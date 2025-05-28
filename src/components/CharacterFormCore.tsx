@@ -1,9 +1,10 @@
+
 'use client';
 
-import * as React from 'react'; // Added this line
+import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize } from '@/types/character';
-import { DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, SIZES, ALIGNMENTS, ALL_SKILLS_3_5 } from '@/types/character';
+import { DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, SIZES, ALIGNMENTS, ALL_SKILLS_3_5, DND_RACES, DND_CLASSES } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,6 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { ScrollText } from 'lucide-react';
+import { ComboboxPrimitive } from '@/components/ui/combobox';
 
 interface CharacterFormCoreProps {
   initialCharacter?: Character;
@@ -84,11 +86,15 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
      if (name === 'className') {
       setCharacter(prev => ({
         ...prev,
-        classes: [{ ...prev.classes[0], className: value }]
+        // For now, assumes single class. A more robust system would handle multiple classes.
+        classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: value, level: prev.classes[0]?.level || 1 }]
       }));
     } else if (name === 'size') {
        setCharacter(prev => ({ ...prev, [name]: value as CharacterSize, sizeModifierAC: calculateAbilityModifier(prev.abilityScores.dexterity) + (SIZES.indexOf(value as CharacterSize) - 4) * (value === SIZES[5] || value === SIZES[6] || value === SIZES[7] || value === SIZES[8] ? -1 : 1) })); // simplified size mod
-    } else {
+    } else if (name === 'race') {
+      setCharacter(prev => ({ ...prev, race: value }));
+    }
+     else {
       setCharacter(prev => ({ ...prev, [name]: value }));
     }
   };
@@ -96,7 +102,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const handleClassLevelChange = (value: string) => {
     setCharacter(prev => ({
       ...prev,
-      classes: [{ ...prev.classes[0], level: parseInt(value,10) || 1 }]
+      classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: prev.classes[0]?.className || '', level: parseInt(value,10) || 1 }]
     }));
   };
 
@@ -136,16 +142,36 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               <Label htmlFor="name">Name</Label>
               <Input id="name" name="name" value={character.name} onChange={handleChange} required />
             </div>
-            <div>
-              <Label htmlFor="race">Race</Label>
-              <Input id="race" name="race" value={character.race} onChange={handleChange} required />
+            <div className="flex items-end gap-2">
+              <div className="flex-grow">
+                <Label htmlFor="race">Race</Label>
+                <ComboboxPrimitive
+                  options={DND_RACES}
+                  value={character.race}
+                  onChange={(value) => handleSelectChange('race', value)}
+                  placeholder="Select Race"
+                  searchPlaceholder="Search races..."
+                  emptyPlaceholder="No race found."
+                />
+              </div>
+              <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <Label htmlFor="className">Class</Label>
-              <Input id="className" name="className" value={character.classes[0]?.className || ''} onChange={(e) => handleSelectChange('className', e.target.value)} placeholder="e.g., Fighter" required />
+            <div className="flex items-end gap-2">
+              <div className="flex-grow">
+                <Label htmlFor="className">Class</Label>
+                 <ComboboxPrimitive
+                  options={DND_CLASSES}
+                  value={character.classes[0]?.className || ''}
+                  onChange={(value) => handleSelectChange('className', value)}
+                  placeholder="Select Class"
+                  searchPlaceholder="Search classes..."
+                  emptyPlaceholder="No class found."
+                />
+              </div>
+              <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
             </div>
              <div>
               <Label htmlFor="level">Level</Label>

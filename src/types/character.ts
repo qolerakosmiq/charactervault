@@ -1,3 +1,4 @@
+
 export interface CharacterClass {
   id: string;
   className: string;
@@ -117,6 +118,33 @@ export const ALIGNMENTS = [
 ] as const;
 export type CharacterAlignment = typeof ALIGNMENTS[number];
 
+export const DND_RACES = [
+  { value: 'human', label: 'Human' },
+  { value: 'elf', label: 'Elf' },
+  { value: 'dwarf', label: 'Dwarf' },
+  { value: 'halfling', label: 'Halfling' },
+  { value: 'gnome', label: 'Gnome' },
+  { value: 'half-elf', label: 'Half-Elf' },
+  { value: 'half-orc', label: 'Half-Orc' },
+] as const;
+export type DndRace = typeof DND_RACES[number]['value'];
+
+export const DND_CLASSES = [
+  { value: 'barbarian', label: 'Barbarian' },
+  { value: 'bard', label: 'Bard' },
+  { value: 'cleric', label: 'Cleric' },
+  { value: 'druid', label: 'Druid' },
+  { value: 'fighter', label: 'Fighter' },
+  { value: 'monk', label: 'Monk' },
+  { value: 'paladin', label: 'Paladin' },
+  { value: 'ranger', label: 'Ranger' },
+  { value: 'rogue', label: 'Rogue' },
+  { value: 'sorcerer', label: 'Sorcerer' },
+  { value: 'wizard', label: 'Wizard' },
+] as const;
+export type DndClass = typeof DND_CLASSES[number]['value'];
+
+
 // Add default D&D 3.5 skills
 export const ALL_SKILLS_3_5: Omit<Skill, 'id' | 'ranks' | 'miscModifier' | 'totalBonus' | 'abilityModifier' | 'isClassSkill'>[] = [
   { name: "Appraise", keyAbility: "intelligence" },
@@ -173,3 +201,4 @@ export const ALL_SKILLS_3_5: Omit<Skill, 'id' | 'ranks' | 'miscModifier' | 'tota
   { name: "Use Magic Device", keyAbility: "charisma" },
   { name: "Use Rope", keyAbility: "dexterity" },
 ];
+
