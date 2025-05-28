@@ -11,8 +11,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
+import Image from 'next/image';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
-import { ScrollText, Dices } from 'lucide-react';
+import { ScrollText, Dices, UserSquare2, Palette } from 'lucide-react';
 import { ComboboxPrimitive } from '@/components/ui/combobox';
 import { cn } from '@/lib/utils';
 import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
@@ -66,6 +68,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       })),
       feats: [],
       inventory: [],
+      personalStory: '',
+      portraitDataUrl: undefined,
     }
   );
   const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<AgingEffectsDetails | null>(null);
@@ -138,6 +142,19 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }));
   };
 
+  const handlePortraitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCharacter(prev => ({ ...prev, portraitDataUrl: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setCharacter(prev => ({ ...prev, portraitDataUrl: undefined }));
+    }
+  };
+
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -169,6 +186,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           </div>
         </CardHeader>
         <CardContent className="space-y-6 pt-6">
+          {/* Name & Race */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div>
               <Label htmlFor="name">Name</Label>
@@ -192,6 +210,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             </div>
           </div>
 
+          {/* Class & Level */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
              <div>
                 <Label htmlFor="className">Class</Label>
@@ -225,6 +244,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             </div>
           </div>
 
+          {/* Alignment & Size */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div>
               <Label htmlFor="alignment">Alignment</Label>
@@ -264,6 +284,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             </div>
           </div>
 
+          {/* Age, Gender & Deity */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
             <div>
               <Label htmlFor="age">Age</Label>
@@ -369,6 +390,70 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           </div>
         </CardContent>
       </Card>
+
+      {/* Personal Story & Portrait Section */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-3">
+             <UserSquare2 className="h-8 w-8 text-primary" /> {/* Or Palette icon for appearance */}
+            <div>
+              <CardTitle className="text-2xl font-serif">
+                Personal Story & Portrait
+              </CardTitle>
+              <CardDescription>
+                Flesh out your character's background and appearance.
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6 pt-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+            {/* Portrait Upload Area */}
+            <div className="md:col-span-1 space-y-2">
+              <Label htmlFor="portraitUpload">Character Portrait</Label>
+              <div className="aspect-square w-full bg-muted rounded-md flex items-center justify-center relative overflow-hidden border border-border shadow-sm">
+                {character.portraitDataUrl ? (
+                  <Image src={character.portraitDataUrl} alt="Character Portrait" layout="fill" objectFit="cover" />
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-muted-foreground">
+                    <Palette size={48} className="mb-2"/>
+                    <span className="text-sm">No portrait uploaded</span>
+                  </div>
+                )}
+              </div>
+              <Input
+                id="portraitUpload"
+                type="file"
+                accept="image/*"
+                onChange={handlePortraitChange}
+                className="text-sm file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+              />
+              {/* Fallback if image is not showing for placeholder */}
+               {!character.portraitDataUrl && (
+                <div className="hidden"> 
+                    <Image src="https://placehold.co/300x300.png" alt="Portrait Placeholder" width={300} height={300} data-ai-hint="fantasy portrait" />
+                </div>
+              )}
+            </div>
+
+            {/* Personal Story Textarea */}
+            <div className="md:col-span-2 space-y-2">
+              <Label htmlFor="personalStory">Personal Story</Label>
+              <Textarea
+                id="personalStory"
+                name="personalStory"
+                value={character.personalStory || ''}
+                onChange={handleChange}
+                placeholder="Describe your character's history, motivations, personality, and defining moments..."
+                rows={12} 
+                className="min-h-[260px] md:min-h-full" // Adjust height as needed
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+
       <Button type="submit" size="lg" className="w-full md:w-auto shadow-md hover:shadow-lg transition-shadow">
         {isCreating ? 'Create Character' : 'Save Changes'}
       </Button>
@@ -384,4 +469,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-
