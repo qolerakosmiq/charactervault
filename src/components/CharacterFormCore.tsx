@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize } from '@/types/character';
+import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails } from '@/types/character';
 import { DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, SIZES, ALIGNMENTS, ALL_SKILLS_3_5, DND_RACES, DND_CLASSES, getNetAgingEffects } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import { Separator } from '@/components/ui/separator';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { ScrollText } from 'lucide-react';
 import { ComboboxPrimitive } from '@/components/ui/combobox';
+import { cn } from '@/lib/utils';
 
 interface CharacterFormCoreProps {
   initialCharacter?: Character;
@@ -66,14 +67,14 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       inventory: [],
     }
   );
-  const [ageEffectsDescription, setAgeEffectsDescription] = React.useState<string | null>(null);
+  const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<AgingEffectsDetails | null>(null);
 
   React.useEffect(() => {
     if (character.race && character.age > 0) {
-      const { description } = getNetAgingEffects(character.race as any, character.age); // Cast as any for DndRace type
-      setAgeEffectsDescription(description);
+      const details = getNetAgingEffects(character.race as any, character.age); // Cast as any for DndRace type
+      setAgeEffectsDetails(details);
     } else {
-      setAgeEffectsDescription(null);
+      setAgeEffectsDetails(null);
     }
   }, [character.age, character.race]);
 
@@ -227,8 +228,31 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             <div>
               <Label htmlFor="age">Age</Label>
               <Input id="age" name="age" type="number" value={character.age} onChange={handleChange} />
-              {ageEffectsDescription && ageEffectsDescription.length > 0 && (
-                <p className="text-xs text-muted-foreground mt-1 ml-1">{ageEffectsDescription}</p>
+              {ageEffectsDetails && (ageEffectsDetails.categoryName !== "Adult" || ageEffectsDetails.effects.length > 0) && (
+                <p className="text-xs text-muted-foreground mt-1 ml-1">
+                  {ageEffectsDetails.categoryName !== "Adult" && (
+                      <strong className="text-foreground">{ageEffectsDetails.categoryName}. </strong>
+                  )}
+                  {ageEffectsDetails.effects.length > 0 ? (
+                    <>
+                      {'('}
+                      {ageEffectsDetails.effects.map((effect, index) => (
+                        <span
+                          key={effect.ability}
+                          className={cn(
+                            effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
+                          )}
+                        >
+                          {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
+                          {index < ageEffectsDetails.effects.length - 1 ? ', ' : ''}
+                        </span>
+                      ))}
+                      {')'}
+                    </>
+                  ) : (
+                    ageEffectsDetails.categoryName !== "Adult" && <span>No ability score changes.</span>
+                  )}
+                </p>
               )}
             </div>
             <div>

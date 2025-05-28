@@ -1,5 +1,6 @@
 
 
+
 export interface CharacterClass {
   id: string;
   className: string;
@@ -240,8 +241,8 @@ interface RaceAgingInfo {
 // --- Effects for Standard Humanoids (Human, Dwarf, Gnome, Halfling, Orc, Half-Orc based on PHB p.109) ---
 // These are TOTAL adjustments for reaching this age category.
 const HUMANOID_MIDDLE_EFFECTS: Partial<Record<AbilityName, number>> = { strength: -1, dexterity: -1, constitution: -1, intelligence: 1, wisdom: 1, charisma: 1 };
-const HUMANOID_OLD_EFFECTS: Partial<Record<AbilityName, number>> =    { strength: -2, dexterity: -2, constitution: -2, intelligence: 1, wisdom: 1, charisma: 1 };
-const HUMANOID_VENERABLE_EFFECTS: Partial<Record<AbilityName, number>> = { strength: -3, dexterity: -3, constitution: -3, intelligence: 1, wisdom: 1, charisma: 1 };
+const HUMANOID_OLD_EFFECTS: Partial<Record<AbilityName, number>> =    { strength: -2, dexterity: -2, constitution: -2, intelligence: 1, wisdom: 1, charisma: 1 }; // These are -2 from base, which is -1 from Middle Age
+const HUMANOID_VENERABLE_EFFECTS: Partial<Record<AbilityName, number>> = { strength: -3, dexterity: -3, constitution: -3, intelligence: 1, wisdom: 1, charisma: 1 }; // These are -3 from base, which is -1 from Old Age
 
 // --- Effects for Elves (and Half-Elves, based on PHB p.109) ---
 // These are TOTAL adjustments for reaching this age category.
@@ -251,43 +252,43 @@ const ELF_VENERABLE_EFFECTS: Partial<Record<AbilityName, number>> = { strength: 
 
 
 export const DND_RACE_AGING_EFFECTS: Record<RaceCategory, RaceAgingInfo> = {
-  human: { // Used for Human
-    categories: [ // Age thresholds derived from Human venerable age (70)
+  human: {
+    categories: [ 
       { categoryName: 'Middle Age', ageFactor: 35/70, effects: HUMANOID_MIDDLE_EFFECTS },
       { categoryName: 'Old', ageFactor: 53/70, effects: HUMANOID_OLD_EFFECTS },
       { categoryName: 'Venerable', ageFactor: 70/70, effects: HUMANOID_VENERABLE_EFFECTS },
     ],
   },
-  elf: { // Used for Elf, Half-Elf
-    categories: [ // Age thresholds derived from Elf/Half-Elf venerable age (e.g., Elf 350, Half-Elf 125)
-      { categoryName: 'Middle Age', ageFactor: 175/350, effects: ELF_MIDDLE_EFFECTS }, // Elf: 175. Half-Elf: 125* (175/350) = 62.5
-      { categoryName: 'Old', ageFactor: 263/350, effects: ELF_OLD_EFFECTS },       // Elf: 263. Half-Elf: 125* (263/350) = 93.9
-      { categoryName: 'Venerable', ageFactor: 350/350, effects: ELF_VENERABLE_EFFECTS }, // Elf: 350. Half-Elf: 125* (350/350) = 125
+  elf: { 
+    categories: [ 
+      { categoryName: 'Middle Age', ageFactor: 175/350, effects: ELF_MIDDLE_EFFECTS }, 
+      { categoryName: 'Old', ageFactor: 263/350, effects: ELF_OLD_EFFECTS },       
+      { categoryName: 'Venerable', ageFactor: 350/350, effects: ELF_VENERABLE_EFFECTS }, 
     ],
   },
   dwarf: {
-    categories: [ // Age thresholds derived from Dwarf venerable age (250)
+    categories: [ 
       { categoryName: 'Middle Age', ageFactor: 125/250, effects: HUMANOID_MIDDLE_EFFECTS },
       { categoryName: 'Old', ageFactor: 188/250, effects: HUMANOID_OLD_EFFECTS },
       { categoryName: 'Venerable', ageFactor: 250/250, effects: HUMANOID_VENERABLE_EFFECTS },
     ],
   },
   gnome: {
-     categories: [ // Age thresholds derived from Gnome venerable age (200)
+     categories: [ 
       { categoryName: 'Middle Age', ageFactor: 100/200, effects: HUMANOID_MIDDLE_EFFECTS },
       { categoryName: 'Old', ageFactor: 150/200, effects: HUMANOID_OLD_EFFECTS },
       { categoryName: 'Venerable', ageFactor: 200/200, effects: HUMANOID_VENERABLE_EFFECTS },
     ],
   },
   halfling: {
-     categories: [ // Age thresholds derived from Halfling venerable age (100)
+     categories: [
       { categoryName: 'Middle Age', ageFactor: 50/100, effects: HUMANOID_MIDDLE_EFFECTS },
       { categoryName: 'Old', ageFactor: 75/100, effects: HUMANOID_OLD_EFFECTS },
       { categoryName: 'Venerable', ageFactor: 100/100, effects: HUMANOID_VENERABLE_EFFECTS },
     ],
   },
-  orc: { // Used for Orc, Half-Orc
-    categories: [ // Age thresholds derived from Orc/Half-Orc venerable age (e.g. Half-Orc 60)
+  orc: { 
+    categories: [ 
       { categoryName: 'Middle Age', ageFactor: 30/60, effects: HUMANOID_MIDDLE_EFFECTS },
       { categoryName: 'Old', ageFactor: 45/60, effects: HUMANOID_OLD_EFFECTS },
       { categoryName: 'Venerable', ageFactor: 60/60, effects: HUMANOID_VENERABLE_EFFECTS },
@@ -295,57 +296,46 @@ export const DND_RACE_AGING_EFFECTS: Record<RaceCategory, RaceAgingInfo> = {
   }
 };
 
-export function getNetAgingEffects(race: DndRace, age: number): { netEffects: Partial<AbilityScores>, description: string } {
+export interface AgingEffectsDetails {
+  categoryName: string;
+  effects: Array<{ ability: AbilityName; change: number }>;
+}
+
+export function getNetAgingEffects(race: DndRace, age: number): AgingEffectsDetails {
   const raceVenerableAge = DND_RACE_BASE_MAX_AGE[race];
-  if (raceVenerableAge === undefined) return { netEffects: {}, description: "Unknown race for max age." };
+  if (raceVenerableAge === undefined) return { categoryName: "Adult", effects: [] };
 
   const agingCategoryKey = RACE_TO_AGING_CATEGORY_MAP[race];
-  if (!agingCategoryKey) return { netEffects: {}, description: "Unknown race for aging category map." };
+  if (!agingCategoryKey) return { categoryName: "Adult", effects: [] };
 
   const raceAgingPattern = DND_RACE_AGING_EFFECTS[agingCategoryKey];
-  if (!raceAgingPattern) return { netEffects: {}, description: "No aging data pattern for this race category." };
+  if (!raceAgingPattern) return { categoryName: "Adult", effects: [] };
 
-  let netEffects: Partial<AbilityScores> = {};
-  let currentCategoryName: string = "Adult"; // Default if no category met or below first threshold
+  let currentCategoryName: string = "Adult";
   let highestAttainedCategoryEffects: Partial<AbilityScores> | null = null;
 
-  // Iterate through categories (assuming they are ordered: Middle, Old, Venerable)
   for (const category of raceAgingPattern.categories) {
     const ageThresholdForCategory = Math.floor(category.ageFactor * raceVenerableAge);
     if (age >= ageThresholdForCategory) {
       currentCategoryName = category.categoryName;
-      highestAttainedCategoryEffects = category.effects; // Overwrite with effects of the latest met category
+      highestAttainedCategoryEffects = category.effects; 
     } else {
-      // Since categories are ordered, if this one isn't met, subsequent (older) ones won't be.
       break; 
     }
   }
 
+  const appliedEffects: Array<{ ability: AbilityName; change: number }> = [];
   if (highestAttainedCategoryEffects) {
-    netEffects = { ...highestAttainedCategoryEffects };
-  }
-
-  let effectDescriptions: string[] = [];
-  (Object.keys(netEffects) as AbilityName[]).forEach(ability => {
-    const val = netEffects[ability];
-    if (val !== 0 && val !== undefined) {
-      effectDescriptions.push(`${ability.substring(0,3).toUpperCase()} ${val! > 0 ? '+' : ''}${val}`);
-    }
-  });
-  
-  const baseDescription = currentCategoryName === "Adult" && effectDescriptions.length === 0 
-    ? "" // No effects, still considered adult for description purposes unless a category is hit.
-    : `${currentCategoryName}.`;
-
-  if (effectDescriptions.length === 0 && currentCategoryName !== "Adult") {
-     return { netEffects, description: `${currentCategoryName}. No ability score changes.` };
-  }
-  if (effectDescriptions.length === 0) { // Covers adult with no effects, or category with no effects
-     return { netEffects, description: baseDescription.trim() };
+    (Object.keys(highestAttainedCategoryEffects) as AbilityName[]).forEach(ability => {
+      const change = highestAttainedCategoryEffects[ability];
+      if (change !== undefined && change !== 0) {
+        appliedEffects.push({ ability, change });
+      }
+    });
   }
 
   return {
-    netEffects,
-    description: `${baseDescription} Effects: ${effectDescriptions.join(', ')}.`
+    categoryName: currentCategoryName,
+    effects: appliedEffects,
   };
 }
