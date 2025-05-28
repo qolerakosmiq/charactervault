@@ -1,4 +1,6 @@
 
+import constantsData from '@/data/dnd-constants.json';
+
 export interface CharacterClass {
   id: string;
   className: string;
@@ -50,47 +52,32 @@ export interface SavingThrows {
 export interface Character {
   id: string;
   name: string;
-  race: string;
-  alignment: string;
+  race: string; // This will correspond to DndRace values
+  alignment: string; // This will correspond to CharacterAlignment values
   deity?: string;
-  size: string; // e.g., 'Medium', 'Small'
+  size: string; // This will correspond to CharacterSize values
   age: number;
   gender: string;
   
-  // Basic Stats
   abilityScores: AbilityScores;
-
-  // Combat Stats
-  hp: number; // Current Hit Points
-  maxHp: number; // Max Hit Points
+  hp: number;
+  maxHp: number;
   
-  // AC Components
   armorBonus: number;
   shieldBonus: number;
-  sizeModifierAC: number; // Based on 'size'
+  sizeModifierAC: number;
   naturalArmor: number;
   deflectionBonus: number;
   dodgeBonus: number;
   acMiscModifier: number;
 
-  // Initiative
   initiativeMiscModifier: number;
-
-  // Base Attack Bonus - array for multiple attacks if needed by class/level prog.
-  // For simplicity, classes will define this. Let's assume it's calculated and not stored directly on character model,
-  // but derived from classes. Or, if we must store it, it needs to be updated when class/level changes.
-  // For now, this will be dynamically calculated.
-  
-  // Saving throws - base saves are often from class/level
   savingThrows: SavingThrows;
 
-  // Relations
   classes: CharacterClass[];
   skills: Skill[];
   feats: Feat[];
   inventory: Item[];
-  // Spells - Placeholder for future
-  // spells: any[]; 
 }
 
 export const DEFAULT_ABILITIES: AbilityScores = {
@@ -108,44 +95,24 @@ export const DEFAULT_SAVING_THROWS: SavingThrows = {
   will: { base: 0, magicMod: 0, miscMod: 0 },
 };
 
-export const SIZES = ['Fine', 'Diminutive', 'Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan', 'Colossal'] as const;
-export type CharacterSize = typeof SIZES[number];
+// --- Types derived from JSON structure (or strongly typed if possible) ---
+export type CharacterSize = typeof constantsData.SIZES_DATA[number];
+export const SIZES: readonly CharacterSize[] = constantsData.SIZES_DATA;
 
-export const ALIGNMENTS = [
-  'Lawful Good', 'Neutral Good', 'Chaotic Good',
-  'Lawful Neutral', 'True Neutral', 'Chaotic Neutral',
-  'Lawful Evil', 'Neutral Evil', 'Chaotic Evil'
-] as const;
-export type CharacterAlignment = typeof ALIGNMENTS[number];
+export type CharacterAlignment = typeof constantsData.ALIGNMENTS_DATA[number];
+export const ALIGNMENTS: readonly CharacterAlignment[] = constantsData.ALIGNMENTS_DATA;
 
-export const DND_RACES = [
-  { value: 'human', label: 'Human' },
-  { value: 'elf', label: 'Elf' },
-  { value: 'dwarf', label: 'Dwarf' },
-  { value: 'halfling', label: 'Halfling' },
-  { value: 'gnome', label: 'Gnome' },
-  { value: 'half-elf', label: 'Half-Elf' },
-  { value: 'half-orc', label: 'Half-Orc' },
-] as const;
-export type DndRace = typeof DND_RACES[number]['value'];
+export type DndRace = typeof constantsData.DND_RACES_DATA[number]['value'];
+export const DND_RACES: ReadonlyArray<{value: DndRace, label: string}> = constantsData.DND_RACES_DATA as ReadonlyArray<{value: DndRace, label: string}>;
 
-export const DND_CLASSES = [
-  { value: 'barbarian', label: 'Barbarian', hitDice: 'd12' },
-  { value: 'bard', label: 'Bard', hitDice: 'd6' },
-  { value: 'cleric', label: 'Cleric', hitDice: 'd8' },
-  { value: 'druid', label: 'Druid', hitDice: 'd8' },
-  { value: 'fighter', label: 'Fighter', hitDice: 'd10' },
-  { value: 'monk', label: 'Monk', hitDice: 'd8' },
-  { value: 'paladin', label: 'Paladin', hitDice: 'd10' },
-  { value: 'ranger', label: 'Ranger', hitDice: 'd8' },
-  { value: 'rogue', label: 'Rogue', hitDice: 'd6' },
-  { value: 'sorcerer', label: 'Sorcerer', hitDice: 'd4' },
-  { value: 'wizard', label: 'Wizard', hitDice: 'd4' },
-] as const;
-export type DndClass = typeof DND_CLASSES[number]['value'];
+export type DndClass = typeof constantsData.DND_CLASSES_DATA[number]['value'];
+export const DND_CLASSES: ReadonlyArray<{value: DndClass, label: string, hitDice: string}> = constantsData.DND_CLASSES_DATA as ReadonlyArray<{value: DndClass, label: string, hitDice: string}>;
+
+export const GENDERS: ReadonlyArray<{value: string, label: string}> = constantsData.GENDERS_DATA;
+export const DND_DEITIES: ReadonlyArray<{value: string, label: string}> = constantsData.DND_DEITIES_DATA;
 
 
-// Add default D&D 3.5 skills
+// --- Skills (Remains in TS for now) ---
 export const ALL_SKILLS_3_5: Omit<Skill, 'id' | 'ranks' | 'miscModifier' | 'totalBonus' | 'abilityModifier' | 'isClassSkill'>[] = [
   { name: "Appraise", keyAbility: "intelligence" },
   { name: "Balance", keyAbility: "dexterity" },
@@ -157,7 +124,6 @@ export const ALL_SKILLS_3_5: Omit<Skill, 'id' | 'ranks' | 'miscModifier' | 'tota
   { name: "Craft (Bowmaking)", keyAbility: "intelligence" },
   { name: "Craft (Weaponsmithing)", keyAbility: "intelligence" },
   { name: "Craft (Trapmaking)", keyAbility: "intelligence" },
-  // Add other craft specializations as needed
   { name: "Decipher Script", keyAbility: "intelligence" },
   { name: "Diplomacy", keyAbility: "charisma" },
   { name: "Disable Device", keyAbility: "intelligence" },
@@ -186,9 +152,7 @@ export const ALL_SKILLS_3_5: Omit<Skill, 'id' | 'ranks' | 'miscModifier' | 'tota
   { name: "Perform (Act)", keyAbility: "charisma" },
   { name: "Perform (Sing)", keyAbility: "charisma" },
   { name: "Perform (Dance)", keyAbility: "charisma" },
-  // Add other perform specializations
   { name: "Profession (Herbalist)", keyAbility: "wisdom" },
-  // Add other profession specializations
   { name: "Ride", keyAbility: "dexterity" },
   { name: "Search", keyAbility: "intelligence" },
   { name: "Sense Motive", keyAbility: "wisdom" },
@@ -202,117 +166,37 @@ export const ALL_SKILLS_3_5: Omit<Skill, 'id' | 'ranks' | 'miscModifier' | 'tota
   { name: "Use Rope", keyAbility: "dexterity" },
 ];
 
-// D&D 3.5 Aging Effects
+// --- Aging Effects ---
+export type RaceCategory = keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA;
 
-export type RaceCategory = 'human' | 'dwarf' | 'elf' | 'gnome' | 'halfling' | 'orc';
-
-export const DND_RACE_BASE_MAX_AGE: Record<DndRace, number> = {
-  'human': 70,    // Venerable age for Human (max age 70 + 2d20)
-  'elf': 350,     // Venerable age for Elf (max age 350 + 4d%)
-  'dwarf': 250,   // Venerable age for Dwarf (max age 250 + 2d%)
-  'halfling': 100, // Venerable age for Halfling (max age 100 + 2d20)
-  'gnome': 200,   // Venerable age for Gnome (max age 200 + 3d%)
-  'half-elf': 125,// Venerable age for Half-Elf (max age 125 + 3d20)
-  'half-orc': 60, // Venerable age for Half-Orc (max age 60 + 2d10)
-};
-
-export const RACE_TO_AGING_CATEGORY_MAP: Record<DndRace, RaceCategory> = {
-  'human': 'human',
-  'elf': 'elf',
-  'dwarf': 'dwarf',
-  'halfling': 'halfling',
-  'gnome': 'gnome',
-  'half-elf': 'elf',   // Half-elves use elf aging pattern (effects), but with their own baseMaxAge and ageFactors derived from it
-  'half-orc': 'orc',   // Half-orcs use orc aging pattern (effects), with their own baseMaxAge and ageFactors
-};
-
-interface AgeCategoryEffect {
-  categoryName: 'Middle Age' | 'Old' | 'Venerable';
-  ageFactor: number; // Factor of the race's venerable age (from DND_RACE_BASE_MAX_AGE) to determine threshold
-  effects: Partial<Record<AbilityName, number>>; // Total ability adjustments for this category
+interface AgeCategoryEffectData {
+  categoryName: string;
+  ageFactor: number;
+  effects: Partial<Record<AbilityName, number>>;
 }
 
-interface RaceAgingInfo {
-  categories: AgeCategoryEffect[];
+interface RaceAgingInfoData {
+  categories: AgeCategoryEffectData[];
 }
-
-// --- Effects for Standard Humanoids (Human, Dwarf, Gnome, Halfling, Orc, Half-Orc based on PHB p.109) ---
-// These are TOTAL adjustments for reaching this age category.
-const HUMANOID_MIDDLE_EFFECTS: Partial<Record<AbilityName, number>> = { strength: -1, dexterity: -1, constitution: -1, intelligence: 1, wisdom: 1, charisma: 1 };
-const HUMANOID_OLD_EFFECTS: Partial<Record<AbilityName, number>> =    { strength: -2, dexterity: -2, constitution: -2, intelligence: 1, wisdom: 1, charisma: 1 }; // These are -2 from base, which is -1 from Middle Age
-const HUMANOID_VENERABLE_EFFECTS: Partial<Record<AbilityName, number>> = { strength: -3, dexterity: -3, constitution: -3, intelligence: 1, wisdom: 1, charisma: 1 }; // These are -3 from base, which is -1 from Old Age
-
-// --- Effects for Elves (and Half-Elves, based on PHB p.109) ---
-// These are TOTAL adjustments for reaching this age category.
-const ELF_MIDDLE_EFFECTS: Partial<Record<AbilityName, number>> = { intelligence: 1, wisdom: 1, charisma: 1 }; // No physical penalty
-const ELF_OLD_EFFECTS: Partial<Record<AbilityName, number>> =    { strength: -1, dexterity: -1, constitution: -1, intelligence: 2, wisdom: 2, charisma: 2 };
-const ELF_VENERABLE_EFFECTS: Partial<Record<AbilityName, number>> = { strength: -2, dexterity: -2, constitution: -2, intelligence: 3, wisdom: 3, charisma: 3 };
-
-
-export const DND_RACE_AGING_EFFECTS: Record<RaceCategory, RaceAgingInfo> = {
-  human: {
-    categories: [ 
-      { categoryName: 'Middle Age', ageFactor: 35/70, effects: HUMANOID_MIDDLE_EFFECTS },
-      { categoryName: 'Old', ageFactor: 53/70, effects: HUMANOID_OLD_EFFECTS },
-      { categoryName: 'Venerable', ageFactor: 70/70, effects: HUMANOID_VENERABLE_EFFECTS },
-    ],
-  },
-  elf: { 
-    categories: [ 
-      { categoryName: 'Middle Age', ageFactor: 175/350, effects: ELF_MIDDLE_EFFECTS }, 
-      { categoryName: 'Old', ageFactor: 263/350, effects: ELF_OLD_EFFECTS },       
-      { categoryName: 'Venerable', ageFactor: 350/350, effects: ELF_VENERABLE_EFFECTS }, 
-    ],
-  },
-  dwarf: {
-    categories: [ 
-      { categoryName: 'Middle Age', ageFactor: 125/250, effects: HUMANOID_MIDDLE_EFFECTS },
-      { categoryName: 'Old', ageFactor: 188/250, effects: HUMANOID_OLD_EFFECTS },
-      { categoryName: 'Venerable', ageFactor: 250/250, effects: HUMANOID_VENERABLE_EFFECTS },
-    ],
-  },
-  gnome: {
-     categories: [ 
-      { categoryName: 'Middle Age', ageFactor: 100/200, effects: HUMANOID_MIDDLE_EFFECTS },
-      { categoryName: 'Old', ageFactor: 150/200, effects: HUMANOID_OLD_EFFECTS },
-      { categoryName: 'Venerable', ageFactor: 200/200, effects: HUMANOID_VENERABLE_EFFECTS },
-    ],
-  },
-  halfling: {
-     categories: [
-      { categoryName: 'Middle Age', ageFactor: 50/100, effects: HUMANOID_MIDDLE_EFFECTS },
-      { categoryName: 'Old', ageFactor: 75/100, effects: HUMANOID_OLD_EFFECTS },
-      { categoryName: 'Venerable', ageFactor: 100/100, effects: HUMANOID_VENERABLE_EFFECTS },
-    ],
-  },
-  orc: { 
-    categories: [ 
-      { categoryName: 'Middle Age', ageFactor: 30/60, effects: HUMANOID_MIDDLE_EFFECTS },
-      { categoryName: 'Old', ageFactor: 45/60, effects: HUMANOID_OLD_EFFECTS },
-      { categoryName: 'Venerable', ageFactor: 60/60, effects: HUMANOID_VENERABLE_EFFECTS },
-    ],
-  }
-};
 
 export interface AgingEffectsDetails {
   categoryName: string;
   effects: Array<{ ability: AbilityName; change: number }>;
 }
 
-export function getNetAgingEffects(race: DndRace, age: number): AgingEffectsDetails {
-  const raceVenerableAge = DND_RACE_BASE_MAX_AGE[race];
+export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffectsDetails {
+  const raceVenerableAge = (constantsData.DND_RACE_BASE_MAX_AGE_DATA as Record<DndRace, number>)[raceValue];
   if (raceVenerableAge === undefined) return { categoryName: "Adult", effects: [] };
 
-  const agingCategoryKey = RACE_TO_AGING_CATEGORY_MAP[race];
+  const agingCategoryKey = (constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA as Record<DndRace, RaceCategory>)[raceValue];
   if (!agingCategoryKey) return { categoryName: "Adult", effects: [] };
-
-  const raceAgingPattern = DND_RACE_AGING_EFFECTS[agingCategoryKey];
+  
+  const raceAgingPattern = (constantsData.DND_RACE_AGING_EFFECTS_DATA as Record<RaceCategory, RaceAgingInfoData>)[agingCategoryKey];
   if (!raceAgingPattern) return { categoryName: "Adult", effects: [] };
 
   let currentCategoryName: string = "Adult";
-  let highestAttainedCategoryEffects: Partial<AbilityScores> | null = null;
+  let highestAttainedCategoryEffects: Partial<Record<AbilityName, number>> | null = null;
 
-  // Iterate in reverse order to find the highest attained category first
   const sortedCategories = [...raceAgingPattern.categories].sort((a, b) => b.ageFactor - a.ageFactor);
 
   for (const category of sortedCategories) {
@@ -320,10 +204,9 @@ export function getNetAgingEffects(race: DndRace, age: number): AgingEffectsDeta
     if (age >= ageThresholdForCategory) {
       currentCategoryName = category.categoryName;
       highestAttainedCategoryEffects = category.effects; 
-      break; // Found the highest category
+      break;
     }
   }
-
 
   const appliedEffects: Array<{ ability: AbilityName; change: number }> = [];
   if (highestAttainedCategoryEffects) {
@@ -341,83 +224,14 @@ export function getNetAgingEffects(race: DndRace, age: number): AgingEffectsDeta
   };
 }
 
-export const GENDERS = [
-  { value: 'Male', label: 'Male' },
-  { value: 'Female', label: 'Female' },
-  // User can type other values
-] as const;
 
-
-export const DND_DEITIES = [
-  // Greyhawk Deities
-  { value: 'Boccob', label: 'Boccob' },
-  { value: 'Corellon Larethian', label: 'Corellon Larethian' },
-  { value: 'Ehlonna', label: 'Ehlonna' },
-  { value: 'Erythnul', label: 'Erythnul' },
-  { value: 'Fharlanghn', label: 'Fharlanghn' },
-  { value: 'Garl Glittergold', label: 'Garl Glittergold' },
-  { value: 'Gruumsh', label: 'Gruumsh' },
-  { value: 'Heironeous', label: 'Heironeous' },
-  { value: 'Hextor', label: 'Hextor' },
-  { value: 'Kord', label: 'Kord' },
-  { value: 'Moradin', label: 'Moradin' },
-  { value: 'Nerull', label: 'Nerull' },
-  { value: 'Obad-Hai', label: 'Obad-Hai' },
-  { value: 'Olidammara', label: 'Olidammara' },
-  { value: 'Pelor', label: 'Pelor' },
-  { value: 'St. Cuthbert', label: 'St. Cuthbert' },
-  { value: 'Vecna', label: 'Vecna' },
-  { value: 'Wee Jas', label: 'Wee Jas' },
-  { value: 'Yondalla', label: 'Yondalla' },
-  // Forgotten Realms Core Deities
-  { value: 'Bane', label: 'Bane' },
-  { value: 'Chauntea', label: 'Chauntea' },
-  { value: 'Cyric', label: 'Cyric' },
-  { value: 'Helm', label: 'Helm' },
-  { value: 'Ilmater', label: 'Ilmater' },
-  { value: 'Kelemvor', label: 'Kelemvor' },
-  { value: 'Lathander', label: 'Lathander' },
-  { value: 'Mystra', label: 'Mystra' },
-  { value: 'Oghma', label: 'Oghma' },
-  { value: 'Selûne', label: 'Selûne' },
-  { value: 'Shar', label: 'Shar' },
-  { value: 'Silvanus', label: 'Silvanus' },
-  { value: 'Sune', label: 'Sune' },
-  { value: 'Talos', label: 'Talos' },
-  { value: 'Tempus', label: 'Tempus' },
-  { value: 'Torm', label: 'Torm' },
-  { value: 'Tymora', label: 'Tymora' },
-  { value: 'Tyr', label: 'Tyr' },
-  { value: 'Umberlee', label: 'Umberlee' },
-  // Non-human deities common across settings
-  { value: 'Lolth', label: 'Lolth' },
-  { value: 'Tiamat', label: 'Tiamat' },
-  { value: 'Bahamut', label: 'Bahamut' },
-  { value: 'Kurtulmak', label: 'Kurtulmak'},
-  { value: 'Maglubiyet', label: 'Maglubiyet'},
-  // User can type other values
-] as const;
-
-// D&D 3.5 Size Ability Score Modifiers (based on DMG p.291 for adjusting creature stats)
-// These represent typical adjustments if a creature's size changes from Medium.
-export const DND_SIZE_ABILITY_MODIFIERS: Record<CharacterSize, { strength?: number; dexterity?: number }> = {
-  'Fine': { strength: -10, dexterity: +8 },
-  'Diminutive': { strength: -8, dexterity: +6 },
-  'Tiny': { strength: -6, dexterity: +4 },
-  'Small': { strength: -4, dexterity: +2 },
-  'Medium': { strength: 0, dexterity: 0 },
-  'Large': { strength: +4, dexterity: -2 },
-  'Huge': { strength: +8, dexterity: -4 },
-  'Gargantuan': { strength: +12, dexterity: -6 },
-  'Colossal': { strength: +16, dexterity: -8 },
-};
-
+// --- Size Ability Score Modifiers ---
 export interface SizeAbilityEffectsDetails {
   effects: Array<{ ability: AbilityName; change: number }>;
 }
 
 export function getSizeAbilityEffects(size: CharacterSize): SizeAbilityEffectsDetails {
-  const mods = DND_SIZE_ABILITY_MODIFIERS[size];
+  const mods = (constantsData.DND_SIZE_ABILITY_MODIFIERS_DATA as Record<CharacterSize, { strength?: number; dexterity?: number }>)[size];
   const appliedEffects: Array<{ ability: AbilityName; change: number }> = [];
 
   if (mods) {
@@ -427,8 +241,6 @@ export function getSizeAbilityEffects(size: CharacterSize): SizeAbilityEffectsDe
     if (mods.dexterity !== undefined && mods.dexterity !== 0) {
       appliedEffects.push({ ability: 'dexterity', change: mods.dexterity });
     }
-    // Note: D&D 3.5 DMG p.291 primarily lists Str/Dex. Con can also change, but it's less universal.
-    // For simplicity, we'll stick to Str & Dex as per the table for generic size changes.
   }
   return { effects: appliedEffects };
 }
