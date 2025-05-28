@@ -41,7 +41,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       deity: '',
       size: SIZES[4], // Medium
       age: 20,
-      gender: '',
+      gender: GENDERS[0].value, // Default to Male
       abilityScores: { ...DEFAULT_ABILITIES },
       hp: 10,
       maxHp: 10,
@@ -71,7 +71,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   React.useEffect(() => {
     if (character.race && character.age > 0) {
-      const details = getNetAgingEffects(character.race as any, character.age); // Cast as any for DndRace type
+      const details = getNetAgingEffects(character.race as any, character.age); 
       setAgeEffectsDetails(details);
     } else {
       setAgeEffectsDetails(null);
@@ -208,7 +208,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div>
               <Label htmlFor="alignment">Alignment</Label>
-              <Select name="alignment" value={character.alignment} onValueChange={(value) => handleSelectChange('alignment', value)}>
+              <Select name="alignment" value={character.alignment} onValueChange={(value) => handleSelectChange('alignment', value as CharacterAlignment)}>
                 <SelectTrigger><SelectValue placeholder="Select alignment" /></SelectTrigger>
                 <SelectContent>
                   {ALIGNMENTS.map(align => <SelectItem key={align} value={align}>{align}</SelectItem>)}
@@ -217,7 +217,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             </div>
             <div>
               <Label htmlFor="size">Size</Label>
-              <Select name="size" value={character.size} onValueChange={(value) => handleSelectChange('size', value)}>
+              <Select name="size" value={character.size} onValueChange={(value) => handleSelectChange('size', value as CharacterSize)}>
                 <SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger>
                 <SelectContent>
                   {SIZES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}

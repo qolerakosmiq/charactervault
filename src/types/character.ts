@@ -2,6 +2,7 @@
 
 
 
+
 export interface CharacterClass {
   id: string;
   className: string;
@@ -347,6 +348,7 @@ export function getNetAgingEffects(race: DndRace, age: number): AgingEffectsDeta
 export const GENDERS = [
   { value: 'Male', label: 'Male' },
   { value: 'Female', label: 'Female' },
+  // User can type other values
 ] as const;
 
 
@@ -397,5 +399,5 @@ export const DND_DEITIES = [
   { value: 'Bahamut', label: 'Bahamut' },
   { value: 'Kurtulmak', label: 'Kurtulmak'},
   { value: 'Maglubiyet', label: 'Maglubiyet'},
-  { value: 'Sekhmet', label: 'Sekhmet' }, // Example of an animalistic/mythological deity
+  // User can type other values
 ] as const;
