@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { ScrollText, Dices, UserSquare2, Palette } from 'lucide-react';
-import { ComboboxPrimitive } from '@/components/ui/combobox';
+import { ComboboxPrimitive, type ComboboxOption } from '@/components/ui/combobox';
 import { cn } from '@/lib/utils';
 import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
 
@@ -188,7 +188,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         <CardContent className="space-y-6 pt-6">
           {/* Name & Race */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            <div>
+             <div>
               <Label htmlFor="name">Name</Label>
               <Input id="name" name="name" value={character.name} onChange={handleChange} required />
             </div>
@@ -197,7 +197,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
                   <ComboboxPrimitive
-                    options={DND_RACES}
+                    options={DND_RACES as readonly ComboboxOption[]}
                     value={character.race}
                     onChange={(value) => handleSelectChange('race', value)}
                     placeholder="Select Race"
@@ -217,7 +217,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                 <div className="flex items-center gap-2">
                   <div className="flex-grow">
                     <ComboboxPrimitive
-                      options={DND_CLASSES}
+                      options={DND_CLASSES as readonly ComboboxOption[]}
                       value={character.classes[0]?.className || ''}
                       onChange={(value) => handleSelectChange('className', value)}
                       placeholder="Select Class"
@@ -319,7 +319,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             <div>
               <Label htmlFor="gender">Gender</Label>
               <ComboboxPrimitive
-                  options={GENDERS}
+                  options={GENDERS as readonly ComboboxOption[]}
                   value={character.gender}
                   onChange={(value) => handleSelectChange('gender', value)}
                   placeholder="Select or type gender"
@@ -331,7 +331,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
              <div>
               <Label htmlFor="deity">Deity</Label>
               <ComboboxPrimitive
-                  options={DND_DEITIES}
+                  options={DND_DEITIES as readonly ComboboxOption[]}
                   value={character.deity || ''}
                   onChange={(value) => handleSelectChange('deity', value)}
                   placeholder="Select or type deity"
@@ -446,7 +446,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                 onChange={handleChange}
                 placeholder="Describe your character's history, motivations, personality, and defining moments..."
                 rows={12} 
-                className="min-h-[260px] md:min-h-full" // Adjust height as needed
+                className="min-h-[260px] md:min-h-0 md:h-auto md:aspect-[2/1]"
               />
             </div>
           </div>
@@ -469,3 +469,4 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
+
