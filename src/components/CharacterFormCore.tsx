@@ -119,6 +119,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
   
   const abilityNames: AbilityName[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+  const selectedClassInfo = DND_CLASSES.find(c => c.value === character.classes[0]?.className);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
@@ -159,23 +160,26 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <Label htmlFor="className">Class</Label>
+                <ComboboxPrimitive
+                options={DND_CLASSES}
+                value={character.classes[0]?.className || ''}
+                onChange={(value) => handleSelectChange('className', value)}
+                placeholder="Select Class"
+                searchPlaceholder="Search classes..."
+                emptyPlaceholder="No class found."
+              />
+              {selectedClassInfo && (
+                <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: {selectedClassInfo.hitDice}</p>
+              )}
+            </div>
             <div className="flex items-end gap-2">
               <div className="flex-grow">
-                <Label htmlFor="className">Class</Label>
-                 <ComboboxPrimitive
-                  options={DND_CLASSES}
-                  value={character.classes[0]?.className || ''}
-                  onChange={(value) => handleSelectChange('className', value)}
-                  placeholder="Select Class"
-                  searchPlaceholder="Search classes..."
-                  emptyPlaceholder="No class found."
-                />
+                <Label htmlFor="level">Level</Label>
+                <Input id="level" name="level" type="number" value={character.classes[0]?.level || 1} onChange={(e) => handleClassLevelChange(e.target.value)} min="1" />
               </div>
               <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
-            </div>
-             <div>
-              <Label htmlFor="level">Level</Label>
-              <Input id="level" name="level" type="number" value={character.classes[0]?.level || 1} onChange={(e) => handleClassLevelChange(e.target.value)} min="1" />
             </div>
           </div>
 

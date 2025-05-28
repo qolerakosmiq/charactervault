@@ -130,17 +130,17 @@ export const DND_RACES = [
 export type DndRace = typeof DND_RACES[number]['value'];
 
 export const DND_CLASSES = [
-  { value: 'barbarian', label: 'Barbarian' },
-  { value: 'bard', label: 'Bard' },
-  { value: 'cleric', label: 'Cleric' },
-  { value: 'druid', label: 'Druid' },
-  { value: 'fighter', label: 'Fighter' },
-  { value: 'monk', label: 'Monk' },
-  { value: 'paladin', label: 'Paladin' },
-  { value: 'ranger', label: 'Ranger' },
-  { value: 'rogue', label: 'Rogue' },
-  { value: 'sorcerer', label: 'Sorcerer' },
-  { value: 'wizard', label: 'Wizard' },
+  { value: 'barbarian', label: 'Barbarian', hitDice: 'd12' },
+  { value: 'bard', label: 'Bard', hitDice: 'd6' },
+  { value: 'cleric', label: 'Cleric', hitDice: 'd8' },
+  { value: 'druid', label: 'Druid', hitDice: 'd8' },
+  { value: 'fighter', label: 'Fighter', hitDice: 'd10' },
+  { value: 'monk', label: 'Monk', hitDice: 'd8' },
+  { value: 'paladin', label: 'Paladin', hitDice: 'd10' },
+  { value: 'ranger', label: 'Ranger', hitDice: 'd8' },
+  { value: 'rogue', label: 'Rogue', hitDice: 'd6' },
+  { value: 'sorcerer', label: 'Sorcerer', hitDice: 'd4' },
+  { value: 'wizard', label: 'Wizard', hitDice: 'd4' },
 ] as const;
 export type DndClass = typeof DND_CLASSES[number]['value'];
 
