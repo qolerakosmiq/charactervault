@@ -241,7 +241,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     <React.Fragment key={effect.ability}>
                       <strong
                         className={cn(
-                           "font-semibold",
+                           "font-bold",
                           effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
                         )}
                       >
@@ -270,7 +270,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                         <React.Fragment key={effect.ability}>
                           <strong
                             className={cn(
-                              "font-semibold",
+                              "font-bold",
                               effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
                             )}
                           >
@@ -338,7 +338,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     <span className="text-accent">Modifier: </span>
                     <span
                       className={cn(
-                        "font-semibold",
+                        "font-bold",
                         modifier > 0 && "text-emerald-500",
                         modifier < 0 && "text-destructive",
                         modifier === 0 && "text-accent" 
