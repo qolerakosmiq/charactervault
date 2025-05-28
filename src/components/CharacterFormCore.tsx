@@ -259,7 +259,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             <div>
               <Label htmlFor="age">Age</Label>
               <Input id="age" name="age" type="number" value={character.age} onChange={handleChange} />
-              {ageEffectsDetails && (ageEffectsDetails.categoryName !== "Adult" || ageEffectsDetails.effects.length > 0) && (
+               {ageEffectsDetails && (ageEffectsDetails.categoryName !== "Adult" || ageEffectsDetails.effects.length > 0) && (
                 <p className="text-xs text-muted-foreground mt-1 ml-1">
                   {ageEffectsDetails.categoryName !== "Adult" && (
                       <span>{ageEffectsDetails.categoryName}: </span>
@@ -299,7 +299,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                 />
             </div>
              <div>
-              <Label htmlFor="deity">Deity (Optional)</Label>
+              <Label htmlFor="deity">Deity</Label>
               <ComboboxPrimitive
                   options={DND_DEITIES}
                   value={character.deity || ''}
@@ -359,3 +359,4 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </form>
   );
 }
+
