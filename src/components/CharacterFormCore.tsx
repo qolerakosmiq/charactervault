@@ -3,8 +3,8 @@
 
 import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails } from '@/types/character';
-import { DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, SIZES, ALIGNMENTS, ALL_SKILLS_3_5, DND_RACES, DND_CLASSES, getNetAgingEffects, GENDERS, DND_DEITIES } from '@/types/character';
+import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRace, SizeAbilityEffectsDetails } from '@/types/character';
+import { DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, SIZES, ALIGNMENTS, ALL_SKILLS_3_5, DND_RACES, DND_CLASSES, getNetAgingEffects, GENDERS, DND_DEITIES, getSizeAbilityEffects } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -68,15 +68,26 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
   );
   const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<AgingEffectsDetails | null>(null);
+  const [sizeAbilityEffectsDetails, setSizeAbilityEffectsDetails] = React.useState<SizeAbilityEffectsDetails | null>(null);
 
   React.useEffect(() => {
     if (character.race && character.age > 0) {
-      const details = getNetAgingEffects(character.race as any, character.age); 
+      const details = getNetAgingEffects(character.race as DndRace, character.age); 
       setAgeEffectsDetails(details);
     } else {
       setAgeEffectsDetails(null);
     }
   }, [character.age, character.race]);
+
+  React.useEffect(() => {
+    if (character.size) {
+      const details = getSizeAbilityEffects(character.size as CharacterSize);
+      // Only set if there are actual effects to display
+      setSizeAbilityEffectsDetails(details.effects.length > 0 ? details : null);
+    } else {
+      setSizeAbilityEffectsDetails(null);
+    }
+  }, [character.size]);
 
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -223,6 +234,23 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   {SIZES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                 </SelectContent>
               </Select>
+              {sizeAbilityEffectsDetails && sizeAbilityEffectsDetails.effects.length > 0 && (
+                <p className="text-xs text-muted-foreground mt-1 ml-1">
+                  Impact on ability scores: {/* Space after colon */}
+                  {sizeAbilityEffectsDetails.effects.map((effect, index) => (
+                    <React.Fragment key={effect.ability}>
+                      <strong
+                        className={cn(
+                          effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
+                        )}
+                      >
+                        {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
+                      </strong>
+                      {index < sizeAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
+                    </React.Fragment>
+                  ))}
+                </p>
+              )}
             </div>
           </div>
 

@@ -1,8 +1,4 @@
 
-
-
-
-
 export interface CharacterClass {
   id: string;
   className: string;
@@ -401,3 +397,38 @@ export const DND_DEITIES = [
   { value: 'Maglubiyet', label: 'Maglubiyet'},
   // User can type other values
 ] as const;
+
+// D&D 3.5 Size Ability Score Modifiers (based on DMG p.291 for adjusting creature stats)
+// These represent typical adjustments if a creature's size changes from Medium.
+export const DND_SIZE_ABILITY_MODIFIERS: Record<CharacterSize, { strength?: number; dexterity?: number }> = {
+  'Fine': { strength: -10, dexterity: +8 },
+  'Diminutive': { strength: -8, dexterity: +6 },
+  'Tiny': { strength: -6, dexterity: +4 },
+  'Small': { strength: -4, dexterity: +2 },
+  'Medium': { strength: 0, dexterity: 0 },
+  'Large': { strength: +4, dexterity: -2 },
+  'Huge': { strength: +8, dexterity: -4 },
+  'Gargantuan': { strength: +12, dexterity: -6 },
+  'Colossal': { strength: +16, dexterity: -8 },
+};
+
+export interface SizeAbilityEffectsDetails {
+  effects: Array<{ ability: AbilityName; change: number }>;
+}
+
+export function getSizeAbilityEffects(size: CharacterSize): SizeAbilityEffectsDetails {
+  const mods = DND_SIZE_ABILITY_MODIFIERS[size];
+  const appliedEffects: Array<{ ability: AbilityName; change: number }> = [];
+
+  if (mods) {
+    if (mods.strength !== undefined && mods.strength !== 0) {
+      appliedEffects.push({ ability: 'strength', change: mods.strength });
+    }
+    if (mods.dexterity !== undefined && mods.dexterity !== 0) {
+      appliedEffects.push({ ability: 'dexterity', change: mods.dexterity });
+    }
+    // Note: D&D 3.5 DMG p.291 primarily lists Str/Dex. Con can also change, but it's less universal.
+    // For simplicity, we'll stick to Str & Dex as per the table for generic size changes.
+  }
+  return { effects: appliedEffects };
+}
