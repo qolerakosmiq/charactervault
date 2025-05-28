@@ -138,52 +138,61 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           </div>
         </CardHeader>
         <CardContent className="space-y-6 pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div>
               <Label htmlFor="name">Name</Label>
               <Input id="name" name="name" value={character.name} onChange={handleChange} required />
             </div>
-            <div className="flex items-end gap-2">
-              <div className="flex-grow">
-                <Label htmlFor="race">Race</Label>
-                <ComboboxPrimitive
-                  options={DND_RACES}
-                  value={character.race}
-                  onChange={(value) => handleSelectChange('race', value)}
-                  placeholder="Select Race"
-                  searchPlaceholder="Search races..."
-                  emptyPlaceholder="No race found."
-                />
+            <div>
+              <Label htmlFor="race">Race</Label>
+              <div className="flex items-center gap-2">
+                <div className="flex-grow">
+                  <ComboboxPrimitive
+                    options={DND_RACES}
+                    value={character.race}
+                    onChange={(value) => handleSelectChange('race', value)}
+                    placeholder="Select Race"
+                    searchPlaceholder="Search races..."
+                    emptyPlaceholder="No race found."
+                  />
+                </div>
+                <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
               </div>
-              <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div>
               <Label htmlFor="className">Class</Label>
-                <ComboboxPrimitive
-                options={DND_CLASSES}
-                value={character.classes[0]?.className || ''}
-                onChange={(value) => handleSelectChange('className', value)}
-                placeholder="Select Class"
-                searchPlaceholder="Search classes..."
-                emptyPlaceholder="No class found."
-              />
+              <div className="flex items-center gap-2">
+                <div className="flex-grow">
+                  <ComboboxPrimitive
+                    options={DND_CLASSES}
+                    value={character.classes[0]?.className || ''}
+                    onChange={(value) => handleSelectChange('className', value)}
+                    placeholder="Select Class"
+                    searchPlaceholder="Search classes..."
+                    emptyPlaceholder="No class found."
+                  />
+                </div>
+                <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
+              </div>
               {selectedClassInfo && (
                 <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: {selectedClassInfo.hitDice}</p>
               )}
             </div>
-            <div className="flex items-end gap-2">
-              <div className="flex-grow">
-                <Label htmlFor="level">Level</Label>
-                <Input id="level" name="level" type="number" value={character.classes[0]?.level || 1} onChange={(e) => handleClassLevelChange(e.target.value)} min="1" />
+            <div>
+              <Label htmlFor="level">Level</Label>
+              <div className="flex items-center gap-2">
+                <div className="flex-grow">
+                  <Input id="level" name="level" type="number" value={character.classes[0]?.level || 1} onChange={(e) => handleClassLevelChange(e.target.value)} min="1" />
+                </div>
+                <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
               </div>
-              <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div>
               <Label htmlFor="alignment">Alignment</Label>
               <Select name="alignment" value={character.alignment} onValueChange={(value) => handleSelectChange('alignment', value)}>
@@ -204,7 +213,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
             <div>
               <Label htmlFor="age">Age</Label>
               <Input id="age" name="age" type="number" value={character.age} onChange={handleChange} />
