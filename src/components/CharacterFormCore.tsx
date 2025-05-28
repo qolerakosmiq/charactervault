@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react'; // Added this line
 import type { ChangeEvent, FormEvent } from 'react';
 import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize } from '@/types/character';
 import { DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, SIZES, ALIGNMENTS, ALL_SKILLS_3_5 } from '@/types/character';
