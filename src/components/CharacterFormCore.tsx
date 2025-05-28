@@ -501,7 +501,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         </CardContent>
       </Card>
 
-      <div className="flex flex-col md:flex-row md:justify-between gap-4 mt-8">
+      <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-8">
         <Button type="button" variant="outline" size="lg" onClick={handleCancel} className="w-full md:w-auto">
           Cancel
         </Button>
@@ -521,3 +521,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
+
+
+    
