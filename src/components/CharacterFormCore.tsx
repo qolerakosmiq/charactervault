@@ -18,8 +18,8 @@ import { ScrollText, Dices, UserSquare2, Palette } from 'lucide-react';
 import { ComboboxPrimitive, type ComboboxOption } from '@/components/ui/combobox';
 import { cn } from '@/lib/utils';
 import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
-import { useRouter } from 'next/navigation'; // Added for Cancel button
-import { useToast } from "@/hooks/use-toast"; // Added for validation messages
+import { useRouter } from 'next/navigation';
+import { useToast } from "@/hooks/use-toast";
 
 interface CharacterFormCoreProps {
   initialCharacter?: Character;
@@ -167,7 +167,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    // Name validation (already handled by 'required' attribute, but good to have)
     if (!character.name || character.name.trim() === '') {
       toast({
         title: "Missing Information",
@@ -177,7 +176,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       return;
     }
 
-    // Class validation
     if (!character.classes[0]?.className || character.classes[0]?.className.trim() === '') {
       toast({
         title: "Missing Information",
@@ -187,7 +185,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       return;
     }
 
-    // Age validation
     if (character.age <= 0) {
        toast({
         title: "Invalid Age",
@@ -197,7 +194,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       return;
     }
 
-    // Ability score validation
     for (const ability of abilityNames) {
       if (character.abilityScores[ability] <= 0) {
         toast({
@@ -505,12 +501,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         </CardContent>
       </Card>
 
-      <div className="flex flex-col md:flex-row gap-4 mt-8">
-        <Button type="submit" size="lg" className="w-full md:flex-1 shadow-md hover:shadow-lg transition-shadow">
-          {isCreating ? 'Create Character' : 'Save Changes'}
-        </Button>
+      <div className="flex flex-col md:flex-row md:justify-between gap-4 mt-8">
         <Button type="button" variant="outline" size="lg" onClick={handleCancel} className="w-full md:w-auto">
           Cancel
+        </Button>
+        <Button type="submit" size="lg" className="w-full md:w-auto shadow-md hover:shadow-lg transition-shadow">
+          {isCreating ? 'Create Character' : 'Save Changes'}
         </Button>
       </div>
     </form>
