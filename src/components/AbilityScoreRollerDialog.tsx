@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react'; // Added this line
+import * as React from 'react';
 import { useState, useEffect, useMemo } from 'react';
 import type { AbilityName, AbilityScores } from '@/types/character';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,7 @@ interface AbilityScoreRollerDialogProps {
 }
 
 const ABILITY_ORDER: AbilityName[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+const UNASSIGN_VALUE = "__UNASSIGN__"; // Define a constant for the unassign value
 
 type RolledScoreItem = {
   id: string; // Unique ID for each roll, e.g., 'roll-0', 'roll-1'
@@ -72,7 +73,7 @@ export function AbilityScoreRollerDialog({
   const handleAssignScore = (ability: AbilityName, rollId: string | undefined) => {
     setAssignments((prev) => {
       const newAssignments = { ...prev };
-      if (rollId === undefined || rollId === '') { // Unassigning
+      if (rollId === undefined || rollId === UNASSIGN_VALUE) { // Unassigning
         delete newAssignments[ability];
       } else {
         // If this rollId was previously assigned to another ability, unassign it from there
@@ -149,12 +150,12 @@ export function AbilityScoreRollerDialog({
         <div className="grid grid-cols-2 gap-x-4 gap-y-3 items-center">
           {ABILITY_ORDER.map((ability) => {
             const currentAssignedRollId = assignments[ability];
-            const availableRollsForThisAbility = rolledScores.filter(
-              (roll) =>
-                // It's this roll itself OR it's not assigned to any other ability
-                roll.id === currentAssignedRollId ||
-                !Object.values(assignments).some(assignedId => assignedId === roll.id && assignments[ability] !== roll.id)
-            );
+            // const availableRollsForThisAbility = rolledScores.filter(
+            //   (roll) =>
+            //     // It's this roll itself OR it's not assigned to any other ability
+            //     roll.id === currentAssignedRollId ||
+            //     !Object.values(assignments).some(assignedId => assignedId === roll.id && assignments[ability] !== roll.id)
+            // );
 
             return (
               <React.Fragment key={ability}>
@@ -169,7 +170,7 @@ export function AbilityScoreRollerDialog({
                     <SelectValue placeholder="Assign..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Unassign</SelectItem>
+                    <SelectItem value={UNASSIGN_VALUE}>Unassign</SelectItem>
                     {rolledScores.map((roll) => (
                        <SelectItem
                         key={roll.id}
