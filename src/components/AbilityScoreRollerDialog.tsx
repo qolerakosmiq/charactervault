@@ -1,6 +1,7 @@
 
 'use client';
 
+import * as React from 'react'; // Added this line
 import { useState, useEffect, useMemo } from 'react';
 import type { AbilityName, AbilityScores } from '@/types/character';
 import { Button } from '@/components/ui/button';
