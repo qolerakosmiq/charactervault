@@ -1,6 +1,7 @@
 
 
 
+
 export interface CharacterClass {
   id: string;
   className: string;
@@ -314,15 +315,18 @@ export function getNetAgingEffects(race: DndRace, age: number): AgingEffectsDeta
   let currentCategoryName: string = "Adult";
   let highestAttainedCategoryEffects: Partial<AbilityScores> | null = null;
 
-  for (const category of raceAgingPattern.categories) {
+  // Iterate in reverse order to find the highest attained category first
+  const sortedCategories = [...raceAgingPattern.categories].sort((a, b) => b.ageFactor - a.ageFactor);
+
+  for (const category of sortedCategories) {
     const ageThresholdForCategory = Math.floor(category.ageFactor * raceVenerableAge);
     if (age >= ageThresholdForCategory) {
       currentCategoryName = category.categoryName;
       highestAttainedCategoryEffects = category.effects; 
-    } else {
-      break; 
+      break; // Found the highest category
     }
   }
+
 
   const appliedEffects: Array<{ ability: AbilityName; change: number }> = [];
   if (highestAttainedCategoryEffects) {
@@ -339,3 +343,59 @@ export function getNetAgingEffects(race: DndRace, age: number): AgingEffectsDeta
     effects: appliedEffects,
   };
 }
+
+export const GENDERS = [
+  { value: 'Male', label: 'Male' },
+  { value: 'Female', label: 'Female' },
+] as const;
+
+
+export const DND_DEITIES = [
+  // Greyhawk Deities
+  { value: 'Boccob', label: 'Boccob' },
+  { value: 'Corellon Larethian', label: 'Corellon Larethian' },
+  { value: 'Ehlonna', label: 'Ehlonna' },
+  { value: 'Erythnul', label: 'Erythnul' },
+  { value: 'Fharlanghn', label: 'Fharlanghn' },
+  { value: 'Garl Glittergold', label: 'Garl Glittergold' },
+  { value: 'Gruumsh', label: 'Gruumsh' },
+  { value: 'Heironeous', label: 'Heironeous' },
+  { value: 'Hextor', label: 'Hextor' },
+  { value: 'Kord', label: 'Kord' },
+  { value: 'Moradin', label: 'Moradin' },
+  { value: 'Nerull', label: 'Nerull' },
+  { value: 'Obad-Hai', label: 'Obad-Hai' },
+  { value: 'Olidammara', label: 'Olidammara' },
+  { value: 'Pelor', label: 'Pelor' },
+  { value: 'St. Cuthbert', label: 'St. Cuthbert' },
+  { value: 'Vecna', label: 'Vecna' },
+  { value: 'Wee Jas', label: 'Wee Jas' },
+  { value: 'Yondalla', label: 'Yondalla' },
+  // Forgotten Realms Core Deities
+  { value: 'Bane', label: 'Bane' },
+  { value: 'Chauntea', label: 'Chauntea' },
+  { value: 'Cyric', label: 'Cyric' },
+  { value: 'Helm', label: 'Helm' },
+  { value: 'Ilmater', label: 'Ilmater' },
+  { value: 'Kelemvor', label: 'Kelemvor' },
+  { value: 'Lathander', label: 'Lathander' },
+  { value: 'Mystra', label: 'Mystra' },
+  { value: 'Oghma', label: 'Oghma' },
+  { value: 'Selûne', label: 'Selûne' },
+  { value: 'Shar', label: 'Shar' },
+  { value: 'Silvanus', label: 'Silvanus' },
+  { value: 'Sune', label: 'Sune' },
+  { value: 'Talos', label: 'Talos' },
+  { value: 'Tempus', label: 'Tempus' },
+  { value: 'Torm', label: 'Torm' },
+  { value: 'Tymora', label: 'Tymora' },
+  { value: 'Tyr', label: 'Tyr' },
+  { value: 'Umberlee', label: 'Umberlee' },
+  // Non-human deities common across settings
+  { value: 'Lolth', label: 'Lolth' },
+  { value: 'Tiamat', label: 'Tiamat' },
+  { value: 'Bahamut', label: 'Bahamut' },
+  { value: 'Kurtulmak', label: 'Kurtulmak'},
+  { value: 'Maglubiyet', label: 'Maglubiyet'},
+  { value: 'Sekhmet', label: 'Sekhmet' }, // Example of an animalistic/mythological deity
+] as const;

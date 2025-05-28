@@ -4,7 +4,7 @@
 import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails } from '@/types/character';
-import { DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, SIZES, ALIGNMENTS, ALL_SKILLS_3_5, DND_RACES, DND_CLASSES, getNetAgingEffects } from '@/types/character';
+import { DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, SIZES, ALIGNMENTS, ALL_SKILLS_3_5, DND_RACES, DND_CLASSES, getNetAgingEffects, GENDERS, DND_DEITIES } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -104,6 +104,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
        setCharacter(prev => ({ ...prev, [name]: value as CharacterSize, sizeModifierAC: calculateAbilityModifier(prev.abilityScores.dexterity) + (SIZES.indexOf(value as CharacterSize) - 4) * (value === SIZES[5] || value === SIZES[6] || value === SIZES[7] || value === SIZES[8] ? -1 : 1) }));
     } else if (name === 'race') {
       setCharacter(prev => ({ ...prev, race: value }));
+    } else if (name === 'gender' || name === 'deity') {
+      setCharacter(prev => ({ ...prev, [name]: value }));
     }
      else {
       setCharacter(prev => ({ ...prev, [name]: value }));
@@ -239,7 +241,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                         <React.Fragment key={effect.ability}>
                           <strong
                             className={cn(
-                              "font-bold",
                               effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
                             )}
                           >
@@ -257,11 +258,27 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             </div>
             <div>
               <Label htmlFor="gender">Gender</Label>
-              <Input id="gender" name="gender" value={character.gender} onChange={handleChange} />
+              <ComboboxPrimitive
+                  options={GENDERS}
+                  value={character.gender}
+                  onChange={(value) => handleSelectChange('gender', value)}
+                  placeholder="Select or type gender"
+                  searchPlaceholder="Search genders..."
+                  emptyPlaceholder="No gender found. Type to add."
+                  isEditable={true}
+                />
             </div>
              <div>
               <Label htmlFor="deity">Deity (Optional)</Label>
-              <Input id="deity" name="deity" value={character.deity || ''} onChange={handleChange} />
+              <ComboboxPrimitive
+                  options={DND_DEITIES}
+                  value={character.deity || ''}
+                  onChange={(value) => handleSelectChange('deity', value)}
+                  placeholder="Select or type deity"
+                  searchPlaceholder="Search deities..."
+                  emptyPlaceholder="No deity found. Type to add."
+                  isEditable={true}
+                />
             </div>
           </div>
 
@@ -298,4 +315,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </form>
   );
 }
-
