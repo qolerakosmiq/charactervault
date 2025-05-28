@@ -241,6 +241,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     <React.Fragment key={effect.ability}>
                       <strong
                         className={cn(
+                           "font-semibold",
                           effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
                         )}
                       >
@@ -269,6 +270,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                         <React.Fragment key={effect.ability}>
                           <strong
                             className={cn(
+                              "font-semibold",
                               effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
                             )}
                           >
@@ -313,27 +315,41 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           <Separator className="my-6" />
           <h3 className="text-xl font-serif font-semibold text-primary">Ability Scores</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-            {abilityNames.map(ability => (
-              <div key={ability} className="space-y-1 flex flex-col items-center">
-                <Label htmlFor={ability} className="capitalize text-sm font-semibold">
-                  {ability.substring(0,3).toUpperCase()}
-                </Label>
-                <p className="text-xs text-muted-foreground capitalize mb-0.5">
-                  {ability}
-                </p>
-                <Input
-                  id={ability}
-                  name={ability}
-                  type="number"
-                  value={character.abilityScores[ability]}
-                  onChange={(e) => handleAbilityScoreChange(ability, e.target.value)}
-                  className="text-center w-16"
-                />
-                <p className="text-center text-sm text-accent font-semibold mt-1">
-                  Modifier: {calculateAbilityModifier(character.abilityScores[ability]) >= 0 ? '+' : ''}{calculateAbilityModifier(character.abilityScores[ability])}
-                </p>
-              </div>
-            ))}
+            {abilityNames.map(ability => {
+              const score = character.abilityScores[ability];
+              const modifier = calculateAbilityModifier(score);
+              return (
+                <div key={ability} className="space-y-1 flex flex-col items-center">
+                  <Label htmlFor={ability} className="capitalize text-sm font-semibold">
+                    {ability.substring(0,3).toUpperCase()}
+                  </Label>
+                  <p className="text-xs text-muted-foreground capitalize mb-0.5">
+                    {ability}
+                  </p>
+                  <Input
+                    id={ability}
+                    name={ability}
+                    type="number"
+                    value={score}
+                    onChange={(e) => handleAbilityScoreChange(ability, e.target.value)}
+                    className="text-center w-16"
+                  />
+                  <p className="text-center text-sm mt-1">
+                    <span className="text-accent">Modifier: </span>
+                    <span
+                      className={cn(
+                        "font-semibold",
+                        modifier > 0 && "text-emerald-500",
+                        modifier < 0 && "text-destructive",
+                        modifier === 0 && "text-accent" 
+                      )}
+                    >
+                      {modifier >= 0 ? '+' : ''}{modifier}
+                    </span>
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </CardContent>
       </Card>
