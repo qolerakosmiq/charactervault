@@ -162,7 +162,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            <div>
+             <div>
               <Label htmlFor="className">Class</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
@@ -238,6 +238,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                 <Label htmlFor={ability} className="capitalize text-sm font-semibold">
                   {ability.substring(0,3).toUpperCase()}
                 </Label>
+                <p className="text-xs text-muted-foreground capitalize mb-0.5">
+                  {ability}
+                </p>
                 <Input
                   id={ability}
                   name={ability}
@@ -246,9 +249,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   onChange={(e) => handleAbilityScoreChange(ability, e.target.value)}
                   className="text-center w-16" 
                 />
-                <p className="text-xs text-muted-foreground capitalize mt-0.5">
-                  {ability}
-                </p>
                 <p className="text-center text-sm text-accent font-semibold mt-1">
                   Modifier: {calculateAbilityModifier(character.abilityScores[ability]) >= 0 ? '+' : ''}{calculateAbilityModifier(character.abilityScores[ability])}
                 </p>
