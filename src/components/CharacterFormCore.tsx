@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRace, SizeAbilityEffectsDetails } from '@/types/character';
+import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRace, SizeAbilityEffectsDetails, AbilityScores } from '@/types/character';
 import { DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, SIZES, ALIGNMENTS, ALL_SKILLS_3_5, DND_RACES, DND_CLASSES, getNetAgingEffects, GENDERS, DND_DEITIES, getSizeAbilityEffects } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,9 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
-import { ScrollText } from 'lucide-react';
+import { ScrollText, Dices } from 'lucide-react';
 import { ComboboxPrimitive } from '@/components/ui/combobox';
 import { cn } from '@/lib/utils';
+import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
 
 interface CharacterFormCoreProps {
   initialCharacter?: Character;
@@ -69,6 +70,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   );
   const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<AgingEffectsDetails | null>(null);
   const [sizeAbilityEffectsDetails, setSizeAbilityEffectsDetails] = React.useState<SizeAbilityEffectsDetails | null>(null);
+  const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
+
 
   React.useEffect(() => {
     if (character.race && character.age > 0) {
@@ -103,6 +106,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         [ability]: parseInt(value, 10) || 0,
       },
     }));
+  };
+
+  const handleApplyRolledScores = (newScores: AbilityScores) => {
+    setCharacter(prev => ({ ...prev, abilityScores: newScores }));
+    setIsRollerDialogOpen(false);
   };
 
   const handleSelectChange = (name: keyof Character | 'className', value: string) => {
@@ -144,6 +152,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const selectedClassInfo = DND_CLASSES.find(c => c.value === character.classes[0]?.className);
 
   return (
+    <>
     <form onSubmit={handleSubmit} className="space-y-8">
       <Card>
         <CardHeader>
@@ -313,7 +322,14 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           </div>
 
           <Separator className="my-6" />
-          <h3 className="text-xl font-serif font-semibold text-primary">Ability Scores</h3>
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-xl font-serif font-semibold text-primary">Ability Scores</h3>
+            {isCreating && (
+               <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)}>
+                <Dices className="mr-2 h-4 w-4" /> Roll Scores
+              </Button>
+            )}
+          </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
             {abilityNames.map(ability => {
               const score = character.abilityScores[ability];
@@ -357,6 +373,15 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         {isCreating ? 'Create Character' : 'Save Changes'}
       </Button>
     </form>
+
+    {isCreating && (
+      <AbilityScoreRollerDialog
+        isOpen={isRollerDialogOpen}
+        onOpenChange={setIsRollerDialogOpen}
+        onScoresApplied={handleApplyRolledScores}
+      />
+    )}
+    </>
   );
 }
 
