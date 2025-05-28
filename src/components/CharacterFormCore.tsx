@@ -407,9 +407,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           </div>
         </CardHeader>
         <CardContent className="space-y-6 pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start md:items-stretch">
             {/* Portrait Upload Area */}
-            <div className="md:col-span-1 space-y-2">
+            <div className="md:col-span-1 space-y-2 flex flex-col">
               <Label htmlFor="portraitUpload">Character Portrait</Label>
               <div className="aspect-square w-full bg-muted rounded-md flex items-center justify-center relative overflow-hidden border border-border shadow-sm">
                 {character.portraitDataUrl ? (
@@ -437,7 +437,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             </div>
 
             {/* Personal Story Textarea */}
-            <div className="md:col-span-2 space-y-2">
+            <div className="md:col-span-2 space-y-2 flex flex-col">
               <Label htmlFor="personalStory">Personal Story</Label>
               <Textarea
                 id="personalStory"
@@ -446,7 +446,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                 onChange={handleChange}
                 placeholder="Describe your character's history, motivations, personality, and defining moments..."
                 rows={12} 
-                className="min-h-[260px] md:min-h-0 md:h-auto md:aspect-[2/1]"
+                className="min-h-[260px] md:flex-grow md:min-h-0"
               />
             </div>
           </div>
