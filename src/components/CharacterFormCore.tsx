@@ -61,7 +61,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         keyAbility: skill.keyAbility,
         ranks: 0,
         miscModifier: 0,
-        isClassSkill: false, 
+        isClassSkill: false,
       })),
       feats: [],
       inventory: [],
@@ -101,7 +101,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: value, level: prev.classes[0]?.level || 1 }]
       }));
     } else if (name === 'size') {
-       setCharacter(prev => ({ ...prev, [name]: value as CharacterSize, sizeModifierAC: calculateAbilityModifier(prev.abilityScores.dexterity) + (SIZES.indexOf(value as CharacterSize) - 4) * (value === SIZES[5] || value === SIZES[6] || value === SIZES[7] || value === SIZES[8] ? -1 : 1) })); 
+       setCharacter(prev => ({ ...prev, [name]: value as CharacterSize, sizeModifierAC: calculateAbilityModifier(prev.abilityScores.dexterity) + (SIZES.indexOf(value as CharacterSize) - 4) * (value === SIZES[5] || value === SIZES[6] || value === SIZES[7] || value === SIZES[8] ? -1 : 1) }));
     } else if (name === 'race') {
       setCharacter(prev => ({ ...prev, race: value }));
     }
@@ -109,7 +109,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       setCharacter(prev => ({ ...prev, [name]: value }));
     }
   };
-  
+
   const handleClassLevelChange = (value: string) => {
     setCharacter(prev => ({
       ...prev,
@@ -126,7 +126,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     };
     onSave(finalCharacterData);
   };
-  
+
   const abilityNames: AbilityName[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
   const selectedClassInfo = DND_CLASSES.find(c => c.value === character.classes[0]?.className);
 
@@ -187,18 +187,18 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
                 </div>
                 {selectedClassInfo && (
-                  <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: {selectedClassInfo.hitDice}</p>
+                  <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: <strong className="font-bold">{selectedClassInfo.hitDice}</strong></p>
                 )}
             </div>
             <div>
               <Label htmlFor="level">Level</Label>
-                <Input 
-                  id="level" 
-                  name="level" 
-                  type="number" 
-                  value={character.classes[0]?.level || 1} 
-                  onChange={(e) => handleClassLevelChange(e.target.value)} 
-                  min="1" 
+                <Input
+                  id="level"
+                  name="level"
+                  type="number"
+                  value={character.classes[0]?.level || 1}
+                  onChange={(e) => handleClassLevelChange(e.target.value)}
+                  min="1"
                 />
             </div>
           </div>
@@ -223,7 +223,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               </Select>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
             <div>
               <Label htmlFor="age">Age</Label>
@@ -239,6 +239,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                         <React.Fragment key={effect.ability}>
                           <strong
                             className={cn(
+                              "font-bold",
                               effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
                             )}
                           >
@@ -263,7 +264,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               <Input id="deity" name="deity" value={character.deity || ''} onChange={handleChange} />
             </div>
           </div>
-          
+
           <Separator className="my-6" />
           <h3 className="text-xl font-serif font-semibold text-primary">Ability Scores</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
@@ -281,7 +282,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   type="number"
                   value={character.abilityScores[ability]}
                   onChange={(e) => handleAbilityScoreChange(ability, e.target.value)}
-                  className="text-center w-16" 
+                  className="text-center w-16"
                 />
                 <p className="text-center text-sm text-accent font-semibold mt-1">
                   Modifier: {calculateAbilityModifier(character.abilityScores[ability]) >= 0 ? '+' : ''}{calculateAbilityModifier(character.abilityScores[ability])}
