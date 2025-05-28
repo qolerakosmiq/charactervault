@@ -18,6 +18,8 @@ import { ScrollText, Dices, UserSquare2, Palette } from 'lucide-react';
 import { ComboboxPrimitive, type ComboboxOption } from '@/components/ui/combobox';
 import { cn } from '@/lib/utils';
 import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
+import { useRouter } from 'next/navigation'; // Added for Cancel button
+import { useToast } from "@/hooks/use-toast"; // Added for validation messages
 
 interface CharacterFormCoreProps {
   initialCharacter?: Character;
@@ -75,11 +77,13 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<AgingEffectsDetails | null>(null);
   const [sizeAbilityEffectsDetails, setSizeAbilityEffectsDetails] = React.useState<SizeAbilityEffectsDetails | null>(null);
   const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
+  const router = useRouter();
+  const { toast } = useToast();
 
 
   React.useEffect(() => {
     if (character.race && character.age > 0) {
-      const details = getNetAgingEffects(character.race as DndRace, character.age); 
+      const details = getNetAgingEffects(character.race as DndRace, character.age);
       setAgeEffectsDetails(details);
     } else {
       setAgeEffectsDetails(null);
@@ -155,9 +159,56 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
   };
 
+  const handleCancel = () => {
+    router.push('/');
+  };
+
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+
+    // Name validation (already handled by 'required' attribute, but good to have)
+    if (!character.name || character.name.trim() === '') {
+      toast({
+        title: "Missing Information",
+        description: "Please enter a character name.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Class validation
+    if (!character.classes[0]?.className || character.classes[0]?.className.trim() === '') {
+      toast({
+        title: "Missing Information",
+        description: "Please select or enter a character class.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Age validation
+    if (character.age <= 0) {
+       toast({
+        title: "Invalid Age",
+        description: "Age must be greater than 0.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Ability score validation
+    for (const ability of abilityNames) {
+      if (character.abilityScores[ability] <= 0) {
+        toast({
+          title: `Invalid ${ability.charAt(0).toUpperCase() + ability.slice(1)} Score`,
+          description: `${ability.charAt(0).toUpperCase() + ability.slice(1)} score must be greater than 0.`,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     const finalCharacterData = {
       ...character,
       sizeModifierAC: calculateAbilityModifier(character.abilityScores.dexterity) + (SIZES.indexOf(character.size as CharacterSize) - 4) * (character.size === SIZES[5] || character.size === SIZES[6] || character.size === SIZES[7] || character.size === SIZES[8] ? -1 : 1)
@@ -288,7 +339,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
             <div>
               <Label htmlFor="age">Age</Label>
-              <Input id="age" name="age" type="number" value={character.age} onChange={handleChange} />
+              <Input id="age" name="age" type="number" value={character.age} onChange={handleChange} min="1" />
                {ageEffectsDetails && (ageEffectsDetails.categoryName !== "Adult" || ageEffectsDetails.effects.length > 0) && (
                 <p className="text-xs text-muted-foreground mt-1 ml-1">
                   {ageEffectsDetails.categoryName !== "Adult" && (
@@ -370,6 +421,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     value={score}
                     onChange={(e) => handleAbilityScoreChange(ability, e.target.value)}
                     className="text-center w-16"
+                    min="1"
                   />
                   <p className="text-center text-sm mt-1">
                     <span className="text-accent">Modifier: </span>
@@ -378,7 +430,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                         "font-bold",
                         modifier > 0 && "text-emerald-500",
                         modifier < 0 && "text-destructive",
-                        modifier === 0 && "text-accent" 
+                        modifier === 0 && "text-accent"
                       )}
                     >
                       {modifier >= 0 ? '+' : ''}{modifier}
@@ -407,7 +459,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           </div>
         </CardHeader>
         <CardContent className="space-y-6 pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start md:items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:items-stretch">
             {/* Portrait Upload Area */}
             <div className="md:col-span-1 space-y-2 flex flex-col">
               <Label htmlFor="portraitUpload">Character Portrait</Label>
@@ -430,7 +482,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               />
               {/* Fallback if image is not showing for placeholder */}
                {!character.portraitDataUrl && (
-                <div className="hidden"> 
+                <div className="hidden">
                     <Image src="https://placehold.co/300x300.png" alt="Portrait Placeholder" width={300} height={300} data-ai-hint="fantasy portrait" />
                 </div>
               )}
@@ -445,7 +497,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                 value={character.personalStory || ''}
                 onChange={handleChange}
                 placeholder="Describe your character's history, motivations, personality, and defining moments..."
-                rows={12} 
+                rows={12}
                 className="min-h-[260px] md:flex-grow md:min-h-0"
               />
             </div>
@@ -453,10 +505,14 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         </CardContent>
       </Card>
 
-
-      <Button type="submit" size="lg" className="w-full md:w-auto shadow-md hover:shadow-lg transition-shadow">
-        {isCreating ? 'Create Character' : 'Save Changes'}
-      </Button>
+      <div className="flex flex-col md:flex-row gap-4 mt-8">
+        <Button type="submit" size="lg" className="w-full md:flex-1 shadow-md hover:shadow-lg transition-shadow">
+          {isCreating ? 'Create Character' : 'Save Changes'}
+        </Button>
+        <Button type="button" variant="outline" size="lg" onClick={handleCancel} className="w-full md:w-auto">
+          Cancel
+        </Button>
+      </div>
     </form>
 
     {isCreating && (
@@ -469,4 +525,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-
