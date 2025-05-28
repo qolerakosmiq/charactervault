@@ -231,23 +231,22 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               {ageEffectsDetails && (ageEffectsDetails.categoryName !== "Adult" || ageEffectsDetails.effects.length > 0) && (
                 <p className="text-xs text-muted-foreground mt-1 ml-1">
                   {ageEffectsDetails.categoryName !== "Adult" && (
-                      <strong className="text-foreground">{ageEffectsDetails.categoryName}. </strong>
+                      <span>{ageEffectsDetails.categoryName}: </span>
                   )}
                   {ageEffectsDetails.effects.length > 0 ? (
                     <>
-                      {'('}
                       {ageEffectsDetails.effects.map((effect, index) => (
-                        <span
-                          key={effect.ability}
-                          className={cn(
-                            effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
-                          )}
-                        >
-                          {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
-                          {index < ageEffectsDetails.effects.length - 1 ? ', ' : ''}
-                        </span>
+                        <React.Fragment key={effect.ability}>
+                          <strong
+                            className={cn(
+                              effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
+                            )}
+                          >
+                            {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
+                          </strong>
+                          {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
+                        </React.Fragment>
                       ))}
-                      {')'}
                     </>
                   ) : (
                     ageEffectsDetails.categoryName !== "Adult" && <span>No ability score changes.</span>
