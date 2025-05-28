@@ -1,4 +1,5 @@
 
+
 export interface CharacterClass {
   id: string;
   className: string;
@@ -201,4 +202,151 @@ export const ALL_SKILLS_3_5: Omit<Skill, 'id' | 'ranks' | 'miscModifier' | 'tota
   { name: "Use Magic Device", keyAbility: "charisma" },
   { name: "Use Rope", keyAbility: "dexterity" },
 ];
+
+// D&D 3.5 Aging Effects
+export type RaceCategory = 'human' | 'dwarf' | 'elf' | 'gnome' | 'halfling' | 'orc';
+
+interface AgeCategoryEffect {
+  categoryName: 'Middle Age' | 'Old' | 'Venerable';
+  ageAtCategory: (baseMaxAge: number) => number; // Function to calculate age threshold
+  effects: Partial<Record<AbilityName, number>>;
+}
+
+interface RaceAgingInfo {
+  baseMaxAge: number; // Approximate, as 3.5 uses random rolls for max age
+  categories: AgeCategoryEffect[];
+}
+
+export const DND_RACE_AGING_EFFECTS: Record<RaceCategory, RaceAgingInfo> = {
+  human: { // Also applies to Half-Elf, Half-Orc with human progression
+    baseMaxAge: 70, // Example base for calculations, SRD uses 2d20+starting for max
+    categories: [
+      { categoryName: 'Middle Age', ageAtCategory: (base) => 35, effects: { strength: -1, dexterity: -1, constitution: -1, intelligence: 1, wisdom: 1, charisma: 1 } },
+      { categoryName: 'Old', ageAtCategory: (base) => 53, effects: { strength: -2, dexterity: -2, constitution: -2, intelligence: 1, wisdom: 1, charisma: 1 } }, // Cumulative: total -3 phys, +2 mental
+      { categoryName: 'Venerable', ageAtCategory: (base) => 70, effects: { strength: -3, dexterity: -3, constitution: -3, intelligence: 1, wisdom: 1, charisma: 1 } }, // Cumulative: total -6 phys, +3 mental
+    ],
+  },
+  dwarf: {
+    baseMaxAge: 250,
+    categories: [
+      { categoryName: 'Middle Age', ageAtCategory: (base) => 125, effects: { strength: -1, dexterity: -1, constitution: -1, intelligence: 1, wisdom: 1, charisma: 1 } },
+      { categoryName: 'Old', ageAtCategory: (base) => 188, effects: { strength: -2, dexterity: -2, constitution: -2, intelligence: 1, wisdom: 1, charisma: 1 } },
+      { categoryName: 'Venerable', ageAtCategory: (base) => 250, effects: { strength: -3, dexterity: -3, constitution: -3, intelligence: 1, wisdom: 1, charisma: 1 } },
+    ],
+  },
+  elf: { // Elves are a bit different, they don't take physical penalties until very late
+    baseMaxAge: 700, // Elves have very long lifespans
+    categories: [
+      // Elves reach middle age at 175, but don't suffer penalties. Old at 263, Venerable at 350.
+      // For simplicity, we'll model that they just get mental bonuses for a long time, then penalties kick in.
+      // This is a simplification of SRD rules where penalties kick in later.
+      { categoryName: 'Middle Age', ageAtCategory: (base) => 175, effects: { intelligence: 1, wisdom: 1, charisma: 1 } }, // No physical penalty
+      { categoryName: 'Old', ageAtCategory: (base) => 263, effects: { strength: -1, dexterity: -1, constitution: -1, intelligence: 2, wisdom: 2, charisma: 2 } }, // Now apply physical, mental are cumulative
+      { categoryName: 'Venerable', ageAtCategory: (base) => 350, effects: { strength: -2, dexterity: -2, constitution: -2, intelligence: 3, wisdom: 3, charisma: 3 } }, // Cumulative
+    ],
+  },
+  gnome: {
+    baseMaxAge: 350,
+    categories: [
+      { categoryName: 'Middle Age', ageAtCategory: (base) => 100, effects: { strength: -1, dexterity: -1, constitution: -1, intelligence: 1, wisdom: 1, charisma: 1 } },
+      { categoryName: 'Old', ageAtCategory: (base) => 150, effects: { strength: -2, dexterity: -2, constitution: -2, intelligence: 1, wisdom: 1, charisma: 1 } },
+      { categoryName: 'Venerable', ageAtCategory: (base) => 200, effects: { strength: -3, dexterity: -3, constitution: -3, intelligence: 1, wisdom: 1, charisma: 1 } },
+    ],
+  },
+  halfling: {
+    baseMaxAge: 100,
+    categories: [
+      { categoryName: 'Middle Age', ageAtCategory: (base) => 50, effects: { strength: -1, dexterity: -1, constitution: -1, intelligence: 1, wisdom: 1, charisma: 1 } },
+      { categoryName: 'Old', ageAtCategory: (base) => 75, effects: { strength: -2, dexterity: -2, constitution: -2, intelligence: 1, wisdom: 1, charisma: 1 } },
+      { categoryName: 'Venerable', ageAtCategory: (base) => 100, effects: { strength: -3, dexterity: -3, constitution: -3, intelligence: 1, wisdom: 1, charisma: 1 } },
+    ],
+  },
+  'half-orc': { // Uses Human aging table
+    baseMaxAge: 60, // Shorter than human
+    categories: DND_RACE_AGING_EFFECTS.human?.categories || [], // Reference Human if defined
+  },
+  // Note: Half-Elf typically uses Human aging table. This structure means 'human' is the default for them if mapped.
+};
+
+// Map specific races to broader aging categories
+export const RACE_TO_AGING_CATEGORY_MAP: Record<DndRace, RaceCategory> = {
+  'human': 'human',
+  'elf': 'elf',
+  'dwarf': 'dwarf',
+  'halfling': 'halfling',
+  'gnome': 'gnome',
+  'half-elf': 'human', // Half-elves age like humans
+  'half-orc': 'human', // Half-orcs age like humans (though often die earlier due to lifestyle)
+};
+
+export function getNetAgingEffects(race: DndRace, age: number): { netEffects: Partial<AbilityScores>, description: string } {
+  const agingCategory = RACE_TO_AGING_CATEGORY_MAP[race];
+  if (!agingCategory) return { netEffects: {}, description: "Unknown race for aging." };
+
+  const raceAgingInfo = DND_RACE_AGING_EFFECTS[agingCategory];
+  if (!raceAgingInfo) return { netEffects: {}, description: "No aging data for this race category." };
+
+  const netEffects: Partial<AbilityScores> = {};
+  let currentCategoryName: string = "Adult"; // Default if no category met
+
+  // Iterate through categories and sum up effects if age threshold is met
+  // D&D 3.5 rules state penalties are cumulative, bonuses are not (unless stated otherwise).
+  // For simplicity in this model, we'll make the listed effects per category cumulative for penalties, and take the highest for bonuses.
+  // More accurate 3.5: Physical penalties accumulate. Mental bonuses are fixed per category (e.g., Old gives +1 Int, not +1 on top of Middle Age's +1).
+  // Let's adjust: physical penalties accumulate. Mental bonuses are the *highest value met*.
+
+  let highestMentalBonuses: Partial<AbilityScores> = {};
+  let cumulativePhysicalPenalties: Partial<AbilityScores> = {};
+
+  for (const category of raceAgingInfo.categories) {
+    if (age >= category.ageAtCategory(raceAgingInfo.baseMaxAge)) {
+      currentCategoryName = category.categoryName;
+      for (const [ability, change] of Object.entries(category.effects)) {
+        const abilityKey = ability as AbilityName;
+        if (change < 0) { // Physical penalty
+          cumulativePhysicalPenalties[abilityKey] = (cumulativePhysicalPenalties[abilityKey] || 0) + change;
+        } else if (change > 0) { // Mental bonus
+          highestMentalBonuses[abilityKey] = Math.max(highestMentalBonuses[abilityKey] || 0, change);
+        }
+      }
+    }
+  }
+  
+  // Combine physical penalties and highest mental bonuses
+  (Object.keys(cumulativePhysicalPenalties) as AbilityName[]).forEach(key => {
+    netEffects[key] = (netEffects[key] || 0) + cumulativePhysicalPenalties[key]!;
+  });
+  (Object.keys(highestMentalBonuses) as AbilityName[]).forEach(key => {
+    netEffects[key] = (netEffects[key] || 0) + highestMentalBonuses[key]!;
+  });
+
+
+  let effectDescriptions: string[] = [];
+  (Object.keys(netEffects) as AbilityName[]).forEach(ability => {
+    const val = netEffects[ability];
+    if (val !== 0 && val !== undefined) {
+      effectDescriptions.push(`${ability.substring(0,3).toUpperCase()} ${val! > 0 ? '+' : ''}${val}`);
+    }
+  });
+
+  if (effectDescriptions.length === 0 && currentCategoryName !== "Adult") {
+     return { netEffects, description: `${currentCategoryName}. No ability score changes.` };
+  }
+  if (effectDescriptions.length === 0) {
+     return { netEffects, description: "" };
+  }
+
+  return {
+    netEffects,
+    description: `${currentCategoryName}. Effects: ${effectDescriptions.join(', ')}.`
+  };
+}
+
+// Ensure 'half-orc' entry references human after DND_RACE_AGING_EFFECTS.human is defined
+if (DND_RACE_AGING_EFFECTS.human) {
+  DND_RACE_AGING_EFFECTS['half-orc'] = {
+    ...DND_RACE_AGING_EFFECTS.human,
+     baseMaxAge: 60, // Half-orcs have a shorter max age typically
+  };
+}
 

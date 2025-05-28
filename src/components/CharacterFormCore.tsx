@@ -4,7 +4,7 @@
 import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize } from '@/types/character';
-import { DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, SIZES, ALIGNMENTS, ALL_SKILLS_3_5, DND_RACES, DND_CLASSES } from '@/types/character';
+import { DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, SIZES, ALIGNMENTS, ALL_SKILLS_3_5, DND_RACES, DND_CLASSES, getNetAgingEffects } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,7 +35,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     initialCharacter || {
       id: generateCUID(),
       name: '',
-      race: '',
+      race: DND_RACES[0].value, // Default to Human
       alignment: ALIGNMENTS[4], // True Neutral
       deity: '',
       size: SIZES[4], // Medium
@@ -53,19 +53,30 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       acMiscModifier: 0,
       initiativeMiscModifier: 0,
       savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)), // Deep copy
-      classes: [{ id: generateCUID(), className: '', level: 1 }],
+      classes: [{ id: generateCUID(), className: DND_CLASSES[0].value, level: 1 }], // Default to Barbarian Lvl 1
       skills: ALL_SKILLS_3_5.map(skill => ({
         id: generateCUID(),
         name: skill.name,
         keyAbility: skill.keyAbility,
         ranks: 0,
         miscModifier: 0,
-        isClassSkill: false, // This would be determined by class
+        isClassSkill: false, 
       })),
       feats: [],
       inventory: [],
     }
   );
+  const [ageEffectsDescription, setAgeEffectsDescription] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (character.race && character.age > 0) {
+      const { description } = getNetAgingEffects(character.race as any, character.age); // Cast as any for DndRace type
+      setAgeEffectsDescription(description);
+    } else {
+      setAgeEffectsDescription(null);
+    }
+  }, [character.age, character.race]);
+
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -86,11 +97,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
      if (name === 'className') {
       setCharacter(prev => ({
         ...prev,
-        // For now, assumes single class. A more robust system would handle multiple classes.
         classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: value, level: prev.classes[0]?.level || 1 }]
       }));
     } else if (name === 'size') {
-       setCharacter(prev => ({ ...prev, [name]: value as CharacterSize, sizeModifierAC: calculateAbilityModifier(prev.abilityScores.dexterity) + (SIZES.indexOf(value as CharacterSize) - 4) * (value === SIZES[5] || value === SIZES[6] || value === SIZES[7] || value === SIZES[8] ? -1 : 1) })); // simplified size mod
+       setCharacter(prev => ({ ...prev, [name]: value as CharacterSize, sizeModifierAC: calculateAbilityModifier(prev.abilityScores.dexterity) + (SIZES.indexOf(value as CharacterSize) - 4) * (value === SIZES[5] || value === SIZES[6] || value === SIZES[7] || value === SIZES[8] ? -1 : 1) })); 
     } else if (name === 'race') {
       setCharacter(prev => ({ ...prev, race: value }));
     }
@@ -109,10 +119,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    // Add any validation or final calculations here before saving
     const finalCharacterData = {
       ...character,
-      // Ensure sizeModifierAC is correctly calculated based on current size
       sizeModifierAC: calculateAbilityModifier(character.abilityScores.dexterity) + (SIZES.indexOf(character.size as CharacterSize) - 4) * (character.size === SIZES[5] || character.size === SIZES[6] || character.size === SIZES[7] || character.size === SIZES[8] ? -1 : 1)
     };
     onSave(finalCharacterData);
@@ -163,23 +171,23 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
              <div>
-              <Label htmlFor="className">Class</Label>
-              <div className="flex items-center gap-2">
-                <div className="flex-grow">
-                  <ComboboxPrimitive
-                    options={DND_CLASSES}
-                    value={character.classes[0]?.className || ''}
-                    onChange={(value) => handleSelectChange('className', value)}
-                    placeholder="Select Class"
-                    searchPlaceholder="Search classes..."
-                    emptyPlaceholder="No class found."
-                  />
+                <Label htmlFor="className">Class</Label>
+                <div className="flex items-center gap-2">
+                  <div className="flex-grow">
+                    <ComboboxPrimitive
+                      options={DND_CLASSES}
+                      value={character.classes[0]?.className || ''}
+                      onChange={(value) => handleSelectChange('className', value)}
+                      placeholder="Select Class"
+                      searchPlaceholder="Search classes..."
+                      emptyPlaceholder="No class found."
+                    />
+                  </div>
+                  <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
                 </div>
-                <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
-              </div>
-              {selectedClassInfo && (
-                <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: {selectedClassInfo.hitDice}</p>
-              )}
+                {selectedClassInfo && (
+                  <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: {selectedClassInfo.hitDice}</p>
+                )}
             </div>
             <div>
               <Label htmlFor="level">Level</Label>
@@ -219,6 +227,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             <div>
               <Label htmlFor="age">Age</Label>
               <Input id="age" name="age" type="number" value={character.age} onChange={handleChange} />
+              {ageEffectsDescription && ageEffectsDescription.length > 0 && (
+                <p className="text-xs text-muted-foreground mt-1 ml-1">{ageEffectsDescription}</p>
+              )}
             </div>
             <div>
               <Label htmlFor="gender">Gender</Label>
@@ -263,3 +274,4 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </form>
   );
 }
+
