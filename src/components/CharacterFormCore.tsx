@@ -183,12 +183,14 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             </div>
             <div>
               <Label htmlFor="level">Level</Label>
-              <div className="flex items-center gap-2">
-                <div className="flex-grow">
-                  <Input id="level" name="level" type="number" value={character.classes[0]?.level || 1} onChange={(e) => handleClassLevelChange(e.target.value)} min="1" />
-                </div>
-                <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
-              </div>
+                <Input 
+                  id="level" 
+                  name="level" 
+                  type="number" 
+                  value={character.classes[0]?.level || 1} 
+                  onChange={(e) => handleClassLevelChange(e.target.value)} 
+                  min="1" 
+                />
             </div>
           </div>
 
@@ -232,18 +234,23 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           <h3 className="text-xl font-serif font-semibold text-primary">Ability Scores</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
             {abilityNames.map(ability => (
-              <div key={ability} className="space-y-1">
-                <Label htmlFor={ability} className="capitalize">{ability.substring(0,3).toUpperCase()}</Label>
+              <div key={ability} className="space-y-1 flex flex-col items-center">
+                <Label htmlFor={ability} className="capitalize text-sm font-semibold">
+                  {ability.substring(0,3).toUpperCase()}
+                </Label>
                 <Input
                   id={ability}
                   name={ability}
                   type="number"
                   value={character.abilityScores[ability]}
                   onChange={(e) => handleAbilityScoreChange(ability, e.target.value)}
-                  className="text-center"
+                  className="text-center w-16" 
                 />
-                <p className="text-center text-sm text-accent font-semibold">
-                  Mod: {calculateAbilityModifier(character.abilityScores[ability]) >= 0 ? '+' : ''}{calculateAbilityModifier(character.abilityScores[ability])}
+                <p className="text-xs text-muted-foreground capitalize mt-0.5">
+                  {ability}
+                </p>
+                <p className="text-center text-sm text-accent font-semibold mt-1">
+                  Modifier: {calculateAbilityModifier(character.abilityScores[ability]) >= 0 ? '+' : ''}{calculateAbilityModifier(character.abilityScores[ability])}
                 </p>
               </div>
             ))}
