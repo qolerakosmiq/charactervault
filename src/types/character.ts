@@ -199,9 +199,6 @@ export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffect
   let currentCategoryName: string = "Adult";
   let highestAttainedCategoryEffects: Partial<Record<AbilityName, number>> | null = null;
 
-  // Ensure categories are sorted by ageFactor to correctly find the highest applicable one.
-  // The provided JSON has them in increasing order, so if we want the "latest" applicable, we should iterate and take the last one that matches.
-  // Or, sort descending and take the first one.
   const sortedCategories = [...raceAgingPattern.categories].sort((a, b) => a.ageFactor - b.ageFactor);
 
 
@@ -210,19 +207,14 @@ export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffect
     if (age >= ageThresholdForCategory) {
       currentCategoryName = category.categoryName;
       highestAttainedCategoryEffects = category.effects; 
-      // Continue checking as there might be a later category (e.g. Old then Venerable)
     } else {
-      // Since categories are sorted by ageFactor, once we find a category the character hasn't reached,
-      // we can stop. The previous one (if any) was the correct one.
       break;
     }
   }
   
-  // If no category was met (e.g. young character), highestAttainedCategoryEffects remains null.
-  // Default to "Adult" with no effects if character is younger than first age category.
   if (!highestAttainedCategoryEffects && age < Math.floor(sortedCategories[0].ageFactor * raceVenerableAge)) {
      currentCategoryName = "Adult";
-     highestAttainedCategoryEffects = {}; // No effects for Adult by default unless specified
+     highestAttainedCategoryEffects = {}; 
   }
 
 
@@ -259,6 +251,26 @@ export function getSizeAbilityEffects(size: CharacterSize): SizeAbilityEffectsDe
     if (mods.dexterity !== undefined && mods.dexterity !== 0) {
       appliedEffects.push({ ability: 'dexterity', change: mods.dexterity });
     }
+  }
+  return { effects: appliedEffects };
+}
+
+// --- Race Ability Score Modifiers ---
+export interface RaceAbilityEffectsDetails {
+  effects: Array<{ ability: AbilityName; change: number }>;
+}
+
+export function getRaceAbilityEffects(raceValue: DndRace): RaceAbilityEffectsDetails {
+  const modifiers = (constantsData.DND_RACE_ABILITY_MODIFIERS_DATA as Record<DndRace, Partial<Record<AbilityName, number>>>)[raceValue];
+  const appliedEffects: Array<{ ability: AbilityName; change: number }> = [];
+
+  if (modifiers) {
+    (Object.keys(modifiers) as AbilityName[]).forEach(ability => {
+      const change = modifiers[ability];
+      if (change !== undefined && change !== 0) {
+        appliedEffects.push({ ability, change });
+      }
+    });
   }
   return { effects: appliedEffects };
 }

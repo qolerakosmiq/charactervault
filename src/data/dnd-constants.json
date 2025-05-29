@@ -92,8 +92,8 @@
     "dwarf": "dwarf",
     "halfling": "halfling",
     "gnome": "gnome",
-    "half-elf": "elf",
-    "half-orc": "orc"
+    "half-elf": "elf", 
+    "half-orc": "orc" 
   },
   "DND_RACE_AGING_EFFECTS_DATA": {
     "human": {
@@ -149,5 +149,14 @@
     "Huge": { "strength": 8, "dexterity": -4 },
     "Gargantuan": { "strength": 12, "dexterity": -6 },
     "Colossal": { "strength": 16, "dexterity": -8 }
+  },
+  "DND_RACE_ABILITY_MODIFIERS_DATA": {
+    "human": {},
+    "elf": { "dexterity": 2, "constitution": -2 },
+    "dwarf": { "constitution": 2, "charisma": -2 },
+    "halfling": { "dexterity": 2, "strength": -2 },
+    "gnome": { "constitution": 2, "strength": -2 },
+    "half-elf": {},
+    "half-orc": { "strength": 2, "intelligence": -2, "charisma": -2 }
   }
 }

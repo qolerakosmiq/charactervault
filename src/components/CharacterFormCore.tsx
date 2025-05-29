@@ -3,8 +3,8 @@
 
 import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRace, SizeAbilityEffectsDetails, AbilityScores } from '@/types/character';
-import { DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, SIZES, ALIGNMENTS, ALL_SKILLS_3_5, DND_RACES, DND_CLASSES, getNetAgingEffects, GENDERS, DND_DEITIES, getSizeAbilityEffects } from '@/types/character';
+import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRace, SizeAbilityEffectsDetails, AbilityScores, RaceAbilityEffectsDetails } from '@/types/character';
+import { DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, SIZES, ALIGNMENTS, ALL_SKILLS_3_5, DND_RACES, DND_CLASSES, getNetAgingEffects, GENDERS, DND_DEITIES, getSizeAbilityEffects, getRaceAbilityEffects } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -76,6 +76,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   );
   const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<AgingEffectsDetails | null>(null);
   const [sizeAbilityEffectsDetails, setSizeAbilityEffectsDetails] = React.useState<SizeAbilityEffectsDetails | null>(null);
+  const [raceAbilityEffectsDetails, setRaceAbilityEffectsDetails] = React.useState<RaceAbilityEffectsDetails | null>(null);
   const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -98,6 +99,15 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       setSizeAbilityEffectsDetails(null);
     }
   }, [character.size]);
+
+  React.useEffect(() => {
+    if (character.race) {
+      const details = getRaceAbilityEffects(character.race as DndRace);
+      setRaceAbilityEffectsDetails(details.effects.length > 0 ? details : null);
+    } else {
+      setRaceAbilityEffectsDetails(null);
+    }
+  }, [character.race]);
 
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -291,6 +301,26 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
                 )}
               </div>
+              {raceAbilityEffectsDetails && raceAbilityEffectsDetails.effects.length > 0 && (
+                <p className="text-xs text-muted-foreground mt-1 ml-1">
+                  {raceAbilityEffectsDetails.effects.map((effect, index) => (
+                    <React.Fragment key={effect.ability}>
+                      <strong
+                        className={cn(
+                          "font-bold",
+                          effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
+                        )}
+                      >
+                        {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
+                      </strong>
+                      {index < raceAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
+                    </React.Fragment>
+                  ))}
+                </p>
+              )}
+              {raceAbilityEffectsDetails && raceAbilityEffectsDetails.effects.length === 0 && isPredefinedRace && (
+                 <p className="text-xs text-muted-foreground mt-1 ml-1">No ability score changes</p>
+              )}
             </div>
           </div>
 
@@ -573,3 +603,4 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
+
