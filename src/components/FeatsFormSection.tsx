@@ -7,9 +7,10 @@ import { DND_FEATS, calculateAvailableFeats } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Award, Info } from 'lucide-react';
-import { ComboboxPrimitive, ComboboxOption } from '@/components/ui/combobox';
+import { ComboboxPrimitive, type ComboboxOption } from '@/components/ui/combobox';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Label } from '@/components/ui/label'; // Added import
 
 interface FeatsFormSectionProps {
   characterRace: DndRaceId | string;
