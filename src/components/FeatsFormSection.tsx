@@ -37,18 +37,16 @@ export function FeatsFormSection({
 
   React.useEffect(() => {
     const currentFeatIds = selectedFeats.map(f => f.id);
-    // Only update if the actual array of IDs has changed, to prevent infinite loops if parent passes new array instance with same content.
     if (JSON.stringify(featSelections.slice().sort()) !== JSON.stringify(currentFeatIds.slice().sort())) {
       setFeatSelections(currentFeatIds);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedFeats]);
+  }, [selectedFeats, featSelections]);
 
 
   const convertSelectionsToFeatTypes = (selections: string[]): FeatType[] => {
     return selections
       .map(id => {
-        if (!id) return undefined; // Handle undefined if a slot is empty
+        if (!id) return undefined; 
         const featDef = DND_FEATS.find(f => f.value === id);
         if (!featDef) return undefined;
         return {
@@ -103,25 +101,24 @@ export function FeatsFormSection({
   const featSlotsLeft = availableFeatSlots - selectedFeatsCount;
 
   const baseFeat = 1;
-  const humanBonus = characterRace === 'human' ? 1 : 0;
+  const racialBonus = characterRace === 'human' ? 1 : 0; // For now, hardcoded for human.
   const levelProgressionFeats = Math.floor(characterLevel / 3);
 
-  // This is a simplified character representation for prerequisite checking
   const characterForPrereqCheck = React.useMemo(() => ({
     abilityScores,
     skills,
-    feats: convertSelectionsToFeatTypes(featSelections), // Use current selections for dynamic prereq checks
+    feats: convertSelectionsToFeatTypes(featSelections), 
     classes: characterClasses,
     race: characterRace,
-    age: 0, // Age might be relevant for some feats in extended rules, but not common for SRD
-    name: '', // Not relevant for prereqs
-    alignment: 'true-neutral' as const, // Not typically relevant for feat prereqs
-    size: 'medium' as const, // Not typically relevant for feat prereqs
-    hp: 0, maxHp: 0, // Not relevant
-    armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0, deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, // AC not relevant
-    initiativeMiscModifier: 0, // Initiative not relevant
-    savingThrows: { fortitude: {base:0,magicMod:0,miscMod:0}, reflex: {base:0,magicMod:0,miscMod:0}, will: {base:0,magicMod:0,miscMod:0} }, // Saves not typically prereqs
-    inventory: [] // Inventory not relevant
+    age: 0, 
+    name: '', 
+    alignment: 'true-neutral' as const, 
+    size: 'medium' as const, 
+    hp: 0, maxHp: 0, 
+    armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0, deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, 
+    initiativeMiscModifier: 0, 
+    savingThrows: { fortitude: {base:0,magicMod:0,miscMod:0}, reflex: {base:0,magicMod:0,miscMod:0}, will: {base:0,magicMod:0,miscMod:0} }, 
+    inventory: [] 
   }), [abilityScores, skills, featSelections, characterClasses, characterRace]);
 
 
@@ -149,14 +146,14 @@ export function FeatsFormSection({
                 )}>{featSlotsLeft}</span>
               </p>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+             <p className="text-xs text-muted-foreground mt-1">
               Base <strong className="font-bold text-primary">[{baseFeat}]</strong>
               {characterRace === 'human' && (
                 <>
-                  {' + '}Human Bonus <strong className="font-bold text-primary">[+{humanBonus}]</strong>
+                  {' + '}Racial Bonus <strong className="font-bold text-primary">[{racialBonus}]</strong>
                 </>
               )}
-              {' + '}Level Progression <strong className="font-bold text-primary">[+{levelProgressionFeats}]</strong>
+              {' + '}Level Progression <strong className="font-bold text-primary">[{levelProgressionFeats}]</strong>
             </p>
           </div>
 
@@ -251,4 +248,3 @@ export function FeatsFormSection({
     </>
   );
 }
-
