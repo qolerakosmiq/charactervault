@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, Feat } from '@/types/character';
-import { SKILL_DEFINITIONS, CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill } from '@/types/character';
+import { SKILL_DEFINITIONS, CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, DND_RACES } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
-import { InfoDisplayDialog } from '@/components/InfoDisplayDialog'; // Updated import
+import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 
 interface SkillsFormSectionProps {
   skills: SkillType[];
@@ -43,17 +43,18 @@ export function SkillsFormSection({
 }: SkillsFormSectionProps) {
   const [isAddOrEditSkillDialogOpen, setIsAddOrEditSkillDialogOpen] = React.useState(false);
   const [skillToEdit, setSkillToEdit] = React.useState<SkillType | undefined>(undefined);
-  const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false); // Renamed state
-  const [currentSkillInfo, setCurrentSkillInfo] = React.useState<{title: string, content: string} | null>(null); // Renamed state
+  const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
+  const [currentSkillInfo, setCurrentSkillInfo] = React.useState<{title: string, content: string} | null>(null);
 
   const firstClass = characterClasses[0];
   const characterLevel = firstClass?.level || 1;
   const intelligenceModifier = getAbilityModifierByName(abilityScores, 'intelligence');
 
-  const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0) : 0;
-  const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace as DndRaceId | string);
+  const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof ClassSkillPointsBaseJsonData] || 0) : 0;
+  const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace);
 
   const pointsPerLevelBase = baseSkillPointsForClass + intelligenceModifier + racialBonus;
+  
   const pointsForFirstLevel = pointsPerLevelBase * 4;
   const pointsFromLevelProgression = characterLevel > 1 ? pointsPerLevelBase * (characterLevel - 1) : 0;
   const totalSkillPointsAvailable = pointsForFirstLevel + pointsFromLevelProgression;
@@ -131,7 +132,8 @@ export function SkillsFormSection({
             <p className="text-sm font-medium">
               Skill Points Left: <span className={cn(
                 "text-lg font-bold",
-                skillPointsLeft >= 0 ? "text-emerald-500" : "text-destructive",
+                skillPointsLeft > 0 && "text-emerald-500",
+                skillPointsLeft < 0 && "text-destructive",
                 skillPointsLeft === 0 && "text-accent"
               )}>{skillPointsLeft}</span>
             </p>
@@ -184,7 +186,8 @@ export function SkillsFormSection({
 
             const synergyBonus = calculateTotalSynergyBonus(skill.id, skills);
             const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats);
-            const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus;
+            const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES);
+            const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus + currentRacialBonus;
 
 
             const totalBonus = (skill.ranks || 0) + totalDisplayedModifier;
@@ -306,16 +309,14 @@ export function SkillsFormSection({
         initialSkillData={skillToEdit}
         allSkills={allSkillOptionsForDialog}
     />
-    {currentSkillInfo && ( // Updated condition
-      <InfoDisplayDialog // Updated component name
+    {currentSkillInfo && (
+      <InfoDisplayDialog
         isOpen={isInfoDialogOpen}
         onOpenChange={setIsInfoDialogOpen}
-        title={currentSkillInfo.title} // Pass generalized props
-        content={currentSkillInfo.content} // Pass generalized props
+        title={currentSkillInfo.title}
+        content={currentSkillInfo.content}
       />
     )}
     </>
   );
 }
-
-    
