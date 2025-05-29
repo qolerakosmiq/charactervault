@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollText, PlusCircle, Trash2 } from 'lucide-react';
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
-import { calculateMaxRanks } from '@/lib/constants'; 
+import { calculateMaxRanks } from '@/lib/constants';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -45,9 +45,14 @@ export function SkillsFormSection({
 
   const baseSkillPointsForClass = firstClass?.className ? CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0 : 0;
   const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace);
-  
+
   const totalSkillPointsAvailable = (baseSkillPointsForClass + intelligenceModifier + racialBonus) * 4;
-  const totalSkillPointsSpent = skills.reduce((acc, skill) => acc + (skill.ranks || 0), 0);
+
+  const totalSkillPointsSpent = skills.reduce((acc, skill) => {
+    const costMultiplier = skill.isClassSkill ? 1 : 2;
+    return acc + (skill.ranks || 0) * costMultiplier;
+  }, 0);
+
   const skillPointsLeft = totalSkillPointsAvailable - totalSkillPointsSpent;
 
   const handleAddCustomSkill = () => {
@@ -92,13 +97,14 @@ export function SkillsFormSection({
 
         <ScrollArea className="h-[400px] pr-3">
           <div className="space-y-1 -mx-1">
-            <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-xs">
+            <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-xs">
               <span className="text-center w-10">Class?</span>
               <span className="pl-1">Skill</span>
               <span className="text-center w-10">Total</span>
               <span className="text-center w-10">Key</span>
               <span className="text-center w-10">Mod</span>
               <span className="text-center w-12">Ranks</span>
+              <span className="text-center w-12">Cost</span>
               <span className="text-center w-10">Max</span>
             </div>
 
@@ -107,17 +113,18 @@ export function SkillsFormSection({
               const keyAbility = skill.keyAbility || skillDef?.keyAbility as AbilityName | undefined;
               const keyAbilityShort = keyAbility ? keyAbility.substring(0, 3).toUpperCase() : 'N/A';
               const abilityMod = keyAbility && keyAbility !== 'none' ? getAbilityModifierByName(abilityScores, keyAbility) : 0;
-              
-              const totalBonus = (skill.ranks || 0) + abilityMod; // MiscModifier removed from sum
+
+              const totalBonus = (skill.ranks || 0) + abilityMod;
               const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
-              
+              const skillCost = skill.isClassSkill ? 1 : 2;
+
               return (
-                <div key={skill.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">
+                <div key={skill.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">
                   <div className="flex justify-center w-10">
                     <Checkbox
                       id={`skill_class_${skill.id}`}
                       checked={skill.isClassSkill}
-                      disabled 
+                      disabled
                       className="h-3.5 w-3.5"
                     />
                   </div>
@@ -125,7 +132,7 @@ export function SkillsFormSection({
                     <Label htmlFor={`skill_ranks_${skill.id}`} className="text-xs truncate pr-1 leading-tight pl-1">
                       {skill.name}
                     </Label>
-                    {!skillDef && ( 
+                    {!skillDef && (
                        <TooltipProvider delayDuration={100}>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -151,20 +158,21 @@ export function SkillsFormSection({
                   <Input
                     id={`skill_ranks_${skill.id}`}
                     type="number"
-                    step="0.5" 
+                    step="0.5"
                     value={skill.ranks || 0}
                     onChange={(e) => onSkillChange(skill.id, parseFloat(e.target.value) || 0, skill.miscModifier || 0)}
                     className="h-7 w-12 text-xs text-center p-1"
                     max={maxRanksValue}
                     min="0"
                   />
+                  <span className="text-xs text-muted-foreground text-center w-12">{skillCost}</span>
                   <span className="text-xs text-muted-foreground text-center w-10">{maxRanksValue}</span>
                 </div>
               );
             })}
           </div>
         </ScrollArea>
-        
+
         <Separator className="my-4" />
 
         <div>
