@@ -6,10 +6,11 @@ import type { Feat as FeatType, DndRaceId, CharacterClass, FeatDefinitionJsonDat
 import { DND_FEATS, calculateAvailableFeats, DND_RACES } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, PlusCircle, Trash2, Edit3 } from 'lucide-react';
+import { Award, PlusCircle, Trash2 } from 'lucide-react'; // Removed Edit3
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
+import { useToast } from "@/hooks/use-toast"; // Added useToast
 
 interface FeatsFormSectionProps {
   characterRace: DndRaceId | string;
@@ -27,14 +28,12 @@ export function FeatsFormSection({
   const characterLevel = characterClasses.reduce((sum, cls) => sum + cls.level, 0) || 1;
   const availableFeatSlots = calculateAvailableFeats(characterRace, characterLevel);
 
-  const [featSelections, setFeatSelections] = React.useState<(string | undefined)[]>([]);
+  const [featSelections, setFeatSelections] = React.useState<string[]>([]); // Now just string IDs
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
-  const [editingSlotIndex, setEditingSlotIndex] = React.useState<number | null>(null);
+  const { toast } = useToast(); // Initialize toast
 
   React.useEffect(() => {
     const newDerivedSelections = selectedFeats.map(f => f.id);
-    // Only update if the derived selections actually differ or if the number of available slots differs from current selections
-    // This helps avoid unnecessary re-renders and preserves the order of `undefined` slots if they exist
     if (JSON.stringify(featSelections) !== JSON.stringify(newDerivedSelections)) {
        setFeatSelections(newDerivedSelections);
     }
@@ -42,12 +41,12 @@ export function FeatsFormSection({
   }, [selectedFeats]);
 
 
-  const convertSelectionsToFeatTypes = (selections: (string | undefined)[]): FeatType[] => {
+  const convertSelectionsToFeatTypes = (selections: string[]): FeatType[] => {
     return selections
       .map(id => {
         if (!id) return undefined;
         const featDef = DND_FEATS.find(f => f.value === id);
-        if (!featDef) return undefined; // Should not happen if selection is from dialog
+        if (!featDef) return undefined;
         return {
           id: featDef.value,
           name: featDef.label,
@@ -58,12 +57,25 @@ export function FeatsFormSection({
       .filter(feat => feat !== undefined) as FeatType[];
   };
 
-  const handleAddSlot = () => {
-    // Allow adding slots even beyond 'available'
-    const newSelections = [...featSelections, undefined];
+  const handleOpenFeatDialog = () => {
+    setIsFeatDialogOpen(true);
+  };
+
+  const handleFeatSelectedFromDialog = (featId: string) => {
+    if (featSelections.includes(featId)) {
+      toast({
+        title: "Duplicate Feat",
+        description: "This feat has already been selected.",
+        variant: "destructive",
+      });
+      setIsFeatDialogOpen(false); // Close dialog even if duplicate
+      return;
+    }
+
+    const newSelections = [...featSelections, featId];
     setFeatSelections(newSelections);
-    // Note: We don't call onFeatSelectionChange here, as no feat is actually selected yet.
-    // It will be called when a feat is chosen for this new slot.
+    onFeatSelectionChange(convertSelectionsToFeatTypes(newSelections));
+    setIsFeatDialogOpen(false);
   };
 
   const handleRemoveSlot = (indexToRemove: number) => {
@@ -72,36 +84,11 @@ export function FeatsFormSection({
     onFeatSelectionChange(convertSelectionsToFeatTypes(newSelections));
   };
 
-  const handleOpenFeatDialog = (slotIndex: number) => {
-    setEditingSlotIndex(slotIndex);
-    setIsFeatDialogOpen(true);
-  };
-
-  const handleFeatSelectedFromDialog = (featId: string) => {
-    if (editingSlotIndex !== null) {
-      const newSelections = [...featSelections];
-      const isAlreadySelectedElsewhere = newSelections.some(
-        (id, index) => id === featId && index !== editingSlotIndex
-      );
-      if (isAlreadySelectedElsewhere) {
-        console.warn("This feat is already selected in another slot.");
-        // Optionally show a toast or alert here
-      } else {
-        newSelections[editingSlotIndex] = featId;
-        setFeatSelections(newSelections);
-        onFeatSelectionChange(convertSelectionsToFeatTypes(newSelections));
-      }
-    }
-    setIsFeatDialogOpen(false);
-    setEditingSlotIndex(null);
-  };
-
-
   const getFeatDetails = (featId: string | undefined): FeatDefinitionJsonData | undefined => {
     return DND_FEATS.find(f => f.value === featId);
   };
 
-  const selectedFeatsCount = featSelections.filter(Boolean).length;
+  const selectedFeatsCount = featSelections.length;
   const featSlotsLeft = availableFeatSlots - selectedFeatsCount;
 
   const baseFeat = 1;
@@ -147,42 +134,30 @@ export function FeatsFormSection({
               <div className="space-y-2">
                 {featSelections.map((selectedFeatId, index) => {
                   const featDetails = getFeatDetails(selectedFeatId);
+                  if (!featDetails) return null; // Should not happen if ID is valid
                   return (
-                    <div key={`feat-slot-${index}`} className="flex items-center justify-between py-2 border-b border-border/30 last:border-b-0">
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start text-left font-normal h-auto py-2 mr-2 flex-grow"
-                        onClick={() => handleOpenFeatDialog(index)}
-                      >
-                        <div className="flex-grow">
-                          <div className="flex items-center">
-                             <Edit3 className="mr-2 h-4 w-4 text-muted-foreground shrink-0" />
-                            {featDetails ? (
-                              <span className="text-foreground">{featDetails.label}</span>
-                            ) : (
-                              <span className="text-muted-foreground">Click to select feat... (Slot {index + 1})</span>
-                            )}
-                          </div>
-                          {featDetails?.description && (
-                            <p className="text-xs text-muted-foreground mt-1 whitespace-normal">
-                              {featDetails.description}
-                            </p>
-                          )}
-                           {featDetails?.prerequisites && (
-                            <p className="text-xs text-destructive/80 mt-1 whitespace-normal">
-                              Prerequisites: {featDetails.prerequisites}
-                            </p>
-                          )}
-                        </div>
-                      </Button>
+                    <div key={`feat-slot-${index}-${selectedFeatId}`} className="flex items-start justify-between py-2 px-3 border rounded-md bg-background hover:bg-muted/20">
+                      <div className="flex-grow mr-2">
+                        <h4 className="font-medium text-foreground">{featDetails.label}</h4>
+                        {featDetails.description && (
+                          <p className="text-xs text-muted-foreground mt-0.5 whitespace-normal">
+                            {featDetails.description}
+                          </p>
+                        )}
+                         {featDetails.prerequisites && (
+                          <p className="text-xs text-destructive/80 mt-0.5 whitespace-normal">
+                            Prerequisites: {featDetails.prerequisites}
+                          </p>
+                        )}
+                      </div>
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => handleRemoveSlot(index)}
-                        className="h-8 w-8 text-destructive hover:text-destructive/80 shrink-0"
+                        className="h-8 w-8 text-destructive hover:text-destructive/80 shrink-0 mt-0.5" // Adjusted margin-top
+                        aria-label={`Remove feat ${featDetails.label}`}
                       >
                         <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Remove Feat Slot</span>
                       </Button>
                     </div>
                   );
@@ -191,12 +166,11 @@ export function FeatsFormSection({
             </ScrollArea>
           )}
            {featSelections.length === 0 && (
-             <p className="text-sm text-muted-foreground mb-4 text-center py-2">No feat slots added yet. Click "Add Feat Slot" to begin.</p>
+             <p className="text-sm text-muted-foreground mb-4 text-center py-2">No feats selected. Click "Add Feat" to begin.</p>
            )}
 
-
-          <Button onClick={handleAddSlot} variant="outline" size="sm" className="mt-2">
-            <PlusCircle className="mr-2 h-4 w-4" /> Add Feat Slot
+          <Button onClick={handleOpenFeatDialog} variant="outline" size="sm" className="mt-2">
+            <PlusCircle className="mr-2 h-4 w-4" /> Add Feat
           </Button>
         </CardContent>
       </Card>
@@ -209,4 +183,3 @@ export function FeatsFormSection({
     </>
   );
 }
-
