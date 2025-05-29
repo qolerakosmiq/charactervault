@@ -109,13 +109,13 @@
     { "value": "dodge", "label": "Dodge", "description": "+1 dodge bonus to AC against a designated opponent.", "prerequisites": { "abilities": { "dexterity": 13 } } },
     { "value": "endurance", "label": "Endurance", "description": "+4 bonus on checks to avoid nonlethal damage from forced marches, starvation, thirst, extreme temperatures, etc." },
     { "value": "eschew-materials", "label": "Eschew Materials", "description": "Cast spells without material components costing 1 gp or less." },
-    { "value": "exotic-weapon-proficiency", "label": "Exotic Weapon Proficiency", "description": "No penalty on attacks with one exotic weapon.", "prerequisites": { "bab": 1 } },
+    { "value": "exotic-weapon-proficiency", "label": "Exotic Weapon Proficiency", "description": "No penalty on attacks with one exotic weapon.", "prerequisites": { "bab": 1 }, "canTakeMultipleTimes": true, "requiresSpecialization": "exotic weapon" },
     { "value": "far-shot", "label": "Far Shot", "description": "Increase range increment of ranged weapons.", "prerequisites": { "feats": ["point-blank-shot"] } },
     { "value": "great-cleave", "label": "Great Cleave", "description": "Make unlimited additional melee attacks after dropping opponents.", "prerequisites": { "abilities": { "strength": 13 }, "feats": ["cleave", "power-attack"], "bab": 4 } },
     { "value": "great-fortitude", "label": "Great Fortitude", "description": "+2 bonus on Fortitude saves." },
     { "value": "improved-bull-rush", "label": "Improved Bull Rush", "description": "+4 bonus on bull rush attempts, no attack of opportunity.", "prerequisites": { "feats": ["power-attack"] } },
     { "value": "improved-counterspell", "label": "Improved Counterspell", "description": "Counterspell with spell of same school." },
-    { "value": "improved-critical", "label": "Improved Critical", "description": "Double threat range with one weapon.", "prerequisites": { "bab": 8, "special": "Proficiency with weapon" } },
+    { "value": "improved-critical", "label": "Improved Critical", "description": "Double threat range with one weapon.", "prerequisites": { "bab": 8, "special": "Proficiency with weapon" }, "canTakeMultipleTimes": true, "requiresSpecialization": "weapon" },
     { "value": "improved-disarm", "label": "Improved Disarm", "description": "+4 bonus on disarm attempts, no attack of opportunity.", "prerequisites": { "abilities": { "intelligence": 13 }, "feats": ["combat-expertise"] } },
     { "value": "improved-feint", "label": "Improved Feint", "description": "Feint in combat as a move action.", "prerequisites": { "abilities": { "intelligence": 13 }, "feats": ["combat-expertise"] } },
     { "value": "improved-grapple", "label": "Improved Grapple", "description": "+4 bonus on grapple checks, no attack of opportunity.", "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["improved-unarmed-strike"] } },
@@ -142,7 +142,7 @@
     { "value": "power-attack", "label": "Power Attack", "description": "Trade attack bonus for damage (melee weapons).", "prerequisites": { "abilities": { "strength": 13 } } },
     { "value": "precise-shot", "label": "Precise Shot", "description": "No penalty for shooting or throwing ranged weapons into melee.", "prerequisites": { "feats": ["point-blank-shot"] } },
     { "value": "quick-draw", "label": "Quick Draw", "description": "Draw a weapon as a free action.", "prerequisites": { "bab": 1 } },
-    { "value": "rapid-reload", "label": "Rapid Reload", "description": "Reload one type of crossbow faster.", "prerequisites": { "special": "Weapon Proficiency (chosen crossbow)" } },
+    { "value": "rapid-reload", "label": "Rapid Reload", "description": "Reload one type of crossbow faster.", "prerequisites": { "special": "Weapon Proficiency (chosen crossbow)" }, "canTakeMultipleTimes": true, "requiresSpecialization": "crossbow type" },
     { "value": "rapid-shot", "label": "Rapid Shot", "description": "Make an extra ranged attack.", "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["point-blank-shot"] } },
     { "value": "ride-by-attack", "label": "Ride-By Attack", "description": "Move before and after a charge attack while mounted.", "prerequisites": { "skills": [{ "id": "ride", "ranks": 1 }], "feats": ["mounted-combat"] } },
     { "value": "run", "label": "Run", "description": "Run five times your normal speed (if wearing light or no armor) or four times speed (if wearing medium or heavy armor and carrying a medium or heavy load)." },
@@ -150,22 +150,26 @@
     { "value": "self-sufficient", "label": "Self-Sufficient", "description": "+2 bonus on Heal and Survival checks.", "effects": { "skills": { "heal": 2, "survival": 2 } } },
     { "value": "shield-proficiency", "label": "Shield Proficiency", "description": "No penalty on attack rolls when using a shield." },
     { "value": "shot-on-the-run", "label": "Shot on the Run", "description": "Move, make a ranged attack, and continue moving.", "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge", "mobility", "point-blank-shot"], "bab": 4 } },
-    { "value": "skill-focus", "label": "Skill Focus", "description": "+3 bonus on checks with one chosen skill." },
-    { "value": "spell-focus", "label": "Spell Focus", "description": "+1 to save DCs for one school of magic." },
+    { "value": "skill-focus", "label": "Skill Focus", "description": "+3 bonus on checks with one chosen skill.", "canTakeMultipleTimes": true, "requiresSpecialization": "skill", "effects": { "skills": {} } },
+    { "value": "spell-focus", "label": "Spell Focus", "description": "+1 to save DCs for one school of magic.", "canTakeMultipleTimes": true, "requiresSpecialization": "school of magic" },
+    { "value": "greater-spell-focus", "label": "Greater Spell Focus", "description": "+1 to save DCs for one school of magic (stacks with Spell Focus).", "prerequisites": { "feats": ["spell-focus"] }, "canTakeMultipleTimes": true, "requiresSpecialization": "school of magic" },
     { "value": "spell-mastery", "label": "Spell Mastery", "description": "Prepare some spells without referring to a spellbook.", "prerequisites": { "special": "Wizard level 1st" } },
     { "value": "spell-penetration", "label": "Spell Penetration", "description": "+2 bonus on caster level checks to overcome spell resistance." },
+    { "value": "greater-spell-penetration", "label": "Greater Spell Penetration", "description": "+2 bonus on caster level checks to overcome spell resistance (stacks with Spell Penetration).", "prerequisites": {"feats": ["spell-penetration"]}},
     { "value": "spirited-charge", "label": "Spirited Charge", "description": "Double damage on a mounted charge.", "prerequisites": { "skills": [{ "id": "ride", "ranks": 1 }], "feats": ["mounted-combat", "ride-by-attack"] } },
     { "value": "spring-attack", "label": "Spring Attack", "description": "Move, attack, and then move again.", "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge", "mobility"], "bab": 4 } },
     { "value": "stealthy", "label": "Stealthy", "description": "+2 bonus on Hide and Move Silently checks.", "effects": { "skills": { "hide": 2, "move-silently": 2 } } },
     { "value": "stunning-fist", "label": "Stunning Fist", "description": "Stun opponent with an unarmed strike.", "prerequisites": { "abilities": { "dexterity": 13, "wisdom": 13 }, "feats": ["improved-unarmed-strike"], "bab": 8 } },
-    { "value": "toughness", "label": "Toughness", "description": "+3 hit points." },
+    { "value": "toughness", "label": "Toughness", "description": "+3 hit points.", "canTakeMultipleTimes": true },
     { "value": "track", "label": "Track", "description": "Use Survival skill to track." },
     { "value": "trample", "label": "Trample", "description": "Overrun opponents while mounted.", "prerequisites": { "skills": [{ "id": "ride", "ranks": 1 }], "feats": ["mounted-combat"] } },
     { "value": "two-weapon-defense", "label": "Two-Weapon Defense", "description": "+1 shield bonus to AC when fighting with two weapons.", "prerequisites": { "abilities": { "dexterity": 15 }, "feats": ["two-weapon-fighting"] } },
     { "value": "two-weapon-fighting", "label": "Two-Weapon Fighting", "description": "Reduce penalties for fighting with two weapons.", "prerequisites": { "abilities": { "dexterity": 15 } } },
     { "value": "weapon-finesse", "label": "Weapon Finesse", "description": "Use Dexterity modifier instead of Strength modifier on attack rolls with light weapons.", "prerequisites": { "bab": 1 } },
-    { "value": "weapon-focus", "label": "Weapon Focus", "description": "+1 bonus on attack rolls with one chosen weapon.", "prerequisites": { "bab": 1, "special": "Proficiency with weapon" } },
-    { "value": "weapon-specialization", "label": "Weapon Specialization", "description": "+2 bonus on damage rolls with one chosen weapon.", "prerequisites": { "feats": ["weapon-focus"], "special": "Fighter level 4th, Proficiency with weapon" } },
+    { "value": "weapon-focus", "label": "Weapon Focus", "description": "+1 bonus on attack rolls with one chosen weapon.", "prerequisites": { "bab": 1, "special": "Proficiency with weapon" }, "canTakeMultipleTimes": true, "requiresSpecialization": "weapon" },
+    { "value": "greater-weapon-focus", "label": "Greater Weapon Focus", "description": "+1 bonus on attack rolls with one chosen weapon (stacks with Weapon Focus).", "prerequisites": { "feats": ["weapon-focus"], "special": "Fighter level 8th, Proficiency with weapon" }, "canTakeMultipleTimes": true, "requiresSpecialization": "weapon" },
+    { "value": "weapon-specialization", "label": "Weapon Specialization", "description": "+2 bonus on damage rolls with one chosen weapon.", "prerequisites": { "feats": ["weapon-focus"], "special": "Fighter level 4th, Proficiency with weapon" }, "canTakeMultipleTimes": true, "requiresSpecialization": "weapon" },
+    { "value": "greater-weapon-specialization", "label": "Greater Weapon Specialization", "description": "+2 bonus on damage rolls with one chosen weapon (stacks with Weapon Specialization).", "prerequisites": { "feats": ["weapon-focus", "weapon-specialization", "greater-weapon-focus"], "special": "Fighter level 12th, Proficiency with weapon" }, "canTakeMultipleTimes": true, "requiresSpecialization": "weapon" },
     { "value": "whirlwind-attack", "label": "Whirlwind Attack", "description": "Attack all adjacent opponents.", "prerequisites": { "abilities": { "dexterity": 13, "intelligence": 13 }, "feats": ["combat-expertise", "dodge", "mobility", "spring-attack"], "bab": 4 } }
   ],
   "DEFAULT_ABILITIES": {
@@ -205,50 +209,50 @@
     "dwarf": "dwarf",
     "gnome": "gnome",
     "halfling": "halfling",
-    "half-elf": "elf", 
+    "half-elf": "elf",
     "half-orc": "orc"
   },
   "DND_RACE_AGING_EFFECTS_DATA": {
     "human": {
       "categories": [
         { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "old", "ageFactor": 0.7571, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
+        { "categoryName": "old", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
       ]
     },
     "elf": {
       "categories": [
         { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "old", "ageFactor": 0.7514, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "old", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
         { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
       ]
     },
     "dwarf": {
       "categories": [
         { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "old", "ageFactor": 0.752, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
+        { "categoryName": "old", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
       ]
     },
     "gnome": {
       "categories": [
         { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "old", "ageFactor": 0.75, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
+        { "categoryName": "old", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
       ]
     },
     "halfling": {
       "categories": [
         { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "old", "ageFactor": 0.75, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
+        { "categoryName": "old", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
       ]
     },
     "orc": {
       "categories": [
         { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "old", "ageFactor": 0.75, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
+        { "categoryName": "old", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
       ]
     }
   },
@@ -366,14 +370,14 @@
       { "targetSkill": "sleight-of-hand", "ranksRequired": 5, "bonus": 2 }
     ],
     "craft-alchemy": [
-      { "targetSkill": "appraise", "ranksRequired": 5, "bonus": 2 }
+      { "targetSkill": "appraise", "ranksRequired": 5, "bonus": 2, "description": "When appraising alchemical items."}
     ],
     "handle-animal": [
       { "targetSkill": "ride", "ranksRequired": 5, "bonus": 2 },
       { "targetSkill": "diplomacy", "ranksRequired": 5, "bonus": 2, "description": "To influence magical beasts." }
     ],
     "knowledge-arcana": [
-        { "targetSkill": "spellcraft", "ranksRequired": 5, "bonus": 2 }
+        { "targetSkill": "spellcraft", "ranksRequired": 5, "bonus": 2, "description": "To identify magic items." }
     ],
     "search": [
         { "targetSkill": "survival", "ranksRequired": 5, "bonus": 2, "description": "To follow tracks." }
@@ -382,8 +386,7 @@
       { "targetSkill": "diplomacy", "ranksRequired": 5, "bonus": 2 }
     ],
     "spellcraft": [
-      { "targetSkill": "use-magic-device", "ranksRequired": 5, "bonus": 2 },
-      { "targetSkill": "knowledge-arcana", "ranksRequired": 5, "bonus": 2 }
+      { "targetSkill": "use-magic-device", "ranksRequired": 5, "bonus": 2, "description": "When using scrolls." }
     ],
     "survival": [
       { "targetSkill": "knowledge-nature", "ranksRequired": 5, "bonus": 2 }
@@ -393,7 +396,7 @@
       { "targetSkill": "jump", "ranksRequired": 5, "bonus": 2 }
     ],
     "use-rope": [
-      { "targetSkill": "escape-artist", "ranksRequired": 5, "bonus": 2 },
+      { "targetSkill": "escape-artist", "ranksRequired": 5, "bonus": 2, "description": "To escape rope bonds." },
       { "targetSkill": "climb", "ranksRequired": 5, "bonus": 2, "description": "When using a rope."}
     ]
   }

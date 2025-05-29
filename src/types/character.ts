@@ -43,9 +43,10 @@ export type FeatDefinitionJsonData = {
   value: string; 
   label: string; 
   description: string;
-  // prerequisitesText field is removed
   prerequisites?: FeatPrerequisiteDetails; 
   effects?: FeatEffectDetails;
+  canTakeMultipleTimes?: boolean;
+  requiresSpecialization?: string;
 };
 
 export interface Feat {
@@ -53,8 +54,10 @@ export interface Feat {
   name: string; 
   description?: string;
   prerequisites?: FeatPrerequisiteDetails;
-  // prerequisitesText field is removed
   effects?: FeatEffectDetails;
+  canTakeMultipleTimes?: boolean;
+  requiresSpecialization?: string;
+  specializationDetail?: string; // To store the user's choice for specialized feats
 }
 
 export interface Item {
@@ -397,7 +400,7 @@ export function calculateAvailableFeats(race: DndRaceId | string, level: number)
 
 export function checkFeatPrerequisites(
   featDefinition: FeatDefinitionJsonData,
-  character: Pick<Character, 'abilityScores' | 'skills' | 'feats' | 'classes'>,
+  character: Pick<Character, 'abilityScores' | 'skills' | 'feats' | 'classes' | 'race' | 'age'>, // Added age and race
   allFeatDefinitions: readonly FeatDefinitionJsonData[]
 ): { met: boolean; metMessages: string[]; unmetMessages: string[]; } {
   const { prerequisites } = featDefinition;
@@ -453,8 +456,8 @@ export function checkFeatPrerequisites(
     }
   }
   
+  const totalLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1; 
   if (prerequisites.casterLevel !== undefined) {
-    const totalLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1; 
     if (totalLevel < prerequisites.casterLevel) { 
       unmetMessages.push(`Caster Level ${prerequisites.casterLevel}`);
     } else {
@@ -463,10 +466,32 @@ export function checkFeatPrerequisites(
   }
   
   if (prerequisites.special) {
-    metMessages.push(prerequisites.special);
+    // For simplicity, special prerequisites are assumed met for now or need manual verification.
+    // This part can be expanded if specific special conditions need programmatic checks.
+    // Example: check for "Wizard level 1st" might look at character.classes
+    let specialMet = true; // Assume met by default
+    if (prerequisites.special.toLowerCase().includes("fighter level")) {
+        const requiredLevel = parseInt(prerequisites.special.toLowerCase().replace(/[^0-9]/g, ''), 10);
+        const fighterClass = character.classes.find(c => c.className === 'fighter');
+        if (!fighterClass || fighterClass.level < requiredLevel) {
+            specialMet = false;
+        }
+    } else if (prerequisites.special.toLowerCase().includes("wizard level")) {
+        const requiredLevel = parseInt(prerequisites.special.toLowerCase().replace(/[^0-9]/g, ''), 10);
+        const wizardClass = character.classes.find(c => c.className === 'wizard');
+        if (!wizardClass || wizardClass.level < requiredLevel) {
+            specialMet = false;
+        }
+    }
+    // Add more specific checks here as needed.
+
+
+    if (specialMet) {
+        metMessages.push(prerequisites.special);
+    } else {
+        unmetMessages.push(prerequisites.special);
+    }
   }
 
   return { met: unmetMessages.length === 0, unmetMessages, metMessages };
 }
-
-    

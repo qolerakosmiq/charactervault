@@ -32,16 +32,15 @@ export function FeatsFormSection({
   const characterLevel = characterClasses.reduce((sum, cls) => sum + cls.level, 0) || 1;
   const availableFeatSlots = calculateAvailableFeats(characterRace, characterLevel);
 
-  // Stores the IDs of the selected feats for each slot
   const [featSelections, setFeatSelections] = React.useState<string[]>([]);
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
   const { toast } = useToast();
 
   React.useEffect(() => {
-    // Ensure all feats from props are represented in featSelections
     const currentFeatIds = selectedFeats.map(f => f.id);
-    if (JSON.stringify(featSelections) !== JSON.stringify(currentFeatIds)) {
-      setFeatSelections(currentFeatIds);
+     // Only update if the actual list of feat IDs differs, to avoid infinite loops if parent re-renders
+    if (JSON.stringify(featSelections.slice().sort()) !== JSON.stringify(currentFeatIds.slice().sort())) {
+        setFeatSelections(currentFeatIds);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFeats]);
@@ -59,6 +58,9 @@ export function FeatsFormSection({
           description: featDef.description,
           prerequisites: featDef.prerequisites,
           effects: featDef.effects,
+          canTakeMultipleTimes: featDef.canTakeMultipleTimes,
+          requiresSpecialization: featDef.requiresSpecialization,
+          // specializationDetail will be handled if/when UI for it is added
         } as FeatType;
       })
       .filter(feat => feat !== undefined) as FeatType[];
@@ -69,10 +71,13 @@ export function FeatsFormSection({
   };
 
   const handleFeatSelectedFromDialog = (featId: string) => {
-    if (featSelections.includes(featId)) {
+    const featDef = DND_FEATS.find(f => f.value === featId);
+    if (!featDef) return; // Should not happen if dialog is populated correctly
+
+    if (!featDef.canTakeMultipleTimes && featSelections.includes(featId)) {
       toast({
         title: "Duplicate Feat",
-        description: "This feat has already been selected.",
+        description: `The feat "${featDef.label}" cannot be taken more than once.`,
         variant: "destructive",
       });
       setIsFeatDialogOpen(false);
@@ -102,14 +107,16 @@ export function FeatsFormSection({
   const humanBonus = DND_RACES.find(r => r.value === characterRace)?.value === 'human' ? 1 : 0;
   const levelProgressionFeats = Math.floor(characterLevel / 3);
 
-  const characterForPrereqCheck = React.useMemo(() => ({
+  // Prepare a simplified character object for prerequisite checking
+   const characterForPrereqCheck = React.useMemo(() => ({
     abilityScores,
     skills,
-    feats: selectedFeats,
+    feats: convertSelectionsToFeatTypes(featSelections), // Use current selections for check
     classes: characterClasses,
     race: characterRace,
-    level: characterLevel,
-  }), [abilityScores, skills, selectedFeats, characterClasses, characterRace, characterLevel]);
+    age: 0, // Age is not typically a feat prerequisite, default to 0
+    // level: characterLevel, // Already available as characterLevel
+  }), [abilityScores, skills, featSelections, characterClasses, characterRace]);
 
 
   return (
@@ -120,9 +127,6 @@ export function FeatsFormSection({
             <Award className="h-8 w-8 text-primary" />
             <div>
               <CardTitle className="text-2xl font-serif">Feats</CardTitle>
-              <CardDescription>
-                Select your character's feats.
-              </CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -168,21 +172,21 @@ export function FeatsFormSection({
                             {featDetails.description}
                           </p>
                         )}
-                        {allPrereqMessages.length > 0 ? (
+                        { (allPrereqMessages.length > 0 || (featDetails.prerequisites && Object.keys(featDetails.prerequisites).length > 0)) && (
                           <p className="text-xs mt-0.5 whitespace-normal">
                             Prerequisites:{' '}
-                            {allPrereqMessages.map((msg, idx) => (
-                              <React.Fragment key={idx}>
-                                <span className={msg.type === 'unmet' ? 'text-destructive' : 'text-muted-foreground'}>
-                                  {msg.text}
-                                </span>
-                                {idx < allPrereqMessages.length - 1 && ', '}
-                              </React.Fragment>
-                            ))}
+                            {allPrereqMessages.length > 0 ? 
+                              allPrereqMessages.map((msg, idx) => (
+                                <React.Fragment key={idx}>
+                                  <span className={msg.type === 'unmet' ? 'text-destructive' : 'text-muted-foreground'}>
+                                    {msg.text}
+                                  </span>
+                                  {idx < allPrereqMessages.length - 1 && ', '}
+                                </React.Fragment>
+                              ))
+                              : "None"
+                            }
                           </p>
-                        ) : (
-                           (featDetails.prerequisites && Object.keys(featDetails.prerequisites).length > 0) &&
-                           <p className="text-xs mt-0.5 whitespace-normal">Prerequisites: None</p>
                         )}
                       </div>
                       <Button
@@ -219,4 +223,3 @@ export function FeatsFormSection({
     </>
   );
 }
-
