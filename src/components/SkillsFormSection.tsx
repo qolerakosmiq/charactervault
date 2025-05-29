@@ -138,10 +138,24 @@ export function SkillsFormSection({
           </div>
            <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
             <p>
-                (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>) × First Level <strong className="font-bold text-primary">[4]</strong>
+                (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
+                {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
+                {racialBonus !== 0 && (
+                  <>
+                    {' + '}Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>
+                  </>
+                )}
+                ) × First Level <strong className="font-bold text-primary">[4]</strong>
             </p>
             <p>
-                + (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>) × Level Progression <strong className="font-bold text-primary">[{characterLevel > 1 ? (characterLevel -1) : 0}]</strong>
+                + (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
+                {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
+                {racialBonus !== 0 && (
+                  <>
+                    {' + '}Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>
+                  </>
+                )}
+                ) × Level Progression <strong className="font-bold text-primary">[{characterLevel > 1 ? (characterLevel -1) : 0}]</strong>
             </p>
            </div>
         </div>
