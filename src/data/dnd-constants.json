@@ -7,8 +7,8 @@
     "Lawful Evil", "Neutral Evil", "Chaotic Evil"
   ],
   "GENDERS_DATA": [
-    { "value": "Male", "label": "Male" },
-    { "value": "Female", "label": "Female" }
+    { "value": "male", "label": "Male" },
+    { "value": "female", "label": "Female" }
   ],
   "DND_RACES_DATA": [
     { "value": "human", "label": "Human" },
@@ -33,49 +33,49 @@
     { "value": "wizard", "label": "Wizard", "hitDice": "d4" }
   ],
   "DND_DEITIES_DATA": [
-    { "value": "Boccob", "label": "Boccob" },
-    { "value": "Corellon Larethian", "label": "Corellon Larethian" },
-    { "value": "Ehlonna", "label": "Ehlonna" },
-    { "value": "Erythnul", "label": "Erythnul" },
-    { "value": "Fharlanghn", "label": "Fharlanghn" },
-    { "value": "Garl Glittergold", "label": "Garl Glittergold" },
-    { "value": "Gruumsh", "label": "Gruumsh" },
-    { "value": "Heironeous", "label": "Heironeous" },
-    { "value": "Hextor", "label": "Hextor" },
-    { "value": "Kord", "label": "Kord" },
-    { "value": "Moradin", "label": "Moradin" },
-    { "value": "Nerull", "label": "Nerull" },
-    { "value": "Obad-Hai", "label": "Obad-Hai" },
-    { "value": "Olidammara", "label": "Olidammara" },
-    { "value": "Pelor", "label": "Pelor" },
-    { "value": "St. Cuthbert", "label": "St. Cuthbert" },
-    { "value": "Vecna", "label": "Vecna" },
-    { "value": "Wee Jas", "label": "Wee Jas" },
-    { "value": "Yondalla", "label": "Yondalla" },
-    { "value": "Bane", "label": "Bane" },
-    { "value": "Chauntea", "label": "Chauntea" },
-    { "value": "Cyric", "label": "Cyric" },
-    { "value": "Helm", "label": "Helm" },
-    { "value": "Ilmater", "label": "Ilmater" },
-    { "value": "Kelemvor", "label": "Kelemvor" },
-    { "value": "Lathander", "label": "Lathander" },
-    { "value": "Mystra", "label": "Mystra" },
-    { "value": "Oghma", "label": "Oghma" },
-    { "value": "Selûne", "label": "Selûne" },
-    { "value": "Shar", "label": "Shar" },
-    { "value": "Silvanus", "label": "Silvanus" },
-    { "value": "Sune", "label": "Sune" },
-    { "value": "Talos", "label": "Talos" },
-    { "value": "Tempus", "label": "Tempus" },
-    { "value": "Torm", "label": "Torm" },
-    { "value": "Tymora", "label": "Tymora" },
-    { "value": "Tyr", "label": "Tyr" },
-    { "value": "Umberlee", "label": "Umberlee" },
-    { "value": "Lolth", "label": "Lolth" },
-    { "value": "Tiamat", "label": "Tiamat" },
-    { "value": "Bahamut", "label": "Bahamut" },
-    { "value": "Kurtulmak", "label": "Kurtulmak"},
-    { "value": "Maglubiyet", "label": "Maglubiyet"}
+    { "value": "boccob", "label": "Boccob" },
+    { "value": "corellon-larethian", "label": "Corellon Larethian" },
+    { "value": "ehlonna", "label": "Ehlonna" },
+    { "value": "erythnul", "label": "Erythnul" },
+    { "value": "fharlanghn", "label": "Fharlanghn" },
+    { "value": "garl-glittergold", "label": "Garl Glittergold" },
+    { "value": "gruumsh", "label": "Gruumsh" },
+    { "value": "heironeous", "label": "Heironeous" },
+    { "value": "hextor", "label": "Hextor" },
+    { "value": "kord", "label": "Kord" },
+    { "value": "moradin", "label": "Moradin" },
+    { "value": "nerull", "label": "Nerull" },
+    { "value": "obad-hai", "label": "Obad-Hai" },
+    { "value": "olidammara", "label": "Olidammara" },
+    { "value": "pelor", "label": "Pelor" },
+    { "value": "st-cuthbert", "label": "St. Cuthbert" },
+    { "value": "vecna", "label": "Vecna" },
+    { "value": "wee-jas", "label": "Wee Jas" },
+    { "value": "yondalla", "label": "Yondalla" },
+    { "value": "bane", "label": "Bane" },
+    { "value": "chauntea", "label": "Chauntea" },
+    { "value": "cyric", "label": "Cyric" },
+    { "value": "helm", "label": "Helm" },
+    { "value": "ilmater", "label": "Ilmater" },
+    { "value": "kelemvor", "label": "Kelemvor" },
+    { "value": "lathander", "label": "Lathander" },
+    { "value": "mystra", "label": "Mystra" },
+    { "value": "oghma", "label": "Oghma" },
+    { "value": "selune", "label": "Selûne" },
+    { "value": "shar", "label": "Shar" },
+    { "value": "silvanus", "label": "Silvanus" },
+    { "value": "sune", "label": "Sune" },
+    { "value": "talos", "label": "Talos" },
+    { "value": "tempus", "label": "Tempus" },
+    { "value": "torm", "label": "Torm" },
+    { "value": "tymora", "label": "Tymora" },
+    { "value": "tyr", "label": "Tyr" },
+    { "value": "umberlee", "label": "Umberlee" },
+    { "value": "lolth", "label": "Lolth" },
+    { "value": "tiamat", "label": "Tiamat" },
+    { "value": "bahamut", "label": "Bahamut" },
+    { "value": "kurtulmak", "label": "Kurtulmak"},
+    { "value": "maglubiyet", "label": "Maglubiyet"}
   ],
   "DEFAULT_ABILITIES": {
     "strength": 10,
@@ -114,8 +114,8 @@
     "dwarf": "dwarf",
     "halfling": "halfling",
     "gnome": "gnome",
-    "half-elf": "elf",
-    "half-orc": "orc"
+    "half-elf": "elf", 
+    "half-orc": "orc"  
   },
   "DND_RACE_AGING_EFFECTS_DATA": {
     "human": {
@@ -125,11 +125,11 @@
         { "categoryName": "Venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
       ]
     },
-    "elf": {
+    "elf": { 
       "categories": [
-        { "categoryName": "Middle Age", "ageFactor": 0.5, "effects": { "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "Old", "ageFactor": 0.7514, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
-        { "categoryName": "Venerable", "ageFactor": 1.0, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+        { "categoryName": "Middle Age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "Old", "ageFactor": 0.7514, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "Venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
       ]
     },
     "dwarf": {
@@ -153,7 +153,7 @@
         { "categoryName": "Venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
       ]
     },
-    "orc": {
+    "orc": { 
       "categories": [
         { "categoryName": "Middle Age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
         { "categoryName": "Old", "ageFactor": 0.75, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
@@ -185,75 +185,75 @@
     "human": 1
   },
   "SKILL_DEFINITIONS_DATA": [
-    { "name": "Appraise", "keyAbility": "intelligence" },
-    { "name": "Balance", "keyAbility": "dexterity" },
-    { "name": "Bluff", "keyAbility": "charisma" },
-    { "name": "Climb", "keyAbility": "strength" },
-    { "name": "Concentration", "keyAbility": "constitution" },
-    { "name": "Craft (Alchemy)", "keyAbility": "intelligence" },
-    { "name": "Craft (Armorsmithing)", "keyAbility": "intelligence" },
-    { "name": "Craft (Bowmaking)", "keyAbility": "intelligence" },
-    { "name": "Craft (Weaponsmithing)", "keyAbility": "intelligence" },
-    { "name": "Craft (Trapmaking)", "keyAbility": "intelligence" },
-    { "name": "Craft (Pottery)", "keyAbility": "intelligence" },
-    { "name": "Craft (Painting)", "keyAbility": "intelligence" },
-    { "name": "Decipher Script", "keyAbility": "intelligence" },
-    { "name": "Diplomacy", "keyAbility": "charisma" },
-    { "name": "Disable Device", "keyAbility": "intelligence" },
-    { "name": "Disguise", "keyAbility": "charisma" },
-    { "name": "Escape Artist", "keyAbility": "dexterity" },
-    { "name": "Forgery", "keyAbility": "intelligence" },
-    { "name": "Gather Information", "keyAbility": "charisma" },
-    { "name": "Handle Animal", "keyAbility": "charisma" },
-    { "name": "Heal", "keyAbility": "wisdom" },
-    { "name": "Hide", "keyAbility": "dexterity" },
-    { "name": "Intimidate", "keyAbility": "charisma" },
-    { "name": "Jump", "keyAbility": "strength" },
-    { "name": "Knowledge (Arcana)", "keyAbility": "intelligence" },
-    { "name": "Knowledge (Architecture & Engineering)", "keyAbility": "intelligence" },
-    { "name": "Knowledge (Dungeoneering)", "keyAbility": "intelligence" },
-    { "name": "Knowledge (Geography)", "keyAbility": "intelligence" },
-    { "name": "Knowledge (History)", "keyAbility": "intelligence" },
-    { "name": "Knowledge (Local)", "keyAbility": "intelligence" },
-    { "name": "Knowledge (Nature)", "keyAbility": "intelligence" },
-    { "name": "Knowledge (Nobility & Royalty)", "keyAbility": "intelligence" },
-    { "name": "Knowledge (Religion)", "keyAbility": "intelligence" },
-    { "name": "Knowledge (The Planes)", "keyAbility": "intelligence" },
-    { "name": "Listen", "keyAbility": "wisdom" },
-    { "name": "Move Silently", "keyAbility": "dexterity" },
-    { "name": "Open Lock", "keyAbility": "dexterity" },
-    { "name": "Perform (Act)", "keyAbility": "charisma" },
-    { "name": "Perform (Sing)", "keyAbility": "charisma" },
-    { "name": "Perform (Dance)", "keyAbility": "charisma" },
-    { "name": "Perform (Oratory)", "keyAbility": "charisma" },
-    { "name": "Perform (String Instrument)", "keyAbility": "charisma" },
-    { "name": "Profession (Herbalist)", "keyAbility": "wisdom" },
-    { "name": "Profession (Sailor)", "keyAbility": "wisdom" },
-    { "name": "Ride", "keyAbility": "dexterity" },
-    { "name": "Search", "keyAbility": "intelligence" },
-    { "name": "Sense Motive", "keyAbility": "wisdom" },
-    { "name": "Sleight of Hand", "keyAbility": "dexterity" },
-    { "name": "Speak Language", "keyAbility": "none" },
-    { "name": "Spellcraft", "keyAbility": "intelligence" },
-    { "name": "Spot", "keyAbility": "wisdom" },
-    { "name": "Survival", "keyAbility": "wisdom" },
-    { "name": "Swim", "keyAbility": "strength" },
-    { "name": "Tumble", "keyAbility": "dexterity" },
-    { "name": "Use Magic Device", "keyAbility": "charisma" },
-    { "name": "Use Rope", "keyAbility": "dexterity" }
+    { "value": "appraise", "label": "Appraise", "keyAbility": "intelligence" },
+    { "value": "balance", "label": "Balance", "keyAbility": "dexterity" },
+    { "value": "bluff", "label": "Bluff", "keyAbility": "charisma" },
+    { "value": "climb", "label": "Climb", "keyAbility": "strength" },
+    { "value": "concentration", "label": "Concentration", "keyAbility": "constitution" },
+    { "value": "craft-alchemy", "label": "Craft (Alchemy)", "keyAbility": "intelligence" },
+    { "value": "craft-armorsmithing", "label": "Craft (Armorsmithing)", "keyAbility": "intelligence" },
+    { "value": "craft-bowmaking", "label": "Craft (Bowmaking)", "keyAbility": "intelligence" },
+    { "value": "craft-weaponsmithing", "label": "Craft (Weaponsmithing)", "keyAbility": "intelligence" },
+    { "value": "craft-trapmaking", "label": "Craft (Trapmaking)", "keyAbility": "intelligence" },
+    { "value": "craft-pottery", "label": "Craft (Pottery)", "keyAbility": "intelligence" },
+    { "value": "craft-painting", "label": "Craft (Painting)", "keyAbility": "intelligence" },
+    { "value": "decipher-script", "label": "Decipher Script", "keyAbility": "intelligence" },
+    { "value": "diplomacy", "label": "Diplomacy", "keyAbility": "charisma" },
+    { "value": "disable-device", "label": "Disable Device", "keyAbility": "intelligence" },
+    { "value": "disguise", "label": "Disguise", "keyAbility": "charisma" },
+    { "value": "escape-artist", "label": "Escape Artist", "keyAbility": "dexterity" },
+    { "value": "forgery", "label": "Forgery", "keyAbility": "intelligence" },
+    { "value": "gather-information", "label": "Gather Information", "keyAbility": "charisma" },
+    { "value": "handle-animal", "label": "Handle Animal", "keyAbility": "charisma" },
+    { "value": "heal", "label": "Heal", "keyAbility": "wisdom" },
+    { "value": "hide", "label": "Hide", "keyAbility": "dexterity" },
+    { "value": "intimidate", "label": "Intimidate", "keyAbility": "charisma" },
+    { "value": "jump", "label": "Jump", "keyAbility": "strength" },
+    { "value": "knowledge-arcana", "label": "Knowledge (Arcana)", "keyAbility": "intelligence" },
+    { "value": "knowledge-architecture-and-engineering", "label": "Knowledge (Architecture & Engineering)", "keyAbility": "intelligence" },
+    { "value": "knowledge-dungeoneering", "label": "Knowledge (Dungeoneering)", "keyAbility": "intelligence" },
+    { "value": "knowledge-geography", "label": "Knowledge (Geography)", "keyAbility": "intelligence" },
+    { "value": "knowledge-history", "label": "Knowledge (History)", "keyAbility": "intelligence" },
+    { "value": "knowledge-local", "label": "Knowledge (Local)", "keyAbility": "intelligence" },
+    { "value": "knowledge-nature", "label": "Knowledge (Nature)", "keyAbility": "intelligence" },
+    { "value": "knowledge-nobility-and-royalty", "label": "Knowledge (Nobility & Royalty)", "keyAbility": "intelligence" },
+    { "value": "knowledge-religion", "label": "Knowledge (Religion)", "keyAbility": "intelligence" },
+    { "value": "knowledge-the-planes", "label": "Knowledge (The Planes)", "keyAbility": "intelligence" },
+    { "value": "listen", "label": "Listen", "keyAbility": "wisdom" },
+    { "value": "move-silently", "label": "Move Silently", "keyAbility": "dexterity" },
+    { "value": "open-lock", "label": "Open Lock", "keyAbility": "dexterity" },
+    { "value": "perform-act", "label": "Perform (Act)", "keyAbility": "charisma" },
+    { "value": "perform-sing", "label": "Perform (Sing)", "keyAbility": "charisma" },
+    { "value": "perform-dance", "label": "Perform (Dance)", "keyAbility": "charisma" },
+    { "value": "perform-oratory", "label": "Perform (Oratory)", "keyAbility": "charisma" },
+    { "value": "perform-string-instrument", "label": "Perform (String Instrument)", "keyAbility": "charisma" },
+    { "value": "profession-herbalist", "label": "Profession (Herbalist)", "keyAbility": "wisdom" },
+    { "value": "profession-sailor", "label": "Profession (Sailor)", "keyAbility": "wisdom" },
+    { "value": "ride", "label": "Ride", "keyAbility": "dexterity" },
+    { "value": "search", "label": "Search", "keyAbility": "intelligence" },
+    { "value": "sense-motive", "label": "Sense Motive", "keyAbility": "wisdom" },
+    { "value": "sleight-of-hand", "label": "Sleight of Hand", "keyAbility": "dexterity" },
+    { "value": "speak-language", "label": "Speak Language", "keyAbility": "none" },
+    { "value": "spellcraft", "label": "Spellcraft", "keyAbility": "intelligence" },
+    { "value": "spot", "label": "Spot", "keyAbility": "wisdom" },
+    { "value": "survival", "label": "Survival", "keyAbility": "wisdom" },
+    { "value": "swim", "label": "Swim", "keyAbility": "strength" },
+    { "value": "tumble", "label": "Tumble", "keyAbility": "dexterity" },
+    { "value": "use-magic-device", "label": "Use Magic Device", "keyAbility": "charisma" },
+    { "value": "use-rope", "label": "Use Rope", "keyAbility": "dexterity" }
   ],
   "CLASS_SKILLS_DATA": {
-    "barbarian": ["Climb", "Craft (Primitive)", "Handle Animal", "Intimidate", "Jump", "Listen", "Ride", "Survival", "Swim"],
-    "bard": ["Appraise", "Balance", "Bluff", "Climb", "Concentration", "Craft (Any)", "Decipher Script", "Diplomacy", "Disguise", "Escape Artist", "Gather Information", "Hide", "Jump", "Knowledge (Arcana)", "Knowledge (Architecture & Engineering)", "Knowledge (Dungeoneering)", "Knowledge (Geography)", "Knowledge (History)", "Knowledge (Local)", "Knowledge (Nature)", "Knowledge (Nobility & Royalty)", "Knowledge (Religion)", "Knowledge (The Planes)", "Listen", "Move Silently", "Perform (Any)", "Profession (Any)", "Sense Motive", "Sleight of Hand", "Speak Language", "Spellcraft", "Swim", "Tumble", "Use Magic Device"],
-    "cleric": ["Concentration", "Craft (Any)", "Diplomacy", "Heal", "Knowledge (Arcana)", "Knowledge (History)", "Knowledge (Religion)", "Knowledge (The Planes)", "Profession (Any)", "Spellcraft"],
-    "druid": ["Concentration", "Craft (Any)", "Diplomacy", "Handle Animal", "Heal", "Knowledge (Nature)", "Listen", "Profession (Any)", "Ride", "Spellcraft", "Spot", "Survival", "Swim"],
-    "fighter": ["Climb", "Craft (Any)", "Handle Animal", "Intimidate", "Jump", "Ride", "Swim"],
-    "monk": ["Balance", "Climb", "Concentration", "Craft (Any)", "Diplomacy", "Escape Artist", "Hide", "Jump", "Knowledge (Arcana)", "Knowledge (Religion)", "Listen", "Move Silently", "Perform (Any)", "Profession (Any)", "Sense Motive", "Spot", "Swim", "Tumble"],
-    "paladin": ["Concentration", "Craft (Any)", "Diplomacy", "Handle Animal", "Heal", "Knowledge (Nobility & Royalty)", "Knowledge (Religion)", "Profession (Any)", "Ride", "Sense Motive"],
-    "ranger": ["Climb", "Concentration", "Craft (Any)", "Handle Animal", "Heal", "Hide", "Jump", "Knowledge (Dungeoneering)", "Knowledge (Geography)", "Knowledge (Nature)", "Listen", "Move Silently", "Profession (Any)", "Ride", "Search", "Spot", "Survival", "Swim", "Use Rope"],
-    "rogue": ["Appraise", "Balance", "Bluff", "Climb", "Craft (Any)", "Decipher Script", "Diplomacy", "Disable Device", "Disguise", "Escape Artist", "Forgery", "Gather Information", "Hide", "Intimidate", "Jump", "Knowledge (Local)", "Listen", "Move Silently", "Open Lock", "Perform (Any)", "Profession (Any)", "Search", "Sense Motive", "Sleight of Hand", "Spot", "Swim", "Tumble", "Use Magic Device", "Use Rope"],
-    "sorcerer": ["Bluff", "Concentration", "Craft (Any)", "Knowledge (Arcana)", "Profession (Any)", "Spellcraft"],
-    "wizard": ["Concentration", "Craft (Any)", "Decipher Script", "Knowledge (Arcana)", "Knowledge (Architecture & Engineering)", "Knowledge (Dungeoneering)", "Knowledge (Geography)", "Knowledge (History)", "Knowledge (Local)", "Knowledge (Nature)", "Knowledge (Nobility & Royalty)", "Knowledge (Religion)", "Knowledge (The Planes)", "Profession (Any)", "Spellcraft"]
+    "barbarian": ["climb", "craft-primitive", "handle-animal", "intimidate", "jump", "listen", "ride", "survival", "swim"],
+    "bard": ["appraise", "balance", "bluff", "climb", "concentration", "craft-any", "decipher-script", "diplomacy", "disguise", "escape-artist", "gather-information", "hide", "jump", "knowledge-arcana", "knowledge-architecture-and-engineering", "knowledge-dungeoneering", "knowledge-geography", "knowledge-history", "knowledge-local", "knowledge-nature", "knowledge-nobility-and-royalty", "knowledge-religion", "knowledge-the-planes", "listen", "move-silently", "perform-any", "profession-any", "sense-motive", "sleight-of-hand", "speak-language", "spellcraft", "swim", "tumble", "use-magic-device"],
+    "cleric": ["concentration", "craft-any", "diplomacy", "heal", "knowledge-arcana", "knowledge-history", "knowledge-religion", "knowledge-the-planes", "profession-any", "spellcraft"],
+    "druid": ["concentration", "craft-any", "diplomacy", "handle-animal", "heal", "knowledge-nature", "listen", "profession-any", "ride", "spellcraft", "spot", "survival", "swim"],
+    "fighter": ["climb", "craft-any", "handle-animal", "intimidate", "jump", "ride", "swim"],
+    "monk": ["balance", "climb", "concentration", "craft-any", "diplomacy", "escape-artist", "hide", "jump", "knowledge-arcana", "knowledge-religion", "listen", "move-silently", "perform-any", "profession-any", "sense-motive", "spot", "swim", "tumble"],
+    "paladin": ["concentration", "craft-any", "diplomacy", "handle-animal", "heal", "knowledge-nobility-and-royalty", "knowledge-religion", "profession-any", "ride", "sense-motive"],
+    "ranger": ["climb", "concentration", "craft-any", "handle-animal", "heal", "hide", "jump", "knowledge-dungeoneering", "knowledge-geography", "knowledge-nature", "listen", "move-silently", "profession-any", "ride", "search", "spot", "survival", "swim", "use-rope"],
+    "rogue": ["appraise", "balance", "bluff", "climb", "craft-any", "decipher-script", "diplomacy", "disable-device", "disguise", "escape-artist", "forgery", "gather-information", "hide", "intimidate", "jump", "knowledge-local", "listen", "move-silently", "open-lock", "perform-any", "profession-any", "search", "sense-motive", "sleight-of-hand", "spot", "swim", "tumble", "use-magic-device", "use-rope"],
+    "sorcerer": ["bluff", "concentration", "craft-any", "knowledge-arcana", "profession-any", "spellcraft"],
+    "wizard": ["concentration", "craft-any", "decipher-script", "knowledge-arcana", "knowledge-architecture-and-engineering", "knowledge-dungeoneering", "knowledge-geography", "knowledge-history", "knowledge-local", "knowledge-nature", "knowledge-nobility-and-royalty", "knowledge-religion", "knowledge-the-planes", "profession-any", "spellcraft"]
   },
   "CLASS_SKILL_POINTS_BASE_DATA": {
     "barbarian": 4,
@@ -269,41 +269,43 @@
     "wizard": 2
   },
   "SKILL_SYNERGIES_DATA": {
-    "Bluff": [
-      { "targetSkill": "Diplomacy", "ranksRequired": 5, "bonus": 2 },
-      { "targetSkill": "Intimidate", "ranksRequired": 5, "bonus": 2 },
-      { "targetSkill": "Sleight of Hand", "ranksRequired": 5, "bonus": 2, "description": "Concealing an object" }
+    "bluff": [
+      { "targetSkill": "diplomacy", "ranksRequired": 5, "bonus": 2 },
+      { "targetSkill": "intimidate", "ranksRequired": 5, "bonus": 2 },
+      { "targetSkill": "sleight-of-hand", "ranksRequired": 5, "bonus": 2 }
     ],
-    "Craft (Alchemy)": [
-      { "targetSkill": "Appraise", "ranksRequired": 5, "bonus": 2, "description": "Alchemical items" }
+    "craft-alchemy": [
+      { "targetSkill": "appraise", "ranksRequired": 5, "bonus": 2 }
     ],
-    "Handle Animal": [
-      { "targetSkill": "Ride", "ranksRequired": 5, "bonus": 2 },
-      { "targetSkill": "Diplomacy", "ranksRequired": 5, "bonus": 2, "description": "With animals" }
+    "handle-animal": [
+      { "targetSkill": "ride", "ranksRequired": 5, "bonus": 2 },
+      { "targetSkill": "diplomacy", "ranksRequired": 5, "bonus": 2 }
     ],
-    "Knowledge (Arcana)": [
-        { "targetSkill": "Spellcraft", "ranksRequired": 5, "bonus": 2, "description": "Deciphering spells on scrolls" }
+    "knowledge-arcana": [
+        { "targetSkill": "spellcraft", "ranksRequired": 5, "bonus": 2 }
     ],
-    "Search": [
-        { "targetSkill": "Survival", "ranksRequired": 5, "bonus": 2, "description": "Following tracks" }
+    "search": [
+        { "targetSkill": "survival", "ranksRequired": 5, "bonus": 2 }
     ],
-    "Sense Motive": [
-      { "targetSkill": "Diplomacy", "ranksRequired": 5, "bonus": 2 }
+    "sense-motive": [
+      { "targetSkill": "diplomacy", "ranksRequired": 5, "bonus": 2 }
     ],
-    "Spellcraft": [
-      { "targetSkill": "Use Magic Device", "ranksRequired": 5, "bonus": 2, "description": "Emulating a class feature" },
-      { "targetSkill": "Knowledge (Arcana)", "ranksRequired": 5, "bonus": 2 }
+    "spellcraft": [
+      { "targetSkill": "use-magic-device", "ranksRequired": 5, "bonus": 2 },
+      { "targetSkill": "knowledge-arcana", "ranksRequired": 5, "bonus": 2 }
     ],
-    "Survival": [
-      { "targetSkill": "Knowledge (Nature)", "ranksRequired": 5, "bonus": 2 }
+    "survival": [
+      { "targetSkill": "knowledge-nature", "ranksRequired": 5, "bonus": 2 }
     ],
-    "Tumble": [
-      { "targetSkill": "Balance", "ranksRequired": 5, "bonus": 2 },
-      { "targetSkill": "Jump", "ranksRequired": 5, "bonus": 2 }
+    "tumble": [
+      { "targetSkill": "balance", "ranksRequired": 5, "bonus": 2 },
+      { "targetSkill": "jump", "ranksRequired": 5, "bonus": 2 }
     ],
-    "Use Rope": [
-      { "targetSkill": "Escape Artist", "ranksRequired": 5, "bonus": 2, "description": "Using ropes" },
-      { "targetSkill": "Climb", "ranksRequired": 5, "bonus": 2, "description": "Using a rope" }
+    "use-rope": [
+      { "targetSkill": "escape-artist", "ranksRequired": 5, "bonus": 2 },
+      { "targetSkill": "climb", "ranksRequired": 5, "bonus": 2 }
     ]
   }
 }
+
+  

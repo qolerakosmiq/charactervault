@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndClass, DndRace, SkillDefinitionData, CustomSynergyRule } from '@/types/character';
+import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, DndClassId } from '@/types/character';
 import { CLASS_SKILL_POINTS_BASE, SKILL_DEFINITIONS, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,7 +23,7 @@ interface SkillsFormSectionProps {
   skills: SkillType[];
   abilityScores: AbilityScores;
   characterClasses: CharacterClass[];
-  characterRace: DndRace | string;
+  characterRace: DndRaceId | string;
   onSkillChange: (skillId: string, ranks: number) => void;
   onCustomSkillAdd: (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[] }) => void;
   onCustomSkillUpdate: (skillData: { id: string; name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[] }) => void;
@@ -49,7 +49,7 @@ export function SkillsFormSection({
   const intelligenceModifier = getAbilityModifierByName(abilityScores, 'intelligence');
 
   const baseSkillPointsForClass = firstClass?.className ? CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0 : 0;
-  const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace as DndRace | string);
+  const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace as DndRaceId);
 
   const totalSkillPointsAvailable = (baseSkillPointsForClass + intelligenceModifier + racialBonus) * 4;
 
@@ -139,7 +139,9 @@ export function SkillsFormSection({
             </div>
 
             {skills.map(skill => {
-              const skillDef = SKILL_DEFINITIONS.find(sd => sd.name === skill.name);
+              // skill.id is kebab-case for predefined, UUID for custom
+              // skill.name is display name
+              const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skill.id); // Match by ID
               const keyAbility = skill.keyAbility || (skillDef?.keyAbility as AbilityName | undefined);
               const keyAbilityShort = keyAbility ? keyAbility.substring(0, 3).toUpperCase() : 'N/A';
               
@@ -148,14 +150,14 @@ export function SkillsFormSection({
                 baseAbilityMod = getAbilityModifierByName(abilityScores, keyAbility);
               }
               
-              const synergyBonus = calculateTotalSynergyBonus(skill.name, skills);
+              const synergyBonus = calculateTotalSynergyBonus(skill.id, skills); // Pass skill.id
               const totalAbilityMod = baseAbilityMod + synergyBonus;
 
 
               const totalBonus = (skill.ranks || 0) + totalAbilityMod + (skill.miscModifier || 0);
               const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
               const skillCost = skill.isClassSkill ? 1 : 2;
-              const isCustomSkill = !skillDef;
+              const isCustomSkill = !skillDef; // A skill is custom if its ID is not in SKILL_DEFINITIONS
 
               return (
                 <div key={skill.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">
@@ -163,7 +165,7 @@ export function SkillsFormSection({
                     <Checkbox
                       id={`skill_class_${skill.id}`}
                       checked={skill.isClassSkill}
-                      disabled // Class skills are determined by class/custom skill setup.
+                      disabled 
                       className="h-3.5 w-3.5"
                     />
                   </div>
@@ -252,3 +254,5 @@ export function SkillsFormSection({
     </>
   );
 }
+
+  

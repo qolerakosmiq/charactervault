@@ -3,27 +3,25 @@ import constantsData from '@/data/dnd-constants.json';
 
 export interface CharacterClass {
   id: string;
-  className: string;
+  className: string; // Stores kebab-case ID
   level: number;
 }
 
-// New interface for custom-defined synergy rules
 export interface CustomSynergyRule {
-  id: string; // For list key and future management
-  targetSkillName: string;
-  ranksInThisSkillRequired: number; // Ranks needed in the skill *providing* the synergy
+  id: string; 
+  targetSkillName: string; // Stores ID of target skill (kebab-case or UUID for custom)
+  ranksInThisSkillRequired: number; 
   bonusGranted: number;
-  // description?: string; // Removed
 }
 
 export interface Skill {
-  id: string;
-  name: string;
+  id: string; // Kebab-case for predefined, UUID for custom
+  name: string; // Human-readable name
   ranks: number;
   miscModifier: number;
   keyAbility?: AbilityName;
   isClassSkill?: boolean;
-  providesSynergies?: CustomSynergyRule[]; // New: Synergies this skill provides
+  providesSynergies?: CustomSynergyRule[];
 }
 
 export interface Feat {
@@ -62,12 +60,12 @@ export interface SavingThrows {
 export interface Character {
   id: string;
   name: string;
-  race: string;
-  alignment: string;
-  deity?: string;
-  size: string;
+  race: string; // Stores kebab-case ID
+  alignment: string; // Stores raw alignment string
+  deity?: string; // Stores kebab-case ID or custom string
+  size: string; // Stores raw size string
   age: number;
-  gender: string;
+  gender: string; // Stores kebab-case ID or custom string
 
   abilityScores: AbilityScores;
   hp: number;
@@ -93,7 +91,6 @@ export interface Character {
 }
 
 export const DEFAULT_ABILITIES: AbilityScores = constantsData.DEFAULT_ABILITIES as AbilityScores;
-
 export const DEFAULT_SAVING_THROWS: SavingThrows = constantsData.DEFAULT_SAVING_THROWS as SavingThrows;
 
 // --- Types derived from JSON structure ---
@@ -103,67 +100,66 @@ export const SIZES: readonly CharacterSize[] = constantsData.SIZES_DATA;
 export type CharacterAlignment = typeof constantsData.ALIGNMENTS_DATA[number];
 export const ALIGNMENTS: readonly CharacterAlignment[] = constantsData.ALIGNMENTS_DATA;
 
-export type DndRace = typeof constantsData.DND_RACES_DATA[number]['value'];
-export const DND_RACES: ReadonlyArray<{value: DndRace, label: string}> = constantsData.DND_RACES_DATA as ReadonlyArray<{value: DndRace, label: string}>;
+// DndRace, DndClass etc. will now be string, representing the kebab-case ID
+export type DndRaceId = typeof constantsData.DND_RACES_DATA[number]['value'];
+export const DND_RACES: ReadonlyArray<{value: DndRaceId, label: string}> = constantsData.DND_RACES_DATA as ReadonlyArray<{value: DndRaceId, label: string}>;
 
-export type DndClass = typeof constantsData.DND_CLASSES_DATA[number]['value'];
-export const DND_CLASSES: ReadonlyArray<{value: DndClass, label: string, hitDice: string}> = constantsData.DND_CLASSES_DATA as ReadonlyArray<{value: DndClass, label: string, hitDice: string}>;
+export type DndClassId = typeof constantsData.DND_CLASSES_DATA[number]['value'];
+export const DND_CLASSES: ReadonlyArray<{value: DndClassId, label: string, hitDice: string}> = constantsData.DND_CLASSES_DATA as ReadonlyArray<{value: DndClassId, label: string, hitDice: string}>;
 
 export const GENDERS: ReadonlyArray<{value: string, label: string}> = constantsData.GENDERS_DATA;
-export const DND_DEITIES: ReadonlyArray<{value: string, label: string}> = constantsData.DND_DEITIES_DATA;
+export const DND_DEITIES: ReadonlyArray<{value: string, label: string}> = constantsData.DND_DEITIES_DATA as ReadonlyArray<{value: string, label: string}>;
 
 // --- Skill Definitions from JSON ---
-export type SkillDefinitionData = typeof constantsData.SKILL_DEFINITIONS_DATA[number];
-export const SKILL_DEFINITIONS: readonly SkillDefinitionData[] = constantsData.SKILL_DEFINITIONS_DATA as ReadonlyArray<SkillDefinitionData>;
+export type SkillDefinitionJsonData = typeof constantsData.SKILL_DEFINITIONS_DATA[number]; // {value: string, label: string, keyAbility: string}
+export const SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[] = constantsData.SKILL_DEFINITIONS_DATA as ReadonlyArray<SkillDefinitionJsonData>;
 
-export type ClassSkillsData = typeof constantsData.CLASS_SKILLS_DATA;
-export const CLASS_SKILLS: Readonly<ClassSkillsData> = constantsData.CLASS_SKILLS_DATA as Readonly<ClassSkillsData>;
+export type ClassSkillsJsonData = typeof constantsData.CLASS_SKILLS_DATA; // Record<DndClassId, DndSkillId[]>
+export const CLASS_SKILLS: Readonly<ClassSkillsJsonData> = constantsData.CLASS_SKILLS_DATA as Readonly<ClassSkillsJsonData>;
 
-export type ClassSkillPointsBaseData = typeof constantsData.CLASS_SKILL_POINTS_BASE_DATA;
-export const CLASS_SKILL_POINTS_BASE: Readonly<ClassSkillPointsBaseData> = constantsData.CLASS_SKILL_POINTS_BASE_DATA as Readonly<ClassSkillPointsBaseData>;
+export type ClassSkillPointsBaseJsonData = typeof constantsData.CLASS_SKILL_POINTS_BASE_DATA; // Record<DndClassId, number>
+export const CLASS_SKILL_POINTS_BASE: Readonly<ClassSkillPointsBaseJsonData> = constantsData.CLASS_SKILL_POINTS_BASE_DATA as Readonly<ClassSkillPointsBaseJsonData>;
 
-export type RaceSkillPointsBonusPerLevelData = typeof constantsData.DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA;
-export const RACE_SKILL_POINTS_BONUS_PER_LEVEL: Readonly<RaceSkillPointsBonusPerLevelData> = constantsData.DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA as Readonly<RaceSkillPointsBonusPerLevelData>;
+export type RaceSkillPointsBonusPerLevelJsonData = typeof constantsData.DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA; // Record<DndRaceId, number>
+export const RACE_SKILL_POINTS_BONUS_PER_LEVEL: Readonly<RaceSkillPointsBonusPerLevelJsonData> = constantsData.DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA as Readonly<RaceSkillPointsBonusPerLevelJsonData>;
 
-export function getRaceSkillPointsBonusPerLevel(race: DndRace | string): number {
-    return (RACE_SKILL_POINTS_BONUS_PER_LEVEL as Record<string, number>)[race] || 0;
+export function getRaceSkillPointsBonusPerLevel(raceId: DndRaceId | string): number {
+    return (RACE_SKILL_POINTS_BONUS_PER_LEVEL as Record<string, number>)[raceId] || 0;
 }
 
-
 export function getInitialCharacterSkills(characterClasses: CharacterClass[]): Skill[] {
-  const firstClass = characterClasses[0]?.className as DndClass | undefined;
-  const classSkillsForCurrentClass = firstClass ? (CLASS_SKILLS[firstClass as keyof ClassSkillsData] || []) : [];
+  const firstClassId = characterClasses[0]?.className as DndClassId | undefined;
+  const classSkillsForCurrentClass = firstClassId ? (CLASS_SKILLS[firstClassId as keyof ClassSkillsJsonData] || []) : [];
 
   return SKILL_DEFINITIONS.map(def => {
-    let isClassSkill = classSkillsForCurrentClass.includes(def.name);
+    let isClassSkill = classSkillsForCurrentClass.includes(def.value);
+    // Handle generic "craft-any" or "perform-any" etc.
     if (!isClassSkill) {
-        // Handle generic "Craft (Any)" or "Knowledge (all skills, taken individually)"
-        if (def.name.startsWith("Craft (") && classSkillsForCurrentClass.includes("Craft (Any)")) {
+        const skillId = def.value;
+        if (skillId.startsWith("craft-") && classSkillsForCurrentClass.includes("craft-any")) {
             isClassSkill = true;
-        } else if (def.name.startsWith("Knowledge (") && (classSkillsForCurrentClass.includes("Knowledge (Any)") || classSkillsForCurrentClass.includes("Knowledge (all skills, taken individually)"))) {
+        } else if (skillId.startsWith("knowledge-") && (classSkillsForCurrentClass.includes("knowledge-any") || classSkillsForCurrentClass.includes("knowledge-all"))) {
             isClassSkill = true;
-        } else if (def.name.startsWith("Perform (") && classSkillsForCurrentClass.includes("Perform (Any)")) {
+        } else if (skillId.startsWith("perform-") && classSkillsForCurrentClass.includes("perform-any")) {
             isClassSkill = true;
-        } else if (def.name.startsWith("Profession (") && classSkillsForCurrentClass.includes("Profession (Any)")) {
+        } else if (skillId.startsWith("profession-") && classSkillsForCurrentClass.includes("profession-any")) {
             isClassSkill = true;
         }
     }
-    const skillId = `skill-${def.name.toLowerCase().replace(/\W+/g, '-')}`;
     return {
-      id: skillId,
-      name: def.name,
+      id: def.value, // Use kebab-case ID from JSON
+      name: def.label, // Use human-readable label from JSON
       keyAbility: def.keyAbility as AbilityName,
       ranks: 0,
       miscModifier: 0,
       isClassSkill: isClassSkill,
-      providesSynergies: [] // Initialize with empty array
+      providesSynergies: [] 
     };
   });
 }
 
-
 // --- Aging Effects ---
-export type RaceCategory = keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA;
+export type RaceAgingCategoryKey = keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA;
 
 interface AgeCategoryEffectData {
   categoryName: string;
@@ -180,21 +176,20 @@ export interface AgingEffectsDetails {
   effects: Array<{ ability: AbilityName; change: number }>;
 }
 
-export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffectsDetails {
-  const raceVenerableAge = (constantsData.DND_RACE_BASE_MAX_AGE_DATA as Record<DndRace, number>)[raceValue];
+export function getNetAgingEffects(raceId: DndRaceId, age: number): AgingEffectsDetails {
+  const raceVenerableAge = (constantsData.DND_RACE_BASE_MAX_AGE_DATA as Record<DndRaceId, number>)[raceId];
   if (raceVenerableAge === undefined) return { categoryName: "Adult", effects: [] };
 
-  const agingCategoryKey = (constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA as Record<DndRace, RaceCategory>)[raceValue];
+  const agingCategoryKey = (constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA as Record<DndRaceId, RaceAgingCategoryKey>)[raceId];
   if (!agingCategoryKey) return { categoryName: "Adult", effects: [] };
 
-  const raceAgingPattern = (constantsData.DND_RACE_AGING_EFFECTS_DATA as Record<RaceCategory, RaceAgingInfoData>)[agingCategoryKey];
+  const raceAgingPattern = (constantsData.DND_RACE_AGING_EFFECTS_DATA as Record<RaceAgingCategoryKey, RaceAgingInfoData>)[agingCategoryKey];
   if (!raceAgingPattern) return { categoryName: "Adult", effects: [] };
 
   let currentCategoryName: string = "Adult";
   let highestAttainedCategoryEffects: Partial<Record<AbilityName, number>> | null = null;
 
   const sortedCategories = [...raceAgingPattern.categories].sort((a, b) => a.ageFactor - b.ageFactor);
-
 
   for (const category of sortedCategories) {
     const ageThresholdForCategory = Math.floor(category.ageFactor * raceVenerableAge);
@@ -208,9 +203,8 @@ export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffect
   
   if (!highestAttainedCategoryEffects && (sortedCategories.length === 0 || age < Math.floor(sortedCategories[0].ageFactor * raceVenerableAge))) {
      currentCategoryName = "Adult";
-     highestAttainedCategoryEffects = {}; // Ensure it's an empty object for "Adult" if no other category matched
+     highestAttainedCategoryEffects = {};
   }
-
 
   const appliedEffects: Array<{ ability: AbilityName; change: number }> = [];
   if (highestAttainedCategoryEffects) {
@@ -224,13 +218,12 @@ export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffect
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB; // Negative (-1) comes before positive (1)
+            return signA - signB; 
         }
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
         return indexA - indexB;
     });
-
 
     for (const ability of abilitiesToProcess) {
         appliedEffects.push({ ability, change: highestAttainedCategoryEffects![ability]! });
@@ -242,7 +235,6 @@ export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffect
     effects: appliedEffects,
   };
 }
-
 
 // --- Size Ability Score Modifiers ---
 export interface SizeAbilityEffectsDetails {
@@ -264,7 +256,7 @@ export function getSizeAbilityEffects(size: CharacterSize): SizeAbilityEffectsDe
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB; // Negative first
+            return signA - signB;
         }
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
@@ -283,8 +275,8 @@ export interface RaceAbilityEffectsDetails {
   effects: Array<{ ability: AbilityName; change: number }>;
 }
 
-export function getRaceAbilityEffects(raceValue: DndRace): RaceAbilityEffectsDetails {
-  const modifiers = (constantsData.DND_RACE_ABILITY_MODIFIERS_DATA as Record<DndRace, Partial<Record<AbilityName, number>>>)[raceValue];
+export function getRaceAbilityEffects(raceId: DndRaceId): RaceAbilityEffectsDetails {
+  const modifiers = (constantsData.DND_RACE_ABILITY_MODIFIERS_DATA as Record<DndRaceId, Partial<Record<AbilityName, number>>>)[raceId];
   const appliedEffects: Array<{ ability: AbilityName; change: number }> = [];
 
   if (modifiers) {
@@ -298,7 +290,7 @@ export function getRaceAbilityEffects(raceValue: DndRace): RaceAbilityEffectsDet
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB; // Negative first
+            return signA - signB; 
         }
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
@@ -313,28 +305,27 @@ export function getRaceAbilityEffects(raceValue: DndRace): RaceAbilityEffectsDet
 }
 
 // --- Skill Synergies (Predefined) ---
-export interface SynergyEffect {
-  targetSkill: string;
+export interface SynergyEffectJsonData {
+  targetSkill: string; // Kebab-case skill ID
   ranksRequired: number;
   bonus: number;
-  description?: string;
 }
 
-export type SkillSynergiesData = Record<string, SynergyEffect[]>;
+export type SkillSynergiesJsonData = Record<string, SynergyEffectJsonData[]>; // Key is kebab-case providing skill ID
 
-export const SKILL_SYNERGIES: Readonly<SkillSynergiesData> = constantsData.SKILL_SYNERGIES_DATA as Readonly<SkillSynergiesData>;
+export const SKILL_SYNERGIES: Readonly<SkillSynergiesJsonData> = constantsData.SKILL_SYNERGIES_DATA as Readonly<SkillSynergiesJsonData>;
 
-export function calculateTotalSynergyBonus(targetSkillName: string, currentCharacterSkills: Skill[]): number {
+export function calculateTotalSynergyBonus(targetSkillId: string, currentCharacterSkills: Skill[]): number {
   let totalBonus = 0;
   
   // 1. Check predefined synergies from SKILL_SYNERGIES_DATA
   if (SKILL_SYNERGIES) {
-    for (const providingSkillName in SKILL_SYNERGIES) {
-      const synergiesProvidedByThisDefinition = SKILL_SYNERGIES[providingSkillName];
+    for (const providingSkillId in SKILL_SYNERGIES) {
+      const synergiesProvidedByThisDefinition = SKILL_SYNERGIES[providingSkillId];
       if (synergiesProvidedByThisDefinition) {
         for (const synergy of synergiesProvidedByThisDefinition) {
-          if (synergy.targetSkill === targetSkillName) {
-            const providingSkillInCharacter = currentCharacterSkills.find(s => s.name === providingSkillName);
+          if (synergy.targetSkill === targetSkillId) {
+            const providingSkillInCharacter = currentCharacterSkills.find(s => s.id === providingSkillId);
             if (providingSkillInCharacter && (providingSkillInCharacter.ranks || 0) >= synergy.ranksRequired) {
               totalBonus += synergy.bonus;
             }
@@ -348,7 +339,8 @@ export function calculateTotalSynergyBonus(targetSkillName: string, currentChara
   for (const providingSkill of currentCharacterSkills) {
     if (providingSkill.providesSynergies) {
       for (const customRule of providingSkill.providesSynergies) {
-        if (customRule.targetSkillName === targetSkillName) {
+        // customRule.targetSkillName stores the ID of the target skill
+        if (customRule.targetSkillName === targetSkillId) { 
           if ((providingSkill.ranks || 0) >= customRule.ranksInThisSkillRequired) {
             totalBonus += customRule.bonusGranted;
           }
@@ -359,3 +351,5 @@ export function calculateTotalSynergyBonus(targetSkillName: string, currentChara
   
   return totalBonus;
 }
+
+  
