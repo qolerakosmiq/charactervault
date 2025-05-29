@@ -66,7 +66,6 @@ export function AddCustomSkillDialog({
   const [newSynergyTargetSkill, setNewSynergyTargetSkill] = React.useState('');
   const [newSynergyRanksRequired, setNewSynergyRanksRequired] = React.useState(5);
   const [newSynergyBonus, setNewSynergyBonus] = React.useState(2);
-  // const [newSynergyDescription, setNewSynergyDescription] = React.useState(''); // Removed
 
   const isEditing = !!initialSkillData;
 
@@ -95,7 +94,6 @@ export function AddCustomSkillDialog({
       setNewSynergyTargetSkill('');
       setNewSynergyRanksRequired(5);
       setNewSynergyBonus(2);
-      // setNewSynergyDescription(''); // Removed
     }
   }, [isOpen, initialSkillData]);
 
@@ -111,14 +109,12 @@ export function AddCustomSkillDialog({
         targetSkillName: newSynergyTargetSkill.trim(),
         ranksInThisSkillRequired: newSynergyRanksRequired,
         bonusGranted: newSynergyBonus,
-        // description: newSynergyDescription.trim() || undefined, // Removed
       }
     ]);
     // Reset synergy form
     setNewSynergyTargetSkill('');
     setNewSynergyRanksRequired(5);
     setNewSynergyBonus(2);
-    // setNewSynergyDescription(''); // Removed
   };
 
   const handleRemoveSynergyRule = (ruleId: string) => {
@@ -154,7 +150,7 @@ export function AddCustomSkillDialog({
         </DialogHeader>
         
         <ScrollArea className="max-h-[70vh] pr-4">
-          <div className="space-y-4 py-4">
+          <div className="space-y-4 p-4"> {/* Changed py-4 to p-4 here */}
             <div className="space-y-1">
               <Label htmlFor="custom-skill-name">Skill Name</Label>
               <Input
@@ -210,7 +206,7 @@ export function AddCustomSkillDialog({
                     placeholder="Select target skill"
                     searchPlaceholder="Search skills..."
                     emptyPlaceholder="No skill found."
-                    isEditable={false} // Target skill must be from the list
+                    isEditable={false} 
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -234,7 +230,6 @@ export function AddCustomSkillDialog({
                     />
                   </div>
                 </div>
-                {/* Removed Synergy Description Input */}
                 <Button onClick={handleAddSynergyRule} size="sm" variant="outline">
                   <PlusCircle className="mr-2 h-4 w-4" /> Add Synergy Rule
                 </Button>
@@ -248,7 +243,6 @@ export function AddCustomSkillDialog({
                       <div>
                         <p>Grants <span className="font-semibold text-accent">{rule.bonusGranted > 0 ? '+' : ''}{rule.bonusGranted}</span> to <span className="font-semibold">{rule.targetSkillName}</span></p>
                         <p className="text-muted-foreground">Requires <span className="font-semibold">{rule.ranksInThisSkillRequired}</span> ranks in this custom skill.</p>
-                        {/* {rule.description && <p className="text-muted-foreground italic">"{rule.description}"</p>} Removed */}
                       </div>
                       <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => handleRemoveSynergyRule(rule.id)}>
                         <Trash2 className="h-3.5 w-3.5" />
