@@ -123,11 +123,14 @@ export interface Character {
 export const DEFAULT_ABILITIES: AbilityScores = constantsData.DEFAULT_ABILITIES as AbilityScores;
 export const DEFAULT_SAVING_THROWS: SavingThrows = constantsData.DEFAULT_SAVING_THROWS as SavingThrows;
 
-export type CharacterSize = typeof constantsData.SIZES_DATA[number]['value'];
-export const SIZES: ReadonlyArray<{value: CharacterSize, label: string}> = constantsData.SIZES_DATA as ReadonlyArray<{value: CharacterSize, label: string}>;
+export type CharacterSizeObject = typeof constantsData.SIZES_DATA[number];
+export type CharacterSize = CharacterSizeObject['value'];
+export const SIZES: ReadonlyArray<CharacterSizeObject> = constantsData.SIZES_DATA as ReadonlyArray<CharacterSizeObject>;
 
-export type CharacterAlignment = typeof constantsData.ALIGNMENTS_DATA[number]['value'];
-export const ALIGNMENTS: ReadonlyArray<{value: CharacterAlignment, label: string}> = constantsData.ALIGNMENTS_DATA as ReadonlyArray<{value: CharacterAlignment, label: string}>;
+export type CharacterAlignmentObject = typeof constantsData.ALIGNMENTS_DATA[number];
+export type CharacterAlignment = CharacterAlignmentObject['value'];
+export const ALIGNMENTS: ReadonlyArray<CharacterAlignmentObject> = constantsData.ALIGNMENTS_DATA as ReadonlyArray<CharacterAlignmentObject>;
+
 
 export type GenderId = typeof constantsData.GENDERS_DATA[number]['value'];
 export const GENDERS: ReadonlyArray<{value: GenderId, label: string}> = constantsData.GENDERS_DATA as ReadonlyArray<{value: GenderId, label: string}>;
@@ -247,7 +250,7 @@ export function getNetAgingEffects(raceId: DndRaceId, age: number): AgingEffects
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signB - signA; 
+            return signA - signB; // Negative (-1) before Positive (1)
         }
         
         const indexA = ABILITY_ORDER.indexOf(aAbility);
@@ -285,7 +288,7 @@ export function getSizeAbilityEffects(sizeId: CharacterSize): SizeAbilityEffects
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signB - signA; 
+            return signA - signB; // Negative (-1) before Positive (1)
         }
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
@@ -318,7 +321,7 @@ export function getRaceAbilityEffects(raceId: DndRaceId): RaceAbilityEffectsDeta
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signB - signA; 
+            return signA - signB; // Negative (-1) before Positive (1)
         }
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
@@ -470,6 +473,7 @@ export function checkFeatPrerequisites(
   
   if (prerequisites.special) {
     let specialMet = true; 
+    // Basic special check, can be expanded
     if (prerequisites.special.toLowerCase().includes("fighter level")) {
         const requiredLevel = parseInt(prerequisites.special.toLowerCase().replace(/[^0-9]/g, ''), 10);
         const fighterClass = character.classes.find(c => c.className === 'fighter');
@@ -482,6 +486,16 @@ export function checkFeatPrerequisites(
         if (!wizardClass || wizardClass.level < requiredLevel) {
             specialMet = false;
         }
+    } else if (prerequisites.special.toLowerCase().includes("wild shape ability")) {
+        // Check if character has a class that grants wild shape (e.g., Druid)
+        const hasWildShapeClass = character.classes.some(c => c.className === 'druid'); // Simplified
+        if (!hasWildShapeClass) {
+            specialMet = false;
+        }
+    } else if (prerequisites.special.toLowerCase().includes("proficiency with weapon")) {
+        // This is a complex check not fully implemented here. 
+        // Assume met for now or would require deeper weapon proficiency tracking.
+        // specialMet = true; // Placeholder
     }
     
     if (specialMet) {
