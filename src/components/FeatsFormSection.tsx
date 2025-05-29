@@ -39,7 +39,6 @@ export function FeatsFormSection({
 
   React.useEffect(() => {
     const newDerivedSelections = selectedFeats.map(f => f.id);
-    // Only update if the actual list of feat IDs has changed to prevent infinite loops
     if (JSON.stringify(featSelections) !== JSON.stringify(newDerivedSelections)) {
        setFeatSelections(newDerivedSelections);
     }
@@ -52,13 +51,14 @@ export function FeatsFormSection({
       .map(id => {
         if (!id) return undefined;
         const featDef = DND_FEATS.find(f => f.value === id);
-        if (!featDef) return undefined; // Should not happen if ID is valid
+        if (!featDef) return undefined; 
         return {
           id: featDef.value,
           name: featDef.label,
           description: featDef.description,
           prerequisites: featDef.prerequisites,
-          prerequisitesText: featDef.prerequisitesText
+          prerequisitesText: featDef.prerequisitesText,
+          effects: featDef.effects // Ensure effects are copied
         } as FeatType;
       })
       .filter(feat => feat !== undefined) as FeatType[];
@@ -105,9 +105,11 @@ export function FeatsFormSection({
   const characterForPrereqCheck = React.useMemo(() => ({
     abilityScores,
     skills,
-    feats: selectedFeats,
+    feats: selectedFeats, // Use the prop directly for checking, as it's the source of truth
     classes: characterClasses,
-  }), [abilityScores, skills, selectedFeats, characterClasses]);
+    race: characterRace, // Add race for prerequisites if needed
+    level: characterLevel, // Add level for prerequisites if needed
+  }), [abilityScores, skills, selectedFeats, characterClasses, characterRace, characterLevel]);
 
 
   return (
@@ -211,3 +213,4 @@ export function FeatsFormSection({
     </>
   );
 }
+
