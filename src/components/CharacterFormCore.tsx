@@ -37,11 +37,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       id: crypto.randomUUID(),
       name: '',
       race: '',
-      alignment: '',
+      alignment: 'true-neutral', // Default to kebab-case ID
       deity: '',
-      size: (constantsData.SIZES_DATA as CharacterSize[])[4], // Medium
+      size: 'medium', // Default to kebab-case ID
       age: 20,
-      gender: (constantsData.GENDERS_DATA as {value: GenderId, label: string}[])[0].value,
+      gender: (GENDERS.find(g => g.value === 'male') || GENDERS[0]).value, // Default to male or first
       abilityScores: { ...JSON.parse(JSON.stringify(constantsData.DEFAULT_ABILITIES || {})) },
       hp: 10,
       maxHp: 10,
@@ -118,26 +118,18 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         const predefinedSkills = getInitialCharacterSkills(prevCharacter.classes);
         
         const existingCustomSkills = prevCharacter.skills.filter(
-          s => !SKILL_DEFINITIONS.some(def => def.value === s.id)
+          s => !SKILL_DEFINITIONS.some(def => def.value === s.id) // Compare against skill ID (value)
         );
 
-        // For custom skills, reset ranks/misc, but keep name, keyAbility, isClassSkill, providesSynergies, description
         const updatedCustomSkills = existingCustomSkills.map(customSkill => ({
           ...customSkill,
           ranks: 0, 
-          // miscModifier is removed, so not resetting it here
-          // name, keyAbility, isClassSkill, providesSynergies, description are preserved
         }));
 
         const finalSkillsMap = new Map<string, SkillType>();
-        // Add predefined skills first (they get potentially overridden isClassSkill status, but ranks reset)
         predefinedSkills.forEach(skill => finalSkillsMap.set(skill.id, {...skill, ranks: 0, miscModifier: 0}));
         
-        // Then, merge/add custom skills
         updatedCustomSkills.forEach(customSkill => {
-            // If a custom skill somehow has the same ID as a predefined one, this ensures
-            // the custom-defined properties (name, keyAbility, isClassSkill, synergies, description) are kept.
-            // Ranks and misc modifiers are reset for all.
             finalSkillsMap.set(customSkill.id, customSkill); 
         });
 
@@ -175,7 +167,27 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
      if (name === 'className') {
       // This case is handled by handleClassChange directly
     } else if (name === 'size') {
-       setCharacter(prev => ({ ...prev, [name]: value as CharacterSize, sizeModifierAC: calculateAbilityModifier(prev.abilityScores.dexterity) + (SIZES.indexOf(value as CharacterSize) - 4) * (value === SIZES[5] || value === SIZES[6] || value === SIZES[7] || value === SIZES[8] ? -1 : 1) }));
+       const sizeObject = SIZES.find(s => s.value === value);
+       const dexModForAC = calculateAbilityModifier(character.abilityScores.dexterity);
+       // getSizeModifierAC expects the label, so find it from the value
+       const sizeLabelForAC = SIZES.find(s => s.value === value)?.label || value;
+       const sizeModAC = constantsData.DND_SIZE_ABILITY_MODIFIERS_DATA[value as keyof typeof constantsData.DND_SIZE_ABILITY_MODIFIERS_DATA]?.dexterity || 0; // This is wrong for AC, AC uses special size mod
+
+       // Correct AC size modifier calculation
+        let acSizeModifierValue = 0;
+        switch (value) { // value is kebab-case ID here
+            case 'fine': acSizeModifierValue = 8; break;
+            case 'diminutive': acSizeModifierValue = 4; break;
+            case 'tiny': acSizeModifierValue = 2; break;
+            case 'small': acSizeModifierValue = 1; break;
+            case 'medium': acSizeModifierValue = 0; break;
+            case 'large': acSizeModifierValue = -1; break;
+            case 'huge': acSizeModifierValue = -2; break;
+            case 'gargantuan': acSizeModifierValue = -4; break;
+            case 'colossal': acSizeModifierValue = -8; break;
+        }
+
+       setCharacter(prev => ({ ...prev, [name]: value as CharacterSize, sizeModifierAC: acSizeModifierValue }));
     } else if (name === 'race') {
       setCharacter(prev => ({ ...prev, race: value as DndRaceId }));
     } else if (name === 'gender') {
@@ -212,11 +224,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const handleCustomSkillAdd = (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
     const newSkill: SkillType = {
-      id: crypto.randomUUID(),
+      id: crypto.randomUUID(), // Custom skills get a UUID
       name: skillData.name,
       keyAbility: skillData.keyAbility,
       ranks: 0,
-      miscModifier: 0, // This will be removed in a later step if it's not already gone.
+      miscModifier: 0,
       isClassSkill: skillData.isClassSkill,
       providesSynergies: skillData.providesSynergies,
       description: skillData.description,
@@ -232,7 +244,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       ...prev,
       skills: prev.skills.map(s =>
         s.id === updatedSkillData.id
-          ? { ...s, // Keep existing ranks if needed, miscModifier is removed
+          ? { ...s, 
               name: updatedSkillData.name,
               keyAbility: updatedSkillData.keyAbility,
               isClassSkill: updatedSkillData.isClassSkill,
@@ -329,11 +341,25 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         return;
       }
     }
+    
+    let acSizeModifierValue = 0;
+    switch (character.size) { // character.size is kebab-case ID
+        case 'fine': acSizeModifierValue = 8; break;
+        case 'diminutive': acSizeModifierValue = 4; break;
+        case 'tiny': acSizeModifierValue = 2; break;
+        case 'small': acSizeModifierValue = 1; break;
+        case 'medium': acSizeModifierValue = 0; break;
+        case 'large': acSizeModifierValue = -1; break;
+        case 'huge': acSizeModifierValue = -2; break;
+        case 'gargantuan': acSizeModifierValue = -4; break;
+        case 'colossal': acSizeModifierValue = -8; break;
+    }
+
 
     const finalCharacterData = {
       ...character,
       classes: [{ ...character.classes[0], level: 1 }],
-      sizeModifierAC: calculateAbilityModifier(character.abilityScores.dexterity) + (SIZES.indexOf(character.size as CharacterSize) - 4) * (character.size === SIZES[5] || character.size === SIZES[6] || character.size === SIZES[7] || character.size === SIZES[8] ? -1 : 1)
+      sizeModifierAC: acSizeModifierValue
     };
     onSave(finalCharacterData);
   };
@@ -401,7 +427,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     isEditable={true}
                   />
                 </div>
-                {isPredefinedRace && (
+                 {isPredefinedRace && (
                    <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
                     <Info className="h-5 w-5" />
                   </Button>
@@ -466,10 +492,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               <Label htmlFor="alignment">Alignment</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
-                  <Select name="alignment" value={character.alignment} onValueChange={(value) => handleSelectChange('alignment', value as CharacterAlignment)}>
+                  <Select name="alignment" value={character.alignment} onValueChange={(value) => handleSelectChange('alignment', value)}>
                     <SelectTrigger><SelectValue placeholder="Select alignment" /></SelectTrigger>
                     <SelectContent>
-                      {ALIGNMENTS.map(align => <SelectItem key={align} value={align}>{align}</SelectItem>)}
+                      {ALIGNMENTS.map(align => <SelectItem key={align.value} value={align.value}>{align.label}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
@@ -525,12 +551,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                             {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                           </React.Fragment>
                         ))}
-                        {ageEffectsDetails.categoryName && <div className="mt-0.5">{ageEffectsDetails.categoryName}</div>}
+                         {ageEffectsDetails.categoryName !== 'adult' && <div className="mt-0.5">{constantsData.DND_RACE_AGING_EFFECTS_DATA[constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA[character.race as DndRaceId] as keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA]?.categories.find(c => c.categoryName === ageEffectsDetails.categoryName)?.categoryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || ageEffectsDetails.categoryName}</div>}
                      </>
                   ) : (
                    <>
                     No impact on ability scores
-                    {ageEffectsDetails.categoryName && ageEffectsDetails.categoryName !== "Adult" && <div className="mt-0.5">{ageEffectsDetails.categoryName}</div>}
+                    {ageEffectsDetails.categoryName !== "adult" && <div className="mt-0.5">{constantsData.DND_RACE_AGING_EFFECTS_DATA[constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA[character.race as DndRaceId] as keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA]?.categories.find(c => c.categoryName === ageEffectsDetails.categoryName)?.categoryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || ageEffectsDetails.categoryName}</div>}
                    </>
                   )}
                 </div>
@@ -550,10 +576,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             </div>
              <div className="space-y-1">
               <Label htmlFor="size">Size</Label>
-              <Select name="size" value={character.size} onValueChange={(value) => handleSelectChange('size', value as CharacterSize)}>
+              <Select name="size" value={character.size} onValueChange={(value) => handleSelectChange('size', value)}>
                 <SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger>
                 <SelectContent>
-                  {SIZES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  {SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
                 </SelectContent>
               </Select>
               {sizeAbilityEffectsDetails && (
@@ -719,3 +745,4 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   );
 }
 
+    

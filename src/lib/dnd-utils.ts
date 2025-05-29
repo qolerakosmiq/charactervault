@@ -1,4 +1,6 @@
+
 import type { AbilityName, AbilityScores, CharacterClass, CharacterSize, Skill } from '@/types/character';
+import { SIZES } from '@/types/character'; // Import SIZES to look up labels
 
 export function calculateAbilityModifier(score: number): number {
   return Math.floor((score - 10) / 2);
@@ -20,7 +22,7 @@ export function getBab(classes: CharacterClass[]): number[] {
   // For simplicity, sum levels and use a generic progression.
   // A real implementation needs to handle multiclassing rules correctly.
   const totalLevel = classes.reduce((sum, c) => sum + c.level, 0);
-  const mainClass = classes[0]?.className.toLowerCase() || '';
+  const mainClass = (classes[0]?.className as string).toLowerCase() || '';
 
   // Very simplified: Fighter (good), Rogue (medium), Wizard (poor)
   let baseBab = 0;
@@ -46,7 +48,7 @@ export function getBaseSaves(classes: CharacterClass[]): { fortitude: number; re
    if (classes.length === 0) return { fortitude: 0, reflex: 0, will: 0 };
    // Simplified: sum levels and use generic save progression.
    const totalLevel = classes.reduce((sum, c) => sum + c.level, 0);
-   const mainClass = classes[0]?.className.toLowerCase() || '';
+   const mainClass = (classes[0]?.className as string).toLowerCase() || '';
 
    let goodSaveBase = Math.floor(2 + totalLevel / 2);
    let poorSaveBase = Math.floor(totalLevel / 3);
@@ -85,8 +87,11 @@ export function calculateGrapple(bab: number[], strModifier: number, sizeModifie
   return (bab[0] || 0) + strModifier + sizeModifierGrapple;
 }
 
-export function getSizeModifierAC(size: CharacterSize): number {
-  switch (size) {
+export function getSizeModifierAC(sizeId: CharacterSize): number {
+  const sizeObject = SIZES.find(s => s.value === sizeId);
+  const sizeLabel = sizeObject ? sizeObject.label : sizeId; // Fallback to ID if label not found
+
+  switch (sizeLabel) {
     case 'Colossal': return -8;
     case 'Gargantuan': return -4;
     case 'Huge': return -2;
@@ -100,8 +105,11 @@ export function getSizeModifierAC(size: CharacterSize): number {
   }
 }
 
-export function getSizeModifierGrapple(size: CharacterSize): number {
-  switch (size) {
+export function getSizeModifierGrapple(sizeId: CharacterSize): number {
+  const sizeObject = SIZES.find(s => s.value === sizeId);
+  const sizeLabel = sizeObject ? sizeObject.label : sizeId; // Fallback to ID if label not found
+
+  switch (sizeLabel) {
     case 'Colossal': return 16;
     case 'Gargantuan': return 12;
     case 'Huge': return 8;
@@ -125,3 +133,5 @@ export function calculateSkillTotal(skill: Skill, abilityScores: AbilityScores):
 export function getCharacterOverallLevel(classes: CharacterClass[]): number {
   return classes.reduce((sum, charClass) => sum + charClass.level, 0);
 }
+
+    

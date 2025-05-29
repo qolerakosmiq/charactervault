@@ -1,12 +1,13 @@
+
 'use client';
 
-import type { Character, CharacterAlignment, CharacterSize, CharacterClass } from '@/types/character';
+import type { Character, CharacterAlignment, CharacterSize, CharacterClass, DndRaceId, DndClassId, DndDeityId, GenderId } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { UserCircle2 } from 'lucide-react';
-import { SIZES, ALIGNMENTS } from '@/types/character'; // Assuming these are defined in types
+import { SIZES, ALIGNMENTS } from '@/types/character';
 
 interface CoreInfoSectionProps {
   character: Pick<Character, 'name' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
@@ -27,15 +28,19 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
   };
 
   const handleSelectChange = (field: keyof Character, value: string) => {
-    onCoreValueChange(field, value as any);
+    if (field === 'alignment') {
+      onCoreValueChange(field, value as CharacterAlignment);
+    } else if (field === 'size') {
+      onCoreValueChange(field, value as CharacterSize);
+    } else {
+      onCoreValueChange(field, value as any);
+    }
   };
 
   const handleClassFieldChange = (index: number, field: keyof CharacterClass, value: string | number) => {
     onClassChange(index, field, value);
   };
 
-  // For simplicity, this form handles only the first class. 
-  // A more complex UI would be needed for multiclassing.
   const firstClass = character.classes[0] || { id: crypto.randomUUID(), className: '', level: 1 };
 
 
@@ -56,18 +61,17 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
           </div>
           <div>
             <Label htmlFor="race">Race</Label>
-            <Input id="race" name="race" value={character.race} onChange={handleInputChange} />
+            <Input id="race" name="race" value={character.race as string} onChange={handleInputChange} />
           </div>
         </div>
 
-        {/* Simplified Class/Level Input */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="className">Class</Label>
             <Input 
               id="className" 
               name="className" 
-              value={firstClass.className} 
+              value={firstClass.className as string} 
               onChange={(e) => handleClassFieldChange(0, 'className', e.target.value)}
               placeholder="e.g., Fighter"
             />
@@ -92,13 +96,13 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
             <Select name="alignment" value={character.alignment} onValueChange={(value) => handleSelectChange('alignment', value)}>
               <SelectTrigger><SelectValue placeholder="Select alignment" /></SelectTrigger>
               <SelectContent>
-                {ALIGNMENTS.map(align => <SelectItem key={align} value={align}>{align}</SelectItem>)}
+                {ALIGNMENTS.map(align => <SelectItem key={align.value} value={align.value}>{align.label}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
           <div>
-            <Label htmlFor="deity">Deity (Optional)</Label>
-            <Input id="deity" name="deity" value={character.deity || ''} onChange={handleInputChange} />
+            <Label htmlFor="deity">Deity</Label>
+            <Input id="deity" name="deity" value={character.deity as string || ''} onChange={handleInputChange} />
           </div>
         </div>
 
@@ -108,7 +112,7 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
             <Select name="size" value={character.size} onValueChange={(value) => handleSelectChange('size', value)}>
               <SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger>
               <SelectContent>
-                {SIZES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                {SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -118,10 +122,12 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
           </div>
           <div>
             <Label htmlFor="gender">Gender</Label>
-            <Input id="gender" name="gender" value={character.gender} onChange={handleInputChange} />
+            <Input id="gender" name="gender" value={character.gender as string} onChange={handleInputChange} />
           </div>
         </div>
       </CardContent>
     </Card>
   );
 }
+
+    

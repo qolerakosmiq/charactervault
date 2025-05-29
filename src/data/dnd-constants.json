@@ -1,10 +1,26 @@
 
 {
-  "SIZES_DATA": ["Fine", "Diminutive", "Tiny", "Small", "Medium", "Large", "Huge", "Gargantuan", "Colossal"],
+  "SIZES_DATA": [
+    { "value": "fine", "label": "Fine" },
+    { "value": "diminutive", "label": "Diminutive" },
+    { "value": "tiny", "label": "Tiny" },
+    { "value": "small", "label": "Small" },
+    { "value": "medium", "label": "Medium" },
+    { "value": "large", "label": "Large" },
+    { "value": "huge", "label": "Huge" },
+    { "value": "gargantuan", "label": "Gargantuan" },
+    { "value": "colossal", "label": "Colossal" }
+  ],
   "ALIGNMENTS_DATA": [
-    "Lawful Good", "Neutral Good", "Chaotic Good",
-    "Lawful Neutral", "True Neutral", "Chaotic Neutral",
-    "Lawful Evil", "Neutral Evil", "Chaotic Evil"
+    { "value": "lawful-good", "label": "Lawful Good" },
+    { "value": "neutral-good", "label": "Neutral Good" },
+    { "value": "chaotic-good", "label": "Chaotic Good" },
+    { "value": "lawful-neutral", "label": "Lawful Neutral" },
+    { "value": "true-neutral", "label": "True Neutral" },
+    { "value": "chaotic-neutral", "label": "Chaotic Neutral" },
+    { "value": "lawful-evil", "label": "Lawful Evil" },
+    { "value": "neutral-evil", "label": "Neutral Evil" },
+    { "value": "chaotic-evil", "label": "Chaotic Evil" }
   ],
   "GENDERS_DATA": [
     { "value": "male", "label": "Male" },
@@ -120,57 +136,57 @@
   "DND_RACE_AGING_EFFECTS_DATA": {
     "human": {
       "categories": [
-        { "categoryName": "Middle Age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "Old", "ageFactor": 0.7571, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "Venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
+        { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "old", "ageFactor": 0.7571, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
       ]
     },
     "elf": {
       "categories": [
-        { "categoryName": "Middle Age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "Old", "ageFactor": 0.7514, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
-        { "categoryName": "Venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+        { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "old", "ageFactor": 0.7514, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
       ]
     },
     "dwarf": {
       "categories": [
-        { "categoryName": "Middle Age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "Old", "ageFactor": 0.752, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "Venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
+        { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "old", "ageFactor": 0.752, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
       ]
     },
     "gnome": {
       "categories": [
-        { "categoryName": "Middle Age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "Old", "ageFactor": 0.75, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "Venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
+        { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "old", "ageFactor": 0.75, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
       ]
     },
     "halfling": {
       "categories": [
-        { "categoryName": "Middle Age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "Old", "ageFactor": 0.75, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "Venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
+        { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "old", "ageFactor": 0.75, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
       ]
     },
     "orc": {
       "categories": [
-        { "categoryName": "Middle Age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "Old", "ageFactor": 0.75, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
-        { "categoryName": "Venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
+        { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "old", "ageFactor": 0.75, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
       ]
     }
   },
   "DND_SIZE_ABILITY_MODIFIERS_DATA": {
-    "Fine": { "strength": -10, "dexterity": 8 },
-    "Diminutive": { "strength": -8, "dexterity": 6 },
-    "Tiny": { "strength": -6, "dexterity": 4 },
-    "Small": { "strength": -4, "dexterity": 2 },
-    "Medium": {},
-    "Large": { "strength": 4, "dexterity": -2 },
-    "Huge": { "strength": 8, "dexterity": -4 },
-    "Gargantuan": { "strength": 12, "dexterity": -6 },
-    "Colossal": { "strength": 16, "dexterity": -8 }
+    "fine": { "strength": -10, "dexterity": 8 },
+    "diminutive": { "strength": -8, "dexterity": 6 },
+    "tiny": { "strength": -6, "dexterity": 4 },
+    "small": { "strength": -4, "dexterity": 2 },
+    "medium": {},
+    "large": { "strength": 4, "dexterity": -2 },
+    "huge": { "strength": 8, "dexterity": -4 },
+    "gargantuan": { "strength": 12, "dexterity": -6 },
+    "colossal": { "strength": 16, "dexterity": -8 }
   },
   "DND_RACE_ABILITY_MODIFIERS_DATA": {
     "human": {},

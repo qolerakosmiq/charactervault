@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Character } from '@/types/character';
@@ -16,6 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { ALIGNMENTS, SIZES } from '@/types/character'; // Import SIZES and ALIGNMENTS
 
 interface CharacterCardProps {
   character: Character;
@@ -25,6 +27,10 @@ interface CharacterCardProps {
 export function CharacterCard({ character, onDelete }: CharacterCardProps) {
   const primaryClass = character.classes[0] ? `${character.classes[0].className} ${character.classes[0].level}` : 'N/A';
   const totalLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1;
+
+  // Find labels for alignment and size
+  const alignmentLabel = ALIGNMENTS.find(a => a.value === character.alignment)?.label || character.alignment;
+  const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
 
   return (
     <Card className="flex flex-col overflow-hidden shadow-lg hover:shadow-primary/20 transition-shadow duration-300">
@@ -41,9 +47,9 @@ export function CharacterCard({ character, onDelete }: CharacterCardProps) {
       </CardHeader>
       <CardContent className="p-4 flex-grow">
         <div className="space-y-1 text-sm">
-          <p><span className="font-semibold">Alignment:</span> {character.alignment}</p>
+          <p><span className="font-semibold">Alignment:</span> {alignmentLabel}</p>
           {character.deity && <p><span className="font-semibold">Deity:</span> {character.deity}</p>}
-          <p><span className="font-semibold">Size:</span> {character.size}</p>
+          <p><span className="font-semibold">Size:</span> {sizeLabel}</p>
         </div>
       </CardContent>
       <CardFooter className="p-4 bg-muted/30 border-t">
@@ -79,3 +85,5 @@ export function CharacterCard({ character, onDelete }: CharacterCardProps) {
     </Card>
   );
 }
+
+    
