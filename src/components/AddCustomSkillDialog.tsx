@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import type { AbilityName, CustomSynergyRule } from '@/types/character';
+import type { AbilityName, CustomSynergyRule, Skill as SkillType } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { ComboboxPrimitive, type ComboboxOption } from '@/components/ui/combobox';
 import { PlusCircle, Pencil, Trash2, Sparkles } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -37,6 +38,7 @@ interface AddCustomSkillDialogProps {
     isClassSkill: boolean;
     providesSynergies?: CustomSynergyRule[];
   };
+  allSkills: SkillType[]; // Used to populate target skill combobox
 }
 
 const keyAbilityOptions: Array<{ value: AbilityName; label: string }> = [
@@ -53,6 +55,7 @@ export function AddCustomSkillDialog({
   onOpenChange,
   onSave,
   initialSkillData,
+  allSkills,
 }: AddCustomSkillDialogProps) {
   const [skillName, setSkillName] = React.useState('');
   const [selectedKeyAbility, setSelectedKeyAbility] = React.useState<AbilityName>('intelligence');
@@ -63,9 +66,16 @@ export function AddCustomSkillDialog({
   const [newSynergyTargetSkill, setNewSynergyTargetSkill] = React.useState('');
   const [newSynergyRanksRequired, setNewSynergyRanksRequired] = React.useState(5);
   const [newSynergyBonus, setNewSynergyBonus] = React.useState(2);
-  const [newSynergyDescription, setNewSynergyDescription] = React.useState('');
+  // const [newSynergyDescription, setNewSynergyDescription] = React.useState(''); // Removed
 
   const isEditing = !!initialSkillData;
+
+  const availableTargetSkillsOptions = React.useMemo(() => {
+    return allSkills
+      .filter(skill => skill.name !== (initialSkillData?.name || skillName)) // Exclude self
+      .map(skill => ({ value: skill.name, label: skill.name }))
+      .sort((a,b) => a.label.localeCompare(b.label));
+  }, [allSkills, skillName, initialSkillData?.name]);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -85,13 +95,13 @@ export function AddCustomSkillDialog({
       setNewSynergyTargetSkill('');
       setNewSynergyRanksRequired(5);
       setNewSynergyBonus(2);
-      setNewSynergyDescription('');
+      // setNewSynergyDescription(''); // Removed
     }
   }, [isOpen, initialSkillData]);
 
   const handleAddSynergyRule = () => {
     if (!newSynergyTargetSkill.trim() || newSynergyRanksRequired <= 0 || newSynergyBonus === 0) {
-      alert('Please fill in Target Skill, Ranks Required (>0), and Bonus (not 0) for the synergy rule.');
+      alert('Please select a Target Skill and ensure Ranks Required (>0) and Bonus (not 0) are set for the synergy rule.');
       return;
     }
     setSynergyRules(prev => [
@@ -101,14 +111,14 @@ export function AddCustomSkillDialog({
         targetSkillName: newSynergyTargetSkill.trim(),
         ranksInThisSkillRequired: newSynergyRanksRequired,
         bonusGranted: newSynergyBonus,
-        description: newSynergyDescription.trim() || undefined,
+        // description: newSynergyDescription.trim() || undefined, // Removed
       }
     ]);
     // Reset synergy form
     setNewSynergyTargetSkill('');
     setNewSynergyRanksRequired(5);
     setNewSynergyBonus(2);
-    setNewSynergyDescription('');
+    // setNewSynergyDescription(''); // Removed
   };
 
   const handleRemoveSynergyRule = (ruleId: string) => {
@@ -192,12 +202,15 @@ export function AddCustomSkillDialog({
               </h3>
               <div className="p-3 border rounded-md bg-muted/20 space-y-3">
                 <div className="space-y-1">
-                  <Label htmlFor="synergy-target-skill">Target Skill Name</Label>
-                  <Input 
-                    id="synergy-target-skill" 
-                    value={newSynergyTargetSkill} 
-                    onChange={(e) => setNewSynergyTargetSkill(e.target.value)}
-                    placeholder="e.g., Spellcraft" 
+                  <Label htmlFor="synergy-target-skill">Target Skill</Label>
+                  <ComboboxPrimitive
+                    options={availableTargetSkillsOptions}
+                    value={newSynergyTargetSkill}
+                    onChange={(value) => setNewSynergyTargetSkill(value)}
+                    placeholder="Select target skill"
+                    searchPlaceholder="Search skills..."
+                    emptyPlaceholder="No skill found."
+                    isEditable={false} // Target skill must be from the list
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -221,15 +234,7 @@ export function AddCustomSkillDialog({
                     />
                   </div>
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor="synergy-description">Synergy Description (Optional)</Label>
-                  <Input 
-                    id="synergy-description" 
-                    value={newSynergyDescription} 
-                    onChange={(e) => setNewSynergyDescription(e.target.value)}
-                    placeholder="e.g., +2 to identify magic items" 
-                  />
-                </div>
+                {/* Removed Synergy Description Input */}
                 <Button onClick={handleAddSynergyRule} size="sm" variant="outline">
                   <PlusCircle className="mr-2 h-4 w-4" /> Add Synergy Rule
                 </Button>
@@ -243,7 +248,7 @@ export function AddCustomSkillDialog({
                       <div>
                         <p>Grants <span className="font-semibold text-accent">{rule.bonusGranted > 0 ? '+' : ''}{rule.bonusGranted}</span> to <span className="font-semibold">{rule.targetSkillName}</span></p>
                         <p className="text-muted-foreground">Requires <span className="font-semibold">{rule.ranksInThisSkillRequired}</span> ranks in this custom skill.</p>
-                        {rule.description && <p className="text-muted-foreground italic">"{rule.description}"</p>}
+                        {/* {rule.description && <p className="text-muted-foreground italic">"{rule.description}"</p>} Removed */}
                       </div>
                       <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => handleRemoveSynergyRule(rule.id)}>
                         <Trash2 className="h-3.5 w-3.5" />

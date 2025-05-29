@@ -9,11 +9,11 @@ export interface CharacterClass {
 
 // New interface for custom-defined synergy rules
 export interface CustomSynergyRule {
-  id: string;
+  id: string; // For list key and future management
   targetSkillName: string;
-  ranksInThisSkillRequired: number;
+  ranksInThisSkillRequired: number; // Ranks needed in the skill *providing* the synergy
   bonusGranted: number;
-  description?: string;
+  // description?: string; // Removed
 }
 
 export interface Skill {
@@ -359,4 +359,3 @@ export function calculateTotalSynergyBonus(targetSkillName: string, currentChara
   
   return totalBonus;
 }
-

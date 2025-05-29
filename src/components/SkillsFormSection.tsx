@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndClass, DndRace, SkillDefinitionData } from '@/types/character';
+import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndClass, DndRace, SkillDefinitionData, CustomSynergyRule } from '@/types/character';
 import { CLASS_SKILL_POINTS_BASE, SKILL_DEFINITIONS, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,9 +24,9 @@ interface SkillsFormSectionProps {
   abilityScores: AbilityScores;
   characterClasses: CharacterClass[];
   characterRace: DndRace | string;
-  onSkillChange: (skillId: string, ranks: number) => void; // Misc modifier removed
-  onCustomSkillAdd: (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean }) => void;
-  onCustomSkillUpdate: (skillData: { id: string; name: string; keyAbility: AbilityName; isClassSkill: boolean }) => void;
+  onSkillChange: (skillId: string, ranks: number) => void;
+  onCustomSkillAdd: (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[] }) => void;
+  onCustomSkillUpdate: (skillData: { id: string; name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[] }) => void;
   onCustomSkillRemove: (skillId: string) => void;
 }
 
@@ -45,7 +45,7 @@ export function SkillsFormSection({
 
 
   const firstClass = characterClasses[0];
-  const characterLevel = firstClass?.level || 1; // Character creation always at level 1 for now
+  const characterLevel = firstClass?.level || 1; 
   const intelligenceModifier = getAbilityModifierByName(abilityScores, 'intelligence');
 
   const baseSkillPointsForClass = firstClass?.className ? CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0 : 0;
@@ -70,19 +70,21 @@ export function SkillsFormSection({
     setIsAddOrEditSkillDialogOpen(true);
   };
   
-  const handleSaveCustomSkill = (skillData: { id?: string; name: string; keyAbility: AbilityName; isClassSkill: boolean }) => {
-    if (skillData.id && skillToEdit?.id === skillData.id) { // Editing existing skill
+  const handleSaveCustomSkill = (skillData: { id?: string; name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[] }) => {
+    if (skillData.id && skillToEdit?.id === skillData.id) { 
       onCustomSkillUpdate({
         id: skillData.id,
         name: skillData.name,
         keyAbility: skillData.keyAbility,
         isClassSkill: skillData.isClassSkill,
+        providesSynergies: skillData.providesSynergies,
       });
-    } else { // Adding new skill
+    } else { 
       onCustomSkillAdd({
         name: skillData.name,
         keyAbility: skillData.keyAbility,
         isClassSkill: skillData.isClassSkill,
+        providesSynergies: skillData.providesSynergies,
       });
     }
     setIsAddOrEditSkillDialogOpen(false);
@@ -113,9 +115,8 @@ export function SkillsFormSection({
             <p className="text-sm font-medium">
               Skill Points Left: <span className={cn(
                 "text-lg font-bold",
-                skillPointsLeft >= 0 && "text-emerald-500", // Use >= 0 for green if 0 is acceptable
+                skillPointsLeft >= 0 && "text-emerald-500", 
                 skillPointsLeft < 0 && "text-destructive"
-                // skillPointsLeft === 0 && "text-accent" // Keeping 0 as green or emerald
               )}>{skillPointsLeft}</span>
             </p>
           </div>
@@ -151,7 +152,7 @@ export function SkillsFormSection({
               const totalAbilityMod = baseAbilityMod + synergyBonus;
 
 
-              const totalBonus = (skill.ranks || 0) + totalAbilityMod + (skill.miscModifier || 0); // Include miscModifier here
+              const totalBonus = (skill.ranks || 0) + totalAbilityMod + (skill.miscModifier || 0);
               const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
               const skillCost = skill.isClassSkill ? 1 : 2;
               const isCustomSkill = !skillDef;
@@ -176,6 +177,7 @@ export function SkillsFormSection({
                           <Tooltip>
                             <TooltipTrigger asChild>
                                <Button
+                                type="button"
                                 variant="ghost"
                                 size="icon"
                                 className="h-5 w-5 text-muted-foreground hover:text-foreground"
@@ -193,6 +195,7 @@ export function SkillsFormSection({
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button
+                                  type="button"
                                   variant="ghost"
                                   size="icon"
                                   className="h-5 w-5 text-destructive/70 hover:text-destructive"
@@ -244,6 +247,7 @@ export function SkillsFormSection({
         onOpenChange={setIsAddOrEditSkillDialogOpen}
         onSave={handleSaveCustomSkill}
         initialSkillData={skillToEdit}
+        allSkills={skills}
     />
     </>
   );
