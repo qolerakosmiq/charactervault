@@ -15,12 +15,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { PlusCircle } from 'lucide-react';
 
 interface AddCustomSkillDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (skillData: { name: string; keyAbility: AbilityName }) => void;
+  onSave: (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean }) => void;
 }
 
 const keyAbilityOptions: Array<{ value: AbilityName; label: string }> = [
@@ -40,6 +41,7 @@ export function AddCustomSkillDialog({
 }: AddCustomSkillDialogProps) {
   const [skillName, setSkillName] = React.useState('');
   const [selectedKeyAbility, setSelectedKeyAbility] = React.useState<AbilityName>('none');
+  const [isClassSkill, setIsClassSkill] = React.useState(false);
 
   const handleSaveSkill = () => {
     if (skillName.trim() === '') {
@@ -47,9 +49,10 @@ export function AddCustomSkillDialog({
       alert('Skill name cannot be empty.');
       return;
     }
-    onSave({ name: skillName.trim(), keyAbility: selectedKeyAbility });
+    onSave({ name: skillName.trim(), keyAbility: selectedKeyAbility, isClassSkill });
     setSkillName('');
     setSelectedKeyAbility('none');
+    setIsClassSkill(false);
     onOpenChange(false);
   };
 
@@ -57,6 +60,7 @@ export function AddCustomSkillDialog({
     if (isOpen) {
       setSkillName('');
       setSelectedKeyAbility('none');
+      setIsClassSkill(false);
     }
   }, [isOpen]);
 
@@ -69,7 +73,7 @@ export function AddCustomSkillDialog({
             Add Custom Skill
           </DialogTitle>
           <DialogDescription>
-            Define a new skill for your character. Custom skills are not class skills by default.
+            Define a new skill for your character.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
@@ -99,6 +103,16 @@ export function AddCustomSkillDialog({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="custom-skill-is-class"
+              checked={isClassSkill}
+              onCheckedChange={(checked) => setIsClassSkill(checked as boolean)}
+            />
+            <Label htmlFor="custom-skill-is-class" className="text-sm font-normal">
+              Is Class Skill?
+            </Label>
           </div>
         </div>
         <DialogFooter>

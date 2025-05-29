@@ -29,17 +29,12 @@ interface CharacterFormCoreProps {
   isCreating: boolean;
 }
 
-const generateCUID = () => {
-  const s = (len: number) => Math.random().toString(36).substring(2, 2 + len);
-  return `c${s(8)}${s(4)}${s(4)}${s(4)}${s(12)}`;
-};
-
 
 export function CharacterFormCore({ initialCharacter, onSave, isCreating }: CharacterFormCoreProps) {
   const [character, setCharacter] = React.useState<Character>(() => {
-    const defaultClasses: CharacterClass[] = [{ id: generateCUID(), className: '', level: 1 }];
+    const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: '', level: 1 }];
     return initialCharacter || {
-      id: generateCUID(),
+      id: crypto.randomUUID(),
       name: '',
       race: '', 
       alignment: '', 
@@ -112,17 +107,17 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         setCharacter(prev => ({ ...prev, age: minAdultAge }));
       }
     }
-  }, [character.race]);
+  }, [character.race, character.age]); 
 
    // Re-initialize skills if class changes
   React.useEffect(() => {
-    if (character.classes[0]?.className) { // Only re-init if class is actually set
+    if (character.classes[0]?.className) { 
       setCharacter(prev => ({
         ...prev,
         skills: getInitialCharacterSkills(prev.classes)
       }));
     }
-  }, [character.classes[0]?.className]); // Dependency on className string itself
+  }, [character.classes[0]?.className]);
 
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -149,7 +144,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
      if (name === 'className') { 
       setCharacter(prev => ({
         ...prev,
-        classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: value, level: 1 }]
+        classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: value, level: 1 }]
       }));
     } else if (name === 'size') {
        setCharacter(prev => ({ ...prev, [name]: value as CharacterSize, sizeModifierAC: calculateAbilityModifier(prev.abilityScores.dexterity) + (SIZES.indexOf(value as CharacterSize) - 4) * (value === SIZES[5] || value === SIZES[6] || value === SIZES[7] || value === SIZES[8] ? -1 : 1) }));
@@ -166,11 +161,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const handleClassChange = (value: string) => { 
       const newClassName = value;
       setCharacter(prev => {
-        const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: newClassName, level: 1 }];
+        const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: newClassName, level: 1 }];
         return {
           ...prev,
           classes: updatedClasses,
-          // Skills will be re-initialized by the useEffect watching character.classes[0].className
         };
       });
   };
@@ -184,14 +178,14 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }));
   };
 
-  const handleCustomSkillAdd = (skillData: { name: string; keyAbility: AbilityName }) => {
+  const handleCustomSkillAdd = (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean }) => {
     const newSkill: SkillType = {
-      id: generateCUID(),
+      id: crypto.randomUUID(),
       name: skillData.name,
       keyAbility: skillData.keyAbility,
       ranks: 0,
       miscModifier: 0,
-      isClassSkill: false, // Custom skills are not class skills by default
+      isClassSkill: skillData.isClassSkill,
     };
     setCharacter(prev => ({
       ...prev,
@@ -296,16 +290,20 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const abilityNames: AbilityName[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
-  const selectedClassInfo = DND_CLASSES.find(c => c.value.toLowerCase() === character.classes[0]?.className?.toLowerCase());
-
+  
   const isPredefinedRace = React.useMemo(
     () => DND_RACES.some(r => r.value.toLowerCase() === character.race?.toLowerCase()),
     [character.race]
   );
   const isPredefinedClass = React.useMemo(
     () => DND_CLASSES.some(c => c.value.toLowerCase() === character.classes[0]?.className?.toLowerCase()),
-    [character.classes]
+    [character.classes[0]?.className]
   );
+  const selectedClassInfo = React.useMemo(
+    () => DND_CLASSES.find(c => c.value.toLowerCase() === character.classes[0]?.className?.toLowerCase()),
+    [character.classes[0]?.className]
+  );
+
 
   const currentMinAgeForInput = React.useMemo(() => {
     const selectedRaceInfo = DND_RACES.find(r => r.value.toLowerCase() === character.race?.toLowerCase());
@@ -336,7 +334,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         <CardContent className="space-y-6 pt-6">
           {/* Name & Race */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            <div className="space-y-1">
+             <div className="space-y-1">
               <Label htmlFor="name">Name</Label>
               <Input id="name" name="name" value={character.name} onChange={handleChange} />
             </div>
@@ -359,13 +357,14 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     <HelpCircle className="h-5 w-5" />
                   </Button>
                 )}
-                {!isPredefinedRace && character.race && (
+                {!isPredefinedRace && character.race && character.race.trim() !== '' && (
                   <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
                 )}
               </div>
-              {raceAbilityEffectsDetails && raceAbilityEffectsDetails.effects.length > 0 && (
+              {raceAbilityEffectsDetails && (
                 <p className="text-xs text-muted-foreground mt-1 ml-1">
-                    {raceAbilityEffectsDetails.effects.map((effect, index) => (
+                    {raceAbilityEffectsDetails.effects.length > 0 ? (
+                      raceAbilityEffectsDetails.effects.map((effect, index) => (
                       <React.Fragment key={effect.ability}>
                         <strong
                           className={cn(
@@ -377,11 +376,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                         </strong>
                         {index < raceAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                       </React.Fragment>
-                    ))}
+                    ))
+                    ) : (
+                      <span>No impact on ability scores</span>
+                    )}
                 </p>
-              )}
-              {raceAbilityEffectsDetails && raceAbilityEffectsDetails.effects.length === 0 && (
-                 <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
               )}
             </div>
           </div>
@@ -407,7 +406,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                       <HelpCircle className="h-5 w-5" />
                     </Button>
                   )}
-                  {!isPredefinedClass && character.classes[0]?.className && (
+                  {!isPredefinedClass && character.classes[0]?.className && character.classes[0]?.className.trim() !== '' && (
                     <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
                   )}
                 </div>
@@ -465,7 +464,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                {ageEffectsDetails && (
                 <div className="text-xs text-muted-foreground mt-1 ml-1">
                    {ageEffectsDetails.effects.length > 0 ? (
-                    <>
+                     <>
                       {ageEffectsDetails.effects.map((effect, index) => (
                         <React.Fragment key={effect.ability}>
                           <strong
@@ -480,7 +479,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                         </React.Fragment>
                       ))}
                       {ageEffectsDetails.categoryName && ageEffectsDetails.categoryName !== "Adult" && <div className="mt-0.5">{ageEffectsDetails.categoryName}</div>}
-                    </>
+                     </>
                   ) : (
                    <>
                     No impact on ability scores

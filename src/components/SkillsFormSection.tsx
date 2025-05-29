@@ -25,7 +25,7 @@ interface SkillsFormSectionProps {
   characterClasses: CharacterClass[];
   characterRace: DndRace | string;
   onSkillChange: (skillId: string, ranks: number, miscModifier: number) => void;
-  onCustomSkillAdd: (skillData: { name: string; keyAbility: AbilityName }) => void;
+  onCustomSkillAdd: (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean }) => void;
   onCustomSkillRemove: (skillId: string) => void;
 }
 
@@ -56,7 +56,7 @@ export function SkillsFormSection({
 
   const skillPointsLeft = totalSkillPointsAvailable - totalSkillPointsSpent;
 
-  const handleSaveCustomSkill = (skillData: { name: string; keyAbility: AbilityName }) => {
+  const handleSaveCustomSkill = (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean }) => {
     onCustomSkillAdd(skillData);
     setIsAddSkillDialogOpen(false);
   };
@@ -122,7 +122,7 @@ export function SkillsFormSection({
               const totalAbilityMod = baseAbilityMod + synergyBonus;
 
 
-              const totalBonus = (skill.ranks || 0) + totalAbilityMod; // miscModifier for skills is not directly edited in this table view
+              const totalBonus = (skill.ranks || 0) + totalAbilityMod;
               const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
               const skillCost = skill.isClassSkill ? 1 : 2;
 
@@ -132,7 +132,7 @@ export function SkillsFormSection({
                     <Checkbox
                       id={`skill_class_${skill.id}`}
                       checked={skill.isClassSkill}
-                      disabled // Class skills are determined by class, not editable here
+                      disabled // Class skills are determined by class, not editable here for predefined skills
                       className="h-3.5 w-3.5"
                     />
                   </div>
@@ -169,7 +169,7 @@ export function SkillsFormSection({
                     type="number"
                     step="0.5" // Allow half ranks for cross-class skills
                     value={skill.ranks || 0}
-                    onChange={(e) => onSkillChange(skill.id, parseFloat(e.target.value) || 0, skill.miscModifier)}
+                    onChange={(e) => onSkillChange(skill.id, parseFloat(e.target.value) || 0, skill.miscModifier || 0)}
                     className="h-7 w-12 text-xs text-center p-1"
                     max={maxRanksValue}
                     min="0"
@@ -185,7 +185,7 @@ export function SkillsFormSection({
         <Separator className="my-4" />
 
         <div>
-          <Button onClick={() => setIsAddSkillDialogOpen(true)} size="sm" variant="outline">
+          <Button type="button" onClick={() => setIsAddSkillDialogOpen(true)} size="sm" variant="outline">
             <PlusCircle className="mr-2 h-4 w-4" /> Add Custom Skill
           </Button>
         </div>

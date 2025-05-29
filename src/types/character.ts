@@ -137,9 +137,10 @@ export function getInitialCharacterSkills(characterClasses: CharacterClass[]): S
             isClassSkill = true;
         }
     }
-
+    // Generate a deterministic ID based on the skill name
+    const skillId = `skill-${def.name.toLowerCase().replace(/\W+/g, '-')}`;
     return {
-      id: crypto.randomUUID(),
+      id: skillId,
       name: def.name,
       keyAbility: def.keyAbility as AbilityName,
       ranks: 0,
@@ -212,7 +213,7 @@ export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffect
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB; // Negative first
+            return signB - signA; // Positive first, then negative (reversed from previous for display)
         }
 
         // If signs are the same, sort by canonical ability order
@@ -220,6 +221,22 @@ export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffect
         const indexB = ABILITY_ORDER.indexOf(bAbility);
         return indexA - indexB;
     });
+    // Re-sort: negative first, then positive, then by canonical ability order
+    abilitiesToProcess.sort((aAbility, bAbility) => {
+        const changeA = highestAttainedCategoryEffects![aAbility]!;
+        const changeB = highestAttainedCategoryEffects![bAbility]!;
+        const signA = Math.sign(changeA);
+        const signB = Math.sign(changeB);
+
+        if (signA !== signB) {
+            return signA - signB; // Negative (-1) comes before positive (1)
+        }
+        // If signs are the same, sort by canonical ability order
+        const indexA = ABILITY_ORDER.indexOf(aAbility);
+        const indexB = ABILITY_ORDER.indexOf(bAbility);
+        return indexA - indexB;
+    });
+
 
     for (const ability of abilitiesToProcess) {
         appliedEffects.push({ ability, change: highestAttainedCategoryEffects![ability]! });
@@ -280,7 +297,7 @@ export function getRaceAbilityEffects(raceValue: DndRace): RaceAbilityEffectsDet
     const abilitiesToProcess = (Object.keys(modifiers) as AbilityName[])
       .filter(ability => modifiers[ability] !== undefined && modifiers[ability] !== 0);
 
-    abilitiesToProcess.sort((aAbility, bAbility) => {
+     abilitiesToProcess.sort((aAbility, bAbility) => {
         const changeA = modifiers![aAbility]!;
         const changeB = modifiers![bAbility]!;
         const signA = Math.sign(changeA);
