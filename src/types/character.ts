@@ -135,7 +135,7 @@ export const ALIGNMENTS: ReadonlyArray<CharacterAlignmentObject> = constantsData
 export type GenderId = typeof constantsData.GENDERS_DATA[number]['value'];
 export const GENDERS: ReadonlyArray<{value: GenderId, label: string}> = constantsData.GENDERS_DATA as ReadonlyArray<{value: GenderId, label: string}>;
 
-export type DndRaceOption = typeof constantsData.DND_RACES_DATA[number];
+export type DndRaceOption = typeof constantsData.DND_RACES_DATA[number] & { racialSkillBonuses?: Record<string, number> };
 export type DndRaceId = DndRaceOption['value'];
 export const DND_RACES: ReadonlyArray<DndRaceOption> = constantsData.DND_RACES_DATA as ReadonlyArray<DndRaceOption>;
 
@@ -303,25 +303,29 @@ export function getSizeAbilityEffects(sizeId: CharacterSize): SizeAbilityEffects
 }
 
 export interface RaceAbilityEffectsDetails {
-  effects: Array<{ ability: AbilityName; change: number }>;
+  abilityEffects: Array<{ ability: AbilityName; change: number }>;
+  skillBonuses?: Array<{ skillName: string; bonus: number }>;
+  // racialFeats?: Array<{ featName: string }>; // For future use
 }
 
-export function getRaceAbilityEffects(raceId: DndRaceId): RaceAbilityEffectsDetails {
-  const modifiers = (constantsData.DND_RACE_ABILITY_MODIFIERS_DATA as Record<DndRaceId, Partial<Record<AbilityName, number>>>)[raceId];
-  const appliedEffects: Array<{ ability: AbilityName; change: number }> = [];
 
-  if (modifiers) {
-    const abilitiesToProcess = (Object.keys(modifiers) as AbilityName[])
-      .filter(ability => modifiers[ability] !== undefined && modifiers[ability] !== 0);
+export function getRaceSpecialQualities(raceId: DndRaceId): RaceAbilityEffectsDetails {
+  const raceData = DND_RACES.find(r => r.value === raceId);
+  const abilityModifiers = (constantsData.DND_RACE_ABILITY_MODIFIERS_DATA as Record<DndRaceId, Partial<Record<AbilityName, number>>>)[raceId];
+  
+  const appliedAbilityEffects: Array<{ ability: AbilityName; change: number }> = [];
+  if (abilityModifiers) {
+    const abilitiesToProcess = (Object.keys(abilityModifiers) as AbilityName[])
+      .filter(ability => abilityModifiers[ability] !== undefined && abilityModifiers[ability] !== 0);
 
      abilitiesToProcess.sort((aAbility, bAbility) => {
-        const changeA = modifiers![aAbility]!;
-        const changeB = modifiers![bAbility]!;
+        const changeA = abilityModifiers![aAbility]!;
+        const changeB = abilityModifiers![bAbility]!;
         const signA = Math.sign(changeA);
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB; // Negative (-1) before Positive (1)
+            return signA - signB; 
         }
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
@@ -329,10 +333,25 @@ export function getRaceAbilityEffects(raceId: DndRaceId): RaceAbilityEffectsDeta
     });
 
     for (const ability of abilitiesToProcess) {
-      appliedEffects.push({ ability, change: modifiers[ability]! });
+      appliedAbilityEffects.push({ ability, change: abilityModifiers[ability]! });
     }
   }
-  return { effects: appliedEffects };
+
+  const appliedSkillBonuses: Array<{ skillName: string; bonus: number }> = [];
+  if (raceData?.racialSkillBonuses) {
+    for (const [skillId, bonus] of Object.entries(raceData.racialSkillBonuses)) {
+      const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skillId);
+      if (skillDef) {
+        appliedSkillBonuses.push({ skillName: skillDef.label, bonus });
+      }
+    }
+    appliedSkillBonuses.sort((a, b) => a.skillName.localeCompare(b.skillName));
+  }
+
+  return { 
+    abilityEffects: appliedAbilityEffects,
+    skillBonuses: appliedSkillBonuses.length > 0 ? appliedSkillBonuses : undefined,
+  };
 }
 
 export interface SynergyEffectJsonData {

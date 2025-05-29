@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ScrollText, PlusCircle, MinusCircle } from 'lucide-react';
+import { ScrollText } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { AbilityName } from '@/types/character';
 import { cn } from '@/lib/utils';
@@ -22,6 +22,8 @@ interface InfoDisplayDialogProps {
   title?: string;
   content?: string;
   abilityModifiers?: Array<{ ability: AbilityName; change: number }>;
+  skillBonuses?: Array<{ skillName: string; bonus: number }>;
+  // racialFeats?: Array<{ featName: string }>; // For future use
 }
 
 export function InfoDisplayDialog({
@@ -30,6 +32,7 @@ export function InfoDisplayDialog({
   title,
   content,
   abilityModifiers,
+  skillBonuses,
 }: InfoDisplayDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -49,7 +52,7 @@ export function InfoDisplayDialog({
 
           {abilityModifiers && abilityModifiers.length > 0 && (
             <>
-              {content && <Separator className="my-4" />}
+              {(content) && <Separator className="my-4" />}
               <div>
                 <h3 className="text-md font-semibold mb-2 text-foreground">Ability Score Adjustments:</h3>
                 <ul className="space-y-1 text-sm">
@@ -61,10 +64,29 @@ export function InfoDisplayDialog({
                           "font-bold",
                           change > 0 && "text-emerald-500",
                           change < 0 && "text-destructive",
-                          change === 0 && "text-muted-foreground" // Or text-accent if preferred for zero
+                          change === 0 && "text-muted-foreground" 
                         )}
                       >
                         {change > 0 ? '+' : ''}{change}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          )}
+
+          {skillBonuses && skillBonuses.length > 0 && (
+            <>
+              {(content || (abilityModifiers && abilityModifiers.length > 0)) && <Separator className="my-4" />}
+              <div>
+                <h3 className="text-md font-semibold mb-2 text-foreground">Racial Skill Bonuses:</h3>
+                <ul className="space-y-1 text-sm">
+                  {skillBonuses.map(({ skillName, bonus }) => (
+                    <li key={skillName} className="flex justify-between">
+                      <span>{skillName}:</span>
+                      <span className="font-bold text-emerald-500">
+                        {bonus > 0 ? '+' : ''}{bonus}
                       </span>
                     </li>
                   ))}
