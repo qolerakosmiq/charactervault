@@ -34,18 +34,27 @@ export function FeatsFormSection({
   const availableFeatSlots = calculateAvailableFeats(characterRace, characterLevel);
 
   // Stores the IDs of selected feats for currently displayed slots
-  const [featSelections, setFeatSelections] = React.useState<(string | undefined)[]>(() => {
-    return selectedFeats.map(f => f.id).slice(0, availableFeatSlots);
-  });
+  const [featSelections, setFeatSelections] = React.useState<(string | undefined)[]>([]);
 
   React.useEffect(() => {
-    // Sync with external changes to selectedFeats or availableFeatSlots
-    const newDerivedSelections = selectedFeats.map(f => f.id).slice(0, availableFeatSlots);
+    // Sync with external changes to selectedFeats
+    // We want to display all selected feats, even if it exceeds "availableFeatSlots"
+    const newDerivedSelections = selectedFeats.map(f => f.id);
+    
+    // Only update if the derived selections are actually different from the current internal state
+    // or if the component initializes and featSelections is empty but newDerivedSelections is not.
     if (JSON.stringify(featSelections) !== JSON.stringify(newDerivedSelections)) {
-      setFeatSelections(newDerivedSelections);
+      // If newDerivedSelections is empty and featSelections has only `undefined` items or is different, reset.
+      if (newDerivedSelections.length === 0 && (featSelections.length > 0 && featSelections.every(s => s === undefined))) {
+        setFeatSelections([]);
+      } else {
+        // Ensure that if selectedFeats is empty but featSelections has slots (e.g. [undefined]), it resets.
+        // Also, if selectedFeats is not empty, it populates featSelections.
+        setFeatSelections(newDerivedSelections.length > 0 ? newDerivedSelections : (featSelections.length > 0 ? [] : featSelections) );
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedFeats, availableFeatSlots]);
+  }, [selectedFeats]);
 
 
   const convertSelectionsToFeatTypes = (selections: (string | undefined)[]): FeatType[] => {
@@ -53,7 +62,7 @@ export function FeatsFormSection({
       .map(id => {
         if (!id) return undefined;
         const featDef = DND_FEATS.find(f => f.value === id);
-        if (!featDef) return undefined;
+        if (!featDef) return undefined; // Should not happen if IDs are from DND_FEATS
         return {
           id: featDef.value,
           name: featDef.label,
@@ -65,10 +74,7 @@ export function FeatsFormSection({
   };
 
   const handleAddSlot = () => {
-    if (featSelections.length < availableFeatSlots) {
-      setFeatSelections(prev => [...prev, undefined]);
-      // Parent is updated when a feat is actually selected or removed
-    }
+    setFeatSelections(prev => [...prev, undefined]);
   };
 
   const handleRemoveSlot = (indexToRemove: number) => {
@@ -79,7 +85,7 @@ export function FeatsFormSection({
 
   const handleFeatChangeInSlot = (slotIndex: number, featId: string | undefined) => {
     const newSelections = [...featSelections];
-    newSelections[slotIndex] = featId === "---unselect---" ? undefined : featId;
+    newSelections[slotIndex] = featId === "---unselect---" ? undefined : featId; // Assuming "---unselect---" might be used by combobox
     setFeatSelections(newSelections);
     onFeatSelectionChange(convertSelectionsToFeatTypes(newSelections));
   };
@@ -117,13 +123,13 @@ export function FeatsFormSection({
         <div className="mb-4 p-3 border rounded-md bg-muted/30">
           <div className="flex justify-between items-center">
             <p className="text-sm font-medium">
-              Total Feat Slots: <span className="text-lg font-bold text-primary">{availableFeatSlots}</span>
+              Feats Available: <span className="text-lg font-bold text-primary">{availableFeatSlots}</span>
             </p>
             <p className="text-sm font-medium">
-              Selected Feats: <span className={cn(
+              Feats Left: <span className={cn(
                 "text-lg font-bold",
-                featSelections.filter(Boolean).length <= availableFeatSlots ? "text-emerald-500" : "text-destructive"
-              )}>{featSelections.filter(Boolean).length}</span>
+                featSlotsLeft >= 0 ? "text-emerald-500" : "text-destructive"
+              )}>{featSlotsLeft}</span>
             </p>
           </div>
            <p className="text-xs text-muted-foreground mt-1">
@@ -133,7 +139,7 @@ export function FeatsFormSection({
           </p>
         </div>
 
-        {availableFeatSlots > 0 ? (
+        {featSelections.length > 0 ? (
           <ScrollArea className="max-h-[400px] pr-3">
             <div className="space-y-4">
               {featSelections.map((selectedFeatId, index) => {
@@ -177,14 +183,12 @@ export function FeatsFormSection({
             </div>
           </ScrollArea>
         ) : (
-          <p className="text-sm text-muted-foreground">No feat slots available at this level/race combination.</p>
+          <p className="text-sm text-muted-foreground">No feat slots added yet. Click "Add Feat Slot" to begin.</p>
         )}
 
-        {featSelections.length < availableFeatSlots && (
-          <Button onClick={handleAddSlot} variant="outline" size="sm" className="mt-4">
-            <PlusCircle className="mr-2 h-4 w-4" /> Add Feat Slot
-          </Button>
-        )}
+        <Button onClick={handleAddSlot} variant="outline" size="sm" className="mt-4">
+          <PlusCircle className="mr-2 h-4 w-4" /> Add Feat Slot
+        </Button>
       </CardContent>
     </Card>
   );
