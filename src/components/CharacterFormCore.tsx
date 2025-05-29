@@ -39,9 +39,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       race: '',
       alignment: '',
       deity: '',
-      size: SIZES[4], // Medium
+      size: (constantsData.SIZES_DATA as CharacterSize[])[4], // Medium
       age: 20,
-      gender: GENDERS[0].value,
+      gender: (constantsData.GENDERS_DATA as {value: GenderId, label: string}[])[0].value,
       abilityScores: { ...JSON.parse(JSON.stringify(constantsData.DEFAULT_ABILITIES || {})) },
       hp: 10,
       maxHp: 10,
@@ -125,7 +125,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         const updatedCustomSkills = existingCustomSkills.map(customSkill => ({
           ...customSkill,
           ranks: 0, 
-          miscModifier: 0,
+          // miscModifier is removed, so not resetting it here
           // name, keyAbility, isClassSkill, providesSynergies, description are preserved
         }));
 
@@ -216,7 +216,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       name: skillData.name,
       keyAbility: skillData.keyAbility,
       ranks: 0,
-      miscModifier: 0,
+      miscModifier: 0, // This will be removed in a later step if it's not already gone.
       isClassSkill: skillData.isClassSkill,
       providesSynergies: skillData.providesSynergies,
       description: skillData.description,
@@ -232,7 +232,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       ...prev,
       skills: prev.skills.map(s =>
         s.id === updatedSkillData.id
-          ? { ...s, // Keep existing ranks and miscModifier if needed, or reset them
+          ? { ...s, // Keep existing ranks if needed, miscModifier is removed
               name: updatedSkillData.name,
               keyAbility: updatedSkillData.keyAbility,
               isClassSkill: updatedSkillData.isClassSkill,
@@ -525,7 +525,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                             {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                           </React.Fragment>
                         ))}
-                        {ageEffectsDetails.categoryName && ageEffectsDetails.categoryName !== "Adult" && <div className="mt-0.5">{ageEffectsDetails.categoryName}</div>}
+                        {ageEffectsDetails.categoryName && <div className="mt-0.5">{ageEffectsDetails.categoryName}</div>}
                      </>
                   ) : (
                    <>
@@ -553,7 +553,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               <Select name="size" value={character.size} onValueChange={(value) => handleSelectChange('size', value as CharacterSize)}>
                 <SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger>
                 <SelectContent>
-                  {SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+                  {SIZES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                 </SelectContent>
               </Select>
               {sizeAbilityEffectsDetails && (
@@ -718,3 +718,4 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
+
