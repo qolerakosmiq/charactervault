@@ -10,12 +10,10 @@ export interface CharacterClass {
 export interface Skill {
   id: string;
   name: string;
-  ranks: number; // Allows for 0.5 ranks for cross-class
+  ranks: number; 
   miscModifier: number;
-  abilityModifier?: number; // Calculated, not stored directly if always derived
-  totalBonus?: number; // Calculated
-  keyAbility?: AbilityName; // e.g. 'STR', 'DEX'
-  isClassSkill?: boolean; // To determine max ranks
+  keyAbility?: AbilityName; 
+  isClassSkill?: boolean; 
 }
 
 export interface Feat {
@@ -32,7 +30,7 @@ export interface Item {
   weight?: number;
 }
 
-export type AbilityName = 'strength' | 'dexterity' | 'constitution' | 'intelligence' | 'wisdom' | 'charisma';
+export type AbilityName = 'strength' | 'dexterity' | 'constitution' | 'intelligence' | 'wisdom' | 'charisma' | 'none';
 const ABILITY_ORDER: AbilityName[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
 
@@ -54,10 +52,10 @@ export interface SavingThrows {
 export interface Character {
   id: string;
   name: string;
-  race: string; // This will correspond to DndRace values
-  alignment: string; // This will correspond to CharacterAlignment values
+  race: string; 
+  alignment: string; 
   deity?: string;
-  size: string; // This will correspond to CharacterSize values
+  size: string; 
   age: number;
   gender: string;
   
@@ -99,7 +97,7 @@ export const DEFAULT_SAVING_THROWS: SavingThrows = {
   will: { base: 0, magicMod: 0, miscMod: 0 },
 };
 
-// --- Types derived from JSON structure (or strongly typed if possible) ---
+// --- Types derived from JSON structure ---
 export type CharacterSize = typeof constantsData.SIZES_DATA[number];
 export const SIZES: readonly CharacterSize[] = constantsData.SIZES_DATA;
 
@@ -115,60 +113,47 @@ export const DND_CLASSES: ReadonlyArray<{value: DndClass, label: string, hitDice
 export const GENDERS: ReadonlyArray<{value: string, label: string}> = constantsData.GENDERS_DATA;
 export const DND_DEITIES: ReadonlyArray<{value: string, label: string}> = constantsData.DND_DEITIES_DATA;
 
+// --- Skill Definitions from JSON ---
+export type SkillDefinitionData = typeof constantsData.SKILL_DEFINITIONS_DATA[number];
+export const SKILL_DEFINITIONS: readonly SkillDefinitionData[] = constantsData.SKILL_DEFINITIONS_DATA as ReadonlyArray<SkillDefinitionData>;
 
-// --- Skills (Remains in TS for now) ---
-export const ALL_SKILLS_3_5: Omit<Skill, 'id' | 'ranks' | 'miscModifier' | 'totalBonus' | 'abilityModifier' | 'isClassSkill'>[] = [
-  { name: "Appraise", keyAbility: "intelligence" },
-  { name: "Balance", keyAbility: "dexterity" },
-  { name: "Bluff", keyAbility: "charisma" },
-  { name: "Climb", keyAbility: "strength" },
-  { name: "Concentration", keyAbility: "constitution" },
-  { name: "Craft (Alchemy)", keyAbility: "intelligence" },
-  { name: "Craft (Armorsmithing)", keyAbility: "intelligence" },
-  { name: "Craft (Bowmaking)", keyAbility: "intelligence" },
-  { name: "Craft (Weaponsmithing)", keyAbility: "intelligence" },
-  { name: "Craft (Trapmaking)", keyAbility: "intelligence" },
-  { name: "Decipher Script", keyAbility: "intelligence" },
-  { name: "Diplomacy", keyAbility: "charisma" },
-  { name: "Disable Device", keyAbility: "intelligence" },
-  { name: "Disguise", keyAbility: "charisma" },
-  { name: "Escape Artist", keyAbility: "dexterity" },
-  { name: "Forgery", keyAbility: "intelligence" },
-  { name: "Gather Information", keyAbility: "charisma" },
-  { name: "Handle Animal", keyAbility: "charisma" },
-  { name: "Heal", keyAbility: "wisdom" },
-  { name: "Hide", keyAbility: "dexterity" },
-  { name: "Intimidate", keyAbility: "charisma" },
-  { name: "Jump", keyAbility: "strength" },
-  { name: "Knowledge (Arcana)", keyAbility: "intelligence" },
-  { name: "Knowledge (Architecture & Engineering)", keyAbility: "intelligence" },
-  { name: "Knowledge (Dungeoneering)", keyAbility: "intelligence" },
-  { name: "Knowledge (Geography)", keyAbility: "intelligence" },
-  { name: "Knowledge (History)", keyAbility: "intelligence" },
-  { name: "Knowledge (Local)", keyAbility: "intelligence" },
-  { name: "Knowledge (Nature)", keyAbility: "intelligence" },
-  { name: "Knowledge (Nobility & Royalty)", keyAbility: "intelligence" },
-  { name: "Knowledge (Religion)", keyAbility: "intelligence" },
-  { name: "Knowledge (The Planes)", keyAbility: "intelligence" },
-  { name: "Listen", keyAbility: "wisdom" },
-  { name: "Move Silently", keyAbility: "dexterity" },
-  { name: "Open Lock", keyAbility: "dexterity" },
-  { name: "Perform (Act)", keyAbility: "charisma" },
-  { name: "Perform (Sing)", keyAbility: "charisma" },
-  { name: "Perform (Dance)", keyAbility: "charisma" },
-  { name: "Profession (Herbalist)", keyAbility: "wisdom" },
-  { name: "Ride", keyAbility: "dexterity" },
-  { name: "Search", keyAbility: "intelligence" },
-  { name: "Sense Motive", keyAbility: "wisdom" },
-  { name: "Sleight of Hand", keyAbility: "dexterity" },
-  { name: "Spellcraft", keyAbility: "intelligence" },
-  { name: "Spot", keyAbility: "wisdom" },
-  { name: "Survival", keyAbility: "wisdom" },
-  { name: "Swim", keyAbility: "strength" },
-  { name: "Tumble", keyAbility: "dexterity" },
-  { name: "Use Magic Device", keyAbility: "charisma" },
-  { name: "Use Rope", keyAbility: "dexterity" },
-];
+export type ClassSkillsData = typeof constantsData.CLASS_SKILLS_DATA;
+export const CLASS_SKILLS: Readonly<ClassSkillsData> = constantsData.CLASS_SKILLS_DATA as Readonly<ClassSkillsData>;
+
+export type ClassSkillPointsBaseData = typeof constantsData.CLASS_SKILL_POINTS_BASE_DATA;
+export const CLASS_SKILL_POINTS_BASE: Readonly<ClassSkillPointsBaseData> = constantsData.CLASS_SKILL_POINTS_BASE_DATA as Readonly<ClassSkillPointsBaseData>;
+
+
+export function getInitialCharacterSkills(characterClasses: CharacterClass[]): Skill[] {
+  const firstClass = characterClasses[0]?.className as DndClass | undefined;
+  const classSkillsForCurrentClass = firstClass ? (CLASS_SKILLS[firstClass as keyof ClassSkillsData] || []) : [];
+
+  return SKILL_DEFINITIONS.map(def => {
+    // Handle generic Craft, Knowledge, Perform for class skill check
+    let isClassSkill = classSkillsForCurrentClass.includes(def.name);
+    if (!isClassSkill) {
+        if (def.name.startsWith("Craft (") && classSkillsForCurrentClass.includes("Craft (Any)")) {
+            isClassSkill = true;
+        } else if (def.name.startsWith("Knowledge (") && classSkillsForCurrentClass.includes("Knowledge (all skills, taken individually)")) {
+            isClassSkill = true;
+        } else if (def.name.startsWith("Perform (") && classSkillsForCurrentClass.includes("Perform (Any)")) {
+            isClassSkill = true;
+        } else if (def.name.startsWith("Profession (") && classSkillsForCurrentClass.includes("Profession (Any)")) {
+            isClassSkill = true;
+        }
+    }
+
+    return {
+      id: crypto.randomUUID(),
+      name: def.name,
+      keyAbility: def.keyAbility as AbilityName, // Ensure keyAbility is correctly typed
+      ranks: 0,
+      miscModifier: 0,
+      isClassSkill: isClassSkill,
+    };
+  });
+}
+
 
 // --- Aging Effects ---
 export type RaceCategory = keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA;
@@ -232,7 +217,7 @@ export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffect
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB; // Negative changes come before positive.
+            return signA - signB; 
         }
 
         const indexA = ABILITY_ORDER.indexOf(aAbility);
@@ -321,3 +306,4 @@ export function getRaceAbilityEffects(raceValue: DndRace): RaceAbilityEffectsDet
   }
   return { effects: appliedEffects };
 }
+

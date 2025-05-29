@@ -3,8 +3,8 @@
 
 import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRace, SizeAbilityEffectsDetails, AbilityScores, RaceAbilityEffectsDetails } from '@/types/character';
-import { DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, SIZES, ALIGNMENTS, ALL_SKILLS_3_5, DND_RACES, DND_CLASSES, getNetAgingEffects, GENDERS, DND_DEITIES, getSizeAbilityEffects, getRaceAbilityEffects } from '@/types/character';
+import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRace, SizeAbilityEffectsDetails, AbilityScores, RaceAbilityEffectsDetails, Skill as SkillType, DndClass } from '@/types/character';
+import { SIZES, ALIGNMENTS, DND_RACES, DND_CLASSES, getNetAgingEffects, GENDERS, DND_DEITIES, getSizeAbilityEffects, getRaceAbilityEffects, getInitialCharacterSkills } from '@/types/character';
 import constantsData from '@/data/dnd-constants.json';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,7 @@ import { ScrollText, Dices, UserSquare2, Palette, HelpCircle } from 'lucide-reac
 import { ComboboxPrimitive, type ComboboxOption } from '@/components/ui/combobox';
 import { cn } from '@/lib/utils';
 import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
+import { SkillsFormSection } from '@/components/SkillsFormSection'; // New Import
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 
@@ -28,27 +29,25 @@ interface CharacterFormCoreProps {
   isCreating: boolean;
 }
 
-// Generate a unique ID (for client-side use)
 const generateCUID = () => {
-  // Basic CUID-like structure, not truly collision-proof for distributed systems
-  // but good enough for client-side unique IDs.
   const s = (len: number) => Math.random().toString(36).substring(2, 2 + len);
   return `c${s(8)}${s(4)}${s(4)}${s(4)}${s(12)}`;
 };
 
 
 export function CharacterFormCore({ initialCharacter, onSave, isCreating }: CharacterFormCoreProps) {
-  const [character, setCharacter] = React.useState<Character>(
-    initialCharacter || {
+  const [character, setCharacter] = React.useState<Character>(() => {
+    const defaultClasses: CharacterClass[] = [{ id: generateCUID(), className: '', level: 1 }];
+    return initialCharacter || {
       id: generateCUID(),
       name: '',
       race: '', 
       alignment: '', 
       deity: '',
-      size: SIZES[4], // Medium
+      size: SIZES[4], 
       age: 20,
       gender: GENDERS[0].value, 
-      abilityScores: { ...DEFAULT_ABILITIES },
+      abilityScores: { ...JSON.parse(JSON.stringify(constantsData.DEFAULT_ABILITIES || {})) }, // Deep copy from JSON if available
       hp: 10,
       maxHp: 10,
       armorBonus: 0,
@@ -59,22 +58,16 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       dodgeBonus: 0,
       acMiscModifier: 0,
       initiativeMiscModifier: 0,
-      savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)), // Deep copy
-      classes: [{ id: generateCUID(), className: '', level: 1 }], 
-      skills: ALL_SKILLS_3_5.map(skill => ({
-        id: generateCUID(),
-        name: skill.name,
-        keyAbility: skill.keyAbility,
-        ranks: 0,
-        miscModifier: 0,
-        isClassSkill: false,
-      })),
+      savingThrows: JSON.parse(JSON.stringify(constantsData.DEFAULT_SAVING_THROWS || {})), // Deep copy
+      classes: defaultClasses,
+      skills: getInitialCharacterSkills(defaultClasses), // Initialize skills
       feats: [],
       inventory: [],
       personalStory: '',
       portraitDataUrl: undefined,
-    }
-  );
+    };
+  });
+
   const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<AgingEffectsDetails | null>(null);
   const [sizeAbilityEffectsDetails, setSizeAbilityEffectsDetails] = React.useState<SizeAbilityEffectsDetails | null>(null);
   const [raceAbilityEffectsDetails, setRaceAbilityEffectsDetails] = React.useState<RaceAbilityEffectsDetails | null>(null);
@@ -121,6 +114,16 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
   }, [character.race]);
 
+   // Re-initialize skills if class changes
+  React.useEffect(() => {
+    if (character.classes[0]?.className) {
+      setCharacter(prev => ({
+        ...prev,
+        skills: getInitialCharacterSkills(prev.classes)
+      }));
+    }
+  }, [character.classes[0]?.className]);
+
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -160,11 +163,47 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
   };
   
-  const handleClassChange = (value: string) => { // value is the className
-      setCharacter(prev => ({
-        ...prev,
-        classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: value, level: 1 }]
-      }));
+  const handleClassChange = (value: string) => { 
+      const newClassName = value;
+      setCharacter(prev => {
+        const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: newClassName, level: 1 }];
+        return {
+          ...prev,
+          classes: updatedClasses,
+          skills: getInitialCharacterSkills(updatedClasses) // Re-initialize skills based on new class
+        };
+      });
+  };
+
+  const handleSkillChange = (skillId: string, ranks: number, miscModifier: number) => {
+    setCharacter(prev => ({
+      ...prev,
+      skills: prev.skills.map(s =>
+        s.id === skillId ? { ...s, ranks, miscModifier } : s
+      ),
+    }));
+  };
+
+  const handleCustomSkillAdd = (skillName: string) => {
+    const newSkill: SkillType = {
+      id: generateCUID(),
+      name: skillName,
+      keyAbility: 'intelligence', // Default or make selectable later
+      ranks: 0,
+      miscModifier: 0,
+      isClassSkill: false, // Custom skills are not class skills by default
+    };
+    setCharacter(prev => ({
+      ...prev,
+      skills: [...prev.skills, newSkill],
+    }));
+  };
+  
+  const handleCustomSkillRemove = (skillId: string) => {
+    setCharacter(prev => ({
+      ...prev,
+      skills: prev.skills.filter(s => s.id !== skillId)
+    }));
   };
 
 
@@ -316,7 +355,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     isEditable={true}
                   />
                 </div>
-                 {isPredefinedRace && character.race && (
+                {isPredefinedRace && character.race && (
                    <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
                     <HelpCircle className="h-5 w-5" />
                   </Button>
@@ -447,8 +486,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   {ageEffectsDetails.categoryName && ageEffectsDetails.categoryName !== "Adult" && (
                      <div className="mt-0.5">{ageEffectsDetails.categoryName}</div>
                   )}
-                   {ageEffectsDetails.categoryName === "Adult" && ageEffectsDetails.effects.length === 0 && (
-                     <div className="mt-0.5">{/* Placeholder to maintain layout if needed, or remove if not causing alignment issues */}</div>
+                   {ageEffectsDetails.categoryName === "Adult" && ageEffectsDetails.effects.length === 0 && ageEffectsDetails.categoryName !== "Venerable" && (
+                     <div className="mt-0.5">{/* Placeholder for adult with no changes, if needed for alignment or remove if not */}</div>
                   )}
                 </div>
               )}
@@ -551,7 +590,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       <Card>
         <CardHeader>
           <div className="flex items-center space-x-3">
-             <UserSquare2 className="h-8 w-8 text-primary" /> {/* Or Palette icon for appearance */}
+             <UserSquare2 className="h-8 w-8 text-primary" /> 
             <div>
               <CardTitle className="text-2xl font-serif">
                 Personal Story & Portrait
@@ -564,7 +603,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         </CardHeader>
         <CardContent className="space-y-6 pt-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:items-stretch">
-            {/* Portrait Upload Area */}
             <div className="md:col-span-1 space-y-2 flex flex-col">
               <Label htmlFor="portraitUpload">Character Portrait</Label>
               <div className="aspect-square w-full bg-muted rounded-md flex items-center justify-center relative overflow-hidden border border-border shadow-sm">
@@ -584,7 +622,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                 onChange={handlePortraitChange}
                 className="text-sm file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
               />
-              {/* Fallback if image is not showing for placeholder */}
                {!character.portraitDataUrl && (
                 <div className="hidden">
                     <Image src="https://placehold.co/300x300.png" alt="Portrait Placeholder" width={300} height={300} data-ai-hint="fantasy portrait" />
@@ -592,7 +629,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               )}
             </div>
 
-            {/* Personal Story Textarea */}
             <div className="md:col-span-2 space-y-2 flex flex-col">
               <Label htmlFor="personalStory">Personal Story</Label>
               <Textarea
@@ -607,6 +643,17 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           </div>
         </CardContent>
       </Card>
+
+      {/* Skills Section */}
+      <SkillsFormSection
+        skills={character.skills}
+        abilityScores={character.abilityScores}
+        characterClasses={character.classes}
+        onSkillChange={handleSkillChange}
+        onCustomSkillAdd={handleCustomSkillAdd}
+        onCustomSkillRemove={handleCustomSkillRemove}
+      />
+
 
       <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-8">
         <Button type="button" variant="outline" size="lg" onClick={handleCancel} className="w-full md:w-auto">
@@ -628,3 +675,4 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
+

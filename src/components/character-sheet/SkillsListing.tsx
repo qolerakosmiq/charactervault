@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Character, Skill as SkillType, AbilityScores } from '@/types/character';
@@ -6,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Scroll } from 'lucide-react';
 import { getAbilityModifierByName, calculateSkillTotal, getCharacterOverallLevel } from '@/lib/dnd-utils';
-import { SKILL_DEFINITIONS, calculateMaxRanks } from '@/lib/constants';
+import { calculateMaxRanks } from '@/lib/constants';
+import { SKILL_DEFINITIONS } from '@/types/character'; // Corrected import path
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
