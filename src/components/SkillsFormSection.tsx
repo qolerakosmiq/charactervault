@@ -53,11 +53,12 @@ export function SkillsFormSection({
   const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0) : 0;
   const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace as DndRaceId | string);
 
+  // At level 1, (base + int_mod + racial_mod) * 4.
+  // For subsequent levels, (base + int_mod + racial_mod) per level.
+  // Since character creation is level 1, we only use the *4 multiplier.
   const pointsForFirstLevel = (baseSkillPointsForClass + intelligenceModifier + racialBonus) * 4;
-  const levelsAfterFirst = characterLevel > 1 ? characterLevel - 1 : 0;
-  const pointsForSubsequentLevels = (baseSkillPointsForClass + intelligenceModifier + racialBonus) * levelsAfterFirst;
+  const totalSkillPointsAvailable = pointsForFirstLevel;
 
-  const totalSkillPointsAvailable = pointsForFirstLevel + pointsForSubsequentLevels;
 
   const totalSkillPointsSpent = skills.reduce((acc, skill) => {
     const costMultiplier = skill.isClassSkill ? 1 : 2;
@@ -137,16 +138,14 @@ export function SkillsFormSection({
           </div>
            <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
             <p>
-                (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>) × <strong className="font-bold text-primary">4</strong>
-            </p>
-            <p>
-                + (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>) × <strong className="font-bold text-primary">[{levelsAfterFirst}]</strong> (for levels 2+)
+                (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>) × <strong className="font-bold text-primary">4</strong> (Multiplier for Level <strong className="font-bold text-primary">[{characterLevel}]</strong>)
             </p>
            </div>
         </div>
 
         <div className="space-y-1 -mx-1">
-          <div className="grid grid-cols-[auto_auto_1fr_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-xs">
+          {/* Header Row: Ensure this matches the number of columns in the rows below */}
+          <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-xs">
             <span className="text-center w-10">Class?</span>
             <span className="pl-1">Skill</span>
             <span className="text-center w-10">Total</span>
@@ -180,7 +179,8 @@ export function SkillsFormSection({
 
 
             return (
-              <div key={skill.id} className="grid grid-cols-[auto_auto_1fr_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">
+              <div key={skill.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">
+                {/* Col 1: Class Skill Checkbox */}
                 <div className="flex justify-center w-10">
                   <Checkbox
                     id={`skill_class_${skill.id}`}
@@ -201,6 +201,7 @@ export function SkillsFormSection({
                     className="h-3.5 w-3.5"
                   />
                 </div>
+                {/* Col 2: Skill Name & Buttons */}
                 <div className="flex items-center">
                      <Button
                         type="button"
@@ -211,8 +212,11 @@ export function SkillsFormSection({
                       >
                         <Info className="h-3 w-3" />
                       </Button>
+                    <Label htmlFor={`skill_ranks_${skill.id}`} className="text-xs truncate pr-1 leading-tight flex-grow">
+                          {skill.name}
+                    </Label>
                   {isCustomSkill && (
-                    <div className="flex items-center">
+                    <div className="flex items-center ml-auto">
                       <TooltipProvider delayDuration={100}>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -252,12 +256,13 @@ export function SkillsFormSection({
                      </div>
                   )}
                 </div>
-                <Label htmlFor={`skill_ranks_${skill.id}`} className="text-xs truncate pr-1 leading-tight">
-                      {skill.name}
-                </Label>
+                {/* Col 3: Total Bonus */}
                 <span className="font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
+                {/* Col 4: Key Ability */}
                 <span className="text-xs text-muted-foreground text-center w-10">{keyAbilityShort}</span>
+                {/* Col 5: Total Modifier */}
                 <span className="text-xs text-center w-10">{totalDisplayedModifier >= 0 ? '+' : ''}{totalDisplayedModifier}</span>
+                {/* Col 6: Ranks Input */}
                 <Input
                   id={`skill_ranks_${skill.id}`}
                   type="number"
@@ -268,7 +273,9 @@ export function SkillsFormSection({
                   max={maxRanksValue}
                   min="0"
                 />
+                {/* Col 7: Cost */}
                 <span className="text-xs text-muted-foreground text-center w-12">{skillCost}</span>
+                {/* Col 8: Max Ranks */}
                 <span className="text-xs text-muted-foreground text-center w-10">{maxRanksValue}</span>
               </div>
             );
@@ -302,5 +309,4 @@ export function SkillsFormSection({
     </>
   );
 }
-
     
