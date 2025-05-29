@@ -48,7 +48,7 @@ export function SkillsFormSection({
 
 
   const firstClass = characterClasses[0];
-  const characterLevel = firstClass?.level || 1;
+  const characterLevel = firstClass?.level || 1; // Character creation is at level 1
   const intelligenceModifier = getAbilityModifierByName(abilityScores, 'intelligence');
 
   const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0) : 0;
@@ -56,6 +56,8 @@ export function SkillsFormSection({
 
   // At 1st level, (Class Base + Int Mod + Racial Bonus per level) * 4
   const totalSkillPointsAvailable = (baseSkillPointsForClass + intelligenceModifier + racialBonus) * 4;
+  // For subsequent levels, it would be (Class Base + Int Mod + Racial Bonus per level) * (Level - 1)
+  // Since this form is for level 1, points from subsequent levels are 0.
 
   const totalSkillPointsSpent = skills.reduce((acc, skill) => {
     const costMultiplier = skill.isClassSkill ? 1 : 2;
@@ -106,6 +108,7 @@ export function SkillsFormSection({
     return skills.map(s => ({ value: s.id, label: s.name }));
   }, [skills]);
 
+  const levelsAfterFirst = characterLevel > 1 ? characterLevel - 1 : 0;
 
   return (
     <>
@@ -136,9 +139,14 @@ export function SkillsFormSection({
               )}>{skillPointsLeft}</span>
             </p>
           </div>
-           <p className="text-xs text-muted-foreground mt-1">
-            (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>) × <strong className="font-bold text-primary">4</strong> (Multiplier for Level <strong className="font-bold text-primary">[{characterLevel}]</strong>)
-          </p>
+           <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
+            <p>
+                (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>) × <strong className="font-bold text-primary">4</strong>
+            </p>
+            <p>
+                + (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>) × <strong className="font-bold text-primary">[{levelsAfterFirst}]</strong> (for levels 2+)
+            </p>
+           </div>
         </div>
 
         <div className="space-y-1 -mx-1">
