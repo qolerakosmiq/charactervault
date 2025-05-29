@@ -27,14 +27,15 @@
     { "value": "female", "label": "Female" }
   ],
   "DND_RACES_DATA": [
-    { 
-      "value": "human", 
-      "label": "Human", 
-      "description": "Humans are the most adaptable and ambitious people among the common races. Whatever their goals, humans are the innovators, the achievers, and the pioneers of the worlds."
+    {
+      "value": "human",
+      "label": "Human",
+      "description": "Humans are the most adaptable and ambitious people among the common races. Whatever their goals, humans are the innovators, the achievers, and the pioneers of the worlds.",
+      "bonusFeatSlots": 1
     },
-    { 
-      "value": "elf", 
-      "label": "Elf", 
+    {
+      "value": "elf",
+      "label": "Elf",
       "description": "Elves are a magical people of otherworldly grace, living in the world but not entirely part of it. They live in places of ethereal beauty, in the midst of ancient forests or in spires glittering with faerie light, where soft music drifts through the air and gentle fragrances waft on the breeze. Elves love nature and magic, art and artistry, music and poetry, and the good things of the world.",
       "racialSkillBonuses": {
         "listen": 2,
@@ -42,10 +43,10 @@
         "spot": 2
       }
     },
-    { 
-      "value": "dwarf", 
-      "label": "Dwarf", 
-      "description": "Dwarves are known for their skill in warfare, their ability to withstand physical and magical punishment, their knowledge of the earth’s secrets, their hard work, and their capacity for drinking ale. Their kingdoms are spread across the mountains of the world, where they mine gems and precious metals and forge items of wonder." 
+    {
+      "value": "dwarf",
+      "label": "Dwarf",
+      "description": "Dwarves are known for their skill in warfare, their ability to withstand physical and magical punishment, their knowledge of the earth’s secrets, their hard work, and their capacity for drinking ale. Their kingdoms are spread across the mountains of the world, where they mine gems and precious metals and forge items of wonder."
     },
     { "value": "halfling", "label": "Halfling", "description": "Halflings are an affable and cheerful people. They cherish the bonds of family and friendship as well as the comforts of hearth and home, harboring few dreams of gold or glory. Even adventurers among them usually venture into the world for reasons of community, friendship, wanderlust, or curiosity." },
     { "value": "gnome", "label": "Gnome", "description": "Gnomes are welcome everywhere as technicians, alchemists, and inventors. Despite the demand for their skills, most gnomes prefer to remain among their own kind, living in comfortable burrows beneath rolling, wooded hills." },
@@ -63,9 +64,9 @@
     { "value": "ranger", "label": "Ranger", "hitDice": "d8" },
     { "value": "rogue", "label": "Rogue", "hitDice": "d6" },
     { "value": "sorcerer", "label": "Sorcerer", "hitDice": "d4" },
-    { 
-      "value": "wizard", 
-      "label": "Wizard", 
+    {
+      "value": "wizard",
+      "label": "Wizard",
       "hitDice": "d4",
       "grantedFeats": [
         { "featId": "scribe-scroll", "note": "(Wizard Bonus Feat)", "levelAcquired": 1 }
@@ -158,7 +159,7 @@
     { "value": "mobility", "label": "Mobility", "description": "+4 dodge bonus to AC against attacks of opportunity from moving out of or within a threatened area.", "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge"] } },
     { "value": "mounted-archery", "label": "Mounted Archery", "description": "Half penalty for ranged attacks while mounted and moving.", "prerequisites": { "skills": [{ "id": "ride", "ranks": 1 }], "feats": ["mounted-combat"] } },
     { "value": "mounted-combat", "label": "Mounted Combat", "description": "Once per round, negate a hit on your mount with a Ride check.", "prerequisites": { "skills": [{ "id": "ride", "ranks": 1 }] } },
-    { "value": "natural-spell", "label": "Natural Spell", "description": "Cast spells while in wild shape.", "prerequisites": { "abilities": { "wisdom": 13 }, "special": "wild shape ability" } },
+    { "value": "natural-spell", "label": "Natural Spell", "description": "Cast spells while in wild shape.", "prerequisites": { "abilities": { "wisdom": 13 }, "special": "Wild shape ability" } },
     { "value": "negotiator", "label": "Negotiator", "description": "+2 bonus on Diplomacy and Sense Motive checks.", "effects": { "skills": { "diplomacy": 2, "sense-motive": 2 } } },
     { "value": "nimble-fingers", "label": "Nimble Fingers", "description": "+2 bonus on Disable Device and Open Lock checks.", "effects": { "skills": { "disable-device": 2, "open-lock": 2 } } },
     { "value": "persuasive", "label": "Persuasive", "description": "+2 bonus on Bluff and Intimidate checks.", "effects": { "skills": { "bluff": 2, "intimidate": 2 } } },
@@ -224,7 +225,7 @@
     "dwarf": 250,
     "halfling": 100,
     "gnome": 200,
-    "half-elf": 125, 
+    "half-elf": 125,
     "half-orc": 60
   },
   "RACE_TO_AGING_CATEGORY_MAP_DATA": {
@@ -233,7 +234,7 @@
     "dwarf": "dwarf",
     "gnome": "gnome",
     "halfling": "halfling",
-    "half-elf": "elf", 
+    "half-elf": "elf",
     "half-orc": "orc"
   },
   "DND_RACE_AGING_EFFECTS_DATA": {
@@ -272,7 +273,7 @@
         { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
       ]
     },
-    "orc": { 
+    "orc": {
       "categories": [
         { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
         { "categoryName": "old", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
@@ -425,5 +426,3 @@
     ]
   }
 }
-
-    

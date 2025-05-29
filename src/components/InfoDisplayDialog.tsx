@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ScrollText, CheckSquare } from 'lucide-react'; // Added CheckSquare
+import { ScrollText, CheckSquare, Award } from 'lucide-react'; // Added Award
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { AbilityName } from '@/types/character';
 import { cn } from '@/lib/utils';
@@ -23,7 +23,8 @@ interface InfoDisplayDialogProps {
   content?: string;
   abilityModifiers?: Array<{ ability: AbilityName; change: number }>;
   skillBonuses?: Array<{ skillName: string; bonus: number }>;
-  grantedFeats?: Array<{ name: string; note?: string }>; 
+  grantedFeats?: Array<{ name: string; note?: string }>;
+  bonusFeatSlots?: number;
 }
 
 export function InfoDisplayDialog({
@@ -34,7 +35,14 @@ export function InfoDisplayDialog({
   abilityModifiers,
   skillBonuses,
   grantedFeats,
+  bonusFeatSlots,
 }: InfoDisplayDialogProps) {
+  const hasAnyBonusSection =
+    (abilityModifiers && abilityModifiers.length > 0) ||
+    (skillBonuses && skillBonuses.length > 0) ||
+    (grantedFeats && grantedFeats.length > 0) ||
+    (bonusFeatSlots && bonusFeatSlots > 0);
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md md:max-w-lg">
@@ -65,7 +73,7 @@ export function InfoDisplayDialog({
                           "font-bold",
                           change > 0 && "text-emerald-500",
                           change < 0 && "text-destructive",
-                          change === 0 && "text-muted-foreground" 
+                          change === 0 && "text-muted-foreground"
                         )}
                       >
                         {change > 0 ? '+' : ''}{change}
@@ -96,13 +104,21 @@ export function InfoDisplayDialog({
             </>
           )}
 
-          {grantedFeats && grantedFeats.length > 0 && (
+          {(grantedFeats && grantedFeats.length > 0) || (bonusFeatSlots && bonusFeatSlots > 0) ? (
             <>
               {(content || (abilityModifiers && abilityModifiers.length > 0) || (skillBonuses && skillBonuses.length > 0)) && <Separator className="my-4" />}
               <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">Granted Feats:</h3>
+                <h3 className="text-md font-semibold mb-2 text-foreground flex items-center">
+                    <Award className="mr-2 h-4 w-4 text-primary/80" /> Racial Feat Bonuses:
+                </h3>
                 <ul className="space-y-1 text-sm">
-                  {grantedFeats.map(({ name, note }, index) => (
+                  {bonusFeatSlots && bonusFeatSlots > 0 && (
+                    <li className="flex items-center">
+                      <CheckSquare className="h-4 w-4 mr-2 text-primary/80" />
+                      <span>Bonus Feat Slots: +{bonusFeatSlots}</span>
+                    </li>
+                  )}
+                  {grantedFeats && grantedFeats.map(({ name, note }, index) => (
                     <li key={`${name}-${index}`} className="flex items-center">
                       <CheckSquare className="h-4 w-4 mr-2 text-primary/80" />
                       <span>{name} {note && <span className="text-muted-foreground text-xs">{note}</span>}</span>
@@ -111,7 +127,9 @@ export function InfoDisplayDialog({
                 </ul>
               </div>
             </>
-          )}
+          ) : null}
+
+
         </ScrollArea>
         <DialogFooter className="mt-2">
           <Button onClick={() => onOpenChange(false)}>Close</Button>
@@ -120,5 +138,3 @@ export function InfoDisplayDialog({
     </Dialog>
   );
 }
-
-    

@@ -35,16 +35,16 @@ interface CharacterFormCoreProps {
 export function CharacterFormCore({ initialCharacter, onSave, isCreating }: CharacterFormCoreProps) {
   const [character, setCharacter] = React.useState<Character>(() => {
     const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: '', level: 1 }];
-    const initialFeats = getGrantedFeatsForCharacter('', defaultClasses, 1); // Get initial granted feats
+    const initialFeats = getGrantedFeatsForCharacter('', defaultClasses, 1);
     return initialCharacter || {
       id: crypto.randomUUID(),
       name: '',
-      race: '' as DndRaceId,
-      alignment: '' as CharacterAlignment,
+      race: '',
+      alignment: '',
       deity: '',
-      size: 'medium' as CharacterSize,
+      size: 'medium',
       age: 20,
-      gender: '' as GenderId,
+      gender: '',
       abilityScores: { ...JSON.parse(JSON.stringify(constantsData.DEFAULT_ABILITIES || {})) },
       hp: 10,
       maxHp: 10,
@@ -59,7 +59,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       savingThrows: JSON.parse(JSON.stringify(constantsData.DEFAULT_SAVING_THROWS || {})),
       classes: defaultClasses,
       skills: getInitialCharacterSkills(defaultClasses),
-      feats: initialFeats, // Initialize with granted feats
+      feats: initialFeats,
       inventory: [],
       personalStory: '',
       portraitDataUrl: undefined,
@@ -71,7 +71,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const [raceSpecialQualities, setRaceSpecialQualities] = React.useState<RaceSpecialQualities | null>(null);
   const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
-  const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<{ title: string; content?: string; abilityModifiers?: RaceSpecialQualities['abilityEffects']; skillBonuses?: RaceSpecialQualities['skillBonuses'], grantedFeats?: Array<{name: string, note?: string}> } | null>(null);
+  const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<{ title: string; content?: string; abilityModifiers?: RaceSpecialQualities['abilityEffects']; skillBonuses?: RaceSpecialQualities['skillBonuses'], grantedFeats?: RaceSpecialQualities['grantedFeats'], bonusFeatSlots?: number } | null>(null);
 
 
   const router = useRouter();
@@ -106,7 +106,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   }, [character.race]);
 
   React.useEffect(() => {
-    if (character.race && isCreating) { 
+    if (character.race) {
       const selectedRaceInfo = DND_RACES.find(r => r.value === character.race);
       if (selectedRaceInfo) {
         const raceKey = selectedRaceInfo.value as DndRaceId;
@@ -116,36 +116,36 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         }
       }
     }
-  }, [character.race, character.age, isCreating]); 
+  }, [character.race, character.age]);
 
 
   React.useEffect(() => {
     const existingCustomSkillsMap = new Map<string, Partial<SkillType>>();
     character.skills.forEach(skill => {
-      if (!SKILL_DEFINITIONS.some(def => def.value === skill.id)) { 
+      if (!SKILL_DEFINITIONS.some(def => def.value === skill.id)) {
         existingCustomSkillsMap.set(skill.id, {
           name: skill.name,
           keyAbility: skill.keyAbility,
-          isClassSkill: skill.isClassSkill, 
+          isClassSkill: skill.isClassSkill,
           providesSynergies: skill.providesSynergies,
           description: skill.description,
-          ranks: 0, 
-          miscModifier: 0 
+          ranks: 0,
+          miscModifier: 0
         });
       }
     });
-  
+
     const newPredefinedSkills = getInitialCharacterSkills(character.classes);
     const finalSkillsMap = new Map<string, SkillType>();
-  
+
     newPredefinedSkills.forEach(predefinedSkill => {
-      finalSkillsMap.set(predefinedSkill.id, { 
-        ...predefinedSkill, 
-        ranks: 0, 
-        miscModifier: 0 
+      finalSkillsMap.set(predefinedSkill.id, {
+        ...predefinedSkill,
+        ranks: 0,
+        miscModifier: 0
       });
     });
-  
+
     existingCustomSkillsMap.forEach((customSkillData, skillId) => {
       finalSkillsMap.set(skillId, {
         id: skillId,
@@ -159,29 +159,29 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       });
     });
 
-    // Handle granted feats
     const characterLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1;
     const newGrantedFeats = getGrantedFeatsForCharacter(character.race, character.classes, characterLevel);
-    
-    // Preserve user-chosen feats
+
     const userChosenFeats = character.feats.filter(feat => !feat.isGranted);
-    
-    // Combine and deduplicate, ensuring granted feats are always present
+
     const combinedFeatsMap = new Map<string, FeatType>();
-    newGrantedFeats.forEach(feat => combinedFeatsMap.set(feat.id, feat)); // Add granted first
-    userChosenFeats.forEach(feat => { // Add chosen, but don't overwrite if ID matches a granted one (unlikely but safe)
-        if (!combinedFeatsMap.has(feat.id)) {
-            combinedFeatsMap.set(feat.id, feat);
+    newGrantedFeats.forEach(feat => combinedFeatsMap.set(feat.id, feat));
+    userChosenFeats.forEach(feat => {
+        if (!combinedFeatsMap.has(feat.id) || feat.canTakeMultipleTimes) {
+             // For multiple-takable feats, we allow adding them even if a granted version exists.
+             // However, a better approach for "instances" of feats might be needed later.
+             // For now, simply adding it will work, but they'll all share the same base ID.
+            combinedFeatsMap.set(feat.isGranted ? `${feat.id}-${crypto.randomUUID()}` : feat.id, feat);
         }
     });
-    
+
     setCharacter(prev => ({
       ...prev,
       skills: Array.from(finalSkillsMap.values()).sort((a, b) => a.name.localeCompare(b.name)),
       feats: Array.from(combinedFeatsMap.values()),
     }));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [character.classes[0]?.className, character.race]); 
+  }, [character.classes[0]?.className, character.race]);
 
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -257,7 +257,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
  const handleCustomSkillAdd = (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
     const newSkill: SkillType = {
-      id: crypto.randomUUID(), 
+      id: crypto.randomUUID(),
       name: skillData.name,
       keyAbility: skillData.keyAbility,
       ranks: 0,
@@ -300,17 +300,22 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const handleFeatSelectionChange = (newlyChosenFeats: FeatType[]) => {
     const characterLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1;
     const autoGrantedFeats = getGrantedFeatsForCharacter(character.race, character.classes, characterLevel);
-    
-    const finalFeatsSet = new Set<FeatType>();
-    autoGrantedFeats.forEach(feat => finalFeatsSet.add(feat));
-    newlyChosenFeats.forEach(feat => {
-        const existing = Array.from(finalFeatsSet).find(f => f.id === feat.id);
-        if(!existing || (existing && feat.canTakeMultipleTimes)) {
-             finalFeatsSet.add({...feat, isGranted: false }); // Ensure chosen are not marked as granted
+
+    const finalFeatsMap = new Map<string, FeatType>();
+    autoGrantedFeats.forEach(feat => finalFeatsMap.set(feat.id, feat)); // Add granted first
+
+    newlyChosenFeats.forEach(feat => { // Add chosen
+        // If feat can be taken multiple times, generate a unique ID for this instance
+        const featIdToStore = (feat.canTakeMultipleTimes && finalFeatsMap.has(feat.id))
+            ? `${feat.id}-${crypto.randomUUID()}`
+            : feat.id;
+
+        if (!finalFeatsMap.has(featIdToStore) || feat.canTakeMultipleTimes) {
+           finalFeatsMap.set(featIdToStore, { ...feat, isGranted: false });
         }
     });
 
-    setCharacter(prev => ({ ...prev, feats: Array.from(finalFeatsSet) }));
+    setCharacter(prev => ({ ...prev, feats: Array.from(finalFeatsMap.values()) }));
   };
 
 
@@ -335,17 +340,13 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     const selectedRace = DND_RACES.find(r => r.value === character.race);
     if (selectedRace) {
       const qualities = getRaceSpecialQualities(selectedRace.value as DndRaceId);
-      const grantedFeatInfo = qualities.grantedFeats?.map(gf => {
-        const featDef = DND_FEATS.find(f => f.value === gf.featId);
-        return { name: featDef?.label || gf.featId, note: gf.note };
-      }).filter(Boolean);
-
       setCurrentInfoDialogData({
         title: selectedRace.label,
         content: selectedRace.description,
         abilityModifiers: qualities.abilityEffects,
         skillBonuses: qualities.skillBonuses,
-        grantedFeats: grantedFeatInfo as Array<{name: string, note?: string}> | undefined
+        grantedFeats: qualities.grantedFeats,
+        bonusFeatSlots: qualities.bonusFeatSlots
       });
       setIsInfoDialogOpen(true);
     }
@@ -518,7 +519,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
                 )}
               </div>
-              {raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 ? (
+              {raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
                 <p className="text-xs text-muted-foreground mt-1 ml-1">
                   {raceSpecialQualities.abilityEffects.map((effect, index) => (
                       <React.Fragment key={effect.ability}>
@@ -534,7 +535,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                       </React.Fragment>
                     ))}
                 </p>
-              ) : character.race && isPredefinedRace && (
+              )}
+               {raceSpecialQualities && raceSpecialQualities.abilityEffects.length === 0 && (
                  <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
               )}
             </div>
@@ -871,10 +873,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         abilityModifiers={currentInfoDialogData.abilityModifiers}
         skillBonuses={currentInfoDialogData.skillBonuses}
         grantedFeats={currentInfoDialogData.grantedFeats}
+        bonusFeatSlots={currentInfoDialogData.bonusFeatSlots}
       />
     )}
     </>
   );
 }
-
-    
