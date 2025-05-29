@@ -10,7 +10,7 @@ export interface CharacterClass {
 
 export interface CustomSynergyRule {
   id: string; 
-  targetSkillName: string; 
+  targetSkillName: string; // This will store the ID of the target skill
   ranksInThisSkillRequired: number; 
   bonusGranted: number;
 }
@@ -29,14 +29,14 @@ export interface Skill {
 export interface FeatPrerequisiteDetails {
   bab?: number;
   abilities?: Partial<Record<AbilityName, number>>;
-  skills?: Array<{ id: string; ranks: number }>;
-  feats?: string[]; 
+  skills?: Array<{ id: string; ranks: number }>; // skill ID
+  feats?: string[]; // feat IDs
   casterLevel?: number;
   special?: string;
 }
 
 export interface FeatEffectDetails {
-  skills?: Record<string, number>; 
+  skills?: Record<string, number>; // skill ID to bonus
 }
 
 export type FeatDefinitionJsonData = {
@@ -57,7 +57,7 @@ export interface Feat {
   effects?: FeatEffectDetails;
   canTakeMultipleTimes?: boolean;
   requiresSpecialization?: string;
-  specializationDetail?: string; // To store the user's choice for specialized feats
+  specializationDetail?: string; 
 }
 
 export interface Item {
@@ -132,8 +132,10 @@ export const ALIGNMENTS: ReadonlyArray<{value: CharacterAlignment, label: string
 export type GenderId = typeof constantsData.GENDERS_DATA[number]['value'];
 export const GENDERS: ReadonlyArray<{value: GenderId, label: string}> = constantsData.GENDERS_DATA as ReadonlyArray<{value: GenderId, label: string}>;
 
-export type DndRaceId = typeof constantsData.DND_RACES_DATA[number]['value'];
-export const DND_RACES: ReadonlyArray<{value: DndRaceId, label: string}> = constantsData.DND_RACES_DATA as ReadonlyArray<{value: DndRaceId, label: string}>;
+export type DndRaceOption = typeof constantsData.DND_RACES_DATA[number];
+export type DndRaceId = DndRaceOption['value'];
+export const DND_RACES: ReadonlyArray<DndRaceOption> = constantsData.DND_RACES_DATA as ReadonlyArray<DndRaceOption>;
+
 
 export type DndClassId = typeof constantsData.DND_CLASSES_DATA[number]['value'];
 export const DND_CLASSES: ReadonlyArray<{value: DndClassId, label: string, hitDice: string}> = constantsData.DND_CLASSES_DATA as ReadonlyArray<{value: DndClassId, label: string, hitDice: string}>;
@@ -145,7 +147,7 @@ export const DND_DEITIES: ReadonlyArray<{value: DndDeityId, label: string}> = co
 export const DND_FEATS: readonly FeatDefinitionJsonData[] = constantsData.DND_FEATS_DATA as ReadonlyArray<FeatDefinitionJsonData>;
 
 
-export type SkillDefinitionJsonData = typeof constantsData.SKILL_DEFINITIONS_DATA[number] & { description?: string };
+export type SkillDefinitionJsonData = typeof constantsData.SKILL_DEFINITIONS_DATA[number] & { description: string };
 export const SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[] = constantsData.SKILL_DEFINITIONS_DATA as ReadonlyArray<SkillDefinitionJsonData>;
 
 export type ClassSkillsJsonData = typeof constantsData.CLASS_SKILLS_DATA;
@@ -167,7 +169,7 @@ export function getInitialCharacterSkills(characterClasses: CharacterClass[]): S
 
   return SKILL_DEFINITIONS.map(def => {
     let isClassSkill = classSkillsForCurrentClass.includes(def.value); 
-    if (!isClassSkill) {
+    if (!isClassSkill && def.value) {
         const skillCategory = def.value.split('-')[0]; 
         if (classSkillsForCurrentClass.includes(`${skillCategory}-any`) || classSkillsForCurrentClass.includes(`${skillCategory}-all`)) {
             isClassSkill = true;
@@ -363,7 +365,7 @@ export function calculateTotalSynergyBonus(targetSkillId: string, currentCharact
   for (const providingSkill of currentCharacterSkills) {
     if (providingSkill.providesSynergies) {
       for (const customRule of providingSkill.providesSynergies) {
-        if (customRule.targetSkillName === targetSkillId) { 
+        if (customRule.targetSkillName === targetSkillId) { // targetSkillName is an ID
           if ((providingSkill.ranks || 0) >= customRule.ranksInThisSkillRequired) {
             totalBonus += customRule.bonusGranted;
           }
@@ -400,16 +402,17 @@ export function calculateAvailableFeats(race: DndRaceId | string, level: number)
 
 export function checkFeatPrerequisites(
   featDefinition: FeatDefinitionJsonData,
-  character: Pick<Character, 'abilityScores' | 'skills' | 'feats' | 'classes' | 'race' | 'age'>, // Added age and race
+  character: Pick<Character, 'abilityScores' | 'skills' | 'feats' | 'classes' | 'race' | 'age'>, 
   allFeatDefinitions: readonly FeatDefinitionJsonData[]
 ): { met: boolean; metMessages: string[]; unmetMessages: string[]; } {
   const { prerequisites } = featDefinition;
+  const unmetMessages: string[] = [];
+  const metMessages: string[] = [];
+
   if (!prerequisites) {
     return { met: true, unmetMessages: [], metMessages: [] };
   }
 
-  const unmetMessages: string[] = [];
-  const metMessages: string[] = [];
 
   if (prerequisites.bab !== undefined) {
     const characterBab = getBab(character.classes)[0]; 
@@ -466,10 +469,7 @@ export function checkFeatPrerequisites(
   }
   
   if (prerequisites.special) {
-    // For simplicity, special prerequisites are assumed met for now or need manual verification.
-    // This part can be expanded if specific special conditions need programmatic checks.
-    // Example: check for "Wizard level 1st" might look at character.classes
-    let specialMet = true; // Assume met by default
+    let specialMet = true; 
     if (prerequisites.special.toLowerCase().includes("fighter level")) {
         const requiredLevel = parseInt(prerequisites.special.toLowerCase().replace(/[^0-9]/g, ''), 10);
         const fighterClass = character.classes.find(c => c.className === 'fighter');
@@ -483,9 +483,7 @@ export function checkFeatPrerequisites(
             specialMet = false;
         }
     }
-    // Add more specific checks here as needed.
-
-
+    
     if (specialMet) {
         metMessages.push(prerequisites.special);
     } else {
@@ -495,3 +493,5 @@ export function checkFeatPrerequisites(
 
   return { met: unmetMessages.length === 0, unmetMessages, metMessages };
 }
+
+    

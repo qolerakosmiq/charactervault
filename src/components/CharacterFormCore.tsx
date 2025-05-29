@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRaceId, SizeAbilityEffectsDetails, AbilityScores, RaceAbilityEffectsDetails, Skill as SkillType, DndClassId, CustomSynergyRule, DndDeityId, GenderId, Feat as FeatType } from '@/types/character';
+import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRaceId, SizeAbilityEffectsDetails, AbilityScores, RaceAbilityEffectsDetails, Skill as SkillType, DndClassId, CustomSynergyRule, DndDeityId, GenderId, Feat as FeatType, DndRaceOption } from '@/types/character';
 import { SIZES, ALIGNMENTS, DND_RACES, DND_CLASSES, getNetAgingEffects, GENDERS, DND_DEITIES, getSizeAbilityEffects, getRaceAbilityEffects, getInitialCharacterSkills, SKILL_DEFINITIONS } from '@/types/character';
 import constantsData from '@/data/dnd-constants.json';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ import { SkillsFormSection } from '@/components/SkillsFormSection';
 import { FeatsFormSection } from '@/components/FeatsFormSection';
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
+import { InfoDisplayDialog } from '@/components/InfoDisplayDialog'; // New import
 
 interface CharacterFormCoreProps {
   initialCharacter?: Character;
@@ -37,12 +38,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     return initialCharacter || {
       id: crypto.randomUUID(),
       name: '',
-      race: '' as DndRaceId, // No default selection
-      alignment: '' as CharacterAlignment, // No default selection
+      race: '' as DndRaceId, 
+      alignment: '' as CharacterAlignment, 
       deity: '',
-      size: 'medium', // Default to medium
-      age: 20, // Generic default, will be adjusted if race with min age is selected
-      gender: '' as GenderId, // No default selection
+      size: 'medium' as CharacterSize, 
+      age: 20, 
+      gender: '' as GenderId, 
       abilityScores: { ...JSON.parse(JSON.stringify(constantsData.DEFAULT_ABILITIES || {})) },
       hp: 10,
       maxHp: 10,
@@ -68,6 +69,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const [sizeAbilityEffectsDetails, setSizeAbilityEffectsDetails] = React.useState<SizeAbilityEffectsDetails | null>(null);
   const [raceAbilityEffectsDetails, setRaceAbilityEffectsDetails] = React.useState<RaceAbilityEffectsDetails | null>(null);
   const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
+  const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false); // For generic info dialog
+  const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<{ title: string; content: string } | null>(null); // For generic info dialog
+
   const router = useRouter();
   const { toast } = useToast();
 
@@ -113,12 +117,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   }, [character.race, character.age]);
 
   React.useEffect(() => {
-    const firstClassId = character.classes[0]?.className as DndClassId | undefined;
-
     const existingCustomSkillsMap = new Map<string, Partial<SkillType>>();
     character.skills.forEach(skill => {
-      if (!SKILL_DEFINITIONS.some(def => def.value === skill.id)) {
-        existingCustomSkillsMap.set(skill.id, {
+      if (!SKILL_DEFINITIONS.some(def => def.value === skill.id)) { // Predefined skills are identified by their value/ID
+        existingCustomSkillsMap.set(skill.id, { // Custom skills have UUIDs
           name: skill.name,
           keyAbility: skill.keyAbility,
           isClassSkill: skill.isClassSkill,
@@ -138,18 +140,18 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     });
 
     existingCustomSkillsMap.forEach((customSkillData, skillId) => {
-      finalSkillsMap.set(skillId, {
+      finalSkillsMap.set(skillId, { // Add or overwrite with custom skill data
         id: skillId,
         name: customSkillData.name!,
         keyAbility: customSkillData.keyAbility!,
         isClassSkill: customSkillData.isClassSkill!,
         providesSynergies: customSkillData.providesSynergies,
         description: customSkillData.description,
-        ranks: 0,
-        miscModifier: 0,
+        ranks: 0, // Reset ranks
+        miscModifier: 0, // Reset misc mods
       });
     });
-
+    
     setCharacter(prev => ({
       ...prev,
       skills: Array.from(finalSkillsMap.values()).sort((a, b) => a.name.localeCompare(b.name)),
@@ -237,7 +239,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const handleCustomSkillAdd = (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
     const newSkill: SkillType = {
-      id: crypto.randomUUID(), // Custom skills get a UUID
+      id: crypto.randomUUID(), 
       name: skillData.name,
       keyAbility: skillData.keyAbility,
       ranks: 0,
@@ -297,6 +299,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const handleCancel = () => {
     router.push('/');
+  };
+
+  const handleOpenInfoDialog = (title: string, content?: string) => {
+    setCurrentInfoDialogData({ title, content: content || "No description available." });
+    setIsInfoDialogOpen(true);
   };
 
 
@@ -404,7 +411,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         return (constantsData.DND_RACE_MIN_ADULT_AGE_DATA as Record<DndRaceId, number>)[selectedRaceInfo.value as DndRaceId] || 1;
         }
     }
-    return 1; // Default min age if race is not selected or not found
+    return 1; 
   }, [character.race]);
 
 
@@ -447,7 +454,16 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   />
                 </div>
                 {isPredefinedRace && (
-                   <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
+                   <Button 
+                      type="button" 
+                      variant="ghost" 
+                      size="icon" 
+                      className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
+                      onClick={() => {
+                        const raceData = DND_RACES.find(r => r.value === character.race);
+                        if (raceData) handleOpenInfoDialog(raceData.label, raceData.description);
+                      }}
+                    >
                     <Info className="h-5 w-5" />
                   </Button>
                 )}
@@ -570,7 +586,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                             {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                           </React.Fragment>
                         ))}
-                        <div className="mt-0.5">{constantsData.DND_RACE_AGING_EFFECTS_DATA[constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA[character.race as DndRaceId] as keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA]?.categories.find(c => c.categoryName === ageEffectsDetails.categoryName)?.categoryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || ageEffectsDetails.categoryName}</div>
+                         {ageEffectsDetails.categoryName !== "adult" && <div className="mt-0.5">{constantsData.DND_RACE_AGING_EFFECTS_DATA[constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA[character.race as DndRaceId] as keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA]?.categories.find(c => c.categoryName === ageEffectsDetails.categoryName)?.categoryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || ageEffectsDetails.categoryName}</div>}
                       </>
                     ) : (
                       <>
@@ -772,6 +788,16 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         onScoresApplied={handleApplyRolledScores}
       />
     )}
+    {isInfoDialogOpen && currentInfoDialogData && (
+      <InfoDisplayDialog
+        isOpen={isInfoDialogOpen}
+        onOpenChange={setIsInfoDialogOpen}
+        title={currentInfoDialogData.title}
+        content={currentInfoDialogData.content}
+      />
+    )}
     </>
   );
 }
+
+    

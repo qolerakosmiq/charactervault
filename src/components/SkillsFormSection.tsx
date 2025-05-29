@@ -16,7 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
-import { SkillInfoDialog } from '@/components/SkillInfoDialog';
+import { InfoDisplayDialog } from '@/components/InfoDisplayDialog'; // Updated import
 
 interface SkillsFormSectionProps {
   skills: SkillType[];
@@ -43,8 +43,8 @@ export function SkillsFormSection({
 }: SkillsFormSectionProps) {
   const [isAddOrEditSkillDialogOpen, setIsAddOrEditSkillDialogOpen] = React.useState(false);
   const [skillToEdit, setSkillToEdit] = React.useState<SkillType | undefined>(undefined);
-  const [isSkillInfoDialogOpen, setIsSkillInfoDialogOpen] = React.useState(false);
-  const [selectedSkillForInfo, setSelectedSkillForInfo] = React.useState<SkillType | undefined>(undefined);
+  const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false); // Renamed state
+  const [currentSkillInfo, setCurrentSkillInfo] = React.useState<{title: string, content: string} | null>(null); // Renamed state
 
   const firstClass = characterClasses[0];
   const characterLevel = firstClass?.level || 1;
@@ -77,8 +77,8 @@ export function SkillsFormSection({
   };
 
   const handleOpenSkillInfoDialog = (skill: SkillType) => {
-    setSelectedSkillForInfo(skill);
-    setIsSkillInfoDialogOpen(true);
+    setCurrentSkillInfo({ title: skill.name, content: skill.description || "No description available." });
+    setIsInfoDialogOpen(true);
   };
 
   const handleSaveCustomSkill = (skillData: { id?: string; name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
@@ -150,7 +150,7 @@ export function SkillsFormSection({
             <p>
                 + (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
                 {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
-                {racialBonus !== 0 && (
+                 {racialBonus !== 0 && (
                   <>
                     {' + '}Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>
                   </>
@@ -161,7 +161,6 @@ export function SkillsFormSection({
         </div>
 
         <div className="space-y-1 -mx-1">
-          {/* Header Row: Ensure this matches the number of columns in the rows below */}
           <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-xs">
             <span className="text-center w-10">Class?</span>
             <span className="pl-1">Skill</span>
@@ -197,7 +196,6 @@ export function SkillsFormSection({
 
             return (
               <div key={skill.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">
-                {/* Col 1: Class Skill Checkbox */}
                 <div className="flex justify-center w-10">
                   <Checkbox
                     id={`skill_class_${skill.id}`}
@@ -218,7 +216,6 @@ export function SkillsFormSection({
                     className="h-3.5 w-3.5"
                   />
                 </div>
-                {/* Col 2: Skill Name & Buttons */}
                 <div className="flex items-center">
                      <Button
                         type="button"
@@ -273,13 +270,9 @@ export function SkillsFormSection({
                      </div>
                   )}
                 </div>
-                {/* Col 3: Total Bonus */}
                 <span className="font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
-                {/* Col 4: Key Ability */}
                 <span className="text-xs text-muted-foreground text-center w-10">{keyAbilityShort}</span>
-                {/* Col 5: Total Modifier */}
                 <span className="text-xs text-center w-10">{totalDisplayedModifier >= 0 ? '+' : ''}{totalDisplayedModifier}</span>
-                {/* Col 6: Ranks Input */}
                 <Input
                   id={`skill_ranks_${skill.id}`}
                   type="number"
@@ -290,9 +283,7 @@ export function SkillsFormSection({
                   max={maxRanksValue}
                   min="0"
                 />
-                {/* Col 7: Cost */}
                 <span className="text-xs text-muted-foreground text-center w-12">{skillCost}</span>
-                {/* Col 8: Max Ranks */}
                 <span className="text-xs text-muted-foreground text-center w-10">{maxRanksValue}</span>
               </div>
             );
@@ -315,15 +306,16 @@ export function SkillsFormSection({
         initialSkillData={skillToEdit}
         allSkills={allSkillOptionsForDialog}
     />
-    {selectedSkillForInfo && (
-      <SkillInfoDialog
-        isOpen={isSkillInfoDialogOpen}
-        onOpenChange={setIsSkillInfoDialogOpen}
-        skillName={selectedSkillForInfo.name}
-        skillDescription={selectedSkillForInfo.description}
+    {currentSkillInfo && ( // Updated condition
+      <InfoDisplayDialog // Updated component name
+        isOpen={isInfoDialogOpen}
+        onOpenChange={setIsInfoDialogOpen}
+        title={currentSkillInfo.title} // Pass generalized props
+        content={currentSkillInfo.content} // Pass generalized props
       />
     )}
     </>
   );
 }
+
     
