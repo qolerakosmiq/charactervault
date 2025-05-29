@@ -32,14 +32,16 @@ export function FeatsFormSection({
   const characterLevel = characterClasses.reduce((sum, cls) => sum + cls.level, 0) || 1;
   const availableFeatSlots = calculateAvailableFeats(characterRace, characterLevel);
 
-  const [featSelections, setFeatSelections] = React.useState<string[]>([]); 
+  // Stores the IDs of the selected feats for each slot
+  const [featSelections, setFeatSelections] = React.useState<string[]>([]);
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
   const { toast } = useToast();
 
   React.useEffect(() => {
-    const newDerivedSelections = selectedFeats.map(f => f.id);
-    if (JSON.stringify(featSelections) !== JSON.stringify(newDerivedSelections)) {
-       setFeatSelections(newDerivedSelections);
+    // Ensure all feats from props are represented in featSelections
+    const currentFeatIds = selectedFeats.map(f => f.id);
+    if (JSON.stringify(featSelections) !== JSON.stringify(currentFeatIds)) {
+      setFeatSelections(currentFeatIds);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFeats]);
@@ -50,13 +52,13 @@ export function FeatsFormSection({
       .map(id => {
         if (!id) return undefined;
         const featDef = DND_FEATS.find(f => f.value === id);
-        if (!featDef) return undefined; 
+        if (!featDef) return undefined;
         return {
           id: featDef.value,
           name: featDef.label,
           description: featDef.description,
           prerequisites: featDef.prerequisites,
-          effects: featDef.effects 
+          effects: featDef.effects,
         } as FeatType;
       })
       .filter(feat => feat !== undefined) as FeatType[];
@@ -99,14 +101,14 @@ export function FeatsFormSection({
   const baseFeat = 1;
   const humanBonus = DND_RACES.find(r => r.value === characterRace)?.value === 'human' ? 1 : 0;
   const levelProgressionFeats = Math.floor(characterLevel / 3);
-  
+
   const characterForPrereqCheck = React.useMemo(() => ({
     abilityScores,
     skills,
-    feats: selectedFeats, 
+    feats: selectedFeats,
     classes: characterClasses,
-    race: characterRace, 
-    level: characterLevel, 
+    race: characterRace,
+    level: characterLevel,
   }), [abilityScores, skills, selectedFeats, characterClasses, characterRace, characterLevel]);
 
 
@@ -149,14 +151,13 @@ export function FeatsFormSection({
               <div className="space-y-2">
                 {featSelections.map((selectedFeatId, index) => {
                   const featDetails = getFeatDetails(selectedFeatId);
-                  if (!featDetails) return null; 
+                  if (!featDetails) return null;
 
                   const prereqStatus = checkFeatPrerequisites(featDetails, characterForPrereqCheck as Character, DND_FEATS);
                   const allPrereqMessages = [
                     ...prereqStatus.metMessages.map(msg => ({ text: msg, type: 'met' as const })),
                     ...prereqStatus.unmetMessages.map(msg => ({ text: msg, type: 'unmet' as const }))
                   ];
-
 
                   return (
                     <div key={`feat-slot-${index}-${selectedFeatId}`} className="flex items-start justify-between py-2 px-3 border rounded-md bg-background hover:bg-muted/20">
@@ -180,7 +181,7 @@ export function FeatsFormSection({
                             ))}
                           </p>
                         ) : (
-                           (featDetails.prerequisites && Object.keys(featDetails.prerequisites).length > 0) && /* Only show "None" if there were supposed to be prereqs but all checks resulted in no messages */
+                           (featDetails.prerequisites && Object.keys(featDetails.prerequisites).length > 0) &&
                            <p className="text-xs mt-0.5 whitespace-normal">Prerequisites: None</p>
                         )}
                       </div>
@@ -203,7 +204,7 @@ export function FeatsFormSection({
              <p className="text-sm text-muted-foreground mb-4 text-center py-2">No feats selected. Click "Add Feat" to begin.</p>
            )}
 
-          <Button onClick={handleAddFeatClick} variant="outline" size="sm" className="mt-2">
+          <Button onClick={handleAddFeatClick} type="button" variant="outline" size="sm" className="mt-2">
             <PlusCircle className="mr-2 h-4 w-4" /> Add Feat
           </Button>
         </CardContent>
@@ -218,3 +219,4 @@ export function FeatsFormSection({
     </>
   );
 }
+
