@@ -123,22 +123,31 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const handleSelectChange = (name: keyof Character | 'className', value: string) => {
      if (name === 'className') {
+      const newClass = DND_CLASSES.find(c => c.value === value) || DND_CLASSES[0];
       setCharacter(prev => ({
         ...prev,
-        // Ensure level remains 1 when class changes
-        classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: value, level: 1 }]
+        classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: newClass.value, level: 1 }]
       }));
     } else if (name === 'size') {
        setCharacter(prev => ({ ...prev, [name]: value as CharacterSize, sizeModifierAC: calculateAbilityModifier(prev.abilityScores.dexterity) + (SIZES.indexOf(value as CharacterSize) - 4) * (value === SIZES[5] || value === SIZES[6] || value === SIZES[7] || value === SIZES[8] ? -1 : 1) }));
     } else if (name === 'race') {
       setCharacter(prev => ({ ...prev, race: value }));
-    } else if (name === 'gender' || name === 'deity') {
+    } else if (name === 'gender' || name === 'deity' || name === 'alignment') {
       setCharacter(prev => ({ ...prev, [name]: value }));
     }
      else {
       setCharacter(prev => ({ ...prev, [name]: value }));
     }
   };
+  
+  const handleClassChange = (value: string) => {
+      const newClass = DND_CLASSES.find(c => c.value === value) || DND_CLASSES[0];
+      setCharacter(prev => ({
+        ...prev,
+        classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: newClass.value, level: 1 }]
+      }));
+  };
+
 
   const handlePortraitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -201,7 +210,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
     const finalCharacterData = {
       ...character,
-      classes: [{ ...character.classes[0], level: 1 }], // Ensure level is 1 on save
+      classes: [{ ...character.classes[0], level: 1 }], 
       sizeModifierAC: calculateAbilityModifier(character.abilityScores.dexterity) + (SIZES.indexOf(character.size as CharacterSize) - 4) * (character.size === SIZES[5] || character.size === SIZES[6] || character.size === SIZES[7] || character.size === SIZES[8] ? -1 : 1)
     };
     onSave(finalCharacterData);
@@ -252,8 +261,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             </div>
           </div>
 
-          {/* Class (Level removed) */}
-          <div className="grid grid-cols-1 gap-6 items-start">
+          {/* Class & Alignment */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
              <div>
                 <Label htmlFor="className">Class (Level 1)</Label>
                 <div className="flex items-center gap-2">
@@ -261,7 +270,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     <ComboboxPrimitive
                       options={DND_CLASSES as readonly ComboboxOption[]}
                       value={character.classes[0]?.className || ''}
-                      onChange={(value) => handleSelectChange('className', value)}
+                      onChange={handleClassChange}
                       placeholder="Select Class"
                       searchPlaceholder="Search classes..."
                       emptyPlaceholder="No class found."
@@ -273,10 +282,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: <strong className="font-bold">{selectedClassInfo.hitDice}</strong></p>
                 )}
             </div>
-          </div>
-
-          {/* Alignment & Size */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div>
               <Label htmlFor="alignment">Alignment</Label>
               <Select name="alignment" value={character.alignment} onValueChange={(value) => handleSelectChange('alignment', value as CharacterAlignment)}>
@@ -286,36 +291,26 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                 </SelectContent>
               </Select>
             </div>
+          </div>
+          
+          {/* Deity */}
+          <div className="grid grid-cols-1 gap-6 items-start">
             <div>
-              <Label htmlFor="size">Size</Label>
-              <Select name="size" value={character.size} onValueChange={(value) => handleSelectChange('size', value as CharacterSize)}>
-                <SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger>
-                <SelectContent>
-                  {SIZES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                </SelectContent>
-              </Select>
-              {sizeAbilityEffectsDetails && sizeAbilityEffectsDetails.effects.length > 0 && (
-                <p className="text-xs text-muted-foreground mt-1 ml-1">
-                  Impact on ability scores: {/* Space after colon */}
-                  {sizeAbilityEffectsDetails.effects.map((effect, index) => (
-                    <React.Fragment key={effect.ability}>
-                      <strong
-                        className={cn(
-                           "font-bold",
-                          effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
-                        )}
-                      >
-                        {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
-                      </strong>
-                      {index < sizeAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
-                    </React.Fragment>
-                  ))}
-                </p>
-              )}
+              <Label htmlFor="deity">Deity</Label>
+              <ComboboxPrimitive
+                  options={DND_DEITIES as readonly ComboboxOption[]}
+                  value={character.deity || ''}
+                  onChange={(value) => handleSelectChange('deity', value)}
+                  placeholder="Select or type deity"
+                  searchPlaceholder="Search deities..."
+                  emptyPlaceholder="No deity found. Type to add."
+                  isEditable={true}
+                />
             </div>
           </div>
 
-          {/* Age, Gender & Deity */}
+
+          {/* Age, Gender & Size */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
             <div>
               <Label htmlFor="age">Age</Label>
@@ -358,16 +353,31 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                 />
             </div>
              <div>
-              <Label htmlFor="deity">Deity</Label>
-              <ComboboxPrimitive
-                  options={DND_DEITIES as readonly ComboboxOption[]}
-                  value={character.deity || ''}
-                  onChange={(value) => handleSelectChange('deity', value)}
-                  placeholder="Select or type deity"
-                  searchPlaceholder="Search deities..."
-                  emptyPlaceholder="No deity found. Type to add."
-                  isEditable={true}
-                />
+              <Label htmlFor="size">Size</Label>
+              <Select name="size" value={character.size} onValueChange={(value) => handleSelectChange('size', value as CharacterSize)}>
+                <SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger>
+                <SelectContent>
+                  {SIZES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              {sizeAbilityEffectsDetails && sizeAbilityEffectsDetails.effects.length > 0 && (
+                <p className="text-xs text-muted-foreground mt-1 ml-1">
+                  Impact on ability scores: {/* Space after colon */}
+                  {sizeAbilityEffectsDetails.effects.map((effect, index) => (
+                    <React.Fragment key={effect.ability}>
+                      <strong
+                        className={cn(
+                           "font-bold",
+                          effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
+                        )}
+                      >
+                        {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
+                      </strong>
+                      {index < sizeAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
+                    </React.Fragment>
+                  ))}
+                </p>
+              )}
             </div>
           </div>
 
@@ -503,5 +513,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-
-    
