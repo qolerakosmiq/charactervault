@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ScrollText } from 'lucide-react';
+import { ScrollText, CheckSquare } from 'lucide-react'; // Added CheckSquare
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { AbilityName } from '@/types/character';
 import { cn } from '@/lib/utils';
@@ -23,7 +23,7 @@ interface InfoDisplayDialogProps {
   content?: string;
   abilityModifiers?: Array<{ ability: AbilityName; change: number }>;
   skillBonuses?: Array<{ skillName: string; bonus: number }>;
-  // racialFeats?: Array<{ featName: string }>; // For future use
+  grantedFeats?: Array<{ name: string; note?: string }>; 
 }
 
 export function InfoDisplayDialog({
@@ -33,6 +33,7 @@ export function InfoDisplayDialog({
   content,
   abilityModifiers,
   skillBonuses,
+  grantedFeats,
 }: InfoDisplayDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -94,6 +95,23 @@ export function InfoDisplayDialog({
               </div>
             </>
           )}
+
+          {grantedFeats && grantedFeats.length > 0 && (
+            <>
+              {(content || (abilityModifiers && abilityModifiers.length > 0) || (skillBonuses && skillBonuses.length > 0)) && <Separator className="my-4" />}
+              <div>
+                <h3 className="text-md font-semibold mb-2 text-foreground">Granted Feats:</h3>
+                <ul className="space-y-1 text-sm">
+                  {grantedFeats.map(({ name, note }, index) => (
+                    <li key={`${name}-${index}`} className="flex items-center">
+                      <CheckSquare className="h-4 w-4 mr-2 text-primary/80" />
+                      <span>{name} {note && <span className="text-muted-foreground text-xs">{note}</span>}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          )}
         </ScrollArea>
         <DialogFooter className="mt-2">
           <Button onClick={() => onOpenChange(false)}>Close</Button>
@@ -102,3 +120,5 @@ export function InfoDisplayDialog({
     </Dialog>
   );
 }
+
+    
