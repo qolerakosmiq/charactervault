@@ -41,12 +41,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     initialCharacter || {
       id: generateCUID(),
       name: '',
-      race: '', // Default to Human
-      alignment: '', // True Neutral
+      race: '', 
+      alignment: '', 
       deity: '',
       size: SIZES[4], // Medium
       age: 20,
-      gender: GENDERS[0].value, // Default to Male
+      gender: GENDERS[0].value, 
       abilityScores: { ...DEFAULT_ABILITIES },
       hp: 10,
       maxHp: 10,
@@ -59,7 +59,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       acMiscModifier: 0,
       initiativeMiscModifier: 0,
       savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)), // Deep copy
-      classes: [{ id: generateCUID(), className: '', level: 1 }], // Default to Barbarian Lvl 1
+      classes: [{ id: generateCUID(), className: '', level: 1 }], 
       skills: ALL_SKILLS_3_5.map(skill => ({
         id: generateCUID(),
         name: skill.name,
@@ -93,7 +93,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   React.useEffect(() => {
     if (character.size) {
       const details = getSizeAbilityEffects(character.size as CharacterSize);
-      // Only set if there are actual effects to display
       setSizeAbilityEffectsDetails(details.effects.length > 0 ? details : null);
     } else {
       setSizeAbilityEffectsDetails(null);
@@ -139,7 +138,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
   };
   
-  const handleClassChange = (value: string) => {
+  const handleClassChange = (value: string) => { // value is the className
       setCharacter(prev => ({
         ...prev,
         classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: value, level: 1 }]
@@ -185,7 +184,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       });
       return;
     }
-
+    
     if (!character.classes[0]?.className || character.classes[0]?.className.trim() === '') {
       toast({
         title: "Missing Information",
@@ -267,7 +266,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
              <div className="space-y-1">
               <Label htmlFor="name">Name</Label>
-              <Input id="name" name="name" value={character.name} onChange={handleChange} required />
+              <Input id="name" name="name" value={character.name} onChange={handleChange} />
             </div>
             <div className="space-y-1">
               <Label htmlFor="race">Race</Label>
@@ -279,7 +278,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     onChange={(value) => handleSelectChange('race', value)}
                     placeholder="Select or type race"
                     searchPlaceholder="Search races..."
-                    emptyPlaceholder="No race found. Type to add."
+                    emptyPlaceholder="No race found. Type to add custom."
                     isEditable={true}
                   />
                 </div>
@@ -307,7 +306,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                       onChange={handleClassChange}
                       placeholder="Select or type class"
                       searchPlaceholder="Search classes..."
-                      emptyPlaceholder="No class found. Type to add."
+                      emptyPlaceholder="No class found. Type to add custom."
                       isEditable={true}
                     />
                   </div>
@@ -389,7 +388,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                       </React.Fragment>
                     ))
                   ) : (
-                    <span>No ability score changes</span>
+                   <span>No ability score changes</span>
                   )}
                 </p>
               )}
