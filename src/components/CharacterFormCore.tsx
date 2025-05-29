@@ -263,8 +263,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
           {/* Class & Alignment */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-             <div>
-                <Label htmlFor="className">Class (Level 1)</Label>
+             <div className="space-y-1"> {/* Added space-y-1 to group label and input/sub-label */}
+                <Label htmlFor="className">Class</Label>
                 <div className="flex items-center gap-2">
                   <div className="flex-grow">
                     <ComboboxPrimitive
@@ -312,14 +312,14 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
           {/* Age, Gender & Size */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-            <div>
+            <div className="space-y-1">
               <Label htmlFor="age">Age</Label>
               <Input id="age" name="age" type="number" value={character.age} onChange={handleChange} min="1" />
                {ageEffectsDetails && (
                 <p className="text-xs text-muted-foreground mt-1 ml-1">
-                  {ageEffectsDetails.categoryName}: {/* Space after colon */}
                   {ageEffectsDetails.effects.length > 0 ? (
                     <>
+                      {ageEffectsDetails.categoryName !== 'Adult' ? `${ageEffectsDetails.categoryName}: ` : ''}
                       {ageEffectsDetails.effects.map((effect, index) => (
                         <React.Fragment key={effect.ability}>
                           <strong
@@ -335,7 +335,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                       ))}
                     </>
                   ) : (
-                    <span>No ability score changes.</span>
+                    <span>No ability score changes</span>
                   )}
                 </p>
               )}
@@ -352,7 +352,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   isEditable={true}
                 />
             </div>
-             <div>
+             <div className="space-y-1">
               <Label htmlFor="size">Size</Label>
               <Select name="size" value={character.size} onValueChange={(value) => handleSelectChange('size', value as CharacterSize)}>
                 <SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger>
@@ -360,24 +360,32 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   {SIZES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                 </SelectContent>
               </Select>
-              {sizeAbilityEffectsDetails && sizeAbilityEffectsDetails.effects.length > 0 && (
-                <p className="text-xs text-muted-foreground mt-1 ml-1">
-                  Impact on ability scores: {/* Space after colon */}
-                  {sizeAbilityEffectsDetails.effects.map((effect, index) => (
-                    <React.Fragment key={effect.ability}>
-                      <strong
-                        className={cn(
-                           "font-bold",
-                          effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
-                        )}
-                      >
-                        {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
-                      </strong>
-                      {index < sizeAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
-                    </React.Fragment>
-                  ))}
-                </p>
-              )}
+              {sizeAbilityEffectsDetails ? (
+                sizeAbilityEffectsDetails.effects.length > 0 ? (
+                  <p className="text-xs text-muted-foreground mt-1 ml-1">
+                    Impact on ability scores: {/* Space after colon */}
+                    {sizeAbilityEffectsDetails.effects.map((effect, index) => (
+                      <React.Fragment key={effect.ability}>
+                        <strong
+                          className={cn(
+                             "font-bold",
+                            effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
+                          )}
+                        >
+                          {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
+                        </strong>
+                        {index < sizeAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
+                      </React.Fragment>
+                    ))}
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground mt-1 ml-1">No ability score changes.</p>
+                )
+              ) : (
+                 /* Handle case where sizeAbilityEffectsDetails is null initially or if Medium (no effects) makes it null */
+                <p className="text-xs text-muted-foreground mt-1 ml-1">No ability score changes.</p>
+              )
+            }
             </div>
           </div>
 
@@ -453,7 +461,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               <Label htmlFor="portraitUpload">Character Portrait</Label>
               <div className="aspect-square w-full bg-muted rounded-md flex items-center justify-center relative overflow-hidden border border-border shadow-sm">
                 {character.portraitDataUrl ? (
-                  <Image src={character.portraitDataUrl} alt="Character Portrait" layout="fill" objectFit="cover" />
+                  <Image src={character.portraitDataUrl} alt="Character Portrait" fill objectFit="cover" />
                 ) : (
                   <div className="flex flex-col items-center justify-center text-muted-foreground">
                     <Palette size={48} className="mb-2"/>
