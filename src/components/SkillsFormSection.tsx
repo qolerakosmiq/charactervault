@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndClass, DndRace } from '@/types/character';
-import { CLASS_SKILL_POINTS_BASE, SKILL_DEFINITIONS, getRaceSkillPointsBonusPerLevel } from '@/types/character';
+import { CLASS_SKILL_POINTS_BASE, SKILL_DEFINITIONS, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -97,7 +97,7 @@ export function SkillsFormSection({
 
         <ScrollArea className="h-[400px] pr-3">
           <div className="space-y-1 -mx-1">
-            <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-xs">
+            <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-xs">
               <span className="text-center w-10">Class?</span>
               <span className="pl-1">Skill</span>
               <span className="text-center w-10">Total</span>
@@ -112,9 +112,17 @@ export function SkillsFormSection({
               const skillDef = SKILL_DEFINITIONS.find(sd => sd.name === skill.name);
               const keyAbility = skill.keyAbility || skillDef?.keyAbility as AbilityName | undefined;
               const keyAbilityShort = keyAbility ? keyAbility.substring(0, 3).toUpperCase() : 'N/A';
-              const abilityMod = keyAbility && keyAbility !== 'none' ? getAbilityModifierByName(abilityScores, keyAbility) : 0;
+              
+              let baseAbilityMod = 0;
+              if (keyAbility && keyAbility !== 'none') {
+                baseAbilityMod = getAbilityModifierByName(abilityScores, keyAbility);
+              }
+              
+              const synergyBonus = calculateTotalSynergyBonus(skill.name, skills);
+              const totalAbilityMod = baseAbilityMod + synergyBonus;
 
-              const totalBonus = (skill.ranks || 0) + abilityMod;
+
+              const totalBonus = (skill.ranks || 0) + totalAbilityMod + (skill.miscModifier || 0); // Re-add miscModifier to totalBonus calculation
               const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
               const skillCost = skill.isClassSkill ? 1 : 2;
 
@@ -154,7 +162,7 @@ export function SkillsFormSection({
                   </div>
                   <span className="font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
                   <span className="text-xs text-muted-foreground text-center w-10">{keyAbilityShort}</span>
-                  <span className="text-xs text-center w-10">{abilityMod >= 0 ? '+' : ''}{abilityMod}</span>
+                  <span className="text-xs text-center w-10">{totalAbilityMod >= 0 ? '+' : ''}{totalAbilityMod}</span>
                   <Input
                     id={`skill_ranks_${skill.id}`}
                     type="number"

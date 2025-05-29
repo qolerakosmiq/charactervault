@@ -10,10 +10,10 @@ export interface CharacterClass {
 export interface Skill {
   id: string;
   name: string;
-  ranks: number; 
-  miscModifier: number;
-  keyAbility?: AbilityName; 
-  isClassSkill?: boolean; 
+  ranks: number;
+  miscModifier: number; // User-entered misc mod, not synergy
+  keyAbility?: AbilityName;
+  isClassSkill?: boolean;
 }
 
 export interface Feat {
@@ -52,17 +52,17 @@ export interface SavingThrows {
 export interface Character {
   id: string;
   name: string;
-  race: string; 
-  alignment: string; 
+  race: string;
+  alignment: string;
   deity?: string;
-  size: string; 
+  size: string;
   age: number;
   gender: string;
-  
+
   abilityScores: AbilityScores;
   hp: number;
   maxHp: number;
-  
+
   armorBonus: number;
   shieldBonus: number;
   sizeModifierAC: number;
@@ -125,7 +125,6 @@ export function getInitialCharacterSkills(characterClasses: CharacterClass[]): S
   const classSkillsForCurrentClass = firstClass ? (CLASS_SKILLS[firstClass as keyof ClassSkillsData] || []) : [];
 
   return SKILL_DEFINITIONS.map(def => {
-    // Handle generic Craft, Knowledge, Perform for class skill check
     let isClassSkill = classSkillsForCurrentClass.includes(def.name);
     if (!isClassSkill) {
         if (def.name.startsWith("Craft (") && classSkillsForCurrentClass.includes("Craft (Any)")) {
@@ -142,7 +141,7 @@ export function getInitialCharacterSkills(characterClasses: CharacterClass[]): S
     return {
       id: crypto.randomUUID(),
       name: def.name,
-      keyAbility: def.keyAbility as AbilityName, // Ensure keyAbility is correctly typed
+      keyAbility: def.keyAbility as AbilityName,
       ranks: 0,
       miscModifier: 0,
       isClassSkill: isClassSkill,
@@ -175,7 +174,7 @@ export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffect
 
   const agingCategoryKey = (constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA as Record<DndRace, RaceCategory>)[raceValue];
   if (!agingCategoryKey) return { categoryName: "Adult", effects: [] };
-  
+
   const raceAgingPattern = (constantsData.DND_RACE_AGING_EFFECTS_DATA as Record<RaceCategory, RaceAgingInfoData>)[agingCategoryKey];
   if (!raceAgingPattern) return { categoryName: "Adult", effects: [] };
 
@@ -189,15 +188,15 @@ export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffect
     const ageThresholdForCategory = Math.floor(category.ageFactor * raceVenerableAge);
     if (age >= ageThresholdForCategory) {
       currentCategoryName = category.categoryName;
-      highestAttainedCategoryEffects = category.effects; 
+      highestAttainedCategoryEffects = category.effects;
     } else {
       break;
     }
   }
-  
-  if (!highestAttainedCategoryEffects && age < Math.floor(sortedCategories[0].ageFactor * raceVenerableAge)) {
+
+  if (!highestAttainedCategoryEffects && (sortedCategories.length === 0 || age < Math.floor(sortedCategories[0].ageFactor * raceVenerableAge))) {
      currentCategoryName = "Adult";
-     highestAttainedCategoryEffects = {}; 
+     highestAttainedCategoryEffects = {};
   }
 
 
@@ -213,14 +212,15 @@ export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffect
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB; 
+            return signA - signB; // Negative first
         }
 
+        // If signs are the same, sort by canonical ability order
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
         return indexA - indexB;
     });
-    
+
     for (const ability of abilitiesToProcess) {
         appliedEffects.push({ ability, change: highestAttainedCategoryEffects![ability]! });
     }
@@ -253,9 +253,8 @@ export function getSizeAbilityEffects(size: CharacterSize): SizeAbilityEffectsDe
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB;
+            return signA - signB; // Negative first
         }
-
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
         return indexA - indexB;
@@ -280,7 +279,7 @@ export function getRaceAbilityEffects(raceValue: DndRace): RaceAbilityEffectsDet
   if (modifiers) {
     const abilitiesToProcess = (Object.keys(modifiers) as AbilityName[])
       .filter(ability => modifiers[ability] !== undefined && modifiers[ability] !== 0);
-    
+
     abilitiesToProcess.sort((aAbility, bAbility) => {
         const changeA = modifiers![aAbility]!;
         const changeB = modifiers![bAbility]!;
@@ -288,9 +287,8 @@ export function getRaceAbilityEffects(raceValue: DndRace): RaceAbilityEffectsDet
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB;
+            return signA - signB; // Negative first
         }
-
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
         return indexA - indexB;
@@ -303,4 +301,34 @@ export function getRaceAbilityEffects(raceValue: DndRace): RaceAbilityEffectsDet
   return { effects: appliedEffects };
 }
 
+// --- Skill Synergies ---
+export interface SynergyEffect {
+  targetSkill: string;
+  ranksRequired: number;
+  bonus: number;
+  description?: string;
+}
 
+export type SkillSynergiesData = Record<string, SynergyEffect[]>;
+
+export const SKILL_SYNERGIES: Readonly<SkillSynergiesData> = constantsData.SKILL_SYNERGIES_DATA as Readonly<SkillSynergiesData>;
+
+export function calculateTotalSynergyBonus(targetSkillName: string, currentCharacterSkills: Skill[]): number {
+  let totalBonus = 0;
+  if (!SKILL_SYNERGIES) return 0; // Guard against undefined SKILL_SYNERGIES
+
+  for (const providingSkillName in SKILL_SYNERGIES) {
+    const synergiesProvided = SKILL_SYNERGIES[providingSkillName];
+    if (synergiesProvided) {
+      for (const synergy of synergiesProvided) {
+        if (synergy.targetSkill === targetSkillName) {
+          const providingSkill = currentCharacterSkills.find(s => s.name === providingSkillName);
+          if (providingSkill && (providingSkill.ranks || 0) >= synergy.ranksRequired) {
+            totalBonus += synergy.bonus;
+          }
+        }
+      }
+    }
+  }
+  return totalBonus;
+}

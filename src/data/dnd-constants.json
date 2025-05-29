@@ -114,8 +114,8 @@
     "dwarf": "dwarf",
     "halfling": "halfling",
     "gnome": "gnome",
-    "half-elf": "elf", 
-    "half-orc": "orc" 
+    "half-elf": "elf",
+    "half-orc": "orc"
   },
   "DND_RACE_AGING_EFFECTS_DATA": {
     "human": {
@@ -153,7 +153,7 @@
         { "categoryName": "Venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 1, "wisdom": 1, "charisma": 1 } }
       ]
     },
-    "orc": { 
+    "orc": {
       "categories": [
         { "categoryName": "Middle Age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
         { "categoryName": "Old", "ageFactor": 0.75, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
@@ -267,5 +267,43 @@
     "rogue": 8,
     "sorcerer": 2,
     "wizard": 2
+  },
+  "SKILL_SYNERGIES_DATA": {
+    "Bluff": [
+      { "targetSkill": "Diplomacy", "ranksRequired": 5, "bonus": 2 },
+      { "targetSkill": "Intimidate", "ranksRequired": 5, "bonus": 2 },
+      { "targetSkill": "Sleight of Hand", "ranksRequired": 5, "bonus": 2, "description": "Concealing an object" }
+    ],
+    "Craft (Alchemy)": [
+      { "targetSkill": "Appraise", "ranksRequired": 5, "bonus": 2, "description": "Alchemical items" }
+    ],
+    "Handle Animal": [
+      { "targetSkill": "Ride", "ranksRequired": 5, "bonus": 2 },
+      { "targetSkill": "Diplomacy", "ranksRequired": 5, "bonus": 2, "description": "With animals" }
+    ],
+    "Knowledge (Arcana)": [
+        { "targetSkill": "Spellcraft", "ranksRequired": 5, "bonus": 2, "description": "Deciphering spells on scrolls" }
+    ],
+    "Search": [
+        { "targetSkill": "Survival", "ranksRequired": 5, "bonus": 2, "description": "Following tracks" }
+    ],
+    "Sense Motive": [
+      { "targetSkill": "Diplomacy", "ranksRequired": 5, "bonus": 2 }
+    ],
+    "Spellcraft": [
+      { "targetSkill": "Use Magic Device", "ranksRequired": 5, "bonus": 2, "description": "Emulating a class feature" },
+      { "targetSkill": "Knowledge (Arcana)", "ranksRequired": 5, "bonus": 2 }
+    ],
+    "Survival": [
+      { "targetSkill": "Knowledge (Nature)", "ranksRequired": 5, "bonus": 2 }
+    ],
+    "Tumble": [
+      { "targetSkill": "Balance", "ranksRequired": 5, "bonus": 2 },
+      { "targetSkill": "Jump", "ranksRequired": 5, "bonus": 2 }
+    ],
+    "Use Rope": [
+      { "targetSkill": "Escape Artist", "ranksRequired": 5, "bonus": 2, "description": "Using ropes" },
+      { "targetSkill": "Climb", "ranksRequired": 5, "bonus": 2, "description": "Using a rope" }
+    ]
   }
 }
