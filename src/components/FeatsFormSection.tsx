@@ -5,7 +5,7 @@ import * as React from 'react';
 import type { Feat as FeatType, DndRaceId, CharacterClass, FeatDefinitionJsonData, Character, AbilityScores, Skill } from '@/types/character';
 import { DND_FEATS, calculateAvailableFeats, DND_RACES, checkFeatPrerequisites } from '@/types/character';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Award, PlusCircle, Trash2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
@@ -32,14 +32,12 @@ export function FeatsFormSection({
   const characterLevel = characterClasses.reduce((sum, cls) => sum + cls.level, 0) || 1;
   const availableFeatSlots = calculateAvailableFeats(characterRace, characterLevel);
 
-  // Stores only the IDs of the selected feats
   const [featSelections, setFeatSelections] = React.useState<string[]>([]);
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
   const { toast } = useToast();
 
   React.useEffect(() => {
     const currentFeatIds = selectedFeats.map(f => f.id);
-     // Only update if the actual list of feat IDs differs
     if (JSON.stringify(featSelections.slice().sort()) !== JSON.stringify(currentFeatIds.slice().sort())) {
         setFeatSelections(currentFeatIds);
     }
@@ -114,6 +112,15 @@ export function FeatsFormSection({
     classes: characterClasses,
     race: characterRace,
     age: 0, 
+    // Dummy values for fields not directly used by prerequisite checks but part of Character
+    name: '',
+    alignment: '',
+    size: 'medium',
+    hp: 0, maxHp: 0,
+    armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0, deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0,
+    initiativeMiscModifier: 0,
+    savingThrows: { fortitude: {base:0,magicMod:0,miscMod:0}, reflex: {base:0,magicMod:0,miscMod:0}, will: {base:0,magicMod:0,miscMod:0} },
+    inventory: []
   }), [abilityScores, skills, featSelections, characterClasses, characterRace]);
 
 
@@ -128,7 +135,7 @@ export function FeatsFormSection({
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col">
           <div className="mb-6 p-3 border rounded-md bg-muted/30">
             <div className="flex justify-between items-center">
               <p className="text-sm font-medium">
@@ -148,7 +155,7 @@ export function FeatsFormSection({
             </p>
           </div>
 
-          <ScrollArea className="max-h-[400px] pr-1 mb-4">
+          <ScrollArea className="flex-grow min-h-0 max-h-[400px] pr-1 mb-4">
             <div className="space-y-2">
               {featSelections.length > 0 ? (
                 featSelections.map((selectedFeatId, index) => {
@@ -205,7 +212,7 @@ export function FeatsFormSection({
             </div>
           </ScrollArea>
 
-          <Button onClick={handleAddFeatClick} type="button" variant="outline" size="sm" className="mt-2">
+          <Button onClick={handleAddFeatClick} type="button" variant="outline" size="sm" className="mt-2 self-start">
             <PlusCircle className="mr-2 h-4 w-4" /> Add Feat
           </Button>
         </CardContent>
@@ -220,3 +227,4 @@ export function FeatsFormSection({
     </>
   );
 }
+
