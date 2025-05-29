@@ -51,9 +51,10 @@ export function SkillsFormSection({
   const characterLevel = firstClass?.level || 1;
   const intelligenceModifier = getAbilityModifierByName(abilityScores, 'intelligence');
 
-  const baseSkillPointsForClass = firstClass?.className ? CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0 : 0;
+  const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0) : 0;
   const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace as DndRaceId | string);
 
+  // At 1st level, (Class Base + Int Mod + Racial Bonus per level) * 4
   const totalSkillPointsAvailable = (baseSkillPointsForClass + intelligenceModifier + racialBonus) * 4;
 
   const totalSkillPointsSpent = skills.reduce((acc, skill) => {
@@ -136,7 +137,7 @@ export function SkillsFormSection({
             </p>
           </div>
            <p className="text-xs text-muted-foreground mt-1">
-            (Class Base <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus <strong className="font-bold text-primary">[{racialBonus}]</strong>) * <strong className="font-bold text-primary">4</strong>
+            (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>) × <strong className="font-bold text-primary">4</strong> (Multiplier for Level <strong className="font-bold text-primary">[{characterLevel}]</strong>)
           </p>
         </div>
 
@@ -287,3 +288,4 @@ export function SkillsFormSection({
     </>
   );
 }
+
