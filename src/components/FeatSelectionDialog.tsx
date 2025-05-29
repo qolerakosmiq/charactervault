@@ -19,15 +19,17 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import type { FeatDefinitionJsonData } from '@/types/character';
+import type { FeatDefinitionJsonData, Character } from '@/types/character';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { BookOpenText } from 'lucide-react';
+import { checkFeatPrerequisites, DND_FEATS } from '@/types/character'; // DND_FEATS needed for check
 
 interface FeatSelectionDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onFeatSelected: (featId: string) => void;
   allFeats: readonly FeatDefinitionJsonData[];
+  character: Character; // Pass the full character or relevant parts for prerequisite checking
 }
 
 export function FeatSelectionDialog({
@@ -35,6 +37,7 @@ export function FeatSelectionDialog({
   onOpenChange,
   onFeatSelected,
   allFeats,
+  character,
 }: FeatSelectionDialogProps) {
   
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -44,13 +47,13 @@ export function FeatSelectionDialog({
     return allFeats.filter(feat => 
       feat.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
       feat.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (feat.prerequisites && feat.prerequisites.toLowerCase().includes(searchTerm.toLowerCase()))
+      (feat.prerequisitesText && feat.prerequisitesText.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }, [allFeats, searchTerm]);
 
   React.useEffect(() => {
     if (!isOpen) {
-      setSearchTerm(''); // Reset search term when dialog closes
+      setSearchTerm(''); 
     }
   }, [isOpen]);
 
@@ -72,28 +75,40 @@ export function FeatSelectionDialog({
             onValueChange={setSearchTerm}
           />
           <ScrollArea className="flex-grow min-h-0">
-            <CommandList className="max-h-none"> {/* Override default max-h */}
+            <CommandList className="max-h-none"> 
               <CommandEmpty>No feats found.</CommandEmpty>
               <CommandGroup>
-                {filteredFeats.map((feat) => (
-                  <CommandItem
-                    key={feat.value}
-                    value={feat.label} // cmdk uses this for internal matching if not providing custom filter
-                    onSelect={() => {
-                      onFeatSelected(feat.value);
-                      onOpenChange(false);
-                    }}
-                    className="flex flex-col items-start p-3 hover:bg-accent/50 cursor-pointer"
-                  >
-                    <div className="font-medium text-sm text-foreground">{feat.label}</div>
-                    <p className="text-xs text-muted-foreground mt-0.5 whitespace-normal">{feat.description}</p>
-                    {feat.prerequisites && (
-                      <p className="text-xs text-destructive/80 mt-0.5 whitespace-normal">
-                        Prerequisites: {feat.prerequisites}
-                      </p>
-                    )}
-                  </CommandItem>
-                ))}
+                {filteredFeats.map((feat) => {
+                  const prereqStatus = checkFeatPrerequisites(feat, character, DND_FEATS);
+                  return (
+                    <CommandItem
+                      key={feat.value}
+                      value={feat.label} 
+                      onSelect={() => {
+                        onFeatSelected(feat.value);
+                        onOpenChange(false);
+                      }}
+                      className="flex flex-col items-start p-3 hover:bg-accent/50 cursor-pointer"
+                    >
+                      <div className="font-medium text-sm text-foreground">{feat.label}</div>
+                      <p className="text-xs text-muted-foreground mt-0.5 whitespace-normal">{feat.description}</p>
+                      {(prereqStatus.originalPrerequisitesText || prereqStatus.unmetMessages.length > 0 || prereqStatus.metMessages.length > 0) && (
+                          <p className="text-xs mt-0.5 whitespace-normal">
+                              Prerequisites: {' '}
+                              {prereqStatus.metMessages.map((msg, i) => (
+                                  <span key={`met-${i}`} className="text-muted-foreground">{msg}{i < prereqStatus.metMessages.length -1 + prereqStatus.unmetMessages.length ? ', ' : ''}</span>
+                              ))}
+                              {prereqStatus.unmetMessages.map((msg, i) => (
+                                  <span key={`unmet-${i}`} className="text-destructive">{msg}{i < prereqStatus.unmetMessages.length - 1 ? ', ' : ''}</span>
+                              ))}
+                               {!prereqStatus.met && prereqStatus.metMessages.length === 0 && prereqStatus.unmetMessages.length === 0 && prereqStatus.originalPrerequisitesText && (
+                                <span className="text-muted-foreground">{prereqStatus.originalPrerequisitesText}</span>
+                               )}
+                          </p>
+                      )}
+                    </CommandItem>
+                  );
+                })}
               </CommandGroup>
             </CommandList>
           </ScrollArea>

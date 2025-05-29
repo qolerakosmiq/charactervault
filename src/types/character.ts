@@ -1,22 +1,23 @@
 
 import constantsData from '@/data/dnd-constants.json';
+import { getBab } from '@/lib/dnd-utils'; // Ensure getBab is imported if used here
 
 export interface CharacterClass {
   id: string;
-  className: DndClassId | string; // Kebab-case ID or custom string
+  className: DndClassId | string; 
   level: number;
 }
 
 export interface CustomSynergyRule {
-  id: string;
-  targetSkillName: string; // Stores ID of target skill (kebab-case or UUID for custom)
-  ranksInThisSkillRequired: number;
+  id: string; 
+  targetSkillName: string; 
+  ranksInThisSkillRequired: number; 
   bonusGranted: number;
 }
 
 export interface Skill {
-  id: string; // Kebab-case for predefined, UUID for custom
-  name: string; // Human-readable name
+  id: string; 
+  name: string; 
   ranks: number;
   miscModifier: number;
   keyAbility?: AbilityName;
@@ -25,11 +26,29 @@ export interface Skill {
   description?: string;
 }
 
+export interface FeatPrerequisiteDetails {
+  bab?: number;
+  abilities?: Partial<Record<AbilityName, number>>;
+  skills?: Array<{ id: string; ranks: number }>;
+  feats?: string[]; // array of feat IDs
+  casterLevel?: number; // Simplified: Character level for now
+  special?: string;
+}
+
+export type FeatDefinitionJsonData = {
+  value: string; // Kebab-case ID
+  label: string; // Human-readable name
+  description: string;
+  prerequisitesText?: string; // Original prerequisite text for display
+  prerequisites?: FeatPrerequisiteDetails; // Structured prerequisites
+};
+
 export interface Feat {
-  id: string; // Kebab-case ID from DND_FEATS_DATA 'value' field
-  name: string; // 'label' from DND_FEATS_DATA
+  id: string; 
+  name: string; 
   description?: string;
-  prerequisites?: string;
+  prerequisites?: FeatPrerequisiteDetails;
+  prerequisitesText?: string;
 }
 
 export interface Item {
@@ -62,12 +81,12 @@ export interface SavingThrows {
 export interface Character {
   id: string;
   name: string;
-  race: DndRaceId | string; // Kebab-case ID or custom string
+  race: DndRaceId | string; 
   alignment: CharacterAlignment;
-  deity?: DndDeityId | string; // Kebab-case ID or custom string
+  deity?: DndDeityId | string; 
   size: CharacterSize;
   age: number;
-  gender: GenderId | string; // Kebab-case ID or custom string
+  gender: GenderId | string; 
 
   abilityScores: AbilityScores;
   hp: number;
@@ -113,7 +132,7 @@ export const DND_CLASSES: ReadonlyArray<{value: DndClassId, label: string, hitDi
 export type DndDeityId = typeof constantsData.DND_DEITIES_DATA[number]['value'];
 export const DND_DEITIES: ReadonlyArray<{value: DndDeityId, label: string}> = constantsData.DND_DEITIES_DATA as ReadonlyArray<{value: DndDeityId, label: string}>;
 
-export type FeatDefinitionJsonData = typeof constantsData.DND_FEATS_DATA[number];
+
 export const DND_FEATS: readonly FeatDefinitionJsonData[] = constantsData.DND_FEATS_DATA as ReadonlyArray<FeatDefinitionJsonData>;
 
 
@@ -138,22 +157,16 @@ export function getInitialCharacterSkills(characterClasses: CharacterClass[]): S
   const classSkillsForCurrentClass = firstClassId ? (CLASS_SKILLS[firstClassId as keyof ClassSkillsJsonData] || []) : [];
 
   return SKILL_DEFINITIONS.map(def => {
-    let isClassSkill = classSkillsForCurrentClass.includes(def.value); // def.value is the kebab-case skill ID
+    let isClassSkill = classSkillsForCurrentClass.includes(def.value); 
     if (!isClassSkill) {
-        // Check for generic class skill categories like "craft-any"
-        if (def.value.startsWith("craft-") && classSkillsForCurrentClass.includes("craft-any")) {
-            isClassSkill = true;
-        } else if (def.value.startsWith("knowledge-") && (classSkillsForCurrentClass.includes("knowledge-any") || classSkillsForCurrentClass.includes("knowledge-all"))) {
-            isClassSkill = true;
-        } else if (def.value.startsWith("perform-") && classSkillsForCurrentClass.includes("perform-any")) {
-            isClassSkill = true;
-        } else if (def.value.startsWith("profession-") && classSkillsForCurrentClass.includes("profession-any")) {
+        const skillCategory = def.value.split('-')[0]; // e.g. "craft", "knowledge", "perform"
+        if (classSkillsForCurrentClass.includes(`${skillCategory}-any`) || classSkillsForCurrentClass.includes(`${skillCategory}-all`)) {
             isClassSkill = true;
         }
     }
     return {
-      id: def.value, // Use kebab-case ID from JSON ('value' field)
-      name: def.label, // Use display label from JSON ('label' field)
+      id: def.value, 
+      name: def.label, 
       keyAbility: def.keyAbility as AbilityName,
       ranks: 0,
       miscModifier: 0,
@@ -161,13 +174,13 @@ export function getInitialCharacterSkills(characterClasses: CharacterClass[]): S
       providesSynergies: [],
       description: def.description || ""
     };
-  });
+  }).sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export type RaceAgingCategoryKey = keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA;
 
 interface AgeCategoryEffectData {
-  categoryName: string; // Kebab-case ID
+  categoryName: string; 
   ageFactor: number;
   effects: Partial<Record<AbilityName, number>>;
 }
@@ -177,13 +190,13 @@ interface RaceAgingInfoData {
 }
 
 export interface AgingEffectsDetails {
-  categoryName: string; // Kebab-case ID
+  categoryName: string; 
   effects: Array<{ ability: AbilityName; change: number }>;
 }
 
 export function getNetAgingEffects(raceId: DndRaceId | string, age: number): AgingEffectsDetails {
   const raceVenerableAge = (constantsData.DND_RACE_BASE_MAX_AGE_DATA as Record<DndRaceId, number>)[raceId as DndRaceId];
-  if (raceVenerableAge === undefined) return { categoryName: "adult", effects: [] }; // Default to adult
+  if (raceVenerableAge === undefined) return { categoryName: "adult", effects: [] }; 
 
   const agingCategoryKey = (constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA as Record<DndRaceId, RaceAgingCategoryKey>)[raceId as DndRaceId];
   if (!agingCategoryKey) return { categoryName: "adult", effects: [] };
@@ -191,7 +204,7 @@ export function getNetAgingEffects(raceId: DndRaceId | string, age: number): Agi
   const raceAgingPattern = (constantsData.DND_RACE_AGING_EFFECTS_DATA as Record<RaceAgingCategoryKey, RaceAgingInfoData>)[agingCategoryKey];
   if (!raceAgingPattern) return { categoryName: "adult", effects: [] };
 
-  let currentCategoryName: string = "adult"; // Kebab-case default
+  let currentCategoryName: string = "adult"; 
   let highestAttainedCategoryEffects: Partial<Record<AbilityName, number>> | null = null;
 
   const sortedCategories = [...raceAgingPattern.categories].sort((a, b) => a.ageFactor - b.ageFactor);
@@ -199,7 +212,7 @@ export function getNetAgingEffects(raceId: DndRaceId | string, age: number): Agi
   for (const category of sortedCategories) {
     const ageThresholdForCategory = Math.floor(category.ageFactor * raceVenerableAge);
     if (age >= ageThresholdForCategory) {
-      currentCategoryName = category.categoryName; // This is already kebab-case from JSON
+      currentCategoryName = category.categoryName; 
       highestAttainedCategoryEffects = category.effects;
     } else {
       break;
@@ -223,9 +236,9 @@ export function getNetAgingEffects(raceId: DndRaceId | string, age: number): Agi
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB; // Negative changes first
+            return signA - signB; 
         }
-        // If signs are the same, sort by ability order
+        
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
         return indexA - indexB;
@@ -247,7 +260,7 @@ export interface SizeAbilityEffectsDetails {
 }
 
 export function getSizeAbilityEffects(sizeId: CharacterSize): SizeAbilityEffectsDetails {
-  const mods = (constantsData.DND_SIZE_ABILITY_MODIFIERS_DATA as Record<CharacterSize, Partial<Record<AbilityName, number>>>)[sizeId]; // sizeId is kebab-case
+  const mods = (constantsData.DND_SIZE_ABILITY_MODIFIERS_DATA as Record<CharacterSize, Partial<Record<AbilityName, number>>>)[sizeId]; 
   const appliedEffects: Array<{ ability: AbilityName; change: number }> = [];
 
   if (mods) {
@@ -261,7 +274,7 @@ export function getSizeAbilityEffects(sizeId: CharacterSize): SizeAbilityEffects
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB; // Negative changes first
+            return signA - signB; 
         }
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
@@ -294,7 +307,7 @@ export function getRaceAbilityEffects(raceId: DndRaceId | string): RaceAbilityEf
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB; // Negative changes first
+            return signA - signB; 
         }
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
@@ -309,25 +322,25 @@ export function getRaceAbilityEffects(raceId: DndRaceId | string): RaceAbilityEf
 }
 
 export interface SynergyEffectJsonData {
-  targetSkill: string; // Kebab-case skill ID
+  targetSkill: string; 
   ranksRequired: number;
   bonus: number;
+  description?: string;
 }
 
-export type SkillSynergiesJsonData = Record<string, SynergyEffectJsonData[]>; // Key is kebab-case skill ID
+export type SkillSynergiesJsonData = Record<string, SynergyEffectJsonData[]>; 
 
 export const SKILL_SYNERGIES: Readonly<SkillSynergiesJsonData> = constantsData.SKILL_SYNERGIES_DATA as Readonly<SkillSynergiesJsonData>;
 
 export function calculateTotalSynergyBonus(targetSkillId: string, currentCharacterSkills: Skill[]): number {
   let totalBonus = 0;
 
-  // Check predefined synergies
   if (SKILL_SYNERGIES) {
-    for (const providingSkillId in SKILL_SYNERGIES) { // providingSkillId is kebab-case
+    for (const providingSkillId in SKILL_SYNERGIES) { 
       const synergiesProvidedByThisDefinition = SKILL_SYNERGIES[providingSkillId];
       if (synergiesProvidedByThisDefinition) {
         for (const synergy of synergiesProvidedByThisDefinition) {
-          if (synergy.targetSkill === targetSkillId) { // targetSkill is also kebab-case ID
+          if (synergy.targetSkill === targetSkillId) { 
             const providingSkillInCharacter = currentCharacterSkills.find(s => s.id === providingSkillId);
             if (providingSkillInCharacter && (providingSkillInCharacter.ranks || 0) >= synergy.ranksRequired) {
               totalBonus += synergy.bonus;
@@ -338,11 +351,10 @@ export function calculateTotalSynergyBonus(targetSkillId: string, currentCharact
     }
   }
 
-  // Check custom synergies defined on skills
   for (const providingSkill of currentCharacterSkills) {
     if (providingSkill.providesSynergies) {
       for (const customRule of providingSkill.providesSynergies) {
-        if (customRule.targetSkillName === targetSkillId) { // targetSkillName is already an ID
+        if (customRule.targetSkillName === targetSkillId) { 
           if ((providingSkill.ranks || 0) >= customRule.ranksInThisSkillRequired) {
             totalBonus += customRule.bonusGranted;
           }
@@ -357,17 +369,92 @@ export function calculateTotalSynergyBonus(targetSkillId: string, currentCharact
 export function calculateAvailableFeats(race: DndRaceId | string, level: number): number {
   let availableFeats = 0;
   if (level >= 1) {
-    availableFeats += 1; // Base feat at 1st level
+    availableFeats += 1; 
   }
   if (race === 'human') {
-    availableFeats += 1; // Human bonus feat at 1st level
+    availableFeats += 1; 
   }
-  // Add feats for every 3 levels (3rd, 6th, 9th, etc.)
+  
   availableFeats += Math.floor(level / 3);
-
-  // Placeholder for class-specific bonus feats (e.g., Fighter, Wizard)
-  // This would need access to characterClasses
   return availableFeats;
 }
 
+export function checkFeatPrerequisites(
+  featDefinition: FeatDefinitionJsonData,
+  character: Pick<Character, 'abilityScores' | 'skills' | 'feats' | 'classes'>,
+  allFeatDefinitions: readonly FeatDefinitionJsonData[]
+): { met: boolean; metMessages: string[]; unmetMessages: string[]; originalPrerequisitesText?: string } {
+  const { prerequisites, prerequisitesText } = featDefinition;
+  if (!prerequisites) {
+    return { met: true, unmetMessages: [], metMessages: [], originalPrerequisitesText: prerequisitesText || "" };
+  }
+
+  const unmetMessages: string[] = [];
+  const metMessages: string[] = [];
+
+  // BAB
+  if (prerequisites.bab !== undefined) {
+    const characterBab = getBab(character.classes)[0]; 
+    if (characterBab < prerequisites.bab) {
+      unmetMessages.push(`BAB +${prerequisites.bab}`);
+    } else {
+      metMessages.push(`BAB +${prerequisites.bab}`);
+    }
+  }
+
+  // Ability Scores
+  if (prerequisites.abilities) {
+    for (const [ability, requiredScore] of Object.entries(prerequisites.abilities)) {
+      if (character.abilityScores[ability as AbilityName] < requiredScore!) {
+        unmetMessages.push(`${ability.charAt(0).toUpperCase() + ability.slice(1)} ${requiredScore}`);
+      } else {
+        metMessages.push(`${ability.charAt(0).toUpperCase() + ability.slice(1)} ${requiredScore}`);
+      }
+    }
+  }
+
+  // Skills
+  if (prerequisites.skills) {
+    for (const skillReq of prerequisites.skills) {
+      const charSkill = character.skills.find(s => s.id === skillReq.id);
+      if (!charSkill || charSkill.ranks < skillReq.ranks) {
+        const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skillReq.id);
+        unmetMessages.push(`${skillDef?.label || skillReq.id} ${skillReq.ranks} ranks`);
+      } else {
+        const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skillReq.id);
+        metMessages.push(`${skillDef?.label || skillReq.id} ${skillReq.ranks} ranks`);
+      }
+    }
+  }
+
+  // Feats
+  if (prerequisites.feats) {
+    const characterFeatIds = character.feats.map(f => f.id);
+    for (const requiredFeatId of prerequisites.feats) {
+      if (!characterFeatIds.includes(requiredFeatId)) {
+        const featDef = allFeatDefinitions.find(f => f.value === requiredFeatId);
+        unmetMessages.push(featDef?.label || requiredFeatId);
+      } else {
+         const featDef = allFeatDefinitions.find(f => f.value === requiredFeatId);
+        metMessages.push(featDef?.label || requiredFeatId);
+      }
+    }
+  }
+
+  // Caster Level (Simplified: using total character level for now)
+  if (prerequisites.casterLevel !== undefined) {
+    const totalLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1; 
+    if (totalLevel < prerequisites.casterLevel) { 
+      unmetMessages.push(`Caster Level ${prerequisites.casterLevel}`);
+    } else {
+      metMessages.push(`Caster Level ${prerequisites.casterLevel}`);
+    }
+  }
+  
+  if (prerequisites.special) {
+    metMessages.push(prerequisites.special);
+  }
+
+  return { met: unmetMessages.length === 0, unmetMessages, metMessages, originalPrerequisitesText: prerequisitesText };
+}
     

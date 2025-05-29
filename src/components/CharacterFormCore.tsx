@@ -20,7 +20,7 @@ import { ComboboxPrimitive } from '@/components/ui/combobox';
 import { cn } from '@/lib/utils';
 import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
 import { SkillsFormSection } from '@/components/SkillsFormSection';
-import { FeatsFormSection } from '@/components/FeatsFormSection'; // Import FeatsFormSection
+import { FeatsFormSection } from '@/components/FeatsFormSection';
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 
@@ -110,7 +110,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         }
       }
     }
-  }, [character.race, character.age]); // Added character.age to dependencies
+  }, [character.race, character.age]); 
 
   React.useEffect(() => {
     const firstClassId = character.classes[0]?.className;
@@ -125,6 +125,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         const updatedCustomSkills = existingCustomSkills.map(customSkill => ({
           ...customSkill,
           ranks: 0, 
+          // miscModifier: 0 // Misc modifier can be preserved if desired
         }));
 
         const finalSkillsMap = new Map<string, SkillType>();
@@ -430,7 +431,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     isEditable={true}
                   />
                 </div>
-                 {isPredefinedRace && (
+                {isPredefinedRace && (
                    <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
                     <Info className="h-5 w-5" />
                   </Button>
@@ -464,32 +465,32 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
            {/* Class and Alignment */}
            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-             <div className="space-y-1">
-                <Label htmlFor="className">Class</Label>
-                <div className="flex items-center gap-2">
-                  <div className="flex-grow">
-                    <ComboboxPrimitive
-                      options={DND_CLASSES}
-                      value={character.classes[0]?.className || ''}
-                      onChange={handleClassChange}
-                      placeholder="Select or type class"
-                      searchPlaceholder="Search classes..."
-                      emptyPlaceholder="No class found. Type to add custom."
-                      isEditable={true}
-                    />
-                  </div>
-                   {isPredefinedClass && (
-                    <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
-                      <Info className="h-5 w-5" />
-                    </Button>
-                  )}
-                  {!isPredefinedClass && character.classes[0]?.className && character.classes[0]?.className.trim() !== '' &&(
-                    <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
-                  )}
+            <div className="space-y-1">
+              <Label htmlFor="className">Class</Label>
+              <div className="flex items-center gap-2">
+                <div className="flex-grow">
+                  <ComboboxPrimitive
+                    options={DND_CLASSES}
+                    value={character.classes[0]?.className || ''}
+                    onChange={handleClassChange}
+                    placeholder="Select or type class"
+                    searchPlaceholder="Search classes..."
+                    emptyPlaceholder="No class found. Type to add custom."
+                    isEditable={true}
+                  />
                 </div>
-                {selectedClassInfo && (
-                  <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: <strong className="font-bold">{selectedClassInfo.hitDice}</strong></p>
+                {isPredefinedClass && (
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
+                    <Info className="h-5 w-5" />
+                  </Button>
                 )}
+                {!isPredefinedClass && character.classes[0]?.className && character.classes[0]?.className.trim() !== '' && (
+                  <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
+                )}
+              </div>
+              {selectedClassInfo && (
+                <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: <strong className="font-bold">{selectedClassInfo.hitDice}</strong></p>
+              )}
             </div>
             <div className="space-y-1">
               <Label htmlFor="alignment">Alignment</Label>
@@ -502,7 +503,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     </SelectContent>
                   </Select>
                 </div>
-                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
                   <Info className="h-5 w-5" />
                 </Button>
               </div>
@@ -538,9 +539,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               <Label htmlFor="age">Age</Label>
               <Input id="age" name="age" type="number" value={character.age} onChange={handleChange} min={currentMinAgeForInput} />
                {ageEffectsDetails && (
-                <div className="text-xs text-muted-foreground mt-1 ml-1">
-                  {ageEffectsDetails.effects.length > 0 ? (
-                     <>
+                  <div className="text-xs text-muted-foreground mt-1 ml-1">
+                    {ageEffectsDetails.effects.length > 0 ? (
+                      <>
                         {ageEffectsDetails.effects.map((effect, index) => (
                           <React.Fragment key={effect.ability}>
                             <strong
@@ -554,16 +555,20 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                             {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                           </React.Fragment>
                         ))}
-                        {ageEffectsDetails.categoryName !== 'adult' && <div className="mt-0.5">{constantsData.DND_RACE_AGING_EFFECTS_DATA[constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA[character.race as DndRaceId] as keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA]?.categories.find(c => c.categoryName === ageEffectsDetails.categoryName)?.categoryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || ageEffectsDetails.categoryName}</div>}
-                     </>
-                  ) : (
-                   <>
-                    No impact on ability scores
-                    {ageEffectsDetails.categoryName !== "adult" && <div className="mt-0.5">{constantsData.DND_RACE_AGING_EFFECTS_DATA[constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA[character.race as DndRaceId] as keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA]?.categories.find(c => c.categoryName === ageEffectsDetails.categoryName)?.categoryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || ageEffectsDetails.categoryName}</div>}
-                   </>
-                  )}
-                </div>
-              )}
+                        {ageEffectsDetails.categoryName !== 'adult' && (
+                           <div className="mt-0.5">{constantsData.DND_RACE_AGING_EFFECTS_DATA[constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA[character.race as DndRaceId] as keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA]?.categories.find(c => c.categoryName === ageEffectsDetails.categoryName)?.categoryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || ageEffectsDetails.categoryName}</div>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                       No impact on ability scores
+                        {ageEffectsDetails.categoryName !== "adult" && (
+                           <div className="mt-0.5">{constantsData.DND_RACE_AGING_EFFECTS_DATA[constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA[character.race as DndRaceId] as keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA]?.categories.find(c => c.categoryName === ageEffectsDetails.categoryName)?.categoryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || ageEffectsDetails.categoryName}</div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
             </div>
             <div className="space-y-1">
               <Label htmlFor="gender">Gender</Label>
@@ -731,6 +736,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         characterClasses={character.classes}
         selectedFeats={character.feats}
         onFeatSelectionChange={handleFeatSelectionChange}
+        abilityScores={character.abilityScores}
+        skills={character.skills}
       />
 
 
@@ -755,4 +762,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   );
 }
 
-    
