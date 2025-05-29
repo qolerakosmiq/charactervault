@@ -44,7 +44,7 @@ export function SkillsFormSection({
   const intelligenceModifier = getAbilityModifierByName(abilityScores, 'intelligence');
 
   const baseSkillPointsForClass = firstClass?.className ? CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0 : 0;
-  const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace);
+  const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace as DndRace); // Cast to DndRace for safety
 
   const totalSkillPointsAvailable = (baseSkillPointsForClass + intelligenceModifier + racialBonus) * 4;
 
@@ -91,13 +91,13 @@ export function SkillsFormSection({
             </p>
           </div>
            <p className="text-xs text-muted-foreground mt-1">
-            Calculation: (Class Base [<strong className="font-bold text-primary">{baseSkillPointsForClass}</strong>] + Intelligence Modifier [<strong className="font-bold text-primary">{intelligenceModifier}</strong>] + Racial Bonus [<strong className="font-bold text-primary">{racialBonus}</strong>]) * <strong className="font-bold text-primary">4</strong>
+            (Class Base [<strong className="font-bold text-primary">{baseSkillPointsForClass}</strong>] + Intelligence Modifier [<strong className="font-bold text-primary">{intelligenceModifier}</strong>] + Racial Bonus [<strong className="font-bold text-primary">{racialBonus}</strong>]) * <strong className="font-bold text-primary">4</strong>
           </p>
         </div>
 
         <ScrollArea className="h-[400px] pr-3">
           <div className="space-y-1 -mx-1">
-            <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-xs">
+            <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-xs">
               <span className="text-center w-10">Class?</span>
               <span className="pl-1">Skill</span>
               <span className="text-center w-10">Total</span>
@@ -122,7 +122,7 @@ export function SkillsFormSection({
               const totalAbilityMod = baseAbilityMod + synergyBonus;
 
 
-              const totalBonus = (skill.ranks || 0) + totalAbilityMod + (skill.miscModifier || 0); // Re-add miscModifier to totalBonus calculation
+              const totalBonus = (skill.ranks || 0) + totalAbilityMod;
               const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
               const skillCost = skill.isClassSkill ? 1 : 2;
 
@@ -168,7 +168,7 @@ export function SkillsFormSection({
                     type="number"
                     step="0.5"
                     value={skill.ranks || 0}
-                    onChange={(e) => onSkillChange(skill.id, parseFloat(e.target.value) || 0, skill.miscModifier || 0)}
+                    onChange={(e) => onSkillChange(skill.id, parseFloat(e.target.value) || 0, 0)}
                     className="h-7 w-12 text-xs text-center p-1"
                     max={maxRanksValue}
                     min="0"
@@ -201,3 +201,4 @@ export function SkillsFormSection({
     </Card>
   );
 }
+
