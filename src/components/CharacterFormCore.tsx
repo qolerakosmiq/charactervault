@@ -125,7 +125,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
      if (name === 'className') {
       setCharacter(prev => ({
         ...prev,
-        classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: value, level: prev.classes[0]?.level || 1 }]
+        // Ensure level remains 1 when class changes
+        classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: value, level: 1 }]
       }));
     } else if (name === 'size') {
        setCharacter(prev => ({ ...prev, [name]: value as CharacterSize, sizeModifierAC: calculateAbilityModifier(prev.abilityScores.dexterity) + (SIZES.indexOf(value as CharacterSize) - 4) * (value === SIZES[5] || value === SIZES[6] || value === SIZES[7] || value === SIZES[8] ? -1 : 1) }));
@@ -137,13 +138,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
      else {
       setCharacter(prev => ({ ...prev, [name]: value }));
     }
-  };
-
-  const handleClassLevelChange = (value: string) => {
-    setCharacter(prev => ({
-      ...prev,
-      classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: prev.classes[0]?.className || '', level: parseInt(value,10) || 1 }]
-    }));
   };
 
   const handlePortraitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,6 +201,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
     const finalCharacterData = {
       ...character,
+      classes: [{ ...character.classes[0], level: 1 }], // Ensure level is 1 on save
       sizeModifierAC: calculateAbilityModifier(character.abilityScores.dexterity) + (SIZES.indexOf(character.size as CharacterSize) - 4) * (character.size === SIZES[5] || character.size === SIZES[6] || character.size === SIZES[7] || character.size === SIZES[8] ? -1 : 1)
     };
     onSave(finalCharacterData);
@@ -257,10 +252,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             </div>
           </div>
 
-          {/* Class & Level */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+          {/* Class (Level removed) */}
+          <div className="grid grid-cols-1 gap-6 items-start">
              <div>
-                <Label htmlFor="className">Class</Label>
+                <Label htmlFor="className">Class (Level 1)</Label>
                 <div className="flex items-center gap-2">
                   <div className="flex-grow">
                     <ComboboxPrimitive
@@ -277,17 +272,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                 {selectedClassInfo && (
                   <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: <strong className="font-bold">{selectedClassInfo.hitDice}</strong></p>
                 )}
-            </div>
-            <div>
-              <Label htmlFor="level">Level</Label>
-                <Input
-                  id="level"
-                  name="level"
-                  type="number"
-                  value={character.classes[0]?.level || 1}
-                  onChange={(e) => handleClassLevelChange(e.target.value)}
-                  min="1"
-                />
             </div>
           </div>
 
@@ -336,11 +320,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             <div>
               <Label htmlFor="age">Age</Label>
               <Input id="age" name="age" type="number" value={character.age} onChange={handleChange} min="1" />
-               {ageEffectsDetails && (ageEffectsDetails.categoryName !== "Adult" || ageEffectsDetails.effects.length > 0) && (
+               {ageEffectsDetails && (
                 <p className="text-xs text-muted-foreground mt-1 ml-1">
-                  {ageEffectsDetails.categoryName !== "Adult" && (
-                      <span>{ageEffectsDetails.categoryName}: </span>
-                  )}
+                  {ageEffectsDetails.categoryName}: {/* Space after colon */}
                   {ageEffectsDetails.effects.length > 0 ? (
                     <>
                       {ageEffectsDetails.effects.map((effect, index) => (
@@ -358,7 +340,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                       ))}
                     </>
                   ) : (
-                    ageEffectsDetails.categoryName !== "Adult" && <span>No ability score changes.</span>
+                    <span>No ability score changes.</span>
                   )}
                 </p>
               )}
@@ -521,6 +503,5 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-
 
     
