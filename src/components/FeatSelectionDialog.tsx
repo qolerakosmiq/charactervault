@@ -72,7 +72,7 @@ export function FeatSelectionDialog({
             onValueChange={setSearchTerm}
           />
           <ScrollArea className="flex-grow min-h-0">
-            <CommandList className="h-full"> {/* Override default max-h and allow it to fill ScrollArea */}
+            <CommandList className="max-h-none"> {/* Override default max-h */}
               <CommandEmpty>No feats found.</CommandEmpty>
               <CommandGroup>
                 {filteredFeats.map((feat) => (
