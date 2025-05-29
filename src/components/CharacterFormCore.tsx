@@ -272,12 +272,13 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           </div>
         </CardHeader>
         <CardContent className="space-y-6 pt-6">
-          {/* Name & Race */}
+          {/* Name */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div className="space-y-1">
               <Label htmlFor="name">Name</Label>
               <Input id="name" name="name" value={character.name} onChange={handleChange} />
             </div>
+            {/* Race */}
             <div className="space-y-1">
               <Label htmlFor="race">Race</Label>
               <div className="flex items-center gap-2">
@@ -402,8 +403,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               <Label htmlFor="age">Age</Label>
               <Input id="age" name="age" type="number" value={character.age} onChange={handleChange} min="1" />
                {ageEffectsDetails && (
-                <p className="text-xs text-muted-foreground mt-1 ml-1">
-                  {ageEffectsDetails.categoryName !== 'Adult' ? `${ageEffectsDetails.categoryName}: ` : ''}
+                <div className="text-xs text-muted-foreground mt-1 ml-1">
                   {ageEffectsDetails.effects.length > 0 ? (
                     ageEffectsDetails.effects.map((effect, index) => (
                       <React.Fragment key={effect.ability}>
@@ -421,7 +421,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   ) : (
                    <span>No impact on ability scores</span>
                   )}
-                </p>
+                  {ageEffectsDetails.categoryName && (
+                     <div className="mt-0.5">{ageEffectsDetails.categoryName}</div>
+                  )}
+                </div>
               )}
             </div>
             <div className="space-y-1">
@@ -444,11 +447,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   {SIZES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                 </SelectContent>
               </Select>
-              {sizeAbilityEffectsDetails ? (
-                sizeAbilityEffectsDetails.effects.length > 0 ? (
-                  <p className="text-xs text-muted-foreground mt-1 ml-1">
-                    Impact on ability scores: {/* Space after colon */}
-                    {sizeAbilityEffectsDetails.effects.map((effect, index) => (
+              {sizeAbilityEffectsDetails && (
+                <p className="text-xs text-muted-foreground mt-1 ml-1">
+                  {sizeAbilityEffectsDetails.effects.length > 0 ? (
+                    sizeAbilityEffectsDetails.effects.map((effect, index) => (
                       <React.Fragment key={effect.ability}>
                         <strong
                           className={cn(
@@ -460,15 +462,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                         </strong>
                         {index < sizeAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                       </React.Fragment>
-                    ))}
-                  </p>
-                ) : (
-                  <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
-                )
-              ) : (
-                <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
-              )
-            }
+                    ))
+                  ) : (
+                    <span>No impact on ability scores</span>
+                  )}
+                </p>
+              )}
             </div>
           </div>
 
@@ -576,7 +575,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                 value={character.personalStory || ''}
                 onChange={handleChange}
                 placeholder="Describe your character's history, motivations, personality, and defining moments..."
-                rows={12}
                 className="min-h-[260px] md:flex-grow md:min-h-0"
               />
             </div>
@@ -604,4 +602,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-
