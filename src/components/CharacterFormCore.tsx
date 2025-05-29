@@ -239,11 +239,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         <CardContent className="space-y-6 pt-6">
           {/* Name & Race */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-             <div>
+             <div className="space-y-1">
               <Label htmlFor="name">Name</Label>
               <Input id="name" name="name" value={character.name} onChange={handleChange} required />
             </div>
-            <div>
+            <div className="space-y-1">
               <Label htmlFor="race">Race</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
@@ -262,8 +262,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           </div>
 
           {/* Class & Alignment */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-             <div className="space-y-1"> {/* Added space-y-1 to group label and input/sub-label */}
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+             <div className="space-y-1">
                 <Label htmlFor="className">Class</Label>
                 <div className="flex items-center gap-2">
                   <div className="flex-grow">
@@ -282,7 +282,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: <strong className="font-bold">{selectedClassInfo.hitDice}</strong></p>
                 )}
             </div>
-            <div>
+            <div className="space-y-1">
               <Label htmlFor="alignment">Alignment</Label>
               <Select name="alignment" value={character.alignment} onValueChange={(value) => handleSelectChange('alignment', value as CharacterAlignment)}>
                 <SelectTrigger><SelectValue placeholder="Select alignment" /></SelectTrigger>
@@ -295,7 +295,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           
           {/* Deity */}
           <div className="grid grid-cols-1 gap-6 items-start">
-            <div>
+            <div className="space-y-1">
               <Label htmlFor="deity">Deity</Label>
               <ComboboxPrimitive
                   options={DND_DEITIES as readonly ComboboxOption[]}
@@ -317,30 +317,28 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               <Input id="age" name="age" type="number" value={character.age} onChange={handleChange} min="1" />
                {ageEffectsDetails && (
                 <p className="text-xs text-muted-foreground mt-1 ml-1">
+                  {ageEffectsDetails.categoryName !== 'Adult' ? `${ageEffectsDetails.categoryName}: ` : ''}
                   {ageEffectsDetails.effects.length > 0 ? (
-                    <>
-                      {ageEffectsDetails.categoryName !== 'Adult' ? `${ageEffectsDetails.categoryName}: ` : ''}
-                      {ageEffectsDetails.effects.map((effect, index) => (
-                        <React.Fragment key={effect.ability}>
-                          <strong
-                            className={cn(
-                              "font-bold",
-                              effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
-                            )}
-                          >
-                            {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
-                          </strong>
-                          {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
-                        </React.Fragment>
-                      ))}
-                    </>
+                    ageEffectsDetails.effects.map((effect, index) => (
+                      <React.Fragment key={effect.ability}>
+                        <strong
+                          className={cn(
+                            "font-bold",
+                            effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
+                          )}
+                        >
+                          {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
+                        </strong>
+                        {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
+                      </React.Fragment>
+                    ))
                   ) : (
                     <span>No ability score changes</span>
                   )}
                 </p>
               )}
             </div>
-            <div>
+            <div className="space-y-1">
               <Label htmlFor="gender">Gender</Label>
               <ComboboxPrimitive
                   options={GENDERS as readonly ComboboxOption[]}
@@ -379,11 +377,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     ))}
                   </p>
                 ) : (
-                  <p className="text-xs text-muted-foreground mt-1 ml-1">No ability score changes.</p>
+                  <p className="text-xs text-muted-foreground mt-1 ml-1">No ability score changes</p>
                 )
               ) : (
-                 /* Handle case where sizeAbilityEffectsDetails is null initially or if Medium (no effects) makes it null */
-                <p className="text-xs text-muted-foreground mt-1 ml-1">No ability score changes.</p>
+                <p className="text-xs text-muted-foreground mt-1 ml-1">No ability score changes</p>
               )
             }
             </div>
@@ -461,7 +458,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               <Label htmlFor="portraitUpload">Character Portrait</Label>
               <div className="aspect-square w-full bg-muted rounded-md flex items-center justify-center relative overflow-hidden border border-border shadow-sm">
                 {character.portraitDataUrl ? (
-                  <Image src={character.portraitDataUrl} alt="Character Portrait" fill objectFit="cover" />
+                  <Image src={character.portraitDataUrl} alt="Character Portrait" fill style={{objectFit: 'cover'}} />
                 ) : (
                   <div className="flex flex-col items-center justify-center text-muted-foreground">
                     <Palette size={48} className="mb-2"/>
