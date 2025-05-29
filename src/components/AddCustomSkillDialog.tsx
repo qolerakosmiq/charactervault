@@ -32,7 +32,7 @@ const keyAbilityOptions: Array<{ value: AbilityName; label: string }> = [
   { value: 'intelligence', label: 'Intelligence (INT)' },
   { value: 'wisdom', label: 'Wisdom (WIS)' },
   { value: 'charisma', label: 'Charisma (CHA)' },
-  { value: 'none', label: 'None' },
+  // { value: 'none', label: 'None' }, // Removed "None" option
 ];
 
 export function AddCustomSkillDialog({
@@ -42,7 +42,7 @@ export function AddCustomSkillDialog({
   initialSkillData,
 }: AddCustomSkillDialogProps) {
   const [skillName, setSkillName] = React.useState('');
-  const [selectedKeyAbility, setSelectedKeyAbility] = React.useState<AbilityName>('none');
+  const [selectedKeyAbility, setSelectedKeyAbility] = React.useState<AbilityName>('intelligence'); // Default to intelligence
   const [isClassSkill, setIsClassSkill] = React.useState(false);
 
   const isEditing = !!initialSkillData;
@@ -55,7 +55,7 @@ export function AddCustomSkillDialog({
         setIsClassSkill(initialSkillData.isClassSkill);
       } else {
         setSkillName('');
-        setSelectedKeyAbility('none');
+        setSelectedKeyAbility('intelligence'); // Reset to intelligence for new skill
         setIsClassSkill(false);
       }
     }
