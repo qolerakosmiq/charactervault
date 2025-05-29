@@ -7,7 +7,6 @@ import { DND_FEATS, calculateAvailableFeats, DND_RACES, checkFeatPrerequisites }
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Award, PlusCircle, Trash2 } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
 import { useToast } from "@/hooks/use-toast";
@@ -38,21 +37,19 @@ export function FeatsFormSection({
 
   React.useEffect(() => {
     const currentFeatIds = selectedFeats.map(f => f.id);
-    // Only update if there's an actual difference to prevent potential infinite loops
-    // if parent component re-renders frequently.
     if (JSON.stringify(featSelections.slice().sort()) !== JSON.stringify(currentFeatIds.slice().sort())) {
-        setFeatSelections(currentFeatIds);
+      setFeatSelections(currentFeatIds);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedFeats]); // Only depend on selectedFeats from props
+  }, [selectedFeats]);
 
 
   const convertSelectionsToFeatTypes = (selections: string[]): FeatType[] => {
     return selections
       .map(id => {
-        if (!id) return undefined; // Handle case where a slot might be empty
+        if (!id) return undefined;
         const featDef = DND_FEATS.find(f => f.value === id);
-        if (!featDef) return undefined; // Should not happen if IDs are valid
+        if (!featDef) return undefined;
         return {
           id: featDef.value,
           name: featDef.label,
@@ -72,7 +69,7 @@ export function FeatsFormSection({
 
   const handleFeatSelectedFromDialog = (featId: string) => {
     const featDef = DND_FEATS.find(f => f.value === featId);
-    if (!featDef) return; 
+    if (!featDef) return;
 
     if (!featDef.canTakeMultipleTimes && featSelections.includes(featId)) {
       toast({
@@ -104,22 +101,20 @@ export function FeatsFormSection({
   const selectedFeatsCount = featSelections.length;
   const featSlotsLeft = availableFeatSlots - selectedFeatsCount;
 
-  const baseFeat = 1; // At 1st level
+  const baseFeat = 1;
   const humanBonus = DND_RACES.find(r => r.value === characterRace)?.value === 'human' ? 1 : 0;
   const levelProgressionFeats = Math.floor(characterLevel / 3);
 
-   // Construct a partial Character object for prerequisite checking
-   const characterForPrereqCheck = React.useMemo(() => ({
+  const characterForPrereqCheck = React.useMemo(() => ({
     abilityScores,
     skills,
-    feats: convertSelectionsToFeatTypes(featSelections), // Use current internal selections for accurate check
+    feats: convertSelectionsToFeatTypes(featSelections),
     classes: characterClasses,
     race: characterRace,
-    // Add dummy values for other Character properties if needed by checkFeatPrerequisites
-    age: 0, 
+    age: 0,
     name: '',
-    alignment: 'true-neutral', // Or any valid default
-    size: 'medium',
+    alignment: 'true-neutral' as const,
+    size: 'medium' as const,
     hp: 0, maxHp: 0,
     armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0, deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0,
     initiativeMiscModifier: 0,
@@ -159,18 +154,17 @@ export function FeatsFormSection({
             </p>
           </div>
 
-          <ScrollArea className="max-h-[400px] pr-1 mb-4">
+          <div className="mb-4">
             {featSelections.length > 0 ? (
               <div className="space-y-2">
                 {featSelections.map((selectedFeatId, index) => {
                   const featDetails = getFeatDetails(selectedFeatId);
-                  if (!featDetails) { 
-                    // This can happen if a feat ID was in selectedFeats but somehow not in DND_FEATS
-                    // Or if selectedFeatId is undefined (though filter should prevent this part)
+                  if (!featDetails) {
                     return (
                          <div key={`feat-slot-${index}-empty`} className="flex items-center justify-between py-2 px-3 border rounded-md bg-background hover:bg-muted/20">
                             <p className="text-sm text-muted-foreground">Error: Feat data not found for ID: {selectedFeatId}</p>
                              <Button
+                                type="button"
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => handleRemoveSlot(index)}
@@ -190,7 +184,7 @@ export function FeatsFormSection({
                   ];
 
                   return (
-                    <div key={`feat-slot-${index}-${selectedFeatId}`} className="flex items-start justify-between py-2 px-3 border rounded-md bg-background hover:bg-muted/20">
+                    <div key={`feat-slot-${index}-${selectedFeatId}`} className="flex items-start justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors">
                       <div className="flex-grow mr-2">
                         <h4 className="font-medium text-foreground">{featDetails.label}</h4>
                         {featDetails.description && (
@@ -201,7 +195,7 @@ export function FeatsFormSection({
                         { (allPrereqMessages.length > 0 || (featDetails.prerequisites && Object.keys(featDetails.prerequisites).length > 0)) && (
                           <p className="text-xs mt-0.5 whitespace-normal">
                             Prerequisites:{' '}
-                            {allPrereqMessages.length > 0 ? 
+                            {allPrereqMessages.length > 0 ?
                               allPrereqMessages.map((msg, idx) => (
                                 <React.Fragment key={idx}>
                                   <span className={msg.type === 'unmet' ? 'text-destructive' : 'text-muted-foreground'}>
@@ -216,6 +210,7 @@ export function FeatsFormSection({
                         )}
                       </div>
                       <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
                         onClick={() => handleRemoveSlot(index)}
@@ -233,7 +228,7 @@ export function FeatsFormSection({
                 No feats selected. Click "Add Feat" to begin.
               </p>
             )}
-          </ScrollArea>
+          </div>
 
           <Button onClick={handleAddFeatClick} type="button" variant="outline" size="sm" className="mt-2">
             <PlusCircle className="mr-2 h-4 w-4" /> Add Feat
@@ -250,4 +245,3 @@ export function FeatsFormSection({
     </>
   );
 }
-
