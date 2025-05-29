@@ -8,9 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Award, PlusCircle, Trash2, Edit3 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { FeatSelectionDialog } from './FeatSelectionDialog'; // New Dialog
+import { FeatSelectionDialog } from './FeatSelectionDialog';
 
 interface FeatsFormSectionProps {
   characterRace: DndRaceId | string;
@@ -28,16 +27,16 @@ export function FeatsFormSection({
   const characterLevel = characterClasses.reduce((sum, cls) => sum + cls.level, 0) || 1;
   const availableFeatSlots = calculateAvailableFeats(characterRace, characterLevel);
 
-  // Stores the IDs of selected feats for currently displayed slots
   const [featSelections, setFeatSelections] = React.useState<(string | undefined)[]>([]);
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
   const [editingSlotIndex, setEditingSlotIndex] = React.useState<number | null>(null);
 
-
   React.useEffect(() => {
     const newDerivedSelections = selectedFeats.map(f => f.id);
+    // Only update if the derived selections actually differ or if the number of available slots differs from current selections
+    // This helps avoid unnecessary re-renders and preserves the order of `undefined` slots if they exist
     if (JSON.stringify(featSelections) !== JSON.stringify(newDerivedSelections)) {
-      setFeatSelections(newDerivedSelections.length > 0 ? newDerivedSelections : (featSelections.length > 0 && newDerivedSelections.length === 0 ? [] : newDerivedSelections));
+       setFeatSelections(newDerivedSelections);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFeats]);
@@ -48,7 +47,7 @@ export function FeatsFormSection({
       .map(id => {
         if (!id) return undefined;
         const featDef = DND_FEATS.find(f => f.value === id);
-        if (!featDef) return undefined;
+        if (!featDef) return undefined; // Should not happen if selection is from dialog
         return {
           id: featDef.value,
           name: featDef.label,
@@ -60,7 +59,11 @@ export function FeatsFormSection({
   };
 
   const handleAddSlot = () => {
-    setFeatSelections(prev => [...prev, undefined]);
+    // Allow adding slots even beyond 'available'
+    const newSelections = [...featSelections, undefined];
+    setFeatSelections(newSelections);
+    // Note: We don't call onFeatSelectionChange here, as no feat is actually selected yet.
+    // It will be called when a feat is chosen for this new slot.
   };
 
   const handleRemoveSlot = (indexToRemove: number) => {
@@ -77,20 +80,17 @@ export function FeatsFormSection({
   const handleFeatSelectedFromDialog = (featId: string) => {
     if (editingSlotIndex !== null) {
       const newSelections = [...featSelections];
-      // Check if this featId is already selected in *another* slot
       const isAlreadySelectedElsewhere = newSelections.some(
         (id, index) => id === featId && index !== editingSlotIndex
       );
       if (isAlreadySelectedElsewhere) {
-        // Optionally, show a toast or alert here
         console.warn("This feat is already selected in another slot.");
-        setIsFeatDialogOpen(false); // Close dialog even if not changing
-        return;
+        // Optionally show a toast or alert here
+      } else {
+        newSelections[editingSlotIndex] = featId;
+        setFeatSelections(newSelections);
+        onFeatSelectionChange(convertSelectionsToFeatTypes(newSelections));
       }
-
-      newSelections[editingSlotIndex] = featId;
-      setFeatSelections(newSelections);
-      onFeatSelectionChange(convertSelectionsToFeatTypes(newSelections));
     }
     setIsFeatDialogOpen(false);
     setEditingSlotIndex(null);
@@ -100,13 +100,6 @@ export function FeatsFormSection({
   const getFeatDetails = (featId: string | undefined): FeatDefinitionJsonData | undefined => {
     return DND_FEATS.find(f => f.value === featId);
   };
-
-  // Filter out feats already selected in OTHER slots for the dialog
-  const getFeatsForDialog = (): FeatDefinitionJsonData[] => {
-    const selectedInOtherSlots = featSelections.filter((id, index) => id && index !== editingSlotIndex);
-    return DND_FEATS.filter(featDef => !selectedInOtherSlots.includes(featDef.value));
-  };
-
 
   const selectedFeatsCount = featSelections.filter(Boolean).length;
   const featSlotsLeft = availableFeatSlots - selectedFeatsCount;
@@ -130,7 +123,7 @@ export function FeatsFormSection({
           </div>
         </CardHeader>
         <CardContent>
-          <div className="mb-4 p-3 border rounded-md bg-muted/30">
+          <div className="mb-6 p-3 border rounded-md bg-muted/30">
             <div className="flex justify-between items-center">
               <p className="text-sm font-medium">
                 Feats Available: <span className="text-lg font-bold text-primary">{availableFeatSlots}</span>
@@ -143,43 +136,31 @@ export function FeatsFormSection({
               </p>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Base [<strong className="font-bold text-primary">{baseFeat}</strong>]
-              + Human Bonus [<strong className="font-bold text-primary">+{humanBonus}</strong>]
-              + Level Progression [<strong className="font-bold text-primary">+{levelProgressionFeats}</strong>]
+              Base [{baseFeat}]
+              + Human Bonus [+{humanBonus}]
+              + Level Progression [+{levelProgressionFeats}]
             </p>
           </div>
 
-          {featSelections.length > 0 ? (
-            <ScrollArea className="max-h-[400px] pr-3">
-              <div className="space-y-4">
+          {featSelections.length > 0 && (
+            <ScrollArea className="max-h-[400px] pr-1 mb-4">
+              <div className="space-y-2">
                 {featSelections.map((selectedFeatId, index) => {
                   const featDetails = getFeatDetails(selectedFeatId);
                   return (
-                    <div key={`feat-slot-${index}`} className="p-3 border rounded-md bg-muted/10 space-y-2">
-                      <div className="flex justify-between items-center">
-                        <Label>Feat Slot {index + 1}</Label>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleRemoveSlot(index)}
-                          className="h-7 w-7 text-destructive hover:text-destructive/80"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Remove Feat Slot</span>
-                        </Button>
-                      </div>
+                    <div key={`feat-slot-${index}`} className="flex items-center justify-between py-2 border-b border-border/30 last:border-b-0">
                       <Button
                         variant="outline"
-                        className="w-full justify-start text-left font-normal h-auto py-2"
+                        className="w-full justify-start text-left font-normal h-auto py-2 mr-2 flex-grow"
                         onClick={() => handleOpenFeatDialog(index)}
                       >
                         <div className="flex-grow">
                           <div className="flex items-center">
-                             <Edit3 className="mr-2 h-4 w-4 text-muted-foreground" />
+                             <Edit3 className="mr-2 h-4 w-4 text-muted-foreground shrink-0" />
                             {featDetails ? (
                               <span className="text-foreground">{featDetails.label}</span>
                             ) : (
-                              <span className="text-muted-foreground">Click to select feat...</span>
+                              <span className="text-muted-foreground">Click to select feat... (Slot {index + 1})</span>
                             )}
                           </div>
                           {featDetails?.description && (
@@ -188,22 +169,33 @@ export function FeatsFormSection({
                             </p>
                           )}
                            {featDetails?.prerequisites && (
-                            <p className="text-xs text-destructive mt-1 whitespace-normal">
+                            <p className="text-xs text-destructive/80 mt-1 whitespace-normal">
                               Prerequisites: {featDetails.prerequisites}
                             </p>
                           )}
                         </div>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemoveSlot(index)}
+                        className="h-8 w-8 text-destructive hover:text-destructive/80 shrink-0"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Remove Feat Slot</span>
                       </Button>
                     </div>
                   );
                 })}
               </div>
             </ScrollArea>
-          ) : (
-            <p className="text-sm text-muted-foreground">No feat slots added yet. Click "Add Feat Slot" to begin.</p>
           )}
+           {featSelections.length === 0 && (
+             <p className="text-sm text-muted-foreground mb-4 text-center py-2">No feat slots added yet. Click "Add Feat Slot" to begin.</p>
+           )}
 
-          <Button onClick={handleAddSlot} variant="outline" size="sm" className="mt-4">
+
+          <Button onClick={handleAddSlot} variant="outline" size="sm" className="mt-2">
             <PlusCircle className="mr-2 h-4 w-4" /> Add Feat Slot
           </Button>
         </CardContent>
@@ -212,9 +204,9 @@ export function FeatsFormSection({
         isOpen={isFeatDialogOpen}
         onOpenChange={setIsFeatDialogOpen}
         onFeatSelected={handleFeatSelectedFromDialog}
-        allFeats={DND_FEATS} // Pass all feats; dialog can implement its own filtering if needed, or we pass getFeatsForDialog()
-        // currentFeatId={editingSlotIndex !== null ? featSelections[editingSlotIndex] : undefined}
+        allFeats={DND_FEATS}
       />
     </>
   );
 }
+
