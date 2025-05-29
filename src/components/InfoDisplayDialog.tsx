@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ScrollText, CheckSquare, Award } from 'lucide-react'; // Added Award
+import { ScrollText, CheckSquare } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { AbilityName } from '@/types/character';
 import { cn } from '@/lib/utils';
@@ -108,19 +108,17 @@ export function InfoDisplayDialog({
             <>
               {(content || (abilityModifiers && abilityModifiers.length > 0) || (skillBonuses && skillBonuses.length > 0)) && <Separator className="my-4" />}
               <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground flex items-center">
-                    <Award className="mr-2 h-4 w-4 text-primary/80" /> Racial Feat Bonuses:
-                </h3>
+                <h3 className="text-md font-semibold mb-2 text-foreground">Racial Feat Bonuses:</h3>
                 <ul className="space-y-1 text-sm">
                   {bonusFeatSlots && bonusFeatSlots > 0 && (
                     <li className="flex items-center">
-                      <CheckSquare className="h-4 w-4 mr-2 text-primary/80" />
+                      <CheckSquare className="h-4 w-4 mr-2 text-primary/80 shrink-0" />
                       <span>Bonus Feat Slots: +{bonusFeatSlots}</span>
                     </li>
                   )}
                   {grantedFeats && grantedFeats.map(({ name, note }, index) => (
                     <li key={`${name}-${index}`} className="flex items-center">
-                      <CheckSquare className="h-4 w-4 mr-2 text-primary/80" />
+                      <CheckSquare className="h-4 w-4 mr-2 text-primary/80 shrink-0" />
                       <span>{name} {note && <span className="text-muted-foreground text-xs">{note}</span>}</span>
                     </li>
                   ))}
