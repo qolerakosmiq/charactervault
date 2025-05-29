@@ -13,7 +13,6 @@ import { ScrollText, PlusCircle, Trash2, Pencil, Info } from 'lucide-react';
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Separator } from '@/components/ui/separator';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
@@ -141,125 +140,125 @@ export function SkillsFormSection({
           </p>
         </div>
 
-        <ScrollArea className="h-[400px] pr-3">
-          <div className="space-y-1 -mx-1">
-            <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-xs">
-              <span className="text-center w-10">Class?</span>
-              <span className="pl-1">Skill</span>
-              <span className="text-center w-10">Total</span>
-              <span className="text-center w-10">Key</span>
-              <span className="text-center w-10">Mod</span>
-              <span className="text-center w-12">Ranks</span>
-              <span className="text-center w-12">Cost</span>
-              <span className="text-center w-10">Max</span>
-            </div>
+        <div className="space-y-1 -mx-1">
+          <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-xs">
+            <span className="text-center w-10">Class?</span>
+            <span className="pl-1">Skill</span>
+            <span className="text-center w-10">Total</span>
+            <span className="text-center w-10">Key</span>
+            <span className="text-center w-10">Mod</span>
+            <span className="text-center w-12">Ranks</span>
+            <span className="text-center w-12">Cost</span>
+            <span className="text-center w-10">Max</span>
+          </div>
 
-            {skills.map(skill => {
-              const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skill.id);
-              const keyAbility = skill.keyAbility || (skillDef?.keyAbility as AbilityName | undefined);
-              const keyAbilityShort = keyAbility ? keyAbility.substring(0, 3).toUpperCase() : 'N/A';
+          {skills.map(skill => {
+            const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skill.id);
+            const keyAbility = skill.keyAbility || (skillDef?.keyAbility as AbilityName | undefined);
+            const keyAbilityShort = keyAbility ? keyAbility.substring(0, 3).toUpperCase() : 'N/A';
 
-              let baseAbilityMod = 0;
-              if (keyAbility && keyAbility !== 'none') {
-                baseAbilityMod = getAbilityModifierByName(abilityScores, keyAbility);
-              }
+            let baseAbilityMod = 0;
+            if (keyAbility && keyAbility !== 'none') {
+              baseAbilityMod = getAbilityModifierByName(abilityScores, keyAbility);
+            }
 
-              const synergyBonus = calculateTotalSynergyBonus(skill.id, skills);
-              const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats);
-              const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus;
+            const synergyBonus = calculateTotalSynergyBonus(skill.id, skills);
+            const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats);
+            const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus;
 
 
-              const totalBonus = (skill.ranks || 0) + totalDisplayedModifier;
-              const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
-              const skillCost = skill.isClassSkill ? 1 : 2;
-              const isCustomSkill = !skillDef;
+            const totalBonus = (skill.ranks || 0) + totalDisplayedModifier;
+            const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
+            const skillCost = skill.isClassSkill ? 1 : 2;
+            const isCustomSkill = !skillDef;
+            const currentStep = skill.isClassSkill ? 1 : 0.5;
 
-              return (
-                <div key={skill.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">
-                  <div className="flex justify-center w-10">
-                    <Checkbox
-                      id={`skill_class_${skill.id}`}
-                      checked={skill.isClassSkill}
-                      disabled
-                      className="h-3.5 w-3.5"
-                    />
+
+            return (
+              <div key={skill.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">
+                <div className="flex justify-center w-10">
+                  <Checkbox
+                    id={`skill_class_${skill.id}`}
+                    checked={skill.isClassSkill}
+                    disabled
+                    className="h-3.5 w-3.5"
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                     <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5 mr-1 text-muted-foreground hover:text-foreground"
+                        onClick={() => handleOpenSkillInfoDialog(skill)}
+                      >
+                        <Info className="h-3 w-3" />
+                      </Button>
+                    <Label htmlFor={`skill_ranks_${skill.id}`} className="text-xs truncate pr-1 leading-tight">
+                      {skill.name}
+                    </Label>
                   </div>
-                  <div className="flex items-center justify-between">
+                  {isCustomSkill && (
                     <div className="flex items-center">
-                       <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-5 w-5 mr-1 text-muted-foreground hover:text-foreground"
-                          onClick={() => handleOpenSkillInfoDialog(skill)}
-                        >
-                          <Info className="h-3 w-3" />
-                        </Button>
-                      <Label htmlFor={`skill_ranks_${skill.id}`} className="text-xs truncate pr-1 leading-tight">
-                        {skill.name}
-                      </Label>
-                    </div>
-                    {isCustomSkill && (
-                      <div className="flex items-center">
-                        <TooltipProvider delayDuration={100}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                               <Button
+                      <TooltipProvider delayDuration={100}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                             <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="h-5 w-5 text-muted-foreground hover:text-foreground"
+                              onClick={() => handleOpenEditSkillDialog(skill)}
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="p-1 text-xs">
+                            <p>Edit Custom Skill</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider delayDuration={100}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
                                 type="button"
                                 variant="ghost"
                                 size="icon"
-                                className="h-5 w-5 text-muted-foreground hover:text-foreground"
-                                onClick={() => handleOpenEditSkillDialog(skill)}
+                                className="h-5 w-5 text-destructive/70 hover:text-destructive"
+                                onClick={() => onCustomSkillRemove(skill.id)}
                               >
-                                <Pencil className="h-3 w-3" />
+                                <Trash2 className="h-3 w-3" />
                               </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="p-1 text-xs">
-                              <p>Edit Custom Skill</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <TooltipProvider delayDuration={100}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-5 w-5 text-destructive/70 hover:text-destructive"
-                                  onClick={() => onCustomSkillRemove(skill.id)}
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="p-1 text-xs">
-                              <p>Remove Custom Skill</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                       </div>
-                    )}
-                  </div>
-                  <span className="font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
-                  <span className="text-xs text-muted-foreground text-center w-10">{keyAbilityShort}</span>
-                  <span className="text-xs text-center w-10">{totalDisplayedModifier >= 0 ? '+' : ''}{totalDisplayedModifier}</span>
-                  <Input
-                    id={`skill_ranks_${skill.id}`}
-                    type="number"
-                    step={skill.isClassSkill ? "1" : "0.5"}
-                    value={skill.ranks || 0}
-                    onChange={(e) => onSkillChange(skill.id, parseFloat(e.target.value) || 0)}
-                    className="h-7 w-12 text-xs text-center p-1"
-                    max={maxRanksValue}
-                    min="0"
-                  />
-                  <span className="text-xs text-muted-foreground text-center w-12">{skillCost}</span>
-                  <span className="text-xs text-muted-foreground text-center w-10">{maxRanksValue}</span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="p-1 text-xs">
+                            <p>Remove Custom Skill</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                     </div>
+                  )}
                 </div>
-              );
-            })}
-          </div>
-        </ScrollArea>
+                <span className="font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
+                <span className="text-xs text-muted-foreground text-center w-10">{keyAbilityShort}</span>
+                <span className="text-xs text-center w-10">{totalDisplayedModifier >= 0 ? '+' : ''}{totalDisplayedModifier}</span>
+                <Input
+                  id={`skill_ranks_${skill.id}`}
+                  type="number"
+                  step={currentStep}
+                  value={skill.ranks || 0}
+                  onChange={(e) => onSkillChange(skill.id, parseFloat(e.target.value) || 0)}
+                  className="h-7 w-12 text-xs text-center p-1"
+                  max={maxRanksValue}
+                  min="0"
+                />
+                <span className="text-xs text-muted-foreground text-center w-12">{skillCost}</span>
+                <span className="text-xs text-muted-foreground text-center w-10">{maxRanksValue}</span>
+              </div>
+            );
+          })}
+        </div>
 
         <Separator className="my-4" />
 
@@ -288,5 +287,3 @@ export function SkillsFormSection({
     </>
   );
 }
-
-    
