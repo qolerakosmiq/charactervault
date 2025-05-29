@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRaceId, SizeAbilityEffectsDetails, AbilityScores, RaceAbilityEffectsDetails, Skill as SkillType, DndClassId, CustomSynergyRule, DndDeityId, GenderId } from '@/types/character';
+import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRaceId, SizeAbilityEffectsDetails, AbilityScores, RaceAbilityEffectsDetails, Skill as SkillType, DndClassId, CustomSynergyRule, DndDeityId, GenderId, Feat as FeatType } from '@/types/character';
 import { SIZES, ALIGNMENTS, DND_RACES, DND_CLASSES, getNetAgingEffects, GENDERS, DND_DEITIES, getSizeAbilityEffects, getRaceAbilityEffects, getInitialCharacterSkills, SKILL_DEFINITIONS } from '@/types/character';
 import constantsData from '@/data/dnd-constants.json';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,7 @@ import { ComboboxPrimitive } from '@/components/ui/combobox';
 import { cn } from '@/lib/utils';
 import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
 import { SkillsFormSection } from '@/components/SkillsFormSection';
+import { FeatsFormSection } from '@/components/FeatsFormSection'; // Import FeatsFormSection
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 
@@ -37,11 +38,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       id: crypto.randomUUID(),
       name: '',
       race: '',
-      alignment: 'true-neutral', // Default to kebab-case ID
+      alignment: 'true-neutral',
       deity: '',
-      size: 'medium', // Default to kebab-case ID
+      size: 'medium',
       age: 20,
-      gender: (GENDERS.find(g => g.value === 'male') || GENDERS[0]).value, // Default to male or first
+      gender: (GENDERS.find(g => g.value === 'male') || GENDERS[0]).value,
       abilityScores: { ...JSON.parse(JSON.stringify(constantsData.DEFAULT_ABILITIES || {})) },
       hp: 10,
       maxHp: 10,
@@ -109,7 +110,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         }
       }
     }
-  }, [character.race]); 
+  }, [character.race, character.age]); // Added character.age to dependencies
 
   React.useEffect(() => {
     const firstClassId = character.classes[0]?.className;
@@ -118,7 +119,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         const predefinedSkills = getInitialCharacterSkills(prevCharacter.classes);
         
         const existingCustomSkills = prevCharacter.skills.filter(
-          s => !SKILL_DEFINITIONS.some(def => def.value === s.id) // Compare against skill ID (value)
+          s => !SKILL_DEFINITIONS.some(def => def.value === s.id)
         );
 
         const updatedCustomSkills = existingCustomSkills.map(customSkill => ({
@@ -169,13 +170,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     } else if (name === 'size') {
        const sizeObject = SIZES.find(s => s.value === value);
        const dexModForAC = calculateAbilityModifier(character.abilityScores.dexterity);
-       // getSizeModifierAC expects the label, so find it from the value
        const sizeLabelForAC = SIZES.find(s => s.value === value)?.label || value;
-       const sizeModAC = constantsData.DND_SIZE_ABILITY_MODIFIERS_DATA[value as keyof typeof constantsData.DND_SIZE_ABILITY_MODIFIERS_DATA]?.dexterity || 0; // This is wrong for AC, AC uses special size mod
+       const sizeModAC = constantsData.DND_SIZE_ABILITY_MODIFIERS_DATA[value as keyof typeof constantsData.DND_SIZE_ABILITY_MODIFIERS_DATA]?.dexterity || 0; 
 
-       // Correct AC size modifier calculation
         let acSizeModifierValue = 0;
-        switch (value) { // value is kebab-case ID here
+        switch (value) { 
             case 'fine': acSizeModifierValue = 8; break;
             case 'diminutive': acSizeModifierValue = 4; break;
             case 'tiny': acSizeModifierValue = 2; break;
@@ -224,7 +223,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const handleCustomSkillAdd = (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
     const newSkill: SkillType = {
-      id: crypto.randomUUID(), // Custom skills get a UUID
+      id: crypto.randomUUID(),
       name: skillData.name,
       keyAbility: skillData.keyAbility,
       ranks: 0,
@@ -262,6 +261,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       ...prev,
       skills: prev.skills.filter(s => s.id !== skillId)
     }));
+  };
+
+  const handleFeatSelectionChange = (newSelectedFeats: FeatType[]) => {
+    setCharacter(prev => ({ ...prev, feats: newSelectedFeats }));
   };
 
 
@@ -343,7 +346,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
     
     let acSizeModifierValue = 0;
-    switch (character.size) { // character.size is kebab-case ID
+    switch (character.size) { 
         case 'fine': acSizeModifierValue = 8; break;
         case 'diminutive': acSizeModifierValue = 4; break;
         case 'tiny': acSizeModifierValue = 2; break;
@@ -551,7 +554,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                             {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                           </React.Fragment>
                         ))}
-                         {ageEffectsDetails.categoryName !== 'adult' && <div className="mt-0.5">{constantsData.DND_RACE_AGING_EFFECTS_DATA[constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA[character.race as DndRaceId] as keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA]?.categories.find(c => c.categoryName === ageEffectsDetails.categoryName)?.categoryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || ageEffectsDetails.categoryName}</div>}
+                        {ageEffectsDetails.categoryName !== 'adult' && <div className="mt-0.5">{constantsData.DND_RACE_AGING_EFFECTS_DATA[constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA[character.race as DndRaceId] as keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA]?.categories.find(c => c.categoryName === ageEffectsDetails.categoryName)?.categoryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || ageEffectsDetails.categoryName}</div>}
                      </>
                   ) : (
                    <>
@@ -721,6 +724,13 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         onCustomSkillAdd={handleCustomSkillAdd}
         onCustomSkillUpdate={handleCustomSkillUpdate}
         onCustomSkillRemove={handleCustomSkillRemove}
+      />
+
+      <FeatsFormSection
+        characterRace={character.race}
+        characterClasses={character.classes}
+        selectedFeats={character.feats}
+        onFeatSelectionChange={handleFeatSelectionChange}
       />
 
 

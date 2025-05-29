@@ -18,7 +18,7 @@ export interface Skill {
   id: string; // Kebab-case for predefined, UUID for custom
   name: string; // Human-readable name
   ranks: number;
-  miscModifier: number; // This is currently unused as per skill panel changes
+  miscModifier: number;
   keyAbility?: AbilityName;
   isClassSkill?: boolean;
   providesSynergies?: CustomSynergyRule[];
@@ -26,9 +26,10 @@ export interface Skill {
 }
 
 export interface Feat {
-  id: string;
-  name: string;
+  id: string; // Kebab-case ID from DND_FEATS_DATA 'value' field
+  name: string; // 'label' from DND_FEATS_DATA
   description?: string;
+  prerequisites?: string;
 }
 
 export interface Item {
@@ -112,6 +113,10 @@ export const DND_CLASSES: ReadonlyArray<{value: DndClassId, label: string, hitDi
 export type DndDeityId = typeof constantsData.DND_DEITIES_DATA[number]['value'];
 export const DND_DEITIES: ReadonlyArray<{value: DndDeityId, label: string}> = constantsData.DND_DEITIES_DATA as ReadonlyArray<{value: DndDeityId, label: string}>;
 
+export type FeatDefinitionJsonData = typeof constantsData.DND_FEATS_DATA[number];
+export const DND_FEATS: readonly FeatDefinitionJsonData[] = constantsData.DND_FEATS_DATA as ReadonlyArray<FeatDefinitionJsonData>;
+
+
 export type SkillDefinitionJsonData = typeof constantsData.SKILL_DEFINITIONS_DATA[number] & { description?: string };
 export const SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[] = constantsData.SKILL_DEFINITIONS_DATA as ReadonlyArray<SkillDefinitionJsonData>;
 
@@ -147,8 +152,8 @@ export function getInitialCharacterSkills(characterClasses: CharacterClass[]): S
         }
     }
     return {
-      id: def.value, // Use kebab-case ID
-      name: def.label, // Use display label
+      id: def.value, // Use kebab-case ID from JSON ('value' field)
+      name: def.label, // Use display label from JSON ('label' field)
       keyAbility: def.keyAbility as AbilityName,
       ranks: 0,
       miscModifier: 0,
@@ -218,8 +223,9 @@ export function getNetAgingEffects(raceId: DndRaceId | string, age: number): Agi
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB;
+            return signA - signB; // Negative changes first
         }
+        // If signs are the same, sort by ability order
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
         return indexA - indexB;
@@ -255,7 +261,7 @@ export function getSizeAbilityEffects(sizeId: CharacterSize): SizeAbilityEffects
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB;
+            return signA - signB; // Negative changes first
         }
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
@@ -288,7 +294,7 @@ export function getRaceAbilityEffects(raceId: DndRaceId | string): RaceAbilityEf
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB;
+            return signA - signB; // Negative changes first
         }
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
@@ -346,6 +352,22 @@ export function calculateTotalSynergyBonus(targetSkillId: string, currentCharact
   }
 
   return totalBonus;
+}
+
+export function calculateAvailableFeats(race: DndRaceId | string, level: number): number {
+  let availableFeats = 0;
+  if (level >= 1) {
+    availableFeats += 1; // Base feat at 1st level
+  }
+  if (race === 'human') {
+    availableFeats += 1; // Human bonus feat at 1st level
+  }
+  // Add feats for every 3 levels (3rd, 6th, 9th, etc.)
+  availableFeats += Math.floor(level / 3);
+
+  // Placeholder for class-specific bonus feats (e.g., Fighter, Wizard)
+  // This would need access to characterClasses
+  return availableFeats;
 }
 
     
