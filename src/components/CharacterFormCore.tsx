@@ -5,6 +5,7 @@ import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRace, SizeAbilityEffectsDetails, AbilityScores, RaceAbilityEffectsDetails } from '@/types/character';
 import { DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, SIZES, ALIGNMENTS, ALL_SKILLS_3_5, DND_RACES, DND_CLASSES, getNetAgingEffects, GENDERS, DND_DEITIES, getSizeAbilityEffects, getRaceAbilityEffects } from '@/types/character';
+import constantsData from '@/data/dnd-constants.json';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -106,6 +107,17 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       setRaceAbilityEffectsDetails(details);
     } else {
       setRaceAbilityEffectsDetails(null);
+    }
+  }, [character.race]);
+
+  React.useEffect(() => {
+    const selectedRaceInfo = DND_RACES.find(r => r.value.toLowerCase() === character.race?.toLowerCase());
+    if (selectedRaceInfo) {
+      const raceKey = selectedRaceInfo.value as DndRace;
+      const minAdultAge = (constantsData.DND_RACE_MIN_ADULT_AGE_DATA as Record<DndRace, number>)[raceKey];
+      if (minAdultAge !== undefined && character.age < minAdultAge) {
+        setCharacter(prev => ({ ...prev, age: minAdultAge }));
+      }
     }
   }, [character.race]);
 
@@ -212,11 +224,14 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       });
       return;
     }
+    
+    const selectedRaceInfoForValidation = DND_RACES.find(r => r.value.toLowerCase() === character.race?.toLowerCase());
+    const minAgeForValidation = (selectedRaceInfoForValidation ? (constantsData.DND_RACE_MIN_ADULT_AGE_DATA as Record<DndRace, number>)[selectedRaceInfoForValidation.value as DndRace] : undefined) || 1;
 
-    if (character.age <= 0) {
+    if (character.age < minAgeForValidation) {
        toast({
         title: "Invalid Age",
-        description: "Age must be greater than 0.",
+        description: `Age must be at least ${minAgeForValidation}${selectedRaceInfoForValidation ? ` for a ${selectedRaceInfoForValidation.label}` : ''}.`,
         variant: "destructive",
       });
       return;
@@ -252,6 +267,14 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     () => DND_CLASSES.some(c => c.value.toLowerCase() === character.classes[0]?.className?.toLowerCase()),
     [character.classes]
   );
+
+  const currentMinAgeForInput = React.useMemo(() => {
+    const selectedRaceInfo = DND_RACES.find(r => r.value.toLowerCase() === character.race?.toLowerCase());
+    if (selectedRaceInfo) {
+      return (constantsData.DND_RACE_MIN_ADULT_AGE_DATA as Record<DndRace, number>)[selectedRaceInfo.value as DndRace] || 1;
+    }
+    return 1;
+  }, [character.race]);
 
 
   return (
@@ -293,10 +316,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     isEditable={true}
                   />
                 </div>
-                {isPredefinedRace && character.race && (
-                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
-                  <HelpCircle className="h-5 w-5" />
-                </Button>
+                 {isPredefinedRace && character.race && (
+                   <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
+                    <HelpCircle className="h-5 w-5" />
+                  </Button>
                 )}
                 {!isPredefinedRace && character.race && (
                   <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
@@ -342,7 +365,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                       isEditable={true}
                     />
                   </div>
-                  {isPredefinedClass && character.classes[0]?.className && (
+                   {isPredefinedClass && character.classes[0]?.className && (
                     <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
                       <HelpCircle className="h-5 w-5" />
                     </Button>
@@ -401,7 +424,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
             <div className="space-y-1">
               <Label htmlFor="age">Age</Label>
-              <Input id="age" name="age" type="number" value={character.age} onChange={handleChange} min="1" />
+              <Input id="age" name="age" type="number" value={character.age} onChange={handleChange} min={currentMinAgeForInput} />
                {ageEffectsDetails && (
                 <div className="text-xs text-muted-foreground mt-1 ml-1">
                   {ageEffectsDetails.effects.length > 0 ? (
@@ -421,8 +444,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   ) : (
                    <span>No impact on ability scores</span>
                   )}
-                  {ageEffectsDetails.categoryName && (
+                  {ageEffectsDetails.categoryName && ageEffectsDetails.categoryName !== "Adult" && (
                      <div className="mt-0.5">{ageEffectsDetails.categoryName}</div>
+                  )}
+                   {ageEffectsDetails.categoryName === "Adult" && ageEffectsDetails.effects.length === 0 && (
+                     <div className="mt-0.5">{/* Placeholder to maintain layout if needed, or remove if not causing alignment issues */}</div>
                   )}
                 </div>
               )}

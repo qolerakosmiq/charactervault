@@ -77,6 +77,15 @@
     { "value": "Kurtulmak", "label": "Kurtulmak"},
     { "value": "Maglubiyet", "label": "Maglubiyet"}
   ],
+  "DND_RACE_MIN_ADULT_AGE_DATA": {
+    "human": 15,
+    "elf": 110,
+    "dwarf": 40,
+    "halfling": 20,
+    "gnome": 40,
+    "half-elf": 20,
+    "half-orc": 14
+  },
   "DND_RACE_BASE_MAX_AGE_DATA": {
     "human": 70,
     "elf": 350,
