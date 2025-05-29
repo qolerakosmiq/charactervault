@@ -15,7 +15,7 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
-import { ScrollText, Dices, UserSquare2, Palette, HelpCircle } from 'lucide-react';
+import { ScrollText, Dices, UserSquare2, Palette, Info } from 'lucide-react';
 import { ComboboxPrimitive } from '@/components/ui/combobox';
 import { cn } from '@/lib/utils';
 import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
@@ -125,7 +125,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           ...customSkill,
           ranks: 0,
           miscModifier: 0,
-          // isClassSkill is preserved as it's set by user
+          isClassSkill: customSkill.isClassSkill, // Preserve custom class skill status
+          providesSynergies: customSkill.providesSynergies, // Preserve custom synergies
+          description: customSkill.description, // Preserve custom description
         }));
 
         const finalSkillsMap = new Map<string, SkillType>();
@@ -183,10 +185,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const handleSelectChange = (name: keyof Character | 'className', value: string) => {
      if (name === 'className') {
-      setCharacter(prev => ({
-        ...prev,
-        classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: value as DndClassId, level: 1 }]
-      }));
+      // This case is handled by handleClassChange directly
     } else if (name === 'size') {
        setCharacter(prev => ({ ...prev, [name]: value as CharacterSize, sizeModifierAC: calculateAbilityModifier(prev.abilityScores.dexterity) + (SIZES.indexOf(value as CharacterSize) - 4) * (value === SIZES[5] || value === SIZES[6] || value === SIZES[7] || value === SIZES[8] ? -1 : 1) }));
     } else if (name === 'race') {
@@ -204,7 +203,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const handleClassChange = (value: string) => {
-      const newClassId = value;
+      const newClassId = value; // Value can be a predefined ID or custom text
       setCharacter(prev => {
         const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: newClassId, level: 1 }];
         return {
@@ -223,7 +222,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }));
   };
 
-  const handleCustomSkillAdd = (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean, providesSynergies: CustomSynergyRule[], description?: string }) => {
+  const handleCustomSkillAdd = (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
     const newSkill: SkillType = {
       id: crypto.randomUUID(),
       name: skillData.name,
@@ -240,7 +239,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }));
   };
 
-  const handleCustomSkillUpdate = (updatedSkillData: { id: string; name: string; keyAbility: AbilityName; isClassSkill: boolean, providesSynergies: CustomSynergyRule[], description?: string }) => {
+  const handleCustomSkillUpdate = (updatedSkillData: { id: string; name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
     setCharacter(prev => ({
       ...prev,
       skills: prev.skills.map(s =>
@@ -414,7 +413,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                 </div>
                 {isPredefinedRace && (
                    <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
-                    <HelpCircle className="h-5 w-5" />
+                    <Info className="h-5 w-5" />
                   </Button>
                 )}
                 {!isPredefinedRace && character.race && character.race.trim() !== '' && (
@@ -461,7 +460,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   </div>
                    {isPredefinedClass && (
                     <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
-                      <HelpCircle className="h-5 w-5" />
+                      <Info className="h-5 w-5" />
                     </Button>
                   )}
                   {!isPredefinedClass && character.classes[0]?.className && character.classes[0]?.className.trim() !== '' &&(
@@ -479,12 +478,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   <Select name="alignment" value={character.alignment} onValueChange={(value) => handleSelectChange('alignment', value as CharacterAlignment)}>
                     <SelectTrigger><SelectValue placeholder="Select alignment" /></SelectTrigger>
                     <SelectContent>
-                      {ALIGNMENTS.map(align => <SelectItem key={align} value={align}>{align}</SelectItem>)}
+                      {ALIGNMENTS.map(align => <SelectItem key={align.value} value={align.value}>{align.label}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
-                  <HelpCircle className="h-5 w-5" />
+                  <Info className="h-5 w-5" />
                 </Button>
               </div>
             </div>
@@ -506,7 +505,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     />
                 </div>
                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
-                  <HelpCircle className="h-5 w-5" />
+                  <Info className="h-5 w-5" />
                 </Button>
               </div>
             </div>
@@ -534,7 +533,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                             {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                           </React.Fragment>
                         ))}
-                        {ageEffectsDetails.categoryName && ageEffectsDetails.categoryName !== "Adult" && <div className="mt-0.5">{ageEffectsDetails.categoryName}</div>}
+                        {ageEffectsDetails.categoryName && <div className="mt-0.5">{ageEffectsDetails.categoryName}</div>}
                      </>
                   ) : (
                    <>
@@ -562,12 +561,13 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               <Select name="size" value={character.size} onValueChange={(value) => handleSelectChange('size', value as CharacterSize)}>
                 <SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger>
                 <SelectContent>
-                  {SIZES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  {SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
                 </SelectContent>
               </Select>
-              {sizeAbilityEffectsDetails && sizeAbilityEffectsDetails.effects.length > 0 && (
+              {sizeAbilityEffectsDetails && (
                  <p className="text-xs text-muted-foreground mt-1 ml-1">
-                  {sizeAbilityEffectsDetails.effects.map((effect, index) => (
+                  {sizeAbilityEffectsDetails.effects.length > 0 ? 
+                    sizeAbilityEffectsDetails.effects.map((effect, index) => (
                         <React.Fragment key={effect.ability}>
                           <strong
                             className={cn(
@@ -579,11 +579,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                           </strong>
                           {index < sizeAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                         </React.Fragment>
-                      ))}
+                      ))
+                  : "No impact on ability scores"
+                }
                 </p>
-               )}
-               {sizeAbilityEffectsDetails && sizeAbilityEffectsDetails.effects.length === 0 && (
-                  <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
                )}
             </div>
           </div>
@@ -699,7 +698,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         skills={character.skills}
         abilityScores={character.abilityScores}
         characterClasses={character.classes}
-        characterRace={character.race}
+        characterRace={character.race as DndRaceId | string}
         onSkillChange={handleSkillChange}
         onCustomSkillAdd={handleCustomSkillAdd}
         onCustomSkillUpdate={handleCustomSkillUpdate}
@@ -727,5 +726,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-
-    
