@@ -116,13 +116,13 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
    // Re-initialize skills if class changes
   React.useEffect(() => {
-    if (character.classes[0]?.className) {
+    if (character.classes[0]?.className) { // Only re-init if class is actually set
       setCharacter(prev => ({
         ...prev,
         skills: getInitialCharacterSkills(prev.classes)
       }));
     }
-  }, [character.classes[0]?.className]);
+  }, [character.classes[0]?.className]); // Dependency on className string itself
 
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -170,7 +170,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         return {
           ...prev,
           classes: updatedClasses,
-          skills: getInitialCharacterSkills(updatedClasses) // Re-initialize skills based on new class
+          // Skills will be re-initialized by the useEffect watching character.classes[0].className
         };
       });
   };
@@ -184,11 +184,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }));
   };
 
-  const handleCustomSkillAdd = (skillName: string) => {
+  const handleCustomSkillAdd = (skillData: { name: string; keyAbility: AbilityName }) => {
     const newSkill: SkillType = {
       id: generateCUID(),
-      name: skillName,
-      keyAbility: 'intelligence', // Default or make selectable later
+      name: skillData.name,
+      keyAbility: skillData.keyAbility,
       ranks: 0,
       miscModifier: 0,
       isClassSkill: false, // Custom skills are not class skills by default
@@ -334,13 +334,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           </div>
         </CardHeader>
         <CardContent className="space-y-6 pt-6">
-          {/* Name */}
+          {/* Name & Race */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div className="space-y-1">
               <Label htmlFor="name">Name</Label>
               <Input id="name" name="name" value={character.name} onChange={handleChange} />
             </div>
-            {/* Race */}
             <div className="space-y-1">
               <Label htmlFor="race">Race</Label>
               <div className="flex items-center gap-2">
@@ -465,7 +464,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               <Input id="age" name="age" type="number" value={character.age} onChange={handleChange} min={currentMinAgeForInput} />
                {ageEffectsDetails && (
                 <div className="text-xs text-muted-foreground mt-1 ml-1">
-                  {ageEffectsDetails.effects.length > 0 ? (
+                   {ageEffectsDetails.effects.length > 0 ? (
                     <>
                       {ageEffectsDetails.effects.map((effect, index) => (
                         <React.Fragment key={effect.ability}>

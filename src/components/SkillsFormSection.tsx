@@ -16,6 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 
 
 interface SkillsFormSectionProps {
@@ -24,7 +25,7 @@ interface SkillsFormSectionProps {
   characterClasses: CharacterClass[];
   characterRace: DndRace | string;
   onSkillChange: (skillId: string, ranks: number, miscModifier: number) => void;
-  onCustomSkillAdd: (skillName: string) => void;
+  onCustomSkillAdd: (skillData: { name: string; keyAbility: AbilityName }) => void;
   onCustomSkillRemove: (skillId: string) => void;
 }
 
@@ -37,14 +38,14 @@ export function SkillsFormSection({
   onCustomSkillAdd,
   onCustomSkillRemove,
 }: SkillsFormSectionProps) {
-  const [newCustomSkillName, setNewCustomSkillName] = React.useState('');
+  const [isAddSkillDialogOpen, setIsAddSkillDialogOpen] = React.useState(false);
 
   const firstClass = characterClasses[0];
-  const characterLevel = firstClass?.level || 1;
+  const characterLevel = firstClass?.level || 1; // Character creation always at level 1 for now
   const intelligenceModifier = getAbilityModifierByName(abilityScores, 'intelligence');
 
   const baseSkillPointsForClass = firstClass?.className ? CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0 : 0;
-  const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace as DndRace); // Cast to DndRace for safety
+  const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace as DndRace);
 
   const totalSkillPointsAvailable = (baseSkillPointsForClass + intelligenceModifier + racialBonus) * 4;
 
@@ -55,14 +56,13 @@ export function SkillsFormSection({
 
   const skillPointsLeft = totalSkillPointsAvailable - totalSkillPointsSpent;
 
-  const handleAddCustomSkill = () => {
-    if (newCustomSkillName.trim()) {
-      onCustomSkillAdd(newCustomSkillName.trim());
-      setNewCustomSkillName('');
-    }
+  const handleSaveCustomSkill = (skillData: { name: string; keyAbility: AbilityName }) => {
+    onCustomSkillAdd(skillData);
+    setIsAddSkillDialogOpen(false);
   };
 
   return (
+    <>
     <Card>
       <CardHeader>
         <div className="flex items-center space-x-3">
@@ -110,7 +110,7 @@ export function SkillsFormSection({
 
             {skills.map(skill => {
               const skillDef = SKILL_DEFINITIONS.find(sd => sd.name === skill.name);
-              const keyAbility = skill.keyAbility || skillDef?.keyAbility as AbilityName | undefined;
+              const keyAbility = skill.keyAbility || (skillDef?.keyAbility as AbilityName | undefined);
               const keyAbilityShort = keyAbility ? keyAbility.substring(0, 3).toUpperCase() : 'N/A';
               
               let baseAbilityMod = 0;
@@ -122,7 +122,7 @@ export function SkillsFormSection({
               const totalAbilityMod = baseAbilityMod + synergyBonus;
 
 
-              const totalBonus = (skill.ranks || 0) + totalAbilityMod;
+              const totalBonus = (skill.ranks || 0) + totalAbilityMod; // miscModifier for skills is not directly edited in this table view
               const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
               const skillCost = skill.isClassSkill ? 1 : 2;
 
@@ -132,7 +132,7 @@ export function SkillsFormSection({
                     <Checkbox
                       id={`skill_class_${skill.id}`}
                       checked={skill.isClassSkill}
-                      disabled
+                      disabled // Class skills are determined by class, not editable here
                       className="h-3.5 w-3.5"
                     />
                   </div>
@@ -140,6 +140,7 @@ export function SkillsFormSection({
                     <Label htmlFor={`skill_ranks_${skill.id}`} className="text-xs truncate pr-1 leading-tight pl-1">
                       {skill.name}
                     </Label>
+                    {/* Only allow deleting custom skills (those not in SKILL_DEFINITIONS) */}
                     {!skillDef && (
                        <TooltipProvider delayDuration={100}>
                         <Tooltip>
@@ -166,9 +167,9 @@ export function SkillsFormSection({
                   <Input
                     id={`skill_ranks_${skill.id}`}
                     type="number"
-                    step="0.5"
+                    step="0.5" // Allow half ranks for cross-class skills
                     value={skill.ranks || 0}
-                    onChange={(e) => onSkillChange(skill.id, parseFloat(e.target.value) || 0, 0)}
+                    onChange={(e) => onSkillChange(skill.id, parseFloat(e.target.value) || 0, skill.miscModifier)}
                     className="h-7 w-12 text-xs text-center p-1"
                     max={maxRanksValue}
                     min="0"
@@ -184,21 +185,17 @@ export function SkillsFormSection({
         <Separator className="my-4" />
 
         <div>
-          <h4 className="text-md font-semibold mb-2">Add Custom Skill</h4>
-          <div className="flex items-center gap-2">
-            <Input
-              placeholder="Custom Skill Name"
-              value={newCustomSkillName}
-              onChange={(e) => setNewCustomSkillName(e.target.value)}
-              className="h-9"
-            />
-            <Button onClick={handleAddCustomSkill} size="sm">
-              <PlusCircle className="mr-2 h-4 w-4" /> Add Skill
-            </Button>
-          </div>
+          <Button onClick={() => setIsAddSkillDialogOpen(true)} size="sm" variant="outline">
+            <PlusCircle className="mr-2 h-4 w-4" /> Add Custom Skill
+          </Button>
         </div>
       </CardContent>
     </Card>
+    <AddCustomSkillDialog
+        isOpen={isAddSkillDialogOpen}
+        onOpenChange={setIsAddSkillDialogOpen}
+        onSave={handleSaveCustomSkill}
+    />
+    </>
   );
 }
-
