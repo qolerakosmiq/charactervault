@@ -7,13 +7,23 @@ export interface CharacterClass {
   level: number;
 }
 
+// New interface for custom-defined synergy rules
+export interface CustomSynergyRule {
+  id: string;
+  targetSkillName: string;
+  ranksInThisSkillRequired: number;
+  bonusGranted: number;
+  description?: string;
+}
+
 export interface Skill {
   id: string;
   name: string;
   ranks: number;
-  miscModifier: number; // User-entered misc mod, not synergy
+  miscModifier: number;
   keyAbility?: AbilityName;
   isClassSkill?: boolean;
+  providesSynergies?: CustomSynergyRule[]; // New: Synergies this skill provides
 }
 
 export interface Feat {
@@ -127,9 +137,10 @@ export function getInitialCharacterSkills(characterClasses: CharacterClass[]): S
   return SKILL_DEFINITIONS.map(def => {
     let isClassSkill = classSkillsForCurrentClass.includes(def.name);
     if (!isClassSkill) {
+        // Handle generic "Craft (Any)" or "Knowledge (all skills, taken individually)"
         if (def.name.startsWith("Craft (") && classSkillsForCurrentClass.includes("Craft (Any)")) {
             isClassSkill = true;
-        } else if (def.name.startsWith("Knowledge (") && classSkillsForCurrentClass.includes("Knowledge (all skills, taken individually)")) {
+        } else if (def.name.startsWith("Knowledge (") && (classSkillsForCurrentClass.includes("Knowledge (Any)") || classSkillsForCurrentClass.includes("Knowledge (all skills, taken individually)"))) {
             isClassSkill = true;
         } else if (def.name.startsWith("Perform (") && classSkillsForCurrentClass.includes("Perform (Any)")) {
             isClassSkill = true;
@@ -137,7 +148,6 @@ export function getInitialCharacterSkills(characterClasses: CharacterClass[]): S
             isClassSkill = true;
         }
     }
-    // Generate a deterministic ID based on the skill name
     const skillId = `skill-${def.name.toLowerCase().replace(/\W+/g, '-')}`;
     return {
       id: skillId,
@@ -146,6 +156,7 @@ export function getInitialCharacterSkills(characterClasses: CharacterClass[]): S
       ranks: 0,
       miscModifier: 0,
       isClassSkill: isClassSkill,
+      providesSynergies: [] // Initialize with empty array
     };
   });
 }
@@ -191,13 +202,13 @@ export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffect
       currentCategoryName = category.categoryName;
       highestAttainedCategoryEffects = category.effects;
     } else {
-      break;
+      break; 
     }
   }
-
+  
   if (!highestAttainedCategoryEffects && (sortedCategories.length === 0 || age < Math.floor(sortedCategories[0].ageFactor * raceVenerableAge))) {
      currentCategoryName = "Adult";
-     highestAttainedCategoryEffects = {};
+     highestAttainedCategoryEffects = {}; // Ensure it's an empty object for "Adult" if no other category matched
   }
 
 
@@ -205,23 +216,7 @@ export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffect
   if (highestAttainedCategoryEffects) {
     const abilitiesToProcess = (Object.keys(highestAttainedCategoryEffects) as AbilityName[])
       .filter(ability => highestAttainedCategoryEffects && highestAttainedCategoryEffects[ability] !== undefined && highestAttainedCategoryEffects[ability] !== 0);
-
-    abilitiesToProcess.sort((aAbility, bAbility) => {
-        const changeA = highestAttainedCategoryEffects![aAbility]!;
-        const changeB = highestAttainedCategoryEffects![bAbility]!;
-        const signA = Math.sign(changeA);
-        const signB = Math.sign(changeB);
-
-        if (signA !== signB) {
-            return signB - signA; // Positive first, then negative (reversed from previous for display)
-        }
-
-        // If signs are the same, sort by canonical ability order
-        const indexA = ABILITY_ORDER.indexOf(aAbility);
-        const indexB = ABILITY_ORDER.indexOf(bAbility);
-        return indexA - indexB;
-    });
-    // Re-sort: negative first, then positive, then by canonical ability order
+    
     abilitiesToProcess.sort((aAbility, bAbility) => {
         const changeA = highestAttainedCategoryEffects![aAbility]!;
         const changeB = highestAttainedCategoryEffects![bAbility]!;
@@ -231,7 +226,6 @@ export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffect
         if (signA !== signB) {
             return signA - signB; // Negative (-1) comes before positive (1)
         }
-        // If signs are the same, sort by canonical ability order
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
         return indexA - indexB;
@@ -318,7 +312,7 @@ export function getRaceAbilityEffects(raceValue: DndRace): RaceAbilityEffectsDet
   return { effects: appliedEffects };
 }
 
-// --- Skill Synergies ---
+// --- Skill Synergies (Predefined) ---
 export interface SynergyEffect {
   targetSkill: string;
   ranksRequired: number;
@@ -332,20 +326,37 @@ export const SKILL_SYNERGIES: Readonly<SkillSynergiesData> = constantsData.SKILL
 
 export function calculateTotalSynergyBonus(targetSkillName: string, currentCharacterSkills: Skill[]): number {
   let totalBonus = 0;
-  if (!SKILL_SYNERGIES) return 0; // Guard against undefined SKILL_SYNERGIES
-
-  for (const providingSkillName in SKILL_SYNERGIES) {
-    const synergiesProvided = SKILL_SYNERGIES[providingSkillName];
-    if (synergiesProvided) {
-      for (const synergy of synergiesProvided) {
-        if (synergy.targetSkill === targetSkillName) {
-          const providingSkill = currentCharacterSkills.find(s => s.name === providingSkillName);
-          if (providingSkill && (providingSkill.ranks || 0) >= synergy.ranksRequired) {
-            totalBonus += synergy.bonus;
+  
+  // 1. Check predefined synergies from SKILL_SYNERGIES_DATA
+  if (SKILL_SYNERGIES) {
+    for (const providingSkillName in SKILL_SYNERGIES) {
+      const synergiesProvidedByThisDefinition = SKILL_SYNERGIES[providingSkillName];
+      if (synergiesProvidedByThisDefinition) {
+        for (const synergy of synergiesProvidedByThisDefinition) {
+          if (synergy.targetSkill === targetSkillName) {
+            const providingSkillInCharacter = currentCharacterSkills.find(s => s.name === providingSkillName);
+            if (providingSkillInCharacter && (providingSkillInCharacter.ranks || 0) >= synergy.ranksRequired) {
+              totalBonus += synergy.bonus;
+            }
           }
         }
       }
     }
   }
+
+  // 2. Check custom synergies defined on skills within currentCharacterSkills
+  for (const providingSkill of currentCharacterSkills) {
+    if (providingSkill.providesSynergies) {
+      for (const customRule of providingSkill.providesSynergies) {
+        if (customRule.targetSkillName === targetSkillName) {
+          if ((providingSkill.ranks || 0) >= customRule.ranksInThisSkillRequired) {
+            totalBonus += customRule.bonusGranted;
+          }
+        }
+      }
+    }
+  }
+  
   return totalBonus;
 }
+

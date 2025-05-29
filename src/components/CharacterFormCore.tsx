@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRace, SizeAbilityEffectsDetails, AbilityScores, RaceAbilityEffectsDetails, Skill as SkillType, DndClass } from '@/types/character';
+import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRace, SizeAbilityEffectsDetails, AbilityScores, RaceAbilityEffectsDetails, Skill as SkillType, DndClass, CustomSynergyRule } from '@/types/character';
 import { SIZES, ALIGNMENTS, DND_RACES, DND_CLASSES, getNetAgingEffects, GENDERS, DND_DEITIES, getSizeAbilityEffects, getRaceAbilityEffects, getInitialCharacterSkills, SKILL_DEFINITIONS } from '@/types/character';
 import constantsData from '@/data/dnd-constants.json';
 import { Button } from '@/components/ui/button';
@@ -107,34 +107,23 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         setCharacter(prev => ({ ...prev, age: minAdultAge }));
       }
     }
-  }, [character.race]); 
+  }, [character.race, character.age]); // Added character.age to dependencies
 
   React.useEffect(() => {
-    // This effect runs when the *first class name* changes.
     const firstClassName = character.classes[0]?.className;
-    if (firstClassName) { // Only run if a class is selected
+    if (firstClassName) {
       setCharacter(prevCharacter => {
-        // 1. Get the fresh list of predefined skills based on the *new* class.
-        //    `getInitialCharacterSkills` sets ranks and miscModifiers to 0, and isClassSkill correctly.
         const newPredefinedSkills = getInitialCharacterSkills(prevCharacter.classes);
-  
-        // 2. Identify custom skills from the *previous* state.
-        //    A skill is custom if its name is not in SKILL_DEFINITIONS.
         const prevCustomSkills = prevCharacter.skills.filter(
           s => !SKILL_DEFINITIONS.some(def => def.name === s.name)
         );
   
-        // 3. For these custom skills, reset their ranks and misc modifiers.
-        //    The 'isClassSkill' status for a custom skill is determined when it's added/edited.
         const updatedCustomSkills = prevCustomSkills.map(customSkill => ({
           ...customSkill,
           ranks: 0,
-          miscModifier: 0, // Also reset misc modifier for consistency
+          miscModifier: 0,
         }));
   
-        // 4. Combine the lists. Start with the new predefined skills.
-        //    Then, add the updated custom skills, ensuring no name collisions
-        //    (though a custom skill shouldn't have the same name as a predefined one by design).
         const finalSkills = [...newPredefinedSkills];
         updatedCustomSkills.forEach(customSkill => {
           if (!finalSkills.some(s => s.name === customSkill.name)) {
@@ -149,7 +138,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [character.classes[0]?.className]); // Only re-run if the first class's name changes.
+  }, [character.classes[0]?.className]);
 
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -201,16 +190,16 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       });
   };
 
-  const handleSkillChange = (skillId: string, ranks: number) => { // miscModifier removed from params
+  const handleSkillChange = (skillId: string, ranks: number) => {
     setCharacter(prev => ({
       ...prev,
       skills: prev.skills.map(s =>
-        s.id === skillId ? { ...s, ranks } : s // only update ranks
+        s.id === skillId ? { ...s, ranks } : s
       ),
     }));
   };
 
-  const handleCustomSkillAdd = (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean }) => {
+  const handleCustomSkillAdd = (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean, providesSynergies: CustomSynergyRule[] }) => {
     const newSkill: SkillType = {
       id: crypto.randomUUID(),
       name: skillData.name,
@@ -218,6 +207,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       ranks: 0,
       miscModifier: 0,
       isClassSkill: skillData.isClassSkill,
+      providesSynergies: skillData.providesSynergies,
     };
     setCharacter(prev => ({
       ...prev,
@@ -225,12 +215,17 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }));
   };
   
-  const handleCustomSkillUpdate = (updatedSkillData: { id: string; name: string; keyAbility: AbilityName; isClassSkill: boolean }) => {
+  const handleCustomSkillUpdate = (updatedSkillData: { id: string; name: string; keyAbility: AbilityName; isClassSkill: boolean, providesSynergies: CustomSynergyRule[] }) => {
     setCharacter(prev => ({
       ...prev,
       skills: prev.skills.map(s =>
         s.id === updatedSkillData.id
-          ? { ...s, name: updatedSkillData.name, keyAbility: updatedSkillData.keyAbility, isClassSkill: updatedSkillData.isClassSkill }
+          ? { ...s, 
+              name: updatedSkillData.name, 
+              keyAbility: updatedSkillData.keyAbility, 
+              isClassSkill: updatedSkillData.isClassSkill,
+              providesSynergies: updatedSkillData.providesSynergies,
+            }
           : s
       ),
     }));
@@ -273,7 +268,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       });
       return;
     }
-
     if (!character.race || character.race.trim() === '') {
       toast({
         title: "Missing Information",
@@ -282,7 +276,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       });
       return;
     }
-    
     if (!character.classes[0]?.className || character.classes[0]?.className.trim() === '') {
       toast({
         title: "Missing Information",
@@ -291,7 +284,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       });
       return;
     }
-    
     if (!character.alignment || character.alignment.trim() === '') {
       toast({
         title: "Missing Information",
@@ -421,7 +413,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     ))}
                 </p>
               )}
-               {raceAbilityEffectsDetails && raceAbilityEffectsDetails.effects.length === 0 && (
+               {character.race && (!raceAbilityEffectsDetails || raceAbilityEffectsDetails.effects.length === 0) && (
                  <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
                )}
             </div>
@@ -568,7 +560,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     ))}
                 </p>
               )}
-              {sizeAbilityEffectsDetails && sizeAbilityEffectsDetails.effects.length === 0 && (
+              {character.size && (!sizeAbilityEffectsDetails || sizeAbilityEffectsDetails.effects.length === 0) && (
                  <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
                )}
             </div>
@@ -715,3 +707,4 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
+
