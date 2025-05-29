@@ -32,13 +32,14 @@ export function FeatsFormSection({
   const characterLevel = characterClasses.reduce((sum, cls) => sum + cls.level, 0) || 1;
   const availableFeatSlots = calculateAvailableFeats(characterRace, characterLevel);
 
+  // Stores only the IDs of the selected feats
   const [featSelections, setFeatSelections] = React.useState<string[]>([]);
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
   const { toast } = useToast();
 
   React.useEffect(() => {
     const currentFeatIds = selectedFeats.map(f => f.id);
-     // Only update if the actual list of feat IDs differs, to avoid infinite loops if parent re-renders
+     // Only update if the actual list of feat IDs differs
     if (JSON.stringify(featSelections.slice().sort()) !== JSON.stringify(currentFeatIds.slice().sort())) {
         setFeatSelections(currentFeatIds);
     }
@@ -60,7 +61,6 @@ export function FeatsFormSection({
           effects: featDef.effects,
           canTakeMultipleTimes: featDef.canTakeMultipleTimes,
           requiresSpecialization: featDef.requiresSpecialization,
-          // specializationDetail will be handled if/when UI for it is added
         } as FeatType;
       })
       .filter(feat => feat !== undefined) as FeatType[];
@@ -72,7 +72,7 @@ export function FeatsFormSection({
 
   const handleFeatSelectedFromDialog = (featId: string) => {
     const featDef = DND_FEATS.find(f => f.value === featId);
-    if (!featDef) return; // Should not happen if dialog is populated correctly
+    if (!featDef) return; 
 
     if (!featDef.canTakeMultipleTimes && featSelections.includes(featId)) {
       toast({
@@ -107,15 +107,13 @@ export function FeatsFormSection({
   const humanBonus = DND_RACES.find(r => r.value === characterRace)?.value === 'human' ? 1 : 0;
   const levelProgressionFeats = Math.floor(characterLevel / 3);
 
-  // Prepare a simplified character object for prerequisite checking
    const characterForPrereqCheck = React.useMemo(() => ({
     abilityScores,
     skills,
-    feats: convertSelectionsToFeatTypes(featSelections), // Use current selections for check
+    feats: convertSelectionsToFeatTypes(featSelections), 
     classes: characterClasses,
     race: characterRace,
-    age: 0, // Age is not typically a feat prerequisite, default to 0
-    // level: characterLevel, // Already available as characterLevel
+    age: 0, 
   }), [abilityScores, skills, featSelections, characterClasses, characterRace]);
 
 
@@ -150,10 +148,10 @@ export function FeatsFormSection({
             </p>
           </div>
 
-          {featSelections.length > 0 && (
-            <ScrollArea className="max-h-[400px] pr-1 mb-4">
-              <div className="space-y-2">
-                {featSelections.map((selectedFeatId, index) => {
+          <ScrollArea className="max-h-[400px] pr-1 mb-4">
+            <div className="space-y-2">
+              {featSelections.length > 0 ? (
+                featSelections.map((selectedFeatId, index) => {
                   const featDetails = getFeatDetails(selectedFeatId);
                   if (!featDetails) return null;
 
@@ -200,13 +198,12 @@ export function FeatsFormSection({
                       </Button>
                     </div>
                   );
-                })}
-              </div>
-            </ScrollArea>
-          )}
-           {featSelections.length === 0 && (
-             <p className="text-sm text-muted-foreground mb-4 text-center py-2">No feats selected. Click "Add Feat" to begin.</p>
-           )}
+                })
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-2">No feats selected. Click "Add Feat" to begin.</p>
+              )}
+            </div>
+          </ScrollArea>
 
           <Button onClick={handleAddFeatClick} type="button" variant="outline" size="sm" className="mt-2">
             <PlusCircle className="mr-2 h-4 w-4" /> Add Feat
