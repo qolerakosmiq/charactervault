@@ -33,15 +33,15 @@ interface CharacterFormCoreProps {
 
 export function CharacterFormCore({ initialCharacter, onSave, isCreating }: CharacterFormCoreProps) {
   const [character, setCharacter] = React.useState<Character>(() => {
-    const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: '', level: 1 }];
+    const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: DND_CLASSES[0].value, level: 1 }];
     return initialCharacter || {
       id: crypto.randomUUID(),
       name: '',
-      race: '',
+      race: DND_RACES[0].value,
       alignment: 'true-neutral',
       deity: '',
       size: 'medium',
-      age: 20,
+      age: (constantsData.DND_RACE_MIN_ADULT_AGE_DATA as Record<DndRaceId, number>)[DND_RACES[0].value] || 20,
       gender: (GENDERS.find(g => g.value === 'male') || GENDERS[0]).value,
       abilityScores: { ...JSON.parse(JSON.stringify(constantsData.DEFAULT_ABILITIES || {})) },
       hp: 10,
@@ -125,7 +125,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         const updatedCustomSkills = existingCustomSkills.map(customSkill => ({
           ...customSkill,
           ranks: 0, 
-          // miscModifier: 0 // Misc modifier can be preserved if desired
+          miscModifier: 0
         }));
 
         const finalSkillsMap = new Map<string, SkillType>();
@@ -441,7 +441,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                 )}
               </div>
               {raceAbilityEffectsDetails && (
-                <p className="text-xs text-muted-foreground mt-1 ml-1">
+                 <p className="text-xs text-muted-foreground mt-1 ml-1">
                     {raceAbilityEffectsDetails.effects.length > 0 ? 
                       raceAbilityEffectsDetails.effects.map((effect, index) => (
                         <React.Fragment key={effect.ability}>
@@ -555,14 +555,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                             {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                           </React.Fragment>
                         ))}
-                        {ageEffectsDetails.categoryName !== 'adult' && (
-                           <div className="mt-0.5">{constantsData.DND_RACE_AGING_EFFECTS_DATA[constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA[character.race as DndRaceId] as keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA]?.categories.find(c => c.categoryName === ageEffectsDetails.categoryName)?.categoryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || ageEffectsDetails.categoryName}</div>
-                        )}
+                         <div className="mt-0.5">{constantsData.DND_RACE_AGING_EFFECTS_DATA[constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA[character.race as DndRaceId] as keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA]?.categories.find(c => c.categoryName === ageEffectsDetails.categoryName)?.categoryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || ageEffectsDetails.categoryName}</div>
                       </>
                     ) : (
                       <>
                        No impact on ability scores
-                        {ageEffectsDetails.categoryName !== "adult" && (
+                        {(ageEffectsDetails.categoryName && ageEffectsDetails.categoryName !== "adult") && (
                            <div className="mt-0.5">{constantsData.DND_RACE_AGING_EFFECTS_DATA[constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA[character.race as DndRaceId] as keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA]?.categories.find(c => c.categoryName === ageEffectsDetails.categoryName)?.categoryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || ageEffectsDetails.categoryName}</div>
                         )}
                       </>
@@ -725,6 +723,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         abilityScores={character.abilityScores}
         characterClasses={character.classes}
         characterRace={character.race}
+        selectedFeats={character.feats}
         onSkillChange={handleSkillChange}
         onCustomSkillAdd={handleCustomSkillAdd}
         onCustomSkillUpdate={handleCustomSkillUpdate}
@@ -762,3 +761,4 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   );
 }
 
+    

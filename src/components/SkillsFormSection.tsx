@@ -2,14 +2,14 @@
 'use client';
 
 import * as React from 'react';
-import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, DndClassId } from '@/types/character';
-import { CLASS_SKILL_POINTS_BASE, SKILL_DEFINITIONS, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus } from '@/types/character';
+import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, DndClassId, Feat } from '@/types/character';
+import { CLASS_SKILL_POINTS_BASE, SKILL_DEFINITIONS, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollText, PlusCircle, Trash2, Pencil, Info } from 'lucide-react'; // Added Info
+import { ScrollText, PlusCircle, Trash2, Pencil, Info } from 'lucide-react';
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Separator } from '@/components/ui/separator';
@@ -17,13 +17,14 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
-import { SkillInfoDialog } from '@/components/SkillInfoDialog'; // Added SkillInfoDialog
+import { SkillInfoDialog } from '@/components/SkillInfoDialog';
 
 interface SkillsFormSectionProps {
   skills: SkillType[];
   abilityScores: AbilityScores;
   characterClasses: CharacterClass[];
   characterRace: DndRaceId | string;
+  selectedFeats: Feat[];
   onSkillChange: (skillId: string, ranks: number) => void;
   onCustomSkillAdd: (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => void;
   onCustomSkillUpdate: (skillData: { id: string; name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => void;
@@ -35,6 +36,7 @@ export function SkillsFormSection({
   abilityScores,
   characterClasses,
   characterRace,
+  selectedFeats,
   onSkillChange,
   onCustomSkillAdd,
   onCustomSkillUpdate,
@@ -128,8 +130,9 @@ export function SkillsFormSection({
             <p className="text-sm font-medium">
               Skill Points Left: <span className={cn(
                 "text-lg font-bold",
-                skillPointsLeft >= 0 && "text-emerald-500",
-                skillPointsLeft < 0 && "text-destructive"
+                skillPointsLeft > 0 && "text-emerald-500",
+                skillPointsLeft < 0 && "text-destructive",
+                skillPointsLeft === 0 && "text-primary"
               )}>{skillPointsLeft}</span>
             </p>
           </div>
@@ -162,10 +165,11 @@ export function SkillsFormSection({
               }
 
               const synergyBonus = calculateTotalSynergyBonus(skill.id, skills);
-              const totalAbilityMod = baseAbilityMod + synergyBonus;
+              const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats);
+              const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus;
 
 
-              const totalBonus = (skill.ranks || 0) + totalAbilityMod + (skill.miscModifier || 0);
+              const totalBonus = (skill.ranks || 0) + totalDisplayedModifier;
               const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
               const skillCost = skill.isClassSkill ? 1 : 2;
               const isCustomSkill = !skillDef;
@@ -238,7 +242,7 @@ export function SkillsFormSection({
                   </div>
                   <span className="font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
                   <span className="text-xs text-muted-foreground text-center w-10">{keyAbilityShort}</span>
-                  <span className="text-xs text-center w-10">{totalAbilityMod >= 0 ? '+' : ''}{totalAbilityMod}</span>
+                  <span className="text-xs text-center w-10">{totalDisplayedModifier >= 0 ? '+' : ''}{totalDisplayedModifier}</span>
                   <Input
                     id={`skill_ranks_${skill.id}`}
                     type="number"
