@@ -109,53 +109,41 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         }
       }
     }
-  }, [character.race]); // Removed character.age dependency to avoid loop if age is programmatically set
+  }, [character.race]); 
 
   React.useEffect(() => {
     const firstClassId = character.classes[0]?.className;
     if (firstClassId) {
       setCharacter(prevCharacter => {
         const predefinedSkills = getInitialCharacterSkills(prevCharacter.classes);
-
+        
         const existingCustomSkills = prevCharacter.skills.filter(
           s => !SKILL_DEFINITIONS.some(def => def.value === s.id)
         );
 
+        // For custom skills, reset ranks/misc, but keep name, keyAbility, isClassSkill, providesSynergies, description
         const updatedCustomSkills = existingCustomSkills.map(customSkill => ({
           ...customSkill,
-          ranks: 0,
+          ranks: 0, 
           miscModifier: 0,
-          isClassSkill: customSkill.isClassSkill, // Preserve custom class skill status
-          providesSynergies: customSkill.providesSynergies, // Preserve custom synergies
-          description: customSkill.description, // Preserve custom description
+          // name, keyAbility, isClassSkill, providesSynergies, description are preserved
         }));
 
         const finalSkillsMap = new Map<string, SkillType>();
-        predefinedSkills.forEach(skill => finalSkillsMap.set(skill.id, skill));
-
+        // Add predefined skills first (they get potentially overridden isClassSkill status, but ranks reset)
+        predefinedSkills.forEach(skill => finalSkillsMap.set(skill.id, {...skill, ranks: 0, miscModifier: 0}));
+        
+        // Then, merge/add custom skills
         updatedCustomSkills.forEach(customSkill => {
-          if (!finalSkillsMap.has(customSkill.id)) {
-            finalSkillsMap.set(customSkill.id, customSkill);
-          } else {
-            // If a custom skill matches a predefined one by ID (should not happen with UUIDs)
-            // update the predefined one to keep custom name/synergies if they were intended to overwrite.
-            // For now, let's assume predefined properties win unless explicitly custom.
-            const existingPredefined = finalSkillsMap.get(customSkill.id)!;
-            finalSkillsMap.set(customSkill.id, {
-                ...existingPredefined, // Base properties from predefined list (like keyAbility)
-                name: customSkill.name, // Keep custom name if it was different
-                isClassSkill: customSkill.isClassSkill, // Keep custom class skill status
-                providesSynergies: customSkill.providesSynergies, // Keep custom synergies
-                description: customSkill.description, // Keep custom description
-                ranks: 0, // Reset ranks
-                miscModifier: 0, // Reset misc modifier
-            });
-          }
+            // If a custom skill somehow has the same ID as a predefined one, this ensures
+            // the custom-defined properties (name, keyAbility, isClassSkill, synergies, description) are kept.
+            // Ranks and misc modifiers are reset for all.
+            finalSkillsMap.set(customSkill.id, customSkill); 
         });
 
         return {
           ...prevCharacter,
-          skills: Array.from(finalSkillsMap.values()),
+          skills: Array.from(finalSkillsMap.values()).sort((a, b) => a.name.localeCompare(b.name)),
         };
       });
     }
@@ -203,7 +191,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const handleClassChange = (value: string) => {
-      const newClassId = value; // Value can be a predefined ID or custom text
+      const newClassId = value; 
       setCharacter(prev => {
         const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: newClassId, level: 1 }];
         return {
@@ -235,7 +223,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     };
     setCharacter(prev => ({
       ...prev,
-      skills: [...prev.skills, newSkill],
+      skills: [...prev.skills, newSkill].sort((a,b) => a.name.localeCompare(b.name)),
     }));
   };
 
@@ -244,7 +232,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       ...prev,
       skills: prev.skills.map(s =>
         s.id === updatedSkillData.id
-          ? { ...s,
+          ? { ...s, // Keep existing ranks and miscModifier if needed, or reset them
               name: updatedSkillData.name,
               keyAbility: updatedSkillData.keyAbility,
               isClassSkill: updatedSkillData.isClassSkill,
@@ -252,9 +240,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               description: updatedSkillData.description,
             }
           : s
-      ),
+      ).sort((a,b) => a.name.localeCompare(b.name)),
     }));
   };
+  
 
   const handleCustomSkillRemove = (skillId: string) => {
     setCharacter(prev => ({
@@ -392,8 +381,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           </div>
         </CardHeader>
         <CardContent className="space-y-6 pt-6">
+          {/* Name and Race */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-             <div className="space-y-1">
+            <div className="space-y-1">
               <Label htmlFor="name">Name</Label>
               <Input id="name" name="name" value={character.name} onChange={handleChange} />
             </div>
@@ -420,9 +410,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
                 )}
               </div>
-              {raceAbilityEffectsDetails && raceAbilityEffectsDetails.effects.length > 0 && (
+              {raceAbilityEffectsDetails && (
                 <p className="text-xs text-muted-foreground mt-1 ml-1">
-                    {raceAbilityEffectsDetails.effects.map((effect, index) => (
+                    {raceAbilityEffectsDetails.effects.length > 0 ? 
+                      raceAbilityEffectsDetails.effects.map((effect, index) => (
                         <React.Fragment key={effect.ability}>
                           <strong
                             className={cn(
@@ -434,15 +425,15 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                           </strong>
                           {index < raceAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                         </React.Fragment>
-                      ))}
+                      ))
+                      : "No impact on ability scores"
+                    }
                 </p>
               )}
-               {raceAbilityEffectsDetails && raceAbilityEffectsDetails.effects.length === 0 && (
-                  <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
-               )}
             </div>
           </div>
 
+           {/* Class and Alignment */}
            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
              <div className="space-y-1">
                 <Label htmlFor="className">Class</Label>
@@ -478,17 +469,18 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   <Select name="alignment" value={character.alignment} onValueChange={(value) => handleSelectChange('alignment', value as CharacterAlignment)}>
                     <SelectTrigger><SelectValue placeholder="Select alignment" /></SelectTrigger>
                     <SelectContent>
-                      {ALIGNMENTS.map(align => <SelectItem key={align.value} value={align.value}>{align.label}</SelectItem>)}
+                      {ALIGNMENTS.map(align => <SelectItem key={align} value={align}>{align}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
+                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
                   <Info className="h-5 w-5" />
                 </Button>
               </div>
             </div>
           </div>
-
+          
+          {/* Deity */}
           <div className="grid grid-cols-1 gap-6 items-start">
             <div className="space-y-1">
               <Label htmlFor="deity">Deity</Label>
@@ -511,7 +503,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             </div>
           </div>
 
-
+          {/* Age, Gender, Size */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
             <div className="space-y-1">
               <Label htmlFor="age">Age</Label>
@@ -533,7 +525,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                             {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                           </React.Fragment>
                         ))}
-                        {ageEffectsDetails.categoryName && <div className="mt-0.5">{ageEffectsDetails.categoryName}</div>}
+                        {ageEffectsDetails.categoryName && ageEffectsDetails.categoryName !== "Adult" && <div className="mt-0.5">{ageEffectsDetails.categoryName}</div>}
                      </>
                   ) : (
                    <>
@@ -698,7 +690,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         skills={character.skills}
         abilityScores={character.abilityScores}
         characterClasses={character.classes}
-        characterRace={character.race as DndRaceId | string}
+        characterRace={character.race}
         onSkillChange={handleSkillChange}
         onCustomSkillAdd={handleCustomSkillAdd}
         onCustomSkillUpdate={handleCustomSkillUpdate}
