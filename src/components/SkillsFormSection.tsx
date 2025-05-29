@@ -22,7 +22,7 @@ interface SkillsFormSectionProps {
   skills: SkillType[];
   abilityScores: AbilityScores;
   characterClasses: CharacterClass[];
-  characterRace: DndRace | string; // Added characterRace prop
+  characterRace: DndRace | string;
   onSkillChange: (skillId: string, ranks: number, miscModifier: number) => void;
   onCustomSkillAdd: (skillName: string) => void;
   onCustomSkillRemove: (skillId: string) => void;
@@ -32,7 +32,7 @@ export function SkillsFormSection({
   skills,
   abilityScores,
   characterClasses,
-  characterRace, // Destructure characterRace
+  characterRace,
   onSkillChange,
   onCustomSkillAdd,
   onCustomSkillRemove,
@@ -40,14 +40,12 @@ export function SkillsFormSection({
   const [newCustomSkillName, setNewCustomSkillName] = React.useState('');
 
   const firstClass = characterClasses[0];
-  const characterLevel = firstClass?.level || 1; // Assuming level 1 for character creation
+  const characterLevel = firstClass?.level || 1;
   const intelligenceModifier = getAbilityModifierByName(abilityScores, 'intelligence');
 
   const baseSkillPointsForClass = firstClass?.className ? CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0 : 0;
   const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace);
   
-  // At 1st level, characters get four times the number of skill points.
-  // Humans get 1 extra skill point at 1st level (which is then multiplied by 4).
   const totalSkillPointsAvailable = (baseSkillPointsForClass + intelligenceModifier + racialBonus) * 4;
   const totalSkillPointsSpent = skills.reduce((acc, skill) => acc + (skill.ranks || 0), 0);
   const skillPointsLeft = totalSkillPointsAvailable - totalSkillPointsSpent;
@@ -88,22 +86,20 @@ export function SkillsFormSection({
             </p>
           </div>
            <p className="text-xs text-muted-foreground mt-1">
-            Calculation: (Class Base [{baseSkillPointsForClass}] + Intelligence Modifier [{intelligenceModifier}] + Racial Bonus [{racialBonus}]) * 4.
+            Calculation: (Class Base [<strong className="font-bold text-primary">{baseSkillPointsForClass}</strong>] + Intelligence Modifier [<strong className="font-bold text-primary">{intelligenceModifier}</strong>] + Racial Bonus [<strong className="font-bold text-primary">{racialBonus}</strong>]) * <strong className="font-bold text-primary">4</strong>
           </p>
         </div>
 
         <ScrollArea className="h-[400px] pr-3">
           <div className="space-y-1 -mx-1">
-            {/* Header Row - Adjusted grid-cols for better alignment */}
-            <div className="grid grid-cols-[1fr_repeat(5,minmax(0,auto))] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-xs">
+            <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-xs">
+              <span className="text-center w-10">Class?</span>
               <span className="pl-1">Skill</span>
               <span className="text-center w-10">Total</span>
               <span className="text-center w-10">Key</span>
               <span className="text-center w-10">Mod</span>
               <span className="text-center w-12">Ranks</span>
-              {/* <span className="text-center w-10">Misc</span> Removed Misc */}
               <span className="text-center w-10">Max</span>
-              <span className="text-center w-10">Class?</span>
             </div>
 
             {skills.map(skill => {
@@ -112,11 +108,19 @@ export function SkillsFormSection({
               const keyAbilityShort = keyAbility ? keyAbility.substring(0, 3).toUpperCase() : 'N/A';
               const abilityMod = keyAbility && keyAbility !== 'none' ? getAbilityModifierByName(abilityScores, keyAbility) : 0;
               
-              const totalBonus = (skill.ranks || 0) + abilityMod + (skill.miscModifier || 0); // Keep miscModifier in calculation for now, even if not directly editable in UI
+              const totalBonus = (skill.ranks || 0) + abilityMod; // MiscModifier removed from sum
               const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
               
               return (
-                <div key={skill.id} className="grid grid-cols-[1fr_repeat(5,minmax(0,auto))] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">
+                <div key={skill.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">
+                  <div className="flex justify-center w-10">
+                    <Checkbox
+                      id={`skill_class_${skill.id}`}
+                      checked={skill.isClassSkill}
+                      disabled 
+                      className="h-3.5 w-3.5"
+                    />
+                  </div>
                   <div className="flex items-center justify-between">
                     <Label htmlFor={`skill_ranks_${skill.id}`} className="text-xs truncate pr-1 leading-tight pl-1">
                       {skill.name}
@@ -154,24 +158,7 @@ export function SkillsFormSection({
                     max={maxRanksValue}
                     min="0"
                   />
-                  {/* Misc Input Removed from UI
-                  <Input
-                    id={`skill_misc_${skill.id}`}
-                    type="number"
-                    value={skill.miscModifier || 0}
-                    onChange={(e) => onSkillChange(skill.id, skill.ranks || 0, parseInt(e.target.value, 10) || 0)}
-                    className="h-7 w-10 text-xs text-center p-1"
-                  />
-                   */}
                   <span className="text-xs text-muted-foreground text-center w-10">{maxRanksValue}</span>
-                  <div className="flex justify-center w-10">
-                    <Checkbox
-                      id={`skill_class_${skill.id}`}
-                      checked={skill.isClassSkill}
-                      disabled 
-                      className="h-3.5 w-3.5"
-                    />
-                  </div>
                 </div>
               );
             })}
