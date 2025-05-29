@@ -33,6 +33,8 @@ export interface Item {
 }
 
 export type AbilityName = 'strength' | 'dexterity' | 'constitution' | 'intelligence' | 'wisdom' | 'charisma';
+const ABILITY_ORDER: AbilityName[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+
 
 export interface AbilityScores {
   strength: number;
@@ -220,12 +222,27 @@ export function getNetAgingEffects(raceValue: DndRace, age: number): AgingEffect
 
   const appliedEffects: Array<{ ability: AbilityName; change: number }> = [];
   if (highestAttainedCategoryEffects) {
-    (Object.keys(highestAttainedCategoryEffects) as AbilityName[]).forEach(ability => {
-      const change = highestAttainedCategoryEffects[ability];
-      if (change !== undefined && change !== 0) {
-        appliedEffects.push({ ability, change });
-      }
+    const abilitiesToProcess = (Object.keys(highestAttainedCategoryEffects) as AbilityName[])
+      .filter(ability => highestAttainedCategoryEffects && highestAttainedCategoryEffects[ability] !== undefined && highestAttainedCategoryEffects[ability] !== 0);
+
+    abilitiesToProcess.sort((aAbility, bAbility) => {
+        const changeA = highestAttainedCategoryEffects![aAbility]!;
+        const changeB = highestAttainedCategoryEffects![bAbility]!;
+        const signA = Math.sign(changeA);
+        const signB = Math.sign(changeB);
+
+        if (signA !== signB) {
+            return signA - signB; // Negative changes come before positive.
+        }
+
+        const indexA = ABILITY_ORDER.indexOf(aAbility);
+        const indexB = ABILITY_ORDER.indexOf(bAbility);
+        return indexA - indexB;
     });
+    
+    for (const ability of abilitiesToProcess) {
+        appliedEffects.push({ ability, change: highestAttainedCategoryEffects![ability]! });
+    }
   }
 
   return {
@@ -241,15 +258,30 @@ export interface SizeAbilityEffectsDetails {
 }
 
 export function getSizeAbilityEffects(size: CharacterSize): SizeAbilityEffectsDetails {
-  const mods = (constantsData.DND_SIZE_ABILITY_MODIFIERS_DATA as Record<CharacterSize, { strength?: number; dexterity?: number }>)[size];
+  const mods = (constantsData.DND_SIZE_ABILITY_MODIFIERS_DATA as Record<CharacterSize, Partial<Record<AbilityName, number>>>)[size];
   const appliedEffects: Array<{ ability: AbilityName; change: number }> = [];
 
   if (mods) {
-    if (mods.strength !== undefined && mods.strength !== 0) {
-      appliedEffects.push({ ability: 'strength', change: mods.strength });
-    }
-    if (mods.dexterity !== undefined && mods.dexterity !== 0) {
-      appliedEffects.push({ ability: 'dexterity', change: mods.dexterity });
+    const abilitiesToProcess = (Object.keys(mods) as AbilityName[])
+      .filter(ability => mods[ability] !== undefined && mods[ability] !== 0);
+
+    abilitiesToProcess.sort((aAbility, bAbility) => {
+        const changeA = mods![aAbility]!;
+        const changeB = mods![bAbility]!;
+        const signA = Math.sign(changeA);
+        const signB = Math.sign(changeB);
+
+        if (signA !== signB) {
+            return signA - signB;
+        }
+
+        const indexA = ABILITY_ORDER.indexOf(aAbility);
+        const indexB = ABILITY_ORDER.indexOf(bAbility);
+        return indexA - indexB;
+    });
+
+    for (const ability of abilitiesToProcess) {
+      appliedEffects.push({ ability, change: mods[ability]! });
     }
   }
   return { effects: appliedEffects };
@@ -265,12 +297,27 @@ export function getRaceAbilityEffects(raceValue: DndRace): RaceAbilityEffectsDet
   const appliedEffects: Array<{ ability: AbilityName; change: number }> = [];
 
   if (modifiers) {
-    (Object.keys(modifiers) as AbilityName[]).forEach(ability => {
-      const change = modifiers[ability];
-      if (change !== undefined && change !== 0) {
-        appliedEffects.push({ ability, change });
-      }
+    const abilitiesToProcess = (Object.keys(modifiers) as AbilityName[])
+      .filter(ability => modifiers[ability] !== undefined && modifiers[ability] !== 0);
+    
+    abilitiesToProcess.sort((aAbility, bAbility) => {
+        const changeA = modifiers![aAbility]!;
+        const changeB = modifiers![bAbility]!;
+        const signA = Math.sign(changeA);
+        const signB = Math.sign(changeB);
+
+        if (signA !== signB) {
+            return signA - signB;
+        }
+
+        const indexA = ABILITY_ORDER.indexOf(aAbility);
+        const indexB = ABILITY_ORDER.indexOf(bAbility);
+        return indexA - indexB;
     });
+
+    for (const ability of abilitiesToProcess) {
+      appliedEffects.push({ ability, change: modifiers[ability]! });
+    }
   }
   return { effects: appliedEffects };
 }

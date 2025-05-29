@@ -94,7 +94,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   React.useEffect(() => {
     if (character.size) {
       const details = getSizeAbilityEffects(character.size as CharacterSize);
-      setSizeAbilityEffectsDetails(details.effects.length > 0 ? details : null);
+      setSizeAbilityEffectsDetails(details);
     } else {
       setSizeAbilityEffectsDetails(null);
     }
@@ -103,7 +103,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   React.useEffect(() => {
     if (character.race) {
       const details = getRaceAbilityEffects(character.race as DndRace);
-      setRaceAbilityEffectsDetails(details.effects.length > 0 ? details : null);
+      setRaceAbilityEffectsDetails(details);
     } else {
       setRaceAbilityEffectsDetails(null);
     }
@@ -274,7 +274,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         <CardContent className="space-y-6 pt-6">
           {/* Name & Race */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-             <div className="space-y-1">
+            <div className="space-y-1">
               <Label htmlFor="name">Name</Label>
               <Input id="name" name="name" value={character.name} onChange={handleChange} />
             </div>
@@ -301,25 +301,26 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
                 )}
               </div>
-              {raceAbilityEffectsDetails && raceAbilityEffectsDetails.effects.length > 0 && (
+              {raceAbilityEffectsDetails && (
                 <p className="text-xs text-muted-foreground mt-1 ml-1">
-                  {raceAbilityEffectsDetails.effects.map((effect, index) => (
-                    <React.Fragment key={effect.ability}>
-                      <strong
-                        className={cn(
-                          "font-bold",
-                          effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
-                        )}
-                      >
-                        {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
-                      </strong>
-                      {index < raceAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
-                    </React.Fragment>
-                  ))}
+                  {raceAbilityEffectsDetails.effects.length > 0 ? (
+                    raceAbilityEffectsDetails.effects.map((effect, index) => (
+                      <React.Fragment key={effect.ability}>
+                        <strong
+                          className={cn(
+                            "font-bold",
+                            effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
+                          )}
+                        >
+                          {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
+                        </strong>
+                        {index < raceAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
+                      </React.Fragment>
+                    ))
+                  ) : (
+                   <span>No impact on ability scores</span>
+                  )}
                 </p>
-              )}
-              {raceAbilityEffectsDetails && raceAbilityEffectsDetails.effects.length === 0 && isPredefinedRace && (
-                 <p className="text-xs text-muted-foreground mt-1 ml-1">No ability score changes</p>
               )}
             </div>
           </div>
@@ -418,7 +419,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                       </React.Fragment>
                     ))
                   ) : (
-                   <span>No ability score changes</span>
+                   <span>No impact on ability scores</span>
                   )}
                 </p>
               )}
@@ -462,10 +463,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     ))}
                   </p>
                 ) : (
-                  <p className="text-xs text-muted-foreground mt-1 ml-1">No ability score changes</p>
+                  <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
                 )
               ) : (
-                <p className="text-xs text-muted-foreground mt-1 ml-1">No ability score changes</p>
+                <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
               )
             }
             </div>
