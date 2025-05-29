@@ -41,8 +41,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     initialCharacter || {
       id: generateCUID(),
       name: '',
-      race: DND_RACES[0].value, // Default to Human
-      alignment: ALIGNMENTS[4], // True Neutral
+      race: '', // Default to Human
+      alignment: '', // True Neutral
       deity: '',
       size: SIZES[4], // Medium
       age: 20,
@@ -59,7 +59,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       acMiscModifier: 0,
       initiativeMiscModifier: 0,
       savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)), // Deep copy
-      classes: [{ id: generateCUID(), className: DND_CLASSES[0].value, level: 1 }], // Default to Barbarian Lvl 1
+      classes: [{ id: generateCUID(), className: '', level: 1 }], // Default to Barbarian Lvl 1
       skills: ALL_SKILLS_3_5.map(skill => ({
         id: generateCUID(),
         name: skill.name,
@@ -122,7 +122,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const handleSelectChange = (name: keyof Character | 'className', value: string) => {
-     if (name === 'className') { // This case might be redundant if handleClassChange is used directly
+     if (name === 'className') { 
       setCharacter(prev => ({
         ...prev,
         classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: value, level: 1 }]
@@ -140,7 +140,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
   
   const handleClassChange = (value: string) => {
-      // value is the string from ComboboxPrimitive, either a predefined option.value or a custom typed string.
       setCharacter(prev => ({
         ...prev,
         classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: value, level: 1 }]
@@ -178,10 +177,28 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       return;
     }
 
+    if (!character.race || character.race.trim() === '') {
+      toast({
+        title: "Missing Information",
+        description: "Please select or enter a character race.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!character.classes[0]?.className || character.classes[0]?.className.trim() === '') {
       toast({
         title: "Missing Information",
         description: "Please select or enter a character class.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!character.alignment || character.alignment.trim() === '') {
+      toast({
+        title: "Missing Information",
+        description: "Please select an alignment.",
         variant: "destructive",
       });
       return;
@@ -557,4 +574,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-
