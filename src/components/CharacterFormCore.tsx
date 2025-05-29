@@ -122,11 +122,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const handleSelectChange = (name: keyof Character | 'className', value: string) => {
-     if (name === 'className') {
-      const newClass = DND_CLASSES.find(c => c.value === value) || DND_CLASSES[0];
+     if (name === 'className') { // This case might be redundant if handleClassChange is used directly
       setCharacter(prev => ({
         ...prev,
-        classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: newClass.value, level: 1 }]
+        classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: value, level: 1 }]
       }));
     } else if (name === 'size') {
        setCharacter(prev => ({ ...prev, [name]: value as CharacterSize, sizeModifierAC: calculateAbilityModifier(prev.abilityScores.dexterity) + (SIZES.indexOf(value as CharacterSize) - 4) * (value === SIZES[5] || value === SIZES[6] || value === SIZES[7] || value === SIZES[8] ? -1 : 1) }));
@@ -141,10 +140,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
   
   const handleClassChange = (value: string) => {
-      const newClass = DND_CLASSES.find(c => c.value === value) || DND_CLASSES[0];
+      // value is the string from ComboboxPrimitive, either a predefined option.value or a custom typed string.
       setCharacter(prev => ({
         ...prev,
-        classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: newClass.value, level: 1 }]
+        classes: [{ ...prev.classes[0], id: prev.classes[0]?.id || generateCUID(), className: value, level: 1 }]
       }));
   };
 
@@ -217,7 +216,17 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const abilityNames: AbilityName[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
-  const selectedClassInfo = DND_CLASSES.find(c => c.value === character.classes[0]?.className);
+  const selectedClassInfo = DND_CLASSES.find(c => c.value.toLowerCase() === character.classes[0]?.className?.toLowerCase());
+
+  const isPredefinedRace = React.useMemo(
+    () => DND_RACES.some(r => r.value.toLowerCase() === character.race?.toLowerCase()),
+    [character.race]
+  );
+  const isPredefinedClass = React.useMemo(
+    () => DND_CLASSES.some(c => c.value.toLowerCase() === character.classes[0]?.className?.toLowerCase()),
+    [character.classes]
+  );
+
 
   return (
     <>
@@ -251,15 +260,20 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     options={DND_RACES as readonly ComboboxOption[]}
                     value={character.race}
                     onChange={(value) => handleSelectChange('race', value)}
-                    placeholder="Select Race"
+                    placeholder="Select or type race"
                     searchPlaceholder="Search races..."
-                    emptyPlaceholder="No race found."
+                    emptyPlaceholder="No race found. Type to add."
+                    isEditable={true}
                   />
                 </div>
+                {isPredefinedRace && character.race && (
                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
                   <HelpCircle className="h-5 w-5" />
                 </Button>
-                <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
+                )}
+                {!isPredefinedRace && character.race && (
+                  <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
+                )}
               </div>
             </div>
           </div>
@@ -274,15 +288,20 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                       options={DND_CLASSES as readonly ComboboxOption[]}
                       value={character.classes[0]?.className || ''}
                       onChange={handleClassChange}
-                      placeholder="Select Class"
+                      placeholder="Select or type class"
                       searchPlaceholder="Search classes..."
-                      emptyPlaceholder="No class found."
+                      emptyPlaceholder="No class found. Type to add."
+                      isEditable={true}
                     />
                   </div>
-                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
-                    <HelpCircle className="h-5 w-5" />
-                  </Button>
-                  <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
+                  {isPredefinedClass && character.classes[0]?.className && (
+                    <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
+                      <HelpCircle className="h-5 w-5" />
+                    </Button>
+                  )}
+                  {!isPredefinedClass && character.classes[0]?.className && (
+                    <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
+                  )}
                 </div>
                 {selectedClassInfo && (
                   <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: <strong className="font-bold">{selectedClassInfo.hitDice}</strong></p>
@@ -538,3 +557,4 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
+
