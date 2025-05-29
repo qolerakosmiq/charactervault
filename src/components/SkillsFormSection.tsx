@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, DndClassId, Feat } from '@/types/character';
-import { CLASS_SKILL_POINTS_BASE, SKILL_DEFINITIONS, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill } from '@/types/character';
+import { SKILL_DEFINITIONS, CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -46,22 +46,18 @@ export function SkillsFormSection({
   const [isSkillInfoDialogOpen, setIsSkillInfoDialogOpen] = React.useState(false);
   const [selectedSkillForInfo, setSelectedSkillForInfo] = React.useState<SkillType | undefined>(undefined);
 
-
   const firstClass = characterClasses[0];
-  const characterLevel = firstClass?.level || 1; // Character creation is at level 1
+  const characterLevel = firstClass?.level || 1;
   const intelligenceModifier = getAbilityModifierByName(abilityScores, 'intelligence');
 
   const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0) : 0;
   const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace as DndRaceId | string);
 
-  // At 1st level, (Class Base + Int Mod + Racial Bonus per level) * 4
   const pointsForFirstLevel = (baseSkillPointsForClass + intelligenceModifier + racialBonus) * 4;
-  // For subsequent levels, it would be (Class Base + Int Mod + Racial Bonus per level) * (Level - 1)
   const levelsAfterFirst = characterLevel > 1 ? characterLevel - 1 : 0;
   const pointsForSubsequentLevels = (baseSkillPointsForClass + intelligenceModifier + racialBonus) * levelsAfterFirst;
 
   const totalSkillPointsAvailable = pointsForFirstLevel + pointsForSubsequentLevels;
-
 
   const totalSkillPointsSpent = skills.reduce((acc, skill) => {
     const costMultiplier = skill.isClassSkill ? 1 : 2;
@@ -135,9 +131,7 @@ export function SkillsFormSection({
             <p className="text-sm font-medium">
               Skill Points Left: <span className={cn(
                 "text-lg font-bold",
-                skillPointsLeft > 0 && "text-emerald-500",
-                skillPointsLeft < 0 && "text-destructive",
-                skillPointsLeft === 0 && "text-primary"
+                skillPointsLeft >= 0 ? "text-emerald-500" : "text-destructive"
               )}>{skillPointsLeft}</span>
             </p>
           </div>
@@ -146,7 +140,7 @@ export function SkillsFormSection({
                 (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>) × <strong className="font-bold text-primary">4</strong>
             </p>
             <p>
-                + (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>) × Level Progression <strong className="font-bold text-primary">[{levelsAfterFirst}]</strong>
+                + (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>) × <strong className="font-bold text-primary">[{levelsAfterFirst}]</strong> (for levels 2+)
             </p>
            </div>
         </div>
@@ -191,7 +185,19 @@ export function SkillsFormSection({
                   <Checkbox
                     id={`skill_class_${skill.id}`}
                     checked={skill.isClassSkill}
-                    disabled
+                    disabled={!isCustomSkill} 
+                    onCheckedChange={(checked) => {
+                        if (isCustomSkill && skill.keyAbility) { 
+                            onCustomSkillUpdate({
+                                id: skill.id,
+                                name: skill.name,
+                                keyAbility: skill.keyAbility,
+                                isClassSkill: !!checked,
+                                providesSynergies: skill.providesSynergies || [],
+                                description: skill.description || ''
+                            });
+                        }
+                    }}
                     className="h-3.5 w-3.5"
                   />
                 </div>
@@ -296,3 +302,5 @@ export function SkillsFormSection({
     </>
   );
 }
+
+    
