@@ -2,14 +2,14 @@
 'use client';
 
 import * as React from 'react';
-import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndClass, DndRace } from '@/types/character';
+import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndClass, DndRace, SkillDefinitionData } from '@/types/character';
 import { CLASS_SKILL_POINTS_BASE, SKILL_DEFINITIONS, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollText, PlusCircle, Trash2 } from 'lucide-react';
+import { ScrollText, PlusCircle, Trash2, Pencil } from 'lucide-react';
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Separator } from '@/components/ui/separator';
@@ -24,8 +24,9 @@ interface SkillsFormSectionProps {
   abilityScores: AbilityScores;
   characterClasses: CharacterClass[];
   characterRace: DndRace | string;
-  onSkillChange: (skillId: string, ranks: number, miscModifier: number) => void;
+  onSkillChange: (skillId: string, ranks: number) => void; // Misc modifier removed
   onCustomSkillAdd: (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean }) => void;
+  onCustomSkillUpdate: (skillData: { id: string; name: string; keyAbility: AbilityName; isClassSkill: boolean }) => void;
   onCustomSkillRemove: (skillId: string) => void;
 }
 
@@ -36,16 +37,19 @@ export function SkillsFormSection({
   characterRace,
   onSkillChange,
   onCustomSkillAdd,
+  onCustomSkillUpdate,
   onCustomSkillRemove,
 }: SkillsFormSectionProps) {
-  const [isAddSkillDialogOpen, setIsAddSkillDialogOpen] = React.useState(false);
+  const [isAddOrEditSkillDialogOpen, setIsAddOrEditSkillDialogOpen] = React.useState(false);
+  const [skillToEdit, setSkillToEdit] = React.useState<SkillType | undefined>(undefined);
+
 
   const firstClass = characterClasses[0];
   const characterLevel = firstClass?.level || 1; // Character creation always at level 1 for now
   const intelligenceModifier = getAbilityModifierByName(abilityScores, 'intelligence');
 
   const baseSkillPointsForClass = firstClass?.className ? CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0 : 0;
-  const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace as DndRace);
+  const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace as DndRace | string);
 
   const totalSkillPointsAvailable = (baseSkillPointsForClass + intelligenceModifier + racialBonus) * 4;
 
@@ -56,10 +60,35 @@ export function SkillsFormSection({
 
   const skillPointsLeft = totalSkillPointsAvailable - totalSkillPointsSpent;
 
-  const handleSaveCustomSkill = (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean }) => {
-    onCustomSkillAdd(skillData);
-    setIsAddSkillDialogOpen(false);
+  const handleOpenAddSkillDialog = () => {
+    setSkillToEdit(undefined);
+    setIsAddOrEditSkillDialogOpen(true);
   };
+
+  const handleOpenEditSkillDialog = (skill: SkillType) => {
+    setSkillToEdit(skill);
+    setIsAddOrEditSkillDialogOpen(true);
+  };
+  
+  const handleSaveCustomSkill = (skillData: { id?: string; name: string; keyAbility: AbilityName; isClassSkill: boolean }) => {
+    if (skillData.id && skillToEdit?.id === skillData.id) { // Editing existing skill
+      onCustomSkillUpdate({
+        id: skillData.id,
+        name: skillData.name,
+        keyAbility: skillData.keyAbility,
+        isClassSkill: skillData.isClassSkill,
+      });
+    } else { // Adding new skill
+      onCustomSkillAdd({
+        name: skillData.name,
+        keyAbility: skillData.keyAbility,
+        isClassSkill: skillData.isClassSkill,
+      });
+    }
+    setIsAddOrEditSkillDialogOpen(false);
+    setSkillToEdit(undefined);
+  };
+
 
   return (
     <>
@@ -84,9 +113,9 @@ export function SkillsFormSection({
             <p className="text-sm font-medium">
               Skill Points Left: <span className={cn(
                 "text-lg font-bold",
-                skillPointsLeft > 0 && "text-emerald-500",
-                skillPointsLeft < 0 && "text-destructive",
-                skillPointsLeft === 0 && "text-accent"
+                skillPointsLeft >= 0 && "text-emerald-500", // Use >= 0 for green if 0 is acceptable
+                skillPointsLeft < 0 && "text-destructive"
+                // skillPointsLeft === 0 && "text-accent" // Keeping 0 as green or emerald
               )}>{skillPointsLeft}</span>
             </p>
           </div>
@@ -122,9 +151,10 @@ export function SkillsFormSection({
               const totalAbilityMod = baseAbilityMod + synergyBonus;
 
 
-              const totalBonus = (skill.ranks || 0) + totalAbilityMod;
+              const totalBonus = (skill.ranks || 0) + totalAbilityMod + (skill.miscModifier || 0); // Include miscModifier here
               const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
               const skillCost = skill.isClassSkill ? 1 : 2;
+              const isCustomSkill = !skillDef;
 
               return (
                 <div key={skill.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">
@@ -132,7 +162,7 @@ export function SkillsFormSection({
                     <Checkbox
                       id={`skill_class_${skill.id}`}
                       checked={skill.isClassSkill}
-                      disabled // Class skills are determined by class, not editable here for predefined skills
+                      disabled // Class skills are determined by class/custom skill setup.
                       className="h-3.5 w-3.5"
                     />
                   </div>
@@ -140,25 +170,43 @@ export function SkillsFormSection({
                     <Label htmlFor={`skill_ranks_${skill.id}`} className="text-xs truncate pr-1 leading-tight pl-1">
                       {skill.name}
                     </Label>
-                    {/* Only allow deleting custom skills (those not in SKILL_DEFINITIONS) */}
-                    {!skillDef && (
-                       <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
+                    {isCustomSkill && (
+                      <div className="flex items-center">
+                        <TooltipProvider delayDuration={100}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-5 w-5 text-destructive/70 hover:text-destructive"
-                                onClick={() => onCustomSkillRemove(skill.id)}
+                                className="h-5 w-5 text-muted-foreground hover:text-foreground"
+                                onClick={() => handleOpenEditSkillDialog(skill)}
                               >
-                                <Trash2 className="h-3 w-3" />
+                                <Pencil className="h-3 w-3" />
                               </Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="p-1 text-xs">
-                            <p>Remove Custom Skill</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="p-1 text-xs">
+                              <p>Edit Custom Skill</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider delayDuration={100}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-5 w-5 text-destructive/70 hover:text-destructive"
+                                  onClick={() => onCustomSkillRemove(skill.id)}
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="p-1 text-xs">
+                              <p>Remove Custom Skill</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                       </div>
                     )}
                   </div>
                   <span className="font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
@@ -167,9 +215,9 @@ export function SkillsFormSection({
                   <Input
                     id={`skill_ranks_${skill.id}`}
                     type="number"
-                    step="0.5" // Allow half ranks for cross-class skills
+                    step={skill.isClassSkill ? "1" : "0.5"}
                     value={skill.ranks || 0}
-                    onChange={(e) => onSkillChange(skill.id, parseFloat(e.target.value) || 0, skill.miscModifier || 0)}
+                    onChange={(e) => onSkillChange(skill.id, parseFloat(e.target.value) || 0)}
                     className="h-7 w-12 text-xs text-center p-1"
                     max={maxRanksValue}
                     min="0"
@@ -185,16 +233,17 @@ export function SkillsFormSection({
         <Separator className="my-4" />
 
         <div>
-          <Button type="button" onClick={() => setIsAddSkillDialogOpen(true)} size="sm" variant="outline">
+          <Button type="button" onClick={handleOpenAddSkillDialog} size="sm" variant="outline">
             <PlusCircle className="mr-2 h-4 w-4" /> Add Custom Skill
           </Button>
         </div>
       </CardContent>
     </Card>
     <AddCustomSkillDialog
-        isOpen={isAddSkillDialogOpen}
-        onOpenChange={setIsAddSkillDialogOpen}
+        isOpen={isAddOrEditSkillDialogOpen}
+        onOpenChange={setIsAddOrEditSkillDialogOpen}
         onSave={handleSaveCustomSkill}
+        initialSkillData={skillToEdit}
     />
     </>
   );

@@ -16,12 +16,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Pencil } from 'lucide-react';
 
 interface AddCustomSkillDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean }) => void;
+  onSave: (skillData: { id?: string; name: string; keyAbility: AbilityName; isClassSkill: boolean }) => void;
+  initialSkillData?: { id: string; name: string; keyAbility: AbilityName; isClassSkill: boolean };
 }
 
 const keyAbilityOptions: Array<{ value: AbilityName; label: string }> = [
@@ -38,10 +39,27 @@ export function AddCustomSkillDialog({
   isOpen,
   onOpenChange,
   onSave,
+  initialSkillData,
 }: AddCustomSkillDialogProps) {
   const [skillName, setSkillName] = React.useState('');
   const [selectedKeyAbility, setSelectedKeyAbility] = React.useState<AbilityName>('none');
   const [isClassSkill, setIsClassSkill] = React.useState(false);
+
+  const isEditing = !!initialSkillData;
+
+  React.useEffect(() => {
+    if (isOpen) {
+      if (initialSkillData) {
+        setSkillName(initialSkillData.name);
+        setSelectedKeyAbility(initialSkillData.keyAbility);
+        setIsClassSkill(initialSkillData.isClassSkill);
+      } else {
+        setSkillName('');
+        setSelectedKeyAbility('none');
+        setIsClassSkill(false);
+      }
+    }
+  }, [isOpen, initialSkillData]);
 
   const handleSaveSkill = () => {
     if (skillName.trim() === '') {
@@ -49,31 +67,25 @@ export function AddCustomSkillDialog({
       alert('Skill name cannot be empty.');
       return;
     }
-    onSave({ name: skillName.trim(), keyAbility: selectedKeyAbility, isClassSkill });
-    setSkillName('');
-    setSelectedKeyAbility('none');
-    setIsClassSkill(false);
-    onOpenChange(false);
+    onSave({ 
+      id: initialSkillData?.id, 
+      name: skillName.trim(), 
+      keyAbility: selectedKeyAbility, 
+      isClassSkill 
+    });
+    onOpenChange(false); // Close dialog after save
   };
-
-  React.useEffect(() => {
-    if (isOpen) {
-      setSkillName('');
-      setSelectedKeyAbility('none');
-      setIsClassSkill(false);
-    }
-  }, [isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif">
-            <PlusCircle className="mr-2 h-6 w-6 text-primary" />
-            Add Custom Skill
+            {isEditing ? <Pencil className="mr-2 h-6 w-6 text-primary" /> : <PlusCircle className="mr-2 h-6 w-6 text-primary" />}
+            {isEditing ? 'Edit Custom Skill' : 'Add Custom Skill'}
           </DialogTitle>
           <DialogDescription>
-            Define a new skill for your character.
+            {isEditing ? `Modify the details of ${initialSkillData?.name}.` : 'Define a new skill for your character.'}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
@@ -119,7 +131,7 @@ export function AddCustomSkillDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSaveSkill}>Save Skill</Button>
+          <Button onClick={handleSaveSkill}>{isEditing ? 'Save Changes' : 'Save Skill'}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
