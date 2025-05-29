@@ -79,7 +79,7 @@ export function SkillsFormSection({
         <div className="mb-4 p-3 border rounded-md bg-muted/30">
           <div className="flex justify-between items-center">
             <p className="text-sm font-medium">
-              Skill Points Available (Level 1): <span className="text-lg font-bold text-primary">{totalSkillPointsAvailable}</span>
+              Skill Points Available: <span className="text-lg font-bold text-primary">{totalSkillPointsAvailable}</span>
             </p>
             <p className="text-sm font-medium">
               Skill Points Left: <span className={cn(
@@ -91,7 +91,7 @@ export function SkillsFormSection({
             </p>
           </div>
            <p className="text-xs text-muted-foreground mt-1">
-            (Class Base [<strong className="font-bold text-primary">{baseSkillPointsForClass}</strong>] + Intelligence Modifier [<strong className="font-bold text-primary">{intelligenceModifier}</strong>] + Racial Bonus [<strong className="font-bold text-primary">{racialBonus}</strong>]) * <strong className="font-bold text-primary">4</strong>
+            (Class Base <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus <strong className="font-bold text-primary">[{racialBonus}]</strong>) * <strong className="font-bold text-primary">4</strong>
           </p>
         </div>
 
