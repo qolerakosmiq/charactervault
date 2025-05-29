@@ -82,20 +82,9 @@ export interface Character {
   portraitDataUrl?: string;
 }
 
-export const DEFAULT_ABILITIES: AbilityScores = {
-  strength: 10,
-  dexterity: 10,
-  constitution: 10,
-  intelligence: 10,
-  wisdom: 10,
-  charisma: 10,
-};
+export const DEFAULT_ABILITIES: AbilityScores = constantsData.DEFAULT_ABILITIES as AbilityScores;
 
-export const DEFAULT_SAVING_THROWS: SavingThrows = {
-  fortitude: { base: 0, magicMod: 0, miscMod: 0 },
-  reflex: { base: 0, magicMod: 0, miscMod: 0 },
-  will: { base: 0, magicMod: 0, miscMod: 0 },
-};
+export const DEFAULT_SAVING_THROWS: SavingThrows = constantsData.DEFAULT_SAVING_THROWS as SavingThrows;
 
 // --- Types derived from JSON structure ---
 export type CharacterSize = typeof constantsData.SIZES_DATA[number];
@@ -122,6 +111,13 @@ export const CLASS_SKILLS: Readonly<ClassSkillsData> = constantsData.CLASS_SKILL
 
 export type ClassSkillPointsBaseData = typeof constantsData.CLASS_SKILL_POINTS_BASE_DATA;
 export const CLASS_SKILL_POINTS_BASE: Readonly<ClassSkillPointsBaseData> = constantsData.CLASS_SKILL_POINTS_BASE_DATA as Readonly<ClassSkillPointsBaseData>;
+
+export type RaceSkillPointsBonusPerLevelData = typeof constantsData.DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA;
+export const RACE_SKILL_POINTS_BONUS_PER_LEVEL: Readonly<RaceSkillPointsBonusPerLevelData> = constantsData.DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA as Readonly<RaceSkillPointsBonusPerLevelData>;
+
+export function getRaceSkillPointsBonusPerLevel(race: DndRace | string): number {
+    return (RACE_SKILL_POINTS_BONUS_PER_LEVEL as Record<string, number>)[race] || 0;
+}
 
 
 export function getInitialCharacterSkills(characterClasses: CharacterClass[]): Skill[] {
@@ -306,4 +302,5 @@ export function getRaceAbilityEffects(raceValue: DndRace): RaceAbilityEffectsDet
   }
   return { effects: appliedEffects };
 }
+
 

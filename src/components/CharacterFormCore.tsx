@@ -19,7 +19,7 @@ import { ScrollText, Dices, UserSquare2, Palette, HelpCircle } from 'lucide-reac
 import { ComboboxPrimitive, type ComboboxOption } from '@/components/ui/combobox';
 import { cn } from '@/lib/utils';
 import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
-import { SkillsFormSection } from '@/components/SkillsFormSection'; // New Import
+import { SkillsFormSection } from '@/components/SkillsFormSection';
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 
@@ -47,7 +47,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       size: SIZES[4], 
       age: 20,
       gender: GENDERS[0].value, 
-      abilityScores: { ...JSON.parse(JSON.stringify(constantsData.DEFAULT_ABILITIES || {})) }, // Deep copy from JSON if available
+      abilityScores: { ...JSON.parse(JSON.stringify(constantsData.DEFAULT_ABILITIES || {})) }, 
       hp: 10,
       maxHp: 10,
       armorBonus: 0,
@@ -58,9 +58,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       dodgeBonus: 0,
       acMiscModifier: 0,
       initiativeMiscModifier: 0,
-      savingThrows: JSON.parse(JSON.stringify(constantsData.DEFAULT_SAVING_THROWS || {})), // Deep copy
+      savingThrows: JSON.parse(JSON.stringify(constantsData.DEFAULT_SAVING_THROWS || {})), 
       classes: defaultClasses,
-      skills: getInitialCharacterSkills(defaultClasses), // Initialize skills
+      skills: getInitialCharacterSkills(defaultClasses), 
       feats: [],
       inventory: [],
       personalStory: '',
@@ -364,10 +364,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
                 )}
               </div>
-              {raceAbilityEffectsDetails && (
+              {raceAbilityEffectsDetails && raceAbilityEffectsDetails.effects.length > 0 && (
                 <p className="text-xs text-muted-foreground mt-1 ml-1">
-                  {raceAbilityEffectsDetails.effects.length > 0 ? (
-                    raceAbilityEffectsDetails.effects.map((effect, index) => (
+                    {raceAbilityEffectsDetails.effects.map((effect, index) => (
                       <React.Fragment key={effect.ability}>
                         <strong
                           className={cn(
@@ -379,11 +378,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                         </strong>
                         {index < raceAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                       </React.Fragment>
-                    ))
-                  ) : (
-                   <span>No impact on ability scores</span>
-                  )}
+                    ))}
                 </p>
+              )}
+              {raceAbilityEffectsDetails && raceAbilityEffectsDetails.effects.length === 0 && (
+                 <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
               )}
             </div>
           </div>
@@ -467,27 +466,27 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                {ageEffectsDetails && (
                 <div className="text-xs text-muted-foreground mt-1 ml-1">
                   {ageEffectsDetails.effects.length > 0 ? (
-                    ageEffectsDetails.effects.map((effect, index) => (
-                      <React.Fragment key={effect.ability}>
-                        <strong
-                          className={cn(
-                            "font-bold",
-                            effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
-                          )}
-                        >
-                          {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
-                        </strong>
-                        {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
-                      </React.Fragment>
-                    ))
+                    <>
+                      {ageEffectsDetails.effects.map((effect, index) => (
+                        <React.Fragment key={effect.ability}>
+                          <strong
+                            className={cn(
+                              "font-bold",
+                              effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
+                            )}
+                          >
+                            {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
+                          </strong>
+                          {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
+                        </React.Fragment>
+                      ))}
+                      {ageEffectsDetails.categoryName && ageEffectsDetails.categoryName !== "Adult" && <div className="mt-0.5">{ageEffectsDetails.categoryName}</div>}
+                    </>
                   ) : (
-                   <span>No impact on ability scores</span>
-                  )}
-                  {ageEffectsDetails.categoryName && ageEffectsDetails.categoryName !== "Adult" && (
-                     <div className="mt-0.5">{ageEffectsDetails.categoryName}</div>
-                  )}
-                   {ageEffectsDetails.categoryName === "Adult" && ageEffectsDetails.effects.length === 0 && ageEffectsDetails.categoryName !== "Venerable" && (
-                     <div className="mt-0.5">{/* Placeholder for adult with no changes, if needed for alignment or remove if not */}</div>
+                   <>
+                    No impact on ability scores
+                    {ageEffectsDetails.categoryName && ageEffectsDetails.categoryName !== "Adult" && <div className="mt-0.5">{ageEffectsDetails.categoryName}</div>}
+                   </>
                   )}
                 </div>
               )}
@@ -649,6 +648,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         skills={character.skills}
         abilityScores={character.abilityScores}
         characterClasses={character.classes}
+        characterRace={character.race as DndRace} 
         onSkillChange={handleSkillChange}
         onCustomSkillAdd={handleCustomSkillAdd}
         onCustomSkillRemove={handleCustomSkillRemove}
@@ -675,4 +675,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-

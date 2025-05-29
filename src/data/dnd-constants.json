@@ -181,6 +181,9 @@
     "half-elf": {},
     "half-orc": { "strength": 2, "intelligence": -2, "charisma": -2 }
   },
+  "DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA": {
+    "human": 1
+  },
   "SKILL_DEFINITIONS_DATA": [
     { "name": "Appraise", "keyAbility": "intelligence" },
     { "name": "Balance", "keyAbility": "dexterity" },
