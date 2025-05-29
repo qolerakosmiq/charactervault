@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollText, PlusCircle, Trash2, Pencil } from 'lucide-react';
+import { ScrollText, PlusCircle, Trash2, Pencil, Info } from 'lucide-react'; // Added Info
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Separator } from '@/components/ui/separator';
@@ -17,7 +17,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
-
+import { SkillInfoDialog } from '@/components/SkillInfoDialog'; // Added SkillInfoDialog
 
 interface SkillsFormSectionProps {
   skills: SkillType[];
@@ -25,8 +25,8 @@ interface SkillsFormSectionProps {
   characterClasses: CharacterClass[];
   characterRace: DndRaceId | string;
   onSkillChange: (skillId: string, ranks: number) => void;
-  onCustomSkillAdd: (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[] }) => void;
-  onCustomSkillUpdate: (skillData: { id: string; name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[] }) => void;
+  onCustomSkillAdd: (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => void;
+  onCustomSkillUpdate: (skillData: { id: string; name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => void;
   onCustomSkillRemove: (skillId: string) => void;
 }
 
@@ -42,14 +42,16 @@ export function SkillsFormSection({
 }: SkillsFormSectionProps) {
   const [isAddOrEditSkillDialogOpen, setIsAddOrEditSkillDialogOpen] = React.useState(false);
   const [skillToEdit, setSkillToEdit] = React.useState<SkillType | undefined>(undefined);
+  const [isSkillInfoDialogOpen, setIsSkillInfoDialogOpen] = React.useState(false);
+  const [selectedSkillForInfo, setSelectedSkillForInfo] = React.useState<SkillType | undefined>(undefined);
 
 
   const firstClass = characterClasses[0];
-  const characterLevel = firstClass?.level || 1; 
+  const characterLevel = firstClass?.level || 1;
   const intelligenceModifier = getAbilityModifierByName(abilityScores, 'intelligence');
 
   const baseSkillPointsForClass = firstClass?.className ? CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0 : 0;
-  const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace as DndRaceId);
+  const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace as DndRaceId | string);
 
   const totalSkillPointsAvailable = (baseSkillPointsForClass + intelligenceModifier + racialBonus) * 4;
 
@@ -69,27 +71,38 @@ export function SkillsFormSection({
     setSkillToEdit(skill);
     setIsAddOrEditSkillDialogOpen(true);
   };
-  
-  const handleSaveCustomSkill = (skillData: { id?: string; name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[] }) => {
-    if (skillData.id && skillToEdit?.id === skillData.id) { 
+
+  const handleOpenSkillInfoDialog = (skill: SkillType) => {
+    setSelectedSkillForInfo(skill);
+    setIsSkillInfoDialogOpen(true);
+  };
+
+  const handleSaveCustomSkill = (skillData: { id?: string; name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
+    if (skillData.id && skillToEdit?.id === skillData.id) {
       onCustomSkillUpdate({
         id: skillData.id,
         name: skillData.name,
         keyAbility: skillData.keyAbility,
         isClassSkill: skillData.isClassSkill,
         providesSynergies: skillData.providesSynergies,
+        description: skillData.description,
       });
-    } else { 
+    } else {
       onCustomSkillAdd({
         name: skillData.name,
         keyAbility: skillData.keyAbility,
         isClassSkill: skillData.isClassSkill,
         providesSynergies: skillData.providesSynergies,
+        description: skillData.description,
       });
     }
     setIsAddOrEditSkillDialogOpen(false);
     setSkillToEdit(undefined);
   };
+
+  const allSkillOptionsForDialog = React.useMemo(() => {
+    return skills.map(s => ({ value: s.id, label: s.name }));
+  }, [skills]);
 
 
   return (
@@ -115,7 +128,7 @@ export function SkillsFormSection({
             <p className="text-sm font-medium">
               Skill Points Left: <span className={cn(
                 "text-lg font-bold",
-                skillPointsLeft >= 0 && "text-emerald-500", 
+                skillPointsLeft >= 0 && "text-emerald-500",
                 skillPointsLeft < 0 && "text-destructive"
               )}>{skillPointsLeft}</span>
             </p>
@@ -139,25 +152,23 @@ export function SkillsFormSection({
             </div>
 
             {skills.map(skill => {
-              // skill.id is kebab-case for predefined, UUID for custom
-              // skill.name is display name
-              const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skill.id); // Match by ID
+              const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skill.id);
               const keyAbility = skill.keyAbility || (skillDef?.keyAbility as AbilityName | undefined);
               const keyAbilityShort = keyAbility ? keyAbility.substring(0, 3).toUpperCase() : 'N/A';
-              
+
               let baseAbilityMod = 0;
               if (keyAbility && keyAbility !== 'none') {
                 baseAbilityMod = getAbilityModifierByName(abilityScores, keyAbility);
               }
-              
-              const synergyBonus = calculateTotalSynergyBonus(skill.id, skills); // Pass skill.id
+
+              const synergyBonus = calculateTotalSynergyBonus(skill.id, skills);
               const totalAbilityMod = baseAbilityMod + synergyBonus;
 
 
               const totalBonus = (skill.ranks || 0) + totalAbilityMod + (skill.miscModifier || 0);
               const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
               const skillCost = skill.isClassSkill ? 1 : 2;
-              const isCustomSkill = !skillDef; // A skill is custom if its ID is not in SKILL_DEFINITIONS
+              const isCustomSkill = !skillDef;
 
               return (
                 <div key={skill.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">
@@ -165,14 +176,25 @@ export function SkillsFormSection({
                     <Checkbox
                       id={`skill_class_${skill.id}`}
                       checked={skill.isClassSkill}
-                      disabled 
+                      disabled
                       className="h-3.5 w-3.5"
                     />
                   </div>
                   <div className="flex items-center justify-between">
-                    <Label htmlFor={`skill_ranks_${skill.id}`} className="text-xs truncate pr-1 leading-tight pl-1">
-                      {skill.name}
-                    </Label>
+                    <div className="flex items-center">
+                       <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5 mr-1 text-muted-foreground hover:text-foreground"
+                          onClick={() => handleOpenSkillInfoDialog(skill)}
+                        >
+                          <Info className="h-3 w-3" />
+                        </Button>
+                      <Label htmlFor={`skill_ranks_${skill.id}`} className="text-xs truncate pr-1 leading-tight">
+                        {skill.name}
+                      </Label>
+                    </div>
                     {isCustomSkill && (
                       <div className="flex items-center">
                         <TooltipProvider delayDuration={100}>
@@ -249,10 +271,18 @@ export function SkillsFormSection({
         onOpenChange={setIsAddOrEditSkillDialogOpen}
         onSave={handleSaveCustomSkill}
         initialSkillData={skillToEdit}
-        allSkills={skills}
+        allSkills={allSkillOptionsForDialog}
     />
+    {selectedSkillForInfo && (
+      <SkillInfoDialog
+        isOpen={isSkillInfoDialogOpen}
+        onOpenChange={setIsSkillInfoDialogOpen}
+        skillName={selectedSkillForInfo.name}
+        skillDescription={selectedSkillForInfo.description}
+      />
+    )}
     </>
   );
 }
 
-  
+    

@@ -3,14 +3,14 @@ import constantsData from '@/data/dnd-constants.json';
 
 export interface CharacterClass {
   id: string;
-  className: string; // Stores kebab-case ID
+  className: DndClassId | string; // Kebab-case ID or custom string
   level: number;
 }
 
 export interface CustomSynergyRule {
-  id: string; 
+  id: string;
   targetSkillName: string; // Stores ID of target skill (kebab-case or UUID for custom)
-  ranksInThisSkillRequired: number; 
+  ranksInThisSkillRequired: number;
   bonusGranted: number;
 }
 
@@ -22,6 +22,7 @@ export interface Skill {
   keyAbility?: AbilityName;
   isClassSkill?: boolean;
   providesSynergies?: CustomSynergyRule[];
+  description?: string;
 }
 
 export interface Feat {
@@ -60,12 +61,12 @@ export interface SavingThrows {
 export interface Character {
   id: string;
   name: string;
-  race: string; // Stores kebab-case ID
-  alignment: string; // Stores raw alignment string
-  deity?: string; // Stores kebab-case ID or custom string
-  size: string; // Stores raw size string
+  race: DndRaceId | string; // Kebab-case ID or custom string
+  alignment: CharacterAlignment | string; // Alignment string
+  deity?: DndDeityId | string; // Kebab-case ID or custom string
+  size: CharacterSize; // Size string
   age: number;
-  gender: string; // Stores kebab-case ID or custom string
+  gender: GenderId | string; // Kebab-case ID or custom string
 
   abilityScores: AbilityScores;
   hp: number;
@@ -93,34 +94,34 @@ export interface Character {
 export const DEFAULT_ABILITIES: AbilityScores = constantsData.DEFAULT_ABILITIES as AbilityScores;
 export const DEFAULT_SAVING_THROWS: SavingThrows = constantsData.DEFAULT_SAVING_THROWS as SavingThrows;
 
-// --- Types derived from JSON structure ---
 export type CharacterSize = typeof constantsData.SIZES_DATA[number];
 export const SIZES: readonly CharacterSize[] = constantsData.SIZES_DATA;
 
 export type CharacterAlignment = typeof constantsData.ALIGNMENTS_DATA[number];
 export const ALIGNMENTS: readonly CharacterAlignment[] = constantsData.ALIGNMENTS_DATA;
 
-// DndRace, DndClass etc. will now be string, representing the kebab-case ID
+export type GenderId = typeof constantsData.GENDERS_DATA[number]['value'];
+export const GENDERS: ReadonlyArray<{value: GenderId, label: string}> = constantsData.GENDERS_DATA as ReadonlyArray<{value: GenderId, label: string}>;
+
 export type DndRaceId = typeof constantsData.DND_RACES_DATA[number]['value'];
 export const DND_RACES: ReadonlyArray<{value: DndRaceId, label: string}> = constantsData.DND_RACES_DATA as ReadonlyArray<{value: DndRaceId, label: string}>;
 
 export type DndClassId = typeof constantsData.DND_CLASSES_DATA[number]['value'];
 export const DND_CLASSES: ReadonlyArray<{value: DndClassId, label: string, hitDice: string}> = constantsData.DND_CLASSES_DATA as ReadonlyArray<{value: DndClassId, label: string, hitDice: string}>;
 
-export const GENDERS: ReadonlyArray<{value: string, label: string}> = constantsData.GENDERS_DATA;
-export const DND_DEITIES: ReadonlyArray<{value: string, label: string}> = constantsData.DND_DEITIES_DATA as ReadonlyArray<{value: string, label: string}>;
+export type DndDeityId = typeof constantsData.DND_DEITIES_DATA[number]['value'];
+export const DND_DEITIES: ReadonlyArray<{value: DndDeityId, label: string}> = constantsData.DND_DEITIES_DATA as ReadonlyArray<{value: DndDeityId, label: string}>;
 
-// --- Skill Definitions from JSON ---
-export type SkillDefinitionJsonData = typeof constantsData.SKILL_DEFINITIONS_DATA[number]; // {value: string, label: string, keyAbility: string}
+export type SkillDefinitionJsonData = typeof constantsData.SKILL_DEFINITIONS_DATA[number] & { description?: string };
 export const SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[] = constantsData.SKILL_DEFINITIONS_DATA as ReadonlyArray<SkillDefinitionJsonData>;
 
-export type ClassSkillsJsonData = typeof constantsData.CLASS_SKILLS_DATA; // Record<DndClassId, DndSkillId[]>
+export type ClassSkillsJsonData = typeof constantsData.CLASS_SKILLS_DATA;
 export const CLASS_SKILLS: Readonly<ClassSkillsJsonData> = constantsData.CLASS_SKILLS_DATA as Readonly<ClassSkillsJsonData>;
 
-export type ClassSkillPointsBaseJsonData = typeof constantsData.CLASS_SKILL_POINTS_BASE_DATA; // Record<DndClassId, number>
+export type ClassSkillPointsBaseJsonData = typeof constantsData.CLASS_SKILL_POINTS_BASE_DATA;
 export const CLASS_SKILL_POINTS_BASE: Readonly<ClassSkillPointsBaseJsonData> = constantsData.CLASS_SKILL_POINTS_BASE_DATA as Readonly<ClassSkillPointsBaseJsonData>;
 
-export type RaceSkillPointsBonusPerLevelJsonData = typeof constantsData.DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA; // Record<DndRaceId, number>
+export type RaceSkillPointsBonusPerLevelJsonData = typeof constantsData.DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA;
 export const RACE_SKILL_POINTS_BONUS_PER_LEVEL: Readonly<RaceSkillPointsBonusPerLevelJsonData> = constantsData.DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA as Readonly<RaceSkillPointsBonusPerLevelJsonData>;
 
 export function getRaceSkillPointsBonusPerLevel(raceId: DndRaceId | string): number {
@@ -133,7 +134,6 @@ export function getInitialCharacterSkills(characterClasses: CharacterClass[]): S
 
   return SKILL_DEFINITIONS.map(def => {
     let isClassSkill = classSkillsForCurrentClass.includes(def.value);
-    // Handle generic "craft-any" or "perform-any" etc.
     if (!isClassSkill) {
         const skillId = def.value;
         if (skillId.startsWith("craft-") && classSkillsForCurrentClass.includes("craft-any")) {
@@ -147,18 +147,18 @@ export function getInitialCharacterSkills(characterClasses: CharacterClass[]): S
         }
     }
     return {
-      id: def.value, // Use kebab-case ID from JSON
-      name: def.label, // Use human-readable label from JSON
+      id: def.value,
+      name: def.label,
       keyAbility: def.keyAbility as AbilityName,
       ranks: 0,
       miscModifier: 0,
       isClassSkill: isClassSkill,
-      providesSynergies: [] 
+      providesSynergies: [],
+      description: def.description || ""
     };
   });
 }
 
-// --- Aging Effects ---
 export type RaceAgingCategoryKey = keyof typeof constantsData.DND_RACE_AGING_EFFECTS_DATA;
 
 interface AgeCategoryEffectData {
@@ -176,11 +176,11 @@ export interface AgingEffectsDetails {
   effects: Array<{ ability: AbilityName; change: number }>;
 }
 
-export function getNetAgingEffects(raceId: DndRaceId, age: number): AgingEffectsDetails {
-  const raceVenerableAge = (constantsData.DND_RACE_BASE_MAX_AGE_DATA as Record<DndRaceId, number>)[raceId];
+export function getNetAgingEffects(raceId: DndRaceId | string, age: number): AgingEffectsDetails {
+  const raceVenerableAge = (constantsData.DND_RACE_BASE_MAX_AGE_DATA as Record<DndRaceId, number>)[raceId as DndRaceId];
   if (raceVenerableAge === undefined) return { categoryName: "Adult", effects: [] };
 
-  const agingCategoryKey = (constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA as Record<DndRaceId, RaceAgingCategoryKey>)[raceId];
+  const agingCategoryKey = (constantsData.RACE_TO_AGING_CATEGORY_MAP_DATA as Record<DndRaceId, RaceAgingCategoryKey>)[raceId as DndRaceId];
   if (!agingCategoryKey) return { categoryName: "Adult", effects: [] };
 
   const raceAgingPattern = (constantsData.DND_RACE_AGING_EFFECTS_DATA as Record<RaceAgingCategoryKey, RaceAgingInfoData>)[agingCategoryKey];
@@ -197,10 +197,10 @@ export function getNetAgingEffects(raceId: DndRaceId, age: number): AgingEffects
       currentCategoryName = category.categoryName;
       highestAttainedCategoryEffects = category.effects;
     } else {
-      break; 
+      break;
     }
   }
-  
+
   if (!highestAttainedCategoryEffects && (sortedCategories.length === 0 || age < Math.floor(sortedCategories[0].ageFactor * raceVenerableAge))) {
      currentCategoryName = "Adult";
      highestAttainedCategoryEffects = {};
@@ -210,7 +210,7 @@ export function getNetAgingEffects(raceId: DndRaceId, age: number): AgingEffects
   if (highestAttainedCategoryEffects) {
     const abilitiesToProcess = (Object.keys(highestAttainedCategoryEffects) as AbilityName[])
       .filter(ability => highestAttainedCategoryEffects && highestAttainedCategoryEffects[ability] !== undefined && highestAttainedCategoryEffects[ability] !== 0);
-    
+
     abilitiesToProcess.sort((aAbility, bAbility) => {
         const changeA = highestAttainedCategoryEffects![aAbility]!;
         const changeB = highestAttainedCategoryEffects![bAbility]!;
@@ -218,7 +218,7 @@ export function getNetAgingEffects(raceId: DndRaceId, age: number): AgingEffects
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB; 
+            return signA - signB;
         }
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
@@ -236,7 +236,6 @@ export function getNetAgingEffects(raceId: DndRaceId, age: number): AgingEffects
   };
 }
 
-// --- Size Ability Score Modifiers ---
 export interface SizeAbilityEffectsDetails {
   effects: Array<{ ability: AbilityName; change: number }>;
 }
@@ -270,13 +269,12 @@ export function getSizeAbilityEffects(size: CharacterSize): SizeAbilityEffectsDe
   return { effects: appliedEffects };
 }
 
-// --- Race Ability Score Modifiers ---
 export interface RaceAbilityEffectsDetails {
   effects: Array<{ ability: AbilityName; change: number }>;
 }
 
-export function getRaceAbilityEffects(raceId: DndRaceId): RaceAbilityEffectsDetails {
-  const modifiers = (constantsData.DND_RACE_ABILITY_MODIFIERS_DATA as Record<DndRaceId, Partial<Record<AbilityName, number>>>)[raceId];
+export function getRaceAbilityEffects(raceId: DndRaceId | string): RaceAbilityEffectsDetails {
+  const modifiers = (constantsData.DND_RACE_ABILITY_MODIFIERS_DATA as Record<DndRaceId, Partial<Record<AbilityName, number>>>)[raceId as DndRaceId];
   const appliedEffects: Array<{ ability: AbilityName; change: number }> = [];
 
   if (modifiers) {
@@ -290,7 +288,7 @@ export function getRaceAbilityEffects(raceId: DndRaceId): RaceAbilityEffectsDeta
         const signB = Math.sign(changeB);
 
         if (signA !== signB) {
-            return signA - signB; 
+            return signA - signB;
         }
         const indexA = ABILITY_ORDER.indexOf(aAbility);
         const indexB = ABILITY_ORDER.indexOf(bAbility);
@@ -304,21 +302,19 @@ export function getRaceAbilityEffects(raceId: DndRaceId): RaceAbilityEffectsDeta
   return { effects: appliedEffects };
 }
 
-// --- Skill Synergies (Predefined) ---
 export interface SynergyEffectJsonData {
-  targetSkill: string; // Kebab-case skill ID
+  targetSkill: string;
   ranksRequired: number;
   bonus: number;
 }
 
-export type SkillSynergiesJsonData = Record<string, SynergyEffectJsonData[]>; // Key is kebab-case providing skill ID
+export type SkillSynergiesJsonData = Record<string, SynergyEffectJsonData[]>;
 
 export const SKILL_SYNERGIES: Readonly<SkillSynergiesJsonData> = constantsData.SKILL_SYNERGIES_DATA as Readonly<SkillSynergiesJsonData>;
 
 export function calculateTotalSynergyBonus(targetSkillId: string, currentCharacterSkills: Skill[]): number {
   let totalBonus = 0;
-  
-  // 1. Check predefined synergies from SKILL_SYNERGIES_DATA
+
   if (SKILL_SYNERGIES) {
     for (const providingSkillId in SKILL_SYNERGIES) {
       const synergiesProvidedByThisDefinition = SKILL_SYNERGIES[providingSkillId];
@@ -335,12 +331,10 @@ export function calculateTotalSynergyBonus(targetSkillId: string, currentCharact
     }
   }
 
-  // 2. Check custom synergies defined on skills within currentCharacterSkills
   for (const providingSkill of currentCharacterSkills) {
     if (providingSkill.providesSynergies) {
       for (const customRule of providingSkill.providesSynergies) {
-        // customRule.targetSkillName stores the ID of the target skill
-        if (customRule.targetSkillName === targetSkillId) { 
+        if (customRule.targetSkillName === targetSkillId) {
           if ((providingSkill.ranks || 0) >= customRule.ranksInThisSkillRequired) {
             totalBonus += customRule.bonusGranted;
           }
@@ -348,8 +342,8 @@ export function calculateTotalSynergyBonus(targetSkillId: string, currentCharact
       }
     }
   }
-  
+
   return totalBonus;
 }
 
-  
+    

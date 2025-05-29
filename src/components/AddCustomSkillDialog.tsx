@@ -16,29 +16,32 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ComboboxPrimitive, type ComboboxOption } from '@/components/ui/combobox';
+import { ComboboxPrimitive } from '@/components/ui/combobox';
 import { PlusCircle, Pencil, Trash2, Sparkles } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Textarea } from '@/components/ui/textarea'; // Added Textarea
 
 interface AddCustomSkillDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (skillData: { 
-    id?: string; 
-    name: string; 
-    keyAbility: AbilityName; 
+  onSave: (skillData: {
+    id?: string;
+    name: string;
+    keyAbility: AbilityName;
     isClassSkill: boolean;
     providesSynergies: CustomSynergyRule[];
+    description?: string;
   }) => void;
-  initialSkillData?: { 
-    id: string; 
-    name: string; 
-    keyAbility: AbilityName; 
+  initialSkillData?: {
+    id: string;
+    name: string;
+    keyAbility: AbilityName;
     isClassSkill: boolean;
     providesSynergies?: CustomSynergyRule[];
+    description?: string;
   };
-  allSkills: SkillType[]; // Used to populate target skill combobox {id: string, name: string}
+  allSkills: Array<{value: string; label: string}>;
 }
 
 const keyAbilityOptions: Array<{ value: AbilityName; label: string }> = [
@@ -61,6 +64,7 @@ export function AddCustomSkillDialog({
   const [selectedKeyAbility, setSelectedKeyAbility] = React.useState<AbilityName>('intelligence');
   const [isClassSkill, setIsClassSkill] = React.useState(false);
   const [synergyRules, setSynergyRules] = React.useState<CustomSynergyRule[]>([]);
+  const [description, setDescription] = React.useState(''); // Added description state
 
   const [newSynergyTargetSkillId, setNewSynergyTargetSkillId] = React.useState('');
   const [newSynergyRanksRequired, setNewSynergyRanksRequired] = React.useState(5);
@@ -70,8 +74,7 @@ export function AddCustomSkillDialog({
 
   const availableTargetSkillsOptions = React.useMemo(() => {
     return allSkills
-      .filter(skill => skill.id !== initialSkillData?.id) // Exclude self by ID
-      .map(skill => ({ value: skill.id, label: skill.name })) // Combobox value is skill.id, label is skill.name
+      .filter(skill => skill.value !== initialSkillData?.id)
       .sort((a,b) => a.label.localeCompare(b.label));
   }, [allSkills, initialSkillData?.id]);
 
@@ -82,11 +85,13 @@ export function AddCustomSkillDialog({
         setSelectedKeyAbility(initialSkillData.keyAbility);
         setIsClassSkill(initialSkillData.isClassSkill);
         setSynergyRules(initialSkillData.providesSynergies || []);
+        setDescription(initialSkillData.description || ''); // Set description
       } else {
         setSkillName('');
         setSelectedKeyAbility('intelligence');
         setIsClassSkill(false);
         setSynergyRules([]);
+        setDescription(''); // Reset description
       }
       setNewSynergyTargetSkillId('');
       setNewSynergyRanksRequired(5);
@@ -103,7 +108,7 @@ export function AddCustomSkillDialog({
       ...prev,
       {
         id: crypto.randomUUID(),
-        targetSkillName: newSynergyTargetSkillId, // Stores ID
+        targetSkillName: newSynergyTargetSkillId,
         ranksInThisSkillRequired: newSynergyRanksRequired,
         bonusGranted: newSynergyBonus,
       }
@@ -122,19 +127,20 @@ export function AddCustomSkillDialog({
       alert('Skill name cannot be empty.');
       return;
     }
-    onSave({ 
-      id: initialSkillData?.id, 
-      name: skillName.trim(), 
-      keyAbility: selectedKeyAbility, 
+    onSave({
+      id: initialSkillData?.id,
+      name: skillName.trim(),
+      keyAbility: selectedKeyAbility,
       isClassSkill,
       providesSynergies: synergyRules,
+      description: description.trim(), // Save description
     });
     onOpenChange(false);
   };
-  
-  const getSkillNameById = (id: string) => {
-    const skill = allSkills.find(s => s.id === id);
-    return skill ? skill.name : 'Unknown Skill';
+
+  const getSkillLabelById = (id: string) => {
+    const skill = allSkills.find(s => s.value === id);
+    return skill ? skill.label : 'Unknown Skill';
   }
 
   return (
@@ -146,11 +152,11 @@ export function AddCustomSkillDialog({
             {isEditing ? 'Edit Custom Skill' : 'Add Custom Skill'}
           </DialogTitle>
           <DialogDescription>
-            {isEditing ? `Modify the details of ${initialSkillData?.name}.` : 'Define a new skill for your character, including any synergies it provides.'}
+            {isEditing ? `Modify the details of ${initialSkillData?.name}.` : 'Define a new skill, its synergies, and description.'}
           </DialogDescription>
         </DialogHeader>
-        
-        <ScrollArea className="max-h-[70vh] pr-4">
+
+        <ScrollArea className="max-h-[70vh]">
           <div className="space-y-4 p-4">
             <div className="space-y-1">
               <Label htmlFor="custom-skill-name">Skill Name</Label>
@@ -190,6 +196,17 @@ export function AddCustomSkillDialog({
               </Label>
             </div>
 
+            <div className="space-y-1">
+              <Label htmlFor="custom-skill-description">Skill Description</Label>
+              <Textarea
+                id="custom-skill-description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe what this skill does, its uses, etc."
+                rows={3}
+              />
+            </div>
+
             <Separator className="my-6" />
 
             <div>
@@ -202,32 +219,32 @@ export function AddCustomSkillDialog({
                   <Label htmlFor="synergy-target-skill">Target Skill</Label>
                   <ComboboxPrimitive
                     options={availableTargetSkillsOptions}
-                    value={newSynergyTargetSkillId} // Stores ID
-                    onChange={(value) => setNewSynergyTargetSkillId(value)} // Sets ID
+                    value={newSynergyTargetSkillId}
+                    onChange={(value) => setNewSynergyTargetSkillId(value)}
                     placeholder="Select target skill"
                     searchPlaceholder="Search skills..."
                     emptyPlaceholder="No skill found."
-                    isEditable={false} 
+                    isEditable={false}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1">
                     <Label htmlFor="synergy-ranks-required">Ranks in this Skill Required</Label>
-                    <Input 
-                      id="synergy-ranks-required" 
-                      type="number" 
-                      value={newSynergyRanksRequired} 
-                      onChange={(e) => setNewSynergyRanksRequired(parseInt(e.target.value,10) || 0)} 
+                    <Input
+                      id="synergy-ranks-required"
+                      type="number"
+                      value={newSynergyRanksRequired}
+                      onChange={(e) => setNewSynergyRanksRequired(parseInt(e.target.value,10) || 0)}
                       min="1"
                     />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="synergy-bonus-granted">Bonus Granted</Label>
-                    <Input 
-                      id="synergy-bonus-granted" 
-                      type="number" 
-                      value={newSynergyBonus} 
-                      onChange={(e) => setNewSynergyBonus(parseInt(e.target.value,10) || 0)} 
+                    <Input
+                      id="synergy-bonus-granted"
+                      type="number"
+                      value={newSynergyBonus}
+                      onChange={(e) => setNewSynergyBonus(parseInt(e.target.value,10) || 0)}
                     />
                   </div>
                 </div>
@@ -242,7 +259,7 @@ export function AddCustomSkillDialog({
                   {synergyRules.map(rule => (
                     <div key={rule.id} className="flex items-center justify-between p-2 border rounded-md text-xs bg-background">
                       <div>
-                        <p>Grants <span className="font-semibold text-accent">{rule.bonusGranted > 0 ? '+' : ''}{rule.bonusGranted}</span> to <span className="font-semibold">{getSkillNameById(rule.targetSkillName)}</span></p>
+                        <p>Grants <span className="font-semibold text-accent">{rule.bonusGranted > 0 ? '+' : ''}{rule.bonusGranted}</span> to <span className="font-semibold">{getSkillLabelById(rule.targetSkillName)}</span></p>
                         <p className="text-muted-foreground">Requires <span className="font-semibold">{rule.ranksInThisSkillRequired}</span> ranks in this custom skill.</p>
                       </div>
                       <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => handleRemoveSynergyRule(rule.id)} type="button">
@@ -255,7 +272,7 @@ export function AddCustomSkillDialog({
             </div>
           </div>
         </ScrollArea>
-        
+
         <DialogFooter className="mt-2">
           <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
             Cancel
@@ -267,4 +284,4 @@ export function AddCustomSkillDialog({
   );
 }
 
-  
+    
