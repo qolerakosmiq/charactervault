@@ -14,7 +14,7 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
-import { ScrollText, Dices, UserSquare2, Palette } from 'lucide-react';
+import { ScrollText, Dices, UserSquare2, Palette, HelpCircle } from 'lucide-react';
 import { ComboboxPrimitive, type ComboboxOption } from '@/components/ui/combobox';
 import { cn } from '@/lib/utils';
 import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
@@ -256,6 +256,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     emptyPlaceholder="No race found."
                   />
                 </div>
+                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
+                  <HelpCircle className="h-5 w-5" />
+                </Button>
                 <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
               </div>
             </div>
@@ -276,6 +279,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                       emptyPlaceholder="No class found."
                     />
                   </div>
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
+                    <HelpCircle className="h-5 w-5" />
+                  </Button>
                   <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
                 </div>
                 {selectedClassInfo && (
@@ -284,12 +290,19 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             </div>
             <div className="space-y-1">
               <Label htmlFor="alignment">Alignment</Label>
-              <Select name="alignment" value={character.alignment} onValueChange={(value) => handleSelectChange('alignment', value as CharacterAlignment)}>
-                <SelectTrigger><SelectValue placeholder="Select alignment" /></SelectTrigger>
-                <SelectContent>
-                  {ALIGNMENTS.map(align => <SelectItem key={align} value={align}>{align}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-2">
+                <div className="flex-grow">
+                  <Select name="alignment" value={character.alignment} onValueChange={(value) => handleSelectChange('alignment', value as CharacterAlignment)}>
+                    <SelectTrigger><SelectValue placeholder="Select alignment" /></SelectTrigger>
+                    <SelectContent>
+                      {ALIGNMENTS.map(align => <SelectItem key={align} value={align}>{align}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
+                  <HelpCircle className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
           </div>
           
@@ -297,15 +310,22 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           <div className="grid grid-cols-1 gap-6 items-start">
             <div className="space-y-1">
               <Label htmlFor="deity">Deity</Label>
-              <ComboboxPrimitive
-                  options={DND_DEITIES as readonly ComboboxOption[]}
-                  value={character.deity || ''}
-                  onChange={(value) => handleSelectChange('deity', value)}
-                  placeholder="Select or type deity"
-                  searchPlaceholder="Search deities..."
-                  emptyPlaceholder="No deity found. Type to add."
-                  isEditable={true}
-                />
+              <div className="flex items-center gap-2">
+                <div className="flex-grow">
+                  <ComboboxPrimitive
+                      options={DND_DEITIES as readonly ComboboxOption[]}
+                      value={character.deity || ''}
+                      onChange={(value) => handleSelectChange('deity', value)}
+                      placeholder="Select or type deity"
+                      searchPlaceholder="Search deities..."
+                      emptyPlaceholder="No deity found. Type to add."
+                      isEditable={true}
+                    />
+                </div>
+                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10">
+                  <HelpCircle className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
           </div>
 
