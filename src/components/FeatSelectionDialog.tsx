@@ -22,14 +22,14 @@ import {
 import type { FeatDefinitionJsonData, Character } from '@/types/character';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { BookOpenText } from 'lucide-react';
-import { checkFeatPrerequisites, DND_FEATS } from '@/types/character'; // DND_FEATS needed for check
+import { checkFeatPrerequisites, DND_FEATS } from '@/types/character'; 
 
 interface FeatSelectionDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onFeatSelected: (featId: string) => void;
   allFeats: readonly FeatDefinitionJsonData[];
-  character: Character; // Pass the full character or relevant parts for prerequisite checking
+  character: Character; 
 }
 
 export function FeatSelectionDialog({
@@ -47,7 +47,7 @@ export function FeatSelectionDialog({
     return allFeats.filter(feat => 
       feat.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
       feat.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (feat.prerequisitesText && feat.prerequisitesText.toLowerCase().includes(searchTerm.toLowerCase()))
+      (feat.prerequisites && Object.values(feat.prerequisites).some(p => String(p).toLowerCase().includes(searchTerm.toLowerCase())))
     );
   }, [allFeats, searchTerm]);
 
@@ -80,6 +80,11 @@ export function FeatSelectionDialog({
               <CommandGroup>
                 {filteredFeats.map((feat) => {
                   const prereqStatus = checkFeatPrerequisites(feat, character, DND_FEATS);
+                  const allPrereqMessages = [
+                    ...prereqStatus.metMessages.map(msg => ({ text: msg, type: 'met' as const })),
+                    ...prereqStatus.unmetMessages.map(msg => ({ text: msg, type: 'unmet' as const }))
+                  ];
+
                   return (
                     <CommandItem
                       key={feat.value}
@@ -92,20 +97,22 @@ export function FeatSelectionDialog({
                     >
                       <div className="font-medium text-sm text-foreground">{feat.label}</div>
                       <p className="text-xs text-muted-foreground mt-0.5 whitespace-normal">{feat.description}</p>
-                      {(prereqStatus.originalPrerequisitesText || prereqStatus.unmetMessages.length > 0 || prereqStatus.metMessages.length > 0) && (
+                      {allPrereqMessages.length > 0 ? (
                           <p className="text-xs mt-0.5 whitespace-normal">
-                              Prerequisites: {' '}
-                              {prereqStatus.metMessages.map((msg, i) => (
-                                  <span key={`met-${i}`} className="text-muted-foreground">{msg}{i < prereqStatus.metMessages.length -1 + prereqStatus.unmetMessages.length ? ', ' : ''}</span>
-                              ))}
-                              {prereqStatus.unmetMessages.map((msg, i) => (
-                                  <span key={`unmet-${i}`} className="text-destructive">{msg}{i < prereqStatus.unmetMessages.length - 1 ? ', ' : ''}</span>
-                              ))}
-                               {!prereqStatus.met && prereqStatus.metMessages.length === 0 && prereqStatus.unmetMessages.length === 0 && prereqStatus.originalPrerequisitesText && (
-                                <span className="text-muted-foreground">{prereqStatus.originalPrerequisitesText}</span>
-                               )}
+                            Prerequisites:{' '}
+                            {allPrereqMessages.map((msg, index) => (
+                              <React.Fragment key={index}>
+                                <span className={msg.type === 'unmet' ? 'text-destructive' : 'text-muted-foreground'}>
+                                  {msg.text}
+                                </span>
+                                {index < allPrereqMessages.length - 1 && ', '}
+                              </React.Fragment>
+                            ))}
                           </p>
-                      )}
+                        ) : (
+                          (feat.prerequisites && Object.keys(feat.prerequisites).length > 0) &&
+                          <p className="text-xs mt-0.5 whitespace-normal">Prerequisites: None</p>
+                        )}
                     </CommandItem>
                   );
                 })}
@@ -122,4 +129,3 @@ export function FeatSelectionDialog({
     </Dialog>
   );
 }
-

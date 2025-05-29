@@ -17,7 +17,6 @@ interface FeatsFormSectionProps {
   characterClasses: CharacterClass[];
   selectedFeats: FeatType[];
   onFeatSelectionChange: (selectedFeats: FeatType[]) => void;
-  // Props needed for prerequisite checking
   abilityScores: AbilityScores;
   skills: Skill[];
 }
@@ -57,8 +56,7 @@ export function FeatsFormSection({
           name: featDef.label,
           description: featDef.description,
           prerequisites: featDef.prerequisites,
-          prerequisitesText: featDef.prerequisitesText,
-          effects: featDef.effects // Ensure effects are copied
+          effects: featDef.effects 
         } as FeatType;
       })
       .filter(feat => feat !== undefined) as FeatType[];
@@ -105,10 +103,10 @@ export function FeatsFormSection({
   const characterForPrereqCheck = React.useMemo(() => ({
     abilityScores,
     skills,
-    feats: selectedFeats, // Use the prop directly for checking, as it's the source of truth
+    feats: selectedFeats, 
     classes: characterClasses,
-    race: characterRace, // Add race for prerequisites if needed
-    level: characterLevel, // Add level for prerequisites if needed
+    race: characterRace, 
+    level: characterLevel, 
   }), [abilityScores, skills, selectedFeats, characterClasses, characterRace, characterLevel]);
 
 
@@ -154,6 +152,11 @@ export function FeatsFormSection({
                   if (!featDetails) return null; 
 
                   const prereqStatus = checkFeatPrerequisites(featDetails, characterForPrereqCheck as Character, DND_FEATS);
+                  const allPrereqMessages = [
+                    ...prereqStatus.metMessages.map(msg => ({ text: msg, type: 'met' as const })),
+                    ...prereqStatus.unmetMessages.map(msg => ({ text: msg, type: 'unmet' as const }))
+                  ];
+
 
                   return (
                     <div key={`feat-slot-${index}-${selectedFeatId}`} className="flex items-start justify-between py-2 px-3 border rounded-md bg-background hover:bg-muted/20">
@@ -164,19 +167,21 @@ export function FeatsFormSection({
                             {featDetails.description}
                           </p>
                         )}
-                         {(prereqStatus.originalPrerequisitesText || prereqStatus.unmetMessages.length > 0 || prereqStatus.metMessages.length > 0) && (
-                            <p className="text-xs mt-0.5 whitespace-normal">
-                                Prerequisites: {' '}
-                                {prereqStatus.metMessages.map((msg, i) => (
-                                    <span key={`met-${i}`} className="text-muted-foreground">{msg}{i < prereqStatus.metMessages.length -1 + prereqStatus.unmetMessages.length ? ', ' : ''}</span>
-                                ))}
-                                {prereqStatus.unmetMessages.map((msg, i) => (
-                                    <span key={`unmet-${i}`} className="text-destructive">{msg}{i < prereqStatus.unmetMessages.length - 1 ? ', ' : ''}</span>
-                                ))}
-                                {!prereqStatus.met && prereqStatus.metMessages.length === 0 && prereqStatus.unmetMessages.length === 0 && prereqStatus.originalPrerequisitesText && (
-                                  <span className="text-muted-foreground">{prereqStatus.originalPrerequisitesText}</span>
-                                )}
-                            </p>
+                        {allPrereqMessages.length > 0 ? (
+                          <p className="text-xs mt-0.5 whitespace-normal">
+                            Prerequisites:{' '}
+                            {allPrereqMessages.map((msg, idx) => (
+                              <React.Fragment key={idx}>
+                                <span className={msg.type === 'unmet' ? 'text-destructive' : 'text-muted-foreground'}>
+                                  {msg.text}
+                                </span>
+                                {idx < allPrereqMessages.length - 1 && ', '}
+                              </React.Fragment>
+                            ))}
+                          </p>
+                        ) : (
+                           (featDetails.prerequisites && Object.keys(featDetails.prerequisites).length > 0) && /* Only show "None" if there were supposed to be prereqs but all checks resulted in no messages */
+                           <p className="text-xs mt-0.5 whitespace-normal">Prerequisites: None</p>
                         )}
                       </div>
                       <Button
@@ -213,4 +218,3 @@ export function FeatsFormSection({
     </>
   );
 }
-

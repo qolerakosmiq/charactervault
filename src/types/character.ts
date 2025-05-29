@@ -43,7 +43,7 @@ export type FeatDefinitionJsonData = {
   value: string; 
   label: string; 
   description: string;
-  prerequisitesText?: string; 
+  // prerequisitesText field is removed
   prerequisites?: FeatPrerequisiteDetails; 
   effects?: FeatEffectDetails;
 };
@@ -53,7 +53,7 @@ export interface Feat {
   name: string; 
   description?: string;
   prerequisites?: FeatPrerequisiteDetails;
-  prerequisitesText?: string;
+  // prerequisitesText field is removed
   effects?: FeatEffectDetails;
 }
 
@@ -87,12 +87,12 @@ export interface SavingThrows {
 export interface Character {
   id: string;
   name: string;
-  race: DndRaceId; 
-  alignment: CharacterAlignment;
+  race: DndRaceId | ''; 
+  alignment: CharacterAlignment | '';
   deity?: DndDeityId | string; 
   size: CharacterSize;
   age: number;
-  gender: GenderId | string; 
+  gender: GenderId | string | ''; 
 
   abilityScores: AbilityScores;
   hp: number;
@@ -382,7 +382,7 @@ export function calculateFeatBonusesForSkill(skillId: string, selectedFeats: Fea
   return totalBonus;
 }
 
-export function calculateAvailableFeats(race: DndRaceId, level: number): number {
+export function calculateAvailableFeats(race: DndRaceId | string, level: number): number {
   let availableFeats = 0;
   if (level >= 1) {
     availableFeats += 1; 
@@ -399,10 +399,10 @@ export function checkFeatPrerequisites(
   featDefinition: FeatDefinitionJsonData,
   character: Pick<Character, 'abilityScores' | 'skills' | 'feats' | 'classes'>,
   allFeatDefinitions: readonly FeatDefinitionJsonData[]
-): { met: boolean; metMessages: string[]; unmetMessages: string[]; originalPrerequisitesText?: string } {
-  const { prerequisites, prerequisitesText } = featDefinition;
+): { met: boolean; metMessages: string[]; unmetMessages: string[]; } {
+  const { prerequisites } = featDefinition;
   if (!prerequisites) {
-    return { met: true, unmetMessages: [], metMessages: [], originalPrerequisitesText: prerequisitesText || "" };
+    return { met: true, unmetMessages: [], metMessages: [] };
   }
 
   const unmetMessages: string[] = [];
@@ -466,7 +466,7 @@ export function checkFeatPrerequisites(
     metMessages.push(prerequisites.special);
   }
 
-  return { met: unmetMessages.length === 0, unmetMessages, metMessages, originalPrerequisitesText: prerequisitesText };
+  return { met: unmetMessages.length === 0, unmetMessages, metMessages };
 }
 
     
