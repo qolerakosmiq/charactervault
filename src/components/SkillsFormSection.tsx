@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, DndClassId, Feat } from '@/types/character';
+import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, Feat } from '@/types/character';
 import { SKILL_DEFINITIONS, CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -53,11 +53,10 @@ export function SkillsFormSection({
   const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0) : 0;
   const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace as DndRaceId | string);
 
-  // At level 1, (base + int_mod + racial_mod) * 4.
-  // For subsequent levels, (base + int_mod + racial_mod) per level.
-  // Since character creation is level 1, we only use the *4 multiplier.
-  const pointsForFirstLevel = (baseSkillPointsForClass + intelligenceModifier + racialBonus) * 4;
-  const totalSkillPointsAvailable = pointsForFirstLevel;
+  const pointsPerLevelBase = baseSkillPointsForClass + intelligenceModifier + racialBonus;
+  const pointsForFirstLevel = pointsPerLevelBase * 4;
+  const pointsFromLevelProgression = characterLevel > 1 ? pointsPerLevelBase * (characterLevel - 1) : 0;
+  const totalSkillPointsAvailable = pointsForFirstLevel + pointsFromLevelProgression;
 
 
   const totalSkillPointsSpent = skills.reduce((acc, skill) => {
@@ -132,13 +131,17 @@ export function SkillsFormSection({
             <p className="text-sm font-medium">
               Skill Points Left: <span className={cn(
                 "text-lg font-bold",
-                skillPointsLeft >= 0 ? "text-emerald-500" : "text-destructive"
+                skillPointsLeft >= 0 ? "text-emerald-500" : "text-destructive",
+                skillPointsLeft === 0 && "text-accent"
               )}>{skillPointsLeft}</span>
             </p>
           </div>
            <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
             <p>
-                (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>) × <strong className="font-bold text-primary">4</strong> (Multiplier for Level <strong className="font-bold text-primary">[{characterLevel}]</strong>)
+                (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>) × First Level <strong className="font-bold text-primary">[4]</strong>
+            </p>
+            <p>
+                + (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong> + Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong> + Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus}]</strong>) × Level Progression <strong className="font-bold text-primary">[{characterLevel > 1 ? (characterLevel -1) : 0}]</strong>
             </p>
            </div>
         </div>
