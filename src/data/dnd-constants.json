@@ -79,67 +79,67 @@
       "value": "barbarian",
       "label": "Barbarian",
       "hitDice": "d12",
-      "description": "Barbarians are savage warriors from the wild frontiers, relying on their primal fury and immense strength. They are often tribal, disdainful of civilization, and fiercely independent. Alignment: Any nonlawful. Religion: Barbarians may revere animal spirits, nature deities, or ancestors. Background: Often outcasts or members of nomadic tribes. Races: Humans and half-orcs are common barbarians."
+      "description": "Barbarians are savage warriors from the wild frontiers, relying on their primal fury and immense strength. They are often tribal, disdainful of civilization, and fiercely independent.\nAlignment: Any nonlawful.\nReligion: Barbarians may revere animal spirits, nature deities, or ancestors.\nBackground: Often outcasts or members of nomadic tribes.\nRaces: Humans and half-orcs are common barbarians."
     },
     {
       "value": "bard",
       "label": "Bard",
       "hitDice": "d6",
-      "description": "Bards are versatile performers, weaving magic through music and words. They are storytellers, diplomats, and adventurers, often charismatic and quick-witted. Alignment: Any nonlawful. Religion: Bards may follow deities of art, travel, or trickery. Background: Often from performing troupes, scholarly institutions, or simply wanderers. Races: Humans, elves, and half-elves frequently become bards."
+      "description": "Bards are versatile performers, weaving magic through music and words. They are storytellers, diplomats, and adventurers, often charismatic and quick-witted.\nAlignment: Any nonlawful.\nReligion: Bards may follow deities of art, travel, or trickery.\nBackground: Often from performing troupes, scholarly institutions, or simply wanderers.\nRaces: Humans, elves, and half-elves frequently become bards."
     },
     {
       "value": "cleric",
       "label": "Cleric",
       "hitDice": "d8",
-      "description": "Clerics are divine agents, channeling the power of their chosen deity to heal the sick, smite the wicked, or protect the faithful. They are masters of divine magic and often serve as spiritual leaders. Alignment: Must be within one step of their deity's alignment. Religion: Central to their identity, clerics serve a specific deity from the pantheon. Background: Usually trained in temples or religious orders. Races: All races produce clerics, as faith is universal."
+      "description": "Clerics are divine agents, channeling the power of their chosen deity to heal the sick, smite the wicked, or protect the faithful. They are masters of divine magic and often serve as spiritual leaders.\nAlignment: Must be within one step of their deity's alignment.\nReligion: Central to their identity, clerics serve a specific deity from the pantheon.\nBackground: Usually trained in temples or religious orders.\nRaces: All races produce clerics, as faith is universal."
     },
     {
       "value": "druid",
       "label": "Druid",
       "hitDice": "d8",
-      "description": "Druids are guardians of the natural world, drawing power from the untamed wilderness. They can shapeshift into animals, command plants, and call upon nature's fury. Alignment: Any neutral (Neutral Good, Lawful Neutral, True Neutral, Chaotic Neutral, or Neutral Evil). Religion: Druids revere nature itself or specific nature deities. Background: Often solitary hermits, members of ancient circles, or protectors of sacred groves. Races: Humans, elves, and gnomes often feel the call of the wild."
+      "description": "Druids are guardians of the natural world, drawing power from the untamed wilderness. They can shapeshift into animals, command plants, and call upon nature's fury.\nAlignment: Any neutral (Neutral Good, Lawful Neutral, True Neutral, Chaotic Neutral, or Neutral Evil).\nReligion: Druids revere nature itself or specific nature deities.\nBackground: Often solitary hermits, members of ancient circles, or protectors of sacred groves.\nRaces: Humans, elves, and gnomes often feel the call of the wild."
     },
     {
       "value": "fighter",
       "label": "Fighter",
       "hitDice": "d10",
-      "description": "Fighters are masters of martial combat, excelling with all forms of weapons and armor. They are the backbone of armies, the sellswords in taverns, and the dedicated protectors of kingdoms. Alignment: Any. Religion: Fighters may worship deities of war, strength, or protection, or none at all. Background: Varied, from noble knights to grizzled mercenaries or simple village guards. Races: All races produce skilled fighters, especially humans, dwarves, and half-orcs."
+      "description": "Fighters are masters of martial combat, excelling with all forms of weapons and armor. They are the backbone of armies, the sellswords in taverns, and the dedicated protectors of kingdoms.\nAlignment: Any.\nReligion: Fighters may worship deities of war, strength, or protection, or none at all.\nBackground: Varied, from noble knights to grizzled mercenaries or simple village guards.\nRaces: All races produce skilled fighters, especially humans, dwarves, and half-orcs."
     },
     {
       "value": "monk",
       "label": "Monk",
       "hitDice": "d8",
-      "description": "Monks are disciplined warriors who perfect their bodies and minds to achieve extraordinary martial prowess. They eschew armor and traditional weapons, relying on their ki-powered unarmed strikes and mystical abilities. Alignment: Must be lawful. Religion: Monks often follow philosophies of discipline and self-perfection, sometimes tied to specific deities of law or enlightenment. Background: Typically trained in remote monasteries. Races: Humans are the most common monks, but any race with discipline can walk the path."
+      "description": "Monks are disciplined warriors who perfect their bodies and minds to achieve extraordinary martial prowess. They eschew armor and traditional weapons, relying on their ki-powered unarmed strikes and mystical abilities.\nAlignment: Must be lawful.\nReligion: Monks often follow philosophies of discipline and self-perfection, sometimes tied to specific deities of law or enlightenment.\nBackground: Typically trained in remote monasteries.\nRaces: Humans are the most common monks, but any race with discipline can walk the path."
     },
     {
       "value": "paladin",
       "label": "Paladin",
       "hitDice": "d10",
-      "description": "Paladins are holy champions of righteousness, sworn to uphold justice and smite evil. They are granted divine powers to aid their cause, including healing, protection, and the ability to turn undead. Alignment: Must be Lawful Good. Religion: Paladins are devoted servants of good-aligned deities. Background: Often from noble or devout families, trained in holy orders. Races: Humans are the most common paladins, but any creature with a pure heart can be called."
+      "description": "Paladins are holy champions of righteousness, sworn to uphold justice and smite evil. They are granted divine powers to aid their cause, including healing, protection, and the ability to turn undead.\nAlignment: Must be Lawful Good.\nReligion: Paladins are devoted servants of good-aligned deities.\nBackground: Often from noble or devout families, trained in holy orders.\nRaces: Humans are the most common paladins, but any creature with a pure heart can be called."
     },
     {
       "value": "ranger",
       "label": "Ranger",
       "hitDice": "d8",
-      "description": "Rangers are skilled hunters and trackers, at home in the wilderness and adept at fighting specific types of creatures. They often possess some divine magic related to nature and an animal companion. Alignment: Any. Religion: Rangers often revere nature deities or gods of the hunt. Background: Typically raised in borderlands, deep forests, or among reclusive communities. Races: Elves, half-elves, and humans make excellent rangers."
+      "description": "Rangers are skilled hunters and trackers, at home in the wilderness and adept at fighting specific types of creatures. They often possess some divine magic related to nature and an animal companion.\nAlignment: Any.\nReligion: Rangers often revere nature deities or gods of the hunt.\nBackground: Typically raised in borderlands, deep forests, or among reclusive communities.\nRaces: Elves, half-elves, and humans make excellent rangers."
     },
     {
       "value": "rogue",
       "label": "Rogue",
       "hitDice": "d6",
-      "description": "Rogues are masters of stealth, trickery, and skill. They excel at disarming traps, picking locks, and striking from the shadows. They can be charming scoundrels, deadly assassins, or cunning investigators. Alignment: Any. Religion: Rogues often favor deities of luck, shadows, or thievery, or remain unaffiliated. Background: From street urchins to guild thieves or spies. Races: Halflings, elves, and humans are often drawn to the rogue's path."
+      "description": "Rogues are masters of stealth, trickery, and skill. They excel at disarming traps, picking locks, and striking from the shadows. They can be charming scoundrels, deadly assassins, or cunning investigators.\nAlignment: Any.\nReligion: Rogues often favor deities of luck, shadows, or thievery, or remain unaffiliated.\nBackground: From street urchins to guild thieves or spies.\nRaces: Halflings, elves, and humans are often drawn to the rogue's path."
     },
     {
       "value": "sorcerer",
       "label": "Sorcerer",
       "hitDice": "d4",
-      "description": "Sorcerers wield arcane magic through innate talent, often stemming from draconic or fey ancestry. Their magic is intuitive and flexible, not learned through rigorous study. Alignment: Any. Religion: Sorcerers have varied religious beliefs, if any. Background: Their powers often manifest unexpectedly, leading to diverse life paths. Races: Humans and those with magical bloodlines (like half-elves with fey heritage) are common sorcerers."
+      "description": "Sorcerers wield arcane magic through innate talent, often stemming from draconic or fey ancestry. Their magic is intuitive and flexible, not learned through rigorous study.\nAlignment: Any.\nReligion: Sorcerers have varied religious beliefs, if any.\nBackground: Their powers often manifest unexpectedly, leading to diverse life paths.\nRaces: Humans and those with magical bloodlines (like half-elves with fey heritage) are common sorcerers."
     },
     {
       "value": "wizard",
       "label": "Wizard",
       "hitDice": "d4",
-      "description": "Wizards are scholars of the arcane, mastering magic through intense study, research, and practice. They command a vast repertoire of spells, prepared daily from their spellbooks. Alignment: Any. Religion: Wizards often worship deities of knowledge, magic, or secrets, or focus purely on arcane pursuits. Background: Typically educated in academies, mentored by master wizards, or self-taught through ancient tomes. Races: Humans, elves, and gnomes are most commonly drawn to wizardry.",
+      "description": "Wizards are scholars of the arcane, mastering magic through intense study, research, and practice. They command a vast repertoire of spells, prepared daily from their spellbooks.\nAlignment: Any.\nReligion: Wizards often worship deities of knowledge, magic, or secrets, or focus purely on arcane pursuits.\nBackground: Typically educated in academies, mentored by master wizards, or self-taught through ancient tomes.\nRaces: Humans, elves, and gnomes are most commonly drawn to wizardry.",
       "grantedFeats": [
         { "featId": "scribe-scroll", "note": "(Wizard Bonus Feat)", "levelAcquired": 1 }
       ]
@@ -306,7 +306,7 @@
     "dwarf": "dwarf-aging",
     "gnome": "gnome-aging",
     "halfling": "halfling-aging",
-    "half-elf": "elf-aging",
+    "half-elf": "elf-aging", 
     "half-orc": "orc-aging"
   },
   "DND_RACE_AGING_EFFECTS_DATA": {
@@ -345,7 +345,7 @@
         { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
       ]
     },
-    "orc-aging": {
+    "orc-aging": { 
       "categories": [
         { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
         { "categoryName": "old", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
@@ -498,3 +498,5 @@
     ]
   }
 }
+
+    
