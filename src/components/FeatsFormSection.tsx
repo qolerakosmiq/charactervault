@@ -3,20 +3,20 @@
 
 import * as React from 'react';
 import type { Feat as FeatType, DndRaceId, CharacterClass, FeatDefinitionJsonData, Character, AbilityScores, Skill } from '@/types/character';
-import { DND_FEATS, calculateAvailableFeats, checkFeatPrerequisites } from '@/types/character';
+import { DND_FEATS, calculateAvailableFeats, checkFeatPrerequisites, DND_RACES } from '@/types/character'; // Added DND_RACES import
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, PlusCircle, Trash2, Edit3 } from 'lucide-react';
+import { Award, PlusCircle, Trash2, Edit3, ScrollArea } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
-import { AddCustomFeatDialog } from './AddCustomFeatDialog'; // New import
+import { AddCustomFeatDialog } from './AddCustomFeatDialog';
 import { useToast } from "@/hooks/use-toast";
 
 interface FeatsFormSectionProps {
   characterRace: DndRaceId | string;
   characterClasses: CharacterClass[];
-  selectedFeats: FeatType[]; // This will now include custom feats as well
-  onFeatSelectionChange: (updatedFeats: FeatType[]) => void; // Handles changes to the entire feats array
+  selectedFeats: FeatType[];
+  onFeatSelectionChange: (updatedFeats: FeatType[]) => void;
   abilityScores: AbilityScores;
   skills: Skill[];
 }
@@ -32,18 +32,18 @@ export function FeatsFormSection({
   const characterLevel = characterClasses.reduce((sum, cls) => sum + cls.level, 0) || 1;
   const { toast } = useToast();
 
+  const [featSelections, setFeatSelections] = React.useState<(string | undefined)[]>([]);
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
   const [isCustomFeatDialogOpen, setIsCustomFeatDialogOpen] = React.useState(false);
   const [editingCustomFeat, setEditingCustomFeat] = React.useState<FeatType | null>(null);
 
   const selectableSlotsAvailable = calculateAvailableFeats(characterRace, characterLevel);
-  const userChosenOrCustomFeats = selectedFeats.filter(f => !f.isGranted);
-  const userChosenOrCustomFeatsCount = userChosenOrCustomFeats.length;
-  const featSlotsLeft = selectableSlotsAvailable - userChosenOrCustomFeatsCount;
+  const userChosenFeatsCount = selectedFeats.filter(f => !f.isGranted).length;
+  const featSlotsLeft = selectableSlotsAvailable - userChosenFeatsCount;
 
   const baseFeat = 1;
-  const raceData = DND_FEATS.find(r => r.value === characterRace); // Incorrect, should be DND_RACES
-  const racialBonus = DND_RACES.find(r => r.value === characterRace)?.bonusFeatSlots || 0;
+  const raceData = DND_RACES.find(r => r.value === characterRace); // Corrected to DND_RACES
+  const racialBonus = raceData?.bonusFeatSlots || 0;
   const levelProgressionFeats = Math.floor(characterLevel / 3);
 
   const characterForPrereqCheck = React.useMemo(() => ({
@@ -59,12 +59,53 @@ export function FeatsFormSection({
     inventory: [], portraitDataUrl: '', personalStory: ''
   }), [abilityScores, skills, selectedFeats, characterClasses, characterRace]);
 
-  const handlePredefinedFeatSelected = (featId: string) => {
+  const convertSelectionsToFeatTypes = React.useCallback((currentSelections: (string | undefined)[]): FeatType[] => {
+    const granted = selectedFeats.filter(f => f.isGranted);
+    const chosenAndCustom = currentSelections
+      .filter((id): id is string => !!id)
+      .map(idOrUuid => {
+        const existingCustom = selectedFeats.find(sf => sf.id === idOrUuid && sf.isCustom);
+        if (existingCustom) return existingCustom;
+
+        const featDef = DND_FEATS.find(f => f.value === idOrUuid.split('-MULTI-INSTANCE-')[0]);
+        if (featDef) {
+          return {
+            id: idOrUuid, // This preserves the unique ID for multi-instance feats
+            name: featDef.label,
+            description: featDef.description,
+            prerequisites: featDef.prerequisites,
+            effects: featDef.effects,
+            canTakeMultipleTimes: featDef.canTakeMultipleTimes,
+            requiresSpecialization: featDef.requiresSpecialization,
+            isGranted: false,
+            isCustom: false,
+          };
+        }
+        // If it's not predefined and not an existing custom feat, it might be an error or an old ID. Filter it out.
+        return null;
+      })
+      .filter((f): f is FeatType => f !== null);
+    return [...granted, ...chosenAndCustom];
+  }, [selectedFeats]);
+
+
+  React.useEffect(() => {
+    // Sync internal featSelections (IDs) with external selectedFeats (FeatType objects)
+    // This ensures that if feats are loaded or changed externally, our UI reflects it.
+    const userChosenFeatIds = selectedFeats.filter(f => !f.isGranted).map(f => f.id);
+    // Only update if the actual IDs have changed, to prevent infinite loops.
+    if (JSON.stringify(userChosenFeatIds.sort()) !== JSON.stringify(featSelections.filter(id => id !== undefined).sort())) {
+      setFeatSelections(userChosenFeatIds);
+    }
+  }, [selectedFeats]);
+
+
+  const handleFeatSelectedFromDialog = (featId: string) => {
     const featDef = DND_FEATS.find(f => f.value === featId);
     if (!featDef) return;
 
-    const isAlreadySelected = selectedFeats.some(
-      sf => !sf.isCustom && !sf.isGranted && sf.id.split('-MULTI-INSTANCE-')[0] === featId
+    const isAlreadySelected = featSelections.some(
+      selectedId => selectedId?.split('-MULTI-INSTANCE-')[0] === featId
     );
 
     if (isAlreadySelected && !featDef.canTakeMultipleTimes) {
@@ -77,51 +118,48 @@ export function FeatsFormSection({
       return;
     }
 
-    const uniqueId = (featDef.canTakeMultipleTimes && isAlreadySelected) // If it's multi-take and already selected, generate unique ID
+    const uniqueId = (featDef.canTakeMultipleTimes && isAlreadySelected)
       ? `${featId}-MULTI-INSTANCE-${crypto.randomUUID()}`
       : featId;
 
-    const newPredefinedFeat: Feat = {
-      id: uniqueId,
-      name: featDef.label,
-      description: featDef.description,
-      prerequisites: featDef.prerequisites,
-      effects: featDef.effects,
-      canTakeMultipleTimes: featDef.canTakeMultipleTimes,
-      requiresSpecialization: featDef.requiresSpecialization,
-      isGranted: false,
-      isCustom: false,
-    };
-    onFeatSelectionChange([...selectedFeats, newPredefinedFeat]);
+    const newSelections = [...featSelections, uniqueId];
+    setFeatSelections(newSelections);
+    onFeatSelectionChange(convertSelectionsToFeatTypes(newSelections));
     setIsFeatDialogOpen(false);
   };
 
+
   const handleSaveCustomFeat = (featData: Partial<Feat> & { name: string }) => {
-    let updatedFeats;
+    let updatedFullFeatsList;
     if (featData.id) { // Editing existing custom feat
-      updatedFeats = selectedFeats.map(f => f.id === featData.id ? { ...f, ...featData, isCustom: true } : f);
+      updatedFullFeatsList = selectedFeats.map(f =>
+        f.id === featData.id ? { ...f, ...featData, isCustom: true } : f
+      );
     } else { // Adding new custom feat
       const newCustomFeat: Feat = {
-        ...featData,
         id: crypto.randomUUID(),
+        ...featData,
         isCustom: true,
+        isGranted: false, // Ensure not granted by default
       };
-      updatedFeats = [...selectedFeats, newCustomFeat];
+      updatedFullFeatsList = [...selectedFeats, newCustomFeat];
     }
-    onFeatSelectionChange(updatedFeats);
+    onFeatSelectionChange(updatedFullFeatsList);
     setEditingCustomFeat(null);
+    // No need to update featSelections directly here, useEffect will sync from selectedFeats prop
   };
 
-  const handleRemoveFeat = (featIdToRemove: string) => {
-    const updatedFeats = selectedFeats.filter(f => f.id !== featIdToRemove);
-    onFeatSelectionChange(updatedFeats);
+
+  const handleRemoveFeatSlot = (indexToRemove: number) => {
+    const newSelections = featSelections.filter((_, index) => index !== indexToRemove);
+    setFeatSelections(newSelections);
+    onFeatSelectionChange(convertSelectionsToFeatTypes(newSelections));
   };
 
   const handleOpenEditCustomFeatDialog = (feat: Feat) => {
     setEditingCustomFeat(feat);
     setIsCustomFeatDialogOpen(true);
   };
-
 
   return (
     <>
@@ -158,7 +196,8 @@ export function FeatsFormSection({
             </p>
           </div>
 
-          <div className="space-y-2 mb-4"> {/* Container for feat list */}
+          <div className="space-y-2 mb-4">
+            {/* Display Granted Feats */}
             {selectedFeats.filter(f => f.isGranted).map((feat) => {
               const featDetails = DND_FEATS.find(fDef => fDef.value === feat.id.split('-MULTI-INSTANCE-')[0]);
               const prereqStatus = featDetails ? checkFeatPrerequisites(featDetails, characterForPrereqCheck as Character, DND_FEATS) : { met: true, metMessages: [], unmetMessages: []};
@@ -197,64 +236,71 @@ export function FeatsFormSection({
               );
             })}
 
-            {userChosenOrCustomFeats.map((feat) => {
-               const prereqStatus = !feat.isCustom && feat.prerequisites ? checkFeatPrerequisites({value: feat.id, label: feat.name, prerequisites: feat.prerequisites}, characterForPrereqCheck as Character, DND_FEATS) : { met: true, metMessages: [], unmetMessages: []};
-               const allPrereqMessages = [...prereqStatus.metMessages, ...prereqStatus.unmetMessages];
+            {/* Display User Chosen / Custom Feats */}
+            {featSelections.map((featId, index) => {
+              const currentFeat = selectedFeats.find(f => f.id === featId && !f.isGranted);
+              const featDetails = currentFeat ? DND_FEATS.find(fDef => fDef.value === currentFeat.id.split('-MULTI-INSTANCE-')[0]) : null;
+              const prereqStatus = featDetails ? checkFeatPrerequisites(featDetails, characterForPrereqCheck as Character, DND_FEATS) : null;
 
               return (
-                <div key={`chosen-feat-${feat.id}`} className="group flex items-start justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors">
+                <div key={`chosen-slot-${index}`} className="group flex items-start justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors">
                   <div className="flex-grow mr-2">
-                    <h4 className="font-medium text-foreground">{feat.name}</h4>
-                    {feat.description && (
-                      <div
-                        className="text-xs text-muted-foreground mt-0.5 whitespace-normal"
-                        dangerouslySetInnerHTML={{ __html: feat.description }}
-                      />
-                    )}
-                     {feat.isCustom && feat.prerequisitesText && (
-                        <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground">Prerequisites: {feat.prerequisitesText}</p>
-                     )}
-                     {feat.isCustom && feat.effectsText && (
-                        <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground">Effects: {feat.effectsText}</p>
-                     )}
-                    {!feat.isCustom && (allPrereqMessages.length > 0 || feat.prerequisites?.special) && (
-                       <div className="text-xs mt-0.5 whitespace-normal text-muted-foreground">
-                        Prerequisites:{' '}
-                        {allPrereqMessages.length > 0 ?
-                          allPrereqMessages.map((msg, idx) => (
-                            <React.Fragment key={idx}>
-                              <span
-                                className={cn(prereqStatus.unmetMessages.includes(msg) ? 'text-destructive' : 'text-muted-foreground')}
-                                dangerouslySetInnerHTML={{ __html: msg }}
-                              />
-                              {idx < allPrereqMessages.length - 1 && ', '}
-                            </React.Fragment>
-                          ))
-                          : <span>None</span>
-                        }
-                      </div>
-                    )}
+                    <h4 className="font-medium text-foreground">{currentFeat?.name || "No feat selected"}</h4>
+                    {currentFeat?.isCustom ? (
+                      <>
+                        {currentFeat.description && <div className="text-xs text-muted-foreground mt-0.5 whitespace-normal" dangerouslySetInnerHTML={{ __html: currentFeat.description }}/>}
+                        {currentFeat.prerequisitesText && <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground">Prerequisites: {currentFeat.prerequisitesText}</p>}
+                        {currentFeat.effectsText && <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground">Effects: {currentFeat.effectsText}</p>}
+                      </>
+                    ) : featDetails ? (
+                      <>
+                        {featDetails.description && <div className="text-xs text-muted-foreground mt-0.5 whitespace-normal" dangerouslySetInnerHTML={{ __html: featDetails.description }}/>}
+                        {prereqStatus && (prereqStatus.metMessages.length > 0 || prereqStatus.unmetMessages.length > 0 || featDetails.prerequisites?.special) && (
+                          <div className="text-xs mt-0.5 whitespace-normal text-muted-foreground">
+                            Prerequisites:{' '}
+                            {[...prereqStatus.metMessages, ...prereqStatus.unmetMessages].length > 0 ?
+                              [...prereqStatus.metMessages, ...prereqStatus.unmetMessages].map((msg, idx, arr) => (
+                                <React.Fragment key={idx}>
+                                  <span
+                                    className={cn(prereqStatus.unmetMessages.includes(msg) ? 'text-destructive' : 'text-muted-foreground')}
+                                    dangerouslySetInnerHTML={{ __html: msg }}
+                                  />
+                                  {idx < arr.length - 1 && ', '}
+                                </React.Fragment>
+                              ))
+                              : <span>None</span>
+                            }
+                             {featDetails.prerequisites?.special && ![...prereqStatus.metMessages, ...prereqStatus.unmetMessages].some(m => m.includes(featDetails.prerequisites!.special!)) && (
+                                <>
+                                  {([...prereqStatus.metMessages, ...prereqStatus.unmetMessages].length > 0 ? ', ' : '')}
+                                  <span className="text-muted-foreground">{featDetails.prerequisites.special}</span>
+                                </>
+                              )}
+                          </div>
+                        )}
+                      </>
+                    ) : null}
                   </div>
                   <div className="flex items-center shrink-0">
-                    {feat.isCustom && (
+                    {currentFeat?.isCustom && (
                       <Button
                         type="button" variant="ghost" size="icon"
-                        onClick={() => handleOpenEditCustomFeatDialog(feat)}
+                        onClick={() => handleOpenEditCustomFeatDialog(currentFeat)}
                         className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-50 group-hover:opacity-100 transition-opacity"
-                        aria-label={`Edit custom feat ${feat.name}`}
+                        aria-label={`Edit custom feat ${currentFeat.name}`}
                       ><Edit3 className="h-4 w-4" /></Button>
                     )}
                     <Button
                       type="button" variant="ghost" size="icon"
-                      onClick={() => handleRemoveFeat(feat.id)}
+                      onClick={() => handleRemoveFeatSlot(index)}
                       className="h-8 w-8 text-destructive hover:text-destructive/80 opacity-50 group-hover:opacity-100 transition-opacity"
-                      aria-label={`Remove feat ${feat.name}`}
+                      aria-label={`Remove feat slot`}
                     ><Trash2 className="h-4 w-4" /></Button>
                   </div>
                 </div>
               );
             })}
-            {userChosenOrCustomFeats.length === 0 && selectedFeats.filter(f => !f.isGranted).length === 0 && (
+            {featSelections.length === 0 && selectedFeats.filter(f => !f.isGranted).length === 0 && (
               <p className="text-sm text-muted-foreground text-center py-2">No feats selected or added yet.</p>
             )}
           </div>
@@ -272,7 +318,7 @@ export function FeatsFormSection({
       <FeatSelectionDialog
         isOpen={isFeatDialogOpen}
         onOpenChange={setIsFeatDialogOpen}
-        onFeatSelected={handlePredefinedFeatSelected}
+        onFeatSelected={handleFeatSelectedFromDialog}
         allFeats={DND_FEATS}
         character={characterForPrereqCheck as Character}
       />
