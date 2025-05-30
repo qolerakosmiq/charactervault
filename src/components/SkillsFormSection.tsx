@@ -53,11 +53,11 @@ export function SkillsFormSection({
   const characterLevel = firstClass?.level || 1;
   const intelligenceModifier = getAbilityModifierByName(actualAbilityScores, 'intelligence'); 
 
-  const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0) : 0;
-  const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace);
+  const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof ClassSkillPointsBaseJsonData] || 0) : 0;
+  const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace as DndRaceId);
 
-  const pointsForFirstLevel = (baseSkillPointsForClass + intelligenceModifier + (characterRace === 'human' ? 1 : 0)) * 4;
-  const pointsFromLevelProgression = characterLevel > 1 ? (baseSkillPointsForClass + intelligenceModifier + (characterRace === 'human' ? 1 : 0)) * (characterLevel - 1) : 0;
+  const pointsForFirstLevel = (baseSkillPointsForClass + intelligenceModifier + racialBonus) * 4;
+  const pointsFromLevelProgression = characterLevel > 1 ? (baseSkillPointsForClass + intelligenceModifier + racialBonus) * (characterLevel - 1) : 0;
   const totalSkillPointsAvailable = pointsForFirstLevel + pointsFromLevelProgression;
 
 
@@ -216,7 +216,7 @@ export function SkillsFormSection({
             const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus + currentRacialBonus;
 
             const totalBonus = (skill.ranks || 0) + totalDisplayedModifier + (skill.miscModifier || 0);
-            const baseIntelligenceModifierForMaxRanks = getAbilityModifierByName(abilityScores, 'intelligence');
+            const baseIntelligenceModifierForMaxRanks = getAbilityModifierByName(abilityScores, 'intelligence'); // Max ranks based on base INT
             const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, baseIntelligenceModifierForMaxRanks); 
             const skillCost = skill.isClassSkill ? 1 : 2;
             const isCustomSkill = !skillDef;
@@ -312,11 +312,15 @@ export function SkillsFormSection({
                   value={skill.ranks || 0}
                   onChange={(e) => onSkillChange(skill.id, parseFloat(e.target.value) || 0)}
                   className="h-7 w-12 text-xs text-center p-1"
-                  max={maxRanksValue}
                   min="0"
                 />
                 <span className="text-xs text-muted-foreground text-center w-12">{skillCost}</span>
-                <span className="text-xs text-muted-foreground text-center w-10">{maxRanksValue}</span>
+                <span className={cn(
+                    "text-xs text-center w-10",
+                    (skill.ranks || 0) > maxRanksValue ? "text-destructive font-bold" : "text-muted-foreground"
+                  )}>
+                    {maxRanksValue}
+                </span>
               </div>
             );
           })}
@@ -350,3 +354,4 @@ export function SkillsFormSection({
     </>
   );
 }
+
