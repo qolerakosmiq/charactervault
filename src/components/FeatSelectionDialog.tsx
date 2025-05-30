@@ -35,14 +35,11 @@ interface FeatSelectionDialogProps {
 
 // Simple HTML stripper for search purposes
 const stripHtml = (html: string): string => {
-  // Replace <br> tags with spaces, then remove other common tags like <b>, <i>, <p>
   let text = html.replace(/<br\s*\/?>/gi, ' ');
   text = text.replace(/<\/?b>/gi, '');
   text = text.replace(/<\/?i>/gi, '');
   text = text.replace(/<\/?p>/gi, ' ');
-  // Remove any remaining HTML tags
   text = text.replace(/<[^>]+>/g, '');
-  // Replace multiple spaces with a single space and trim
   return text.replace(/\s\s+/g, ' ').trim();
 };
 
@@ -56,23 +53,26 @@ export function FeatSelectionDialog({
 }: FeatSelectionDialogProps) {
 
   const [searchTerm, setSearchTerm] = React.useState('');
+  const scrollAreaRef = React.useRef<HTMLDivElement>(null);
 
-  // CMDK will filter based on CommandItem's value prop, so pre-filtering here is not needed
-  // and was preventing description search.
-  // const filteredFeats = React.useMemo(() => {
-  //   if (!searchTerm.trim()) return allFeats;
-  //   const lowerSearchTerm = searchTerm.toLowerCase();
-  //   return allFeats.filter(feat =>
-  //     feat.label.toLowerCase().includes(lowerSearchTerm) ||
-  //     stripHtml(feat.description.toLowerCase()).includes(lowerSearchTerm)
-  //   );
-  // }, [allFeats, searchTerm]);
+  const sortedFeats = React.useMemo(() => {
+    return [...allFeats].sort((a, b) => a.label.localeCompare(b.label));
+  }, [allFeats]);
 
   React.useEffect(() => {
     if (!isOpen) {
-      setSearchTerm(''); // Reset search term when dialog closes
+      setSearchTerm(''); 
     }
   }, [isOpen]);
+
+  React.useEffect(() => {
+    if (scrollAreaRef.current) {
+      const viewport = scrollAreaRef.current.querySelector<HTMLDivElement>('[data-radix-scroll-area-viewport]');
+      if (viewport) {
+        viewport.scrollTop = 0;
+      }
+    }
+  }, [searchTerm]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -89,13 +89,13 @@ export function FeatSelectionDialog({
           <CommandInput
             placeholder="Search feats by name or description..."
             value={searchTerm}
-            onValueChange={setSearchTerm} // Update searchTerm for CMDK to use
+            onValueChange={setSearchTerm} 
           />
-          <ScrollArea className="flex-grow min-h-0">
-            <CommandList className="max-h-none"> {/* Ensure list can expand */}
+          <ScrollArea ref={scrollAreaRef} className="flex-grow min-h-0">
+            <CommandList className="max-h-none"> 
               <CommandEmpty>No feats found.</CommandEmpty>
               <CommandGroup>
-                {allFeats.map((feat) => { // Iterate over allFeats, CMDK will handle filtering
+                {sortedFeats.map((feat) => { 
                   const prereqStatus = checkFeatPrerequisites(feat, character, DND_FEATS);
                   const allPrereqMessages = [
                     ...prereqStatus.metMessages.map(msg => ({ text: msg, type: 'met' as const })),
@@ -105,7 +105,6 @@ export function FeatSelectionDialog({
                   return (
                     <CommandItem
                       key={feat.value}
-                      // CMDK filters based on this 'value'. Include label and stripped description.
                       value={`${feat.label} ${stripHtml(feat.description)}`}
                       onSelect={() => {
                         onFeatSelected(feat.value);
