@@ -57,13 +57,10 @@ export function InfoDisplayDialog({
   detailsList,
 }: InfoDisplayDialogProps) {
   
-  const hasBonusSection =
-    (abilityModifiers && abilityModifiers.length > 0) ||
-    (skillBonuses && skillBonuses.length > 0) ||
-    (grantedFeats && grantedFeats.length > 0) ||
-    (bonusFeatSlots && bonusFeatSlots > 0) ||
-    (detailsList && detailsList.length > 0);
-
+  const hasAbilityModifiers = abilityModifiers && abilityModifiers.length > 0;
+  const hasSkillBonuses = skillBonuses && skillBonuses.length > 0;
+  const hasFeatAdjustments = (grantedFeats && grantedFeats.length > 0) || (bonusFeatSlots && bonusFeatSlots > 0);
+  const hasDetailsList = detailsList && detailsList.length > 0;
 
   const renderModifierValue = (value: number, positiveColor = "text-emerald-500", negativeColor = "text-destructive", zeroColor = "text-muted-foreground") => (
     <span
@@ -77,6 +74,9 @@ export function InfoDisplayDialog({
       {value >= 0 ? '+' : ''}{value}
     </span>
   );
+
+  // Determine if any of the "bonus" sections (ability, skill, feat) will render
+  const anyBonusSectionWillRender = hasAbilityModifiers || hasSkillBonuses || hasFeatAdjustments;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -178,13 +178,13 @@ export function InfoDisplayDialog({
           )}
 
 
-          {!abilityScoreBreakdown && !skillModifierBreakdown && abilityModifiers && abilityModifiers.length > 0 && (
+          {!abilityScoreBreakdown && !skillModifierBreakdown && hasAbilityModifiers && (
             <>
               {(content) && <Separator className="my-4" />}
               <div>
                 <h3 className="text-md font-semibold mb-2 text-foreground">Ability Score Adjustments:</h3>
                 <ul className="space-y-1 text-sm">
-                  {abilityModifiers.map(({ ability, change }) => (
+                  {abilityModifiers!.map(({ ability, change }) => (
                     <li key={ability} className="flex justify-between">
                       <span className="capitalize">{ability}:</span>
                       {renderModifierValue(change)}
@@ -195,13 +195,13 @@ export function InfoDisplayDialog({
             </>
           )}
 
-          {!abilityScoreBreakdown && !skillModifierBreakdown && skillBonuses && skillBonuses.length > 0 && (
+          {!abilityScoreBreakdown && !skillModifierBreakdown && hasSkillBonuses && (
             <>
-              {(content || (abilityModifiers && abilityModifiers.length > 0)) && <Separator className="my-4" />}
+              {(content || hasAbilityModifiers) && <Separator className="my-4" />}
               <div>
                 <h3 className="text-md font-semibold mb-2 text-foreground">Racial Skill Bonuses:</h3>
                 <ul className="space-y-1 text-sm">
-                  {skillBonuses.map(({ skillName, bonus }) => (
+                  {skillBonuses!.map(({ skillName, bonus }) => (
                     <li key={skillName} className="flex justify-between">
                       <span>{skillName}:</span>
                       {renderModifierValue(bonus)}
@@ -212,10 +212,9 @@ export function InfoDisplayDialog({
             </>
           )}
 
-          {!abilityScoreBreakdown && !skillModifierBreakdown && ((grantedFeats && grantedFeats.length > 0) || (bonusFeatSlots && bonusFeatSlots > 0)) ? (
+          {!abilityScoreBreakdown && !skillModifierBreakdown && hasFeatAdjustments ? (
              <>
-              {(content || hasBonusSection) && (!skillBonuses || skillBonuses.length === 0) && (!abilityModifiers || abilityModifiers.length === 0) && <Separator className="my-4" />}
-               {(skillBonuses && skillBonuses.length > 0 || abilityModifiers && abilityModifiers.length > 0) && <Separator className="my-4" />}
+              {(content || hasAbilityModifiers || hasSkillBonuses) && <Separator className="my-4" />}
               <div>
                 <h3 className="text-md font-semibold mb-2 text-foreground">Racial Feat Adjustments:</h3>
                  <ul className="space-y-1 text-sm">
@@ -235,19 +234,12 @@ export function InfoDisplayDialog({
             </>
           ) : null}
 
-          {detailsList && detailsList.length > 0 && (
+          {!abilityScoreBreakdown && !skillModifierBreakdown && hasDetailsList && (
              <>
-              {(content || hasBonusSection || abilityScoreBreakdown || skillModifierBreakdown) && 
-               (!abilityModifiers || abilityModifiers.length === 0) && 
-               (!skillBonuses || skillBonuses.length === 0) &&
-               (!grantedFeats || grantedFeats.length === 0) &&
-               (!bonusFeatSlots || bonusFeatSlots <= 0) &&
-               <Separator className="my-4" />
-              }
-              {((abilityModifiers && abilityModifiers.length > 0) || (skillBonuses && skillBonuses.length > 0) || (grantedFeats && grantedFeats.length > 0) || (bonusFeatSlots && bonusFeatSlots > 0) ) && <Separator className="my-4" /> }
-              
+              {(content || anyBonusSectionWillRender) && <Separator className="my-4" />}
               <div>
-                {detailsList.map((detail, index) => (
+                <h3 className="text-md font-semibold mb-2 text-foreground">Key Attributes:</h3>
+                {detailsList!.map((detail, index) => (
                   <div key={index} className="flex justify-between text-sm mb-0.5">
                     <span className="text-muted-foreground">{detail.label}:</span>
                     <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value}</span>
@@ -265,3 +257,4 @@ export function InfoDisplayDialog({
     </Dialog>
   );
 }
+
