@@ -46,7 +46,7 @@ export interface FeatPrerequisiteDetails {
   skills?: Array<{ id: string; ranks: number }>; // Skill ID (kebab-case)
   feats?: string[]; // Feat IDs (kebab-case)
   casterLevel?: number;
-  special?: string;
+  classLevel?: { classId: DndClassId | string; level: number };
 }
 
 export interface FeatEffectDetails {
@@ -67,10 +67,9 @@ export type FeatDefinitionJsonData = {
 export interface Feat {
   id: string; // kebab-case ID for single-take, kebab-case-ID-UUID for multi-take (predefined) or UUID (custom)
   name: string;
-  description?: string; // From JSON for predefined, user-input for custom
-  prerequisites?: FeatPrerequisiteDetails; // From JSON for predefined
-  prerequisitesText?: string; // User-input for custom
-  effects?: FeatEffectDetails; // From JSON for predefined
+  description?: string;
+  prerequisites?: FeatPrerequisiteDetails;
+  effects?: FeatEffectDetails;
   effectsText?: string; // User-input for custom
   canTakeMultipleTimes?: boolean;
   requiresSpecialization?: string;
@@ -151,7 +150,7 @@ const combinedSizesMap = new Map<string, CharacterSizeObject>();
 baseSizesData.forEach((size: CharacterSizeObject) => combinedSizesMap.set(size.value, size));
 customSizesData.forEach((size: CharacterSizeObject) => combinedSizesMap.set(size.value, size));
 export const SIZES: ReadonlyArray<CharacterSizeObject> = Array.from(combinedSizesMap.values());
-export type CharacterSizeObject = typeof SIZES[number];
+export type CharacterSizeObject = { value: string; label: string; };
 export type CharacterSize = CharacterSizeObject['value'];
 
 const baseGendersData = (baseDataJson as any).GENDERS_DATA || [];
@@ -193,10 +192,10 @@ const DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA: Readonly<Record<string, number
 
 // --- Alignments Data Merging ---
 const baseAlignmentsData = (alignmentsDataJson as any).ALIGNMENTS_DATA || [];
-const customAlignmentsJson = (customAlignmentsDataJson as any).ALIGNMENTS_DATA || [];
+const customAlignmentsData = (customAlignmentsDataJson as any).ALIGNMENTS_DATA || [];
 const combinedAlignmentsMap = new Map<string, CharacterAlignmentObject>();
 baseAlignmentsData.forEach((align: CharacterAlignmentObject) => combinedAlignmentsMap.set(align.value, align));
-customAlignmentsJson.forEach((align: CharacterAlignmentObject) => combinedAlignmentsMap.set(align.value, align));
+customAlignmentsData.forEach((align: CharacterAlignmentObject) => combinedAlignmentsMap.set(align.value, align));
 export const ALIGNMENTS: ReadonlyArray<CharacterAlignmentObject> = Array.from(combinedAlignmentsMap.values());
 export type CharacterAlignmentObject = { value: string; label: string; description: string; };
 export type CharacterAlignment = CharacterAlignmentObject['value'];
@@ -248,7 +247,7 @@ export type DndDeityOption = {
   value: string; // kebab-case ID
   label: string; // Display name
   alignment: CharacterAlignment;
-  description: string;
+  description?: string;
 };
 export type DndDeityId = typeof DND_DEITIES[number]['value'];
 
@@ -319,7 +318,7 @@ export function getInitialCharacterSkills(characterClasses: CharacterClass[]): S
 export type RaceAgingCategoryKey = keyof typeof DND_RACE_AGING_EFFECTS_DATA;
 
 interface AgeCategoryEffectData {
-  categoryName: RaceAgingCategoryKey | string; // Allow string for custom categories
+  categoryName: RaceAgingCategoryKey | string;
   ageFactor: number;
   effects: Partial<Record<Exclude<AbilityName, 'none'>, number>>;
 }
@@ -369,7 +368,7 @@ export function getNetAgingEffects(raceId: DndRaceId | '', age: number): AgingEf
         const changeB = highestAttainedCategoryEffects![bAbility]!;
         const signA = Math.sign(changeA);
         const signB = Math.sign(changeB);
-        if (signA !== signB) return signB - signA; // Negative first
+        if (signA !== signB) return signA - signB; // Negative first, then positive.
         const indexA = ABILITY_ORDER_INTERNAL.indexOf(aAbility);
         const indexB = ABILITY_ORDER_INTERNAL.indexOf(bAbility);
         return indexA - indexB;
@@ -406,7 +405,7 @@ export function getRaceSpecialQualities(raceId: DndRaceId | ''): RaceSpecialQual
         const changeB = abilityModifiers![bAbility]!;
         const signA = Math.sign(changeA);
         const signB = Math.sign(changeB);
-        if (signA !== signB) return signB - signA; // Negative first
+        if (signA !== signB) return signA - signB;
         const indexA = ABILITY_ORDER_INTERNAL.indexOf(aAbility);
         const indexB = ABILITY_ORDER_INTERNAL.indexOf(bAbility);
         return indexA - indexB;
@@ -454,7 +453,7 @@ export function getSizeAbilityEffects(sizeId: CharacterSize | ''): SizeAbilityEf
         const changeB = mods![bAbility]!;
         const signA = Math.sign(changeA);
         const signB = Math.sign(changeB);
-        if (signA !== signB) return signB - signA; // Negative first
+        if (signA !== signB) return signA - signB;
         const indexA = ABILITY_ORDER_INTERNAL.indexOf(aAbility);
         const indexB = ABILITY_ORDER_INTERNAL.indexOf(bAbility);
         return indexA - indexB;
@@ -488,7 +487,6 @@ export function calculateTotalSynergyBonus(targetSkillId: string, currentCharact
   for (const providingSkill of currentCharacterSkills) {
     if (providingSkill.providesSynergies) {
       for (const customRule of providingSkill.providesSynergies) {
-        // Ensure targetSkillName on customRule is the ID of the target skill
         if (customRule.targetSkillName === targetSkillId) {
           if ((providingSkill.ranks || 0) >= customRule.ranksInThisSkillRequired) {
             totalBonus += customRule.bonusGranted;
@@ -615,32 +613,27 @@ export function checkFeatPrerequisites(featDefinition: FeatDefinitionJsonData, c
     if (totalLevel < prerequisites.casterLevel) unmetMessages.push(`Caster Level ${prerequisites.casterLevel}`);
     else metMessages.push(`Caster Level ${prerequisites.casterLevel}`);
   }
-  if (prerequisites.special) {
-    let specialMet = true;
-    const specialText = prerequisites.special.toLowerCase();
+  
+  if (prerequisites.classLevel) {
+    const { classId, level: requiredClassLevel } = prerequisites.classLevel;
+    const charClass = character.classes.find(c => c.className === classId);
+    const classDef = DND_CLASSES.find(cd => cd.value === classId);
+    const className = classDef?.label || classId;
 
-    const fighterLevelMatch = specialText.match(/fighter level (\d+)/);
-    if (fighterLevelMatch) {
-        const requiredLevel = parseInt(fighterLevelMatch[1], 10);
-        const fighterClass = character.classes.find(c => c.className === 'fighter');
-        if (!fighterClass || fighterClass.level < requiredLevel) specialMet = false;
+    if (!charClass || charClass.level < requiredClassLevel) {
+      unmetMessages.push(`${className} level ${requiredClassLevel}`);
+    } else {
+      metMessages.push(`${className} level ${requiredClassLevel}`);
     }
-
-    const wizardLevelMatch = specialText.match(/wizard level (\d+)/);
-     if (wizardLevelMatch) {
-        const requiredLevel = parseInt(wizardLevelMatch[1], 10);
-        const wizardClass = character.classes.find(c => c.className === 'wizard');
-        if (!wizardClass || wizardClass.level < requiredLevel) specialMet = false;
-    }
-
-    if (specialText.includes("wild shape ability")) {
-        const hasWildShapeClass = character.classes.some(c => c.className === 'druid');
-        if (!hasWildShapeClass) specialMet = false;
-    }
-
-    if (specialMet) metMessages.push(prerequisites.special);
-    else unmetMessages.push(prerequisites.special);
   }
+
+  // This part was removed in a previous step, re-confirming its removal
+  // if (prerequisites.special) {
+  //   let specialMet = true;
+  //   // ... complex special logic ...
+  //   if (specialMet) metMessages.push(prerequisites.special);
+  //   else unmetMessages.push(prerequisites.special);
+  // }
   return { met: unmetMessages.length === 0, unmetMessages, metMessages };
 }
 
@@ -750,3 +743,4 @@ export function isAlignmentCompatible(
 
   return lcDiff <= 1 && geDiff <= 1;
 }
+

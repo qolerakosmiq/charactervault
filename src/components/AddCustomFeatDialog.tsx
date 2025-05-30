@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import type { Feat, FeatPrerequisiteDetails, AbilityName, FeatDefinitionJsonData } from '@/types/character';
+import type { Feat, FeatPrerequisiteDetails, AbilityName, FeatDefinitionJsonData, DndClassOption, DndClassId } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -30,6 +30,7 @@ interface AddCustomFeatDialogProps {
   initialFeatData?: Feat;
   allFeats: readonly FeatDefinitionJsonData[];
   allSkills: readonly ComboboxOption[];
+  allClasses: readonly DndClassOption[];
 }
 
 const abilityOptions: Array<{ value: Exclude<AbilityName, 'none'>; label: string }> = [
@@ -49,6 +50,8 @@ type PrerequisiteListItem = {
   value?: number; // For ability score or skill ranks
 };
 
+const NONE_CLASS_VALUE = "__NONE_CLASS__";
+
 export function AddCustomFeatDialog({
   isOpen,
   onOpenChange,
@@ -56,6 +59,7 @@ export function AddCustomFeatDialog({
   initialFeatData,
   allFeats,
   allSkills,
+  allClasses,
 }: AddCustomFeatDialogProps) {
   const [featName, setFeatName] = React.useState('');
   const [description, setDescription] = React.useState('');
@@ -66,6 +70,9 @@ export function AddCustomFeatDialog({
   // Singular Prerequisites State
   const [prereqBab, setPrereqBab] = React.useState('');
   const [prereqCasterLevel, setPrereqCasterLevel] = React.useState('');
+  const [prereqClassId, setPrereqClassId] = React.useState<DndClassId | string>(NONE_CLASS_VALUE);
+  const [prereqClassLevel, setPrereqClassLevel] = React.useState('');
+
 
   // State for building a new prerequisite
   const [newPrereqType, setNewPrereqType] = React.useState<'ability' | 'skill' | 'feat' | ''>('');
@@ -76,6 +83,11 @@ export function AddCustomFeatDialog({
   const [prerequisitesList, setPrerequisitesList] = React.useState<PrerequisiteListItem[]>([]);
 
   const isEditing = !!initialFeatData;
+  
+  const classComboboxOptions = React.useMemo(() => [
+    { value: NONE_CLASS_VALUE, label: "None" },
+    ...allClasses.map(c => ({ value: c.value, label: c.label }))
+  ], [allClasses]);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -89,6 +101,8 @@ export function AddCustomFeatDialog({
         const prereqs = initialFeatData.prerequisites;
         setPrereqBab(prereqs?.bab?.toString() || '');
         setPrereqCasterLevel(prereqs?.casterLevel?.toString() || '');
+        setPrereqClassId(prereqs?.classLevel?.classId || NONE_CLASS_VALUE);
+        setPrereqClassLevel(prereqs?.classLevel?.level.toString() || '');
         
         const loadedPrereqs: PrerequisiteListItem[] = [];
         if (prereqs?.abilities) {
@@ -120,6 +134,8 @@ export function AddCustomFeatDialog({
         setEffectsText('');
         setPrereqBab('');
         setPrereqCasterLevel('');
+        setPrereqClassId(NONE_CLASS_VALUE);
+        setPrereqClassLevel('');
         setPrerequisitesList([]);
       }
       // Reset new prerequisite form
@@ -177,6 +193,10 @@ export function AddCustomFeatDialog({
     const finalStructuredPrerequisites: FeatPrerequisiteDetails = {};
     if (prereqBab.trim() !== '' && !isNaN(parseInt(prereqBab, 10))) finalStructuredPrerequisites.bab = parseInt(prereqBab, 10);
     if (prereqCasterLevel.trim() !== '' && !isNaN(parseInt(prereqCasterLevel, 10))) finalStructuredPrerequisites.casterLevel = parseInt(prereqCasterLevel, 10);
+    if (prereqClassId !== NONE_CLASS_VALUE && prereqClassId.trim() !== '' && prereqClassLevel.trim() !== '' && !isNaN(parseInt(prereqClassLevel, 10))) {
+        finalStructuredPrerequisites.classLevel = { classId: prereqClassId, level: parseInt(prereqClassLevel, 10) };
+    }
+
 
     prerequisitesList.forEach(p => {
       if (p.type === 'ability' && p.value !== undefined) {
@@ -278,11 +298,36 @@ export function AddCustomFeatDialog({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <Label htmlFor="prereq-bab">Base Attack Bonus (BAB)</Label>
-                <Input id="prereq-bab" type="number" value={prereqBab} onChange={(e) => setPrereqBab(e.target.value)} placeholder="e.g., 1" />
+                <Input id="prereq-bab" type="number" value={prereqBab} onChange={(e) => setPrereqBab(e.target.value)} placeholder="e.g., 1" min="0"/>
               </div>
               <div className="space-y-1">
                 <Label htmlFor="prereq-caster-level">Caster Level</Label>
-                <Input id="prereq-caster-level" type="number" value={prereqCasterLevel} onChange={(e) => setPrereqCasterLevel(e.target.value)} placeholder="e.g., 1" />
+                <Input id="prereq-caster-level" type="number" value={prereqCasterLevel} onChange={(e) => setPrereqCasterLevel(e.target.value)} placeholder="e.g., 1" min="0" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="space-y-1">
+                <Label htmlFor="prereq-class">Class Prerequisite</Label>
+                <ComboboxPrimitive
+                  options={classComboboxOptions}
+                  value={prereqClassId}
+                  onChange={setPrereqClassId}
+                  placeholder="Select Class..."
+                  searchPlaceholder="Search classes..."
+                  emptyPlaceholder="No class found."
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="prereq-class-level">Minimum Level in Class</Label>
+                <Input 
+                  id="prereq-class-level" 
+                  type="number" 
+                  value={prereqClassLevel} 
+                  onChange={(e) => setPrereqClassLevel(e.target.value)} 
+                  placeholder="e.g., 1" 
+                  min="1"
+                  disabled={prereqClassId === NONE_CLASS_VALUE || prereqClassId === ""}
+                />
               </div>
             </div>
             
