@@ -110,36 +110,37 @@ export function CharacterFormCoreInfoSection({
                 <ComboboxPrimitive
                   options={DND_RACES}
                   value={characterData.race}
-                  onChange={(value) => handleSelectChange('race', value as DndRaceId | string)}
+                  onChange={(value) => handleSelectChange('race', value)}
                   placeholder="Select or type race"
                   searchPlaceholder="Search races..."
                   emptyPlaceholder="No race found. Type to add custom."
                   isEditable={true}
                 />
               </div>
-              {isPredefinedRace && characterData.race && (
+              {characterData.race && isPredefinedRace && (
                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenRaceInfoDialog}>
                   <Info className="h-5 w-5" />
                 </Button>
               )}
-              {!isPredefinedRace && characterData.race && characterData.race.trim() !== '' && (
+               {characterData.race && !isPredefinedRace && characterData.race.trim() !== '' && (
                 <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
               )}
             </div>
-            {raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
+            {raceSpecialQualities?.abilityEffects && (
               <p className="text-xs text-muted-foreground mt-1 ml-1">
-                {raceSpecialQualities.abilityEffects.map((effect, index) => (
-                  <React.Fragment key={effect.ability}>
-                    <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
-                      {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
-                    </strong>
-                    {index < raceSpecialQualities.abilityEffects.length - 1 && <span className="text-muted-foreground">, </span>}
-                  </React.Fragment>
-                ))}
+                {raceSpecialQualities.abilityEffects.length > 0 ? (
+                  raceSpecialQualities.abilityEffects.map((effect, index) => (
+                    <React.Fragment key={effect.ability}>
+                      <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
+                        {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
+                      </strong>
+                      {index < raceSpecialQualities.abilityEffects.length - 1 && <span className="text-muted-foreground">, </span>}
+                    </React.Fragment>
+                  ))
+                ) : (
+                  <span className="italic">No impact on ability scores</span>
+                )}
               </p>
-            )}
-            {raceSpecialQualities && raceSpecialQualities.abilityEffects.length === 0 && characterData.race && (
-              <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
             )}
           </div>
         </div>
@@ -153,20 +154,20 @@ export function CharacterFormCoreInfoSection({
                 <ComboboxPrimitive
                   options={DND_CLASSES}
                   value={characterData.classes[0]?.className || ''}
-                  onChange={(value) => onClassChange(value as DndClassId | string)}
+                  onChange={(value) => onClassChange(value)}
                   placeholder="Select or type class"
                   searchPlaceholder="Search classes..."
                   emptyPlaceholder="No class found. Type to add custom."
                   isEditable={true}
                 />
               </div>
-               {isPredefinedClass && characterData.classes[0]?.className && (
+              {characterData.classes[0]?.className && isPredefinedClass && (
                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
                   onClick={onOpenClassInfoDialog}>
                   <Info className="h-5 w-5" />
                 </Button>
               )}
-              {!isPredefinedClass && characterData.classes[0]?.className && characterData.classes[0]?.className.trim() !== '' && (
+              {characterData.classes[0]?.className && !isPredefinedClass && characterData.classes[0]?.className.trim() !== '' && (
                 <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
               )}
             </div>
@@ -196,11 +197,11 @@ export function CharacterFormCoreInfoSection({
         </div>
 
         {/* Deity */}
-        <div className="grid grid-cols-1 gap-6 items-start">
-          <div className="space-y-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+          <div className="space-y-1"> {/* This div now represents the first column in a 2-column layout on md+ */}
             <Label htmlFor="deity">Deity</Label>
             <div className="flex items-center gap-2">
-              <div className="w-1/2 flex-none"> {/* Added flex-none here */}
+              <div className="flex-grow"> {/* ComboboxPrimitive takes full width of this div */}
                 <ComboboxPrimitive
                   options={DND_DEITIES}
                   value={characterData.deity || ''}
@@ -209,7 +210,6 @@ export function CharacterFormCoreInfoSection({
                   searchPlaceholder="Search deities..."
                   emptyPlaceholder="No deity found. Type to add."
                   isEditable={true}
-                  // The ComboboxPrimitive itself will be w-full of this div by default
                 />
               </div>
               {characterData.deity && characterData.deity.trim() !== '' && (
@@ -220,7 +220,9 @@ export function CharacterFormCoreInfoSection({
               )}
             </div>
           </div>
+          {/* The second column in this md:grid-cols-2 is implicitly empty */}
         </div>
+
 
         {/* Age, Gender, Size */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
@@ -245,7 +247,7 @@ export function CharacterFormCoreInfoSection({
                   </>
                 ) : (
                   <>
-                    <p>No impact on ability scores</p>
+                    <p className="italic">No impact on ability scores</p>
                     {ageEffectsDetails.categoryName !== "Adult" && <p>{ageEffectsDetails.categoryName}</p>}
                   </>
                 )}
@@ -273,20 +275,20 @@ export function CharacterFormCoreInfoSection({
               </SelectContent>
             </Select>
             {sizeAbilityEffectsDetails && (
-              sizeAbilityEffectsDetails.effects.length > 0 ? (
-                <p className="text-xs text-muted-foreground mt-1 ml-1">
-                  {sizeAbilityEffectsDetails.effects.map((effect, index) => (
+              <p className="text-xs text-muted-foreground mt-1 ml-1">
+                {sizeAbilityEffectsDetails.effects.length > 0 ? (
+                  sizeAbilityEffectsDetails.effects.map((effect, index) => (
                     <React.Fragment key={effect.ability}>
                       <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
                         {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
                       </strong>
                       {index < sizeAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                     </React.Fragment>
-                  ))}
-                </p>
-              ) : (
-                <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
-              )
+                  ))
+                ) : (
+                  <span className="italic">No impact on ability scores</span>
+                )}
+              </p>
             )}
           </div>
         </div>
