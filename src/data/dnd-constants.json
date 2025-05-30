@@ -66,7 +66,7 @@
     {
       "value": "human",
       "label": "Human",
-      "description": "Humans are the most adaptable and ambitious people among the common races. Whatever their goals, humans are the innovators, the achievers, and the pioneers of the worlds.",
+      "description": "Humans are the most adaptable and ambitious people among the common races.<br />Whatever their goals, humans are the innovators, the achievers, and the pioneers of the worlds.",
       "bonusFeatSlots": 1
     },
     {
@@ -106,67 +106,67 @@
       "value": "barbarian",
       "label": "Barbarian",
       "hitDice": "d12",
-      "description": "Barbarians are savage warriors from the wild frontiers, relying on their primal fury and immense strength.<br />They are often tribal, disdainful of civilization, and fiercely independent.<br /><br /><b>Alignment:</b> Any nonlawful.<br /><br /><b>Religion:</b> Barbarians may revere animal spirits, nature deities, or ancestors.<br /><br /><b>Background:</b> Often outcasts or members of nomadic tribes.<br /><br /><b>Races:</b> Humans and half-orcs are common barbarians."
+      "description": "Barbarians are savage warriors from the wild frontiers, relying on their primal fury and immense strength.<br />They are often tribal, disdainful of civilization, and fiercely independent.<br /><br /><b>Alignment:</b> Any nonlawful.<br /><b>Religion:</b> Barbarians may revere animal spirits, nature deities, or ancestors.<br /><b>Background:</b> Often outcasts or members of nomadic tribes.<br /><b>Races:</b> Humans and half-orcs are common barbarians."
     },
     {
       "value": "bard",
       "label": "Bard",
       "hitDice": "d6",
-      "description": "Bards are versatile performers, weaving magic through music and words.<br />They are storytellers, diplomats, and adventurers, often charismatic and quick-witted.<br /><br /><b>Alignment:</b> Any nonlawful.<br /><br /><b>Religion:</b> Bards may follow deities of art, travel, or trickery.<br /><br /><b>Background:</b> Often from performing troupes, scholarly institutions, or simply wanderers.<br /><br /><b>Races:</b> Humans, elves, and half-elves frequently become bards."
+      "description": "Bards are versatile performers, weaving magic through music and words.<br />They are storytellers, diplomats, and adventurers, often charismatic and quick-witted.<br /><br /><b>Alignment:</b> Any nonlawful.<br /><b>Religion:</b> Bards may follow deities of art, travel, or trickery.<br /><b>Background:</b> Often from performing troupes, scholarly institutions, or simply wanderers.<br /><b>Races:</b> Humans, elves, and half-elves frequently become bards."
     },
     {
       "value": "cleric",
       "label": "Cleric",
       "hitDice": "d8",
-      "description": "Clerics are divine agents, channeling the power of their chosen deity to heal the sick, smite the wicked, or protect the faithful.<br />They are masters of divine magic and often serve as spiritual leaders.<br /><br /><b>Alignment:</b> Must be within one step of their deity's alignment.<br /><br /><b>Religion:</b> Central to their identity, clerics serve a specific deity from the pantheon.<br /><br /><b>Background:</b> Usually trained in temples or religious orders.<br /><br /><b>Races:</b> All races produce clerics, as faith is universal."
+      "description": "Clerics are divine agents, channeling the power of their chosen deity to heal the sick, smite the wicked, or protect the faithful.<br />They are masters of divine magic and often serve as spiritual leaders.<br /><br /><b>Alignment:</b> Must be within one step of their deity's alignment.<br /><b>Religion:</b> Central to their identity, clerics serve a specific deity from the pantheon.<br /><b>Background:</b> Usually trained in temples or religious orders.<br /><b>Races:</b> All races produce clerics, as faith is universal."
     },
     {
       "value": "druid",
       "label": "Druid",
       "hitDice": "d8",
-      "description": "Druids are guardians of the natural world, drawing power from the untamed wilderness.<br />They can shapeshift into animals, command plants, and call upon nature's fury.<br /><br /><b>Alignment:</b> Any neutral (Neutral Good, Lawful Neutral, True Neutral, Chaotic Neutral, or Neutral Evil).<br /><br /><b>Religion:</b> Druids revere nature itself or specific nature deities.<br /><br /><b>Background:</b> Often solitary hermits, members of ancient circles, or protectors of sacred groves.<br /><br /><b>Races:</b> Humans, elves, and gnomes often feel the call of the wild."
+      "description": "Druids are guardians of the natural world, drawing power from the untamed wilderness.<br />They can shapeshift into animals, command plants, and call upon nature's fury.<br /><br /><b>Alignment:</b> Any neutral (Neutral Good, Lawful Neutral, True Neutral, Chaotic Neutral, or Neutral Evil).<br /><b>Religion:</b> Druids revere nature itself or specific nature deities.<br /><b>Background:</b> Often solitary hermits, members of ancient circles, or protectors of sacred groves.<br /><b>Races:</b> Humans, elves, and gnomes often feel the call of the wild."
     },
     {
       "value": "fighter",
       "label": "Fighter",
       "hitDice": "d10",
-      "description": "Fighters are masters of martial combat, excelling with all forms of weapons and armor.<br />They are the backbone of armies, the sellswords in taverns, and the dedicated protectors of kingdoms.<br /><br /><b>Alignment:</b> Any.<br /><br /><b>Religion:</b> Fighters may worship deities of war, strength, or protection, or none at all.<br /><br /><b>Background:</b> Varied, from noble knights to grizzled mercenaries or simple village guards.<br /><br /><b>Races:</b> All races produce skilled fighters, especially humans, dwarves, and half-orcs."
+      "description": "Fighters are masters of martial combat, excelling with all forms of weapons and armor.<br />They are the backbone of armies, the sellswords in taverns, and the dedicated protectors of kingdoms.<br /><br /><b>Alignment:</b> Any.<br /><b>Religion:</b> Fighters may worship deities of war, strength, or protection, or none at all.<br /><b>Background:</b> Varied, from noble knights to grizzled mercenaries or simple village guards.<br /><b>Races:</b> All races produce skilled fighters, especially humans, dwarves, and half-orcs."
     },
     {
       "value": "monk",
       "label": "Monk",
       "hitDice": "d8",
-      "description": "Monks are disciplined warriors who perfect their bodies and minds to achieve extraordinary martial prowess.<br />They eschew armor and traditional weapons, relying on their ki-powered unarmed strikes and mystical abilities.<br /><br /><b>Alignment:</b> Must be lawful.<br /><br /><b>Religion:</b> Monks often follow philosophies of discipline and self-perfection, sometimes tied to specific deities of law or enlightenment.<br /><br /><b>Background:</b> Typically trained in remote monasteries.<br /><br /><b>Races:</b> Humans are the most common monks, but any race with discipline can walk the path."
+      "description": "Monks are disciplined warriors who perfect their bodies and minds to achieve extraordinary martial prowess.<br />They eschew armor and traditional weapons, relying on their ki-powered unarmed strikes and mystical abilities.<br /><br /><b>Alignment:</b> Must be lawful.<br /><b>Religion:</b> Monks often follow philosophies of discipline and self-perfection, sometimes tied to specific deities of law or enlightenment.<br /><b>Background:</b> Typically trained in remote monasteries.<br /><b>Races:</b> Humans are the most common monks, but any race with discipline can walk the path."
     },
     {
       "value": "paladin",
       "label": "Paladin",
       "hitDice": "d10",
-      "description": "Paladins are holy champions of righteousness, sworn to uphold justice and smite evil.<br />They are granted divine powers to aid their cause, including healing, protection, and the ability to turn undead.<br /><br /><b>Alignment:</b> Must be Lawful Good.<br /><br /><b>Religion:</b> Paladins are devoted servants of good-aligned deities.<br /><br /><b>Background:</b> Often from noble or devout families, trained in holy orders.<br /><br /><b>Races:</b> Humans are the most common paladins, but any creature with a pure heart can be called."
+      "description": "Paladins are holy champions of righteousness, sworn to uphold justice and smite evil.<br />They are granted divine powers to aid their cause, including healing, protection, and the ability to turn undead.<br /><br /><b>Alignment:</b> Must be Lawful Good.<br /><b>Religion:</b> Paladins are devoted servants of good-aligned deities.<br /><b>Background:</b> Often from noble or devout families, trained in holy orders.<br /><b>Races:</b> Humans are the most common paladins, but any creature with a pure heart can be called."
     },
     {
       "value": "ranger",
       "label": "Ranger",
       "hitDice": "d8",
-      "description": "Rangers are skilled hunters and trackers, at home in the wilderness and adept at fighting specific types of creatures.<br />They often possess some divine magic related to nature and an animal companion.<br /><br /><b>Alignment:</b> Any.<br /><br /><b>Religion:</b> Rangers often revere nature deities or gods of the hunt.<br /><br /><b>Background:</b> Typically raised in borderlands, deep forests, or among reclusive communities.<br /><br /><b>Races:</b> Elves, half-elves, and humans make excellent rangers."
+      "description": "Rangers are skilled hunters and trackers, at home in the wilderness and adept at fighting specific types of creatures.<br />They often possess some divine magic related to nature and an animal companion.<br /><br /><b>Alignment:</b> Any.<br /><b>Religion:</b> Rangers often revere nature deities or gods of the hunt.<br /><b>Background:</b> Typically raised in borderlands, deep forests, or among reclusive communities.<br /><b>Races:</b> Elves, half-elves, and humans make excellent rangers."
     },
     {
       "value": "rogue",
       "label": "Rogue",
       "hitDice": "d6",
-      "description": "Rogues are masters of stealth, trickery, and skill.<br />They excel at disarming traps, picking locks, and striking from the shadows.<br />They can be charming scoundrels, deadly assassins, or cunning investigators.<br /><br /><b>Alignment:</b> Any.<br /><br /><b>Religion:</b> Rogues often favor deities of luck, shadows, or thievery, or remain unaffiliated.<br /><br /><b>Background:</b> From street urchins to guild thieves or spies.<br /><br /><b>Races:</b> Halflings, elves, and humans are often drawn to the rogue's path."
+      "description": "Rogues are masters of stealth, trickery, and skill.<br />They excel at disarming traps, picking locks, and striking from the shadows.<br />They can be charming scoundrels, deadly assassins, or cunning investigators.<br /><br /><b>Alignment:</b> Any.<br /><b>Religion:</b> Rogues often favor deities of luck, shadows, or thievery, or remain unaffiliated.<br /><b>Background:</b> From street urchins to guild thieves or spies.<br /><b>Races:</b> Halflings, elves, and humans are often drawn to the rogue's path."
     },
     {
       "value": "sorcerer",
       "label": "Sorcerer",
       "hitDice": "d4",
-      "description": "Sorcerers wield arcane magic through innate talent, often stemming from draconic or fey ancestry.<br />Their magic is intuitive and flexible, not learned through rigorous study.<br /><br /><b>Alignment:</b> Any.<br /><br /><b>Religion:</b> Sorcerers have varied religious beliefs, if any.<br /><br /><b>Background:</b> Their powers often manifest unexpectedly, leading to diverse life paths.<br /><br /><b>Races:</b> Humans and those with magical bloodlines (like half-elves with fey heritage) are common sorcerers."
+      "description": "Sorcerers wield arcane magic through innate talent, often stemming from draconic or fey ancestry.<br />Their magic is intuitive and flexible, not learned through rigorous study.<br /><br /><b>Alignment:</b> Any.<br /><b>Religion:</b> Sorcerers have varied religious beliefs, if any.<br /><b>Background:</b> Their powers often manifest unexpectedly, leading to diverse life paths.<br /><b>Races:</b> Humans and those with magical bloodlines (like half-elves with fey heritage) are common sorcerers."
     },
     {
       "value": "wizard",
       "label": "Wizard",
       "hitDice": "d4",
-      "description": "Wizards are scholars of the arcane, mastering magic through intense study, research, and practice.<br />They command a vast repertoire of spells, prepared daily from their spellbooks.<br /><br /><b>Alignment:</b> Any.<br /><br /><b>Religion:</b> Wizards often worship deities of knowledge, magic, or secrets, or focus purely on arcane pursuits.<br /><br /><b>Background:</b> Typically educated in academies, mentored by master wizards, or self-taught through ancient tomes.<br /><br /><b>Races:</b> Humans, elves, and gnomes are most commonly drawn to wizardry.",
+      "description": "Wizards are scholars of the arcane, mastering magic through intense study, research, and practice.<br />They command a vast repertoire of spells, prepared daily from their spellbooks.<br /><br /><b>Alignment:</b> Any.<br /><b>Religion:</b> Wizards often worship deities of knowledge, magic, or secrets, or focus purely on arcane pursuits.<br /><b>Background:</b> Typically educated in academies, mentored by master wizards, or self-taught through ancient tomes.<br /><b>Races:</b> Humans, elves, and gnomes are most commonly drawn to wizardry.",
       "grantedFeats": [
         { "featId": "scribe-scroll", "note": "(Wizard Bonus Feat)", "levelAcquired": 1 }
       ]
@@ -281,7 +281,7 @@
     { "value": "spell-penetration", "label": "Spell Penetration", "description": "<b>Benefit:</b> You get a +2 bonus on caster level checks (1d20 + caster level) made to overcome a creature’s spell resistance." },
     { "value": "greater-spell-penetration", "label": "Greater Spell Penetration", "description": "<b>Benefit:</b> You get a +2 bonus on caster level checks (1d20 + caster level) made to overcome a creature’s spell resistance.<br />This bonus stacks with the bonus from Spell Penetration.", "prerequisites": {"feats": ["spell-penetration"]}},
     { "value": "spirited-charge", "label": "Spirited Charge", "description": "<b>Benefit:</b> When mounted and using the charge action, you deal double damage with a melee weapon (or triple damage with a lance).", "prerequisites": { "skills": [{ "id": "ride", "ranks": 1 }], "feats": ["mounted-combat", "ride-by-attack"] } },
-    { "value": "spring-attack", "label": "Spring Attack", "description": "<b>Benefit:</b> When using the attack action with a melee weapon, you can move both before and after the attack, provided that your total distance moved is not greater than your speed.<br />Moving in this way does not provoke an attack of opportunity from the defender you attack (though it may provoke attacks of opportunity from other creatures, if appropriate).<br />You can’t use this feat if you are carrying a heavy load or wearing heavy armor.<br />You must move at least 5 feet both before and after you make your attack in order to utilize the benefits of Spring Attack.", "prerequisites": { "abilities": { "dexterity": 13, "intelligence": 13 }, "feats": ["combat-expertise", "dodge", "mobility"], "bab": 4 } },
+    { "value": "spring-attack", "label": "Spring Attack", "description": "<b>Benefit:</b> When using the attack action with a melee weapon, you can move both before and after the attack, provided that your total distance moved is not greater than your speed.<br />Moving in this way does not provoke an attack of opportunity from the defender you attack (though it may provoke attacks of opportunity from other creatures, if appropriate).<br />You can’t use this feat if you are carrying a heavy load or wearing heavy armor.<br />You must move at least 5 feet both before and after you make your attack in order to utilize the benefits of Spring Attack.", "prerequisites": { "abilities": { "dexterity": 13, "intelligence": 13 }, "feats": ["combat-expertise", "dodge", "mobility", "spring-attack"], "bab": 4 } },
     { "value": "stealthy", "label": "Stealthy", "description": "<b>Benefit:</b> You get a +2 bonus on all Hide and Move Silently checks.", "effects": { "skills": { "hide": 2, "move-silently": 2 } } },
     { "value": "stunning-fist", "label": "Stunning Fist", "description": "<b>Benefit:</b> You must declare that you are using this feat before you make your attack roll (thus, a failed attack roll ruins the attempt).<br />Stunning Fist forces a foe damaged by your unarmed attack to make a Fortitude saving throw (DC 10 + 1/2 your character level + your Wis modifier), in addition to dealing damage normally.<br />A defender who fails this saving throw is stunned for 1 round (until just before your next action).<br />A stunned character can’t act, loses any Dexterity bonus to AC, and takes a –2 penalty to AC.<br />You may attempt a stunning attack once per day for every four levels you have attained (but see Special), and no more than once per round.<br /><b>Special:</b> A monk may select Stunning Fist as a bonus feat at 1st level, even if she does not meet the prerequisites.<br />A monk who selects this feat may attempt a stunning attack a number of times per day equal to her monk level, plus one more time per day for every four levels she has in classes other than monk.", "prerequisites": { "abilities": { "dexterity": 13, "wisdom": 13 }, "feats": ["improved-unarmed-strike"], "bab": 8 } },
     { "value": "toughness", "label": "Toughness", "description": "<b>Benefit:</b> You gain +3 hit points.<br /><b>Special:</b> A character may gain this feat multiple times.<br />Its effects stack.", "canTakeMultipleTimes": true },
