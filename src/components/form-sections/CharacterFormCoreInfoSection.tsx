@@ -61,8 +61,8 @@ export function CharacterFormCoreInfoSection({
   sizeAbilityEffectsDetails,
   raceSpecialQualities,
   selectedClassInfo,
-  isPredefinedRace,
-  isPredefinedClass,
+  isPredefinedRace, // Use this prop
+  isPredefinedClass, // Use this prop
   currentMinAgeForInput,
   onOpenRaceInfoDialog,
   onOpenClassInfoDialog,
@@ -158,6 +158,9 @@ export function CharacterFormCoreInfoSection({
                     </React.Fragment>
                   ))}
               </p>
+            )}
+             {isPredefinedRace && !raceSpecialQualities?.abilityEffects && (
+                <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
             )}
           </div>
         </div>
