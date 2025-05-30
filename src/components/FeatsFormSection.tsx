@@ -6,7 +6,7 @@ import type { Feat as FeatType, DndRaceId, CharacterClass, FeatDefinitionJsonDat
 import { DND_FEATS, DND_RACES, SKILL_DEFINITIONS, DND_CLASSES, checkFeatPrerequisites, calculateAvailableFeats } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, PlusCircle, Trash2 } from 'lucide-react';
+import { Award, PlusCircle, Trash2, Edit3 } from 'lucide-react'; // Added Edit3
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
 import { AddCustomFeatDialog } from './AddCustomFeatDialog';
@@ -39,11 +39,15 @@ export function FeatsFormSection({
   const [isCustomFeatDialogOpen, setIsCustomFeatDialogOpen] = React.useState(false);
   const [editingCustomFeat, setEditingCustomFeat] = React.useState<FeatType | null>(null);
 
-  const availableFeatSlots = calculateAvailableFeats(characterRace, characterLevel);
-  const raceData = DND_RACES.find(r => r.value === characterRace);
-  const racialBonus = raceData?.bonusFeatSlots || 0;
-  const baseFeat = 1;
-  const levelProgressionFeats = Math.floor(characterLevel / 3);
+  const { availableFeatSlots, baseFeat, racialBonus, levelProgressionFeats } = React.useMemo(() => {
+    const slots = calculateAvailableFeats(characterRace, characterLevel);
+    const raceData = DND_RACES.find(r => r.value === characterRace);
+    const bonus = raceData?.bonusFeatSlots || 0;
+    const base = 1; // At level 1
+    const progression = Math.floor(characterLevel / 3);
+    return { availableFeatSlots: slots, baseFeat: base, racialBonus: bonus, levelProgressionFeats: progression };
+  }, [characterRace, characterLevel]);
+
 
   const userChosenNonCustomFeats = selectedFeats.filter(f => !f.isGranted && !f.isCustom);
   const customFeats = selectedFeats.filter(f => f.isCustom);
@@ -58,7 +62,9 @@ export function FeatsFormSection({
     classes: characterClasses,
     race: characterRace,
     alignment: characterAlignment,
-    name: '', size: 'medium', age: 20,
+    name: '', // Placeholder for type compatibility
+    size: 'medium', // Placeholder
+    age: 20, // Placeholder
     hp: 0, maxHp: 0, armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0,
     deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, initiativeMiscModifier: 0,
     savingThrows: { fortitude: {base:0,magicMod:0,miscMod:0}, reflex: {base:0,magicMod:0,miscMod:0}, will: {base:0,magicMod:0,miscMod:0} },
@@ -96,34 +102,36 @@ export function FeatsFormSection({
   React.useEffect(() => {
     const userChosenAndCustomFeatIds = selectedFeats
       .filter(f => !f.isGranted)
-      .map(f => f.id);
+      .map(f => f.id)
+      .sort(); // Sort for stable comparison
 
-    // Only update if the derived IDs from props are different from the current selection IDs
-    // This check helps prevent infinite loops if not done carefully.
-    if (JSON.stringify(userChosenAndCustomFeatIds.sort()) !== JSON.stringify(featSelections.filter(id => id !== undefined).sort())) {
-      setFeatSelections(userChosenAndCustomFeatIds);
+    const currentSelectionIdsSorted = featSelections.filter(id => id !== undefined).sort();
+
+    if (JSON.stringify(userChosenAndCustomFeatIds) !== JSON.stringify(currentSelectionIdsSorted)) {
+      setFeatSelections(selectedFeats.filter(f => !f.isGranted).map(f => f.id));
     }
-  }, [selectedFeats]);
+  }, [selectedFeats, featSelections]);
 
 
   const handleFeatSelectedFromDialog = (featId: string) => {
     const featDef = DND_FEATS.find(f => f.value === featId);
     if (!featDef) return;
 
-    const isAlreadySelectedAsNonCustom = featSelections.some(
+    const isAlreadySelected = featSelections.some(
       selectedId => selectedId?.split('-MULTI-INSTANCE-')[0] === featId
     );
     const isAlreadyGranted = selectedFeats.some(sf => sf.isGranted && sf.id.split('-MULTI-INSTANCE-')[0] === featId);
 
-    if (!featDef.canTakeMultipleTimes && (isAlreadySelectedAsNonCustom || isAlreadyGranted)) {
+    if (!featDef.canTakeMultipleTimes && (isAlreadySelected || isAlreadyGranted)) {
       toast({ title: "Duplicate Feat", description: `"${featDef.label}" is already selected or granted and cannot be taken multiple times.`, variant: "destructive" });
       setIsFeatDialogOpen(false);
       return;
     }
-
-    const uniqueId = (featDef.canTakeMultipleTimes && (isAlreadySelectedAsNonCustom || isAlreadyGranted))
-      ? `${featId}-MULTI-INSTANCE-${crypto.randomUUID()}`
-      : featId;
+    
+    let uniqueId = featId;
+    if (featDef.canTakeMultipleTimes && (isAlreadySelected || isAlreadyGranted)) {
+       uniqueId = `${featId}-MULTI-INSTANCE-${crypto.randomUUID()}`;
+    }
 
     const newSelections = [...featSelections.filter(id => id !== undefined), uniqueId] as string[];
     setFeatSelections(newSelections);
@@ -134,12 +142,14 @@ export function FeatsFormSection({
   const handleSaveCustomFeat = (featData: Partial<FeatType> & { name: string }) => {
     let updatedFullFeatsList;
     if (featData.id && selectedFeats.some(f => f.id === featData.id && f.isCustom)) {
+      // Editing existing custom feat
       updatedFullFeatsList = selectedFeats.map(f =>
         f.id === featData.id ? { ...f, ...featData, isCustom: true, isGranted: false } as FeatType : f
       );
     } else {
+      // Adding new custom feat
       const newCustomFeat: FeatType = {
-        id: crypto.randomUUID(),
+        id: crypto.randomUUID(), // New ID for new custom feat
         name: featData.name,
         description: featData.description,
         prerequisites: featData.prerequisites,
@@ -153,7 +163,7 @@ export function FeatsFormSection({
       updatedFullFeatsList = [...selectedFeats, newCustomFeat];
     }
     onFeatSelectionChange(updatedFullFeatsList.sort((a,b) => a.name.localeCompare(b.name)));
-    setEditingCustomFeat(null);
+    setEditingCustomFeat(null); // Clear editing state
   };
 
   const handleRemoveFeatSlot = (featIdToRemove: string) => {
@@ -213,9 +223,11 @@ export function FeatsFormSection({
             )}
             {selectedFeats.map((feat) => {
               const featDetails = DND_FEATS.find(f => f.value === feat.id.split('-MULTI-INSTANCE-')[0]) || feat;
-              const prereqMessages: PrerequisiteMessage[] = featDetails.prerequisites || feat.prerequisites
-                ? checkFeatPrerequisites(featDetails, characterForPrereqCheck as Character, DND_FEATS)
-                : [];
+              const prereqMessages: PrerequisiteMessage[] = feat.isCustom && feat.prerequisites
+                ? checkFeatPrerequisites(feat as FeatDefinitionJsonData, characterForPrereqCheck as Character, DND_FEATS)
+                : (!feat.isCustom && featDetails.prerequisites)
+                    ? checkFeatPrerequisites(featDetails, characterForPrereqCheck as Character, DND_FEATS)
+                    : [];
 
               return (
                 <div key={`feat-${feat.id}`} className="group flex items-start justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors">
@@ -242,7 +254,7 @@ export function FeatsFormSection({
                            ))}
                          </div>
                         ) : (
-                            <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground">Prerequisites: None (Custom)</p>
+                            <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground">Prerequisites: None</p>
                         )}
                        </>
                     ) : (
