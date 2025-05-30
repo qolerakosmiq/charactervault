@@ -15,47 +15,47 @@
     {
       "value": "lawful-good",
       "label": "Lawful Good",
-      "description": "<p>Characters of this alignment believe that an orderly, strong society with a well-organized government can work to make life better for the majority of the people. To ensure the quality of life, laws must be created and obeyed. When people respect the laws and try to help one another, society as a whole prospers. Therefore, lawful good characters strive for things that will bring the greatest benefit to the most people and cause the least harm. They are also concerned with issues of justice and fairness, and they value honesty and integrity.</p>"
+      "description": "Characters of this alignment believe that an orderly, strong society with a well-organized government can work to make life better for the majority of the people. To ensure the quality of life, laws must be created and obeyed. When people respect the laws and try to help one another, society as a whole prospers. Therefore, lawful good characters strive for things that will bring the greatest benefit to the most people and cause the least harm. They are also concerned with issues of justice and fairness, and they value honesty and integrity."
     },
     {
       "value": "neutral-good",
       "label": "Neutral Good",
-      "description": "<p>Neutral good characters believe that a balance of forces is important, but that the concerns of law and chaos do not moderate the need for good. The universe is a big place, and while it is important to ensure that good is promoted, it is equally important that this good is not forced upon others. A neutral good character does what is good and right, without bias for or against order.</p>"
+      "description": "Neutral good characters believe that a balance of forces is important, but that the concerns of law and chaos do not moderate the need for good. The universe is a big place, and while it is important to ensure that good is promoted, it is equally important that this good is not forced upon others. A neutral good character does what is good and right, without bias for or against order."
     },
     {
       "value": "chaotic-good",
       "label": "Chaotic Good",
-      "description": "<p>Chaotic good characters are strong individualists marked by a streak of kindness and benevolence. They believe in all the virtues of goodness and right, but they have little use for laws and regulations. They have no use for people who 'try to push folk around and tell them what to do.' Their actions are guided by their own moral compass, which, although good, may not always be in perfect agreement with the rest of society.</p>"
+      "description": "Chaotic good characters are strong individualists marked by a streak of kindness and benevolence. They believe in all the virtues of goodness and right, but they have little use for laws and regulations. They have no use for people who 'try to push folk around and tell them what to do.' Their actions are guided by their own moral compass, which, although good, may not always be in perfect agreement with the rest of society."
     },
     {
       "value": "lawful-neutral",
       "label": "Lawful Neutral",
-      "description": "<p>Order and organization are of paramount importance to characters of this alignment. They believe in a strong, well-ordered government, whether that government is a tyranny or a benevolent democracy. The benefits of organization and regimentation outweigh any moral questions raised by their actions. An oath is an oath, and a promise is a promise. Honesty and reliability are key traits.</p>"
+      "description": "Order and organization are of paramount importance to characters of this alignment. They believe in a strong, well-ordered government, whether that government is a tyranny or a benevolent democracy. The benefits of organization and regimentation outweigh any moral questions raised by their actions. An oath is an oath, and a promise is a promise. Honesty and reliability are key traits."
     },
     {
       "value": "true-neutral",
       "label": "True Neutral",
-      "description": "<p>True neutral characters believe in the ultimate balance of forces, and they refuse to see actions as either good or evil. Since the majority of people in the world make judgments, true neutral characters are extremely rare. True neutral characters do their best to avoid siding with the forces of either good or evil, law or chaos. It is their duty to see that all of these forces remain in balanced contention.</p>"
+      "description": "True neutral characters believe in the ultimate balance of forces, and they refuse to see actions as either good or evil. Since the majority of people in the world make judgments, true neutral characters are extremely rare. True neutral characters do their best to avoid siding with the forces of either good or evil, law or chaos. It is their duty to see that all of these forces remain in balanced contention."
     },
     {
       "value": "chaotic-neutral",
       "label": "Chaotic Neutral",
-      "description": "<p>Chaotic neutral characters believe that there is no order to anything, including their own actions. With this as a guiding principle, they tend to follow whatever whim strikes them at the moment. Good, evil, law, and chaos are all irrelevant. Decency and honor are meaningless. Ultimately, chaotic neutral characters are out for themselves. They value their own freedom above all else, but they won't strive for the freedom of others. They avoid authority, resent restrictions, and challenge traditions.</p>"
+      "description": "Chaotic neutral characters believe that there is no order to anything, including their own actions. With this as a guiding principle, they tend to follow whatever whim strikes them at the moment. Good, evil, law, and chaos are all irrelevant. Decency and honor are meaningless. Ultimately, chaotic neutral characters are out for themselves. They value their own freedom above all else, but they won't strive for the freedom of others. They avoid authority, resent restrictions, and challenge traditions."
     },
     {
       "value": "lawful-evil",
       "label": "Lawful Evil",
-      "description": "<p>Lawful evil characters believe in using society and its laws to benefit themselves. Structure and organization elevate those who deserve to rule as well as provide a clearly defined hierarchy between master and servant. To this end, lawful evil characters support laws and societies that protect their own concerns. If someone is hurt or suffers because of a law that benefits the lawful evil character, too bad. Lawful evil characters obey laws out of fear of punishment or because they can use the law to their own advantage.</p>"
+      "description": "Lawful evil characters believe in using society and its laws to benefit themselves. Structure and organization elevate those who deserve to rule as well as provide a clearly defined hierarchy between master and servant. To this end, lawful evil characters support laws and societies that protect their own concerns. If someone is hurt or suffers because of a law that benefits the lawful evil character, too bad. Lawful evil characters obey laws out of fear of punishment or because they can use the law to their own advantage."
     },
     {
       "value": "neutral-evil",
       "label": "Neutral Evil",
-      "description": "<p>Neutral evil characters are primarily concerned with themselves and their own advancement. They have no particular objection to working with others or, for that matter, going it alone. Their only interest is in getting ahead. They may or may not be driven by greed, but they are always selfish. If there is a choice between doing right and doing wrong, they will choose the action that benefits them the most. Neutral evil characters do not have any particular love of order and have no special fondness for chaos, unless it can be used to advance their own ends.</p>"
+      "description": "Neutral evil characters are primarily concerned with themselves and their own advancement. They have no particular objection to working with others or, for that matter, going it alone. Their only interest is in getting ahead. They may or may not be driven by greed, but they are always selfish. If there is a choice between doing right and doing wrong, they will choose the action that benefits them the most. Neutral evil characters do not have any particular love of order and have no special fondness for chaos, unless it can be used to advance their own ends."
     },
     {
       "value": "chaotic-evil",
       "label": "Chaotic Evil",
-      "description": "<p>Chaotic evil characters are motivated by the desire for personal gain and pleasure. They see absolutely nothing wrong with taking whatever they want by whatever means possible. Laws and governments are tools of the weak, designed to steal from those who have a right to whatever they desire. Strong, powerful people take what they want, and the weak are there to be exploited. When a chaotic evil character is on a rampage, he is an engine of destruction and mayhem. They have no respect for rules, order, or the rights of others.</p>"
+      "description": "Chaotic evil characters are motivated by the desire for personal gain and pleasure. They see absolutely nothing wrong with taking whatever they want by whatever means possible. Laws and governments are tools of the weak, designed to steal from those who have a right to whatever they desire. Strong, powerful people take what they want, and the weak are there to be exploited. When a chaotic evil character is on a rampage, he is an engine of destruction and mayhem. They have no respect for rules, order, or the rights of others."
     }
   ],
   "GENDERS_DATA": [
@@ -404,62 +404,62 @@
     "human": 1
   },
   "SKILL_DEFINITIONS_DATA": [
-    { "value": "appraise", "label": "Appraise", "keyAbility": "intelligence", "description": "<p>You can estimate the monetary value of an item.</p>" },
-    { "value": "balance", "label": "Balance", "keyAbility": "dexterity", "description": "<p>You can keep your balance when walking on a narrow or treacherous surface.</p>" },
-    { "value": "bluff", "label": "Bluff", "keyAbility": "charisma", "description": "<p>You can make a sucker out of someone or get them to believe something that isn't true.</p>" },
-    { "value": "climb", "label": "Climb", "keyAbility": "strength", "description": "<p>You can ascend or descend a slope, wall, or other steep incline.</p>" },
-    { "value": "concentration", "label": "Concentration", "keyAbility": "constitution", "description": "<p>You can focus your mind to cast a spell or perform some other action that requires your undivided attention.</p>" },
-    { "value": "craft-alchemy", "label": "Craft (Alchemy)", "keyAbility": "intelligence", "description": "<p>You can create alchemical items.</p>" },
-    { "value": "craft-armorsmithing", "label": "Craft (Armorsmithing)", "keyAbility": "intelligence", "description": "<p>You can create armor.</p>" },
-    { "value": "craft-bowmaking", "label": "Craft (Bowmaking)", "keyAbility": "intelligence", "description": "<p>You can create bows and arrows.</p>" },
-    { "value": "craft-weaponsmithing", "label": "Craft (Weaponsmithing)", "keyAbility": "intelligence", "description": "<p>You can create weapons.</p>" },
-    { "value": "craft-trapmaking", "label": "Craft (Trapmaking)", "keyAbility": "intelligence", "description": "<p>You can create mechanical traps.</p>" },
-    { "value": "craft-pottery", "label": "Craft (Pottery)", "keyAbility": "intelligence", "description": "<p>You can create ceramic items.</p>" },
-    { "value": "craft-painting", "label": "Craft (Painting)", "keyAbility": "intelligence", "description": "<p>You can create paintings and other visual art.</p>" },
-    { "value": "decipher-script", "label": "Decipher Script", "keyAbility": "intelligence", "description": "<p>You can read and understand unknown languages or coded messages.</p>" },
-    { "value": "diplomacy", "label": "Diplomacy", "keyAbility": "charisma", "description": "<p>You can influence others’ attitudes and behavior through negotiation and tact.</p>" },
-    { "value": "disable-device", "label": "Disable Device", "keyAbility": "intelligence", "description": "<p>You can disable traps and other mechanical devices.</p>" },
-    { "value": "disguise", "label": "Disguise", "keyAbility": "charisma", "description": "<p>You can change your appearance.</p>" },
-    { "value": "escape-artist", "label": "Escape Artist", "keyAbility": "dexterity", "description": "<p>You can slip out of bonds, wriggle through tight spaces, or escape a grapple.</p>" },
-    { "value": "forgery", "label": "Forgery", "keyAbility": "intelligence", "description": "<p>You can create false documents.</p>" },
-    { "value": "gather-information", "label": "Gather Information", "keyAbility": "charisma", "description": "<p>You can find out news, rumors, and other information by talking to people.</p>" },
-    { "value": "handle-animal", "label": "Handle Animal", "keyAbility": "charisma", "description": "<p>You can work with and train animals.</p>" },
-    { "value": "heal", "label": "Heal", "keyAbility": "wisdom", "description": "<p>You can provide medical aid to injured creatures.</p>" },
-    { "value": "hide", "label": "Hide", "keyAbility": "dexterity", "description": "<p>You can conceal yourself from others.</p>" },
-    { "value": "intimidate", "label": "Intimidate", "keyAbility": "charisma", "description": "<p>You can make others fearful or compliant through threats and coercion.</p>" },
-    { "value": "jump", "label": "Jump", "keyAbility": "strength", "description": "<p>You can leap across gaps or over obstacles.</p>" },
-    { "value": "knowledge-arcana", "label": "Knowledge (Arcana)", "keyAbility": "intelligence", "description": "<p>You know about magical traditions, arcane lore, and magical creatures.</p>" },
-    { "value": "knowledge-architecture-and-engineering", "label": "Knowledge (Architecture & Engineering)", "keyAbility": "intelligence", "description": "<p>You know about buildings, structures, and construction techniques.</p>" },
-    { "value": "knowledge-dungeoneering", "label": "Knowledge (Dungeoneering)", "keyAbility": "intelligence", "description": "<p>You know about dungeons, caverns, and subterranean creatures.</p>" },
-    { "value": "knowledge-geography", "label": "Knowledge (Geography)", "keyAbility": "intelligence", "description": "<p>You know about lands, terrain, climate, and peoples.</p>" },
-    { "value": "knowledge-history", "label": "Knowledge (History)", "keyAbility": "intelligence", "description": "<p>You know about past events, legendary people, and ancient civilizations.</p>" },
-    { "value": "knowledge-local", "label": "Knowledge (Local)", "keyAbility": "intelligence", "description": "<p>You know about local personalities, places, traditions, and laws.</p>" },
-    { "value": "knowledge-nature", "label": "Knowledge (Nature)", "keyAbility": "intelligence", "description": "<p>You know about animals, plants, seasons, weather, and natural cycles.</p>" },
-    { "value": "knowledge-nobility-and-royalty", "label": "Knowledge (Nobility & Royalty)", "keyAbility": "intelligence", "description": "<p>You know about lineages, heraldry, customs, and prominent figures among the nobility.</p>" },
-    { "value": "knowledge-religion", "label": "Knowledge (Religion)", "keyAbility": "intelligence", "description": "<p>You know about deities, myths, religious traditions, and holy symbols.</p>" },
-    { "value": "knowledge-the-planes", "label": "Knowledge (The Planes)", "keyAbility": "intelligence", "description": "<p>You know about the different planes of existence, their inhabitants, and their properties.</p>" },
-    { "value": "listen", "label": "Listen", "keyAbility": "wisdom", "description": "<p>You can hear faint sounds or notice subtle auditory details.</p>" },
-    { "value": "move-silently", "label": "Move Silently", "keyAbility": "dexterity", "description": "<p>You can move quietly and avoid detection by sound.</p>" },
-    { "value": "open-lock", "label": "Open Lock", "keyAbility": "dexterity", "description": "<p>You can pick locks on doors, chests, and other objects.</p>" },
-    { "value": "perform-act", "label": "Perform (Act)", "keyAbility": "charisma", "description": "<p>You can entertain an audience with acting, comedy, or storytelling.</p>" },
-    { "value": "perform-sing", "label": "Perform (Sing)", "keyAbility": "charisma", "description": "<p>You can entertain an audience with vocal music.</p>" },
-    { "value": "perform-dance", "label": "Perform (Dance)", "keyAbility": "charisma", "description": "<p>You can entertain an audience with dancing.</p>" },
-    { "value": "perform-oratory", "label": "Perform (Oratory)", "keyAbility": "charisma", "description": "<p>You can captivate an audience with speeches and public speaking.</p>" },
-    { "value": "perform-string-instrument", "label": "Perform (String Instrument)", "keyAbility": "charisma", "description": "<p>You can entertain an audience by playing a string instrument.</p>" },
-    { "value": "profession-herbalist", "label": "Profession (Herbalist)", "keyAbility": "wisdom", "description": "<p>You are skilled in identifying, gathering, and preparing herbs for medicinal or other uses.</p>" },
-    { "value": "profession-sailor", "label": "Profession (Sailor)", "keyAbility": "wisdom", "description": "<p>You are skilled in the tasks and knowledge required to operate and maintain a sailing vessel.</p>" },
-    { "value": "ride", "label": "Ride", "keyAbility": "dexterity", "description": "<p>You can ride a mount, including controlling it in combat or difficult situations.</p>" },
-    { "value": "search", "label": "Search", "keyAbility": "intelligence", "description": "<p>You can find hidden objects, traps, or secret doors.</p>" },
-    { "value": "sense-motive", "label": "Sense Motive", "keyAbility": "wisdom", "description": "<p>You can discern when someone is lying or hiding their true intentions.</p>" },
-    { "value": "sleight-of-hand", "label": "Sleight of Hand", "keyAbility": "dexterity", "description": "<p>You can perform acts of manual dexterity, such as picking pockets or concealing small objects.</p>" },
-    { "value": "speak-language", "label": "Speak Language", "keyAbility": "none", "description": "<p>You can speak and understand an additional language for each rank in this skill. You choose which language each rank represents.</p>" },
-    { "value": "spellcraft", "label": "Spellcraft", "keyAbility": "intelligence", "description": "<p>You can identify spells being cast, understand magical effects, and recognize magic items.</p>" },
-    { "value": "spot", "label": "Spot", "keyAbility": "wisdom", "description": "<p>You can notice hidden or subtle visual details.</p>" },
-    { "value": "survival", "label": "Survival", "keyAbility": "wisdom", "description": "<p>You can find your way in the wilderness, track creatures, and endure harsh conditions.</p>" },
-    { "value": "swim", "label": "Swim", "keyAbility": "strength", "description": "<p>You can move through water.</p>" },
-    { "value": "tumble", "label": "Tumble", "keyAbility": "dexterity", "description": "<p>You can perform acrobatic maneuvers to avoid attacks or move through difficult terrain.</p>" },
-    { "value": "use-magic-device", "label": "Use Magic Device", "keyAbility": "charisma", "description": "<p>You can activate magic items that you normally wouldn't be able to use, such as scrolls or wands of spells not on your class list.</p>" },
-    { "value": "use-rope", "label": "Use Rope", "keyAbility": "dexterity", "description": "<p>You can tie knots, secure ropes, and perform other tasks involving ropes.</p>" }
+    { "value": "appraise", "label": "Appraise", "keyAbility": "intelligence", "description": "You can estimate the monetary value of an item." },
+    { "value": "balance", "label": "Balance", "keyAbility": "dexterity", "description": "You can keep your balance when walking on a narrow or treacherous surface." },
+    { "value": "bluff", "label": "Bluff", "keyAbility": "charisma", "description": "You can make a sucker out of someone or get them to believe something that isn't true." },
+    { "value": "climb", "label": "Climb", "keyAbility": "strength", "description": "You can ascend or descend a slope, wall, or other steep incline." },
+    { "value": "concentration", "label": "Concentration", "keyAbility": "constitution", "description": "You can focus your mind to cast a spell or perform some other action that requires your undivided attention." },
+    { "value": "craft-alchemy", "label": "Craft (Alchemy)", "keyAbility": "intelligence", "description": "You can create alchemical items." },
+    { "value": "craft-armorsmithing", "label": "Craft (Armorsmithing)", "keyAbility": "intelligence", "description": "You can create armor." },
+    { "value": "craft-bowmaking", "label": "Craft (Bowmaking)", "keyAbility": "intelligence", "description": "You can create bows and arrows." },
+    { "value": "craft-weaponsmithing", "label": "Craft (Weaponsmithing)", "keyAbility": "intelligence", "description": "You can create weapons." },
+    { "value": "craft-trapmaking", "label": "Craft (Trapmaking)", "keyAbility": "intelligence", "description": "You can create mechanical traps." },
+    { "value": "craft-pottery", "label": "Craft (Pottery)", "keyAbility": "intelligence", "description": "You can create ceramic items." },
+    { "value": "craft-painting", "label": "Craft (Painting)", "keyAbility": "intelligence", "description": "You can create paintings and other visual art." },
+    { "value": "decipher-script", "label": "Decipher Script", "keyAbility": "intelligence", "description": "You can read and understand unknown languages or coded messages." },
+    { "value": "diplomacy", "label": "Diplomacy", "keyAbility": "charisma", "description": "You can influence others’ attitudes and behavior through negotiation and tact." },
+    { "value": "disable-device", "label": "Disable Device", "keyAbility": "intelligence", "description": "You can disable traps and other mechanical devices." },
+    { "value": "disguise", "label": "Disguise", "keyAbility": "charisma", "description": "You can change your appearance." },
+    { "value": "escape-artist", "label": "Escape Artist", "keyAbility": "dexterity", "description": "You can slip out of bonds, wriggle through tight spaces, or escape a grapple." },
+    { "value": "forgery", "label": "Forgery", "keyAbility": "intelligence", "description": "You can create false documents." },
+    { "value": "gather-information", "label": "Gather Information", "keyAbility": "charisma", "description": "You can find out news, rumors, and other information by talking to people." },
+    { "value": "handle-animal", "label": "Handle Animal", "keyAbility": "charisma", "description": "You can work with and train animals." },
+    { "value": "heal", "label": "Heal", "keyAbility": "wisdom", "description": "You can provide medical aid to injured creatures." },
+    { "value": "hide", "label": "Hide", "keyAbility": "dexterity", "description": "You can conceal yourself from others." },
+    { "value": "intimidate", "label": "Intimidate", "keyAbility": "charisma", "description": "You can make others fearful or compliant through threats and coercion." },
+    { "value": "jump", "label": "Jump", "keyAbility": "strength", "description": "You can leap across gaps or over obstacles." },
+    { "value": "knowledge-arcana", "label": "Knowledge (Arcana)", "keyAbility": "intelligence", "description": "You know about magical traditions, arcane lore, and magical creatures." },
+    { "value": "knowledge-architecture-and-engineering", "label": "Knowledge (Architecture & Engineering)", "keyAbility": "intelligence", "description": "You know about buildings, structures, and construction techniques." },
+    { "value": "knowledge-dungeoneering", "label": "Knowledge (Dungeoneering)", "keyAbility": "intelligence", "description": "You know about dungeons, caverns, and subterranean creatures." },
+    { "value": "knowledge-geography", "label": "Knowledge (Geography)", "keyAbility": "intelligence", "description": "You know about lands, terrain, climate, and peoples." },
+    { "value": "knowledge-history", "label": "Knowledge (History)", "keyAbility": "intelligence", "description": "You know about past events, legendary people, and ancient civilizations." },
+    { "value": "knowledge-local", "label": "Knowledge (Local)", "keyAbility": "intelligence", "description": "You know about local personalities, places, traditions, and laws." },
+    { "value": "knowledge-nature", "label": "Knowledge (Nature)", "keyAbility": "intelligence", "description": "You know about animals, plants, seasons, weather, and natural cycles." },
+    { "value": "knowledge-nobility-and-royalty", "label": "Knowledge (Nobility & Royalty)", "keyAbility": "intelligence", "description": "You know about lineages, heraldry, customs, and prominent figures among the nobility." },
+    { "value": "knowledge-religion", "label": "Knowledge (Religion)", "keyAbility": "intelligence", "description": "You know about deities, myths, religious traditions, and holy symbols." },
+    { "value": "knowledge-the-planes", "label": "Knowledge (The Planes)", "keyAbility": "intelligence", "description": "You know about the different planes of existence, their inhabitants, and their properties." },
+    { "value": "listen", "label": "Listen", "keyAbility": "wisdom", "description": "You can hear faint sounds or notice subtle auditory details." },
+    { "value": "move-silently", "label": "Move Silently", "keyAbility": "dexterity", "description": "You can move quietly and avoid detection by sound." },
+    { "value": "open-lock", "label": "Open Lock", "keyAbility": "dexterity", "description": "You can pick locks on doors, chests, and other objects." },
+    { "value": "perform-act", "label": "Perform (Act)", "keyAbility": "charisma", "description": "You can entertain an audience with acting, comedy, or storytelling." },
+    { "value": "perform-sing", "label": "Perform (Sing)", "keyAbility": "charisma", "description": "You can entertain an audience with vocal music." },
+    { "value": "perform-dance", "label": "Perform (Dance)", "keyAbility": "charisma", "description": "You can entertain an audience with dancing." },
+    { "value": "perform-oratory", "label": "Perform (Oratory)", "keyAbility": "charisma", "description": "You can captivate an audience with speeches and public speaking." },
+    { "value": "perform-string-instrument", "label": "Perform (String Instrument)", "keyAbility": "charisma", "description": "You can entertain an audience by playing a string instrument." },
+    { "value": "profession-herbalist", "label": "Profession (Herbalist)", "keyAbility": "wisdom", "description": "You are skilled in identifying, gathering, and preparing herbs for medicinal or other uses." },
+    { "value": "profession-sailor", "label": "Profession (Sailor)", "keyAbility": "wisdom", "description": "You are skilled in the tasks and knowledge required to operate and maintain a sailing vessel." },
+    { "value": "ride", "label": "Ride", "keyAbility": "dexterity", "description": "You can ride a mount, including controlling it in combat or difficult situations." },
+    { "value": "search", "label": "Search", "keyAbility": "intelligence", "description": "You can find hidden objects, traps, or secret doors." },
+    { "value": "sense-motive", "label": "Sense Motive", "keyAbility": "wisdom", "description": "You can discern when someone is lying or hiding their true intentions." },
+    { "value": "sleight-of-hand", "label": "Sleight of Hand", "keyAbility": "dexterity", "description": "You can perform acts of manual dexterity, such as picking pockets or concealing small objects." },
+    { "value": "speak-language", "label": "Speak Language", "keyAbility": "none", "description": "You can speak and understand an additional language for each rank in this skill. You choose which language each rank represents." },
+    { "value": "spellcraft", "label": "Spellcraft", "keyAbility": "intelligence", "description": "You can identify spells being cast, understand magical effects, and recognize magic items." },
+    { "value": "spot", "label": "Spot", "keyAbility": "wisdom", "description": "You can notice hidden or subtle visual details." },
+    { "value": "survival", "label": "Survival", "keyAbility": "wisdom", "description": "You can find your way in the wilderness, track creatures, and endure harsh conditions." },
+    { "value": "swim", "label": "Swim", "keyAbility": "strength", "description": "You can move through water." },
+    { "value": "tumble", "label": "Tumble", "keyAbility": "dexterity", "description": "You can perform acrobatic maneuvers to avoid attacks or move through difficult terrain." },
+    { "value": "use-magic-device", "label": "Use Magic Device", "keyAbility": "charisma", "description": "You can activate magic items that you normally wouldn't be able to use, such as scrolls or wands of spells not on your class list." },
+    { "value": "use-rope", "label": "Use Rope", "keyAbility": "dexterity", "description": "You can tie knots, secure ropes, and perform other tasks involving ropes." }
   ],
   "CLASS_SKILLS_DATA": {
     "barbarian": ["climb", "craft-alchemy", "craft-armorsmithing", "craft-bowmaking", "craft-weaponsmithing", "craft-trapmaking", "handle-animal", "intimidate", "jump", "listen", "ride", "survival", "swim"],

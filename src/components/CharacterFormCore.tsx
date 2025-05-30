@@ -96,6 +96,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const actualAbilityScoresForSkills = React.useMemo(() => {
     if (!detailedAbilityScores) {
+      // Fallback to base scores if detailed scores are not yet computed
+      // This can happen on initial mount before the effect for detailedAbilityScores runs
       return character.abilityScores;
     }
     const finalScores: Partial<AbilityScores> = {};
@@ -147,7 +149,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     } else {
       // If race is cleared, reset age to a sensible default if it was very high (e.g., elf age)
       // Only reset if age is significantly different from a young human, to avoid needless changes.
-      if (character.age > 100 && character.age !== 20) { 
+      if (character.age !== 20) { 
         setCharacter(prev => ({...prev, age: 20}));
       }
     }
@@ -166,7 +168,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           providesSynergies: skill.providesSynergies,
           description: skill.description,
           ranks: skill.ranks || 0, // Preserve ranks and misc for custom skills
-          miscModifier: skill.miscModifier || 0 // Preserve ranks and misc for custom skills
         });
       }
     });
@@ -194,7 +195,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         providesSynergies: customSkillData.providesSynergies, // Preserve user-defined synergies
         description: customSkillData.description,
         ranks: customSkillData.ranks || 0, // Preserve ranks
-        miscModifier: customSkillData.miscModifier || 0, // Preserve misc modifier
       });
     });
     
@@ -402,7 +402,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const handleOpenAlignmentInfoDialog = () => {
-    const allAlignmentDescriptions = ALIGNMENTS.map(align => `<b>${align.label}:</b>${align.description}`).join('');
+    const allAlignmentDescriptions = ALIGNMENTS.map(
+      (align) => `<p><b>${align.label}:</b><br />${align.description}</p>`
+    ).join('');
     setCurrentInfoDialogData({
       title: "Alignments",
       content: allAlignmentDescriptions,
@@ -521,7 +523,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     isEditable={true}
                   />
                 </div>
-                 {isPredefinedRace && (
+                {isPredefinedRace && (
                    <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={handleOpenRaceInfoDialog}>
                     <Info className="h-5 w-5" />
                   </Button>
@@ -550,46 +552,46 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
            {/* Class and Alignment */}
            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-             <div className="space-y-1">
-                <Label htmlFor="className">Class</Label>
-                <div className="flex items-center gap-2">
-                  <div className="flex-grow">
-                    <ComboboxPrimitive
-                      options={DND_CLASSES}
-                      value={character.classes[0]?.className || ''}
-                      onChange={handleClassChange}
-                      placeholder="Select or type class"
-                      searchPlaceholder="Search classes..."
-                      emptyPlaceholder="No class found. Type to add custom."
-                      isEditable={true}
-                    />
-                  </div>
-                   {isPredefinedClass && (
-                    <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
-                       onClick={() => {
-                          const classData = DND_CLASSES.find(c => c.value === character.classes[0]?.className);
-                          if (classData) {
-                              const classSpecificDetails = [];
-                              if (classData.hitDice) {
-                                  classSpecificDetails.push({ label: "Hit Dice", value: classData.hitDice, isBold: true });
-                              }
-                              handleOpenGenericInfoDialog(
-                                  classData.label,
-                                  classData.description,
-                                  classSpecificDetails
-                              );
-                          }
-                      }}>
-                      <Info className="h-5 w-5" />
-                    </Button>
-                  )}
-                  {!isPredefinedClass && character.classes[0]?.className && character.classes[0]?.className.trim() !== '' && (
-                    <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
-                  )}
+            <div className="space-y-1">
+              <Label htmlFor="className">Class</Label>
+              <div className="flex items-center gap-2">
+                <div className="flex-grow">
+                  <ComboboxPrimitive
+                    options={DND_CLASSES}
+                    value={character.classes[0]?.className || ''}
+                    onChange={handleClassChange}
+                    placeholder="Select or type class"
+                    searchPlaceholder="Search classes..."
+                    emptyPlaceholder="No class found. Type to add custom."
+                    isEditable={true}
+                  />
                 </div>
-                {selectedClassInfo && (
-                  <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: <strong className="font-bold">{selectedClassInfo.hitDice}</strong></p>
+                 {isPredefinedClass && (
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
+                     onClick={() => {
+                        const classData = DND_CLASSES.find(c => c.value === character.classes[0]?.className);
+                        if (classData) {
+                            const classSpecificDetails = [];
+                            if (classData.hitDice) {
+                                classSpecificDetails.push({ label: "Hit Dice", value: classData.hitDice, isBold: true });
+                            }
+                            handleOpenGenericInfoDialog(
+                                classData.label,
+                                classData.description,
+                                classSpecificDetails
+                            );
+                        }
+                    }}>
+                    <Info className="h-5 w-5" />
+                  </Button>
                 )}
+                {!isPredefinedClass && character.classes[0]?.className && character.classes[0]?.className.trim() !== '' && (
+                  <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
+                )}
+              </div>
+              {selectedClassInfo && (
+                  <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: <strong className="font-bold">{selectedClassInfo.hitDice}</strong></p>
+              )}
             </div>
             <div className="space-y-1">
                 <Label htmlFor="alignment">Alignment</Label>
@@ -659,7 +661,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                         <p>{ageEffectsDetails.categoryName}</p>
                       </>
                     ) : (
-                       <p>{ageEffectsDetails.categoryName !== "Adult" ? `${ageEffectsDetails.categoryName}: ` : ""}No impact on ability scores</p>
+                       <p>No impact on ability scores</p>
                     )}
                   </div>
                 )}
@@ -737,7 +739,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     min="1"
                   />
                   <p className="text-center text-sm mt-1">
-                    <span className="text-accent">Modifier: </span>
+                    <span className="text-accent">Modifier: </span> 
                     <span className={cn("font-bold", baseModifier > 0 && "text-emerald-500", baseModifier < 0 && "text-destructive", baseModifier === 0 && "text-accent")}>
                       {baseModifier >= 0 ? '+' : ''}{baseModifier}
                     </span>
@@ -753,7 +755,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                         )}>
                          {actualModifier >= 0 ? '+' : ''}{actualModifier}
                        </span>
-                       <Button
+                        <Button
                           type="button"
                           variant="ghost"
                           size="icon"
@@ -885,3 +887,5 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
+
+    
