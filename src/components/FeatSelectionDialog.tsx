@@ -23,6 +23,7 @@ import type { FeatDefinitionJsonData, Character } from '@/types/character';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { BookOpenText } from 'lucide-react';
 import { checkFeatPrerequisites, DND_FEATS } from '@/types/character'; 
+import { cn } from '@/lib/utils';
 
 interface FeatSelectionDialogProps {
   isOpen: boolean;
@@ -96,13 +97,16 @@ export function FeatSelectionDialog({
                       className="flex flex-col items-start p-3 hover:bg-accent/50 cursor-pointer"
                     >
                       <div className="font-medium text-sm text-foreground">{feat.label}</div>
-                      <p className="text-xs text-muted-foreground mt-0.5 whitespace-normal">{feat.description}</p>
+                      <div 
+                        className="text-xs text-muted-foreground mt-0.5 whitespace-normal prose prose-sm dark:prose-invert max-w-none"
+                        dangerouslySetInnerHTML={{ __html: feat.description }}
+                      />
                       {allPrereqMessages.length > 0 ? (
                           <p className="text-xs mt-0.5 whitespace-normal">
                             Prerequisites:{' '}
                             {allPrereqMessages.map((msg, index) => (
                               <React.Fragment key={index}>
-                                <span className={msg.type === 'unmet' ? 'text-destructive' : 'text-muted-foreground'}>
+                                <span className={cn("text-xs", msg.type === 'unmet' ? 'text-destructive' : 'text-muted-foreground')}>
                                   {msg.text}
                                 </span>
                                 {index < allPrereqMessages.length - 1 && ', '}
@@ -111,7 +115,7 @@ export function FeatSelectionDialog({
                           </p>
                         ) : (
                           (feat.prerequisites && Object.keys(feat.prerequisites).length > 0) &&
-                          <p className="text-xs mt-0.5 whitespace-normal">Prerequisites: None</p>
+                          <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground">Prerequisites: None</p>
                         )}
                     </CommandItem>
                   );
