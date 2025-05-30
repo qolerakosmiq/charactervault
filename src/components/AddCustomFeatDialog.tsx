@@ -31,7 +31,7 @@ interface AddCustomFeatDialogProps {
   allSkills: readonly ComboboxOption[];
 }
 
-const abilityOptions: Array<{ value: Exclude<AbilityName, 'none'>; label: string }> = [
+const abilityOptions: Array<{ value: Exclude<AbilityName, 'none'> | '__NONE__'; label: string }> = [
   { value: 'strength', label: 'Strength (STR)' },
   { value: 'dexterity', label: 'Dexterity (DEX)' },
   { value: 'constitution', label: 'Constitution (CON)' },
@@ -39,6 +39,8 @@ const abilityOptions: Array<{ value: Exclude<AbilityName, 'none'>; label: string
   { value: 'wisdom', label: 'Wisdom (WIS)' },
   { value: 'charisma', label: 'Charisma (CHA)' },
 ];
+
+const NONE_ABILITY_VALUE = "__NONE__"; // Unique value for "None"
 
 export function AddCustomFeatDialog({
   isOpen,
@@ -52,10 +54,11 @@ export function AddCustomFeatDialog({
   const [description, setDescription] = React.useState('');
   const [canTakeMultipleTimes, setCanTakeMultipleTimes] = React.useState(false);
   const [requiresSpecialization, setRequiresSpecialization] = React.useState('');
+  const [effectsText, setEffectsText] = React.useState('');
 
   // Structured Prerequisites State
   const [prereqBab, setPrereqBab] = React.useState('');
-  const [prereqAbilityName, setPrereqAbilityName] = React.useState<Exclude<AbilityName, 'none'> | ''>('');
+  const [prereqAbilityName, setPrereqAbilityName] = React.useState<Exclude<AbilityName, 'none'> | typeof NONE_ABILITY_VALUE>(NONE_ABILITY_VALUE);
   const [prereqAbilityScore, setPrereqAbilityScore] = React.useState('');
   const [prereqSkillId, setPrereqSkillId] = React.useState('');
   const [prereqSkillRanks, setPrereqSkillRanks] = React.useState('');
@@ -72,6 +75,7 @@ export function AddCustomFeatDialog({
         setDescription(initialFeatData.description || '');
         setCanTakeMultipleTimes(initialFeatData.canTakeMultipleTimes || false);
         setRequiresSpecialization(initialFeatData.requiresSpecialization || '');
+        setEffectsText(initialFeatData.effectsText || '');
 
         // Populate structured prerequisites
         const prereqs = initialFeatData.prerequisites;
@@ -81,7 +85,7 @@ export function AddCustomFeatDialog({
           setPrereqAbilityName(firstAbility);
           setPrereqAbilityScore(prereqs.abilities[firstAbility]?.toString() || '');
         } else {
-          setPrereqAbilityName('');
+          setPrereqAbilityName(NONE_ABILITY_VALUE);
           setPrereqAbilityScore('');
         }
         setPrereqSkillId(prereqs?.skills?.[0]?.id || '');
@@ -95,8 +99,9 @@ export function AddCustomFeatDialog({
         setDescription('');
         setCanTakeMultipleTimes(false);
         setRequiresSpecialization('');
+        setEffectsText('');
         setPrereqBab('');
-        setPrereqAbilityName('');
+        setPrereqAbilityName(NONE_ABILITY_VALUE);
         setPrereqAbilityScore('');
         setPrereqSkillId('');
         setPrereqSkillRanks('');
@@ -115,8 +120,8 @@ export function AddCustomFeatDialog({
 
     const structuredPrerequisites: FeatPrerequisiteDetails = {};
     if (prereqBab.trim() !== '') structuredPrerequisites.bab = parseInt(prereqBab, 10);
-    if (prereqAbilityName && prereqAbilityScore.trim() !== '') {
-      structuredPrerequisites.abilities = { [prereqAbilityName]: parseInt(prereqAbilityScore, 10) };
+    if (prereqAbilityName && prereqAbilityName !== NONE_ABILITY_VALUE && prereqAbilityScore.trim() !== '') {
+      structuredPrerequisites.abilities = { [prereqAbilityName as Exclude<AbilityName, 'none'>]: parseInt(prereqAbilityScore, 10) };
     }
     if (prereqSkillId && prereqSkillRanks.trim() !== '') {
       structuredPrerequisites.skills = [{ id: prereqSkillId, ranks: parseInt(prereqSkillRanks, 10) }];
@@ -132,7 +137,7 @@ export function AddCustomFeatDialog({
       name: featName.trim(),
       description: description.trim() || undefined,
       prerequisites: Object.keys(structuredPrerequisites).length > 0 ? structuredPrerequisites : undefined,
-      // effectsText will be handled by a separate section if needed
+      effectsText: effectsText.trim() || undefined,
       canTakeMultipleTimes,
       requiresSpecialization: requiresSpecialization.trim() || undefined,
       isCustom: true,
@@ -214,16 +219,16 @@ export function AddCustomFeatDialog({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
               <div className="space-y-1">
                 <Label htmlFor="prereq-ability-name">Ability Score</Label>
-                <Select value={prereqAbilityName} onValueChange={(val) => setPrereqAbilityName(val as Exclude<AbilityName, 'none'> | '')}>
+                <Select value={prereqAbilityName} onValueChange={(val) => setPrereqAbilityName(val as Exclude<AbilityName, 'none'> | typeof NONE_ABILITY_VALUE)}>
                   <SelectTrigger><SelectValue placeholder="Select Ability..." /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
+                    <SelectItem value={NONE_ABILITY_VALUE}>None</SelectItem>
                     {abilityOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1">
-                <Input id="prereq-ability-score" type="number" value={prereqAbilityScore} onChange={(e) => setPrereqAbilityScore(e.target.value)} placeholder="Min Score" disabled={!prereqAbilityName} />
+                <Input id="prereq-ability-score" type="number" value={prereqAbilityScore} onChange={(e) => setPrereqAbilityScore(e.target.value)} placeholder="Min Score" disabled={prereqAbilityName === NONE_ABILITY_VALUE} />
               </div>
             </div>
 
@@ -268,8 +273,8 @@ export function AddCustomFeatDialog({
               <Label htmlFor="custom-feat-effects-text">Describe Effects</Label>
               <Textarea
                 id="custom-feat-effects-text"
-                value={initialFeatData?.effectsText || ''} // Placeholder for textual effects if needed later
-                onChange={(e) => { /* Update effectsText state if you add it */ }}
+                value={effectsText} 
+                onChange={(e) => setEffectsText(e.target.value)}
                 placeholder="Describe the feat's effects (e.g., +2 damage with greatswords). This is textual only."
                 rows={2}
               />
@@ -289,3 +294,4 @@ export function AddCustomFeatDialog({
     </Dialog>
   );
 }
+
