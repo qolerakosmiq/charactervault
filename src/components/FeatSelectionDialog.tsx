@@ -33,6 +33,20 @@ interface FeatSelectionDialogProps {
   character: Character;
 }
 
+// Simple HTML stripper for search purposes
+const stripHtml = (html: string): string => {
+  // Replace <br> tags with spaces, then remove other common tags like <b>, <i>, <p>
+  let text = html.replace(/<br\s*\/?>/gi, ' ');
+  text = text.replace(/<\/?b>/gi, '');
+  text = text.replace(/<\/?i>/gi, '');
+  text = text.replace(/<\/?p>/gi, ' ');
+  // Remove any remaining HTML tags
+  text = text.replace(/<[^>]+>/g, '');
+  // Replace multiple spaces with a single space and trim
+  return text.replace(/\s\s+/g, ' ').trim();
+};
+
+
 export function FeatSelectionDialog({
   isOpen,
   onOpenChange,
@@ -43,19 +57,20 @@ export function FeatSelectionDialog({
 
   const [searchTerm, setSearchTerm] = React.useState('');
 
-  const filteredFeats = React.useMemo(() => {
-    if (!searchTerm.trim()) return allFeats;
-    const lowerSearchTerm = searchTerm.toLowerCase();
-    return allFeats.filter(feat =>
-      feat.label.toLowerCase().includes(lowerSearchTerm) ||
-      feat.description.toLowerCase().includes(lowerSearchTerm)
-      // Prerequisite search removed as per request
-    );
-  }, [allFeats, searchTerm]);
+  // CMDK will filter based on CommandItem's value prop, so pre-filtering here is not needed
+  // and was preventing description search.
+  // const filteredFeats = React.useMemo(() => {
+  //   if (!searchTerm.trim()) return allFeats;
+  //   const lowerSearchTerm = searchTerm.toLowerCase();
+  //   return allFeats.filter(feat =>
+  //     feat.label.toLowerCase().includes(lowerSearchTerm) ||
+  //     stripHtml(feat.description.toLowerCase()).includes(lowerSearchTerm)
+  //   );
+  // }, [allFeats, searchTerm]);
 
   React.useEffect(() => {
     if (!isOpen) {
-      setSearchTerm('');
+      setSearchTerm(''); // Reset search term when dialog closes
     }
   }, [isOpen]);
 
@@ -74,13 +89,13 @@ export function FeatSelectionDialog({
           <CommandInput
             placeholder="Search feats by name or description..."
             value={searchTerm}
-            onValueChange={setSearchTerm}
+            onValueChange={setSearchTerm} // Update searchTerm for CMDK to use
           />
           <ScrollArea className="flex-grow min-h-0">
             <CommandList className="max-h-none"> {/* Ensure list can expand */}
               <CommandEmpty>No feats found.</CommandEmpty>
               <CommandGroup>
-                {filteredFeats.map((feat) => {
+                {allFeats.map((feat) => { // Iterate over allFeats, CMDK will handle filtering
                   const prereqStatus = checkFeatPrerequisites(feat, character, DND_FEATS);
                   const allPrereqMessages = [
                     ...prereqStatus.metMessages.map(msg => ({ text: msg, type: 'met' as const })),
@@ -90,7 +105,8 @@ export function FeatSelectionDialog({
                   return (
                     <CommandItem
                       key={feat.value}
-                      value={feat.label} // cmdk uses this for internal matching if not overridden
+                      // CMDK filters based on this 'value'. Include label and stripped description.
+                      value={`${feat.label} ${stripHtml(feat.description)}`}
                       onSelect={() => {
                         onFeatSelected(feat.value);
                         onOpenChange(false);
@@ -102,7 +118,7 @@ export function FeatSelectionDialog({
                         className="text-xs text-muted-foreground mt-0.5 whitespace-normal"
                         dangerouslySetInnerHTML={{ __html: feat.description }}
                       />
-                      {(allPrereqMessages.length > 0 || (feat.prerequisites && Object.keys(feat.prerequisites).length > 0)) ? (
+                      {(allPrereqMessages.length > 0 || (feat.prerequisites && Object.keys(feat.prerequisites).length > 0 && !feat.prerequisites.special)) || (feat.prerequisites?.special) ? (
                           <p className="text-xs mt-0.5 whitespace-normal">
                             Prerequisites:{' '}
                             {allPrereqMessages.length > 0 ?
