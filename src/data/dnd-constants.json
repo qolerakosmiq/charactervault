@@ -41,33 +41,105 @@
         "listen": 2,
         "search": 2,
         "spot": 2
-      }
+      },
+      "abilityModifiers": { "dexterity": 2, "constitution": -2 }
     },
     {
       "value": "dwarf",
       "label": "Dwarf",
-      "description": "Dwarves are known for their skill in warfare, their ability to withstand physical and magical punishment, their knowledge of the earth’s secrets, their hard work, and their capacity for drinking ale. Their kingdoms are spread across the mountains of the world, where they mine gems and precious metals and forge items of wonder."
+      "description": "Dwarves are known for their skill in warfare, their ability to withstand physical and magical punishment, their knowledge of the earth’s secrets, their hard work, and their capacity for drinking ale. Their kingdoms are spread across the mountains of the world, where they mine gems and precious metals and forge items of wonder.",
+      "abilityModifiers": { "constitution": 2, "charisma": -2 }
     },
-    { "value": "halfling", "label": "Halfling", "description": "Halflings are an affable and cheerful people. They cherish the bonds of family and friendship as well as the comforts of hearth and home, harboring few dreams of gold or glory. Even adventurers among them usually venture into the world for reasons of community, friendship, wanderlust, or curiosity." },
-    { "value": "gnome", "label": "Gnome", "description": "Gnomes are welcome everywhere as technicians, alchemists, and inventors. Despite the demand for their skills, most gnomes prefer to remain among their own kind, living in comfortable burrows beneath rolling, wooded hills." },
-    { "value": "half-elf", "label": "Half-Elf", "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves." },
-    { "value": "half-orc", "label": "Half-Orc", "description": "Half-orcs’ grayish pigmentation, sloping foreheads, jutting jaws, prominent teeth, and towering builds make their orcish heritage plain for all to see. Whether united under the leadership of a mighty warlock or having fought their way to freedom, half-orcs are driven by a fierce determination to prove their worth." }
+    {
+      "value": "halfling",
+      "label": "Halfling",
+      "description": "Halflings are an affable and cheerful people. They cherish the bonds of family and friendship as well as the comforts of hearth and home, harboring few dreams of gold or glory. Even adventurers among them usually venture into the world for reasons of community, friendship, wanderlust, or curiosity.",
+      "abilityModifiers": { "dexterity": 2, "strength": -2 }
+    },
+    {
+      "value": "gnome",
+      "label": "Gnome",
+      "description": "Gnomes are welcome everywhere as technicians, alchemists, and inventors. Despite the demand for their skills, most gnomes prefer to remain among their own kind, living in comfortable burrows beneath rolling, wooded hills.",
+      "abilityModifiers": { "constitution": 2, "strength": -2 }
+    },
+    {
+      "value": "half-elf",
+      "label": "Half-Elf",
+      "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves."
+    },
+    {
+      "value": "half-orc",
+      "label": "Half-Orc",
+      "description": "Half-orcs’ grayish pigmentation, sloping foreheads, jutting jaws, prominent teeth, and towering builds make their orcish heritage plain for all to see. Whether united under the leadership of a mighty warlock or having fought their way to freedom, half-orcs are driven by a fierce determination to prove their worth.",
+      "abilityModifiers": { "strength": 2, "intelligence": -2, "charisma": -2 }
+    }
   ],
   "DND_CLASSES_DATA": [
-    { "value": "barbarian", "label": "Barbarian", "hitDice": "d12" },
-    { "value": "bard", "label": "Bard", "hitDice": "d6" },
-    { "value": "cleric", "label": "Cleric", "hitDice": "d8" },
-    { "value": "druid", "label": "Druid", "hitDice": "d8" },
-    { "value": "fighter", "label": "Fighter", "hitDice": "d10" },
-    { "value": "monk", "label": "Monk", "hitDice": "d8" },
-    { "value": "paladin", "label": "Paladin", "hitDice": "d10" },
-    { "value": "ranger", "label": "Ranger", "hitDice": "d8" },
-    { "value": "rogue", "label": "Rogue", "hitDice": "d6" },
-    { "value": "sorcerer", "label": "Sorcerer", "hitDice": "d4" },
+    {
+      "value": "barbarian",
+      "label": "Barbarian",
+      "hitDice": "d12",
+      "description": "Barbarians are savage warriors from the wild frontiers, relying on their primal fury and immense strength. They are often tribal, disdainful of civilization, and fiercely independent. Alignment: Any nonlawful. Religion: Barbarians may revere animal spirits, nature deities, or ancestors. Background: Often outcasts or members of nomadic tribes. Races: Humans and half-orcs are common barbarians."
+    },
+    {
+      "value": "bard",
+      "label": "Bard",
+      "hitDice": "d6",
+      "description": "Bards are versatile performers, weaving magic through music and words. They are storytellers, diplomats, and adventurers, often charismatic and quick-witted. Alignment: Any nonlawful. Religion: Bards may follow deities of art, travel, or trickery. Background: Often from performing troupes, scholarly institutions, or simply wanderers. Races: Humans, elves, and half-elves frequently become bards."
+    },
+    {
+      "value": "cleric",
+      "label": "Cleric",
+      "hitDice": "d8",
+      "description": "Clerics are divine agents, channeling the power of their chosen deity to heal the sick, smite the wicked, or protect the faithful. They are masters of divine magic and often serve as spiritual leaders. Alignment: Must be within one step of their deity's alignment. Religion: Central to their identity, clerics serve a specific deity from the pantheon. Background: Usually trained in temples or religious orders. Races: All races produce clerics, as faith is universal."
+    },
+    {
+      "value": "druid",
+      "label": "Druid",
+      "hitDice": "d8",
+      "description": "Druids are guardians of the natural world, drawing power from the untamed wilderness. They can shapeshift into animals, command plants, and call upon nature's fury. Alignment: Any neutral (Neutral Good, Lawful Neutral, True Neutral, Chaotic Neutral, or Neutral Evil). Religion: Druids revere nature itself or specific nature deities. Background: Often solitary hermits, members of ancient circles, or protectors of sacred groves. Races: Humans, elves, and gnomes often feel the call of the wild."
+    },
+    {
+      "value": "fighter",
+      "label": "Fighter",
+      "hitDice": "d10",
+      "description": "Fighters are masters of martial combat, excelling with all forms of weapons and armor. They are the backbone of armies, the sellswords in taverns, and the dedicated protectors of kingdoms. Alignment: Any. Religion: Fighters may worship deities of war, strength, or protection, or none at all. Background: Varied, from noble knights to grizzled mercenaries or simple village guards. Races: All races produce skilled fighters, especially humans, dwarves, and half-orcs."
+    },
+    {
+      "value": "monk",
+      "label": "Monk",
+      "hitDice": "d8",
+      "description": "Monks are disciplined warriors who perfect their bodies and minds to achieve extraordinary martial prowess. They eschew armor and traditional weapons, relying on their ki-powered unarmed strikes and mystical abilities. Alignment: Must be lawful. Religion: Monks often follow philosophies of discipline and self-perfection, sometimes tied to specific deities of law or enlightenment. Background: Typically trained in remote monasteries. Races: Humans are the most common monks, but any race with discipline can walk the path."
+    },
+    {
+      "value": "paladin",
+      "label": "Paladin",
+      "hitDice": "d10",
+      "description": "Paladins are holy champions of righteousness, sworn to uphold justice and smite evil. They are granted divine powers to aid their cause, including healing, protection, and the ability to turn undead. Alignment: Must be Lawful Good. Religion: Paladins are devoted servants of good-aligned deities. Background: Often from noble or devout families, trained in holy orders. Races: Humans are the most common paladins, but any creature with a pure heart can be called."
+    },
+    {
+      "value": "ranger",
+      "label": "Ranger",
+      "hitDice": "d8",
+      "description": "Rangers are skilled hunters and trackers, at home in the wilderness and adept at fighting specific types of creatures. They often possess some divine magic related to nature and an animal companion. Alignment: Any. Religion: Rangers often revere nature deities or gods of the hunt. Background: Typically raised in borderlands, deep forests, or among reclusive communities. Races: Elves, half-elves, and humans make excellent rangers."
+    },
+    {
+      "value": "rogue",
+      "label": "Rogue",
+      "hitDice": "d6",
+      "description": "Rogues are masters of stealth, trickery, and skill. They excel at disarming traps, picking locks, and striking from the shadows. They can be charming scoundrels, deadly assassins, or cunning investigators. Alignment: Any. Religion: Rogues often favor deities of luck, shadows, or thievery, or remain unaffiliated. Background: From street urchins to guild thieves or spies. Races: Halflings, elves, and humans are often drawn to the rogue's path."
+    },
+    {
+      "value": "sorcerer",
+      "label": "Sorcerer",
+      "hitDice": "d4",
+      "description": "Sorcerers wield arcane magic through innate talent, often stemming from draconic or fey ancestry. Their magic is intuitive and flexible, not learned through rigorous study. Alignment: Any. Religion: Sorcerers have varied religious beliefs, if any. Background: Their powers often manifest unexpectedly, leading to diverse life paths. Races: Humans and those with magical bloodlines (like half-elves with fey heritage) are common sorcerers."
+    },
     {
       "value": "wizard",
       "label": "Wizard",
       "hitDice": "d4",
+      "description": "Wizards are scholars of the arcane, mastering magic through intense study, research, and practice. They command a vast repertoire of spells, prepared daily from their spellbooks. Alignment: Any. Religion: Wizards often worship deities of knowledge, magic, or secrets, or focus purely on arcane pursuits. Background: Typically educated in academies, mentored by master wizards, or self-taught through ancient tomes. Races: Humans, elves, and gnomes are most commonly drawn to wizardry.",
       "grantedFeats": [
         { "featId": "scribe-scroll", "note": "(Wizard Bonus Feat)", "levelAcquired": 1 }
       ]
@@ -234,7 +306,7 @@
     "dwarf": "dwarf-aging",
     "gnome": "gnome-aging",
     "halfling": "halfling-aging",
-    "half-elf": "elf-aging", 
+    "half-elf": "elf-aging",
     "half-orc": "orc-aging"
   },
   "DND_RACE_AGING_EFFECTS_DATA": {
@@ -305,62 +377,62 @@
     "human": 1
   },
   "SKILL_DEFINITIONS_DATA": [
-    { "value": "appraise", "label": "Appraise", "keyAbility": "intelligence", "description": "Estimate the monetary value of an item or service." },
-    { "value": "balance", "label": "Balance", "keyAbility": "dexterity", "description": "Maintain your equilibrium when trying to stand on a narrow or treacherous surface." },
-    { "value": "bluff", "label": "Bluff", "keyAbility": "charisma", "description": "Deceive others, either verbally or through your actions." },
-    { "value": "climb", "label": "Climb", "keyAbility": "strength", "description": "Scale a wall or steep incline." },
-    { "value": "concentration", "label": "Concentration", "keyAbility": "constitution", "description": "Focus your mind to cast a spell or use a spell-like ability in distracting circumstances." },
-    { "value": "craft-alchemy", "label": "Craft (Alchemy)", "keyAbility": "intelligence", "description": "Create alchemical items such as antitoxin, alchemist's fire, or tanglefoot bags." },
-    { "value": "craft-armorsmithing", "label": "Craft (Armorsmithing)", "keyAbility": "intelligence", "description": "Create and repair metal armor." },
-    { "value": "craft-bowmaking", "label": "Craft (Bowmaking)", "keyAbility": "intelligence", "description": "Create and repair bows and crossbows." },
-    { "value": "craft-weaponsmithing", "label": "Craft (Weaponsmithing)", "keyAbility": "intelligence", "description": "Create and repair metal weapons." },
-    { "value": "craft-trapmaking", "label": "Craft (Trapmaking)", "keyAbility": "intelligence", "description": "Create mechanical traps." },
-    { "value": "craft-pottery", "label": "Craft (Pottery)", "keyAbility": "intelligence", "description": "Create ceramic objects." },
-    { "value": "craft-painting", "label": "Craft (Painting)", "keyAbility": "intelligence", "description": "Create paintings or illustrations." },
-    { "value": "decipher-script", "label": "Decipher Script", "keyAbility": "intelligence", "description": "Figure out the meaning of writings in an unknown language or code." },
-    { "value": "diplomacy", "label": "Diplomacy", "keyAbility": "charisma", "description": "Influence others' attitudes or behavior through negotiation and tact." },
-    { "value": "disable-device", "label": "Disable Device", "keyAbility": "intelligence", "description": "Disable a trap or sabotage a mechanism." },
-    { "value": "disguise", "label": "Disguise", "keyAbility": "charisma", "description": "Change your appearance." },
-    { "value": "escape-artist", "label": "Escape Artist", "keyAbility": "dexterity", "description": "Slip out of bonds, wriggle through tight spaces, or escape a grapple." },
-    { "value": "forgery", "label": "Forgery", "keyAbility": "intelligence", "description": "Create a convincing written fake." },
-    { "value": "gather-information", "label": "Gather Information", "keyAbility": "charisma", "description": "Make inquiries and pick up rumors." },
-    { "value": "handle-animal", "label": "Handle Animal", "keyAbility": "charisma", "description": "Work with animals, domestic or wild." },
-    { "value": "heal", "label": "Heal", "keyAbility": "wisdom", "description": "Provide medical aid, treat wounds, or diagnose illnesses." },
-    { "value": "hide", "label": "Hide", "keyAbility": "dexterity", "description": "Fade into the shadows or use cover to escape detection." },
-    { "value": "intimidate", "label": "Intimidate", "keyAbility": "charisma", "description": "Cow or frighten others into doing what you want." },
-    { "value": "jump", "label": "Jump", "keyAbility": "strength", "description": "Make standing or running jumps." },
-    { "value": "knowledge-arcana", "label": "Knowledge (Arcana)", "keyAbility": "intelligence", "description": "Understand ancient mysteries, magic traditions, arcane symbols, and similar topics." },
-    { "value": "knowledge-architecture-and-engineering", "label": "Knowledge (Architecture & Engineering)", "keyAbility": "intelligence", "description": "Understand construction, fortifications, and siege engines." },
-    { "value": "knowledge-dungeoneering", "label": "Knowledge (Dungeoneering)", "keyAbility": "intelligence", "description": "Know about caverns, passages, and underground creatures." },
-    { "value": "knowledge-geography", "label": "Knowledge (Geography)", "keyAbility": "intelligence", "description": "Know about lands, terrain, climate, and people." },
-    { "value": "knowledge-history", "label": "Knowledge (History)", "keyAbility": "intelligence", "description": "Know about royalty, wars, colonies, migrations, and founding of cities." },
-    { "value": "knowledge-local", "label": "Knowledge (Local)", "keyAbility": "intelligence", "description": "Know about local legends, personalities, inhabitants, laws, customs, traditions, and humanoids." },
-    { "value": "knowledge-nature", "label": "Knowledge (Nature)", "keyAbility": "intelligence", "description": "Know about animals, plants, seasons and cycles, weather, vermin, and fey." },
-    { "value": "knowledge-nobility-and-royalty", "label": "Knowledge (Nobility & Royalty)", "keyAbility": "intelligence", "description": "Know about lineages, heraldry, and the customs of the nobility." },
-    { "value": "knowledge-religion", "label": "Knowledge (Religion)", "keyAbility": "intelligence", "description": "Know about gods and goddesses, mythic history, ecclesiastic tradition, holy symbols, and the undead." },
-    { "value": "knowledge-the-planes", "label": "Knowledge (The Planes)", "keyAbility": "intelligence", "description": "Know about the Inner Planes, Outer Planes, Astral Plane, Ethereal Plane, outsiders, and planar magic." },
-    { "value": "listen", "label": "Listen", "keyAbility": "wisdom", "description": "Hear noises, including the sound of someone moving stealthily." },
-    { "value": "move-silently", "label": "Move Silently", "keyAbility": "dexterity", "description": "Move quietly to avoid detection." },
-    { "value": "open-lock", "label": "Open Lock", "keyAbility": "dexterity", "description": "Open a nonmagical lock." },
-    { "value": "perform-act", "label": "Perform (Act)", "keyAbility": "charisma", "description": "Entertain an audience with acting." },
-    { "value": "perform-sing", "label": "Perform (Sing)", "keyAbility": "charisma", "description": "Entertain an audience with singing." },
-    { "value": "perform-dance", "label": "Perform (Dance)", "keyAbility": "charisma", "description": "Entertain an audience with dancing." },
-    { "value": "perform-oratory", "label": "Perform (Oratory)", "keyAbility": "charisma", "description": "Entertain an audience with storytelling or public speaking." },
-    { "value": "perform-string-instrument", "label": "Perform (String Instrument)", "keyAbility": "charisma", "description": "Entertain an audience with a string instrument." },
-    { "value": "profession-herbalist", "label": "Profession (Herbalist)", "keyAbility": "wisdom", "description": "Earn a living through knowledge of herbs." },
-    { "value": "profession-sailor", "label": "Profession (Sailor)", "keyAbility": "wisdom", "description": "Earn a living as a sailor." },
-    { "value": "ride", "label": "Ride", "keyAbility": "dexterity", "description": "Ride a mount, typically a horse." },
-    { "value": "search", "label": "Search", "keyAbility": "intelligence", "description": "Find simple traps, secret doors, or other hidden objects or features." },
-    { "value": "sense-motive", "label": "Sense Motive", "keyAbility": "wisdom", "description": "Discern if someone is being deceptive or telling the truth." },
-    { "value": "sleight-of-hand", "label": "Sleight of Hand", "keyAbility": "dexterity", "description": "Perform acts of legerdemain, such as picking pockets or concealing an object." },
-    { "value": "speak-language", "label": "Speak Language", "keyAbility": "none", "description": "Understand and speak a language other than your native tongue." },
-    { "value": "spellcraft", "label": "Spellcraft", "keyAbility": "intelligence", "description": "Identify a spell being cast, or a spell effect. Also used to learn spells from scrolls and to craft magic items." },
-    { "value": "spot", "label": "Spot", "keyAbility": "wisdom", "description": "Notice something out of the ordinary, such as a hidden creature or object." },
-    { "value": "survival", "label": "Survival", "keyAbility": "wisdom", "description": "Find your way in the wilderness, avoid natural hazards, and live off the land." },
-    { "value": "swim", "label": "Swim", "keyAbility": "strength", "description": "Move through water." },
-    { "value": "tumble", "label": "Tumble", "keyAbility": "dexterity", "description": "Perform acrobatic maneuvers, such as moving through threatened areas without provoking attacks of opportunity." },
-    { "value": "use-magic-device", "label": "Use Magic Device", "keyAbility": "charisma", "description": "Activate magic items, such as scrolls or wands, that you otherwise couldn't use." },
-    { "value": "use-rope", "label": "Use Rope", "keyAbility": "dexterity", "description": "Tie knots, secure a grappling hook, or bind a prisoner." }
+    { "value": "appraise", "label": "Appraise", "keyAbility": "intelligence", "description": "" },
+    { "value": "balance", "label": "Balance", "keyAbility": "dexterity", "description": "" },
+    { "value": "bluff", "label": "Bluff", "keyAbility": "charisma", "description": "" },
+    { "value": "climb", "label": "Climb", "keyAbility": "strength", "description": "" },
+    { "value": "concentration", "label": "Concentration", "keyAbility": "constitution", "description": "" },
+    { "value": "craft-alchemy", "label": "Craft (Alchemy)", "keyAbility": "intelligence", "description": "" },
+    { "value": "craft-armorsmithing", "label": "Craft (Armorsmithing)", "keyAbility": "intelligence", "description": "" },
+    { "value": "craft-bowmaking", "label": "Craft (Bowmaking)", "keyAbility": "intelligence", "description": "" },
+    { "value": "craft-weaponsmithing", "label": "Craft (Weaponsmithing)", "keyAbility": "intelligence", "description": "" },
+    { "value": "craft-trapmaking", "label": "Craft (Trapmaking)", "keyAbility": "intelligence", "description": "" },
+    { "value": "craft-pottery", "label": "Craft (Pottery)", "keyAbility": "intelligence", "description": "" },
+    { "value": "craft-painting", "label": "Craft (Painting)", "keyAbility": "intelligence", "description": "" },
+    { "value": "decipher-script", "label": "Decipher Script", "keyAbility": "intelligence", "description": "" },
+    { "value": "diplomacy", "label": "Diplomacy", "keyAbility": "charisma", "description": "" },
+    { "value": "disable-device", "label": "Disable Device", "keyAbility": "intelligence", "description": "" },
+    { "value": "disguise", "label": "Disguise", "keyAbility": "charisma", "description": "" },
+    { "value": "escape-artist", "label": "Escape Artist", "keyAbility": "dexterity", "description": "" },
+    { "value": "forgery", "label": "Forgery", "keyAbility": "intelligence", "description": "" },
+    { "value": "gather-information", "label": "Gather Information", "keyAbility": "charisma", "description": "" },
+    { "value": "handle-animal", "label": "Handle Animal", "keyAbility": "charisma", "description": "" },
+    { "value": "heal", "label": "Heal", "keyAbility": "wisdom", "description": "" },
+    { "value": "hide", "label": "Hide", "keyAbility": "dexterity", "description": "" },
+    { "value": "intimidate", "label": "Intimidate", "keyAbility": "charisma", "description": "" },
+    { "value": "jump", "label": "Jump", "keyAbility": "strength", "description": "" },
+    { "value": "knowledge-arcana", "label": "Knowledge (Arcana)", "keyAbility": "intelligence", "description": "" },
+    { "value": "knowledge-architecture-and-engineering", "label": "Knowledge (Architecture & Engineering)", "keyAbility": "intelligence", "description": "" },
+    { "value": "knowledge-dungeoneering", "label": "Knowledge (Dungeoneering)", "keyAbility": "intelligence", "description": "" },
+    { "value": "knowledge-geography", "label": "Knowledge (Geography)", "keyAbility": "intelligence", "description": "" },
+    { "value": "knowledge-history", "label": "Knowledge (History)", "keyAbility": "intelligence", "description": "" },
+    { "value": "knowledge-local", "label": "Knowledge (Local)", "keyAbility": "intelligence", "description": "" },
+    { "value": "knowledge-nature", "label": "Knowledge (Nature)", "keyAbility": "intelligence", "description": "" },
+    { "value": "knowledge-nobility-and-royalty", "label": "Knowledge (Nobility & Royalty)", "keyAbility": "intelligence", "description": "" },
+    { "value": "knowledge-religion", "label": "Knowledge (Religion)", "keyAbility": "intelligence", "description": "" },
+    { "value": "knowledge-the-planes", "label": "Knowledge (The Planes)", "keyAbility": "intelligence", "description": "" },
+    { "value": "listen", "label": "Listen", "keyAbility": "wisdom", "description": "" },
+    { "value": "move-silently", "label": "Move Silently", "keyAbility": "dexterity", "description": "" },
+    { "value": "open-lock", "label": "Open Lock", "keyAbility": "dexterity", "description": "" },
+    { "value": "perform-act", "label": "Perform (Act)", "keyAbility": "charisma", "description": "" },
+    { "value": "perform-sing", "label": "Perform (Sing)", "keyAbility": "charisma", "description": "" },
+    { "value": "perform-dance", "label": "Perform (Dance)", "keyAbility": "charisma", "description": "" },
+    { "value": "perform-oratory", "label": "Perform (Oratory)", "keyAbility": "charisma", "description": "" },
+    { "value": "perform-string-instrument", "label": "Perform (String Instrument)", "keyAbility": "charisma", "description": "" },
+    { "value": "profession-herbalist", "label": "Profession (Herbalist)", "keyAbility": "wisdom", "description": "" },
+    { "value": "profession-sailor", "label": "Profession (Sailor)", "keyAbility": "wisdom", "description": "" },
+    { "value": "ride", "label": "Ride", "keyAbility": "dexterity", "description": "" },
+    { "value": "search", "label": "Search", "keyAbility": "intelligence", "description": "" },
+    { "value": "sense-motive", "label": "Sense Motive", "keyAbility": "wisdom", "description": "" },
+    { "value": "sleight-of-hand", "label": "Sleight of Hand", "keyAbility": "dexterity", "description": "" },
+    { "value": "speak-language", "label": "Speak Language", "keyAbility": "none", "description": "" },
+    { "value": "spellcraft", "label": "Spellcraft", "keyAbility": "intelligence", "description": "" },
+    { "value": "spot", "label": "Spot", "keyAbility": "wisdom", "description": "" },
+    { "value": "survival", "label": "Survival", "keyAbility": "wisdom", "description": "" },
+    { "value": "swim", "label": "Swim", "keyAbility": "strength", "description": "" },
+    { "value": "tumble", "label": "Tumble", "keyAbility": "dexterity", "description": "" },
+    { "value": "use-magic-device", "label": "Use Magic Device", "keyAbility": "charisma", "description": "" },
+    { "value": "use-rope", "label": "Use Rope", "keyAbility": "dexterity", "description": "" }
   ],
   "CLASS_SKILLS_DATA": {
     "barbarian": ["climb", "craft-alchemy", "craft-armorsmithing", "craft-bowmaking", "craft-weaponsmithing", "craft-trapmaking", "handle-animal", "intimidate", "jump", "listen", "ride", "survival", "swim"],

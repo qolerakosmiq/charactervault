@@ -28,7 +28,7 @@ export interface Skill {
 
 export interface FeatPrerequisiteDetails {
   bab?: number;
-  abilities?: Partial<Record<AbilityName, number>>;
+  abilities?: Partial<Record<Exclude<AbilityName, 'none'>, number>>;
   skills?: Array<{ id: string; ranks: number }>; // Skill ID (kebab-case)
   feats?: string[]; // Feat IDs (kebab-case)
   casterLevel?: number;
@@ -36,8 +36,8 @@ export interface FeatPrerequisiteDetails {
 }
 
 export interface FeatEffectDetails {
-  skills?: Record<string, number>; // Skill ID (kebab-case) to bonus
-  abilities?: Partial<Record<AbilityName, number>>; // Ability to bonus/penalty
+  skills?: Record<string, number>; // skillId (kebab-case): bonus
+  abilities?: Partial<Record<Exclude<AbilityName, 'none'>, number>>; // Ability to bonus/penalty
 }
 
 export type FeatDefinitionJsonData = {
@@ -72,7 +72,7 @@ export interface Item {
 }
 
 export type AbilityName = 'strength' | 'dexterity' | 'constitution' | 'intelligence' | 'wisdom' | 'charisma' | 'none';
-const ABILITY_ORDER: AbilityName[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+const ABILITY_ORDER: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
 
 export interface AbilityScores {
@@ -143,12 +143,15 @@ export type DndRaceOption = typeof constantsData.DND_RACES_DATA[number] & {
   racialSkillBonuses?: Record<string, number>; // skillId (kebab-case): bonus
   grantedFeats?: Array<{ featId: string; note?: string; levelAcquired?: number }>; // featId (kebab-case)
   bonusFeatSlots?: number;
+  abilityModifiers?: Partial<Record<Exclude<AbilityName, 'none'>, number>>;
 };
 export type DndRaceId = DndRaceOption['value']; // kebab-case ID
 export const DND_RACES: ReadonlyArray<DndRaceOption> = constantsData.DND_RACES_DATA as ReadonlyArray<DndRaceOption>;
 
 
 export type DndClassOption = typeof constantsData.DND_CLASSES_DATA[number] & {
+  hitDice: string;
+  description: string;
   grantedFeats?: Array<{ featId: string; note?: string; levelAcquired?: number }>; // featId (kebab-case)
 };
 export type DndClassId = DndClassOption['value']; // kebab-case ID
@@ -209,7 +212,7 @@ export type RaceAgingCategoryKey = keyof typeof constantsData.DND_RACE_AGING_EFF
 interface AgeCategoryEffectData {
   categoryName: string; // kebab-case e.g., "middle-age"
   ageFactor: number;
-  effects: Partial<Record<AbilityName, number>>;
+  effects: Partial<Record<Exclude<AbilityName, 'none'>, number>>;
 }
 
 interface RaceAgingInfoData {
@@ -234,7 +237,7 @@ export function getNetAgingEffects(raceId: DndRaceId | '', age: number): AgingEf
   if (!raceAgingPattern) return { categoryName: "Adult", effects: [] };
 
   let currentCategoryKey: string = "adult"; // Use kebab-case "adult" as a default key
-  let highestAttainedCategoryEffects: Partial<Record<AbilityName, number>> | null = null;
+  let highestAttainedCategoryEffects: Partial<Record<Exclude<AbilityName, 'none'>, number>> | null = null;
 
   const sortedCategories = [...raceAgingPattern.categories].sort((a, b) => a.ageFactor - b.ageFactor);
 
@@ -255,8 +258,8 @@ export function getNetAgingEffects(raceId: DndRaceId | '', age: number): AgingEf
 
   const appliedEffects: Array<{ ability: AbilityName; change: number }> = [];
   if (highestAttainedCategoryEffects) {
-    const abilitiesToProcess = (Object.keys(highestAttainedCategoryEffects) as AbilityName[])
-      .filter(ability => highestAttainedCategoryEffects && highestAttainedCategoryEffects[ability] !== undefined && highestAttainedCategoryEffects[ability] !== 0 && ability !== 'none');
+    const abilitiesToProcess = (Object.keys(highestAttainedCategoryEffects) as Exclude<AbilityName, 'none'>[])
+      .filter(ability => highestAttainedCategoryEffects && highestAttainedCategoryEffects[ability] !== undefined && highestAttainedCategoryEffects[ability] !== 0);
 
     abilitiesToProcess.sort((aAbility, bAbility) => {
         const changeA = highestAttainedCategoryEffects![aAbility]!;
@@ -303,13 +306,14 @@ export function getRaceSpecialQualities(raceId: DndRaceId | ''): RaceSpecialQual
   if (!raceId) {
     return { abilityEffects: [], skillBonuses: [], grantedFeats: [], bonusFeatSlots: 0 };
   }
-  const raceData = DND_RACES.find(r => r.value === raceId); // raceId is kebab-case
-  const abilityModifiers = (constantsData.DND_RACE_ABILITY_MODIFIERS_DATA as Record<DndRaceId, Partial<Record<AbilityName, number>>>)[raceId];
+  const raceData = DND_RACES.find(r => r.value === raceId);
+  const abilityModifiers = raceData?.abilityModifiers;
+
 
   const appliedAbilityEffects: Array<{ ability: AbilityName; change: number }> = [];
   if (abilityModifiers) {
-    const abilitiesToProcess = (Object.keys(abilityModifiers) as AbilityName[])
-      .filter(ability => abilityModifiers[ability] !== undefined && abilityModifiers[ability] !== 0 && ability !== 'none');
+    const abilitiesToProcess = (Object.keys(abilityModifiers) as Exclude<AbilityName, 'none'>[])
+      .filter(ability => abilityModifiers[ability] !== undefined && abilityModifiers[ability] !== 0 );
 
      abilitiesToProcess.sort((aAbility, bAbility) => {
         const changeA = abilityModifiers![aAbility]!;
@@ -334,7 +338,7 @@ export function getRaceSpecialQualities(raceId: DndRaceId | ''): RaceSpecialQual
   if (raceData?.racialSkillBonuses) {
     for (const [skillId, bonus] of Object.entries(raceData.racialSkillBonuses)) { // skillId is kebab-case
       const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skillId);
-      if (skillDef) {
+      if (skillDef && bonus !== 0) {
         appliedSkillBonuses.push({ skillName: skillDef.label, bonus }); 
       }
     }
@@ -356,12 +360,12 @@ export interface SizeAbilityEffectsDetails {
 
 export function getSizeAbilityEffects(sizeId: CharacterSize | ''): SizeAbilityEffectsDetails {
    if (!sizeId) return { effects: [] }; // sizeId is kebab-case
-  const mods = (constantsData.DND_SIZE_ABILITY_MODIFIERS_DATA as Record<CharacterSize, Partial<Record<AbilityName, number>>>)[sizeId];
+  const mods = (constantsData.DND_SIZE_ABILITY_MODIFIERS_DATA as Record<CharacterSize, Partial<Record<Exclude<AbilityName, 'none'>, number>>>)[sizeId];
   const appliedEffects: Array<{ ability: AbilityName; change: number }> = [];
 
   if (mods) {
-    const abilitiesToProcess = (Object.keys(mods) as AbilityName[])
-      .filter(ability => mods[ability] !== undefined && mods[ability] !== 0 && ability !== 'none');
+    const abilitiesToProcess = (Object.keys(mods) as Exclude<AbilityName, 'none'>[])
+      .filter(ability => mods[ability] !== undefined && mods[ability] !== 0 );
 
     abilitiesToProcess.sort((aAbility, bAbility) => {
         const changeA = mods![aAbility]!;
@@ -540,7 +544,7 @@ export function checkFeatPrerequisites(
 
   if (prerequisites.abilities) {
     for (const [abilityKey, requiredScore] of Object.entries(prerequisites.abilities)) {
-      const ability = abilityKey as AbilityName;
+      const ability = abilityKey as Exclude<AbilityName, 'none'>;
       if (character.abilityScores[ability] < requiredScore!) {
         unmetMessages.push(`${ability.charAt(0).toUpperCase() + ability.slice(1)} ${requiredScore}`);
       } else {
@@ -623,7 +627,7 @@ export interface AbilityScoreComponentValue {
 }
 
 export interface AbilityScoreBreakdown {
-  ability: AbilityName;
+  ability: Exclude<AbilityName, 'none'>;
   base: number;
   components: AbilityScoreComponentValue[];
   finalScore: number;
@@ -633,13 +637,12 @@ export type DetailedAbilityScores = Record<Exclude<AbilityName, 'none'>, Ability
 
 export function calculateDetailedAbilityScores(character: Character): DetailedAbilityScores {
   const result: Partial<DetailedAbilityScores> = {};
-  const abilityNamesList: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
   const racialQualities = getRaceSpecialQualities(character.race);
   const agingDetails = getNetAgingEffects(character.race, character.age);
   const sizeDetails = getSizeAbilityEffects(character.size);
 
-  for (const ability of abilityNamesList) {
+  for (const ability of ABILITY_ORDER) {
     const baseScore = character.abilityScores[ability] || 0;
     const components: AbilityScoreComponentValue[] = [];
     let currentScore = baseScore;
@@ -689,3 +692,4 @@ export function calculateDetailedAbilityScores(character: Character): DetailedAb
   }
   return result as DetailedAbilityScores;
 }
+

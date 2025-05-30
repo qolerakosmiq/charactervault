@@ -23,7 +23,7 @@ import { SkillsFormSection } from '@/components/SkillsFormSection';
 import { FeatsFormSection } from '@/components/FeatsFormSection';
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
-import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
+import { InfoDisplayDialog, type SkillModifierBreakdownDetails } from '@/components/InfoDisplayDialog';
 
 interface CharacterFormCoreProps {
   initialCharacter?: Character;
@@ -56,7 +56,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       alignment: '',
       deity: '',
       size: '',
-      age: 20, // Default age, will be adjusted if race has a higher min adult age
+      age: 20,
       gender: '',
       abilityScores: defaultBaseAbilityScores,
       hp: 10,
@@ -84,7 +84,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const [raceSpecialQualities, setRaceSpecialQualities] = React.useState<RaceSpecialQualities | null>(null);
   const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
-  const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<{ title?: string; content?: string; abilityModifiers?: RaceSpecialQualities['abilityEffects']; skillBonuses?: RaceSpecialQualities['skillBonuses'], grantedFeats?: RaceSpecialQualities['grantedFeats'], bonusFeatSlots?: number, abilityScoreBreakdown?: AbilityScoreBreakdown } | null>(null);
+  const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<{ title?: string; content?: string; abilityModifiers?: RaceSpecialQualities['abilityEffects']; skillBonuses?: RaceSpecialQualities['skillBonuses'], grantedFeats?: RaceSpecialQualities['grantedFeats'], bonusFeatSlots?: number, abilityScoreBreakdown?: AbilityScoreBreakdown, detailsList?: Array<{ label: string; value: string; isBold?: boolean }> } | null>(null);
   const [detailedAbilityScores, setDetailedAbilityScores] = React.useState<DetailedAbilityScores | null>(null);
 
   const router = useRouter();
@@ -96,8 +96,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const actualAbilityScoresForSkills = React.useMemo(() => {
     if (!detailedAbilityScores) {
-      // Fallback to base scores if detailed scores are not yet computed
-      // This ensures SkillsFormSection always gets a valid AbilityScores object
       return character.abilityScores;
     }
     const finalScores: Partial<AbilityScores> = {};
@@ -370,8 +368,16 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
   };
 
-  const handleOpenGenericInfoDialog = (title: string, content?: string) => {
-    setCurrentInfoDialogData({ title, content: content || "No description available.", abilityModifiers: [], skillBonuses: [], grantedFeats: [] });
+  const handleOpenGenericInfoDialog = (title: string, description?: string, details?: Array<{ label: string; value: string; isBold?: boolean }>) => {
+    setCurrentInfoDialogData({ 
+        title, 
+        content: description || "No description available.", 
+        abilityModifiers: [], 
+        skillBonuses: [], 
+        grantedFeats: [], 
+        bonusFeatSlots: 0,
+        detailsList: details 
+    });
     setIsInfoDialogOpen(true);
   };
 
@@ -486,7 +492,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     isEditable={true}
                   />
                 </div>
-                 {isPredefinedRace && (
+                {isPredefinedRace && (
                    <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={handleOpenRaceInfoDialog}>
                     <Info className="h-5 w-5" />
                   </Button>
@@ -531,9 +537,19 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   </div>
                   {isPredefinedClass && (
                     <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
-                      onClick={() => {
+                       onClick={() => {
                           const classData = DND_CLASSES.find(c => c.value === character.classes[0]?.className);
-                          if (classData) handleOpenGenericInfoDialog(classData.label, `Hit Dice: ${classData.hitDice}. Further class details can be added here.`);
+                          if (classData) {
+                              const classSpecificDetails = [];
+                              if (classData.hitDice) {
+                                  classSpecificDetails.push({ label: "Hit Dice", value: classData.hitDice, isBold: true });
+                              }
+                              handleOpenGenericInfoDialog(
+                                  classData.label,
+                                  classData.description,
+                                  classSpecificDetails
+                              );
+                          }
                       }}>
                       <Info className="h-5 w-5" />
                     </Button>
@@ -557,12 +573,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                         </SelectContent>
                     </Select>
                     </div>
-                    <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
+                     <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
                         onClick={() => {
                             const alignData = ALIGNMENTS.find(a => a.value === character.alignment);
                             handleOpenGenericInfoDialog(alignData ? alignData.label : "Alignment Info", alignData ? `Details about ${alignData.label} alignment.` : "Select an alignment to see details.");
                         }}>
-                    <Info className="h-5 w-5" />
+                       <Info className="h-5 w-5" />
                     </Button>
                 </div>
             </div>
@@ -782,8 +798,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
       <SkillsFormSection
         skills={character.skills}
-        abilityScores={character.abilityScores} // Base scores for skill point calculation
-        actualAbilityScores={actualAbilityScoresForSkills} // Actual scores for skill check mods
+        abilityScores={character.abilityScores} 
+        actualAbilityScores={actualAbilityScoresForSkills} 
         characterClasses={character.classes}
         characterRace={character.race}
         selectedFeats={character.feats}
@@ -798,7 +814,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         characterClasses={character.classes}
         selectedFeats={character.feats}
         onFeatSelectionChange={handleFeatSelectionChange}
-        abilityScores={actualAbilityScoresForSkills} // Pass actual scores for prerequisite checking
+        abilityScores={actualAbilityScoresForSkills} 
         skills={character.skills}
       />
 
@@ -831,6 +847,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         grantedFeats={currentInfoDialogData.grantedFeats}
         bonusFeatSlots={currentInfoDialogData.bonusFeatSlots}
         abilityScoreBreakdown={currentInfoDialogData.abilityScoreBreakdown}
+        detailsList={currentInfoDialogData.detailsList}
       />
     )}
     </>

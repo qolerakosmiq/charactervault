@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Info } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import type { AbilityName, AbilityScoreBreakdown } from '@/types/character';
+import type { AbilityName, AbilityScoreBreakdown, Feat, RaceSpecialQualities } from '@/types/character';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
@@ -40,6 +40,7 @@ interface InfoDisplayDialogProps {
   bonusFeatSlots?: number;
   abilityScoreBreakdown?: AbilityScoreBreakdown;
   skillModifierBreakdown?: SkillModifierBreakdownDetails;
+  detailsList?: Array<{ label: string; value: string; isBold?: boolean }>;
 }
 
 export function InfoDisplayDialog({
@@ -53,13 +54,16 @@ export function InfoDisplayDialog({
   bonusFeatSlots,
   abilityScoreBreakdown,
   skillModifierBreakdown,
+  detailsList,
 }: InfoDisplayDialogProps) {
   
   const hasBonusSection =
     (abilityModifiers && abilityModifiers.length > 0) ||
     (skillBonuses && skillBonuses.length > 0) ||
     (grantedFeats && grantedFeats.length > 0) ||
-    (bonusFeatSlots && bonusFeatSlots > 0);
+    (bonusFeatSlots && bonusFeatSlots > 0) ||
+    (detailsList && detailsList.length > 0);
+
 
   const renderModifierValue = (value: number, positiveColor = "text-emerald-500", negativeColor = "text-destructive", zeroColor = "text-muted-foreground") => (
     <span
@@ -87,13 +91,13 @@ export function InfoDisplayDialog({
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] pr-4 my-2">
           {content && !abilityScoreBreakdown && !skillModifierBreakdown && (
-            <DialogDescription className="whitespace-pre-wrap text-sm">
+            <DialogDescription className="whitespace-pre-wrap text-sm leading-relaxed">
               {content}
             </DialogDescription>
           )}
           
           {content && (skillModifierBreakdown || abilityScoreBreakdown) && (
-             <p className="whitespace-pre-wrap text-sm text-muted-foreground mb-3">{content}</p>
+             <p className="whitespace-pre-wrap text-sm text-muted-foreground mb-3 leading-relaxed">{content}</p>
           )}
 
 
@@ -214,7 +218,7 @@ export function InfoDisplayDialog({
                {(skillBonuses && skillBonuses.length > 0 || abilityModifiers && abilityModifiers.length > 0) && <Separator className="my-4" />}
               <div>
                 <h3 className="text-md font-semibold mb-2 text-foreground">Racial Feat Adjustments:</h3>
-                <ul className="space-y-1 text-sm">
+                 <ul className="space-y-1 text-sm">
                   {bonusFeatSlots && bonusFeatSlots > 0 && (
                     <li className="flex justify-between">
                       <span>Bonus Feat Slots:</span>
@@ -230,6 +234,29 @@ export function InfoDisplayDialog({
               </div>
             </>
           ) : null}
+
+          {detailsList && detailsList.length > 0 && (
+             <>
+              {(content || hasBonusSection || abilityScoreBreakdown || skillModifierBreakdown) && 
+               (!abilityModifiers || abilityModifiers.length === 0) && 
+               (!skillBonuses || skillBonuses.length === 0) &&
+               (!grantedFeats || grantedFeats.length === 0) &&
+               (!bonusFeatSlots || bonusFeatSlots <= 0) &&
+               <Separator className="my-4" />
+              }
+              {((abilityModifiers && abilityModifiers.length > 0) || (skillBonuses && skillBonuses.length > 0) || (grantedFeats && grantedFeats.length > 0) || (bonusFeatSlots && bonusFeatSlots > 0) ) && <Separator className="my-4" /> }
+              
+              <div>
+                {detailsList.map((detail, index) => (
+                  <div key={index} className="flex justify-between text-sm mb-0.5">
+                    <span className="text-muted-foreground">{detail.label}:</span>
+                    <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
         </ScrollArea>
         <DialogFooter className="mt-2">
           <Button onClick={() => onOpenChange(false)}>Close</Button>
