@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRaceId, SizeAbilityEffectsDetails, RaceSpecialQualities, AbilityScores, RaceAbilityEffectsDetails, Skill as SkillType, DndClassId, CustomSynergyRule, DndDeityId, GenderId, Feat as FeatType, DndRaceOption, DetailedAbilityScores, AbilityScoreBreakdown } from '@/types/character';
+import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRaceId, SizeAbilityEffectsDetails, RaceSpecialQualities, AbilityScores, RaceAbilityEffectsDetails, Skill as SkillType, DndClassId, CustomSynergyRule, DndDeityId, GenderId, Feat as FeatType, DndRaceOption, DetailedAbilityScores, AbilityScoreBreakdown, CharacterAlignmentObject } from '@/types/character';
 import { SIZES, ALIGNMENTS, DND_RACES, DND_CLASSES, getNetAgingEffects, GENDERS, DND_DEITIES, getSizeAbilityEffects, getRaceSpecialQualities, getInitialCharacterSkills, SKILL_DEFINITIONS, DND_FEATS, getGrantedFeatsForCharacter, calculateDetailedAbilityScores } from '@/types/character';
 import constantsData from '@/data/dnd-constants.json';
 import { Button } from '@/components/ui/button';
@@ -199,7 +199,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     const userChosenFeats = character.feats.filter(feat => !feat.isGranted);
 
     const combinedFeatsMap = new Map<string, FeatType>();
-    newGrantedFeats.forEach(feat => combinedFeatsMap.set(feat.id, feat));
+    newGrantedFeats.forEach(feat => combinedFeatsMap.set(feat.id, feat)); 
     userChosenFeats.forEach(feat => {
         const featDef = DND_FEATS.find(f => f.value === feat.id.split('-')[0]); 
         const featIdToStore = feat.id;
@@ -381,6 +381,15 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     setIsInfoDialogOpen(true);
   };
 
+  const handleOpenAlignmentInfoDialog = () => {
+    const allAlignmentDescriptions = ALIGNMENTS.map(align => `**${align.label}**:\n${align.description}`).join('\n\n');
+    setCurrentInfoDialogData({
+      title: "Alignments",
+      content: allAlignmentDescriptions,
+    });
+    setIsInfoDialogOpen(true);
+  };
+
   const handleOpenAbilityScoreBreakdownDialog = (ability: Exclude<AbilityName, 'none'>) => {
     if (detailedAbilityScores && detailedAbilityScores[ability]) {
       setCurrentInfoDialogData({
@@ -492,7 +501,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     isEditable={true}
                   />
                 </div>
-                {isPredefinedRace && (
+                 {isPredefinedRace && (
                    <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={handleOpenRaceInfoDialog}>
                     <Info className="h-5 w-5" />
                   </Button>
@@ -574,10 +583,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     </Select>
                     </div>
                      <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
-                        onClick={() => {
-                            const alignData = ALIGNMENTS.find(a => a.value === character.alignment);
-                            handleOpenGenericInfoDialog(alignData ? alignData.label : "Alignment Info", alignData ? `Details about ${alignData.label} alignment.` : "Select an alignment to see details.");
-                        }}>
+                        onClick={handleOpenAlignmentInfoDialog}>
                        <Info className="h-5 w-5" />
                     </Button>
                 </div>
@@ -718,9 +724,14 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   {actualScoreData && (
                      <div className="text-center text-sm mt-1 flex items-center justify-center gap-1">
                        <span className="text-accent">Actual: </span>
-                       <span className={cn("font-bold", actualModifier > 0 && "text-emerald-500", actualModifier < 0 && "text-destructive", actualModifier === 0 && "text-accent")}>
-                          {actualModifier >= 0 ? '+' : ''}{actualModifier}
-                       </span>
+                       <Button
+                          type="button"
+                          variant="link"
+                          className={cn("font-bold p-0 h-auto text-sm", actualModifier > 0 && "text-emerald-500 hover:text-emerald-500/80", actualModifier < 0 && "text-destructive hover:text-destructive/80", actualModifier === 0 && "text-accent hover:text-accent/80")}
+                          onClick={() => handleOpenAbilityScoreBreakdownDialog(ability)}
+                        >
+                         {actualModifier >= 0 ? '+' : ''}{actualModifier}
+                       </Button>
                         <Button
                           type="button"
                           variant="ghost" 
@@ -853,3 +864,5 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
+
+    

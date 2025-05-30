@@ -4,7 +4,7 @@ import { getBab } from '@/lib/dnd-utils';
 
 export interface CharacterClass {
   id: string;
-  className: DndClassId | string; // kebab-case ID
+  className: DndClassId | ''; // kebab-case ID
   level: number;
 }
 
@@ -51,7 +51,7 @@ export type FeatDefinitionJsonData = {
 };
 
 export interface Feat {
-  id: string; // kebab-case ID or UUID for multiple-taken instances
+  id: string; // kebab-case ID, or kebab-case-ID-UUID for multiple-taken instances
   name: string;
   description?: string;
   prerequisites?: FeatPrerequisiteDetails;
@@ -130,7 +130,7 @@ export type CharacterSizeObject = typeof constantsData.SIZES_DATA[number];
 export type CharacterSize = CharacterSizeObject['value'];
 export const SIZES: ReadonlyArray<CharacterSizeObject> = constantsData.SIZES_DATA as ReadonlyArray<CharacterSizeObject>;
 
-export type CharacterAlignmentObject = typeof constantsData.ALIGNMENTS_DATA[number];
+export type CharacterAlignmentObject = typeof constantsData.ALIGNMENTS_DATA[number] & { description: string };
 export type CharacterAlignment = CharacterAlignmentObject['value'];
 export const ALIGNMENTS: ReadonlyArray<CharacterAlignmentObject> = constantsData.ALIGNMENTS_DATA as ReadonlyArray<CharacterAlignmentObject>;
 
@@ -443,7 +443,8 @@ export function calculateFeatBonusesForSkill(skillId: string, selectedFeats: Fea
 export function calculateRacialSkillBonus(
   skillId: string, // Kebab-case skill ID
   raceId: DndRaceId | string,
-  dndRacesData: readonly DndRaceOption[]
+  dndRacesData: readonly DndRaceOption[],
+  skillDefinitionsData: readonly SkillDefinitionJsonData[] // Not actually used, but good for future consistency if needed
 ): number {
   if (!raceId) {
     return 0;
@@ -529,7 +530,7 @@ export function checkFeatPrerequisites(
   const unmetMessages: string[] = [];
   const metMessages: string[] = [];
 
-  if (!prerequisites) {
+  if (!prerequisites || Object.keys(prerequisites).length === 0) {
     return { met: true, unmetMessages: [], metMessages: [] };
   }
 
@@ -693,3 +694,6 @@ export function calculateDetailedAbilityScores(character: Character): DetailedAb
   return result as DetailedAbilityScores;
 }
 
+
+
+    
