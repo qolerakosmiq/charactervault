@@ -145,12 +145,14 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         }
       }
     } else {
+      // If race is cleared, reset age to a sensible default if it was very high (e.g., elf age)
+      // Only reset if age is significantly different from a young human, to avoid needless changes.
       if (character.age > 100 && character.age !== 20) { 
         setCharacter(prev => ({...prev, age: 20}));
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [character.race]); 
+  }, [character.race]); // Only depends on race
 
 
   React.useEffect(() => {
@@ -163,8 +165,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           isClassSkill: skill.isClassSkill, 
           providesSynergies: skill.providesSynergies,
           description: skill.description,
-          ranks: skill.ranks || 0, 
-          miscModifier: skill.miscModifier || 0 
+          ranks: skill.ranks || 0, // Preserve ranks and misc for custom skills
+          miscModifier: skill.miscModifier || 0 // Preserve ranks and misc for custom skills
         });
       }
     });
@@ -172,50 +174,59 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     const newPredefinedSkills = getInitialCharacterSkills(character.classes); // returns skills with kebab-case IDs
     const finalSkillsMap = new Map<string, SkillType>();
 
+    // Add or update predefined skills
     newPredefinedSkills.forEach(predefinedSkill => {
       finalSkillsMap.set(predefinedSkill.id, { // predefinedSkill.id is kebab-case
-        ...predefinedSkill,
-        ranks: 0, 
-        miscModifier: 0, 
+        ...predefinedSkill, // This includes name, keyAbility, default isClassSkill, description from JSON
+        ranks: 0, // Ranks are always reset for predefined skills on class change
+        miscModifier: 0, // Misc modifiers are also reset for predefined skills
+        providesSynergies: SKILL_DEFINITIONS.find(def => def.value === predefinedSkill.id)?.providesSynergies || [], // Reset predefined synergies
       });
     });
 
+    // Add back custom skills with their preserved data
     existingCustomSkillsMap.forEach((customSkillData, skillId) => { // skillId here is UUID
       finalSkillsMap.set(skillId, {
         id: skillId,
         name: customSkillData.name!,
         keyAbility: customSkillData.keyAbility!,
-        isClassSkill: customSkillData.isClassSkill!,
-        providesSynergies: customSkillData.providesSynergies,
+        isClassSkill: customSkillData.isClassSkill!, // Preserve user-set class skill status
+        providesSynergies: customSkillData.providesSynergies, // Preserve user-defined synergies
         description: customSkillData.description,
-        ranks: 0, 
-        miscModifier: 0, 
+        ranks: customSkillData.ranks || 0, // Preserve ranks
+        miscModifier: customSkillData.miscModifier || 0, // Preserve misc modifier
       });
     });
     
+    // Feats handling
     const characterLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1;
     const newGrantedFeats = getGrantedFeatsForCharacter(character.race, character.classes, characterLevel);
+    // Filter out granted feats from the existing user-chosen feats to avoid duplication
     const userChosenFeats = character.feats.filter(feat => !feat.isGranted); 
 
     const combinedFeatsMap = new Map<string, FeatType>();
-    newGrantedFeats.forEach(feat => combinedFeatsMap.set(feat.id, feat)); 
+    newGrantedFeats.forEach(feat => combinedFeatsMap.set(feat.id, feat)); // Add all new granted feats
 
+    // Add back user-chosen feats, ensuring they are not duplicates of newly granted ones
+    // unless the feat can be taken multiple times.
     userChosenFeats.forEach(feat => { 
-        const featDef = DND_FEATS.find(f => f.value === feat.id.split('-')[0]); 
-        const featIdToStore = feat.id; 
+        const featDef = DND_FEATS.find(f => f.value === feat.id.split('-MULTI-INSTANCE-')[0]); // Get base definition
+        const featIdToStore = feat.id; // This already includes -MULTI-INSTANCE- if applicable
         
+        // Only add if it's not already granted OR if it's a feat that can be taken multiple times
         if (!combinedFeatsMap.has(featIdToStore) || featDef?.canTakeMultipleTimes) {
-           combinedFeatsMap.set(featIdToStore, { ...feat, isGranted: false });
+           combinedFeatsMap.set(featIdToStore, { ...feat, isGranted: false }); // Ensure it's marked as not granted
         }
     });
+
 
     setCharacter(prev => ({
       ...prev,
       skills: Array.from(finalSkillsMap.values()).sort((a, b) => a.name.localeCompare(b.name)),
-      feats: Array.from(combinedFeatsMap.values()), 
+      feats: Array.from(combinedFeatsMap.values()), // Use the combined list
     }));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [character.classes[0]?.className, character.race]); 
+  }, [character.classes[0]?.className, character.race]); // Re-run when first class or race changes
 
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -260,6 +271,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const handleClassChange = (value: string) => {
       const newClassId = value as DndClassId | string; // value is kebab-case id or custom text
       setCharacter(prev => {
+        // Always assume a single class for now, at level 1 during creation
         const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: newClassId, level: 1 }];
         return {
           ...prev,
@@ -279,12 +291,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
  const handleCustomSkillAdd = (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
     const newSkill: SkillType = {
-      id: crypto.randomUUID(), 
+      id: crypto.randomUUID(), // Custom skills get a UUID
       name: skillData.name,
       keyAbility: skillData.keyAbility,
       ranks: 0,
       miscModifier: 0,
-      isClassSkill: skillData.keyAbility === 'none' ? false : skillData.isClassSkill, 
+      isClassSkill: skillData.keyAbility === 'none' ? false : skillData.isClassSkill, // Ensure isClassSkill is false if keyAbility is 'none'
       providesSynergies: skillData.providesSynergies,
       description: skillData.description,
     };
@@ -299,10 +311,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       ...prev,
       skills: prev.skills.map(s =>
         s.id === updatedSkillData.id
-          ? { ...s,
+          ? { ...s, // Spread existing skill to preserve ranks, miscMod, etc.
               name: updatedSkillData.name,
               keyAbility: updatedSkillData.keyAbility,
-              isClassSkill: updatedSkillData.keyAbility === 'none' ? false : updatedSkillData.isClassSkill,
+              isClassSkill: updatedSkillData.keyAbility === 'none' ? false : updatedSkillData.isClassSkill, // Ensure isClassSkill is false if keyAbility is 'none'
               providesSynergies: updatedSkillData.providesSynergies,
               description: updatedSkillData.description,
             }
@@ -320,17 +332,23 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const handleFeatSelectionChange = (newlyChosenFeats: FeatType[]) => {
+    // This function receives only the user-chosen feats.
+    // We need to combine them with the existing/recalculated granted feats.
     const characterLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1;
     const autoGrantedFeats = getGrantedFeatsForCharacter(character.race, character.classes, characterLevel);
 
     const finalFeatsMap = new Map<string, FeatType>();
-    autoGrantedFeats.forEach(feat => finalFeatsMap.set(feat.id, feat)); 
+    autoGrantedFeats.forEach(feat => finalFeatsMap.set(feat.id, feat)); // Add all granted feats
 
+    // Add the newly chosen feats, ensuring they are marked as not granted
+    // and handling multi-take cases by using the ID from newlyChosenFeats
     newlyChosenFeats.forEach(feat => { 
-        const featIdToStore = feat.id; 
+        const featDef = DND_FEATS.find(f => f.value === feat.id.split('-MULTI-INSTANCE-')[0]); 
+        const featIdToStore = feat.id; // This ID from newlyChosenFeats already handles -MULTI-INSTANCE- if needed
         
-        if (!finalFeatsMap.has(featIdToStore) || feat.canTakeMultipleTimes) {
-           finalFeatsMap.set(featIdToStore, { ...feat, isGranted: false });
+        // If it's not already granted OR it's a feat that can be taken multiple times, add/override
+        if (!finalFeatsMap.has(featIdToStore) || featDef?.canTakeMultipleTimes) {
+           finalFeatsMap.set(featIdToStore, { ...feat, isGranted: false }); // Ensure isGranted is false for chosen feats
         }
     });
     setCharacter(prev => ({ ...prev, feats: Array.from(finalFeatsMap.values()) }));
@@ -384,7 +402,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const handleOpenAlignmentInfoDialog = () => {
-    const allAlignmentDescriptions = ALIGNMENTS.map(align => `<b>${align.label}:</b><br />${align.description}`).join('');
+    const allAlignmentDescriptions = ALIGNMENTS.map(align => `<b>${align.label}:</b>${align.description}`).join('');
     setCurrentInfoDialogData({
       title: "Alignments",
       content: allAlignmentDescriptions,
@@ -434,7 +452,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     
     const finalCharacterData = {
       ...character,
-      classes: [{ ...character.classes[0], level: 1 }], 
+      classes: [{ ...character.classes[0], level: 1 }], // Ensure level 1 for new chars
     };
     onSave(finalCharacterData);
   };
