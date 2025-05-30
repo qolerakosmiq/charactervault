@@ -55,7 +55,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       race: '',
       alignment: '',
       deity: '',
-      size: 'medium', // Default to medium
+      size: 'medium', 
       age: 20,
       gender: '',
       abilityScores: defaultBaseAbilityScores,
@@ -156,7 +156,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   React.useEffect(() => {
     const existingCustomSkillsMap = new Map<string, Partial<SkillType>>();
     character.skills.forEach(skill => {
-      if (!SKILL_DEFINITIONS.some(def => def.value === skill.id)) {
+      if (!SKILL_DEFINITIONS.some(def => def.value === skill.id)) { // skill.id is already kebab-case or UUID
         existingCustomSkillsMap.set(skill.id, {
           name: skill.name,
           keyAbility: skill.keyAbility,
@@ -169,18 +169,18 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       }
     });
 
-    const newPredefinedSkills = getInitialCharacterSkills(character.classes);
+    const newPredefinedSkills = getInitialCharacterSkills(character.classes); // returns skills with kebab-case IDs
     const finalSkillsMap = new Map<string, SkillType>();
 
     newPredefinedSkills.forEach(predefinedSkill => {
-      finalSkillsMap.set(predefinedSkill.id, {
+      finalSkillsMap.set(predefinedSkill.id, { // predefinedSkill.id is kebab-case
         ...predefinedSkill,
         ranks: 0, 
         miscModifier: 0, 
       });
     });
 
-    existingCustomSkillsMap.forEach((customSkillData, skillId) => {
+    existingCustomSkillsMap.forEach((customSkillData, skillId) => { // skillId here is UUID
       finalSkillsMap.set(skillId, {
         id: skillId,
         name: customSkillData.name!,
@@ -258,7 +258,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const handleClassChange = (value: string) => {
-      const newClassId = value as DndClassId | string; 
+      const newClassId = value as DndClassId | string; // value is kebab-case id or custom text
       setCharacter(prev => {
         const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: newClassId, level: 1 }];
         return {
@@ -384,7 +384,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const handleOpenAlignmentInfoDialog = () => {
-    const allAlignmentDescriptions = ALIGNMENTS.map(align => `<b>${align.label}:</b>${align.description}`).join('');
+    const allAlignmentDescriptions = ALIGNMENTS.map(align => `<b>${align.label}:</b><br />${align.description}`).join('');
     setCurrentInfoDialogData({
       title: "Alignments",
       content: allAlignmentDescriptions,
@@ -524,7 +524,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     ))}
                 </p>
               )}
-               {raceSpecialQualities && raceSpecialQualities.abilityEffects.length === 0 && (
+               {raceSpecialQualities && raceSpecialQualities.abilityEffects.length === 0 && character.race && (
                  <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
                )}
             </div>
@@ -629,7 +629,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     {ageEffectsDetails.effects.length > 0 ? (
                       <>
                         <p>
-                          {ageEffectsDetails.effects.map((effect, index) => (
+                           {ageEffectsDetails.effects.map((effect, index) => (
                             <React.Fragment key={effect.ability}>
                               <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
                                 {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
@@ -667,19 +667,20 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                 </SelectContent>
               </Select>
               {sizeAbilityEffectsDetails && (
-                 <p className="text-xs text-muted-foreground mt-1 ml-1">
-                  {sizeAbilityEffectsDetails.effects.length > 0 ?
-                    sizeAbilityEffectsDetails.effects.map((effect, index) => (
+                sizeAbilityEffectsDetails.effects.length > 0 ? (
+                  <p className="text-xs text-muted-foreground mt-1 ml-1">
+                    {sizeAbilityEffectsDetails.effects.map((effect, index) => (
                         <React.Fragment key={effect.ability}>
                           <strong className={cn( "font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
                             {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
                           </strong>
                           {index < sizeAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                         </React.Fragment>
-                      ))
-                  : "No impact on ability scores"
-                }
-                </p>
+                      ))}
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
+                )
                )}
             </div>
           </div>
@@ -726,20 +727,22 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   {actualScoreData && (
                      <div className="text-center text-sm mt-1 flex items-center justify-center gap-1">
                        <span className="text-accent">Actual: </span>
-                        <Button
+                       <span className={cn(
+                          "font-bold",
+                          actualModifier > 0 && "text-emerald-500",
+                          actualModifier < 0 && "text-destructive",
+                          actualModifier === 0 && "text-accent"
+                        )}>
+                         {actualModifier >= 0 ? '+' : ''}{actualModifier}
+                       </span>
+                       <Button
                           type="button"
-                          variant="ghost" 
+                          variant="ghost"
                           size="icon"
-                          className={cn(
-                            "h-5 w-5 text-muted-foreground hover:text-primary p-0 font-bold",
-                            actualModifier > 0 && "text-emerald-500 hover:text-emerald-500/80", 
-                            actualModifier < 0 && "text-destructive hover:text-destructive/80",
-                            actualModifier === 0 && "text-accent hover:text-accent/80"
-                          )}
+                          className="h-5 w-5 p-0 text-muted-foreground hover:text-primary"
                           onClick={() => handleOpenAbilityScoreBreakdownDialog(ability)}
                         >
-                           {actualModifier >= 0 ? '+' : ''}{actualModifier}
-                           <Info className="h-3.5 w-3.5 ml-0.5 opacity-60 group-hover:opacity-100" />
+                           <Info className="h-3.5 w-3.5" />
                         </Button>
                     </div>
                   )}
@@ -864,4 +867,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-
