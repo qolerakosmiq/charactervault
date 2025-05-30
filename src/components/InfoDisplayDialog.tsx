@@ -10,11 +10,12 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ScrollText } from 'lucide-react';
+import { ScrollText, Info } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import type { AbilityName } from '@/types/character';
+import type { AbilityName, AbilityScoreBreakdown } from '@/types/character';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import { calculateAbilityModifier } from '@/lib/dnd-utils';
 
 interface InfoDisplayDialogProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ interface InfoDisplayDialogProps {
   skillBonuses?: Array<{ skillName: string; bonus: number }>;
   grantedFeats?: Array<{ name: string; note?: string }>;
   bonusFeatSlots?: number;
+  abilityScoreBreakdown?: AbilityScoreBreakdown;
 }
 
 export function InfoDisplayDialog({
@@ -36,8 +38,10 @@ export function InfoDisplayDialog({
   skillBonuses,
   grantedFeats,
   bonusFeatSlots,
+  abilityScoreBreakdown,
 }: InfoDisplayDialogProps) {
-  const hasAnyBonusSection =
+  
+  const hasBonusSection =
     (abilityModifiers && abilityModifiers.length > 0) ||
     (skillBonuses && skillBonuses.length > 0) ||
     (grantedFeats && grantedFeats.length > 0) ||
@@ -48,18 +52,62 @@ export function InfoDisplayDialog({
       <DialogContent className="sm:max-w-md md:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif">
-            <ScrollText className="mr-2 h-6 w-6 text-primary" />
-            {title || 'Information'}
+            <Info className="mr-2 h-6 w-6 text-primary" />
+            {abilityScoreBreakdown ? `${abilityScoreBreakdown.ability.charAt(0).toUpperCase() + abilityScoreBreakdown.ability.slice(1)} Score Calculation` : title || 'Information'}
           </DialogTitle>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] pr-4 my-2">
-          {content && (
+          {content && !abilityScoreBreakdown && (
             <DialogDescription className="whitespace-pre-wrap text-sm">
               {content}
             </DialogDescription>
           )}
 
-          {abilityModifiers && abilityModifiers.length > 0 && (
+          {abilityScoreBreakdown && (
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span>Base Score:</span>
+                <span className="font-bold">{abilityScoreBreakdown.base}</span>
+              </div>
+              {abilityScoreBreakdown.components.map((comp, index) => (
+                comp.value !== 0 && (
+                  <div key={index} className="flex justify-between">
+                    <span>{comp.source}:</span>
+                    <span
+                      className={cn(
+                        "font-bold",
+                        comp.value > 0 && "text-emerald-500",
+                        comp.value < 0 && "text-destructive"
+                      )}
+                    >
+                      {comp.value > 0 ? '+' : ''}{comp.value}
+                    </span>
+                  </div>
+                )
+              ))}
+              <Separator className="my-2" />
+              <div className="flex justify-between text-base">
+                <span className="font-semibold">Final Score:</span>
+                <span className="font-bold">{abilityScoreBreakdown.finalScore}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-semibold">Final Modifier:</span>
+                <span
+                  className={cn(
+                    "font-bold",
+                    calculateAbilityModifier(abilityScoreBreakdown.finalScore) > 0 && "text-emerald-500",
+                    calculateAbilityModifier(abilityScoreBreakdown.finalScore) < 0 && "text-destructive",
+                     calculateAbilityModifier(abilityScoreBreakdown.finalScore) === 0 && "text-accent"
+                  )}
+                >
+                  {calculateAbilityModifier(abilityScoreBreakdown.finalScore) >= 0 ? '+' : ''}
+                  {calculateAbilityModifier(abilityScoreBreakdown.finalScore)}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {!abilityScoreBreakdown && abilityModifiers && abilityModifiers.length > 0 && (
             <>
               {(content) && <Separator className="my-4" />}
               <div>
@@ -85,7 +133,7 @@ export function InfoDisplayDialog({
             </>
           )}
 
-          {skillBonuses && skillBonuses.length > 0 && (
+          {!abilityScoreBreakdown && skillBonuses && skillBonuses.length > 0 && (
             <>
               {(content || (abilityModifiers && abilityModifiers.length > 0)) && <Separator className="my-4" />}
               <div>
@@ -104,9 +152,10 @@ export function InfoDisplayDialog({
             </>
           )}
 
-          {(grantedFeats && grantedFeats.length > 0) || (bonusFeatSlots && bonusFeatSlots > 0) ? (
-            <>
-              {(content || (abilityModifiers && abilityModifiers.length > 0) || (skillBonuses && skillBonuses.length > 0)) && <Separator className="my-4" />}
+          {!abilityScoreBreakdown && ((grantedFeats && grantedFeats.length > 0) || (bonusFeatSlots && bonusFeatSlots > 0)) ? (
+             <>
+              {(content || hasBonusSection) && (!skillBonuses || skillBonuses.length === 0) && (!abilityModifiers || abilityModifiers.length === 0) && <Separator className="my-4" />}
+               {(skillBonuses && skillBonuses.length > 0 || abilityModifiers && abilityModifiers.length > 0) && <Separator className="my-4" />}
               <div>
                 <h3 className="text-md font-semibold mb-2 text-foreground">Racial Feat Adjustments:</h3>
                 <ul className="space-y-1 text-sm">
@@ -131,8 +180,6 @@ export function InfoDisplayDialog({
               </div>
             </>
           ) : null}
-
-
         </ScrollArea>
         <DialogFooter className="mt-2">
           <Button onClick={() => onOpenChange(false)}>Close</Button>

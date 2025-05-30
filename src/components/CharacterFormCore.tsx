@@ -3,8 +3,8 @@
 
 import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRaceId, SizeAbilityEffectsDetails, RaceSpecialQualities, AbilityScores, RaceAbilityEffectsDetails, Skill as SkillType, DndClassId, CustomSynergyRule, DndDeityId, GenderId, Feat as FeatType, DndRaceOption } from '@/types/character';
-import { SIZES, ALIGNMENTS, DND_RACES, DND_CLASSES, getNetAgingEffects, GENDERS, DND_DEITIES, getSizeAbilityEffects, getRaceSpecialQualities, getInitialCharacterSkills, SKILL_DEFINITIONS, DND_FEATS, getGrantedFeatsForCharacter } from '@/types/character';
+import type { AbilityName, Character, CharacterClass, CharacterAlignment, CharacterSize, AgingEffectsDetails, DndRaceId, SizeAbilityEffectsDetails, RaceSpecialQualities, AbilityScores, RaceAbilityEffectsDetails, Skill as SkillType, DndClassId, CustomSynergyRule, DndDeityId, GenderId, Feat as FeatType, DndRaceOption, DetailedAbilityScores, AbilityScoreBreakdown } from '@/types/character';
+import { SIZES, ALIGNMENTS, DND_RACES, DND_CLASSES, getNetAgingEffects, GENDERS, DND_DEITIES, getSizeAbilityEffects, getRaceSpecialQualities, getInitialCharacterSkills, SKILL_DEFINITIONS, DND_FEATS, getGrantedFeatsForCharacter, calculateDetailedAbilityScores } from '@/types/character';
 import constantsData from '@/data/dnd-constants.json';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,21 +31,32 @@ interface CharacterFormCoreProps {
   isCreating: boolean;
 }
 
-
 export function CharacterFormCore({ initialCharacter, onSave, isCreating }: CharacterFormCoreProps) {
   const [character, setCharacter] = React.useState<Character>(() => {
+    const defaultBaseAbilityScores = { ...JSON.parse(JSON.stringify(constantsData.DEFAULT_ABILITIES || {})) };
     const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: '', level: 1 }];
-    const initialFeats = getGrantedFeatsForCharacter('', defaultClasses, 1);
+
+    const tempCharForInitialFeats: Character = {
+      id: crypto.randomUUID(),
+      name: '', race: '', alignment: '', deity: '', size: '', age: 0, gender: '',
+      abilityScores: defaultBaseAbilityScores,
+      hp: 10, maxHp: 10, armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0,
+      deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, initiativeMiscModifier: 0,
+      savingThrows: JSON.parse(JSON.stringify(constantsData.DEFAULT_SAVING_THROWS || {})),
+      classes: defaultClasses, skills: [], feats: [], inventory: [],
+    }
+    const initialFeats = getGrantedFeatsForCharacter(tempCharForInitialFeats.race, tempCharForInitialFeats.classes, 1);
+    
     return initialCharacter || {
       id: crypto.randomUUID(),
       name: '',
       race: '',
       alignment: '',
       deity: '',
-      size: 'medium',
+      size: '',
       age: 20,
       gender: '',
-      abilityScores: { ...JSON.parse(JSON.stringify(constantsData.DEFAULT_ABILITIES || {})) },
+      abilityScores: defaultBaseAbilityScores,
       hp: 10,
       maxHp: 10,
       armorBonus: 0,
@@ -71,11 +82,15 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const [raceSpecialQualities, setRaceSpecialQualities] = React.useState<RaceSpecialQualities | null>(null);
   const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
-  const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<{ title: string; content?: string; abilityModifiers?: RaceSpecialQualities['abilityEffects']; skillBonuses?: RaceSpecialQualities['skillBonuses'], grantedFeats?: RaceSpecialQualities['grantedFeats'], bonusFeatSlots?: number } | null>(null);
-
+  const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<{ title?: string; content?: string; abilityModifiers?: RaceSpecialQualities['abilityEffects']; skillBonuses?: RaceSpecialQualities['skillBonuses'], grantedFeats?: RaceSpecialQualities['grantedFeats'], bonusFeatSlots?: number, abilityScoreBreakdown?: AbilityScoreBreakdown } | null>(null);
+  const [detailedAbilityScores, setDetailedAbilityScores] = React.useState<DetailedAbilityScores | null>(null);
 
   const router = useRouter();
   const { toast } = useToast();
+
+  React.useEffect(() => {
+    setDetailedAbilityScores(calculateDetailedAbilityScores(character));
+  }, [character.abilityScores, character.race, character.age, character.size, character.feats, character]);
 
 
   React.useEffect(() => {
@@ -105,7 +120,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
   }, [character.race]);
 
-  React.useEffect(() => {
+ React.useEffect(() => {
     if (character.race) {
       const selectedRaceInfo = DND_RACES.find(r => r.value === character.race);
       if (selectedRaceInfo) {
@@ -115,22 +130,28 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           setCharacter(prev => ({ ...prev, age: minAdultAge }));
         }
       }
+    } else {
+      // If race is cleared, reset age to a sensible default if it's very high from a previous long-lived race
+      if (character.age > 100) { // Arbitrary threshold, adjust as needed
+        setCharacter(prev => ({...prev, age: 20}));
+      }
     }
-  }, [character.race, character.age]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [character.race]);
 
 
   React.useEffect(() => {
     const existingCustomSkillsMap = new Map<string, Partial<SkillType>>();
     character.skills.forEach(skill => {
-      if (!SKILL_DEFINITIONS.some(def => def.value === skill.id)) {
+      if (!SKILL_DEFINITIONS.some(def => def.value === skill.id)) { // skill.id is kebab for predefined, UUID for custom
         existingCustomSkillsMap.set(skill.id, {
           name: skill.name,
           keyAbility: skill.keyAbility,
           isClassSkill: skill.isClassSkill,
           providesSynergies: skill.providesSynergies,
           description: skill.description,
-          ranks: 0,
-          miscModifier: 0
+          ranks: 0, // Reset ranks
+          miscModifier: 0 // Reset misc mods
         });
       }
     });
@@ -139,10 +160,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     const finalSkillsMap = new Map<string, SkillType>();
 
     newPredefinedSkills.forEach(predefinedSkill => {
+      const existingCharacterSkill = character.skills.find(s => s.id === predefinedSkill.id);
       finalSkillsMap.set(predefinedSkill.id, {
         ...predefinedSkill,
-        ranks: 0,
-        miscModifier: 0
+        ranks: existingCharacterSkill?.ranks || 0, // Preserve ranks if skill still exists
+        miscModifier: existingCharacterSkill?.miscModifier || 0, // Preserve misc mods
       });
     });
 
@@ -154,24 +176,24 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         isClassSkill: customSkillData.isClassSkill!,
         providesSynergies: customSkillData.providesSynergies,
         description: customSkillData.description,
-        ranks: 0,
+        ranks: 0, // Custom skills ranks are reset on class change as per previous logic
         miscModifier: 0,
       });
     });
-
+    
     const characterLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1;
     const newGrantedFeats = getGrantedFeatsForCharacter(character.race, character.classes, characterLevel);
-
     const userChosenFeats = character.feats.filter(feat => !feat.isGranted);
 
     const combinedFeatsMap = new Map<string, FeatType>();
     newGrantedFeats.forEach(feat => combinedFeatsMap.set(feat.id, feat));
     userChosenFeats.forEach(feat => {
-        if (!combinedFeatsMap.has(feat.id) || feat.canTakeMultipleTimes) {
-             // For multiple-takable feats, we allow adding them even if a granted version exists.
-             // However, a better approach for "instances" of feats might be needed later.
-             // For now, simply adding it will work, but they'll all share the same base ID.
-            combinedFeatsMap.set(feat.isGranted ? `${feat.id}-${crypto.randomUUID()}` : feat.id, feat);
+        const featDef = DND_FEATS.find(f => f.value === feat.id.split('-')[0]); // Use base ID for definition
+        const featIdToStore = (featDef?.canTakeMultipleTimes && combinedFeatsMap.has(feat.id.split('-')[0]) && !feat.id.includes(crypto.randomUUID().substring(0,4))) // crude check if it's a unique instance
+            ? `${feat.id.split('-')[0]}-${crypto.randomUUID()}` // Ensure multiple-instance feats get unique IDs if needed
+            : feat.id;
+        if (!combinedFeatsMap.has(featIdToStore) || featDef?.canTakeMultipleTimes) {
+           combinedFeatsMap.set(featIdToStore, feat);
         }
     });
 
@@ -181,7 +203,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       feats: Array.from(combinedFeatsMap.values()),
     }));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [character.classes[0]?.className, character.race]);
+  }, [character.classes[0]?.className, character.race]); // Only re-calc skills & granted feats on class/race change
 
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -206,29 +228,17 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const handleSelectChange = (name: keyof Character | 'className', value: string) => {
      if (name === 'className') {
-      // This case is handled by handleClassChange directly
+       //This is handled by handleClassChange
     } else if (name === 'size') {
-       let acSizeModifierValue = 0;
-        switch (value) {
-            case 'fine': acSizeModifierValue = 8; break;
-            case 'diminutive': acSizeModifierValue = 4; break;
-            case 'tiny': acSizeModifierValue = 2; break;
-            case 'small': acSizeModifierValue = 1; break;
-            case 'medium': acSizeModifierValue = 0; break;
-            case 'large': acSizeModifierValue = -1; break;
-            case 'huge': acSizeModifierValue = -2; break;
-            case 'gargantuan': acSizeModifierValue = -4; break;
-            case 'colossal': acSizeModifierValue = -8; break;
-        }
-       setCharacter(prev => ({ ...prev, [name]: value as CharacterSize, sizeModifierAC: acSizeModifierValue }));
+       setCharacter(prev => ({ ...prev, size: value as CharacterSize }));
     } else if (name === 'race') {
       setCharacter(prev => ({ ...prev, race: value as DndRaceId }));
     } else if (name === 'gender') {
-      setCharacter(prev => ({ ...prev, gender: value as GenderId }));
+      setCharacter(prev => ({ ...prev, gender: value as GenderId | string }));
     } else if (name === 'deity') {
-      setCharacter(prev => ({ ...prev, deity: value as DndDeityId }));
+      setCharacter(prev => ({ ...prev, deity: value as DndDeityId | string }));
     } else if (name === 'alignment') {
-      setCharacter(prev => ({ ...prev, [name]: value as CharacterAlignment }));
+      setCharacter(prev => ({ ...prev, alignment: value as CharacterAlignment }));
     }
      else {
       setCharacter(prev => ({ ...prev, [name]: value }));
@@ -236,7 +246,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const handleClassChange = (value: string) => {
-      const newClassId = value as DndClassId | string;
+      const newClassId = value as DndClassId | string; // Value is kebab-case ID or custom string
       setCharacter(prev => {
         const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: newClassId, level: 1 }];
         return {
@@ -257,7 +267,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
  const handleCustomSkillAdd = (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
     const newSkill: SkillType = {
-      id: crypto.randomUUID(),
+      id: crypto.randomUUID(), // Custom skills always get a UUID
       name: skillData.name,
       keyAbility: skillData.keyAbility,
       ranks: 0,
@@ -302,19 +312,14 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     const autoGrantedFeats = getGrantedFeatsForCharacter(character.race, character.classes, characterLevel);
 
     const finalFeatsMap = new Map<string, FeatType>();
-    autoGrantedFeats.forEach(feat => finalFeatsMap.set(feat.id, feat)); // Add granted first
+    autoGrantedFeats.forEach(feat => finalFeatsMap.set(feat.id, feat)); 
 
-    newlyChosenFeats.forEach(feat => { // Add chosen
-        // If feat can be taken multiple times, generate a unique ID for this instance
-        const featIdToStore = (feat.canTakeMultipleTimes && finalFeatsMap.has(feat.id))
-            ? `${feat.id}-${crypto.randomUUID()}`
-            : feat.id;
-
+    newlyChosenFeats.forEach(feat => { 
+        const featIdToStore = feat.id; // ID already unique for multiple-takable from FeatsFormSection
         if (!finalFeatsMap.has(featIdToStore) || feat.canTakeMultipleTimes) {
            finalFeatsMap.set(featIdToStore, { ...feat, isGranted: false });
         }
     });
-
     setCharacter(prev => ({ ...prev, feats: Array.from(finalFeatsMap.values()) }));
   };
 
@@ -357,89 +362,54 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     setIsInfoDialogOpen(true);
   };
 
+  const handleOpenAbilityScoreBreakdownDialog = (ability: Exclude<AbilityName, 'none'>) => {
+    if (detailedAbilityScores && detailedAbilityScores[ability]) {
+      setCurrentInfoDialogData({
+        abilityScoreBreakdown: detailedAbilityScores[ability]
+      });
+      setIsInfoDialogOpen(true);
+    }
+  };
+
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
     if (!character.name || character.name.trim() === '') {
-      toast({
-        title: "Missing Information",
-        description: "Please enter a character name.",
-        variant: "destructive",
-      });
-      return;
+      toast({ title: "Missing Information", description: "Please enter a character name.", variant: "destructive" }); return;
     }
     if (!character.race || character.race.trim() === '') {
-      toast({
-        title: "Missing Information",
-        description: "Please select or enter a character race.",
-        variant: "destructive",
-      });
-      return;
+      toast({ title: "Missing Information", description: "Please select or enter a character race.", variant: "destructive" }); return;
     }
     if (!character.classes[0]?.className || character.classes[0]?.className.trim() === '') {
-      toast({
-        title: "Missing Information",
-        description: "Please select or enter a character class.",
-        variant: "destructive",
-      });
-      return;
+      toast({ title: "Missing Information", description: "Please select or enter a character class.", variant: "destructive" }); return;
     }
     if (!character.alignment || character.alignment.trim() === '') {
-      toast({
-        title: "Missing Information",
-        description: "Please select an alignment.",
-        variant: "destructive",
-      });
-      return;
+      toast({ title: "Missing Information", description: "Please select an alignment.", variant: "destructive" }); return;
     }
 
     const selectedRaceInfoForValidation = DND_RACES.find(r => r.value === character.race);
     const minAgeForValidation = (selectedRaceInfoForValidation ? (constantsData.DND_RACE_MIN_ADULT_AGE_DATA as Record<DndRaceId, number>)[selectedRaceInfoForValidation.value as DndRaceId] : undefined) || 1;
 
     if (character.age < minAgeForValidation) {
-       toast({
-        title: "Invalid Age",
-        description: `Age must be at least ${minAgeForValidation}${selectedRaceInfoForValidation ? ` for a ${selectedRaceInfoForValidation.label}` : ''}.`,
-        variant: "destructive",
-      });
-      return;
+       toast({ title: "Invalid Age", description: `Age must be at least ${minAgeForValidation}${selectedRaceInfoForValidation ? ` for a ${selectedRaceInfoForValidation.label}` : ''}.`, variant: "destructive" }); return;
     }
 
     for (const ability of abilityNames) {
+      if (ability === 'none') continue;
       if (character.abilityScores[ability] <= 0) {
-        toast({
-          title: `Invalid ${ability.charAt(0).toUpperCase() + ability.slice(1)} Score`,
-          description: `${ability.charAt(0).toUpperCase() + ability.slice(1)} score must be greater than 0.`,
-          variant: "destructive",
-        });
-        return;
+        toast({ title: `Invalid ${ability.charAt(0).toUpperCase() + ability.slice(1)} Score`, description: `${ability.charAt(0).toUpperCase() + ability.slice(1)} score must be greater than 0.`, variant: "destructive" }); return;
       }
     }
-
-    let acSizeModifierValue = 0;
-    switch (character.size) {
-        case 'fine': acSizeModifierValue = 8; break;
-        case 'diminutive': acSizeModifierValue = 4; break;
-        case 'tiny': acSizeModifierValue = 2; break;
-        case 'small': acSizeModifierValue = 1; break;
-        case 'medium': acSizeModifierValue = 0; break;
-        case 'large': acSizeModifierValue = -1; break;
-        case 'huge': acSizeModifierValue = -2; break;
-        case 'gargantuan': acSizeModifierValue = -4; break;
-        case 'colossal': acSizeModifierValue = -8; break;
-    }
-
-
+    
     const finalCharacterData = {
       ...character,
-      classes: [{ ...character.classes[0], level: 1 }],
-      sizeModifierAC: acSizeModifierValue
+      classes: [{ ...character.classes[0], level: 1 }], // Ensure level 1 for created character
     };
     onSave(finalCharacterData);
   };
 
-  const abilityNames: AbilityName[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+  const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
   const isPredefinedRace = React.useMemo(
     () => DND_RACES.some(r => r.value === character.race),
@@ -505,13 +475,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   />
                 </div>
                 {isPredefinedRace && (
-                   <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
-                      onClick={handleOpenRaceInfoDialog}
-                    >
+                   <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={handleOpenRaceInfoDialog}>
                     <Info className="h-5 w-5" />
                   </Button>
                 )}
@@ -519,25 +483,20 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
                 )}
               </div>
-              {raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
+              {raceSpecialQualities?.abilityEffects && (
                 <p className="text-xs text-muted-foreground mt-1 ml-1">
-                  {raceSpecialQualities.abilityEffects.map((effect, index) => (
+                  {raceSpecialQualities.abilityEffects.length > 0 ?
+                    raceSpecialQualities.abilityEffects.map((effect, index) => (
                       <React.Fragment key={effect.ability}>
-                        <strong
-                          className={cn(
-                            "font-bold",
-                            effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
-                          )}
-                        >
+                        <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
                           {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
                         </strong>
                         {index < raceSpecialQualities.abilityEffects.length - 1 && <span className="text-muted-foreground">, </span>}
                       </React.Fragment>
-                    ))}
+                    ))
+                    : "No impact on ability scores"
+                  }
                 </p>
-              )}
-               {raceSpecialQualities && raceSpecialQualities.abilityEffects.length === 0 && (
-                 <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
               )}
             </div>
           </div>
@@ -559,16 +518,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   />
                 </div>
                 {isPredefinedClass && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
                     onClick={() => {
                         const classData = DND_CLASSES.find(c => c.value === character.classes[0]?.className);
                         if (classData) handleOpenGenericInfoDialog(classData.label, `Hit Dice: ${classData.hitDice}. Further class details can be added here.`);
-                    }}
-                  >
+                    }}>
                     <Info className="h-5 w-5" />
                   </Button>
                 )}
@@ -591,16 +545,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     </SelectContent>
                   </Select>
                 </div>
-                <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
                     onClick={() => {
                         const alignData = ALIGNMENTS.find(a => a.value === character.alignment);
-                         handleOpenGenericInfoDialog(alignData ? alignData.label : "Alignment", alignData ? `Details about ${alignData.label} alignment.` : "Select an alignment to see details.");
-                    }}
-                >
+                         handleOpenGenericInfoDialog(alignData ? alignData.label : "Alignment Info", alignData ? `Details about ${alignData.label} alignment.` : "Select an alignment to see details.");
+                    }}>
                   <Info className="h-5 w-5" />
                 </Button>
               </div>
@@ -623,16 +572,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                       isEditable={true}
                     />
                 </div>
-                 <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
+                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
                     onClick={() => {
                         const deityData = DND_DEITIES.find(d => d.value === character.deity);
-                        handleOpenGenericInfoDialog(deityData ? deityData.label : "Deity", deityData ? `Details about the deity ${deityData.label}.` : "Select or type a deity to see details.");
-                    }}
-                >
+                        handleOpenGenericInfoDialog(deityData ? deityData.label : "Deity Info", deityData ? `Details about the deity ${deityData.label}.` : "Select or type a deity to see details.");
+                    }}>
                   <Info className="h-5 w-5" />
                 </Button>
               </div>
@@ -646,32 +590,23 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               <Input id="age" name="age" type="number" value={character.age} onChange={handleChange} min={currentMinAgeForInput} />
                {ageEffectsDetails && (
                   <div className="text-xs text-muted-foreground mt-1 ml-1 space-y-0.5">
-                     {(ageEffectsDetails.categoryName !== "adult" || ageEffectsDetails.effects.length > 0) ? (
-                        <>
-                            {ageEffectsDetails.effects.length > 0 && (
-                                <p>
-                                {ageEffectsDetails.effects.map((effect, index) => (
-                                    <React.Fragment key={effect.ability}>
-                                    <strong
-                                        className={cn(
-                                        "font-bold",
-                                        effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
-                                        )}
-                                    >
-                                        {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
-                                    </strong>
-                                    {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
-                                    </React.Fragment>
-                                ))}
-                                </p>
-                            )}
-                             <p>
-                                {ageEffectsDetails.categoryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                             </p>
-                        </>
-                     ) : (
-                        <p>No impact on ability scores</p>
-                     )}
+                    {ageEffectsDetails.effects.length > 0 ? (
+                      <>
+                        <p>
+                          {ageEffectsDetails.effects.map((effect, index) => (
+                            <React.Fragment key={effect.ability}>
+                              <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
+                                {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
+                              </strong>
+                              {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
+                            </React.Fragment>
+                          ))}
+                        </p>
+                        <p>{ageEffectsDetails.categoryName}</p>
+                      </>
+                    ) : (
+                       <p>{ageEffectsDetails.categoryName !== "Adult" ? `${ageEffectsDetails.categoryName}: ` : ""}No impact on ability scores</p>
+                    )}
                   </div>
                 )}
             </div>
@@ -700,12 +635,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   {sizeAbilityEffectsDetails.effects.length > 0 ?
                     sizeAbilityEffectsDetails.effects.map((effect, index) => (
                         <React.Fragment key={effect.ability}>
-                          <strong
-                            className={cn(
-                              "font-bold",
-                              effect.change < 0 ? 'text-destructive' : 'text-emerald-500'
-                            )}
-                          >
+                          <strong className={cn( "font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
                             {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
                           </strong>
                           {index < sizeAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
@@ -729,8 +659,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
             {abilityNames.map(ability => {
-              const score = character.abilityScores[ability];
-              const modifier = calculateAbilityModifier(score);
+              const baseScore = character.abilityScores[ability];
+              const baseModifier = calculateAbilityModifier(baseScore);
+              const actualScoreData = detailedAbilityScores ? detailedAbilityScores[ability] : null;
+              const actualModifier = actualScoreData ? calculateAbilityModifier(actualScoreData.finalScore) : baseModifier;
+
               return (
                 <div key={ability} className="space-y-1 flex flex-col items-center">
                   <Label htmlFor={ability} className="capitalize text-sm font-semibold">
@@ -743,24 +676,32 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     id={ability}
                     name={ability}
                     type="number"
-                    value={score}
+                    value={baseScore}
                     onChange={(e) => handleAbilityScoreChange(ability, e.target.value)}
                     className="text-center w-16"
                     min="1"
                   />
                   <p className="text-center text-sm mt-1">
                     <span className="text-accent">Modifier: </span>
-                    <span
-                      className={cn(
-                        "font-bold",
-                        modifier > 0 && "text-emerald-500",
-                        modifier < 0 && "text-destructive",
-                        modifier === 0 && "text-accent"
-                      )}
-                    >
-                      {modifier >= 0 ? '+' : ''}{modifier}
+                    <span className={cn("font-bold", baseModifier > 0 && "text-emerald-500", baseModifier < 0 && "text-destructive", baseModifier === 0 && "text-accent")}>
+                      {baseModifier >= 0 ? '+' : ''}{baseModifier}
                     </span>
                   </p>
+                  {actualScoreData && (
+                    <div className="text-center text-sm mt-1">
+                       <span className="text-accent">Actual Modifier: </span>
+                       <Button
+                          type="button"
+                          variant="link"
+                          size="sm"
+                          className={cn("font-bold p-0 h-auto text-sm", actualModifier > 0 && "text-emerald-500 hover:text-emerald-600", actualModifier < 0 && "text-destructive hover:text-destructive/80", actualModifier === 0 && "text-accent hover:text-accent/80")}
+                          onClick={() => handleOpenAbilityScoreBreakdownDialog(ability)}
+                        >
+                          {actualModifier >= 0 ? '+' : ''}{actualModifier}
+                           <Info className="h-3 w-3 ml-1 opacity-60 group-hover:opacity-100" />
+                        </Button>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -874,6 +815,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         skillBonuses={currentInfoDialogData.skillBonuses}
         grantedFeats={currentInfoDialogData.grantedFeats}
         bonusFeatSlots={currentInfoDialogData.bonusFeatSlots}
+        abilityScoreBreakdown={currentInfoDialogData.abilityScoreBreakdown}
       />
     )}
     </>
