@@ -138,7 +138,7 @@ export function CharacterFormCoreInfoSection({
                   isEditable={true}
                 />
               </div>
-              {characterData.race && isPredefinedRace && (
+              {isPredefinedRace && characterData.race && (
                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenRaceInfoDialog}>
                   <Info className="h-5 w-5" />
                 </Button>
@@ -147,7 +147,7 @@ export function CharacterFormCoreInfoSection({
                 <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
               )}
             </div>
-            {raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
+            {isPredefinedRace && raceSpecialQualities && raceSpecialQualities.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
               <p className="text-xs text-muted-foreground mt-1 ml-1">
                 {raceSpecialQualities.abilityEffects.map((effect, index) => (
                     <React.Fragment key={effect.ability}>
@@ -158,9 +158,6 @@ export function CharacterFormCoreInfoSection({
                     </React.Fragment>
                   ))}
               </p>
-            )}
-             {raceSpecialQualities && raceSpecialQualities.abilityEffects.length === 0 && (
-                 <p className="text-xs text-muted-foreground mt-1 ml-1 italic">No impact on ability scores</p>
             )}
           </div>
         </div>
@@ -181,7 +178,7 @@ export function CharacterFormCoreInfoSection({
                   isEditable={true}
                 />
               </div>
-              {characterData.classes[0]?.className && isPredefinedClass && (
+              {isPredefinedClass && characterData.classes[0]?.className && (
                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
                   onClick={onOpenClassInfoDialog}>
                   <Info className="h-5 w-5" />
@@ -215,7 +212,7 @@ export function CharacterFormCoreInfoSection({
         </div>
 
         {/* Deity */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div className="space-y-1">
               <Label htmlFor="deity">Deity</Label>
               <div className="flex items-center gap-2">
@@ -246,24 +243,20 @@ export function CharacterFormCoreInfoSection({
           <div className="space-y-1">
             <Label htmlFor="age">Age</Label>
             <Input id="age" name="age" type="number" value={characterData.age} onChange={handleInputChange} min={currentMinAgeForInput} />
-            {ageEffectsDetails && (
+            {ageEffectsDetails && ageEffectsDetails.effects.length > 0 && (
               <div className="text-xs text-muted-foreground mt-1 ml-1 space-y-0.5">
-                {ageEffectsDetails.effects.length > 0 ? (
-                  <>
-                     <p>
-                      {ageEffectsDetails.effects.map((effect, index) => (
-                        <React.Fragment key={effect.ability}>
-                          <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
-                            {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
-                          </strong>
-                          {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
-                        </React.Fragment>
-                      ))}
-                    </p>
-                    <p className="text-xs">{ageEffectsDetails.categoryName}</p>
-                  </>
-                ) : (
-                    <p className="italic">No impact on ability scores</p>
+                <p>
+                  {ageEffectsDetails.effects.map((effect, index) => (
+                    <React.Fragment key={effect.ability}>
+                      <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
+                        {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
+                      </strong>
+                      {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
+                    </React.Fragment>
+                  ))}
+                </p>
+                {ageEffectsDetails.categoryName !== 'Adult' && (
+                  <p className="text-xs">{ageEffectsDetails.categoryName}</p>
                 )}
               </div>
             )}
@@ -288,20 +281,16 @@ export function CharacterFormCoreInfoSection({
                 {SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
               </SelectContent>
             </Select>
-            {sizeAbilityEffectsDetails && (
+            {sizeAbilityEffectsDetails && sizeAbilityEffectsDetails.effects.length > 0 && (
               <p className="text-xs text-muted-foreground mt-1 ml-1">
-                {sizeAbilityEffectsDetails.effects.length > 0 ? (
-                  sizeAbilityEffectsDetails.effects.map((effect, index) => (
+                {sizeAbilityEffectsDetails.effects.map((effect, index) => (
                     <React.Fragment key={effect.ability}>
                       <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
                         {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
                       </strong>
                       {index < sizeAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                     </React.Fragment>
-                  ))
-                ) : (
-                  <span className="italic">No impact on ability scores</span>
-                )}
+                  ))}
               </p>
             )}
           </div>
