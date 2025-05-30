@@ -37,7 +37,7 @@ import { cn } from '@/lib/utils';
 interface CharacterFormCoreInfoSectionProps {
   characterData: Pick<Character, 'name' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
   onFieldChange: (field: keyof Character, value: any) => void;
-  onClassChange: (className: DndClassId | string) => void; // Simplified to only pass className
+  onClassChange: (className: DndClassId | string) => void;
   ageEffectsDetails: AgingEffectsDetails | null;
   sizeAbilityEffectsDetails: SizeAbilityEffectsDetails | null;
   raceSpecialQualities: RaceSpecialQualities | null;
@@ -117,7 +117,7 @@ export function CharacterFormCoreInfoSection({
                   isEditable={true}
                 />
               </div>
-              {isPredefinedRace && (
+              {isPredefinedRace && characterData.race && (
                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenRaceInfoDialog}>
                   <Info className="h-5 w-5" />
                 </Button>
@@ -146,7 +146,7 @@ export function CharacterFormCoreInfoSection({
 
         {/* Class and Alignment */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-          <div className="space-y-1">
+           <div className="space-y-1">
             <Label htmlFor="className">Class</Label>
             <div className="flex items-center gap-2">
               <div className="flex-grow">
@@ -160,7 +160,7 @@ export function CharacterFormCoreInfoSection({
                   isEditable={true}
                 />
               </div>
-              {isPredefinedClass && (
+               {isPredefinedClass && characterData.classes[0]?.className && (
                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
                   onClick={onOpenClassInfoDialog}>
                   <Info className="h-5 w-5" />
@@ -170,8 +170,8 @@ export function CharacterFormCoreInfoSection({
                 <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
               )}
             </div>
-            {selectedClassInfo && (
-              <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: <strong className="font-bold">{selectedClassInfo.hitDice}</strong></p>
+            {selectedClassInfo?.hitDice && (
+              <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: <strong className="font-bold text-primary">{selectedClassInfo.hitDice}</strong></p>
             )}
           </div>
           <div className="space-y-1">
@@ -185,10 +185,12 @@ export function CharacterFormCoreInfoSection({
                   </SelectContent>
                 </Select>
               </div>
-              <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
-                onClick={onOpenAlignmentInfoDialog}>
-                <Info className="h-5 w-5" />
-              </Button>
+              {characterData.alignment && (
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
+                  onClick={onOpenAlignmentInfoDialog}>
+                  <Info className="h-5 w-5" />
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -198,7 +200,7 @@ export function CharacterFormCoreInfoSection({
           <div className="space-y-1">
             <Label htmlFor="deity">Deity</Label>
             <div className="flex items-center gap-2">
-              <div className="flex-grow w-1/2"> {/* Added w-1/2 here */}
+              <div className="w-1/2 flex-none"> {/* Added flex-none here */}
                 <ComboboxPrimitive
                   options={DND_DEITIES}
                   value={characterData.deity || ''}
@@ -207,6 +209,7 @@ export function CharacterFormCoreInfoSection({
                   searchPlaceholder="Search deities..."
                   emptyPlaceholder="No deity found. Type to add."
                   isEditable={true}
+                  // The ComboboxPrimitive itself will be w-full of this div by default
                 />
               </div>
               {characterData.deity && characterData.deity.trim() !== '' && (
@@ -225,28 +228,28 @@ export function CharacterFormCoreInfoSection({
             <Label htmlFor="age">Age</Label>
             <Input id="age" name="age" type="number" value={characterData.age} onChange={handleInputChange} min={currentMinAgeForInput} />
             {ageEffectsDetails && (
-                <div className="text-xs text-muted-foreground mt-1 ml-1 space-y-0.5">
+              <div className="text-xs text-muted-foreground mt-1 ml-1 space-y-0.5">
                 {ageEffectsDetails.effects.length > 0 ? (
-                    <>
+                  <>
                     <p>
-                        {ageEffectsDetails.effects.map((effect, index) => (
+                      {ageEffectsDetails.effects.map((effect, index) => (
                         <React.Fragment key={effect.ability}>
-                            <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
-                            {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
-                            </strong>
-                            {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
+                          <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
+                            {effect.ability.substring(0, 3).toUpperCase()} {effect.change}
+                          </strong>
+                          {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                         </React.Fragment>
-                        ))}
+                      ))}
                     </p>
-                    <p>{ageEffectsDetails.categoryName}</p>
-                    </>
+                    {ageEffectsDetails.categoryName !== "Adult" && <p>{ageEffectsDetails.categoryName}</p>}
+                  </>
                 ) : (
-                    <>
+                  <>
                     <p>No impact on ability scores</p>
                     {ageEffectsDetails.categoryName !== "Adult" && <p>{ageEffectsDetails.categoryName}</p>}
-                    </>
+                  </>
                 )}
-                </div>
+              </div>
             )}
             </div>
           <div className="space-y-1">
