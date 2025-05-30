@@ -21,8 +21,8 @@ import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 
 interface SkillsFormSectionProps {
   skills: SkillType[];
-  abilityScores: AbilityScores; // Base scores for skill point calculation
-  actualAbilityScores: AbilityScores; // Actual scores for skill check modifiers
+  abilityScores: AbilityScores; // Base scores for skill point calculation (legacy, actualAbilityScores is preferred for most things)
+  actualAbilityScores: AbilityScores; // Actual scores for skill check modifiers and skill point calculation
   characterClasses: CharacterClass[];
   characterRace: DndRaceId | string;
   selectedFeats: Feat[];
@@ -34,8 +34,8 @@ interface SkillsFormSectionProps {
 
 export function SkillsFormSection({
   skills,
-  abilityScores,
-  actualAbilityScores,
+  abilityScores, // Still needed for max rank calculation if it intentionally uses base INT.
+  actualAbilityScores, // Use this for skill point calculation and skill check mods.
   characterClasses,
   characterRace,
   selectedFeats,
@@ -51,7 +51,8 @@ export function SkillsFormSection({
 
   const firstClass = characterClasses[0];
   const characterLevel = firstClass?.level || 1;
-  const intelligenceModifier = getAbilityModifierByName(abilityScores, 'intelligence'); // Use base Int for skill points
+  // Use ACTUAL Intelligence modifier for skill points calculation
+  const intelligenceModifier = getAbilityModifierByName(actualAbilityScores, 'intelligence'); 
 
   const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0) : 0;
   const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace);
@@ -137,11 +138,11 @@ export function SkillsFormSection({
               Skill Points Left: <span className={cn(
                 "text-lg font-bold",
                 skillPointsLeft >= 0 ? "text-emerald-500" : "text-destructive",
-                skillPointsLeft === 0 && "text-accent" // Fallback to accent if exactly zero
+                skillPointsLeft === 0 && "text-accent" 
               )}>{skillPointsLeft}</span>
             </p>
           </div>
-          <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
+           <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
             <p>
                 (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
                 {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
@@ -182,19 +183,16 @@ export function SkillsFormSection({
             const keyAbility = skill.keyAbility || (skillDef?.keyAbility as AbilityName | undefined);
             const keyAbilityShort = keyAbility ? keyAbility.substring(0, 3).toUpperCase() : 'N/A';
 
-            // Use actualAbilityScores for calculating the modifier for skill checks
-            let baseAbilityMod = 0;
-            if (keyAbility && keyAbility !== 'none' && actualAbilityScores) {
-              baseAbilityMod = getAbilityModifierByName(actualAbilityScores, keyAbility);
-            }
-
+            const baseAbilityMod = keyAbility ? getAbilityModifierByName(actualAbilityScores, keyAbility) : 0;
             const synergyBonus = calculateTotalSynergyBonus(skill.id, skills);
             const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats);
             const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES as DndRaceOption[], SKILL_DEFINITIONS as SkillDefinitionJsonData[]);
             const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus + currentRacialBonus;
 
             const totalBonus = (skill.ranks || 0) + totalDisplayedModifier;
-            const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier); // Max ranks based on base Int
+            // Max ranks calculation should use base intelligence for strict PHB interpretation.
+            const baseIntelligenceModifierForMaxRanks = getAbilityModifierByName(abilityScores, 'intelligence');
+            const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, baseIntelligenceModifierForMaxRanks); 
             const skillCost = skill.isClassSkill ? 1 : 2;
             const isCustomSkill = !skillDef;
             const currentStep = skill.isClassSkill ? 1 : 0.5;
@@ -208,7 +206,7 @@ export function SkillsFormSection({
                     checked={skill.isClassSkill}
                     disabled={!isCustomSkill} 
                     onCheckedChange={(checked) => {
-                        if (isCustomSkill && skill.keyAbility) { 
+                        if (isCustomSkill && skill.keyAbility && skill.providesSynergies !== undefined) { 
                             onCustomSkillUpdate({
                                 id: skill.id,
                                 name: skill.name,
@@ -229,6 +227,7 @@ export function SkillsFormSection({
                         size="icon"
                         className="h-5 w-5 mr-1 text-muted-foreground hover:text-foreground"
                         onClick={() => handleOpenSkillInfoDialog(skill)}
+                        aria-label={`Info for ${skill.name}`}
                       >
                         <Info className="h-3 w-3" />
                       </Button>
@@ -246,6 +245,7 @@ export function SkillsFormSection({
                               size="icon"
                               className="h-5 w-5 text-muted-foreground hover:text-foreground"
                               onClick={() => handleOpenEditSkillDialog(skill)}
+                              aria-label={`Edit ${skill.name}`}
                             >
                               <Pencil className="h-3 w-3" />
                             </Button>
@@ -264,6 +264,7 @@ export function SkillsFormSection({
                                 size="icon"
                                 className="h-5 w-5 text-destructive/70 hover:text-destructive"
                                 onClick={() => onCustomSkillRemove(skill.id)}
+                                aria-label={`Remove ${skill.name}`}
                               >
                                 <Trash2 className="h-3 w-3" />
                               </Button>
@@ -323,3 +324,4 @@ export function SkillsFormSection({
     </>
   );
 }
+
