@@ -22,7 +22,7 @@ import {
 import type { FeatDefinitionJsonData, Character } from '@/types/character';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { BookOpenText } from 'lucide-react';
-import { checkFeatPrerequisites, DND_FEATS } from '@/types/character'; 
+import { checkFeatPrerequisites, DND_FEATS } from '@/types/character';
 import { cn } from '@/lib/utils';
 
 interface FeatSelectionDialogProps {
@@ -30,7 +30,7 @@ interface FeatSelectionDialogProps {
   onOpenChange: (open: boolean) => void;
   onFeatSelected: (featId: string) => void;
   allFeats: readonly FeatDefinitionJsonData[];
-  character: Character; 
+  character: Character;
 }
 
 export function FeatSelectionDialog({
@@ -40,12 +40,12 @@ export function FeatSelectionDialog({
   allFeats,
   character,
 }: FeatSelectionDialogProps) {
-  
+
   const [searchTerm, setSearchTerm] = React.useState('');
 
   const filteredFeats = React.useMemo(() => {
     if (!searchTerm) return allFeats;
-    return allFeats.filter(feat => 
+    return allFeats.filter(feat =>
       feat.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
       feat.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (feat.prerequisites && Object.values(feat.prerequisites).some(p => String(p).toLowerCase().includes(searchTerm.toLowerCase())))
@@ -54,7 +54,7 @@ export function FeatSelectionDialog({
 
   React.useEffect(() => {
     if (!isOpen) {
-      setSearchTerm(''); 
+      setSearchTerm('');
     }
   }, [isOpen]);
 
@@ -70,13 +70,13 @@ export function FeatSelectionDialog({
           </DialogDescription>
         </DialogHeader>
         <Command className="rounded-lg border shadow-md flex-grow min-h-0 flex flex-col">
-          <CommandInput 
-            placeholder="Search feats by name, description, or prerequisite..." 
+          <CommandInput
+            placeholder="Search feats by name, description, or prerequisite..."
             value={searchTerm}
             onValueChange={setSearchTerm}
           />
           <ScrollArea className="flex-grow min-h-0">
-            <CommandList className="max-h-none"> 
+            <CommandList className="max-h-none">
               <CommandEmpty>No feats found.</CommandEmpty>
               <CommandGroup>
                 {filteredFeats.map((feat) => {
@@ -89,34 +89,35 @@ export function FeatSelectionDialog({
                   return (
                     <CommandItem
                       key={feat.value}
-                      value={feat.label} 
+                      value={feat.label}
                       onSelect={() => {
                         onFeatSelected(feat.value);
                         onOpenChange(false);
                       }}
-                      className="flex flex-col items-start p-3 hover:bg-accent/50 cursor-pointer"
+                      className="flex flex-col items-start p-3 hover:bg-accent/10 cursor-pointer data-[selected=true]:bg-accent/20"
                     >
                       <div className="font-medium text-sm text-foreground">{feat.label}</div>
-                      <div 
-                        className="text-xs text-muted-foreground mt-0.5 whitespace-normal prose prose-sm dark:prose-invert max-w-none"
+                      <div
+                        className="text-xs text-muted-foreground mt-0.5 whitespace-normal"
                         dangerouslySetInnerHTML={{ __html: feat.description }}
                       />
-                      {allPrereqMessages.length > 0 ? (
+                      {(allPrereqMessages.length > 0 || (feat.prerequisites && Object.keys(feat.prerequisites).length > 0)) ? (
                           <p className="text-xs mt-0.5 whitespace-normal">
                             Prerequisites:{' '}
-                            {allPrereqMessages.map((msg, index) => (
-                              <React.Fragment key={index}>
-                                <span className={cn("text-xs", msg.type === 'unmet' ? 'text-destructive' : 'text-muted-foreground')}>
-                                  {msg.text}
-                                </span>
-                                {index < allPrereqMessages.length - 1 && ', '}
-                              </React.Fragment>
-                            ))}
+                            {allPrereqMessages.length > 0 ?
+                              allPrereqMessages.map((msg, index) => (
+                                <React.Fragment key={index}>
+                                  <span className={cn("text-xs", msg.type === 'unmet' ? 'text-destructive' : 'text-muted-foreground/80')}>
+                                    {msg.text}
+                                  </span>
+                                  {index < allPrereqMessages.length - 1 && ', '}
+                                </React.Fragment>
+                              ))
+                              : <span className="text-muted-foreground/80">None</span>
+                            }
                           </p>
-                        ) : (
-                          (feat.prerequisites && Object.keys(feat.prerequisites).length > 0) &&
-                          <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground">Prerequisites: None</p>
-                        )}
+                        ) : null
+                      }
                     </CommandItem>
                   );
                 })}
