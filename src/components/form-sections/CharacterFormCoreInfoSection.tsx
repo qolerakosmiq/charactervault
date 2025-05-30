@@ -198,7 +198,7 @@ export function CharacterFormCoreInfoSection({
           <div className="space-y-1">
             <Label htmlFor="deity">Deity</Label>
             <div className="flex items-center gap-2">
-              <div className="flex-grow">
+              <div className="flex-grow w-1/2"> {/* Added w-1/2 here */}
                 <ComboboxPrimitive
                   options={DND_DEITIES}
                   value={characterData.deity || ''}
@@ -209,10 +209,12 @@ export function CharacterFormCoreInfoSection({
                   isEditable={true}
                 />
               </div>
-              <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
-                onClick={onOpenDeityInfoDialog}>
-                <Info className="h-5 w-5" />
-              </Button>
+              {characterData.deity && characterData.deity.trim() !== '' && (
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
+                  onClick={onOpenDeityInfoDialog}>
+                  <Info className="h-5 w-5" />
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -223,27 +225,30 @@ export function CharacterFormCoreInfoSection({
             <Label htmlFor="age">Age</Label>
             <Input id="age" name="age" type="number" value={characterData.age} onChange={handleInputChange} min={currentMinAgeForInput} />
             {ageEffectsDetails && (
-              <div className="text-xs text-muted-foreground mt-1 ml-1 space-y-0.5">
+                <div className="text-xs text-muted-foreground mt-1 ml-1 space-y-0.5">
                 {ageEffectsDetails.effects.length > 0 ? (
-                  <>
+                    <>
                     <p>
-                      {ageEffectsDetails.effects.map((effect, index) => (
+                        {ageEffectsDetails.effects.map((effect, index) => (
                         <React.Fragment key={effect.ability}>
-                          <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
+                            <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
                             {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
-                          </strong>
-                          {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
+                            </strong>
+                            {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                         </React.Fragment>
-                      ))}
+                        ))}
                     </p>
                     <p>{ageEffectsDetails.categoryName}</p>
-                  </>
+                    </>
                 ) : (
-                  <p>No impact on ability scores</p>
+                    <>
+                    <p>No impact on ability scores</p>
+                    {ageEffectsDetails.categoryName !== "Adult" && <p>{ageEffectsDetails.categoryName}</p>}
+                    </>
                 )}
-              </div>
+                </div>
             )}
-          </div>
+            </div>
           <div className="space-y-1">
             <Label htmlFor="gender">Gender</Label>
             <ComboboxPrimitive
