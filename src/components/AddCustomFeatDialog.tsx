@@ -17,10 +17,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { PlusCircle, Pencil } from 'lucide-react';
+import { PlusCircle, Pencil, Trash2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ComboboxPrimitive, type ComboboxOption } from '@/components/ui/combobox';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 
 interface AddCustomFeatDialogProps {
   isOpen: boolean;
@@ -31,7 +32,7 @@ interface AddCustomFeatDialogProps {
   allSkills: readonly ComboboxOption[];
 }
 
-const abilityOptions: Array<{ value: Exclude<AbilityName, 'none'> | '__NONE__'; label: string }> = [
+const abilityOptions: Array<{ value: Exclude<AbilityName, 'none'>; label: string }> = [
   { value: 'strength', label: 'Strength (STR)' },
   { value: 'dexterity', label: 'Dexterity (DEX)' },
   { value: 'constitution', label: 'Constitution (CON)' },
@@ -40,7 +41,13 @@ const abilityOptions: Array<{ value: Exclude<AbilityName, 'none'> | '__NONE__'; 
   { value: 'charisma', label: 'Charisma (CHA)' },
 ];
 
-const NONE_ABILITY_VALUE = "__NONE__"; // Unique value for "None"
+type PrerequisiteListItem = {
+  tempId: string;
+  type: 'ability' | 'skill' | 'feat';
+  itemId: string; // For ability: ability name; For skill: skill ID; For feat: feat ID
+  itemLabel: string; // For display
+  value?: number; // For ability score or skill ranks
+};
 
 export function AddCustomFeatDialog({
   isOpen,
@@ -56,15 +63,18 @@ export function AddCustomFeatDialog({
   const [requiresSpecialization, setRequiresSpecialization] = React.useState('');
   const [effectsText, setEffectsText] = React.useState('');
 
-  // Structured Prerequisites State
+  // Singular Prerequisites State
   const [prereqBab, setPrereqBab] = React.useState('');
-  const [prereqAbilityName, setPrereqAbilityName] = React.useState<Exclude<AbilityName, 'none'> | typeof NONE_ABILITY_VALUE>(NONE_ABILITY_VALUE);
-  const [prereqAbilityScore, setPrereqAbilityScore] = React.useState('');
-  const [prereqSkillId, setPrereqSkillId] = React.useState('');
-  const [prereqSkillRanks, setPrereqSkillRanks] = React.useState('');
-  const [prereqFeatId, setPrereqFeatId] = React.useState('');
   const [prereqCasterLevel, setPrereqCasterLevel] = React.useState('');
   const [prereqSpecialText, setPrereqSpecialText] = React.useState('');
+
+  // State for building a new prerequisite
+  const [newPrereqType, setNewPrereqType] = React.useState<'ability' | 'skill' | 'feat' | ''>('');
+  const [newPrereqItemId, setNewPrereqItemId] = React.useState('');
+  const [newPrereqValue, setNewPrereqValue] = React.useState(''); // For ability score or skill ranks
+
+  // List of structured prerequisites
+  const [prerequisitesList, setPrerequisitesList] = React.useState<PrerequisiteListItem[]>([]);
 
   const isEditing = !!initialFeatData;
 
@@ -77,22 +87,32 @@ export function AddCustomFeatDialog({
         setRequiresSpecialization(initialFeatData.requiresSpecialization || '');
         setEffectsText(initialFeatData.effectsText || '');
 
-        // Populate structured prerequisites
         const prereqs = initialFeatData.prerequisites;
         setPrereqBab(prereqs?.bab?.toString() || '');
-        if (prereqs?.abilities && Object.keys(prereqs.abilities).length > 0) {
-          const firstAbility = Object.keys(prereqs.abilities)[0] as Exclude<AbilityName, 'none'>;
-          setPrereqAbilityName(firstAbility);
-          setPrereqAbilityScore(prereqs.abilities[firstAbility]?.toString() || '');
-        } else {
-          setPrereqAbilityName(NONE_ABILITY_VALUE);
-          setPrereqAbilityScore('');
-        }
-        setPrereqSkillId(prereqs?.skills?.[0]?.id || '');
-        setPrereqSkillRanks(prereqs?.skills?.[0]?.ranks?.toString() || '');
-        setPrereqFeatId(prereqs?.feats?.[0] || '');
         setPrereqCasterLevel(prereqs?.casterLevel?.toString() || '');
         setPrereqSpecialText(prereqs?.special || '');
+
+        const loadedPrereqs: PrerequisiteListItem[] = [];
+        if (prereqs?.abilities) {
+          for (const [ability, score] of Object.entries(prereqs.abilities)) {
+            const abilityLabel = abilityOptions.find(opt => opt.value === ability)?.label || ability;
+            loadedPrereqs.push({ tempId: crypto.randomUUID(), type: 'ability', itemId: ability, itemLabel: abilityLabel, value: score });
+          }
+        }
+        if (prereqs?.skills) {
+          prereqs.skills.forEach(skillReq => {
+            const skillLabel = allSkills.find(s => s.value === skillReq.id)?.label || skillReq.id;
+            loadedPrereqs.push({ tempId: crypto.randomUUID(), type: 'skill', itemId: skillReq.id, itemLabel: skillLabel, value: skillReq.ranks });
+          });
+        }
+        if (prereqs?.feats) {
+          prereqs.feats.forEach(featId => {
+            const featLabel = allFeats.find(f => f.value === featId)?.label || featId;
+            loadedPrereqs.push({ tempId: crypto.randomUUID(), type: 'feat', itemId: featId, itemLabel: featLabel });
+          });
+        }
+        setPrerequisitesList(loadedPrereqs);
+
       } else {
         // Reset all fields for new feat
         setFeatName('');
@@ -101,42 +121,85 @@ export function AddCustomFeatDialog({
         setRequiresSpecialization('');
         setEffectsText('');
         setPrereqBab('');
-        setPrereqAbilityName(NONE_ABILITY_VALUE);
-        setPrereqAbilityScore('');
-        setPrereqSkillId('');
-        setPrereqSkillRanks('');
-        setPrereqFeatId('');
         setPrereqCasterLevel('');
         setPrereqSpecialText('');
+        setPrerequisitesList([]);
       }
+      // Reset new prerequisite form
+      setNewPrereqType('');
+      setNewPrereqItemId('');
+      setNewPrereqValue('');
     }
-  }, [isOpen, initialFeatData]);
+  }, [isOpen, initialFeatData, allFeats, allSkills]);
+
+  const handleAddPrerequisite = () => {
+    if (!newPrereqType || !newPrereqItemId) {
+      alert('Please select a prerequisite type and item.');
+      return;
+    }
+    let itemLabel = '';
+    let value: number | undefined = undefined;
+
+    if (newPrereqType === 'ability') {
+      const abilityOpt = abilityOptions.find(opt => opt.value === newPrereqItemId);
+      itemLabel = abilityOpt ? abilityOpt.label : newPrereqItemId;
+      value = parseInt(newPrereqValue, 10);
+      if (isNaN(value) || value <= 0) {
+        alert('Please enter a valid ability score.');
+        return;
+      }
+    } else if (newPrereqType === 'skill') {
+      const skillOpt = allSkills.find(opt => opt.value === newPrereqItemId);
+      itemLabel = skillOpt ? skillOpt.label : newPrereqItemId;
+      value = parseInt(newPrereqValue, 10);
+      if (isNaN(value) || value <= 0) {
+        alert('Please enter valid skill ranks.');
+        return;
+      }
+    } else if (newPrereqType === 'feat') {
+      const featOpt = allFeats.find(opt => opt.value === newPrereqItemId);
+      itemLabel = featOpt ? featOpt.label : newPrereqItemId;
+    }
+
+    setPrerequisitesList(prev => [...prev, { tempId: crypto.randomUUID(), type: newPrereqType, itemId: newPrereqItemId, itemLabel, value }]);
+    setNewPrereqItemId('');
+    setNewPrereqValue('');
+    // Keep newPrereqType for potentially adding another of the same type
+  };
+
+  const handleRemovePrerequisite = (tempIdToRemove: string) => {
+    setPrerequisitesList(prev => prev.filter(p => p.tempId !== tempIdToRemove));
+  };
 
   const handleSaveFeat = () => {
     if (featName.trim() === '') {
-      alert('Feat name cannot be empty.'); // Simple validation
+      alert('Feat name cannot be empty.');
       return;
     }
 
-    const structuredPrerequisites: FeatPrerequisiteDetails = {};
-    if (prereqBab.trim() !== '') structuredPrerequisites.bab = parseInt(prereqBab, 10);
-    if (prereqAbilityName && prereqAbilityName !== NONE_ABILITY_VALUE && prereqAbilityScore.trim() !== '') {
-      structuredPrerequisites.abilities = { [prereqAbilityName as Exclude<AbilityName, 'none'>]: parseInt(prereqAbilityScore, 10) };
-    }
-    if (prereqSkillId && prereqSkillRanks.trim() !== '') {
-      structuredPrerequisites.skills = [{ id: prereqSkillId, ranks: parseInt(prereqSkillRanks, 10) }];
-    }
-    if (prereqFeatId) {
-      structuredPrerequisites.feats = [prereqFeatId];
-    }
-    if (prereqCasterLevel.trim() !== '') structuredPrerequisites.casterLevel = parseInt(prereqCasterLevel, 10);
-    if (prereqSpecialText.trim() !== '') structuredPrerequisites.special = prereqSpecialText.trim();
+    const finalStructuredPrerequisites: FeatPrerequisiteDetails = {};
+    if (prereqBab.trim() !== '' && !isNaN(parseInt(prereqBab, 10))) finalStructuredPrerequisites.bab = parseInt(prereqBab, 10);
+    if (prereqCasterLevel.trim() !== '' && !isNaN(parseInt(prereqCasterLevel, 10))) finalStructuredPrerequisites.casterLevel = parseInt(prereqCasterLevel, 10);
+    if (prereqSpecialText.trim() !== '') finalStructuredPrerequisites.special = prereqSpecialText.trim();
+
+    prerequisitesList.forEach(p => {
+      if (p.type === 'ability' && p.value !== undefined) {
+        if (!finalStructuredPrerequisites.abilities) finalStructuredPrerequisites.abilities = {};
+        finalStructuredPrerequisites.abilities[p.itemId as Exclude<AbilityName, 'none'>] = p.value;
+      } else if (p.type === 'skill' && p.value !== undefined) {
+        if (!finalStructuredPrerequisites.skills) finalStructuredPrerequisites.skills = [];
+        finalStructuredPrerequisites.skills.push({ id: p.itemId, ranks: p.value });
+      } else if (p.type === 'feat') {
+        if (!finalStructuredPrerequisites.feats) finalStructuredPrerequisites.feats = [];
+        finalStructuredPrerequisites.feats.push(p.itemId);
+      }
+    });
 
     onSave({
       id: initialFeatData?.id,
       name: featName.trim(),
       description: description.trim() || undefined,
-      prerequisites: Object.keys(structuredPrerequisites).length > 0 ? structuredPrerequisites : undefined,
+      prerequisites: Object.keys(finalStructuredPrerequisites).length > 0 || prerequisitesList.length > 0 ? finalStructuredPrerequisites : undefined,
       effectsText: effectsText.trim() || undefined,
       canTakeMultipleTimes,
       requiresSpecialization: requiresSpecialization.trim() || undefined,
@@ -147,7 +210,7 @@ export function AddCustomFeatDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif">
             {isEditing ? <Pencil className="mr-2 h-6 w-6 text-primary" /> : <PlusCircle className="mr-2 h-6 w-6 text-primary" />}
@@ -158,7 +221,7 @@ export function AddCustomFeatDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[70vh] pr-2">
+        <ScrollArea className="max-h-[70vh] p-1">
           <div className="space-y-4 p-4">
             {/* Core Feat Info */}
             <div className="space-y-1">
@@ -202,9 +265,9 @@ export function AddCustomFeatDialog({
             </div>
 
             <Separator className="my-6" />
-            <h3 className="text-md font-semibold text-foreground">Structured Prerequisites</h3>
+            <h3 className="text-md font-semibold text-foreground mb-2">Structured Prerequisites</h3>
             
-            {/* Structured Prerequisites Inputs */}
+            {/* Singular Prerequisites Inputs */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <Label htmlFor="prereq-bab">Base Attack Bonus (BAB)</Label>
@@ -215,58 +278,99 @@ export function AddCustomFeatDialog({
                 <Input id="prereq-caster-level" type="number" value={prereqCasterLevel} onChange={(e) => setPrereqCasterLevel(e.target.value)} placeholder="e.g., 1" />
               </div>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-              <div className="space-y-1">
-                <Label htmlFor="prereq-ability-name">Ability Score</Label>
-                <Select value={prereqAbilityName} onValueChange={(val) => setPrereqAbilityName(val as Exclude<AbilityName, 'none'> | typeof NONE_ABILITY_VALUE)}>
-                  <SelectTrigger><SelectValue placeholder="Select Ability..." /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={NONE_ABILITY_VALUE}>None</SelectItem>
-                    {abilityOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1">
-                <Input id="prereq-ability-score" type="number" value={prereqAbilityScore} onChange={(e) => setPrereqAbilityScore(e.target.value)} placeholder="Min Score" disabled={prereqAbilityName === NONE_ABILITY_VALUE} />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-               <div className="space-y-1">
-                <Label htmlFor="prereq-skill-id">Skill</Label>
-                <ComboboxPrimitive
-                  options={allSkills}
-                  value={prereqSkillId}
-                  onChange={setPrereqSkillId}
-                  placeholder="Select Skill..."
-                  searchPlaceholder="Search skills..."
-                  emptyPlaceholder="No skill found."
-                />
-              </div>
-              <div className="space-y-1">
-                 <Input id="prereq-skill-ranks" type="number" value={prereqSkillRanks} onChange={(e) => setPrereqSkillRanks(e.target.value)} placeholder="Min Ranks" disabled={!prereqSkillId} />
-              </div>
-            </div>
-            
-            <div className="space-y-1">
-              <Label htmlFor="prereq-feat-id">Feat</Label>
-              <ComboboxPrimitive
-                  options={allFeats.map(f => ({value: f.value, label: f.label}))}
-                  value={prereqFeatId}
-                  onChange={setPrereqFeatId}
-                  placeholder="Select Prerequisite Feat..."
-                  searchPlaceholder="Search feats..."
-                  emptyPlaceholder="No feat found."
-                />
-            </div>
-
-            <div className="space-y-1">
+             <div className="space-y-1 mt-4">
               <Label htmlFor="prereq-special-text">Special Prerequisite Text</Label>
               <Input id="prereq-special-text" value={prereqSpecialText} onChange={(e) => setPrereqSpecialText(e.target.value)} placeholder="e.g., Wild Shape ability" />
             </div>
+
+            {/* Multiple Prerequisites Section */}
+            <Separator className="my-6" />
+            <h4 className="text-sm font-medium text-foreground mb-1">Add Specific Prerequisite:</h4>
+            <div className="p-3 border rounded-md bg-muted/20 space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+                <div className="space-y-1">
+                  <Label htmlFor="new-prereq-type">Type</Label>
+                  <Select value={newPrereqType} onValueChange={(val) => { setNewPrereqType(val as any); setNewPrereqItemId(''); setNewPrereqValue(''); }}>
+                    <SelectTrigger><SelectValue placeholder="Select Type..." /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ability">Ability Score</SelectItem>
+                      <SelectItem value="skill">Skill</SelectItem>
+                      <SelectItem value="feat">Feat</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {newPrereqType === 'ability' && (
+                  <>
+                    <div className="space-y-1">
+                      <Label htmlFor="new-prereq-ability-item">Ability</Label>
+                      <Select value={newPrereqItemId} onValueChange={setNewPrereqItemId}>
+                        <SelectTrigger><SelectValue placeholder="Select Ability..." /></SelectTrigger>
+                        <SelectContent>
+                          {abilityOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="new-prereq-ability-value">Min Score</Label>
+                      <Input id="new-prereq-ability-value" type="number" value={newPrereqValue} onChange={e => setNewPrereqValue(e.target.value)} placeholder="e.g., 13" />
+                    </div>
+                  </>
+                )}
+                {newPrereqType === 'skill' && (
+                  <>
+                    <div className="space-y-1">
+                      <Label htmlFor="new-prereq-skill-item">Skill</Label>
+                      <ComboboxPrimitive
+                        options={allSkills}
+                        value={newPrereqItemId}
+                        onChange={setNewPrereqItemId}
+                        placeholder="Select Skill..."
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="new-prereq-skill-value">Min Ranks</Label>
+                      <Input id="new-prereq-skill-value" type="number" value={newPrereqValue} onChange={e => setNewPrereqValue(e.target.value)} placeholder="e.g., 5" />
+                    </div>
+                  </>
+                )}
+                {newPrereqType === 'feat' && (
+                  <div className="space-y-1 md:col-span-2"> {/* Feat selector can take more space */}
+                    <Label htmlFor="new-prereq-feat-item">Feat</Label>
+                    <ComboboxPrimitive
+                      options={allFeats.map(f => ({ value: f.value, label: f.label }))}
+                      value={newPrereqItemId}
+                      onChange={setNewPrereqItemId}
+                      placeholder="Select Prerequisite Feat..."
+                    />
+                  </div>
+                )}
+              </div>
+              {newPrereqType && (
+                <Button onClick={handleAddPrerequisite} size="sm" variant="outline" type="button">
+                  <PlusCircle className="mr-2 h-4 w-4" /> Add to Prerequisite List
+                </Button>
+              )}
+            </div>
+
+            {prerequisitesList.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <Label>Defined Prerequisites:</Label>
+                {prerequisitesList.map(p => (
+                  <div key={p.tempId} className="flex items-center justify-between p-2 border rounded-md text-xs bg-background">
+                    <div>
+                      <Badge variant="secondary" className="mr-2 capitalize">{p.type}</Badge>
+                      <span className="font-medium">{p.itemLabel}</span>
+                      {p.value !== undefined && <span className="text-muted-foreground"> (Min: {p.value}{p.type === 'skill' ? ' ranks' : ''})</span>}
+                    </div>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => handleRemovePrerequisite(p.tempId)} type="button">
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
             
-            {/* Effects section (textual for now, can be expanded later) */}
             <Separator className="my-6" />
             <h3 className="text-md font-semibold text-foreground">Effects (Textual)</h3>
              <div className="space-y-1">
@@ -279,12 +383,10 @@ export function AddCustomFeatDialog({
                 rows={2}
               />
             </div>
-
-
           </div>
         </ScrollArea>
 
-        <DialogFooter className="mt-2">
+        <DialogFooter className="mt-2 pt-4 border-t">
           <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
             Cancel
           </Button>
@@ -294,4 +396,3 @@ export function AddCustomFeatDialog({
     </Dialog>
   );
 }
-
