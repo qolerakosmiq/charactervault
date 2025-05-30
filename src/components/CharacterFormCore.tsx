@@ -33,16 +33,16 @@ interface CharacterFormCoreProps {
 
 export function CharacterFormCore({ initialCharacter, onSave, isCreating }: CharacterFormCoreProps) {
   const [character, setCharacter] = React.useState<Character>(() => {
-    const defaultBaseAbilityScores = { ...JSON.parse(JSON.stringify(constantsData.DEFAULT_ABILITIES || {})) };
+    const defaultBaseAbilityScores = { ...(JSON.parse(JSON.stringify(constantsData.DEFAULT_ABILITIES)) as AbilityScores) };
     const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: '', level: 1 }];
 
     const tempCharForInitialFeats: Character = {
       id: crypto.randomUUID(),
-      name: '', race: '', alignment: '', deity: '', size: '', age: 0, gender: '',
+      name: '', race: '', alignment: '', deity: '', size: '', age: 20, gender: '',
       abilityScores: defaultBaseAbilityScores,
       hp: 10, maxHp: 10, armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0,
       deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, initiativeMiscModifier: 0,
-      savingThrows: JSON.parse(JSON.stringify(constantsData.DEFAULT_SAVING_THROWS || {})),
+      savingThrows: JSON.parse(JSON.stringify(constantsData.DEFAULT_SAVING_THROWS)) as SavingThrows,
       classes: defaultClasses, skills: [], feats: [], inventory: [],
     }
     const initialFeats = getGrantedFeatsForCharacter(tempCharForInitialFeats.race, tempCharForInitialFeats.classes, 1);
@@ -67,7 +67,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       dodgeBonus: 0,
       acMiscModifier: 0,
       initiativeMiscModifier: 0,
-      savingThrows: JSON.parse(JSON.stringify(constantsData.DEFAULT_SAVING_THROWS || {})),
+      savingThrows: JSON.parse(JSON.stringify(constantsData.DEFAULT_SAVING_THROWS)) as SavingThrows,
       classes: defaultClasses,
       skills: getInitialCharacterSkills(defaultClasses),
       feats: initialFeats,
@@ -90,7 +90,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   React.useEffect(() => {
     setDetailedAbilityScores(calculateDetailedAbilityScores(character));
-  }, [character.abilityScores, character.race, character.age, character.size, character.feats, character]);
+  }, [character]); // Recalculate when any part of character changes
 
 
   React.useEffect(() => {
@@ -143,15 +143,15 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   React.useEffect(() => {
     const existingCustomSkillsMap = new Map<string, Partial<SkillType>>();
     character.skills.forEach(skill => {
-      if (!SKILL_DEFINITIONS.some(def => def.value === skill.id)) { // skill.id is kebab for predefined, UUID for custom
+      if (!SKILL_DEFINITIONS.some(def => def.value === skill.id)) {
         existingCustomSkillsMap.set(skill.id, {
           name: skill.name,
           keyAbility: skill.keyAbility,
           isClassSkill: skill.isClassSkill,
           providesSynergies: skill.providesSynergies,
           description: skill.description,
-          ranks: 0, // Reset ranks
-          miscModifier: 0 // Reset misc mods
+          ranks: 0, 
+          miscModifier: 0 
         });
       }
     });
@@ -163,8 +163,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       const existingCharacterSkill = character.skills.find(s => s.id === predefinedSkill.id);
       finalSkillsMap.set(predefinedSkill.id, {
         ...predefinedSkill,
-        ranks: existingCharacterSkill?.ranks || 0, // Preserve ranks if skill still exists
-        miscModifier: existingCharacterSkill?.miscModifier || 0, // Preserve misc mods
+        ranks: existingCharacterSkill?.ranks || 0, 
+        miscModifier: existingCharacterSkill?.miscModifier || 0, 
       });
     });
 
@@ -176,7 +176,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         isClassSkill: customSkillData.isClassSkill!,
         providesSynergies: customSkillData.providesSynergies,
         description: customSkillData.description,
-        ranks: 0, // Custom skills ranks are reset on class change as per previous logic
+        ranks: 0, 
         miscModifier: 0,
       });
     });
@@ -188,9 +188,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     const combinedFeatsMap = new Map<string, FeatType>();
     newGrantedFeats.forEach(feat => combinedFeatsMap.set(feat.id, feat));
     userChosenFeats.forEach(feat => {
-        const featDef = DND_FEATS.find(f => f.value === feat.id.split('-')[0]); // Use base ID for definition
-        const featIdToStore = (featDef?.canTakeMultipleTimes && combinedFeatsMap.has(feat.id.split('-')[0]) && !feat.id.includes(crypto.randomUUID().substring(0,4))) // crude check if it's a unique instance
-            ? `${feat.id.split('-')[0]}-${crypto.randomUUID()}` // Ensure multiple-instance feats get unique IDs if needed
+        const featDef = DND_FEATS.find(f => f.value === feat.id.split('-')[0]); 
+        const featIdToStore = (featDef?.canTakeMultipleTimes && combinedFeatsMap.has(feat.id.split('-')[0]) && !feat.id.includes(crypto.randomUUID().substring(0,4))) 
+            ? `${feat.id.split('-')[0]}-${crypto.randomUUID().substring(0,8)}`
             : feat.id;
         if (!combinedFeatsMap.has(featIdToStore) || featDef?.canTakeMultipleTimes) {
            combinedFeatsMap.set(featIdToStore, feat);
@@ -203,7 +203,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       feats: Array.from(combinedFeatsMap.values()),
     }));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [character.classes[0]?.className, character.race]); // Only re-calc skills & granted feats on class/race change
+  }, [character.classes[0]?.className, character.race]); 
 
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -246,7 +246,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const handleClassChange = (value: string) => {
-      const newClassId = value as DndClassId | string; // Value is kebab-case ID or custom string
+      const newClassId = value as DndClassId | string; 
       setCharacter(prev => {
         const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: newClassId, level: 1 }];
         return {
@@ -267,7 +267,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
  const handleCustomSkillAdd = (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
     const newSkill: SkillType = {
-      id: crypto.randomUUID(), // Custom skills always get a UUID
+      id: crypto.randomUUID(), 
       name: skillData.name,
       keyAbility: skillData.keyAbility,
       ranks: 0,
@@ -315,7 +315,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     autoGrantedFeats.forEach(feat => finalFeatsMap.set(feat.id, feat)); 
 
     newlyChosenFeats.forEach(feat => { 
-        const featIdToStore = feat.id; // ID already unique for multiple-takable from FeatsFormSection
+        const featIdToStore = feat.id; 
         if (!finalFeatsMap.has(featIdToStore) || feat.canTakeMultipleTimes) {
            finalFeatsMap.set(featIdToStore, { ...feat, isGranted: false });
         }
@@ -404,7 +404,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     
     const finalCharacterData = {
       ...character,
-      classes: [{ ...character.classes[0], level: 1 }], // Ensure level 1 for created character
+      classes: [{ ...character.classes[0], level: 1 }], 
     };
     onSave(finalCharacterData);
   };
@@ -503,36 +503,36 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
            {/* Class and Alignment */}
            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            <div className="space-y-1">
-              <Label htmlFor="className">Class</Label>
-              <div className="flex items-center gap-2">
-                <div className="flex-grow">
-                  <ComboboxPrimitive
-                    options={DND_CLASSES}
-                    value={character.classes[0]?.className || ''}
-                    onChange={handleClassChange}
-                    placeholder="Select or type class"
-                    searchPlaceholder="Search classes..."
-                    emptyPlaceholder="No class found. Type to add custom."
-                    isEditable={true}
-                  />
+             <div className="space-y-1">
+                <Label htmlFor="className">Class</Label>
+                <div className="flex items-center gap-2">
+                  <div className="flex-grow">
+                    <ComboboxPrimitive
+                      options={DND_CLASSES}
+                      value={character.classes[0]?.className || ''}
+                      onChange={handleClassChange}
+                      placeholder="Select or type class"
+                      searchPlaceholder="Search classes..."
+                      emptyPlaceholder="No class found. Type to add custom."
+                      isEditable={true}
+                    />
+                  </div>
+                  {isPredefinedClass && (
+                    <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
+                      onClick={() => {
+                          const classData = DND_CLASSES.find(c => c.value === character.classes[0]?.className);
+                          if (classData) handleOpenGenericInfoDialog(classData.label, `Hit Dice: ${classData.hitDice}. Further class details can be added here.`);
+                      }}>
+                      <Info className="h-5 w-5" />
+                    </Button>
+                  )}
+                  {!isPredefinedClass && character.classes[0]?.className && character.classes[0]?.className.trim() !== '' && (
+                    <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
+                  )}
                 </div>
-                {isPredefinedClass && (
-                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
-                    onClick={() => {
-                        const classData = DND_CLASSES.find(c => c.value === character.classes[0]?.className);
-                        if (classData) handleOpenGenericInfoDialog(classData.label, `Hit Dice: ${classData.hitDice}. Further class details can be added here.`);
-                    }}>
-                    <Info className="h-5 w-5" />
-                  </Button>
+                {selectedClassInfo && (
+                  <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: <strong className="font-bold">{selectedClassInfo.hitDice}</strong></p>
                 )}
-                {!isPredefinedClass && character.classes[0]?.className && character.classes[0]?.className.trim() !== '' && (
-                  <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
-                )}
-              </div>
-              {selectedClassInfo && (
-                <p className="text-xs text-muted-foreground mt-1 ml-1">Hit Dice: <strong className="font-bold">{selectedClassInfo.hitDice}</strong></p>
-              )}
             </div>
             <div className="space-y-1">
               <Label htmlFor="alignment">Alignment</Label>
@@ -688,17 +688,19 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     </span>
                   </p>
                   {actualScoreData && (
-                    <div className="text-center text-sm mt-1">
-                       <span className="text-accent">Actual Modifier: </span>
-                       <Button
+                    <div className="text-center text-sm mt-1 flex items-center justify-center gap-1">
+                       <span className="text-accent">Actual: </span>
+                       <span className={cn("font-bold", actualModifier > 0 && "text-emerald-500", actualModifier < 0 && "text-destructive", actualModifier === 0 && "text-accent")}>
+                          {actualModifier >= 0 ? '+' : ''}{actualModifier}
+                       </span>
+                        <Button
                           type="button"
-                          variant="link"
-                          size="sm"
-                          className={cn("font-bold p-0 h-auto text-sm", actualModifier > 0 && "text-emerald-500 hover:text-emerald-600", actualModifier < 0 && "text-destructive hover:text-destructive/80", actualModifier === 0 && "text-accent hover:text-accent/80")}
+                          variant="ghost" 
+                          size="icon"
+                          className="h-5 w-5 text-muted-foreground hover:text-primary"
                           onClick={() => handleOpenAbilityScoreBreakdownDialog(ability)}
                         >
-                          {actualModifier >= 0 ? '+' : ''}{actualModifier}
-                           <Info className="h-3 w-3 ml-1 opacity-60 group-hover:opacity-100" />
+                           <Info className="h-3.5 w-3.5" />
                         </Button>
                     </div>
                   )}
@@ -783,7 +785,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         characterClasses={character.classes}
         selectedFeats={character.feats}
         onFeatSelectionChange={handleFeatSelectionChange}
-        abilityScores={character.abilityScores}
+        abilityScores={detailedAbilityScores ? Object.fromEntries(abilityNames.map(ab => [ab, detailedAbilityScores[ab].finalScore])) as AbilityScores : character.abilityScores}
         skills={character.skills}
       />
 
@@ -821,3 +823,5 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
+
+    
