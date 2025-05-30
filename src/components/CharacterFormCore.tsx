@@ -31,6 +31,8 @@ interface CharacterFormCoreProps {
   isCreating: boolean;
 }
 
+const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+
 export function CharacterFormCore({ initialCharacter, onSave, isCreating }: CharacterFormCoreProps) {
   const [character, setCharacter] = React.useState<Character>(() => {
     const defaultBaseAbilityScores = { ...(JSON.parse(JSON.stringify(constantsData.DEFAULT_ABILITIES)) as AbilityScores) };
@@ -42,7 +44,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       abilityScores: defaultBaseAbilityScores,
       hp: 10, maxHp: 10, armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0,
       deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, initiativeMiscModifier: 0,
-      savingThrows: JSON.parse(JSON.stringify(constantsData.DEFAULT_SAVING_THROWS)) as SavingThrows,
+      savingThrows: JSON.parse(JSON.stringify(constantsData.DEFAULT_SAVING_THROWS)),
       classes: defaultClasses, skills: [], feats: [], inventory: [],
     }
     const initialFeats = getGrantedFeatsForCharacter(tempCharForInitialFeats.race, tempCharForInitialFeats.classes, 1);
@@ -54,7 +56,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       alignment: '',
       deity: '',
       size: '',
-      age: 20,
+      age: 20, // Default age, will be adjusted if race has a higher min adult age
       gender: '',
       abilityScores: defaultBaseAbilityScores,
       hp: 10,
@@ -67,7 +69,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       dodgeBonus: 0,
       acMiscModifier: 0,
       initiativeMiscModifier: 0,
-      savingThrows: JSON.parse(JSON.stringify(constantsData.DEFAULT_SAVING_THROWS)) as SavingThrows,
+      savingThrows: JSON.parse(JSON.stringify(constantsData.DEFAULT_SAVING_THROWS)),
       classes: defaultClasses,
       skills: getInitialCharacterSkills(defaultClasses),
       feats: initialFeats,
@@ -90,7 +92,21 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   React.useEffect(() => {
     setDetailedAbilityScores(calculateDetailedAbilityScores(character));
-  }, [character]); // Recalculate when any part of character changes
+  }, [character]); 
+
+  const actualAbilityScoresForSkills = React.useMemo(() => {
+    if (!detailedAbilityScores) {
+      // Fallback to base scores if detailed scores are not yet computed
+      // This ensures SkillsFormSection always gets a valid AbilityScores object
+      return character.abilityScores;
+    }
+    const finalScores: Partial<AbilityScores> = {};
+    for (const ability of abilityNames) {
+      if (ability === 'none') continue;
+      finalScores[ability] = detailedAbilityScores[ability].finalScore;
+    }
+    return finalScores as AbilityScores;
+  }, [detailedAbilityScores, character.abilityScores]);
 
 
   React.useEffect(() => {
@@ -131,8 +147,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         }
       }
     } else {
-      // If race is cleared, reset age to a sensible default if it's very high from a previous long-lived race
-      if (character.age > 100) { // Arbitrary threshold, adjust as needed
+      if (character.age > 100 && character.age !== 20) { 
         setCharacter(prev => ({...prev, age: 20}));
       }
     }
@@ -150,8 +165,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           isClassSkill: skill.isClassSkill,
           providesSynergies: skill.providesSynergies,
           description: skill.description,
-          ranks: 0, 
-          miscModifier: 0 
+          ranks: skill.ranks || 0, 
+          miscModifier: skill.miscModifier || 0 
         });
       }
     });
@@ -176,8 +191,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         isClassSkill: customSkillData.isClassSkill!,
         providesSynergies: customSkillData.providesSynergies,
         description: customSkillData.description,
-        ranks: 0, 
-        miscModifier: 0,
+        ranks: customSkillData.ranks || 0, 
+        miscModifier: customSkillData.miscModifier || 0,
       });
     });
     
@@ -189,9 +204,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     newGrantedFeats.forEach(feat => combinedFeatsMap.set(feat.id, feat));
     userChosenFeats.forEach(feat => {
         const featDef = DND_FEATS.find(f => f.value === feat.id.split('-')[0]); 
-        const featIdToStore = (featDef?.canTakeMultipleTimes && combinedFeatsMap.has(feat.id.split('-')[0]) && !feat.id.includes(crypto.randomUUID().substring(0,4))) 
-            ? `${feat.id.split('-')[0]}-${crypto.randomUUID().substring(0,8)}`
-            : feat.id;
+        const featIdToStore = feat.id;
         if (!combinedFeatsMap.has(featIdToStore) || featDef?.canTakeMultipleTimes) {
            combinedFeatsMap.set(featIdToStore, feat);
         }
@@ -409,7 +422,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     onSave(finalCharacterData);
   };
 
-  const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
   const isPredefinedRace = React.useMemo(
     () => DND_RACES.some(r => r.value === character.race),
@@ -474,7 +486,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     isEditable={true}
                   />
                 </div>
-                {isPredefinedRace && (
+                 {isPredefinedRace && (
                    <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={handleOpenRaceInfoDialog}>
                     <Info className="h-5 w-5" />
                   </Button>
@@ -483,21 +495,21 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                   <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
                 )}
               </div>
-              {raceSpecialQualities?.abilityEffects && (
+              {raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
                 <p className="text-xs text-muted-foreground mt-1 ml-1">
-                  {raceSpecialQualities.abilityEffects.length > 0 ?
-                    raceSpecialQualities.abilityEffects.map((effect, index) => (
+                  {raceSpecialQualities.abilityEffects.map((effect, index) => (
                       <React.Fragment key={effect.ability}>
                         <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
                           {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
                         </strong>
                         {index < raceSpecialQualities.abilityEffects.length - 1 && <span className="text-muted-foreground">, </span>}
                       </React.Fragment>
-                    ))
-                    : "No impact on ability scores"
-                  }
+                    ))}
                 </p>
               )}
+               {raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length === 0 && (
+                 <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
+               )}
             </div>
           </div>
 
@@ -535,24 +547,24 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                 )}
             </div>
             <div className="space-y-1">
-              <Label htmlFor="alignment">Alignment</Label>
-              <div className="flex items-center gap-2">
-                <div className="flex-grow">
-                  <Select name="alignment" value={character.alignment} onValueChange={(value) => handleSelectChange('alignment', value as CharacterAlignment)}>
-                    <SelectTrigger><SelectValue placeholder="Select alignment" /></SelectTrigger>
-                    <SelectContent>
-                      {ALIGNMENTS.map(align => <SelectItem key={align.value} value={align.value}>{align.label}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+                <Label htmlFor="alignment">Alignment</Label>
+                <div className="flex items-center gap-2">
+                    <div className="flex-grow">
+                    <Select name="alignment" value={character.alignment} onValueChange={(value) => handleSelectChange('alignment', value as CharacterAlignment)}>
+                        <SelectTrigger><SelectValue placeholder="Select alignment" /></SelectTrigger>
+                        <SelectContent>
+                        {ALIGNMENTS.map(align => <SelectItem key={align.value} value={align.value}>{align.label}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                    </div>
+                    <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
+                        onClick={() => {
+                            const alignData = ALIGNMENTS.find(a => a.value === character.alignment);
+                            handleOpenGenericInfoDialog(alignData ? alignData.label : "Alignment Info", alignData ? `Details about ${alignData.label} alignment.` : "Select an alignment to see details.");
+                        }}>
+                    <Info className="h-5 w-5" />
+                    </Button>
                 </div>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
-                    onClick={() => {
-                        const alignData = ALIGNMENTS.find(a => a.value === character.alignment);
-                         handleOpenGenericInfoDialog(alignData ? alignData.label : "Alignment Info", alignData ? `Details about ${alignData.label} alignment.` : "Select an alignment to see details.");
-                    }}>
-                  <Info className="h-5 w-5" />
-                </Button>
-              </div>
             </div>
           </div>
 
@@ -688,7 +700,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     </span>
                   </p>
                   {actualScoreData && (
-                    <div className="text-center text-sm mt-1 flex items-center justify-center gap-1">
+                     <div className="text-center text-sm mt-1 flex items-center justify-center gap-1">
                        <span className="text-accent">Actual: </span>
                        <span className={cn("font-bold", actualModifier > 0 && "text-emerald-500", actualModifier < 0 && "text-destructive", actualModifier === 0 && "text-accent")}>
                           {actualModifier >= 0 ? '+' : ''}{actualModifier}
@@ -770,7 +782,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
       <SkillsFormSection
         skills={character.skills}
-        abilityScores={character.abilityScores}
+        abilityScores={character.abilityScores} // Base scores for skill point calculation
+        actualAbilityScores={actualAbilityScoresForSkills} // Actual scores for skill check mods
         characterClasses={character.classes}
         characterRace={character.race}
         selectedFeats={character.feats}
@@ -785,7 +798,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         characterClasses={character.classes}
         selectedFeats={character.feats}
         onFeatSelectionChange={handleFeatSelectionChange}
-        abilityScores={detailedAbilityScores ? Object.fromEntries(abilityNames.map(ab => [ab, detailedAbilityScores[ab].finalScore])) as AbilityScores : character.abilityScores}
+        abilityScores={actualAbilityScoresForSkills} // Pass actual scores for prerequisite checking
         skills={character.skills}
       />
 
@@ -823,5 +836,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-
-    

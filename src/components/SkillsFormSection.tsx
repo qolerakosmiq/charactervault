@@ -2,8 +2,8 @@
 'use client';
 
 import * as React from 'react';
-import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, Feat } from '@/types/character';
-import { SKILL_DEFINITIONS, CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, DND_RACES } from '@/types/character';
+import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, Feat, DndRaceOption, SkillDefinitionJsonData } from '@/types/character';
+import { CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, DND_RACES, SKILL_DEFINITIONS } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -18,9 +18,11 @@ import { cn } from '@/lib/utils';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 
+
 interface SkillsFormSectionProps {
   skills: SkillType[];
-  abilityScores: AbilityScores;
+  abilityScores: AbilityScores; // Base scores for skill point calculation
+  actualAbilityScores: AbilityScores; // Actual scores for skill check modifiers
   characterClasses: CharacterClass[];
   characterRace: DndRaceId | string;
   selectedFeats: Feat[];
@@ -33,6 +35,7 @@ interface SkillsFormSectionProps {
 export function SkillsFormSection({
   skills,
   abilityScores,
+  actualAbilityScores,
   characterClasses,
   characterRace,
   selectedFeats,
@@ -48,9 +51,9 @@ export function SkillsFormSection({
 
   const firstClass = characterClasses[0];
   const characterLevel = firstClass?.level || 1;
-  const intelligenceModifier = getAbilityModifierByName(abilityScores, 'intelligence');
+  const intelligenceModifier = getAbilityModifierByName(abilityScores, 'intelligence'); // Use base Int for skill points
 
-  const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof ClassSkillPointsBaseJsonData] || 0) : 0;
+  const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0) : 0;
   const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace);
 
   const pointsPerLevelBase = baseSkillPointsForClass + intelligenceModifier + racialBonus;
@@ -78,9 +81,10 @@ export function SkillsFormSection({
   };
 
   const handleOpenSkillInfoDialog = (skill: SkillType) => {
-    setCurrentSkillInfo({ title: skill.name, content: skill.description || "No description available." });
+    setCurrentSkillInfo({ title: skill.name, content: skill.description || "No description available for this skill." });
     setIsInfoDialogOpen(true);
   };
+
 
   const handleSaveCustomSkill = (skillData: { id?: string; name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
     if (skillData.id && skillToEdit?.id === skillData.id) {
@@ -132,13 +136,12 @@ export function SkillsFormSection({
             <p className="text-sm font-medium">
               Skill Points Left: <span className={cn(
                 "text-lg font-bold",
-                skillPointsLeft > 0 && "text-emerald-500",
-                skillPointsLeft < 0 && "text-destructive",
-                skillPointsLeft === 0 && "text-accent"
+                skillPointsLeft >= 0 ? "text-emerald-500" : "text-destructive",
+                skillPointsLeft === 0 && "text-accent" // Fallback to accent if exactly zero
               )}>{skillPointsLeft}</span>
             </p>
           </div>
-           <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
+          <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
             <p>
                 (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
                 {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
@@ -179,19 +182,19 @@ export function SkillsFormSection({
             const keyAbility = skill.keyAbility || (skillDef?.keyAbility as AbilityName | undefined);
             const keyAbilityShort = keyAbility ? keyAbility.substring(0, 3).toUpperCase() : 'N/A';
 
+            // Use actualAbilityScores for calculating the modifier for skill checks
             let baseAbilityMod = 0;
-            if (keyAbility && keyAbility !== 'none') {
-              baseAbilityMod = getAbilityModifierByName(abilityScores, keyAbility);
+            if (keyAbility && keyAbility !== 'none' && actualAbilityScores) {
+              baseAbilityMod = getAbilityModifierByName(actualAbilityScores, keyAbility);
             }
 
             const synergyBonus = calculateTotalSynergyBonus(skill.id, skills);
             const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats);
-            const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES);
+            const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES as DndRaceOption[], SKILL_DEFINITIONS as SkillDefinitionJsonData[]);
             const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus + currentRacialBonus;
 
-
             const totalBonus = (skill.ranks || 0) + totalDisplayedModifier;
-            const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
+            const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier); // Max ranks based on base Int
             const skillCost = skill.isClassSkill ? 1 : 2;
             const isCustomSkill = !skillDef;
             const currentStep = skill.isClassSkill ? 1 : 0.5;
@@ -314,7 +317,7 @@ export function SkillsFormSection({
         isOpen={isInfoDialogOpen}
         onOpenChange={setIsInfoDialogOpen}
         title={currentSkillInfo.title}
-        content={currentSkillInfo.content}
+        content={currentSkillInfo.content || "No description provided."}
       />
     )}
     </>
