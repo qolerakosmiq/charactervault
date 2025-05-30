@@ -11,18 +11,21 @@
       "value": "bard",
       "label": "Bard",
       "hitDice": "d6",
+      "isCaster": true,
       "description": "<p>Bards are versatile performers, weaving magic through music and words.<br />They are storytellers, diplomats, and adventurers, often charismatic and quick-witted.</p><p><b>Alignment:</b><br />Any nonlawful.</p><p><b>Religion:</b><br />Bards may follow deities of art, travel, or trickery.</p><p><b>Background:</b><br />Often from performing troupes, scholarly institutions, or simply wanderers.</p><p><b>Races:</b><br />Humans, elves, and half-elves frequently become bards.</p>"
     },
     {
       "value": "cleric",
       "label": "Cleric",
       "hitDice": "d8",
+      "isCaster": true,
       "description": "<p>Clerics are divine agents, channeling the power of their chosen deity to heal the sick, smite the wicked, or protect the faithful.<br />They are masters of divine magic and often serve as spiritual leaders.</p><p><b>Alignment:</b><br />Must be within one step of their deity's alignment.</p><p><b>Religion:</b><br />Central to their identity, clerics serve a specific deity from the pantheon.</p><p><b>Background:</b><br />Usually trained in temples or religious orders.</p><p><b>Races:</b><br />All races produce clerics, as faith is universal.</p>"
     },
     {
       "value": "druid",
       "label": "Druid",
       "hitDice": "d8",
+      "isCaster": true,
       "description": "<p>Druids are guardians of the natural world, drawing power from the untamed wilderness.<br />They can shapeshift into animals, command plants, and call upon nature's fury.</p><p><b>Alignment:</b><br />Any neutral (Neutral Good, Lawful Neutral, True Neutral, Chaotic Neutral, or Neutral Evil).</p><p><b>Religion:</b><br />Druids revere nature itself or specific nature deities.</p><p><b>Background:</b><br />Often solitary hermits, members of ancient circles, or protectors of sacred groves.</p><p><b>Races:</b><br />Humans, elves, and gnomes often feel the call of the wild.</p>"
     },
     {
@@ -59,12 +62,14 @@
       "value": "sorcerer",
       "label": "Sorcerer",
       "hitDice": "d4",
+      "isCaster": true,
       "description": "<p>Sorcerers wield arcane magic through innate talent, often stemming from draconic or fey ancestry.<br />Their magic is intuitive and flexible, not learned through rigorous study.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Sorcerers have varied religious beliefs, if any.</p><p><b>Background:</b><br />Their powers often manifest unexpectedly, leading to diverse life paths.</p><p><b>Races:</b><br />Humans and those with magical bloodlines (like half-elves with fey heritage) are common sorcerers.</p>"
     },
     {
       "value": "wizard",
       "label": "Wizard",
       "hitDice": "d4",
+      "isCaster": true,
       "description": "<p>Wizards are scholars of the arcane, mastering magic through intense study, research, and practice.<br />They command a vast repertoire of spells, prepared daily from their spellbooks.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Wizards often worship deities of knowledge, magic, or secrets, or focus purely on arcane pursuits.</p><p><b>Background:</b><br />Typically educated in academies, mentored by master wizards, or self-taught through ancient tomes.</p><p><b>Races:</b><br />Humans, elves, and gnomes are most commonly drawn to wizardry.</p>",
       "grantedFeats": [
         { "featId": "scribe-scroll", "note": "(Wizard Bonus Feat)", "levelAcquired": 1 }
@@ -72,5 +77,3 @@
     }
   ]
 }
-
-    
