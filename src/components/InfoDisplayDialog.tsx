@@ -4,7 +4,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -12,31 +11,19 @@ import {
 import { Button } from '@/components/ui/button';
 import { Info } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import type { AbilityName, AbilityScoreBreakdown, Feat, RaceSpecialQualities } from '@/types/character';
+import type { AbilityName, AbilityScoreBreakdown, Feat, RaceSpecialQualities, SkillModifierBreakdownDetails } from '@/types/character';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
-
-export interface SkillModifierBreakdownDetails {
-  skillName: string;
-  keyAbilityName?: string;
-  keyAbilityModifier: number;
-  ranks: number;
-  synergyBonus: number;
-  featBonus: number;
-  racialBonus: number;
-  miscModifier: number;
-  totalBonus: number;
-}
 
 interface InfoDisplayDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   title?: string;
-  content?: string;
+  content?: string; // This content can now be HTML
   abilityModifiers?: Array<{ ability: AbilityName; change: number }>;
   skillBonuses?: Array<{ skillName: string; bonus: number }>;
-  grantedFeats?: Array<{ name: string; note?: string }>;
+  grantedFeats?: Array<{ featId: string; name: string; note?: string; levelAcquired?: number }>;
   bonusFeatSlots?: number;
   abilityScoreBreakdown?: AbilityScoreBreakdown;
   skillModifierBreakdown?: SkillModifierBreakdownDetails;
@@ -75,8 +62,16 @@ export function InfoDisplayDialog({
     </span>
   );
 
-  // Determine if any of the "bonus" sections (ability, skill, feat) will render
   const anyBonusSectionWillRender = hasAbilityModifiers || hasSkillBonuses || hasFeatAdjustments;
+
+  // Determine the main dialog title
+  let dialogTitle = title || 'Information';
+  if (abilityScoreBreakdown) {
+    dialogTitle = `${abilityScoreBreakdown.ability.charAt(0).toUpperCase() + abilityScoreBreakdown.ability.slice(1)} Score Calculation`;
+  } else if (skillModifierBreakdown) {
+    dialogTitle = `${skillModifierBreakdown.skillName} Details`;
+  }
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -84,20 +79,22 @@ export function InfoDisplayDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif">
             <Info className="mr-2 h-6 w-6 text-primary" />
-            {abilityScoreBreakdown ? `${abilityScoreBreakdown.ability.charAt(0).toUpperCase() + abilityScoreBreakdown.ability.slice(1)} Score Calculation` 
-             : skillModifierBreakdown ? `${skillModifierBreakdown.skillName} Details`
-             : title || 'Information'}
+            {dialogTitle}
           </DialogTitle>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] pr-4 my-2">
           {content && !abilityScoreBreakdown && !skillModifierBreakdown && (
-            <DialogDescription className="whitespace-pre-wrap text-sm leading-relaxed">
-              {content}
-            </DialogDescription>
+             <div 
+              className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none" 
+              dangerouslySetInnerHTML={{ __html: content }} 
+            />
           )}
           
           {content && (skillModifierBreakdown || abilityScoreBreakdown) && (
-             <p className="whitespace-pre-wrap text-sm text-muted-foreground mb-3 leading-relaxed">{content}</p>
+             <div 
+              className="text-sm text-muted-foreground mb-3 leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
           )}
 
 
@@ -216,7 +213,7 @@ export function InfoDisplayDialog({
              <>
               {(content || hasAbilityModifiers || hasSkillBonuses) && <Separator className="my-4" />}
               <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">Racial Feat Adjustments:</h3>
+                 <h3 className="text-md font-semibold mb-2 text-foreground">Racial Feat Adjustments:</h3>
                  <ul className="space-y-1 text-sm">
                   {bonusFeatSlots && bonusFeatSlots > 0 && (
                     <li className="flex justify-between">
@@ -224,8 +221,8 @@ export function InfoDisplayDialog({
                        {renderModifierValue(bonusFeatSlots)}
                     </li>
                   )}
-                  {grantedFeats && grantedFeats.map(({ name, note }, index) => (
-                    <li key={`${name}-${index}`}>
+                  {grantedFeats && grantedFeats.map(({ featId, name, note }, index) => (
+                    <li key={`${featId}-${index}`}>
                       <span>{name} {note && <span className="text-muted-foreground text-xs">{note}</span>}</span>
                     </li>
                   ))}
@@ -258,3 +255,4 @@ export function InfoDisplayDialog({
   );
 }
 
+    
