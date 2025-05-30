@@ -49,7 +49,7 @@ const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', '
 
 export function CharacterFormCore({ initialCharacter, onSave, isCreating }: CharacterFormCoreProps) {
   const [character, setCharacter] = React.useState<Character>(() => {
-    const defaultBaseAbilityScores = { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES))) };
+    const defaultBaseAbilityScores: AbilityScores = { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES))) };
     const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: '', level: 1 }];
 
     const tempCharForInitialFeats: Character = {
@@ -64,7 +64,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     
     return initialCharacter || {
       id: crypto.randomUUID(),
-      name: '', race: '', alignment: '', deity: '', size: 'medium', age: 20, gender: '',
+      name: '', race: '', alignment: '', deity: '', size: '', age: 20, gender: '',
       abilityScores: defaultBaseAbilityScores, hp: 10, maxHp: 10,
       armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0,
       deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, initiativeMiscModifier: 0,
@@ -165,7 +165,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   React.useEffect(() => {
     const existingCustomSkillsMap = new Map<string, Partial<SkillType>>();
     character.skills.forEach(skill => {
-      // Check if it's a custom skill (not in predefined SKILL_DEFINITIONS_DATA)
+      // Check if it's a custom skill (not in predefined SKILL_DEFINITIONS)
       if (!SKILL_DEFINITIONS.some(def => def.value === skill.id)) {
         existingCustomSkillsMap.set(skill.id, {
           name: skill.name, keyAbility: skill.keyAbility, isClassSkill: skill.isClassSkill,
@@ -195,7 +195,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         isClassSkill: customSkillData.isClassSkill!, // Preserve user-set isClassSkill for custom skills
         providesSynergies: customSkillData.providesSynergies,
         description: customSkillData.description,
-        ranks: customSkillData.ranks || 0, // Reset ranks for custom skills
+        ranks: 0, // Reset ranks for custom skills
         miscModifier: 0, // Reset misc for custom skills
       });
     });
@@ -212,14 +212,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       const featDef = DND_FEATS.find(f => f.value === feat.id.split('-MULTI-INSTANCE-')[0]);
       const featIdToStore = feat.id; // This ID might have -MULTI-INSTANCE-suffix
       
-      // Only add/re-add if it's not a newly granted feat (unless multi-take)
-      // Or if it's a multi-take feat and we want to allow multiple selections.
-      // We need to be careful here: if a previously chosen feat becomes granted, we might want to "refund" the slot.
-      // For now, we'll ensure granted feats take precedence if they have the same base ID and are not multi-take.
-      
       if (!combinedFeatsMap.has(featIdToStore) || (featDef?.canTakeMultipleTimes)) {
-         // If a non-multi-take chosen feat has the same base ID as a granted feat, the granted one takes precedence.
-         // Only add chosen if base ID isn't already granted, OR if it's multi-take.
         const baseGrantedId = featIdToStore.split('-MULTI-INSTANCE-')[0];
         if (!newGrantedFeats.some(gf => gf.id === baseGrantedId && !featDef?.canTakeMultipleTimes)) {
             combinedFeatsMap.set(featIdToStore, { ...feat, isGranted: false });
@@ -321,13 +314,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       const featDef = DND_FEATS.find(f => f.value === feat.id.split('-MULTI-INSTANCE-')[0]);
       const featIdToStore = feat.id; // This ID might have -MULTI-INSTANCE-suffix
       
-      // Only add chosen feat if its base ID is not already granted (unless it's multi-take)
-      // Or if the specific instance (for multi-take) isn't already there.
       const baseGrantedId = featIdToStore.split('-MULTI-INSTANCE-')[0];
       const isBaseGrantedAndNotMultiTake = autoGrantedFeats.some(gf => gf.id === baseGrantedId && !featDef?.canTakeMultipleTimes);
 
       if (!isBaseGrantedAndNotMultiTake) {
-        // If it's multi-take, it's fine. If not multi-take, it's only added if not granted.
         finalFeatsMap.set(featIdToStore, { ...feat, isGranted: false });
       }
     });
@@ -388,9 +378,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const handleOpenAlignmentInfoDialog = () => {
+    // Assuming ALIGNMENTS_DATA is an array of {value, label, description}
+    // and description already contains HTML like <p>Description text</p>
     const allAlignmentDescriptions = ALIGNMENTS.map(
-      (align) => `<p><b>${align.label}:</b><br />${align.description}</p>`
-    ).join('');
+      (align) => `<b>${align.label}:</b>${align.description}` // No extra <br/> here
+    ).join(''); // Join directly, <p> tags will provide spacing
     setCurrentInfoDialogData({ title: "Alignments", content: allAlignmentDescriptions });
     setIsInfoDialogOpen(true);
   };
