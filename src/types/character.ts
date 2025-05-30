@@ -47,6 +47,8 @@ export interface FeatPrerequisiteDetails {
   feats?: string[]; // Feat IDs (kebab-case)
   casterLevel?: number;
   classLevel?: { classId: DndClassId | string; level: number };
+  raceId?: DndRaceId | string;
+  alignment?: string; // Can be full "lawful-good" or component "lawful", "good", "evil", "chaotic", "neutral-lc", "neutral-ge"
 }
 
 export interface FeatEffectDetails {
@@ -73,7 +75,7 @@ export interface Feat {
   effectsText?: string; // User-input for custom
   canTakeMultipleTimes?: boolean;
   requiresSpecialization?: string;
-  specializationDetail?: string; // Not yet used in UI for specialization choice
+  specializationDetail?: string;
   isGranted?: boolean;
   grantedNote?: string;
   isCustom?: boolean; // Flag for custom feats
@@ -135,79 +137,91 @@ export interface Character {
   portraitDataUrl?: string;
 }
 
+// Helper function to merge array data, replacing items with the same 'value' ID
+function mergeArrayData<T extends { value: string }>(base: T[], custom: T[]): T[] {
+  const combinedMap = new Map<string, T>();
+  base.forEach(item => combinedMap.set(item.value, item));
+  custom.forEach(item => combinedMap.set(item.value, item)); // Custom overrides base
+  return Array.from(combinedMap.values());
+}
+
+// Helper function to merge object data (simple shallow merge, custom overrides base)
+function mergeObjectData<T extends Record<string, any>>(base: T, custom: T): T {
+  return { ...base, ...custom };
+}
+
+
 // --- Base Data Merging ---
 const baseDefaultAbilities = (baseDataJson as any).DEFAULT_ABILITIES || {};
 const customDefaultAbilities = (customBaseDataJson as any).DEFAULT_ABILITIES || {};
-export const DEFAULT_ABILITIES: AbilityScores = { ...baseDefaultAbilities, ...customDefaultAbilities };
+export const DEFAULT_ABILITIES: AbilityScores = mergeObjectData(baseDefaultAbilities, customDefaultAbilities);
 
 const baseDefaultSavingThrows = (baseDataJson as any).DEFAULT_SAVING_THROWS || {};
 const customDefaultSavingThrows = (customBaseDataJson as any).DEFAULT_SAVING_THROWS || {};
-export const DEFAULT_SAVING_THROWS: SavingThrows = { ...baseDefaultSavingThrows, ...customDefaultSavingThrows };
+export const DEFAULT_SAVING_THROWS: SavingThrows = mergeObjectData(baseDefaultSavingThrows, customDefaultSavingThrows);
 
 const baseSizesData = (baseDataJson as any).SIZES_DATA || [];
 const customSizesData = (customBaseDataJson as any).SIZES_DATA || [];
-const combinedSizesMap = new Map<string, CharacterSizeObject>();
-baseSizesData.forEach((size: CharacterSizeObject) => combinedSizesMap.set(size.value, size));
-customSizesData.forEach((size: CharacterSizeObject) => combinedSizesMap.set(size.value, size));
-export const SIZES: ReadonlyArray<CharacterSizeObject> = Array.from(combinedSizesMap.values());
+export const SIZES: ReadonlyArray<CharacterSizeObject> = mergeArrayData(baseSizesData, customSizesData);
 export type CharacterSizeObject = { value: string; label: string; };
-export type CharacterSize = CharacterSizeObject['value'];
+export type CharacterSize = typeof SIZES[number]['value'];
 
 const baseGendersData = (baseDataJson as any).GENDERS_DATA || [];
 const customGendersData = (customBaseDataJson as any).GENDERS_DATA || [];
-const combinedGendersMap = new Map<string, { value: string; label: string }>();
-baseGendersData.forEach((gender: { value: string; label: string }) => combinedGendersMap.set(gender.value, gender));
-customGendersData.forEach((gender: { value: string; label: string }) => combinedGendersMap.set(gender.value, gender));
-export const GENDERS: ReadonlyArray<{value: string; label: string}> = Array.from(combinedGendersMap.values());
+export const GENDERS: ReadonlyArray<{value: string; label: string}> = mergeArrayData(baseGendersData, customGendersData);
 export type GenderId = typeof GENDERS[number]['value'];
 
 const baseRaceMinAdultAge = (baseDataJson as any).DND_RACE_MIN_ADULT_AGE_DATA || {};
 const customRaceMinAdultAge = (customBaseDataJson as any).DND_RACE_MIN_ADULT_AGE_DATA || {};
-export const DND_RACE_MIN_ADULT_AGE_DATA: Readonly<Record<DndRaceId, number>> = { ...baseRaceMinAdultAge, ...customRaceMinAdultAge };
+export const DND_RACE_MIN_ADULT_AGE_DATA: Readonly<Record<string, number>> = mergeObjectData(baseRaceMinAdultAge, customRaceMinAdultAge);
 
 const baseRaceMaxAge = (baseDataJson as any).DND_RACE_BASE_MAX_AGE_DATA || {};
 const customRaceMaxAge = (customBaseDataJson as any).DND_RACE_BASE_MAX_AGE_DATA || {};
-const DND_RACE_BASE_MAX_AGE_DATA: Readonly<Record<DndRaceId, number>> = { ...baseRaceMaxAge, ...customRaceMaxAge };
+const DND_RACE_BASE_MAX_AGE_DATA: Readonly<Record<string, number>> = mergeObjectData(baseRaceMaxAge, customRaceMaxAge);
 
 const baseRaceToAgingMap = (baseDataJson as any).RACE_TO_AGING_CATEGORY_MAP_DATA || {};
 const customRaceToAgingMap = (customBaseDataJson as any).RACE_TO_AGING_CATEGORY_MAP_DATA || {};
-const RACE_TO_AGING_CATEGORY_MAP_DATA: Readonly<Record<DndRaceId, RaceAgingCategoryKey>> = { ...baseRaceToAgingMap, ...customRaceToAgingMap };
+const RACE_TO_AGING_CATEGORY_MAP_DATA: Readonly<Record<string, RaceAgingCategoryKey>> = mergeObjectData(baseRaceToAgingMap, customRaceToAgingMap);
 
 const baseRaceAgingEffects = (baseDataJson as any).DND_RACE_AGING_EFFECTS_DATA || {};
 const customRaceAgingEffects = (customBaseDataJson as any).DND_RACE_AGING_EFFECTS_DATA || {};
-const DND_RACE_AGING_EFFECTS_DATA: Readonly<Record<RaceAgingCategoryKey, RaceAgingInfoData>> = { ...baseRaceAgingEffects, ...customRaceAgingEffects };
+const DND_RACE_AGING_EFFECTS_DATA: Readonly<Record<RaceAgingCategoryKey, RaceAgingInfoData>> = mergeObjectData(baseRaceAgingEffects, customRaceAgingEffects);
 
 const baseSizeAbilityModifiers = (baseDataJson as any).DND_SIZE_ABILITY_MODIFIERS_DATA || {};
 const customSizeAbilityModifiers = (customBaseDataJson as any).DND_SIZE_ABILITY_MODIFIERS_DATA || {};
-const DND_SIZE_ABILITY_MODIFIERS_DATA: Readonly<Record<CharacterSize, Partial<Record<Exclude<AbilityName, 'none'>, number>>>> = { ...baseSizeAbilityModifiers, ...customSizeAbilityModifiers };
+const DND_SIZE_ABILITY_MODIFIERS_DATA: Readonly<Record<string, Partial<Record<Exclude<AbilityName, 'none'>, number>>>> = mergeObjectData(baseSizeAbilityModifiers, customSizeAbilityModifiers);
 
 const baseRaceAbilityModifiers = (baseDataJson as any).DND_RACE_ABILITY_MODIFIERS_DATA || {};
 const customRaceAbilityModifiers = (customBaseDataJson as any).DND_RACE_ABILITY_MODIFIERS_DATA || {};
-const DND_RACE_ABILITY_MODIFIERS_DATA: Readonly<Record<DndRaceId, Partial<Record<Exclude<AbilityName, 'none'>, number>>>> = { ...baseRaceAbilityModifiers, ...customRaceAbilityModifiers };
+const DND_RACE_ABILITY_MODIFIERS_DATA: Readonly<Record<string, Partial<Record<Exclude<AbilityName, 'none'>, number>>>> = mergeObjectData(baseRaceAbilityModifiers, customRaceAbilityModifiers);
 
 const baseRaceSkillPointsBonus = (baseDataJson as any).DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA || {};
 const customRaceSkillPointsBonus = (customBaseDataJson as any).DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA || {};
-const DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA: Readonly<Record<string, number>> = { ...baseRaceSkillPointsBonus, ...customRaceSkillPointsBonus };
+const DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA: Readonly<Record<string, number>> = mergeObjectData(baseRaceSkillPointsBonus, customRaceSkillPointsBonus);
 
 
 // --- Alignments Data Merging ---
 const baseAlignmentsData = (alignmentsDataJson as any).ALIGNMENTS_DATA || [];
-const customAlignmentsData = (customAlignmentsDataJson as any).ALIGNMENTS_DATA || [];
-const combinedAlignmentsMap = new Map<string, CharacterAlignmentObject>();
-baseAlignmentsData.forEach((align: CharacterAlignmentObject) => combinedAlignmentsMap.set(align.value, align));
-customAlignmentsData.forEach((align: CharacterAlignmentObject) => combinedAlignmentsMap.set(align.value, align));
-export const ALIGNMENTS: ReadonlyArray<CharacterAlignmentObject> = Array.from(combinedAlignmentsMap.values());
+const customAlignmentsJson = (customAlignmentsDataJson as any).ALIGNMENTS_DATA || [];
+export const ALIGNMENTS: ReadonlyArray<CharacterAlignmentObject> = mergeArrayData(baseAlignmentsData, customAlignmentsJson);
 export type CharacterAlignmentObject = { value: string; label: string; description: string; };
-export type CharacterAlignment = CharacterAlignmentObject['value'];
+export type CharacterAlignment = typeof ALIGNMENTS[number]['value'];
+
+export const ALIGNMENT_PREREQUISITE_OPTIONS: ReadonlyArray<{ value: string; label: string }> = [
+  ...ALIGNMENTS.map(a => ({ value: a.value, label: a.label })),
+  { value: 'lawful', label: 'Any Lawful' },
+  { value: 'neutral-lc', label: 'Any Neutral (Law/Chaos Axis)' },
+  { value: 'chaotic', label: 'Any Chaotic' },
+  { value: 'good', label: 'Any Good' },
+  { value: 'neutral-ge', label: 'Any Neutral (Good/Evil Axis)' },
+  { value: 'evil', label: 'Any Evil' },
+];
 
 
 // --- Races Data Merging ---
 const baseRacesData = (racesDataJson as any).DND_RACES_DATA || [];
 const customRacesJson = (customRacesDataJson as any).DND_RACES_DATA || [];
-const combinedRacesMap = new Map<string, DndRaceOption>();
-baseRacesData.forEach((race: DndRaceOption) => combinedRacesMap.set(race.value, race));
-customRacesJson.forEach((race: DndRaceOption) => combinedRacesMap.set(race.value, race));
-export const DND_RACES: ReadonlyArray<DndRaceOption> = Array.from(combinedRacesMap.values());
+export const DND_RACES: ReadonlyArray<DndRaceOption> = mergeArrayData(baseRacesData, customRacesJson);
 export type DndRaceOption = {
   value: string; // kebab-case ID
   label: string; // Display name
@@ -222,10 +236,7 @@ export type DndRaceId = typeof DND_RACES[number]['value'];
 // --- Classes Data Merging ---
 const baseClassesData = (classesDataJson as any).DND_CLASSES_DATA || [];
 const customClassesJson = (customClassesDataJson as any).DND_CLASSES_DATA || [];
-const combinedClassesMap = new Map<string, DndClassOption>();
-baseClassesData.forEach((cls: DndClassOption) => combinedClassesMap.set(cls.value, cls));
-customClassesJson.forEach((cls: DndClassOption) => combinedClassesMap.set(cls.value, cls));
-export const DND_CLASSES: ReadonlyArray<DndClassOption> = Array.from(combinedClassesMap.values());
+export const DND_CLASSES: ReadonlyArray<DndClassOption> = mergeArrayData(baseClassesData, customClassesJson);
 export type DndClassOption = {
   value: string; // kebab-case ID
   label: string; // Display name
@@ -239,10 +250,7 @@ export type DndClassId = typeof DND_CLASSES[number]['value'];
 // --- Deities Data Merging ---
 const baseDeitiesData = (deitiesDataJson as any).DND_DEITIES_DATA || [];
 const customDeitiesJson = (customDeitiesDataJson as any).DND_DEITIES_DATA || [];
-const combinedDeitiesMap = new Map<string, DndDeityOption>();
-baseDeitiesData.forEach((deity: DndDeityOption) => combinedDeitiesMap.set(deity.value, deity));
-customDeitiesJson.forEach((deity: DndDeityOption) => combinedDeitiesMap.set(deity.value, deity));
-export const DND_DEITIES: ReadonlyArray<DndDeityOption> = Array.from(combinedDeitiesMap.values());
+export const DND_DEITIES: ReadonlyArray<DndDeityOption> = mergeArrayData(baseDeitiesData, customDeitiesJson);
 export type DndDeityOption = {
   value: string; // kebab-case ID
   label: string; // Display name
@@ -255,19 +263,13 @@ export type DndDeityId = typeof DND_DEITIES[number]['value'];
 // --- Feats Data Merging ---
 const baseFeatsData = (featsDataJson as any).DND_FEATS_DATA || [];
 const customFeatsJson = (customFeatsDataJson as any).DND_FEATS_DATA || [];
-const combinedFeatsMap = new Map<string, FeatDefinitionJsonData>();
-baseFeatsData.forEach((feat: FeatDefinitionJsonData) => combinedFeatsMap.set(feat.value, feat));
-customFeatsJson.forEach((feat: FeatDefinitionJsonData) => combinedFeatsMap.set(feat.value, feat)); // Custom feats can override base ones
-export const DND_FEATS: readonly FeatDefinitionJsonData[] = Array.from(combinedFeatsMap.values());
+export const DND_FEATS: readonly FeatDefinitionJsonData[] = mergeArrayData(baseFeatsData, customFeatsJson);
 
 
 // --- Skills Data Merging ---
 const baseSkillDefinitions = (skillsDataJson as any).SKILL_DEFINITIONS_DATA || [];
 const customSkillDefinitions = (customSkillsDataJson as any).SKILL_DEFINITIONS_DATA || [];
-const combinedSkillDefinitionsMap = new Map<string, SkillDefinitionJsonData>();
-baseSkillDefinitions.forEach((skillDef: SkillDefinitionJsonData) => combinedSkillDefinitionsMap.set(skillDef.value, skillDef));
-customSkillDefinitions.forEach((skillDef: SkillDefinitionJsonData) => combinedSkillDefinitionsMap.set(skillDef.value, skillDef)); // Custom can override
-export const SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[] = Array.from(combinedSkillDefinitionsMap.values());
+export const SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[] = mergeArrayData(baseSkillDefinitions, customSkillDefinitions);
 export type SkillDefinitionJsonData = {
   value: string; // kebab-case ID
   label: string; // Display name
@@ -278,18 +280,18 @@ export type SkillDefinitionJsonData = {
 const baseClassSkills = (skillsDataJson as any).CLASS_SKILLS_DATA || {};
 const customClassSkills = (customSkillsDataJson as any).CLASS_SKILLS_DATA || {};
 export type ClassSkillsJsonData = Record<string, string[]>; // classId (kebab): skillId[] (kebab)
-export const CLASS_SKILLS: Readonly<ClassSkillsJsonData> = { ...baseClassSkills, ...customClassSkills };
+export const CLASS_SKILLS: Readonly<ClassSkillsJsonData> = mergeObjectData(baseClassSkills, customClassSkills);
 
 const baseClassSkillPoints = (skillsDataJson as any).CLASS_SKILL_POINTS_BASE_DATA || {};
 const customClassSkillPoints = (customSkillsDataJson as any).CLASS_SKILL_POINTS_BASE_DATA || {};
 export type ClassSkillPointsBaseJsonData = Record<string, number>; // classId (kebab): points
-export const CLASS_SKILL_POINTS_BASE: Readonly<ClassSkillPointsBaseJsonData> = { ...baseClassSkillPoints, ...customClassSkillPoints };
+export const CLASS_SKILL_POINTS_BASE: Readonly<ClassSkillPointsBaseJsonData> = mergeObjectData(baseClassSkillPoints, customClassSkillPoints);
 
 const baseSkillSynergies = (skillsDataJson as any).SKILL_SYNERGIES_DATA || {};
 const customSkillSynergies = (customSkillsDataJson as any).SKILL_SYNERGIES_DATA || {};
 export type SynergyEffectJsonData = { targetSkill: string; ranksRequired: number; bonus: number }; // skillId (kebab)
 export type SkillSynergiesJsonData = Record<string, SynergyEffectJsonData[]>; // skillId (kebab): SynergyEffect[]
-export const SKILL_SYNERGIES: Readonly<SkillSynergiesJsonData> = { ...baseSkillSynergies, ...customSkillSynergies };
+export const SKILL_SYNERGIES: Readonly<SkillSynergiesJsonData> = mergeObjectData(baseSkillSynergies, customSkillSynergies);
 
 // Helper function using data from dnd-base.json
 export function getRaceSkillPointsBonusPerLevel(raceId: DndRaceId | string): number {
@@ -303,7 +305,7 @@ export function getInitialCharacterSkills(characterClasses: CharacterClass[]): S
   return SKILL_DEFINITIONS.map(def => {
     let isClassSkill = classSkillsForCurrentClass.includes(def.value);
     return {
-      id: def.value,
+      id: def.value, // Use kebab-case ID from definition
       name: def.label,
       keyAbility: def.keyAbility as AbilityName,
       ranks: 0,
@@ -318,7 +320,7 @@ export function getInitialCharacterSkills(characterClasses: CharacterClass[]): S
 export type RaceAgingCategoryKey = keyof typeof DND_RACE_AGING_EFFECTS_DATA;
 
 interface AgeCategoryEffectData {
-  categoryName: RaceAgingCategoryKey | string;
+  categoryName: RaceAgingCategoryKey | string; // kebab-case
   ageFactor: number;
   effects: Partial<Record<Exclude<AbilityName, 'none'>, number>>;
 }
@@ -328,15 +330,15 @@ interface RaceAgingInfoData {
 }
 
 export interface AgingEffectsDetails {
-  categoryName: string;
+  categoryName: string; // Human-readable
   effects: Array<{ ability: Exclude<AbilityName, 'none'>; change: number }>;
 }
 
 export function getNetAgingEffects(raceId: DndRaceId | '', age: number): AgingEffectsDetails {
   if (!raceId) return { categoryName: "Adult", effects: [] };
 
-  const raceVenerableAge = DND_RACE_BASE_MAX_AGE_DATA[raceId as DndRaceId];
-  if (raceVenerableAge === undefined) return { categoryName: "Adult", effects: [] };
+  const raceMaxAge = DND_RACE_BASE_MAX_AGE_DATA[raceId as DndRaceId];
+  if (raceMaxAge === undefined) return { categoryName: "Adult", effects: [] };
 
   const agingCategoryKey = RACE_TO_AGING_CATEGORY_MAP_DATA[raceId as DndRaceId];
   if (!agingCategoryKey) return { categoryName: "Adult", effects: [] };
@@ -349,7 +351,7 @@ export function getNetAgingEffects(raceId: DndRaceId | '', age: number): AgingEf
   const sortedCategories = [...raceAgingPattern.categories].sort((a, b) => a.ageFactor - b.ageFactor);
 
   for (const category of sortedCategories) {
-    const ageThresholdForCategory = Math.floor(category.ageFactor * raceVenerableAge);
+    const ageThresholdForCategory = Math.floor(category.ageFactor * raceMaxAge);
     if (age >= ageThresholdForCategory) {
       currentCategoryLabel = category.categoryName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
       highestAttainedCategoryEffects = category.effects;
@@ -368,10 +370,10 @@ export function getNetAgingEffects(raceId: DndRaceId | '', age: number): AgingEf
         const changeB = highestAttainedCategoryEffects![bAbility]!;
         const signA = Math.sign(changeA);
         const signB = Math.sign(changeB);
-        if (signA !== signB) return signA - signB; // Negative first, then positive.
+        if (signA !== signB) return signA - signB; // Negative first
         const indexA = ABILITY_ORDER_INTERNAL.indexOf(aAbility);
         const indexB = ABILITY_ORDER_INTERNAL.indexOf(bAbility);
-        return indexA - indexB;
+        return indexA - indexB; // Then by standard ability order
     });
     for (const ability of abilitiesToProcess) {
         appliedEffects.push({ ability, change: highestAttainedCategoryEffects![ability]! });
@@ -487,7 +489,7 @@ export function calculateTotalSynergyBonus(targetSkillId: string, currentCharact
   for (const providingSkill of currentCharacterSkills) {
     if (providingSkill.providesSynergies) {
       for (const customRule of providingSkill.providesSynergies) {
-        if (customRule.targetSkillName === targetSkillId) {
+        if (customRule.targetSkillName === targetSkillId) { // targetSkillName stores the ID
           if ((providingSkill.ranks || 0) >= customRule.ranksInThisSkillRequired) {
             totalBonus += customRule.bonusGranted;
           }
@@ -519,16 +521,16 @@ export function calculateRacialSkillBonus(skillId_kebab: string, raceId: DndRace
 }
 
 
-export function calculateAvailableFeats(raceId: DndRaceId | string, level: number): number {
+export function calculateAvailableFeats(characterRaceId: DndRaceId | string, level: number): number {
   let availableFeats = 0;
-  if (level >= 1) availableFeats += 1;
+  if (level >= 1) availableFeats += 1; // Base feat at 1st level
 
-  const raceData = DND_RACES.find(r => r.value === raceId);
+  const raceData = DND_RACES.find(r => r.value === characterRaceId);
   if (raceData?.bonusFeatSlots) {
     availableFeats += raceData.bonusFeatSlots;
   }
 
-  availableFeats += Math.floor(level / 3);
+  availableFeats += Math.floor(level / 3); // Feats at 3rd, 6th, 9th, etc.
   return availableFeats;
 }
 
@@ -539,7 +541,7 @@ export function getGrantedFeatsForCharacter(characterRaceId: DndRaceId | string,
     if (!featId_kebab || (levelAcquired !== undefined && levelAcquired > characterLevel)) return;
 
     const featDef = DND_FEATS.find(f => f.value === featId_kebab);
-    if (featDef && !grantedFeatsMap.has(featId_kebab)) { // Only add if not already granted from another source
+    if (featDef && !grantedFeatsMap.has(featId_kebab)) { 
       grantedFeatsMap.set(featId_kebab, {
         id: featDef.value, name: featDef.label, description: featDef.description,
         prerequisites: featDef.prerequisites, effects: featDef.effects,
@@ -627,13 +629,41 @@ export function checkFeatPrerequisites(featDefinition: FeatDefinitionJsonData, c
     }
   }
 
-  // This part was removed in a previous step, re-confirming its removal
-  // if (prerequisites.special) {
-  //   let specialMet = true;
-  //   // ... complex special logic ...
-  //   if (specialMet) metMessages.push(prerequisites.special);
-  //   else unmetMessages.push(prerequisites.special);
-  // }
+  if (prerequisites.raceId) {
+    const raceDef = DND_RACES.find(r => r.value === prerequisites.raceId);
+    const raceName = raceDef?.label || prerequisites.raceId;
+    if (character.race !== prerequisites.raceId) {
+      unmetMessages.push(`Race: ${raceName}`);
+    } else {
+      metMessages.push(`Race: ${raceName}`);
+    }
+  }
+
+  if (prerequisites.alignment) {
+    const reqAlign = prerequisites.alignment;
+    const charAlign = character.alignment;
+    let alignmentMet = false;
+    let requiredAlignmentLabel = ALIGNMENT_PREREQUISITE_OPTIONS.find(opt => opt.value === reqAlign)?.label || reqAlign;
+
+    if (reqAlign.includes('-')) { // Full alignment e.g., "lawful-good"
+        alignmentMet = charAlign === reqAlign;
+    } else { // Alignment component e.g., "lawful", "good", "neutral-lc"
+        const charParts = charAlign.split('-');
+        if (reqAlign === 'lawful' && charParts[0] === 'lawful') alignmentMet = true;
+        else if (reqAlign === 'chaotic' && charParts[0] === 'chaotic') alignmentMet = true;
+        else if (reqAlign === 'good' && charParts[1] === 'good') alignmentMet = true;
+        else if (reqAlign === 'evil' && charParts[1] === 'evil') alignmentMet = true;
+        else if (reqAlign === 'neutral-lc' && (charParts[0] === 'neutral' || charAlign === 'true-neutral')) alignmentMet = true;
+        else if (reqAlign === 'neutral-ge' && (charParts[1] === 'neutral' || charAlign === 'true-neutral')) alignmentMet = true;
+    }
+
+    if (!alignmentMet) {
+      unmetMessages.push(`Alignment: ${requiredAlignmentLabel}`);
+    } else {
+      metMessages.push(`Alignment: ${requiredAlignmentLabel}`);
+    }
+  }
+
   return { met: unmetMessages.length === 0, unmetMessages, metMessages };
 }
 
@@ -743,4 +773,3 @@ export function isAlignmentCompatible(
 
   return lcDiff <= 1 && geDiff <= 1;
 }
-

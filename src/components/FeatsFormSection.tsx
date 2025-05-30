@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import type { Feat as FeatType, DndRaceId, CharacterClass, FeatDefinitionJsonData, Character, AbilityScores, Skill, DndClassOption } from '@/types/character';
+import type { Feat as FeatType, DndRaceId, CharacterClass, FeatDefinitionJsonData, Character, AbilityScores, Skill, DndClassOption, DndRaceOption } from '@/types/character';
 import { DND_FEATS, DND_RACES, SKILL_DEFINITIONS, DND_CLASSES, checkFeatPrerequisites } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -93,9 +93,12 @@ export function FeatsFormSection({
   React.useEffect(() => {
     const userChosenPredefinedAndCustomFeatIds = selectedFeats
       .filter(f => !f.isGranted)
-      .map(f => f.id);
-
-    if (JSON.stringify(userChosenPredefinedAndCustomFeatIds.sort()) !== JSON.stringify(featSelections.filter(id => id !== undefined).sort())) {
+      .map(f => f.id)
+      .sort();
+  
+    const currentInternalSelectionIds = featSelections.filter(id => id !== undefined).sort();
+  
+    if (JSON.stringify(userChosenPredefinedAndCustomFeatIds) !== JSON.stringify(currentInternalSelectionIds)) {
       setFeatSelections(userChosenPredefinedAndCustomFeatIds);
     }
   }, [selectedFeats, featSelections]);
@@ -193,7 +196,7 @@ export function FeatsFormSection({
             </div>
              <p className="text-xs text-muted-foreground mt-1">
                 Base <strong className="font-bold text-primary">[{baseFeat}]</strong>
-                {(characterRace === 'human' || (raceData && (raceData.bonusFeatSlots || 0) > 0)) && (
+                {racialBonus > 0 && (
                     <>
                     {' + '}Racial Bonus <strong className="font-bold text-primary">[{racialBonus}]</strong>
                     </>
@@ -207,7 +210,8 @@ export function FeatsFormSection({
                  <p className="text-sm text-muted-foreground text-center py-2">No feats selected or granted yet.</p>
             )}
             {selectedFeats.map((feat) => {
-              const prereqStatus = checkFeatPrerequisites(feat, characterForPrereqCheck as Character, DND_FEATS);
+              const featDetails = DND_FEATS.find(f => f.value === feat.id.split('-MULTI-INSTANCE-')[0]) || feat;
+              const prereqStatus = checkFeatPrerequisites(featDetails, characterForPrereqCheck as Character, DND_FEATS);
               const displayPrereqs = prereqStatus.metMessages.concat(prereqStatus.unmetMessages);
 
               return (
@@ -217,35 +221,53 @@ export function FeatsFormSection({
                       {feat.name}
                       {feat.isGranted && feat.grantedNote && <span className="text-xs text-muted-foreground ml-1 italic">{feat.grantedNote}</span>}
                     </h4>
-                    {feat.description && (
-                      <div
-                        className="text-xs text-muted-foreground mt-0.5 whitespace-normal"
-                        dangerouslySetInnerHTML={{ __html: feat.description }}
-                      />
-                    )}
-                    {feat.isCustom && feat.effectsText && (
-                       <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground">Effects: {feat.effectsText}</p>
-                    )}
-
-                    {displayPrereqs.length > 0 && (
-                      <div className="text-xs mt-0.5 whitespace-normal text-muted-foreground">
-                        Prerequisites:{' '}
-                        {displayPrereqs.map((msg, idx, arr) => (
-                          <React.Fragment key={idx}>
-                            <span
-                              className={cn(prereqStatus.unmetMessages.includes(msg) ? 'text-destructive' : 'text-muted-foreground')}
-                              dangerouslySetInnerHTML={{ __html: msg }}
-                            />
-                            {idx < arr.length - 1 && ', '}
-                          </React.Fragment>
-                        ))}
-                      </div>
-                    )}
-                    {feat.prerequisites && Object.keys(feat.prerequisites).length === 0 && !feat.isCustom && (
-                         <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground">Prerequisites: None</p>
-                    )}
-                     {feat.isCustom && (!feat.prerequisites || Object.keys(feat.prerequisites).length === 0) && (
-                         <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground">Prerequisites: None (Custom)</p>
+                    {feat.isCustom ? (
+                       <>
+                        {feat.description && <div className="text-xs text-muted-foreground mt-0.5 whitespace-normal" dangerouslySetInnerHTML={{ __html: feat.description }} />}
+                        {feat.effectsText && <p className="text-xs text-muted-foreground mt-0.5 whitespace-normal">Effects: {feat.effectsText}</p>}
+                        {feat.prerequisites && Object.keys(feat.prerequisites).length > 0 && (
+                             <div className="text-xs mt-0.5 whitespace-normal text-muted-foreground">
+                             Prerequisites:{' '}
+                             {displayPrereqs.map((msg, idx, arr) => (
+                               <React.Fragment key={idx}>
+                                 <span
+                                   className={cn(prereqStatus.unmetMessages.includes(msg) ? 'text-destructive' : 'text-muted-foreground')}
+                                   dangerouslySetInnerHTML={{ __html: msg }}
+                                 />
+                                 {idx < arr.length - 1 && ', '}
+                               </React.Fragment>
+                             ))}
+                           </div>
+                        )}
+                         {(!feat.prerequisites || Object.keys(feat.prerequisites).length === 0) && (
+                            <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground">Prerequisites: None (Custom)</p>
+                        )}
+                       </>
+                    ) : (
+                      <>
+                        {featDetails.description && (
+                          <div
+                            className="text-xs text-muted-foreground mt-0.5 whitespace-normal"
+                            dangerouslySetInnerHTML={{ __html: featDetails.description }}
+                          />
+                        )}
+                        {displayPrereqs.length > 0 ? (
+                          <div className="text-xs mt-0.5 whitespace-normal text-muted-foreground">
+                            Prerequisites:{' '}
+                            {displayPrereqs.map((msg, idx, arr) => (
+                              <React.Fragment key={idx}>
+                                <span
+                                  className={cn(prereqStatus.unmetMessages.includes(msg) ? 'text-destructive' : 'text-muted-foreground')}
+                                  dangerouslySetInnerHTML={{ __html: msg }}
+                                />
+                                {idx < arr.length - 1 && ', '}
+                              </React.Fragment>
+                            ))}
+                          </div>
+                        ) : (
+                            <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground">Prerequisites: None</p>
+                        )}
+                      </>
                     )}
                   </div>
                   {!feat.isGranted && (
@@ -296,6 +318,7 @@ export function FeatsFormSection({
         allFeats={DND_FEATS}
         allSkills={allSkillOptionsForDialog}
         allClasses={DND_CLASSES}
+        allRaces={DND_RACES}
       />
     </>
   );

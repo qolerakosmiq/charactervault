@@ -2,7 +2,8 @@
 'use client';
 
 import * as React from 'react';
-import type { Feat, FeatPrerequisiteDetails, AbilityName, FeatDefinitionJsonData, DndClassOption, DndClassId } from '@/types/character';
+import type { Feat, FeatPrerequisiteDetails, AbilityName, FeatDefinitionJsonData, DndClassOption, DndClassId, DndRaceOption, CharacterAlignmentObject, DndRaceId } from '@/types/character';
+import { ALIGNMENT_PREREQUISITE_OPTIONS } from '@/types/character'; // Import new options
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -31,6 +32,8 @@ interface AddCustomFeatDialogProps {
   allFeats: readonly FeatDefinitionJsonData[];
   allSkills: readonly ComboboxOption[];
   allClasses: readonly DndClassOption[];
+  allRaces: readonly DndRaceOption[];
+  // allAlignmentsAndComponents: readonly { value: string; label: string }[]; // We'll use ALIGNMENT_PREREQUISITE_OPTIONS
 }
 
 const abilityOptions: Array<{ value: Exclude<AbilityName, 'none'>; label: string }> = [
@@ -50,7 +53,7 @@ type PrerequisiteListItem = {
   value?: number; // For ability score or skill ranks
 };
 
-const NONE_CLASS_VALUE = "__NONE_CLASS__";
+const NONE_VALUE = "__NONE__"; // Generic none value for comboboxes
 
 export function AddCustomFeatDialog({
   isOpen,
@@ -60,6 +63,7 @@ export function AddCustomFeatDialog({
   allFeats,
   allSkills,
   allClasses,
+  allRaces,
 }: AddCustomFeatDialogProps) {
   const [featName, setFeatName] = React.useState('');
   const [description, setDescription] = React.useState('');
@@ -70,8 +74,10 @@ export function AddCustomFeatDialog({
   // Singular Prerequisites State
   const [prereqBab, setPrereqBab] = React.useState('');
   const [prereqCasterLevel, setPrereqCasterLevel] = React.useState('');
-  const [prereqClassId, setPrereqClassId] = React.useState<DndClassId | string>(NONE_CLASS_VALUE);
+  const [prereqClassId, setPrereqClassId] = React.useState<DndClassId | string>(NONE_VALUE);
   const [prereqClassLevel, setPrereqClassLevel] = React.useState('');
+  const [prereqRaceId, setPrereqRaceId] = React.useState<DndRaceId | string>(NONE_VALUE);
+  const [prereqAlignment, setPrereqAlignment] = React.useState<string>(NONE_VALUE);
 
 
   // State for building a new prerequisite
@@ -85,9 +91,20 @@ export function AddCustomFeatDialog({
   const isEditing = !!initialFeatData;
   
   const classComboboxOptions = React.useMemo(() => [
-    { value: NONE_CLASS_VALUE, label: "None" },
+    { value: NONE_VALUE, label: "None" },
     ...allClasses.map(c => ({ value: c.value, label: c.label }))
   ], [allClasses]);
+
+  const raceComboboxOptions = React.useMemo(() => [
+    { value: NONE_VALUE, label: "None" },
+    ...allRaces.map(r => ({ value: r.value, label: r.label }))
+  ], [allRaces]);
+
+  const alignmentComboboxOptions = React.useMemo(() => [
+    { value: NONE_VALUE, label: "None" },
+    ...ALIGNMENT_PREREQUISITE_OPTIONS
+  ], []);
+
 
   React.useEffect(() => {
     if (isOpen) {
@@ -101,8 +118,10 @@ export function AddCustomFeatDialog({
         const prereqs = initialFeatData.prerequisites;
         setPrereqBab(prereqs?.bab?.toString() || '');
         setPrereqCasterLevel(prereqs?.casterLevel?.toString() || '');
-        setPrereqClassId(prereqs?.classLevel?.classId || NONE_CLASS_VALUE);
+        setPrereqClassId(prereqs?.classLevel?.classId || NONE_VALUE);
         setPrereqClassLevel(prereqs?.classLevel?.level.toString() || '');
+        setPrereqRaceId(prereqs?.raceId || NONE_VALUE);
+        setPrereqAlignment(prereqs?.alignment || NONE_VALUE);
         
         const loadedPrereqs: PrerequisiteListItem[] = [];
         if (prereqs?.abilities) {
@@ -134,8 +153,10 @@ export function AddCustomFeatDialog({
         setEffectsText('');
         setPrereqBab('');
         setPrereqCasterLevel('');
-        setPrereqClassId(NONE_CLASS_VALUE);
+        setPrereqClassId(NONE_VALUE);
         setPrereqClassLevel('');
+        setPrereqRaceId(NONE_VALUE);
+        setPrereqAlignment(NONE_VALUE);
         setPrerequisitesList([]);
       }
       // Reset new prerequisite form
@@ -193,8 +214,14 @@ export function AddCustomFeatDialog({
     const finalStructuredPrerequisites: FeatPrerequisiteDetails = {};
     if (prereqBab.trim() !== '' && !isNaN(parseInt(prereqBab, 10))) finalStructuredPrerequisites.bab = parseInt(prereqBab, 10);
     if (prereqCasterLevel.trim() !== '' && !isNaN(parseInt(prereqCasterLevel, 10))) finalStructuredPrerequisites.casterLevel = parseInt(prereqCasterLevel, 10);
-    if (prereqClassId !== NONE_CLASS_VALUE && prereqClassId.trim() !== '' && prereqClassLevel.trim() !== '' && !isNaN(parseInt(prereqClassLevel, 10))) {
+    if (prereqClassId !== NONE_VALUE && prereqClassId.trim() !== '' && prereqClassLevel.trim() !== '' && !isNaN(parseInt(prereqClassLevel, 10))) {
         finalStructuredPrerequisites.classLevel = { classId: prereqClassId, level: parseInt(prereqClassLevel, 10) };
+    }
+    if (prereqRaceId !== NONE_VALUE && prereqRaceId.trim() !== '') {
+        finalStructuredPrerequisites.raceId = prereqRaceId;
+    }
+    if (prereqAlignment !== NONE_VALUE && prereqAlignment.trim() !== '') {
+        finalStructuredPrerequisites.alignment = prereqAlignment;
     }
 
 
@@ -326,7 +353,31 @@ export function AddCustomFeatDialog({
                   onChange={(e) => setPrereqClassLevel(e.target.value)} 
                   placeholder="e.g., 1" 
                   min="1"
-                  disabled={prereqClassId === NONE_CLASS_VALUE || prereqClassId === ""}
+                  disabled={prereqClassId === NONE_VALUE || prereqClassId === ""}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="space-y-1">
+                <Label htmlFor="prereq-race">Race Prerequisite</Label>
+                <ComboboxPrimitive
+                  options={raceComboboxOptions}
+                  value={prereqRaceId}
+                  onChange={setPrereqRaceId}
+                  placeholder="Select Race..."
+                  searchPlaceholder="Search races..."
+                  emptyPlaceholder="No race found."
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="prereq-alignment">Alignment Prerequisite</Label>
+                <ComboboxPrimitive
+                  options={alignmentComboboxOptions}
+                  value={prereqAlignment}
+                  onChange={setPrereqAlignment}
+                  placeholder="Select Alignment..."
+                  searchPlaceholder="Search alignments..."
+                  emptyPlaceholder="No alignment found."
                 />
               </div>
             </div>
