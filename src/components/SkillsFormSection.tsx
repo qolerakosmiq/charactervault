@@ -67,9 +67,9 @@ export function SkillsFormSection({
   const totalSkillPointsSpent = skills.reduce((acc, currentSkill) => {
     let costMultiplier = 1;
     if (currentSkill.keyAbility === 'none') {
-      costMultiplier = 1; // Skills like Speak Language always cost 1 point per rank.
+      costMultiplier = 1; 
     } else if (!currentSkill.isClassSkill) {
-      costMultiplier = 2; // Cross-class skills cost 2 points per rank.
+      costMultiplier = 2; 
     }
     return acc + ((currentSkill.ranks || 0) * costMultiplier);
   }, 0);
@@ -97,8 +97,8 @@ export function SkillsFormSection({
     const currentMiscModifier = skill.miscModifier || 0;
     const currentRanks = skill.ranks || 0;
 
-    const totalDisplayedModifierInTable = currentKeyAbilityModifier + currentSynergyBonus + currentFeatSkillBonus + currentRacialSkillBonus; // This is what's shown in "Mod" column
-    const totalSkillBonus = currentRanks + totalDisplayedModifierInTable + currentMiscModifier; // This is the final total
+    const totalDisplayedModifierInTable = currentKeyAbilityModifier + currentSynergyBonus + currentFeatSkillBonus + currentRacialSkillBonus; 
+    const totalSkillBonus = currentRanks + totalDisplayedModifierInTable + currentMiscModifier; 
 
     const breakdown: SkillModifierBreakdownDetails = {
       skillName: skill.name,
@@ -178,26 +178,26 @@ export function SkillsFormSection({
             </p>
           </div>
            <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
-            <p>
-                (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
-                {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
-                {(racialBonus || 0) !== 0 && (
-                  <>
-                    {' + '}Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
-                  </>
-                )}
-                ) × First Level <strong className="font-bold text-primary">[4]</strong>
-            </p>
-            <p>
-                + (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
-                {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
-                {(racialBonus || 0) !== 0 && (
-                  <>
-                    {' + '}Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
-                  </>
-                )}
-                ) × Level Progression <strong className="font-bold text-primary">[{characterLevel > 1 ? (characterLevel -1) : 0}]</strong>
-            </p>
+             <p>
+                 (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
+                 {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
+                 {(racialBonus || 0) !== 0 && (
+                   <>
+                     {' + '}Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
+                   </>
+                 )}
+                 ) × First Level <strong className="font-bold text-primary">[4]</strong>
+             </p>
+             <p>
+                 + (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
+                 {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
+                 {(racialBonus || 0) !== 0 && (
+                    <>
+                     {' + '}Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
+                   </>
+                 )}
+                 ) × Level Progression <strong className="font-bold text-primary">[{characterLevel > 1 ? (characterLevel -1) : 0}]</strong>
+             </p>
            </div>
         </div>
 
@@ -216,14 +216,16 @@ export function SkillsFormSection({
           {skills.map(skill => {
             const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skill.id);
             const keyAbility = skill.keyAbility || (skillDef?.keyAbility as AbilityName | undefined);
-            const keyAbilityDisplay = (keyAbility && keyAbility !== 'none') ? keyAbility.substring(0, 3).toUpperCase() : '---';
+            const keyAbilityDisplay = (keyAbility && keyAbility !== 'none') ? keyAbility.substring(0, 3).toUpperCase() : '';
 
             const baseAbilityMod = (keyAbility && keyAbility !== 'none')
               ? getAbilityModifierByName(actualAbilityScores, keyAbility)
               : 0;
+
             const synergyBonus = calculateTotalSynergyBonus(skill.id, skills);
             const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats);
             const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, SKILL_DEFINITIONS);
+            
             const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus + currentRacialBonus;
 
             const totalBonus = (skill.ranks || 0) + totalDisplayedModifier + (skill.miscModifier || 0);
