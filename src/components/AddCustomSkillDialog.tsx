@@ -20,7 +20,7 @@ import { ComboboxPrimitive } from '@/components/ui/combobox';
 import { PlusCircle, Pencil, Trash2, Sparkles } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Textarea } from '@/components/ui/textarea'; // Added Textarea
+import { Textarea } from '@/components/ui/textarea';
 
 interface AddCustomSkillDialogProps {
   isOpen: boolean;
@@ -51,6 +51,7 @@ const keyAbilityOptions: Array<{ value: AbilityName; label: string }> = [
   { value: 'intelligence', label: 'Intelligence (INT)' },
   { value: 'wisdom', label: 'Wisdom (WIS)' },
   { value: 'charisma', label: 'Charisma (CHA)' },
+  { value: 'none', label: 'None' },
 ];
 
 export function AddCustomSkillDialog({
@@ -64,7 +65,7 @@ export function AddCustomSkillDialog({
   const [selectedKeyAbility, setSelectedKeyAbility] = React.useState<AbilityName>('intelligence');
   const [isClassSkill, setIsClassSkill] = React.useState(false);
   const [synergyRules, setSynergyRules] = React.useState<CustomSynergyRule[]>([]);
-  const [description, setDescription] = React.useState(''); // Added description state
+  const [description, setDescription] = React.useState('');
 
   const [newSynergyTargetSkillId, setNewSynergyTargetSkillId] = React.useState('');
   const [newSynergyRanksRequired, setNewSynergyRanksRequired] = React.useState(5);
@@ -82,22 +83,33 @@ export function AddCustomSkillDialog({
     if (isOpen) {
       if (initialSkillData) {
         setSkillName(initialSkillData.name);
-        setSelectedKeyAbility(initialSkillData.keyAbility);
-        setIsClassSkill(initialSkillData.isClassSkill);
+        const initialKeyAbility = initialSkillData.keyAbility;
+        setSelectedKeyAbility(initialKeyAbility);
+        // If keyAbility is 'none', isClassSkill must be false.
+        setIsClassSkill(initialKeyAbility === 'none' ? false : initialSkillData.isClassSkill);
         setSynergyRules(initialSkillData.providesSynergies || []);
-        setDescription(initialSkillData.description || ''); // Set description
+        setDescription(initialSkillData.description || '');
       } else {
-        setSkillName('');
+        // When adding new, default to 'intelligence' and isClassSkill false.
         setSelectedKeyAbility('intelligence');
         setIsClassSkill(false);
+        setSkillName('');
         setSynergyRules([]);
-        setDescription(''); // Reset description
+        setDescription('');
       }
       setNewSynergyTargetSkillId('');
       setNewSynergyRanksRequired(5);
       setNewSynergyBonus(2);
     }
   }, [isOpen, initialSkillData]);
+
+  const handleKeyAbilityChange = (value: string) => {
+    const newKeyAbility = value as AbilityName;
+    setSelectedKeyAbility(newKeyAbility);
+    if (newKeyAbility === 'none') {
+      setIsClassSkill(false); // Uncheck "Is Class Skill?"
+    }
+  };
 
   const handleAddSynergyRule = () => {
     if (!newSynergyTargetSkillId.trim() || newSynergyRanksRequired <= 0 || newSynergyBonus === 0) {
@@ -108,7 +120,7 @@ export function AddCustomSkillDialog({
       ...prev,
       {
         id: crypto.randomUUID(),
-        targetSkillName: newSynergyTargetSkillId,
+        targetSkillName: newSynergyTargetSkillId, // This stores the ID
         ranksInThisSkillRequired: newSynergyRanksRequired,
         bonusGranted: newSynergyBonus,
       }
@@ -131,9 +143,9 @@ export function AddCustomSkillDialog({
       id: initialSkillData?.id,
       name: skillName.trim(),
       keyAbility: selectedKeyAbility,
-      isClassSkill,
+      isClassSkill: selectedKeyAbility === 'none' ? false : isClassSkill, // Ensure isClassSkill is false if keyAbility is 'none'
       providesSynergies: synergyRules,
-      description: description.trim(), // Save description
+      description: description.trim(),
     });
     onOpenChange(false);
   };
@@ -171,7 +183,7 @@ export function AddCustomSkillDialog({
               <Label htmlFor="custom-skill-key-ability">Key Ability</Label>
               <Select
                 value={selectedKeyAbility}
-                onValueChange={(value) => setSelectedKeyAbility(value as AbilityName)}
+                onValueChange={handleKeyAbilityChange}
               >
                 <SelectTrigger id="custom-skill-key-ability">
                   <SelectValue placeholder="Select key ability" />
@@ -190,6 +202,7 @@ export function AddCustomSkillDialog({
                 id="custom-skill-is-class"
                 checked={isClassSkill}
                 onCheckedChange={(checked) => setIsClassSkill(checked as boolean)}
+                disabled={selectedKeyAbility === 'none'}
               />
               <Label htmlFor="custom-skill-is-class" className="text-sm font-normal">
                 Is Class Skill?
@@ -283,5 +296,3 @@ export function AddCustomSkillDialog({
     </Dialog>
   );
 }
-
-    
