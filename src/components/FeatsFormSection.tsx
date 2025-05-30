@@ -2,11 +2,11 @@
 'use client';
 
 import * as React from 'react';
-import type { Feat as FeatType, DndRaceId, CharacterClass, FeatDefinitionJsonData, Character, AbilityScores, Skill, DndClassOption, DndRaceOption } from '@/types/character';
-import { DND_FEATS, DND_RACES, SKILL_DEFINITIONS, DND_CLASSES, checkFeatPrerequisites } from '@/types/character';
+import type { Feat as FeatType, DndRaceId, CharacterClass, FeatDefinitionJsonData, Character, AbilityScores, Skill, DndClassOption, DndRaceOption, CharacterAlignment, PrerequisiteMessage } from '@/types/character';
+import { DND_FEATS, DND_RACES, SKILL_DEFINITIONS, DND_CLASSES, checkFeatPrerequisites, calculateAvailableFeats } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, PlusCircle, Trash2, Edit3 } from 'lucide-react';
+import { Award, PlusCircle, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
 import { AddCustomFeatDialog } from './AddCustomFeatDialog';
@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 interface FeatsFormSectionProps {
   characterRace: DndRaceId | string;
   characterClasses: CharacterClass[];
+  characterAlignment: CharacterAlignment;
   selectedFeats: FeatType[];
   onFeatSelectionChange: (updatedFeats: FeatType[]) => void;
   abilityScores: AbilityScores;
@@ -24,6 +25,7 @@ interface FeatsFormSectionProps {
 export function FeatsFormSection({
   characterRace,
   characterClasses,
+  characterAlignment,
   selectedFeats,
   onFeatSelectionChange,
   abilityScores,
@@ -37,16 +39,16 @@ export function FeatsFormSection({
   const [isCustomFeatDialogOpen, setIsCustomFeatDialogOpen] = React.useState(false);
   const [editingCustomFeat, setEditingCustomFeat] = React.useState<FeatType | null>(null);
 
-  const baseFeat = 1;
+  const availableFeatSlots = calculateAvailableFeats(characterRace, characterLevel);
   const raceData = DND_RACES.find(r => r.value === characterRace);
   const racialBonus = raceData?.bonusFeatSlots || 0;
+  const baseFeat = 1;
   const levelProgressionFeats = Math.floor(characterLevel / 3);
-  const selectableSlotsAvailable = baseFeat + racialBonus + levelProgressionFeats;
 
   const userChosenNonCustomFeats = selectedFeats.filter(f => !f.isGranted && !f.isCustom);
   const customFeats = selectedFeats.filter(f => f.isCustom);
   const userAddedFeatsCount = userChosenNonCustomFeats.length + customFeats.length;
-  const featSlotsLeft = selectableSlotsAvailable - userAddedFeatsCount;
+  const featSlotsLeft = availableFeatSlots - userAddedFeatsCount;
 
 
   const characterForPrereqCheck = React.useMemo(() => ({
@@ -55,12 +57,13 @@ export function FeatsFormSection({
     feats: selectedFeats,
     classes: characterClasses,
     race: characterRace,
-    name: '', alignment: 'true-neutral', size: 'medium', age: 20,
+    alignment: characterAlignment,
+    name: '', size: 'medium', age: 20,
     hp: 0, maxHp: 0, armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0,
     deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, initiativeMiscModifier: 0,
     savingThrows: { fortitude: {base:0,magicMod:0,miscMod:0}, reflex: {base:0,magicMod:0,miscMod:0}, will: {base:0,magicMod:0,miscMod:0} },
     inventory: [], portraitDataUrl: '', personalStory: ''
-  }), [abilityScores, skills, selectedFeats, characterClasses, characterRace]);
+  }), [abilityScores, skills, selectedFeats, characterClasses, characterRace, characterAlignment]);
 
   const convertSelectionsToFeatTypes = React.useCallback((currentSelectionIds: (string | undefined)[]): FeatType[] => {
     const granted = selectedFeats.filter(f => f.isGranted);
@@ -91,17 +94,16 @@ export function FeatsFormSection({
 
 
   React.useEffect(() => {
-    const userChosenPredefinedAndCustomFeatIds = selectedFeats
+    const userChosenAndCustomFeatIds = selectedFeats
       .filter(f => !f.isGranted)
-      .map(f => f.id)
-      .sort();
-  
-    const currentInternalSelectionIds = featSelections.filter(id => id !== undefined).sort();
-  
-    if (JSON.stringify(userChosenPredefinedAndCustomFeatIds) !== JSON.stringify(currentInternalSelectionIds)) {
-      setFeatSelections(userChosenPredefinedAndCustomFeatIds);
+      .map(f => f.id);
+
+    // Only update if the derived IDs from props are different from the current selection IDs
+    // This check helps prevent infinite loops if not done carefully.
+    if (JSON.stringify(userChosenAndCustomFeatIds.sort()) !== JSON.stringify(featSelections.filter(id => id !== undefined).sort())) {
+      setFeatSelections(userChosenAndCustomFeatIds);
     }
-  }, [selectedFeats, featSelections]);
+  }, [selectedFeats]);
 
 
   const handleFeatSelectedFromDialog = (featId: string) => {
@@ -129,13 +131,13 @@ export function FeatsFormSection({
     setIsFeatDialogOpen(false);
   };
 
-  const handleSaveCustomFeat = (featData: Partial<Feat> & { name: string }) => {
+  const handleSaveCustomFeat = (featData: Partial<FeatType> & { name: string }) => {
     let updatedFullFeatsList;
-    if (featData.id && selectedFeats.some(f => f.id === featData.id && f.isCustom)) { // Editing existing custom feat
+    if (featData.id && selectedFeats.some(f => f.id === featData.id && f.isCustom)) {
       updatedFullFeatsList = selectedFeats.map(f =>
-        f.id === featData.id ? { ...f, ...featData, isCustom: true, isGranted: false } : f
+        f.id === featData.id ? { ...f, ...featData, isCustom: true, isGranted: false } as FeatType : f
       );
-    } else { // Adding new custom feat
+    } else {
       const newCustomFeat: FeatType = {
         id: crypto.randomUUID(),
         name: featData.name,
@@ -164,7 +166,7 @@ export function FeatsFormSection({
     setEditingCustomFeat(feat);
     setIsCustomFeatDialogOpen(true);
   };
-  
+
   const allSkillOptionsForDialog = React.useMemo(() => {
     return skills.map(s => ({ value: s.id, label: s.name }));
   }, [skills]);
@@ -185,7 +187,7 @@ export function FeatsFormSection({
           <div className="mb-6 p-3 border rounded-md bg-muted/30">
             <div className="flex justify-between items-center">
               <p className="text-sm font-medium">
-                Feats Available: <span className="text-lg font-bold text-primary">{selectableSlotsAvailable}</span>
+                Feats Available: <span className="text-lg font-bold text-primary">{availableFeatSlots}</span>
               </p>
               <p className="text-sm font-medium">
                 Feats Left: <span className={cn(
@@ -211,8 +213,9 @@ export function FeatsFormSection({
             )}
             {selectedFeats.map((feat) => {
               const featDetails = DND_FEATS.find(f => f.value === feat.id.split('-MULTI-INSTANCE-')[0]) || feat;
-              const prereqStatus = checkFeatPrerequisites(featDetails, characterForPrereqCheck as Character, DND_FEATS);
-              const displayPrereqs = prereqStatus.metMessages.concat(prereqStatus.unmetMessages);
+              const prereqMessages: PrerequisiteMessage[] = featDetails.prerequisites || feat.prerequisites
+                ? checkFeatPrerequisites(featDetails, characterForPrereqCheck as Character, DND_FEATS)
+                : [];
 
               return (
                 <div key={`feat-${feat.id}`} className="group flex items-start justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors">
@@ -225,21 +228,20 @@ export function FeatsFormSection({
                        <>
                         {feat.description && <div className="text-xs text-muted-foreground mt-0.5 whitespace-normal" dangerouslySetInnerHTML={{ __html: feat.description }} />}
                         {feat.effectsText && <p className="text-xs text-muted-foreground mt-0.5 whitespace-normal">Effects: {feat.effectsText}</p>}
-                        {feat.prerequisites && Object.keys(feat.prerequisites).length > 0 && (
-                             <div className="text-xs mt-0.5 whitespace-normal text-muted-foreground">
-                             Prerequisites:{' '}
-                             {displayPrereqs.map((msg, idx, arr) => (
-                               <React.Fragment key={idx}>
-                                 <span
-                                   className={cn(prereqStatus.unmetMessages.includes(msg) ? 'text-destructive' : 'text-muted-foreground')}
-                                   dangerouslySetInnerHTML={{ __html: msg }}
-                                 />
-                                 {idx < arr.length - 1 && ', '}
-                               </React.Fragment>
-                             ))}
-                           </div>
-                        )}
-                         {(!feat.prerequisites || Object.keys(feat.prerequisites).length === 0) && (
+                        {prereqMessages.length > 0 ? (
+                           <div className="text-xs mt-0.5 whitespace-normal text-muted-foreground">
+                           Prerequisites:{' '}
+                           {prereqMessages.map((msg, idx, arr) => (
+                             <React.Fragment key={idx}>
+                               <span
+                                 className={cn(!msg.isMet ? 'text-destructive' : 'text-muted-foreground')}
+                                 dangerouslySetInnerHTML={{ __html: msg.text }}
+                               />
+                               {idx < arr.length - 1 && ', '}
+                             </React.Fragment>
+                           ))}
+                         </div>
+                        ) : (
                             <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground">Prerequisites: None (Custom)</p>
                         )}
                        </>
@@ -251,14 +253,14 @@ export function FeatsFormSection({
                             dangerouslySetInnerHTML={{ __html: featDetails.description }}
                           />
                         )}
-                        {displayPrereqs.length > 0 ? (
+                        {prereqMessages.length > 0 ? (
                           <div className="text-xs mt-0.5 whitespace-normal text-muted-foreground">
                             Prerequisites:{' '}
-                            {displayPrereqs.map((msg, idx, arr) => (
+                            {prereqMessages.map((msg, idx, arr) => (
                               <React.Fragment key={idx}>
                                 <span
-                                  className={cn(prereqStatus.unmetMessages.includes(msg) ? 'text-destructive' : 'text-muted-foreground')}
-                                  dangerouslySetInnerHTML={{ __html: msg }}
+                                  className={cn(!msg.isMet ? 'text-destructive' : 'text-muted-foreground')}
+                                  dangerouslySetInnerHTML={{ __html: msg.text }}
                                 />
                                 {idx < arr.length - 1 && ', '}
                               </React.Fragment>

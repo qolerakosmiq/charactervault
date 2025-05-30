@@ -19,7 +19,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import type { FeatDefinitionJsonData, Character } from '@/types/character';
+import type { FeatDefinitionJsonData, Character, PrerequisiteMessage } from '@/types/character';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { BookOpenText } from 'lucide-react';
 import { checkFeatPrerequisites, DND_FEATS } from '@/types/character';
@@ -61,7 +61,7 @@ export function FeatSelectionDialog({
 
   React.useEffect(() => {
     if (!isOpen) {
-      setSearchTerm(''); 
+      setSearchTerm('');
     }
   }, [isOpen]);
 
@@ -89,23 +89,19 @@ export function FeatSelectionDialog({
           <CommandInput
             placeholder="Search feats by name or description..."
             value={searchTerm}
-            onValueChange={setSearchTerm} 
+            onValueChange={setSearchTerm}
           />
           <ScrollArea ref={scrollAreaRef} className="flex-grow min-h-0">
-            <CommandList className="max-h-none"> 
+            <CommandList className="max-h-none">
               <CommandEmpty>No feats found.</CommandEmpty>
               <CommandGroup>
-                {sortedFeats.map((feat) => { 
-                  const prereqStatus = checkFeatPrerequisites(feat, character, DND_FEATS);
-                  const allPrereqMessages = [
-                    ...prereqStatus.metMessages.map(msg => ({ text: msg, type: 'met' as const })),
-                    ...prereqStatus.unmetMessages.map(msg => ({ text: msg, type: 'unmet' as const }))
-                  ];
+                {sortedFeats.map((feat) => {
+                  const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(feat, character, DND_FEATS);
 
                   return (
                     <CommandItem
                       key={feat.value}
-                      value={`${feat.label} ${stripHtml(feat.description)}`}
+                      value={`${feat.label} ${stripHtml(feat.description || '')}`}
                       onSelect={() => {
                         onFeatSelected(feat.value);
                         onOpenChange(false);
@@ -113,26 +109,28 @@ export function FeatSelectionDialog({
                       className="flex flex-col items-start p-3 hover:bg-accent/10 cursor-pointer data-[selected=true]:bg-accent/20"
                     >
                       <div className="font-medium text-sm text-foreground">{feat.label}</div>
-                      <div
-                        className="text-xs text-muted-foreground mt-0.5 whitespace-normal"
-                        dangerouslySetInnerHTML={{ __html: feat.description }}
-                      />
-                      {(allPrereqMessages.length > 0 || (feat.prerequisites && Object.keys(feat.prerequisites).length > 0 && !feat.prerequisites.special)) || (feat.prerequisites?.special) ? (
+                      {feat.description && (
+                        <div
+                          className="text-xs text-muted-foreground mt-0.5 whitespace-normal"
+                          dangerouslySetInnerHTML={{ __html: feat.description }}
+                        />
+                      )}
+                      {prereqMessages.length > 0 ? (
                           <p className="text-xs mt-0.5 whitespace-normal">
                             Prerequisites:{' '}
-                            {allPrereqMessages.length > 0 ?
-                              allPrereqMessages.map((msg, index) => (
-                                <React.Fragment key={index}>
-                                  <span className={cn("text-xs", msg.type === 'unmet' ? 'text-destructive' : 'text-muted-foreground/80')}>
-                                    {msg.text}
-                                  </span>
-                                  {index < allPrereqMessages.length - 1 && ', '}
-                                </React.Fragment>
-                              ))
-                              : <span className="text-muted-foreground/80">None</span>
-                            }
+                            {prereqMessages.map((msg, index) => (
+                              <React.Fragment key={index}>
+                                <span className={cn("text-xs", !msg.isMet ? 'text-destructive' : 'text-muted-foreground/80')}
+                                  dangerouslySetInnerHTML={{ __html: msg.text }}
+                                >
+                                </span>
+                                {index < prereqMessages.length - 1 && ', '}
+                              </React.Fragment>
+                            ))}
                           </p>
-                        ) : null
+                        ) : (
+                           <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground/80">Prerequisites: None</p>
+                        )
                       }
                     </CommandItem>
                   );

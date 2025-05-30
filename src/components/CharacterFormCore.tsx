@@ -101,11 +101,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const actualAbilityScoresForSkills = React.useMemo(() => {
     if (!detailedAbilityScores) {
-      return character.abilityScores; 
+      return character.abilityScores;
     }
     const finalScores: Partial<AbilityScores> = {};
     for (const ability of abilityNames) {
-      if (ability === 'none') continue; 
+      if (ability === 'none') continue;
       finalScores[ability] = detailedAbilityScores[ability].finalScore;
     }
     return finalScores as AbilityScores;
@@ -150,81 +150,66 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         }
       }
     } else {
-      // If no race is selected (e.g. on initial load if race starts empty)
-      // Set a generic default age if it's creating and age is not already 20
       if (isCreating && character.age !== 20) {
           setCharacter(prev => ({ ...prev, age: 20 }));
       }
     }
-  }, [character.race, isCreating, character.age]); // character.age added to deps
+  }, [character.race, isCreating, character.age]);
 
   React.useEffect(() => {
     const existingCustomSkillsMap = new Map<string, SkillType>();
     character.skills.forEach(skill => {
-      // Check if it's custom by seeing if its ID is not in predefined SKILL_DEFINITIONS
-      // This assumes skill.id for predefined skills is their kebab-case value, and UUID for custom.
       if (!SKILL_DEFINITIONS.some(def => def.value === skill.id)) {
         existingCustomSkillsMap.set(skill.id, { ...skill, ranks: 0, miscModifier: 0, isClassSkill: skill.isClassSkill });
       }
     });
-  
+
     const newPredefinedSkills = getInitialCharacterSkills(character.classes);
     const finalSkillsMap = new Map<string, SkillType>();
-  
-    // Add/update predefined skills based on the current class
+
     newPredefinedSkills.forEach(predefinedSkill => {
       finalSkillsMap.set(predefinedSkill.id, {
-        ...predefinedSkill, // Includes name, keyAbility, isClassSkill (from definition), description
-        ranks: 0,           // Reset ranks
-        miscModifier: 0,    // Reset miscModifier
-        providesSynergies: predefinedSkill.providesSynergies || [], // Keep predefined synergies
+        ...predefinedSkill,
+        ranks: 0, miscModifier: 0,
+        providesSynergies: predefinedSkill.providesSynergies || [],
       });
     });
-  
-    // Add back existing custom skills, retaining their user-defined properties but resetting ranks/misc
+
     existingCustomSkillsMap.forEach((customSkillData, skillId) => {
       finalSkillsMap.set(skillId, {
-        ...customSkillData, // Includes name, keyAbility, isClassSkill, providesSynergies, description
-        ranks: 0,           // Reset ranks
-        miscModifier: 0,    // Reset miscModifier
+        ...customSkillData,
+        ranks: 0, miscModifier: 0,
       });
     });
-    
+
     const characterLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1;
     const newGrantedFeats = getGrantedFeatsForCharacter(character.race, character.classes, characterLevel);
     const userChosenFeats = character.feats.filter(feat => !feat.isGranted);
 
     const combinedFeatsMap = new Map<string, FeatType>();
-    newGrantedFeats.forEach(feat => combinedFeatsMap.set(feat.id, feat)); 
+    newGrantedFeats.forEach(feat => combinedFeatsMap.set(feat.id, feat));
 
     userChosenFeats.forEach(feat => {
       const featDef = DND_FEATS.find(f => f.value === feat.id.split('-MULTI-INSTANCE-')[0]);
       const featIdToStore = feat.id;
 
-      if (feat.isCustom) { 
+      if (feat.isCustom) {
         combinedFeatsMap.set(featIdToStore, { ...feat, isGranted: false });
       } else if (!combinedFeatsMap.has(featIdToStore) || (featDef?.canTakeMultipleTimes)) {
           const baseGrantedId = featIdToStore.split('-MULTI-INSTANCE-')[0];
-          // Only add user-chosen predefined feat if it's not already granted (and not multi-take)
-          // OR if it can be taken multiple times
           if (!newGrantedFeats.some(gf => gf.id === baseGrantedId && !featDef?.canTakeMultipleTimes) || featDef?.canTakeMultipleTimes) {
               combinedFeatsMap.set(featIdToStore, { ...feat, isGranted: false });
           }
       }
     });
-    
+
     setCharacter(prev => ({
       ...prev,
       skills: Array.from(finalSkillsMap.values()).sort((a, b) => a.name.localeCompare(b.name)),
       feats: Array.from(combinedFeatsMap.values()).sort((a,b) => a.name.localeCompare(b.name)),
     }));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [character.classes[0]?.className, character.race]); // Only re-evaluate if class name or race changes
+  }, [character.classes, character.race, character.feats.filter(f=>f.isGranted).map(f=>f.id).join(',')]); // Re-evaluate if granted feats might change based on class/race
 
-
-  const handleChange = (field: keyof Character, value: any) => {
-     setCharacter(prev => ({ ...prev, [field]: value }));
-  };
 
   const handleCoreInfoFieldChange = (field: keyof Character, value: any) => {
      setCharacter(prev => ({ ...prev, [field]: value }));
@@ -263,12 +248,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const handleCustomSkillAdd = (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
     const newSkill: SkillType = {
-      id: crypto.randomUUID(), 
-      name: skillData.name, 
+      id: crypto.randomUUID(),
+      name: skillData.name,
       keyAbility: skillData.keyAbility,
-      ranks: 0, miscModifier: 0, 
+      ranks: 0, miscModifier: 0,
       isClassSkill: skillData.keyAbility === 'none' ? false : skillData.isClassSkill,
-      providesSynergies: skillData.providesSynergies || [], 
+      providesSynergies: skillData.providesSynergies || [],
       description: skillData.description || '',
     };
     setCharacter(prev => ({
@@ -348,7 +333,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         setCurrentInfoDialogData({
             title: classData.label,
             content: classData.description,
-            grantedFeats: classData.grantedFeats, 
+            grantedFeats: classData.grantedFeats?.map(gf => ({...gf, name: DND_FEATS.find(f => f.value === gf.featId)?.label || gf.featId})),
             detailsList: classSpecificDetails
         });
         setIsInfoDialogOpen(true);
@@ -357,7 +342,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const handleOpenAlignmentInfoDialog = () => {
     const allAlignmentDescriptions = ALIGNMENTS.map(
-     (align) => `<b>${align.label}:</b>${align.description}`
+     (align) => `<p><b>${align.label}:</b><br />${align.description}</p>`
    ).join('');
    setCurrentInfoDialogData({ title: "Alignments", content: allAlignmentDescriptions });
    setIsInfoDialogOpen(true);
@@ -396,35 +381,35 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     if (!character.name || character.name.trim() === '') { toast({ title: "Missing Information", description: "Please enter a character name.", variant: "destructive" }); return; }
     if (!character.race || character.race.trim() === '') { toast({ title: "Missing Information", description: "Please select or enter a character race.", variant: "destructive" }); return; }
     if (!character.classes[0]?.className || character.classes[0]?.className.trim() === '') { toast({ title: "Missing Information", description: "Please select or enter a character class.", variant: "destructive" }); return; }
-    if (!character.alignment) { toast({ title: "Missing Information", description: "Please select an alignment.", variant: "destructive" }); return; } // This check is now technically redundant due to defaults
+    if (!character.alignment) { toast({ title: "Missing Information", description: "Please select an alignment.", variant: "destructive" }); return; }
 
     const selectedRaceInfoForValidation = DND_RACES.find(r => r.value === character.race);
     const minAgeForValidation = (selectedRaceInfoForValidation ? (DND_RACE_MIN_ADULT_AGE_DATA as Record<DndRaceId, number>)[selectedRaceInfoForValidation.value as DndRaceId] : undefined) || 1;
     if (character.age < minAgeForValidation) { toast({ title: "Invalid Age", description: `Age must be at least ${minAgeForValidation}${selectedRaceInfoForValidation ? ` for a ${selectedRaceInfoForValidation.label}` : ''}.`, variant: "destructive" }); return; }
 
     for (const ability of abilityNames) {
-      if (ability === 'none') continue; 
+      if (ability === 'none') continue;
       if (character.abilityScores[ability] <= 0) { toast({ title: `Invalid ${ability.charAt(0).toUpperCase() + ability.slice(1)} Score`, description: `${ability.charAt(0).toUpperCase() + ability.slice(1)} score must be greater than 0.`, variant: "destructive" }); return; }
     }
 
-    const finalCharacterData = { 
-      ...character, 
-      classes: character.classes.length > 0 ? character.classes : [{id: crypto.randomUUID(), className: '', level: 1}], 
+    const finalCharacterData = {
+      ...character,
+      classes: character.classes.length > 0 ? character.classes : [{id: crypto.randomUUID(), className: '', level: 1}],
     };
     if (finalCharacterData.classes[0]) {
         finalCharacterData.classes[0].level = 1;
     }
-    
+
     onSave(finalCharacterData);
   };
 
   const selectedClassInfo = React.useMemo(() => DND_CLASSES.find(c => c.value === character.classes[0]?.className), [character.classes[0]?.className]);
-  
-  const selectedRaceInfo = React.useMemo(() => 
-    DND_RACES.find(r => r.value === character.race), 
+  const isPredefinedClass = !!selectedClassInfo;
+
+  const selectedRaceInfo = React.useMemo(() =>
+    DND_RACES.find(r => r.value === character.race),
   [character.race]);
   const isPredefinedRace = !!selectedRaceInfo;
-  const isPredefinedClass = !!selectedClassInfo;
 
 
   const currentMinAgeForInput = React.useMemo(() => {
@@ -473,8 +458,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
         <SkillsFormSection
           skills={character.skills}
-          abilityScores={character.abilityScores} 
-          actualAbilityScores={actualAbilityScoresForSkills} 
+          abilityScores={character.abilityScores}
+          actualAbilityScores={actualAbilityScoresForSkills}
           characterClasses={character.classes}
           characterRace={character.race}
           selectedFeats={character.feats}
@@ -487,9 +472,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         <FeatsFormSection
           characterRace={character.race}
           characterClasses={character.classes}
+          characterAlignment={character.alignment}
           selectedFeats={character.feats}
           onFeatSelectionChange={handleFeatListChange}
-          abilityScores={actualAbilityScoresForSkills} 
+          abilityScores={actualAbilityScoresForSkills}
           skills={character.skills}
         />
 
