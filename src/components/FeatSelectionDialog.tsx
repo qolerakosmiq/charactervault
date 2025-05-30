@@ -44,11 +44,12 @@ export function FeatSelectionDialog({
   const [searchTerm, setSearchTerm] = React.useState('');
 
   const filteredFeats = React.useMemo(() => {
-    if (!searchTerm) return allFeats;
+    if (!searchTerm.trim()) return allFeats;
+    const lowerSearchTerm = searchTerm.toLowerCase();
     return allFeats.filter(feat =>
-      feat.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      feat.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (feat.prerequisites && Object.values(feat.prerequisites).some(p => String(p).toLowerCase().includes(searchTerm.toLowerCase())))
+      feat.label.toLowerCase().includes(lowerSearchTerm) ||
+      feat.description.toLowerCase().includes(lowerSearchTerm)
+      // Prerequisite search removed as per request
     );
   }, [allFeats, searchTerm]);
 
@@ -71,12 +72,12 @@ export function FeatSelectionDialog({
         </DialogHeader>
         <Command className="rounded-lg border shadow-md flex-grow min-h-0 flex flex-col">
           <CommandInput
-            placeholder="Search feats by name, description, or prerequisite..."
+            placeholder="Search feats by name or description..."
             value={searchTerm}
             onValueChange={setSearchTerm}
           />
           <ScrollArea className="flex-grow min-h-0">
-            <CommandList className="max-h-none">
+            <CommandList className="max-h-none"> {/* Ensure list can expand */}
               <CommandEmpty>No feats found.</CommandEmpty>
               <CommandGroup>
                 {filteredFeats.map((feat) => {
@@ -89,7 +90,7 @@ export function FeatSelectionDialog({
                   return (
                     <CommandItem
                       key={feat.value}
-                      value={feat.label}
+                      value={feat.label} // cmdk uses this for internal matching if not overridden
                       onSelect={() => {
                         onFeatSelected(feat.value);
                         onOpenChange(false);
