@@ -66,7 +66,6 @@ export function AddCustomFeatDialog({
   // Singular Prerequisites State
   const [prereqBab, setPrereqBab] = React.useState('');
   const [prereqCasterLevel, setPrereqCasterLevel] = React.useState('');
-  const [prereqSpecialText, setPrereqSpecialText] = React.useState('');
 
   // State for building a new prerequisite
   const [newPrereqType, setNewPrereqType] = React.useState<'ability' | 'skill' | 'feat' | ''>('');
@@ -90,8 +89,7 @@ export function AddCustomFeatDialog({
         const prereqs = initialFeatData.prerequisites;
         setPrereqBab(prereqs?.bab?.toString() || '');
         setPrereqCasterLevel(prereqs?.casterLevel?.toString() || '');
-        setPrereqSpecialText(prereqs?.special || '');
-
+        
         const loadedPrereqs: PrerequisiteListItem[] = [];
         if (prereqs?.abilities) {
           for (const [ability, score] of Object.entries(prereqs.abilities)) {
@@ -122,7 +120,6 @@ export function AddCustomFeatDialog({
         setEffectsText('');
         setPrereqBab('');
         setPrereqCasterLevel('');
-        setPrereqSpecialText('');
         setPrerequisitesList([]);
       }
       // Reset new prerequisite form
@@ -145,7 +142,7 @@ export function AddCustomFeatDialog({
       itemLabel = abilityOpt ? abilityOpt.label : newPrereqItemId;
       value = parseInt(newPrereqValue, 10);
       if (isNaN(value) || value <= 0) {
-        alert('Please enter a valid ability score.');
+        alert('Please enter a valid positive ability score.');
         return;
       }
     } else if (newPrereqType === 'skill') {
@@ -153,7 +150,7 @@ export function AddCustomFeatDialog({
       itemLabel = skillOpt ? skillOpt.label : newPrereqItemId;
       value = parseInt(newPrereqValue, 10);
       if (isNaN(value) || value <= 0) {
-        alert('Please enter valid skill ranks.');
+        alert('Please enter valid positive skill ranks.');
         return;
       }
     } else if (newPrereqType === 'feat') {
@@ -180,7 +177,6 @@ export function AddCustomFeatDialog({
     const finalStructuredPrerequisites: FeatPrerequisiteDetails = {};
     if (prereqBab.trim() !== '' && !isNaN(parseInt(prereqBab, 10))) finalStructuredPrerequisites.bab = parseInt(prereqBab, 10);
     if (prereqCasterLevel.trim() !== '' && !isNaN(parseInt(prereqCasterLevel, 10))) finalStructuredPrerequisites.casterLevel = parseInt(prereqCasterLevel, 10);
-    if (prereqSpecialText.trim() !== '') finalStructuredPrerequisites.special = prereqSpecialText.trim();
 
     prerequisitesList.forEach(p => {
       if (p.type === 'ability' && p.value !== undefined) {
@@ -207,6 +203,17 @@ export function AddCustomFeatDialog({
     });
     onOpenChange(false);
   };
+
+  const isAddPrerequisiteDisabled = React.useMemo(() => {
+    if (!newPrereqType) return true;
+    if (!newPrereqItemId) return true;
+    if ((newPrereqType === 'ability' || newPrereqType === 'skill')) {
+      const numValue = parseInt(newPrereqValue, 10);
+      if (isNaN(numValue) || numValue <= 0) return true;
+    }
+    return false;
+  }, [newPrereqType, newPrereqItemId, newPrereqValue]);
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -278,11 +285,7 @@ export function AddCustomFeatDialog({
                 <Input id="prereq-caster-level" type="number" value={prereqCasterLevel} onChange={(e) => setPrereqCasterLevel(e.target.value)} placeholder="e.g., 1" />
               </div>
             </div>
-             <div className="space-y-1 mt-4">
-              <Label htmlFor="prereq-special-text">Special Prerequisite Text</Label>
-              <Input id="prereq-special-text" value={prereqSpecialText} onChange={(e) => setPrereqSpecialText(e.target.value)} placeholder="e.g., Wild Shape ability" />
-            </div>
-
+            
             {/* Multiple Prerequisites Section */}
             <Separator className="my-6" />
             <h4 className="text-sm font-medium text-foreground mb-1">Add Specific Prerequisite:</h4>
@@ -313,7 +316,7 @@ export function AddCustomFeatDialog({
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="new-prereq-ability-value">Min Score</Label>
-                      <Input id="new-prereq-ability-value" type="number" value={newPrereqValue} onChange={e => setNewPrereqValue(e.target.value)} placeholder="e.g., 13" />
+                      <Input id="new-prereq-ability-value" type="number" value={newPrereqValue} onChange={e => setNewPrereqValue(e.target.value)} placeholder="e.g., 13" min="1" />
                     </div>
                   </>
                 )}
@@ -330,7 +333,7 @@ export function AddCustomFeatDialog({
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="new-prereq-skill-value">Min Ranks</Label>
-                      <Input id="new-prereq-skill-value" type="number" value={newPrereqValue} onChange={e => setNewPrereqValue(e.target.value)} placeholder="e.g., 5" />
+                      <Input id="new-prereq-skill-value" type="number" value={newPrereqValue} onChange={e => setNewPrereqValue(e.target.value)} placeholder="e.g., 5" min="1" />
                     </div>
                   </>
                 )}
@@ -347,7 +350,7 @@ export function AddCustomFeatDialog({
                 )}
               </div>
               {newPrereqType && (
-                <Button onClick={handleAddPrerequisite} size="sm" variant="outline" type="button">
+                <Button onClick={handleAddPrerequisite} size="sm" variant="outline" type="button" disabled={isAddPrerequisiteDisabled}>
                   <PlusCircle className="mr-2 h-4 w-4" /> Add to Prerequisite List
                 </Button>
               )}
