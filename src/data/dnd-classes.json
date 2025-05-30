@@ -1,0 +1,76 @@
+
+{
+  "DND_CLASSES_DATA": [
+    {
+      "value": "barbarian",
+      "label": "Barbarian",
+      "hitDice": "d12",
+      "description": "<p>Barbarians are savage warriors from the wild frontiers, relying on their primal fury and immense strength.<br />They are often tribal, disdainful of civilization, and fiercely independent.</p><p><b>Alignment:</b><br />Any nonlawful.</p><p><b>Religion:</b><br />Barbarians may revere animal spirits, nature deities, or ancestors.</p><p><b>Background:</b><br />Often outcasts or members of nomadic tribes.</p><p><b>Races:</b><br />Humans and half-orcs are common barbarians.</p>"
+    },
+    {
+      "value": "bard",
+      "label": "Bard",
+      "hitDice": "d6",
+      "description": "<p>Bards are versatile performers, weaving magic through music and words.<br />They are storytellers, diplomats, and adventurers, often charismatic and quick-witted.</p><p><b>Alignment:</b><br />Any nonlawful.</p><p><b>Religion:</b><br />Bards may follow deities of art, travel, or trickery.</p><p><b>Background:</b><br />Often from performing troupes, scholarly institutions, or simply wanderers.</p><p><b>Races:</b><br />Humans, elves, and half-elves frequently become bards.</p>"
+    },
+    {
+      "value": "cleric",
+      "label": "Cleric",
+      "hitDice": "d8",
+      "description": "<p>Clerics are divine agents, channeling the power of their chosen deity to heal the sick, smite the wicked, or protect the faithful.<br />They are masters of divine magic and often serve as spiritual leaders.</p><p><b>Alignment:</b><br />Must be within one step of their deity's alignment.</p><p><b>Religion:</b><br />Central to their identity, clerics serve a specific deity from the pantheon.</p><p><b>Background:</b><br />Usually trained in temples or religious orders.</p><p><b>Races:</b><br />All races produce clerics, as faith is universal.</p>"
+    },
+    {
+      "value": "druid",
+      "label": "Druid",
+      "hitDice": "d8",
+      "description": "<p>Druids are guardians of the natural world, drawing power from the untamed wilderness.<br />They can shapeshift into animals, command plants, and call upon nature's fury.</p><p><b>Alignment:</b><br />Any neutral (Neutral Good, Lawful Neutral, True Neutral, Chaotic Neutral, or Neutral Evil).</p><p><b>Religion:</b><br />Druids revere nature itself or specific nature deities.</p><p><b>Background:</b><br />Often solitary hermits, members of ancient circles, or protectors of sacred groves.</p><p><b>Races:</b><br />Humans, elves, and gnomes often feel the call of the wild.</p>"
+    },
+    {
+      "value": "fighter",
+      "label": "Fighter",
+      "hitDice": "d10",
+      "description": "<p>Fighters are masters of martial combat, excelling with all forms of weapons and armor.<br />They are the backbone of armies, the sellswords in taverns, and the dedicated protectors of kingdoms.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Fighters may worship deities of war, strength, or protection, or none at all.</p><p><b>Background:</b><br />Varied, from noble knights to grizzled mercenaries or simple village guards.</p><p><b>Races:</b><br />All races produce skilled fighters, especially humans, dwarves, and half-orcs.</p>"
+    },
+    {
+      "value": "monk",
+      "label": "Monk",
+      "hitDice": "d8",
+      "description": "<p>Monks are disciplined warriors who perfect their bodies and minds to achieve extraordinary martial prowess.<br />They eschew armor and traditional weapons, relying on their ki-powered unarmed strikes and mystical abilities.</p><p><b>Alignment:</b><br />Must be lawful.</p><p><b>Religion:</b><br />Monks often follow philosophies of discipline and self-perfection, sometimes tied to specific deities of law or enlightenment.</p><p><b>Background:</b><br />Typically trained in remote monasteries.</p><p><b>Races:</b><br />Humans are the most common monks, but any race with discipline can walk the path.</p>"
+    },
+    {
+      "value": "paladin",
+      "label": "Paladin",
+      "hitDice": "d10",
+      "description": "<p>Paladins are holy champions of righteousness, sworn to uphold justice and smite evil.<br />They are granted divine powers to aid their cause, including healing, protection, and the ability to turn undead.</p><p><b>Alignment:</b><br />Must be Lawful Good.</p><p><b>Religion:</b><br />Paladins are devoted servants of good-aligned deities.</p><p><b>Background:</b><br />Often from noble or devout families, trained in holy orders.</p><p><b>Races:</b><br />Humans are the most common paladins, but any creature with a pure heart can be called.</p>"
+    },
+    {
+      "value": "ranger",
+      "label": "Ranger",
+      "hitDice": "d8",
+      "description": "<p>Rangers are skilled hunters and trackers, at home in the wilderness and adept at fighting specific types of creatures.<br />They often possess some divine magic related to nature and an animal companion.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Rangers often revere nature deities or gods of the hunt.</p><p><b>Background:</b><br />Typically raised in borderlands, deep forests, or among reclusive communities.</p><p><b>Races:</b><br />Elves, half-elves, and humans make excellent rangers.</p>"
+    },
+    {
+      "value": "rogue",
+      "label": "Rogue",
+      "hitDice": "d6",
+      "description": "<p>Rogues are masters of stealth, trickery, and skill.<br />They excel at disarming traps, picking locks, and striking from the shadows.<br />They can be charming scoundrels, deadly assassins, or cunning investigators.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Rogues often favor deities of luck, shadows, or thievery, or remain unaffiliated.</p><p><b>Background:</b><br />From street urchins to guild thieves or spies.</p><p><b>Races:</b><br />Halflings, elves, and humans are often drawn to the rogue's path.</p>"
+    },
+    {
+      "value": "sorcerer",
+      "label": "Sorcerer",
+      "hitDice": "d4",
+      "description": "<p>Sorcerers wield arcane magic through innate talent, often stemming from draconic or fey ancestry.<br />Their magic is intuitive and flexible, not learned through rigorous study.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Sorcerers have varied religious beliefs, if any.</p><p><b>Background:</b><br />Their powers often manifest unexpectedly, leading to diverse life paths.</p><p><b>Races:</b><br />Humans and those with magical bloodlines (like half-elves with fey heritage) are common sorcerers.</p>"
+    },
+    {
+      "value": "wizard",
+      "label": "Wizard",
+      "hitDice": "d4",
+      "description": "<p>Wizards are scholars of the arcane, mastering magic through intense study, research, and practice.<br />They command a vast repertoire of spells, prepared daily from their spellbooks.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Wizards often worship deities of knowledge, magic, or secrets, or focus purely on arcane pursuits.</p><p><b>Background:</b><br />Typically educated in academies, mentored by master wizards, or self-taught through ancient tomes.</p><p><b>Races:</b><br />Humans, elves, and gnomes are most commonly drawn to wizardry.</p>",
+      "grantedFeats": [
+        { "featId": "scribe-scroll", "note": "(Wizard Bonus Feat)", "levelAcquired": 1 }
+      ]
+    }
+  ]
+}
+
+    

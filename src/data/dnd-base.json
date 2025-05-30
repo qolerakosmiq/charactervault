@@ -1,0 +1,127 @@
+
+{
+  "SIZES_DATA": [
+    { "value": "fine", "label": "Fine" },
+    { "value": "diminutive", "label": "Diminutive" },
+    { "value": "tiny", "label": "Tiny" },
+    { "value": "small", "label": "Small" },
+    { "value": "medium", "label": "Medium" },
+    { "value": "large", "label": "Large" },
+    { "value": "huge", "label": "Huge" },
+    { "value": "gargantuan", "label": "Gargantuan" },
+    { "value": "colossal", "label": "Colossal" }
+  ],
+  "GENDERS_DATA": [
+    { "value": "male", "label": "Male" },
+    { "value": "female", "label": "Female" }
+  ],
+  "DEFAULT_ABILITIES": {
+    "strength": 10,
+    "dexterity": 10,
+    "constitution": 10,
+    "intelligence": 10,
+    "wisdom": 10,
+    "charisma": 10
+  },
+  "DEFAULT_SAVING_THROWS": {
+    "fortitude": { "base": 0, "magicMod": 0, "miscMod": 0 },
+    "reflex": { "base": 0, "magicMod": 0, "miscMod": 0 },
+    "will": { "base": 0, "magicMod": 0, "miscMod": 0 }
+  },
+  "DND_RACE_MIN_ADULT_AGE_DATA": {
+    "human": 15,
+    "elf": 110,
+    "dwarf": 40,
+    "halfling": 20,
+    "gnome": 40,
+    "half-elf": 20,
+    "half-orc": 14
+  },
+  "DND_RACE_BASE_MAX_AGE_DATA": {
+    "human": 70,
+    "elf": 350,
+    "dwarf": 250,
+    "halfling": 100,
+    "gnome": 200,
+    "half-elf": 125,
+    "half-orc": 60
+  },
+  "RACE_TO_AGING_CATEGORY_MAP_DATA": {
+    "human": "human-aging",
+    "elf": "elf-aging",
+    "dwarf": "dwarf-aging",
+    "gnome": "gnome-aging",
+    "halfling": "halfling-aging",
+    "half-elf": "elf-aging",
+    "half-orc": "orc-aging"
+  },
+  "DND_RACE_AGING_EFFECTS_DATA": {
+    "human-aging": {
+      "categories": [
+        { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "old", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    },
+    "elf-aging": {
+      "categories": [
+        { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "old", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    },
+    "dwarf-aging": {
+      "categories": [
+        { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "old", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    },
+    "gnome-aging": {
+      "categories": [
+        { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "old", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    },
+    "halfling-aging": {
+      "categories": [
+        { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "old", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    },
+    "orc-aging": {
+      "categories": [
+        { "categoryName": "middle-age", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "old", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "venerable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    }
+  },
+  "DND_SIZE_ABILITY_MODIFIERS_DATA": {
+    "fine": { "strength": -10, "dexterity": 8 },
+    "diminutive": { "strength": -8, "dexterity": 6 },
+    "tiny": { "strength": -6, "dexterity": 4 },
+    "small": { "strength": -4, "dexterity": 2 },
+    "medium": {},
+    "large": { "strength": 4, "dexterity": -2 },
+    "huge": { "strength": 8, "dexterity": -4 },
+    "gargantuan": { "strength": 12, "dexterity": -6 },
+    "colossal": { "strength": 16, "dexterity": -8 }
+  },
+  "DND_RACE_ABILITY_MODIFIERS_DATA": {
+    "human": {},
+    "elf": { "dexterity": 2, "constitution": -2 },
+    "dwarf": { "constitution": 2, "charisma": -2 },
+    "halfling": { "dexterity": 2, "strength": -2 },
+    "gnome": { "constitution": 2, "strength": -2 },
+    "half-elf": {},
+    "half-orc": { "strength": 2, "intelligence": -2, "charisma": -2 }
+  },
+  "DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA": {
+    "human": 1
+  }
+}
+
+    
