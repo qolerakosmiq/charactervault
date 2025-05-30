@@ -33,9 +33,9 @@ import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
-import { CharacterFormCoreInfoSection } from '../form-sections/CharacterFormCoreInfoSection';
-import { CharacterFormAbilityScoresSection } from '../form-sections/CharacterFormAbilityScoresSection';
-import { CharacterFormStoryPortraitSection } from '../form-sections/CharacterFormStoryPortraitSection';
+import { CharacterFormCoreInfoSection } from '@/components/form-sections/CharacterFormCoreInfoSection';
+import { CharacterFormAbilityScoresSection } from '@/components/form-sections/CharacterFormAbilityScoresSection';
+import { CharacterFormStoryPortraitSection } from '@/components/form-sections/CharacterFormStoryPortraitSection';
 import { SkillsFormSection } from '@/components/SkillsFormSection';
 import { FeatsFormSection } from '@/components/FeatsFormSection';
 
@@ -98,11 +98,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const actualAbilityScoresForSkills = React.useMemo(() => {
     if (!detailedAbilityScores) {
-      return character.abilityScores; // Fallback to base if detailed not ready
+      // Fallback to base if detailed not ready, e.g., during initial render or if calculation fails
+      return character.abilityScores; 
     }
     const finalScores: Partial<AbilityScores> = {};
-    for (const ability of abilityNames) {
-      if (ability === 'none') continue;
+    for (const ability of abilityNames) { // Ensure abilityNames is defined in this scope or imported
+      if (ability === 'none') continue; // 'none' is not a valid key for DetailedAbilityScores
       finalScores[ability] = detailedAbilityScores[ability].finalScore;
     }
     return finalScores as AbilityScores;
@@ -151,23 +152,25 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         }
       }
     } else {
-      if (character.age !== 20 && isCreating) {
+      // When no race is selected (or it's cleared), revert age to default if creating
+      if (character.age !== 20 && isCreating && character.race === '') { 
         setCharacter(prev => ({ ...prev, age: 20 }));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [character.race, isCreating]);
+  }, [character.race, isCreating]); // Note: Not adding character.age here to prevent loops if age change triggers race change etc.
 
 
   // Update skills and granted feats when class or race changes
   React.useEffect(() => {
     const existingCustomSkillsMap = new Map<string, Partial<SkillType>>();
     character.skills.forEach(skill => {
+      // Check if it's a custom skill (not in predefined SKILL_DEFINITIONS_DATA)
       if (!SKILL_DEFINITIONS.some(def => def.value === skill.id)) {
         existingCustomSkillsMap.set(skill.id, {
           name: skill.name, keyAbility: skill.keyAbility, isClassSkill: skill.isClassSkill,
           providesSynergies: skill.providesSynergies, description: skill.description,
-          ranks: skill.ranks || 0,
+          ranks: skill.ranks || 0, // Preserve ranks for custom skills if they exist
         });
       }
     });
@@ -176,31 +179,51 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     const finalSkillsMap = new Map<string, SkillType>();
 
     newPredefinedSkills.forEach(predefinedSkill => {
+      const existingPredefinedVersion = character.skills.find(s => s.id === predefinedSkill.id);
       finalSkillsMap.set(predefinedSkill.id, {
-        ...predefinedSkill, ranks: 0, miscModifier: 0,
-        providesSynergies: SKILL_DEFINITIONS.find(def => def.value === predefinedSkill.id)?.providesSynergies || [],
+        ...predefinedSkill, // This now includes isClassSkill based on current class
+        ranks: 0, // Reset ranks for predefined skills
+        miscModifier: existingPredefinedVersion?.miscModifier || 0, // Preserve misc mod if it existed
+        providesSynergies: SKILL_DEFINITIONS.find(def => def.value === predefinedSkill.id)?.providesSynergies || [], // Use predefined synergies
+        description: SKILL_DEFINITIONS.find(sd => sd.value === predefinedSkill.id)?.description || '',
       });
     });
 
     existingCustomSkillsMap.forEach((customSkillData, skillId) => {
       finalSkillsMap.set(skillId, {
         id: skillId, name: customSkillData.name!, keyAbility: customSkillData.keyAbility!,
-        isClassSkill: customSkillData.isClassSkill!, providesSynergies: customSkillData.providesSynergies,
-        description: customSkillData.description, ranks: customSkillData.ranks || 0, miscModifier: 0,
+        isClassSkill: customSkillData.isClassSkill!, // Preserve user-set isClassSkill for custom skills
+        providesSynergies: customSkillData.providesSynergies,
+        description: customSkillData.description,
+        ranks: customSkillData.ranks || 0, // Reset ranks for custom skills
+        miscModifier: 0, // Reset misc for custom skills
       });
     });
 
     const characterLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1;
     const newGrantedFeats = getGrantedFeatsForCharacter(character.race, character.classes, characterLevel);
+    
+    // Preserve user-chosen feats
     const userChosenFeats = character.feats.filter(feat => !feat.isGranted);
 
     const combinedFeatsMap = new Map<string, FeatType>();
     newGrantedFeats.forEach(feat => combinedFeatsMap.set(feat.id, feat));
     userChosenFeats.forEach(feat => {
       const featDef = DND_FEATS.find(f => f.value === feat.id.split('-MULTI-INSTANCE-')[0]);
-      const featIdToStore = feat.id;
-      if (!combinedFeatsMap.has(featIdToStore) || featDef?.canTakeMultipleTimes) {
-        combinedFeatsMap.set(featIdToStore, { ...feat, isGranted: false });
+      const featIdToStore = feat.id; // This ID might have -MULTI-INSTANCE-suffix
+      
+      // Only add/re-add if it's not a newly granted feat (unless multi-take)
+      // Or if it's a multi-take feat and we want to allow multiple selections.
+      // We need to be careful here: if a previously chosen feat becomes granted, we might want to "refund" the slot.
+      // For now, we'll ensure granted feats take precedence if they have the same base ID and are not multi-take.
+      
+      if (!combinedFeatsMap.has(featIdToStore) || (featDef?.canTakeMultipleTimes)) {
+         // If a non-multi-take chosen feat has the same base ID as a granted feat, the granted one takes precedence.
+         // Only add chosen if base ID isn't already granted, OR if it's multi-take.
+        const baseGrantedId = featIdToStore.split('-MULTI-INSTANCE-')[0];
+        if (!newGrantedFeats.some(gf => gf.id === baseGrantedId && !featDef?.canTakeMultipleTimes)) {
+            combinedFeatsMap.set(featIdToStore, { ...feat, isGranted: false });
+        }
       }
     });
 
@@ -210,11 +233,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       feats: Array.from(combinedFeatsMap.values()),
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [character.classes[0]?.className, character.race]);
+  }, [character.classes[0]?.className, character.race]); 
 
 
   const handleChange = (field: keyof Character, value: any) => {
-    setCharacter(prev => ({ ...prev, [field]: value }));
+     setCharacter(prev => ({ ...prev, [field]: value }));
   };
   
   const handleCoreInfoFieldChange = (field: keyof Character, value: any) => {
@@ -286,18 +309,29 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }));
   };
 
-  const handleFeatSelectionChange = (newlyChosenFeats: FeatType[]) => {
+  const handleFeatSelectionChange = (newlyChosenFeats: FeatType[]) => { // newlyChosenFeats are only user-chosen ones
     const characterLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1;
     const autoGrantedFeats = getGrantedFeatsForCharacter(character.race, character.classes, characterLevel);
+    
     const finalFeatsMap = new Map<string, FeatType>();
+    
     autoGrantedFeats.forEach(feat => finalFeatsMap.set(feat.id, feat));
+    
     newlyChosenFeats.forEach(feat => {
       const featDef = DND_FEATS.find(f => f.value === feat.id.split('-MULTI-INSTANCE-')[0]);
-      const featIdToStore = feat.id;
-      if (!finalFeatsMap.has(featIdToStore) || featDef?.canTakeMultipleTimes) {
+      const featIdToStore = feat.id; // This ID might have -MULTI-INSTANCE-suffix
+      
+      // Only add chosen feat if its base ID is not already granted (unless it's multi-take)
+      // Or if the specific instance (for multi-take) isn't already there.
+      const baseGrantedId = featIdToStore.split('-MULTI-INSTANCE-')[0];
+      const isBaseGrantedAndNotMultiTake = autoGrantedFeats.some(gf => gf.id === baseGrantedId && !featDef?.canTakeMultipleTimes);
+
+      if (!isBaseGrantedAndNotMultiTake) {
+        // If it's multi-take, it's fine. If not multi-take, it's only added if not granted.
         finalFeatsMap.set(featIdToStore, { ...feat, isGranted: false });
       }
     });
+    
     setCharacter(prev => ({ ...prev, feats: Array.from(finalFeatsMap.values()) }));
   };
 
@@ -346,7 +380,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             title: classData.label, content: classData.description,
             abilityModifiers: [], skillBonuses: [],
             grantedFeats: classData.grantedFeats,
-            bonusFeatSlots: 0, // Classes don't typically grant general bonus feat slots, but specific feats
+            bonusFeatSlots: 0, 
             detailsList: classSpecificDetails
         });
         setIsInfoDialogOpen(true);
@@ -354,10 +388,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const handleOpenAlignmentInfoDialog = () => {
-    // The JSON description already contains <p> tags and the <b>Label:</b><br/> prefix is added here.
     const allAlignmentDescriptions = ALIGNMENTS.map(
-      (align) => `<b>${align.label}:</b>${align.description}`
-    ).join(''); // Removed the join with <br /><br /> to let <p> tags handle spacing
+      (align) => `<p><b>${align.label}:</b><br />${align.description}</p>`
+    ).join('');
     setCurrentInfoDialogData({ title: "Alignments", content: allAlignmentDescriptions });
     setIsInfoDialogOpen(true);
   };
@@ -366,7 +399,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       const deityData = DND_DEITIES.find(d => d.value === character.deity);
       setCurrentInfoDialogData({
           title: deityData ? deityData.label : "Deity Info",
-          content: deityData ? `Details about the deity ${deityData.label}.` : "Select or type a deity to see details."
+          content: deityData ? `<p>Details about the deity ${deityData.label}.</p>` : "<p>Select or type a deity to see details.</p>"
       });
       setIsInfoDialogOpen(true);
   };
@@ -447,8 +480,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
         <SkillsFormSection
           skills={character.skills}
-          abilityScores={character.abilityScores} // Base scores for skill points calculation
-          actualAbilityScores={actualAbilityScoresForSkills} // Actual scores for skill modifiers
+          abilityScores={character.abilityScores} 
+          actualAbilityScores={actualAbilityScoresForSkills}
           characterClasses={character.classes}
           characterRace={character.race}
           selectedFeats={character.feats}
@@ -463,8 +496,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           characterClasses={character.classes}
           selectedFeats={character.feats}
           onFeatSelectionChange={handleFeatSelectionChange}
-          abilityScores={actualAbilityScoresForSkills} // Pass actual scores for prereq check
-          skills={character.skills} // Pass skills for prereq check
+          abilityScores={actualAbilityScoresForSkills} 
+          skills={character.skills} 
         />
 
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-8">
