@@ -16,13 +16,13 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
-import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
+import { InfoDisplayDialog, type SkillModifierBreakdownDetails } from '@/components/InfoDisplayDialog';
 
 
 interface SkillsFormSectionProps {
   skills: SkillType[];
-  abilityScores: AbilityScores; // Base scores for skill point calculation (legacy, actualAbilityScores is preferred for most things)
-  actualAbilityScores: AbilityScores; // Actual scores for skill check modifiers and skill point calculation
+  abilityScores: AbilityScores; 
+  actualAbilityScores: AbilityScores; 
   characterClasses: CharacterClass[];
   characterRace: DndRaceId | string;
   selectedFeats: Feat[];
@@ -34,8 +34,8 @@ interface SkillsFormSectionProps {
 
 export function SkillsFormSection({
   skills,
-  abilityScores, // Still needed for max rank calculation if it intentionally uses base INT.
-  actualAbilityScores, // Use this for skill point calculation and skill check mods.
+  abilityScores,
+  actualAbilityScores,
   characterClasses,
   characterRace,
   selectedFeats,
@@ -47,20 +47,17 @@ export function SkillsFormSection({
   const [isAddOrEditSkillDialogOpen, setIsAddOrEditSkillDialogOpen] = React.useState(false);
   const [skillToEdit, setSkillToEdit] = React.useState<SkillType | undefined>(undefined);
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
-  const [currentSkillInfo, setCurrentSkillInfo] = React.useState<{title: string, content: string} | null>(null);
+  const [currentSkillInfo, setCurrentSkillInfo] = React.useState<{ title: string; content?: string; skillModifierBreakdown?: SkillModifierBreakdownDetails } | null>(null);
 
   const firstClass = characterClasses[0];
   const characterLevel = firstClass?.level || 1;
-  // Use ACTUAL Intelligence modifier for skill points calculation
   const intelligenceModifier = getAbilityModifierByName(actualAbilityScores, 'intelligence'); 
 
   const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0) : 0;
   const racialBonus = getRaceSkillPointsBonusPerLevel(characterRace);
 
-  const pointsPerLevelBase = baseSkillPointsForClass + intelligenceModifier + racialBonus;
-  
-  const pointsForFirstLevel = pointsPerLevelBase * 4;
-  const pointsFromLevelProgression = characterLevel > 1 ? pointsPerLevelBase * (characterLevel - 1) : 0;
+  const pointsForFirstLevel = (baseSkillPointsForClass + intelligenceModifier + (characterRace === 'human' ? 1 : 0)) * 4;
+  const pointsFromLevelProgression = characterLevel > 1 ? (baseSkillPointsForClass + intelligenceModifier + (characterRace === 'human' ? 1 : 0)) * (characterLevel - 1) : 0;
   const totalSkillPointsAvailable = pointsForFirstLevel + pointsFromLevelProgression;
 
 
@@ -82,7 +79,36 @@ export function SkillsFormSection({
   };
 
   const handleOpenSkillInfoDialog = (skill: SkillType) => {
-    setCurrentSkillInfo({ title: skill.name, content: skill.description || "No description available for this skill." });
+    const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skill.id);
+    const keyAbility = skill.keyAbility || (skillDef?.keyAbility as AbilityName | undefined);
+    
+    const currentKeyAbilityModifier = keyAbility ? getAbilityModifierByName(actualAbilityScores, keyAbility) : 0;
+    const currentSynergyBonus = calculateTotalSynergyBonus(skill.id, skills);
+    const currentFeatSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats);
+    const currentRacialSkillBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, SKILL_DEFINITIONS);
+    const currentMiscModifier = skill.miscModifier || 0;
+    const currentRanks = skill.ranks || 0;
+
+    const totalDisplayedModifier = currentKeyAbilityModifier + currentSynergyBonus + currentFeatSkillBonus + currentRacialSkillBonus + currentMiscModifier;
+    const totalSkillBonus = currentRanks + totalDisplayedModifier;
+
+    const breakdown: SkillModifierBreakdownDetails = {
+      skillName: skill.name,
+      keyAbilityName: keyAbility ? (keyAbility.charAt(0).toUpperCase() + keyAbility.slice(1)) : undefined,
+      keyAbilityModifier: currentKeyAbilityModifier,
+      ranks: currentRanks,
+      synergyBonus: currentSynergyBonus,
+      featBonus: currentFeatSkillBonus,
+      racialBonus: currentRacialSkillBonus,
+      miscModifier: currentMiscModifier,
+      totalBonus: totalSkillBonus,
+    };
+
+    setCurrentSkillInfo({ 
+      title: skill.name, 
+      content: skill.description || skillDef?.description || "No description available for this skill.",
+      skillModifierBreakdown: breakdown,
+    });
     setIsInfoDialogOpen(true);
   };
 
@@ -186,11 +212,10 @@ export function SkillsFormSection({
             const baseAbilityMod = keyAbility ? getAbilityModifierByName(actualAbilityScores, keyAbility) : 0;
             const synergyBonus = calculateTotalSynergyBonus(skill.id, skills);
             const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats);
-            const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES as DndRaceOption[], SKILL_DEFINITIONS as SkillDefinitionJsonData[]);
+            const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, SKILL_DEFINITIONS);
             const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus + currentRacialBonus;
 
-            const totalBonus = (skill.ranks || 0) + totalDisplayedModifier;
-            // Max ranks calculation should use base intelligence for strict PHB interpretation.
+            const totalBonus = (skill.ranks || 0) + totalDisplayedModifier + (skill.miscModifier || 0);
             const baseIntelligenceModifierForMaxRanks = getAbilityModifierByName(abilityScores, 'intelligence');
             const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, baseIntelligenceModifierForMaxRanks); 
             const skillCost = skill.isClassSkill ? 1 : 2;
@@ -318,10 +343,10 @@ export function SkillsFormSection({
         isOpen={isInfoDialogOpen}
         onOpenChange={setIsInfoDialogOpen}
         title={currentSkillInfo.title}
-        content={currentSkillInfo.content || "No description provided."}
+        content={currentSkillInfo.content}
+        skillModifierBreakdown={currentSkillInfo.skillModifierBreakdown}
       />
     )}
     </>
   );
 }
-
