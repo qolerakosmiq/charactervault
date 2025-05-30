@@ -32,63 +32,82 @@ export function FeatsFormSection({
 
   const selectableSlotsAvailable = calculateAvailableFeats(characterRace, characterLevel);
   
-  // Internal state for just the IDs of user-chosen feats
-  const [featSelections, setFeatSelections] = React.useState<string[]>(() =>
-    selectedFeats.filter(f => !f.isGranted).map(f => f.id)
-  );
+  const [featSelections, setFeatSelections] = React.useState<string[]>([]);
   
-  const userChosenFeatsCount = featSelections.length;
+  const userChosenFeatsCount = featSelections.filter(id => {
+    const featDef = DND_FEATS.find(f => f.value === id);
+    return featDef && !selectedFeats.find(sf => sf.id === id && sf.isGranted);
+  }).length;
+
   const featSlotsLeft = selectableSlotsAvailable - userChosenFeatsCount;
 
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
   const { toast } = useToast();
 
   React.useEffect(() => {
-    // Extract only the IDs of *user-chosen* feats from the prop
     const propUserChosenFeatIds = selectedFeats
       .filter(f => !f.isGranted)
       .map(f => f.id)
-      .filter((id): id is string => typeof id === 'string'); // Ensure all are strings
+      .filter((id): id is string => typeof id === 'string');
 
-    // Deep comparison to avoid unnecessary re-renders if arrays are equivalent
-    // Sort copies to avoid mutating the original arrays during comparison
     const currentInternalSelectionsSorted = [...featSelections].sort();
     const propUserChosenFeatIdsSorted = [...propUserChosenFeatIds].sort();
 
     if (JSON.stringify(currentInternalSelectionsSorted) !== JSON.stringify(propUserChosenFeatIdsSorted)) {
       setFeatSelections(propUserChosenFeatIds);
     }
-  }, [selectedFeats]); // Only depend on selectedFeats prop
+  }, [selectedFeats]);
 
 
   const convertSelectionsToFeatTypes = (ids: string[]): FeatType[] => {
-    return ids.map(id => {
-      const featDef = DND_FEATS.find(f => f.value === id);
+    return ids.map((id, index) => {
+      // For feats that can be taken multiple times, we need unique IDs for each instance.
+      // The base ID is the feat's value. Subsequent instances append a unique suffix.
+      // This logic assumes `ids` might contain multiple occurrences of the same base feat ID if it's multi-take.
+      const featDef = DND_FEATS.find(f => f.value === id.split('-MULTI-INSTANCE-')[0]);
+      let uniqueId = id;
+      if (featDef?.canTakeMultipleTimes) {
+          // Count how many times this base feat ID has appeared before this index
+          const occurrences = ids.slice(0, index).filter(prevId => prevId.split('-MULTI-INSTANCE-')[0] === featDef.value).length;
+          if (occurrences > 0 || ids.filter(checkId => checkId.split('-MULTI-INSTANCE-')[0] === featDef.value).length > 1) {
+            // If it's not the first instance or if there are multiple instances overall, generate a unique ID
+             // Ensure the ID passed in `id` from `featSelections` is used, which already contains the UUID for multiple instances
+            if (!id.includes('-MULTI-INSTANCE-')) { // if it's a newly added multiple instance
+                uniqueId = `${featDef.value}-MULTI-INSTANCE-${crypto.randomUUID()}`;
+            }
+          } else {
+            uniqueId = featDef.value; // First instance of a potentially multi-take feat uses base ID
+          }
+      } else {
+        uniqueId = featDef?.value || id; // For non-multi-take, or if somehow id doesn't have suffix yet
+      }
+
+
       return {
-        id: id,
-        name: featDef?.label || id, // Fallback to ID if label not found (shouldn't happen with valid data)
+        id: uniqueId,
+        name: featDef?.label || id,
         description: featDef?.description,
         prerequisites: featDef?.prerequisites,
-        effects: featDef?.effects, // Make sure effects are copied
+        effects: featDef?.effects,
         canTakeMultipleTimes: featDef?.canTakeMultipleTimes,
         requiresSpecialization: featDef?.requiresSpecialization,
-        isGranted: false, // These are user-chosen slots
+        isGranted: false, 
       };
     });
   };
 
-  const handleFeatSelectedFromDialog = (featId: string) => {
+  const handleFeatSelectedFromDialog = (featId: string) => { // featId is the base value from DND_FEATS
     const featDef = DND_FEATS.find(f => f.value === featId);
     if (!featDef) return;
 
-    const isAlreadyChosen = featSelections.includes(featId);
-    // Also check against granted feats that cannot be taken multiple times
+    const isAlreadyChosen = featSelections.some(selId => selId.split('-MULTI-INSTANCE-')[0] === featId);
+    
     const isAlreadyGrantedAndNotMultiple = selectedFeats.some(
       f => f.isGranted && f.id === featId && !featDef.canTakeMultipleTimes
     );
 
     if (isAlreadyGrantedAndNotMultiple) {
-         toast({
+        toast({
             title: "Feat Already Granted",
             description: `The feat "${featDef.label}" is already granted to you and cannot be taken again.`,
             variant: "destructive",
@@ -106,17 +125,17 @@ export function FeatsFormSection({
         setIsFeatDialogOpen(false);
         return;
     }
-
-    const newSelections = [...featSelections, featId];
+    
+    // For multi-take feats, generate a unique ID for this instance
+    const idToAdd = featDef.canTakeMultipleTimes ? `${featId}-MULTI-INSTANCE-${crypto.randomUUID()}` : featId;
+    const newSelections = [...featSelections, idToAdd];
     setFeatSelections(newSelections);
-
-    // Granted feats are managed by CharacterFormCore, so we only pass user-chosen ones up
     onFeatSelectionChange(convertSelectionsToFeatTypes(newSelections));
     setIsFeatDialogOpen(false);
   };
 
-  const handleRemoveSlot = (indexToRemove: number) => {
-    const newSelections = featSelections.filter((_, index) => index !== indexToRemove);
+  const handleRemoveSlot = (idToRemove: string) => { // idToRemove is the unique ID from featSelections
+    const newSelections = featSelections.filter(id => id !== idToRemove);
     setFeatSelections(newSelections);
     onFeatSelectionChange(convertSelectionsToFeatTypes(newSelections));
   };
@@ -129,21 +148,17 @@ export function FeatsFormSection({
   const characterForPrereqCheck = React.useMemo(() => ({
     abilityScores,
     skills,
-    feats: selectedFeats, // Pass the full list including granted for accurate checking
+    feats: selectedFeats, 
     classes: characterClasses,
     race: characterRace,
-    // Dummy values for parts of Character not relevant to prereq check here
     age: 0, name: '', alignment: 'true-neutral' as const, size: 'medium' as const,
     hp: 0, maxHp: 0, armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0,
     deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, initiativeMiscModifier: 0,
     savingThrows: { fortitude: {base:0,magicMod:0,miscMod:0}, reflex: {base:0,magicMod:0,miscMod:0}, will: {base:0,magicMod:0,miscMod:0} },
-    inventory: []
+    inventory: [],
+    portraitDataUrl: '',
+    personalStory: ''
   }), [abilityScores, skills, selectedFeats, characterClasses, characterRace]);
-
-  // Filtered list of feats that can be added (all feats for now, dialog handles search)
-  // Prerequisite checks are done in the dialog for display, and can be re-checked upon selection if needed.
-  const availableFeatOptionsForDialog = DND_FEATS;
-
 
   return (
     <>
@@ -169,7 +184,7 @@ export function FeatsFormSection({
                 )}>{featSlotsLeft}</span>
               </p>
             </div>
-             <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Base <strong className="font-bold text-primary">[{baseFeat}]</strong>
               {racialBonus > 0 && (
                 <>
@@ -181,9 +196,8 @@ export function FeatsFormSection({
           </div>
           
           <div className="mb-4 space-y-2">
-            {/* Display Granted Feats First (Read-only) */}
             {selectedFeats.filter(f => f.isGranted).map((feat) => {
-                const featDetails = DND_FEATS.find(fDef => fDef.value === feat.id);
+                const featDetails = DND_FEATS.find(fDef => fDef.value === feat.id.split('-MULTI-INSTANCE-')[0]);
                 if (!featDetails) return null;
                 const prereqStatus = checkFeatPrerequisites(featDetails, characterForPrereqCheck as Character, DND_FEATS);
                 const allPrereqMessages = [
@@ -192,48 +206,51 @@ export function FeatsFormSection({
                 ];
 
                 return (
-                    <div key={`granted-feat-${feat.id}`} className="py-2 px-3 border-b border-border/50 bg-muted/50 rounded-md">
+                    <div key={`granted-feat-${feat.id}`} className="py-2 px-3 border rounded-md bg-muted/50">
                         <h4 className="font-medium text-foreground">
                           {feat.name}
-                          {feat.grantedNote && <span className="text-xs text-muted-foreground ml-1">{feat.grantedNote}</span>}
+                          {feat.grantedNote && <span className="text-xs text-muted-foreground ml-1 italic">{feat.grantedNote}</span>}
                         </h4>
                         {featDetails.description && (
-                          <p className="text-xs text-muted-foreground mt-0.5 whitespace-normal">
-                            {featDetails.description}
-                          </p>
+                          <div
+                            className="text-xs text-muted-foreground mt-0.5 whitespace-normal"
+                            dangerouslySetInnerHTML={{ __html: featDetails.description }}
+                          />
                         )}
-                        {(allPrereqMessages.length > 0 || (featDetails.prerequisites && Object.keys(featDetails.prerequisites).length > 0)) && (
-                          <p className="text-xs mt-0.5 whitespace-normal">
+                        {(allPrereqMessages.length > 0 || (featDetails.prerequisites && Object.keys(featDetails.prerequisites).length > 0 && !featDetails.prerequisites.special)) || (featDetails.prerequisites?.special) ? (
+                          <div className="text-xs mt-0.5 whitespace-normal">
                             Prerequisites:{' '}
                             {allPrereqMessages.length > 0 ?
                               allPrereqMessages.map((msg, idx) => (
                                 <React.Fragment key={idx}>
-                                  <span className={msg.type === 'unmet' ? 'text-destructive' : 'text-muted-foreground'}>
-                                    {msg.text}
-                                  </span>
+                                  <span 
+                                    className={cn(msg.type === 'unmet' ? 'text-destructive' : 'text-muted-foreground')}
+                                    dangerouslySetInnerHTML={{ __html: msg.text }}
+                                  />
                                   {idx < allPrereqMessages.length - 1 && ', '}
                                 </React.Fragment>
                               ))
                               : <span className="text-muted-foreground">None</span>
                             }
-                          </p>
-                        )}
+                          </div>
+                        ) : null
+                      }
                     </div>
                 );
             })}
 
-            {/* Display User-Chosen Feats */}
-            {featSelections.map((selectedFeatId, index) => {
-              const featDetails = DND_FEATS.find(f => f.value === selectedFeatId);
-              if (!featDetails) { // Should not happen if featSelections only contains valid IDs
+            {featSelections.map((selectedFeatInstanceId) => {
+              const baseFeatId = selectedFeatInstanceId.split('-MULTI-INSTANCE-')[0];
+              const featDetails = DND_FEATS.find(f => f.value === baseFeatId);
+              if (!featDetails) { 
                 return (
-                  <div key={`chosen-feat-error-${index}`} className="flex items-center justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors text-destructive">
+                  <div key={`chosen-feat-error-${selectedFeatInstanceId}`} className="flex items-center justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors text-destructive">
                     Error: Invalid feat ID.
                     <Button
                       type="button" variant="ghost" size="icon"
-                      onClick={() => handleRemoveSlot(index)}
+                      onClick={() => handleRemoveSlot(selectedFeatInstanceId)}
                       className="h-8 w-8 text-destructive hover:text-destructive/80 shrink-0 mt-0.5"
-                      aria-label={`Remove feat slot ${index + 1}`}
+                      aria-label={`Remove feat slot`}
                     ><Trash2 className="h-4 w-4" /></Button>
                   </div>
                 );
@@ -246,38 +263,40 @@ export function FeatsFormSection({
               ];
 
               return (
-                <div key={`chosen-feat-slot-${selectedFeatId}-${index}`} className="flex items-start justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors group">
+                <div key={`chosen-feat-slot-${selectedFeatInstanceId}`} className="flex items-start justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors group">
                   <div className="flex-grow mr-2">
                     <h4 className="font-medium text-foreground">
                       {featDetails.label}
                     </h4>
                     {featDetails.description && (
-                      <p className="text-xs text-muted-foreground mt-0.5 whitespace-normal">
-                        {featDetails.description}
-                      </p>
+                       <div
+                        className="text-xs text-muted-foreground mt-0.5 whitespace-normal"
+                        dangerouslySetInnerHTML={{ __html: featDetails.description }}
+                      />
                     )}
-                    {(allPrereqMessages.length > 0 || (featDetails.prerequisites && Object.keys(featDetails.prerequisites).length > 0)) && (
-                      <p className="text-xs mt-0.5 whitespace-normal">
+                    {(allPrereqMessages.length > 0 || (featDetails.prerequisites && Object.keys(featDetails.prerequisites).length > 0 && !featDetails.prerequisites.special)) || (featDetails.prerequisites?.special) ? (
+                       <div className="text-xs mt-0.5 whitespace-normal">
                         Prerequisites:{' '}
                         {allPrereqMessages.length > 0 ?
                           allPrereqMessages.map((msg, idx) => (
                             <React.Fragment key={idx}>
-                              <span className={msg.type === 'unmet' ? 'text-destructive' : 'text-muted-foreground'}>
-                                {msg.text}
-                              </span>
+                              <span 
+                                className={cn(msg.type === 'unmet' ? 'text-destructive' : 'text-muted-foreground')}
+                                dangerouslySetInnerHTML={{ __html: msg.text }}
+                              />
                               {idx < allPrereqMessages.length - 1 && ', '}
                             </React.Fragment>
                           ))
                           : <span className="text-muted-foreground">None</span>
                         }
-                      </p>
-                    )}
+                      </div>
+                    ) : null }
                   </div>
                   <Button
                       type="button"
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleRemoveSlot(index)}
+                      onClick={() => handleRemoveSlot(selectedFeatInstanceId)}
                       className="h-8 w-8 text-destructive hover:text-destructive/80 shrink-0 mt-0.5 opacity-50 group-hover:opacity-100 transition-opacity"
                       aria-label={`Remove feat ${featDetails.label}`}
                     >
@@ -302,7 +321,7 @@ export function FeatsFormSection({
         isOpen={isFeatDialogOpen}
         onOpenChange={setIsFeatDialogOpen}
         onFeatSelected={handleFeatSelectedFromDialog}
-        allFeats={availableFeatOptionsForDialog}
+        allFeats={DND_FEATS} // Pass all feats to the dialog
         character={characterForPrereqCheck as Character}
       />
     </>
