@@ -15,47 +15,47 @@
     {
       "value": "lawful-good",
       "label": "Lawful Good",
-      "description": "<p>Characters of this alignment believe that an orderly, strong society with a well-organized government can work to make life better for the majority of the people. To ensure the quality of life, laws must be created and obeyed. When people respect the laws and try to help one another, society as a whole prospers. Therefore, lawful good characters strive for things that will bring the greatest benefit to the most people and cause the least harm. They are also concerned with issues of justice and fairness, and they value honesty and integrity.</p>"
+      "description": "<b>Lawful Good:</b><br /><p>Characters of this alignment believe that an orderly, strong society with a well-organized government can work to make life better for the majority of the people. To ensure the quality of life, laws must be created and obeyed. When people respect the laws and try to help one another, society as a whole prospers. Therefore, lawful good characters strive for things that will bring the greatest benefit to the most people and cause the least harm. They are also concerned with issues of justice and fairness, and they value honesty and integrity.</p>"
     },
     {
       "value": "neutral-good",
       "label": "Neutral Good",
-      "description": "<p>Neutral good characters believe that a balance of forces is important, but that the concerns of law and chaos do not moderate the need for good. The universe is a big place, and while it is important to ensure that good is promoted, it is equally important that this good is not forced upon others. A neutral good character does what is good and right, without bias for or against order.</p>"
+      "description": "<b>Neutral Good:</b><br /><p>Neutral good characters believe that a balance of forces is important, but that the concerns of law and chaos do not moderate the need for good. The universe is a big place, and while it is important to ensure that good is promoted, it is equally important that this good is not forced upon others. A neutral good character does what is good and right, without bias for or against order.</p>"
     },
     {
       "value": "chaotic-good",
       "label": "Chaotic Good",
-      "description": "<p>Chaotic good characters are strong individualists marked by a streak of kindness and benevolence. They believe in all the virtues of goodness and right, but they have little use for laws and regulations. They have no use for people who 'try to push folk around and tell them what to do.' Their actions are guided by their own moral compass, which, although good, may not always be in perfect agreement with the rest of society.</p>"
+      "description": "<b>Chaotic Good:</b><br /><p>Chaotic good characters are strong individualists marked by a streak of kindness and benevolence. They believe in all the virtues of goodness and right, but they have little use for laws and regulations. They have no use for people who 'try to push folk around and tell them what to do.' Their actions are guided by their own moral compass, which, although good, may not always be in perfect agreement with the rest of society.</p>"
     },
     {
       "value": "lawful-neutral",
       "label": "Lawful Neutral",
-      "description": "<p>Order and organization are of paramount importance to characters of this alignment. They believe in a strong, well-ordered government, whether that government is a tyranny or a benevolent democracy. The benefits of organization and regimentation outweigh any moral questions raised by their actions. An oath is an oath, and a promise is a promise. Honesty and reliability are key traits.</p>"
+      "description": "<b>Lawful Neutral:</b><br /><p>Order and organization are of paramount importance to characters of this alignment. They believe in a strong, well-ordered government, whether that government is a tyranny or a benevolent democracy. The benefits of organization and regimentation outweigh any moral questions raised by their actions. An oath is an oath, and a promise is a promise. Honesty and reliability are key traits.</p>"
     },
     {
       "value": "true-neutral",
       "label": "True Neutral",
-      "description": "<p>True neutral characters believe in the ultimate balance of forces, and they refuse to see actions as either good or evil. Since the majority of people in the world make judgments, true neutral characters are extremely rare. True neutral characters do their best to avoid siding with the forces of either good or evil, law or chaos. It is their duty to see that all of these forces remain in balanced contention.</p>"
+      "description": "<b>True Neutral:</b><br /><p>True neutral characters believe in the ultimate balance of forces, and they refuse to see actions as either good or evil. Since the majority of people in the world make judgments, true neutral characters are extremely rare. True neutral characters do their best to avoid siding with the forces of either good or evil, law or chaos. It is their duty to see that all of these forces remain in balanced contention.</p>"
     },
     {
       "value": "chaotic-neutral",
       "label": "Chaotic Neutral",
-      "description": "<p>Chaotic neutral characters believe that there is no order to anything, including their own actions. With this as a guiding principle, they tend to follow whatever whim strikes them at the moment. Good, evil, law, and chaos are all irrelevant. Decency and honor are meaningless. Ultimately, chaotic neutral characters are out for themselves. They value their own freedom above all else, but they won't strive for the freedom of others. They avoid authority, resent restrictions, and challenge traditions.</p>"
+      "description": "<b>Chaotic Neutral:</b><br /><p>Chaotic neutral characters believe that there is no order to anything, including their own actions. With this as a guiding principle, they tend to follow whatever whim strikes them at the moment. Good, evil, law, and chaos are all irrelevant. Decency and honor are meaningless. Ultimately, chaotic neutral characters are out for themselves. They value their own freedom above all else, but they won't strive for the freedom of others. They avoid authority, resent restrictions, and challenge traditions.</p>"
     },
     {
       "value": "lawful-evil",
       "label": "Lawful Evil",
-      "description": "<p>Lawful evil characters believe in using society and its laws to benefit themselves. Structure and organization elevate those who deserve to rule as well as provide a clearly defined hierarchy between master and servant. To this end, lawful evil characters support laws and societies that protect their own concerns. If someone is hurt or suffers because of a law that benefits the lawful evil character, too bad. Lawful evil characters obey laws out of fear of punishment or because they can use the law to their own advantage.</p>"
+      "description": "<b>Lawful Evil:</b><br /><p>Lawful evil characters believe in using society and its laws to benefit themselves. Structure and organization elevate those who deserve to rule as well as provide a clearly defined hierarchy between master and servant. To this end, lawful evil characters support laws and societies that protect their own concerns. If someone is hurt or suffers because of a law that benefits the lawful evil character, too bad. Lawful evil characters obey laws out of fear of punishment or because they can use the law to their own advantage.</p>"
     },
     {
       "value": "neutral-evil",
       "label": "Neutral Evil",
-      "description": "<p>Neutral evil characters are primarily concerned with themselves and their own advancement. They have no particular objection to working with others or, for that matter, going it alone. Their only interest is in getting ahead. They may or may not be driven by greed, but they are always selfish. If there is a choice between doing right and doing wrong, they will choose the action that benefits them the most. Neutral evil characters do not have any particular love of order and have no special fondness for chaos, unless it can be used to advance their own ends.</p>"
+      "description": "<b>Neutral Evil:</b><br /><p>Neutral evil characters are primarily concerned with themselves and their own advancement. They have no particular objection to working with others or, for that matter, going it alone. Their only interest is in getting ahead. They may or may not be driven by greed, but they are always selfish. If there is a choice between doing right and doing wrong, they will choose the action that benefits them the most. Neutral evil characters do not have any particular love of order and have no special fondness for chaos, unless it can be used to advance their own ends.</p>"
     },
     {
       "value": "chaotic-evil",
       "label": "Chaotic Evil",
-      "description": "<p>Chaotic evil characters are motivated by the desire for personal gain and pleasure. They see absolutely nothing wrong with taking whatever they want by whatever means possible. Laws and governments are tools of the weak, designed to steal from those who have a right to whatever they desire. Strong, powerful people take what they want, and the weak are there to be exploited. When a chaotic evil character is on a rampage, he is an engine of destruction and mayhem. They have no respect for rules, order, or the rights of others.</p>"
+      "description": "<b>Chaotic Evil:</b><br /><p>Chaotic evil characters are motivated by the desire for personal gain and pleasure. They see absolutely nothing wrong with taking whatever they want by whatever means possible. Laws and governments are tools of the weak, designed to steal from those who have a right to whatever they desire. Strong, powerful people take what they want, and the weak are there to be exploited. When a chaotic evil character is on a rampage, he is an engine of destruction and mayhem. They have no respect for rules, order, or the rights of others.</p>"
     }
   ],
   "GENDERS_DATA": [
@@ -66,46 +66,39 @@
     {
       "value": "human",
       "label": "Human",
-      "description": "<p>Humans are the most adaptable and ambitious people among the common races. Whatever their goals, humans are the innovators, the achievers, and the pioneers of the worlds.</p>",
-      "abilityModifiers": {},
+      "description": "Humans are the most adaptable and ambitious people among the common races. Whatever their goals, humans are the innovators, the achievers, and the pioneers of the worlds.",
       "bonusFeatSlots": 1
     },
     {
       "value": "elf",
       "label": "Elf",
-      "description": "<p>Elves are a magical people of otherworldly grace, living in the world but not entirely part of it. They live in places of ethereal beauty, in the midst of ancient forests or in spires glittering with faerie light, where soft music drifts through the air and gentle fragrances waft on the breeze. Elves love nature and magic, art and artistry, music and poetry, and the good things of the world.</p>",
-      "abilityModifiers": { "dexterity": 2, "constitution": -2 },
+      "description": "Elves are a magical people of otherworldly grace, living in the world but not entirely part of it. They live in places of ethereal beauty, in the midst of ancient forests or in spires glittering with faerie light, where soft music drifts through the air and gentle fragrances waft on the breeze. Elves love nature and magic, art and artistry, music and poetry, and the good things of the world.",
       "racialSkillBonuses": { "listen": 2, "search": 2, "spot": 2 }
     },
     {
       "value": "dwarf",
       "label": "Dwarf",
-      "description": "<p>Dwarves are known for their skill in warfare, their ability to withstand physical and magical punishment, their knowledge of the earth’s secrets, their hard work, and their capacity for drinking ale. Their kingdoms are spread across the mountains of the world, where they mine gems and precious metals and forge items of wonder.</p>",
-      "abilityModifiers": { "constitution": 2, "charisma": -2 }
+      "description": "Dwarves are known for their skill in warfare, their ability to withstand physical and magical punishment, their knowledge of the earth’s secrets, their hard work, and their capacity for drinking ale. Their kingdoms are spread across the mountains of the world, where they mine gems and precious metals and forge items of wonder."
     },
     {
       "value": "halfling",
       "label": "Halfling",
-      "description": "<p>Halflings are an affable and cheerful people. They cherish the bonds of family and friendship as well as the comforts of hearth and home, harboring few dreams of gold or glory. Even adventurers among them usually venture into the world for reasons of community, friendship, wanderlust, or curiosity.</p>",
-      "abilityModifiers": { "dexterity": 2, "strength": -2 }
+      "description": "Halflings are an affable and cheerful people. They cherish the bonds of family and friendship as well as the comforts of hearth and home, harboring few dreams of gold or glory. Even adventurers among them usually venture into the world for reasons of community, friendship, wanderlust, or curiosity."
     },
     {
       "value": "gnome",
       "label": "Gnome",
-      "description": "<p>Gnomes are welcome everywhere as technicians, alchemists, and inventors. Despite the demand for their skills, most gnomes prefer to remain among their own kind, living in comfortable burrows beneath rolling, wooded hills.</p>",
-      "abilityModifiers": { "constitution": 2, "strength": -2 }
+      "description": "Gnomes are welcome everywhere as technicians, alchemists, and inventors. Despite the demand for their skills, most gnomes prefer to remain among their own kind, living in comfortable burrows beneath rolling, wooded hills."
     },
     {
       "value": "half-elf",
       "label": "Half-Elf",
-      "description": "<p>Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves.</p>",
-      "abilityModifiers": {}
+      "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves."
     },
     {
       "value": "half-orc",
       "label": "Half-Orc",
-      "description": "<p>Half-orcs’ grayish pigmentation, sloping foreheads, jutting jaws, prominent teeth, and towering builds make their orcish heritage plain for all to see. Whether united under the leadership of a mighty warlock or having fought their way to freedom, half-orcs are driven by a fierce determination to prove their worth.</p>",
-      "abilityModifiers": { "strength": 2, "intelligence": -2, "charisma": -2 }
+      "description": "Half-orcs’ grayish pigmentation, sloping foreheads, jutting jaws, prominent teeth, and towering builds make their orcish heritage plain for all to see. Whether united under the leadership of a mighty warlock or having fought their way to freedom, half-orcs are driven by a fierce determination to prove their worth."
     }
   ],
   "DND_CLASSES_DATA": [
@@ -498,7 +491,8 @@
     "bluff": [
       { "targetSkill": "diplomacy", "ranksRequired": 5, "bonus": 2 },
       { "targetSkill": "intimidate", "ranksRequired": 5, "bonus": 2 },
-      { "targetSkill": "sleight-of-hand", "ranksRequired": 5, "bonus": 2 }
+      { "targetSkill": "sleight-of-hand", "ranksRequired": 5, "bonus": 2 },
+      { "targetSkill": "disguise", "ranksRequired": 5, "bonus": 2, "note": "when trying to act in character" }
     ],
     "craft-alchemy": [
       { "targetSkill": "appraise", "ranksRequired": 5, "bonus": 2, "note": "when appraising alchemical items" }
@@ -517,7 +511,7 @@
       { "targetSkill": "diplomacy", "ranksRequired": 5, "bonus": 2 }
     ],
     "spellcraft": [
-      { "targetSkill": "use-magic-device", "ranksRequired": 5, "bonus": 2 }
+      { "targetSkill": "use-magic-device", "ranksRequired": 5, "bonus": 2, "note": "when emulating a spell with a scroll" }
     ],
     "survival": [
       { "targetSkill": "knowledge-nature", "ranksRequired": 5, "bonus": 2 }
@@ -532,3 +526,5 @@
     ]
   }
 }
+
+    
