@@ -10,19 +10,32 @@ import type {
   DndRaceOption, DetailedAbilityScores, AbilityScoreBreakdown, CharacterAlignmentObject, DndClassOption
 } from '@/types/character';
 import {
-  SIZES, ALIGNMENTS, DND_RACES, DND_CLASSES, getNetAgingEffects, GENDERS, DND_DEITIES,
-  getSizeAbilityEffects, getRaceSpecialQualities, getInitialCharacterSkills, SKILL_DEFINITIONS,
-  DND_FEATS, getGrantedFeatsForCharacter, calculateDetailedAbilityScores,
-  DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, DND_RACE_MIN_ADULT_AGE_DATA
+  SIZES,
+  ALIGNMENTS,
+  DND_RACES,
+  DND_CLASSES,
+  getNetAgingEffects,
+  GENDERS,
+  DND_DEITIES,
+  getSizeAbilityEffects,
+  getRaceSpecialQualities,
+  getInitialCharacterSkills,
+  SKILL_DEFINITIONS,
+  DND_FEATS,
+  getGrantedFeatsForCharacter,
+  calculateDetailedAbilityScores,
+  DEFAULT_ABILITIES, // Import directly
+  DEFAULT_SAVING_THROWS, // Import directly
+  DND_RACE_MIN_ADULT_AGE_DATA // Import directly
 } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
-import { CharacterFormCoreInfoSection } from './form-sections/CharacterFormCoreInfoSection';
-import { CharacterFormAbilityScoresSection } from './form-sections/CharacterFormAbilityScoresSection';
-import { CharacterFormStoryPortraitSection } from './form-sections/CharacterFormStoryPortraitSection';
+import { CharacterFormCoreInfoSection } from '../form-sections/CharacterFormCoreInfoSection';
+import { CharacterFormAbilityScoresSection } from '../form-sections/CharacterFormAbilityScoresSection';
+import { CharacterFormStoryPortraitSection } from '../form-sections/CharacterFormStoryPortraitSection';
 import { SkillsFormSection } from '@/components/SkillsFormSection';
 import { FeatsFormSection } from '@/components/FeatsFormSection';
 
@@ -94,6 +107,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
     return finalScores as AbilityScores;
   }, [detailedAbilityScores, character.abilityScores]);
+
 
   // Age effects
   React.useEffect(() => {
@@ -312,8 +326,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       const qualities = getRaceSpecialQualities(selectedRace.value as DndRaceId);
       setCurrentInfoDialogData({
         title: selectedRace.label, content: selectedRace.description,
-        abilityModifiers: qualities.abilityEffects, skillBonuses: qualities.skillBonuses,
-        grantedFeats: qualities.grantedFeats, bonusFeatSlots: qualities.bonusFeatSlots
+        abilityModifiers: qualities.abilityEffects,
+        skillBonuses: qualities.skillBonuses,
+        grantedFeats: qualities.grantedFeats,
+        bonusFeatSlots: qualities.bonusFeatSlots,
       });
       setIsInfoDialogOpen(true);
     }
@@ -328,7 +344,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         }
         setCurrentInfoDialogData({
             title: classData.label, content: classData.description,
-            abilityModifiers: [], skillBonuses: [], grantedFeats: classData.grantedFeats, bonusFeatSlots: 0,
+            abilityModifiers: [], skillBonuses: [],
+            grantedFeats: classData.grantedFeats,
+            bonusFeatSlots: 0, // Classes don't typically grant general bonus feat slots, but specific feats
             detailsList: classSpecificDetails
         });
         setIsInfoDialogOpen(true);
@@ -336,9 +354,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const handleOpenAlignmentInfoDialog = () => {
+    // The JSON description already contains <p> tags and the <b>Label:</b><br/> prefix is added here.
     const allAlignmentDescriptions = ALIGNMENTS.map(
-      (align) => `<p><b>${align.label}:</b><br />${align.description}</p>`
-    ).join('');
+      (align) => `<b>${align.label}:</b>${align.description}`
+    ).join(''); // Removed the join with <br /><br /> to let <p> tags handle spacing
     setCurrentInfoDialogData({ title: "Alignments", content: allAlignmentDescriptions });
     setIsInfoDialogOpen(true);
   };
@@ -428,8 +447,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
         <SkillsFormSection
           skills={character.skills}
-          abilityScores={character.abilityScores}
-          actualAbilityScores={actualAbilityScoresForSkills}
+          abilityScores={character.abilityScores} // Base scores for skill points calculation
+          actualAbilityScores={actualAbilityScoresForSkills} // Actual scores for skill modifiers
           characterClasses={character.classes}
           characterRace={character.race}
           selectedFeats={character.feats}
@@ -444,8 +463,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           characterClasses={character.classes}
           selectedFeats={character.feats}
           onFeatSelectionChange={handleFeatSelectionChange}
-          abilityScores={actualAbilityScoresForSkills}
-          skills={character.skills}
+          abilityScores={actualAbilityScoresForSkills} // Pass actual scores for prereq check
+          skills={character.skills} // Pass skills for prereq check
         />
 
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-8">
