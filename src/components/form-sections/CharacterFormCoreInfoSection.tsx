@@ -16,6 +16,7 @@ import type {
   RaceSpecialQualities,
   DndRaceOption,
   DndClassOption,
+  DndDeityOption,
 } from '@/types/character';
 import {
   SIZES,
@@ -24,6 +25,7 @@ import {
   DND_CLASSES,
   GENDERS,
   DND_DEITIES,
+  isAlignmentCompatible, // Import the compatibility function
 } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -81,6 +83,25 @@ export function CharacterFormCoreInfoSection({
     onFieldChange(field, value);
   };
 
+  const filteredDeities = React.useMemo(() => {
+    if (!characterData.alignment) {
+      return DND_DEITIES; // If no alignment, show all deities
+    }
+    return DND_DEITIES.filter(deity => 
+      isAlignmentCompatible(characterData.alignment, deity.alignment)
+    );
+  }, [characterData.alignment]);
+
+  React.useEffect(() => {
+    if (characterData.alignment && characterData.deity) {
+      const currentDeity = DND_DEITIES.find(d => d.value === characterData.deity);
+      if (currentDeity && !isAlignmentCompatible(characterData.alignment, currentDeity.alignment)) {
+        onFieldChange('deity', ''); // Clear deity if it becomes incompatible
+      }
+    }
+  }, [characterData.alignment, characterData.deity, onFieldChange]);
+
+
   return (
     <Card>
       <CardHeader>
@@ -126,21 +147,20 @@ export function CharacterFormCoreInfoSection({
                 <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
               )}
             </div>
-            {raceSpecialQualities?.abilityEffects && (
+            {raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
               <p className="text-xs text-muted-foreground mt-1 ml-1">
-                {raceSpecialQualities.abilityEffects.length > 0 ? (
-                  raceSpecialQualities.abilityEffects.map((effect, index) => (
+                {raceSpecialQualities.abilityEffects.map((effect, index) => (
                     <React.Fragment key={effect.ability}>
                       <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
                         {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
                       </strong>
                       {index < raceSpecialQualities.abilityEffects.length - 1 && <span className="text-muted-foreground">, </span>}
                     </React.Fragment>
-                  ))
-                ) : (
-                  <span className="italic">No impact on ability scores</span>
-                )}
+                  ))}
               </p>
+            )}
+             {raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length === 0 && (
+                 <p className="text-xs text-muted-foreground mt-1 ml-1 italic">No impact on ability scores</p>
             )}
           </div>
         </div>
@@ -198,29 +218,28 @@ export function CharacterFormCoreInfoSection({
 
         {/* Deity */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-          <div className="space-y-1"> {/* This div now represents the first column in a 2-column layout on md+ */}
-            <Label htmlFor="deity">Deity</Label>
-            <div className="flex items-center gap-2">
-              <div className="flex-grow"> {/* ComboboxPrimitive takes full width of this div */}
-                <ComboboxPrimitive
-                  options={DND_DEITIES}
-                  value={characterData.deity || ''}
-                  onChange={(value) => handleSelectChange('deity', value as DndDeityId | string)}
-                  placeholder="Select or type deity"
-                  searchPlaceholder="Search deities..."
-                  emptyPlaceholder="No deity found. Type to add."
-                  isEditable={true}
-                />
+            <div className="space-y-1"> 
+              <Label htmlFor="deity">Deity</Label>
+              <div className="flex items-center gap-2">
+                <div className="flex-grow"> 
+                  <ComboboxPrimitive
+                    options={filteredDeities}
+                    value={characterData.deity || ''}
+                    onChange={(value) => handleSelectChange('deity', value as DndDeityId | string)}
+                    placeholder="Select or type deity"
+                    searchPlaceholder="Search deities..."
+                    emptyPlaceholder="No deity found. Type to add."
+                    isEditable={true}
+                  />
+                </div>
+                {characterData.deity && characterData.deity.trim() !== '' && (
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
+                    onClick={onOpenDeityInfoDialog}>
+                    <Info className="h-5 w-5" />
+                  </Button>
+                )}
               </div>
-              {characterData.deity && characterData.deity.trim() !== '' && (
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
-                  onClick={onOpenDeityInfoDialog}>
-                  <Info className="h-5 w-5" />
-                </Button>
-              )}
             </div>
-          </div>
-          {/* The second column in this md:grid-cols-2 is implicitly empty */}
         </div>
 
 
@@ -237,7 +256,7 @@ export function CharacterFormCoreInfoSection({
                       {ageEffectsDetails.effects.map((effect, index) => (
                         <React.Fragment key={effect.ability}>
                           <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
-                            {effect.ability.substring(0, 3).toUpperCase()} {effect.change}
+                            {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
                           </strong>
                           {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                         </React.Fragment>
@@ -274,21 +293,20 @@ export function CharacterFormCoreInfoSection({
                 {SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
               </SelectContent>
             </Select>
-            {sizeAbilityEffectsDetails && (
+            {sizeAbilityEffectsDetails && sizeAbilityEffectsDetails.effects.length > 0 && (
               <p className="text-xs text-muted-foreground mt-1 ml-1">
-                {sizeAbilityEffectsDetails.effects.length > 0 ? (
-                  sizeAbilityEffectsDetails.effects.map((effect, index) => (
+                {sizeAbilityEffectsDetails.effects.map((effect, index) => (
                     <React.Fragment key={effect.ability}>
                       <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
                         {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
                       </strong>
                       {index < sizeAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
                     </React.Fragment>
-                  ))
-                ) : (
-                  <span className="italic">No impact on ability scores</span>
-                )}
+                  ))}
               </p>
+            )}
+            {sizeAbilityEffectsDetails && sizeAbilityEffectsDetails.effects.length === 0 && (
+                 <p className="text-xs text-muted-foreground mt-1 ml-1 italic">No impact on ability scores</p>
             )}
           </div>
         </div>
