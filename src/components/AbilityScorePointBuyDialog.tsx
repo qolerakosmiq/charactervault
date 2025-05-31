@@ -46,7 +46,7 @@ const POINT_BUY_COST: Record<number, number> = {
   18: 16,
 };
 
-const ABILITY_DISPLAY_NAMES: Record<Exclude<AbilityName, 'none'>, string> = {
+const ABILITY_DISPLAY_NAMES_FULL: Record<Exclude<AbilityName, 'none'>, string> = {
   strength: 'Strength (STR)',
   dexterity: 'Dexterity (DEX)',
   constitution: 'Constitution (CON)',
@@ -168,10 +168,18 @@ export function AbilityScorePointBuyDialog({
                 {ABILITY_ORDER.map((ability) => {
                     const score = currentScores[ability];
                     const cost = POINT_BUY_COST[score];
+                    const fullDisplayName = ABILITY_DISPLAY_NAMES_FULL[ability];
+                    const match = fullDisplayName.match(/^([^\(]+)(\s*\(.*?\))?$/);
+                    const namePart = match ? match[1].trim() : fullDisplayName;
+                    const abbreviationPart = match && match[2] ? match[2].trim() : '';
+
                     return (
                     <div key={ability} className="p-3 border rounded-md space-y-2 bg-background">
-                        <Label htmlFor={`score-input-${ability}`} className="text-base font-medium flex justify-between items-center">
-                          {ABILITY_DISPLAY_NAMES[ability]}
+                        <Label htmlFor={`score-input-${ability}`} className="text-base flex justify-between items-center">
+                          <span>
+                            <span className="font-semibold">{namePart}</span>
+                            {abbreviationPart && <span className="text-muted-foreground ml-1">{abbreviationPart}</span>}
+                          </span>
                           <Badge variant="outline">Cost: {cost}</Badge>
                         </Label>
                         <div className="flex items-center justify-center space-x-2">
