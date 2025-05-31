@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
 // AddCustomFeatDialog import removed
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from '@/components/ui/badge'; // Added import
 
 interface FeatsFormSectionProps {
   character: Character;
@@ -52,8 +53,8 @@ export function FeatsFormSection({
     const slots = calculateAvailableFeats(character.race, characterLevel);
     const raceData = DND_RACES.find(r => r.value === character.race);
     const bonus = raceData?.bonusFeatSlots || 0;
-    const base = 1;
-    const progression = Math.floor(characterLevel / 3);
+    const base = 1; // Base feat at 1st level
+    const progression = Math.floor(characterLevel / 3); // Feats from level progression
     return { availableFeatSlots: slots, baseFeat: base, racialBonus: bonus, levelProgressionFeats: progression };
   }, [character.race, characterLevel]);
 
@@ -65,6 +66,8 @@ export function FeatsFormSection({
     abilityScores,
     skills,
   }), [character, abilityScores, skills]);
+
+  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs";
 
 
   const handleAddOrUpdateChosenFeatInstance = (definitionId: string, specializationDetail?: string) => {
@@ -150,9 +153,13 @@ export function FeatsFormSection({
               </p>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Base <strong className="font-bold text-primary">[{baseFeat}]</strong>
-              {racialBonus > 0 && (<> {' + '}Racial Bonus <strong className="font-bold text-primary">[{racialBonus}]</strong></>)}
-              {' + '}Level Progression <strong className="font-bold text-primary">[{levelProgressionFeats}]</strong>
+              Base <Badge variant="outline" className={badgeClassName}>{baseFeat}</Badge>
+              {racialBonus > 0 && (
+                <>
+                  {' + '}Racial Bonus <Badge variant="outline" className={badgeClassName}>{racialBonus}</Badge>
+                </>
+              )}
+              {' + '}Level Progression <Badge variant="outline" className={badgeClassName}>{levelProgressionFeats}</Badge>
             </p>
           </div>
 
