@@ -214,7 +214,7 @@ export function FeatsFormSection({
 
           <div className="mt-2 flex gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setIsFeatDialogOpen(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" /> Add Feat from List
+              <PlusCircle className="mr-2 h-4 w-4" /> Add Feat
             </Button>
             {/* "Add New Custom Feat Definition" button removed from here */}
           </div>
