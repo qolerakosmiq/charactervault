@@ -37,8 +37,6 @@ export function NumberSpinnerInput({
   const [internalDisplayValue, setInternalDisplayValue] = React.useState(String(value));
 
   React.useEffect(() => {
-    // Sync display when the external value prop changes,
-    // but only if the input is not currently focused to avoid disrupting typing.
     if (document.activeElement !== document.getElementById(id || '')) {
       setInternalDisplayValue(String(value));
     }
@@ -58,27 +56,24 @@ export function NumberSpinnerInput({
     let num = typeof valToCommit === 'string' ? parseFloat(valToCommit) : valToCommit;
     
     if (isNaN(num)) {
-      // If parsing fails, revert to the current prop value or min if prop value is also bad
-      num = Number.isFinite(value) ? value : (min !== -Infinity ? min : 0);
+      // If parsing fails, revert to the current prop value, or min, or 0
+      num = Number.isFinite(value) ? value : (min !== -Infinity && Number.isFinite(min) ? min : 0);
     }
 
-    num = Math.max(min, Math.min(max, num)); // Clamp
-    const finalNum = parseFloat(num.toFixed(precision)); // Apply precision
+    num = Math.max(min === -Infinity ? -Infinity : (Number.isFinite(min) ? min! : 0), Math.min(max === Infinity ? Infinity : (Number.isFinite(max) ? max! : Infinity), num)); // Clamp
+    const finalNum = parseFloat(num.toFixed(precision)); 
     
-    // Only call onChange if the value has effectively changed
-    // This prevents potential loops if parent re-renders with the exact same numeric value
     if (finalNum !== value || String(finalNum) !== String(value)) {
         onChange(finalNum);
     }
-    // Always update display to the cleaned/committed value
     setInternalDisplayValue(String(finalNum));
   };
 
   const handleDecrement = () => {
     if (disabled) return;
-    const currentNumericValue = Number(value); // Use the committed prop value for calculation
+    const currentNumericValue = Number(value); 
     if (isNaN(currentNumericValue)) {
-        handleCommit(min !== -Infinity ? min : 0); // If current value is bad, commit min
+        handleCommit(min !== -Infinity && Number.isFinite(min) ? min : 0);
         return;
     }
     handleCommit(currentNumericValue - step);
@@ -86,27 +81,27 @@ export function NumberSpinnerInput({
 
   const handleIncrement = () => {
     if (disabled) return;
-    const currentNumericValue = Number(value); // Use the committed prop value for calculation
+    const currentNumericValue = Number(value); 
     if (isNaN(currentNumericValue)) {
-        handleCommit(min !== -Infinity ? min : 0); // If current value is bad, commit min
+        handleCommit(min !== -Infinity && Number.isFinite(min) ? min : 0);
         return;
     }
     handleCommit(currentNumericValue + step);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInternalDisplayValue(e.target.value); // Allow any typing for immediate feedback
+    setInternalDisplayValue(e.target.value); 
   };
 
   const handleInputBlur = () => {
-    handleCommit(internalDisplayValue); // Validate, clamp, format, and call onChange on blur
+    handleCommit(internalDisplayValue); 
   };
   
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       handleCommit(internalDisplayValue);
-      (e.target as HTMLInputElement).blur(); // Optional: blur on enter
+      (e.target as HTMLInputElement).blur(); 
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       handleIncrement();
@@ -120,38 +115,38 @@ export function NumberSpinnerInput({
     <div className={cn("flex items-center space-x-1", className)}>
       <Button
         type="button"
-        variant="ghost" // Changed from "outline"
+        variant="ghost"
         size={buttonSize}
         className={cn("p-0", buttonClassName)}
         onClick={handleDecrement}
-        disabled={disabled || Number(value) <= min}
+        disabled={disabled || Number(value) <= (min === -Infinity ? -Infinity : (Number.isFinite(min) ? min! : -Infinity))}
         aria-label="Decrement"
       >
         <MinusCircle className="h-4 w-4" />
       </Button>
       <Input
         id={id}
-        type="text" // Use text for more flexible input
-        inputMode="decimal" // Hint for mobile keyboards
+        type="text" 
+        inputMode="decimal" 
         value={internalDisplayValue}
         onChange={handleInputChange}
         onBlur={handleInputBlur}
         onKeyDown={handleInputKeyDown}
         disabled={disabled}
         className={cn(
-            "w-12 h-8 text-center appearance-none", // Default width, can be overridden by inputClassName
+            "w-12 h-8 text-center appearance-none", 
             inputClassName
         )}
-        style={{ MozAppearance: 'textfield' }} // For Firefox to hide native spinners
+        style={{ MozAppearance: 'textfield' }} 
         aria-live="polite"
       />
       <Button
         type="button"
-        variant="ghost" // Changed from "outline"
+        variant="ghost"
         size={buttonSize}
         className={cn("p-0", buttonClassName)}
         onClick={handleIncrement}
-        disabled={disabled || Number(value) >= max}
+        disabled={disabled || Number(value) >= (max === Infinity ? Infinity : (Number.isFinite(max) ? max! : Infinity))}
         aria-label="Increment"
       >
         <PlusCircle className="h-4 w-4" />
