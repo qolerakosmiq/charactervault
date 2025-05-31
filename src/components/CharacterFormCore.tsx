@@ -38,7 +38,6 @@ import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitio
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
-// AbilityScoreRollerDialog and AbilityScorePointBuyDialog imports removed from here
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 import { CharacterFormCoreInfoSection } from '@/components/form-sections/CharacterFormCoreInfoSection';
 import { CharacterFormAbilityScoresSection } from '@/components/form-sections/CharacterFormAbilityScoresSection';
@@ -54,7 +53,6 @@ import { BookOpenCheck, ShieldPlus, Zap, ShieldCheck, Settings, Calculator } fro
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-// AbilityScorePointBuyDialog import already removed above
 
 interface CharacterFormCoreProps {
   initialCharacter?: Character;
@@ -453,6 +451,17 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     const selectedRace = DND_RACES.find(r => r.value === character.race);
     if (selectedRace) {
       const qualities = getRaceSpecialQualities(selectedRace.value as DndRaceId);
+      const details: Array<{ label: string; value: string; isBold?: boolean }> = [];
+
+      const racialSkillPointBonus = getRaceSkillPointsBonusPerLevel(selectedRace.value as DndRaceId);
+      if (racialSkillPointBonus > 0) {
+        details.push({
+          label: "Bonus Skill Points/Level",
+          value: `+${racialSkillPointBonus}`,
+          isBold: true
+        });
+      }
+
       setCurrentInfoDialogData({
         title: selectedRace.label,
         content: selectedRace.description,
@@ -460,6 +469,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         skillBonuses: qualities.skillBonuses,
         grantedFeats: qualities.grantedFeats,
         bonusFeatSlots: qualities.bonusFeatSlots,
+        detailsList: details.length > 0 ? details : undefined,
       });
       setIsInfoDialogOpen(true);
     }
@@ -730,7 +740,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         </div>
       </form>
 
-      {/* Dialogs that are still globally managed or specific to CharacterFormCore */}
       {isInfoDialogOpen && currentInfoDialogData && (
         <InfoDisplayDialog
           isOpen={isInfoDialogOpen}
@@ -767,3 +776,4 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   );
 }
 
+    
