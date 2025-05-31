@@ -82,9 +82,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       allInitialFeatDefsForGranting
     );
     
-    // For new characters, skills are initialized with predefined ones.
-    // For existing characters, their saved skills are used.
-    // Custom skills will be added reactively by the useEffect below if their definitions exist globally.
     let initialSkills = initialCharacter?.skills || getInitialCharacterSkills(defaultClasses);
 
 
@@ -202,7 +199,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       character.race,
       character.classes,
       characterLevel,
-      allAvailableFeatDefinitions // This now includes global custom feat defs
+      allAvailableFeatDefinitions
     );
 
     const userChosenFeatInstances = character.feats.filter(fi => !fi.isGranted);
@@ -234,16 +231,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   React.useEffect(() => {
     if (!isClient) return;
 
-    const currentGlobalDefs = globalCustomSkillDefinitionsFromStore; // From Zustand store directly
+    const currentGlobalDefs = globalCustomSkillDefinitionsFromStore; 
     const prevGlobalDefs = prevGlobalCustomSkillDefinitionsRef.current;
-
-    const newlyAddedToGlobalStore = currentGlobalDefs.filter(
-      (currentDef) => !prevGlobalDefs.find(prevDef => prevDef.id === currentDef.id)
-    );
 
     const instancesToAddToCharacter: SkillType[] = [];
     
-    // For brand new characters or characters who don't have instances of globally available custom skills
     currentGlobalDefs.forEach(globalDef => {
         if (!character.skills.find(s => s.id === globalDef.id)) {
             const isClassSkill = character.classes[0]?.className ?
@@ -297,15 +289,18 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }));
   };
 
-  const handleApplyRolledScores = (newScores: AbilityScores) => {
+  const handleMultipleBaseAbilityScoresChange = (newScores: AbilityScores) => {
     setCharacter(prev => ({ ...prev, abilityScores: newScores }));
+  };
+
+  const handleApplyRolledScores = (newScores: AbilityScores) => {
+    handleMultipleBaseAbilityScoresChange(newScores);
     setIsRollerDialogOpen(false);
   };
 
   const handleClassChange = (value: DndClassId | string) => {
     setCharacter(prev => {
       const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: value, level: 1 }];
-      // Re-evaluate class skills for *all* skills when class changes
       const newSkills = prev.skills.map(skillInstance => {
           const isNowClassSkill = value ? 
             (CLASS_SKILLS[value as keyof typeof CLASS_SKILLS] || []).includes(skillInstance.id)
@@ -325,7 +320,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       ...prev,
       skills: prev.skills.map(s =>
         s.id === skillId ? { ...s, ranks, isClassSkill: isClassSkill !== undefined ? isClassSkill : s.isClassSkill } : s
-      ), // No re-sort here, assuming ranks/isClassSkill change doesn't affect sort order.
+      ),
     }));
   };
 
@@ -336,7 +331,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     } else {
         definitionsActions.addCustomSkillDefinition(skillData);
     }
-    // The useEffect will pick up this change and add the instance if needed
   };
 
   const handleFeatInstancesChange = (updatedFeatInstances: CharacterFeatInstance[]) => {
@@ -514,6 +508,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           baseAbilityScores={character.abilityScores}
           detailedAbilityScores={detailedAbilityScores}
           onBaseAbilityScoreChange={handleBaseAbilityScoreChange}
+          onMultipleBaseAbilityScoresChange={handleMultipleBaseAbilityScoresChange}
           onOpenAbilityScoreBreakdownDialog={handleOpenAbilityScoreBreakdownDialog}
           onOpenRollerDialog={() => setIsRollerDialogOpen(true)}
           isCreating={isCreating}
