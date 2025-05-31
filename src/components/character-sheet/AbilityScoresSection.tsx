@@ -1,11 +1,12 @@
+
 'use client';
 
 import type { AbilityName, AbilityScores } from '@/types/character';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { Dices } from 'lucide-react';
+import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput'; // Added import
 
 interface AbilityScoresSectionProps {
   abilityScores: AbilityScores;
@@ -26,6 +27,7 @@ export function AbilityScoresSection({ abilityScores, onAbilityScoreChange }: Ab
       <CardContent>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-6">
           {abilityNames.map(ability => {
+            if (ability === 'none') return null;
             const score = abilityScores[ability];
             const modifier = calculateAbilityModifier(score);
             return (
@@ -33,14 +35,14 @@ export function AbilityScoresSection({ abilityScores, onAbilityScoreChange }: Ab
                 <Label htmlFor={ability} className="capitalize text-sm font-medium">
                   {ability.substring(0, 3).toUpperCase()}
                 </Label>
-                <Input
+                <NumberSpinnerInput
                   id={ability}
-                  name={ability}
-                  type="number"
                   value={score}
-                  onChange={(e) => onAbilityScoreChange(ability, parseInt(e.target.value, 10) || 0)}
-                  className="w-full text-lg text-center appearance-none"
-                  min="0" max="99"
+                  onChange={(newValue) => onAbilityScoreChange(ability, newValue)}
+                  min={0} // Practical min, can be adjusted
+                  max={99} // Practical max
+                  inputClassName="w-20 h-10 text-lg" // Adjusted width
+                  buttonClassName="h-10 w-10"
                 />
                 <p className="text-center text-lg font-semibold text-accent">
                   {modifier >= 0 ? '+' : ''}{modifier}

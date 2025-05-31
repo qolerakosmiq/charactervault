@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Item as ItemType } from '@/types/character';
@@ -7,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Backpack, PlusCircle, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput'; // Added import
 
 interface InventoryListingProps {
   inventory: ItemType[];
@@ -78,12 +80,12 @@ export function InventoryListing({ inventory, onItemAdd, onItemRemove, onItemUpd
                       onChange={(e) => handleEditChange('name', e.target.value)}
                       placeholder="Item Name"
                     />
-                    <Input 
-                      type="number"
-                      value={editingItem.quantity} 
-                      onChange={(e) => handleEditChange('quantity', parseInt(e.target.value, 10) || 1)}
-                      placeholder="Quantity"
-                      min="1"
+                    <NumberSpinnerInput
+                      value={editingItem.quantity}
+                      onChange={(newValue) => handleEditChange('quantity', newValue)}
+                      min={1}
+                      inputClassName="w-24 h-10 text-base"
+                      buttonClassName="h-10 w-10"
                     />
                     <Textarea 
                       value={editingItem.description || ''} 
@@ -92,8 +94,8 @@ export function InventoryListing({ inventory, onItemAdd, onItemRemove, onItemUpd
                       rows={2}
                     />
                     <div className="flex justify-end space-x-2">
-                      <Button size="sm" variant="ghost" onClick={handleCancelEdit}>Cancel</Button>
-                      <Button size="sm" onClick={handleSaveEdit}>Save</Button>
+                      <Button size="sm" variant="ghost" onClick={handleCancelEdit} type="button">Cancel</Button>
+                      <Button size="sm" onClick={handleSaveEdit} type="button">Save</Button>
                     </div>
                   </div>
                 ) : (
@@ -127,12 +129,12 @@ export function InventoryListing({ inventory, onItemAdd, onItemRemove, onItemUpd
               value={newItemName}
               onChange={(e) => setNewItemName(e.target.value)}
             />
-            <Input
-              type="number"
-              placeholder="Quantity"
+            <NumberSpinnerInput
               value={newItemQuantity}
-              onChange={(e) => setNewItemQuantity(parseInt(e.target.value, 10) || 1)}
-              min="1"
+              onChange={setNewItemQuantity}
+              min={1}
+              inputClassName="w-24 h-10 text-base"
+              buttonClassName="h-10 w-10"
             />
             <Textarea
               placeholder="Item Description (Optional)"
@@ -140,7 +142,7 @@ export function InventoryListing({ inventory, onItemAdd, onItemRemove, onItemUpd
               onChange={(e) => setNewItemDescription(e.target.value)}
               rows={2}
             />
-            <Button onClick={handleAddItem} size="sm">
+            <Button onClick={handleAddItem} size="sm" type="button">
               <PlusCircle className="mr-2 h-4 w-4" /> Add Item
             </Button>
           </div>

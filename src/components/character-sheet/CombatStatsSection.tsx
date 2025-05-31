@@ -1,7 +1,7 @@
+
 'use client';
 
 import type { Character, AbilityScores, SavingThrows, CharacterClass } from '@/types/character';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, Swords, Heart, Zap, Dices } from 'lucide-react';
@@ -17,6 +17,7 @@ import {
   getSizeModifierGrapple
 } from '@/lib/dnd-utils';
 import { Separator } from '../ui/separator';
+import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput'; // Added import
 
 interface CombatStatsSectionProps {
   character: Character;
@@ -27,7 +28,6 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
   const abilityScores = character.abilityScores;
   const classes = character.classes;
 
-  // Calculated values
   const dexModifier = getAbilityModifierByName(abilityScores, 'dexterity');
   const strModifier = getAbilityModifierByName(abilityScores, 'strength');
   const conModifier = getAbilityModifierByName(abilityScores, 'constitution');
@@ -63,11 +63,6 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
     onCharacterUpdate(`savingThrows.${saveType}.${field}`, value);
   };
   
-  const handleNumericChange = (field: keyof Character, value: string) => {
-    onCharacterUpdate(field, parseInt(value, 10) || 0);
-  };
-
-
   return (
     <Card>
       <CardHeader>
@@ -81,22 +76,40 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
           <div>
             <Label htmlFor="hp">Current HP</Label>
-            <Input id="hp" type="number" value={character.hp} onChange={(e) => handleNumericChange('hp', e.target.value)} />
+            <NumberSpinnerInput
+              id="hp"
+              value={character.hp}
+              onChange={(newValue) => onCharacterUpdate('hp', newValue)}
+              min={-999} // Allow very low HP for near death states
+              max={character.maxHp > 0 ? character.maxHp + 20 : 999} // Allow some buffer over maxHP
+              inputClassName="w-24 h-10 text-lg"
+              buttonClassName="h-10 w-10"
+            />
           </div>
           <div>
             <Label htmlFor="maxHp">Max HP</Label>
-            <Input id="maxHp" type="number" value={character.maxHp} onChange={(e) => handleNumericChange('maxHp', e.target.value)} />
+             <NumberSpinnerInput
+              id="maxHp"
+              value={character.maxHp}
+              onChange={(newValue) => onCharacterUpdate('maxHp', newValue)}
+              min={1}
+              max={999}
+              inputClassName="w-24 h-10 text-lg"
+              buttonClassName="h-10 w-10"
+            />
           </div>
           <div className="text-center md:text-left">
             <Label>Initiative</Label>
             <p className="text-3xl font-bold text-accent">{initiative >= 0 ? '+' : ''}{initiative}</p>
             <div className="flex items-center justify-center md:justify-start gap-1 mt-1">
               <span className="text-xs text-muted-foreground">Dex ({dexModifier >= 0 ? '+' : ''}{dexModifier}) + Misc:</span>
-              <Input 
-                type="number" 
-                value={character.initiativeMiscModifier} 
-                onChange={(e) => handleNumericChange('initiativeMiscModifier', e.target.value)}
-                className="w-16 h-6 text-xs p-1"
+              <NumberSpinnerInput
+                value={character.initiativeMiscModifier}
+                onChange={(newValue) => onCharacterUpdate('initiativeMiscModifier', newValue)}
+                min={-20} max={20}
+                inputClassName="w-12 h-6 text-xs"
+                buttonClassName="h-6 w-6"
+                buttonSize="sm"
               />
             </div>
           </div>
@@ -107,16 +120,17 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
         {/* Armor Class */}
         <div>
           <h4 className="text-lg font-semibold mb-2 flex items-center"><Shield className="h-5 w-5 mr-2 text-primary/80" />Armor Class: <span className="text-3xl font-bold text-accent ml-2">{totalAC}</span></h4>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 text-sm">
-            <span>Base: 10</span>
-            <span>Dex Mod: {dexModifier >=0 ? '+':''}{dexModifier}</span>
-            <span>Size Mod: {sizeModAC >=0 ? '+':''}{sizeModAC}</span>
-            <div className="flex items-center gap-1">Armor: <Input type="number" value={character.armorBonus} onChange={(e) => handleNumericChange('armorBonus', e.target.value)} className="w-16 h-7 text-sm p-1" /></div>
-            <div className="flex items-center gap-1">Shield: <Input type="number" value={character.shieldBonus} onChange={(e) => handleNumericChange('shieldBonus', e.target.value)} className="w-16 h-7 text-sm p-1" /></div>
-            <div className="flex items-center gap-1">Natural: <Input type="number" value={character.naturalArmor} onChange={(e) => handleNumericChange('naturalArmor', e.target.value)} className="w-16 h-7 text-sm p-1" /></div>
-            <div className="flex items-center gap-1">Deflection: <Input type="number" value={character.deflectionBonus} onChange={(e) => handleNumericChange('deflectionBonus', e.target.value)} className="w-16 h-7 text-sm p-1" /></div>
-            <div className="flex items-center gap-1">Dodge: <Input type="number" value={character.dodgeBonus} onChange={(e) => handleNumericChange('dodgeBonus', e.target.value)} className="w-16 h-7 text-sm p-1" /></div>
-            <div className="flex items-center gap-1">Misc: <Input type="number" value={character.acMiscModifier} onChange={(e) => handleNumericChange('acMiscModifier', e.target.value)} className="w-16 h-7 text-sm p-1" /></div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3 text-sm items-center">
+            <div className="flex items-center gap-1">Base: <span className="font-semibold">10</span></div>
+            <div className="flex items-center gap-1">Dex Mod: <span className="font-semibold">{dexModifier >=0 ? '+':''}{dexModifier}</span></div>
+            <div className="flex items-center gap-1">Size Mod: <span className="font-semibold">{sizeModAC >=0 ? '+':''}{sizeModAC}</span></div>
+            
+            <div className="flex items-center gap-1"><Label htmlFor="ac-armor" className="shrink-0">Armor:</Label> <NumberSpinnerInput id="ac-armor" value={character.armorBonus} onChange={(val) => onCharacterUpdate('armorBonus', val)} min={0} max={30} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
+            <div className="flex items-center gap-1"><Label htmlFor="ac-shield" className="shrink-0">Shield:</Label> <NumberSpinnerInput id="ac-shield" value={character.shieldBonus} onChange={(val) => onCharacterUpdate('shieldBonus', val)} min={0} max={15} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
+            <div className="flex items-center gap-1"><Label htmlFor="ac-natural" className="shrink-0">Natural:</Label> <NumberSpinnerInput id="ac-natural" value={character.naturalArmor} onChange={(val) => onCharacterUpdate('naturalArmor', val)} min={0} max={20} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
+            <div className="flex items-center gap-1"><Label htmlFor="ac-deflection" className="shrink-0">Deflection:</Label> <NumberSpinnerInput id="ac-deflection" value={character.deflectionBonus} onChange={(val) => onCharacterUpdate('deflectionBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
+            <div className="flex items-center gap-1"><Label htmlFor="ac-dodge" className="shrink-0">Dodge:</Label> <NumberSpinnerInput id="ac-dodge" value={character.dodgeBonus} onChange={(val) => onCharacterUpdate('dodgeBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
+            <div className="flex items-center gap-1"><Label htmlFor="ac-misc" className="shrink-0">Misc:</Label> <NumberSpinnerInput id="ac-misc" value={character.acMiscModifier} onChange={(val) => onCharacterUpdate('acMiscModifier', val)} min={-10} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
           </div>
         </div>
         
@@ -148,14 +162,27 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                 <div className="text-xs space-y-1 mt-1">
                   <p>Base: {baseSaves[saveType]}</p>
                   <p>Ability Mod: {saveType === 'fortitude' ? conModifier : saveType === 'reflex' ? dexModifier : wisModifier}</p>
-                  <div className="flex items-center gap-1">Magic: <Input type="number" value={character.savingThrows[saveType].magicMod} onChange={(e) => handleSavingThrowChange(saveType, 'magicMod', parseInt(e.target.value, 10) || 0)} className="w-16 h-6 text-xs p-1" /></div>
-                  <div className="flex items-center gap-1">Misc: <Input type="number" value={character.savingThrows[saveType].miscMod} onChange={(e) => handleSavingThrowChange(saveType, 'miscMod', parseInt(e.target.value, 10) || 0)} className="w-16 h-6 text-xs p-1" /></div>
+                  <div className="flex items-center gap-1"><Label htmlFor={`st-magic-${saveType}`} className="shrink-0">Magic:</Label> 
+                    <NumberSpinnerInput 
+                      id={`st-magic-${saveType}`}
+                      value={character.savingThrows[saveType].magicMod} 
+                      onChange={(val) => handleSavingThrowChange(saveType, 'magicMod', val)} 
+                      min={-10} max={10}
+                      inputClassName="w-12 h-6 text-xs" buttonClassName="h-6 w-6" buttonSize="sm" />
+                  </div>
+                  <div className="flex items-center gap-1"><Label htmlFor={`st-misc-${saveType}`} className="shrink-0">Misc:</Label> 
+                    <NumberSpinnerInput
+                      id={`st-misc-${saveType}`}
+                      value={character.savingThrows[saveType].miscMod} 
+                      onChange={(val) => handleSavingThrowChange(saveType, 'miscMod', val)}
+                      min={-10} max={10}
+                      inputClassName="w-12 h-6 text-xs" buttonClassName="h-6 w-6" buttonSize="sm" />
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-
       </CardContent>
     </Card>
   );

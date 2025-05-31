@@ -4,7 +4,6 @@
 import * as React from 'react';
 import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, CharacterFeatInstance, DndRaceOption, SkillDefinitionJsonData, FeatDefinitionJsonData } from '@/types/character';
 import { CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES } from '@/types/character';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,20 +11,18 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollText, Pencil, Info } from 'lucide-react';
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
-import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-// AddCustomSkillDialog import removed
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
+import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 
-// Extended SkillDisplayInfo to include all necessary definition properties
 interface SkillDisplayInfo extends SkillType {
   name: string;
   keyAbility: AbilityName;
   description?: string;
   isCustom: boolean;
-  definitionProvidesSynergies?: CustomSynergyRule[]; // Synergies THIS skill definition provides
+  definitionProvidesSynergies?: CustomSynergyRule[]; 
 }
 
 export interface SkillModifierBreakdownDetails {
@@ -33,7 +30,7 @@ export interface SkillModifierBreakdownDetails {
   keyAbilityName?: string;
   keyAbilityModifier: number;
   ranks: number;
-  synergyBonus: number; // Synergy received from other skills
+  synergyBonus: number; 
   featBonus: number;
   racialBonus: number;
   miscModifier: number;
@@ -51,7 +48,7 @@ interface SkillsFormSectionProps {
   allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
   allCustomSkillDefinitions: readonly CustomSkillDefinition[];
   onSkillChange: (skillId: string, ranks: number, isClassSkill?: boolean) => void;
-  onEditCustomSkillDefinition: (skillDefId: string) => void; // Callback to CharacterFormCore
+  onEditCustomSkillDefinition: (skillDefId: string) => void; 
 }
 
 export function SkillsFormSection({
@@ -67,7 +64,6 @@ export function SkillsFormSection({
   onSkillChange,
   onEditCustomSkillDefinition,
 }: SkillsFormSectionProps) {
-  // State for AddOrEditSkillDialog moved to CharacterFormCore
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentSkillInfo, setCurrentSkillInfo] = React.useState<{ title: string; content?: string; skillModifierBreakdown?: SkillModifierBreakdownDetails } | null>(null);
 
@@ -227,7 +223,7 @@ export function SkillsFormSection({
             <span className="text-center w-10">Total</span>
             <span className="text-center w-10">Key</span>
             <span className="text-center w-10">Mod</span>
-            <span className="text-center w-12">Ranks</span>
+            <span className="text-center w-16">Ranks</span>
             <span className="text-center w-12">Cost</span>
             <span className="text-center w-10">Max</span>
           </div>
@@ -303,15 +299,19 @@ export function SkillsFormSection({
                 <span className="font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
                 <span className="text-xs text-muted-foreground text-center w-10">{keyAbilityDisplay}</span>
                 <span className="text-xs text-center w-10">{totalDisplayedModifier >= 0 ? '+' : ''}{totalDisplayedModifier}</span>
-                <Input
-                  id={`skill_ranks_${skill.id}`}
-                  type="number"
-                  step={currentStepForInput}
-                  value={skill.ranks || 0}
-                  onChange={(e) => onSkillChange(skill.id, parseFloat(e.target.value) || 0, skill.isClassSkill)}
-                  className="h-7 w-12 text-xs text-center p-1"
-                  min="0"
-                />
+                <div className="w-16 flex justify-center">
+                  <NumberSpinnerInput
+                    id={`skill_ranks_${skill.id}`}
+                    value={skill.ranks || 0}
+                    onChange={(newValue) => onSkillChange(skill.id, newValue, skill.isClassSkill)}
+                    min={0}
+                    // max={maxRanksValue} // Max validation is visual via max column
+                    step={currentStepForInput}
+                    inputClassName="w-10 h-7 text-xs"
+                    buttonSize="sm"
+                    buttonClassName="h-7 w-7"
+                  />
+                </div>
                 <span className="text-xs text-muted-foreground text-center w-12">{skillCostDisplay}</span>
                 <span className={cn(
                     "text-xs text-center w-10",
@@ -323,10 +323,8 @@ export function SkillsFormSection({
             );
           })}
         </div>
-        {/* "Add Custom Skill Definition" button removed from here */}
       </CardContent>
     </Card>
-    {/* AddCustomSkillDialog rendering removed from here */}
     {currentSkillInfo && (
       <InfoDisplayDialog
         isOpen={isInfoDialogOpen}
@@ -339,4 +337,3 @@ export function SkillsFormSection({
     </>
   );
 }
-

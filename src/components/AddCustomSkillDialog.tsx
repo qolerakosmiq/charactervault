@@ -16,19 +16,19 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { ComboboxPrimitive } from '@/components/ui/combobox';
 import { PlusCircle, Pencil, Trash2, Sparkles } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
+import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput'; // Added import
 
 interface AddCustomSkillDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (skillDefData: CustomSkillDefinition) => void; // Saves the definition to global store
-  initialSkillData?: CustomSkillDefinition; // The full definition for editing
-  allSkills: Array<{value: string; label: string}>; // For synergy target dropdown (skill IDs and names)
+  onSave: (skillDefData: CustomSkillDefinition) => void; 
+  initialSkillData?: CustomSkillDefinition; 
+  allSkills: Array<{value: string; label: string}>; 
 }
 
 const keyAbilityOptions: Array<{ value: AbilityName; label: string }> = [
@@ -46,15 +46,14 @@ export function AddCustomSkillDialog({
   onOpenChange,
   onSave,
   initialSkillData,
-  allSkills, // These are {value: skillId, label: skillName}
+  allSkills, 
 }: AddCustomSkillDialogProps) {
   const [skillName, setSkillName] = React.useState('');
   const [selectedKeyAbility, setSelectedKeyAbility] = React.useState<AbilityName>('intelligence');
-  // isClassSkill is NOT part of the definition; it's per-character based on class. Removed from here.
   const [synergyRules, setSynergyRules] = React.useState<CustomSynergyRule[]>([]);
   const [description, setDescription] = React.useState('');
 
-  const [newSynergyTargetSkillId, setNewSynergyTargetSkillId] = React.useState(''); // Stores ID of target skill
+  const [newSynergyTargetSkillId, setNewSynergyTargetSkillId] = React.useState(''); 
   const [newSynergyRanksRequired, setNewSynergyRanksRequired] = React.useState(5);
   const [newSynergyBonus, setNewSynergyBonus] = React.useState(2);
 
@@ -62,7 +61,7 @@ export function AddCustomSkillDialog({
 
   const availableTargetSkillsOptions = React.useMemo(() => {
     return allSkills
-      .filter(skill => skill.value !== initialSkillData?.id) // skill.value is the ID
+      .filter(skill => skill.value !== initialSkillData?.id) 
       .sort((a,b) => a.label.localeCompare(b.label));
   }, [allSkills, initialSkillData?.id]);
 
@@ -87,7 +86,6 @@ export function AddCustomSkillDialog({
 
   const handleKeyAbilityChange = (value: string) => {
     setSelectedKeyAbility(value as AbilityName);
-    // No need to manage isClassSkill here, as it's not part of the global definition
   };
 
   const handleAddSynergyRule = () => {
@@ -98,8 +96,8 @@ export function AddCustomSkillDialog({
     setSynergyRules(prev => [
       ...prev,
       {
-        id: crypto.randomUUID(), // Temp ID for list management in dialog
-        targetSkillName: newSynergyTargetSkillId, // This stores the target skill ID
+        id: crypto.randomUUID(), 
+        targetSkillName: newSynergyTargetSkillId, 
         ranksInThisSkillRequired: newSynergyRanksRequired,
         bonusGranted: newSynergyBonus,
       }
@@ -130,7 +128,7 @@ export function AddCustomSkillDialog({
   };
 
   const getSkillLabelById = (id: string) => {
-    const skill = allSkills.find(s => s.value === id); // s.value is ID
+    const skill = allSkills.find(s => s.value === id); 
     return skill ? skill.label : 'Unknown Skill';
   }
 
@@ -176,8 +174,6 @@ export function AddCustomSkillDialog({
                 </SelectContent>
               </Select>
             </div>
-            {/* "Is Class Skill" checkbox removed as it's not part of global definition */}
-
             <div className="space-y-1">
               <Label htmlFor="custom-skill-description">Skill Description</Label>
               <Textarea
@@ -200,8 +196,8 @@ export function AddCustomSkillDialog({
                 <div className="space-y-1">
                   <Label htmlFor="synergy-target-skill">Target Skill to Grant Bonus To</Label>
                   <ComboboxPrimitive
-                    options={availableTargetSkillsOptions} // {value: skillId, label: skillName}
-                    value={newSynergyTargetSkillId} // Stores skillId
+                    options={availableTargetSkillsOptions} 
+                    value={newSynergyTargetSkillId} 
                     onChange={(value) => setNewSynergyTargetSkillId(value)}
                     placeholder="Select target skill"
                     searchPlaceholder="Search skills..."
@@ -212,21 +208,26 @@ export function AddCustomSkillDialog({
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1">
                     <Label htmlFor="synergy-ranks-required">Ranks in *this* Custom Skill Required</Label>
-                    <Input
+                    <NumberSpinnerInput
                       id="synergy-ranks-required"
-                      type="number"
                       value={newSynergyRanksRequired}
-                      onChange={(e) => setNewSynergyRanksRequired(parseInt(e.target.value,10) || 0)}
-                      min="1"
+                      onChange={setNewSynergyRanksRequired}
+                      min={1}
+                      inputClassName="h-9 text-sm"
+                      buttonClassName="h-9 w-9"
+                      buttonSize="sm"
                     />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="synergy-bonus-granted">Bonus Granted to Target Skill</Label>
-                    <Input
+                     <NumberSpinnerInput
                       id="synergy-bonus-granted"
-                      type="number"
                       value={newSynergyBonus}
-                      onChange={(e) => setNewSynergyBonus(parseInt(e.target.value,10) || 0)}
+                      onChange={setNewSynergyBonus}
+                      min={-10} max={10} // Allow negative bonuses if desired
+                      inputClassName="h-9 text-sm"
+                      buttonClassName="h-9 w-9"
+                      buttonSize="sm"
                     />
                   </div>
                 </div>

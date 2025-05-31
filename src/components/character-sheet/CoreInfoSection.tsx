@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { UserCircle2 } from 'lucide-react';
 import { SIZES, ALIGNMENTS } from '@/types/character';
+import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput'; // Added import
 
 interface CoreInfoSectionProps {
   character: Pick<Character, 'name' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
@@ -20,11 +21,8 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const field = name as keyof Character;
-    if (name === 'age') {
-      onCoreValueChange(field, parseInt(value, 10) || 0 as any);
-    } else {
-      onCoreValueChange(field, value as any);
-    }
+    // Age and Level are now handled by NumberSpinnerInput
+    onCoreValueChange(field, value as any);
   };
 
   const handleSelectChange = (field: keyof Character, value: string) => {
@@ -78,13 +76,14 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
           </div>
           <div>
             <Label htmlFor="level">Level</Label>
-            <Input 
-              id="level" 
-              name="level" 
-              type="number" 
-              value={firstClass.level} 
-              onChange={(e) => handleClassFieldChange(0, 'level', parseInt(e.target.value, 10) || 1)} 
-              min="1"
+            <NumberSpinnerInput
+              id="level"
+              value={firstClass.level}
+              onChange={(newValue) => handleClassFieldChange(0, 'level', newValue)}
+              min={1}
+              max={20} // Common D&D max level
+              inputClassName="w-24 h-10 text-base" // Adjusted width for level
+              buttonClassName="h-10 w-10"
             />
           </div>
         </div>
@@ -117,8 +116,16 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
             </Select>
           </div>
           <div>
-            <Label htmlFor="age">Age</Label>
-            <Input id="age" name="age" type="number" value={character.age} onChange={handleInputChange} />
+            <Label htmlFor="age-cs">Age</Label>
+            <NumberSpinnerInput
+              id="age-cs"
+              value={character.age}
+              onChange={(newValue) => onCoreValueChange('age', newValue)}
+              min={1} // Or a race-specific min
+              max={1000}
+              inputClassName="w-24 h-10 text-base"
+              buttonClassName="h-10 w-10"
+            />
           </div>
           <div>
             <Label htmlFor="gender">Gender</Label>
@@ -129,5 +136,3 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
     </Card>
   );
 }
-
-    

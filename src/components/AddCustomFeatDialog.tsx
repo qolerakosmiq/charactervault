@@ -23,14 +23,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ComboboxPrimitive, type ComboboxOption } from '@/components/ui/combobox';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput'; // Added import
 
 interface AddCustomFeatDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onSave: (featDefData: FeatDefinitionJsonData & { isCustom: true }) => void;
   initialFeatData?: FeatDefinitionJsonData & { isCustom: true };
-  allFeats: readonly FeatDefinitionJsonData[]; // For feat prerequisite selector (predefined D&D feats)
-  allSkills: readonly ComboboxOption[]; // skill ID (value) and label
+  allFeats: readonly FeatDefinitionJsonData[]; 
+  allSkills: readonly ComboboxOption[]; 
   allClasses: readonly DndClassOption[];
   allRaces: readonly DndRaceOption[];
 }
@@ -47,9 +48,9 @@ const abilityOptions: Array<{ value: Exclude<AbilityName, 'none'>; label: string
 type PrerequisiteListItem = {
   tempId: string;
   type: 'ability' | 'skill' | 'feat';
-  itemId: string; // For ability: ability name; For skill: skill ID; For feat: feat definition ID
+  itemId: string; 
   itemLabel: string;
-  value?: number; // For ability: score; For skill: ranks
+  value?: number; 
 };
 
 const NONE_VALUE = "__NONE__";
@@ -59,8 +60,8 @@ export function AddCustomFeatDialog({
   onOpenChange,
   onSave,
   initialFeatData,
-  allFeats, // Predefined D&D feats
-  allSkills, // skill definitions {value: id, label: name}
+  allFeats, 
+  allSkills, 
   allClasses,
   allRaces,
 }: AddCustomFeatDialogProps) {
@@ -69,15 +70,15 @@ export function AddCustomFeatDialog({
   const [canTakeMultipleTimes, setCanTakeMultipleTimes] = React.useState(false);
   const [requiresSpecialization, setRequiresSpecialization] = React.useState('');
   const [effectsText, setEffectsText] = React.useState('');
-  const [prereqBab, setPrereqBab] = React.useState('');
-  const [prereqCasterLevel, setPrereqCasterLevel] = React.useState('');
+  const [prereqBab, setPrereqBab] = React.useState(0); // Changed to number
+  const [prereqCasterLevel, setPrereqCasterLevel] = React.useState(0); // Changed to number
   const [prereqClassId, setPrereqClassId] = React.useState<DndClassId | string>(NONE_VALUE);
-  const [prereqClassLevel, setPrereqClassLevel] = React.useState('');
+  const [prereqClassLevel, setPrereqClassLevel] = React.useState(0); // Changed to number
   const [prereqRaceId, setPrereqRaceId] = React.useState<DndRaceId | string>(NONE_VALUE);
   const [prereqAlignment, setPrereqAlignment] = React.useState<string>(NONE_VALUE);
   const [newPrereqType, setNewPrereqType] = React.useState<'ability' | 'skill' | 'feat' | ''>('');
   const [newPrereqItemId, setNewPrereqItemId] = React.useState('');
-  const [newPrereqValue, setNewPrereqValue] = React.useState('');
+  const [newPrereqValue, setNewPrereqValue] = React.useState(0); // Changed to number
   const [prerequisitesList, setPrerequisitesList] = React.useState<PrerequisiteListItem[]>([]);
 
   const isEditing = !!initialFeatData;
@@ -107,10 +108,10 @@ export function AddCustomFeatDialog({
         setEffectsText(initialFeatData.effectsText || '');
 
         const prereqs = initialFeatData.prerequisites;
-        setPrereqBab(prereqs?.bab?.toString() || '');
-        setPrereqCasterLevel(prereqs?.casterLevel?.toString() || '');
+        setPrereqBab(prereqs?.bab || 0);
+        setPrereqCasterLevel(prereqs?.casterLevel || 0);
         setPrereqClassId(prereqs?.classLevel?.classId || NONE_VALUE);
-        setPrereqClassLevel(prereqs?.classLevel?.level.toString() || '');
+        setPrereqClassLevel(prereqs?.classLevel?.level || 0);
         setPrereqRaceId(prereqs?.raceId || NONE_VALUE);
         setPrereqAlignment(prereqs?.alignment || NONE_VALUE);
         
@@ -121,15 +122,15 @@ export function AddCustomFeatDialog({
             loadedPrereqs.push({ tempId: crypto.randomUUID(), type: 'ability', itemId: ability, itemLabel: abilityLabel, value: score });
           }
         }
-        if (prereqs?.skills) { // prereqs.skills contains {id: skillId, ranks: number}
+        if (prereqs?.skills) { 
           prereqs.skills.forEach(skillReq => {
             const skillLabel = allSkills.find(s => s.value === skillReq.id)?.label || skillReq.id;
             loadedPrereqs.push({ tempId: crypto.randomUUID(), type: 'skill', itemId: skillReq.id, itemLabel: skillLabel, value: skillReq.ranks });
           });
         }
-        if (prereqs?.feats) { // prereqs.feats is an array of feat definition IDs
+        if (prereqs?.feats) { 
           prereqs.feats.forEach(featId => {
-            const featLabel = allFeats.find(f => f.value === featId)?.label || featId; // Use predefined feats for label
+            const featLabel = allFeats.find(f => f.value === featId)?.label || featId; 
             loadedPrereqs.push({ tempId: crypto.randomUUID(), type: 'feat', itemId: featId, itemLabel: featLabel });
           });
         }
@@ -140,17 +141,17 @@ export function AddCustomFeatDialog({
         setCanTakeMultipleTimes(false);
         setRequiresSpecialization('');
         setEffectsText('');
-        setPrereqBab('');
-        setPrereqCasterLevel('');
+        setPrereqBab(0);
+        setPrereqCasterLevel(0);
         setPrereqClassId(NONE_VALUE);
-        setPrereqClassLevel('');
+        setPrereqClassLevel(0);
         setPrereqRaceId(NONE_VALUE);
         setPrereqAlignment(NONE_VALUE);
         setPrerequisitesList([]);
       }
       setNewPrereqType('');
       setNewPrereqItemId('');
-      setNewPrereqValue('');
+      setNewPrereqValue(0);
     }
   }, [isOpen, initialFeatData, allFeats, allSkills]);
 
@@ -165,27 +166,27 @@ export function AddCustomFeatDialog({
     if (newPrereqType === 'ability') {
       const abilityOpt = abilityOptions.find(opt => opt.value === newPrereqItemId);
       itemLabel = abilityOpt ? abilityOpt.label : newPrereqItemId;
-      value = parseInt(newPrereqValue, 10);
-      if (isNaN(value) || value <= 0) {
+      value = newPrereqValue;
+      if (value <= 0) {
         alert('Please enter a valid positive ability score.');
         return;
       }
-    } else if (newPrereqType === 'skill') { // newPrereqItemId is skill ID
+    } else if (newPrereqType === 'skill') { 
       const skillOpt = allSkills.find(opt => opt.value === newPrereqItemId);
       itemLabel = skillOpt ? skillOpt.label : newPrereqItemId;
-      value = parseInt(newPrereqValue, 10);
-      if (isNaN(value) || value <= 0) {
+      value = newPrereqValue;
+      if (value <= 0) {
         alert('Please enter valid positive skill ranks.');
         return;
       }
-    } else if (newPrereqType === 'feat') { // newPrereqItemId is feat definition ID
+    } else if (newPrereqType === 'feat') { 
       const featOpt = allFeats.find(opt => opt.value === newPrereqItemId);
       itemLabel = featOpt ? featOpt.label : newPrereqItemId;
     }
 
     setPrerequisitesList(prev => [...prev, { tempId: crypto.randomUUID(), type: newPrereqType, itemId: newPrereqItemId, itemLabel, value }]);
     setNewPrereqItemId('');
-    setNewPrereqValue('');
+    setNewPrereqValue(0);
   };
 
   const handleRemovePrerequisite = (tempIdToRemove: string) => {
@@ -199,10 +200,10 @@ export function AddCustomFeatDialog({
     }
 
     const finalStructuredPrerequisites: FeatPrerequisiteDetails = {};
-    if (prereqBab.trim() !== '' && !isNaN(parseInt(prereqBab, 10))) finalStructuredPrerequisites.bab = parseInt(prereqBab, 10);
-    if (prereqCasterLevel.trim() !== '' && !isNaN(parseInt(prereqCasterLevel, 10))) finalStructuredPrerequisites.casterLevel = parseInt(prereqCasterLevel, 10);
-    if (prereqClassId !== NONE_VALUE && prereqClassId.trim() !== '' && prereqClassLevel.trim() !== '' && !isNaN(parseInt(prereqClassLevel, 10))) {
-        finalStructuredPrerequisites.classLevel = { classId: prereqClassId, level: parseInt(prereqClassLevel, 10) };
+    if (prereqBab > 0) finalStructuredPrerequisites.bab = prereqBab;
+    if (prereqCasterLevel > 0) finalStructuredPrerequisites.casterLevel = prereqCasterLevel;
+    if (prereqClassId !== NONE_VALUE && prereqClassId.trim() !== '' && prereqClassLevel > 0) {
+        finalStructuredPrerequisites.classLevel = { classId: prereqClassId, level: prereqClassLevel };
     }
     if (prereqRaceId !== NONE_VALUE && prereqRaceId.trim() !== '') {
         finalStructuredPrerequisites.raceId = prereqRaceId;
@@ -215,10 +216,10 @@ export function AddCustomFeatDialog({
       if (p.type === 'ability' && p.value !== undefined) {
         if (!finalStructuredPrerequisites.abilities) finalStructuredPrerequisites.abilities = {};
         finalStructuredPrerequisites.abilities[p.itemId as Exclude<AbilityName, 'none'>] = p.value;
-      } else if (p.type === 'skill' && p.value !== undefined) { // p.itemId is skill ID
+      } else if (p.type === 'skill' && p.value !== undefined) { 
         if (!finalStructuredPrerequisites.skills) finalStructuredPrerequisites.skills = [];
         finalStructuredPrerequisites.skills.push({ id: p.itemId, ranks: p.value });
-      } else if (p.type === 'feat') { // p.itemId is feat definition ID
+      } else if (p.type === 'feat') { 
         if (!finalStructuredPrerequisites.feats) finalStructuredPrerequisites.feats = [];
         finalStructuredPrerequisites.feats.push(p.itemId);
       }
@@ -233,7 +234,6 @@ export function AddCustomFeatDialog({
       canTakeMultipleTimes,
       requiresSpecialization: requiresSpecialization.trim() || undefined,
       isCustom: true,
-      // Effects object could be built here if editable
     };
 
     onSave(featDefinition);
@@ -244,8 +244,7 @@ export function AddCustomFeatDialog({
     if (!newPrereqType) return true;
     if (!newPrereqItemId) return true;
     if ((newPrereqType === 'ability' || newPrereqType === 'skill')) {
-      const numValue = parseInt(newPrereqValue, 10);
-      if (isNaN(numValue) || numValue <= 0) return true;
+      if (newPrereqValue <= 0) return true;
     }
     return false;
   }, [newPrereqType, newPrereqItemId, newPrereqValue]);
@@ -311,11 +310,11 @@ export function AddCustomFeatDialog({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <Label htmlFor="prereq-bab">Base Attack Bonus (BAB)</Label>
-                <Input id="prereq-bab" type="number" value={prereqBab} onChange={(e) => setPrereqBab(e.target.value)} placeholder="e.g., 1" min="0"/>
+                <NumberSpinnerInput id="prereq-bab" value={prereqBab} onChange={setPrereqBab} min={0} inputClassName="h-9 text-sm" buttonClassName="h-9 w-9" buttonSize="sm"/>
               </div>
               <div className="space-y-1">
                 <Label htmlFor="prereq-caster-level">Caster Level</Label>
-                <Input id="prereq-caster-level" type="number" value={prereqCasterLevel} onChange={(e) => setPrereqCasterLevel(e.target.value)} placeholder="e.g., 1" min="0" />
+                <NumberSpinnerInput id="prereq-caster-level" value={prereqCasterLevel} onChange={setPrereqCasterLevel} min={0} inputClassName="h-9 text-sm" buttonClassName="h-9 w-9" buttonSize="sm"/>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -330,13 +329,12 @@ export function AddCustomFeatDialog({
               </div>
               <div className="space-y-1">
                 <Label htmlFor="prereq-class-level">Minimum Level in Class</Label>
-                <Input 
+                <NumberSpinnerInput 
                   id="prereq-class-level" 
-                  type="number" 
                   value={prereqClassLevel} 
-                  onChange={(e) => setPrereqClassLevel(e.target.value)} 
-                  placeholder="e.g., 1" 
-                  min="1"
+                  onChange={setPrereqClassLevel} 
+                  min={0} // Can be 0 if "None" class is selected
+                  inputClassName="h-9 text-sm" buttonClassName="h-9 w-9" buttonSize="sm"
                   disabled={prereqClassId === NONE_VALUE || prereqClassId === ""}
                 />
               </div>
@@ -368,7 +366,7 @@ export function AddCustomFeatDialog({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
                 <div className="space-y-1">
                   <Label htmlFor="new-prereq-type">Type</Label>
-                  <Select value={newPrereqType} onValueChange={(val) => { setNewPrereqType(val as any); setNewPrereqItemId(''); setNewPrereqValue(''); }}>
+                  <Select value={newPrereqType} onValueChange={(val) => { setNewPrereqType(val as any); setNewPrereqItemId(''); setNewPrereqValue(0); }}>
                     <SelectTrigger><SelectValue placeholder="Select Type..." /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="ability">Ability Score</SelectItem>
@@ -391,7 +389,7 @@ export function AddCustomFeatDialog({
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="new-prereq-ability-value">Min Score</Label>
-                      <Input id="new-prereq-ability-value" type="number" value={newPrereqValue} onChange={e => setNewPrereqValue(e.target.value)} placeholder="e.g., 13" min="1" />
+                      <NumberSpinnerInput id="new-prereq-ability-value" value={newPrereqValue} onChange={setNewPrereqValue} min={1} inputClassName="h-9 text-sm" buttonClassName="h-9 w-9" buttonSize="sm" />
                     </div>
                   </>
                 )}
@@ -400,15 +398,15 @@ export function AddCustomFeatDialog({
                     <div className="space-y-1">
                       <Label htmlFor="new-prereq-skill-item">Skill</Label>
                       <ComboboxPrimitive
-                        options={allSkills} // {value: skillId, label: skillName}
-                        value={newPrereqItemId} // skillId
+                        options={allSkills} 
+                        value={newPrereqItemId} 
                         onChange={setNewPrereqItemId}
                         placeholder="Select Skill..."
                       />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="new-prereq-skill-value">Min Ranks</Label>
-                      <Input id="new-prereq-skill-value" type="number" value={newPrereqValue} onChange={e => setNewPrereqValue(e.target.value)} placeholder="e.g., 5" min="1" />
+                      <NumberSpinnerInput id="new-prereq-skill-value" value={newPrereqValue} onChange={setNewPrereqValue} min={1} inputClassName="h-9 text-sm" buttonClassName="h-9 w-9" buttonSize="sm" />
                     </div>
                   </>
                 )}
@@ -416,8 +414,8 @@ export function AddCustomFeatDialog({
                   <div className="space-y-1 md:col-span-2">
                     <Label htmlFor="new-prereq-feat-item">Feat</Label>
                     <ComboboxPrimitive
-                      options={allFeats.map(f => ({ value: f.value, label: f.label }))} // {value: featDefId, label: featName}
-                      value={newPrereqItemId} // featDefId
+                      options={allFeats.map(f => ({ value: f.value, label: f.label }))} 
+                      value={newPrereqItemId} 
                       onChange={setNewPrereqItemId}
                       placeholder="Select Prerequisite Feat..."
                     />

@@ -6,14 +6,14 @@ import type { AbilityScores, CharacterClass, SavingThrows, SavingThrowType, DndC
 import { DND_CLASSES }
 from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 import { Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 
 interface SavingThrowsPanelProps {
   savingThrows: SavingThrows;
-  abilityScores: AbilityScores; // Expecting detailed/final scores for ability mods
+  abilityScores: AbilityScores; 
   characterClasses: CharacterClass[];
   onSavingThrowMiscModChange: (saveType: SavingThrowType, value: number) => void;
 }
@@ -65,12 +65,17 @@ export function SavingThrowsPanel({
     {
       label: "Custom Modifier",
       getValue: (saveType: SavingThrowType) => (
-        <Input
-          type="number"
-          value={savingThrows[saveType].miscMod}
-          onChange={(e) => onSavingThrowMiscModChange(saveType, parseInt(e.target.value, 10) || 0)}
-          className="h-8 w-12 text-sm text-center mx-auto"
-        />
+        <div className="flex justify-center">
+          <NumberSpinnerInput
+            value={savingThrows[saveType].miscMod}
+            onChange={(newValue) => onSavingThrowMiscModChange(saveType, newValue)}
+            min={-20} 
+            max={20}
+            inputClassName="w-10 h-7 text-sm"
+            buttonSize="sm"
+            buttonClassName="h-7 w-7"
+          />
+        </div>
       ),
     },
   ];
@@ -87,13 +92,19 @@ export function SavingThrowsPanel({
       <CardContent>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[300px]">
-            <thead><tr className="border-b"><th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground"></th>{/* Removed "Save Detail" */}
-                {SAVE_TYPES.map((saveType) => (<th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-muted-foreground capitalize">{SAVE_DISPLAY_NAMES[saveType]}</th>))}
+            <thead><tr className="border-b">
+                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground"></th>
+                {SAVE_TYPES.map((saveType) => (<th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-muted-foreground capitalize">
+                    {SAVE_DISPLAY_NAMES[saveType]}
+                  </th>))}
               </tr></thead>
             <tbody>{
               dataRows.map((row) => {
                 const labelKey = typeof row.label === 'string' ? row.label.replace(/\s+/g, '-') : Math.random().toString();
-                return (<tr key={labelKey} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors"><td className="py-2 px-1 text-sm font-medium text-foreground align-top">{row.label}</td>
+                return (<tr key={labelKey} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
+                  <td className="py-2 px-1 text-sm font-medium text-foreground align-top whitespace-normal">
+                    <span className="inline-block w-full">{row.label}</span>
+                  </td>
                   {SAVE_TYPES.map((saveType) => (<td key={`${labelKey}-${saveType}`} className="py-2 px-0.5 text-center text-sm text-muted-foreground">{row.getValue(saveType)}</td>))}
                 </tr>);
               })}

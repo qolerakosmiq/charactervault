@@ -35,6 +35,7 @@ import { ScrollText, Info } from 'lucide-react';
 import { ComboboxPrimitive } from '@/components/ui/combobox';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 
 interface CharacterFormCoreInfoSectionProps {
   characterData: Pick<Character, 'name' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
@@ -61,8 +62,8 @@ export function CharacterFormCoreInfoSection({
   sizeAbilityEffectsDetails,
   raceSpecialQualities,
   selectedClassInfo,
-  isPredefinedRace, // Use this prop
-  isPredefinedClass, // Use this prop
+  isPredefinedRace, 
+  isPredefinedClass, 
   currentMinAgeForInput,
   onOpenRaceInfoDialog,
   onOpenClassInfoDialog,
@@ -72,11 +73,8 @@ export function CharacterFormCoreInfoSection({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const field = name as keyof Character;
-    if (name === 'age') {
-      onFieldChange(field, parseInt(value, 10) || 0);
-    } else {
-      onFieldChange(field, value);
-    }
+    // Age is handled by NumberSpinnerInput now
+    onFieldChange(field, value);
   };
 
   const handleSelectChange = (field: keyof Character, value: string) => {
@@ -245,7 +243,16 @@ export function CharacterFormCoreInfoSection({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
           <div className="space-y-1">
             <Label htmlFor="age">Age</Label>
-            <Input id="age" name="age" type="number" value={characterData.age} onChange={handleInputChange} min={currentMinAgeForInput} />
+            <NumberSpinnerInput
+              id="age"
+              value={characterData.age}
+              onChange={(newValue) => onFieldChange('age', newValue)}
+              min={currentMinAgeForInput}
+              max={1000} // A reasonable upper limit for age
+              inputClassName="h-10 text-base" // Match other inputs in this section
+              buttonClassName="h-10 w-10"
+              buttonSize="icon"
+            />
             {ageEffectsDetails && ageEffectsDetails.effects.length > 0 && (
               <div className="text-xs text-muted-foreground mt-1 ml-1 space-y-0.5">
                 <p>

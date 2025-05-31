@@ -80,12 +80,10 @@ export function AbilityScorePointBuyDialog({
 
   React.useEffect(() => {
     if (isOpen) {
-      // Reset scores and points when dialog opens if needed, or persist last state
-      // For now, let's reset to default on open if not already set up for persistence
       const initial = {} as Partial<AbilityScores>;
       ABILITY_ORDER.forEach(ability => initial[ability] = DEFAULT_SCORE);
       setCurrentScores(initial as AbilityScores);
-      setTotalPoints(initialTotalPoints); // Reset total points as well
+      setTotalPoints(initialTotalPoints); 
     }
   }, [isOpen, initialTotalPoints]);
 
@@ -102,8 +100,6 @@ export function AbilityScorePointBuyDialog({
 
     if (tempSpent <= totalPoints) {
       setCurrentScores(tempScores);
-    } else {
-      // Optionally, provide feedback like a toast that they can't afford this score
     }
   };
 
@@ -120,7 +116,6 @@ export function AbilityScorePointBuyDialog({
       onScoresApplied(currentScores);
       onOpenChange(false);
     } else {
-      // This case should be prevented by disabling the button
       console.error("Error: Cannot apply scores, points spent exceed total points.");
     }
   };
@@ -150,7 +145,7 @@ export function AbilityScorePointBuyDialog({
                         type="number"
                         value={totalPoints}
                         onChange={(e) => setTotalPoints(parseInt(e.target.value, 10) || 0)}
-                        className="w-24 h-8"
+                        className="w-24 h-8 text-center"
                         />
                     </div>
                     <div className="flex-grow text-right">
@@ -185,6 +180,7 @@ export function AbilityScorePointBuyDialog({
                         </Label>
                         <div className="flex items-center justify-center space-x-2">
                         <Button
+                            type="button"
                             variant="outline"
                             size="icon"
                             className="h-8 w-8"
@@ -201,6 +197,7 @@ export function AbilityScorePointBuyDialog({
                             className="w-16 h-10 text-center text-xl appearance-none"
                         />
                         <Button
+                            type="button"
                             variant="outline"
                             size="icon"
                             className="h-8 w-8"
@@ -218,10 +215,10 @@ export function AbilityScorePointBuyDialog({
         </ScrollArea>
 
         <DialogFooter className="mt-6 pt-4 border-t">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
             Cancel
           </Button>
-          <Button onClick={handleApply} disabled={isApplyDisabled}>
+          <Button onClick={handleApply} disabled={isApplyDisabled} type="button">
             Apply Scores
           </Button>
         </DialogFooter>
@@ -229,4 +226,3 @@ export function AbilityScorePointBuyDialog({
     </Dialog>
   );
 }
-

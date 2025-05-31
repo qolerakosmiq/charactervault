@@ -4,13 +4,13 @@
 import * as React from 'react';
 import type { AbilityName, AbilityScores, DetailedAbilityScores } from '@/types/character';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dices, Info, Calculator } from 'lucide-react'; // Added Calculator
+import { Dices, Info, Calculator } from 'lucide-react'; 
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { cn } from '@/lib/utils';
-import { AbilityScorePointBuyDialog } from '@/components/AbilityScorePointBuyDialog'; // Added import
+import { AbilityScorePointBuyDialog } from '@/components/AbilityScorePointBuyDialog'; 
+import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 
 const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -18,7 +18,7 @@ interface CharacterFormAbilityScoresSectionProps {
   baseAbilityScores: AbilityScores;
   detailedAbilityScores: DetailedAbilityScores | null;
   onBaseAbilityScoreChange: (ability: Exclude<AbilityName, 'none'>, value: number) => void;
-  onMultipleBaseAbilityScoresChange: (newScores: AbilityScores) => void; // New prop for point buy / roller
+  onMultipleBaseAbilityScoresChange: (newScores: AbilityScores) => void; 
   onOpenAbilityScoreBreakdownDialog: (ability: Exclude<AbilityName, 'none'>) => void;
   onOpenRollerDialog: () => void;
   isCreating: boolean;
@@ -28,7 +28,7 @@ export function CharacterFormAbilityScoresSection({
   baseAbilityScores,
   detailedAbilityScores,
   onBaseAbilityScoreChange,
-  onMultipleBaseAbilityScoresChange, // New prop
+  onMultipleBaseAbilityScoresChange, 
   onOpenAbilityScoreBreakdownDialog,
   onOpenRollerDialog,
   isCreating,
@@ -77,14 +77,15 @@ export function CharacterFormAbilityScoresSection({
                   <p className="text-xs text-muted-foreground capitalize mb-0.5">
                     {ability}
                   </p>
-                  <Input
+                  <NumberSpinnerInput
                     id={ability}
-                    name={ability}
-                    type="number"
                     value={baseScore}
-                    onChange={(e) => onBaseAbilityScoreChange(ability, parseInt(e.target.value, 10) || 0)}
-                    className="text-center w-16"
-                    min="1"
+                    onChange={(newValue) => onBaseAbilityScoreChange(ability, newValue)}
+                    min={1}
+                    max={99} // A high practical limit for base scores
+                    inputClassName="w-12 h-8 text-base"
+                    buttonSize="sm"
+                    className="w-full justify-center"
                   />
                   <p className="text-center text-sm mt-1">
                     <span className="text-accent">Modifier: </span>
