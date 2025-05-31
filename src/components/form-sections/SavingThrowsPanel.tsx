@@ -3,7 +3,8 @@
 
 import * as React from 'react';
 import type { AbilityScores, CharacterClass, SavingThrows, SavingThrowType, DndClassOption, SingleSavingThrow } from '@/types/character';
-import { DND_CLASSES } from '@/types/character';
+import { DND_CLASSES }
+from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -46,19 +47,19 @@ export function SavingThrowsPanel({
           <table className="w-full min-w-[360px]">
             <thead>
               <tr className="border-b">
-                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground">
+                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground whitespace-normal">
                   <span className="inline-block w-full">Saving Throw</span>
                 </th>
-                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground">
+                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground whitespace-normal">
                   <span className="inline-block w-full">Total</span>
                 </th>
-                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground">
+                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground whitespace-normal">
                   <span className="inline-block w-full">Base</span>
                 </th>
-                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground">
+                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground whitespace-normal">
                   <span className="inline-block w-full">Ability Mod</span>
                 </th>
-                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground">
+                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground whitespace-normal">
                   <span className="inline-block w-full">Custom Mod</span>
                 </th>
               </tr>
