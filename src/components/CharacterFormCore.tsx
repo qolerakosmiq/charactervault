@@ -37,7 +37,7 @@ import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitio
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
-import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
+// AbilityScoreRollerDialog and AbilityScorePointBuyDialog imports removed from here
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 import { CharacterFormCoreInfoSection } from '@/components/form-sections/CharacterFormCoreInfoSection';
 import { CharacterFormAbilityScoresSection } from '@/components/form-sections/CharacterFormAbilityScoresSection';
@@ -53,7 +53,7 @@ import { BookOpenCheck, ShieldPlus, Zap, ShieldCheck, Settings, Calculator } fro
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { AbilityScorePointBuyDialog } from '@/components/AbilityScorePointBuyDialog';
+// AbilityScorePointBuyDialog import already removed above
 
 interface CharacterFormCoreProps {
   initialCharacter?: Character;
@@ -131,8 +131,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<CharacterFormCoreInfoSectionProps['ageEffectsDetails']>(null);
   const [sizeAbilityEffectsDetails, setSizeAbilityEffectsDetails] = React.useState<CharacterFormCoreInfoSectionProps['sizeAbilityEffectsDetails']>(null);
   const [raceSpecialQualities, setRaceSpecialQualities] = React.useState<CharacterFormCoreInfoSectionProps['raceSpecialQualities']>(null);
-  const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
-  const [isPointBuyDialogOpen, setIsPointBuyDialogOpen] = React.useState(false); // This state now controls the single dialog instance
+  // Removed isRollerDialogOpen and isPointBuyDialogOpen states
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<Parameters<typeof InfoDisplayDialog>[0] | null>(null);
   const [detailedAbilityScores, setDetailedAbilityScores] = React.useState<DetailedAbilityScores | null>(null);
@@ -325,15 +324,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     setCharacter(prev => ({ ...prev, abilityScores: newScores }));
   };
 
-  const handleApplyRolledScores = (newScores: AbilityScores) => {
-    handleMultipleBaseAbilityScoresChange(newScores);
-    setIsRollerDialogOpen(false);
-  };
-
-  const handleApplyPointBuyScores = (newScores: AbilityScores) => {
-    handleMultipleBaseAbilityScoresChange(newScores);
-    setIsPointBuyDialogOpen(false);
-  };
+  // Removed handleApplyRolledScores and handleApplyPointBuyScores
 
   const handleClassChange = (value: DndClassId | string) => {
     setCharacter(prev => {
@@ -608,8 +599,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           onBaseAbilityScoreChange={handleBaseAbilityScoreChange}
           onMultipleBaseAbilityScoresChange={handleMultipleBaseAbilityScoresChange}
           onOpenAbilityScoreBreakdownDialog={handleOpenAbilityScoreBreakdownDialog}
-          onOpenRollerDialog={() => setIsRollerDialogOpen(true)}
-          onOpenPointBuyDialog={() => setIsPointBuyDialogOpen(true)} // Pass callback to section
           isCreating={isCreating}
         />
 
@@ -730,22 +719,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         </div>
       </form>
 
-      {isCreating && (
-        <AbilityScoreRollerDialog
-          isOpen={isRollerDialogOpen}
-          onOpenChange={setIsRollerDialogOpen}
-          onScoresApplied={handleApplyRolledScores}
-          rerollOnes={rerollOnesForAbilityScores}
-        />
-      )}
-      {isCreating && (
-        <AbilityScorePointBuyDialog
-            isOpen={isPointBuyDialogOpen}
-            onOpenChange={setIsPointBuyDialogOpen}
-            onScoresApplied={handleApplyPointBuyScores}
-            totalPointsBudget={pointBuyBudget} // This instance is controlled by CharacterFormCore's state
-        />
-      )}
+      {/* Dialogs that are still globally managed or specific to CharacterFormCore */}
       {isInfoDialogOpen && currentInfoDialogData && (
         <InfoDisplayDialog
           isOpen={isInfoDialogOpen}
@@ -781,3 +755,4 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
+

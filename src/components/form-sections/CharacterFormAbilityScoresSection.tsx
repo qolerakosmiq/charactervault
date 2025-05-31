@@ -9,8 +9,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dices, Info, Calculator } from 'lucide-react';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { cn } from '@/lib/utils';
-// AbilityScorePointBuyDialog import removed as it's no longer rendered here
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
+import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
+import { AbilityScorePointBuyDialog } from '@/components/AbilityScorePointBuyDialog';
+import { useDefinitionsStore } from '@/lib/definitions-store';
 
 const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -20,8 +22,6 @@ interface CharacterFormAbilityScoresSectionProps {
   onBaseAbilityScoreChange: (ability: Exclude<AbilityName, 'none'>, value: number) => void;
   onMultipleBaseAbilityScoresChange: (newScores: AbilityScores) => void;
   onOpenAbilityScoreBreakdownDialog: (ability: Exclude<AbilityName, 'none'>) => void;
-  onOpenRollerDialog: () => void;
-  onOpenPointBuyDialog: () => void; // New prop to open dialog in parent
   isCreating: boolean;
 }
 
@@ -31,13 +31,37 @@ export function CharacterFormAbilityScoresSection({
   onBaseAbilityScoreChange,
   onMultipleBaseAbilityScoresChange,
   onOpenAbilityScoreBreakdownDialog,
-  onOpenRollerDialog,
-  onOpenPointBuyDialog, // Destructure new prop
   isCreating,
 }: CharacterFormAbilityScoresSectionProps) {
-  // Local state for PointBuyDialog (isPointBuyDialogOpen) is removed
+  const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
+  const [isPointBuyDialogOpen, setIsPointBuyDialogOpen] = React.useState(false);
 
-  // handleApplyPointBuyScores is removed as dialog is handled by parent
+  const { rerollOnesForAbilityScores, pointBuyBudget: rawPointBuyBudgetFromStore } = useDefinitionsStore(state => ({
+    rerollOnesForAbilityScores: state.rerollOnesForAbilityScores,
+    pointBuyBudget: state.pointBuyBudget,
+  }));
+
+  let numericPointBuyBudget: number;
+  if (typeof rawPointBuyBudgetFromStore === 'number' && !isNaN(rawPointBuyBudgetFromStore)) {
+    numericPointBuyBudget = rawPointBuyBudgetFromStore;
+  } else if (typeof rawPointBuyBudgetFromStore === 'string') {
+    const parsed = parseFloat(rawPointBuyBudgetFromStore);
+    numericPointBuyBudget = !isNaN(parsed) ? parsed : 25;
+  } else {
+    numericPointBuyBudget = 25; // Default if store value is invalid or not string/number
+  }
+  const pointBuyBudget = numericPointBuyBudget;
+
+
+  const handleApplyRolledScores = (newScores: AbilityScores) => {
+    onMultipleBaseAbilityScoresChange(newScores);
+    setIsRollerDialogOpen(false);
+  };
+
+  const handleApplyPointBuyScores = (newScores: AbilityScores) => {
+    onMultipleBaseAbilityScoresChange(newScores);
+    setIsPointBuyDialogOpen(false);
+  };
 
   return (
     <>
@@ -50,10 +74,10 @@ export function CharacterFormAbilityScoresSection({
             </div>
             {isCreating && (
               <div className="flex gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={onOpenRollerDialog}>
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)}>
                   <Dices className="mr-2 h-4 w-4" /> Roll Scores
                 </Button>
-                <Button type="button" variant="outline" size="sm" onClick={onOpenPointBuyDialog}> {/* Use prop here */}
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)}>
                   <Calculator className="mr-2 h-4 w-4" /> Point Buy
                 </Button>
               </div>
@@ -120,7 +144,22 @@ export function CharacterFormAbilityScoresSection({
           </div>
         </CardContent>
       </Card>
-      {/* AbilityScorePointBuyDialog instance removed from here */}
+      {isCreating && (
+        <AbilityScoreRollerDialog
+          isOpen={isRollerDialogOpen}
+          onOpenChange={setIsRollerDialogOpen}
+          onScoresApplied={handleApplyRolledScores}
+          rerollOnes={rerollOnesForAbilityScores}
+        />
+      )}
+      {isCreating && (
+        <AbilityScorePointBuyDialog
+            isOpen={isPointBuyDialogOpen}
+            onOpenChange={setIsPointBuyDialogOpen}
+            onScoresApplied={handleApplyPointBuyScores}
+            totalPointsBudget={pointBuyBudget}
+        />
+      )}
     </>
   );
 }
