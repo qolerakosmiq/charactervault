@@ -12,19 +12,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Calculator, MinusCircle, PlusCircle } from 'lucide-react';
+import { Calculator } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput'; // Import NumberSpinnerInput
 
 interface AbilityScorePointBuyDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onScoresApplied: (scores: AbilityScores) => void;
-  totalPointsBudget: number; // Prop from parent
+  totalPointsBudget: number | string; // Prop from parent, can be string or number initially
 }
 
 const ABILITY_ORDER: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
@@ -59,7 +59,7 @@ export function AbilityScorePointBuyDialog({
   isOpen,
   onOpenChange,
   onScoresApplied,
-  totalPointsBudget, // This is the prop
+  totalPointsBudget,
 }: AbilityScorePointBuyDialogProps) {
   const [currentScores, setCurrentScores] = React.useState<AbilityScores>(() => {
     const scores: Partial<AbilityScores> = {};
@@ -67,7 +67,6 @@ export function AbilityScorePointBuyDialog({
     return scores as AbilityScores;
   });
 
-  // Attempt to parse totalPointsBudget if it's a string, then validate
   const parsedBudgetProp = typeof totalPointsBudget === 'string' ? parseFloat(totalPointsBudget) : totalPointsBudget;
   const isValidBudgetProp = typeof parsedBudgetProp === 'number' && !isNaN(parsedBudgetProp);
   
@@ -98,22 +97,16 @@ export function AbilityScorePointBuyDialog({
 
 
   const handleScoreChange = (ability: Exclude<AbilityName, 'none'>, newScore: number) => {
+    // Clamping is handled by NumberSpinnerInput's min/max, but good to double-check
     if (newScore < MIN_SCORE || newScore > MAX_SCORE) return;
 
     const tempScores = { ...currentScores, [ability]: newScore };
     const tempSpent = calculatePointsSpent(tempScores);
 
-    if (tempSpent <= safeBudgetForCalculations) {
+    // Allow decrement even if over budget, but not increment if it goes over.
+    if (newScore < currentScores[ability] || tempSpent <= safeBudgetForCalculations) {
       setCurrentScores(tempScores);
     }
-  };
-
-  const incrementScore = (ability: Exclude<AbilityName, 'none'>) => {
-    handleScoreChange(ability, currentScores[ability] + 1);
-  };
-
-  const decrementScore = (ability: Exclude<AbilityName, 'none'>) => {
-    handleScoreChange(ability, currentScores[ability] - 1);
   };
 
   const handleApply = () => {
@@ -121,6 +114,7 @@ export function AbilityScorePointBuyDialog({
       onScoresApplied(currentScores);
       onOpenChange(false);
     } else {
+      // This case should ideally be prevented by disabling increment buttons
       console.error("Error: Cannot apply scores, points spent exceed total points.");
     }
   };
@@ -168,6 +162,8 @@ export function AbilityScorePointBuyDialog({
                     const abbreviationPart = match ? match[1] : fullDisplayNameFromMap;
                     const fullNamePart = match ? match[2] : '';
 
+                    const incrementWouldExceedBudget = (calculatePointsSpent({ ...currentScores, [ability]: score + 1 })) > safeBudgetForCalculations;
+
                     return (
                     <div key={ability} className="p-3 border rounded-md space-y-2 bg-background">
                         <Label htmlFor={`score-input-${ability}`} className="text-base flex justify-between items-center">
@@ -177,34 +173,20 @@ export function AbilityScorePointBuyDialog({
                           </span>
                           <Badge variant="outline">Cost: {cost}</Badge>
                         </Label>
-                        <div className="flex items-center justify-center space-x-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => decrementScore(ability)}
-                            disabled={score <= MIN_SCORE}
-                        >
-                            <MinusCircle className="h-4 w-4" />
-                        </Button>
-                        <Input
-                            id={`score-input-${ability}`}
-                            type="number"
-                            value={score}
-                            readOnly
-                            className="w-16 h-10 text-center text-xl appearance-none"
-                        />
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => incrementScore(ability)}
-                            disabled={score >= MAX_SCORE || (calculatePointsSpent({ ...currentScores, [ability]: score + 1 })) > safeBudgetForCalculations}
-                        >
-                            <PlusCircle className="h-4 w-4" />
-                        </Button>
+                        <div className="flex items-center justify-center">
+                           <NumberSpinnerInput
+                              id={`score-input-${ability}`}
+                              value={score}
+                              onChange={(newVal) => handleScoreChange(ability, newVal)}
+                              min={MIN_SCORE}
+                              max={MAX_SCORE}
+                              readOnly={true}
+                              isIncrementDisabled={incrementWouldExceedBudget}
+                              inputClassName="w-16 h-10 text-center text-xl" // Adjusted size
+                              buttonClassName="h-10 w-10" // Adjusted button size
+                              buttonSize="icon" // Ensures buttons are icon-sized
+                              className="justify-center" // Center the spinner itself
+                           />
                         </div>
                     </div>
                     );
