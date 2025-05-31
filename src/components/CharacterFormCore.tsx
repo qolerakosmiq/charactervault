@@ -242,11 +242,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   React.useEffect(() => {
     if (!isClient) return;
 
-    const currentGlobalDefs = globalCustomSkillDefinitionsFromStore; 
+    const currentGlobalDefs = globalCustomSkillDefinitionsFromStore;
     const prevGlobalDefs = prevGlobalCustomSkillDefinitionsRef.current;
 
     const instancesToAddToCharacter: SkillType[] = [];
-    
+
     currentGlobalDefs.forEach(globalDef => {
         if (!character.skills.find(s => s.id === globalDef.id)) {
             const isClassSkill = character.classes[0]?.className ?
@@ -265,7 +265,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       setCharacter(prevCharacter => {
         const existingSkillIds = new Set(prevCharacter.skills.map(s => s.id));
         const uniqueNewInstances = instancesToAddToCharacter.filter(inst => !existingSkillIds.has(inst.id));
-        
+
         if (uniqueNewInstances.length === 0) return prevCharacter;
 
         const updatedSkills = [...prevCharacter.skills, ...uniqueNewInstances].sort((a, b) => {
@@ -278,10 +278,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
     prevGlobalCustomSkillDefinitionsRef.current = currentGlobalDefs;
   }, [
-    globalCustomSkillDefinitionsFromStore, 
-    isClient, 
-    character.skills, 
-    character.classes, 
+    globalCustomSkillDefinitionsFromStore,
+    isClient,
+    character.skills,
+    character.classes,
     allAvailableSkillDefinitionsForDisplay
   ]);
 
@@ -313,7 +313,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     setCharacter(prev => {
       const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: value, level: 1 }];
       const newSkills = prev.skills.map(skillInstance => {
-          const isNowClassSkill = value ? 
+          const isNowClassSkill = value ?
             (CLASS_SKILLS[value as keyof typeof CLASS_SKILLS] || []).includes(skillInstance.id)
             : false;
           return {...skillInstance, isClassSkill: isNowClassSkill };
@@ -396,7 +396,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const allSkillOptionsForDialog = React.useMemo(() => {
     return allAvailableSkillDefinitionsForDisplay
-      .filter(skill => skill.id !== skillToEdit?.id) 
+      .filter(skill => skill.id !== skillToEdit?.id)
       .map(s => ({ value: s.id, label: s.name }))
       .sort((a,b) => a.label.localeCompare(b.label));
   }, [allAvailableSkillDefinitionsForDisplay, skillToEdit]);
@@ -584,44 +584,44 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           characterRace={character.race as DndRaceId}
           selectedFeats={character.feats}
           allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
-          allCustomSkillDefinitions={globalCustomSkillDefinitions} 
-          allFeatDefinitions={allAvailableFeatDefinitions} 
+          allCustomSkillDefinitions={globalCustomSkillDefinitions}
+          allFeatDefinitions={allAvailableFeatDefinitions}
           onSkillChange={handleSkillChange}
           onEditCustomSkillDefinition={handleOpenEditCustomSkillDialog}
         />
 
         <FeatsFormSection
           character={character}
-          allAvailableFeatDefinitions={allAvailableFeatDefinitions} 
+          allAvailableFeatDefinitions={allAvailableFeatDefinitions}
           chosenFeatInstances={character.feats}
           onFeatInstancesChange={handleFeatInstancesChange}
           onEditCustomFeatDefinition={handleOpenEditCustomFeatDefinitionDialog}
           abilityScores={actualAbilityScoresForSkills}
           skills={character.skills}
           allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
-          allCustomSkillDefinitions={globalCustomSkillDefinitions} 
+          allCustomSkillDefinitions={globalCustomSkillDefinitions}
         />
 
         <Separator className="my-10" />
 
         <div className="space-y-4">
-            <h3 className="text-xl font-serif text-foreground/80">Manage Global Definitions</h3>
+            <h3 className="text-xl font-serif text-foreground/80">Dungeon Master Settings</h3>
             <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                    type="button" 
-                    variant="outline" 
+                <Button
+                    type="button"
+                    variant="outline"
                     onClick={() => { setSkillToEdit(undefined); setIsAddOrEditSkillDialogOpen(true); }}
                     className="w-full sm:w-auto"
                 >
-                    <BookOpenCheck className="mr-2 h-5 w-5" /> Add New Custom Skill Definition
+                    <BookOpenCheck className="mr-2 h-5 w-5" /> Add New Custom Skill
                 </Button>
-                <Button 
-                    type="button" 
-                    variant="outline" 
+                <Button
+                    type="button"
+                    variant="outline"
                     onClick={() => { setEditingCustomFeatDefinition(undefined); setIsCustomFeatDialogOpen(true); }}
                     className="w-full sm:w-auto"
                 >
-                    <ShieldPlus className="mr-2 h-5 w-5" /> Add New Custom Feat Definition
+                    <ShieldPlus className="mr-2 h-5 w-5" /> Add New Custom Feat
                 </Button>
             </div>
         </div>
