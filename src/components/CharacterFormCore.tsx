@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import * as React from 'react';
@@ -200,12 +199,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           setCharacter(prev => ({ ...prev, age: minAdultAge }));
         }
       }
-    } else {
-      if (isCreating && character.age !== 20) {
-          setCharacter(prev => ({ ...prev, age: 20 }));
-      }
     }
-  }, [character.race, isCreating, character.age]);
+    // Removed the 'else' block that was resetting age to 20 if no race was selected during creation.
+    // The NumberSpinnerInput's own min prop (derived from currentMinAgeForInput) will now handle the lower bound correctly.
+  }, [character.race, character.age, setCharacter]); // isCreating removed as it's not needed for this specific logic anymore.
 
  React.useEffect(() => {
     const characterLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1;
@@ -709,4 +706,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-
