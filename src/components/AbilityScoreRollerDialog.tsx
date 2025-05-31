@@ -23,6 +23,7 @@ interface AbilityScoreRollerDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onScoresApplied: (scores: AbilityScores) => void;
+  rerollOnes: boolean; // New prop
 }
 
 const ABILITY_ORDER: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
@@ -42,10 +43,25 @@ const ABILITY_FULL_DISPLAY_NAMES: Record<Exclude<AbilityName, 'none'>, string> =
   charisma: 'Charisma (CHA)',
 };
 
-const rollDie = (): number => Math.floor(Math.random() * 6) + 1;
+// Internal function to roll a single die, with optional reroll of 1s
+const rollDieInternal = (rerollActive: boolean): number => {
+  let roll = Math.floor(Math.random() * 6) + 1;
+  if (rerollActive) {
+    while (roll === 1) {
+      roll = Math.floor(Math.random() * 6) + 1;
+    }
+  }
+  return roll;
+};
 
-const generateSingleAbilityScore = (): number => {
-  const rolls = [rollDie(), rollDie(), rollDie(), rollDie()];
+// Internal function to generate a single ability score (4d6 drop lowest)
+const generateSingleAbilityScoreInternal = (rerollActive: boolean): number => {
+  const rolls = [
+    rollDieInternal(rerollActive),
+    rollDieInternal(rerollActive),
+    rollDieInternal(rerollActive),
+    rollDieInternal(rerollActive),
+  ];
   rolls.sort((a, b) => a - b); 
   rolls.shift(); 
   return rolls.reduce((sum, val) => sum + val, 0); 
@@ -55,26 +71,27 @@ export function AbilityScoreRollerDialog({
   isOpen,
   onOpenChange,
   onScoresApplied,
+  rerollOnes, // Destructure new prop
 }: AbilityScoreRollerDialogProps) {
   const [rolledScores, setRolledScores] = useState<RolledScoreItem[]>([]);
   const [assignments, setAssignments] = useState<Partial<Record<Exclude<AbilityName, 'none'>, string>>>({});
 
-  const generateNewRolls = () => {
+  const generateNewRolls = React.useCallback(() => {
     const newScores = Array(6)
       .fill(0)
       .map((_, index) => ({
         id: `roll-${index}-${Date.now()}`, 
-        value: generateSingleAbilityScore(),
+        value: generateSingleAbilityScoreInternal(rerollOnes), // Use the rerollOnes prop
       }));
     setRolledScores(newScores);
     setAssignments({}); 
-  };
+  }, [rerollOnes]); // Add rerollOnes to dependency array
 
   useEffect(() => {
     if (isOpen) {
       generateNewRolls();
     }
-  }, [isOpen]);
+  }, [isOpen, generateNewRolls]); // generateNewRolls is now memoized with useCallback
 
   const handleAssignScore = (ability: Exclude<AbilityName, 'none'>, rollId: string | undefined) => {
     setAssignments((prev) => {
@@ -130,7 +147,7 @@ export function AbilityScoreRollerDialog({
             Roll Initial Ability Scores
           </DialogTitle>
           <DialogDescription>
-            Roll 4d6, drop the lowest for each score. Assign these values to your abilities.
+            Roll 4d6 (drop lowest{rerollOnes ? ", rerolling 1s" : ""}). Assign these values to your abilities.
           </DialogDescription>
         </DialogHeader>
 

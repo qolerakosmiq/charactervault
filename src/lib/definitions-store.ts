@@ -17,16 +17,17 @@ export interface CustomSkillDefinition {
 interface DefinitionsStoreState {
   customFeatDefinitions: (FeatDefinitionJsonData & { isCustom: true })[];
   customSkillDefinitions: CustomSkillDefinition[];
+  rerollOnesForAbilityScores: boolean; // New setting
   actions: {
     addCustomFeatDefinition: (featDef: FeatDefinitionJsonData & { isCustom: true }) => void;
     updateCustomFeatDefinition: (featDef: FeatDefinitionJsonData & { isCustom: true }) => void;
-    // deleteCustomFeatDefinition: (featDefId: string) => void; // Future
     getCustomFeatDefinitionById: (featDefId: string) => (FeatDefinitionJsonData & { isCustom: true }) | undefined;
 
     addCustomSkillDefinition: (skillDef: CustomSkillDefinition) => void;
     updateCustomSkillDefinition: (skillDef: CustomSkillDefinition) => void;
-    // deleteCustomSkillDefinition: (skillDefId: string) => void; // Future
     getCustomSkillDefinitionById: (skillDefId: string) => CustomSkillDefinition | undefined;
+
+    toggleRerollOnesForAbilityScores: () => void; // New action
   };
 }
 
@@ -37,6 +38,7 @@ export const useDefinitionsStore = create<DefinitionsStoreState>()(
     (set, get) => ({
       customFeatDefinitions: [],
       customSkillDefinitions: [],
+      rerollOnesForAbilityScores: false, // Default value
       actions: {
         addCustomFeatDefinition: (featDef) =>
           set((state) => ({
@@ -64,6 +66,10 @@ export const useDefinitionsStore = create<DefinitionsStoreState>()(
         getCustomSkillDefinitionById: (skillDefId) => {
           return get().customSkillDefinitions.find(def => def.id === skillDefId);
         },
+        toggleRerollOnesForAbilityScores: () =>
+          set((state) => ({
+            rerollOnesForAbilityScores: !state.rerollOnesForAbilityScores,
+          })),
       },
     }),
     {
@@ -72,7 +78,8 @@ export const useDefinitionsStore = create<DefinitionsStoreState>()(
       partialize: (state) => ({
         customFeatDefinitions: state.customFeatDefinitions,
         customSkillDefinitions: state.customSkillDefinitions,
-      }), // Only persist definitions, not actions
+        rerollOnesForAbilityScores: state.rerollOnesForAbilityScores, // Persist the new setting
+      }),
     }
   )
 );

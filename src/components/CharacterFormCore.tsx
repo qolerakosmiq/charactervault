@@ -45,11 +45,13 @@ import { CharacterFormStoryPortraitSection } from '@/components/form-sections/Ch
 import { SkillsFormSection } from '@/components/SkillsFormSection';
 import { FeatsFormSection } from '@/components/FeatsFormSection';
 import { SavingThrowsPanel } from '@/components/form-sections/SavingThrowsPanel';
-import { ArmorClassPanel } from '@/components/form-sections/ArmorClassPanel'; // Added import
+import { ArmorClassPanel } from '@/components/form-sections/ArmorClassPanel';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 import { Separator } from '@/components/ui/separator';
-import { BookOpenCheck, ShieldPlus, Zap, ShieldCheck } from 'lucide-react'; // Added ShieldCheck
+import { BookOpenCheck, ShieldPlus, Zap, ShieldCheck } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox'; // Added import
+import { Label } from '@/components/ui/label'; // Added import
 
 interface CharacterFormCoreProps {
   initialCharacter?: Character;
@@ -60,8 +62,13 @@ interface CharacterFormCoreProps {
 const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
 export function CharacterFormCore({ initialCharacter, onSave, isCreating }: CharacterFormCoreProps) {
-  const { customFeatDefinitions: globalCustomFeatDefinitionsFromStore, actions: definitionsActions } = useDefinitionsStore();
-  const { customSkillDefinitions: globalCustomSkillDefinitionsFromStore } = useDefinitionsStore();
+  const { 
+    customFeatDefinitions: globalCustomFeatDefinitionsFromStore, 
+    customSkillDefinitions: globalCustomSkillDefinitionsFromStore,
+    rerollOnesForAbilityScores: rerollOnesForAbilityScoresFromStore, // Get new setting
+    actions: definitionsActions 
+  } = useDefinitionsStore();
+
 
   const [isClient, setIsClient] = React.useState(false);
   React.useEffect(() => {
@@ -70,6 +77,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const globalCustomFeatDefinitions = isClient ? globalCustomFeatDefinitionsFromStore : [];
   const globalCustomSkillDefinitions = isClient ? globalCustomSkillDefinitionsFromStore : [];
+  const rerollOnesForAbilityScores = isClient ? rerollOnesForAbilityScoresFromStore : false;
 
 
   const [character, setCharacter] = React.useState<Character>(() => {
@@ -200,9 +208,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         }
       }
     }
-    // Removed the 'else' block that was resetting age to 20 if no race was selected during creation.
-    // The NumberSpinnerInput's own min prop (derived from currentMinAgeForInput) will now handle the lower bound correctly.
-  }, [character.race, character.age, setCharacter]); // isCreating removed as it's not needed for this specific logic anymore.
+  }, [character.race, character.age, setCharacter]);
 
  React.useEffect(() => {
     const characterLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1;
@@ -651,6 +657,16 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     <ShieldPlus className="mr-2 h-5 w-5" /> Add New Custom Feat
                 </Button>
             </div>
+            <div className="flex items-center space-x-2 pt-2">
+                <Checkbox
+                    id="dm-reroll-ones"
+                    checked={rerollOnesForAbilityScores}
+                    onCheckedChange={definitionsActions.toggleRerollOnesForAbilityScores}
+                />
+                <Label htmlFor="dm-reroll-ones" className="text-sm font-normal text-muted-foreground">
+                    Reroll 1s for Ability Score Rolls (4d6 drop lowest)
+                </Label>
+            </div>
         </div>
 
 
@@ -669,6 +685,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           isOpen={isRollerDialogOpen}
           onOpenChange={setIsRollerDialogOpen}
           onScoresApplied={handleApplyRolledScores}
+          rerollOnes={rerollOnesForAbilityScores} 
         />
       )}
       {isInfoDialogOpen && currentInfoDialogData && (
