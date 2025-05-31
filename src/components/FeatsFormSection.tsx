@@ -4,11 +4,11 @@
 import * as React from 'react';
 import type {
   FeatDefinitionJsonData, CharacterFeatInstance, Character, AbilityScores, Skill,
-  SkillDefinitionJsonData
+  SkillDefinitionJsonData, FeatTypeString // Added FeatTypeString
 } from '@/types/character';
 import {
   DND_FEATS_DEFINITIONS, DND_RACES, SKILL_DEFINITIONS, DND_CLASSES,
-  checkFeatPrerequisites, calculateAvailableFeats
+  checkFeatPrerequisites, calculateAvailableFeats, FEAT_TYPES // Added FEAT_TYPES
 } from '@/types/character';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { Button } from '@/components/ui/button';
@@ -173,12 +173,16 @@ export function FeatsFormSection({
 
               const prereqMessages = checkFeatPrerequisites(definition, characterForPrereqCheck, allAvailableFeatDefinitions, allPredefinedSkillDefinitions, allCustomSkillDefinitions);
               const isCustomDefinition = definition.isCustom;
+              const featTypeLabel = definition.type && definition.type !== "special" 
+                ? FEAT_TYPES.find(ft => ft.value === definition.type)?.label.replace("Special ", "")
+                : null;
 
               return (
                 <div key={instance.instanceId} className="group flex items-start justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors">
                   <div className="flex-grow mr-2">
                     <h4 className="font-medium text-foreground">
                       {definition.label}
+                      {featTypeLabel && <Badge variant="outline" className="text-xs ml-1.5 font-normal text-muted-foreground border-muted-foreground/50">{featTypeLabel}</Badge>}
                       {instance.isGranted && instance.grantedNote && <span className="text-xs text-muted-foreground ml-1 italic">{instance.grantedNote}</span>}
                       {definition.requiresSpecialization && instance.specializationDetail && <span className="text-xs text-muted-foreground ml-1">({instance.specializationDetail})</span>}
                       {isCustomDefinition && <span className="text-xs text-primary/70 ml-1">(Custom)</span>}
@@ -243,3 +247,4 @@ export function FeatsFormSection({
     </>
   );
 }
+

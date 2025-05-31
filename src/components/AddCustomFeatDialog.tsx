@@ -2,8 +2,8 @@
 'use client';
 
 import * as React from 'react';
-import type { FeatDefinitionJsonData, FeatPrerequisiteDetails, AbilityName, DndClassOption, DndClassId, DndRaceOption, CharacterAlignmentObject, DndRaceId } from '@/types/character';
-import { ALIGNMENT_PREREQUISITE_OPTIONS } from '@/types/character';
+import type { FeatDefinitionJsonData, FeatPrerequisiteDetails, AbilityName, DndClassOption, DndClassId, DndRaceOption, CharacterAlignmentObject, DndRaceId, FeatTypeString } from '@/types/character';
+import { ALIGNMENT_PREREQUISITE_OPTIONS, FEAT_TYPES } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -66,19 +66,20 @@ export function AddCustomFeatDialog({
   allRaces,
 }: AddCustomFeatDialogProps) {
   const [featName, setFeatName] = React.useState('');
+  const [featType, setFeatType] = React.useState<FeatTypeString>('special');
   const [description, setDescription] = React.useState('');
   const [canTakeMultipleTimes, setCanTakeMultipleTimes] = React.useState(false);
   const [requiresSpecialization, setRequiresSpecialization] = React.useState('');
   const [effectsText, setEffectsText] = React.useState('');
-  const [prereqBab, setPrereqBab] = React.useState(0); // Changed to number
-  const [prereqCasterLevel, setPrereqCasterLevel] = React.useState(0); // Changed to number
+  const [prereqBab, setPrereqBab] = React.useState(0);
+  const [prereqCasterLevel, setPrereqCasterLevel] = React.useState(0);
   const [prereqClassId, setPrereqClassId] = React.useState<DndClassId | string>(NONE_VALUE);
-  const [prereqClassLevel, setPrereqClassLevel] = React.useState(0); // Changed to number
+  const [prereqClassLevel, setPrereqClassLevel] = React.useState(0);
   const [prereqRaceId, setPrereqRaceId] = React.useState<DndRaceId | string>(NONE_VALUE);
   const [prereqAlignment, setPrereqAlignment] = React.useState<string>(NONE_VALUE);
   const [newPrereqType, setNewPrereqType] = React.useState<'ability' | 'skill' | 'feat' | ''>('');
   const [newPrereqItemId, setNewPrereqItemId] = React.useState('');
-  const [newPrereqValue, setNewPrereqValue] = React.useState(0); // Changed to number
+  const [newPrereqValue, setNewPrereqValue] = React.useState(0);
   const [prerequisitesList, setPrerequisitesList] = React.useState<PrerequisiteListItem[]>([]);
 
   const isEditing = !!initialFeatData;
@@ -102,6 +103,7 @@ export function AddCustomFeatDialog({
     if (isOpen) {
       if (initialFeatData) {
         setFeatName(initialFeatData.label || '');
+        setFeatType(initialFeatData.type || 'special');
         setDescription(initialFeatData.description || '');
         setCanTakeMultipleTimes(initialFeatData.canTakeMultipleTimes || false);
         setRequiresSpecialization(initialFeatData.requiresSpecialization || '');
@@ -137,6 +139,7 @@ export function AddCustomFeatDialog({
         setPrerequisitesList(loadedPrereqs);
       } else {
         setFeatName('');
+        setFeatType('special');
         setDescription('');
         setCanTakeMultipleTimes(false);
         setRequiresSpecialization('');
@@ -198,6 +201,10 @@ export function AddCustomFeatDialog({
       alert('Feat name cannot be empty.');
       return;
     }
+    if (!featType) {
+        alert('Feat type is required.');
+        return;
+    }
 
     const finalStructuredPrerequisites: FeatPrerequisiteDetails = {};
     if (prereqBab > 0) finalStructuredPrerequisites.bab = prereqBab;
@@ -228,6 +235,7 @@ export function AddCustomFeatDialog({
     const featDefinition: FeatDefinitionJsonData & { isCustom: true } = {
       value: initialFeatData?.value || crypto.randomUUID(),
       label: featName.trim(),
+      type: featType,
       description: description.trim() || undefined,
       prerequisites: Object.keys(finalStructuredPrerequisites).length > 0 || prerequisitesList.length > 0 ? finalStructuredPrerequisites : undefined,
       effectsText: effectsText.trim() || undefined,
@@ -264,14 +272,31 @@ export function AddCustomFeatDialog({
 
         <ScrollArea className="max-h-[70vh] p-1">
           <div className="space-y-4 p-4">
-            <div className="space-y-1">
-              <Label htmlFor="custom-feat-name">Feat Name (Label)</Label>
-              <Input
-                id="custom-feat-name"
-                value={featName}
-                onChange={(e) => setFeatName(e.target.value)}
-                placeholder="e.g., Mighty Cleave"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label htmlFor="custom-feat-name">Feat Name (Label)</Label>
+                  <Input
+                    id="custom-feat-name"
+                    value={featName}
+                    onChange={(e) => setFeatName(e.target.value)}
+                    placeholder="e.g., Mighty Cleave"
+                  />
+                </div>
+                <div className="space-y-1">
+                    <Label htmlFor="custom-feat-type">Feat Type</Label>
+                    <Select value={featType} onValueChange={(value) => setFeatType(value as FeatTypeString)}>
+                        <SelectTrigger id="custom-feat-type">
+                            <SelectValue placeholder="Select feat type..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {FEAT_TYPES.map(option => (
+                                <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
             <div className="space-y-1">
               <Label htmlFor="custom-feat-description">Description</Label>
@@ -472,3 +497,4 @@ export function AddCustomFeatDialog({
     </Dialog>
   );
 }
+
