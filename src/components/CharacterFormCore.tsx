@@ -45,11 +45,11 @@ import { CharacterFormAbilityScoresSection } from '@/components/form-sections/Ch
 import { CharacterFormStoryPortraitSection } from '@/components/form-sections/CharacterFormStoryPortraitSection';
 import { SkillsFormSection } from '@/components/SkillsFormSection';
 import { FeatsFormSection } from '@/components/FeatsFormSection';
-import { SavingThrowsPanel } from '@/components/form-sections/SavingThrowsPanel'; // Added
+import { SavingThrowsPanel } from '@/components/form-sections/SavingThrowsPanel';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 import { Separator } from '@/components/ui/separator';
-import { BookOpenCheck, ShieldPlus, Zap } from 'lucide-react'; // Added Zap for Saving Throws
+import { BookOpenCheck, ShieldPlus, Zap } from 'lucide-react';
 
 interface CharacterFormCoreProps {
   initialCharacter?: Character;
@@ -245,7 +245,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     if (!isClient) return;
 
     const currentGlobalDefs = globalCustomSkillDefinitionsFromStore;
-    // const prevGlobalDefs = prevGlobalCustomSkillDefinitionsRef.current; // Not strictly needed for adding, but good for complex logic
 
     const instancesToAddToCharacter: SkillType[] = [];
 
@@ -370,7 +369,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     } else {
         definitionsActions.addCustomFeatDefinition(featDefData);
     }
-    // If a feat definition changed from multi-take to single-take, prune extra instances
     const oldDefinition = allAvailableFeatDefinitions.find(d => d.value === featDefData.value && d.isCustom);
     if (oldDefinition?.canTakeMultipleTimes && !featDefData.canTakeMultipleTimes) {
       const instancesOfThisFeat = character.feats.filter(inst => inst.definitionId === featDefData.value && !inst.isGranted);
@@ -458,6 +456,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         const classSpecificDetails = [];
         if (classData.hitDice) {
             classSpecificDetails.push({ label: "Hit Dice", value: classData.hitDice, isBold: true });
+        }
+        if (classData.saves) {
+            classSpecificDetails.push({ label: "Fortitude Save", value: classData.saves.fortitude.charAt(0).toUpperCase() + classData.saves.fortitude.slice(1) });
+            classSpecificDetails.push({ label: "Reflex Save", value: classData.saves.reflex.charAt(0).toUpperCase() + classData.saves.reflex.slice(1) });
+            classSpecificDetails.push({ label: "Will Save", value: classData.saves.will.charAt(0).toUpperCase() + classData.saves.will.slice(1) });
         }
          const grantedFeatsFormatted = classData.grantedFeats?.map(gf => ({
             ...gf,
@@ -619,7 +622,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
         <SavingThrowsPanel
             savingThrows={character.savingThrows}
-            abilityScores={character.abilityScores}
+            abilityScores={actualAbilityScoresForSkills} // Use detailed scores for ability mods
             characterClasses={character.classes}
             onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
         />

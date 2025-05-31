@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 
 interface SavingThrowsPanelProps {
   savingThrows: SavingThrows;
-  abilityScores: AbilityScores;
+  abilityScores: AbilityScores; // Expecting detailed/final scores for ability mods
   characterClasses: CharacterClass[];
   onSavingThrowMiscModChange: (saveType: SavingThrowType, value: number) => void;
 }
@@ -27,7 +27,7 @@ const SAVE_DISPLAY_NAMES: Record<SavingThrowType, string> = {
 
 export function SavingThrowsPanel({
   savingThrows,
-  abilityScores,
+  abilityScores, // This should ideally be the *final* ability scores after all modifiers
   characterClasses,
   onSavingThrowMiscModChange,
 }: SavingThrowsPanelProps) {
@@ -59,7 +59,9 @@ export function SavingThrowsPanel({
                 const baseSaveValue = calculatedBaseSaves[saveType];
                 const abilityKey = SAVING_THROW_ABILITIES[saveType];
                 const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
-                const totalSave = baseSaveValue + abilityModifier + currentSaveData.miscMod + currentSaveData.magicMod;
+                // Note: magicMod is part of the savingThrows state but not directly editable here yet.
+                // Total calculation assumes magicMod is also applied if present in the data.
+                const totalSave = baseSaveValue + abilityModifier + currentSaveData.miscMod + (currentSaveData.magicMod || 0);
 
                 return (
                   <tr key={saveType} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
@@ -90,3 +92,4 @@ export function SavingThrowsPanel({
     </Card>
   );
 }
+
