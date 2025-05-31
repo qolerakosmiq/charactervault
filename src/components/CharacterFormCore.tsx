@@ -664,7 +664,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     onCheckedChange={definitionsActions.toggleRerollOnesForAbilityScores}
                 />
                 <Label htmlFor="dm-reroll-ones" className="text-sm font-normal text-muted-foreground">
-                    Reroll 1s for Ability Score Rolls (4d6 drop lowest)
+                    Reroll 1s for Ability Score Rolls
                 </Label>
             </div>
         </div>
