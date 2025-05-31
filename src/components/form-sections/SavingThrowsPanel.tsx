@@ -27,7 +27,7 @@ const SAVE_DISPLAY_NAMES: Record<SavingThrowType, string> = {
 
 export function SavingThrowsPanel({
   savingThrows,
-  abilityScores, // This should ideally be the *final* ability scores after all modifiers
+  abilityScores,
   characterClasses,
   onSavingThrowMiscModChange,
 }: SavingThrowsPanelProps) {
@@ -43,8 +43,7 @@ export function SavingThrowsPanel({
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[450px]"> {/* Adjusted min-width for longer headers */}
-            <thead>
+          <table className="w-full min-w-[450px]"><thead>
               <tr className="border-b">
                 <th className="pb-2 text-left text-sm font-medium text-muted-foreground">Saving Throw</th>
                 <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Total</th>
@@ -52,15 +51,12 @@ export function SavingThrowsPanel({
                 <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Ability Modifier</th>
                 <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Custom Modifier</th>
               </tr>
-            </thead>
-            <tbody>
+            </thead><tbody>
               {SAVE_TYPES.map((saveType) => {
                 const currentSaveData: SingleSavingThrow = savingThrows[saveType];
                 const baseSaveValue = calculatedBaseSaves[saveType];
                 const abilityKey = SAVING_THROW_ABILITIES[saveType];
                 const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
-                // Note: magicMod is part of the savingThrows state but not directly editable here yet.
-                // Total calculation assumes magicMod is also applied if present in the data.
                 const totalSave = baseSaveValue + abilityModifier + currentSaveData.miscMod + (currentSaveData.magicMod || 0);
 
                 return (
@@ -85,11 +81,9 @@ export function SavingThrowsPanel({
                   </tr>
                 );
               })}
-            </tbody>
-          </table>
+            </tbody></table>
         </div>
       </CardContent>
     </Card>
   );
 }
-
