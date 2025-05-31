@@ -77,8 +77,11 @@ export function SkillsFormSection({
   const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0) : 0;
   const racialBonus = characterRace ? getRaceSkillPointsBonusPerLevel(characterRace as DndRaceId) : 0;
 
-  const pointsForFirstLevel = (baseSkillPointsForClass + intelligenceModifier + (racialBonus || 0)) * 4;
-  const pointsFromLevelProgression = characterLevel > 1 ? (baseSkillPointsForClass + intelligenceModifier + (racialBonus || 0)) * (characterLevel - 1) : 0;
+  // Ensure minimum of 1 skill point per level from class + Int mod + racial bonus
+  const pointsPerRegularLevel = Math.max(1, baseSkillPointsForClass + intelligenceModifier + (racialBonus || 0));
+
+  const pointsForFirstLevel = pointsPerRegularLevel * 4;
+  const pointsFromLevelProgression = characterLevel > 1 ? pointsPerRegularLevel * (characterLevel - 1) : 0;
   const totalSkillPointsAvailable = pointsForFirstLevel + pointsFromLevelProgression;
 
   const allCombinedSkillDefinitions = React.useMemo(() => {
@@ -194,21 +197,21 @@ export function SkillsFormSection({
           </div>
            <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
              <p>
-                 (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
-                 {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
+                 (Min(1) of Class Base <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
+                 {' + '}Int Mod <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
                  {(racialBonus || 0) !== 0 && (
                    <>
-                     {' + '}Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
+                     {' + '}Racial/Lvl <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
                    </>
                  )}
                  ) × First Level <strong className="font-bold text-primary">[4]</strong>
              </p>
              <p>
-                 + (Class Base per Level <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
-                 {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
+                 + (Min(1) of Class Base <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
+                 {' + '}Int Mod <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
                  {(racialBonus || 0) !== 0 && (
                     <>
-                     {' + '}Racial Bonus per Level <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
+                     {' + '}Racial/Lvl <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
                    </>
                  )}
                  ) × Level Progression <strong className="font-bold text-primary">[{characterLevel > 1 ? (characterLevel -1) : 0}]</strong>
