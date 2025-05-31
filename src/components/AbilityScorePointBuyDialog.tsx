@@ -110,16 +110,16 @@ export function AbilityScorePointBuyDialog({
   };
 
   const handleApply = () => {
-    if (pointsRemaining >= 0) {
+    if (pointsRemaining === 0 && isValidBudgetProp) {
       onScoresApplied(currentScores);
       onOpenChange(false);
     } else {
-      // This case should ideally be prevented by disabling increment buttons
-      console.error("Error: Cannot apply scores, points spent exceed total points.");
+      // This case should ideally be prevented by disabling the apply button
+      console.error("Error: Cannot apply scores, points spent do not match total points or budget is invalid.");
     }
   };
 
-  const isApplyDisabled = pointsRemaining < 0 || !isValidBudgetProp;
+  const isApplyDisabled = pointsRemaining !== 0 || !isValidBudgetProp;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -145,8 +145,8 @@ export function AbilityScorePointBuyDialog({
                         <p className="text-sm">
                         Points Spent: <Badge variant="secondary">{String(pointsSpent)}</Badge>
                         </p>
-                        <p className={cn("text-sm font-semibold mt-1", pointsRemaining < 0 ? "text-destructive" : "text-emerald-500")}>
-                        Points Remaining: <Badge variant={pointsRemaining < 0 || !isValidBudgetProp ? "destructive" : "default"} className={pointsRemaining >=0 && isValidBudgetProp ? "bg-emerald-600 hover:bg-emerald-600/80" : ""}>{String(pointsRemaining)}</Badge>
+                        <p className={cn("text-sm font-semibold mt-1", pointsRemaining !== 0 ? "text-destructive" : "text-emerald-500")}>
+                        Points Remaining: <Badge variant={pointsRemaining !== 0 || !isValidBudgetProp ? "destructive" : "default"} className={pointsRemaining === 0 && isValidBudgetProp ? "bg-emerald-600 hover:bg-emerald-600/80" : ""}>{String(pointsRemaining)}</Badge>
                         </p>
                     </div>
                 </div>
