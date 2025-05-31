@@ -147,7 +147,7 @@ export function CharacterFormCoreInfoSection({
               )}
             </div>
             {isPredefinedRace && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
-               <div className="flex flex-wrap gap-1 mt-[6px] ml-1">
+               <div className="flex flex-wrap gap-1 mt-2 ml-1">
                 {raceSpecialQualities.abilityEffects.map((effect) => {
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
                   let badgeClassName = "text-xs font-normal";
@@ -183,7 +183,7 @@ export function CharacterFormCoreInfoSection({
               </div>
             )}
             {isPredefinedRace && (!raceSpecialQualities?.abilityEffects || raceSpecialQualities.abilityEffects.length === 0) && (
-                <p className="text-xs text-muted-foreground mt-[6px] ml-1">No ability score adjustments.</p>
+                <p className="text-xs text-muted-foreground mt-2 ml-1">No ability score adjustments.</p>
             )}
           </div>
         </div>
@@ -215,7 +215,7 @@ export function CharacterFormCoreInfoSection({
               )}
             </div>
             {selectedClassInfo?.hitDice && (
-              <div className="mt-[6px] ml-1">
+              <div className="mt-2 ml-1">
                 <Badge 
                   variant="secondary" 
                   className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground"
@@ -287,7 +287,7 @@ export function CharacterFormCoreInfoSection({
               buttonSize="icon"
             />
             {ageEffectsDetails && (ageEffectsDetails.categoryName !== 'Adult' || ageEffectsDetails.effects.length > 0) && (
-              <div className="flex flex-wrap items-center gap-1 mt-[6px] ml-1">
+              <div className="flex flex-wrap items-center gap-1 mt-2 ml-1">
                 <Badge
                   variant="secondary"
                   className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground"
@@ -344,7 +344,7 @@ export function CharacterFormCoreInfoSection({
               </SelectContent>
             </Select>
             {sizeAbilityEffectsDetails && sizeAbilityEffectsDetails.effects.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-[6px] ml-1">
+              <div className="flex flex-wrap gap-1 mt-2 ml-1">
                 {sizeAbilityEffectsDetails.effects.map((effect) => {
                     let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
                     let badgeClassName = "text-xs font-normal";
