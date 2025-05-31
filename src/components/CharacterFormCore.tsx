@@ -29,7 +29,8 @@ import {
   DEFAULT_SAVING_THROWS,
   DND_RACE_MIN_ADULT_AGE_DATA,
   CLASS_SKILLS,
-  SKILL_SYNERGIES
+  SKILL_SYNERGIES,
+  getRaceSkillPointsBonusPerLevel
 } from '@/types/character';
 
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
@@ -131,7 +132,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<CharacterFormCoreInfoSectionProps['ageEffectsDetails']>(null);
   const [sizeAbilityEffectsDetails, setSizeAbilityEffectsDetails] = React.useState<CharacterFormCoreInfoSectionProps['sizeAbilityEffectsDetails']>(null);
   const [raceSpecialQualities, setRaceSpecialQualities] = React.useState<CharacterFormCoreInfoSectionProps['raceSpecialQualities']>(null);
-  // Removed isRollerDialogOpen and isPointBuyDialogOpen states
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<Parameters<typeof InfoDisplayDialog>[0] | null>(null);
   const [detailedAbilityScores, setDetailedAbilityScores] = React.useState<DetailedAbilityScores | null>(null);
@@ -324,7 +324,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     setCharacter(prev => ({ ...prev, abilityScores: newScores }));
   };
 
-  // Removed handleApplyRolledScores and handleApplyPointBuyScores
 
   const handleClassChange = (value: DndClassId | string) => {
     setCharacter(prev => {
@@ -478,6 +477,18 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             classSpecificDetails.push({ label: "Reflex Save", value: classData.saves.reflex.charAt(0).toUpperCase() + classData.saves.reflex.slice(1) });
             classSpecificDetails.push({ label: "Will Save", value: classData.saves.will.charAt(0).toUpperCase() + classData.saves.will.slice(1) });
         }
+        
+        if (character.race) {
+          const racialSkillPointBonus = getRaceSkillPointsBonusPerLevel(character.race as DndRaceId);
+          if (racialSkillPointBonus > 0) {
+            classSpecificDetails.push({
+              label: "Racial Bonus Skill Points/Level",
+              value: `+${racialSkillPointBonus}`,
+              isBold: true
+            });
+          }
+        }
+
          const grantedFeatsFormatted = classData.grantedFeats?.map(gf => ({
             ...gf,
             name: allAvailableFeatDefinitions.find(f => f.value === gf.featId)?.label || gf.featId

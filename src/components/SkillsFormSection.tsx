@@ -168,7 +168,7 @@ export function SkillsFormSection({
     setIsInfoDialogOpen(true);
   };
 
-  const racialBonusPart = (racialBonus || 0) !== 0 ? ` + Racial/Lvl [${racialBonus || 0}]` : "";
+  const racialBonusPart = (racialBonus || 0) !== 0 ? ` + Racial Modifier [${racialBonus || 0}]` : "";
 
 
   return (
@@ -208,7 +208,7 @@ export function SkillsFormSection({
                     {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
                     {(racialBonus || 0) !== 0 && (
                         <>
-                        {' + '}Racial/Lvl <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
+                        {' + '}Racial Modifier <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
                         </>
                     )}
                     ) × First Level <strong className="font-bold text-primary">[4]</strong> = <strong className="font-bold text-primary">{pointsForFirstLevel}</strong>
@@ -218,7 +218,7 @@ export function SkillsFormSection({
                     {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
                     {(racialBonus || 0) !== 0 && (
                         <>
-                        {' + '}Racial/Lvl <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
+                        {' + '}Racial Modifier <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
                         </>
                     )}
                     ) × Level Progression <strong className="font-bold text-primary">[{characterLevel > 1 ? (characterLevel -1) : 0}]</strong> = <strong className="font-bold text-primary">{pointsFromLevelProgression}</strong>
