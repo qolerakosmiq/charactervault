@@ -205,25 +205,25 @@ export function SkillsFormSection({
              {firstClass?.className && classLabel ? (
                 <>
                   <p>
-                    (Minimum 1 of {classLabel} Base <Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
+                    ({classLabel} Base <Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
                     {' + '}Intelligence Modifier <Badge variant="outline" className={badgeClassName}>{intelligenceModifier}</Badge>
                     {(racialBonus || 0) !== 0 && (
                         <>
                         {' + '}Racial Modifier <Badge variant="outline" className={badgeClassName}>{racialBonus || 0}</Badge>
                         </>
                     )}
-                    ) × First Level <Badge variant="outline" className={badgeClassName}>4</Badge>
+                    , Minimum 1) × <Badge variant="outline" className={badgeClassName}>4</Badge> First Level
                     {' = '} <span className="font-bold text-primary">{pointsForFirstLevel}</span>
                   </p>
                   <p>
-                    + (Minimum 1 of {classLabel} Base <Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
+                    + ({classLabel} Base <Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
                     {' + '}Intelligence Modifier <Badge variant="outline" className={badgeClassName}>{intelligenceModifier}</Badge>
                     {(racialBonus || 0) !== 0 && (
                         <>
                         {' + '}Racial Modifier <Badge variant="outline" className={badgeClassName}>{racialBonus || 0}</Badge>
                         </>
                     )}
-                    ) × Level Progression <Badge variant="outline" className={badgeClassName}>{characterLevel > 1 ? (characterLevel -1) : 0}</Badge>
+                    , Minimum 1) × <Badge variant="outline" className={badgeClassName}>{characterLevel > 1 ? (characterLevel -1) : 0}</Badge> Level Progression
                     {' = '} <span className="font-bold text-primary">{pointsFromLevelProgression}</span>
                   </p>
                 </>
