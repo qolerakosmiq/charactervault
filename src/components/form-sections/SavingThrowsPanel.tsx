@@ -7,7 +7,7 @@ import { DND_CLASSES }
 from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui/label'; // Label might not be directly used in this pivoted table structure for row headers
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 import { Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -34,6 +34,49 @@ export function SavingThrowsPanel({
 }: SavingThrowsPanelProps) {
   const calculatedBaseSaves = getBaseSaves(characterClasses, DND_CLASSES);
 
+  const dataRows = [
+    {
+      label: 'Total',
+      getValue: (saveType: SavingThrowType) => {
+        const currentSaveData: SingleSavingThrow = savingThrows[saveType];
+        const baseSaveValue = calculatedBaseSaves[saveType];
+        const abilityKey = SAVING_THROW_ABILITIES[saveType];
+        const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
+        const totalSave = baseSaveValue + abilityModifier + currentSaveData.miscMod + (currentSaveData.magicMod || 0);
+        return <span className={cn("text-lg font-bold", totalSave >= 0 ? "text-accent" : "text-destructive")}>{totalSave >= 0 ? '+' : ''}{totalSave}</span>;
+      },
+    },
+    {
+      label: 'Base',
+      getValue: (saveType: SavingThrowType) => calculatedBaseSaves[saveType],
+    },
+    {
+      label: 'Ability Mod',
+      getValue: (saveType: SavingThrowType) => {
+        const abilityKey = SAVING_THROW_ABILITIES[saveType];
+        const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
+        return (
+          <>
+            {abilityModifier >= 0 ? '+' : ''}{abilityModifier}
+            <span className="ml-1 text-xs">({abilityKey.substring(0, 3).toUpperCase()})</span>
+          </>
+        );
+      },
+    },
+    {
+      label: 'Custom Mod',
+      getValue: (saveType: SavingThrowType) => (
+        <Input
+          type="number"
+          value={savingThrows[saveType].miscMod}
+          onChange={(e) => onSavingThrowMiscModChange(saveType, parseInt(e.target.value, 10) || 0)}
+          className="h-8 w-16 text-sm text-center mx-auto" // w-16 might be too wide, adjust if needed
+        />
+      ),
+    },
+  ];
+
+
   return (
     <Card>
       <CardHeader>
@@ -44,56 +87,28 @@ export function SavingThrowsPanel({
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[360px]">
+          <table className="w-full min-w-[300px]"> {/* Adjusted min-width */}
             <thead>
               <tr className="border-b">
-                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground whitespace-normal">
-                  <span className="inline-block w-full">Saving Throw</span>
-                </th>
-                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground whitespace-normal">
-                  <span className="inline-block w-full">Total</span>
-                </th>
-                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground whitespace-normal">
-                  <span className="inline-block w-full">Base</span>
-                </th>
-                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground whitespace-normal">
-                  <span className="inline-block w-full">Ability Mod</span>
-                </th>
-                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground whitespace-normal">
-                  <span className="inline-block w-full">Custom Mod</span>
-                </th>
+                <th className="py-2 px-2 text-left text-sm font-medium text-muted-foreground">Save Detail</th>
+                {SAVE_TYPES.map((saveType) => (
+                  <th key={saveType} className="py-2 px-2 text-center text-sm font-medium text-muted-foreground capitalize">
+                    {SAVE_DISPLAY_NAMES[saveType]}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {SAVE_TYPES.map((saveType) => {
-                const currentSaveData: SingleSavingThrow = savingThrows[saveType];
-                const baseSaveValue = calculatedBaseSaves[saveType];
-                const abilityKey = SAVING_THROW_ABILITIES[saveType];
-                const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
-                const totalSave = baseSaveValue + abilityModifier + currentSaveData.miscMod + (currentSaveData.magicMod || 0);
-
-                return (
-                  <tr key={saveType} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
-                    <td className="py-3 px-0.5 text-sm font-medium text-foreground">{SAVE_DISPLAY_NAMES[saveType]}</td>
-                    <td className={cn("py-3 px-0.5 text-center text-lg font-bold", totalSave >= 0 ? "text-accent" : "text-destructive")}>
-                      {totalSave >= 0 ? '+' : ''}{totalSave}
+              {dataRows.map((row) => (
+                <tr key={row.label} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
+                  <td className="py-2 px-2 text-sm font-medium text-foreground">{row.label}</td>
+                  {SAVE_TYPES.map((saveType) => (
+                    <td key={`${row.label}-${saveType}`} className="py-2 px-2 text-center text-sm text-muted-foreground">
+                      {row.getValue(saveType)}
                     </td>
-                    <td className="py-3 px-0.5 text-center text-sm text-muted-foreground">{baseSaveValue}</td>
-                    <td className="py-3 px-0.5 text-center text-sm text-muted-foreground">
-                      {abilityModifier >= 0 ? '+' : ''}{abilityModifier}
-                      <span className="ml-1 text-xs">({abilityKey.substring(0, 3).toUpperCase()})</span>
-                    </td>
-                    <td className="py-3 px-0.5 text-center">
-                      <Input
-                        type="number"
-                        value={currentSaveData.miscMod}
-                        onChange={(e) => onSavingThrowMiscModChange(saveType, parseInt(e.target.value, 10) || 0)}
-                        className="h-8 w-12 text-sm text-center mx-auto"
-                      />
-                    </td>
-                  </tr>
-                );
-              })}
+                  ))}
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
