@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, CharacterFeatInstance, DndRaceOption, SkillDefinitionJsonData, FeatDefinitionJsonData } from '@/types/character';
-import { CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, DND_RACES, SKILL_DEFINITIONS } from '@/types/character';
+import { CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -16,38 +16,61 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
-import { InfoDisplayDialog, type SkillModifierBreakdownDetails } from '@/components/InfoDisplayDialog';
+import type { CustomSkillDefinition } from '@/lib/definitions-store';
+import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 
+// Extended SkillDisplayInfo to include all necessary definition properties
+interface SkillDisplayInfo extends SkillType {
+  name: string;
+  keyAbility: AbilityName;
+  description?: string;
+  isCustom: boolean;
+  definitionProvidesSynergies?: CustomSynergyRule[]; // Synergies THIS skill definition provides
+}
+
+export interface SkillModifierBreakdownDetails {
+  skillName: string;
+  keyAbilityName?: string;
+  keyAbilityModifier: number;
+  ranks: number;
+  synergyBonus: number; // Synergy received from other skills
+  featBonus: number;
+  racialBonus: number;
+  miscModifier: number;
+  totalBonus: number;
+}
 
 interface SkillsFormSectionProps {
-  skills: SkillType[];
+  skills: SkillType[]; // Character's skill instances {id, ranks, miscModifier, isClassSkill}
   abilityScores: AbilityScores; 
   actualAbilityScores: AbilityScores; 
   characterClasses: CharacterClass[];
   characterRace: DndRaceId | string;
-  selectedFeats: CharacterFeatInstance[]; // Changed from Feat[] to CharacterFeatInstance[]
-  allFeatDefinitions: (FeatDefinitionJsonData & {isCustom?: boolean})[]; // Needed for skill bonus calculation
-  onSkillChange: (skillId: string, ranks: number) => void;
-  onCustomSkillAdd: (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => void;
-  onCustomSkillUpdate: (skillData: { id: string; name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => void;
-  onCustomSkillRemove: (skillId: string) => void;
+  selectedFeats: CharacterFeatInstance[];
+  allFeatDefinitions: (FeatDefinitionJsonData & {isCustom?: boolean})[];
+  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
+  allCustomSkillDefinitions: readonly CustomSkillDefinition[];
+  onSkillChange: (skillId: string, ranks: number, isClassSkill?: boolean) => void;
+  onCustomSkillDefinitionSave: (skillData: CustomSkillDefinition) => void; // To save to global store
+  onAddCustomSkillInstanceToCharacter: (skillDefId: string) => void; // To add instance to character
 }
 
 export function SkillsFormSection({
-  skills,
+  skills: characterSkillInstances,
   abilityScores,
   actualAbilityScores,
   characterClasses,
   characterRace,
-  selectedFeats, // Now CharacterFeatInstance[]
-  allFeatDefinitions, // Pass this down
+  selectedFeats,
+  allFeatDefinitions,
+  allPredefinedSkillDefinitions,
+  allCustomSkillDefinitions,
   onSkillChange,
-  onCustomSkillAdd,
-  onCustomSkillUpdate,
-  onCustomSkillRemove,
+  onCustomSkillDefinitionSave,
+  onAddCustomSkillInstanceToCharacter,
 }: SkillsFormSectionProps) {
   const [isAddOrEditSkillDialogOpen, setIsAddOrEditSkillDialogOpen] = React.useState(false);
-  const [skillToEdit, setSkillToEdit] = React.useState<SkillType | undefined>(undefined);
+  const [skillToEdit, setSkillToEdit] = React.useState<CustomSkillDefinition | undefined>(undefined);
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentSkillInfo, setCurrentSkillInfo] = React.useState<{ title: string; content?: string; skillModifierBreakdown?: SkillModifierBreakdownDetails } | null>(null);
 
@@ -65,7 +88,40 @@ export function SkillsFormSection({
   const pointsFromLevelProgression = characterLevel > 1 ? (baseSkillPointsForClass + intelligenceModifier + (racialBonus || 0)) * (characterLevel - 1) : 0;
   const totalSkillPointsAvailable = pointsForFirstLevel + pointsFromLevelProgression;
 
-  const totalSkillPointsSpent = skills.reduce((acc, currentSkill) => {
+  // Combine predefined and custom skill definitions for display and selection
+  const allCombinedSkillDefinitions = React.useMemo(() => {
+    const predefined = allPredefinedSkillDefinitions.map(sd => ({
+      id: sd.value,
+      name: sd.label,
+      keyAbility: sd.keyAbility as AbilityName,
+      description: sd.description,
+      isCustom: false,
+      providesSynergies: SKILL_SYNERGIES[sd.value] || [], // Look up predefined synergies
+    }));
+    const custom = allCustomSkillDefinitions.map(csd => ({
+      ...csd, // id, name, keyAbility, description, providesSynergies
+      isCustom: true,
+    }));
+    return [...predefined, ...custom].sort((a,b) => a.name.localeCompare(b.name));
+  }, [allPredefinedSkillDefinitions, allCustomSkillDefinitions]);
+
+  // Map character skill instances to full display info
+  const skillsForDisplay: SkillDisplayInfo[] = React.useMemo(() => {
+    return characterSkillInstances.map(instance => {
+      const definition = allCombinedSkillDefinitions.find(def => def.id === instance.id);
+      return {
+        ...instance, // id, ranks, miscModifier, isClassSkill
+        name: definition?.name || 'Unknown Skill',
+        keyAbility: definition?.keyAbility || 'none',
+        description: definition?.description,
+        isCustom: definition?.isCustom || false,
+        definitionProvidesSynergies: definition?.providesSynergies,
+      };
+    }).sort((a,b) => a.name.localeCompare(b.name));
+  }, [characterSkillInstances, allCombinedSkillDefinitions]);
+
+
+  const totalSkillPointsSpent = skillsForDisplay.reduce((acc, currentSkill) => {
     let costMultiplier = 1;
     if (currentSkill.keyAbility === 'none') {
       costMultiplier = 1; 
@@ -74,28 +130,41 @@ export function SkillsFormSection({
     }
     return acc + ((currentSkill.ranks || 0) * costMultiplier);
   }, 0);
-
   const skillPointsLeft = totalSkillPointsAvailable - totalSkillPointsSpent;
+
 
   const handleOpenAddSkillDialog = () => {
     setSkillToEdit(undefined);
     setIsAddOrEditSkillDialogOpen(true);
   };
 
-  const handleOpenEditSkillDialog = (skill: SkillType) => {
-    setSkillToEdit(skill);
-    setIsAddOrEditSkillDialogOpen(true);
+  const handleOpenEditSkillDialog = (skillDisplayInfo: SkillDisplayInfo) => {
+    if (skillDisplayInfo.isCustom) {
+      const customDef = allCustomSkillDefinitions.find(csd => csd.id === skillDisplayInfo.id);
+      setSkillToEdit(customDef); // Pass the full CustomSkillDefinition
+      setIsAddOrEditSkillDialogOpen(true);
+    }
+  };
+  
+  const handleRemoveCustomSkillInstance = (skillId: string) => {
+    // This function is tricky. If it's the last instance of a custom skill,
+    // should it also offer to remove the definition? For now, just removes from character.
+    // The parent CharacterFormCore needs a handler for this.
+    // For now, we'll assume onSkillChange with ranks 0 effectively removes it from active use,
+    // but the instance might still be in character.skills array if we want to "hide" 0-rank skills.
+    // A true removal would filter characterSkillInstances.
+    // This needs to be handled by a callback to CharacterFormCore to update character.skills
+    console.warn("Removal of custom skill instances needs a CharacterFormCore handler.");
   };
 
-  const handleOpenSkillInfoDialog = (skill: SkillType) => {
-    const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skill.id);
-    const keyAbility = skill.keyAbility || (skillDef?.keyAbility as AbilityName | undefined);
-    
+
+  const handleOpenSkillInfoDialog = (skill: SkillDisplayInfo) => {
+    const keyAbility = skill.keyAbility;
     const currentKeyAbilityModifier = (keyAbility && keyAbility !== 'none') ? getAbilityModifierByName(actualAbilityScores, keyAbility) : 0;
-    const currentSynergyBonus = calculateTotalSynergyBonus(skill.id, skills);
-    // Use allFeatDefinitions to look up feat effects for skill bonuses
+    
+    const currentSynergyBonus = calculateTotalSynergyBonus(skill.id, characterSkillInstances, allPredefinedSkillDefinitions, allCustomSkillDefinitions);
     const currentFeatSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats, allFeatDefinitions);
-    const currentRacialSkillBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, SKILL_DEFINITIONS);
+    const currentRacialSkillBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, allPredefinedSkillDefinitions);
     const currentMiscModifier = skill.miscModifier || 0;
     const currentRanks = skill.ranks || 0;
 
@@ -116,38 +185,32 @@ export function SkillsFormSection({
 
     setCurrentSkillInfo({ 
       title: skill.name, 
-      content: skill.description || skillDef?.description || "No description available for this skill.",
+      content: skill.description || "No description available for this skill.",
       skillModifierBreakdown: breakdown,
     });
     setIsInfoDialogOpen(true);
   };
 
-  const handleSaveCustomSkill = (skillData: { id?: string; name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
-    if (skillData.id && skillToEdit?.id === skillData.id) {
-      onCustomSkillUpdate({
-        id: skillData.id,
-        name: skillData.name,
-        keyAbility: skillData.keyAbility,
-        isClassSkill: skillData.isClassSkill,
-        providesSynergies: skillData.providesSynergies,
-        description: skillData.description,
-      });
-    } else {
-      onCustomSkillAdd({
-        name: skillData.name,
-        keyAbility: skillData.keyAbility,
-        isClassSkill: skillData.isClassSkill,
-        providesSynergies: skillData.providesSynergies,
-        description: skillData.description,
-      });
+  const handleSaveCustomSkillDefinition = (skillDefData: CustomSkillDefinition) => {
+    onCustomSkillDefinitionSave(skillDefData); // Saves to global store
+    // If it's a new skill def, and user wants to add it to character immediately:
+    if (!skillToEdit && !characterSkillInstances.find(s => s.id === skillDefData.id)) {
+      onAddCustomSkillInstanceToCharacter(skillDefData.id);
     }
     setIsAddOrEditSkillDialogOpen(false);
     setSkillToEdit(undefined);
   };
 
-  const allSkillOptionsForDialog = React.useMemo(() => {
-    return skills.map(s => ({ value: s.id, label: s.name }));
-  }, [skills]);
+  // Options for the "Add Custom Skill Dialog" synergy target dropdown.
+  // It should list all predefined skills and all GLOBAL custom skill definitions,
+  // excluding the one currently being edited (if any).
+  const allSkillOptionsForSynergyDialog = React.useMemo(() => {
+    return allCombinedSkillDefinitions
+      .filter(skill => skill.id !== skillToEdit?.id) // Exclude skill being edited
+      .map(s => ({ value: s.id, label: s.name }))
+      .sort((a,b) => a.label.localeCompare(b.label));
+  }, [allCombinedSkillDefinitions, skillToEdit]);
+
 
   return (
     <>
@@ -214,27 +277,22 @@ export function SkillsFormSection({
             <span className="text-center w-10">Max</span>
           </div>
 
-          {skills.map(skill => {
-            const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skill.id);
-            const keyAbility = skill.keyAbility || (skillDef?.keyAbility as AbilityName | undefined);
-            const keyAbilityDisplay = (keyAbility && keyAbility !== 'none') ? keyAbility.substring(0, 3).toUpperCase() : '';
+          {skillsForDisplay.map(skill => {
+            const keyAbility = skill.keyAbility;
+            const keyAbilityDisplay = (keyAbility && keyAbility !== 'none') ? keyAbility.substring(0, 3).toUpperCase() : 'N/A';
 
             const baseAbilityMod = (keyAbility && keyAbility !== 'none')
               ? getAbilityModifierByName(actualAbilityScores, keyAbility)
               : 0;
 
-            const synergyBonus = calculateTotalSynergyBonus(skill.id, skills);
+            const synergyBonus = calculateTotalSynergyBonus(skill.id, characterSkillInstances, allPredefinedSkillDefinitions, allCustomSkillDefinitions);
             const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats, allFeatDefinitions);
-            const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, SKILL_DEFINITIONS);
+            const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, allPredefinedSkillDefinitions);
             
             const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus + currentRacialBonus;
-
             const totalBonus = (skill.ranks || 0) + totalDisplayedModifier + (skill.miscModifier || 0);
-            const baseIntelligenceModifierForMaxRanks = getAbilityModifierByName(abilityScores, 'intelligence'); 
-            const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, baseIntelligenceModifierForMaxRanks); 
-            
+            const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
             const skillCostDisplay = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 2;
-            const isCustomSkill = !skillDef;
             const currentStepForInput = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 0.5;
 
             return (
@@ -243,18 +301,8 @@ export function SkillsFormSection({
                   <Checkbox
                     id={`skill_class_${skill.id}`}
                     checked={skill.isClassSkill}
-                    disabled={!isCustomSkill || skill.keyAbility === 'none'} 
                     onCheckedChange={(checked) => {
-                        if (isCustomSkill && skill.keyAbility && skill.keyAbility !== 'none' && skill.providesSynergies !== undefined) { 
-                            onCustomSkillUpdate({
-                                id: skill.id,
-                                name: skill.name,
-                                keyAbility: skill.keyAbility,
-                                isClassSkill: !!checked,
-                                providesSynergies: skill.providesSynergies || [],
-                                description: skill.description || ''
-                            });
-                        }
+                        onSkillChange(skill.id, skill.ranks, !!checked);
                     }}
                     className="h-3.5 w-3.5"
                   />
@@ -271,9 +319,9 @@ export function SkillsFormSection({
                         <Info className="h-3 w-3" />
                       </Button>
                     <Label htmlFor={`skill_ranks_${skill.id}`} className="text-xs truncate pr-1 leading-tight flex-grow">
-                          {skill.name}
+                          {skill.name} {skill.isCustom && <span className="text-primary/70 text-xs">(Custom)</span>}
                     </Label>
-                  {isCustomSkill && (
+                  {skill.isCustom && (
                     <div className="flex items-center ml-auto">
                       <TooltipProvider delayDuration={100}>
                         <Tooltip>
@@ -284,16 +332,19 @@ export function SkillsFormSection({
                               size="icon"
                               className="h-5 w-5 text-muted-foreground hover:text-foreground"
                               onClick={() => handleOpenEditSkillDialog(skill)}
-                              aria-label={`Edit ${skill.name}`}
+                              aria-label={`Edit custom skill definition ${skill.name}`}
                             >
                               <Pencil className="h-3 w-3" />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent side="top" className="p-1 text-xs">
-                            <p>Edit Custom Skill</p>
+                            <p>Edit Custom Skill Definition</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
+                      {/* Removing custom skill instances/definitions needs careful thought.
+                          For now, removing a definition is not directly supported from this list.
+                          Removing an *instance* would mean setting ranks to 0 or filtering from character.skills.
                       <TooltipProvider delayDuration={100}>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -302,17 +353,18 @@ export function SkillsFormSection({
                                 variant="ghost"
                                 size="icon"
                                 className="h-5 w-5 text-destructive/70 hover:text-destructive"
-                                onClick={() => onCustomSkillRemove(skill.id)}
+                                onClick={() => handleRemoveCustomSkillInstance(skill.id)}
                                 aria-label={`Remove ${skill.name}`}
                               >
                                 <Trash2 className="h-3 w-3" />
                               </Button>
                           </TooltipTrigger>
                           <TooltipContent side="top" className="p-1 text-xs">
-                            <p>Remove Custom Skill</p>
+                            <p>Remove Custom Skill (Instance)</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
+                      */}
                      </div>
                   )}
                 </div>
@@ -324,7 +376,7 @@ export function SkillsFormSection({
                   type="number"
                   step={currentStepForInput}
                   value={skill.ranks || 0}
-                  onChange={(e) => onSkillChange(skill.id, parseFloat(e.target.value) || 0)}
+                  onChange={(e) => onSkillChange(skill.id, parseFloat(e.target.value) || 0, skill.isClassSkill)}
                   className="h-7 w-12 text-xs text-center p-1"
                   min="0"
                 />
@@ -344,7 +396,7 @@ export function SkillsFormSection({
 
         <div>
           <Button type="button" onClick={handleOpenAddSkillDialog} size="sm" variant="outline">
-            <PlusCircle className="mr-2 h-4 w-4" /> Add Custom Skill
+            <PlusCircle className="mr-2 h-4 w-4" /> Add Custom Skill Definition
           </Button>
         </div>
       </CardContent>
@@ -352,9 +404,9 @@ export function SkillsFormSection({
     <AddCustomSkillDialog
         isOpen={isAddOrEditSkillDialogOpen}
         onOpenChange={setIsAddOrEditSkillDialogOpen}
-        onSave={handleSaveCustomSkill}
+        onSave={handleSaveCustomSkillDefinition}
         initialSkillData={skillToEdit}
-        allSkills={allSkillOptionsForDialog}
+        allSkills={allSkillOptionsForSynergyDialog}
     />
     {currentSkillInfo && (
       <InfoDisplayDialog

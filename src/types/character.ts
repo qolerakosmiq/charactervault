@@ -10,11 +10,13 @@ import customAlignmentsDataJson from '@/data/custom-alignments.json';
 import deitiesDataJson from '@/data/dnd-deities.json';
 import customDeitiesDataJson from '@/data/custom-deities.json';
 import skillsDataJson from '@/data/dnd-skills.json';
-import customSkillsDataJson from '@/data/custom-skills.json';
+// customSkillsDataJson is now less relevant for *initial* skills as custom skills are global
 import featsDataJson from '@/data/dnd-feats.json';
-import customFeatsDataJson from '@/data/custom-feats.json';
+// customFeatsDataJson import removed as it's unused
 
 import { getBab } from '@/lib/dnd-utils';
+import type { CustomSkillDefinition } from '@/lib/definitions-store';
+
 
 export interface CharacterClass {
   id: string;
@@ -24,26 +26,24 @@ export interface CharacterClass {
 
 export interface CustomSynergyRule {
   id: string;
-  targetSkillName: string;
+  targetSkillName: string; // This should be skill ID (value)
   ranksInThisSkillRequired: number;
   bonusGranted: number;
 }
 
+// Represents a skill *taken by a character*
 export interface Skill {
-  id: string;
-  name: string;
-  keyAbility?: AbilityName;
-  isClassSkill?: boolean;
+  id: string; // For predefined skills, this is their 'value'. For custom, it's the ID of the CustomSkillDefinition.
   ranks: number;
   miscModifier: number;
-  description?: string;
-  providesSynergies?: CustomSynergyRule[];
+  isClassSkill?: boolean; // Determined per character based on their class
+  // name, keyAbility, description, providesSynergies are looked up from definition
 }
 
 export interface FeatPrerequisiteDetails {
   bab?: number;
   abilities?: Partial<Record<Exclude<AbilityName, 'none'>, number>>;
-  skills?: Array<{ id: string; ranks: number }>;
+  skills?: Array<{ id: string; ranks: number }>; // skill ID and ranks
   feats?: string[]; // Array of feat definition IDs
   casterLevel?: number;
   classLevel?: { classId: DndClassId | string; level: number };
@@ -53,7 +53,7 @@ export interface FeatPrerequisiteDetails {
 }
 
 export interface FeatEffectDetails {
-  skills?: Record<string, number>;
+  skills?: Record<string, number>; // skill ID (value) to bonus
   abilities?: Partial<Record<Exclude<AbilityName, 'none'>, number>>;
 }
 
@@ -66,18 +66,14 @@ export type FeatDefinitionJsonData = {
   effectsText?: string;
   canTakeMultipleTimes?: boolean;
   requiresSpecialization?: string;
-  // isCustom is not part of the JSON, but added dynamically
 };
 
 // Represents an instance of a feat taken by the character
 export interface CharacterFeatInstance {
-  definitionId: string; // ID of the FeatDefinitionJsonData (predefined or custom)
+  definitionId: string; // ID of the FeatDefinitionJsonData (predefined or global custom)
   instanceId: string;   // Unique ID for this specific taking of the feat.
-                        // For single-take feats, usually same as definitionId.
-                        // For multi-take, definitionId-MULTI-INSTANCE-uuid.
   specializationDetail?: string;
-  // Granted feats might have a note about their source, managed at display time or added here.
-  isGranted?: boolean; // Flag to indicate if this instance was granted (e.g. racial, class)
+  isGranted?: boolean;
   grantedNote?: string;
 }
 
@@ -130,9 +126,9 @@ export interface Character {
   initiativeMiscModifier: number;
   savingThrows: SavingThrows;
   classes: CharacterClass[];
-  skills: Skill[];
-  feats: CharacterFeatInstance[]; // Stores instances of feats taken by the character
-  customFeatDefinitions: (FeatDefinitionJsonData & { isCustom: true })[]; // Stores definitions of custom feats
+  skills: Skill[]; // Character's skill instances
+  feats: CharacterFeatInstance[]; // Character's feat instances
+  // customFeatDefinitions is removed, now global
   inventory: Item[];
   personalStory?: string;
   portraitDataUrl?: string;
@@ -141,10 +137,9 @@ export interface Character {
 function mergeArrayData<T extends { value: string }>(base: T[], custom: T[]): T[] {
   const combinedMap = new Map<string, T>();
   base.forEach(item => combinedMap.set(item.value, item));
-  custom.forEach(item => combinedMap.set(item.value, item));
+  custom.forEach(item => combinedMap.set(item.value, item)); // Custom overrides base if 'value' is same
   return Array.from(combinedMap.values());
 }
-
 function mergeObjectData<T extends Record<string, any>>(base: T, custom: T): T {
   return { ...base, ...custom };
 }
@@ -226,7 +221,7 @@ export type DndRaceOption = {
   label: string;
   description?: string;
   bonusFeatSlots?: number;
-  racialSkillBonuses?: Record<string, number>;
+  racialSkillBonuses?: Record<string, number>; // skill ID (value) to bonus
   grantedFeats?: Array<{ featId: string; note?: string; levelAcquired?: number }>;
 };
 export type DndRaceId = "human" | "elf" | "dwarf" | "halfling" | "gnome" | "half-elf" | "half-orc" | string;
@@ -259,54 +254,56 @@ const customDeitiesDataFile = (customDeitiesDataJson as any).DND_DEITIES_DATA ||
 export const DND_DEITIES: ReadonlyArray<DndDeityOption> = mergeArrayData(baseDeitiesData, customDeitiesDataFile);
 
 const baseFeatsData = (featsDataJson as any).DND_FEATS_DATA || [];
-const customFeatsDataFile = (customFeatsDataJson as any).DND_FEATS_DATA || [];
-export const DND_FEATS_DEFINITIONS: readonly (FeatDefinitionJsonData & { isCustom?: false })[] = mergeArrayData(baseFeatsData, customFeatsDataFile).map(f => ({...f, isCustom: false as const}));
+// const customFeatsDataFile = (customFeatsDataJson as any).DND_FEATS_DATA || []; // This was the problematic line's reference
+export const DND_FEATS_DEFINITIONS: readonly (FeatDefinitionJsonData & { isCustom?: false })[] = mergeArrayData(baseFeatsData, []).map(f => ({...f, isCustom: false as const}));
 
 
-export type SkillDefinitionJsonData = {
-  value: string;
-  label: string;
+export type SkillDefinitionJsonData = { // This is for *predefined* skills from JSON
+  value: string; // skill ID
+  label: string; // skill name
   keyAbility: AbilityName | string;
   description?: string;
 };
 const baseSkillDefinitions = (skillsDataJson as any).SKILL_DEFINITIONS_DATA || [];
-const customSkillDefinitions = (customSkillsDataJson as any).SKILL_DEFINITIONS_DATA || [];
-export const SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[] = mergeArrayData(baseSkillDefinitions, customSkillDefinitions);
+// Custom skill definitions will be managed by definitions-store
+export const SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[] = mergeArrayData(baseSkillDefinitions, []);
 
-export type ClassSkillsJsonData = Record<string, string[]>;
+export type ClassSkillsJsonData = Record<string, string[]>; // class ID to array of skill IDs
 const baseClassSkills = (skillsDataJson as any).CLASS_SKILLS_DATA || {};
-const customClassSkills = (customSkillsDataJson as any).CLASS_SKILLS_DATA || {};
-export const CLASS_SKILLS: Readonly<ClassSkillsJsonData> = mergeObjectData(baseClassSkills, customClassSkills);
+// Custom class skills for custom classes would need to be handled if custom classes are added
+export const CLASS_SKILLS: Readonly<ClassSkillsJsonData> = mergeObjectData(baseClassSkills, {});
 
-export type ClassSkillPointsBaseJsonData = Record<string, number>;
+export type ClassSkillPointsBaseJsonData = Record<string, number>; // class ID to base points
 const baseClassSkillPoints = (skillsDataJson as any).CLASS_SKILL_POINTS_BASE_DATA || {};
-const customClassSkillPoints = (customSkillsDataJson as any).CLASS_SKILL_POINTS_BASE_DATA || {};
-export const CLASS_SKILL_POINTS_BASE: Readonly<ClassSkillPointsBaseJsonData> = mergeObjectData(baseClassSkillPoints, customClassSkillPoints);
+export const CLASS_SKILL_POINTS_BASE: Readonly<ClassSkillPointsBaseJsonData> = mergeObjectData(baseClassSkillPoints, {});
 
-export type SynergyEffectJsonData = { targetSkill: string; ranksRequired: number; bonus: number };
-export type SkillSynergiesJsonData = Record<string, SynergyEffectJsonData[]>;
+export type SynergyEffectJsonData = { targetSkill: string; ranksRequired: number; bonus: number }; // targetSkill is skill ID
+export type SkillSynergiesJsonData = Record<string, SynergyEffectJsonData[]>; // providing skill ID to synergy effects
 const baseSkillSynergies = (skillsDataJson as any).SKILL_SYNERGIES_DATA || {};
-const customSkillSynergies = (customSkillsDataJson as any).SKILL_SYNERGIES_DATA || {};
-export const SKILL_SYNERGIES: Readonly<SkillSynergiesJsonData> = mergeObjectData(baseSkillSynergies, customSkillSynergies);
+export const SKILL_SYNERGIES: Readonly<SkillSynergiesJsonData> = mergeObjectData(baseSkillSynergies, {});
 
 export function getRaceSkillPointsBonusPerLevel(raceId: DndRaceId | string): number {
     return (DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA as Record<string, number>)[raceId] || 0;
 }
 
+// Initializes character's skills based on predefined skill definitions.
+// Custom skills are added to character dynamically if chosen.
 export function getInitialCharacterSkills(characterClasses: CharacterClass[]): Skill[] {
   const firstClassValue = characterClasses[0]?.className;
   const classSkillsForCurrentClass = firstClassValue ? (CLASS_SKILLS[firstClassValue as keyof ClassSkillsJsonData] || []) : [];
 
   return SKILL_DEFINITIONS.map(def => ({
-    id: def.value,
-    name: def.label,
-    keyAbility: def.keyAbility as AbilityName,
+    id: def.value, // This is the definition ID
     ranks: 0,
     miscModifier: 0,
     isClassSkill: classSkillsForCurrentClass.includes(def.value),
-    providesSynergies: [],
-    description: def.description || ""
-  })).sort((a, b) => a.name.localeCompare(b.name));
+    // name, keyAbility, description, providesSynergies are looked up from definition
+  })).sort((a, b) => {
+    // Sort by name, which needs to be looked up
+    const nameA = SKILL_DEFINITIONS.find(d => d.value === a.id)?.label || '';
+    const nameB = SKILL_DEFINITIONS.find(d => d.value === b.id)?.label || '';
+    return nameA.localeCompare(nameB);
+  });
 }
 
 export type RaceAgingCategoryKey = keyof typeof DND_RACE_AGING_EFFECTS_DATA;
@@ -371,7 +368,7 @@ export function getNetAgingEffects(raceId: DndRaceId | '', age: number): AgingEf
 
 export interface RaceSpecialQualities {
   abilityEffects: Array<{ ability: Exclude<AbilityName, 'none'>; change: number }>;
-  skillBonuses?: Array<{ skillName: string; bonus: number }>;
+  skillBonuses?: Array<{ skillName: string; bonus: number }>; // skillName refers to label
   grantedFeats?: Array<{ featId: string; name: string; note?: string; levelAcquired?: number }>;
   bonusFeatSlots?: number;
 }
@@ -444,15 +441,22 @@ export function getSizeAbilityEffects(sizeId: CharacterSize | ''): SizeAbilityEf
   return { effects: appliedEffects };
 }
 
-export function calculateTotalSynergyBonus(targetSkillId: string, currentCharacterSkills: Skill[]): number {
+export function calculateTotalSynergyBonus(
+  targetSkillId: string, // ID of the skill receiving the bonus
+  currentCharacterSkills: Skill[], // Character's skill instances
+  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[],
+  allCustomSkillDefinitions: readonly CustomSkillDefinition[]
+): number {
   let totalBonus = 0;
+
+  // Synergies from predefined skills
   if (SKILL_SYNERGIES) {
-    for (const providingSkillId_kebab in SKILL_SYNERGIES) {
-      const synergiesProvidedByThisDefinition = (SKILL_SYNERGIES as SkillSynergiesJsonData)[providingSkillId_kebab];
+    for (const providingSkillDefId in SKILL_SYNERGIES) {
+      const synergiesProvidedByThisDefinition = (SKILL_SYNERGIES as SkillSynergiesJsonData)[providingSkillDefId];
       if (synergiesProvidedByThisDefinition) {
         for (const synergy of synergiesProvidedByThisDefinition) {
-          if (synergy.targetSkill === targetSkillId) {
-            const providingSkillInCharacter = currentCharacterSkills.find(s => s.id === providingSkillId_kebab);
+          if (synergy.targetSkill === targetSkillId) { // targetSkill is an ID
+            const providingSkillInCharacter = currentCharacterSkills.find(s => s.id === providingSkillDefId);
             if (providingSkillInCharacter && (providingSkillInCharacter.ranks || 0) >= synergy.ranksRequired) {
               totalBonus += synergy.bonus;
             }
@@ -461,11 +465,15 @@ export function calculateTotalSynergyBonus(targetSkillId: string, currentCharact
       }
     }
   }
-  for (const providingSkill of currentCharacterSkills) {
-    if (providingSkill.providesSynergies) {
-      for (const customRule of providingSkill.providesSynergies) {
+
+  // Synergies from custom skills taken by the character
+  for (const charSkillInstance of currentCharacterSkills) {
+    const customSkillDef = allCustomSkillDefinitions.find(csd => csd.id === charSkillInstance.id);
+    if (customSkillDef?.providesSynergies) {
+      for (const customRule of customSkillDef.providesSynergies) {
+        // customRule.targetSkillName should store the ID of the target skill
         if (customRule.targetSkillName === targetSkillId) {
-          if ((providingSkill.ranks || 0) >= customRule.ranksInThisSkillRequired) {
+          if ((charSkillInstance.ranks || 0) >= customRule.ranksInThisSkillRequired) {
             totalBonus += customRule.bonusGranted;
           }
         }
@@ -474,6 +482,7 @@ export function calculateTotalSynergyBonus(targetSkillId: string, currentCharact
   }
   return totalBonus;
 }
+
 
 export function calculateFeatBonusesForSkill(skillId_kebab: string, characterFeatInstances: CharacterFeatInstance[], allFeatDefinitions: (FeatDefinitionJsonData & {isCustom?: boolean})[]): number {
   let totalBonus = 0;
@@ -497,36 +506,48 @@ export function calculateRacialSkillBonus(skillId_kebab: string, raceId: DndRace
 
 export function calculateAvailableFeats(characterRaceId: DndRaceId | string, level: number): number {
   let availableFeats = 0;
-  if (level >= 1) availableFeats += 1;
+  if (level >= 1) availableFeats += 1; // Base feat at 1st level
   const raceData = DND_RACES.find(r => r.value === characterRaceId);
   if (raceData?.bonusFeatSlots) {
     availableFeats += raceData.bonusFeatSlots;
   }
-  availableFeats += Math.floor(level / 3);
+  availableFeats += Math.floor(level / 3); // Feat at 3rd, 6th, 9th, etc.
   return availableFeats;
 }
 
 export function getGrantedFeatsForCharacter(
   characterRaceId: DndRaceId | string,
   characterClasses: CharacterClass[],
-  characterLevel: number
+  characterLevel: number,
+  allFeatDefinitions: readonly FeatDefinitionJsonData[] // Includes predefined and global custom
 ): CharacterFeatInstance[] {
   const grantedInstances: CharacterFeatInstance[] = [];
-  const addedDefinitionIds = new Set<string>(); // To prevent adding same granted feat multiple times
+  const addedDefinitionIds = new Set<string>();
 
   const addGrantedInstance = (featDefId: string, note: string | undefined, source: string, levelAcquired?: number) => {
-    if (!featDefId || (levelAcquired !== undefined && levelAcquired > characterLevel) || addedDefinitionIds.has(featDefId)) {
+    if (!featDefId || (levelAcquired !== undefined && levelAcquired > characterLevel) ) { // Removed addedDefinitionIds check to allow multiple sources granting same feat if that's a rule.
       return;
     }
-    const featDef = DND_FEATS_DEFINITIONS.find(f => f.value === featDefId);
+    const featDef = allFeatDefinitions.find(f => f.value === featDefId);
     if (featDef) {
+      // For granted feats that can be taken multiple times, ensure their instance ID is unique if another source grants it.
+      // However, typical granted feats (like Scribe Scroll for Wizard) are usually single-take.
+      // If a feat is granted multiple times and IS multi-take, each grant would need a unique instance ID.
+      // For simplicity, assume granted feats here are single-take unless game rules specify otherwise for specific grants.
+      // We'll use the definitionId as instanceId for granted feats for now.
+      const instanceId = featDef.value; 
+      
+      // Check if this specific instance (by definitionID for granted) is already added
+      if (addedDefinitionIds.has(instanceId)) return;
+
+
       grantedInstances.push({
         definitionId: featDef.value,
-        instanceId: featDef.value, // For granted, instanceId can be same as definitionId
+        instanceId: instanceId, 
         isGranted: true,
         grantedNote: note ? `${note} (${source})` : `(${source})`,
       });
-      addedDefinitionIds.add(featDefId);
+      addedDefinitionIds.add(instanceId);
     }
   };
 
@@ -566,8 +587,10 @@ const PREREQ_ORDER_MAP: Record<string, number> = {
 
 export function checkFeatPrerequisites(
   featDefinitionToCheck: FeatDefinitionJsonData,
-  character: Pick<Character, 'abilityScores' | 'skills' | 'feats' | 'classes' | 'race' | 'age' | 'alignment' | 'customFeatDefinitions'>,
-  allFeatDefinitions: readonly (FeatDefinitionJsonData & {isCustom?: boolean})[]
+  character: Pick<Character, 'abilityScores' | 'skills' | 'feats' | 'classes' | 'race' | 'age' | 'alignment'>,
+  allFeatDefinitions: readonly (FeatDefinitionJsonData & {isCustom?: boolean})[],
+  allSkillDefinitions: readonly SkillDefinitionJsonData[], // Add this
+  allCustomSkillDefinitions: readonly CustomSkillDefinition[] // Add this
 ): PrerequisiteMessage[] {
   const { prerequisites } = featDefinitionToCheck;
   const messages: PrerequisiteMessage[] = [];
@@ -575,6 +598,19 @@ export function checkFeatPrerequisites(
   if (!prerequisites || Object.keys(prerequisites).length === 0) {
     return [];
   }
+
+  // Helper to get combined skill definitions
+  const getCombinedSkillDefs = () => {
+    const combined: Array<{id: string; label: string}> = allSkillDefinitions.map(sd => ({id: sd.value, label: sd.label}));
+    allCustomSkillDefinitions.forEach(csd => {
+      if (!combined.find(s => s.id === csd.id)) {
+        combined.push({id: csd.id, label: csd.name});
+      }
+    });
+    return combined;
+  };
+  const combinedSkillDefs = getCombinedSkillDefs();
+
 
   if (prerequisites.raceId !== undefined && prerequisites.raceId !== "") {
     const raceDef = DND_RACES.find(r => r.value === prerequisites!.raceId);
@@ -649,16 +685,16 @@ export function checkFeatPrerequisites(
   }
 
   if (prerequisites.skills) {
-    for (const skillReq of prerequisites.skills) {
-      const charSkill = character.skills.find(s => s.id === skillReq.id);
-      const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skillReq.id);
+    for (const skillReq of prerequisites.skills) { // skillReq.id is the skill definition ID
+      const charSkillInstance = character.skills.find(s => s.id === skillReq.id);
+      const skillDef = combinedSkillDefs.find(sd => sd.id === skillReq.id);
       const skillName = skillDef?.label || skillReq.id;
-      const isMet = charSkill ? charSkill.ranks >= skillReq.ranks : false;
+      const isMet = charSkillInstance ? charSkillInstance.ranks >= skillReq.ranks : false;
       messages.push({ text: `${skillName} ${skillReq.ranks} Ranks`, isMet, orderKey: `skill_${skillReq.id}`, originalText: skillName });
     }
   }
 
-  if (prerequisites.feats) {
+  if (prerequisites.feats) { // prerequisites.feats contains definition IDs
     const characterTakenFeatDefinitionIds = character.feats.map(f => f.definitionId);
     for (const requiredFeatDefId of prerequisites.feats) {
       const featDef = allFeatDefinitions.find(f => f.value === requiredFeatDefId);
@@ -685,6 +721,7 @@ export function checkFeatPrerequisites(
   return messages;
 }
 
+
 export interface AbilityScoreComponentValue {
   source: string;
   value: number;
@@ -699,12 +736,17 @@ export interface AbilityScoreBreakdown {
 
 export type DetailedAbilityScores = Record<Exclude<AbilityName, 'none'>, AbilityScoreBreakdown>;
 
-export function calculateDetailedAbilityScores(character: Character): DetailedAbilityScores {
+export function calculateDetailedAbilityScores(character: Character, globalCustomFeatDefs: (FeatDefinitionJsonData & { isCustom: true })[]): DetailedAbilityScores {
   const result: Partial<DetailedAbilityScores> = {};
   const racialQualities = getRaceSpecialQualities(character.race);
   const agingDetails = getNetAgingEffects(character.race, character.age);
   const sizeDetails = getSizeAbilityEffects(character.size);
-  const allFeatDefs = [...DND_FEATS_DEFINITIONS, ...character.customFeatDefinitions];
+  
+  const allFeatDefs: (FeatDefinitionJsonData & { isCustom?: boolean })[] = [
+    ...DND_FEATS_DEFINITIONS,
+    ...globalCustomFeatDefs,
+  ];
+
 
   for (const ability of ABILITY_ORDER_INTERNAL) {
     const baseScore = character.abilityScores[ability] || 0;
@@ -789,3 +831,4 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
+

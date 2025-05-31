@@ -8,7 +8,7 @@ import type {
   AgingEffectsDetails, DndRaceId, SizeAbilityEffectsDetails, RaceSpecialQualities, AbilityScores,
   Skill as SkillType, DndClassId, CustomSynergyRule, DndDeityId, GenderId,
   DndRaceOption, DetailedAbilityScores, AbilityScoreBreakdown, CharacterAlignmentObject, DndClassOption, DndDeityOption,
-  FeatDefinitionJsonData, CharacterFeatInstance
+  FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData
 } from '@/types/character';
 import {
   SIZES,
@@ -21,14 +21,16 @@ import {
   getSizeAbilityEffects,
   getRaceSpecialQualities,
   getInitialCharacterSkills,
-  SKILL_DEFINITIONS,
-  DND_FEATS_DEFINITIONS, // Use new definitions constant
+  SKILL_DEFINITIONS, // Predefined skill definitions
+  DND_FEATS_DEFINITIONS,
   getGrantedFeatsForCharacter,
   calculateDetailedAbilityScores,
   DEFAULT_ABILITIES,
   DEFAULT_SAVING_THROWS,
   DND_RACE_MIN_ADULT_AGE_DATA
 } from '@/types/character';
+
+import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
 
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
@@ -50,14 +52,21 @@ interface CharacterFormCoreProps {
 const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
 export function CharacterFormCore({ initialCharacter, onSave, isCreating }: CharacterFormCoreProps) {
+  const { customFeatDefinitions: globalCustomFeatDefinitions, actions: definitionsActions } = useDefinitionsStore();
+  const { customSkillDefinitions: globalCustomSkillDefinitions } = useDefinitionsStore();
+
+
   const [character, setCharacter] = React.useState<Character>(() => {
     const defaultBaseAbilityScores = { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES)) as AbilityScores) };
     const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: '', level: 1 }];
-
-    const tempCharForInitialFeats: Pick<Character, 'race' | 'classes'> = { // Simplified for initial feat calculation
-      race: '', classes: defaultClasses,
-    }
-    const initialFeats = getGrantedFeatsForCharacter(tempCharForInitialFeats.race, tempCharForInitialFeats.classes, 1);
+    
+    const allInitialFeatDefs = [...DND_FEATS_DEFINITIONS, ...globalCustomFeatDefinitions];
+    const initialFeats = getGrantedFeatsForCharacter(
+      initialCharacter?.race || '',
+      initialCharacter?.classes || defaultClasses,
+      1,
+      allInitialFeatDefs
+    );
 
     return initialCharacter || {
       id: crypto.randomUUID(),
@@ -67,9 +76,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, initiativeMiscModifier: 0,
       savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)),
       classes: defaultClasses,
-      skills: getInitialCharacterSkills(defaultClasses),
-      feats: initialFeats, // Now CharacterFeatInstance[]
-      customFeatDefinitions: [], // Initialize custom feat definitions
+      skills: getInitialCharacterSkills(defaultClasses), // Skills are instances
+      feats: initialFeats, // CharacterFeatInstance[]
+      // customFeatDefinitions removed from character, now global
       inventory: [], personalStory: '', portraitDataUrl: undefined,
     };
   });
@@ -93,9 +102,32 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const router = useRouter();
   const { toast } = useToast();
 
+  const allAvailableFeatDefinitions = React.useMemo(() => {
+    const predefined = DND_FEATS_DEFINITIONS.map(def => ({ ...def, isCustom: false as const }));
+    // globalCustomFeatDefinitions already has isCustom: true
+    return [...predefined, ...globalCustomFeatDefinitions];
+  }, [globalCustomFeatDefinitions]);
+
+  const allAvailableSkillDefinitionsForDisplay = React.useMemo(() => {
+    const predefined = SKILL_DEFINITIONS.map(sd => ({
+        id: sd.value,
+        name: sd.label,
+        keyAbility: sd.keyAbility as AbilityName,
+        description: sd.description,
+        isCustom: false,
+        providesSynergies: undefined, // Or look up from SKILL_SYNERGIES
+    }));
+    const custom = globalCustomSkillDefinitions.map(csd => ({
+        ...csd,
+        isCustom: true,
+    }));
+    return [...predefined, ...custom].sort((a,b) => a.name.localeCompare(b.name));
+  }, [globalCustomSkillDefinitions]);
+
+
   React.useEffect(() => {
-    setDetailedAbilityScores(calculateDetailedAbilityScores(character));
-  }, [character]);
+    setDetailedAbilityScores(calculateDetailedAbilityScores(character, globalCustomFeatDefinitions));
+  }, [character, globalCustomFeatDefinitions]);
 
   const actualAbilityScoresForSkills = React.useMemo(() => {
     if (!detailedAbilityScores) {
@@ -154,15 +186,16 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
   }, [character.race, isCreating, character.age]);
 
-  // Initial granted feats calculation
  React.useEffect(() => {
     const characterLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1;
-    const newGrantedFeatInstances = getGrantedFeatsForCharacter(character.race, character.classes, characterLevel);
+    const newGrantedFeatInstances = getGrantedFeatsForCharacter(
+      character.race,
+      character.classes,
+      characterLevel,
+      allAvailableFeatDefinitions // Pass combined list
+    );
 
-    // Combine new granted feats with existing user-chosen feats
-    // User-chosen feats are those not marked as isGranted
     const userChosenFeatInstances = character.feats.filter(fi => !fi.isGranted);
-
     const combinedFeatInstancesMap = new Map<string, CharacterFeatInstance>();
 
     newGrantedFeatInstances.forEach(instance => {
@@ -170,29 +203,21 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     });
 
     userChosenFeatInstances.forEach(instance => {
-        // If a granted version of this feat definition exists AND the feat cannot be taken multiple times, don't re-add.
-        // This check needs the full definition. For now, we'll simplify.
-        // This logic will be more robust in FeatsFormSection when adding feats.
-        if (!combinedFeatInstancesMap.has(instance.instanceId) || combinedFeatInstancesMap.get(instance.instanceId)?.isGranted) {
-            // A more complex check might be needed if a feat definition can be both granted AND chosen (e.g. Scribe Scroll for Wizard)
-            // We primarily want to avoid duplicate *instances* if the feat isn't multi-take.
-            // For now, just re-add user chosen if not already present as granted.
-             if (!newGrantedFeatInstances.some(gf => gf.definitionId === instance.definitionId && !DND_FEATS_DEFINITIONS.find(d => d.value === gf.definitionId)?.canTakeMultipleTimes)) {
-                 combinedFeatInstancesMap.set(instance.instanceId, instance);
-             }
-        }
+        const definition = allAvailableFeatDefinitions.find(d => d.value === instance.definitionId);
+        if (!newGrantedFeatInstances.some(gf => gf.definitionId === instance.definitionId && !definition?.canTakeMultipleTimes)) {
+             combinedFeatInstancesMap.set(instance.instanceId, instance);
+         }
     });
-
 
     setCharacter(prev => ({
         ...prev,
         feats: Array.from(combinedFeatInstancesMap.values()).sort((a, b) => {
-            const defA = [...DND_FEATS_DEFINITIONS, ...prev.customFeatDefinitions].find(d => d.value === a.definitionId);
-            const defB = [...DND_FEATS_DEFINITIONS, ...prev.customFeatDefinitions].find(d => d.value === b.definitionId);
+            const defA = allAvailableFeatDefinitions.find(d => d.value === a.definitionId);
+            const defB = allAvailableFeatDefinitions.find(d => d.value === b.definitionId);
             return (defA?.label || '').localeCompare(defB?.label || '');
         }),
     }));
-  }, [character.race, character.classes]);
+  }, [character.race, character.classes, allAvailableFeatDefinitions]);
 
 
   const handleCoreInfoFieldChange = (field: keyof Character, value: any) => {
@@ -217,63 +242,70 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const handleClassChange = (value: DndClassId | string) => {
     setCharacter(prev => {
       const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: value, level: 1 }];
-      return { ...prev, classes: updatedClasses };
+      const newSkills = getInitialCharacterSkills(updatedClasses); // Re-init skills to update class skills
+      return { ...prev, classes: updatedClasses, skills: newSkills };
     });
   };
 
-  const handleSkillChange = (skillId: string, ranks: number) => {
+  const handleSkillChange = (skillId: string, ranks: number, isClassSkill?: boolean) => {
     setCharacter(prev => ({
       ...prev,
       skills: prev.skills.map(s =>
-        s.id === skillId ? { ...s, ranks } : s
+        s.id === skillId ? { ...s, ranks, isClassSkill: isClassSkill !== undefined ? isClassSkill : s.isClassSkill } : s
       ),
     }));
   };
 
-  const handleCustomSkillAdd = (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
-    const newSkill: SkillType = {
-      id: crypto.randomUUID(),
-      name: skillData.name,
-      keyAbility: skillData.keyAbility,
-      ranks: 0, miscModifier: 0,
-      isClassSkill: skillData.keyAbility === 'none' ? false : skillData.isClassSkill,
-      providesSynergies: skillData.providesSynergies || [],
-      description: skillData.description || '',
-    };
-    setCharacter(prev => ({
-      ...prev,
-      skills: [...prev.skills, newSkill].sort((a, b) => a.name.localeCompare(b.name)),
-    }));
+  const handleCustomSkillAddOrUpdateToStore = (skillData: CustomSkillDefinition) => {
+    const existing = definitionsActions.getCustomSkillDefinitionById(skillData.id);
+    if(existing) {
+        definitionsActions.updateCustomSkillDefinition(skillData);
+    } else {
+        definitionsActions.addCustomSkillDefinition(skillData);
+    }
+    // If a skill definition is updated (e.g. name, keyAbility), character's skill instances
+    // will reflect this dynamically as they only store id, ranks, miscMod, isClassSkill.
+    // If a *new* custom skill definition is added, it becomes available.
+    // If it's added to the character sheet, a new Skill instance is created.
   };
 
-  const handleCustomSkillUpdate = (updatedSkillData: { id: string; name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
-    setCharacter(prev => ({
-      ...prev,
-      skills: prev.skills.map(s =>
-        s.id === updatedSkillData.id
-          ? { ...s,
-              name: updatedSkillData.name, keyAbility: updatedSkillData.keyAbility,
-              isClassSkill: updatedSkillData.keyAbility === 'none' ? false : updatedSkillData.isClassSkill,
-              providesSynergies: updatedSkillData.providesSynergies, description: updatedSkillData.description,
-            }
-          : s
-      ).sort((a, b) => a.name.localeCompare(b.name)),
-    }));
-  };
+  // This function is called when a character *takes* a newly defined custom skill
+  const handleAddCustomSkillInstanceToCharacter = (skillDefId: string) => {
+     const skillDef = definitionsActions.getCustomSkillDefinitionById(skillDefId) || allAvailableSkillDefinitionsForDisplay.find(s => s.id === skillDefId);
+     if (skillDef && !character.skills.find(s => s.id === skillDefId)) {
+        const isClassSkill = character.classes[0]?.className ? 
+            (CLASS_SKILLS[character.classes[0]?.className as keyof typeof CLASS_SKILLS] || []).includes(skillDefId) : false;
 
-  const handleCustomSkillRemove = (skillId: string) => {
-    setCharacter(prev => ({
-      ...prev,
-      skills: prev.skills.filter(s => s.id !== skillId)
-    }));
+        const newSkillInstance: SkillType = {
+            id: skillDefId,
+            ranks: 0,
+            miscModifier: 0,
+            isClassSkill: isClassSkill,
+        };
+        setCharacter(prev => ({
+            ...prev,
+            skills: [...prev.skills, newSkillInstance].sort((a, b) => {
+                const nameA = allAvailableSkillDefinitionsForDisplay.find(d => d.id === a.id)?.name || '';
+                const nameB = allAvailableSkillDefinitionsForDisplay.find(d => d.id === b.id)?.name || '';
+                return nameA.localeCompare(nameB);
+            })
+        }));
+     }
   };
 
   const handleFeatInstancesChange = (updatedFeatInstances: CharacterFeatInstance[]) => {
     setCharacter(prev => ({ ...prev, feats: updatedFeatInstances }));
   };
 
-  const handleCustomFeatDefinitionsChange = (updatedDefinitions: (FeatDefinitionJsonData & { isCustom: true })[]) => {
-    setCharacter(prev => ({ ...prev, customFeatDefinitions: updatedDefinitions }));
+  const handleCustomFeatDefinitionChangeInStore = (featDefData: (FeatDefinitionJsonData & { isCustom: true })) => {
+    const existing = definitionsActions.getCustomFeatDefinitionById(featDefData.value);
+    if (existing) {
+        definitionsActions.updateCustomFeatDefinition(featDefData);
+    } else {
+        definitionsActions.addCustomFeatDefinition(featDefData);
+    }
+    // If a feat definition changes (e.g. name, prerequisites), existing CharacterFeatInstance
+    // on the character will reflect this dynamically when its definition is looked up.
   };
 
 
@@ -319,10 +351,14 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         if (classData.hitDice) {
             classSpecificDetails.push({ label: "Hit Dice", value: classData.hitDice, isBold: true });
         }
+         const grantedFeatsFormatted = classData.grantedFeats?.map(gf => ({
+            ...gf,
+            name: allAvailableFeatDefinitions.find(f => f.value === gf.featId)?.label || gf.featId
+        }));
         setCurrentInfoDialogData({
             title: classData.label,
             content: classData.description,
-            grantedFeats: classData.grantedFeats?.map(gf => ({...gf, name: DND_FEATS_DEFINITIONS.find(f => f.value === gf.featId)?.label || gf.featId})),
+            grantedFeats: grantedFeatsFormatted,
             detailsList: classSpecificDetails
         });
         setIsInfoDialogOpen(true);
@@ -386,7 +422,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       classes: character.classes.length > 0 ? character.classes : [{id: crypto.randomUUID(), className: '', level: 1}],
     };
     if (finalCharacterData.classes[0]) {
-        finalCharacterData.classes[0].level = 1; // Ensure level 1 for first class on initial save
+        finalCharacterData.classes[0].level = 1;
     }
 
     onSave(finalCharacterData);
@@ -408,12 +444,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
     return 1;
   }, [character.race]);
-
-  const allAvailableFeatDefinitions = React.useMemo(() => {
-    const predefined = DND_FEATS_DEFINITIONS.map(def => ({ ...def, isCustom: false as const }));
-    const custom = character.customFeatDefinitions || [];
-    return [...predefined, ...custom];
-  }, [character.customFeatDefinitions]);
 
 
   return (
@@ -453,28 +483,31 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         />
 
         <SkillsFormSection
-          skills={character.skills}
-          abilityScores={character.abilityScores}
-          actualAbilityScores={actualAbilityScoresForSkills}
+          skills={character.skills} // Character's skill instances
+          abilityScores={character.abilityScores} // Base scores for max ranks calc
+          actualAbilityScores={actualAbilityScoresForSkills} // Final scores for modifier display
           characterClasses={character.classes}
-          characterRace={character.race}
-          selectedFeats={character.feats} // Pass CharacterFeatInstance[]
-          allFeatDefinitions={allAvailableFeatDefinitions} // Pass all definitions for skill bonus calc
+          characterRace={character.race as DndRaceId}
+          selectedFeats={character.feats}
+          allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
+          allCustomSkillDefinitions={globalCustomSkillDefinitions}
+          allFeatDefinitions={allAvailableFeatDefinitions}
           onSkillChange={handleSkillChange}
-          onCustomSkillAdd={handleCustomSkillAdd}
-          onCustomSkillUpdate={handleCustomSkillUpdate}
-          onCustomSkillRemove={handleCustomSkillRemove}
+          onCustomSkillDefinitionSave={handleCustomSkillAddOrUpdateToStore}
+          onAddCustomSkillInstanceToCharacter={handleAddCustomSkillInstanceToCharacter}
+          // onCustomSkillRemove is more complex if it involves removing a definition
         />
 
         <FeatsFormSection
-          character={character} // Pass the whole character for prerequisite checks
+          character={character}
           allAvailableFeatDefinitions={allAvailableFeatDefinitions}
           chosenFeatInstances={character.feats}
-          customFeatDefinitions={character.customFeatDefinitions}
           onFeatInstancesChange={handleFeatInstancesChange}
-          onCustomFeatDefinitionsChange={handleCustomFeatDefinitionsChange}
-          abilityScores={actualAbilityScoresForSkills} // For quick access to final scores for prereqs
+          onCustomFeatDefinitionSave={handleCustomFeatDefinitionChangeInStore}
+          abilityScores={actualAbilityScoresForSkills}
           skills={character.skills}
+          allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
+          allCustomSkillDefinitions={globalCustomSkillDefinitions}
         />
 
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-8">

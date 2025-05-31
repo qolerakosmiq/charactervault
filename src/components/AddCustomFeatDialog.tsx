@@ -27,10 +27,10 @@ import { Badge } from '@/components/ui/badge';
 interface AddCustomFeatDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (featDefData: FeatDefinitionJsonData & { isCustom: true }) => void; // Callback with full definition
-  initialFeatData?: FeatDefinitionJsonData & { isCustom: true }; // Pass the full definition for editing
-  allFeats: readonly FeatDefinitionJsonData[]; // For feat prerequisite selector
-  allSkills: readonly ComboboxOption[];
+  onSave: (featDefData: FeatDefinitionJsonData & { isCustom: true }) => void;
+  initialFeatData?: FeatDefinitionJsonData & { isCustom: true };
+  allFeats: readonly FeatDefinitionJsonData[]; // For feat prerequisite selector (predefined D&D feats)
+  allSkills: readonly ComboboxOption[]; // skill ID (value) and label
   allClasses: readonly DndClassOption[];
   allRaces: readonly DndRaceOption[];
 }
@@ -47,9 +47,9 @@ const abilityOptions: Array<{ value: Exclude<AbilityName, 'none'>; label: string
 type PrerequisiteListItem = {
   tempId: string;
   type: 'ability' | 'skill' | 'feat';
-  itemId: string;
+  itemId: string; // For ability: ability name; For skill: skill ID; For feat: feat definition ID
   itemLabel: string;
-  value?: number;
+  value?: number; // For ability: score; For skill: ranks
 };
 
 const NONE_VALUE = "__NONE__";
@@ -59,8 +59,8 @@ export function AddCustomFeatDialog({
   onOpenChange,
   onSave,
   initialFeatData,
-  allFeats, // Predefined feats for prereq selection
-  allSkills,
+  allFeats, // Predefined D&D feats
+  allSkills, // skill definitions {value: id, label: name}
   allClasses,
   allRaces,
 }: AddCustomFeatDialogProps) {
@@ -100,7 +100,7 @@ export function AddCustomFeatDialog({
   React.useEffect(() => {
     if (isOpen) {
       if (initialFeatData) {
-        setFeatName(initialFeatData.label || ''); // Use label for name
+        setFeatName(initialFeatData.label || '');
         setDescription(initialFeatData.description || '');
         setCanTakeMultipleTimes(initialFeatData.canTakeMultipleTimes || false);
         setRequiresSpecialization(initialFeatData.requiresSpecialization || '');
@@ -121,16 +121,15 @@ export function AddCustomFeatDialog({
             loadedPrereqs.push({ tempId: crypto.randomUUID(), type: 'ability', itemId: ability, itemLabel: abilityLabel, value: score });
           }
         }
-        if (prereqs?.skills) {
+        if (prereqs?.skills) { // prereqs.skills contains {id: skillId, ranks: number}
           prereqs.skills.forEach(skillReq => {
             const skillLabel = allSkills.find(s => s.value === skillReq.id)?.label || skillReq.id;
             loadedPrereqs.push({ tempId: crypto.randomUUID(), type: 'skill', itemId: skillReq.id, itemLabel: skillLabel, value: skillReq.ranks });
           });
         }
-        if (prereqs?.feats) {
+        if (prereqs?.feats) { // prereqs.feats is an array of feat definition IDs
           prereqs.feats.forEach(featId => {
-            // Use allFeats (which are FeatDefinitionJsonData[]) to find labels
-            const featLabel = allFeats.find(f => f.value === featId)?.label || featId;
+            const featLabel = allFeats.find(f => f.value === featId)?.label || featId; // Use predefined feats for label
             loadedPrereqs.push({ tempId: crypto.randomUUID(), type: 'feat', itemId: featId, itemLabel: featLabel });
           });
         }
@@ -171,7 +170,7 @@ export function AddCustomFeatDialog({
         alert('Please enter a valid positive ability score.');
         return;
       }
-    } else if (newPrereqType === 'skill') {
+    } else if (newPrereqType === 'skill') { // newPrereqItemId is skill ID
       const skillOpt = allSkills.find(opt => opt.value === newPrereqItemId);
       itemLabel = skillOpt ? skillOpt.label : newPrereqItemId;
       value = parseInt(newPrereqValue, 10);
@@ -179,8 +178,7 @@ export function AddCustomFeatDialog({
         alert('Please enter valid positive skill ranks.');
         return;
       }
-    } else if (newPrereqType === 'feat') {
-      // Use allFeats (which are FeatDefinitionJsonData[]) for label lookup
+    } else if (newPrereqType === 'feat') { // newPrereqItemId is feat definition ID
       const featOpt = allFeats.find(opt => opt.value === newPrereqItemId);
       itemLabel = featOpt ? featOpt.label : newPrereqItemId;
     }
@@ -217,26 +215,25 @@ export function AddCustomFeatDialog({
       if (p.type === 'ability' && p.value !== undefined) {
         if (!finalStructuredPrerequisites.abilities) finalStructuredPrerequisites.abilities = {};
         finalStructuredPrerequisites.abilities[p.itemId as Exclude<AbilityName, 'none'>] = p.value;
-      } else if (p.type === 'skill' && p.value !== undefined) {
+      } else if (p.type === 'skill' && p.value !== undefined) { // p.itemId is skill ID
         if (!finalStructuredPrerequisites.skills) finalStructuredPrerequisites.skills = [];
         finalStructuredPrerequisites.skills.push({ id: p.itemId, ranks: p.value });
-      } else if (p.type === 'feat') {
+      } else if (p.type === 'feat') { // p.itemId is feat definition ID
         if (!finalStructuredPrerequisites.feats) finalStructuredPrerequisites.feats = [];
-        finalStructuredPrerequisites.feats.push(p.itemId); // Store definition ID
+        finalStructuredPrerequisites.feats.push(p.itemId);
       }
     });
 
-    // Construct the feat definition object
     const featDefinition: FeatDefinitionJsonData & { isCustom: true } = {
-      value: initialFeatData?.value || crypto.randomUUID(), // Use existing value (ID) or generate new
+      value: initialFeatData?.value || crypto.randomUUID(),
       label: featName.trim(),
       description: description.trim() || undefined,
       prerequisites: Object.keys(finalStructuredPrerequisites).length > 0 || prerequisitesList.length > 0 ? finalStructuredPrerequisites : undefined,
-      // effects: initialFeatData?.effects, // Preserve effects if not editable here
       effectsText: effectsText.trim() || undefined,
       canTakeMultipleTimes,
       requiresSpecialization: requiresSpecialization.trim() || undefined,
       isCustom: true,
+      // Effects object could be built here if editable
     };
 
     onSave(featDefinition);
@@ -403,8 +400,8 @@ export function AddCustomFeatDialog({
                     <div className="space-y-1">
                       <Label htmlFor="new-prereq-skill-item">Skill</Label>
                       <ComboboxPrimitive
-                        options={allSkills}
-                        value={newPrereqItemId}
+                        options={allSkills} // {value: skillId, label: skillName}
+                        value={newPrereqItemId} // skillId
                         onChange={setNewPrereqItemId}
                         placeholder="Select Skill..."
                       />
@@ -419,8 +416,8 @@ export function AddCustomFeatDialog({
                   <div className="space-y-1 md:col-span-2">
                     <Label htmlFor="new-prereq-feat-item">Feat</Label>
                     <ComboboxPrimitive
-                      options={allFeats.map(f => ({ value: f.value, label: f.label }))} // Use value and label from FeatDefinitionJsonData
-                      value={newPrereqItemId}
+                      options={allFeats.map(f => ({ value: f.value, label: f.label }))} // {value: featDefId, label: featName}
+                      value={newPrereqItemId} // featDefId
                       onChange={setNewPrereqItemId}
                       placeholder="Select Prerequisite Feat..."
                     />

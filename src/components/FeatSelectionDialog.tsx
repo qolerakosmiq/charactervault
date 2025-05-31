@@ -19,7 +19,8 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import type { FeatDefinitionJsonData, Character, PrerequisiteMessage } from '@/types/character';
+import type { FeatDefinitionJsonData, Character, PrerequisiteMessage, SkillDefinitionJsonData } from '@/types/character';
+import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { BookOpenText } from 'lucide-react';
 import { checkFeatPrerequisites } from '@/types/character';
@@ -28,9 +29,11 @@ import { cn } from '@/lib/utils';
 interface FeatSelectionDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onFeatSelected: (featDefinitionId: string) => void; // Callback with definitionId
-  allFeats: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]; // All available definitions
-  character: Character; // Full character object for prerequisite checks
+  onFeatSelected: (featDefinitionId: string) => void;
+  allFeats: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
+  character: Character;
+  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
+  allCustomSkillDefinitions: readonly CustomSkillDefinition[];
 }
 
 const stripHtml = (html: string): string => {
@@ -48,25 +51,25 @@ export function FeatSelectionDialog({
   onFeatSelected,
   allFeats,
   character,
+  allPredefinedSkillDefinitions,
+  allCustomSkillDefinitions,
 }: FeatSelectionDialogProps) {
   const [searchTerm, setSearchTerm] = React.useState('');
   const scrollAreaRef = React.useRef<HTMLDivElement>(null);
 
-  const sortedFeats = React.useMemo(() => {
+  const sortedAndFilteredFeats = React.useMemo(() => {
     return [...allFeats].sort((a, b) => a.label.localeCompare(b.label));
   }, [allFeats]);
 
   React.useEffect(() => {
-    if (!isOpen) {
-      setSearchTerm('');
-    }
-    if (scrollAreaRef.current) {
+    if (isOpen && scrollAreaRef.current) {
       const viewport = scrollAreaRef.current.querySelector<HTMLDivElement>('[data-radix-scroll-area-viewport]');
       if (viewport) {
         viewport.scrollTop = 0;
       }
     }
-  }, [isOpen, searchTerm]);
+    if(!isOpen) setSearchTerm(''); // Clear search on close
+  }, [isOpen, searchTerm]); // Rerun on search term change too to reset scroll
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -89,14 +92,20 @@ export function FeatSelectionDialog({
             <CommandList className="max-h-none">
               <CommandEmpty>No feats found.</CommandEmpty>
               <CommandGroup>
-                {sortedFeats.map((featDef) => {
-                  const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(featDef, character, allFeats);
+                {sortedAndFilteredFeats.map((featDef) => {
+                  const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(
+                    featDef, 
+                    character, 
+                    allFeats, // Pass all feat definitions for checking feat prereqs
+                    allPredefinedSkillDefinitions,
+                    allCustomSkillDefinitions
+                  );
                   return (
                     <CommandItem
-                      key={featDef.value} // featDef.value is the definitionId
+                      key={featDef.value}
                       value={`${featDef.label} ${stripHtml(featDef.description || '')}`}
                       onSelect={() => {
-                        onFeatSelected(featDef.value); // Pass definitionId
+                        onFeatSelected(featDef.value);
                         onOpenChange(false);
                       }}
                       className="flex flex-col items-start p-3 hover:bg-accent/10 cursor-pointer data-[selected=true]:bg-accent/20"
