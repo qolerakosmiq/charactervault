@@ -47,12 +47,12 @@ const POINT_BUY_COST: Record<number, number> = {
 };
 
 const ABILITY_DISPLAY_NAMES_FULL: Record<Exclude<AbilityName, 'none'>, string> = {
-  strength: 'Strength (STR)',
-  dexterity: 'Dexterity (DEX)',
-  constitution: 'Constitution (CON)',
-  intelligence: 'Intelligence (INT)',
-  wisdom: 'Wisdom (WIS)',
-  charisma: 'Charisma (CHA)',
+  strength: 'STR (Strength)',
+  dexterity: 'DEX (Dexterity)',
+  constitution: 'CON (Constitution)',
+  intelligence: 'INT (Intelligence)',
+  wisdom: 'WIS (Wisdom)',
+  charisma: 'CHA (Charisma)',
 };
 
 export function AbilityScorePointBuyDialog({
@@ -168,17 +168,18 @@ export function AbilityScorePointBuyDialog({
                 {ABILITY_ORDER.map((ability) => {
                     const score = currentScores[ability];
                     const cost = POINT_BUY_COST[score];
-                    const fullDisplayName = ABILITY_DISPLAY_NAMES_FULL[ability];
-                    const match = fullDisplayName.match(/^([^\(]+)(\s*\(.*?\))?$/);
-                    const namePart = match ? match[1].trim() : fullDisplayName;
-                    const abbreviationPart = match && match[2] ? match[2].trim() : '';
+                    const fullDisplayNameFromMap = ABILITY_DISPLAY_NAMES_FULL[ability];
+                    
+                    const match = fullDisplayNameFromMap.match(/^([A-Z]{3})\s*\(([^)]+)\)$/);
+                    const abbreviationPart = match ? match[1] : fullDisplayNameFromMap;
+                    const fullNamePart = match ? match[2] : '';
 
                     return (
                     <div key={ability} className="p-3 border rounded-md space-y-2 bg-background">
                         <Label htmlFor={`score-input-${ability}`} className="text-base flex justify-between items-center">
                           <span>
-                            <span className="font-semibold">{namePart}</span>
-                            {abbreviationPart && <span className="text-muted-foreground ml-1 font-normal">{abbreviationPart}</span>}
+                            <span className="font-semibold">{abbreviationPart}</span>
+                            {fullNamePart && <span className="text-muted-foreground ml-1 font-normal">({fullNamePart})</span>}
                           </span>
                           <Badge variant="outline">Cost: {cost}</Badge>
                         </Label>
