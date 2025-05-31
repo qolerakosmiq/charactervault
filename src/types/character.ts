@@ -519,15 +519,65 @@ export function calculateRacialSkillBonus(skillId_kebab: string, raceId: DndRace
   return 0;
 }
 
-export function calculateAvailableFeats(characterRaceId: DndRaceId | string, level: number): number {
-  let availableFeats = 0;
-  if (level >= 1) availableFeats += 1; // Base feat at 1st level
+export interface AvailableFeatSlotsBreakdown {
+  total: number;
+  base: number;
+  racial: number;
+  levelProgression: number;
+  classBonus: number;
+}
+
+export function calculateAvailableFeats(
+  characterRaceId: DndRaceId | string,
+  level: number,
+  characterClasses: CharacterClass[]
+): AvailableFeatSlotsBreakdown {
+  let baseFeat = 0;
+  if (level >= 1) baseFeat = 1; // Base feat at 1st level
+
+  let racialBonus = 0;
   const raceData = DND_RACES.find(r => r.value === characterRaceId);
   if (raceData?.bonusFeatSlots) {
-    availableFeats += raceData.bonusFeatSlots;
+    racialBonus = raceData.bonusFeatSlots;
   }
-  availableFeats += Math.floor(level / 3); // Feat at 3rd, 6th, 9th, etc.
-  return availableFeats;
+
+  const levelProgressionFeats = Math.floor(level / 3); // Feat at 3rd, 6th, 9th, etc.
+
+  let classBonusFeats = 0;
+  characterClasses.forEach(charClass => {
+    if (charClass.className === 'fighter') {
+      if (charClass.level >= 1) classBonusFeats += 1; // Fighter bonus feat at 1st level
+      if (charClass.level >= 2) classBonusFeats += Math.floor((charClass.level) / 2); // And every two fighter levels thereafter (so level 2, 4, 6...)
+                                                                                    // This adds 1 at L2, 1 at L4, etc.
+                                                                                    // A Fighter 1 gets 1. Fighter 2 gets 1 (1st) + 1 (2nd) = 2. Fighter 3 gets 2. Fighter 4 gets 2+1=3.
+      // A simpler way to calculate fighter bonus feats: 1 (at 1st) + (level / 2, rounded down, only counting level 2+)
+      // Fighter level 1: 1 + 0 = 1
+      // Fighter level 2: 1 + 1 = 2
+      // Fighter level 3: 1 + 1 = 2
+      // Fighter level 4: 1 + 2 = 3
+      // This logic appears incorrect if it's 1 at L1, and 1 *additional* every 2 levels (2,4,6...).
+      // PHB p.38: "At 1st level, a fighter gets a bonus combat-oriented feat... In addition, at 2nd level, and every two fighter levels thereafter (4th, 6th, 8th, 10th, 12th, 14th, 16th, 18th, and 20th), a fighter gains a bonus feat."
+      // So a L1 fighter gets 1. L2 gets 1+1=2. L3 gets 2. L4 gets 2+1=3.
+      // Reset and implement correctly:
+      classBonusFeats = 0; // Reset for correct calculation
+      if (charClass.className === 'fighter') {
+          if (charClass.level >= 1) classBonusFeats += 1; // 1st level fighter
+          for (let i = 2; i <= charClass.level; i += 2) { // Every 2 levels thereafter
+              classBonusFeats += 1;
+          }
+      }
+    }
+    // Add other classes that grant bonus feats here if needed
+  });
+
+  const totalFeats = baseFeat + racialBonus + levelProgressionFeats + classBonusFeats;
+  return {
+    total: totalFeats,
+    base: baseFeat,
+    racial: racialBonus,
+    levelProgression: levelProgressionFeats,
+    classBonus: classBonusFeats,
+  };
 }
 
 export function getGrantedFeatsForCharacter(
@@ -578,6 +628,7 @@ export function getGrantedFeatsForCharacter(
     const classData = DND_CLASSES.find(c => c.value === charClass.className);
     if (classData?.grantedFeats) {
       classData.grantedFeats.forEach(gf => {
+        // Grant if levelAcquired is undefined (always granted) or less than/equal to the current level IN THAT CLASS
         if (gf.levelAcquired === undefined || gf.levelAcquired <= charClass.level) {
           addGrantedInstance(gf.featId, gf.note, classData.label, gf.levelAcquired);
         }
@@ -846,5 +897,6 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
+
 
 

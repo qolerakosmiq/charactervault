@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
 // AddCustomFeatDialog import removed
 import { useToast } from "@/hooks/use-toast";
-import { Badge } from '@/components/ui/badge'; // Added import
+import { Badge } from '@/components/ui/badge'; 
 
 interface FeatsFormSectionProps {
   character: Character;
@@ -49,14 +49,12 @@ export function FeatsFormSection({
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
   // State for AddCustomFeatDialog moved to CharacterFormCore
 
-  const { availableFeatSlots, baseFeat, racialBonus, levelProgressionFeats } = React.useMemo(() => {
-    const slots = calculateAvailableFeats(character.race, characterLevel);
-    const raceData = DND_RACES.find(r => r.value === character.race);
-    const bonus = raceData?.bonusFeatSlots || 0;
-    const base = 1; // Base feat at 1st level
-    const progression = Math.floor(characterLevel / 3); // Feats from level progression
-    return { availableFeatSlots: slots, baseFeat: base, racialBonus: bonus, levelProgressionFeats: progression };
-  }, [character.race, characterLevel]);
+  const featSlotsBreakdown = React.useMemo(() => {
+    return calculateAvailableFeats(character.race, characterLevel, character.classes);
+  }, [character.race, characterLevel, character.classes]);
+
+  const { total: availableFeatSlots, base: baseFeat, racial: racialBonus, levelProgression: levelProgressionFeats, classBonus: classBonusFeats } = featSlotsBreakdown;
+
 
   const userChosenFeatInstancesCount = chosenFeatInstances.filter(f => !f.isGranted).length;
   const featSlotsLeft = availableFeatSlots - userChosenFeatInstancesCount;
@@ -152,7 +150,7 @@ export function FeatsFormSection({
                 )}>{featSlotsLeft}</span>
               </p>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+             <p className="text-xs text-muted-foreground mt-1">
               Base <Badge variant="outline" className={badgeClassName}>{baseFeat}</Badge>
               {racialBonus > 0 && (
                 <>
@@ -160,6 +158,11 @@ export function FeatsFormSection({
                 </>
               )}
               {' + '}Level Progression <Badge variant="outline" className={badgeClassName}>{levelProgressionFeats}</Badge>
+              {classBonusFeats > 0 && (
+                <>
+                  {' + '}Class Granted <Badge variant="outline" className={badgeClassName}>{classBonusFeats}</Badge>
+                </>
+              )}
             </p>
           </div>
 

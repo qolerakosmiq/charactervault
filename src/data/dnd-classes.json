@@ -37,7 +37,7 @@
       "label": "Fighter",
       "hitDice": "d10",
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
-      "description": "<p>Fighters are masters of martial combat, excelling with all forms of weapons and armor.<br />They are the backbone of armies, the sellswords in taverns, and the dedicated protectors of kingdoms.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Fighters may worship deities of war, strength, or protection, or none at all.</p><p><b>Background:</b><br />Varied, from noble knights to grizzled mercenaries or simple village guards.</p><p><b>Races:</b><br />All races produce skilled fighters, especially humans, dwarves, and half-orcs.</p>"
+      "description": "<p>Fighters are masters of martial combat, excelling with all forms of weapons and armor.<br />They are the backbone of armies, the sellswords in taverns, and the dedicated protectors of kingdoms.</p><p><b>Bonus Feats:</b><br/>A fighter gains a bonus combat-oriented feat at 1st level, at 2nd level, and at every two fighter levels thereafter (4th, 6th, etc.). These bonus feats must be selected from those listed as fighter bonus feats.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Fighters may worship deities of war, strength, or protection, or none at all.</p><p><b>Background:</b><br />Varied, from noble knights to grizzled mercenaries or simple village guards.</p><p><b>Races:</b><br />All races produce skilled fighters, especially humans, dwarves, and half-orcs.</p>"
     },
     {
       "value": "monk",
