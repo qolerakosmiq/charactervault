@@ -97,18 +97,21 @@ export function SavingThrowsPanel({
                 ))}
               </tr></thead>
             <tbody>
-              {dataRows.map((row) => (
-                <tr key={(typeof row.label.props.children === 'string' ? row.label.props.children : Math.random().toString())} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
+              {dataRows.map((row) => {
+                const labelKey = typeof row.label.props.children === 'string' ? row.label.props.children : Math.random().toString();
+                return (
+                <tr key={labelKey} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
                   <td className="py-2 px-1 text-sm font-medium text-foreground align-top whitespace-normal">
                     {row.label}
                   </td>
                   {SAVE_TYPES.map((saveType) => (
-                    <td key={`${(typeof row.label.props.children === 'string' ? row.label.props.children : Math.random().toString())}-${saveType}`} className="py-2 px-0.5 text-center text-sm text-muted-foreground">
+                    <td key={`${labelKey}-${saveType}`} className="py-2 px-0.5 text-center text-sm text-muted-foreground">
                       {row.getValue(saveType)}
                     </td>
                   ))}
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
