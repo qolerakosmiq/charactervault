@@ -70,7 +70,7 @@ export function SavingThrowsPanel({
           type="number"
           value={savingThrows[saveType].miscMod}
           onChange={(e) => onSavingThrowMiscModChange(saveType, parseInt(e.target.value, 10) || 0)}
-          className="h-8 w-16 text-sm text-center mx-auto" // w-16 might be too wide, adjust if needed
+          className="h-8 w-12 text-sm text-center mx-auto" 
         />
       ),
     },
@@ -90,9 +90,9 @@ export function SavingThrowsPanel({
           <table className="w-full min-w-[300px]"> {/* Adjusted min-width */}
             <thead>
               <tr className="border-b">
-                <th className="py-2 px-2 text-left text-sm font-medium text-muted-foreground">Save Detail</th>
+                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground"></th> {/* Removed "Save Detail" */}
                 {SAVE_TYPES.map((saveType) => (
-                  <th key={saveType} className="py-2 px-2 text-center text-sm font-medium text-muted-foreground capitalize">
+                  <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-muted-foreground capitalize">
                     {SAVE_DISPLAY_NAMES[saveType]}
                   </th>
                 ))}
@@ -101,9 +101,9 @@ export function SavingThrowsPanel({
             <tbody>
               {dataRows.map((row) => (
                 <tr key={row.label} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
-                  <td className="py-2 px-2 text-sm font-medium text-foreground">{row.label}</td>
+                  <td className="py-2 px-1 text-sm font-medium text-foreground">{row.label}</td>
                   {SAVE_TYPES.map((saveType) => (
-                    <td key={`${row.label}-${saveType}`} className="py-2 px-2 text-center text-sm text-muted-foreground">
+                    <td key={`${row.label}-${saveType}`} className="py-2 px-0.5 text-center text-sm text-muted-foreground">
                       {row.getValue(saveType)}
                     </td>
                   ))}
