@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
+import { Badge } from '@/components/ui/badge'; // Added import
 
 interface SkillDisplayInfo extends SkillType {
   name: string;
@@ -79,8 +80,9 @@ export function SkillsFormSection({
   const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0) : 0;
   const racialBonus = characterRace ? getRaceSkillPointsBonusPerLevel(characterRace as DndRaceId) : 0;
 
-  // Ensure minimum of 1 skill point per level from class + Int mod + racial bonus
-  const pointsPerRegularLevel = Math.max(1, baseSkillPointsForClass + intelligenceModifier + (racialBonus || 0));
+  const pointsPerLevelBeforeMin = baseSkillPointsForClass + intelligenceModifier + (racialBonus || 0);
+  const pointsPerRegularLevel = Math.max(1, pointsPerLevelBeforeMin);
+
 
   const pointsForFirstLevel = pointsPerRegularLevel * 4;
   const pointsFromLevelProgression = characterLevel > 1 ? pointsPerRegularLevel * (characterLevel - 1) : 0;
@@ -168,9 +170,6 @@ export function SkillsFormSection({
     setIsInfoDialogOpen(true);
   };
 
-  const racialBonusPart = (racialBonus || 0) !== 0 ? ` + Racial Modifier [${racialBonus || 0}]` : "";
-
-
   return (
     <>
     <Card>
@@ -201,27 +200,29 @@ export function SkillsFormSection({
             </p>
           </div>
            <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
-             {firstClass?.className ? (
+             {firstClass?.className && classLabel ? (
                 <>
                   <p>
-                    (Minimum 1 of {classLabel} Base <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
-                    {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
+                    (Minimum 1 of {classLabel} Base <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{baseSkillPointsForClass}</Badge>
+                    {' + '}Intelligence Modifier <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{intelligenceModifier}</Badge>
                     {(racialBonus || 0) !== 0 && (
                         <>
-                        {' + '}Racial Modifier <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
+                        {' + '}Racial Modifier <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{racialBonus || 0}</Badge>
                         </>
                     )}
-                    ) × First Level <strong className="font-bold text-primary">[4]</strong> = <strong className="font-bold text-primary">{pointsForFirstLevel}</strong>
+                    ) × First Level <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">4</Badge>
+                    {' = '} <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{pointsForFirstLevel}</Badge>
                   </p>
                   <p>
-                    + (Minimum 1 of {classLabel} Base <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
-                    {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
+                    + (Minimum 1 of {classLabel} Base <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{baseSkillPointsForClass}</Badge>
+                    {' + '}Intelligence Modifier <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{intelligenceModifier}</Badge>
                     {(racialBonus || 0) !== 0 && (
                         <>
-                        {' + '}Racial Modifier <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
+                        {' + '}Racial Modifier <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{racialBonus || 0}</Badge>
                         </>
                     )}
-                    ) × Level Progression <strong className="font-bold text-primary">[{characterLevel > 1 ? (characterLevel -1) : 0}]</strong> = <strong className="font-bold text-primary">{pointsFromLevelProgression}</strong>
+                    ) × Level Progression <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{characterLevel > 1 ? (characterLevel -1) : 0}</Badge>
+                    {' = '} <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{pointsFromLevelProgression}</Badge>
                   </p>
                 </>
               ) : (
