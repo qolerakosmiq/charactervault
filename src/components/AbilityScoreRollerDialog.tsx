@@ -25,23 +25,30 @@ interface AbilityScoreRollerDialogProps {
   onScoresApplied: (scores: AbilityScores) => void;
 }
 
-const ABILITY_ORDER: AbilityName[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
-const UNASSIGN_VALUE = "__UNASSIGN__"; // Define a constant for the unassign value
+const ABILITY_ORDER: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+const UNASSIGN_VALUE = "__UNASSIGN__"; 
 
 type RolledScoreItem = {
-  id: string; // Unique ID for each roll, e.g., 'roll-0', 'roll-1'
+  id: string; 
   value: number;
 };
 
-// Helper function to roll a single die (1-6)
+const ABILITY_FULL_DISPLAY_NAMES: Record<Exclude<AbilityName, 'none'>, string> = {
+  strength: 'Strength (STR)',
+  dexterity: 'Dexterity (DEX)',
+  constitution: 'Constitution (CON)',
+  intelligence: 'Intelligence (INT)',
+  wisdom: 'Wisdom (WIS)',
+  charisma: 'Charisma (CHA)',
+};
+
 const rollDie = (): number => Math.floor(Math.random() * 6) + 1;
 
-// Helper function to generate a single ability score (4d6 drop lowest)
 const generateSingleAbilityScore = (): number => {
   const rolls = [rollDie(), rollDie(), rollDie(), rollDie()];
-  rolls.sort((a, b) => a - b); // Sort in ascending order
-  rolls.shift(); // Remove the lowest die
-  return rolls.reduce((sum, val) => sum + val, 0); // Sum the remaining three
+  rolls.sort((a, b) => a - b); 
+  rolls.shift(); 
+  return rolls.reduce((sum, val) => sum + val, 0); 
 };
 
 export function AbilityScoreRollerDialog({
@@ -50,18 +57,17 @@ export function AbilityScoreRollerDialog({
   onScoresApplied,
 }: AbilityScoreRollerDialogProps) {
   const [rolledScores, setRolledScores] = useState<RolledScoreItem[]>([]);
-  // Stores which RolledScoreItem.id is assigned to which AbilityName
-  const [assignments, setAssignments] = useState<Partial<Record<AbilityName, string>>>({});
+  const [assignments, setAssignments] = useState<Partial<Record<Exclude<AbilityName, 'none'>, string>>>({});
 
   const generateNewRolls = () => {
     const newScores = Array(6)
       .fill(0)
       .map((_, index) => ({
-        id: `roll-${index}-${Date.now()}`, // Ensure unique IDs even with same values
+        id: `roll-${index}-${Date.now()}`, 
         value: generateSingleAbilityScore(),
       }));
     setRolledScores(newScores);
-    setAssignments({}); // Clear previous assignments
+    setAssignments({}); 
   };
 
   useEffect(() => {
@@ -70,16 +76,15 @@ export function AbilityScoreRollerDialog({
     }
   }, [isOpen]);
 
-  const handleAssignScore = (ability: AbilityName, rollId: string | undefined) => {
+  const handleAssignScore = (ability: Exclude<AbilityName, 'none'>, rollId: string | undefined) => {
     setAssignments((prev) => {
       const newAssignments = { ...prev };
-      if (rollId === undefined || rollId === UNASSIGN_VALUE) { // Unassigning
+      if (rollId === undefined || rollId === UNASSIGN_VALUE) { 
         delete newAssignments[ability];
       } else {
-        // If this rollId was previously assigned to another ability, unassign it from there
         for (const key in newAssignments) {
-          if (newAssignments[key as AbilityName] === rollId && key !== ability) {
-            delete newAssignments[key as AbilityName];
+          if (newAssignments[key as Exclude<AbilityName, 'none'>] === rollId && key !== ability) {
+            delete newAssignments[key as Exclude<AbilityName, 'none'>];
           }
         }
         newAssignments[ability] = rollId;
@@ -106,7 +111,6 @@ export function AbilityScoreRollerDialog({
       onScoresApplied(finalScores as AbilityScores);
       onOpenChange(false);
     } else {
-      // This case should ideally be prevented by disabling the button
       console.error("Error: Not all scores are assigned.");
     }
   };
@@ -131,10 +135,6 @@ export function AbilityScoreRollerDialog({
         </DialogHeader>
 
         <div className="my-4 space-y-4">
-          <Button onClick={generateNewRolls} variant="outline" className="w-full">
-            <RefreshCw className="mr-2 h-4 w-4" /> Reroll Scores
-          </Button>
-
           <div className="text-center">
             <Label className="text-sm font-medium text-muted-foreground">Your Rolled Scores:</Label>
             <div className="flex justify-center gap-2 mt-2 flex-wrap">
@@ -145,22 +145,29 @@ export function AbilityScoreRollerDialog({
               ))}
             </div>
           </div>
+          <Button onClick={generateNewRolls} variant="outline" className="w-full">
+            <RefreshCw className="mr-2 h-4 w-4" /> Reroll Scores
+          </Button>
         </div>
 
         <div className="grid grid-cols-2 gap-x-4 gap-y-3 items-center">
           {ABILITY_ORDER.map((ability) => {
             const currentAssignedRollId = assignments[ability];
-            // const availableRollsForThisAbility = rolledScores.filter(
-            //   (roll) =>
-            //     // It's this roll itself OR it's not assigned to any other ability
-            //     roll.id === currentAssignedRollId ||
-            //     !Object.values(assignments).some(assignedId => assignedId === roll.id && assignments[ability] !== roll.id)
-            // );
+            const fullDisplayName = ABILITY_FULL_DISPLAY_NAMES[ability];
+            const openParenIndex = fullDisplayName.indexOf('(');
+            let mainNamePart = fullDisplayName;
+            let abbreviationPart = '';
 
+            if (openParenIndex > -1 && fullDisplayName.endsWith(')')) {
+                mainNamePart = fullDisplayName.substring(0, openParenIndex).trim();
+                abbreviationPart = fullDisplayName.substring(openParenIndex);
+            }
+            
             return (
               <React.Fragment key={ability}>
-                <Label htmlFor={`assign-${ability}`} className="capitalize font-medium text-right">
-                  {ability}
+                <Label htmlFor={`assign-${ability}`} className="font-medium text-right">
+                  {mainNamePart}
+                  {abbreviationPart && <span className="text-muted-foreground ml-1">{abbreviationPart}</span>}
                 </Label>
                 <Select
                   value={currentAssignedRollId}
@@ -176,8 +183,8 @@ export function AbilityScoreRollerDialog({
                         key={roll.id}
                         value={roll.id}
                         disabled={
-                          Object.values(assignments).includes(roll.id) && // Check if this roll.id is in any assignment value
-                          assignments[ability] !== roll.id // AND it's not the one currently assigned to *this* ability
+                          Object.values(assignments).includes(roll.id) && 
+                          assignments[ability] !== roll.id 
                         }
                       >
                         {roll.value}
