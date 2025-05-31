@@ -83,10 +83,10 @@ export function CharacterFormAbilityScoresSection({
                     onChange={(newValue) => onBaseAbilityScoreChange(ability, newValue)}
                     min={1}
                     max={99}
-                    inputClassName="w-12 h-8 text-base"
+                    inputClassName="flex-1 h-8 text-base text-center" // Changed w-12 to flex-1
                     buttonSize="icon"
                     buttonClassName="h-8 w-8"
-                    className="w-full justify-center"
+                    className="w-full justify-center" 
                   />
                   <p className="text-center text-sm mt-1">
                     <span className="text-accent">Modifier: </span>
