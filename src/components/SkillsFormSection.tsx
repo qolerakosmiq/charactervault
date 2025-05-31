@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, CharacterFeatInstance, DndRaceOption, SkillDefinitionJsonData, FeatDefinitionJsonData } from '@/types/character';
-import { CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES } from '@/types/character';
+import { CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES, DND_CLASSES } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -69,6 +69,8 @@ export function SkillsFormSection({
 
   const firstClass = characterClasses[0];
   const characterLevel = firstClass?.level || 1;
+  const classLabel = firstClass?.className ? DND_CLASSES.find(c => c.value === firstClass.className)?.label || firstClass.className : "";
+
 
   const intelligenceModifier = (actualAbilityScores && actualAbilityScores.intelligence !== undefined)
     ? getAbilityModifierByName(actualAbilityScores, 'intelligence')
@@ -166,6 +168,9 @@ export function SkillsFormSection({
     setIsInfoDialogOpen(true);
   };
 
+  const racialBonusPart = (racialBonus || 0) !== 0 ? ` + Racial/Lvl [${racialBonus || 0}]` : "";
+
+
   return (
     <>
     <Card>
@@ -196,26 +201,34 @@ export function SkillsFormSection({
             </p>
           </div>
            <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
-             <p>
-                 (Min(1) of Class Base <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
-                 {' + '}Int Mod <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
-                 {(racialBonus || 0) !== 0 && (
-                   <>
-                     {' + '}Racial/Lvl <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
-                   </>
-                 )}
-                 ) × First Level <strong className="font-bold text-primary">[4]</strong>
-             </p>
-             <p>
-                 + (Min(1) of Class Base <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
-                 {' + '}Int Mod <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
-                 {(racialBonus || 0) !== 0 && (
-                    <>
-                     {' + '}Racial/Lvl <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
-                   </>
-                 )}
-                 ) × Level Progression <strong className="font-bold text-primary">[{characterLevel > 1 ? (characterLevel -1) : 0}]</strong>
-             </p>
+             {firstClass?.className ? (
+                <>
+                  <p>
+                    (Minimum 1 of {classLabel} Base <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
+                    {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
+                    {(racialBonus || 0) !== 0 && (
+                        <>
+                        {' + '}Racial/Lvl <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
+                        </>
+                    )}
+                    ) × First Level <strong className="font-bold text-primary">[4]</strong> = <strong className="font-bold text-primary">{pointsForFirstLevel}</strong>
+                  </p>
+                  <p>
+                    + (Minimum 1 of {classLabel} Base <strong className="font-bold text-primary">[{baseSkillPointsForClass}]</strong>
+                    {' + '}Intelligence Modifier <strong className="font-bold text-primary">[{intelligenceModifier}]</strong>
+                    {(racialBonus || 0) !== 0 && (
+                        <>
+                        {' + '}Racial/Lvl <strong className="font-bold text-primary">[{racialBonus || 0}]</strong>
+                        </>
+                    )}
+                    ) × Level Progression <strong className="font-bold text-primary">[{characterLevel > 1 ? (characterLevel -1) : 0}]</strong> = <strong className="font-bold text-primary">{pointsFromLevelProgression}</strong>
+                  </p>
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Select a class to see available skill points.
+                </p>
+              )}
            </div>
         </div>
 
