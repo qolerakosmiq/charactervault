@@ -29,7 +29,7 @@ interface FeatSelectionDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onFeatSelected: (featId: string) => void;
-  allFeats: readonly FeatDefinitionJsonData[];
+  allFeats: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]; // Adjusted type
   character: Character;
 }
 
@@ -61,18 +61,17 @@ export function FeatSelectionDialog({
 
   React.useEffect(() => {
     if (!isOpen) {
-      setSearchTerm('');
+      setSearchTerm(''); // Clear search term when dialog closes
     }
-  }, [isOpen]);
-
-  React.useEffect(() => {
+    // Scroll to top when dialog opens or search term changes
     if (scrollAreaRef.current) {
       const viewport = scrollAreaRef.current.querySelector<HTMLDivElement>('[data-radix-scroll-area-viewport]');
       if (viewport) {
         viewport.scrollTop = 0;
       }
     }
-  }, [searchTerm]);
+  }, [isOpen, searchTerm]);
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -96,7 +95,8 @@ export function FeatSelectionDialog({
               <CommandEmpty>No feats found.</CommandEmpty>
               <CommandGroup>
                 {sortedFeats.map((feat) => {
-                  const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(feat, character, DND_FEATS);
+                  // Pass allFeats (which includes custom defs) to checkFeatPrerequisites
+                  const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(feat, character, allFeats);
 
                   return (
                     <CommandItem
@@ -148,3 +148,4 @@ export function FeatSelectionDialog({
     </Dialog>
   );
 }
+
