@@ -46,11 +46,21 @@ export function SavingThrowsPanel({
           <table className="w-full min-w-[360px]">
             <thead>
               <tr className="border-b">
-                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground">Saving Throw</th>
-                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground">Total</th>
-                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground">Base</th>
-                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground">Ability Mod</th>
-                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground">Custom Mod</th>
+                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground">
+                  <span className="inline-block w-full">Saving Throw</span>
+                </th>
+                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground">
+                  <span className="inline-block w-full">Total</span>
+                </th>
+                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground">
+                  <span className="inline-block w-full">Base</span>
+                </th>
+                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground">
+                  <span className="inline-block w-full">Ability Mod</span>
+                </th>
+                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground">
+                  <span className="inline-block w-full">Custom Mod</span>
+                </th>
               </tr>
             </thead>
             <tbody>
