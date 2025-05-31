@@ -120,7 +120,7 @@ export function NumberSpinnerInput({
     <div className={cn("flex items-center space-x-1", className)}>
       <Button
         type="button"
-        variant="outline"
+        variant="ghost" // Changed from "outline"
         size={buttonSize}
         className={cn("p-0", buttonClassName)}
         onClick={handleDecrement}
@@ -147,7 +147,7 @@ export function NumberSpinnerInput({
       />
       <Button
         type="button"
-        variant="outline"
+        variant="ghost" // Changed from "outline"
         size={buttonSize}
         className={cn("p-0", buttonClassName)}
         onClick={handleIncrement}
