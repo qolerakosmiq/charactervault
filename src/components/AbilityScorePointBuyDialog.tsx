@@ -178,7 +178,7 @@ export function AbilityScorePointBuyDialog({
                         <Label htmlFor={`score-input-${ability}`} className="text-base flex justify-between items-center">
                           <span>
                             <span className="font-semibold">{namePart}</span>
-                            {abbreviationPart && <span className="text-muted-foreground ml-1">{abbreviationPart}</span>}
+                            {abbreviationPart && <span className="text-muted-foreground ml-1 font-normal">{abbreviationPart}</span>}
                           </span>
                           <Badge variant="outline">Cost: {cost}</Badge>
                         </Label>
