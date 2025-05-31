@@ -38,17 +38,38 @@ export function NumberSpinnerInput({
 }: NumberSpinnerInputProps) {
   const handleDecrement = () => {
     if (readOnly || disabled) return;
-    const newValue = Math.max(min, value - step);
-    // Handle floating point precision issues for non-integer steps
-    const precision = (step.toString().split('.')[1] || '').length;
-    onChange(parseFloat(newValue.toFixed(precision)));
+    
+    const numericValue = Number(value);
+    if (isNaN(numericValue)) return;
+
+    const newValue = Math.max(min, numericValue - step);
+    
+    const stepStr = String(step);
+    const decimalPart = stepStr.split('.')[1];
+    const precision = decimalPart ? decimalPart.length : 0;
+    
+    const numericNewValue = Number(newValue);
+    if (isNaN(numericNewValue)) return;
+
+    onChange(parseFloat(numericNewValue.toFixed(precision)));
   };
 
   const handleIncrement = () => {
     if (readOnly || disabled) return;
-    const newValue = Math.min(max, value + step);
-    const precision = (step.toString().split('.')[1] || '').length;
-    onChange(parseFloat(newValue.toFixed(precision)));
+
+    const numericValue = Number(value);
+    if (isNaN(numericValue)) return;
+
+    const newValue = Math.min(max, numericValue + step);
+
+    const stepStr = String(step);
+    const decimalPart = stepStr.split('.')[1];
+    const precision = decimalPart ? decimalPart.length : 0;
+    
+    const numericNewValue = Number(newValue);
+    if (isNaN(numericNewValue)) return;
+
+    onChange(parseFloat(numericNewValue.toFixed(precision)));
   };
 
   return (
@@ -57,29 +78,33 @@ export function NumberSpinnerInput({
         type="button"
         variant="outline"
         size={buttonSize}
-        className={cn("h-8 w-8 p-0", buttonClassName)}
+        className={cn("p-0", buttonClassName)} // Ensured p-0 for consistent icon sizing
         onClick={handleDecrement}
-        disabled={disabled || readOnly || value <= min}
+        disabled={disabled || readOnly || Number(value) <= min}
         aria-label="Decrement"
       >
         <MinusCircle className="h-4 w-4" />
       </Button>
       <Input
         id={id}
-        type="number"
-        value={value}
+        type="number" // Still good for semantics, even though readOnly
+        value={Number.isFinite(value) ? value : ''} // Handle NaN or Infinity for display
         readOnly
         disabled={disabled}
-        className={cn("w-16 h-8 text-center appearance-none", inputClassName)}
+        className={cn(
+            "w-12 h-8 text-center appearance-none", // Default width, can be overridden by inputClassName
+            inputClassName
+        )}
+        style={{ MozAppearance: 'textfield' }} // For Firefox to hide native spinners
         aria-live="polite"
       />
       <Button
         type="button"
         variant="outline"
         size={buttonSize}
-        className={cn("h-8 w-8 p-0", buttonClassName)}
+        className={cn("p-0", buttonClassName)} // Ensured p-0 for consistent icon sizing
         onClick={handleIncrement}
-        disabled={disabled || readOnly || value >= max}
+        disabled={disabled || readOnly || Number(value) >= max}
         aria-label="Increment"
       >
         <PlusCircle className="h-4 w-4" />
