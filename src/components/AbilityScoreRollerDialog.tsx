@@ -167,7 +167,7 @@ export function AbilityScoreRollerDialog({
               <React.Fragment key={ability}>
                 <Label htmlFor={`assign-${ability}`} className="font-medium text-right">
                   {mainNamePart}
-                  {abbreviationPart && <span className="text-muted-foreground ml-1">{abbreviationPart}</span>}
+                  {abbreviationPart && <span className="text-muted-foreground ml-1 font-normal">{abbreviationPart}</span>}
                 </Label>
                 <Select
                   value={currentAssignedRollId}
