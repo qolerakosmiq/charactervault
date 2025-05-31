@@ -82,8 +82,7 @@ export function CharacterFormAbilityScoresSection({
                     value={baseScore}
                     onChange={(newValue) => onBaseAbilityScoreChange(ability, newValue)}
                     min={1}
-                    max={99}
-                    inputClassName="flex-1 h-8 text-base text-center" // Changed w-12 to flex-1
+                    inputClassName="flex-1 h-8 text-base text-center" 
                     buttonSize="icon"
                     buttonClassName="h-8 w-8"
                     className="w-full justify-center" 
