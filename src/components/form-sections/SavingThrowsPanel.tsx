@@ -43,15 +43,17 @@ export function SavingThrowsPanel({
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[450px]"><thead>
+          <table className="w-full min-w-[360px]">
+            <thead>
               <tr className="border-b">
-                <th className="pb-2 text-left text-sm font-medium text-muted-foreground">Saving Throw</th>
-                <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Total</th>
-                <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Base</th>
-                <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Ability Mod</th>
-                <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Custom Mod</th>
+                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground">Saving Throw</th>
+                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground">Total</th>
+                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground">Base</th>
+                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground">Ability Mod</th>
+                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground">Custom Mod</th>
               </tr>
-            </thead><tbody>
+            </thead>
+            <tbody>
               {SAVE_TYPES.map((saveType) => {
                 const currentSaveData: SingleSavingThrow = savingThrows[saveType];
                 const baseSaveValue = calculatedBaseSaves[saveType];
@@ -61,27 +63,28 @@ export function SavingThrowsPanel({
 
                 return (
                   <tr key={saveType} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
-                    <td className="py-3 px-1 text-sm font-medium text-foreground">{SAVE_DISPLAY_NAMES[saveType]}</td>
-                    <td className={cn("py-3 px-1 text-center text-lg font-bold", totalSave >= 0 ? "text-accent" : "text-destructive")}>
+                    <td className="py-3 px-0.5 text-sm font-medium text-foreground">{SAVE_DISPLAY_NAMES[saveType]}</td>
+                    <td className={cn("py-3 px-0.5 text-center text-lg font-bold", totalSave >= 0 ? "text-accent" : "text-destructive")}>
                       {totalSave >= 0 ? '+' : ''}{totalSave}
                     </td>
-                    <td className="py-3 px-1 text-center text-sm text-muted-foreground">{baseSaveValue}</td>
-                    <td className="py-3 px-1 text-center text-sm text-muted-foreground">
+                    <td className="py-3 px-0.5 text-center text-sm text-muted-foreground">{baseSaveValue}</td>
+                    <td className="py-3 px-0.5 text-center text-sm text-muted-foreground">
                       {abilityModifier >= 0 ? '+' : ''}{abilityModifier}
                       <span className="ml-1 text-xs">({abilityKey.substring(0, 3).toUpperCase()})</span>
                     </td>
-                    <td className="py-3 px-1 text-center">
+                    <td className="py-3 px-0.5 text-center">
                       <Input
                         type="number"
                         value={currentSaveData.miscMod}
                         onChange={(e) => onSavingThrowMiscModChange(saveType, parseInt(e.target.value, 10) || 0)}
-                        className="h-8 w-16 text-sm text-center mx-auto"
+                        className="h-8 w-12 text-sm text-center mx-auto"
                       />
                     </td>
                   </tr>
                 );
               })}
-            </tbody></table>
+            </tbody>
+          </table>
         </div>
       </CardContent>
     </Card>
