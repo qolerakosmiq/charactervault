@@ -14,7 +14,6 @@ interface NumberSpinnerInputProps {
   max?: number;
   step?: number;
   disabled?: boolean;
-  readOnly?: boolean;
   className?: string;
   inputClassName?: string;
   buttonClassName?: string;
@@ -29,47 +28,92 @@ export function NumberSpinnerInput({
   max = Infinity,
   step = 1,
   disabled = false,
-  readOnly = false,
   className,
   inputClassName,
   buttonClassName,
   buttonSize = 'icon',
   id,
 }: NumberSpinnerInputProps) {
+  const [internalDisplayValue, setInternalDisplayValue] = React.useState(String(value));
+
+  React.useEffect(() => {
+    // Sync display when the external value prop changes,
+    // but only if the input is not currently focused to avoid disrupting typing.
+    if (document.activeElement !== document.getElementById(id || '')) {
+      setInternalDisplayValue(String(value));
+    }
+  }, [value, id]);
+
+  const getPrecision = (s: number) => {
+    const stepStr = String(s);
+    if (stepStr.includes('.')) {
+      return stepStr.split('.')[1].length;
+    }
+    return 0;
+  };
+
+  const precision = getPrecision(step);
+
+  const handleCommit = (valToCommit: number | string) => {
+    let num = typeof valToCommit === 'string' ? parseFloat(valToCommit) : valToCommit;
+    
+    if (isNaN(num)) {
+      // If parsing fails, revert to the current prop value or min if prop value is also bad
+      num = Number.isFinite(value) ? value : (min !== -Infinity ? min : 0);
+    }
+
+    num = Math.max(min, Math.min(max, num)); // Clamp
+    const finalNum = parseFloat(num.toFixed(precision)); // Apply precision
+    
+    // Only call onChange if the value has effectively changed
+    // This prevents potential loops if parent re-renders with the exact same numeric value
+    if (finalNum !== value || String(finalNum) !== String(value)) {
+        onChange(finalNum);
+    }
+    // Always update display to the cleaned/committed value
+    setInternalDisplayValue(String(finalNum));
+  };
+
   const handleDecrement = () => {
-    if (readOnly || disabled) return;
-    
-    const numericValue = Number(value);
-    if (isNaN(numericValue)) return;
-
-    const newValue = Math.max(min, numericValue - step);
-    
-    const stepStr = String(step);
-    const decimalPart = stepStr.split('.')[1];
-    const precision = decimalPart ? decimalPart.length : 0;
-    
-    const numericNewValue = Number(newValue);
-    if (isNaN(numericNewValue)) return;
-
-    onChange(parseFloat(numericNewValue.toFixed(precision)));
+    if (disabled) return;
+    const currentNumericValue = Number(value); // Use the committed prop value for calculation
+    if (isNaN(currentNumericValue)) {
+        handleCommit(min !== -Infinity ? min : 0); // If current value is bad, commit min
+        return;
+    }
+    handleCommit(currentNumericValue - step);
   };
 
   const handleIncrement = () => {
-    if (readOnly || disabled) return;
+    if (disabled) return;
+    const currentNumericValue = Number(value); // Use the committed prop value for calculation
+    if (isNaN(currentNumericValue)) {
+        handleCommit(min !== -Infinity ? min : 0); // If current value is bad, commit min
+        return;
+    }
+    handleCommit(currentNumericValue + step);
+  };
 
-    const numericValue = Number(value);
-    if (isNaN(numericValue)) return;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInternalDisplayValue(e.target.value); // Allow any typing for immediate feedback
+  };
 
-    const newValue = Math.min(max, numericValue + step);
-
-    const stepStr = String(step);
-    const decimalPart = stepStr.split('.')[1];
-    const precision = decimalPart ? decimalPart.length : 0;
-    
-    const numericNewValue = Number(newValue);
-    if (isNaN(numericNewValue)) return;
-
-    onChange(parseFloat(numericNewValue.toFixed(precision)));
+  const handleInputBlur = () => {
+    handleCommit(internalDisplayValue); // Validate, clamp, format, and call onChange on blur
+  };
+  
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleCommit(internalDisplayValue);
+      (e.target as HTMLInputElement).blur(); // Optional: blur on enter
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      handleIncrement();
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      handleDecrement();
+    }
   };
 
   return (
@@ -78,18 +122,21 @@ export function NumberSpinnerInput({
         type="button"
         variant="outline"
         size={buttonSize}
-        className={cn("p-0", buttonClassName)} // Ensured p-0 for consistent icon sizing
+        className={cn("p-0", buttonClassName)}
         onClick={handleDecrement}
-        disabled={disabled || readOnly || Number(value) <= min}
+        disabled={disabled || Number(value) <= min}
         aria-label="Decrement"
       >
         <MinusCircle className="h-4 w-4" />
       </Button>
       <Input
         id={id}
-        type="number" // Still good for semantics, even though readOnly
-        value={Number.isFinite(value) ? value : ''} // Handle NaN or Infinity for display
-        readOnly
+        type="text" // Use text for more flexible input
+        inputMode="decimal" // Hint for mobile keyboards
+        value={internalDisplayValue}
+        onChange={handleInputChange}
+        onBlur={handleInputBlur}
+        onKeyDown={handleInputKeyDown}
         disabled={disabled}
         className={cn(
             "w-12 h-8 text-center appearance-none", // Default width, can be overridden by inputClassName
@@ -102,9 +149,9 @@ export function NumberSpinnerInput({
         type="button"
         variant="outline"
         size={buttonSize}
-        className={cn("p-0", buttonClassName)} // Ensured p-0 for consistent icon sizing
+        className={cn("p-0", buttonClassName)}
         onClick={handleIncrement}
-        disabled={disabled || readOnly || Number(value) >= max}
+        disabled={disabled || Number(value) >= max}
         aria-label="Increment"
       >
         <PlusCircle className="h-4 w-4" />
