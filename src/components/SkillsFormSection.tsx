@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, Feat, DndRaceOption, SkillDefinitionJsonData } from '@/types/character';
+import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, CharacterFeatInstance, DndRaceOption, SkillDefinitionJsonData, FeatDefinitionJsonData } from '@/types/character';
 import { CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, DND_RACES, SKILL_DEFINITIONS } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,7 +25,8 @@ interface SkillsFormSectionProps {
   actualAbilityScores: AbilityScores; 
   characterClasses: CharacterClass[];
   characterRace: DndRaceId | string;
-  selectedFeats: Feat[];
+  selectedFeats: CharacterFeatInstance[]; // Changed from Feat[] to CharacterFeatInstance[]
+  allFeatDefinitions: (FeatDefinitionJsonData & {isCustom?: boolean})[]; // Needed for skill bonus calculation
   onSkillChange: (skillId: string, ranks: number) => void;
   onCustomSkillAdd: (skillData: { name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => void;
   onCustomSkillUpdate: (skillData: { id: string; name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => void;
@@ -38,7 +39,8 @@ export function SkillsFormSection({
   actualAbilityScores,
   characterClasses,
   characterRace,
-  selectedFeats,
+  selectedFeats, // Now CharacterFeatInstance[]
+  allFeatDefinitions, // Pass this down
   onSkillChange,
   onCustomSkillAdd,
   onCustomSkillUpdate,
@@ -62,7 +64,6 @@ export function SkillsFormSection({
   const pointsForFirstLevel = (baseSkillPointsForClass + intelligenceModifier + (racialBonus || 0)) * 4;
   const pointsFromLevelProgression = characterLevel > 1 ? (baseSkillPointsForClass + intelligenceModifier + (racialBonus || 0)) * (characterLevel - 1) : 0;
   const totalSkillPointsAvailable = pointsForFirstLevel + pointsFromLevelProgression;
-
 
   const totalSkillPointsSpent = skills.reduce((acc, currentSkill) => {
     let costMultiplier = 1;
@@ -92,7 +93,8 @@ export function SkillsFormSection({
     
     const currentKeyAbilityModifier = (keyAbility && keyAbility !== 'none') ? getAbilityModifierByName(actualAbilityScores, keyAbility) : 0;
     const currentSynergyBonus = calculateTotalSynergyBonus(skill.id, skills);
-    const currentFeatSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats);
+    // Use allFeatDefinitions to look up feat effects for skill bonuses
+    const currentFeatSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats, allFeatDefinitions);
     const currentRacialSkillBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, SKILL_DEFINITIONS);
     const currentMiscModifier = skill.miscModifier || 0;
     const currentRanks = skill.ranks || 0;
@@ -119,7 +121,6 @@ export function SkillsFormSection({
     });
     setIsInfoDialogOpen(true);
   };
-
 
   const handleSaveCustomSkill = (skillData: { id?: string; name: string; keyAbility: AbilityName; isClassSkill: boolean; providesSynergies: CustomSynergyRule[]; description?: string; }) => {
     if (skillData.id && skillToEdit?.id === skillData.id) {
@@ -223,7 +224,7 @@ export function SkillsFormSection({
               : 0;
 
             const synergyBonus = calculateTotalSynergyBonus(skill.id, skills);
-            const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats);
+            const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats, allFeatDefinitions);
             const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, SKILL_DEFINITIONS);
             
             const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus + currentRacialBonus;
@@ -235,7 +236,6 @@ export function SkillsFormSection({
             const skillCostDisplay = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 2;
             const isCustomSkill = !skillDef;
             const currentStepForInput = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 0.5;
-
 
             return (
               <div key={skill.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">

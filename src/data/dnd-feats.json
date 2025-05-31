@@ -80,5 +80,3 @@
     { "value": "whirlwind-attack", "label": "Whirlwind Attack", "description": "<b>Benefit:</b> When you use the full attack action, you can give up your regular attacks and instead make one melee attack at your full base attack bonus against each opponent within reach.<br />You must make a separate attack roll against each opponent.<br />When you use the Whirlwind Attack feat, you also forfeit any bonus or extra attacks granted by other feats or abilities (such as Cleave or the haste spell).", "prerequisites": { "abilities": { "dexterity": 13, "intelligence": 13 }, "feats": ["combat-expertise", "dodge", "mobility", "spring-attack"], "bab": 4 } }
   ]
 }
-
-    

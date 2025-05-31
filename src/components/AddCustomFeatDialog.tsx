@@ -2,8 +2,8 @@
 'use client';
 
 import * as React from 'react';
-import type { Feat, FeatPrerequisiteDetails, AbilityName, FeatDefinitionJsonData, DndClassOption, DndClassId, DndRaceOption, CharacterAlignmentObject, DndRaceId } from '@/types/character';
-import { ALIGNMENT_PREREQUISITE_OPTIONS } from '@/types/character'; // Import new options
+import type { FeatDefinitionJsonData, FeatPrerequisiteDetails, AbilityName, DndClassOption, DndClassId, DndRaceOption, CharacterAlignmentObject, DndRaceId } from '@/types/character';
+import { ALIGNMENT_PREREQUISITE_OPTIONS } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -27,13 +27,12 @@ import { Badge } from '@/components/ui/badge';
 interface AddCustomFeatDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (featData: Partial<Feat> & { name: string }) => void;
-  initialFeatData?: Feat;
-  allFeats: readonly FeatDefinitionJsonData[];
+  onSave: (featDefData: FeatDefinitionJsonData & { isCustom: true }) => void; // Callback with full definition
+  initialFeatData?: FeatDefinitionJsonData & { isCustom: true }; // Pass the full definition for editing
+  allFeats: readonly FeatDefinitionJsonData[]; // For feat prerequisite selector
   allSkills: readonly ComboboxOption[];
   allClasses: readonly DndClassOption[];
   allRaces: readonly DndRaceOption[];
-  // allAlignmentsAndComponents: readonly { value: string; label: string }[]; // We'll use ALIGNMENT_PREREQUISITE_OPTIONS
 }
 
 const abilityOptions: Array<{ value: Exclude<AbilityName, 'none'>; label: string }> = [
@@ -48,19 +47,19 @@ const abilityOptions: Array<{ value: Exclude<AbilityName, 'none'>; label: string
 type PrerequisiteListItem = {
   tempId: string;
   type: 'ability' | 'skill' | 'feat';
-  itemId: string; // For ability: ability name; For skill: skill ID; For feat: feat ID
-  itemLabel: string; // For display
-  value?: number; // For ability score or skill ranks
+  itemId: string;
+  itemLabel: string;
+  value?: number;
 };
 
-const NONE_VALUE = "__NONE__"; // Generic none value for comboboxes
+const NONE_VALUE = "__NONE__";
 
 export function AddCustomFeatDialog({
   isOpen,
   onOpenChange,
   onSave,
   initialFeatData,
-  allFeats,
+  allFeats, // Predefined feats for prereq selection
   allSkills,
   allClasses,
   allRaces,
@@ -70,22 +69,15 @@ export function AddCustomFeatDialog({
   const [canTakeMultipleTimes, setCanTakeMultipleTimes] = React.useState(false);
   const [requiresSpecialization, setRequiresSpecialization] = React.useState('');
   const [effectsText, setEffectsText] = React.useState('');
-
-  // Singular Prerequisites State
   const [prereqBab, setPrereqBab] = React.useState('');
   const [prereqCasterLevel, setPrereqCasterLevel] = React.useState('');
   const [prereqClassId, setPrereqClassId] = React.useState<DndClassId | string>(NONE_VALUE);
   const [prereqClassLevel, setPrereqClassLevel] = React.useState('');
   const [prereqRaceId, setPrereqRaceId] = React.useState<DndRaceId | string>(NONE_VALUE);
   const [prereqAlignment, setPrereqAlignment] = React.useState<string>(NONE_VALUE);
-
-
-  // State for building a new prerequisite
   const [newPrereqType, setNewPrereqType] = React.useState<'ability' | 'skill' | 'feat' | ''>('');
   const [newPrereqItemId, setNewPrereqItemId] = React.useState('');
-  const [newPrereqValue, setNewPrereqValue] = React.useState(''); // For ability score or skill ranks
-
-  // List of structured prerequisites
+  const [newPrereqValue, setNewPrereqValue] = React.useState('');
   const [prerequisitesList, setPrerequisitesList] = React.useState<PrerequisiteListItem[]>([]);
 
   const isEditing = !!initialFeatData;
@@ -105,11 +97,10 @@ export function AddCustomFeatDialog({
     ...ALIGNMENT_PREREQUISITE_OPTIONS
   ], []);
 
-
   React.useEffect(() => {
     if (isOpen) {
       if (initialFeatData) {
-        setFeatName(initialFeatData.name || '');
+        setFeatName(initialFeatData.label || ''); // Use label for name
         setDescription(initialFeatData.description || '');
         setCanTakeMultipleTimes(initialFeatData.canTakeMultipleTimes || false);
         setRequiresSpecialization(initialFeatData.requiresSpecialization || '');
@@ -138,14 +129,13 @@ export function AddCustomFeatDialog({
         }
         if (prereqs?.feats) {
           prereqs.feats.forEach(featId => {
+            // Use allFeats (which are FeatDefinitionJsonData[]) to find labels
             const featLabel = allFeats.find(f => f.value === featId)?.label || featId;
             loadedPrereqs.push({ tempId: crypto.randomUUID(), type: 'feat', itemId: featId, itemLabel: featLabel });
           });
         }
         setPrerequisitesList(loadedPrereqs);
-
       } else {
-        // Reset all fields for new feat
         setFeatName('');
         setDescription('');
         setCanTakeMultipleTimes(false);
@@ -159,7 +149,6 @@ export function AddCustomFeatDialog({
         setPrereqAlignment(NONE_VALUE);
         setPrerequisitesList([]);
       }
-      // Reset new prerequisite form
       setNewPrereqType('');
       setNewPrereqItemId('');
       setNewPrereqValue('');
@@ -191,6 +180,7 @@ export function AddCustomFeatDialog({
         return;
       }
     } else if (newPrereqType === 'feat') {
+      // Use allFeats (which are FeatDefinitionJsonData[]) for label lookup
       const featOpt = allFeats.find(opt => opt.value === newPrereqItemId);
       itemLabel = featOpt ? featOpt.label : newPrereqItemId;
     }
@@ -198,7 +188,6 @@ export function AddCustomFeatDialog({
     setPrerequisitesList(prev => [...prev, { tempId: crypto.randomUUID(), type: newPrereqType, itemId: newPrereqItemId, itemLabel, value }]);
     setNewPrereqItemId('');
     setNewPrereqValue('');
-    // Keep newPrereqType for potentially adding another of the same type
   };
 
   const handleRemovePrerequisite = (tempIdToRemove: string) => {
@@ -224,7 +213,6 @@ export function AddCustomFeatDialog({
         finalStructuredPrerequisites.alignment = prereqAlignment;
     }
 
-
     prerequisitesList.forEach(p => {
       if (p.type === 'ability' && p.value !== undefined) {
         if (!finalStructuredPrerequisites.abilities) finalStructuredPrerequisites.abilities = {};
@@ -234,20 +222,24 @@ export function AddCustomFeatDialog({
         finalStructuredPrerequisites.skills.push({ id: p.itemId, ranks: p.value });
       } else if (p.type === 'feat') {
         if (!finalStructuredPrerequisites.feats) finalStructuredPrerequisites.feats = [];
-        finalStructuredPrerequisites.feats.push(p.itemId);
+        finalStructuredPrerequisites.feats.push(p.itemId); // Store definition ID
       }
     });
 
-    onSave({
-      id: initialFeatData?.id,
-      name: featName.trim(),
+    // Construct the feat definition object
+    const featDefinition: FeatDefinitionJsonData & { isCustom: true } = {
+      value: initialFeatData?.value || crypto.randomUUID(), // Use existing value (ID) or generate new
+      label: featName.trim(),
       description: description.trim() || undefined,
       prerequisites: Object.keys(finalStructuredPrerequisites).length > 0 || prerequisitesList.length > 0 ? finalStructuredPrerequisites : undefined,
+      // effects: initialFeatData?.effects, // Preserve effects if not editable here
       effectsText: effectsText.trim() || undefined,
       canTakeMultipleTimes,
       requiresSpecialization: requiresSpecialization.trim() || undefined,
       isCustom: true,
-    });
+    };
+
+    onSave(featDefinition);
     onOpenChange(false);
   };
 
@@ -261,25 +253,23 @@ export function AddCustomFeatDialog({
     return false;
   }, [newPrereqType, newPrereqItemId, newPrereqValue]);
 
-
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif">
             {isEditing ? <Pencil className="mr-2 h-6 w-6 text-primary" /> : <PlusCircle className="mr-2 h-6 w-6 text-primary" />}
-            {isEditing ? 'Edit Custom Feat' : 'Add Custom Feat'}
+            {isEditing ? 'Edit Custom Feat Definition' : 'Add Custom Feat Definition'}
           </DialogTitle>
           <DialogDescription>
-            {isEditing ? `Modify the details of ${initialFeatData?.name}.` : 'Define a new custom feat with structured prerequisites.'}
+            {isEditing ? `Modify the definition of ${initialFeatData?.label}.` : 'Define a new custom feat template.'}
           </DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="max-h-[70vh] p-1">
           <div className="space-y-4 p-4">
-            {/* Core Feat Info */}
             <div className="space-y-1">
-              <Label htmlFor="custom-feat-name">Feat Name</Label>
+              <Label htmlFor="custom-feat-name">Feat Name (Label)</Label>
               <Input
                 id="custom-feat-name"
                 value={featName}
@@ -321,7 +311,6 @@ export function AddCustomFeatDialog({
             <Separator className="my-6" />
             <h3 className="text-md font-semibold text-foreground mb-2">Structured Prerequisites</h3>
             
-            {/* Singular Prerequisites Inputs */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <Label htmlFor="prereq-bab">Base Attack Bonus (BAB)</Label>
@@ -340,8 +329,6 @@ export function AddCustomFeatDialog({
                   value={prereqClassId}
                   onChange={setPrereqClassId}
                   placeholder="Select Class..."
-                  searchPlaceholder="Search classes..."
-                  emptyPlaceholder="No class found."
                 />
               </div>
               <div className="space-y-1">
@@ -365,8 +352,6 @@ export function AddCustomFeatDialog({
                   value={prereqRaceId}
                   onChange={setPrereqRaceId}
                   placeholder="Select Race..."
-                  searchPlaceholder="Search races..."
-                  emptyPlaceholder="No race found."
                 />
               </div>
               <div className="space-y-1">
@@ -376,13 +361,10 @@ export function AddCustomFeatDialog({
                   value={prereqAlignment}
                   onChange={setPrereqAlignment}
                   placeholder="Select Alignment..."
-                  searchPlaceholder="Search alignments..."
-                  emptyPlaceholder="No alignment found."
                 />
               </div>
             </div>
             
-            {/* Multiple Prerequisites Section */}
             <Separator className="my-6" />
             <h4 className="text-sm font-medium text-foreground mb-1">Add Specific Prerequisite:</h4>
             <div className="p-3 border rounded-md bg-muted/20 space-y-3">
@@ -434,10 +416,10 @@ export function AddCustomFeatDialog({
                   </>
                 )}
                 {newPrereqType === 'feat' && (
-                  <div className="space-y-1 md:col-span-2"> {/* Feat selector can take more space */}
+                  <div className="space-y-1 md:col-span-2">
                     <Label htmlFor="new-prereq-feat-item">Feat</Label>
                     <ComboboxPrimitive
-                      options={allFeats.map(f => ({ value: f.value, label: f.label }))}
+                      options={allFeats.map(f => ({ value: f.value, label: f.label }))} // Use value and label from FeatDefinitionJsonData
                       value={newPrereqItemId}
                       onChange={setNewPrereqItemId}
                       placeholder="Select Prerequisite Feat..."
@@ -460,7 +442,7 @@ export function AddCustomFeatDialog({
                     <div>
                       <Badge variant="secondary" className="mr-2 capitalize">{p.type}</Badge>
                       <span className="font-medium">{p.itemLabel}</span>
-                      {p.value !== undefined && <span className="text-muted-foreground"> (Min: {p.value}{p.type === 'skill' ? ' ranks' : ''})</span>}
+                      {p.value !== undefined && <span className="text-muted-foreground"> (Min: {p.value}{p.type === 'skill' ? ' Ranks' : ''})</span>}
                     </div>
                     <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => handleRemovePrerequisite(p.tempId)} type="button">
                       <Trash2 className="h-3.5 w-3.5" />
@@ -489,7 +471,7 @@ export function AddCustomFeatDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
             Cancel
           </Button>
-          <Button onClick={handleSaveFeat} type="button">{isEditing ? 'Save Changes' : 'Save Custom Feat'}</Button>
+          <Button onClick={handleSaveFeat} type="button">{isEditing ? 'Save Changes to Definition' : 'Save Custom Feat Definition'}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
