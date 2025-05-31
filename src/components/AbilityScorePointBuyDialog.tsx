@@ -157,7 +157,7 @@ export function AbilityScorePointBuyDialog({
                         <p className="text-sm">
                         Points Spent: <Badge variant="secondary">{pointsSpent}</Badge>
                         </p>
-                        <p className={cn("text-sm font-semibold", pointsRemaining < 0 ? "text-destructive" : "text-emerald-500")}>
+                        <p className={cn("text-sm font-semibold mt-1", pointsRemaining < 0 ? "text-destructive" : "text-emerald-500")}>
                         Points Remaining: <Badge variant={pointsRemaining < 0 ? "destructive" : "default"} className={pointsRemaining >=0 ? "bg-emerald-600 hover:bg-emerald-600/80" : ""}>{pointsRemaining}</Badge>
                         </p>
                     </div>
