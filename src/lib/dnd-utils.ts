@@ -1,6 +1,7 @@
 
-import type { AbilityName, AbilityScores, CharacterClass, CharacterSize, Skill } from '@/types/character';
-import { SIZES } from '@/types/character'; // Import SIZES to look up labels
+
+import type { AbilityName, AbilityScores, CharacterClass, CharacterSize, Skill, DndClassOption, SavingThrowType } from '@/types/character';
+import { SIZES, DND_CLASSES } from '@/types/character'; // Import SIZES to look up labels
 
 export function calculateAbilityModifier(score: number): number {
   return Math.floor((score - 10) / 2);
@@ -15,54 +16,78 @@ export function getAbilityModifierByName(scores: AbilityScores, abilityName: Abi
   return calculateAbilityModifier(score);
 }
 
-// Simplified BAB progression (replace with actual class tables)
-// Returns an array for iterative attacks, e.g. [10, 5] for BAB +10/+5
+// BAB progression
 export function getBab(classes: CharacterClass[]): number[] {
-  if (classes.length === 0) return [0];
-  // For simplicity, sum levels and use a generic progression.
-  // A real implementation needs to handle multiclassing rules correctly.
-  const totalLevel = classes.reduce((sum, c) => sum + c.level, 0);
-  const mainClass = (classes[0]?.className as string).toLowerCase() || '';
-
-  // Very simplified: Fighter (good), Rogue (medium), Wizard (poor)
-  let baseBab = 0;
-  if (mainClass.includes('fighter') || mainClass.includes('paladin') || mainClass.includes('ranger') || mainClass.includes('barbarian')) {
-    baseBab = totalLevel; // Good BAB
-  } else if (mainClass.includes('cleric') || mainClass.includes('druid') || mainClass.includes('monk') || mainClass.includes('rogue') || mainClass.includes('bard')) {
-    baseBab = Math.floor(totalLevel * 0.75); // Medium BAB
-  } else {
-    baseBab = Math.floor(totalLevel * 0.5); // Poor BAB
-  }
+  if (classes.length === 0 || !classes[0]?.className) return [0];
   
-  const attacks: number[] = [baseBab];
-  let nextAttack = baseBab - 5;
-  while (nextAttack > 0) {
+  let totalBab = 0;
+  // SRD multiclassing: BAB from different classes are added together.
+  classes.forEach(charClass => {
+    if (!charClass.className) return;
+    const classDef = DND_CLASSES.find(cd => cd.value === charClass.className);
+    if (!classDef) return;
+
+    // Determine progression type (good, medium, poor)
+    // This is a simplification. Real SRD defines BAB per class table.
+    // For now: Fighter/Paladin/Ranger/Barbarian = good (level)
+    // Cleric/Druid/Monk/Rogue/Bard = medium (level * 3/4)
+    // Wizard/Sorcerer = poor (level * 1/2)
+    const classNameLower = classDef.label.toLowerCase();
+    let classBabContribution = 0;
+    if (['fighter', 'paladin', 'ranger', 'barbarian'].includes(classNameLower)) {
+      classBabContribution = charClass.level;
+    } else if (['cleric', 'druid', 'monk', 'rogue', 'bard'].includes(classNameLower)) {
+      classBabContribution = Math.floor(charClass.level * 0.75);
+    } else { // wizard, sorcerer
+      classBabContribution = Math.floor(charClass.level * 0.5);
+    }
+    totalBab += classBabContribution;
+  });
+  
+  const attacks: number[] = [totalBab];
+  let nextAttack = totalBab - 5;
+  while (nextAttack >= 1) { // PHB Errata: Iterative attacks stop if BAB drops below +1
     attacks.push(nextAttack);
     nextAttack -= 5;
   }
   return attacks;
 }
 
-// Simplified Base Saves (replace with actual class tables)
-export function getBaseSaves(classes: CharacterClass[]): { fortitude: number; reflex: number; will: number } {
-   if (classes.length === 0) return { fortitude: 0, reflex: 0, will: 0 };
-   // Simplified: sum levels and use generic save progression.
-   const totalLevel = classes.reduce((sum, c) => sum + c.level, 0);
-   const mainClass = (classes[0]?.className as string).toLowerCase() || '';
+export function calculateClassSaveContribution(level: number, progression: 'good' | 'poor'): number {
+  if (progression === 'good') {
+    return 2 + Math.floor(level / 2);
+  } else { // poor
+    return Math.floor(level / 3);
+  }
+}
 
-   let goodSaveBase = Math.floor(2 + totalLevel / 2);
-   let poorSaveBase = Math.floor(totalLevel / 3);
+// Updated Base Saves to handle multiclassing per SRD
+export function getBaseSaves(
+  classes: CharacterClass[],
+  allClassDefinitions: readonly DndClassOption[] // Pass DND_CLASSES here
+): { fortitude: number; reflex: number; will: number } {
+  const baseSavesResult = { fortitude: 0, reflex: 0, will: 0 };
 
-   if (mainClass.includes('fighter') || mainClass.includes('paladin') || mainClass.includes('barbarian')) { // Good Fort
-    return { fortitude: goodSaveBase, reflex: poorSaveBase, will: poorSaveBase };
-   } else if (mainClass.includes('rogue') || mainClass.includes('ranger') || mainClass.includes('bard')) { // Good Reflex
-    return { fortitude: poorSaveBase, reflex: goodSaveBase, will: poorSaveBase };
-   } else if (mainClass.includes('cleric') || mainClass.includes('druid') || mainClass.includes('wizard') || mainClass.includes('sorcerer')) { // Good Will
-    return { fortitude: poorSaveBase, reflex: poorSaveBase, will: goodSaveBase };
-   } else if (mainClass.includes('monk')) { // Good all
-    return { fortitude: goodSaveBase, reflex: goodSaveBase, will: goodSaveBase };
-   }
-   return { fortitude: poorSaveBase, reflex: poorSaveBase, will: poorSaveBase }; // Default to poor
+  if (!classes || classes.length === 0) return baseSavesResult;
+
+  for (const charClass of classes) {
+    if (!charClass.className) continue;
+    const classDef = allClassDefinitions.find(cd => cd.value === charClass.className);
+    
+    if (classDef && classDef.saves) {
+      baseSavesResult.fortitude += calculateClassSaveContribution(charClass.level, classDef.saves.fortitude);
+      baseSavesResult.reflex += calculateClassSaveContribution(charClass.level, classDef.saves.reflex);
+      baseSavesResult.will += calculateClassSaveContribution(charClass.level, classDef.saves.will);
+    } else if (classDef) {
+      // Fallback for classes that might be missing the 'saves' object after JSON update
+      // This is a very rough estimation and should be avoided by ensuring dnd-classes.json is complete
+      const poorSave = Math.floor(charClass.level / 3);
+      baseSavesResult.fortitude += poorSave;
+      baseSavesResult.reflex += poorSave;
+      baseSavesResult.will += poorSave;
+    }
+  }
+  return baseSavesResult;
 }
 
 
@@ -133,5 +158,11 @@ export function calculateSkillTotal(skill: Skill, abilityScores: AbilityScores):
 export function getCharacterOverallLevel(classes: CharacterClass[]): number {
   return classes.reduce((sum, charClass) => sum + charClass.level, 0);
 }
+
+export const SAVING_THROW_ABILITIES: Record<SavingThrowType, AbilityName> = {
+  fortitude: 'constitution',
+  reflex: 'dexterity',
+  will: 'wisdom',
+};
 
     

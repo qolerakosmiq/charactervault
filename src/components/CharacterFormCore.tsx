@@ -1,11 +1,12 @@
 
+
 'use client';
 
 import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import type {
   AbilityName, Character, CharacterClass,
-  DndRaceId, AbilityScores,
+  DndRaceId, AbilityScores, SavingThrows, SavingThrowType,
   Skill as SkillType, DndClassId, DndDeityId, GenderId,
   DndRaceOption, DetailedAbilityScores, AbilityScoreBreakdown,
   FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData
@@ -44,10 +45,11 @@ import { CharacterFormAbilityScoresSection } from '@/components/form-sections/Ch
 import { CharacterFormStoryPortraitSection } from '@/components/form-sections/CharacterFormStoryPortraitSection';
 import { SkillsFormSection } from '@/components/SkillsFormSection';
 import { FeatsFormSection } from '@/components/FeatsFormSection';
+import { SavingThrowsPanel } from '@/components/form-sections/SavingThrowsPanel'; // Added
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 import { Separator } from '@/components/ui/separator';
-import { BookOpenCheck, ShieldPlus } from 'lucide-react';
+import { BookOpenCheck, ShieldPlus, Zap } from 'lucide-react'; // Added Zap for Saving Throws
 
 interface CharacterFormCoreProps {
   initialCharacter?: Character;
@@ -243,7 +245,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     if (!isClient) return;
 
     const currentGlobalDefs = globalCustomSkillDefinitionsFromStore;
-    const prevGlobalDefs = prevGlobalCustomSkillDefinitionsRef.current;
+    // const prevGlobalDefs = prevGlobalCustomSkillDefinitionsRef.current; // Not strictly needed for adding, but good for complex logic
 
     const instancesToAddToCharacter: SkillType[] = [];
 
@@ -417,6 +419,19 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     } else {
       setCharacter(prev => ({ ...prev, portraitDataUrl: undefined }));
     }
+  };
+
+  const handleSavingThrowMiscModChange = (saveType: SavingThrowType, value: number) => {
+    setCharacter(prev => ({
+      ...prev,
+      savingThrows: {
+        ...prev.savingThrows,
+        [saveType]: {
+          ...prev.savingThrows[saveType],
+          miscMod: value,
+        },
+      },
+    }));
   };
 
   const handleCancel = () => { router.push('/'); };
@@ -602,6 +617,14 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
         />
 
+        <SavingThrowsPanel
+            savingThrows={character.savingThrows}
+            abilityScores={character.abilityScores}
+            characterClasses={character.classes}
+            onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
+        />
+
+
         <Separator className="my-10" />
 
         <div className="space-y-4">
@@ -679,3 +702,4 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
+

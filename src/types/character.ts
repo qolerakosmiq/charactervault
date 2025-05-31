@@ -1,4 +1,5 @@
 
+
 import baseDataJson from '@/data/dnd-base.json';
 import customBaseDataJson from '@/data/custom-base.json';
 import racesDataJson from '@/data/dnd-races.json';
@@ -14,7 +15,7 @@ import skillsDataJson from '@/data/dnd-skills.json';
 import featsDataJson from '@/data/dnd-feats.json';
 // customFeatsDataJson import removed as it's unused
 
-import { getBab } from '@/lib/dnd-utils';
+import { getBab } from '@/lib/dnd-utils'; // getBaseSaves will be moved to dnd-utils
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 
 
@@ -98,11 +99,20 @@ export interface AbilityScores {
   charisma: number;
 }
 
-export interface SavingThrows {
-  fortitude: { base: number; magicMod: number; miscMod: number; total?: number, abilityMod?: number };
-  reflex: { base: number; magicMod: number; miscMod: number; total?: number, abilityMod?: number };
-  will: { base: number; magicMod: number; miscMod: number; total?: number, abilityMod?: number };
+export type SavingThrowType = 'fortitude' | 'reflex' | 'will';
+
+export interface SingleSavingThrow {
+  base: number; // This will be calculated from class(es)
+  magicMod: number;
+  miscMod: number; // This will be the user-editable "Custom Modifier"
+  // total and abilityModDisplay can be calculated on the fly in components
 }
+export interface SavingThrows {
+  fortitude: SingleSavingThrow;
+  reflex: SingleSavingThrow;
+  will: SingleSavingThrow;
+}
+
 
 export interface Character {
   id: string;
@@ -236,6 +246,11 @@ export type DndClassOption = {
   description: string;
   casting?: ClassCastingDetails;
   grantedFeats?: Array<{ featId: string; note?: string; levelAcquired?: number }>;
+  saves?: { // Added for saving throw progression
+    fortitude: "good" | "poor";
+    reflex: "good" | "poor";
+    will: "good" | "poor";
+  };
 };
 export type DndClassId = "barbarian" | "bard" | "cleric" | "druid" | "fighter" | "monk" | "paladin" | "ranger" | "rogue" | "sorcerer" | "wizard" | string;
 const baseClassesData = (classesDataJson as any).DND_CLASSES_DATA || [];
@@ -831,4 +846,5 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
+
 
