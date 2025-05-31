@@ -70,7 +70,7 @@ export function SavingThrowsPanel({
           type="number"
           value={savingThrows[saveType].miscMod}
           onChange={(e) => onSavingThrowMiscModChange(saveType, parseInt(e.target.value, 10) || 0)}
-          className="h-8 w-12 text-sm text-center mx-auto" 
+          className="h-8 w-12 text-sm text-center mx-auto"
         />
       ),
     },
@@ -87,18 +87,16 @@ export function SavingThrowsPanel({
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[300px]"> {/* Adjusted min-width */}
-            <thead>
+          <table className="w-full min-w-[300px]"><thead>
               <tr className="border-b">
-                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground"></th> {/* Removed "Save Detail" */}
+                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground"></th>
                 {SAVE_TYPES.map((saveType) => (
-                  <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-muted-foreground capitalize">
-                    {SAVE_DISPLAY_NAMES[saveType]}
+                  <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-muted-foreground capitalize whitespace-normal">
+                    <span>{SAVE_DISPLAY_NAMES[saveType]}</span>
                   </th>
                 ))}
               </tr>
-            </thead>
-            <tbody>
+            </thead><tbody>
               {dataRows.map((row) => (
                 <tr key={row.label} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
                   <td className="py-2 px-1 text-sm font-medium text-foreground">{row.label}</td>
@@ -116,4 +114,4 @@ export function SavingThrowsPanel({
     </Card>
   );
 }
-
+    
