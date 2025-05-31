@@ -82,9 +82,10 @@ export function CharacterFormAbilityScoresSection({
                     value={baseScore}
                     onChange={(newValue) => onBaseAbilityScoreChange(ability, newValue)}
                     min={1}
-                    max={99} // A high practical limit for base scores
+                    max={99}
                     inputClassName="w-12 h-8 text-base"
-                    buttonSize="sm"
+                    buttonSize="icon"
+                    buttonClassName="h-8 w-8"
                     className="w-full justify-center"
                   />
                   <p className="text-center text-sm mt-1">
