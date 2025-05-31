@@ -64,12 +64,12 @@ interface CharacterFormCoreProps {
 const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
 export function CharacterFormCore({ initialCharacter, onSave, isCreating }: CharacterFormCoreProps) {
-  const { 
-    customFeatDefinitions: globalCustomFeatDefinitionsFromStore, 
+  const {
+    customFeatDefinitions: globalCustomFeatDefinitionsFromStore,
     customSkillDefinitions: globalCustomSkillDefinitionsFromStore,
     rerollOnesForAbilityScores: rerollOnesForAbilityScoresFromStore,
-    pointBuyBudget: rawPointBuyBudgetFromStore, // Renamed for clarity
-    actions: definitionsActions 
+    pointBuyBudget: rawPointBuyBudgetFromStore,
+    actions: definitionsActions
   } = useDefinitionsStore();
 
 
@@ -81,13 +81,16 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const globalCustomFeatDefinitions = isClient ? globalCustomFeatDefinitionsFromStore : [];
   const globalCustomSkillDefinitions = isClient ? globalCustomSkillDefinitionsFromStore : [];
   const rerollOnesForAbilityScores = isClient ? rerollOnesForAbilityScoresFromStore : false;
-  
-  // Robust handling of pointBuyBudget from store
+
   let numericPointBuyBudgetFromStore: number;
   if (typeof rawPointBuyBudgetFromStore === 'number' && !isNaN(rawPointBuyBudgetFromStore)) {
     numericPointBuyBudgetFromStore = rawPointBuyBudgetFromStore;
-  } else {
-    numericPointBuyBudgetFromStore = 25; // Default if store value is invalid
+  } else if (typeof rawPointBuyBudgetFromStore === 'string') {
+    const parsed = parseFloat(rawPointBuyBudgetFromStore);
+    numericPointBuyBudgetFromStore = !isNaN(parsed) ? parsed : 25;
+  }
+  else {
+    numericPointBuyBudgetFromStore = 25; // Default if store value is invalid or not string/number
   }
   const pointBuyBudget = isClient ? numericPointBuyBudgetFromStore : 25;
 
@@ -95,7 +98,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const [character, setCharacter] = React.useState<Character>(() => {
     const defaultBaseAbilityScores = { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES)) as AbilityScores) };
     const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: '', level: 1 }];
-    
+
     const allInitialFeatDefsForGranting = [
         ...DND_FEATS_DEFINITIONS.map(def => ({ ...def, isCustom: false as const })),
         ...(isCreating && isClient ? globalCustomFeatDefinitionsFromStore : (initialCharacter?.feats.filter(f => f.isGranted && allInitialFeatDefsForGranting.find(fd => fd.value === f.definitionId && fd.isCustom)).map(f => globalCustomFeatDefinitionsFromStore.find(cfd => cfd.value === f.definitionId)).filter(Boolean) as (FeatDefinitionJsonData & { isCustom: true })[] || []))
@@ -107,7 +110,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       initialCharacter?.classes?.reduce((sum, c) => sum + c.level, 0) || 1,
       allInitialFeatDefsForGranting
     );
-    
+
     let initialSkills = initialCharacter?.skills || getInitialCharacterSkills(defaultClasses);
 
 
@@ -129,7 +132,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const [sizeAbilityEffectsDetails, setSizeAbilityEffectsDetails] = React.useState<CharacterFormCoreInfoSectionProps['sizeAbilityEffectsDetails']>(null);
   const [raceSpecialQualities, setRaceSpecialQualities] = React.useState<CharacterFormCoreInfoSectionProps['raceSpecialQualities']>(null);
   const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
-  const [isPointBuyDialogOpen, setIsPointBuyDialogOpen] = React.useState(false);
+  const [isPointBuyDialogOpen, setIsPointBuyDialogOpen] = React.useState(false); // This state now controls the single dialog instance
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<Parameters<typeof InfoDisplayDialog>[0] | null>(null);
   const [detailedAbilityScores, setDetailedAbilityScores] = React.useState<DetailedAbilityScores | null>(null);
@@ -606,6 +609,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           onMultipleBaseAbilityScoresChange={handleMultipleBaseAbilityScoresChange}
           onOpenAbilityScoreBreakdownDialog={handleOpenAbilityScoreBreakdownDialog}
           onOpenRollerDialog={() => setIsRollerDialogOpen(true)}
+          onOpenPointBuyDialog={() => setIsPointBuyDialogOpen(true)} // Pass callback to section
           isCreating={isCreating}
         />
 
@@ -641,11 +645,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
         />
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <SavingThrowsPanel
               savingThrows={character.savingThrows}
-              abilityScores={actualAbilityScoresForSavesAndSkills} 
+              abilityScores={actualAbilityScoresForSavesAndSkills}
               characterClasses={character.classes}
               onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
           />
@@ -685,7 +689,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                         value={pointBuyBudget}
                         onChange={definitionsActions.setPointBuyBudget}
                         min={0}
-                        // Removed max={100}
                         inputClassName="h-9 text-sm w-20"
                         buttonClassName="h-9 w-9"
                         buttonSize="sm"
@@ -732,7 +735,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           isOpen={isRollerDialogOpen}
           onOpenChange={setIsRollerDialogOpen}
           onScoresApplied={handleApplyRolledScores}
-          rerollOnes={rerollOnesForAbilityScores} 
+          rerollOnes={rerollOnesForAbilityScores}
         />
       )}
       {isCreating && (
@@ -740,7 +743,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             isOpen={isPointBuyDialogOpen}
             onOpenChange={setIsPointBuyDialogOpen}
             onScoresApplied={handleApplyPointBuyScores}
-            totalPointsBudget={pointBuyBudget} 
+            totalPointsBudget={pointBuyBudget} // This instance is controlled by CharacterFormCore's state
         />
       )}
       {isInfoDialogOpen && currentInfoDialogData && (
@@ -778,4 +781,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-

@@ -6,10 +6,10 @@ import type { AbilityName, AbilityScores, DetailedAbilityScores } from '@/types/
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dices, Info, Calculator } from 'lucide-react'; 
+import { Dices, Info, Calculator } from 'lucide-react';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { cn } from '@/lib/utils';
-import { AbilityScorePointBuyDialog } from '@/components/AbilityScorePointBuyDialog'; 
+// AbilityScorePointBuyDialog import removed as it's no longer rendered here
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 
 const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
@@ -18,9 +18,10 @@ interface CharacterFormAbilityScoresSectionProps {
   baseAbilityScores: AbilityScores;
   detailedAbilityScores: DetailedAbilityScores | null;
   onBaseAbilityScoreChange: (ability: Exclude<AbilityName, 'none'>, value: number) => void;
-  onMultipleBaseAbilityScoresChange: (newScores: AbilityScores) => void; 
+  onMultipleBaseAbilityScoresChange: (newScores: AbilityScores) => void;
   onOpenAbilityScoreBreakdownDialog: (ability: Exclude<AbilityName, 'none'>) => void;
   onOpenRollerDialog: () => void;
+  onOpenPointBuyDialog: () => void; // New prop to open dialog in parent
   isCreating: boolean;
 }
 
@@ -28,17 +29,15 @@ export function CharacterFormAbilityScoresSection({
   baseAbilityScores,
   detailedAbilityScores,
   onBaseAbilityScoreChange,
-  onMultipleBaseAbilityScoresChange, 
+  onMultipleBaseAbilityScoresChange,
   onOpenAbilityScoreBreakdownDialog,
   onOpenRollerDialog,
+  onOpenPointBuyDialog, // Destructure new prop
   isCreating,
 }: CharacterFormAbilityScoresSectionProps) {
-  const [isPointBuyDialogOpen, setIsPointBuyDialogOpen] = React.useState(false);
+  // Local state for PointBuyDialog (isPointBuyDialogOpen) is removed
 
-  const handleApplyPointBuyScores = (newScores: AbilityScores) => {
-    onMultipleBaseAbilityScoresChange(newScores);
-    setIsPointBuyDialogOpen(false);
-  };
+  // handleApplyPointBuyScores is removed as dialog is handled by parent
 
   return (
     <>
@@ -54,7 +53,7 @@ export function CharacterFormAbilityScoresSection({
                 <Button type="button" variant="outline" size="sm" onClick={onOpenRollerDialog}>
                   <Dices className="mr-2 h-4 w-4" /> Roll Scores
                 </Button>
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)}>
+                <Button type="button" variant="outline" size="sm" onClick={onOpenPointBuyDialog}> {/* Use prop here */}
                   <Calculator className="mr-2 h-4 w-4" /> Point Buy
                 </Button>
               </div>
@@ -82,10 +81,10 @@ export function CharacterFormAbilityScoresSection({
                     value={baseScore}
                     onChange={(newValue) => onBaseAbilityScoreChange(ability, newValue)}
                     min={1}
-                    inputClassName="flex-1 h-8 text-base text-center" 
+                    inputClassName="flex-1 h-8 text-base text-center"
                     buttonSize="icon"
                     buttonClassName="h-8 w-8"
-                    className="w-full justify-center" 
+                    className="w-full justify-center"
                   />
                   <p className="text-center text-sm mt-1">
                     <span className="text-accent">Modifier: </span>
@@ -121,13 +120,7 @@ export function CharacterFormAbilityScoresSection({
           </div>
         </CardContent>
       </Card>
-      {isCreating && (
-        <AbilityScorePointBuyDialog
-            isOpen={isPointBuyDialogOpen}
-            onOpenChange={setIsPointBuyDialogOpen}
-            onScoresApplied={handleApplyPointBuyScores}
-        />
-      )}
+      {/* AbilityScorePointBuyDialog instance removed from here */}
     </>
   );
 }
