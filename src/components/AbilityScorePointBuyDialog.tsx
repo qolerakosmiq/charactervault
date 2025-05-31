@@ -76,7 +76,10 @@ export function AbilityScorePointBuyDialog({
   }, []);
 
   const [pointsSpent, setPointsSpent] = React.useState(() => calculatePointsSpent(currentScores));
-  const pointsRemaining = totalPointsBudget - pointsSpent;
+  
+  // Ensure totalPointsBudget is a number before calculation to prevent NaN propagation
+  const safeTotalPointsBudget = (typeof totalPointsBudget === 'number' && !isNaN(totalPointsBudget)) ? totalPointsBudget : 0;
+  const pointsRemaining = safeTotalPointsBudget - pointsSpent;
 
   React.useEffect(() => {
     if (isOpen) {
@@ -98,7 +101,7 @@ export function AbilityScorePointBuyDialog({
     const tempScores = { ...currentScores, [ability]: newScore };
     const tempSpent = calculatePointsSpent(tempScores);
 
-    if (tempSpent <= totalPointsBudget) {
+    if (tempSpent <= safeTotalPointsBudget) {
       setCurrentScores(tempScores);
     }
   };
@@ -121,7 +124,7 @@ export function AbilityScorePointBuyDialog({
     }
   };
 
-  const isApplyDisabled = pointsRemaining < 0;
+  const isApplyDisabled = pointsRemaining < 0 || isNaN(pointsRemaining);
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -141,14 +144,14 @@ export function AbilityScorePointBuyDialog({
                 <div className="flex items-center justify-between gap-4 p-3 border rounded-md bg-muted/30">
                     <div className="text-left">
                         <p className="text-sm font-medium">Total Points Budget:</p>
-                        <p className="text-xl font-bold text-primary">{totalPointsBudget}</p>
+                        <p className="text-xl font-bold text-primary">{ typeof totalPointsBudget === 'number' && !isNaN(totalPointsBudget) ? totalPointsBudget : 'N/A'}</p>
                     </div>
                     <div className="flex-grow text-right">
                         <p className="text-sm">
-                        Points Spent: <Badge variant="secondary">{pointsSpent}</Badge>
+                        Points Spent: <Badge variant="secondary">{String(pointsSpent)}</Badge>
                         </p>
                         <p className={cn("text-sm font-semibold mt-1", pointsRemaining < 0 ? "text-destructive" : "text-emerald-500")}>
-                        Points Remaining: <Badge variant={pointsRemaining < 0 ? "destructive" : "default"} className={pointsRemaining >=0 ? "bg-emerald-600 hover:bg-emerald-600/80" : ""}>{pointsRemaining}</Badge>
+                        Points Remaining: <Badge variant={pointsRemaining < 0 || isNaN(pointsRemaining) ? "destructive" : "default"} className={pointsRemaining >=0 ? "bg-emerald-600 hover:bg-emerald-600/80" : ""}>{String(pointsRemaining)}</Badge>
                         </p>
                     </div>
                 </div>
@@ -197,7 +200,7 @@ export function AbilityScorePointBuyDialog({
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => incrementScore(ability)}
-                            disabled={score >= MAX_SCORE || (calculatePointsSpent({ ...currentScores, [ability]: score + 1 })) > totalPointsBudget}
+                            disabled={score >= MAX_SCORE || (calculatePointsSpent({ ...currentScores, [ability]: score + 1 })) > safeTotalPointsBudget}
                         >
                             <PlusCircle className="h-4 w-4" />
                         </Button>
