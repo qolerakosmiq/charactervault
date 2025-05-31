@@ -36,7 +36,7 @@ import { ComboboxPrimitive } from '@/components/ui/combobox';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Badge } from '@/components/ui/badge'; // Added import for Badge
+import { Badge } from '@/components/ui/badge';
 
 interface CharacterFormCoreInfoSectionProps {
   characterData: Pick<Character, 'name' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
@@ -148,21 +148,40 @@ export function CharacterFormCoreInfoSection({
             </div>
             {isPredefinedRace && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-1 ml-1">
-                {raceSpecialQualities.abilityEffects.map((effect) => (
-                  <Badge
-                    key={effect.ability}
-                    variant={effect.change === 0 ? "outline" : effect.change < 0 ? "destructive" : "outline"}
-                    className={cn(
-                      "font-normal text-xs", // Badges are font-semibold by default, text-xs for smaller text
-                      effect.change > 0 && "text-emerald-600 border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20",
-                      // Destructive variant handles its own colors, including hover
-                      effect.change < 0 && "hover:bg-destructive/80", // Ensure hover for destructive is consistent
-                      effect.change === 0 && "text-muted-foreground border-muted-foreground/30 bg-muted/50"
-                    )}
-                  >
-                    {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
-                  </Badge>
-                ))}
+                {raceSpecialQualities.abilityEffects.map((effect) => {
+                  let badgeVariantProp: "destructive" | "secondary" = "secondary";
+                  let badgeClassName = "font-normal text-xs";
+
+                  if (effect.change > 0) { // Positive (Emerald)
+                    badgeClassName = cn(
+                      badgeClassName,
+                      "bg-emerald-700 text-emerald-100 border-emerald-600",
+                      "hover:bg-emerald-700 hover:text-emerald-100" // No hover change
+                    );
+                  } else if (effect.change < 0) { // Negative (Destructive)
+                    badgeVariantProp = "destructive";
+                    badgeClassName = cn(
+                      badgeClassName,
+                      "hover:bg-destructive" // Override default hover for destructive variant
+                    );
+                  } else { // Zero (Muted)
+                    badgeClassName = cn(
+                      badgeClassName,
+                      "bg-muted/50 text-muted-foreground border-border",
+                      "hover:bg-muted/50 hover:text-muted-foreground" // No hover change
+                    );
+                  }
+
+                  return (
+                    <Badge
+                      key={effect.ability}
+                      variant={badgeVariantProp}
+                      className={badgeClassName}
+                    >
+                      {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
+                    </Badge>
+                  );
+                })}
               </div>
             )}
             {isPredefinedRace && (!raceSpecialQualities?.abilityEffects || raceSpecialQualities.abilityEffects.length === 0) && (
