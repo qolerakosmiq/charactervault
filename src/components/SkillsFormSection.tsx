@@ -9,13 +9,13 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollText, PlusCircle, Trash2, Pencil, Info } from 'lucide-react';
+import { ScrollText, Pencil, Info } from 'lucide-react';
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
+// AddCustomSkillDialog import removed
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 
@@ -51,7 +51,7 @@ interface SkillsFormSectionProps {
   allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
   allCustomSkillDefinitions: readonly CustomSkillDefinition[];
   onSkillChange: (skillId: string, ranks: number, isClassSkill?: boolean) => void;
-  onCustomSkillDefinitionSave: (skillData: CustomSkillDefinition) => void; // To save to global store
+  onEditCustomSkillDefinition: (skillDefId: string) => void; // Callback to CharacterFormCore
 }
 
 export function SkillsFormSection({
@@ -65,10 +65,9 @@ export function SkillsFormSection({
   allPredefinedSkillDefinitions,
   allCustomSkillDefinitions,
   onSkillChange,
-  onCustomSkillDefinitionSave,
+  onEditCustomSkillDefinition,
 }: SkillsFormSectionProps) {
-  const [isAddOrEditSkillDialogOpen, setIsAddOrEditSkillDialogOpen] = React.useState(false);
-  const [skillToEdit, setSkillToEdit] = React.useState<CustomSkillDefinition | undefined>(undefined);
+  // State for AddOrEditSkillDialog moved to CharacterFormCore
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentSkillInfo, setCurrentSkillInfo] = React.useState<{ title: string; content?: string; skillModifierBreakdown?: SkillModifierBreakdownDetails } | null>(null);
 
@@ -128,17 +127,9 @@ export function SkillsFormSection({
   }, 0);
   const skillPointsLeft = totalSkillPointsAvailable - totalSkillPointsSpent;
 
-
-  const handleOpenAddSkillDialog = () => {
-    setSkillToEdit(undefined);
-    setIsAddOrEditSkillDialogOpen(true);
-  };
-
-  const handleOpenEditSkillDialog = (skillDisplayInfo: SkillDisplayInfo) => {
+  const handleOpenEditDialog = (skillDisplayInfo: SkillDisplayInfo) => {
     if (skillDisplayInfo.isCustom) {
-      const customDef = allCustomSkillDefinitions.find(csd => csd.id === skillDisplayInfo.id);
-      setSkillToEdit(customDef); 
-      setIsAddOrEditSkillDialogOpen(true);
+      onEditCustomSkillDefinition(skillDisplayInfo.id);
     }
   };
   
@@ -175,21 +166,6 @@ export function SkillsFormSection({
     });
     setIsInfoDialogOpen(true);
   };
-
-  const handleSaveCustomSkillDefinitionToStore = (skillDefData: CustomSkillDefinition) => {
-    onCustomSkillDefinitionSave(skillDefData); // Saves to global store via CharacterFormCore
-    // Instance addition is now handled reactively by CharacterFormCore's useEffect
-    setIsAddOrEditSkillDialogOpen(false);
-    setSkillToEdit(undefined);
-  };
-
-  const allSkillOptionsForSynergyDialog = React.useMemo(() => {
-    return allCombinedSkillDefinitions
-      .filter(skill => skill.id !== skillToEdit?.id) 
-      .map(s => ({ value: s.id, label: s.name }))
-      .sort((a,b) => a.label.localeCompare(b.label));
-  }, [allCombinedSkillDefinitions, skillToEdit]);
-
 
   return (
     <>
@@ -310,7 +286,7 @@ export function SkillsFormSection({
                               variant="ghost"
                               size="icon"
                               className="h-5 w-5 text-muted-foreground hover:text-foreground"
-                              onClick={() => handleOpenEditSkillDialog(skill)}
+                              onClick={() => handleOpenEditDialog(skill)}
                               aria-label={`Edit custom skill definition ${skill.name}`}
                             >
                               <Pencil className="h-3 w-3" />
@@ -347,23 +323,10 @@ export function SkillsFormSection({
             );
           })}
         </div>
-
-        <Separator className="my-4" />
-
-        <div>
-          <Button type="button" onClick={handleOpenAddSkillDialog} size="sm" variant="outline">
-            <PlusCircle className="mr-2 h-4 w-4" /> Add Custom Skill Definition
-          </Button>
-        </div>
+        {/* "Add Custom Skill Definition" button removed from here */}
       </CardContent>
     </Card>
-    <AddCustomSkillDialog
-        isOpen={isAddOrEditSkillDialogOpen}
-        onOpenChange={setIsAddOrEditSkillDialogOpen}
-        onSave={handleSaveCustomSkillDefinitionToStore}
-        initialSkillData={skillToEdit}
-        allSkills={allSkillOptionsForSynergyDialog}
-    />
+    {/* AddCustomSkillDialog rendering removed from here */}
     {currentSkillInfo && (
       <InfoDisplayDialog
         isOpen={isInfoDialogOpen}
@@ -376,4 +339,3 @@ export function SkillsFormSection({
     </>
   );
 }
-

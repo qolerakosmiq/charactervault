@@ -44,6 +44,10 @@ import { CharacterFormAbilityScoresSection } from '@/components/form-sections/Ch
 import { CharacterFormStoryPortraitSection } from '@/components/form-sections/CharacterFormStoryPortraitSection';
 import { SkillsFormSection } from '@/components/SkillsFormSection';
 import { FeatsFormSection } from '@/components/FeatsFormSection';
+import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
+import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
+import { Separator } from '@/components/ui/separator';
+import { BookOpenCheck, ShieldPlus } from 'lucide-react';
 
 interface CharacterFormCoreProps {
   initialCharacter?: Character;
@@ -106,6 +110,13 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<Parameters<typeof InfoDisplayDialog>[0] | null>(null);
   const [detailedAbilityScores, setDetailedAbilityScores] = React.useState<DetailedAbilityScores | null>(null);
+
+  // State for global definition dialogs
+  const [isAddOrEditSkillDialogOpen, setIsAddOrEditSkillDialogOpen] = React.useState(false);
+  const [skillToEdit, setSkillToEdit] = React.useState<CustomSkillDefinition | undefined>(undefined);
+  const [isCustomFeatDialogOpen, setIsCustomFeatDialogOpen] = React.useState(false);
+  const [editingCustomFeatDefinition, setEditingCustomFeatDefinition] = React.useState<(FeatDefinitionJsonData & { isCustom: true }) | undefined>(undefined);
+
 
   const router = useRouter();
   const { toast } = useToast();
@@ -331,20 +342,64 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     } else {
         definitionsActions.addCustomSkillDefinition(skillData);
     }
+    setIsAddOrEditSkillDialogOpen(false);
+    setSkillToEdit(undefined);
   };
+
+  const handleOpenEditCustomSkillDialog = (skillDefId: string) => {
+    const customDef = definitionsActions.getCustomSkillDefinitionById(skillDefId);
+    if (customDef) {
+      setSkillToEdit(customDef);
+      setIsAddOrEditSkillDialogOpen(true);
+    } else {
+      toast({ title: "Error", description: "Could not find custom skill definition to edit.", variant: "destructive" });
+    }
+  };
+
 
   const handleFeatInstancesChange = (updatedFeatInstances: CharacterFeatInstance[]) => {
     setCharacter(prev => ({ ...prev, feats: updatedFeatInstances }));
   };
 
-  const handleCustomFeatDefinitionChangeInStore = (featDefData: (FeatDefinitionJsonData & { isCustom: true })) => {
+  const handleCustomFeatDefinitionSaveToStore = (featDefData: (FeatDefinitionJsonData & { isCustom: true })) => {
     const existing = definitionsActions.getCustomFeatDefinitionById(featDefData.value);
     if (existing) {
         definitionsActions.updateCustomFeatDefinition(featDefData);
     } else {
         definitionsActions.addCustomFeatDefinition(featDefData);
     }
+    // If a feat definition changed from multi-take to single-take, prune extra instances
+    const oldDefinition = allAvailableFeatDefinitions.find(d => d.value === featDefData.value && d.isCustom);
+    if (oldDefinition?.canTakeMultipleTimes && !featDefData.canTakeMultipleTimes) {
+      const instancesOfThisFeat = character.feats.filter(inst => inst.definitionId === featDefData.value && !inst.isGranted);
+      if (instancesOfThisFeat.length > 1) {
+        const firstInstance = instancesOfThisFeat[0];
+        const newChosenInstances = character.feats.filter(
+          inst => inst.isGranted || inst.definitionId !== featDefData.value || inst.instanceId === firstInstance.instanceId
+        );
+        handleFeatInstancesChange(newChosenInstances);
+      }
+    }
+    setEditingCustomFeatDefinition(undefined);
+    setIsCustomFeatDialogOpen(false);
   };
+
+  const handleOpenEditCustomFeatDefinitionDialog = (definitionId: string) => {
+    const defToEdit = definitionsActions.getCustomFeatDefinitionById(definitionId);
+    if (defToEdit) {
+      setEditingCustomFeatDefinition(defToEdit);
+      setIsCustomFeatDialogOpen(true);
+    } else {
+      toast({ title: "Error", description: "Could not find custom feat definition to edit.", variant: "destructive" });
+    }
+  };
+
+  const allSkillOptionsForDialog = React.useMemo(() => {
+    return allAvailableSkillDefinitionsForDisplay
+      .filter(skill => skill.id !== skillToEdit?.id) 
+      .map(s => ({ value: s.id, label: s.name }))
+      .sort((a,b) => a.label.localeCompare(b.label));
+  }, [allAvailableSkillDefinitionsForDisplay, skillToEdit]);
 
 
   const handlePersonalStoryChange = (story: string) => {
@@ -532,7 +587,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           allCustomSkillDefinitions={globalCustomSkillDefinitions} 
           allFeatDefinitions={allAvailableFeatDefinitions} 
           onSkillChange={handleSkillChange}
-          onCustomSkillDefinitionSave={handleCustomSkillDefinitionSaveToStore}
+          onEditCustomSkillDefinition={handleOpenEditCustomSkillDialog}
         />
 
         <FeatsFormSection
@@ -540,14 +595,39 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           allAvailableFeatDefinitions={allAvailableFeatDefinitions} 
           chosenFeatInstances={character.feats}
           onFeatInstancesChange={handleFeatInstancesChange}
-          onCustomFeatDefinitionSave={handleCustomFeatDefinitionChangeInStore}
+          onEditCustomFeatDefinition={handleOpenEditCustomFeatDefinitionDialog}
           abilityScores={actualAbilityScoresForSkills}
           skills={character.skills}
           allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions} 
         />
 
-        <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-8">
+        <Separator className="my-10" />
+
+        <div className="space-y-4">
+            <h3 className="text-xl font-serif text-foreground/80">Manage Global Definitions</h3>
+            <div className="flex flex-col sm:flex-row gap-4">
+                <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => { setSkillToEdit(undefined); setIsAddOrEditSkillDialogOpen(true); }}
+                    className="w-full sm:w-auto"
+                >
+                    <BookOpenCheck className="mr-2 h-5 w-5" /> Add New Custom Skill Definition
+                </Button>
+                <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => { setEditingCustomFeatDefinition(undefined); setIsCustomFeatDialogOpen(true); }}
+                    className="w-full sm:w-auto"
+                >
+                    <ShieldPlus className="mr-2 h-5 w-5" /> Add New Custom Feat Definition
+                </Button>
+            </div>
+        </div>
+
+
+        <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-12 pt-8 border-t">
           <Button type="button" variant="outline" size="lg" onClick={handleCancel} className="w-full md:w-auto">
             Cancel
           </Button>
@@ -579,6 +659,23 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           skillModifierBreakdown={currentInfoDialogData.skillModifierBreakdown}
         />
       )}
+      <AddCustomSkillDialog
+        isOpen={isAddOrEditSkillDialogOpen}
+        onOpenChange={setIsAddOrEditSkillDialogOpen}
+        onSave={handleCustomSkillDefinitionSaveToStore}
+        initialSkillData={skillToEdit}
+        allSkills={allSkillOptionsForDialog}
+      />
+      <AddCustomFeatDialog
+        isOpen={isCustomFeatDialogOpen}
+        onOpenChange={setIsCustomFeatDialogOpen}
+        onSave={handleCustomFeatDefinitionSaveToStore}
+        initialFeatData={editingCustomFeatDefinition}
+        allFeats={DND_FEATS_DEFINITIONS}
+        allSkills={allSkillOptionsForDialog}
+        allClasses={DND_CLASSES}
+        allRaces={DND_RACES}
+      />
     </>
   );
 }

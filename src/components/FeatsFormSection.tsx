@@ -4,19 +4,19 @@
 import * as React from 'react';
 import type {
   FeatDefinitionJsonData, CharacterFeatInstance, Character, AbilityScores, Skill,
-  SkillDefinitionJsonData // Added
+  SkillDefinitionJsonData
 } from '@/types/character';
 import {
   DND_FEATS_DEFINITIONS, DND_RACES, SKILL_DEFINITIONS, DND_CLASSES,
   checkFeatPrerequisites, calculateAvailableFeats
 } from '@/types/character';
-import type { CustomSkillDefinition } from '@/lib/definitions-store'; // Added
+import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Award, PlusCircle, Trash2, Pencil } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
-import { AddCustomFeatDialog } from './AddCustomFeatDialog';
+// AddCustomFeatDialog import removed
 import { useToast } from "@/hooks/use-toast";
 
 interface FeatsFormSectionProps {
@@ -24,11 +24,11 @@ interface FeatsFormSectionProps {
   allAvailableFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
   chosenFeatInstances: CharacterFeatInstance[];
   onFeatInstancesChange: (updatedInstances: CharacterFeatInstance[]) => void;
-  onCustomFeatDefinitionSave: (featDef: FeatDefinitionJsonData & { isCustom: true }) => void; // Callback to save/update global def
+  onEditCustomFeatDefinition: (featDefId: string) => void; // Callback to CharacterFormCore
   abilityScores: AbilityScores;
   skills: Skill[];
-  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[]; // Added
-  allCustomSkillDefinitions: readonly CustomSkillDefinition[]; // Added
+  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
+  allCustomSkillDefinitions: readonly CustomSkillDefinition[];
 }
 
 export function FeatsFormSection({
@@ -36,18 +36,17 @@ export function FeatsFormSection({
   allAvailableFeatDefinitions,
   chosenFeatInstances,
   onFeatInstancesChange,
-  onCustomFeatDefinitionSave,
+  onEditCustomFeatDefinition,
   abilityScores,
   skills,
-  allPredefinedSkillDefinitions, // Added
-  allCustomSkillDefinitions, // Added
+  allPredefinedSkillDefinitions,
+  allCustomSkillDefinitions,
 }: FeatsFormSectionProps) {
   const characterLevel = character.classes.reduce((sum, cls) => sum + cls.level, 0) || 1;
   const { toast } = useToast();
 
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
-  const [isCustomFeatDialogOpen, setIsCustomFeatDialogOpen] = React.useState(false);
-  const [editingCustomFeatDefinition, setEditingCustomFeatDefinition] = React.useState<(FeatDefinitionJsonData & { isCustom: true }) | undefined>(undefined);
+  // State for AddCustomFeatDialog moved to CharacterFormCore
 
   const { availableFeatSlots, baseFeat, racialBonus, levelProgressionFeats } = React.useMemo(() => {
     const slots = calculateAvailableFeats(character.race, characterLevel);
@@ -89,10 +88,8 @@ export function FeatsFormSection({
 
     let newInstanceId = definitionId;
     if (definition.canTakeMultipleTimes) {
-      // Always generate a unique instance ID for multi-take feats to distinguish them
       newInstanceId = `${definitionId}-MULTI-INSTANCE-${crypto.randomUUID()}`;
     } else if (existingInstancesOfThisDef.length > 0 && !isGranted) {
-      // This case should be prevented by the check above, but as a safeguard
       toast({ title: "Duplicate Feat", description: `"${definition.label}" cannot be taken multiple times.`, variant: "destructive" });
       return;
     }
@@ -102,7 +99,7 @@ export function FeatsFormSection({
       definitionId: definition.value,
       instanceId: newInstanceId,
       specializationDetail: specializationDetail || '',
-      isGranted: false, // User chosen feats are not granted by this action
+      isGranted: false, 
     };
 
     onFeatInstancesChange([...chosenFeatInstances, newInstance].sort((a, b) => {
@@ -118,40 +115,15 @@ export function FeatsFormSection({
     onFeatInstancesChange(updatedInstances);
   };
 
-  const handleSaveCustomFeatDefinitionToStore = (featDefData: (FeatDefinitionJsonData & { isCustom: true })) => {
-    onCustomFeatDefinitionSave(featDefData); // This now calls the CharacterFormCore handler to update global store
-
-    // If a feat definition changed from multi-take to single-take, prune extra instances
-    const oldDefinition = allAvailableFeatDefinitions.find(d => d.value === featDefData.value && d.isCustom);
-    if (oldDefinition?.canTakeMultipleTimes && !featDefData.canTakeMultipleTimes) {
-      const instancesOfThisFeat = chosenFeatInstances.filter(inst => inst.definitionId === featDefData.value && !inst.isGranted);
-      if (instancesOfThisFeat.length > 1) {
-        const firstInstance = instancesOfThisFeat[0];
-        const newChosenInstances = chosenFeatInstances.filter(
-          inst => inst.isGranted || inst.definitionId !== featDefData.value || inst.instanceId === firstInstance.instanceId
-        );
-        onFeatInstancesChange(newChosenInstances);
-      }
-    }
-    setEditingCustomFeatDefinition(undefined);
-    setIsCustomFeatDialogOpen(false);
-  };
-
-  const handleOpenEditCustomFeatDialog = (definitionId: string) => {
-    const defToEdit = allAvailableFeatDefinitions.find(def => def.value === definitionId && def.isCustom) as (FeatDefinitionJsonData & { isCustom: true }) | undefined;
+  const handleOpenEditDialog = (definitionId: string) => {
+    const defToEdit = allAvailableFeatDefinitions.find(def => def.value === definitionId && def.isCustom);
     if (defToEdit) {
-      setEditingCustomFeatDefinition(defToEdit);
-      setIsCustomFeatDialogOpen(true);
+      onEditCustomFeatDefinition(definitionId);
     } else {
       toast({ title: "Error", description: "Could not find custom feat definition to edit.", variant: "destructive" });
     }
   };
 
-  const allSkillOptionsForDialog = React.useMemo(() => {
-    const predefined = allPredefinedSkillDefinitions.map(s => ({ value: s.value, label: s.label }));
-    const custom = allCustomSkillDefinitions.map(cs => ({ value: cs.id, label: cs.name}));
-    return [...predefined, ...custom].sort((a,b) => a.label.localeCompare(b.label));
-  }, [allPredefinedSkillDefinitions, allCustomSkillDefinitions]);
 
   return (
     <>
@@ -218,10 +190,10 @@ export function FeatsFormSection({
                     )}
                   </div>
                   <div className="flex items-center shrink-0">
-                    {isCustomDefinition && ( // Edit button for all custom feat definitions
+                    {isCustomDefinition && ( 
                       <Button
                         type="button" variant="ghost" size="icon"
-                        onClick={() => handleOpenEditCustomFeatDialog(instance.definitionId)}
+                        onClick={() => handleOpenEditDialog(instance.definitionId)}
                         className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-50 group-hover:opacity-100 transition-opacity"
                         aria-label={`Edit custom feat definition ${definition.label}`}
                       ><Pencil className="h-4 w-4" /></Button>
@@ -244,9 +216,7 @@ export function FeatsFormSection({
             <Button type="button" variant="outline" size="sm" onClick={() => setIsFeatDialogOpen(true)}>
               <PlusCircle className="mr-2 h-4 w-4" /> Add Feat from List
             </Button>
-            <Button type="button" variant="outline" size="sm" onClick={() => { setEditingCustomFeatDefinition(undefined); setIsCustomFeatDialogOpen(true); }}>
-              <PlusCircle className="mr-2 h-4 w-4" /> Add New Custom Feat Definition
-            </Button>
+            {/* "Add New Custom Feat Definition" button removed from here */}
           </div>
         </CardContent>
       </Card>
@@ -259,16 +229,7 @@ export function FeatsFormSection({
         allPredefinedSkillDefinitions={allPredefinedSkillDefinitions}
         allCustomSkillDefinitions={allCustomSkillDefinitions}
       />
-      <AddCustomFeatDialog
-        isOpen={isCustomFeatDialogOpen}
-        onOpenChange={setIsCustomFeatDialogOpen}
-        onSave={handleSaveCustomFeatDefinitionToStore}
-        initialFeatData={editingCustomFeatDefinition}
-        allFeats={DND_FEATS_DEFINITIONS} // For feat prerequisite selector (only predefined feats can be prereqs for custom for now)
-        allSkills={allSkillOptionsForDialog}
-        allClasses={DND_CLASSES}
-        allRaces={DND_RACES}
-      />
+      {/* AddCustomFeatDialog rendering removed from here */}
     </>
   );
 }
