@@ -22,14 +22,14 @@ import {
 import type { FeatDefinitionJsonData, Character, PrerequisiteMessage } from '@/types/character';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { BookOpenText } from 'lucide-react';
-import { checkFeatPrerequisites, DND_FEATS } from '@/types/character';
+import { checkFeatPrerequisites } from '@/types/character'; // DND_FEATS is not directly used here for check
 import { cn } from '@/lib/utils';
 
 interface FeatSelectionDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onFeatSelected: (featId: string) => void;
-  allFeats: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]; // Adjusted type
+  allFeats: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
   character: Character;
 }
 
@@ -48,7 +48,7 @@ export function FeatSelectionDialog({
   isOpen,
   onOpenChange,
   onFeatSelected,
-  allFeats,
+  allFeats, // This now includes custom feat definitions
   character,
 }: FeatSelectionDialogProps) {
 
@@ -88,7 +88,7 @@ export function FeatSelectionDialog({
           <CommandInput
             placeholder="Search feats by name or description..."
             value={searchTerm}
-            onValueChange={setSearchTerm}
+            onValueChange={setSearchTerm} // This will trigger the useEffect for scrolling
           />
           <ScrollArea ref={scrollAreaRef} className="flex-grow min-h-0">
             <CommandList className="max-h-none">
@@ -101,9 +101,9 @@ export function FeatSelectionDialog({
                   return (
                     <CommandItem
                       key={feat.value}
-                      value={`${feat.label} ${stripHtml(feat.description || '')}`}
+                      value={`${feat.label} ${stripHtml(feat.description || '')}`} // Search value
                       onSelect={() => {
-                        onFeatSelected(feat.value);
+                        onFeatSelected(feat.value); // feat.value is the base ID
                         onOpenChange(false);
                       }}
                       className="flex flex-col items-start p-3 hover:bg-accent/10 cursor-pointer data-[selected=true]:bg-accent/20"
@@ -148,4 +148,3 @@ export function FeatSelectionDialog({
     </Dialog>
   );
 }
-
