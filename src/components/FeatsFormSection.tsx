@@ -78,13 +78,13 @@ export function FeatsFormSection({
     }));
 
     const customFeatDefinitions = selectedFeats
-      .filter(feat => feat.isCustom && !feat.id.includes("-MULTI-INSTANCE-")) // Only base custom feat definitions
+      .filter(feat => feat.isCustom && !feat.id.includes("-MULTI-INSTANCE-")) 
       .map(feat => ({
-        value: feat.id, // Use the original UUID of the custom feat definition
+        value: feat.id, 
         label: feat.name,
         description: feat.description,
         prerequisites: feat.prerequisites,
-        effects: feat.effects, // Note: custom feats created via dialog store effects in effectsText
+        effects: feat.effects, 
         effectsText: feat.effectsText,
         canTakeMultipleTimes: feat.canTakeMultipleTimes,
         requiresSpecialization: feat.requiresSpecialization,
@@ -99,7 +99,6 @@ export function FeatsFormSection({
 
 
   const handleFeatSelectedFromDialog = (featIdFromDialog: string) => {
-    // featIdFromDialog is the base ID (predefined value or original custom feat UUID)
     const featDefinition = allFeatsForDialog.find(f => f.value === featIdFromDialog);
     if (!featDefinition) {
         toast({ title: "Error", description: `Feat definition with ID ${featIdFromDialog} not found.`, variant: "destructive" });
@@ -123,7 +122,7 @@ export function FeatsFormSection({
        newFeatInstanceId = `${featIdFromDialog}-MULTI-INSTANCE-${crypto.randomUUID()}`;
     }
 
-    const sourceIsCustom = selectedFeats.some(sf => sf.id === featIdFromDialog && sf.isCustom && !sf.id.includes("-MULTI-INSTANCE-"));
+    const sourceIsCustomDefinition = allFeatsForDialog.find(f => f.value === featIdFromDialog && selectedFeats.some(sf => sf.id === f.value && sf.isCustom && !sf.id.includes("-MULTI-INSTANCE-")));
 
     const newFeatToAdd: FeatType = {
       id: newFeatInstanceId,
@@ -131,12 +130,12 @@ export function FeatsFormSection({
       description: featDefinition.description,
       prerequisites: featDefinition.prerequisites,
       effects: featDefinition.effects,
-      effectsText: sourceIsCustom ? (featDefinition as FeatType).effectsText : undefined,
+      effectsText: sourceIsCustomDefinition ? (featDefinition as FeatType).effectsText : undefined,
       canTakeMultipleTimes: featDefinition.canTakeMultipleTimes,
       requiresSpecialization: featDefinition.requiresSpecialization,
-      specializationDetail: '', // User will need to fill this if required for the instance
+      specializationDetail: '', 
       isGranted: false,
-      isCustom: sourceIsCustom, 
+      isCustom: !!sourceIsCustomDefinition, 
     };
 
     onFeatSelectionChange([...selectedFeats, newFeatToAdd].sort((a,b) => a.name.localeCompare(b.name)));
@@ -148,22 +147,18 @@ export function FeatsFormSection({
     if (featData.id && selectedFeats.some(f => f.id === featData.id && f.isCustom && !f.id.includes("-MULTI-INSTANCE-"))) {
       // Editing an existing custom feat definition
       updatedFullFeatsList = selectedFeats.map(f => {
-        if (f.id === featData.id) { // This is the custom feat definition being updated
+        if (f.id === featData.id) { 
           return { ...f, ...featData, isCustom: true, isGranted: false } as FeatType;
         }
-        // If 'f' is an INSTANCE of the feat being edited
         if (f.isCustom && f.id.startsWith(`${featData.id}-MULTI-INSTANCE-`)) {
           return {
-            ...f, // Keep instance ID (f.id) and specializationDetail
-            // Update with new definition data
+            ...f, 
             name: featData.name,
             description: featData.description,
             prerequisites: featData.prerequisites,
-            // effects: featData.effects, // Custom dialog doesn't set structured effects directly currently
             effectsText: featData.effectsText,
             canTakeMultipleTimes: featData.canTakeMultipleTimes,
             requiresSpecialization: featData.requiresSpecialization,
-            // isCustom and isGranted remain as they were for the instance
           };
         }
         return f;
@@ -175,7 +170,6 @@ export function FeatsFormSection({
         name: featData.name,
         description: featData.description,
         prerequisites: featData.prerequisites,
-        // effects: featData.effects,
         effectsText: featData.effectsText,
         canTakeMultipleTimes: featData.canTakeMultipleTimes,
         requiresSpecialization: featData.requiresSpecialization,
@@ -190,15 +184,13 @@ export function FeatsFormSection({
   };
 
   const handleRemoveFeatSlot = (featIdToRemove: string) => {
-    // featIdToRemove is the specific ID of the feat in the list (could be base definition or instance)
     const newFeatsList = selectedFeats.filter(f => f.id !== featIdToRemove);
     onFeatSelectionChange(newFeatsList.sort((a,b) => a.name.localeCompare(b.name)));
   };
 
   const handleOpenEditCustomFeatDialog = (feat: FeatType) => {
-    // Ensure we're editing the base definition if it's an instance
     const baseFeatId = feat.id.split('-MULTI-INSTANCE-')[0];
-    const featToEdit = selectedFeats.find(f => f.id === baseFeatId && f.isCustom);
+    const featToEdit = selectedFeats.find(f => f.id === baseFeatId && f.isCustom && !f.id.includes("-MULTI-INSTANCE-"));
     if (featToEdit) {
       setEditingCustomFeat(featToEdit);
       setIsCustomFeatDialogOpen(true);
@@ -252,18 +244,17 @@ export function FeatsFormSection({
                  <p className="text-sm text-muted-foreground text-center py-2">No feats selected or granted yet.</p>
             )}
             {selectedFeats.map((featInstance) => {
-              // Find the base definition for display and prerequisites
               const baseFeatId = featInstance.id.split('-MULTI-INSTANCE-')[0];
               let featDisplayDefinition: FeatDefinitionJsonData | FeatType | undefined;
               
               if (featInstance.isCustom) {
                 featDisplayDefinition = selectedFeats.find(f => f.id === baseFeatId && f.isCustom && !f.id.includes("-MULTI-INSTANCE-"));
-                 if(!featDisplayDefinition) featDisplayDefinition = featInstance; // Fallback if somehow definition is missing but instance exists
+                 if(!featDisplayDefinition) featDisplayDefinition = featInstance; 
               } else {
                 featDisplayDefinition = DND_FEATS.find(f => f.value === baseFeatId);
               }
               
-              if (!featDisplayDefinition) { // Should not happen if data is consistent
+              if (!featDisplayDefinition) { 
                   return <div key={`feat-${featInstance.id}`} className="text-destructive">Error: Feat definition not found for {featInstance.name} ({featInstance.id})</div>;
               }
 
@@ -273,16 +264,15 @@ export function FeatsFormSection({
                 <div key={`feat-${featInstance.id}`} className="group flex items-start justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors">
                   <div className="flex-grow mr-2">
                     <h4 className="font-medium text-foreground">
-                      {featInstance.name} {/* Display name from the instance itself */}
+                      {featInstance.name} 
                       {featInstance.isGranted && featInstance.grantedNote && <span className="text-xs text-muted-foreground ml-1 italic">{featInstance.grantedNote}</span>}
                       {featInstance.requiresSpecialization && featInstance.specializationDetail && <span className="text-xs text-muted-foreground ml-1">({featInstance.specializationDetail})</span>}
                     </h4>
                     
-                    {/* Display description from the base definition */}
                     {featDisplayDefinition.description && <div className="text-xs text-muted-foreground mt-0.5 whitespace-normal" dangerouslySetInnerHTML={{ __html: featDisplayDefinition.description }} />}
                     
-                    {/* Display effectsText if it's a custom feat instance */}
-                    {featInstance.isCustom && featInstance.effectsText && <p className="text-xs text-muted-foreground mt-0.5 whitespace-normal">Effects: {featInstance.effectsText}</p>}
+                    {(featDisplayDefinition as FeatType).effectsText && <p className="text-xs text-muted-foreground mt-0.5 whitespace-normal">Effects: {(featDisplayDefinition as FeatType).effectsText}</p>}
+
 
                     {prereqMessages.length > 0 ? (
                        <div className="text-xs mt-0.5 whitespace-normal text-muted-foreground">
@@ -303,18 +293,17 @@ export function FeatsFormSection({
                   </div>
                   {!featInstance.isGranted && (
                     <div className="flex items-center shrink-0">
-                      {/* Edit button should only appear for base custom feat definitions */}
                       {featInstance.isCustom && !featInstance.id.includes("-MULTI-INSTANCE-") && (
                         <Button
                           type="button" variant="ghost" size="icon"
-                          onClick={() => handleOpenEditCustomFeatDialog(featInstance)} // Pass the definition instance
+                          onClick={() => handleOpenEditCustomFeatDialog(featInstance)} 
                           className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-50 group-hover:opacity-100 transition-opacity"
                           aria-label={`Edit custom feat ${featInstance.name}`}
                         ><Edit3 className="h-4 w-4" /></Button>
                       )}
                       <Button
                         type="button" variant="ghost" size="icon"
-                        onClick={() => handleRemoveFeatSlot(featInstance.id)} // Pass the specific instance ID
+                        onClick={() => handleRemoveFeatSlot(featInstance.id)} 
                         className="h-8 w-8 text-destructive hover:text-destructive/80 opacity-50 group-hover:opacity-100 transition-opacity"
                         aria-label={`Remove feat instance`}
                       ><Trash2 className="h-4 w-4" /></Button>
@@ -326,8 +315,8 @@ export function FeatsFormSection({
           </div>
 
           <div className="mt-2 flex gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={() => setIsFeatDialogOpen(true)} disabled={featSlotsLeft <=0 && availableFeatSlots > 0}>
-              <PlusCircle className="mr-2 h-4 w-4" /> Add Feat {featSlotsLeft <=0 && availableFeatSlots > 0 ? "(No Slots)" : ""}
+            <Button type="button" variant="outline" size="sm" onClick={() => setIsFeatDialogOpen(true)}>
+              <PlusCircle className="mr-2 h-4 w-4" /> Add Feat
             </Button>
             <Button type="button" variant="outline" size="sm" onClick={() => { setEditingCustomFeat(null); setIsCustomFeatDialogOpen(true); }}>
               <PlusCircle className="mr-2 h-4 w-4" /> Add Custom Feat
