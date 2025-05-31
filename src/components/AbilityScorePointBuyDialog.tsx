@@ -24,7 +24,7 @@ interface AbilityScorePointBuyDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onScoresApplied: (scores: AbilityScores) => void;
-  totalPointsBudget: number; // Changed from initialTotalPoints, value comes from store via parent
+  totalPointsBudget: number; // Prop from parent
 }
 
 const ABILITY_ORDER: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
@@ -59,14 +59,20 @@ export function AbilityScorePointBuyDialog({
   isOpen,
   onOpenChange,
   onScoresApplied,
-  totalPointsBudget,
+  totalPointsBudget, // This is the prop
 }: AbilityScorePointBuyDialogProps) {
-  // totalPoints is now a prop totalPointsBudget, no local state for it.
   const [currentScores, setCurrentScores] = React.useState<AbilityScores>(() => {
     const scores: Partial<AbilityScores> = {};
     ABILITY_ORDER.forEach(ability => scores[ability] = DEFAULT_SCORE);
     return scores as AbilityScores;
   });
+
+  // Attempt to parse totalPointsBudget if it's a string, then validate
+  const parsedBudgetProp = typeof totalPointsBudget === 'string' ? parseFloat(totalPointsBudget) : totalPointsBudget;
+  const isValidBudgetProp = typeof parsedBudgetProp === 'number' && !isNaN(parsedBudgetProp);
+  
+  const displayBudget = isValidBudgetProp ? parsedBudgetProp : 'N/A';
+  const safeBudgetForCalculations = isValidBudgetProp ? parsedBudgetProp : 0;
 
   const calculatePointsSpent = React.useCallback((scores: AbilityScores): number => {
     return ABILITY_ORDER.reduce((acc, ability) => {
@@ -76,19 +82,15 @@ export function AbilityScorePointBuyDialog({
   }, []);
 
   const [pointsSpent, setPointsSpent] = React.useState(() => calculatePointsSpent(currentScores));
-  
-  // Ensure totalPointsBudget is a number before calculation to prevent NaN propagation
-  const safeTotalPointsBudget = (typeof totalPointsBudget === 'number' && !isNaN(totalPointsBudget)) ? totalPointsBudget : 0;
-  const pointsRemaining = safeTotalPointsBudget - pointsSpent;
+  const pointsRemaining = safeBudgetForCalculations - pointsSpent;
 
   React.useEffect(() => {
     if (isOpen) {
       const initial = {} as Partial<AbilityScores>;
       ABILITY_ORDER.forEach(ability => initial[ability] = DEFAULT_SCORE);
       setCurrentScores(initial as AbilityScores);
-      // No need to setTotalPoints locally, it's a prop
     }
-  }, [isOpen]); // totalPointsBudget is a prop, not necessarily a dependency for resetting scores
+  }, [isOpen]);
 
   React.useEffect(() => {
     setPointsSpent(calculatePointsSpent(currentScores));
@@ -101,7 +103,7 @@ export function AbilityScorePointBuyDialog({
     const tempScores = { ...currentScores, [ability]: newScore };
     const tempSpent = calculatePointsSpent(tempScores);
 
-    if (tempSpent <= safeTotalPointsBudget) {
+    if (tempSpent <= safeBudgetForCalculations) {
       setCurrentScores(tempScores);
     }
   };
@@ -119,12 +121,11 @@ export function AbilityScorePointBuyDialog({
       onScoresApplied(currentScores);
       onOpenChange(false);
     } else {
-      // This case should ideally be prevented by disabling the Apply button
       console.error("Error: Cannot apply scores, points spent exceed total points.");
     }
   };
 
-  const isApplyDisabled = pointsRemaining < 0 || isNaN(pointsRemaining);
+  const isApplyDisabled = pointsRemaining < 0 || !isValidBudgetProp;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -144,14 +145,14 @@ export function AbilityScorePointBuyDialog({
                 <div className="flex items-center justify-between gap-4 p-3 border rounded-md bg-muted/30">
                     <div className="text-left">
                         <p className="text-sm font-medium">Total Points Budget:</p>
-                        <p className="text-xl font-bold text-primary">{ typeof totalPointsBudget === 'number' && !isNaN(totalPointsBudget) ? totalPointsBudget : 'N/A'}</p>
+                        <p className="text-xl font-bold text-primary">{String(displayBudget)}</p>
                     </div>
                     <div className="flex-grow text-right">
                         <p className="text-sm">
                         Points Spent: <Badge variant="secondary">{String(pointsSpent)}</Badge>
                         </p>
                         <p className={cn("text-sm font-semibold mt-1", pointsRemaining < 0 ? "text-destructive" : "text-emerald-500")}>
-                        Points Remaining: <Badge variant={pointsRemaining < 0 || isNaN(pointsRemaining) ? "destructive" : "default"} className={pointsRemaining >=0 ? "bg-emerald-600 hover:bg-emerald-600/80" : ""}>{String(pointsRemaining)}</Badge>
+                        Points Remaining: <Badge variant={pointsRemaining < 0 || !isValidBudgetProp ? "destructive" : "default"} className={pointsRemaining >=0 && isValidBudgetProp ? "bg-emerald-600 hover:bg-emerald-600/80" : ""}>{String(pointsRemaining)}</Badge>
                         </p>
                     </div>
                 </div>
@@ -200,7 +201,7 @@ export function AbilityScorePointBuyDialog({
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => incrementScore(ability)}
-                            disabled={score >= MAX_SCORE || (calculatePointsSpent({ ...currentScores, [ability]: score + 1 })) > safeTotalPointsBudget}
+                            disabled={score >= MAX_SCORE || (calculatePointsSpent({ ...currentScores, [ability]: score + 1 })) > safeBudgetForCalculations}
                         >
                             <PlusCircle className="h-4 w-4" />
                         </Button>
