@@ -48,8 +48,8 @@ export function SavingThrowsPanel({
                 <th className="pb-2 text-left text-sm font-medium text-muted-foreground">Saving Throw</th>
                 <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Total</th>
                 <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Base</th>
-                <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Ability Modifier</th>
-                <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Custom Modifier</th>
+                <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Ability Mod</th>
+                <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Custom Mod</th>
               </tr>
             </thead><tbody>
               {SAVE_TYPES.map((saveType) => {
