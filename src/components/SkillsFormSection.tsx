@@ -223,7 +223,7 @@ export function SkillsFormSection({
             <span className="text-center w-10">Total</span>
             <span className="text-center w-10">Key</span>
             <span className="text-center w-10">Mod</span>
-            <span className="text-center w-16">Ranks</span>
+            <span className="text-center w-32">Ranks</span>
             <span className="text-center w-12">Cost</span>
             <span className="text-center w-10">Max</span>
           </div>
@@ -337,3 +337,4 @@ export function SkillsFormSection({
     </>
   );
 }
+
