@@ -147,7 +147,7 @@ export function CharacterFormCoreInfoSection({
               )}
             </div>
             {isPredefinedRace && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
-               <div className="flex flex-wrap gap-1 mt-1 ml-1">
+               <div className="flex flex-wrap gap-1 mt-[6px] ml-1">
                 {raceSpecialQualities.abilityEffects.map((effect) => {
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
                   let badgeClassName = "text-xs font-normal";
@@ -174,16 +174,16 @@ export function CharacterFormCoreInfoSection({
                       variant={badgeVariantProp}
                       className={badgeClassName}
                     >
-                      {effect.ability.substring(0, 3).toUpperCase()}{' '}
+                      {effect.ability.substring(0, 3).toUpperCase()}{effect.change !== 0 ? '\u00A0' : ''}
                       {effect.change > 0 ? '+' : ''}
-                      {effect.change}
+                      {effect.change !==0 ? effect.change : ''}
                     </Badge>
                   );
                 })}
               </div>
             )}
             {isPredefinedRace && (!raceSpecialQualities?.abilityEffects || raceSpecialQualities.abilityEffects.length === 0) && (
-                <p className="text-xs text-muted-foreground mt-1 ml-1">No ability score adjustments.</p>
+                <p className="text-xs text-muted-foreground mt-[6px] ml-1">No ability score adjustments.</p>
             )}
           </div>
         </div>
@@ -215,13 +215,13 @@ export function CharacterFormCoreInfoSection({
               )}
             </div>
             {selectedClassInfo?.hitDice && (
-              <div className="mt-1 ml-1">
+              <div className="mt-[6px] ml-1">
                 <Badge 
                   variant="secondary" 
                   className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground"
                 >
                   Hit Dice:{'\u00A0'}
-                  <strong>{selectedClassInfo.hitDice}</strong>
+                  <strong className="font-bold">{selectedClassInfo.hitDice}</strong>
                 </Badge>
               </div>
             )}
@@ -287,7 +287,7 @@ export function CharacterFormCoreInfoSection({
               buttonSize="icon"
             />
             {ageEffectsDetails && (ageEffectsDetails.categoryName !== 'Adult' || ageEffectsDetails.effects.length > 0) && (
-              <div className="flex flex-wrap items-center gap-1 mt-1 ml-1">
+              <div className="flex flex-wrap items-center gap-1 mt-[6px] ml-1">
                 <Badge
                   variant="secondary"
                   className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground"
@@ -308,7 +308,6 @@ export function CharacterFormCoreInfoSection({
                     badgeVariantProp = "destructive";
                     badgeClassName = cn(badgeClassName, "hover:bg-destructive");
                   }
-                  // No 'else' needed for zero change, as those are filtered out by `effects.length > 0` or the ability filter itself
                   return (
                     <Badge
                       key={effect.ability}
@@ -345,7 +344,7 @@ export function CharacterFormCoreInfoSection({
               </SelectContent>
             </Select>
             {sizeAbilityEffectsDetails && sizeAbilityEffectsDetails.effects.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-1 ml-1">
+              <div className="flex flex-wrap gap-1 mt-[6px] ml-1">
                 {sizeAbilityEffectsDetails.effects.map((effect) => {
                     let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
                     let badgeClassName = "text-xs font-normal";
