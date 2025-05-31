@@ -26,7 +26,7 @@ export function FeatsFormSection({
   characterRace,
   characterClasses,
   characterAlignment,
-  selectedFeats, // This is the character.feats array
+  selectedFeats,
   onFeatSelectionChange,
   abilityScores,
   skills,
@@ -99,8 +99,8 @@ export function FeatsFormSection({
 
 
   const handleFeatSelectedFromDialog = (featIdFromDialog: string) => {
-    const featDefinition = allFeatsForDialog.find(f => f.value === featIdFromDialog);
-    if (!featDefinition) {
+    const sourceDefinition = allFeatsForDialog.find(f => f.value === featIdFromDialog);
+    if (!sourceDefinition) {
         toast({ title: "Error", description: `Feat definition with ID ${featIdFromDialog} not found.`, variant: "destructive" });
         return;
     }
@@ -111,31 +111,31 @@ export function FeatsFormSection({
     
     const isAlreadyGranted = selectedFeats.some(sf => sf.isGranted && sf.id.split('-MULTI-INSTANCE-')[0] === featIdFromDialog);
 
-    if (!featDefinition.canTakeMultipleTimes && (existingInstancesCount > 0 || isAlreadyGranted)) {
-      toast({ title: "Duplicate Feat", description: `"${featDefinition.label}" is already selected or granted and cannot be taken multiple times.`, variant: "destructive" });
+    if (!sourceDefinition.canTakeMultipleTimes && (existingInstancesCount > 0 || isAlreadyGranted)) {
+      toast({ title: "Duplicate Feat", description: `"${sourceDefinition.label}" is already selected or granted and cannot be taken multiple times.`, variant: "destructive" });
       setIsFeatDialogOpen(false);
       return;
     }
     
     let newFeatInstanceId = featIdFromDialog;
-    if (featDefinition.canTakeMultipleTimes && (existingInstancesCount > 0 || isAlreadyGranted)) {
+    if (sourceDefinition.canTakeMultipleTimes && (existingInstancesCount > 0 || isAlreadyGranted)) {
        newFeatInstanceId = `${featIdFromDialog}-MULTI-INSTANCE-${crypto.randomUUID()}`;
     }
 
-    const sourceIsCustomDefinition = allFeatsForDialog.find(f => f.value === featIdFromDialog && selectedFeats.some(sf => sf.id === f.value && sf.isCustom && !sf.id.includes("-MULTI-INSTANCE-")));
+    const isSourceCustom = selectedFeats.some(sf => sf.id === featIdFromDialog && sf.isCustom && !sf.id.includes("-MULTI-INSTANCE-"));
 
     const newFeatToAdd: FeatType = {
       id: newFeatInstanceId,
-      name: featDefinition.label,
-      description: featDefinition.description,
-      prerequisites: featDefinition.prerequisites,
-      effects: featDefinition.effects,
-      effectsText: sourceIsCustomDefinition ? (featDefinition as FeatType).effectsText : undefined,
-      canTakeMultipleTimes: featDefinition.canTakeMultipleTimes,
-      requiresSpecialization: featDefinition.requiresSpecialization,
+      name: sourceDefinition.label,
+      description: sourceDefinition.description,
+      prerequisites: sourceDefinition.prerequisites,
+      effects: sourceDefinition.effects,
+      effectsText: isSourceCustom ? (sourceDefinition as FeatType).effectsText : undefined,
+      canTakeMultipleTimes: sourceDefinition.canTakeMultipleTimes,
+      requiresSpecialization: sourceDefinition.requiresSpecialization,
       specializationDetail: '', 
       isGranted: false,
-      isCustom: !!sourceIsCustomDefinition, 
+      isCustom: isSourceCustom, 
     };
 
     onFeatSelectionChange([...selectedFeats, newFeatToAdd].sort((a,b) => a.name.localeCompare(b.name)));
@@ -144,21 +144,26 @@ export function FeatsFormSection({
 
   const handleSaveCustomFeat = (featData: Partial<FeatType> & { name: string }) => {
     let updatedFullFeatsList;
-    if (featData.id && selectedFeats.some(f => f.id === featData.id && f.isCustom && !f.id.includes("-MULTI-INSTANCE-"))) {
+    const baseCustomFeatId = featData.id; // This ID is the base UUID of the custom feat definition
+
+    if (baseCustomFeatId && selectedFeats.some(f => f.id === baseCustomFeatId && f.isCustom && !f.id.includes("-MULTI-INSTANCE-"))) {
       // Editing an existing custom feat definition
       updatedFullFeatsList = selectedFeats.map(f => {
-        if (f.id === featData.id) { 
+        if (f.id === baseCustomFeatId) { 
+          // This is the definition itself
           return { ...f, ...featData, isCustom: true, isGranted: false } as FeatType;
         }
-        if (f.isCustom && f.id.startsWith(`${featData.id}-MULTI-INSTANCE-`)) {
+        // If this feat 'f' is an *instance* of the custom feat being edited
+        if (f.isCustom && f.id.startsWith(`${baseCustomFeatId}-MULTI-INSTANCE-`)) {
           return {
-            ...f, 
-            name: featData.name,
+            ...f, // Keep instance ID and specializationDetail
+            name: featData.name, // Update core properties from the definition
             description: featData.description,
             prerequisites: featData.prerequisites,
             effectsText: featData.effectsText,
             canTakeMultipleTimes: featData.canTakeMultipleTimes,
             requiresSpecialization: featData.requiresSpecialization,
+            // effects and isCustom are inherent from the definition, no need to copy here unless they change too
           };
         }
         return f;
@@ -188,11 +193,17 @@ export function FeatsFormSection({
     onFeatSelectionChange(newFeatsList.sort((a,b) => a.name.localeCompare(b.name)));
   };
 
-  const handleOpenEditCustomFeatDialog = (feat: FeatType) => {
-    const baseFeatId = feat.id.split('-MULTI-INSTANCE-')[0];
-    const featToEdit = selectedFeats.find(f => f.id === baseFeatId && f.isCustom && !f.id.includes("-MULTI-INSTANCE-"));
-    if (featToEdit) {
-      setEditingCustomFeat(featToEdit);
+  const handleOpenEditCustomFeatDialog = (featInstance: FeatType) => {
+    // Always find the base definition to edit
+    const baseFeatId = featInstance.id.split('-MULTI-INSTANCE-')[0];
+    const featDefinitionToEdit = selectedFeats.find(f => f.id === baseFeatId && f.isCustom && !f.id.includes("-MULTI-INSTANCE-"));
+    
+    if (featDefinitionToEdit) {
+      setEditingCustomFeat(featDefinitionToEdit);
+      setIsCustomFeatDialogOpen(true);
+    } else if (featInstance.isCustom && !featInstance.id.includes("-MULTI-INSTANCE-")) {
+      // It's already the definition
+      setEditingCustomFeat(featInstance);
       setIsCustomFeatDialogOpen(true);
     } else {
         toast({title:"Error", description: "Could not find custom feat definition to edit.", variant: "destructive"});
@@ -244,14 +255,14 @@ export function FeatsFormSection({
                  <p className="text-sm text-muted-foreground text-center py-2">No feats selected or granted yet.</p>
             )}
             {selectedFeats.map((featInstance) => {
-              const baseFeatId = featInstance.id.split('-MULTI-INSTANCE-')[0];
+              const baseFeatIdForDisplay = featInstance.id.split('-MULTI-INSTANCE-')[0];
               let featDisplayDefinition: FeatDefinitionJsonData | FeatType | undefined;
               
               if (featInstance.isCustom) {
-                featDisplayDefinition = selectedFeats.find(f => f.id === baseFeatId && f.isCustom && !f.id.includes("-MULTI-INSTANCE-"));
-                 if(!featDisplayDefinition) featDisplayDefinition = featInstance; 
+                featDisplayDefinition = selectedFeats.find(f => f.id === baseFeatIdForDisplay && f.isCustom && !f.id.includes("-MULTI-INSTANCE-"));
+                 if(!featDisplayDefinition) featDisplayDefinition = featInstance; // Fallback if base definition somehow not found (should not happen)
               } else {
-                featDisplayDefinition = DND_FEATS.find(f => f.value === baseFeatId);
+                featDisplayDefinition = DND_FEATS.find(f => f.value === baseFeatIdForDisplay);
               }
               
               if (!featDisplayDefinition) { 
@@ -293,7 +304,7 @@ export function FeatsFormSection({
                   </div>
                   {!featInstance.isGranted && (
                     <div className="flex items-center shrink-0">
-                      {featInstance.isCustom && !featInstance.id.includes("-MULTI-INSTANCE-") && (
+                      {featInstance.isCustom && (
                         <Button
                           type="button" variant="ghost" size="icon"
                           onClick={() => handleOpenEditCustomFeatDialog(featInstance)} 
