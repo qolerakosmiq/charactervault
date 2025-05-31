@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Badge } from '@/components/ui/badge'; // Added import
+import { Badge } from '@/components/ui/badge';
 
 interface SkillDisplayInfo extends SkillType {
   name: string;
@@ -170,6 +170,8 @@ export function SkillsFormSection({
     setIsInfoDialogOpen(true);
   };
 
+  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs";
+
   return (
     <>
     <Card>
@@ -203,26 +205,26 @@ export function SkillsFormSection({
              {firstClass?.className && classLabel ? (
                 <>
                   <p>
-                    (Minimum 1 of {classLabel} Base <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{baseSkillPointsForClass}</Badge>
-                    {' + '}Intelligence Modifier <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{intelligenceModifier}</Badge>
+                    (Minimum 1 of {classLabel} Base <Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
+                    {' + '}Intelligence Modifier <Badge variant="outline" className={badgeClassName}>{intelligenceModifier}</Badge>
                     {(racialBonus || 0) !== 0 && (
                         <>
-                        {' + '}Racial Modifier <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{racialBonus || 0}</Badge>
+                        {' + '}Racial Modifier <Badge variant="outline" className={badgeClassName}>{racialBonus || 0}</Badge>
                         </>
                     )}
-                    ) × First Level <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">4</Badge>
-                    {' = '} <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{pointsForFirstLevel}</Badge>
+                    ) × First Level <Badge variant="outline" className={badgeClassName}>4</Badge>
+                    {' = '} <span className="font-bold text-primary">{pointsForFirstLevel}</span>
                   </p>
                   <p>
-                    + (Minimum 1 of {classLabel} Base <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{baseSkillPointsForClass}</Badge>
-                    {' + '}Intelligence Modifier <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{intelligenceModifier}</Badge>
+                    + (Minimum 1 of {classLabel} Base <Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
+                    {' + '}Intelligence Modifier <Badge variant="outline" className={badgeClassName}>{intelligenceModifier}</Badge>
                     {(racialBonus || 0) !== 0 && (
                         <>
-                        {' + '}Racial Modifier <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{racialBonus || 0}</Badge>
+                        {' + '}Racial Modifier <Badge variant="outline" className={badgeClassName}>{racialBonus || 0}</Badge>
                         </>
                     )}
-                    ) × Level Progression <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{characterLevel > 1 ? (characterLevel -1) : 0}</Badge>
-                    {' = '} <Badge variant="outline" className="text-accent border-accent font-bold px-1.5 py-0 text-xs">{pointsFromLevelProgression}</Badge>
+                    ) × Level Progression <Badge variant="outline" className={badgeClassName}>{characterLevel > 1 ? (characterLevel -1) : 0}</Badge>
+                    {' = '} <span className="font-bold text-primary">{pointsFromLevelProgression}</span>
                   </p>
                 </>
               ) : (
