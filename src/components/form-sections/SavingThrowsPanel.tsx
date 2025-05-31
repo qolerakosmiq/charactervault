@@ -51,7 +51,7 @@ export function SavingThrowsPanel({
       getValue: (saveType: SavingThrowType) => calculatedBaseSaves[saveType],
     },
     {
-      label: 'Ability Mod',
+      label: 'Ability Modifier',
       getValue: (saveType: SavingThrowType) => {
         const abilityKey = SAVING_THROW_ABILITIES[saveType];
         const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
@@ -64,7 +64,7 @@ export function SavingThrowsPanel({
       },
     },
     {
-      label: 'Custom Mod',
+      label: 'Custom Modifier',
       getValue: (saveType: SavingThrowType) => (
         <Input
           type="number"
@@ -116,3 +116,4 @@ export function SavingThrowsPanel({
     </Card>
   );
 }
+
