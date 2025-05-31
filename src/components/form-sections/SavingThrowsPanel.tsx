@@ -89,8 +89,7 @@ export function SavingThrowsPanel({
         <div className="overflow-x-auto">
           <table className="w-full min-w-[300px]">
             <thead>
-              <tr className="border-b">
-                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground"></th> {/* Removed "Save Detail" */}
+              <tr className="border-b"><th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground"></th>{/* Removed "Save Detail" */}
                 {SAVE_TYPES.map((saveType) => (
                   <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-muted-foreground capitalize">
                     <span>{SAVE_DISPLAY_NAMES[saveType]}</span>
@@ -100,10 +99,9 @@ export function SavingThrowsPanel({
             </thead>
             <tbody>
               {dataRows.map((row) => (
-                <tr key={(row.label.props.children as string) || Math.random()} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
-                  <td className="py-2 px-1 text-sm font-medium text-foreground align-top whitespace-normal">{row.label}</td>
+                <tr key={(typeof row.label.props.children === 'string' ? row.label.props.children : Math.random().toString())} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors"><td className="py-2 px-1 text-sm font-medium text-foreground align-top whitespace-normal">{row.label}</td>
                   {SAVE_TYPES.map((saveType) => (
-                    <td key={`${(row.label.props.children as string) || Math.random()}-${saveType}`} className="py-2 px-0.5 text-center text-sm text-muted-foreground">
+                    <td key={`${(typeof row.label.props.children === 'string' ? row.label.props.children : Math.random().toString())}-${saveType}`} className="py-2 px-0.5 text-center text-sm text-muted-foreground">
                       {row.getValue(saveType)}
                     </td>
                   ))}
