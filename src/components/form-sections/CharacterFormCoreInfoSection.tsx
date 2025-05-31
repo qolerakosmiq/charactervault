@@ -183,7 +183,7 @@ export function CharacterFormCoreInfoSection({
               </div>
             )}
             {isPredefinedRace && (!raceSpecialQualities?.abilityEffects || raceSpecialQualities.abilityEffects.length === 0) && (
-                <p className="text-xs text-muted-foreground pt-[6px] ml-1">No ability score adjustments.</p>
+                <div className="pt-[6px] ml-1"><p className="text-xs text-muted-foreground">No ability score adjustments.</p></div>
             )}
           </div>
         </div>
@@ -216,8 +216,8 @@ export function CharacterFormCoreInfoSection({
             </div>
             {selectedClassInfo?.hitDice && (
               <div className="pt-[6px] ml-1">
-                <Badge 
-                  variant="secondary" 
+                <Badge
+                  variant="secondary"
                   className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground"
                 >
                   Hit Dice:{'\u00A0'}
@@ -282,7 +282,7 @@ export function CharacterFormCoreInfoSection({
               onChange={(newValue) => onFieldChange('age', newValue)}
               min={currentMinAgeForInput}
               max={1000} // A reasonable upper limit for age
-              inputClassName="h-10 text-base" // Match other inputs in this section
+              inputClassName="w-full h-10 text-base" 
               buttonClassName="h-10 w-10"
               buttonSize="icon"
             />
@@ -302,11 +302,11 @@ export function CharacterFormCoreInfoSection({
                     badgeClassName = cn(
                       badgeClassName,
                       "bg-emerald-700 text-emerald-100 border-emerald-600",
-                      "hover:bg-emerald-700 hover:text-emerald-100"
+                      "hover:bg-emerald-700 hover:text-emerald-100" 
                     );
                   } else if (effect.change < 0) {
                     badgeVariantProp = "destructive";
-                    badgeClassName = cn(badgeClassName, "hover:bg-destructive");
+                    badgeClassName = cn(badgeClassName, "hover:bg-destructive"); 
                   }
                   return (
                     <Badge
