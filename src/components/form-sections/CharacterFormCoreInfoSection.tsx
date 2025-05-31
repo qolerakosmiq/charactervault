@@ -156,19 +156,19 @@ export function CharacterFormCoreInfoSection({
                     badgeClassName = cn(
                       badgeClassName,
                       "bg-emerald-700 text-emerald-100 border-emerald-600",
-                      "hover:bg-emerald-700 hover:text-emerald-100" // No hover change
+                      "hover:bg-emerald-700 hover:text-emerald-100" 
                     );
                   } else if (effect.change < 0) { 
                     badgeVariantProp = "destructive";
                     badgeClassName = cn(
                       badgeClassName,
-                      "hover:bg-destructive" // No hover change for destructive
+                      "hover:bg-destructive" 
                     );
                   } else { 
                      badgeClassName = cn(
                       badgeClassName,
                       "bg-muted/50 text-muted-foreground border-border",
-                      "hover:bg-muted/50 hover:text-muted-foreground"  // No hover change
+                      "hover:bg-muted/50 hover:text-muted-foreground" 
                     );
                   }
 
@@ -219,8 +219,7 @@ export function CharacterFormCoreInfoSection({
             {selectedClassInfo?.hitDice && (
               <div className="mt-1 ml-1">
                 <Badge variant="secondary" className="text-xs font-normal">
-                  Hit Dice:{' '}
-                  <strong className="font-bold">{selectedClassInfo.hitDice}</strong>
+                  Hit Dice:{' '}<strong>{selectedClassInfo.hitDice}</strong>
                 </Badge>
               </div>
             )}
