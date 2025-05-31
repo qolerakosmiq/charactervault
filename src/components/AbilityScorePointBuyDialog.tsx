@@ -130,7 +130,7 @@ export function AbilityScorePointBuyDialog({
             Point Buy Ability Scores
           </DialogTitle>
           <DialogDescription>
-            Distribute points to set your character's initial ability scores. Scores start at 8.
+            Distribute points to set your character's initial ability scores. Scores start at 8, and the maximum score is 18.
           </DialogDescription>
         </DialogHeader>
 
@@ -181,7 +181,7 @@ export function AbilityScorePointBuyDialog({
                               min={MIN_SCORE}
                               max={MAX_SCORE}
                               readOnly={true}
-                              isIncrementDisabled={incrementWouldExceedBudget}
+                              isIncrementDisabled={incrementWouldExceedBudget || score >= MAX_SCORE}
                               inputClassName="w-16 h-10 text-center text-xl" // Adjusted size
                               buttonClassName="h-10 w-10" // Adjusted button size
                               buttonSize="icon" // Ensures buttons are icon-sized
