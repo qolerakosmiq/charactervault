@@ -149,26 +149,23 @@ export function CharacterFormCoreInfoSection({
             {isPredefinedRace && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
                <div className="flex flex-wrap gap-1 mt-1 ml-1">
                 {raceSpecialQualities.abilityEffects.map((effect) => {
-                  let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary"; // default is not actually used here due to specific classNames
-                  let badgeClassName = "font-normal text-xs";
+                  let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
+                  let badgeClassName = "text-xs font-normal";
 
                   if (effect.change > 0) { 
                     badgeClassName = cn(
                       badgeClassName,
                       "bg-emerald-700 text-emerald-100 border-emerald-600",
-                      "hover:bg-emerald-700 hover:text-emerald-100" // No hover change
+                      "hover:bg-emerald-700 hover:text-emerald-100"
                     );
                   } else if (effect.change < 0) { 
                     badgeVariantProp = "destructive";
-                     badgeClassName = cn(
-                      badgeClassName,
-                      "hover:bg-destructive" // No hover change
-                    );
+                     badgeClassName = cn(badgeClassName, "hover:bg-destructive");
                   } else { 
                      badgeClassName = cn(
                       badgeClassName,
                       "bg-muted/50 text-muted-foreground border-border",
-                      "hover:bg-muted/50 hover:text-muted-foreground" // No hover change
+                      "hover:bg-muted/50 hover:text-muted-foreground"
                     );
                   }
                   return (
@@ -177,7 +174,9 @@ export function CharacterFormCoreInfoSection({
                       variant={badgeVariantProp}
                       className={badgeClassName}
                     >
-                      {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
+                      {effect.ability.substring(0, 3).toUpperCase()}{' '}
+                      {effect.change > 0 ? '+' : ''}
+                      {effect.change}
                     </Badge>
                   );
                 })}
@@ -287,21 +286,41 @@ export function CharacterFormCoreInfoSection({
               buttonClassName="h-10 w-10"
               buttonSize="icon"
             />
-            {ageEffectsDetails && ageEffectsDetails.effects.length > 0 && (
-              <div className="text-xs text-muted-foreground mt-1 ml-1 space-y-0.5">
-                <p>
-                  {ageEffectsDetails.effects.map((effect, index) => (
-                    <React.Fragment key={effect.ability}>
-                      <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
-                        {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
-                      </strong>
-                      {index < ageEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
-                    </React.Fragment>
-                  ))}
-                </p>
-                {ageEffectsDetails.categoryName !== 'Adult' && (
-                  <p className="text-xs">{ageEffectsDetails.categoryName}</p>
-                )}
+            {ageEffectsDetails && (ageEffectsDetails.categoryName !== 'Adult' || ageEffectsDetails.effects.length > 0) && (
+              <div className="flex flex-wrap items-center gap-1 mt-1 ml-1">
+                <Badge
+                  variant="secondary"
+                  className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground"
+                >
+                  {ageEffectsDetails.categoryName}
+                </Badge>
+                {ageEffectsDetails.effects.map((effect) => {
+                  let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
+                  let badgeClassName = "text-xs font-normal";
+
+                  if (effect.change > 0) {
+                    badgeClassName = cn(
+                      badgeClassName,
+                      "bg-emerald-700 text-emerald-100 border-emerald-600",
+                      "hover:bg-emerald-700 hover:text-emerald-100"
+                    );
+                  } else if (effect.change < 0) {
+                    badgeVariantProp = "destructive";
+                    badgeClassName = cn(badgeClassName, "hover:bg-destructive");
+                  }
+                  // No 'else' needed for zero change, as those are filtered out by `effects.length > 0` or the ability filter itself
+                  return (
+                    <Badge
+                      key={effect.ability}
+                      variant={badgeVariantProp}
+                      className={badgeClassName}
+                    >
+                      {effect.ability.substring(0, 3).toUpperCase()}{'\u00A0'}
+                      {effect.change > 0 ? '+' : ''}
+                      {effect.change}
+                    </Badge>
+                  );
+                })}
               </div>
             )}
             </div>
@@ -326,16 +345,24 @@ export function CharacterFormCoreInfoSection({
               </SelectContent>
             </Select>
             {sizeAbilityEffectsDetails && sizeAbilityEffectsDetails.effects.length > 0 && (
-              <p className="text-xs text-muted-foreground mt-1 ml-1">
-                {sizeAbilityEffectsDetails.effects.map((effect, index) => (
-                    <React.Fragment key={effect.ability}>
-                      <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
-                        {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
-                      </strong>
-                      {index < sizeAbilityEffectsDetails.effects.length - 1 && <span className="text-muted-foreground">, </span>}
-                    </React.Fragment>
-                  ))}
-              </p>
+              <div className="flex flex-wrap gap-1 mt-1 ml-1">
+                {sizeAbilityEffectsDetails.effects.map((effect) => {
+                    let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
+                    let badgeClassName = "text-xs font-normal";
+                     if (effect.change > 0) {
+                        badgeClassName = cn(badgeClassName, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
+                    } else if (effect.change < 0) {
+                        badgeVariantProp = "destructive";
+                        badgeClassName = cn(badgeClassName, "hover:bg-destructive");
+                    }
+                    return (
+                      <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassName}>
+                        {effect.ability.substring(0, 3).toUpperCase()}{'\u00A0'}
+                        {effect.change > 0 ? '+' : ''}{effect.change}
+                      </Badge>
+                    );
+                })}
+              </div>
             )}
           </div>
         </div>
