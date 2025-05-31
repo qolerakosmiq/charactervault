@@ -49,9 +49,10 @@ import { ArmorClassPanel } from '@/components/form-sections/ArmorClassPanel';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 import { Separator } from '@/components/ui/separator';
-import { BookOpenCheck, ShieldPlus, Zap, ShieldCheck } from 'lucide-react';
-import { Checkbox } from '@/components/ui/checkbox'; // Added import
-import { Label } from '@/components/ui/label'; // Added import
+import { BookOpenCheck, ShieldPlus, Zap, ShieldCheck, Settings, Calculator } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 
 interface CharacterFormCoreProps {
   initialCharacter?: Character;
@@ -65,7 +66,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const { 
     customFeatDefinitions: globalCustomFeatDefinitionsFromStore, 
     customSkillDefinitions: globalCustomSkillDefinitionsFromStore,
-    rerollOnesForAbilityScores: rerollOnesForAbilityScoresFromStore, // Get new setting
+    rerollOnesForAbilityScores: rerollOnesForAbilityScoresFromStore,
+    pointBuyBudget: pointBuyBudgetFromStore,
     actions: definitionsActions 
   } = useDefinitionsStore();
 
@@ -78,6 +80,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const globalCustomFeatDefinitions = isClient ? globalCustomFeatDefinitionsFromStore : [];
   const globalCustomSkillDefinitions = isClient ? globalCustomSkillDefinitionsFromStore : [];
   const rerollOnesForAbilityScores = isClient ? rerollOnesForAbilityScoresFromStore : false;
+  const pointBuyBudget = isClient ? pointBuyBudgetFromStore : 25;
 
 
   const [character, setCharacter] = React.useState<Character>(() => {
@@ -637,16 +640,55 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
         <Separator className="my-10" />
 
-        <div className="space-y-4">
-            <h3 className="text-xl font-serif text-foreground/80">Dungeon Master Settings</h3>
-            <div className="flex flex-col sm:flex-row gap-4">
+        <div className="space-y-4 p-4 border rounded-lg shadow-sm bg-card">
+            <h3 className="text-xl font-serif text-foreground/80 flex items-center">
+                <Settings className="mr-3 h-6 w-6 text-primary/70" />
+                Dungeon Master Settings
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="dm-reroll-ones" className="flex items-center">
+                        <Checkbox
+                            id="dm-reroll-ones"
+                            checked={rerollOnesForAbilityScores}
+                            onCheckedChange={definitionsActions.toggleRerollOnesForAbilityScores}
+                            className="mr-2"
+                        />
+                        Reroll 1s for Ability Score Rolls
+                    </Label>
+                    <p className="text-xs text-muted-foreground pl-6">
+                        When using 4d6 drop lowest, reroll any die that shows a 1 until it is not a 1.
+                    </p>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="dm-point-buy-budget" className="flex items-center">
+                        <Calculator className="mr-2 h-4 w-4 text-muted-foreground" />
+                        Point Buy Budget for Ability Scores
+                    </Label>
+                    <NumberSpinnerInput
+                        id="dm-point-buy-budget"
+                        value={pointBuyBudget}
+                        onChange={definitionsActions.setPointBuyBudget}
+                        min={0}
+                        max={100} // Sensible max for point buy
+                        inputClassName="h-9 text-sm w-20"
+                        buttonClassName="h-9 w-9"
+                        buttonSize="sm"
+                    />
+                     <p className="text-xs text-muted-foreground">
+                        Default is 25 points for standard D&D 3.5 point buy.
+                    </p>
+                </div>
+            </div>
+            <Separator className="my-4" />
+             <div className="flex flex-col sm:flex-row gap-3">
                 <Button
                     type="button"
                     variant="outline"
                     onClick={() => { setSkillToEdit(undefined); setIsAddOrEditSkillDialogOpen(true); }}
                     className="w-full sm:w-auto"
                 >
-                    <BookOpenCheck className="mr-2 h-5 w-5" /> Add New Custom Skill
+                    <BookOpenCheck className="mr-2 h-5 w-5" /> Add New Custom Skill Definition
                 </Button>
                 <Button
                     type="button"
@@ -654,18 +696,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     onClick={() => { setEditingCustomFeatDefinition(undefined); setIsCustomFeatDialogOpen(true); }}
                     className="w-full sm:w-auto"
                 >
-                    <ShieldPlus className="mr-2 h-5 w-5" /> Add New Custom Feat
+                    <ShieldPlus className="mr-2 h-5 w-5" /> Add New Custom Feat Definition
                 </Button>
-            </div>
-            <div className="flex items-center space-x-2 pt-2">
-                <Checkbox
-                    id="dm-reroll-ones"
-                    checked={rerollOnesForAbilityScores}
-                    onCheckedChange={definitionsActions.toggleRerollOnesForAbilityScores}
-                />
-                <Label htmlFor="dm-reroll-ones" className="text-sm font-normal text-muted-foreground">
-                    Reroll 1s for Ability Score Rolls
-                </Label>
             </div>
         </div>
 

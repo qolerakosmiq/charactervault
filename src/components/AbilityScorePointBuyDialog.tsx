@@ -24,7 +24,7 @@ interface AbilityScorePointBuyDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onScoresApplied: (scores: AbilityScores) => void;
-  initialTotalPoints?: number;
+  totalPointsBudget: number; // Changed from initialTotalPoints, value comes from store via parent
 }
 
 const ABILITY_ORDER: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
@@ -59,9 +59,9 @@ export function AbilityScorePointBuyDialog({
   isOpen,
   onOpenChange,
   onScoresApplied,
-  initialTotalPoints = 25,
+  totalPointsBudget,
 }: AbilityScorePointBuyDialogProps) {
-  const [totalPoints, setTotalPoints] = React.useState(initialTotalPoints);
+  // totalPoints is now a prop totalPointsBudget, no local state for it.
   const [currentScores, setCurrentScores] = React.useState<AbilityScores>(() => {
     const scores: Partial<AbilityScores> = {};
     ABILITY_ORDER.forEach(ability => scores[ability] = DEFAULT_SCORE);
@@ -76,16 +76,16 @@ export function AbilityScorePointBuyDialog({
   }, []);
 
   const [pointsSpent, setPointsSpent] = React.useState(() => calculatePointsSpent(currentScores));
-  const pointsRemaining = totalPoints - pointsSpent;
+  const pointsRemaining = totalPointsBudget - pointsSpent;
 
   React.useEffect(() => {
     if (isOpen) {
       const initial = {} as Partial<AbilityScores>;
       ABILITY_ORDER.forEach(ability => initial[ability] = DEFAULT_SCORE);
       setCurrentScores(initial as AbilityScores);
-      setTotalPoints(initialTotalPoints); 
+      // No need to setTotalPoints locally, it's a prop
     }
-  }, [isOpen, initialTotalPoints]);
+  }, [isOpen]); // totalPointsBudget is a prop, not necessarily a dependency for resetting scores
 
   React.useEffect(() => {
     setPointsSpent(calculatePointsSpent(currentScores));
@@ -98,7 +98,7 @@ export function AbilityScorePointBuyDialog({
     const tempScores = { ...currentScores, [ability]: newScore };
     const tempSpent = calculatePointsSpent(tempScores);
 
-    if (tempSpent <= totalPoints) {
+    if (tempSpent <= totalPointsBudget) {
       setCurrentScores(tempScores);
     }
   };
@@ -116,6 +116,7 @@ export function AbilityScorePointBuyDialog({
       onScoresApplied(currentScores);
       onOpenChange(false);
     } else {
+      // This case should ideally be prevented by disabling the Apply button
       console.error("Error: Cannot apply scores, points spent exceed total points.");
     }
   };
@@ -137,16 +138,10 @@ export function AbilityScorePointBuyDialog({
 
         <ScrollArea className="max-h-[60vh] pr-2">
             <div className="p-1 space-y-4">
-                <div className="flex items-center gap-4 p-3 border rounded-md bg-muted/30">
-                    <div className="space-y-1">
-                        <Label htmlFor="total-points-buy">Total Points Budget</Label>
-                        <Input
-                        id="total-points-buy"
-                        type="number"
-                        value={totalPoints}
-                        onChange={(e) => setTotalPoints(parseInt(e.target.value, 10) || 0)}
-                        className="w-24 h-8 text-center"
-                        />
+                <div className="flex items-center justify-between gap-4 p-3 border rounded-md bg-muted/30">
+                    <div className="text-left">
+                        <p className="text-sm font-medium">Total Points Budget:</p>
+                        <p className="text-xl font-bold text-primary">{totalPointsBudget}</p>
                     </div>
                     <div className="flex-grow text-right">
                         <p className="text-sm">
@@ -202,7 +197,7 @@ export function AbilityScorePointBuyDialog({
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => incrementScore(ability)}
-                            disabled={score >= MAX_SCORE || (calculatePointsSpent({ ...currentScores, [ability]: score + 1 })) > totalPoints}
+                            disabled={score >= MAX_SCORE || (calculatePointsSpent({ ...currentScores, [ability]: score + 1 })) > totalPointsBudget}
                         >
                             <PlusCircle className="h-4 w-4" />
                         </Button>

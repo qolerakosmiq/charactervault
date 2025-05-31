@@ -17,7 +17,8 @@ export interface CustomSkillDefinition {
 interface DefinitionsStoreState {
   customFeatDefinitions: (FeatDefinitionJsonData & { isCustom: true })[];
   customSkillDefinitions: CustomSkillDefinition[];
-  rerollOnesForAbilityScores: boolean; // New setting
+  rerollOnesForAbilityScores: boolean;
+  pointBuyBudget: number; // New setting for point buy total
   actions: {
     addCustomFeatDefinition: (featDef: FeatDefinitionJsonData & { isCustom: true }) => void;
     updateCustomFeatDefinition: (featDef: FeatDefinitionJsonData & { isCustom: true }) => void;
@@ -27,7 +28,8 @@ interface DefinitionsStoreState {
     updateCustomSkillDefinition: (skillDef: CustomSkillDefinition) => void;
     getCustomSkillDefinitionById: (skillDefId: string) => CustomSkillDefinition | undefined;
 
-    toggleRerollOnesForAbilityScores: () => void; // New action
+    toggleRerollOnesForAbilityScores: () => void;
+    setPointBuyBudget: (budget: number) => void; // New action
   };
 }
 
@@ -38,7 +40,8 @@ export const useDefinitionsStore = create<DefinitionsStoreState>()(
     (set, get) => ({
       customFeatDefinitions: [],
       customSkillDefinitions: [],
-      rerollOnesForAbilityScores: false, // Default value
+      rerollOnesForAbilityScores: false,
+      pointBuyBudget: 25, // Default point buy budget
       actions: {
         addCustomFeatDefinition: (featDef) =>
           set((state) => ({
@@ -70,6 +73,8 @@ export const useDefinitionsStore = create<DefinitionsStoreState>()(
           set((state) => ({
             rerollOnesForAbilityScores: !state.rerollOnesForAbilityScores,
           })),
+        setPointBuyBudget: (budget) =>
+          set({ pointBuyBudget: Math.max(0, budget) }), // Ensure budget is not negative
       },
     }),
     {
@@ -78,7 +83,8 @@ export const useDefinitionsStore = create<DefinitionsStoreState>()(
       partialize: (state) => ({
         customFeatDefinitions: state.customFeatDefinitions,
         customSkillDefinitions: state.customSkillDefinitions,
-        rerollOnesForAbilityScores: state.rerollOnesForAbilityScores, // Persist the new setting
+        rerollOnesForAbilityScores: state.rerollOnesForAbilityScores,
+        pointBuyBudget: state.pointBuyBudget, // Persist the new setting
       }),
     }
   )
