@@ -22,7 +22,7 @@ interface SkillDisplayInfo extends SkillType {
   keyAbility: AbilityName;
   description?: string;
   isCustom: boolean;
-  definitionProvidesSynergies?: CustomSynergyRule[]; 
+  definitionProvidesSynergies?: CustomSynergyRule[];
 }
 
 export interface SkillModifierBreakdownDetails {
@@ -30,7 +30,7 @@ export interface SkillModifierBreakdownDetails {
   keyAbilityName?: string;
   keyAbilityModifier: number;
   ranks: number;
-  synergyBonus: number; 
+  synergyBonus: number;
   featBonus: number;
   racialBonus: number;
   miscModifier: number;
@@ -48,7 +48,7 @@ interface SkillsFormSectionProps {
   allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
   allCustomSkillDefinitions: readonly CustomSkillDefinition[];
   onSkillChange: (skillId: string, ranks: number, isClassSkill?: boolean) => void;
-  onEditCustomSkillDefinition: (skillDefId: string) => void; 
+  onEditCustomSkillDefinition: (skillDefId: string) => void;
 }
 
 export function SkillsFormSection({
@@ -299,7 +299,7 @@ export function SkillsFormSection({
                 <span className="font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
                 <span className="text-xs text-muted-foreground text-center w-10">{keyAbilityDisplay}</span>
                 <span className="text-xs text-center w-10">{totalDisplayedModifier >= 0 ? '+' : ''}{totalDisplayedModifier}</span>
-                <div className="w-16 flex justify-center">
+                <div className="w-32 flex justify-center"> {/* Increased width for the spinner container */}
                   <NumberSpinnerInput
                     id={`skill_ranks_${skill.id}`}
                     value={skill.ranks || 0}
@@ -307,7 +307,7 @@ export function SkillsFormSection({
                     min={0}
                     // max={maxRanksValue} // Max validation is visual via max column
                     step={currentStepForInput}
-                    inputClassName="w-10 h-7 text-xs"
+                    inputClassName="w-14 h-7 text-xs" {/* Increased input width */}
                     buttonSize="sm"
                     buttonClassName="h-7 w-7"
                   />
