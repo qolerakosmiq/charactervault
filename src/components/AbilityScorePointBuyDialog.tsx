@@ -46,6 +46,15 @@ const POINT_BUY_COST: Record<number, number> = {
   18: 16,
 };
 
+const ABILITY_DISPLAY_NAMES: Record<Exclude<AbilityName, 'none'>, string> = {
+  strength: 'Strength (STR)',
+  dexterity: 'Dexterity (DEX)',
+  constitution: 'Constitution (CON)',
+  intelligence: 'Intelligence (INT)',
+  wisdom: 'Wisdom (WIS)',
+  charisma: 'Charisma (CHA)',
+};
+
 export function AbilityScorePointBuyDialog({
   isOpen,
   onOpenChange,
@@ -161,9 +170,9 @@ export function AbilityScorePointBuyDialog({
                     const cost = POINT_BUY_COST[score];
                     return (
                     <div key={ability} className="p-3 border rounded-md space-y-2 bg-background">
-                        <Label className="capitalize text-lg font-medium flex justify-between items-center">
-                        {ability}
-                        <Badge variant="outline">Cost: {cost}</Badge>
+                        <Label htmlFor={`score-input-${ability}`} className="text-base font-medium flex justify-between items-center">
+                          {ABILITY_DISPLAY_NAMES[ability]}
+                          <Badge variant="outline">Cost: {cost}</Badge>
                         </Label>
                         <div className="flex items-center justify-center space-x-2">
                         <Button
@@ -176,10 +185,11 @@ export function AbilityScorePointBuyDialog({
                             <MinusCircle className="h-4 w-4" />
                         </Button>
                         <Input
+                            id={`score-input-${ability}`}
                             type="number"
                             value={score}
-                            readOnly // Or allow direct input with validation
-                            className="w-16 h-10 text-center text-xl font-bold appearance-none"
+                            readOnly
+                            className="w-16 h-10 text-center text-xl appearance-none"
                         />
                         <Button
                             variant="outline"
@@ -210,3 +220,4 @@ export function AbilityScorePointBuyDialog({
     </Dialog>
   );
 }
+
