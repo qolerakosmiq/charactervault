@@ -41,9 +41,9 @@ export interface SkillModifierBreakdownDetails {
 }
 
 interface SkillsFormSectionProps {
-  skills: SkillType[]; 
-  abilityScores: AbilityScores; 
-  actualAbilityScores: AbilityScores; 
+  skills: SkillType[];
+  abilityScores: AbilityScores;
+  actualAbilityScores: AbilityScores;
   characterClasses: CharacterClass[];
   characterRace: DndRaceId | string;
   selectedFeats: CharacterFeatInstance[];
@@ -73,10 +73,10 @@ export function SkillsFormSection({
 
   const firstClass = characterClasses[0];
   const characterLevel = firstClass?.level || 1;
-  
+
   const intelligenceModifier = (actualAbilityScores && actualAbilityScores.intelligence !== undefined)
     ? getAbilityModifierByName(actualAbilityScores, 'intelligence')
-    : 0; 
+    : 0;
 
   const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0) : 0;
   const racialBonus = characterRace ? getRaceSkillPointsBonusPerLevel(characterRace as DndRaceId) : 0;
@@ -92,10 +92,10 @@ export function SkillsFormSection({
       keyAbility: sd.keyAbility as AbilityName,
       description: sd.description,
       isCustom: false,
-      providesSynergies: SKILL_SYNERGIES[sd.value as keyof typeof SKILL_SYNERGIES] || [], 
+      providesSynergies: SKILL_SYNERGIES[sd.value as keyof typeof SKILL_SYNERGIES] || [],
     }));
     const custom = allCustomSkillDefinitions.map(csd => ({
-      ...csd, 
+      ...csd,
       isCustom: true,
     }));
     return [...predefined, ...custom].sort((a,b) => a.name.localeCompare(b.name));
@@ -105,7 +105,7 @@ export function SkillsFormSection({
     return characterSkillInstances.map(instance => {
       const definition = allCombinedSkillDefinitions.find(def => def.id === instance.id);
       return {
-        ...instance, 
+        ...instance,
         name: definition?.name || 'Unknown Skill',
         keyAbility: definition?.keyAbility || 'none',
         description: definition?.description,
@@ -119,9 +119,9 @@ export function SkillsFormSection({
   const totalSkillPointsSpent = skillsForDisplay.reduce((acc, currentSkill) => {
     let costMultiplier = 1;
     if (currentSkill.keyAbility === 'none') {
-      costMultiplier = 1; 
+      costMultiplier = 1;
     } else if (!currentSkill.isClassSkill) {
-      costMultiplier = 2; 
+      costMultiplier = 2;
     }
     return acc + ((currentSkill.ranks || 0) * costMultiplier);
   }, 0);
@@ -132,20 +132,20 @@ export function SkillsFormSection({
       onEditCustomSkillDefinition(skillDisplayInfo.id);
     }
   };
-  
+
 
   const handleOpenSkillInfoDialog = (skill: SkillDisplayInfo) => {
     const keyAbility = skill.keyAbility;
     const currentKeyAbilityModifier = (keyAbility && keyAbility !== 'none') ? getAbilityModifierByName(actualAbilityScores, keyAbility) : 0;
-    
+
     const currentSynergyBonus = calculateTotalSynergyBonus(skill.id, characterSkillInstances, allPredefinedSkillDefinitions, allCustomSkillDefinitions);
     const currentFeatSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats, allFeatDefinitions);
     const currentRacialSkillBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, allPredefinedSkillDefinitions);
     const currentMiscModifier = skill.miscModifier || 0;
     const currentRanks = skill.ranks || 0;
 
-    const totalDisplayedModifierInTable = currentKeyAbilityModifier + currentSynergyBonus + currentFeatSkillBonus + currentRacialSkillBonus; 
-    const totalSkillBonus = currentRanks + totalDisplayedModifierInTable + currentMiscModifier; 
+    const totalDisplayedModifierInTable = currentKeyAbilityModifier + currentSynergyBonus + currentFeatSkillBonus + currentRacialSkillBonus;
+    const totalSkillBonus = currentRanks + totalDisplayedModifierInTable + currentMiscModifier;
 
     const breakdown: SkillModifierBreakdownDetails = {
       skillName: skill.name,
@@ -159,8 +159,8 @@ export function SkillsFormSection({
       totalBonus: totalSkillBonus,
     };
 
-    setCurrentSkillInfo({ 
-      title: skill.name, 
+    setCurrentSkillInfo({
+      title: skill.name,
       content: skill.description || "No description available for this skill.",
       skillModifierBreakdown: breakdown,
     });
@@ -192,7 +192,7 @@ export function SkillsFormSection({
                 "text-lg font-bold",
                 skillPointsLeft > 0 && "text-emerald-500",
                 skillPointsLeft < 0 && "text-destructive",
-                skillPointsLeft === 0 && "text-accent" 
+                skillPointsLeft === 0 && "text-accent"
               )}>{skillPointsLeft}</span>
             </p>
           </div>
@@ -243,7 +243,7 @@ export function SkillsFormSection({
             const synergyBonus = calculateTotalSynergyBonus(skill.id, characterSkillInstances, allPredefinedSkillDefinitions, allCustomSkillDefinitions);
             const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats, allFeatDefinitions);
             const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, allPredefinedSkillDefinitions);
-            
+
             const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus + currentRacialBonus;
             const totalBonus = (skill.ranks || 0) + totalDisplayedModifier + (skill.miscModifier || 0);
             const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
@@ -273,7 +273,7 @@ export function SkillsFormSection({
                       >
                         <Info className="h-3 w-3" />
                       </Button>
-                    <Label htmlFor={`skill_ranks_${skill.id}`} className="text-xs truncate pr-1 leading-tight flex-grow">
+                    <Label htmlFor={`skill_ranks_${skill.id}`} className="text-xs pr-1 leading-tight flex-grow">
                           {skill.name} {skill.isCustom && <span className="text-primary/70 text-xs">(Custom)</span>}
                     </Label>
                   {skill.isCustom && (
@@ -339,3 +339,4 @@ export function SkillsFormSection({
     </>
   );
 }
+
