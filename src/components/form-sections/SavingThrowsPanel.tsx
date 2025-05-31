@@ -43,14 +43,14 @@ export function SavingThrowsPanel({
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[400px]">
+          <table className="w-full min-w-[450px]"> {/* Adjusted min-width for longer headers */}
             <thead>
               <tr className="border-b">
                 <th className="pb-2 text-left text-sm font-medium text-muted-foreground">Saving Throw</th>
                 <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Total</th>
                 <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Base</th>
-                <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Ability Mod</th>
-                <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Custom Mod</th>
+                <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Ability Modifier</th>
+                <th className="pb-2 text-center text-sm font-medium text-muted-foreground">Custom Modifier</th>
               </tr>
             </thead>
             <tbody>

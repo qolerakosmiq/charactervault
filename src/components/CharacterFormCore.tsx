@@ -46,10 +46,11 @@ import { CharacterFormStoryPortraitSection } from '@/components/form-sections/Ch
 import { SkillsFormSection } from '@/components/SkillsFormSection';
 import { FeatsFormSection } from '@/components/FeatsFormSection';
 import { SavingThrowsPanel } from '@/components/form-sections/SavingThrowsPanel';
+import { ArmorClassPanel } from '@/components/form-sections/ArmorClassPanel'; // Added import
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 import { Separator } from '@/components/ui/separator';
-import { BookOpenCheck, ShieldPlus, Zap } from 'lucide-react';
+import { BookOpenCheck, ShieldPlus, Zap, ShieldCheck } from 'lucide-react'; // Added ShieldCheck
 
 interface CharacterFormCoreProps {
   initialCharacter?: Character;
@@ -149,7 +150,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     setDetailedAbilityScores(calculateDetailedAbilityScores(character, globalCustomFeatDefinitions));
   }, [character, globalCustomFeatDefinitions]);
 
-  const actualAbilityScoresForSkills = React.useMemo(() => {
+  const actualAbilityScoresForSavesAndSkills = React.useMemo(() => {
     if (!detailedAbilityScores) {
       return character.abilityScores;
     }
@@ -597,13 +598,13 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         <SkillsFormSection
           skills={character.skills}
           abilityScores={character.abilityScores}
-          actualAbilityScores={actualAbilityScoresForSkills}
+          actualAbilityScores={actualAbilityScoresForSavesAndSkills}
           characterClasses={character.classes}
           characterRace={character.race as DndRaceId}
           selectedFeats={character.feats}
+          allFeatDefinitions={allAvailableFeatDefinitions}
           allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
-          allFeatDefinitions={allAvailableFeatDefinitions}
           onSkillChange={handleSkillChange}
           onEditCustomSkillDefinition={handleOpenEditCustomSkillDialog}
         />
@@ -614,18 +615,21 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           chosenFeatInstances={character.feats}
           onFeatInstancesChange={handleFeatInstancesChange}
           onEditCustomFeatDefinition={handleOpenEditCustomFeatDefinitionDialog}
-          abilityScores={actualAbilityScoresForSkills}
+          abilityScores={actualAbilityScoresForSavesAndSkills}
           skills={character.skills}
           allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
         />
-
-        <SavingThrowsPanel
-            savingThrows={character.savingThrows}
-            abilityScores={actualAbilityScoresForSkills} // Use detailed scores for ability mods
-            characterClasses={character.classes}
-            onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
-        />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <SavingThrowsPanel
+              savingThrows={character.savingThrows}
+              abilityScores={actualAbilityScoresForSavesAndSkills} 
+              characterClasses={character.classes}
+              onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
+          />
+          <ArmorClassPanel />
+        </div>
 
 
         <Separator className="my-10" />
