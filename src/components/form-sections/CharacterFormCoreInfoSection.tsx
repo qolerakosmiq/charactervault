@@ -36,6 +36,7 @@ import { ComboboxPrimitive } from '@/components/ui/combobox';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
+import { Badge } from '@/components/ui/badge'; // Added import for Badge
 
 interface CharacterFormCoreInfoSectionProps {
   characterData: Pick<Character, 'name' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
@@ -145,20 +146,27 @@ export function CharacterFormCoreInfoSection({
                 <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
               )}
             </div>
-            {isPredefinedRace && raceSpecialQualities && raceSpecialQualities.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
-              <p className="text-xs text-muted-foreground mt-1 ml-1">
-                {raceSpecialQualities.abilityEffects.map((effect, index) => (
-                    <React.Fragment key={effect.ability}>
-                      <strong className={cn("font-bold", effect.change < 0 ? 'text-destructive' : 'text-emerald-500')}>
-                        {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
-                      </strong>
-                      {index < raceSpecialQualities.abilityEffects.length - 1 && <span className="text-muted-foreground">, </span>}
-                    </React.Fragment>
-                  ))}
-              </p>
+            {isPredefinedRace && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-1 ml-1">
+                {raceSpecialQualities.abilityEffects.map((effect) => (
+                  <Badge
+                    key={effect.ability}
+                    variant={effect.change === 0 ? "outline" : effect.change < 0 ? "destructive" : "outline"}
+                    className={cn(
+                      "font-normal text-xs", // Badges are font-semibold by default, text-xs for smaller text
+                      effect.change > 0 && "text-emerald-600 border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20",
+                      // Destructive variant handles its own colors, including hover
+                      effect.change < 0 && "hover:bg-destructive/80", // Ensure hover for destructive is consistent
+                      effect.change === 0 && "text-muted-foreground border-muted-foreground/30 bg-muted/50"
+                    )}
+                  >
+                    {effect.ability.substring(0, 3).toUpperCase()} {effect.change > 0 ? '+' : ''}{effect.change}
+                  </Badge>
+                ))}
+              </div>
             )}
-             {isPredefinedRace && !raceSpecialQualities?.abilityEffects && (
-                <p className="text-xs text-muted-foreground mt-1 ml-1">No impact on ability scores</p>
+            {isPredefinedRace && (!raceSpecialQualities?.abilityEffects || raceSpecialQualities.abilityEffects.length === 0) && (
+                <p className="text-xs text-muted-foreground mt-1 ml-1">No ability score adjustments.</p>
             )}
           </div>
         </div>
