@@ -67,14 +67,14 @@ export function FeatsFormSection({
   }), [abilityScores, skills, selectedFeats, characterClasses, characterRace, characterAlignment]);
 
   const allFeatsForDialog = React.useMemo(() => {
-    const predefinedFeatsAsDefinitions: FeatDefinitionJsonData[] = DND_FEATS.map(f => ({
-      ...f, // Spread all properties from DND_FEATS definition
-      isCustom: false, // Explicitly mark as not custom
+    const predefinedFeatsAsDefinitions: (FeatDefinitionJsonData & { isCustom?: boolean })[] = DND_FEATS.map(f => ({
+      ...f,
+      isCustom: false,
     }));
 
     const customFeatDefinitions = selectedFeats
       .filter(feat => feat.isCustom && !feat.id.includes("-MULTI-INSTANCE-")) 
-      .map(feat => ({ // This is FeatType being mapped to FeatDefinitionJsonData for the dialog
+      .map(feat => ({
         value: feat.id, 
         label: feat.name,
         description: feat.description,
@@ -83,7 +83,7 @@ export function FeatsFormSection({
         effectsText: feat.effectsText,
         canTakeMultipleTimes: feat.canTakeMultipleTimes,
         requiresSpecialization: feat.requiresSpecialization,
-        isCustom: true, // Mark this for later identification
+        isCustom: true,
       }));
     
     const combinedMap = new Map<string, FeatDefinitionJsonData & { isCustom?: boolean }>();
@@ -95,14 +95,12 @@ export function FeatsFormSection({
 
 
   const handleFeatSelectedFromDialog = (featIdFromDialog: string) => {
-    // featIdFromDialog is the base ID (value from DND_FEATS or base UUID of a custom feat definition)
     const sourceDefinition = allFeatsForDialog.find(f => f.value === featIdFromDialog);
     if (!sourceDefinition) {
         toast({ title: "Error", description: `Feat definition ${featIdFromDialog} not found.`, variant: "destructive" });
         return;
     }
 
-    // Check against all instances of this feat (including granted ones if any)
     const existingInstancesAndGranted = selectedFeats.filter(sf =>
         sf.id.split('-MULTI-INSTANCE-')[0] === featIdFromDialog
     );
@@ -116,14 +114,8 @@ export function FeatsFormSection({
     let newFeatInstanceId = featIdFromDialog; 
 
     if (sourceDefinition.canTakeMultipleTimes) {
-      // For custom feats that can be taken multiple times, ALWAYS generate a multi-instance ID for the *taken* instance.
-      // The original definition object (with base UUID) remains as a template.
-      // For predefined feats, generate multi-instance ID if it's not the first user-chosen one.
-      if (sourceDefinition.isCustom || existingInstancesAndGranted.some(inst => !inst.isGranted)) { // if custom, or if predefined and already have a user-chosen instance
+      if (sourceDefinition.isCustom || existingInstancesAndGranted.some(inst => !inst.isGranted || inst.isGranted)) { 
           newFeatInstanceId = `${featIdFromDialog}-MULTI-INSTANCE-${crypto.randomUUID()}`;
-      } else if (existingInstancesAndGranted.some(inst => inst.isGranted) && !existingInstancesAndGranted.some(inst => !inst.isGranted)) {
-          // If only granted instances exist, the first user-chosen one can use the base ID
-          // unless it's a custom feat (covered by sourceDefinition.isCustom)
       }
     }
     
@@ -133,7 +125,7 @@ export function FeatsFormSection({
       description: sourceDefinition.description,
       prerequisites: sourceDefinition.prerequisites,
       effects: sourceDefinition.effects,
-      effectsText: (sourceDefinition as any).effectsText, // If it's a custom def, it will have this
+      effectsText: sourceDefinition.effectsText,
       canTakeMultipleTimes: sourceDefinition.canTakeMultipleTimes,
       requiresSpecialization: sourceDefinition.requiresSpecialization,
       specializationDetail: '', 
@@ -149,28 +141,46 @@ export function FeatsFormSection({
     let updatedFullFeatsList;
     const baseCustomFeatId = featData.id; 
 
-    if (baseCustomFeatId) { // Editing an existing custom feat definition
-      updatedFullFeatsList = selectedFeats.map(f => {
-        if (f.id === baseCustomFeatId && f.isCustom && !f.id.includes("-MULTI-INSTANCE-")) { 
-          // This is the definition itself
-          return { ...f, ...featData, isCustom: true, isGranted: false } as FeatType;
-        }
-        // If this feat 'f' is an *instance* of the custom feat being edited
-        if (f.isCustom && f.id.startsWith(`${baseCustomFeatId}-MULTI-INSTANCE-`)) {
-          return {
-            ...f, 
-            name: featData.name, 
-            description: featData.description,
-            prerequisites: featData.prerequisites,
-            effects: featData.effects,
-            effectsText: featData.effectsText,
-            canTakeMultipleTimes: featData.canTakeMultipleTimes,
-            requiresSpecialization: featData.requiresSpecialization,
-          };
-        }
-        return f;
-      });
-    } else { // Adding a brand new custom feat definition
+    if (baseCustomFeatId) { 
+      const originalDefinition = selectedFeats.find(f => f.id === baseCustomFeatId && f.isCustom && !f.id.includes("-MULTI-INSTANCE-"));
+      const wasMultiTake = originalDefinition?.canTakeMultipleTimes || false;
+      const isNowMultiTake = featData.canTakeMultipleTimes || false;
+
+      if (wasMultiTake && !isNowMultiTake) {
+        // Changed from multi-take to single-take: remove all instances, add back updated definition
+        const updatedDefinition: FeatType = {
+          ...(originalDefinition as FeatType), // Cast to ensure all FeatType props
+          ...featData,
+          isCustom: true,
+          isGranted: false,
+          canTakeMultipleTimes: false, // Explicitly set
+        };
+        updatedFullFeatsList = selectedFeats.filter(f => !(f.id.startsWith(baseCustomFeatId) && f.isCustom));
+        updatedFullFeatsList.push(updatedDefinition);
+
+      } else {
+        // No change in multi-take status, or changed from single to multi
+        updatedFullFeatsList = selectedFeats.map(f => {
+          if (f.id === baseCustomFeatId && f.isCustom && !f.id.includes("-MULTI-INSTANCE-")) { 
+            return { ...f, ...featData, isCustom: true, isGranted: false } as FeatType;
+          }
+          if (f.isCustom && f.id.startsWith(`${baseCustomFeatId}-MULTI-INSTANCE-`)) {
+            return {
+              ...f, 
+              name: featData.name, 
+              description: featData.description,
+              prerequisites: featData.prerequisites,
+              effects: featData.effects,
+              effectsText: featData.effectsText,
+              canTakeMultipleTimes: featData.canTakeMultipleTimes, // Update this for instances too
+              requiresSpecialization: featData.requiresSpecialization,
+              // Keep f.specializationDetail and f.id for the instance
+            };
+          }
+          return f;
+        });
+      }
+    } else { 
       const newCustomFeatDefinition: FeatType = {
         id: crypto.randomUUID(), 
         name: featData.name,
@@ -248,36 +258,20 @@ export function FeatsFormSection({
           </div>
 
           <div className="space-y-2 mb-4">
-            {selectedFeats.filter(f => f.isGranted || !f.id.includes("MULTI-INSTANCE-") || selectedFeats.find(def => def.id === f.id.split("-MULTI-INSTANCE-")[0] && def.isCustom)).length === 0 && ( // Filter out definition-only custom feats unless they are also instances
-                 <p className="text-sm text-muted-foreground text-center py-2">No feats selected or granted yet.</p>
-            )}
             {selectedFeats
               .filter(featInstance => {
-                  // Display granted feats
-                  if (featInstance.isGranted) return true;
-                  // Display chosen predefined feats
-                  if (!featInstance.isCustom) return true;
-                  // Display chosen custom feat instances (multi-instance IDs)
-                  if (featInstance.isCustom && featInstance.id.includes("-MULTI-INSTANCE-")) return true;
-                  // For custom feat definitions (base UUID, not multi-instance):
-                  // Only display them if they represent a chosen instance of a non-multi-take feat.
-                  // This prevents showing the definition itself if only multi-take instances of it exist.
-                  if (featInstance.isCustom && !featInstance.id.includes("-MULTI-INSTANCE-")) {
-                      const definition = allFeatsForDialog.find(def => def.value === featInstance.id);
-                      if (definition && !definition.canTakeMultipleTimes) return true; // Show if it's a single-take chosen instance
-                      // If it can be taken multiple times, the definition itself shouldn't be listed as "taken"
-                      // unless it's the *only* way it's represented (which handleFeatSelectedFromDialog tries to avoid)
-                      return false; // Avoids listing definition if multi-take instances exist
-                  }
-                  return false;
+                // Display if granted OR if it's a chosen predefined feat OR a chosen custom instance OR a chosen custom definition.
+                if (featInstance.isGranted) return true;
+                if (!featInstance.isCustom) return true; // Chosen predefined
+                // Chosen custom (either instance or definition that represents a "take")
+                if (featInstance.isCustom) return true; 
+                return false;
               })
               .map((featInstance) => {
               const baseFeatIdForDisplay = featInstance.id.split('-MULTI-INSTANCE-')[0];
-              // Find the definition (predefined or custom) from allFeatsForDialog for display details
               let featDisplayDefinition: (FeatDefinitionJsonData & { isCustom?: boolean }) | undefined = allFeatsForDialog.find(f => f.value === baseFeatIdForDisplay);
               
               if (!featDisplayDefinition) { 
-                  // Fallback if somehow not in allFeatsForDialog (shouldn't happen for valid feats)
                   featDisplayDefinition = {
                       value: featInstance.id,
                       label: featInstance.name,
@@ -327,7 +321,7 @@ export function FeatsFormSection({
                   </div>
                   
                   <div className="flex items-center shrink-0">
-                    {featInstance.isCustom && ( // Show edit for any custom feat (definition or instance)
+                    {featInstance.isCustom && ( 
                       <Button
                         type="button" variant="ghost" size="icon"
                         onClick={() => handleOpenEditCustomFeatDialog(featInstance)} 
@@ -335,7 +329,7 @@ export function FeatsFormSection({
                         aria-label={`Edit custom feat ${featInstance.name}`}
                       ><Edit3 className="h-4 w-4" /></Button>
                     )}
-                    {!featInstance.isGranted && ( // Can only remove non-granted feats
+                    {!featInstance.isGranted && ( 
                       <Button
                         type="button" variant="ghost" size="icon"
                         onClick={() => handleRemoveFeatSlot(featInstance.id)} 
@@ -379,3 +373,4 @@ export function FeatsFormSection({
     </>
   );
 }
+
