@@ -7,7 +7,7 @@ import { DND_CLASSES }
 from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label'; // Label might not be directly used in this pivoted table structure for row headers
+// Label import removed as it's not directly used for row headers now
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 import { Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -36,7 +36,7 @@ export function SavingThrowsPanel({
 
   const dataRows = [
     {
-      label: 'Total',
+      label: <span className="inline-block w-full whitespace-normal">Total</span>,
       getValue: (saveType: SavingThrowType) => {
         const currentSaveData: SingleSavingThrow = savingThrows[saveType];
         const baseSaveValue = calculatedBaseSaves[saveType];
@@ -47,11 +47,11 @@ export function SavingThrowsPanel({
       },
     },
     {
-      label: 'Base',
+      label: <span className="inline-block w-full whitespace-normal">Base</span>,
       getValue: (saveType: SavingThrowType) => calculatedBaseSaves[saveType],
     },
     {
-      label: 'Ability Modifier',
+      label: <span className="inline-block w-full whitespace-normal">Ability Modifier</span>,
       getValue: (saveType: SavingThrowType) => {
         const abilityKey = SAVING_THROW_ABILITIES[saveType];
         const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
@@ -64,7 +64,7 @@ export function SavingThrowsPanel({
       },
     },
     {
-      label: 'Custom Modifier',
+      label: <span className="inline-block w-full whitespace-normal">Custom Modifier</span>,
       getValue: (saveType: SavingThrowType) => (
         <Input
           type="number"
@@ -87,21 +87,23 @@ export function SavingThrowsPanel({
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[300px]"><thead>
+          <table className="w-full min-w-[300px]">
+            <thead>
               <tr className="border-b">
-                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground"></th>
+                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground"></th> {/* Header for row labels column */}
                 {SAVE_TYPES.map((saveType) => (
                   <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-muted-foreground capitalize whitespace-normal">
                     <span>{SAVE_DISPLAY_NAMES[saveType]}</span>
                   </th>
                 ))}
               </tr>
-            </thead><tbody>
+            </thead>
+            <tbody>
               {dataRows.map((row) => (
-                <tr key={row.label} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
-                  <td className="py-2 px-1 text-sm font-medium text-foreground">{row.label}</td>
+                <tr key={row.label.props.children} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
+                  <td className="py-2 px-1 text-sm font-medium text-foreground align-top">{row.label}</td>
                   {SAVE_TYPES.map((saveType) => (
-                    <td key={`${row.label}-${saveType}`} className="py-2 px-0.5 text-center text-sm text-muted-foreground">
+                    <td key={`${row.label.props.children}-${saveType}`} className="py-2 px-0.5 text-center text-sm text-muted-foreground">
                       {row.getValue(saveType)}
                     </td>
                   ))}
