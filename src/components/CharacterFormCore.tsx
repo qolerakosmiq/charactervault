@@ -70,18 +70,23 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     const defaultBaseAbilityScores = { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES)) as AbilityScores) };
     const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: '', level: 1 }];
     
-    // Combine predefined and potentially loaded global custom feats for initial granting
     const allInitialFeatDefsForGranting = [
         ...DND_FEATS_DEFINITIONS.map(def => ({ ...def, isCustom: false as const })),
-        ...(isClient ? globalCustomFeatDefinitionsFromStore : []) // Use store value if client, empty otherwise for initial state
+        ...(isCreating && isClient ? globalCustomFeatDefinitionsFromStore : (initialCharacter?.feats.filter(f => f.isGranted && allInitialFeatDefsForGranting.find(fd => fd.value === f.definitionId && fd.isCustom)).map(f => globalCustomFeatDefinitionsFromStore.find(cfd => cfd.value === f.definitionId)).filter(Boolean) as (FeatDefinitionJsonData & { isCustom: true })[] || []))
     ];
 
     const initialFeats = getGrantedFeatsForCharacter(
       initialCharacter?.race || '',
       initialCharacter?.classes || defaultClasses,
-      1,
+      initialCharacter?.classes?.reduce((sum, c) => sum + c.level, 0) || 1,
       allInitialFeatDefsForGranting
     );
+    
+    // For new characters, skills are initialized with predefined ones.
+    // For existing characters, their saved skills are used.
+    // Custom skills will be added reactively by the useEffect below if their definitions exist globally.
+    let initialSkills = initialCharacter?.skills || getInitialCharacterSkills(defaultClasses);
+
 
     return initialCharacter || {
       id: crypto.randomUUID(),
@@ -91,7 +96,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, initiativeMiscModifier: 0,
       savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)),
       classes: defaultClasses,
-      skills: getInitialCharacterSkills(defaultClasses),
+      skills: initialSkills,
       feats: initialFeats,
       inventory: [], personalStory: '', portraitDataUrl: undefined,
     };
@@ -197,7 +202,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       character.race,
       character.classes,
       characterLevel,
-      allAvailableFeatDefinitions
+      allAvailableFeatDefinitions // This now includes global custom feat defs
     );
 
     const userChosenFeatInstances = character.feats.filter(fi => !fi.isGranted);
@@ -224,6 +229,59 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }));
   }, [character.race, character.classes, allAvailableFeatDefinitions]);
 
+  const prevGlobalCustomSkillDefinitionsRef = React.useRef<CustomSkillDefinition[]>([]);
+
+  React.useEffect(() => {
+    if (!isClient) return;
+
+    const currentGlobalDefs = globalCustomSkillDefinitionsFromStore; // From Zustand store directly
+    const prevGlobalDefs = prevGlobalCustomSkillDefinitionsRef.current;
+
+    const newlyAddedToGlobalStore = currentGlobalDefs.filter(
+      (currentDef) => !prevGlobalDefs.find(prevDef => prevDef.id === currentDef.id)
+    );
+
+    const instancesToAddToCharacter: SkillType[] = [];
+    
+    // For brand new characters or characters who don't have instances of globally available custom skills
+    currentGlobalDefs.forEach(globalDef => {
+        if (!character.skills.find(s => s.id === globalDef.id)) {
+            const isClassSkill = character.classes[0]?.className ?
+                (CLASS_SKILLS[character.classes[0]?.className as keyof typeof CLASS_SKILLS] || []).includes(globalDef.id) : false;
+            instancesToAddToCharacter.push({
+                id: globalDef.id,
+                ranks: 0,
+                miscModifier: 0,
+                isClassSkill: isClassSkill,
+            });
+        }
+    });
+
+
+    if (instancesToAddToCharacter.length > 0) {
+      setCharacter(prevCharacter => {
+        const existingSkillIds = new Set(prevCharacter.skills.map(s => s.id));
+        const uniqueNewInstances = instancesToAddToCharacter.filter(inst => !existingSkillIds.has(inst.id));
+        
+        if (uniqueNewInstances.length === 0) return prevCharacter;
+
+        const updatedSkills = [...prevCharacter.skills, ...uniqueNewInstances].sort((a, b) => {
+          const nameA = allAvailableSkillDefinitionsForDisplay.find(d => d.id === a.id)?.name || '';
+          const nameB = allAvailableSkillDefinitionsForDisplay.find(d => d.id === b.id)?.name || '';
+          return nameA.localeCompare(nameB);
+        });
+        return { ...prevCharacter, skills: updatedSkills };
+      });
+    }
+    prevGlobalCustomSkillDefinitionsRef.current = currentGlobalDefs;
+  }, [
+    globalCustomSkillDefinitionsFromStore, 
+    isClient, 
+    character.skills, 
+    character.classes, 
+    allAvailableSkillDefinitionsForDisplay
+  ]);
+
 
   const handleCoreInfoFieldChange = (field: keyof Character, value: any) => {
      setCharacter(prev => ({ ...prev, [field]: value }));
@@ -247,7 +305,17 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const handleClassChange = (value: DndClassId | string) => {
     setCharacter(prev => {
       const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: value, level: 1 }];
-      const newSkills = getInitialCharacterSkills(updatedClasses);
+      // Re-evaluate class skills for *all* skills when class changes
+      const newSkills = prev.skills.map(skillInstance => {
+          const isNowClassSkill = value ? 
+            (CLASS_SKILLS[value as keyof typeof CLASS_SKILLS] || []).includes(skillInstance.id)
+            : false;
+          return {...skillInstance, isClassSkill: isNowClassSkill };
+      }).sort((a, b) => {
+        const nameA = allAvailableSkillDefinitionsForDisplay.find(d => d.id === a.id)?.name || '';
+        const nameB = allAvailableSkillDefinitionsForDisplay.find(d => d.id === b.id)?.name || '';
+        return nameA.localeCompare(nameB);
+      });
       return { ...prev, classes: updatedClasses, skills: newSkills };
     });
   };
@@ -257,40 +325,18 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       ...prev,
       skills: prev.skills.map(s =>
         s.id === skillId ? { ...s, ranks, isClassSkill: isClassSkill !== undefined ? isClassSkill : s.isClassSkill } : s
-      ),
+      ), // No re-sort here, assuming ranks/isClassSkill change doesn't affect sort order.
     }));
   };
 
-  const handleCustomSkillAddOrUpdateToStore = (skillData: CustomSkillDefinition) => {
+  const handleCustomSkillDefinitionSaveToStore = (skillData: CustomSkillDefinition) => {
     const existing = definitionsActions.getCustomSkillDefinitionById(skillData.id);
     if(existing) {
         definitionsActions.updateCustomSkillDefinition(skillData);
     } else {
         definitionsActions.addCustomSkillDefinition(skillData);
     }
-  };
-
-  const handleAddCustomSkillInstanceToCharacter = (skillDefId: string) => {
-     const skillDef = allAvailableSkillDefinitionsForDisplay.find(s => s.id === skillDefId);
-     if (skillDef && !character.skills.find(s => s.id === skillDefId)) {
-        const isClassSkill = character.classes[0]?.className ?
-            (CLASS_SKILLS[character.classes[0]?.className as keyof typeof CLASS_SKILLS] || []).includes(skillDefId) : false;
-
-        const newSkillInstance: SkillType = {
-            id: skillDefId,
-            ranks: 0,
-            miscModifier: 0,
-            isClassSkill: isClassSkill,
-        };
-        setCharacter(prev => ({
-            ...prev,
-            skills: [...prev.skills, newSkillInstance].sort((a, b) => {
-                const nameA = allAvailableSkillDefinitionsForDisplay.find(d => d.id === a.id)?.name || '';
-                const nameB = allAvailableSkillDefinitionsForDisplay.find(d => d.id === b.id)?.name || '';
-                return nameA.localeCompare(nameB);
-            })
-        }));
-     }
+    // The useEffect will pick up this change and add the instance if needed
   };
 
   const handleFeatInstancesChange = (updatedFeatInstances: CharacterFeatInstance[]) => {
@@ -443,12 +489,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     return 1;
   }, [character.race]);
 
-  if (!isClient && isCreating) {
-    // Potentially render a loading state or null during SSR/pre-hydration for new characters
-    // if the definitions store isn't ready, to avoid rendering with incomplete global data.
-    // For simplicity, we'll let it render with empty global definitions, and the client-side
-    // `isClient` effect will cause a re-render with the correct data.
-  }
 
   return (
     <>
@@ -494,23 +534,22 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           characterRace={character.race as DndRaceId}
           selectedFeats={character.feats}
           allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
-          allCustomSkillDefinitions={globalCustomSkillDefinitions} // Use client-aware version
-          allFeatDefinitions={allAvailableFeatDefinitions} // Already client-aware via globalCustomFeatDefinitions
+          allCustomSkillDefinitions={globalCustomSkillDefinitions} 
+          allFeatDefinitions={allAvailableFeatDefinitions} 
           onSkillChange={handleSkillChange}
-          onCustomSkillDefinitionSave={handleCustomSkillAddOrUpdateToStore}
-          onAddCustomSkillInstanceToCharacter={handleAddCustomSkillInstanceToCharacter}
+          onCustomSkillDefinitionSave={handleCustomSkillDefinitionSaveToStore}
         />
 
         <FeatsFormSection
           character={character}
-          allAvailableFeatDefinitions={allAvailableFeatDefinitions} // Already client-aware
+          allAvailableFeatDefinitions={allAvailableFeatDefinitions} 
           chosenFeatInstances={character.feats}
           onFeatInstancesChange={handleFeatInstancesChange}
           onCustomFeatDefinitionSave={handleCustomFeatDefinitionChangeInStore}
           abilityScores={actualAbilityScoresForSkills}
           skills={character.skills}
           allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
-          allCustomSkillDefinitions={globalCustomSkillDefinitions} // Use client-aware version
+          allCustomSkillDefinitions={globalCustomSkillDefinitions} 
         />
 
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-8">
@@ -542,6 +581,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           bonusFeatSlots={currentInfoDialogData.bonusFeatSlots}
           abilityScoreBreakdown={currentInfoDialogData.abilityScoreBreakdown}
           detailsList={currentInfoDialogData.detailsList}
+          skillModifierBreakdown={currentInfoDialogData.skillModifierBreakdown}
         />
       )}
     </>

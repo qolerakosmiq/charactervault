@@ -41,7 +41,7 @@ export interface SkillModifierBreakdownDetails {
 }
 
 interface SkillsFormSectionProps {
-  skills: SkillType[]; // Character's skill instances {id, ranks, miscModifier, isClassSkill}
+  skills: SkillType[]; 
   abilityScores: AbilityScores; 
   actualAbilityScores: AbilityScores; 
   characterClasses: CharacterClass[];
@@ -52,7 +52,6 @@ interface SkillsFormSectionProps {
   allCustomSkillDefinitions: readonly CustomSkillDefinition[];
   onSkillChange: (skillId: string, ranks: number, isClassSkill?: boolean) => void;
   onCustomSkillDefinitionSave: (skillData: CustomSkillDefinition) => void; // To save to global store
-  onAddCustomSkillInstanceToCharacter: (skillDefId: string) => void; // To add instance to character
 }
 
 export function SkillsFormSection({
@@ -67,7 +66,6 @@ export function SkillsFormSection({
   allCustomSkillDefinitions,
   onSkillChange,
   onCustomSkillDefinitionSave,
-  onAddCustomSkillInstanceToCharacter,
 }: SkillsFormSectionProps) {
   const [isAddOrEditSkillDialogOpen, setIsAddOrEditSkillDialogOpen] = React.useState(false);
   const [skillToEdit, setSkillToEdit] = React.useState<CustomSkillDefinition | undefined>(undefined);
@@ -88,7 +86,6 @@ export function SkillsFormSection({
   const pointsFromLevelProgression = characterLevel > 1 ? (baseSkillPointsForClass + intelligenceModifier + (racialBonus || 0)) * (characterLevel - 1) : 0;
   const totalSkillPointsAvailable = pointsForFirstLevel + pointsFromLevelProgression;
 
-  // Combine predefined and custom skill definitions for display and selection
   const allCombinedSkillDefinitions = React.useMemo(() => {
     const predefined = allPredefinedSkillDefinitions.map(sd => ({
       id: sd.value,
@@ -96,21 +93,20 @@ export function SkillsFormSection({
       keyAbility: sd.keyAbility as AbilityName,
       description: sd.description,
       isCustom: false,
-      providesSynergies: SKILL_SYNERGIES[sd.value as keyof typeof SKILL_SYNERGIES] || [], // Look up predefined synergies
+      providesSynergies: SKILL_SYNERGIES[sd.value as keyof typeof SKILL_SYNERGIES] || [], 
     }));
     const custom = allCustomSkillDefinitions.map(csd => ({
-      ...csd, // id, name, keyAbility, description, providesSynergies
+      ...csd, 
       isCustom: true,
     }));
     return [...predefined, ...custom].sort((a,b) => a.name.localeCompare(b.name));
   }, [allPredefinedSkillDefinitions, allCustomSkillDefinitions]);
 
-  // Map character skill instances to full display info
   const skillsForDisplay: SkillDisplayInfo[] = React.useMemo(() => {
     return characterSkillInstances.map(instance => {
       const definition = allCombinedSkillDefinitions.find(def => def.id === instance.id);
       return {
-        ...instance, // id, ranks, miscModifier, isClassSkill
+        ...instance, 
         name: definition?.name || 'Unknown Skill',
         keyAbility: definition?.keyAbility || 'none',
         description: definition?.description,
@@ -141,22 +137,11 @@ export function SkillsFormSection({
   const handleOpenEditSkillDialog = (skillDisplayInfo: SkillDisplayInfo) => {
     if (skillDisplayInfo.isCustom) {
       const customDef = allCustomSkillDefinitions.find(csd => csd.id === skillDisplayInfo.id);
-      setSkillToEdit(customDef); // Pass the full CustomSkillDefinition
+      setSkillToEdit(customDef); 
       setIsAddOrEditSkillDialogOpen(true);
     }
   };
   
-  const handleRemoveCustomSkillInstance = (skillId: string) => {
-    // This function is tricky. If it's the last instance of a custom skill,
-    // should it also offer to remove the definition? For now, just removes from character.
-    // The parent CharacterFormCore needs a handler for this.
-    // For now, we'll assume onSkillChange with ranks 0 effectively removes it from active use,
-    // but the instance might still be in character.skills array if we want to "hide" 0-rank skills.
-    // A true removal would filter characterSkillInstances.
-    // This needs to be handled by a callback to CharacterFormCore to update character.skills
-    console.warn("Removal of custom skill instances needs a CharacterFormCore handler.");
-  };
-
 
   const handleOpenSkillInfoDialog = (skill: SkillDisplayInfo) => {
     const keyAbility = skill.keyAbility;
@@ -191,22 +176,16 @@ export function SkillsFormSection({
     setIsInfoDialogOpen(true);
   };
 
-  const handleSaveCustomSkillDefinition = (skillDefData: CustomSkillDefinition) => {
-    onCustomSkillDefinitionSave(skillDefData); // Saves to global store
-    // If it's a new skill def, and user wants to add it to character immediately:
-    if (!skillToEdit && !characterSkillInstances.find(s => s.id === skillDefData.id)) {
-      onAddCustomSkillInstanceToCharacter(skillDefData.id);
-    }
+  const handleSaveCustomSkillDefinitionToStore = (skillDefData: CustomSkillDefinition) => {
+    onCustomSkillDefinitionSave(skillDefData); // Saves to global store via CharacterFormCore
+    // Instance addition is now handled reactively by CharacterFormCore's useEffect
     setIsAddOrEditSkillDialogOpen(false);
     setSkillToEdit(undefined);
   };
 
-  // Options for the "Add Custom Skill Dialog" synergy target dropdown.
-  // It should list all predefined skills and all GLOBAL custom skill definitions,
-  // excluding the one currently being edited (if any).
   const allSkillOptionsForSynergyDialog = React.useMemo(() => {
     return allCombinedSkillDefinitions
-      .filter(skill => skill.id !== skillToEdit?.id) // Exclude skill being edited
+      .filter(skill => skill.id !== skillToEdit?.id) 
       .map(s => ({ value: s.id, label: s.name }))
       .sort((a,b) => a.label.localeCompare(b.label));
   }, [allCombinedSkillDefinitions, skillToEdit]);
@@ -342,29 +321,6 @@ export function SkillsFormSection({
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-                      {/* Removing custom skill instances/definitions needs careful thought.
-                          For now, removing a definition is not directly supported from this list.
-                          Removing an *instance* would mean setting ranks to 0 or filtering from character.skills.
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="h-5 w-5 text-destructive/70 hover:text-destructive"
-                                onClick={() => handleRemoveCustomSkillInstance(skill.id)}
-                                aria-label={`Remove ${skill.name}`}
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="p-1 text-xs">
-                            <p>Remove Custom Skill (Instance)</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      */}
                      </div>
                   )}
                 </div>
@@ -404,7 +360,7 @@ export function SkillsFormSection({
     <AddCustomSkillDialog
         isOpen={isAddOrEditSkillDialogOpen}
         onOpenChange={setIsAddOrEditSkillDialogOpen}
-        onSave={handleSaveCustomSkillDefinition}
+        onSave={handleSaveCustomSkillDefinitionToStore}
         initialSkillData={skillToEdit}
         allSkills={allSkillOptionsForSynergyDialog}
     />
@@ -420,3 +376,4 @@ export function SkillsFormSection({
     </>
   );
 }
+
