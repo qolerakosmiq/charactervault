@@ -307,7 +307,7 @@ export function SkillsFormSection({
                     min={0}
                     // max={maxRanksValue} // Max validation is visual via max column
                     step={currentStepForInput}
-                    inputClassName="w-14 h-7 text-xs" {/* Increased input width */}
+                    inputClassName="w-14 h-7 text-xs" 
                     buttonSize="sm"
                     buttonClassName="h-7 w-7"
                   />
