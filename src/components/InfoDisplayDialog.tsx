@@ -27,7 +27,7 @@ interface InfoDisplayDialogProps {
   bonusFeatSlots?: number;
   abilityScoreBreakdown?: AbilityScoreBreakdown;
   skillModifierBreakdown?: SkillModifierBreakdownDetails;
-  detailsList?: Array<{ label: string; value: string; isBold?: boolean }>;
+  detailsList?: Array<{ label: string; value: string | number; isBold?: boolean }>;
 }
 
 export function InfoDisplayDialog({
@@ -43,24 +43,45 @@ export function InfoDisplayDialog({
   skillModifierBreakdown,
   detailsList,
 }: InfoDisplayDialogProps) {
-  
+
   const hasAbilityModifiers = abilityModifiers && abilityModifiers.length > 0;
   const hasSkillBonuses = skillBonuses && skillBonuses.length > 0;
   const hasFeatAdjustments = (grantedFeats && grantedFeats.length > 0) || (bonusFeatSlots && bonusFeatSlots > 0);
   const hasDetailsList = detailsList && detailsList.length > 0;
 
-  const renderModifierValue = (value: number, positiveColor = "text-emerald-500", negativeColor = "text-destructive", zeroColor = "text-muted-foreground") => (
-    <span
-      className={cn(
-        "font-bold",
-        value > 0 && positiveColor,
-        value < 0 && negativeColor,
-        value === 0 && zeroColor
-      )}
-    >
-      {value >= 0 ? '+' : ''}{value}
-    </span>
-  );
+  const renderModifierValue = (value: number | string,
+    positiveColor = "text-emerald-500",
+    negativeColor = "text-destructive",
+    zeroColor = "text-muted-foreground",
+    accentColor = "text-accent", // For the total
+    isTotal = false
+  ) => {
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(numValue)) {
+      return <span className="font-bold">{value}</span>; // Non-numeric or already formatted string
+    }
+
+    let colorClass = zeroColor;
+    if (isTotal) {
+        colorClass = accentColor;
+    } else if (numValue > 0) {
+        colorClass = positiveColor;
+    } else if (numValue < 0) {
+        colorClass = negativeColor;
+    }
+
+    return (
+      <span
+        className={cn(
+          "font-bold",
+          colorClass
+        )}
+      >
+        {numValue >= 0 && !isTotal ? '+' : ''}{numValue}
+      </span>
+    );
+  };
+
 
   const anyBonusSectionWillRender = hasAbilityModifiers || hasSkillBonuses || hasFeatAdjustments;
 
@@ -70,6 +91,8 @@ export function InfoDisplayDialog({
     dialogTitle = `${abilityScoreBreakdown.ability.charAt(0).toUpperCase() + abilityScoreBreakdown.ability.slice(1)} Score Calculation`;
   } else if (skillModifierBreakdown) {
     dialogTitle = `${skillModifierBreakdown.skillName} Details`;
+  } else if (detailsList && title?.toLowerCase().includes("armor class breakdown")){
+    dialogTitle = title; // Keep the modified title from ArmorClassPanel
   }
 
 
@@ -83,15 +106,15 @@ export function InfoDisplayDialog({
           </DialogTitle>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] pr-4 my-2">
-          {content && !abilityScoreBreakdown && !skillModifierBreakdown && (
-             <div 
-              className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none" 
-              dangerouslySetInnerHTML={{ __html: content }} 
+          {content && !abilityScoreBreakdown && !skillModifierBreakdown && !title?.toLowerCase().includes("armor class breakdown") && (
+             <div
+              className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+              dangerouslySetInnerHTML={{ __html: content }}
             />
           )}
-          
+
           {content && (skillModifierBreakdown || abilityScoreBreakdown) && (
-             <div 
+             <div
               className="text-sm text-muted-foreground mb-3 leading-relaxed prose prose-sm dark:prose-invert max-w-none"
               dangerouslySetInnerHTML={{ __html: content }}
             />
@@ -167,7 +190,7 @@ export function InfoDisplayDialog({
                   <Separator className="my-2" />
                   <div className="flex justify-between text-base">
                     <span className="font-semibold">Total Bonus:</span>
-                    {renderModifierValue(skillModifierBreakdown.totalBonus, "text-accent", "text-accent", "text-accent")}
+                    {renderModifierValue(skillModifierBreakdown.totalBonus, "text-accent", "text-accent", "text-accent", "text-accent", true)}
                   </div>
                 </div>
             </div>
@@ -233,15 +256,25 @@ export function InfoDisplayDialog({
 
           {!abilityScoreBreakdown && !skillModifierBreakdown && hasDetailsList && (
              <>
-              {(content || anyBonusSectionWillRender) && <Separator className="my-4" />}
+              {(content || anyBonusSectionWillRender) && (!title?.toLowerCase().includes("armor class breakdown")) && <Separator className="my-4" />}
               <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">Key Attributes:</h3>
-                {detailsList!.map((detail, index) => (
-                  <div key={index} className="flex justify-between text-sm mb-0.5">
-                    <span className="text-muted-foreground">{detail.label}:</span>
-                    <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value}</span>
-                  </div>
-                ))}
+                <h3 className="text-md font-semibold mb-2 text-foreground">
+                  {title?.toLowerCase().includes("armor class breakdown") ? "Calculation:" : "Key Attributes:"}
+                </h3>
+                {detailsList!.map((detail, index) => {
+                  const isTotalRow = detail.label.toLowerCase() === 'total';
+                  const isDexModRow = detail.label.toLowerCase().includes('dexterity modifier');
+                  const valueToRender = (isDexModRow || isTotalRow)
+                    ? renderModifierValue(detail.value, "text-emerald-500", "text-destructive", "text-muted-foreground", "text-accent", isTotalRow)
+                    : detail.value;
+
+                  return (
+                    <div key={index} className="flex justify-between text-sm mb-0.5">
+                      <span className="text-muted-foreground">{detail.label}:</span>
+                      <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{valueToRender}</span>
+                    </div>
+                  );
+                })}
               </div>
             </>
           )}
