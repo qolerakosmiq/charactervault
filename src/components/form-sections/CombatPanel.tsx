@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Swords, Info } from 'lucide-react';
 import { getAbilityModifierByName, getBab, calculateInitiative, calculateGrapple, getSizeModifierGrapple, getUnarmedGrappleDamage } from '@/lib/dnd-utils';
-import { SIZES } from '@/types/character';
+import { SIZES, DND_CLASSES } from '@/types/character'; // Added DND_CLASSES import
 
 
 interface CombatPanelProps {
@@ -39,9 +39,9 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
 
   const unarmedGrappleDamageDice = getUnarmedGrappleDamage(character.size);
   const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
-  const displayedUnarmedGrappleDamageNotes = `${unarmedGrappleDamageDice} (${sizeLabel} Unarmed)`;
   
-  const baseGrappleDamageString = (character.grappleDamage_baseNotes || displayedUnarmedGrappleDamageNotes).split(' ')[0];
+  // Use character.grappleDamage_baseNotes which is set by CharacterFormCore
+  const baseGrappleDamageString = (character.grappleDamage_baseNotes || `${unarmedGrappleDamageDice} (${sizeLabel} Unarmed)`).split(' ')[0];
   const totalNumericGrappleBonus = strModifier + (character.grappleDamage_bonus || 0);
   const displayedGrappleDamageTotal = `${baseGrappleDamageString}${totalNumericGrappleBonus !== 0 ? ` ${totalNumericGrappleBonus >= 0 ? '+' : ''}${totalNumericGrappleBonus}` : ''}`;
 
@@ -78,7 +78,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
   
   const handleGrappleDamageInfo = () => {
     const details: GrappleDamageBreakdownDetails = {
-        baseDamage: character.grappleDamage_baseNotes || displayedUnarmedGrappleDamageNotes,
+        baseDamage: character.grappleDamage_baseNotes || `${unarmedGrappleDamageDice} (${sizeLabel} Unarmed)`,
         bonus: character.grappleDamage_bonus || 0,
         strengthModifier: strModifier,
     };
