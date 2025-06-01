@@ -195,7 +195,7 @@ export function InfoDisplayDialog({
                 <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span>Base Attack Bonus from Classes:</span>
+                    <span>Fighter Base Attack Bonus:</span>
                     <span className="font-bold">{babBreakdown.baseBabFromClasses.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
                   </div>
                    {babBreakdown.miscModifier !== 0 && (
