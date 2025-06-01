@@ -18,7 +18,6 @@ import {
   getNetAgingEffects,
   GENDERS,
   DND_DEITIES,
-  // getSizeAbilityEffects, // Already removed
   getRaceSpecialQualities,
   getInitialCharacterSkills,
   SKILL_DEFINITIONS,
@@ -657,7 +656,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <SavingThrowsPanel
               savingThrows={character.savingThrows}
               abilityScores={actualAbilityScoresForSavesAndSkills}
@@ -665,11 +664,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
           />
           <ArmorClassPanel character={character} />
-          <ResistancesPanel 
-            characterData={character} 
-            onFieldChange={handleCoreInfoFieldChange} 
-          />
         </div>
+        
+        <ResistancesPanel
+          characterData={character}
+          onFieldChange={handleCoreInfoFieldChange}
+        />
 
 
         <Separator className="my-10" />
