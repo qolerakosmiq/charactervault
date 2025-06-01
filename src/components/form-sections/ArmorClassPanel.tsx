@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 import { getAbilityModifierByName, getSizeModifierAC } from '@/lib/dnd-utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DEFAULT_ABILITIES } from '@/types/character'; // Import DEFAULT_ABILITIES
+import { DEFAULT_ABILITIES } from '@/types/character';
 
 interface ArmorClassPanelProps {
   character?: Character; // Character prop is optional
@@ -22,9 +22,8 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<{ title: string; detailsList: AcBreakdownDetail[] } | null>(null);
 
-  // Primary guard: If character data is not yet available, or essential parts are missing, show skeletons.
-  // This ensures the component doesn't crash and waits for valid data.
-  if (!character || !character.abilityScores || !character.size) {
+  // Primary guard: If character data is not yet available render skeletons.
+  if (!character) {
     return (
       <Card>
         <CardHeader>

@@ -663,7 +663,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               characterClasses={character.classes}
               onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
           />
-          <ArmorClassPanel />
+          <ArmorClassPanel character={character} />
         </div>
 
 
