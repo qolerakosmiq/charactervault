@@ -72,7 +72,8 @@ export function InfoDisplayDialog({
         colorClass = zeroColor; 
     }
     
-    const prefix = numValue > 0 ? '+' : (numValue < 0 ? '' : '+');
+    const prefix = numValue > 0 ? '+' : (numValue === 0 ? '+' : '');
+
 
     return (
       <span
@@ -98,7 +99,7 @@ export function InfoDisplayDialog({
     dialogTitle = `${skillModifierBreakdown.skillName} Details`;
     sectionHeading = "Skill Modifier Breakdown:";
   } else if (title?.toLowerCase().includes("armor class breakdown")){
-    dialogTitle = title; // Use the title passed from ArmorClassPanel directly
+    dialogTitle = title;
     sectionHeading = "Calculation:";
   }
 
@@ -178,7 +179,7 @@ export function InfoDisplayDialog({
                   </div>
                    {skillModifierBreakdown.sizeSpecificBonus !== 0 && (
                     <div className="flex justify-between">
-                      <span>Size Bonus:</span>
+                      <span>Size Modifier:</span>
                       {renderModifierValue(skillModifierBreakdown.sizeSpecificBonus)}
                     </div>
                   )}
@@ -311,3 +312,4 @@ export function InfoDisplayDialog({
     </Dialog>
   );
 }
+
