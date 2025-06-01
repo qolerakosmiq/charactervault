@@ -149,7 +149,7 @@ export function InfoDisplayDialog({
     dialogTitle = title;
     sectionHeading = "Calculation:";
   } else if (babBreakdown) {
-    dialogTitle = "Base Attack Bonus (BAB) Breakdown";
+    dialogTitle = "Base Attack Bonus Breakdown"; // Corrected title here
     sectionHeading = "Calculation:";
   } else if (initiativeBreakdown) {
     dialogTitle = "Initiative Breakdown";
