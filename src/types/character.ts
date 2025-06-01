@@ -187,8 +187,8 @@ export interface Character {
   babMiscModifier: number;
   initiativeMiscModifier: number;
   grappleMiscModifier: number;
-  grappleDamage_baseNotes: string;
-  grappleDamage_bonus: number;
+  grappleDamage_baseNotes: string; // Will store dynamically calculated unarmed damage string or future weapon name
+  grappleDamage_bonus: number; // This is the "Custom Modifier" for grapple damage
 
   savingThrows: SavingThrows;
   classes: CharacterClass[];
@@ -240,7 +240,7 @@ export type CharacterSizeObject = {
   skillModifiers?: Partial<Record<string, number>>; // e.g. { "hide": 4 } skillId to bonus
 };
 export type CharacterSize =
-  | "fine" | "diminutive" | "tiny" | "small" | "medium" | "large" | "huge" | "gargantuan" | "colossal";
+  | "fine" | "diminutive" | "tiny" | "small" | "medium" | "large" | "huge" | "gargantuan" | "colossal" | '';
 
 const baseGendersData = (baseDataJson as any).GENDERS_DATA || [];
 const customGendersData = (customBaseDataJson as any).GENDERS_DATA || [];
@@ -363,6 +363,18 @@ export type SynergyEffectJsonData = { targetSkill: string; ranksRequired: number
 export type SkillSynergiesJsonData = Record<string, SynergyEffectJsonData[]>; // providing skill ID to synergy effects
 const baseSkillSynergies = (skillsDataJson as any).SKILL_SYNERGIES_DATA || {};
 export const SKILL_SYNERGIES: Readonly<SkillSynergiesJsonData> = mergeObjectData(baseSkillSynergies, {});
+
+export const GRAPPLE_DAMAGE_BY_SIZE: Partial<Record<CharacterSize, string>> = {
+  tiny: '1d2',
+  small: '1d4',
+  medium: '1d6',
+  large: '2d6',
+  huge: '3d6',
+  gargantuan: '4d6',
+  colossal: '6d6',
+  // Fine and Diminutive often default to 0 or 1 nonlethal, or have special rules.
+  // If not specified, a helper function will return a default like "0" or "1 nonlethal".
+};
 
 export function getRaceSkillPointsBonusPerLevel(raceId: DndRaceId | string): number {
     return (DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA as Record<string, number>)[raceId] || 0;

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -44,8 +45,8 @@ export interface GrappleModifierBreakdownDetails {
 }
 
 export interface GrappleDamageBreakdownDetails {
-  baseDamage: string;
-  bonus: number;
+  baseDamage: string; // e.g., "1d6 (Medium Size Unarmed)" or "Longsword (1d8)"
+  bonus: number; // This is the custom modifier
   strengthModifier: number;
 }
 
@@ -149,7 +150,7 @@ export function InfoDisplayDialog({
     dialogTitle = title;
     sectionHeading = "Calculation:";
   } else if (babBreakdown) {
-    dialogTitle = "Base Attack Bonus Breakdown"; // Corrected title here
+    dialogTitle = "Base Attack Bonus Breakdown"; 
     sectionHeading = "Calculation:";
   } else if (initiativeBreakdown) {
     dialogTitle = "Initiative Breakdown";
@@ -158,7 +159,7 @@ export function InfoDisplayDialog({
     dialogTitle = "Grapple Modifier Breakdown";
     sectionHeading = "Calculation:";
   } else if (grappleDamageBreakdown) {
-    dialogTitle = "Grapple Damage Notes";
+    dialogTitle = "Grapple Damage Breakdown";
     sectionHeading = "Details:";
   }
 
@@ -280,7 +281,7 @@ export function InfoDisplayDialog({
                 <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span>Base Damage / Notes:</span>
+                    <span>Base Damage (Unarmed/Weapon):</span>
                     <span className="font-bold">{grappleDamageBreakdown.baseDamage}</span>
                   </div>
                   <div className="flex justify-between">
@@ -289,11 +290,11 @@ export function InfoDisplayDialog({
                   </div>
                    {grappleDamageBreakdown.bonus !== 0 && (
                     <div className="flex justify-between">
-                        <span>Numeric Bonus:</span>
+                        <span>Custom Modifier:</span>
                         {renderModifierValue(grappleDamageBreakdown.bonus)}
                     </div>
                   )}
-                  {/* Total Grapple Damage is usually Base (like 1d3 or weapon) + STR Mod + Bonus. Displaying a simple sum might be misleading if base is dice. */}
+                  <p className="text-xs text-muted-foreground mt-2">Note: Full weapon damage calculations (including enchantments, feats, etc.) are not yet implemented for grappling with weapons.</p>
                 </div>
               </div>
             </>

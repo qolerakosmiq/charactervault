@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -34,6 +35,8 @@ import {
   getRaceSkillPointsBonusPerLevel,
   DAMAGE_REDUCTION_TYPES
 } from '@/types/character';
+import { getUnarmedGrappleDamage } from '@/lib/dnd-utils';
+
 
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
 
@@ -107,6 +110,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const [character, setCharacter] = React.useState<Character>(() => {
     const defaultBaseAbilityScores = { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES)) as AbilityScores) };
     const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: '', level: 1 }];
+    const defaultSize: CharacterSize = 'medium';
+    const defaultUnarmedGrappleDamage = getUnarmedGrappleDamage(defaultSize);
+    const sizeLabel = SIZES.find(s => s.value === defaultSize)?.label || defaultSize;
+
 
     const allInitialFeatDefsForGranting = [
         ...DND_FEATS_DEFINITIONS.map(def => ({ ...def, isCustom: false as const })),
@@ -125,7 +132,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
     return initialCharacter || {
       id: crypto.randomUUID(),
-      name: '', race: '', alignment: 'true-neutral', deity: '', size: 'medium', age: 20, gender: '',
+      name: '', race: '', alignment: 'true-neutral', deity: '', size: defaultSize, age: 20, gender: '',
       abilityScores: defaultBaseAbilityScores, hp: 10, maxHp: 10,
       armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0,
       deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, 
@@ -133,7 +140,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       babMiscModifier: 0,
       initiativeMiscModifier: 0,
       grappleMiscModifier: 0,
-      grappleDamage_baseNotes: 'Unarmed',
+      grappleDamage_baseNotes: `${defaultUnarmedGrappleDamage} (${sizeLabel} Unarmed)`,
       grappleDamage_bonus: 0,
       
       savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)),
@@ -349,6 +356,19 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     character.classes,
     allAvailableSkillDefinitionsForDisplay
   ]);
+
+  // Effect to update grappleDamage_baseNotes when size changes
+  React.useEffect(() => {
+    const newUnarmedDamage = getUnarmedGrappleDamage(character.size);
+    const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size || 'Unknown Size';
+    const newBaseNotes = `${newUnarmedDamage} (${sizeLabel} Unarmed)`;
+    if (character.grappleDamage_baseNotes !== newBaseNotes) {
+      setCharacter(prev => ({
+        ...prev,
+        grappleDamage_baseNotes: newBaseNotes,
+      }));
+    }
+  }, [character.size, character.grappleDamage_baseNotes]);
 
 
   const handleCoreInfoFieldChange = (field: keyof Character, value: any) => {

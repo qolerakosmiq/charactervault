@@ -1,15 +1,18 @@
 
+
 'use client';
 
 import * as React from 'react';
-import type { Character, BabBreakdownDetails, InitiativeBreakdownDetails, GrappleModifierBreakdownDetails, GrappleDamageBreakdownDetails } from '@/types/character';
+import type { Character, BabBreakdownDetails, InitiativeBreakdownDetails, GrappleModifierBreakdownDetails, GrappleDamageBreakdownDetails, CharacterSize } from '@/types/character';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Swords, Info } from 'lucide-react';
-import { getAbilityModifierByName, getBab, calculateInitiative, calculateGrapple, getSizeModifierGrapple } from '@/lib/dnd-utils';
+import { getAbilityModifierByName, getBab, calculateInitiative, calculateGrapple, getSizeModifierGrapple, getUnarmedGrappleDamage } from '@/lib/dnd-utils';
+import { SIZES } from '@/types/character';
+
 
 interface CombatPanelProps {
   character: Character;
@@ -30,10 +33,15 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
   const baseBabArray = getBab(classes);
   const totalBabWithModifier = baseBabArray.map(bab => bab + (character.babMiscModifier || 0));
 
-  const baseInitiative = calculateInitiative(dexModifier, character.initiativeMiscModifier);
+  const baseInitiative = calculateInitiative(dexModifier, character.initiativeMiscModifier || 0);
 
   const baseGrappleModifier = calculateGrapple(baseBabArray, strModifier, sizeModGrapple);
   const totalGrappleModifier = baseGrappleModifier + (character.grappleMiscModifier || 0);
+
+  const unarmedGrappleDamageDice = getUnarmedGrappleDamage(character.size);
+  const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
+  const displayedUnarmedGrappleDamage = `${unarmedGrappleDamageDice} (${sizeLabel} Unarmed)`;
+
 
   const handleBabInfo = () => {
     const details: BabBreakdownDetails = {
@@ -66,8 +74,8 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
   
   const handleGrappleDamageInfo = () => {
     const details: GrappleDamageBreakdownDetails = {
-        baseDamage: character.grappleDamage_baseNotes || "Unarmed",
-        bonus: character.grappleDamage_bonus || 0,
+        baseDamage: character.grappleDamage_baseNotes, // This will now hold the size-based unarmed string
+        bonus: character.grappleDamage_bonus || 0, // This is the "Custom Modifier"
         strengthModifier: strModifier,
     };
     onOpenCombatStatInfoDialog('grappleDamage', details);
@@ -85,7 +93,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
       <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
         {/* BAB Sub-panel */}
         <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
-          <Label htmlFor="bab-display" className="text-md font-medium block">Base Attack Bonus (BAB)</Label>
+          <Label htmlFor="bab-display" className="text-md font-medium block">Base Attack Bonus</Label>
           <div className="flex items-center justify-center">
             <p id="bab-display" className="text-2xl font-bold text-accent">
               {totalBabWithModifier.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}
@@ -101,8 +109,8 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
                 id="bab-custom-mod"
                 value={character.babMiscModifier || 0}
                 onChange={(val) => onCharacterUpdate('babMiscModifier', val)}
-                min={-20} // Max removed
-                inputClassName="h-8 text-sm w-20" // Width increased
+                min={-20} 
+                inputClassName="h-8 text-sm w-20" 
                 buttonClassName="h-8 w-8"
               />
             </div>
@@ -127,8 +135,8 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
                 id="initiative-custom-mod"
                 value={character.initiativeMiscModifier || 0}
                 onChange={(val) => onCharacterUpdate('initiativeMiscModifier', val)}
-                min={-20} // Max removed
-                inputClassName="h-8 text-sm w-20" // Width increased
+                min={-20} 
+                inputClassName="h-8 text-sm w-20" 
                 buttonClassName="h-8 w-8"
               />
             </div>
@@ -153,8 +161,8 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
                 id="grapple-custom-mod"
                 value={character.grappleMiscModifier || 0}
                 onChange={(val) => onCharacterUpdate('grappleMiscModifier', val)}
-                min={-20} // Max removed
-                inputClassName="h-8 text-sm w-20" // Width increased
+                min={-20} 
+                inputClassName="h-8 text-sm w-20" 
                 buttonClassName="h-8 w-8"
               />
             </div>
@@ -166,7 +174,8 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
             <Label htmlFor="grapple-damage-display" className="text-md font-medium block">Grapple Damage</Label>
             <div className="flex items-center justify-center">
                 <p id="grapple-damage-display" className="text-xl font-semibold text-accent">
-                    {character.grappleDamage_baseNotes || 'Unarmed'}
+                    {character.grappleDamage_baseNotes || displayedUnarmedGrappleDamage}
+                    {strModifier !== 0 ? ` ${strModifier >= 0 ? '+' : ''}${strModifier} STR` : ''}
                     {(character.grappleDamage_bonus || 0) !== 0 ? ` ${character.grappleDamage_bonus! >= 0 ? '+' : ''}${character.grappleDamage_bonus}` : ''}
                 </p>
                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleGrappleDamageInfo}>
@@ -175,26 +184,25 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
             </div>
             <div className="mt-auto space-y-2">
                 <div className="space-y-1">
-                    <Label htmlFor="grapple-damage-base" className="text-xs text-muted-foreground block">Base / Notes</Label>
-                    <div className="flex justify-center">
-                      <Input
-                          id="grapple-damage-base"
-                          value={character.grappleDamage_baseNotes || ''}
-                          onChange={(e) => onCharacterUpdate('grappleDamage_baseNotes', e.target.value)}
-                          placeholder="e.g., 1d3, Unarmed"
-                          className="h-8 text-sm max-w-[150px]" 
-                      />
-                    </div>
+                    <Label className="text-xs text-muted-foreground block">Equipped Weapon</Label>
+                    <Select disabled>
+                        <SelectTrigger className="h-8 text-sm w-full max-w-[200px] mx-auto">
+                            <SelectValue placeholder="Weapon Select (N/A)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {/* Options will be added when weapons are implemented */}
+                        </SelectContent>
+                    </Select>
                 </div>
                 <div className="space-y-1">
-                    <Label htmlFor="grapple-damage-bonus" className="text-xs text-muted-foreground block">Numeric Bonus</Label>
+                    <Label htmlFor="grapple-damage-custom-mod" className="text-xs text-muted-foreground block">Custom Modifier</Label>
                     <div className="flex justify-center">
                       <NumberSpinnerInput
-                          id="grapple-damage-bonus"
+                          id="grapple-damage-custom-mod"
                           value={character.grappleDamage_bonus || 0}
                           onChange={(val) => onCharacterUpdate('grappleDamage_bonus', val)}
-                          min={-20} // Max removed
-                          inputClassName="h-8 text-sm w-20" // Width increased
+                          min={-20} 
+                          inputClassName="h-8 text-sm w-20" 
                           buttonClassName="h-8 w-8"
                       />
                     </div>
@@ -205,3 +213,4 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
     </Card>
   );
 }
+

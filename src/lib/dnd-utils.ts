@@ -1,7 +1,7 @@
 
 
 import type { AbilityName, AbilityScores, CharacterClass, CharacterSize, Skill, DndClassOption, SavingThrowType } from '@/types/character';
-import { SIZES, DND_CLASSES } from '@/types/character'; // Import SIZES to look up labels
+import { SIZES, DND_CLASSES, GRAPPLE_DAMAGE_BY_SIZE } from '@/types/character'; // Import SIZES to look up labels
 
 export function calculateAbilityModifier(score: number): number {
   return Math.floor((score - 10) / 2);
@@ -112,12 +112,14 @@ export function calculateGrapple(bab: number[], strModifier: number, sizeModifie
   return (bab[0] || 0) + strModifier + sizeModifierGrapple;
 }
 
-export function getSizeModifierAC(sizeId: CharacterSize): number {
+export function getSizeModifierAC(sizeId: CharacterSize | ''): number {
+  if (!sizeId) return 0;
   const sizeObject = SIZES.find(s => s.value === sizeId);
   return sizeObject ? sizeObject.acModifier : 0;
 }
 
-export function getSizeModifierGrapple(sizeId: CharacterSize): number {
+export function getSizeModifierGrapple(sizeId: CharacterSize | ''): number {
+  if (!sizeId) return 0;
   const sizeObject = SIZES.find(s => s.value === sizeId);
   // Grapple modifiers are typically opposite to AC for small/large and more extreme for others
   // Fine: -16, Diminutive: -12, Tiny: -8, Small: -4, Medium: 0, Large: +4, Huge: +8, Gargantuan: +12, Colossal: +16
@@ -139,6 +141,11 @@ export function getSizeModifierGrapple(sizeId: CharacterSize): number {
   }
 }
 
+export function getUnarmedGrappleDamage(size: CharacterSize | ''): string {
+  if (!size) return GRAPPLE_DAMAGE_BY_SIZE['medium'] || '1d6'; // Default to medium if no size
+  return GRAPPLE_DAMAGE_BY_SIZE[size] || 'N/A';
+}
+
 export function calculateSkillTotal(skill: Skill, abilityScores: AbilityScores): number {
   const abilityMod = skill.keyAbility ? getAbilityModifierByName(abilityScores, skill.keyAbility) : 0;
   // Max ranks for class skill: level + 3. For cross-class: (level + 3) / 2.
@@ -155,3 +162,4 @@ export const SAVING_THROW_ABILITIES: Record<SavingThrowType, AbilityName> = {
   reflex: 'dexterity',
   will: 'wisdom',
 };
+
