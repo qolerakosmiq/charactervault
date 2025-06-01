@@ -149,7 +149,7 @@ export function InfoDisplayDialog({
     dialogTitle = title;
     sectionHeading = "Calculation:";
   } else if (babBreakdown) {
-    dialogTitle = "Base Attack Bonus Breakdown";
+    dialogTitle = "Base Attack Bonus (BAB) Breakdown";
     sectionHeading = "Calculation:";
   } else if (initiativeBreakdown) {
     dialogTitle = "Initiative Breakdown";
@@ -194,7 +194,7 @@ export function InfoDisplayDialog({
                 <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span>Base BAB from Classes:</span>
+                    <span>Base Attack Bonus from Classes:</span>
                     <span className="font-bold">{babBreakdown.baseBabFromClasses.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
                   </div>
                    {babBreakdown.miscModifier !== 0 && (
@@ -205,7 +205,7 @@ export function InfoDisplayDialog({
                   )}
                   <Separator className="my-2" />
                   <div className="flex justify-between text-base">
-                    <span className="font-semibold">Total BAB:</span>
+                    <span className="font-semibold">Total Base Attack Bonus:</span>
                     <span className="font-bold text-accent">{babBreakdown.totalBab.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
                   </div>
                 </div>
