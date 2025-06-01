@@ -343,26 +343,61 @@ export function CharacterFormCoreInfoSection({
                 {SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
               </SelectContent>
             </Select>
-            {sizeAbilityEffectsDetails && sizeAbilityEffectsDetails.effects.length > 0 && (
-              <div className="flex flex-wrap gap-1 pt-[6px] ml-1">
-                {sizeAbilityEffectsDetails.effects.map((effect) => {
+            <div className="flex flex-wrap items-center gap-1 pt-[6px] ml-1">
+              {sizeAbilityEffectsDetails && sizeAbilityEffectsDetails.effects.length > 0 && (
+                sizeAbilityEffectsDetails.effects.map((effect) => {
                     let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
-                    let badgeClassName = "text-xs font-normal";
+                    let badgeClassNameInternal = "text-xs font-normal";
                      if (effect.change > 0) {
-                        badgeClassName = cn(badgeClassName, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
+                        badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     } else if (effect.change < 0) {
                         badgeVariantProp = "destructive";
-                        badgeClassName = cn(badgeClassName, "hover:bg-destructive");
+                        badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive");
                     }
                     return (
-                      <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassName}>
+                      <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}>
                         {effect.ability.substring(0, 3).toUpperCase()}{'\u00A0'}
                         {effect.change > 0 ? '+' : ''}{effect.change}
                       </Badge>
                     );
-                })}
-              </div>
-            )}
+                })
+              )}
+              {/* AC Modifier Badge for Size */}
+              {characterData.size && (() => {
+                const selectedSizeObject = SIZES.find(s => s.value === characterData.size);
+                if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number') {
+                  const acMod = selectedSizeObject.acModifier;
+                  let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
+                  let badgeClassNameForAc = "text-xs font-normal";
+
+                  if (acMod > 0) { // Positive AC mod is good (smaller creatures get AC bonus)
+                    badgeClassNameForAc = cn(
+                      badgeClassNameForAc,
+                      "bg-emerald-700 text-emerald-100 border-emerald-600",
+                      "hover:bg-emerald-700 hover:text-emerald-100"
+                    );
+                  } else if (acMod < 0) { // Negative AC mod is bad (larger creatures get AC penalty)
+                    badgeVariantProp = "destructive";
+                    badgeClassNameForAc = cn(badgeClassNameForAc, "hover:bg-destructive");
+                  } else { // Zero AC mod (Medium size)
+                    badgeClassNameForAc = cn(
+                      badgeClassNameForAc,
+                      "bg-muted/50 text-muted-foreground border-border",
+                      "hover:bg-muted/50 hover:text-muted-foreground"
+                    );
+                  }
+                  return (
+                    <Badge
+                      variant={badgeVariantProp}
+                      className={badgeClassNameForAc}
+                    >
+                      AC{'\u00A0'}{acMod >= 0 ? '+' : ''}{acMod}
+                    </Badge>
+                  );
+                }
+                return null;
+              })()}
+            </div>
           </div>
         </div>
       </CardContent>
