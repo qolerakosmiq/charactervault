@@ -43,10 +43,19 @@
       "description": "<p>Bards are versatile performers, weaving magic through music and words.<br />They are storytellers, diplomats, and adventurers, often charismatic and quick-witted.</p><p><b>Alignment:</b><br />Any nonlawful.</p><p><b>Religion:</b><br />Bards may follow deities of art, travel, or trickery.</p><p><b>Background:</b><br />Often from performing troupes, scholarly institutions, or simply wanderers.</p><p><b>Races:</b><br />Humans, elves, and half-elves frequently become bards.</p>",
       "grantedFeats": [
         { "featId": "class-bard-bardic-music", "note": "(Bard Feature)", "levelAcquired": 1 },
+        { "featId": "class-bard-bardic-knowledge", "note": "(Bard Feature)", "levelAcquired": 1 },
         { "featId": "class-bard-countersong", "note": "(Bard Feature)", "levelAcquired": 1 },
         { "featId": "class-bard-fascinate", "note": "(Bard Feature)", "levelAcquired": 1 },
         { "featId": "class-bard-inspire-courage", "note": "(+1)", "levelAcquired": 1 },
-        { "featId": "class-bard-suggestion", "note": "(Bard Feature)", "levelAcquired": 6 }
+        { "featId": "class-bard-inspire-competence", "note": "(Bard Feature)", "levelAcquired": 3 },
+        { "featId": "class-bard-suggestion", "note": "(Bard Feature)", "levelAcquired": 6 },
+        { "featId": "class-bard-inspire-courage", "note": "(+2, replaces +1)", "levelAcquired": 8 },
+        { "featId": "class-bard-inspire-greatness", "note": "(Bard Feature)", "levelAcquired": 9 },
+        { "featId": "class-bard-song-of-freedom", "note": "(Bard Feature)", "levelAcquired": 12 },
+        { "featId": "class-bard-inspire-courage", "note": "(+3, replaces +2)", "levelAcquired": 14 },
+        { "featId": "class-bard-inspire-heroics", "note": "(Bard Feature)", "levelAcquired": 15 },
+        { "featId": "class-bard-mass-suggestion", "note": "(Bard Feature)", "levelAcquired": 18 },
+        { "featId": "class-bard-inspire-courage", "note": "(+4, replaces +3)", "levelAcquired": 20 }
       ]
     },
     {

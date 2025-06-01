@@ -53,7 +53,7 @@
     { "value": "rapid-shot", "label": "Rapid Shot", "description": "<b>Benefit:</b> You can get one extra attack per round with a ranged weapon.<br />The attack is at your highest base attack bonus, but each attack you make in that round (the extra one and the normal ones) takes a –2 penalty.<br />You must use the full attack action to use this feat.<br /><b>Normal:</b> A character without this feat can only get a single extra attack with an off-hand weapon.", "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["point-blank-shot"] }, "isClassFeature": false, "type": "special" },
     { "value": "ride-by-attack", "label": "Ride-By Attack", "description": "<b>Benefit:</b> When you are mounted and use the charge action, you may move and attack as if making a standard charge and then move again (continuing the straight line of the charge).<br />Your total movement for the round can’t exceed double your mounted speed.<br />You and your mount do not provoke an attack of opportunity from the opponent that you attack.", "prerequisites": { "skills": [{ "id": "ride", "ranks": 1 }], "feats": ["mounted-combat"] }, "isClassFeature": false, "type": "special" },
     { "value": "run", "label": "Run", "description": "<b>Benefit:</b> When running, you move five times your normal speed (if wearing light or no armor and carrying no more than a light load) or four times your speed (if wearing medium or heavy armor or carrying a medium or heavy load).<br />If you make a jump after a running start (see the Jump skill description), you gain a +4 bonus on your Jump check.<br />While running, you retain your Dexterity bonus to AC.<br /><b>Normal:</b> You move four times your speed (if wearing light or no armor and carrying no more than a light load) or three times your speed (if wearing medium or heavy armor or carrying a medium or heavy load), and you lose your Dexterity bonus to AC.<br />If you make a jump after a running start, you gain no bonus on your Jump check.", "isClassFeature": false, "type": "special" },
-    { "value": "scribe-scroll", "label": "Scribe Scroll", "description": "<b>Benefit:</b> You can create a scroll of any spell that you know.<br />Scribing a scroll takes one day for each 1,000 gp in its base price.<br />The base price of a scroll is its spell level × its caster level × 25 gp.<br />To scribe a scroll, you must spend 1/25 of this base price in XP and use up raw materials costing one-half of this base price.", "prerequisites": { "casterLevel": 1 }, "isClassFeature": false, "type": "special" },
+    { "value": "scribe-scroll", "label": "Scribe Scroll", "description": "<b>Benefit:</b> You can create a scroll of any spell that you know.<br />Scribing a scroll takes one day for each 1,000 gp in its base price.<br />The base price of a scroll is its spell level × its caster level × 25 gp.<br />To scribe a scroll, you must spend 1/25 of this base price in XP and use up raw materials costing one-half of this base price.", "prerequisites": { "casterLevel": 1 }, "isClassFeature": true, "type": "special" },
     { "value": "self-sufficient", "label": "Self-Sufficient", "description": "<b>Benefit:</b> You get a +2 bonus on all Heal and Survival checks.", "effects": { "skills": { "heal": 2, "survival": 2 } }, "isClassFeature": false, "type": "special" },
     { "value": "shield-proficiency", "label": "Shield Proficiency", "description": "<b>Benefit:</b> You can use a shield and take only the standard penalties.", "isClassFeature": false, "type": "special" },
     { "value": "shot-on-the-run", "label": "Shot on the Run", "description": "<b>Benefit:</b> When using the attack action with a ranged weapon, you can move both before and after the attack, provided that your total distance moved is not greater than your speed.", "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge", "mobility", "point-blank-shot"], "bab": 4 }, "isClassFeature": false, "type": "special" },
@@ -68,7 +68,7 @@
     { "value": "stealthy", "label": "Stealthy", "description": "<b>Benefit:</b> You get a +2 bonus on all Hide and Move Silently checks.", "effects": { "skills": { "hide": 2, "move-silently": 2 } }, "isClassFeature": false, "type": "special" },
     { "value": "stunning-fist", "label": "Stunning Fist", "description": "<b>Benefit:</b> You must declare that you are using this feat before you make your attack roll (thus, a failed attack roll ruins the attempt).<br />Stunning Fist forces a foe damaged by your unarmed attack to make a Fortitude saving throw (DC 10 + 1/2 your character level + your Wis modifier), in addition to dealing damage normally.<br />A defender who fails this saving throw is stunned for 1 round (until just before your next action).<br />A stunned character can’t act, loses any Dexterity bonus to AC, and takes a –2 penalty to AC.<br />You may attempt a stunning attack once per day for every four levels you have attained (but see Special), and no more than once per round.<br /><b>Special:</b> A monk may select Stunning Fist as a bonus feat at 1st level, even if she does not meet the prerequisites.<br />A monk who selects this feat may attempt a stunning attack a number of times per day equal to her monk level, plus one more time per day for every four levels she has in classes other than monk.", "prerequisites": { "abilities": { "dexterity": 13, "wisdom": 13 }, "feats": ["improved-unarmed-strike"], "bab": 8 }, "isClassFeature": false, "type": "special" },
     { "value": "toughness", "label": "Toughness", "description": "<b>Benefit:</b> You gain +3 hit points.<br /><b>Special:</b> A character may gain this feat multiple times.<br />Its effects stack.", "canTakeMultipleTimes": true, "isClassFeature": false, "type": "special" },
-    { "value": "track", "label": "Track", "description": "<b>Benefit:</b> To find tracks or to follow them for 1 mile requires a successful Survival check.<br />You must make another Survival check every time the tracks become difficult to follow.", "isClassFeature": false, "type": "special" },
+    { "value": "track", "label": "Track", "description": "<b>Benefit:</b> To find tracks or to follow them for 1 mile requires a successful Survival check.<br />You must make another Survival check every time the tracks become difficult to follow.", "isClassFeature": true, "type": "special-ex" },
     { "value": "trample", "label": "Trample", "description": "<b>Benefit:</b> When you attempt to overrun an opponent while mounted, your target may not choose to avoid you.<br />Your mount may make one hoof attack against any target you knock down, gaining the standard +4 bonus on attack rolls against prone targets.", "prerequisites": { "skills": [{ "id": "ride", "ranks": 1 }], "feats": ["mounted-combat"] }, "isClassFeature": false, "type": "special" },
     { "value": "two-weapon-defense", "label": "Two-Weapon Defense", "description": "<b>Benefit:</b> When wielding a double weapon or two weapons (not including natural weapons or unarmed strikes), you gain a +1 shield bonus to your AC.<br />When you are fighting defensively or using the total defense action, this shield bonus increases to +2.", "prerequisites": { "abilities": { "dexterity": 15 }, "feats": ["two-weapon-fighting"] }, "isClassFeature": false, "type": "special" },
     { "value": "two-weapon-fighting", "label": "Two-Weapon Fighting", "description": "<b>Benefit:</b> Your penalties on attack rolls for fighting with two weapons are reduced.<br />The penalty for your primary hand lessens by 2 and the one for your off hand lessens by 6.<br /><b>Normal:</b> If you wield a second weapon in your off hand, you can get one extra attack per round with that weapon.<br />When fighting in this way you take a –6 penalty on your regular attack or attacks with your primary hand and a –10 penalty on the attack with your off hand.<br />If your off-hand weapon is light, the penalties are reduced by 2 each.<br />(An unarmed strike is always considered light.)", "prerequisites": { "abilities": { "dexterity": 15 } }, "isClassFeature": false, "type": "special" },
@@ -96,7 +96,7 @@
     {
       "value": "class-barbarian-trap-sense",
       "label": "Trap Sense (Ex)",
-      "description": "<b>Benefit:</b> Starting at 3rd level, a barbarian gains an intuitive sense that alerts her to danger from traps, giving her a +1 bonus on Reflex saves made to avoid traps and a +1 dodge bonus to AC against attacks made by traps. These bonuses increase by +1 every three barbarian levels thereafter (6th, 9th, 12th, 15th, and 18th level). Trap sense bonuses gained from multiple classes stack.",
+      "description": "<b>Benefit:</b> Starting at 3rd level, a barbarian gains an intuitive sense that alerts her to danger from traps, giving her a bonus on Reflex saves made to avoid traps and a dodge bonus to AC against attacks made by traps. This bonus starts at +1 and increases by +1 every three barbarian levels thereafter (6th, 9th, 12th, 15th, and 18th level). Trap sense bonuses gained from multiple classes stack.",
       "type": "special-ex",
       "isClassFeature": true,
       "effectsText": "Bonus on Reflex saves and AC against traps (scales with level)."
@@ -159,6 +159,13 @@
       "isClassFeature": true
     },
     {
+      "value": "class-bard-bardic-knowledge",
+      "label": "Bardic Knowledge (Ex)",
+      "description": "<b>Benefit:</b> A bard picks up a lot of stray knowledge while wandering the land and learning stories from other bards. He may make a special bardic knowledge check with a bonus equal to his bard level + his Intelligence modifier to see whether he knows some relevant information about local notable people, legendary items, or noteworthy places. (If the bard has 5 or more ranks in Knowledge (history), he gains a +2 bonus on this check.)",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
       "value": "class-bard-countersong",
       "label": "Countersong (Su)",
       "description": "<b>Benefit:</b> A bard with 3 or more ranks in a Perform skill can use his music or poetics to counter magical effects that depend on sound (but not spells that simply have verbal components). Each round of the countersong, he makes a Perform check. Any creature within 30 feet of the bard (including the bard himself) that is affected by a sonic or language-dependent magical attack may use the bard’s Perform check result in place of its saving throw if, after the saving throw is rolled, the Perform check result proves to be higher. If a creature within range of the countersong is already under the effect of a noninstantaneous sonic or language-dependent magical attack, it gains another saving throw against the effect each round it hears the countersong, but it must use the bard’s Perform check result for the save. Countersong has no effect against effects that don’t allow saves. The bard may keep up the countersong for 10 rounds.",
@@ -175,7 +182,7 @@
     {
       "value": "class-bard-inspire-courage",
       "label": "Inspire Courage (Su)",
-      "description": "<b>Benefit:</b> A bard with 3 or more ranks in a Perform skill can use song or poetics to inspire courage in his allies (including himself), bolstering them against fear and improving their combat abilities. To be affected, an ally must be able to hear the bard sing. The effect lasts for as long as the ally hears the bard sing and for 5 rounds thereafter. An affected ally receives a +1 morale bonus on saving throws against charm and fear effects and a +1 morale bonus on attack and weapon damage rolls. At 8th level, and every six bard levels thereafter, this bonus increases by 1 (+2 at 8th, +3 at 14th, and +4 at 20th). Inspire courage is a mind-affecting ability.",
+      "description": "<b>Benefit:</b> A bard with 3 or more ranks in a Perform skill can use song or poetics to inspire courage in his allies (including himself), bolstering them against fear and improving their combat abilities. To be affected, an ally must be able to hear the bard sing. The effect lasts for as long as the ally hears the bard sing and for 5 rounds thereafter. An affected ally receives a morale bonus on saving throws against charm and fear effects and a morale bonus on attack and weapon damage rolls. The bonus starts at +1 and increases with bard level (+2 at 8th, +3 at 14th, +4 at 20th). Inspire courage is a mind-affecting ability.",
       "type": "special-su",
       "isClassFeature": true
     },
@@ -183,6 +190,41 @@
       "value": "class-bard-suggestion",
       "label": "Suggestion (Sp)",
       "description": "<b>Benefit:</b> A bard of 6th level or higher with 9 or more ranks in a Perform skill can make a suggestion (as the spell) to a creature that he has already fascinated. Using this ability does not break the bard’s concentration on the fascinate effect, nor does it allow a second saving throw against the fascinate effect. Making a suggestion doesn’t count against a bard’s daily use of bardic music. A Will saving throw (DC 10 + 1/2 bard’s level + bard’s Cha modifier) negates the effect. This ability affects only a single creature (but see Mass Suggestion, below). Suggestion is an enchantment (compulsion), mind-affecting, language-dependent ability.",
+      "type": "special-sp",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-bard-inspire-competence",
+      "label": "Inspire Competence (Su)",
+      "description": "<b>Benefit:</b> A bard of 3rd level or higher with 6 or more ranks in a Perform skill can use his music or poetics to help an ally succeed at a task. The ally must be within 30 feet and able to see and hear the bard. The bard must also be able to see the ally. The ally gets a +2 competence bomus on skill checks with a particular skill as long as he or she continues to hear the bard’s music. Certain uses of this ability are infeasible. The effect lasts as long as the bard concentrates, up to a maximum of 2 minutes. A bard can’t inspire competence in himself. Inspire competence is a mind-affecting ability.",
+      "type": "special-su",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-bard-inspire-greatness",
+      "label": "Inspire Greatness (Su)",
+      "description": "<b>Benefit:</b> A bard of 9th level or higher with 12 or more ranks in a Perform skill can use his music or poetics to inspire greatness in himself or a single willing ally within 30 feet, granting extra fighting capability. For every three levels a bard attains beyond 9th, he can target one additional ally with a single use of this ability (two at 12th level, three at 15th, four at 18th). To inspire greatness, a bard must sing and an ally must hear him sing. The effect lasts for as long as the ally hears the bard sing and for 5 rounds thereafter. A creature inspired with greatness gains 2 bonus Hit Dice (d10s), the commensurate number of temporary hit points (apply the target’s Constitution modifier, if any, to these bonus Hit Dice), a +2 competence bonus on attack rolls, and a +1 competence bonus on Fortitude saves. The bonus Hit Dice count as regular Hit Dice for determining the effect of spells such as sleep. Inspire greatness is a mind-affecting ability.",
+      "type": "special-su",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-bard-song-of-freedom",
+      "label": "Song of Freedom (Sp)",
+      "description": "<b>Benefit:</b> A bard of 12th level or higher with 15 or more ranks in a Perform skill can use music or poetics to create an effect equivalent to the break enchantment spell (caster level equals the character’s bard level). Using this ability requires 1 minute of uninterrupted concentration and music, and it functions on a single target within 30 feet.",
+      "type": "special-sp",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-bard-inspire-heroics",
+      "label": "Inspire Heroics (Su)",
+      "description": "<b>Benefit:</b> A bard of 15th level or higher with 18 or more ranks in a Perform skill can use music or poetics to inspire tremendous heroism in himself or a single willing ally within 30 feet. For every three bard levels the character attains beyond 15th, he can_inspire heroics in one additional creature. To inspire heroics, a bard must sing and an ally must hear the bard sing for a full round. A creature so inspired gains a +4 morale bonus on saving throws and a +4 dodge bonus to AC. The effect lasts for as long as the ally hears the bard sing and for 5 rounds thereafter. Inspire heroics is a mind-affecting ability.",
+      "type": "special-su",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-bard-mass-suggestion",
+      "label": "Mass Suggestion (Sp)",
+      "description": "<b>Benefit:</b> This ability functions like suggestion, above, except that a bard of 18th level or higher with 21 or more ranks in a Perform skill can make the suggestion simultaneously to any number of creatures that he has already fascinated. Mass suggestion is an enchantment (compulsion), mind-affecting, language-dependent ability.",
       "type": "special-sp",
       "isClassFeature": true
     },
