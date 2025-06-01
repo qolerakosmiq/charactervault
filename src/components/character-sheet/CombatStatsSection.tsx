@@ -162,7 +162,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
       return dr.type === "none" ? `${dr.value}/—` : `${dr.value}/${typeLabel}`;
     }
     if (dr.rule === 'versus-specific-type') {
-      return `DR ${dr.value} vs ${typeLabel}`;
+      return `${dr.value} vs ${typeLabel}`;
     }
     if (dr.rule === 'excepted-by-type') {
        const displayType = typeLabel === "None" ? "—" : typeLabel;
@@ -176,7 +176,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
     const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
 
     if (dr.rule === 'bypassed-by-type') {
-      return dr.type === "none" ? "Reduces damage from most attacks." : `Reduces damage unless attack is ${typeLabel}.`;
+      return dr.type === "none" ? `Reduces damage from most attacks by ${dr.value}.` : `Reduces damage by ${dr.value} unless attack is ${typeLabel}.`;
     }
     if (dr.rule === 'versus-specific-type') {
       return `Specifically reduces damage from ${typeLabel} sources by ${dr.value}.`;
