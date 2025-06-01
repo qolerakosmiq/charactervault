@@ -44,7 +44,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
 
   const [newDrValue, setNewDrValue] = React.useState(1);
   const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>('none');
-  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>('reduces-damage-from-type');
+  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>('standard-bypass');
   
   const energyResistances: Array<{ field: ResistanceField; label: string; Icon: React.ElementType; fieldPrefix?: string }> = [
     { field: 'fireResistance', label: 'Fire', Icon: Flame, fieldPrefix: 'form-res' },
@@ -80,10 +80,10 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
         return;
     }
 
-    const existingUserDrOfType = characterData.damageReduction.find(
+    const existingUserDrOfTypeAndRule = characterData.damageReduction.find(
       dr => !dr.isGranted && dr.type === newDrType && dr.rule === newDrRule
     );
-    if (existingUserDrOfType) {
+    if (existingUserDrOfTypeAndRule) {
       toast({ title: "Duplicate DR Entry", description: `You already have a custom DR with this type and rule.`, variant: "destructive"});
       return;
     }
@@ -98,28 +98,41 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     onDamageReductionChange([...characterData.damageReduction, newInstance]);
     setNewDrValue(1);
     setNewDrType('none');
-    setNewDrRule('reduces-damage-from-type');
+    setNewDrRule('standard-bypass');
   };
 
   const handleRemoveDamageReduction = (idToRemove: string) => {
     onDamageReductionChange(characterData.damageReduction.filter(dr => dr.id !== idToRemove));
   };
 
-  const getDrDisplayString = (dr: DamageReductionInstance): string => {
-    const typeLabel = DAMAGE_REDUCTION_TYPES.find(t => t.value === dr.type)?.label || dr.type;
+  const getDrTypeLabel = (type: DamageReductionTypeValue | string): string => {
+    return DAMAGE_REDUCTION_TYPES.find(t => t.value === type)?.label || String(type);
+  };
+
+  const getDrPrimaryNotation = (dr: DamageReductionInstance): string => {
+    const typeLabel = getDrTypeLabel(dr.type);
     if (dr.type === "none") {
-        return `${dr.value}/—`;
+      return `${dr.value}/—`;
     }
-    switch (dr.rule) {
-        case "reduces-damage-from-type":
-            return `${dr.value} vs ${typeLabel}`;
-        case "only-affected-by-type":
-            return `${dr.value} vs ${typeLabel}`; // Or some other notation if needed
-        case "reduces-damage-from-not-type":
-            return `${dr.value} vs Non-${typeLabel}`;
-        default:
-            return `${dr.value}/${typeLabel}`; // Fallback to standard bypass notation
+    if (dr.rule === 'standard-bypass') {
+      return `${dr.value}/${typeLabel}`;
     }
+    // For "vs-specific-type" or other custom rules if added.
+    return `${dr.value} vs ${typeLabel}`;
+  };
+
+  const getDrRuleDescription = (dr: DamageReductionInstance): string => {
+    const typeLabel = getDrTypeLabel(dr.type);
+    if (dr.type === "none") {
+      return "Reduces damage from all sources.";
+    }
+    if (dr.rule === 'standard-bypass') {
+      return `Reduces damage unless attack is ${typeLabel}.`;
+    }
+    if (dr.rule === 'vs-specific-type') {
+      return `Specifically reduces damage from ${typeLabel} sources.`;
+    }
+    return `Rule: ${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule}`;
   };
 
 
@@ -245,8 +258,9 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                     characterData.damageReduction.map(dr => (
                       <div key={dr.id} className="flex items-center justify-between p-2 border rounded-md bg-muted/5 text-sm">
                         <div>
-                          <span className="font-semibold">{getDrDisplayString(dr)}</span>
+                          <span className="font-semibold">{getDrPrimaryNotation(dr)}</span>
                           {dr.isGranted && dr.source && <Badge variant="secondary" className="ml-2 text-xs">{dr.source}</Badge>}
+                          <p className="text-xs text-muted-foreground">{getDrRuleDescription(dr)}</p>
                         </div>
                         {!dr.isGranted && (
                           <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80" onClick={() => handleRemoveDamageReduction(dr.id)}>
@@ -261,7 +275,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                 </div>
 
                 <div className="space-y-3 border md:border-l md:border-t-0 p-4 rounded-md md:pl-6"> {/* Right Column: Input for new DR */}
-                  <Label className="text-md font-medium">Add Custom Damage Reduction</Label>
+                  <Label className="text-md font-medium">Custom Damage Reduction</Label>
                   <div className="space-y-1">
                       <Label htmlFor="form-dr-value" className="text-xs">Value</Label>
                       <NumberSpinnerInput

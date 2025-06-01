@@ -49,7 +49,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
 
   const [newDrValue, setNewDrValue] = React.useState(1);
   const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>('none');
-  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>('reduces-damage-from-type');
+  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>('standard-bypass');
 
 
   const abilityScores = character.abilityScores;
@@ -112,13 +112,14 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
         toast({ title: "DR Type Missing", description: "Select/enter DR type.", variant: "destructive"});
         return;
     }
-    const existingUserDrOfType = character.damageReduction.find(
+    const existingUserDrOfTypeAndRule = character.damageReduction.find(
       dr => !dr.isGranted && dr.type === newDrType && dr.rule === newDrRule
     );
-    if (existingUserDrOfType) {
+    if (existingUserDrOfTypeAndRule) {
       toast({ title: "Duplicate DR Entry", description: `Custom DR with this type and rule already exists.`, variant: "destructive"});
       return;
     }
+
     const newInstance: DamageReductionInstance = {
       id: crypto.randomUUID(),
       value: newDrValue,
@@ -129,28 +130,40 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
     onCharacterUpdate('damageReduction', [...character.damageReduction, newInstance]);
     setNewDrValue(1);
     setNewDrType('none');
-    setNewDrRule('reduces-damage-from-type');
+    setNewDrRule('standard-bypass');
   };
 
   const handleRemoveDamageReduction = (idToRemove: string) => {
     onCharacterUpdate('damageReduction', character.damageReduction.filter(dr => dr.id !== idToRemove));
   };
 
-  const getDrDisplayString = (dr: DamageReductionInstance): string => {
-    const typeLabel = DAMAGE_REDUCTION_TYPES.find(t => t.value === dr.type)?.label || dr.type;
+  const getDrTypeLabel = (type: DamageReductionTypeValue | string): string => {
+    return DAMAGE_REDUCTION_TYPES.find(t => t.value === type)?.label || String(type);
+  };
+
+  const getDrPrimaryNotation = (dr: DamageReductionInstance): string => {
+    const typeLabel = getDrTypeLabel(dr.type);
     if (dr.type === "none") {
-        return `${dr.value}/—`;
+      return `${dr.value}/—`;
     }
-    switch (dr.rule) {
-        case "reduces-damage-from-type":
-            return `${dr.value} vs ${typeLabel}`;
-        case "only-affected-by-type":
-             return `${dr.value} vs ${typeLabel}`;
-        case "reduces-damage-from-not-type":
-            return `${dr.value} vs Non-${typeLabel}`;
-        default: // Fallback, should include standard bypass if rule was different
-            return `${dr.value}/${typeLabel}`; 
+    if (dr.rule === 'standard-bypass') {
+      return `${dr.value}/${typeLabel}`;
     }
+    return `${dr.value} vs ${typeLabel}`;
+  };
+
+  const getDrRuleDescription = (dr: DamageReductionInstance): string => {
+    const typeLabel = getDrTypeLabel(dr.type);
+    if (dr.type === "none") {
+      return "Reduces damage from all sources.";
+    }
+    if (dr.rule === 'standard-bypass') {
+      return `Reduces damage unless attack is ${typeLabel}.`;
+    }
+    if (dr.rule === 'vs-specific-type') {
+      return `Specifically reduces damage from ${typeLabel} sources.`;
+    }
+    return `Rule: ${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule}`;
   };
   
   return (
@@ -275,12 +288,12 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
         </CardHeader>
         <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3 text-sm items-center">
-                <div className="flex items-center gap-1"><Label htmlFor="ac-armor" className="shrink-0">Armor Bonus:</Label> <NumberSpinnerInput id="ac-armor" value={character.armorBonus} onChange={(val) => onCharacterUpdate('armorBonus', val)} min={0} max={30} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-shield" className="shrink-0">Shield Bonus:</Label> <NumberSpinnerInput id="ac-shield" value={character.shieldBonus} onChange={(val) => onCharacterUpdate('shieldBonus', val)} min={0} max={15} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-natural" className="shrink-0">Natural Armor:</Label> <NumberSpinnerInput id="ac-natural" value={character.naturalArmor} onChange={(val) => onCharacterUpdate('naturalArmor', val)} min={0} max={20} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-deflection" className="shrink-0">Deflection Bonus:</Label> <NumberSpinnerInput id="ac-deflection" value={character.deflectionBonus} onChange={(val) => onCharacterUpdate('deflectionBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-dodge" className="shrink-0">Dodge Bonus:</Label> <NumberSpinnerInput id="ac-dodge" value={character.dodgeBonus} onChange={(val) => onCharacterUpdate('dodgeBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-misc" className="shrink-0">Misc Modifier:</Label> <NumberSpinnerInput id="ac-misc" value={character.acMiscModifier} onChange={(val) => onCharacterUpdate('acMiscModifier', val)} min={-10} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-armor" className="shrink-0">Armor Bonus:</Label> <NumberSpinnerInput id="ac-armor" value={character.armorBonus} onChange={(val) => onCharacterUpdate('armorBonus', val)} min={0} max={30} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-shield" className="shrink-0">Shield Bonus:</Label> <NumberSpinnerInput id="ac-shield" value={character.shieldBonus} onChange={(val) => onCharacterUpdate('shieldBonus', val)} min={0} max={15} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-natural" className="shrink-0">Natural Armor:</Label> <NumberSpinnerInput id="ac-natural" value={character.naturalArmor} onChange={(val) => onCharacterUpdate('naturalArmor', val)} min={0} max={20} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-deflection" className="shrink-0">Deflection Bonus:</Label> <NumberSpinnerInput id="ac-deflection" value={character.deflectionBonus} onChange={(val) => onCharacterUpdate('deflectionBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-dodge" className="shrink-0">Dodge Bonus:</Label> <NumberSpinnerInput id="ac-dodge" value={character.dodgeBonus} onChange={(val) => onCharacterUpdate('dodgeBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-misc" className="shrink-0">Misc Modifier:</Label> <NumberSpinnerInput id="ac-misc" value={character.acMiscModifier} onChange={(val) => onCharacterUpdate('acMiscModifier', val)} min={-10} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
             </div>
         </CardContent>
       </Card>
@@ -403,8 +416,9 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                       character.damageReduction.map(dr => (
                         <div key={dr.id} className="flex items-center justify-between p-2 border rounded-md bg-muted/5 text-sm">
                           <div>
-                            <span className="font-semibold">{getDrDisplayString(dr)}</span>
+                            <span className="font-semibold">{getDrPrimaryNotation(dr)}</span>
                             {dr.isGranted && dr.source && <Badge variant="secondary" className="ml-2 text-xs">{dr.source}</Badge>}
+                            <p className="text-xs text-muted-foreground">{getDrRuleDescription(dr)}</p>
                           </div>
                           {!dr.isGranted && (
                             <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80" onClick={() => handleRemoveDamageReduction(dr.id)}>
@@ -419,7 +433,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                   </div>
 
                   <div className="space-y-3 border md:border-l md:border-t-0 p-4 rounded-md md:pl-6"> {/* Right Column: Input for new DR */}
-                    <Label className="text-md font-medium">Add Custom Damage Reduction</Label>
+                    <Label className="text-md font-medium">Custom Damage Reduction</Label>
                     <div className="space-y-1">
                         <Label htmlFor="sheet-dr-value" className="text-xs">Value</Label>
                         <NumberSpinnerInput
