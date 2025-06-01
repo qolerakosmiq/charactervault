@@ -8,7 +8,7 @@
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
       "description": "<p>Barbarians are savage warriors from the wild frontiers, relying on their primal fury and immense strength.<br />They are often tribal, disdainful of civilization, and fiercely independent.<br/><b>Note:</b> Barbarians are illiterate unless they spend skill points on the Read/Write Language skill or take a level in another class.</p><p><b>Alignment:</b><br />Any nonlawful.</p><p><b>Religion:</b><br />Barbarians may revere animal spirits, nature deities, or ancestors.</p><p><b>Background:</b><br />Often outcasts or members of nomadic tribes.</p><p><b>Races:</b><br />Humans and half-orcs are common barbarians.</p>",
       "grantedFeats": [
-        { "featId": "class-barbarian-fast-movement", "note": "(+10ft speed)", "levelAcquired": 1 },
+        { "featId": "class-barbarian-fast-movement", "levelAcquired": 1 },
         { "featId": "class-barbarian-rage", "note": "(1/day)", "levelAcquired": 1 },
         { "featId": "class-barbarian-uncanny-dodge", "levelAcquired": 2 },
         { "featId": "class-barbarian-trap-sense", "note": "(+1)", "levelAcquired": 3 },
@@ -164,7 +164,8 @@
         { "featId": "class-monk-flurry-of-blows", "note": "(+7/+7/+2)", "levelAcquired": 10 },
         { "featId": "class-monk-ac-bonus", "note": "(Wis +2)", "levelAcquired": 10 },
         { "featId": "class-monk-diamond-body", "levelAcquired": 11 },
-        { "featId": "class-monk-greater-flurry", "note": "(+8/+8/+8/+3)", "levelAcquired": 11 },
+        { "featId": "class-monk-greater-flurry", "levelAcquired": 11 },
+        { "featId": "class-monk-flurry-of-blows", "note": "(+8/+8/+8/+3)", "levelAcquired": 11 },
         { "featId": "class-monk-abundant-step", "levelAcquired": 12 },
         { "featId": "class-monk-slow-fall", "note": "(60 ft.)", "levelAcquired": 12 },
         { "featId": "class-monk-flurry-of-blows", "note": "(+9/+9/+9/+4)", "levelAcquired": 12 },
@@ -181,7 +182,7 @@
         { "featId": "class-monk-slow-fall", "note": "(80 ft.)", "levelAcquired": 16 },
         { "featId": "class-monk-flurry-of-blows", "note": "(+12/+12/+12/+7/+2)", "levelAcquired": 16 },
         { "featId": "class-monk-unarmed-strike-damage", "note": "(2d8 Med.)", "levelAcquired": 16 },
-        { "featId": "class-monk-timeless-body", "levelAcquired": 17 },
+        { "featId": "class-druid-timeless-body", "note": "(Monk Feature)", "levelAcquired": 17 },
         { "featId": "class-monk-tongue-sun-moon", "levelAcquired": 17 },
         { "featId": "class-monk-slow-fall", "note": "(90 ft.)", "levelAcquired": 18 },
         { "featId": "class-monk-flurry-of-blows", "note": "(+13/+13/+13/+8/+3)", "levelAcquired": 18 },
@@ -201,7 +202,27 @@
       "hitDice": "d10",
       "casting": { "type": "partial", "startsAtLevel": 4, "levelOffset": -3 },
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
-      "description": "<p>Paladins are holy champions of righteousness, sworn to uphold justice and smite evil.<br />They are granted divine powers to aid their cause, including healing, protection, and the ability to turn undead.</p><p><b>Alignment:</b><br />Must be Lawful Good.</p><p><b>Religion:</b><br />Paladins are devoted servants of good-aligned deities.</p><p><b>Background:</b><br />Often from noble or devout families, trained in holy orders.</p><p><b>Races:</b><br />Humans are the most common paladins, but any creature with a pure heart can be called.</p>"
+      "description": "<p>Paladins are holy champions of righteousness, sworn to uphold justice and smite evil.<br />They are granted divine powers to aid their cause, including healing, protection, and the ability to turn undead.</p><p><b>Alignment:</b><br />Must be Lawful Good.</p><p><b>Religion:</b><br />Paladins are devoted servants of good-aligned deities.</p><p><b>Background:</b><br />Often from noble or devout families, trained in holy orders.</p><p><b>Races:</b><br />Humans are the most common paladins, but any creature with a pure heart can be called.</p>",
+      "grantedFeats": [
+        { "featId": "class-paladin-aura-of-good", "levelAcquired": 1 },
+        { "featId": "class-paladin-detect-evil", "levelAcquired": 1 },
+        { "featId": "class-paladin-smite-evil", "note": "(1/day)", "levelAcquired": 1 },
+        { "featId": "class-paladin-divine-grace", "levelAcquired": 2 },
+        { "featId": "class-paladin-lay-on-hands", "levelAcquired": 2 },
+        { "featId": "class-paladin-aura-of-courage", "levelAcquired": 3 },
+        { "featId": "class-paladin-divine-health", "levelAcquired": 3 },
+        { "featId": "class-paladin-turn-undead", "levelAcquired": 4 },
+        { "featId": "class-paladin-smite-evil", "note": "(2/day)", "levelAcquired": 5 },
+        { "featId": "class-paladin-special-mount", "levelAcquired": 5 },
+        { "featId": "class-paladin-remove-disease", "note": "(1/week)", "levelAcquired": 6 },
+        { "featId": "class-paladin-remove-disease", "note": "(2/week)", "levelAcquired": 9 },
+        { "featId": "class-paladin-smite-evil", "note": "(3/day)", "levelAcquired": 10 },
+        { "featId": "class-paladin-remove-disease", "note": "(3/week)", "levelAcquired": 12 },
+        { "featId": "class-paladin-remove-disease", "note": "(4/week)", "levelAcquired": 15 },
+        { "featId": "class-paladin-smite-evil", "note": "(4/day)", "levelAcquired": 15 },
+        { "featId": "class-paladin-remove-disease", "note": "(5/week)", "levelAcquired": 18 },
+        { "featId": "class-paladin-smite-evil", "note": "(5/day)", "levelAcquired": 20 }
+      ]
     },
     {
       "value": "ranger",
@@ -243,5 +264,3 @@
     }
   ]
 }
-
-    
