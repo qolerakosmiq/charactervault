@@ -11,8 +11,7 @@ import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 import { getAbilityModifierByName, getSizeModifierAC } from '@/lib/dnd-utils';
 
 interface ArmorClassPanelProps {
-  character: Character;
-  // No onCharacterUpdate needed here as inputs are in CombatStatsSection
+  character?: Character; // Allow character to be potentially undefined
 }
 
 type AcBreakdownDetail = { label: string; value: string | number; isBold?: boolean };
@@ -20,6 +19,24 @@ type AcBreakdownDetail = { label: string; value: string | number; isBold?: boole
 export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<{ title: string; detailsList: AcBreakdownDetail[] } | null>(null);
+
+  // Guard against undefined character or missing essential properties
+  if (!character || !character.abilityScores || !character.size) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-3">
+            <Shield className="h-8 w-8 text-primary" />
+            <CardTitle className="text-2xl font-serif">Armor Class</CardTitle>
+          </div>
+          <CardDescription>Details about your character's defenses.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-muted-foreground">Character data not fully loaded...</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const dexModifier = getAbilityModifierByName(character.abilityScores, 'dexterity');
   const sizeModAC = getSizeModifierAC(character.size);
@@ -36,7 +53,6 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
     (character.acMiscModifier || 0);
 
   // Calculate Touch AC
-  // Dex bonus applies, armor, shield, and natural armor do not. Dodge bonus applies.
   const touchAC = 10 +
     dexModifier +
     sizeModAC +
@@ -45,7 +61,6 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
     (character.acMiscModifier || 0);
 
   // Calculate Flat-Footed AC
-  // Dex bonus is lost, Dodge bonuses are lost.
   const flatFootedAC = 10 +
     (character.armorBonus || 0) +
     (character.shieldBonus || 0) +
@@ -55,6 +70,8 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
     (character.acMiscModifier || 0);
 
   const showAcBreakdown = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
+    if (!character || !character.abilityScores || !character.size) return;
+
     const detailsList: AcBreakdownDetail[] = [{ label: 'Base', value: 10 }];
     let totalCalculated = 10;
 
@@ -76,7 +93,6 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
       detailsList.push({ label: 'Misc Modifier', value: character.acMiscModifier || 0 });
       totalCalculated = touchAC;
     } else if (acType === 'Flat-Footed') {
-      // No Dex, No Dodge
       detailsList.push({ label: 'Size Modifier', value: sizeModAC });
       detailsList.push({ label: 'Armor Bonus', value: character.armorBonus || 0 });
       detailsList.push({ label: 'Shield Bonus', value: character.shieldBonus || 0 });
