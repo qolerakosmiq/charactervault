@@ -64,7 +64,10 @@
       "hitDice": "d8",
       "casting": { "type": "full" },
       "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
-      "description": "<p>Clerics are divine agents, channeling the power of their chosen deity to heal the sick, smite the wicked, or protect the faithful.<br />They are masters of divine magic and often serve as spiritual leaders.</p><p><b>Alignment:</b><br />Must be within one step of their deity's alignment.</p><p><b>Religion:</b><br />Central to their identity, clerics serve a specific deity from the pantheon.</p><p><b>Background:</b><br />Usually trained in temples or religious orders.</p><p><b>Races:</b><br />All races produce clerics, as faith is universal.</p>"
+      "description": "<p>Clerics are divine agents, channeling the power of their chosen deity to heal the sick, smite the wicked, or protect the faithful.<br />They are masters of divine magic and often serve as spiritual leaders.</p><p><b>Alignment:</b><br />Must be within one step of their deity's alignment.</p><p><b>Religion:</b><br />Central to their identity, clerics serve a specific deity from the pantheon.</p><p><b>Background:</b><br />Usually trained in temples or religious orders.</p><p><b>Races:</b><br />All races produce clerics, as faith is universal.</p>",
+      "grantedFeats": [
+        { "featId": "class-cleric-turn-rebuke-undead", "note": "(Cleric Feature)", "levelAcquired": 1 }
+      ]
     },
     {
       "value": "druid",
@@ -80,8 +83,7 @@
         { "featId": "class-druid-woodland-stride", "note": "(Druid Feature)", "levelAcquired": 2 },
         { "featId": "class-druid-trackless-step", "note": "(Druid Feature)", "levelAcquired": 3 },
         { "featId": "class-druid-resist-natures-lure", "note": "(Druid Feature)", "levelAcquired": 4 },
-        { "featId": "class-druid-wild-shape", "note": "(1/day, Small/Medium)", "levelAcquired": 5 },
-        { "featId": "class-druid-venom-immunity", "note": "(Druid Feature)", "levelAcquired": 9 }
+        { "featId": "class-druid-wild-shape", "note": "(1/day, Small/Medium)", "levelAcquired": 5 }
       ]
     },
     {
@@ -149,5 +151,3 @@
     }
   ]
 }
-
-    

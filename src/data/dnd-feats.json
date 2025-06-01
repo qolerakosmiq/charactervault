@@ -32,7 +32,7 @@
     { "value": "improved-sunder", "label": "Improved Sunder", "description": "<b>Benefit:</b> When you strike at an object held or carried by an opponent (such as a weapon or shield), you do not provoke an attack of opportunity.<br />You also gain a +4 bonus on any attack roll made to sunder an opponent’s weapon or shield.<br /><b>Normal:</b> Without this feat, you provoke an attack of opportunity when you strike at an object held or carried by an opponent.", "prerequisites": { "abilities": { "strength": 13 }, "feats": ["power-attack"] }, "isClassFeature": false, "type": "special" },
     { "value": "improved-trip", "label": "Improved Trip", "description": "<b>Benefit:</b> You do not provoke an attack of opportunity when you attempt to trip an opponent while you are unarmed.<br />You also gain a +4 bonus on your Strength check to trip your opponent.<br />If you trip an opponent in melee combat, you immediately get a melee attack against that opponent as if you hadn’t used your attack for the trip attempt.<br /><b>Normal:</b> Without this feat, you provoke an attack of opportunity when you attempt to trip an opponent while you are unarmed.", "prerequisites": { "abilities": { "intelligence": 13 }, "feats": ["combat-expertise"] }, "isClassFeature": false, "type": "special" },
     { "value": "improved-two-weapon-fighting", "label": "Improved Two-Weapon Fighting", "description": "<b>Benefit:</b> You get a second attack with your off-hand weapon, albeit at a –5 penalty.<br /><b>Normal:</b> Without this feat, you can only get a single extra attack with an off-hand weapon.", "prerequisites": { "abilities": { "dexterity": 17 }, "feats": ["two-weapon-fighting"], "bab": 6 }, "isClassFeature": false, "type": "special" },
-    { "value": "improved-unarmed-strike", "label": "Improved Unarmed Strike", "description": "<b>Benefit:</b> You are considered to be armed even when unarmed—you do not provoke attacks of opportunity from armed opponents when you attack them while unarmed.<br />However, you still get an attack of opportunity against any opponent who makes an unarmed attack on you.<br /><b>Normal:</b> Without this feat, you are considered unarmed when attacking with an unarmed strike, and you can only deal nonlethal damage with such an attack.", "isClassFeature": false, "type": "special" },
+    { "value": "improved-unarmed-strike", "label": "Improved Unarmed Strike", "description": "<b>Benefit:</b> You are considered to be armed even when unarmed—you do not provoke attacks of opportunity from armed opponents when you attack them while unarmed.<br />However, you still get an attack of opportunity against any opponent who makes an unarmed attack on you.<br /><b>Normal:</b> Without this feat, you are considered unarmed when attacking with an unarmed strike, and you can only deal nonlethal damage with such an attack.", "isClassFeature": true, "type": "special" },
     { "value": "investigator", "label": "Investigator", "description": "<b>Benefit:</b> You get a +2 bonus on all Gather Information and Search checks.", "effects": { "skills": { "gather-information": 2, "search": 2 } }, "isClassFeature": false, "type": "special" },
     { "value": "iron-will", "label": "Iron Will", "description": "<b>Benefit:</b> You get a +2 bonus on all Will saving throws.", "isClassFeature": false, "type": "special" },
     { "value": "lightning-reflexes", "label": "Lightning Reflexes", "description": "<b>Benefit:</b> You get a +2 bonus on all Reflex saving throws.", "isClassFeature": false, "type": "special" },
@@ -118,7 +118,7 @@
     {
       "value": "class-barbarian-damage-reduction",
       "label": "Damage Reduction (Ex)",
-      "description": "<b>Benefit:</b> At 7th level, a barbarian gains Damage Reduction. Subtract 1 from the damage the barbarian takes each time he is dealt damage from a weapon or a natural attack. At 10th level, and every three barbarian levels thereafter (13th, 16th, and 19th level), this damage reduction rises by 1 point. Damage reduction can reduce damage to 0 but not below 0.",
+      "description": "<b>Benefit:</b> At 7th level, a barbarian gains Damage Reduction. Subtract from the damage the barbarian takes each time he is dealt damage from a weapon or a natural attack. Damage reduction can reduce damage to 0 but not below 0.",
       "type": "special-ex",
       "isClassFeature": true,
       "effectsText": "DR X/- (scales with level)."
@@ -182,7 +182,7 @@
     {
       "value": "class-bard-inspire-courage",
       "label": "Inspire Courage (Su)",
-      "description": "<b>Benefit:</b> A bard with 3 or more ranks in a Perform skill can use song or poetics to inspire courage in his allies (including himself), bolstering them against fear and improving their combat abilities. To be affected, an ally must be able to hear the bard sing. The effect lasts for as long as the ally hears the bard sing and for 5 rounds thereafter. An affected ally receives a morale bonus on saving throws against charm and fear effects and a morale bonus on attack and weapon damage rolls. The bonus starts at +1 and increases with bard level (+2 at 8th, +3 at 14th, +4 at 20th). Inspire courage is a mind-affecting ability.",
+      "description": "<b>Benefit:</b> A bard with 3 or more ranks in a Perform skill can use song or poetics to inspire courage in his allies (including himself), bolstering them against fear and improving their combat abilities. To be affected, an ally must be able to hear the bard sing. The effect lasts for as long as the ally hears the bard sing and for 5 rounds thereafter. An affected ally receives a morale bonus on saving throws against charm and fear effects and a morale bonus on attack and weapon damage rolls. The bonus starts at +1 and increases with bard level. Inspire courage is a mind-affecting ability.",
       "type": "special-su",
       "isClassFeature": true
     },
@@ -284,8 +284,13 @@
       "description": "<b>Benefit:</b> At 9th level, a druid gains immunity to all poisons.",
       "type": "special-ex",
       "isClassFeature": true
+    },
+    {
+      "value": "class-cleric-turn-rebuke-undead",
+      "label": "Turn or Rebuke Undead (Su)",
+      "description": "<b>Benefit:</b> Any cleric, regardless of alignment, has the power to affect undead creatures by channeling the power of his faith through his holy (or unholy) symbol. A good cleric (or a neutral cleric who worships a good deity) can turn undead. An evil cleric (or a neutral cleric who worships an evil deity) can rebuke undead. A neutral cleric of a neutral deity can choose whether to turn or rebuke undead. If the character is a neutral cleric of a neutral deity, you must choose whether your turning ability is to turn or rebuke undead. This choice also determines whether the cleric can cast spontaneous cure or inflict spells. Once this choice is made, it cannot be reversed. This decision also determines whether the cleric can use spontaneous casting to convert prepared spells into cure spells or inflict spells. A cleric may attempt to turn undead a number of times per day equal to 3 + his Charisma modifier. A cleric with 5 or more ranks in Knowledge (religion) gets a +2 bonus on turning checks against undead.",
+      "type": "special-su",
+      "isClassFeature": true
     }
   ]
 }
-
-    
