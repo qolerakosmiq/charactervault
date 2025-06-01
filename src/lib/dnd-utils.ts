@@ -1,7 +1,8 @@
 
 
-import type { AbilityName, AbilityScores, CharacterClass, CharacterSize, Skill, DndClassOption, SavingThrowType } from '@/types/character';
-import { SIZES, DND_CLASSES, GRAPPLE_DAMAGE_BY_SIZE } from '@/types/character'; // Import SIZES to look up labels
+
+import type { AbilityName, AbilityScores, CharacterClass, CharacterSize, Skill, DndClassOption, SavingThrowType, CharacterSizeObject } from '@/types/character';
+import { SIZES, DND_CLASSES } from '@/types/character'; // Import SIZES to look up labels
 
 export function calculateAbilityModifier(score: number): number {
   return Math.floor((score - 10) / 2);
@@ -141,9 +142,13 @@ export function getSizeModifierGrapple(sizeId: CharacterSize | ''): number {
   }
 }
 
-export function getUnarmedGrappleDamage(size: CharacterSize | ''): string {
-  if (!size) return GRAPPLE_DAMAGE_BY_SIZE['medium'] || '1d6'; // Default to medium if no size
-  return GRAPPLE_DAMAGE_BY_SIZE[size] || 'N/A';
+export function getUnarmedGrappleDamage(sizeId: CharacterSize | ''): string {
+  if (!sizeId) {
+    const mediumSize = SIZES.find(s => s.value === 'medium');
+    return mediumSize?.grappleDamage || '1d3'; // Default to medium if no size or medium has no grapple damage
+  }
+  const sizeObject = SIZES.find(s => s.value === sizeId);
+  return sizeObject?.grappleDamage || '0'; // Default to '0' if size not found or no grappleDamage defined
 }
 
 export function calculateSkillTotal(skill: Skill, abilityScores: AbilityScores): number {
@@ -162,4 +167,5 @@ export const SAVING_THROW_ABILITIES: Record<SavingThrowType, AbilityName> = {
   reflex: 'dexterity',
   will: 'wisdom',
 };
+
 

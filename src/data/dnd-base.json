@@ -1,15 +1,15 @@
 
 {
   "SIZES_DATA": [
-    { "value": "fine", "label": "Fine", "acModifier": 8, "skillModifiers": { "hide": 16 } },
-    { "value": "diminutive", "label": "Diminutive", "acModifier": 4, "skillModifiers": { "hide": 12 } },
-    { "value": "tiny", "label": "Tiny", "acModifier": 2, "skillModifiers": { "hide": 8 } },
-    { "value": "small", "label": "Small", "acModifier": 1, "skillModifiers": { "hide": 4 } },
-    { "value": "medium", "label": "Medium", "acModifier": 0, "skillModifiers": { "hide": 0 } },
-    { "value": "large", "label": "Large", "acModifier": -1, "skillModifiers": { "hide": -4 } },
-    { "value": "huge", "label": "Huge", "acModifier": -2, "skillModifiers": { "hide": -8 } },
-    { "value": "gargantuan", "label": "Gargantuan", "acModifier": -4, "skillModifiers": { "hide": -12 } },
-    { "value": "colossal", "label": "Colossal", "acModifier": -8, "skillModifiers": { "hide": -16 } }
+    { "value": "fine", "label": "Fine", "acModifier": 8, "skillModifiers": { "hide": 16 }, "grappleDamage": "0" },
+    { "value": "diminutive", "label": "Diminutive", "acModifier": 4, "skillModifiers": { "hide": 12 }, "grappleDamage": "0" },
+    { "value": "tiny", "label": "Tiny", "acModifier": 2, "skillModifiers": { "hide": 8 }, "grappleDamage": "1" },
+    { "value": "small", "label": "Small", "acModifier": 1, "skillModifiers": { "hide": 4 }, "grappleDamage": "1d2" },
+    { "value": "medium", "label": "Medium", "acModifier": 0, "skillModifiers": { "hide": 0 }, "grappleDamage": "1d3" },
+    { "value": "large", "label": "Large", "acModifier": -1, "skillModifiers": { "hide": -4 }, "grappleDamage": "1d4" },
+    { "value": "huge", "label": "Huge", "acModifier": -2, "skillModifiers": { "hide": -8 }, "grappleDamage": "1d6" },
+    { "value": "gargantuan", "label": "Gargantuan", "acModifier": -4, "skillModifiers": { "hide": -12 }, "grappleDamage": "1d8" },
+    { "value": "colossal", "label": "Colossal", "acModifier": -8, "skillModifiers": { "hide": -16 }, "grappleDamage": "2d6" }
   ],
   "GENDERS_DATA": [
     { "value": "male", "label": "Male" },
@@ -112,3 +112,5 @@
     "human": 1
   }
 }
+
+    

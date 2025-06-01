@@ -2,6 +2,7 @@
 
 
 
+
 import baseDataJson from '@/data/dnd-base.json';
 import customBaseDataJson from '@/data/custom-base.json';
 import racesDataJson from '@/data/dnd-races.json';
@@ -241,6 +242,7 @@ export type CharacterSizeObject = {
   label: string;
   acModifier: number;
   skillModifiers?: Partial<Record<string, number>>; // e.g. { "hide": 4 } skillId to bonus
+  grappleDamage?: string; // New property for grapple damage
 };
 export type CharacterSize =
   | "fine" | "diminutive" | "tiny" | "small" | "medium" | "large" | "huge" | "gargantuan" | "colossal" | '';
@@ -367,17 +369,6 @@ export type SkillSynergiesJsonData = Record<string, SynergyEffectJsonData[]>; //
 const baseSkillSynergies = (skillsDataJson as any).SKILL_SYNERGIES_DATA || {};
 export const SKILL_SYNERGIES: Readonly<SkillSynergiesJsonData> = mergeObjectData(baseSkillSynergies, {});
 
-export const GRAPPLE_DAMAGE_BY_SIZE: Partial<Record<CharacterSize, string>> = {
-  fine: '0',
-  diminutive: '0',
-  tiny: '1',
-  small: '1d2',
-  medium: '1d3',
-  large: '1d4',
-  huge: '1d6',
-  gargantuan: '1d8',
-  colossal: '2d6',
-};
 
 export function getRaceSkillPointsBonusPerLevel(raceId: DndRaceId | string): number {
     return (DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA as Record<string, number>)[raceId] || 0;
@@ -925,6 +916,7 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
+
 
 
 
