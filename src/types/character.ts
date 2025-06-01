@@ -182,7 +182,14 @@ export interface Character {
   deflectionBonus: number;
   dodgeBonus: number;
   acMiscModifier: number;
+
+  // Combat Panel Fields
+  babMiscModifier: number;
   initiativeMiscModifier: number;
+  grappleMiscModifier: number;
+  grappleDamage_baseNotes: string;
+  grappleDamage_bonus: number;
+
   savingThrows: SavingThrows;
   classes: CharacterClass[];
   skills: Skill[]; // Character's skill instances
@@ -903,4 +910,5 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
+
 

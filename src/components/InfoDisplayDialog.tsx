@@ -23,6 +23,33 @@ export interface ResistanceBreakdownDetails {
   total: number;
 }
 
+export interface BabBreakdownDetails {
+  baseBabFromClasses: number[];
+  miscModifier: number;
+  totalBab: number[];
+}
+
+export interface InitiativeBreakdownDetails {
+  dexModifier: number;
+  miscModifier: number;
+  totalInitiative: number;
+}
+
+export interface GrappleModifierBreakdownDetails {
+  baseAttackBonus: number;
+  strengthModifier: number;
+  sizeModifierGrapple: number;
+  miscModifier: number;
+  totalGrappleModifier: number;
+}
+
+export interface GrappleDamageBreakdownDetails {
+  baseDamage: string;
+  bonus: number;
+  strengthModifier: number;
+}
+
+
 interface InfoDisplayDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -34,8 +61,12 @@ interface InfoDisplayDialogProps {
   bonusFeatSlots?: number;
   abilityScoreBreakdown?: AbilityScoreBreakdown;
   skillModifierBreakdown?: SkillModifierBreakdownDetails;
-  resistanceBreakdown?: ResistanceBreakdownDetails; // New prop
+  resistanceBreakdown?: ResistanceBreakdownDetails;
   detailsList?: Array<{ label: string; value: string | number; isBold?: boolean }>;
+  babBreakdown?: BabBreakdownDetails;
+  initiativeBreakdown?: InitiativeBreakdownDetails;
+  grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
+  grappleDamageBreakdown?: GrappleDamageBreakdownDetails;
 }
 
 export function InfoDisplayDialog({
@@ -49,8 +80,12 @@ export function InfoDisplayDialog({
   bonusFeatSlots,
   abilityScoreBreakdown,
   skillModifierBreakdown,
-  resistanceBreakdown, // Destructure new prop
+  resistanceBreakdown,
   detailsList,
+  babBreakdown,
+  initiativeBreakdown,
+  grappleModifierBreakdown,
+  grappleDamageBreakdown,
 }: InfoDisplayDialogProps) {
 
   const hasAbilityModifiers = abilityModifiers && abilityModifiers.length > 0;
@@ -81,7 +116,7 @@ export function InfoDisplayDialog({
         colorClass = zeroColor;
     }
     
-    const prefix = numValue > 0 ? '+' : (numValue === 0 ? '+' : '');
+    const prefix = numValue > 0 ? '+' : (numValue === 0 ? '' : ''); // No plus for zero unless it's a modifier display explicitly wanting it. For totals, no plus on zero.
 
 
     return (
@@ -113,6 +148,18 @@ export function InfoDisplayDialog({
   } else if (title?.toLowerCase().includes("armor class breakdown")){
     dialogTitle = title;
     sectionHeading = "Calculation:";
+  } else if (babBreakdown) {
+    dialogTitle = "Base Attack Bonus Breakdown";
+    sectionHeading = "Calculation:";
+  } else if (initiativeBreakdown) {
+    dialogTitle = "Initiative Breakdown";
+    sectionHeading = "Calculation:";
+  } else if (grappleModifierBreakdown) {
+    dialogTitle = "Grapple Modifier Breakdown";
+    sectionHeading = "Calculation:";
+  } else if (grappleDamageBreakdown) {
+    dialogTitle = "Grapple Damage Notes";
+    sectionHeading = "Details:";
   }
 
 
@@ -126,24 +173,136 @@ export function InfoDisplayDialog({
           </DialogTitle>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] pr-4 my-2">
-          {content && !abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !title?.toLowerCase().includes("armor class breakdown") && (
+          {content && !abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !title?.toLowerCase().includes("armor class breakdown") && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && (
              <div
               className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
               dangerouslySetInnerHTML={{ __html: content }}
             />
           )}
 
-          {content && (skillModifierBreakdown || abilityScoreBreakdown || resistanceBreakdown || title?.toLowerCase().includes("armor class breakdown")) && (
+          {content && (skillModifierBreakdown || abilityScoreBreakdown || resistanceBreakdown || title?.toLowerCase().includes("armor class breakdown") || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown) && (
              <div
               className="text-sm text-muted-foreground mb-3 leading-relaxed prose prose-sm dark:prose-invert max-w-none"
               dangerouslySetInnerHTML={{ __html: content }}
             />
           )}
 
+          {babBreakdown && (
+            <>
+            {(content) && <Separator className="my-3"/>}
+            <div>
+                <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span>Base BAB from Classes:</span>
+                    <span className="font-bold">{babBreakdown.baseBabFromClasses.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
+                  </div>
+                   {babBreakdown.miscModifier !== 0 && (
+                    <div className="flex justify-between">
+                        <span>Misc Modifier:</span>
+                        {renderModifierValue(babBreakdown.miscModifier)}
+                    </div>
+                  )}
+                  <Separator className="my-2" />
+                  <div className="flex justify-between text-base">
+                    <span className="font-semibold">Total BAB:</span>
+                    <span className="font-bold text-accent">{babBreakdown.totalBab.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {initiativeBreakdown && (
+             <>
+            {(content || babBreakdown) && <Separator className="my-3"/>}
+            <div>
+                <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span>Dexterity Modifier:</span>
+                    {renderModifierValue(initiativeBreakdown.dexModifier)}
+                  </div>
+                  {initiativeBreakdown.miscModifier !== 0 && (
+                    <div className="flex justify-between">
+                        <span>Misc Modifier:</span>
+                        {renderModifierValue(initiativeBreakdown.miscModifier)}
+                    </div>
+                  )}
+                  <Separator className="my-2" />
+                  <div className="flex justify-between text-base">
+                    <span className="font-semibold">Total Initiative:</span>
+                    {renderModifierValue(initiativeBreakdown.totalInitiative, undefined, undefined, undefined, "text-accent", true)}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {grappleModifierBreakdown && (
+            <>
+            {(content || babBreakdown || initiativeBreakdown) && <Separator className="my-3"/>}
+            <div>
+                <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span>Base Attack Bonus (Primary):</span>
+                    {renderModifierValue(grappleModifierBreakdown.baseAttackBonus)}
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Strength Modifier:</span>
+                    {renderModifierValue(grappleModifierBreakdown.strengthModifier)}
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Size Modifier (Grapple):</span>
+                    {renderModifierValue(grappleModifierBreakdown.sizeModifierGrapple)}
+                  </div>
+                  {grappleModifierBreakdown.miscModifier !== 0 && (
+                    <div className="flex justify-between">
+                        <span>Misc Modifier:</span>
+                        {renderModifierValue(grappleModifierBreakdown.miscModifier)}
+                    </div>
+                  )}
+                  <Separator className="my-2" />
+                  <div className="flex justify-between text-base">
+                    <span className="font-semibold">Total Grapple Modifier:</span>
+                    {renderModifierValue(grappleModifierBreakdown.totalGrappleModifier, undefined, undefined, undefined, "text-accent", true)}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+          
+          {grappleDamageBreakdown && (
+            <>
+            {(content || babBreakdown || initiativeBreakdown || grappleModifierBreakdown) && <Separator className="my-3"/>}
+            <div>
+                <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span>Base Damage / Notes:</span>
+                    <span className="font-bold">{grappleDamageBreakdown.baseDamage}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Strength Modifier:</span>
+                    {renderModifierValue(grappleDamageBreakdown.strengthModifier)}
+                  </div>
+                   {grappleDamageBreakdown.bonus !== 0 && (
+                    <div className="flex justify-between">
+                        <span>Numeric Bonus:</span>
+                        {renderModifierValue(grappleDamageBreakdown.bonus)}
+                    </div>
+                  )}
+                  {/* Total Grapple Damage is usually Base (like 1d3 or weapon) + STR Mod + Bonus. Displaying a simple sum might be misleading if base is dice. */}
+                </div>
+              </div>
+            </>
+          )}
+
 
           {abilityScoreBreakdown && (
             <>
-            {content && <Separator className="my-3"/>}
+            {(content || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown) && <Separator className="my-3"/>}
             <div>
                 <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
@@ -175,7 +334,7 @@ export function InfoDisplayDialog({
 
           {skillModifierBreakdown && (
             <>
-            {content && <Separator className="my-3"/>}
+            {(content || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || abilityScoreBreakdown) && <Separator className="my-3"/>}
             <div>
                 <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
@@ -231,7 +390,7 @@ export function InfoDisplayDialog({
           
           {resistanceBreakdown && (
             <>
-              {(content || abilityScoreBreakdown || skillModifierBreakdown) && <Separator className="my-3"/>}
+              {(content || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || abilityScoreBreakdown || skillModifierBreakdown) && <Separator className="my-3"/>}
               <div>
                 <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
@@ -253,7 +412,7 @@ export function InfoDisplayDialog({
             </>
           )}
 
-          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && hasAbilityModifiers && (
+          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && hasAbilityModifiers && (
             <>
               {(content) && <Separator className="my-4" />}
               <div>
@@ -270,7 +429,7 @@ export function InfoDisplayDialog({
             </>
           )}
 
-          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && hasSkillBonuses && (
+          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && hasSkillBonuses && (
             <>
               {(content || hasAbilityModifiers) && <Separator className="my-4" />}
               <div>
@@ -287,7 +446,7 @@ export function InfoDisplayDialog({
             </>
           )}
 
-          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && hasFeatAdjustments ? (
+          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && hasFeatAdjustments ? (
              <>
               {(content || hasAbilityModifiers || hasSkillBonuses) && <Separator className="my-4" />}
               <div>
@@ -309,7 +468,7 @@ export function InfoDisplayDialog({
             </>
           ) : null}
 
-          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && hasDetailsList && (
+          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && hasDetailsList && (
              <>
               {(content || anyBonusSectionWillRender) && (!title?.toLowerCase().includes("armor class breakdown")) && <Separator className="my-4" />}
               <div>
