@@ -365,7 +365,7 @@ export function CharacterFormCoreInfoSection({
               {/* AC Modifier Badge for Size */}
               {characterData.size && (() => {
                 const selectedSizeObject = SIZES.find(s => s.value === characterData.size);
-                if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number') {
+                if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
                   const acMod = selectedSizeObject.acModifier;
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
                   let badgeClassNameForAc = "text-xs font-normal";
@@ -379,13 +379,8 @@ export function CharacterFormCoreInfoSection({
                   } else if (acMod < 0) { // Negative AC mod is bad (larger creatures get AC penalty)
                     badgeVariantProp = "destructive";
                     badgeClassNameForAc = cn(badgeClassNameForAc, "hover:bg-destructive");
-                  } else { // Zero AC mod (Medium size)
-                    badgeClassNameForAc = cn(
-                      badgeClassNameForAc,
-                      "bg-muted/50 text-muted-foreground border-border",
-                      "hover:bg-muted/50 hover:text-muted-foreground"
-                    );
                   }
+                  // No 'else' needed since we're only rendering if acMod !== 0
                   return (
                     <Badge
                       variant={badgeVariantProp}
