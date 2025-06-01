@@ -247,7 +247,7 @@ export function InfoDisplayDialog({
                 <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span>Base Attack Bonus (Primary):</span>
+                    <span>Base Attack Bonus:</span>
                     {renderModifierValue(grappleModifierBreakdown.baseAttackBonus)}
                   </div>
                   <div className="flex justify-between">
@@ -255,7 +255,7 @@ export function InfoDisplayDialog({
                     {renderModifierValue(grappleModifierBreakdown.strengthModifier)}
                   </div>
                   <div className="flex justify-between">
-                    <span>Size Modifier (Grapple):</span>
+                    <span>Size Modifier:</span>
                     {renderModifierValue(grappleModifierBreakdown.sizeModifierGrapple)}
                   </div>
                   {grappleModifierBreakdown.miscModifier !== 0 && (
@@ -507,4 +507,5 @@ export function InfoDisplayDialog({
     </Dialog>
   );
 }
+
 
