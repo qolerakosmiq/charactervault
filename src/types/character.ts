@@ -1,5 +1,6 @@
 
 
+
 import baseDataJson from '@/data/dnd-base.json';
 import customBaseDataJson from '@/data/custom-base.json';
 import racesDataJson from '@/data/dnd-races.json';
@@ -187,7 +188,8 @@ export interface Character {
   babMiscModifier: number;
   initiativeMiscModifier: number;
   grappleMiscModifier: number;
-  grappleDamage_baseNotes: string; // Will store dynamically calculated unarmed damage string or future weapon name
+  grappleWeaponChoice: string; // e.g., 'unarmed', or future weapon ID
+  grappleDamage_baseNotes: string; // Stores the dice string e.g., "1d6" or "1d8" AND descriptive notes like "(Medium Unarmed)"
   grappleDamage_bonus: number; // This is the "Custom Modifier" for grapple damage
 
   savingThrows: SavingThrows;
@@ -365,15 +367,15 @@ const baseSkillSynergies = (skillsDataJson as any).SKILL_SYNERGIES_DATA || {};
 export const SKILL_SYNERGIES: Readonly<SkillSynergiesJsonData> = mergeObjectData(baseSkillSynergies, {});
 
 export const GRAPPLE_DAMAGE_BY_SIZE: Partial<Record<CharacterSize, string>> = {
-  tiny: '1d2',
-  small: '1d4',
-  medium: '1d6',
-  large: '2d6',
-  huge: '3d6',
-  gargantuan: '4d6',
-  colossal: '6d6',
-  // Fine and Diminutive often default to 0 or 1 nonlethal, or have special rules.
-  // If not specified, a helper function will return a default like "0" or "1 nonlethal".
+  fine: '1', // Typically 0 or 1 nonlethal, PHB p.155 table indicates 1 for Fine creatures
+  diminutive: '1d2', // PHB p.155 table indicates 1d2 for Diminutive
+  tiny: '1d3', // PHB p.155 table indicates 1d3 for Tiny
+  small: '1d4', // PHB p.155 table indicates 1d4 for Small
+  medium: '1d6', // PHB p.155 table indicates 1d6 for Medium
+  large: '1d8', // PHB p.155 table indicates 1d8 for Large (This was 2d6 in previous thoughts, PHB is 1d8)
+  huge: '2d6', // PHB p.155 table indicates 2d6 for Huge (This was 3d6)
+  gargantuan: '2d8', // PHB p.155 table indicates 2d8 for Gargantuan (This was 4d6)
+  colossal: '4d6', // PHB p.155 table indicates 4d6 for Colossal (This was 6d6)
 };
 
 export function getRaceSkillPointsBonusPerLevel(raceId: DndRaceId | string): number {
@@ -922,5 +924,6 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
+
 
 

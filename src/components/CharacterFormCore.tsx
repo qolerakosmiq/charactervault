@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import * as React from 'react';
@@ -111,7 +112,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     const defaultBaseAbilityScores = { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES)) as AbilityScores) };
     const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: '', level: 1 }];
     const defaultSize: CharacterSize = 'medium';
-    const defaultUnarmedGrappleDamage = getUnarmedGrappleDamage(defaultSize);
+    const defaultUnarmedGrappleDice = getUnarmedGrappleDamage(defaultSize);
     const sizeLabel = SIZES.find(s => s.value === defaultSize)?.label || defaultSize;
 
 
@@ -140,7 +141,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       babMiscModifier: 0,
       initiativeMiscModifier: 0,
       grappleMiscModifier: 0,
-      grappleDamage_baseNotes: `${defaultUnarmedGrappleDamage} (${sizeLabel} Unarmed)`,
+      grappleWeaponChoice: 'unarmed',
+      grappleDamage_baseNotes: `${defaultUnarmedGrappleDice} (${sizeLabel} Unarmed)`,
       grappleDamage_bonus: 0,
       
       savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)),
@@ -357,18 +359,29 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     allAvailableSkillDefinitionsForDisplay
   ]);
 
-  // Effect to update grappleDamage_baseNotes when size changes
+  // Effect to update grappleDamage_baseNotes when size or weapon choice changes
   React.useEffect(() => {
-    const newUnarmedDamage = getUnarmedGrappleDamage(character.size);
+    let newBaseNotes = '';
     const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size || 'Unknown Size';
-    const newBaseNotes = `${newUnarmedDamage} (${sizeLabel} Unarmed)`;
+
+    if (character.grappleWeaponChoice === 'unarmed') {
+      const unarmedDamageDice = getUnarmedGrappleDamage(character.size);
+      newBaseNotes = `${unarmedDamageDice} (${sizeLabel} Unarmed)`;
+    } else {
+      // Future: Handle selected weapon's damage dice
+      // For now, if it's not 'unarmed', we'll use a placeholder or the current notes if they exist.
+      // This part will need to be fleshed out when weapons are implemented.
+      // newBaseNotes = `0 (Weapon: ${character.grappleWeaponChoice})`; // Placeholder
+      newBaseNotes = character.grappleDamage_baseNotes; // Keep existing notes if not unarmed and not yet implemented
+    }
+
     if (character.grappleDamage_baseNotes !== newBaseNotes) {
       setCharacter(prev => ({
         ...prev,
         grappleDamage_baseNotes: newBaseNotes,
       }));
     }
-  }, [character.size, character.grappleDamage_baseNotes]);
+  }, [character.size, character.grappleWeaponChoice, character.grappleDamage_baseNotes]);
 
 
   const handleCoreInfoFieldChange = (field: keyof Character, value: any) => {
@@ -649,7 +662,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
   };
 
-  const handleOpenCombatStatInfoDialog = (
+  const handleOpenCombatStatInfoDialog = React.useCallback((
     breakdownType: 'bab' | 'initiative' | 'grappleModifier' | 'grappleDamage',
     details: BabBreakdownDetails | InitiativeBreakdownDetails | GrappleModifierBreakdownDetails | GrappleDamageBreakdownDetails
   ) => {
@@ -688,7 +701,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         ...dialogProps
     });
     setIsInfoDialogOpen(true);
-};
+}, [character.classes]);
 
 
   const handleSubmit = (e: FormEvent) => {
@@ -944,3 +957,4 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
+

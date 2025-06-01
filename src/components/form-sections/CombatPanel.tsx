@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -37,12 +38,11 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
   const baseGrappleModifier = calculateGrapple(baseBabArray, strModifier, sizeModGrapple);
   const totalGrappleModifier = baseGrappleModifier + (character.grappleMiscModifier || 0);
 
-  const unarmedGrappleDamageDice = getUnarmedGrappleDamage(character.size);
-  const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
   
-  const baseGrappleDamageString = (character.grappleDamage_baseNotes || `${unarmedGrappleDamageDice} (${sizeLabel} Unarmed)`).split(' ')[0];
+  // Grapple Damage Display Logic
+  const grappleDamageBaseDice = character.grappleDamage_baseNotes.split(' ')[0] || '0';
   const totalNumericGrappleBonus = strModifier + (character.grappleDamage_bonus || 0);
-  const displayedGrappleDamageTotal = `${baseGrappleDamageString}${totalNumericGrappleBonus !== 0 ? `${totalNumericGrappleBonus >= 0 ? '+' : ''}${totalNumericGrappleBonus}` : ''}`;
+  const displayedGrappleDamageTotal = `${grappleDamageBaseDice}${totalNumericGrappleBonus !== 0 ? `${totalNumericGrappleBonus >= 0 ? '+' : ''}${totalNumericGrappleBonus}` : ''}`;
 
 
   const handleBabInfo = () => {
@@ -77,7 +77,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
   
   const handleGrappleDamageInfo = () => {
     const details: GrappleDamageBreakdownDetails = {
-        baseDamage: character.grappleDamage_baseNotes || `${unarmedGrappleDamageDice} (${sizeLabel} Unarmed)`,
+        baseDamage: character.grappleDamage_baseNotes, // This now includes notes like "(Medium Unarmed)"
         bonus: character.grappleDamage_bonus || 0,
         strengthModifier: strModifier,
     };
@@ -186,12 +186,16 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
             <div className="mt-auto space-y-2">
                 <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground block">Weapon</Label>
-                    <Select disabled>
+                    <Select 
+                        value={character.grappleWeaponChoice}
+                        onValueChange={(val) => onCharacterUpdate('grappleWeaponChoice', val)}
+                    >
                         <SelectTrigger className="h-8 text-sm w-full max-w-[200px] mx-auto">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                            {/* Options will be added when weapons are implemented */}
+                             <SelectItem value="unarmed">Unarmed Strike</SelectItem>
+                            {/* Future weapon options will be added here */}
                         </SelectContent>
                     </Select>
                 </div>

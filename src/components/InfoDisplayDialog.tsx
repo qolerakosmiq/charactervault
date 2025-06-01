@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -288,7 +289,11 @@ export function InfoDisplayDialog({
                   </div>
                   <div className="flex justify-between">
                     <span>Weapon Damage:</span>
-                    {renderModifierValue(0)}
+                    {grappleDamageBreakdown.baseDamage.toLowerCase().includes('unarmed') ? (
+                        <span className="font-semibold text-muted-foreground">Unarmed</span>
+                    ) : (
+                        renderModifierValue(0)
+                    )}
                   </div>
                   <div className="flex justify-between">
                     <span>Strength Modifier:</span>
