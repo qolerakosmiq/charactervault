@@ -59,11 +59,11 @@ export interface FeatEffectDetails {
 
 export const FEAT_TYPES = [
   { value: "special", label: "Special" },
-  { value: "special-ex", label: "Special (Extraordinary Ability)" },
-  { value: "special-sp", label: "Special (Spell-Like Ability)" },
-  { value: "special-su", label: "Special (Supernatural Ability)" },
-  { value: "special-ps", label: "Special (Psi-Like Ability)" },
-  { value: "special-ex-su", label: "Special (Extraordinary/Supernatural Ability)" },
+  { value: "special-ex", label: "Extraordinary Ability" },
+  { value: "special-sp", label: "Spell-Like Ability" },
+  { value: "special-su", label: "Supernatural Ability" },
+  { value: "special-ps", label: "Psi-Like Ability" }, // Assuming 'Psionic' might be preferred or 'Psi-Like'
+  { value: "special-ex-su", label: "Extraordinary/Supernatural Ability" },
 ] as const;
 
 export type FeatTypeString = typeof FEAT_TYPES[number]['value'];
@@ -601,7 +601,7 @@ export function getGrantedFeatsForCharacter(
         definitionId: featDef.value,
         instanceId: featDef.canTakeMultipleTimes ? `${featDef.value}-GRANTED-${crypto.randomUUID()}` : instanceId,
         isGranted: true,
-        grantedNote: note ? `${note} (${source})` : `(${source})`,
+        grantedNote: note ? `${note}` : undefined, // Removed automatic (Source) from here
       });
       if (!featDef.canTakeMultipleTimes) {
         addedDefinitionIds.add(instanceId);

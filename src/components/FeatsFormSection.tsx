@@ -131,6 +131,19 @@ export function FeatsFormSection({
     }
   };
 
+  const getFeatSource = (definitionValue: string): string | null => {
+    if (definitionValue.startsWith('class-')) {
+      const parts = definitionValue.split('-');
+      if (parts.length > 1) {
+        const className = parts[1];
+        // Find class label for proper capitalization if available
+        const classDef = DND_CLASSES.find(c => c.value === className);
+        return classDef ? classDef.label : className.charAt(0).toUpperCase() + className.slice(1);
+      }
+    }
+    return null;
+  };
+
 
   return (
     <>
@@ -179,20 +192,27 @@ export function FeatsFormSection({
 
               const prereqMessages = checkFeatPrerequisites(definition, characterForPrereqCheck, allAvailableFeatDefinitions, allPredefinedSkillDefinitions, allCustomSkillDefinitions);
               const isCustomDefinition = definition.isCustom;
+              
               const featTypeLabel = definition.type && definition.type !== "special" 
-                ? FEAT_TYPES.find(ft => ft.value === definition.type)?.label.replace("Special ", "")
+                ? FEAT_TYPES.find(ft => ft.value === definition.type)?.label
                 : null;
+
+              const featSource = (instance.isGranted && definition.isClassFeature) ? getFeatSource(definition.value) : null;
 
               return (
                 <div key={instance.instanceId} className="group flex items-start justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors">
                   <div className="flex-grow mr-2">
-                    <h4 className="font-medium text-foreground">
-                      {definition.label}
-                      {featTypeLabel && <Badge variant="outline" className="text-xs ml-1.5 font-normal text-muted-foreground border-muted-foreground/50">{featTypeLabel}</Badge>}
-                      {instance.isGranted && instance.grantedNote && <span className="text-xs text-muted-foreground ml-1 italic">{instance.grantedNote}</span>}
-                      {definition.requiresSpecialization && instance.specializationDetail && <span className="text-xs text-muted-foreground ml-1">({instance.specializationDetail})</span>}
-                      {isCustomDefinition && <span className="text-xs text-primary/70 ml-1">(Custom)</span>}
-                    </h4>
+                    <div className="flex items-center flex-wrap gap-x-1.5">
+                      {featSource && <Badge variant="secondary" className="text-xs font-normal h-5">{featSource}</Badge>}
+                      <h4 className="font-medium text-foreground inline">
+                        {definition.label}
+                      </h4>
+                      {featTypeLabel && <Badge variant="outline" className="text-xs font-normal h-5">{featTypeLabel}</Badge>}
+                      {isCustomDefinition && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5">Custom</Badge>}
+                       {instance.grantedNote && !featSource && <span className="text-xs text-muted-foreground italic">{instance.grantedNote}</span>}
+                       {instance.grantedNote && featSource && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
+                    </div>
+                    {definition.requiresSpecialization && instance.specializationDetail && <p className="text-xs text-muted-foreground mt-0.5 ml-1">({instance.specializationDetail})</p>}
                     {definition.description && <div className="text-xs text-muted-foreground mt-0.5 whitespace-normal" dangerouslySetInnerHTML={{ __html: definition.description }} />}
                     {definition.effectsText && <p className="text-xs text-muted-foreground mt-0.5 whitespace-normal">Effects: {definition.effectsText}</p>}
                     {prereqMessages.length > 0 ? (
