@@ -2,6 +2,7 @@
 
 
 
+
 import baseDataJson from '@/data/dnd-base.json';
 import customBaseDataJson from '@/data/custom-base.json';
 import racesDataJson from '@/data/dnd-races.json';
@@ -150,8 +151,8 @@ export const DAMAGE_REDUCTION_TYPES = [
 export type DamageReductionTypeValue = typeof DAMAGE_REDUCTION_TYPES[number]['value'];
 
 export const DAMAGE_REDUCTION_RULES_OPTIONS = [
-  { value: "standard-bypass", label: "Reduces Damage from Type" }, // e.g. DR X/Magic - Bypassed BY Magic
-  { value: "vs-specific-type", label: "Versus Specific Type (DR X vs. Type)" }, // e.g. DR X vs Fire
+  { value: "standard-bypass", label: "Standard (Bypassed by Type)" },
+  { value: "vs-specific-type", label: "Versus Specific Type (DR X vs. Type)" },
 ] as const;
 export type DamageReductionRuleValue = typeof DAMAGE_REDUCTION_RULES_OPTIONS[number]['value'];
 
@@ -367,7 +368,7 @@ export function getInitialCharacterSkills(characterClasses: CharacterClass[]): S
   const classSkillsForCurrentClass = firstClassValue ? (CLASS_SKILLS[firstClassValue as keyof ClassSkillsJsonData] || []) : [];
 
   return SKILL_DEFINITIONS.map(def => ({
-    id: def.value, 
+    id: def.value,
     ranks: 0,
     miscModifier: 0,
     isClassSkill: classSkillsForCurrentClass.includes(def.value),
@@ -586,8 +587,8 @@ export function calculateAvailableFeats(
   let classBonusFeats = 0;
   characterClasses.forEach(charClass => {
     if (charClass.className === 'fighter') {
-        if (charClass.level >= 1) classBonusFeats += 1; 
-        for (let i = 2; i <= charClass.level; i += 2) { 
+        if (charClass.level >= 1) classBonusFeats += 1;
+        for (let i = 2; i <= charClass.level; i += 2) {
             classBonusFeats += 1;
         }
     }
@@ -607,7 +608,7 @@ export function getGrantedFeatsForCharacter(
   characterRaceId: DndRaceId | string,
   characterClasses: CharacterClass[],
   characterLevel: number,
-  allFeatDefinitions: readonly FeatDefinitionJsonData[] 
+  allFeatDefinitions: readonly FeatDefinitionJsonData[]
 ): CharacterFeatInstance[] {
   const grantedInstances: CharacterFeatInstance[] = [];
   const addedDefinitionIds = new Set<string>();
@@ -619,13 +620,13 @@ export function getGrantedFeatsForCharacter(
     const featDef = allFeatDefinitions.find(f => f.value === featDefId);
     if (featDef) {
       const instanceId = featDef.value;
-      if (addedDefinitionIds.has(instanceId) && !featDef.canTakeMultipleTimes) return; 
+      if (addedDefinitionIds.has(instanceId) && !featDef.canTakeMultipleTimes) return;
 
       grantedInstances.push({
         definitionId: featDef.value,
         instanceId: featDef.canTakeMultipleTimes ? `${featDef.value}-GRANTED-${crypto.randomUUID()}` : instanceId,
         isGranted: true,
-        grantedNote: note ? `${note}` : undefined, 
+        grantedNote: note ? `${note}` : undefined,
       });
       if (!featDef.canTakeMultipleTimes) {
         addedDefinitionIds.add(instanceId);
@@ -671,8 +672,8 @@ export function checkFeatPrerequisites(
   featDefinitionToCheck: FeatDefinitionJsonData,
   character: Pick<Character, 'abilityScores' | 'skills' | 'feats' | 'classes' | 'race' | 'age' | 'alignment'>,
   allFeatDefinitions: readonly (FeatDefinitionJsonData & {isCustom?: boolean})[],
-  allSkillDefinitions: readonly SkillDefinitionJsonData[], 
-  allCustomSkillDefinitions: readonly CustomSkillDefinition[] 
+  allSkillDefinitions: readonly SkillDefinitionJsonData[],
+  allCustomSkillDefinitions: readonly CustomSkillDefinition[]
 ): PrerequisiteMessage[] {
   const { prerequisites } = featDefinitionToCheck;
   const messages: PrerequisiteMessage[] = [];
@@ -821,7 +822,7 @@ export function calculateDetailedAbilityScores(character: Character, globalCusto
   const result: Partial<DetailedAbilityScores> = {};
   const racialQualities = getRaceSpecialQualities(character.race);
   const agingDetails = getNetAgingEffects(character.race, character.age);
-  
+
   const allFeatDefs: (FeatDefinitionJsonData & { isCustom?: boolean })[] = [
     ...DND_FEATS_DEFINITIONS,
     ...globalCustomFeatDefs,
@@ -904,6 +905,7 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
+
 
 
 
