@@ -11,7 +11,7 @@ import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 import { getAbilityModifierByName, getSizeModifierAC } from '@/lib/dnd-utils';
 
 interface ArmorClassPanelProps {
-  character?: Character; // Allow character to be potentially undefined
+  character: Character; 
 }
 
 type AcBreakdownDetail = { label: string; value: string | number; isBold?: boolean };
@@ -20,24 +20,8 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<{ title: string; detailsList: AcBreakdownDetail[] } | null>(null);
 
-  // Guard against undefined character or missing essential properties
-  if (!character || !character.abilityScores || !character.size) {
-    return (
-      <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-3">
-            <Shield className="h-8 w-8 text-primary" />
-            <CardTitle className="text-2xl font-serif">Armor Class</CardTitle>
-          </div>
-          <CardDescription>Details about your character's defenses.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-muted-foreground">Character data not fully loaded...</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
+  // Calculations will proceed assuming 'character', 'character.abilityScores', and 'character.size' are defined,
+  // as per the 'Character' type and the expectation that the parent component provides a valid object.
   const dexModifier = getAbilityModifierByName(character.abilityScores, 'dexterity');
   const sizeModAC = getSizeModifierAC(character.size);
 
@@ -70,8 +54,7 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
     (character.acMiscModifier || 0);
 
   const showAcBreakdown = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
-    if (!character || !character.abilityScores || !character.size) return;
-
+    // No need to check character, abilityScores, or size here if the prop contract is met
     const detailsList: AcBreakdownDetail[] = [{ label: 'Base', value: 10 }];
     let totalCalculated = 10;
 
