@@ -303,7 +303,12 @@
       "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
       "description": "<p>Wizards are scholars of the arcane, mastering magic through intense study, research, and practice.<br />They command a vast repertoire of spells, prepared daily from their spellbooks.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Wizards often worship deities of knowledge, magic, or secrets, or focus purely on arcane pursuits.</p><p><b>Background:</b><br />Typically educated in academies, mentored by master wizards, or self-taught through ancient tomes.</p><p><b>Races:</b><br />Humans, elves, and gnomes are most commonly drawn to wizardry.</p>",
       "grantedFeats": [
-        { "featId": "scribe-scroll", "note": "(Wizard Bonus Feat)", "levelAcquired": 1 }
+        { "featId": "class-sorcerer-summon-familiar", "levelAcquired": 1, "note": "(Wizard Feature)" },
+        { "featId": "scribe-scroll", "levelAcquired": 1, "note": "(Wizard Bonus Feat)" },
+        { "featId": "class-wizard-bonus-feat-slot", "levelAcquired": 5, "note": "(5th Level - Metamagic, Item Creation, or Spell Mastery)" },
+        { "featId": "class-wizard-bonus-feat-slot", "levelAcquired": 10, "note": "(10th Level - Metamagic, Item Creation, or Spell Mastery)" },
+        { "featId": "class-wizard-bonus-feat-slot", "levelAcquired": 15, "note": "(15th Level - Metamagic, Item Creation, or Spell Mastery)" },
+        { "featId": "class-wizard-bonus-feat-slot", "levelAcquired": 20, "note": "(20th Level - Metamagic, Item Creation, or Spell Mastery)" }
       ]
     }
   ]
