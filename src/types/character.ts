@@ -1,6 +1,7 @@
 
 
 
+
 import baseDataJson from '@/data/dnd-base.json';
 import customBaseDataJson from '@/data/custom-base.json';
 import racesDataJson from '@/data/dnd-races.json';
@@ -367,15 +368,15 @@ const baseSkillSynergies = (skillsDataJson as any).SKILL_SYNERGIES_DATA || {};
 export const SKILL_SYNERGIES: Readonly<SkillSynergiesJsonData> = mergeObjectData(baseSkillSynergies, {});
 
 export const GRAPPLE_DAMAGE_BY_SIZE: Partial<Record<CharacterSize, string>> = {
-  fine: '1', // Typically 0 or 1 nonlethal, PHB p.155 table indicates 1 for Fine creatures
-  diminutive: '1d2', // PHB p.155 table indicates 1d2 for Diminutive
-  tiny: '1d3', // PHB p.155 table indicates 1d3 for Tiny
-  small: '1d4', // PHB p.155 table indicates 1d4 for Small
-  medium: '1d6', // PHB p.155 table indicates 1d6 for Medium
-  large: '1d8', // PHB p.155 table indicates 1d8 for Large (This was 2d6 in previous thoughts, PHB is 1d8)
-  huge: '2d6', // PHB p.155 table indicates 2d6 for Huge (This was 3d6)
-  gargantuan: '2d8', // PHB p.155 table indicates 2d8 for Gargantuan (This was 4d6)
-  colossal: '4d6', // PHB p.155 table indicates 4d6 for Colossal (This was 6d6)
+  fine: '0',
+  diminutive: '0',
+  tiny: '1',
+  small: '1d2',
+  medium: '1d3',
+  large: '1d4',
+  huge: '1d6',
+  gargantuan: '1d8',
+  colossal: '2d6',
 };
 
 export function getRaceSkillPointsBonusPerLevel(raceId: DndRaceId | string): number {
@@ -924,6 +925,7 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
+
 
 
 
