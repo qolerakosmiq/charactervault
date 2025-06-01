@@ -189,7 +189,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
                         value={character.grappleWeaponChoice}
                         onValueChange={(val) => onCharacterUpdate('grappleWeaponChoice', val)}
                     >
-                        <SelectTrigger className="h-8 text-sm w-full max-w-[200px] mx-auto [&>span]:text-center">
+                        <SelectTrigger className="h-8 text-sm w-full max-w-[200px] mx-auto">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
