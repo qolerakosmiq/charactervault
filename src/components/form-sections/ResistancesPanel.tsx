@@ -108,30 +108,28 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
   const getDrTypeLabel = (type: DamageReductionTypeValue | string): string => {
     return DAMAGE_REDUCTION_TYPES.find(t => t.value === type)?.label || String(type);
   };
-
+  
   const getDrPrimaryNotation = (dr: DamageReductionInstance): string => {
     const typeLabel = getDrTypeLabel(dr.type);
-    if (dr.type === "none") {
+    if (dr.type === "none") { // DR X/-
       return `${dr.value}/—`;
     }
-    if (dr.rule === 'standard-bypass') {
+    if (dr.rule === 'standard-bypass') { // DR X/Magic, DR X/Silver
       return `${dr.value}/${typeLabel}`;
     }
-    // For "vs-specific-type" or other custom rules if added.
-    return `${dr.value} vs ${typeLabel}`;
+    // For "vs-specific-type" (DR X vs Fire, DR X vs Bludgeoning)
+    return `${dr.value} vs ${typeLabel}`; 
   };
 
   const getDrRuleDescription = (dr: DamageReductionInstance): string => {
     const typeLabel = getDrTypeLabel(dr.type);
-    if (dr.type === "none") {
-      return "Reduces damage from all sources.";
-    }
     if (dr.rule === 'standard-bypass') {
-      return `Reduces damage unless attack is ${typeLabel}.`;
+      return dr.type === "none" ? "Reduces damage from most sources." : `Reduces damage unless attack is ${typeLabel}.`;
     }
     if (dr.rule === 'vs-specific-type') {
       return `Specifically reduces damage from ${typeLabel} sources.`;
     }
+    // Fallback, should ideally not be reached if rule is one of the defined options
     return `Rule: ${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule}`;
   };
 
@@ -297,6 +295,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                       onChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}
                       placeholder="Select rule..."
                       triggerClassName="h-9 text-sm"
+                      isEditable={false}
                     />
                   </div>
                   <div className="space-y-1">
@@ -306,10 +305,10 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                       options={DAMAGE_REDUCTION_TYPES}
                       value={newDrType}
                       onChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}
-                      placeholder="Select type or enter custom..."
+                      placeholder="Select type..."
                       searchPlaceholder="Search types..."
                       emptyPlaceholder="No type found."
-                      isEditable={true}
+                      isEditable={false}
                       triggerClassName="h-9 text-sm"
                       />
                   </div>
