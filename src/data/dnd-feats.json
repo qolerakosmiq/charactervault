@@ -662,6 +662,13 @@
       "description": "<b>Benefit:</b> On attaining 10th level, and at every three rogue levels thereafter (13th, 16th, and 19th), a rogue may choose one special ability from a list (e.g., Crippling Strike, Defensive Roll, Improved Evasion, Opportunist, Skill Mastery, Slippery Mind, Feat).",
       "type": "special-ex",
       "isClassFeature": true
+    },
+    {
+      "value": "class-sorcerer-summon-familiar",
+      "label": "Summon Familiar (Sp)",
+      "description": "<b>Benefit:</b> A sorcerer can obtain a familiar in exactly the same way as a wizard can. Familiars are magically bonded creatures that serve their masters. The sorcerer chooses one creature from the standard list of familiars (see SRD). The familiar grants special abilities to its master, as given in the table in the SRD. The familiar uses the basic statistics for a creature of its kind, except that it has an Intelligence of at least 6, two Hit Dice, and an AC and saving throws as the master. Its hit points are equal to half the master’s total.",
+      "type": "special-sp",
+      "isClassFeature": true
     }
   ]
 }
