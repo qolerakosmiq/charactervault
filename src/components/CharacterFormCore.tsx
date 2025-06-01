@@ -544,6 +544,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         bonusFeatSlots: qualities.bonusFeatSlots,
         detailsList: details.length > 0 ? details : undefined,
       });
+      setIsInfoDialogOpen(true);
     }
   };
 
@@ -583,6 +584,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             grantedFeats: grantedFeatsFormatted,
             detailsList: classSpecificDetails
         });
+        setIsInfoDialogOpen(true);
     }
   };
 
@@ -591,6 +593,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
      (align) => `<p><b>${align.label}:</b><br />${align.description}</p>`
    ).join('');
    setCurrentInfoDialogData({ isOpen: true, onOpenChange: setIsInfoDialogOpen, title: "Alignments", content: allAlignmentDescriptions });
+   setIsInfoDialogOpen(true);
  };
 
   const handleOpenDeityInfoDialog = () => {
@@ -617,11 +620,13 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             content: "<p>Select or type a deity to see more information.</p>"
         });
       }
+      setIsInfoDialogOpen(true);
   };
 
   const handleOpenAbilityScoreBreakdownDialog = (ability: Exclude<AbilityName, 'none'>) => {
     if (detailedAbilityScores && detailedAbilityScores[ability]) {
       setCurrentInfoDialogData({ isOpen: true, onOpenChange: setIsInfoDialogOpen, abilityScoreBreakdown: detailedAbilityScores[ability] });
+      setIsInfoDialogOpen(true);
     }
   };
 
@@ -656,6 +661,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         title: dialogTitle,
         ...dialogProps
     });
+    setIsInfoDialogOpen(true);
 };
 
 
