@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import * as React from 'react';
@@ -77,7 +76,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
   
   const handleGrappleDamageInfo = () => {
     const details: GrappleDamageBreakdownDetails = {
-        baseDamage: character.grappleDamage_baseNotes, // This now includes notes like "(Medium Unarmed)"
+        baseDamage: character.grappleDamage_baseNotes, 
         bonus: character.grappleDamage_bonus || 0,
         strengthModifier: strModifier,
     };
@@ -190,7 +189,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
                         value={character.grappleWeaponChoice}
                         onValueChange={(val) => onCharacterUpdate('grappleWeaponChoice', val)}
                     >
-                        <SelectTrigger className="h-8 text-sm w-full max-w-[200px] mx-auto">
+                        <SelectTrigger className="h-8 text-sm w-full max-w-[200px] mx-auto text-center">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
