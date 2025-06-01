@@ -58,7 +58,10 @@ export function FeatSelectionDialog({
   const scrollAreaRef = React.useRef<HTMLDivElement>(null);
 
   const sortedAndFilteredFeats = React.useMemo(() => {
-    return [...allFeats].sort((a, b) => a.label.localeCompare(b.label));
+    // Filter out feats that are marked as class features, then sort
+    return [...allFeats]
+      .filter(featDef => featDef.isClassFeature !== true) // Only show if NOT a class feature
+      .sort((a, b) => a.label.localeCompare(b.label));
   }, [allFeats]);
 
   React.useEffect(() => {
@@ -96,7 +99,7 @@ export function FeatSelectionDialog({
                   const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(
                     featDef, 
                     character, 
-                    allFeats, // Pass all feat definitions for checking feat prereqs
+                    allFeats, 
                     allPredefinedSkillDefinitions,
                     allCustomSkillDefinitions
                   );

@@ -78,7 +78,8 @@ export type FeatDefinitionJsonData = {
   effectsText?: string;
   canTakeMultipleTimes?: boolean;
   requiresSpecialization?: string;
-  type?: FeatTypeString; // New field for feat type
+  type?: FeatTypeString;
+  isClassFeature?: boolean; // New flag to identify class-granted features not for general selection
 };
 
 // Represents an instance of a feat taken by the character
@@ -558,13 +559,15 @@ export function calculateAvailableFeats(
   let classBonusFeats = 0;
   characterClasses.forEach(charClass => {
     if (charClass.className === 'fighter') {
-        classBonusFeats = 0; // Reset for correct calculation for each fighter instance (though typically only one)
-        if (charClass.level >= 1) classBonusFeats += 1; // 1st level fighter
-        for (let i = 2; i <= charClass.level; i += 2) { // Every 2 levels thereafter (2nd, 4th, 6th...)
+        // Fighters get a bonus feat at 1st level and every even fighter level thereafter.
+        // The baseFeat already covers the 1st level feat that everyone gets.
+        // So, for a Fighter, the 1st level fighter bonus feat is distinct.
+        if (charClass.level >= 1) classBonusFeats += 1; // Fighter's 1st level bonus
+        for (let i = 2; i <= charClass.level; i += 2) { // Every 2 fighter levels thereafter (2nd, 4th, 6th...)
             classBonusFeats += 1;
         }
     }
-    // Add other classes that grant bonus feats here if needed
+    // Add other classes that grant bonus FEAT SLOTS here if needed
   });
 
   const totalFeats = baseFeat + racialBonus + levelProgressionFeats + classBonusFeats;
@@ -587,29 +590,23 @@ export function getGrantedFeatsForCharacter(
   const addedDefinitionIds = new Set<string>();
 
   const addGrantedInstance = (featDefId: string, note: string | undefined, source: string, levelAcquired?: number) => {
-    if (!featDefId || (levelAcquired !== undefined && levelAcquired > characterLevel) ) { // Removed addedDefinitionIds check to allow multiple sources granting same feat if that's a rule.
+    if (!featDefId || (levelAcquired !== undefined && levelAcquired > characterLevel) ) {
       return;
     }
     const featDef = allFeatDefinitions.find(f => f.value === featDefId);
     if (featDef) {
-      // For granted feats that can be taken multiple times, ensure their instance ID is unique if another source grants it.
-      // However, typical granted feats (like Scribe Scroll for Wizard) are usually single-take.
-      // If a feat is granted multiple times and IS multi-take, each grant would need a unique instance ID.
-      // For simplicity, assume granted feats here are single-take unless game rules specify otherwise for specific grants.
-      // We'll use the definitionId as instanceId for granted feats for now.
-      const instanceId = featDef.value; 
-      
-      // Check if this specific instance (by definitionID for granted) is already added
-      if (addedDefinitionIds.has(instanceId)) return;
-
+      const instanceId = featDef.value;
+      if (addedDefinitionIds.has(instanceId) && !featDef.canTakeMultipleTimes) return; // Prevent re-adding non-stackable granted feats
 
       grantedInstances.push({
         definitionId: featDef.value,
-        instanceId: instanceId, 
+        instanceId: featDef.canTakeMultipleTimes ? `${featDef.value}-GRANTED-${crypto.randomUUID()}` : instanceId,
         isGranted: true,
         grantedNote: note ? `${note} (${source})` : `(${source})`,
       });
-      addedDefinitionIds.add(instanceId);
+      if (!featDef.canTakeMultipleTimes) {
+        addedDefinitionIds.add(instanceId);
+      }
     }
   };
 
@@ -894,7 +891,3 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
-
-
-
-
