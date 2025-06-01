@@ -130,6 +130,30 @@ export interface ResistanceValue {
   customMod: number;
 }
 
+export const DAMAGE_REDUCTION_TYPES = [
+  { value: "none", label: "None (DR X/—)" }, // For DR X/-
+  { value: "magic", label: "Magic" },
+  { value: "adamantine", label: "Adamantine" },
+  { value: "silver", label: "Silver" },
+  { value: "cold-iron", label: "Cold Iron" },
+  { value: "slashing", label: "Slashing" },
+  { value: "piercing", label: "Piercing" },
+  { value: "bludgeoning", label: "Bludgeoning" },
+  { value: "good", label: "Good" },
+  { value: "evil", label: "Evil" },
+  { value: "lawful", label: "Lawful" },
+  { value: "chaotic", label: "Chaotic" },
+] as const;
+export type DamageReductionType = typeof DAMAGE_REDUCTION_TYPES[number]['value'];
+
+export interface DamageReductionInstance {
+  id: string; // Unique ID for this instance (e.g., UUID)
+  value: number;
+  type: DamageReductionType | string; // string for custom user input not in the list
+  isGranted?: boolean;
+  source?: string; // e.g., "Barbarian Level 7", "Amulet of Natural Armor"
+}
+
 export interface Character {
   id: string;
   name: string;
@@ -165,9 +189,9 @@ export interface Character {
   electricityResistance: ResistanceValue;
   sonicResistance: ResistanceValue;
   spellResistance: ResistanceValue;
-  powerResistance: ResistanceValue; // New
-  damageReduction: string; // e.g., "5/magic", "10/adamantine"
-  fortification: ResistanceValue; // Changed to ResistanceValue, though base might often be 0
+  powerResistance: ResistanceValue;
+  damageReduction: DamageReductionInstance[]; // Changed to array
+  fortification: ResistanceValue;
 }
 
 function mergeArrayData<T extends { value: string }>(base: T[], custom: T[]): T[] {
@@ -261,7 +285,7 @@ export type DndRaceOption = {
   label: string;
   description?: string;
   bonusFeatSlots?: number;
-  racialSkillBonuses?: Record<string, number>; // skill ID (value) to bonus
+  racialSkillBonuses?: Record<string, number>; // skillId (value) to bonus
   grantedFeats?: Array<{ featId: string; note?: string; levelAcquired?: number }>;
 };
 export type DndRaceId = "human" | "elf" | "dwarf" | "halfling" | "gnome" | "half-elf" | "half-orc" | string;
@@ -870,6 +894,5 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
-
 
     

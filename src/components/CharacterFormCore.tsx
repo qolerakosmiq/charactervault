@@ -9,7 +9,7 @@ import type {
   Skill as SkillType, DndClassId, DndDeityId, GenderId,
   DndRaceOption, DetailedAbilityScores, AbilityScoreBreakdown,
   FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData, CharacterSize,
-  ResistanceValue // Added
+  ResistanceValue, DamageReductionInstance, DamageReductionType // Added DamageReductionInstance
 } from '@/types/character';
 import {
   SIZES,
@@ -27,11 +27,12 @@ import {
   calculateDetailedAbilityScores,
   DEFAULT_ABILITIES,
   DEFAULT_SAVING_THROWS,
-  DEFAULT_RESISTANCE_VALUE, // Added
+  DEFAULT_RESISTANCE_VALUE,
   DND_RACE_MIN_ADULT_AGE_DATA,
   CLASS_SKILLS,
   SKILL_SYNERGIES,
-  getRaceSkillPointsBonusPerLevel
+  getRaceSkillPointsBonusPerLevel,
+  DAMAGE_REDUCTION_TYPES // Added
 } from '@/types/character';
 
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
@@ -132,16 +133,15 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       skills: initialSkills,
       feats: initialFeats,
       inventory: [], personalStory: '', portraitDataUrl: undefined,
-      // Initialize new resistance fields with ResistanceValue structure
       fireResistance: { ...DEFAULT_RESISTANCE_VALUE },
       coldResistance: { ...DEFAULT_RESISTANCE_VALUE },
       acidResistance: { ...DEFAULT_RESISTANCE_VALUE },
       electricityResistance: { ...DEFAULT_RESISTANCE_VALUE },
       sonicResistance: { ...DEFAULT_RESISTANCE_VALUE },
       spellResistance: { ...DEFAULT_RESISTANCE_VALUE },
-      powerResistance: { ...DEFAULT_RESISTANCE_VALUE }, // New
-      damageReduction: '',
-      fortification: { ...DEFAULT_RESISTANCE_VALUE }, // Changed to ResistanceValue
+      powerResistance: { ...DEFAULT_RESISTANCE_VALUE }, 
+      damageReduction: [], // Changed to empty array
+      fortification: { ...DEFAULT_RESISTANCE_VALUE },
     };
   });
 
@@ -264,6 +264,36 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }));
   }, [character.race, character.classes, allAvailableFeatDefinitions]);
 
+  // Effect to manage granted Barbarian Damage Reduction
+  React.useEffect(() => {
+    const barbarianClass = character.classes.find(c => c.className === 'barbarian');
+    const barbarianLevel = barbarianClass?.level || 0;
+    let grantedDrValue = 0;
+
+    if (barbarianLevel >= 19) grantedDrValue = 5;
+    else if (barbarianLevel >= 16) grantedDrValue = 4;
+    else if (barbarianLevel >= 13) grantedDrValue = 3;
+    else if (barbarianLevel >= 10) grantedDrValue = 2;
+    else if (barbarianLevel >= 7) grantedDrValue = 1;
+
+    setCharacter(prev => {
+      const existingGrantedBarbDr = prev.damageReduction.find(dr => dr.isGranted && dr.source === 'Barbarian Class');
+      let newDrArray = prev.damageReduction.filter(dr => !(dr.isGranted && dr.source === 'Barbarian Class'));
+
+      if (grantedDrValue > 0) {
+        const newBarbDrInstance: DamageReductionInstance = {
+          id: existingGrantedBarbDr?.id || `granted-barb-dr-${crypto.randomUUID()}`,
+          value: grantedDrValue,
+          type: 'none', // DR X/-
+          isGranted: true,
+          source: 'Barbarian Class'
+        };
+        newDrArray = [newBarbDrInstance, ...newDrArray];
+      }
+      return { ...prev, damageReduction: newDrArray };
+    });
+  }, [character.classes]);
+
   const prevGlobalCustomSkillDefinitionsRef = React.useRef<CustomSkillDefinition[]>([]);
 
   React.useEffect(() => {
@@ -328,6 +358,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         [subField]: value,
       },
     }));
+  };
+
+  const handleDamageReductionChange = (newDrArray: DamageReductionInstance[]) => {
+    setCharacter(prev => ({ ...prev, damageReduction: newDrArray }));
   };
 
   const handleBaseAbilityScoreChange = (ability: Exclude<AbilityName, 'none'>, value: number) => {
@@ -701,7 +735,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             fortification: character.fortification,
           }}
           onResistanceChange={handleResistanceChange}
-          onDamageReductionChange={(value) => handleCoreInfoFieldChange('damageReduction', value)}
+          onDamageReductionChange={handleDamageReductionChange}
         />
 
 
@@ -791,6 +825,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           abilityScoreBreakdown={currentInfoDialogData.abilityScoreBreakdown}
           detailsList={currentInfoDialogData.detailsList}
           skillModifierBreakdown={currentInfoDialogData.skillModifierBreakdown}
+          resistanceBreakdown={currentInfoDialogData.resistanceBreakdown}
         />
       )}
       <AddCustomSkillDialog

@@ -1,10 +1,11 @@
 
 'use client';
 
-import type { Character, AbilityScores, SavingThrows, CharacterClass, ResistanceValue } from '@/types/character';
+import type { Character, AbilityScores, SavingThrows, CharacterClass, ResistanceValue, DamageReductionInstance, DamageReductionType } from '@/types/character';
+import { DAMAGE_REDUCTION_TYPES } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Swords, Heart, Zap as InitiativeIcon, ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, Info, Brain, ShieldCheck } from 'lucide-react';
+import { Shield, Swords, Heart, Zap as InitiativeIcon, ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, Info, Brain, ShieldCheck, PlusCircle, Trash2 } from 'lucide-react';
 import { 
   getAbilityModifierByName,
   getBab, 
@@ -17,10 +18,13 @@ import {
 import { Separator } from '../ui/separator';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { ArmorClassPanel } from '../form-sections/ArmorClassPanel'; 
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { InfoDisplayDialog, type ResistanceBreakdownDetails } from '@/components/InfoDisplayDialog';
 import * as React from 'react';
+import { ComboboxPrimitive } from '@/components/ui/combobox';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+
 
 type ResistanceFieldKey = Exclude<keyof Pick<Character,
   'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
@@ -33,7 +37,7 @@ interface CombatStatsSectionProps {
     field: keyof Character | 
            `savingThrows.${keyof SavingThrows}.${'base'|'magicMod'|'miscMod'}` |
            `${ResistanceFieldKey}.customMod` | 
-           'damageReduction', 
+           'damageReductionInstances', // Changed to reflect array update
     value: any
   ) => void;
 }
@@ -41,6 +45,10 @@ interface CombatStatsSectionProps {
 export function CombatStatsSection({ character, onCharacterUpdate }: CombatStatsSectionProps) {
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentResistanceBreakdown, setCurrentResistanceBreakdown] = React.useState<ResistanceBreakdownDetails | undefined>(undefined);
+  const { toast } = useToast();
+
+  const [newDrValue, setNewDrValue] = React.useState(1);
+  const [newDrType, setNewDrType] = React.useState<DamageReductionType | string>('none');
 
   const abilityScores = character.abilityScores;
   const classes = character.classes;
@@ -91,6 +99,43 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
   ) => {
     setCurrentResistanceBreakdown({ name, base, customMod, total });
     setIsInfoDialogOpen(true);
+  };
+
+  const handleAddDamageReduction = () => {
+    if (newDrValue <= 0) {
+      toast({ title: "Invalid DR Value", description: "DR value must be > 0.", variant: "destructive"});
+      return;
+    }
+    if (!newDrType || newDrType.trim() === '') {
+      toast({ title: "DR Type Missing", description: "Select/enter DR type.", variant: "destructive"});
+      return;
+    }
+    const existingUserDrOfType = character.damageReduction.find(
+      dr => !dr.isGranted && dr.type === newDrType
+    );
+    if (existingUserDrOfType) {
+      toast({ title: "Duplicate DR Type", description: `Custom DR for type '${getDrTypeLabel(newDrType)}' already exists.`, variant: "destructive"});
+      return;
+    }
+    const newInstance: DamageReductionInstance = {
+      id: crypto.randomUUID(),
+      value: newDrValue,
+      type: newDrType,
+      isGranted: false,
+    };
+    onCharacterUpdate('damageReductionInstances', [...character.damageReduction, newInstance]);
+    setNewDrValue(1);
+    setNewDrType('none');
+  };
+
+  const handleRemoveDamageReduction = (idToRemove: string) => {
+    onCharacterUpdate('damageReductionInstances', character.damageReduction.filter(dr => dr.id !== idToRemove));
+  };
+
+  const getDrTypeLabel = (type: DamageReductionType | string) => {
+    if (type === 'none') return '—';
+    const predefined = DAMAGE_REDUCTION_TYPES.find(dt => dt.value === type);
+    return predefined ? predefined.label : type;
   };
   
   return (
@@ -243,7 +288,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
                     <div className="flex items-center justify-center">
-                      <Icon className="h-4 w-4 mr-2 text-muted-foreground" />
+                      <Icon className="h-5 w-5 mr-1.5 text-muted-foreground" />
                       <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-sm font-medium">
                         {label}
                       </Label>
@@ -294,9 +339,9 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
                      <div className="flex items-center justify-center">
-                        <Icon className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <Icon className="h-5 w-5 mr-1.5 text-muted-foreground" />
                         <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-sm font-medium">
-                          {label} {unit}
+                          {label} {unit && `(${unit})`}
                         </Label>
                       </div>
                     <div className="flex items-center justify-center">
@@ -334,19 +379,64 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                 );
               })}
             </div>
-            <div className="mt-4 pt-4 border-t space-y-1">
-              <Label htmlFor="sheet-res-damageReduction" className="flex items-center text-sm font-medium mb-1">
-                <ShieldAlert className="h-4 w-4 mr-2 text-muted-foreground" />
-                Damage Reduction
-              </Label>
-              <Input
-                id="sheet-res-damageReduction"
-                value={character.damageReduction || ''}
-                onChange={(e) => onCharacterUpdate('damageReduction', e.target.value)}
-                placeholder="e.g., 5/magic"
-                className="h-9 text-sm"
-              />
-            </div>
+            <Separator className="my-6" />
+            <div>
+                <h4 className="text-md font-semibold mb-3 text-foreground/90">Damage Reduction</h4>
+                <div className="space-y-3">
+                  {character.damageReduction.length > 0 ? (
+                    character.damageReduction.map(dr => (
+                      <div key={dr.id} className="flex items-center justify-between p-2 border rounded-md bg-muted/5 text-sm">
+                        <div>
+                          <span className="font-semibold">{dr.value} / {getDrTypeLabel(dr.type)}</span>
+                          {dr.isGranted && dr.source && <Badge variant="secondary" className="ml-2 text-xs">{dr.source}</Badge>}
+                        </div>
+                        {!dr.isGranted && (
+                          <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80" onClick={() => handleRemoveDamageReduction(dr.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No Damage Reduction entries.</p>
+                  )}
+                </div>
+                <div className="mt-4 pt-4 border-t space-y-2">
+                  <Label className="text-sm font-medium">Add Custom DR</Label>
+                  <div className="flex flex-col sm:flex-row gap-2 items-end">
+                      <div className="space-y-1 flex-grow">
+                          <Label htmlFor="sheet-dr-value" className="text-xs">Value</Label>
+                          <NumberSpinnerInput
+                          id="sheet-dr-value"
+                          value={newDrValue}
+                          onChange={setNewDrValue}
+                          min={1}
+                          inputClassName="h-9 text-sm w-20"
+                          buttonClassName="h-9 w-9"
+                          buttonSize="sm"
+                          />
+                      </div>
+                      <div className="space-y-1 flex-grow-[2]">
+                          <Label htmlFor="sheet-dr-type" className="text-xs">Type to Bypass (or '-' for None)</Label>
+                          <ComboboxPrimitive
+                          id="sheet-dr-type"
+                          options={DAMAGE_REDUCTION_TYPES}
+                          value={newDrType}
+                          onChange={setNewDrType}
+                          placeholder="Select type or enter custom..."
+                          searchPlaceholder="Search types..."
+                          emptyPlaceholder="No type found."
+                          isEditable={true}
+                          triggerClassName="h-9 text-sm"
+                          />
+                      </div>
+                      <Button type="button" onClick={handleAddDamageReduction} size="sm" className="h-9 sm:mt-1">
+                          <PlusCircle className="mr-2 h-4 w-4" /> Add DR
+                      </Button>
+                  </div>
+                </div>
+              </div>
+
           </div>
         </CardContent>
       </Card>
@@ -363,3 +453,5 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
     </>
   );
 }
+
+    
