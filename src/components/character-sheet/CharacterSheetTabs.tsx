@@ -206,11 +206,12 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
             break;
     }
     setCurrentInfoDialogData({
-        isOpen: true,
-        onOpenChange: setIsInfoDialogOpen,
+        isOpen: true, 
+        onOpenChange: setIsInfoDialogOpen, 
         title: dialogTitle,
         ...dialogProps
     });
+    setIsInfoDialogOpen(true); // Ensure the dialog is set to open
   };
 
 
