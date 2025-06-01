@@ -4,7 +4,7 @@
 import * as React from 'react';
 import type { Character } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma } from 'lucide-react'; // Using more distinct icons
+import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck } from 'lucide-react'; // Using more distinct icons
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -43,12 +43,12 @@ export function ResistancesPanel({ characterData, onFieldChange }: ResistancesPa
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3">
             {energyResistances.map(({ field, label, Icon }) => (
               <div key={field} className="space-y-1">
-                <Label htmlFor={field} className="flex items-center text-sm">
+                <Label htmlFor={field as string} className="flex items-center text-sm">
                   <Icon className="h-4 w-4 mr-2 text-muted-foreground" />
                   {label}
                 </Label>
                 <NumberSpinnerInput
-                  id={field}
+                  id={field as string}
                   value={characterData[field as keyof typeof characterData] as number || 0}
                   onChange={(newValue) => onFieldChange(field, newValue)}
                   min={0}
