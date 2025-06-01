@@ -1,4 +1,5 @@
 
+
 import baseDataJson from '@/data/dnd-base.json';
 import customBaseDataJson from '@/data/custom-base.json';
 import racesDataJson from '@/data/dnd-races.json';
@@ -53,7 +54,7 @@ export interface FeatPrerequisiteDetails {
 }
 
 export interface FeatEffectDetails {
-  skills?: Record<string, number>; // skill ID (value) to bonus
+  skills?: Record<string, number>; // skillId (value) to bonus
   abilities?: Partial<Record<Exclude<AbilityName, 'none'>, number>>;
 }
 
@@ -131,7 +132,7 @@ export interface ResistanceValue {
 }
 
 export const DAMAGE_REDUCTION_TYPES = [
-  { value: "none", label: "None (DR X/—)" }, // Reverted Label
+  { value: "none", label: "None" },
   { value: "magic", label: "Magic" },
   { value: "adamantine", label: "Adamantine" },
   { value: "silver", label: "Silver" },
@@ -894,4 +895,5 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
+
 
