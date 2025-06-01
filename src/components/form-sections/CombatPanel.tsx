@@ -2,15 +2,13 @@
 'use client';
 
 import * as React from 'react';
-import type { Character, AbilityScores, BabBreakdownDetails, InitiativeBreakdownDetails, GrappleModifierBreakdownDetails, GrappleDamageBreakdownDetails } from '@/types/character';
-import { DND_CLASSES } from '@/types/character';
+import type { Character, BabBreakdownDetails, InitiativeBreakdownDetails, GrappleModifierBreakdownDetails, GrappleDamageBreakdownDetails } from '@/types/character';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Separator } from '@/components/ui/separator';
-import { Swords, Zap as InitiativeIcon, Grip, Info } from 'lucide-react'; // Using Grip for Grapple
+import { Swords, Info } from 'lucide-react';
 import { getAbilityModifierByName, getBab, calculateInitiative, calculateGrapple, getSizeModifierGrapple } from '@/lib/dnd-utils';
 
 interface CombatPanelProps {
@@ -33,7 +31,6 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
   const totalBabWithModifier = baseBabArray.map(bab => bab + (character.babMiscModifier || 0));
 
   const baseInitiative = calculateInitiative(dexModifier, character.initiativeMiscModifier);
-  // Note: initiativeMiscModifier is already part of character, no separate custom mod needed for total display here.
 
   const baseGrappleModifier = calculateGrapple(baseBabArray, strModifier, sizeModGrapple);
   const totalGrappleModifier = baseGrappleModifier + (character.grappleMiscModifier || 0);
@@ -51,7 +48,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
     const details: InitiativeBreakdownDetails = {
         dexModifier: dexModifier,
         miscModifier: character.initiativeMiscModifier || 0,
-        totalInitiative: baseInitiative, // baseInitiative already includes miscMod
+        totalInitiative: baseInitiative,
     };
     onOpenCombatStatInfoDialog('initiative', details);
   };
@@ -71,11 +68,10 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
     const details: GrappleDamageBreakdownDetails = {
         baseDamage: character.grappleDamage_baseNotes || "Unarmed",
         bonus: character.grappleDamage_bonus || 0,
-        strengthModifier: strModifier, // Assuming Str mod applies to grapple damage
+        strengthModifier: strModifier,
     };
     onOpenCombatStatInfoDialog('grappleDamage', details);
 };
-
 
   return (
     <Card>
@@ -86,120 +82,115 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
         </div>
         <CardDescription>Key offensive and grappling statistics.</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {/* BAB */}
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto] items-end gap-x-4 gap-y-2 p-3 border rounded-md bg-muted/5">
-          <div className="flex-grow">
-            <Label htmlFor="bab-display" className="text-md font-medium">Base Attack Bonus (BAB)</Label>
+      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        {/* BAB Sub-panel */}
+        <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col">
+          <Label htmlFor="bab-display" className="text-md font-medium block">Base Attack Bonus (BAB)</Label>
+          <div className="flex items-center justify-between">
             <p id="bab-display" className="text-2xl font-bold text-accent">
               {totalBabWithModifier.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}
             </p>
+            <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={handleBabInfo}>
+              <Info className="h-4 w-4" />
+            </Button>
           </div>
-          <div className="flex flex-col items-start space-y-1">
-            <Label htmlFor="bab-misc-mod" className="text-xs text-muted-foreground whitespace-nowrap">Misc Modifier</Label>
+          <div className="mt-auto">
+            <Label htmlFor="bab-misc-mod" className="text-xs text-muted-foreground block mb-0.5">Misc Modifier</Label>
             <NumberSpinnerInput
               id="bab-misc-mod"
               value={character.babMiscModifier || 0}
               onChange={(val) => onCharacterUpdate('babMiscModifier', val)}
               min={-20} max={20}
-              inputClassName="w-16 h-8 text-sm"
+              inputClassName="w-full h-8 text-sm"
               buttonClassName="h-8 w-8"
             />
           </div>
-           <Button type="button" variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-foreground self-end" onClick={handleBabInfo}>
-             <Info className="h-5 w-5" />
-           </Button>
         </div>
 
-        <Separator/>
-
-        {/* Initiative */}
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto] items-end gap-x-4 gap-y-2 p-3 border rounded-md bg-muted/5">
-          <div className="flex-grow">
-            <Label htmlFor="initiative-display" className="text-md font-medium">Initiative</Label>
+        {/* Initiative Sub-panel */}
+        <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col">
+          <Label htmlFor="initiative-display" className="text-md font-medium block">Initiative</Label>
+          <div className="flex items-center justify-between">
             <p id="initiative-display" className="text-2xl font-bold text-accent">
               {baseInitiative >= 0 ? '+' : ''}{baseInitiative}
             </p>
+            <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={handleInitiativeInfo}>
+              <Info className="h-4 w-4" />
+            </Button>
           </div>
-          <div className="flex flex-col items-start space-y-1">
-            <Label htmlFor="initiative-misc-mod" className="text-xs text-muted-foreground whitespace-nowrap">Misc Modifier</Label>
+          <div className="mt-auto">
+            <Label htmlFor="initiative-misc-mod" className="text-xs text-muted-foreground block mb-0.5">Misc Modifier</Label>
             <NumberSpinnerInput
               id="initiative-misc-mod"
               value={character.initiativeMiscModifier || 0}
               onChange={(val) => onCharacterUpdate('initiativeMiscModifier', val)}
               min={-20} max={20}
-              inputClassName="w-16 h-8 text-sm"
+              inputClassName="w-full h-8 text-sm"
               buttonClassName="h-8 w-8"
             />
           </div>
-          <Button type="button" variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-foreground self-end" onClick={handleInitiativeInfo}>
-            <Info className="h-5 w-5" />
-          </Button>
         </div>
         
-        <Separator/>
-
-        {/* Grapple Modifier */}
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto] items-end gap-x-4 gap-y-2 p-3 border rounded-md bg-muted/5">
-          <div className="flex-grow">
-            <Label htmlFor="grapple-mod-display" className="text-md font-medium">Grapple Modifier</Label>
+        {/* Grapple Modifier Sub-panel */}
+        <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col">
+          <Label htmlFor="grapple-mod-display" className="text-md font-medium block">Grapple Modifier</Label>
+          <div className="flex items-center justify-between">
             <p id="grapple-mod-display" className="text-2xl font-bold text-accent">
               {totalGrappleModifier >= 0 ? '+' : ''}{totalGrappleModifier}
             </p>
+            <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={handleGrappleModifierInfo}>
+              <Info className="h-4 w-4" />
+            </Button>
           </div>
-          <div className="flex flex-col items-start space-y-1">
-            <Label htmlFor="grapple-misc-mod" className="text-xs text-muted-foreground whitespace-nowrap">Misc Modifier</Label>
+          <div className="mt-auto">
+            <Label htmlFor="grapple-misc-mod" className="text-xs text-muted-foreground block mb-0.5">Misc Modifier</Label>
             <NumberSpinnerInput
               id="grapple-misc-mod"
               value={character.grappleMiscModifier || 0}
               onChange={(val) => onCharacterUpdate('grappleMiscModifier', val)}
               min={-20} max={20}
-              inputClassName="w-16 h-8 text-sm"
+              inputClassName="w-full h-8 text-sm"
               buttonClassName="h-8 w-8"
             />
           </div>
-          <Button type="button" variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-foreground self-end" onClick={handleGrappleModifierInfo}>
-            <Info className="h-5 w-5" />
-          </Button>
         </div>
 
-        <Separator/>
-
-        {/* Grapple Damage */}
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto_auto] items-end gap-x-4 gap-y-2 p-3 border rounded-md bg-muted/5">
-            <div className="md:col-span-2 flex-grow">
-                 <Label htmlFor="grapple-damage-display" className="text-md font-medium">Grapple Damage</Label>
-                 <p id="grapple-damage-display" className="text-lg font-semibold text-accent">
+        {/* Grapple Damage Sub-panel */}
+        <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col">
+            <Label htmlFor="grapple-damage-display" className="text-md font-medium block">Grapple Damage</Label>
+            <div className="flex items-center justify-between">
+                <p id="grapple-damage-display" className="text-xl font-semibold text-accent">
                     {character.grappleDamage_baseNotes || 'Unarmed'}
                     {(character.grappleDamage_bonus || 0) !== 0 ? ` ${character.grappleDamage_bonus! >= 0 ? '+' : ''}${character.grappleDamage_bonus}` : ''}
                 </p>
+                 <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={handleGrappleDamageInfo}>
+                    <Info className="h-4 w-4" />
+                </Button>
             </div>
-            <div className="flex flex-col items-start space-y-1">
-                <Label htmlFor="grapple-damage-base" className="text-xs text-muted-foreground whitespace-nowrap">Base / Notes</Label>
-                <Input
-                    id="grapple-damage-base"
-                    value={character.grappleDamage_baseNotes || ''}
-                    onChange={(e) => onCharacterUpdate('grappleDamage_baseNotes', e.target.value)}
-                    placeholder="e.g., 1d3, Unarmed"
-                    className="h-8 text-sm w-full" 
-                />
+            <div className="mt-auto space-y-2">
+                <div>
+                    <Label htmlFor="grapple-damage-base" className="text-xs text-muted-foreground block mb-0.5">Base / Notes</Label>
+                    <Input
+                        id="grapple-damage-base"
+                        value={character.grappleDamage_baseNotes || ''}
+                        onChange={(e) => onCharacterUpdate('grappleDamage_baseNotes', e.target.value)}
+                        placeholder="e.g., 1d3, Unarmed"
+                        className="h-8 text-sm w-full" 
+                    />
+                </div>
+                <div>
+                    <Label htmlFor="grapple-damage-bonus" className="text-xs text-muted-foreground block mb-0.5">Numeric Bonus</Label>
+                    <NumberSpinnerInput
+                        id="grapple-damage-bonus"
+                        value={character.grappleDamage_bonus || 0}
+                        onChange={(val) => onCharacterUpdate('grappleDamage_bonus', val)}
+                        min={-20} max={20}
+                        inputClassName="w-full h-8 text-sm"
+                        buttonClassName="h-8 w-8"
+                    />
+                </div>
             </div>
-            <div className="flex flex-col items-start space-y-1">
-                 <Label htmlFor="grapple-damage-bonus" className="text-xs text-muted-foreground whitespace-nowrap">Numeric Bonus</Label>
-                <NumberSpinnerInput
-                    id="grapple-damage-bonus"
-                    value={character.grappleDamage_bonus || 0}
-                    onChange={(val) => onCharacterUpdate('grappleDamage_bonus', val)}
-                    min={-20} max={20}
-                    inputClassName="w-16 h-8 text-sm"
-                    buttonClassName="h-8 w-8"
-                />
-            </div>
-             <Button type="button" variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-foreground self-end md:col-start-4" onClick={handleGrappleDamageInfo}>
-                <Info className="h-5 w-5" />
-            </Button>
         </div>
-
       </CardContent>
     </Card>
   );
