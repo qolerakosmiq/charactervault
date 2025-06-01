@@ -99,17 +99,6 @@
       ]
     }
   },
-  "DND_SIZE_ABILITY_MODIFIERS_DATA": {
-    "fine": { "strength": -10, "dexterity": 8 },
-    "diminutive": { "strength": -8, "dexterity": 6 },
-    "tiny": { "strength": -6, "dexterity": 4 },
-    "small": { "strength": -4, "dexterity": 2 },
-    "medium": {},
-    "large": { "strength": 4, "dexterity": -2 },
-    "huge": { "strength": 8, "dexterity": -4 },
-    "gargantuan": { "strength": 12, "dexterity": -6 },
-    "colossal": { "strength": 16, "dexterity": -8 }
-  },
   "DND_RACE_ABILITY_MODIFIERS_DATA": {
     "human": {},
     "elf": { "dexterity": 2, "constitution": -2 },

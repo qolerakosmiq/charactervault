@@ -12,7 +12,7 @@ import type {
   CharacterSize,
   GenderId,
   AgingEffectsDetails,
-  SizeAbilityEffectsDetails,
+  // SizeAbilityEffectsDetails, // Removed as size no longer directly affects abilities
   RaceSpecialQualities,
   DndRaceOption,
   DndClassOption,
@@ -43,7 +43,7 @@ interface CharacterFormCoreInfoSectionProps {
   onFieldChange: (field: keyof Character, value: any) => void;
   onClassChange: (className: DndClassId | string) => void;
   ageEffectsDetails: AgingEffectsDetails | null;
-  sizeAbilityEffectsDetails: SizeAbilityEffectsDetails | null;
+  // sizeAbilityEffectsDetails: SizeAbilityEffectsDetails | null; // Removed
   raceSpecialQualities: RaceSpecialQualities | null;
   selectedClassInfo: DndClassOption | undefined;
   isPredefinedRace: boolean;
@@ -60,7 +60,7 @@ export function CharacterFormCoreInfoSection({
   onFieldChange,
   onClassChange,
   ageEffectsDetails,
-  sizeAbilityEffectsDetails,
+  // sizeAbilityEffectsDetails, // Removed
   raceSpecialQualities,
   selectedClassInfo,
   isPredefinedRace, 
@@ -344,24 +344,7 @@ export function CharacterFormCoreInfoSection({
               </SelectContent>
             </Select>
             <div className="flex flex-wrap items-center gap-1 pt-[6px] ml-1">
-              {sizeAbilityEffectsDetails && sizeAbilityEffectsDetails.effects.length > 0 && (
-                sizeAbilityEffectsDetails.effects.map((effect) => {
-                    let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
-                    let badgeClassNameInternal = "text-xs font-normal";
-                     if (effect.change > 0) {
-                        badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
-                    } else if (effect.change < 0) {
-                        badgeVariantProp = "destructive";
-                        badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive");
-                    }
-                    return (
-                      <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}>
-                        {effect.ability.substring(0, 3).toUpperCase()}{'\u00A0'}
-                        {effect.change > 0 ? '+' : ''}{effect.change}
-                      </Badge>
-                    );
-                })
-              )}
+              {/* Removed display of ability score modifications from size here */}
               {/* AC Modifier Badge for Size */}
               {characterData.size && (() => {
                 const selectedSizeObject = SIZES.find(s => s.value === characterData.size);
@@ -380,7 +363,6 @@ export function CharacterFormCoreInfoSection({
                     badgeVariantProp = "destructive";
                     badgeClassNameForAc = cn(badgeClassNameForAc, "hover:bg-destructive");
                   }
-                  // No 'else' needed since we're only rendering if acMod !== 0
                   return (
                     <Badge
                       variant={badgeVariantProp}

@@ -1,4 +1,5 @@
 
+
 import baseDataJson from '@/data/dnd-base.json';
 import customBaseDataJson from '@/data/custom-base.json';
 import racesDataJson from '@/data/dnd-races.json';
@@ -207,9 +208,7 @@ const baseRaceAgingEffects = (baseDataJson as any).DND_RACE_AGING_EFFECTS_DATA |
 const customRaceAgingEffects = (customBaseDataJson as any).DND_RACE_AGING_EFFECTS_DATA || {};
 const DND_RACE_AGING_EFFECTS_DATA: Readonly<Record<RaceAgingCategoryKey, RaceAgingInfoData>> = mergeObjectData(baseRaceAgingEffects, customRaceAgingEffects);
 
-const baseSizeAbilityModifiers = (baseDataJson as any).DND_SIZE_ABILITY_MODIFIERS_DATA || {};
-const customSizeAbilityModifiers = (customBaseDataJson as any).DND_SIZE_ABILITY_MODIFIERS_DATA || {};
-const DND_SIZE_ABILITY_MODIFIERS_DATA: Readonly<Record<string, Partial<Record<Exclude<AbilityName, 'none'>, number>>>> = mergeObjectData(baseSizeAbilityModifiers, customSizeAbilityModifiers);
+// Removed DND_SIZE_ABILITY_MODIFIERS_DATA as size doesn't directly modify ability scores
 
 const baseRaceAbilityModifiers = (baseDataJson as any).DND_RACE_ABILITY_MODIFIERS_DATA || {};
 const customRaceAbilityModifiers = (customBaseDataJson as any).DND_RACE_ABILITY_MODIFIERS_DATA || {};
@@ -446,32 +445,15 @@ export function getRaceSpecialQualities(raceId: DndRaceId | ''): RaceSpecialQual
   };
 }
 
-export interface SizeAbilityEffectsDetails {
-  effects: Array<{ ability: Exclude<AbilityName, 'none'>; change: number }>;
-}
-
-export function getSizeAbilityEffects(sizeId: CharacterSize | ''): SizeAbilityEffectsDetails {
-   if (!sizeId) return { effects: [] };
-  const mods = DND_SIZE_ABILITY_MODIFIERS_DATA[sizeId as CharacterSize];
-  const appliedEffects: Array<{ ability: Exclude<AbilityName, 'none'>; change: number }> = [];
-  if (mods) {
-    const abilitiesToProcess = ABILITY_ORDER_INTERNAL.filter(
-      ability => mods[ability] !== undefined && mods[ability] !== 0
-    );
-    abilitiesToProcess.sort((aAbility, bAbility) => {
-        const changeA = mods![aAbility]!;
-        const changeB = mods![bAbility]!;
-        const signA = Math.sign(changeA);
-        const signB = Math.sign(changeB);
-        if (signA !== signB) return signA - signB;
-        return ABILITY_ORDER_INTERNAL.indexOf(aAbility) - ABILITY_ORDER_INTERNAL.indexOf(bAbility);
-    });
-    for (const ability of abilitiesToProcess) {
-      appliedEffects.push({ ability, change: mods[ability]! });
-    }
-  }
-  return { effects: appliedEffects };
-}
+// This type and function are no longer needed as size does not directly affect abilities.
+// export interface SizeAbilityEffectsDetails {
+//   effects: Array<{ ability: Exclude<AbilityName, 'none'>; change: number }>;
+// }
+// export function getSizeAbilityEffects(sizeId: CharacterSize | ''): SizeAbilityEffectsDetails {
+//   if (!sizeId) return { effects: [] };
+//   // Logic removed as DND_SIZE_ABILITY_MODIFIERS_DATA is removed
+//   return { effects: [] };
+// }
 
 export function calculateTotalSynergyBonus(
   targetSkillId: string, // ID of the skill receiving the bonus
@@ -814,7 +796,7 @@ export function calculateDetailedAbilityScores(character: Character, globalCusto
   const result: Partial<DetailedAbilityScores> = {};
   const racialQualities = getRaceSpecialQualities(character.race);
   const agingDetails = getNetAgingEffects(character.race, character.age);
-  const sizeDetails = getSizeAbilityEffects(character.size);
+  // Size no longer directly affects ability scores, so sizeDetails is not needed here for ability score calculation.
   
   const allFeatDefs: (FeatDefinitionJsonData & { isCustom?: boolean })[] = [
     ...DND_FEATS_DEFINITIONS,
@@ -840,12 +822,13 @@ export function calculateDetailedAbilityScores(character: Character, globalCusto
       components.push({ source: `Aging (${agingDetails.categoryName})`, value: agingModObj.change });
     }
 
-    const sizeModObj = sizeDetails.effects.find(eff => eff.ability === ability);
-    if (sizeModObj && sizeModObj.change !== 0) {
-      currentScore += sizeModObj.change;
-      const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size || 'Unknown Size';
-      components.push({ source: `Size (${sizeLabel})`, value: sizeModObj.change });
-    }
+    // Removed direct ability score modification from size
+    // const sizeModObj = sizeDetails.effects.find(eff => eff.ability === ability);
+    // if (sizeModObj && sizeModObj.change !== 0) {
+    //   currentScore += sizeModObj.change;
+    //   const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size || 'Unknown Size';
+    //   components.push({ source: `Size (${sizeLabel})`, value: sizeModObj.change });
+    // }
 
     let featTotalMod = 0;
     for (const featInstance of character.feats) {

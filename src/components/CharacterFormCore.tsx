@@ -18,7 +18,7 @@ import {
   getNetAgingEffects,
   GENDERS,
   DND_DEITIES,
-  getSizeAbilityEffects,
+  // getSizeAbilityEffects, // Removed import
   getRaceSpecialQualities,
   getInitialCharacterSkills,
   SKILL_DEFINITIONS,
@@ -128,7 +128,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   });
 
   const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<CharacterFormCoreInfoSectionProps['ageEffectsDetails']>(null);
-  const [sizeAbilityEffectsDetails, setSizeAbilityEffectsDetails] = React.useState<CharacterFormCoreInfoSectionProps['sizeAbilityEffectsDetails']>(null);
+  // const [sizeAbilityEffectsDetails, setSizeAbilityEffectsDetails] = React.useState<CharacterFormCoreInfoSectionProps['sizeAbilityEffectsDetails']>(null); // Removed
   const [raceSpecialQualities, setRaceSpecialQualities] = React.useState<CharacterFormCoreInfoSectionProps['raceSpecialQualities']>(null);
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<Parameters<typeof InfoDisplayDialog>[0] | null>(null);
@@ -192,14 +192,15 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
   }, [character.age, character.race]);
 
-  React.useEffect(() => {
-    if (character.size) {
-      const details = getSizeAbilityEffects(character.size);
-      setSizeAbilityEffectsDetails(details);
-    } else {
-      setSizeAbilityEffectsDetails(null);
-    }
-  }, [character.size]);
+  // Removed useEffect for sizeAbilityEffectsDetails as getSizeAbilityEffects was removed
+  // React.useEffect(() => {
+  //   if (character.size) {
+  //     const details = getSizeAbilityEffects(character.size); // This function was removed
+  //     setSizeAbilityEffectsDetails(details);
+  //   } else {
+  //     setSizeAbilityEffectsDetails(null);
+  //   }
+  // }, [character.size]);
 
   React.useEffect(() => {
     if (character.race) {
@@ -602,7 +603,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           onFieldChange={handleCoreInfoFieldChange}
           onClassChange={handleClassChange}
           ageEffectsDetails={ageEffectsDetails}
-          sizeAbilityEffectsDetails={sizeAbilityEffectsDetails}
+          // sizeAbilityEffectsDetails={sizeAbilityEffectsDetails} // Prop removed
           raceSpecialQualities={raceSpecialQualities}
           selectedClassInfo={selectedClassInfo}
           isPredefinedRace={isPredefinedRace}
