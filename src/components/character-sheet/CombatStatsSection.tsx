@@ -215,12 +215,12 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
         </CardHeader>
         <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3 text-sm items-center">
-                <div className="flex items-center gap-1"><Label htmlFor="ac-armor" className="shrink-0">Armor Bonus:</Label> <NumberSpinnerInput id="ac-armor" value={character.armorBonus} onChange={(val) => onCharacterUpdate('armorBonus', val)} min={0} max={30} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-shield" className="shrink-0">Shield Bonus:</Label> <NumberSpinnerInput id="ac-shield" value={character.shieldBonus} onChange={(val) => onCharacterUpdate('shieldBonus', val)} min={0} max={15} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-natural" className="shrink-0">Natural Armor:</Label> <NumberSpinnerInput id="ac-natural" value={character.naturalArmor} onChange={(val) => onCharacterUpdate('naturalArmor', val)} min={0} max={20} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-deflection" className="shrink-0">Deflection Bonus:</Label> <NumberSpinnerInput id="ac-deflection" value={character.deflectionBonus} onChange={(val) => onCharacterUpdate('deflectionBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-dodge" className="shrink-0">Dodge Bonus:</Label> <NumberSpinnerInput id="ac-dodge" value={character.dodgeBonus} onChange={(val) => onCharacterUpdate('dodgeBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-misc" className="shrink-0">Misc Modifier:</Label> <NumberSpinnerInput id="ac-misc" value={character.acMiscModifier} onChange={(val) => onCharacterUpdate('acMiscModifier', val)} min={-10} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-armor" className="shrink-0">Armor Bonus:</Label> <NumberSpinnerInput id="ac-armor" value={character.armorBonus} onChange={(val) => onCharacterUpdate('armorBonus', val)} min={0} max={30} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-shield" className="shrink-0">Shield Bonus:</Label> <NumberSpinnerInput id="ac-shield" value={character.shieldBonus} onChange={(val) => onCharacterUpdate('shieldBonus', val)} min={0} max={15} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-natural" className="shrink-0">Natural Armor:</Label> <NumberSpinnerInput id="ac-natural" value={character.naturalArmor} onChange={(val) => onCharacterUpdate('naturalArmor', val)} min={0} max={20} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-deflection" className="shrink-0">Deflection Bonus:</Label> <NumberSpinnerInput id="ac-deflection" value={character.deflectionBonus} onChange={(val) => onCharacterUpdate('deflectionBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-dodge" className="shrink-0">Dodge Bonus:</Label> <NumberSpinnerInput id="ac-dodge" value={character.dodgeBonus} onChange={(val) => onCharacterUpdate('dodgeBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-misc" className="shrink-0">Misc Modifier:</Label> <NumberSpinnerInput id="ac-misc" value={character.acMiscModifier} onChange={(val) => onCharacterUpdate('acMiscModifier', val)} min={-10} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
             </div>
         </CardContent>
       </Card>
@@ -265,15 +265,15 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         <Info className="h-4 w-4" />
                       </Button>
                     </div>
-                    <div className="w-full max-w-[120px]">
+                    <div className="w-full max-w-[120px] flex justify-center">
                       <NumberSpinnerInput
                         id={`${fieldPrefix}-${field}-customMod`}
                         value={resistance?.customMod || 0}
                         onChange={(newValue) => onCharacterUpdate(`${field}.customMod` as `${ResistanceFieldKey}.customMod`, newValue)}
                         min={-50} max={200}
-                        inputClassName="w-full h-8 text-sm text-center"
-                        buttonClassName="h-8 w-8"
-                        buttonSize="icon"
+                        inputClassName="w-12 h-7 text-sm text-center"
+                        buttonClassName="h-7 w-7"
+                        buttonSize="sm"
                       />
                     </div>
                   </div>
@@ -313,15 +313,15 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         <Info className="h-4 w-4" />
                       </Button>
                     </div>
-                    <div className="w-full max-w-[120px]">
+                    <div className="w-full max-w-[120px] flex justify-center">
                       <NumberSpinnerInput
                         id={`${fieldPrefix}-${field}-customMod`}
                         value={resistance?.customMod || 0}
                         onChange={(newValue) => onCharacterUpdate(`${field}.customMod` as `${ResistanceFieldKey}.customMod`, newValue)}
                         min={0} max={field === 'fortification' ? 100 : 200}
-                        inputClassName="w-full h-8 text-sm text-center"
-                        buttonClassName="h-8 w-8"
-                        buttonSize="icon"
+                        inputClassName="w-12 h-7 text-sm text-center"
+                        buttonClassName="h-7 w-7"
+                        buttonSize="sm"
                       />
                     </div>
                   </div>

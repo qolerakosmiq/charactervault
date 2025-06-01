@@ -104,16 +104,16 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         <Info className="h-4 w-4" />
                       </Button>
                     </div>
-                    <div className="w-full max-w-[120px]">
+                    <div className="w-full max-w-[120px] flex justify-center">
                       <NumberSpinnerInput
                         id={`${fieldPrefix}-${field}-customMod`}
                         value={resistance?.customMod || 0}
                         onChange={(newValue) => onResistanceChange(field, 'customMod', newValue)}
                         min={-50} 
                         max={200}
-                        inputClassName="w-full h-8 text-sm text-center"
-                        buttonClassName="h-8 w-8"
-                        buttonSize="icon"
+                        inputClassName="w-12 h-7 text-sm text-center"
+                        buttonClassName="h-7 w-7"
+                        buttonSize="sm"
                       />
                     </div>
                   </div>
@@ -155,16 +155,16 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         <Info className="h-4 w-4" />
                       </Button>
                     </div>
-                     <div className="w-full max-w-[120px]">
+                     <div className="w-full max-w-[120px] flex justify-center">
                       <NumberSpinnerInput
                         id={`${fieldPrefix}-${field}-customMod`}
                         value={resistance?.customMod || 0}
                         onChange={(newValue) => onResistanceChange(field, 'customMod', newValue)}
                         min={0}
                         max={field === 'fortification' ? 100 : 200}
-                        inputClassName="w-full h-8 text-sm text-center"
-                        buttonClassName="h-8 w-8"
-                        buttonSize="icon"
+                        inputClassName="w-12 h-7 text-sm text-center"
+                        buttonClassName="h-7 w-7"
+                        buttonSize="sm"
                       />
                     </div>
                   </div>
@@ -172,11 +172,11 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
               })}
             </div>
             <div className="mt-4 pt-4 border-t space-y-1">
-                <Label htmlFor="damageReduction" className="flex items-center text-sm font-medium mb-1">
+                <Label htmlFor="form-res-damageReduction" className="flex items-center text-sm font-medium mb-1">
                   <ShieldAlert className="h-4 w-4 mr-2 text-muted-foreground" /> Damage Reduction
                 </Label>
                 <Input
-                  id="damageReduction"
+                  id="form-res-damageReduction"
                   value={characterData.damageReduction || ''}
                   onChange={(e) => onDamageReductionChange(e.target.value)}
                   placeholder="e.g., 5/magic"
