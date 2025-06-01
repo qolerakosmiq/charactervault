@@ -4,11 +4,11 @@
 import * as React from 'react';
 import type {
   FeatDefinitionJsonData, CharacterFeatInstance, Character, AbilityScores, Skill,
-  SkillDefinitionJsonData, FeatTypeString // Added FeatTypeString
+  SkillDefinitionJsonData, FeatTypeString
 } from '@/types/character';
 import {
   DND_FEATS_DEFINITIONS, DND_RACES, SKILL_DEFINITIONS, DND_CLASSES,
-  checkFeatPrerequisites, calculateAvailableFeats, FEAT_TYPES // Added FEAT_TYPES
+  checkFeatPrerequisites, calculateAvailableFeats, FEAT_TYPES
 } from '@/types/character';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { Button } from '@/components/ui/button';
@@ -75,27 +75,33 @@ export function FeatsFormSection({
       return;
     }
 
-    const existingInstancesOfThisDef = chosenFeatInstances.filter(inst => inst.definitionId === definitionId);
-    const isGranted = chosenFeatInstances.some(inst => inst.definitionId === definitionId && inst.isGranted);
+    const existingChosenInstances = chosenFeatInstances.filter(
+      inst => inst.definitionId === definitionId && !inst.isGranted
+    );
+    const isAlreadyGranted = chosenFeatInstances.some(
+      inst => inst.definitionId === definitionId && inst.isGranted
+    );
 
-    if (!definition.canTakeMultipleTimes && existingInstancesOfThisDef.some(inst => !inst.isGranted)) {
-      toast({ title: "Duplicate Feat", description: `"${definition.label}" cannot be taken multiple times.`, variant: "destructive" });
-      return;
+    if (!definition.canTakeMultipleTimes) {
+      if (isAlreadyGranted) {
+        toast({ title: "Feat Already Granted", description: `"${definition.label}" is already granted by your class/race and cannot be chosen again.`, variant: "destructive" });
+        return;
+      }
+      if (existingChosenInstances.length > 0) {
+        toast({ title: "Duplicate Feat", description: `You have already chosen "${definition.label}", and it cannot be taken multiple times.`, variant: "destructive" });
+        return;
+      }
     }
-    if(isGranted && !definition.canTakeMultipleTimes && existingInstancesOfThisDef.some(inst => !inst.isGranted)){
-       toast({ title: "Feat Already Granted", description: `"${definition.label}" is already granted and cannot be chosen again.`, variant: "destructive" });
-       return;
-    }
+    // If it can be taken multiple times, these checks are bypassed for chosen instances.
+    // However, even multi-take feats shouldn't be re-added if they are *granted* (unless the grant itself is stackable, which is rare).
+    // For simplicity, we'll assume granted feats (even if multi-take by definition) are only granted once by a source.
 
-    let newInstanceId = definitionId;
+    let newInstanceId = definition.value; // Default for non-multi-take or first instance of multi-take
     if (definition.canTakeMultipleTimes) {
-      newInstanceId = `${definitionId}-MULTI-INSTANCE-${crypto.randomUUID()}`;
-    } else if (existingInstancesOfThisDef.length > 0 && !isGranted) {
-      toast({ title: "Duplicate Feat", description: `"${definition.label}" cannot be taken multiple times.`, variant: "destructive" });
-      return;
+      // Ensure instance ID is unique for multi-take feats by appending a UUID
+      newInstanceId = `${definition.value}-MULTI-INSTANCE-${crypto.randomUUID()}`;
     }
-
-
+    
     const newInstance: CharacterFeatInstance = {
       definitionId: definition.value,
       instanceId: newInstanceId,
@@ -230,7 +236,7 @@ export function FeatsFormSection({
             <Button type="button" variant="outline" size="sm" onClick={() => setIsFeatDialogOpen(true)}>
               <PlusCircle className="mr-2 h-4 w-4" /> Add Feat
             </Button>
-            {/* "Add New Custom Feat Definition" button removed from here */}
+            {/* "Add New Custom Feat Definition" button moved to CharacterFormCore */}
           </div>
         </CardContent>
       </Card>
