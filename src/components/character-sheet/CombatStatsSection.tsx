@@ -4,20 +4,20 @@
 import type { Character, AbilityScores, SavingThrows, CharacterClass } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Swords, Heart, Zap, Dices } from 'lucide-react';
+import { Shield, Swords, Heart, Zap as InitiativeIcon, ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma } from 'lucide-react';
 import { 
   getAbilityModifierByName,
   getBab, 
   getBaseSaves, 
-  // calculateAc removed as ArmorClassPanel now handles AC display
   calculateInitiative, 
   calculateGrapple, 
-  getSizeModifierAC, // Keep for potential direct display or other uses
+  getSizeModifierAC,
   getSizeModifierGrapple
 } from '@/lib/dnd-utils';
 import { Separator } from '../ui/separator';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { ArmorClassPanel } from '../form-sections/ArmorClassPanel'; // Import the updated ArmorClassPanel
+import { ArmorClassPanel } from '../form-sections/ArmorClassPanel'; 
+import { Input } from '@/components/ui/input';
 
 interface CombatStatsSectionProps {
   character: Character;
@@ -36,14 +36,8 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
   const babArray = getBab(classes);
   const baseSaves = getBaseSaves(classes);
   
-  // Get the size modifier for AC (which is also used for attack rolls)
   const sizeModAttackAC = getSizeModifierAC(character.size);
-  // Get the specific size modifier for Grapple
   const sizeModGrapple = getSizeModifierGrapple(character.size);
-
-
-  // Normal AC calculation is now inside ArmorClassPanel, but individual components are still managed here.
-  // We don't need to calculate totalAC directly here for display in this component anymore.
 
   const initiative = calculateInitiative(dexModifier, character.initiativeMiscModifier);
   const grapple = calculateGrapple(babArray, strModifier, sizeModGrapple);
@@ -57,6 +51,14 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
   const handleSavingThrowChange = (saveType: keyof SavingThrows, field: 'magicMod' | 'miscMod', value: number) => {
     onCharacterUpdate(`savingThrows.${saveType}.${field}`, value);
   };
+
+  const energyResistancesFields: Array<{ field: keyof Pick<Character, 'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance'>; label: string; Icon: React.ElementType }> = [
+    { field: 'fireResistance', label: 'Fire', Icon: Flame },
+    { field: 'coldResistance', label: 'Cold', Icon: Snowflake },
+    { field: 'acidResistance', label: 'Acid', Icon: Atom },
+    { field: 'electricityResistance', label: 'Electricity', Icon: ElectricityIcon },
+    { field: 'sonicResistance', label: 'Sonic', Icon: Waves },
+  ];
   
   return (
     <div className="space-y-6">
@@ -132,7 +134,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
 
           {/* Saving Throws */}
           <div>
-            <h4 className="text-lg font-semibold mb-2 flex items-center"><Zap className="h-5 w-5 mr-2 text-primary/80" />Saving Throws</h4>
+            <h4 className="text-lg font-semibold mb-2 flex items-center"><InitiativeIcon className="h-5 w-5 mr-2 text-primary/80" />Saving Throws</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {(['fortitude', 'reflex', 'will'] as const).map(saveType => (
                 <div key={saveType} className="p-3 border rounded-md bg-background/30">
@@ -165,10 +167,8 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
         </CardContent>
       </Card>
       
-      {/* Armor Class Section - now a separate component taking character prop */}
       <ArmorClassPanel character={character} />
 
-      {/* Section for AC Component Inputs */}
       <Card>
         <CardHeader>
             <div className="flex items-center space-x-2">
@@ -186,6 +186,93 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                 <div className="flex items-center gap-1"><Label htmlFor="ac-dodge" className="shrink-0">Dodge Bonus:</Label> <NumberSpinnerInput id="ac-dodge" value={character.dodgeBonus} onChange={(val) => onCharacterUpdate('dodgeBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
                 <div className="flex items-center gap-1"><Label htmlFor="ac-misc" className="shrink-0">Misc Modifier:</Label> <NumberSpinnerInput id="ac-misc" value={character.acMiscModifier} onChange={(val) => onCharacterUpdate('acMiscModifier', val)} min={-10} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
             </div>
+        </CardContent>
+      </Card>
+
+      {/* Resistances & Defenses Card */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-2">
+            <ShieldAlert className="h-6 w-6 text-primary" />
+            <CardTitle className="font-serif">Resistances &amp; Other Defenses</CardTitle>
+          </div>
+          <CardDescription>Manage energy resistances, damage reduction, spell resistance, and fortification.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <h4 className="text-md font-semibold mb-2 text-foreground/90">Energy Resistances</h4>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-4 gap-y-3">
+              {energyResistancesFields.map(({ field, label, Icon }) => (
+                <div key={field} className="space-y-1">
+                  <Label htmlFor={`res-${field}`} className="flex items-center text-sm">
+                    <Icon className="h-4 w-4 mr-1 text-muted-foreground" />
+                    {label}
+                  </Label>
+                  <NumberSpinnerInput
+                    id={`res-${field}`}
+                    value={(character[field] as number) || 0}
+                    onChange={(newValue) => onCharacterUpdate(field, newValue)}
+                    min={0}
+                    max={200}
+                    inputClassName="w-full h-9 text-sm"
+                    buttonClassName="h-9 w-9"
+                    buttonSize="sm"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+          <Separator />
+          <div>
+            <h4 className="text-md font-semibold mb-2 text-foreground/90">Other Defenses</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-1">
+                <Label htmlFor="res-spellResistance" className="flex items-center text-sm">
+                  <Sigma className="h-4 w-4 mr-1 text-muted-foreground" />
+                  Spell Resistance
+                </Label>
+                <NumberSpinnerInput
+                  id="res-spellResistance"
+                  value={character.spellResistance || 0}
+                  onChange={(newValue) => onCharacterUpdate('spellResistance', newValue)}
+                  min={0}
+                  max={100}
+                  inputClassName="w-full h-9 text-sm"
+                  buttonClassName="h-9 w-9"
+                  buttonSize="sm"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="res-fortification" className="flex items-center text-sm">
+                  <Shield className="h-4 w-4 mr-1 text-muted-foreground" />
+                  Fortification (%)
+                </Label>
+                <NumberSpinnerInput
+                  id="res-fortification"
+                  value={character.fortification || 0}
+                  onChange={(newValue) => onCharacterUpdate('fortification', newValue)}
+                  min={0}
+                  max={100}
+                  inputClassName="w-full h-9 text-sm"
+                  buttonClassName="h-9 w-9"
+                  buttonSize="sm"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="res-damageReduction" className="flex items-center text-sm">
+                  <ShieldAlert className="h-4 w-4 mr-1 text-muted-foreground" />
+                  Damage Reduction
+                </Label>
+                <Input
+                  id="res-damageReduction"
+                  value={character.damageReduction || ''}
+                  onChange={(e) => onCharacterUpdate('damageReduction', e.target.value)}
+                  placeholder="e.g., 5/magic"
+                  className="h-9 text-sm"
+                />
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 

@@ -18,7 +18,7 @@ import {
   getNetAgingEffects,
   GENDERS,
   DND_DEITIES,
-  // getSizeAbilityEffects, // Removed import
+  // getSizeAbilityEffects, // Already removed
   getRaceSpecialQualities,
   getInitialCharacterSkills,
   SKILL_DEFINITIONS,
@@ -46,6 +46,7 @@ import { SkillsFormSection } from '@/components/SkillsFormSection';
 import { FeatsFormSection } from '@/components/FeatsFormSection';
 import { SavingThrowsPanel } from '@/components/form-sections/SavingThrowsPanel';
 import { ArmorClassPanel } from '@/components/form-sections/ArmorClassPanel';
+import { ResistancesPanel } from '@/components/form-sections/ResistancesPanel'; // Import new panel
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 import { Separator } from '@/components/ui/separator';
@@ -124,11 +125,19 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       skills: initialSkills,
       feats: initialFeats,
       inventory: [], personalStory: '', portraitDataUrl: undefined,
+      // Initialize new resistance fields
+      fireResistance: 0,
+      coldResistance: 0,
+      acidResistance: 0,
+      electricityResistance: 0,
+      sonicResistance: 0,
+      spellResistance: 0,
+      damageReduction: '',
+      fortification: 0,
     };
   });
 
   const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<CharacterFormCoreInfoSectionProps['ageEffectsDetails']>(null);
-  // const [sizeAbilityEffectsDetails, setSizeAbilityEffectsDetails] = React.useState<CharacterFormCoreInfoSectionProps['sizeAbilityEffectsDetails']>(null); // Removed
   const [raceSpecialQualities, setRaceSpecialQualities] = React.useState<CharacterFormCoreInfoSectionProps['raceSpecialQualities']>(null);
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<Parameters<typeof InfoDisplayDialog>[0] | null>(null);
@@ -192,15 +201,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
   }, [character.age, character.race]);
 
-  // Removed useEffect for sizeAbilityEffectsDetails as getSizeAbilityEffects was removed
-  // React.useEffect(() => {
-  //   if (character.size) {
-  //     const details = getSizeAbilityEffects(character.size); // This function was removed
-  //     setSizeAbilityEffectsDetails(details);
-  //   } else {
-  //     setSizeAbilityEffectsDetails(null);
-  //   }
-  // }, [character.size]);
 
   React.useEffect(() => {
     if (character.race) {
@@ -603,7 +603,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           onFieldChange={handleCoreInfoFieldChange}
           onClassChange={handleClassChange}
           ageEffectsDetails={ageEffectsDetails}
-          // sizeAbilityEffectsDetails={sizeAbilityEffectsDetails} // Prop removed
           raceSpecialQualities={raceSpecialQualities}
           selectedClassInfo={selectedClassInfo}
           isPredefinedRace={isPredefinedRace}
@@ -658,7 +657,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <SavingThrowsPanel
               savingThrows={character.savingThrows}
               abilityScores={actualAbilityScoresForSavesAndSkills}
@@ -666,6 +665,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
           />
           <ArmorClassPanel character={character} />
+          <ResistancesPanel 
+            characterData={character} 
+            onFieldChange={handleCoreInfoFieldChange} 
+          />
         </div>
 
 

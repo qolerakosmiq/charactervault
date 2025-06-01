@@ -1,13 +1,14 @@
+
 'use client';
 
-import type { Character, Skill, Feat, Item, CharacterClass, AbilityName, SavingThrows } from '@/types/character';
+import type { Character, Skill, Item, CharacterClass, AbilityName, SavingThrows } from '@/types/character';
 import { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { CoreInfoSection } from './CoreInfoSection';
 import { AbilityScoresSection } from './AbilityScoresSection';
 import { CombatStatsSection } from './CombatStatsSection';
-import { SkillsListing } from './SkillsListing';
+import { SkillsListing } from '../SkillsListing'; // Corrected import for new structure
 import { FeatsListing } from './FeatsListing';
 import { InventoryListing } from './InventoryListing';
 import { SpellsListing } from './SpellsListing';
@@ -115,23 +116,23 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
     setCharacter(prev => ({
       ...prev,
       skills: prev.skills.map(s =>
-        s.id === skillId ? { ...s, ranks, miscModifier, isClassSkill: isClassSkill === undefined ? s.isClassSkill : isClassSkill } : s
+        s.id === skillId ? { ...s, ranks, miscModifier, isClassSkill: isClassSkill === undefined ? s.isClassSkill : s.isClassSkill } : s
       ),
     }));
   }, []);
 
-  const handleFeatAdd = useCallback((feat: Feat) => {
-    setCharacter(prev => ({ ...prev, feats: [...prev.feats, feat] }));
+  const handleFeatAdd = useCallback((featId: string, name: string, description?: string) => { // Adjusted to match FeatsListing
+    setCharacter(prev => ({ ...prev, feats: [...prev.feats, { definitionId: featId, instanceId: crypto.randomUUID(), isGranted: false, specializationDetail: '' }] }));
   }, []);
 
-  const handleFeatRemove = useCallback((featId: string) => {
-    setCharacter(prev => ({ ...prev, feats: prev.feats.filter(f => f.id !== featId) }));
+  const handleFeatRemove = useCallback((instanceId: string) => { // Changed to instanceId
+    setCharacter(prev => ({ ...prev, feats: prev.feats.filter(f => f.instanceId !== instanceId) }));
   }, []);
   
-  const handleFeatUpdate = useCallback((updatedFeat: Feat) => {
+  const handleFeatUpdate = useCallback((updatedFeatInstance: Character['feats'][number]) => { // Changed to instance
     setCharacter(prev => ({
       ...prev,
-      feats: prev.feats.map(f => f.id === updatedFeat.id ? updatedFeat : f)
+      feats: prev.feats.map(f => f.instanceId === updatedFeatInstance.instanceId ? updatedFeatInstance : f)
     }));
   }, []);
 

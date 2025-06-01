@@ -155,6 +155,16 @@ export interface Character {
   inventory: Item[];
   personalStory?: string;
   portraitDataUrl?: string;
+
+  // Resistances
+  fireResistance: number;
+  coldResistance: number;
+  acidResistance: number;
+  electricityResistance: number;
+  sonicResistance: number;
+  spellResistance: number;
+  damageReduction: string; // e.g., "5/magic", "10/adamantine"
+  fortification: number; // Percentage, e.g., 25, 50, 100
 }
 
 function mergeArrayData<T extends { value: string }>(base: T[], custom: T[]): T[] {
@@ -823,12 +833,6 @@ export function calculateDetailedAbilityScores(character: Character, globalCusto
     }
 
     // Removed direct ability score modification from size
-    // const sizeModObj = sizeDetails.effects.find(eff => eff.ability === ability);
-    // if (sizeModObj && sizeModObj.change !== 0) {
-    //   currentScore += sizeModObj.change;
-    //   const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size || 'Unknown Size';
-    //   components.push({ source: `Size (${sizeLabel})`, value: sizeModObj.change });
-    // }
 
     let featTotalMod = 0;
     for (const featInstance of character.feats) {
