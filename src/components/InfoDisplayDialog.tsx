@@ -27,7 +27,7 @@ export interface BabBreakdownDetails {
   baseBabFromClasses: number[];
   miscModifier: number;
   totalBab: number[];
-  characterClassLabel?: string; // Added to display class name
+  characterClassLabel?: string;
 }
 
 export interface InitiativeBreakdownDetails {
@@ -117,7 +117,7 @@ export function InfoDisplayDialog({
         colorClass = zeroColor;
     }
     
-    const prefix = numValue > 0 ? '+' : (numValue === 0 ? '' : ''); // No plus for zero unless it's a modifier display explicitly wanting it. For totals, no plus on zero.
+    const prefix = numValue > 0 ? '+' : (numValue === 0 ? '' : '');
 
 
     return (
@@ -281,8 +281,14 @@ export function InfoDisplayDialog({
                 <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span>Base Damage (Unarmed/Weapon):</span>
-                    <span className="font-bold">{grappleDamageBreakdown.baseDamage}</span>
+                    <span>Base Damage:</span>
+                    <span className="font-bold">
+                      {grappleDamageBreakdown.baseDamage.split(' ')[0] || 'N/A'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Weapon Damage:</span>
+                    {renderModifierValue(0)}
                   </div>
                   <div className="flex justify-between">
                     <span>Strength Modifier:</span>
@@ -294,7 +300,17 @@ export function InfoDisplayDialog({
                         {renderModifierValue(grappleDamageBreakdown.bonus)}
                     </div>
                   )}
-                  <p className="text-xs text-muted-foreground mt-2">Note: Full weapon damage calculations (including enchantments, feats, etc.) are not yet implemented for grappling with weapons.</p>
+                  <Separator className="my-2" />
+                  <div className="flex justify-between text-base">
+                    <span className="font-semibold">Total:</span>
+                    <span className="font-bold text-accent">
+                      {`${grappleDamageBreakdown.baseDamage.split(' ')[0] || '0'}${
+                        (grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus) !== 0 
+                          ? ` ${(grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus) >= 0 ? '+' : ''}${grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus}` 
+                          : ''
+                      }`}
+                    </span>
+                  </div>
                 </div>
               </div>
             </>
@@ -507,3 +523,4 @@ export function InfoDisplayDialog({
     </Dialog>
   );
 }
+
