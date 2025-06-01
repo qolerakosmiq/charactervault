@@ -2,6 +2,7 @@
 'use client';
 
 import type { Character, Skill, Item, CharacterClass, AbilityName, SavingThrows, ResistanceValue, BabBreakdownDetails, InitiativeBreakdownDetails, GrappleModifierBreakdownDetails, GrappleDamageBreakdownDetails } from '@/types/character';
+import { DND_CLASSES } from '@/types/character'; // Import DND_CLASSES
 import { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -186,11 +187,17 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
   ) => {
     let dialogTitle = '';
     let dialogProps: Partial<React.ComponentProps<typeof InfoDisplayDialog>> = {};
+    let characterClassLabel: string | undefined = undefined;
+
+    if (character.classes[0]?.className) {
+        const classDef = DND_CLASSES.find(c => c.value === character.classes[0].className);
+        characterClassLabel = classDef?.label || character.classes[0].className;
+    }
 
     switch (breakdownType) {
         case 'bab':
             dialogTitle = "Base Attack Bonus Breakdown";
-            dialogProps = { babBreakdown: details as BabBreakdownDetails };
+            dialogProps = { babBreakdown: { ...(details as BabBreakdownDetails), characterClassLabel } };
             break;
         case 'initiative':
             dialogTitle = "Initiative Breakdown";
@@ -201,7 +208,7 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
             dialogProps = { grappleModifierBreakdown: details as GrappleModifierBreakdownDetails };
             break;
         case 'grappleDamage':
-            dialogTitle = "Grapple Damage Notes";
+            dialogTitle = "Grapple Damage Breakdown";
             dialogProps = { grappleDamageBreakdown: details as GrappleDamageBreakdownDetails };
             break;
     }
@@ -277,7 +284,7 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
           <CombatPanel 
             character={character} 
             onCharacterUpdate={handleCharacterUpdate}
-            onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog} // Pass handler
+            onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog} 
           />
         </TabsContent>
         <TabsContent value="skills" className="mt-4">

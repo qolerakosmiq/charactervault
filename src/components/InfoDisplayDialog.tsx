@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import {
@@ -28,6 +27,7 @@ export interface BabBreakdownDetails {
   baseBabFromClasses: number[];
   miscModifier: number;
   totalBab: number[];
+  characterClassLabel?: string; // Added to display class name
 }
 
 export interface InitiativeBreakdownDetails {
@@ -150,16 +150,16 @@ export function InfoDisplayDialog({
     dialogTitle = title;
     sectionHeading = "Calculation:";
   } else if (babBreakdown) {
-    dialogTitle = "Base Attack Bonus Breakdown"; 
+    dialogTitle = title || "Base Attack Bonus Breakdown"; 
     sectionHeading = "Calculation:";
   } else if (initiativeBreakdown) {
-    dialogTitle = "Initiative Breakdown";
+    dialogTitle = title || "Initiative Breakdown";
     sectionHeading = "Calculation:";
   } else if (grappleModifierBreakdown) {
-    dialogTitle = "Grapple Modifier Breakdown";
+    dialogTitle = title || "Grapple Modifier Breakdown";
     sectionHeading = "Calculation:";
   } else if (grappleDamageBreakdown) {
-    dialogTitle = "Grapple Damage Breakdown";
+    dialogTitle = title || "Grapple Damage Breakdown";
     sectionHeading = "Details:";
   }
 
@@ -195,7 +195,7 @@ export function InfoDisplayDialog({
                 <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span>Fighter Base Attack Bonus:</span>
+                    <span>{babBreakdown.characterClassLabel || 'Class'} Base Attack Bonus:</span>
                     <span className="font-bold">{babBreakdown.baseBabFromClasses.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
                   </div>
                    {babBreakdown.miscModifier !== 0 && (
@@ -507,5 +507,3 @@ export function InfoDisplayDialog({
     </Dialog>
   );
 }
-
-

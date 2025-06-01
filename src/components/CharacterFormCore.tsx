@@ -655,11 +655,18 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   ) => {
     let dialogTitle = '';
     let dialogProps: Partial<React.ComponentProps<typeof InfoDisplayDialog>> = {};
+    let characterClassLabel: string | undefined = undefined;
+
+    if (character.classes[0]?.className) {
+        const classDef = DND_CLASSES.find(c => c.value === character.classes[0].className);
+        characterClassLabel = classDef?.label || character.classes[0].className;
+    }
+
 
     switch (breakdownType) {
         case 'bab':
             dialogTitle = "Base Attack Bonus Breakdown";
-            dialogProps = { babBreakdown: details as BabBreakdownDetails };
+            dialogProps = { babBreakdown: { ...(details as BabBreakdownDetails), characterClassLabel } };
             break;
         case 'initiative':
             dialogTitle = "Initiative Breakdown";
@@ -670,7 +677,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             dialogProps = { grappleModifierBreakdown: details as GrappleModifierBreakdownDetails };
             break;
         case 'grappleDamage':
-            dialogTitle = "Grapple Damage Notes";
+            dialogTitle = "Grapple Damage Breakdown";
             dialogProps = { grappleDamageBreakdown: details as GrappleDamageBreakdownDetails };
             break;
     }
@@ -937,5 +944,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-
-    
