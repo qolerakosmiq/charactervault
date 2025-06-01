@@ -37,7 +37,7 @@ interface CombatStatsSectionProps {
     field: keyof Character | 
            `savingThrows.${keyof SavingThrows}.${'base'|'magicMod'|'miscMod'}` |
            `${ResistanceFieldKey}.customMod` | 
-           'damageReductionInstances', // Changed to reflect array update
+           'damageReduction', // Changed to reflect array update
     value: any
   ) => void;
 }
@@ -123,13 +123,13 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
       type: newDrType,
       isGranted: false,
     };
-    onCharacterUpdate('damageReductionInstances', [...character.damageReduction, newInstance]);
+    onCharacterUpdate('damageReduction', [...character.damageReduction, newInstance]);
     setNewDrValue(1);
     setNewDrType('none');
   };
 
   const handleRemoveDamageReduction = (idToRemove: string) => {
-    onCharacterUpdate('damageReductionInstances', character.damageReduction.filter(dr => dr.id !== idToRemove));
+    onCharacterUpdate('damageReduction', character.damageReduction.filter(dr => dr.id !== idToRemove));
   };
 
   const getDrTypeLabel = (type: DamageReductionType | string) => {
@@ -276,7 +276,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
             <ShieldAlert className="h-6 w-6 text-primary" />
             <CardTitle className="font-serif">Resistances &amp; Other Defenses</CardTitle>
           </div>
-          <CardDescription>Manage custom modifiers for energy resistances, spell/power resistance, damage reduction, and fortification.</CardDescription>
+          <CardDescription>Manage custom modifiers for resistances, damage reductions, and fortification. Base values are often 0 unless granted by race, class and items.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -454,4 +454,3 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
   );
 }
 
-    

@@ -117,7 +117,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
             <ShieldAlert className="h-8 w-8 text-primary" />
             <CardTitle className="text-2xl font-serif">Resistances & Defenses</CardTitle>
           </div>
-          <CardDescription>Manage custom modifiers for resistances, DR, and fortification. Base values are often 0 unless granted by race/class/items (future feature).</CardDescription>
+          <CardDescription>Manage custom modifiers for resistances, damage reductions, and fortification. Base values are often 0 unless granted by race, class and items.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div>
@@ -295,4 +295,3 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
   );
 }
 
-    
