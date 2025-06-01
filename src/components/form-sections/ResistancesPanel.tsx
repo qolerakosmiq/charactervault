@@ -81,10 +81,12 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                 const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0);
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
-                    <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-sm font-medium flex items-center justify-center">
+                    <div className="flex items-center justify-center">
                       <Icon className="h-4 w-4 mr-2 text-muted-foreground" />
-                      {label}
-                    </Label>
+                      <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-sm font-medium">
+                        {label}
+                      </Label>
+                    </div>
                     <div className="flex items-center justify-center">
                       <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
                         {totalValue}
@@ -110,8 +112,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         value={resistance?.customMod || 0}
                         onChange={(newValue) => onResistanceChange(field, 'customMod', newValue)}
                         min={-50} 
-                        max={200}
-                        inputClassName="w-12 h-7 text-sm text-center"
+                        inputClassName="w-16 h-7 text-sm text-center"
                         buttonClassName="h-7 w-7"
                         buttonSize="sm"
                       />
@@ -130,12 +131,15 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
               {otherNumericResistances.map(({ field, label, Icon, unit, fieldPrefix }) => {
                 const resistance = characterData[field];
                 const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0);
+                const isFortification = field === 'fortification';
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
-                    <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-sm font-medium flex items-center justify-center">
+                     <div className="flex items-center justify-center">
                       <Icon className="h-4 w-4 mr-2 text-muted-foreground" />
-                      {label} {unit}
-                    </Label>
+                      <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-sm font-medium">
+                        {label} {unit}
+                      </Label>
+                    </div>
                     <div className="flex items-center justify-center">
                       <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
                         {totalValue}
@@ -160,9 +164,9 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         id={`${fieldPrefix}-${field}-customMod`}
                         value={resistance?.customMod || 0}
                         onChange={(newValue) => onResistanceChange(field, 'customMod', newValue)}
-                        min={0}
-                        max={field === 'fortification' ? 100 : 200}
-                        inputClassName="w-12 h-7 text-sm text-center"
+                        min={isFortification ? 0 : -50}
+                        max={isFortification ? 100 : undefined}
+                        inputClassName="w-16 h-7 text-sm text-center"
                         buttonClassName="h-7 w-7"
                         buttonSize="sm"
                       />

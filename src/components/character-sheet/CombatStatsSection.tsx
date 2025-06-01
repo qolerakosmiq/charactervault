@@ -242,10 +242,12 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                 const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0);
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
-                    <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-sm font-medium flex items-center justify-center">
+                    <div className="flex items-center justify-center">
                       <Icon className="h-4 w-4 mr-2 text-muted-foreground" />
-                      {label}
-                    </Label>
+                      <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-sm font-medium">
+                        {label}
+                      </Label>
+                    </div>
                     <div className="flex items-center justify-center">
                       <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
                         {totalValue}
@@ -270,8 +272,8 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         id={`${fieldPrefix}-${field}-customMod`}
                         value={resistance?.customMod || 0}
                         onChange={(newValue) => onCharacterUpdate(`${field}.customMod` as `${ResistanceFieldKey}.customMod`, newValue)}
-                        min={-50} max={200}
-                        inputClassName="w-12 h-7 text-sm text-center"
+                        min={-50}
+                        inputClassName="w-16 h-7 text-sm text-center"
                         buttonClassName="h-7 w-7"
                         buttonSize="sm"
                       />
@@ -288,17 +290,20 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
               {otherNumericResistancesFields.map(({ field, label, Icon, unit, fieldPrefix }) => {
                 const resistance = character[field] as ResistanceValue;
                 const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0);
+                const isFortification = field === 'fortification';
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
-                    <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-sm font-medium flex items-center justify-center">
-                      <Icon className="h-4 w-4 mr-2 text-muted-foreground" />
-                      {label} {unit}
-                    </Label>
+                     <div className="flex items-center justify-center">
+                        <Icon className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-sm font-medium">
+                          {label} {unit}
+                        </Label>
+                      </div>
                     <div className="flex items-center justify-center">
                       <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
                         {totalValue}
                       </p>
-                      <Button
+                       <Button
                         type="button"
                         variant="ghost"
                         size="icon"
@@ -313,13 +318,14 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         <Info className="h-4 w-4" />
                       </Button>
                     </div>
-                    <div className="w-full max-w-[120px] flex justify-center">
+                     <div className="w-full max-w-[120px] flex justify-center">
                       <NumberSpinnerInput
                         id={`${fieldPrefix}-${field}-customMod`}
                         value={resistance?.customMod || 0}
                         onChange={(newValue) => onCharacterUpdate(`${field}.customMod` as `${ResistanceFieldKey}.customMod`, newValue)}
-                        min={0} max={field === 'fortification' ? 100 : 200}
-                        inputClassName="w-12 h-7 text-sm text-center"
+                        min={isFortification ? 0 : -50}
+                        max={isFortification ? 100 : undefined}
+                        inputClassName="w-16 h-7 text-sm text-center"
                         buttonClassName="h-7 w-7"
                         buttonSize="sm"
                       />
