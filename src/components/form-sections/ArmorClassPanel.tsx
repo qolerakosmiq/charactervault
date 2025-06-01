@@ -10,10 +10,10 @@ import { Button } from '@/components/ui/button';
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 import { getAbilityModifierByName, getSizeModifierAC } from '@/lib/dnd-utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DEFAULT_ABILITIES } from '@/types/character';
+import { DEFAULT_ABILITIES, SIZES } from '@/types/character';
 
 interface ArmorClassPanelProps {
-  character?: Character; // Character prop is optional
+  character?: Character;
 }
 
 type AcBreakdownDetail = { label: string; value: string | number; isBold?: boolean };
@@ -22,7 +22,6 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<{ title: string; detailsList: AcBreakdownDetail[] } | null>(null);
 
-  // Primary guard: If character data is not yet available render skeletons.
   if (!character) {
     return (
       <Card>
@@ -37,7 +36,7 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
             <div className="flex items-center">
               <Label htmlFor="normal-ac-display" className="text-lg font-medium">Normal</Label>
-              <Button variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" disabled>
+              <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" disabled>
                 <Info className="h-4 w-4" />
               </Button>
             </div>
@@ -46,7 +45,7 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
              <div className="flex items-center">
               <Label htmlFor="touch-ac-display" className="text-lg font-medium">Touch</Label>
-               <Button variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" disabled>
+               <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" disabled>
                 <Info className="h-4 w-4" />
               </Button>
             </div>
@@ -55,7 +54,7 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
             <div className="flex items-center">
               <Label htmlFor="flat-footed-ac-display" className="text-lg font-medium">Flat-Footed</Label>
-              <Button variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" disabled>
+              <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" disabled>
                 <Info className="h-4 w-4" />
               </Button>
             </div>
@@ -66,8 +65,6 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
     );
   }
 
-  // If we've passed the guard, character is defined.
-  // Use fallbacks for abilityScores and size if they are somehow missing on the character object.
   const currentAbilityScores = character.abilityScores || DEFAULT_ABILITIES;
   const currentSize = character.size || 'medium';
 
@@ -85,26 +82,25 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
     (character.acMiscModifier || 0);
 
   const touchAC = 10 +
-    dexModifier + // Dex applies to touch
+    dexModifier + 
     sizeModAC +
     (character.deflectionBonus || 0) +
-    (character.dodgeBonus || 0) + // Dodge applies to touch
+    (character.dodgeBonus || 0) + 
     (character.acMiscModifier || 0);
 
   const flatFootedAC = 10 +
     (character.armorBonus || 0) +
     (character.shieldBonus || 0) +
-    sizeModAC + // Size applies
+    sizeModAC + 
     (character.naturalArmor || 0) +
     (character.deflectionBonus || 0) +
     (character.acMiscModifier || 0);
-    // Dex and Dodge are denied for flat-footed
+    
 
   const showAcBreakdown = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
     const detailsList: AcBreakdownDetail[] = [{ label: 'Base', value: 10 }];
     let totalCalculated = 10;
 
-    // Use the same robustly derived modifiers for the breakdown
     const breakdownDexModifier = getAbilityModifierByName(currentAbilityScores, 'dexterity');
     const breakdownSizeModAC = getSizeModifierAC(currentSize);
 
@@ -135,13 +131,10 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
       totalCalculated = flatFootedAC;
     }
     
-    // Filter out components with a value of 0, except for Base and Total
     const filteredDetailsList = detailsList.filter(detail => detail.label === 'Base' || detail.label === 'Total' || (typeof detail.value === 'number' && detail.value !== 0) || (typeof detail.value === 'string' && detail.value !== '0' && detail.value !== '+0'));
     filteredDetailsList.push({ label: 'Total', value: totalCalculated, isBold: true });
     
-    // Remove duplicates if any, especially for Total
      const uniqueDetailsList = Array.from(new Map(filteredDetailsList.map(item => [item.label, item])).values());
-
 
     setCurrentInfoDialogData({ title: `${acType} AC Breakdown`, detailsList: uniqueDetailsList });
     setIsInfoDialogOpen(true);
@@ -161,7 +154,7 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
             <div className="flex items-center">
               <Label htmlFor="normal-ac-display" className="text-lg font-medium">Normal</Label>
-              <Button variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => showAcBreakdown('Normal')}>
+              <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => showAcBreakdown('Normal')}>
                 <Info className="h-4 w-4" />
               </Button>
             </div>
@@ -170,7 +163,7 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
              <div className="flex items-center">
               <Label htmlFor="touch-ac-display" className="text-lg font-medium">Touch</Label>
-              <Button variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => showAcBreakdown('Touch')}>
+              <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => showAcBreakdown('Touch')}>
                 <Info className="h-4 w-4" />
               </Button>
             </div>
@@ -179,7 +172,7 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
             <div className="flex items-center">
               <Label htmlFor="flat-footed-ac-display" className="text-lg font-medium">Flat-Footed</Label>
-              <Button variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => showAcBreakdown('Flat-Footed')}>
+              <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => showAcBreakdown('Flat-Footed')}>
                 <Info className="h-4 w-4" />
               </Button>
             </div>
@@ -199,4 +192,3 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
   );
 }
 
-    
