@@ -22,7 +22,7 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<{ title: string; detailsList: AcBreakdownDetail[] } | null>(null);
 
-  if (!character || !character.abilityScores || !character.size) {
+  if (!character) {
     return (
       <Card>
         <CardHeader>
@@ -105,9 +105,11 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
     const breakdownSizeModAC = getSizeModifierAC(currentSize);
     const sizeLabel = SIZES.find(s => s.value === currentSize)?.label || currentSize;
 
+    // Always add Dex and Size modifier to the list for display, even if 0
+    detailsList.push({ label: 'Dexterity Modifier', value: breakdownDexModifier });
+    detailsList.push({ label: `Size Modifier (${sizeLabel})`, value: breakdownSizeModAC });
+
     if (acType === 'Normal') {
-      detailsList.push({ label: 'Dexterity Modifier', value: breakdownDexModifier });
-      detailsList.push({ label: `Size Modifier (${sizeLabel})`, value: breakdownSizeModAC });
       if (character.armorBonus || 0) detailsList.push({ label: 'Armor Bonus', value: character.armorBonus || 0 });
       if (character.shieldBonus || 0) detailsList.push({ label: 'Shield Bonus', value: character.shieldBonus || 0 });
       if (character.naturalArmor || 0) detailsList.push({ label: 'Natural Armor', value: character.naturalArmor || 0 });
@@ -116,14 +118,13 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
       if (character.acMiscModifier || 0) detailsList.push({ label: 'Misc Modifier', value: character.acMiscModifier || 0 });
       totalCalculated = normalAC;
     } else if (acType === 'Touch') {
-      detailsList.push({ label: 'Dexterity Modifier', value: breakdownDexModifier });
-      detailsList.push({ label: `Size Modifier (${sizeLabel})`, value: breakdownSizeModAC });
+      // Dex and Size are already added
       if (character.deflectionBonus || 0) detailsList.push({ label: 'Deflection Bonus', value: character.deflectionBonus || 0 });
       if (character.dodgeBonus || 0) detailsList.push({ label: 'Dodge Bonus', value: character.dodgeBonus || 0 });
       if (character.acMiscModifier || 0) detailsList.push({ label: 'Misc Modifier', value: character.acMiscModifier || 0 });
       totalCalculated = touchAC;
     } else if (acType === 'Flat-Footed') {
-      detailsList.push({ label: `Size Modifier (${sizeLabel})`, value: breakdownSizeModAC });
+      // Size is already added. Dex and Dodge are denied.
       if (character.armorBonus || 0) detailsList.push({ label: 'Armor Bonus', value: character.armorBonus || 0 });
       if (character.shieldBonus || 0) detailsList.push({ label: 'Shield Bonus', value: character.shieldBonus || 0 });
       if (character.naturalArmor || 0) detailsList.push({ label: 'Natural Armor', value: character.naturalArmor || 0 });
@@ -131,13 +132,18 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
       if (character.acMiscModifier || 0) detailsList.push({ label: 'Misc Modifier', value: character.acMiscModifier || 0 });
       totalCalculated = flatFootedAC;
     }
+    
+    // Filter out optional components that are zero, but keep Base, Dex Mod, Size Mod, and Total
+    const essentialLabels = ['Base', 'Dexterity Modifier', `Size Modifier (${sizeLabel})`, 'Total'];
+    const finalDetailsList = detailsList.filter(detail => 
+        essentialLabels.includes(detail.label) || 
+        (typeof detail.value === 'number' && detail.value !== 0) ||
+        (typeof detail.value === 'string' && detail.value !== '0' && detail.value !== '+0')
+    );
+    
+    finalDetailsList.push({ label: 'Total', value: totalCalculated, isBold: true });
 
-    const filteredDetailsList = detailsList.filter(detail => detail.label === 'Base' || detail.label === 'Total' || (typeof detail.value === 'number' && detail.value !== 0) || (typeof detail.value === 'string' && detail.value !== '0' && detail.value !== '+0'));
-    filteredDetailsList.push({ label: 'Total', value: totalCalculated, isBold: true });
-
-     const uniqueDetailsList = Array.from(new Map(filteredDetailsList.map(item => [item.label, item])).values());
-
-    setCurrentInfoDialogData({ title: `${acType} Armor Class Breakdown`, detailsList: uniqueDetailsList });
+    setCurrentInfoDialogData({ title: `${acType} Armor Class Breakdown`, detailsList: finalDetailsList });
     setIsInfoDialogOpen(true);
   };
 
@@ -192,4 +198,3 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
     </>
   );
 }
-

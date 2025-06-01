@@ -53,16 +53,16 @@ export function InfoDisplayDialog({
     positiveColor = "text-emerald-500",
     negativeColor = "text-destructive",
     zeroColor = "text-muted-foreground",
-    accentColor = "text-accent", // For the total
+    accentColor = "text-accent", 
     isTotal = false
   ) => {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
     if (isNaN(numValue)) {
-      return <span className="font-bold">{value}</span>; // Non-numeric or already formatted string
+      return <span className="font-bold">{value}</span>; 
     }
 
     let colorClass = zeroColor;
-    if (isTotal) {
+    if (isTotal) { // Total for AC breakdown specifically uses accent
         colorClass = accentColor;
     } else if (numValue > 0) {
         colorClass = positiveColor;
@@ -77,7 +77,7 @@ export function InfoDisplayDialog({
           colorClass
         )}
       >
-        {numValue >= 0 && !isTotal ? '+' : ''}{numValue}
+        {numValue > 0 ? '+' : numValue < 0 ? '' : '+'}{numValue}
       </span>
     );
   };
@@ -85,14 +85,17 @@ export function InfoDisplayDialog({
 
   const anyBonusSectionWillRender = hasAbilityModifiers || hasSkillBonuses || hasFeatAdjustments;
 
-  // Determine the main dialog title
   let dialogTitle = title || 'Information';
+  let sectionHeading = "Key Attributes:";
   if (abilityScoreBreakdown) {
     dialogTitle = `${abilityScoreBreakdown.ability.charAt(0).toUpperCase() + abilityScoreBreakdown.ability.slice(1)} Score Calculation`;
+    sectionHeading = "Score Breakdown:";
   } else if (skillModifierBreakdown) {
     dialogTitle = `${skillModifierBreakdown.skillName} Details`;
-  } else if (detailsList && title?.toLowerCase().includes("armor class breakdown")){
-    dialogTitle = title; // Keep the modified title from ArmorClassPanel
+    sectionHeading = "Skill Modifier Breakdown:";
+  } else if (title?.toLowerCase().includes("armor class breakdown")){
+    dialogTitle = title; 
+    sectionHeading = "Calculation:";
   }
 
 
@@ -122,36 +125,42 @@ export function InfoDisplayDialog({
 
 
           {abilityScoreBreakdown && (
-            <div className="space-y-1 text-sm">
-              <div className="flex justify-between">
-                <span>Base Score:</span>
-                <span className="font-bold">{abilityScoreBreakdown.base}</span>
-              </div>
-              {abilityScoreBreakdown.components.map((comp, index) => (
-                comp.value !== 0 && (
-                  <div key={index} className="flex justify-between">
-                    <span>{comp.source}:</span>
-                    {renderModifierValue(comp.value)}
+            <>
+            {content && <Separator className="my-3"/>}
+            <div>
+                <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span>Base Score:</span>
+                    <span className="font-bold">{abilityScoreBreakdown.base}</span>
                   </div>
-                )
-              ))}
-              <Separator className="my-2" />
-              <div className="flex justify-between text-base">
-                <span className="font-semibold">Final Score:</span>
-                <span className="font-bold">{abilityScoreBreakdown.finalScore}</span>
+                  {abilityScoreBreakdown.components.map((comp, index) => (
+                    comp.value !== 0 && (
+                      <div key={index} className="flex justify-between">
+                        <span>{comp.source}:</span>
+                        {renderModifierValue(comp.value)}
+                      </div>
+                    )
+                  ))}
+                  <Separator className="my-2" />
+                  <div className="flex justify-between text-base">
+                    <span className="font-semibold">Final Score:</span>
+                    <span className="font-bold text-accent">{abilityScoreBreakdown.finalScore}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-semibold">Final Modifier:</span>
+                    {renderModifierValue(calculateAbilityModifier(abilityScoreBreakdown.finalScore))}
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="font-semibold">Final Modifier:</span>
-                {renderModifierValue(calculateAbilityModifier(abilityScoreBreakdown.finalScore))}
-              </div>
-            </div>
+            </>
           )}
 
           {skillModifierBreakdown && (
             <>
             {content && <Separator className="my-3"/>}
             <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">Skill Modifier Breakdown:</h3>
+                <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
                   {skillModifierBreakdown.keyAbilityName && (
                     <div className="flex justify-between">
@@ -190,7 +199,7 @@ export function InfoDisplayDialog({
                   <Separator className="my-2" />
                   <div className="flex justify-between text-base">
                     <span className="font-semibold">Total Bonus:</span>
-                    {renderModifierValue(skillModifierBreakdown.totalBonus, "text-accent", "text-accent", "text-accent", "text-accent", true)}
+                    {renderModifierValue(skillModifierBreakdown.totalBonus, undefined, undefined, undefined, "text-accent", true)}
                   </div>
                 </div>
             </div>
@@ -258,15 +267,14 @@ export function InfoDisplayDialog({
              <>
               {(content || anyBonusSectionWillRender) && (!title?.toLowerCase().includes("armor class breakdown")) && <Separator className="my-4" />}
               <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">
-                  {title?.toLowerCase().includes("armor class breakdown") ? "Calculation:" : "Key Attributes:"}
-                </h3>
+                <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
                 {detailsList!.map((detail, index) => {
                   const isTotalRow = detail.label.toLowerCase() === 'total';
-                  const isDexModRow = detail.label.toLowerCase().includes('dexterity modifier');
-                  const valueToRender = (isDexModRow || isTotalRow)
+                  const isModifierRow = detail.label.toLowerCase().includes('modifier') || detail.label.toLowerCase().includes('bonus') || detail.label.toLowerCase().includes('penalty');
+                  
+                  const valueToRender = (typeof detail.value === 'number')
                     ? renderModifierValue(detail.value, "text-emerald-500", "text-destructive", "text-muted-foreground", "text-accent", isTotalRow)
-                    : detail.value;
+                    : detail.value; // If it's a string, display as is (already formatted or non-numeric)
 
                   return (
                     <div key={index} className="flex justify-between text-sm mb-0.5">
@@ -281,11 +289,9 @@ export function InfoDisplayDialog({
 
         </ScrollArea>
         <DialogFooter className="mt-2">
-          <Button onClick={() => onOpenChange(false)}>Close</Button>
+          <Button onClick={() => onOpenChange(false)} type="button">Close</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
-
-    
