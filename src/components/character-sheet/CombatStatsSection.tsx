@@ -108,7 +108,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
       toast({ title: "Invalid DR Value", description: "DR value must be > 0.", variant: "destructive"});
       return;
     }
-     if (!newDrType || (typeof newDrType === 'string' && newDrType.trim() === '')) {
+     if (!newDrType && newDrType !== 'none') {
         toast({ title: "DR Type Missing", description: "Select DR type.", variant: "destructive"});
         return;
     }
@@ -137,26 +137,28 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
     onCharacterUpdate('damageReduction', character.damageReduction.filter(dr => dr.id !== idToRemove));
   };
 
-  const getDrTypeLabel = (type: DamageReductionTypeValue | string): string => {
-    return DAMAGE_REDUCTION_TYPES.find(t => t.value === type)?.label || String(type);
+  const getDrTypeUiLabel = (typeValue: DamageReductionTypeValue | string): string => {
+    return DAMAGE_REDUCTION_TYPES.find(t => t.value === typeValue)?.label || String(typeValue);
   };
   
   const getDrPrimaryNotation = (dr: DamageReductionInstance): string => {
-    const typeLabel = getDrTypeLabel(dr.type);
-    if (dr.type === "none") { // DR X/-
+    const typeLabel = getDrTypeUiLabel(dr.type);
+    if (dr.type === "none" && dr.rule === 'standard-bypass') { 
       return `${dr.value}/—`;
     }
-    if (dr.rule === 'standard-bypass') { // DR X/Magic, DR X/Silver
+    if (dr.rule === 'standard-bypass') { 
       return `${dr.value}/${typeLabel}`;
     }
-    // For "vs-specific-type" (DR X vs Fire, DR X vs Bludgeoning)
-    return `${dr.value} vs ${typeLabel}`; 
+    if (dr.rule === 'vs-specific-type') {
+      return `${dr.value} vs ${typeLabel}`; 
+    }
+    return `${dr.value}/${typeLabel} (${dr.rule})`; 
   };
 
   const getDrRuleDescription = (dr: DamageReductionInstance): string => {
-    const typeLabel = getDrTypeLabel(dr.type);
+    const typeLabel = getDrTypeUiLabel(dr.type);
     if (dr.rule === 'standard-bypass') {
-      return dr.type === "none" ? "Reduces damage from most sources." : `Reduces damage unless attack is ${typeLabel}.`;
+      return dr.type === "none" ? "Reduces damage from most physical attacks." : `Reduces damage unless attack is ${typeLabel}.`;
     }
     if (dr.rule === 'vs-specific-type') {
       return `Specifically reduces damage from ${typeLabel} sources.`;
@@ -412,17 +414,19 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                   <div className="space-y-3"> 
                     {character.damageReduction.length > 0 ? (
                       character.damageReduction.map(dr => (
-                        <div key={dr.id} className="flex items-center justify-between p-2 border rounded-md bg-muted/5 text-sm">
+                        <div key={dr.id} className="flex items-start justify-between p-2 border rounded-md bg-muted/5 text-sm">
                           <div>
                             <p className="font-semibold">{getDrPrimaryNotation(dr)}</p>
-                            {dr.isGranted && dr.source && <Badge variant="secondary" className="ml-2 text-xs inline-block my-0.5">{dr.source}</Badge>}
                             <p className="text-xs text-muted-foreground">{getDrRuleDescription(dr)}</p>
                           </div>
-                          {!dr.isGranted && (
-                            <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80" onClick={() => handleRemoveDamageReduction(dr.id)}>
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          )}
+                           <div className="flex items-center shrink-0">
+                            {dr.isGranted && dr.source && <Badge variant="secondary" className="text-xs mr-1 whitespace-nowrap">{dr.source}</Badge>}
+                            {!dr.isGranted && (
+                              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80" onClick={() => handleRemoveDamageReduction(dr.id)}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       ))
                     ) : (
@@ -448,7 +452,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         <Label htmlFor="sheet-dr-rule" className="text-xs">Rule</Label>
                          <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
                             <SelectTrigger id="sheet-dr-rule" className="h-9 text-sm">
-                                <SelectValue placeholder="Select rule..." />
+                                <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                                 {DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (
@@ -463,7 +467,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         <Label htmlFor="sheet-dr-type" className="text-xs">Type</Label>
                         <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
                             <SelectTrigger id="sheet-dr-type" className="h-9 text-sm">
-                                <SelectValue placeholder="Select type..." />
+                               <SelectValue placeholder="Select type..." />
                             </SelectTrigger>
                             <SelectContent>
                                 {DAMAGE_REDUCTION_TYPES.map(option => (
