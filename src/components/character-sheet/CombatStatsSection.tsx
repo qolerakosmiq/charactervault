@@ -48,11 +48,10 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
   const { toast } = useToast();
 
   const [newDrValue, setNewDrValue] = React.useState(1);
-  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>(DAMAGE_REDUCTION_TYPES[0].value);
+  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>("none");
   const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>(DAMAGE_REDUCTION_RULES_OPTIONS[0].value);
 
   React.useEffect(() => {
-    // If a rule that requires a specific type is selected, and the current type is 'none', default to 'magic'.
     if (newDrRule !== 'bypassed-by-type' && newDrType === 'none') {
       setNewDrType('magic');
     }
@@ -166,9 +165,25 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
       return `${dr.value} vs ${typeLabel}`;
     }
     if (dr.rule === 'excepted-by-type') {
-      return `${dr.value} vs ${typeLabel}`;
+       return `DR ${dr.value} vs ${typeLabel} (Immunity Except)`;
     }
-    return `${dr.value}/${typeLabel} (Rule: ${dr.rule})`; 
+    return `${dr.value}/${typeLabel} (Rule: ${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule})`; 
+  };
+
+  const getDrRuleDescription = (dr: DamageReductionInstance): string => {
+    const typeLabel = getDrTypeUiLabel(dr.type);
+    const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
+
+    if (dr.rule === 'bypassed-by-type') {
+      return dr.type === "none" ? "Reduces damage from most physical attacks." : `Damage reduced unless attack is ${typeLabel}.`;
+    }
+    if (dr.rule === 'versus-specific-type') {
+      return `Specifically reduces damage from ${typeLabel} sources.`;
+    }
+    if (dr.rule === 'excepted-by-type') {
+        return `Immune to damage unless from ${typeLabel} sources. ${typeLabel} sources deal damage reduced by ${dr.value}.`;
+    }
+    return `Rule: ${ruleDef ? ruleDef.label : dr.rule}`; // Fallback
   };
   
   return (
@@ -424,10 +439,11 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         <div key={dr.id} className="flex items-start justify-between p-2 border rounded-md bg-muted/5 text-sm">
                           <div>
                             <p className="font-semibold">{getDrPrimaryNotation(dr)}</p>
-                            <div className="mt-0.5">
-                                <Badge variant="outline" className="text-xs font-normal h-5">
+                             <div className="mt-0.5 flex items-center">
+                                <Badge variant="outline" className="text-xs font-normal h-5 mr-1">
                                   {ruleLabel}
                                 </Badge>
+                                <span className="text-xs text-muted-foreground">{getDrRuleDescription(dr)}</span>
                               </div>
                           </div>
                            <div className="flex items-center shrink-0">

@@ -43,11 +43,10 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
   const { toast } = useToast();
 
   const [newDrValue, setNewDrValue] = React.useState(1);
-  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>(DAMAGE_REDUCTION_TYPES[0].value);
+  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>("none");
   const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>(DAMAGE_REDUCTION_RULES_OPTIONS[0].value);
 
   React.useEffect(() => {
-    // If a rule that requires a specific type is selected, and the current type is 'none', default to 'magic'.
     if (newDrRule !== 'bypassed-by-type' && newDrType === 'none') {
       setNewDrType('magic');
     }
@@ -133,20 +132,15 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
       return `${dr.value} vs ${typeLabel}`;
     }
     if (dr.rule === 'excepted-by-type') {
-      // For "Excepted by Type", the core mechanic is immunity, DR is secondary.
-      // The notation often is "Immunity to X, except Y (DR applies)"
-      // For simplicity here, we'll keep it consistent with "vs" for the primary display
-      return `${dr.value} vs ${typeLabel}`; 
+       return `DR ${dr.value} vs ${typeLabel} (Immunity Except)`;
     }
-    return `${dr.value}/${typeLabel} (Rule: ${dr.rule})`; 
+    // Fallback, should ideally not happen if rules are exhaustive
+    return `${dr.value}/${typeLabel} (Rule: ${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule})`;
   };
-
-  // This function's output is no longer directly used for rule display in the list
-  // but kept for potential other uses or future refactoring.
+  
   const getDrRuleDescription = (dr: DamageReductionInstance): string => {
     const typeLabel = getDrTypeUiLabel(dr.type);
     const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
-    const ruleLabel = ruleDef ? ruleDef.label : dr.rule;
 
     if (dr.rule === 'bypassed-by-type') {
       return dr.type === "none" ? "Reduces damage from most physical attacks." : `Damage reduced unless attack is ${typeLabel}.`;
@@ -157,7 +151,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     if (dr.rule === 'excepted-by-type') {
         return `Immune to damage unless from ${typeLabel} sources. ${typeLabel} sources deal damage reduced by ${dr.value}.`;
     }
-    return `Rule: ${ruleLabel}`;
+    return `Rule: ${ruleDef ? ruleDef.label : dr.rule}`; // Fallback
   };
 
 
@@ -286,10 +280,11 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                           <div key={dr.id} className="flex items-start justify-between p-2 border rounded-md bg-muted/5 text-sm">
                             <div>
                               <p className="font-semibold">{getDrPrimaryNotation(dr)}</p>
-                              <div className="mt-0.5">
-                                <Badge variant="outline" className="text-xs font-normal h-5">
+                              <div className="mt-0.5 flex items-center">
+                                <Badge variant="outline" className="text-xs font-normal h-5 mr-1">
                                   {ruleLabel}
                                 </Badge>
+                                <span className="text-xs text-muted-foreground">{getDrRuleDescription(dr)}</span>
                               </div>
                             </div>
                             <div className="flex items-center shrink-0">
