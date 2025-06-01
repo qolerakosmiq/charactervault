@@ -21,7 +21,7 @@ import { ArmorClassPanel } from '../form-sections/ArmorClassPanel';
 import { Button } from '@/components/ui/button';
 import { InfoDisplayDialog, type ResistanceBreakdownDetails } from '@/components/InfoDisplayDialog';
 import * as React from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // Changed import
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 
@@ -414,8 +414,8 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                       character.damageReduction.map(dr => (
                         <div key={dr.id} className="flex items-center justify-between p-2 border rounded-md bg-muted/5 text-sm">
                           <div>
-                            <span className="font-semibold">{getDrPrimaryNotation(dr)}</span>
-                            {dr.isGranted && dr.source && <Badge variant="secondary" className="ml-2 text-xs">{dr.source}</Badge>}
+                            <p className="font-semibold">{getDrPrimaryNotation(dr)}</p>
+                            {dr.isGranted && dr.source && <Badge variant="secondary" className="ml-2 text-xs inline-block my-0.5">{dr.source}</Badge>}
                             <p className="text-xs text-muted-foreground">{getDrRuleDescription(dr)}</p>
                           </div>
                           {!dr.isGranted && (
@@ -497,4 +497,3 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
     </>
   );
 }
-

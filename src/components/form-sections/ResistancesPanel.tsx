@@ -11,7 +11,7 @@ import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { InfoDisplayDialog, type ResistanceBreakdownDetails } from '@/components/InfoDisplayDialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // Changed import
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 
@@ -255,8 +255,8 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                     characterData.damageReduction.map(dr => (
                       <div key={dr.id} className="flex items-center justify-between p-2 border rounded-md bg-muted/5 text-sm">
                         <div>
-                          <span className="font-semibold">{getDrPrimaryNotation(dr)}</span>
-                          {dr.isGranted && dr.source && <Badge variant="secondary" className="ml-2 text-xs">{dr.source}</Badge>}
+                          <p className="font-semibold">{getDrPrimaryNotation(dr)}</p>
+                          {dr.isGranted && dr.source && <Badge variant="secondary" className="ml-2 text-xs inline-block my-0.5">{dr.source}</Badge>}
                           <p className="text-xs text-muted-foreground">{getDrRuleDescription(dr)}</p>
                         </div>
                         {!dr.isGranted && (
@@ -285,9 +285,9 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                       buttonSize="sm"
                       />
                   </div>
-                  <div className="space-y-1">
+                   <div className="space-y-1">
                     <Label htmlFor="form-dr-rule" className="text-xs">Rule</Label>
-                    <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
+                     <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
                         <SelectTrigger id="form-dr-rule" className="h-9 text-sm">
                             <SelectValue placeholder="Select rule..." />
                         </SelectTrigger>
@@ -302,7 +302,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                   </div>
                   <div className="space-y-1">
                       <Label htmlFor="form-dr-type" className="text-xs">Type</Label>
-                      <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
+                       <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
                           <SelectTrigger id="form-dr-type" className="h-9 text-sm">
                               <SelectValue placeholder="Select type..." />
                           </SelectTrigger>
@@ -336,5 +336,3 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     </>
   );
 }
-
-    
