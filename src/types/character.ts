@@ -177,7 +177,7 @@ export const DEFAULT_SAVING_THROWS: SavingThrows = mergeObjectData(baseDefaultSa
 const baseSizesData = (baseDataJson as any).SIZES_DATA || [];
 const customSizesData = (customBaseDataJson as any).SIZES_DATA || [];
 export const SIZES: ReadonlyArray<CharacterSizeObject> = mergeArrayData(baseSizesData, customSizesData);
-export type CharacterSizeObject = { value: CharacterSize; label: string; };
+export type CharacterSizeObject = { value: CharacterSize; label: string; acModifier: number; };
 export type CharacterSize =
   | "fine" | "diminutive" | "tiny" | "small" | "medium" | "large" | "huge" | "gargantuan" | "colossal";
 
@@ -890,5 +890,3 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
-
-    

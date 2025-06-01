@@ -1,15 +1,15 @@
 
 {
   "SIZES_DATA": [
-    { "value": "fine", "label": "Fine" },
-    { "value": "diminutive", "label": "Diminutive" },
-    { "value": "tiny", "label": "Tiny" },
-    { "value": "small", "label": "Small" },
-    { "value": "medium", "label": "Medium" },
-    { "value": "large", "label": "Large" },
-    { "value": "huge", "label": "Huge" },
-    { "value": "gargantuan", "label": "Gargantuan" },
-    { "value": "colossal", "label": "Colossal" }
+    { "value": "fine", "label": "Fine", "acModifier": 8 },
+    { "value": "diminutive", "label": "Diminutive", "acModifier": 4 },
+    { "value": "tiny", "label": "Tiny", "acModifier": 2 },
+    { "value": "small", "label": "Small", "acModifier": 1 },
+    { "value": "medium", "label": "Medium", "acModifier": 0 },
+    { "value": "large", "label": "Large", "acModifier": -1 },
+    { "value": "huge", "label": "Huge", "acModifier": -2 },
+    { "value": "gargantuan", "label": "Gargantuan", "acModifier": -4 },
+    { "value": "colossal", "label": "Colossal", "acModifier": -8 }
   ],
   "GENDERS_DATA": [
     { "value": "male", "label": "Male" },
@@ -123,5 +123,3 @@
     "human": 1
   }
 }
-
-    

@@ -34,7 +34,7 @@ export function getBab(classes: CharacterClass[]): number[] {
     // Wizard/Sorcerer = poor (level * 1/2)
     const classNameLower = classDef.label.toLowerCase();
     let classBabContribution = 0;
-    if (['fighter', 'paladin', 'ranger', 'barbarian'].includes(classNameLower)) {
+    if (['fighter', 'paladin', 'ranger', 'barbarian', 'soulknife'].includes(classNameLower)) {
       classBabContribution = charClass.level;
     } else if (['cleric', 'druid', 'monk', 'rogue', 'bard'].includes(classNameLower)) {
       classBabContribution = Math.floor(charClass.level * 0.75);
@@ -114,27 +114,18 @@ export function calculateGrapple(bab: number[], strModifier: number, sizeModifie
 
 export function getSizeModifierAC(sizeId: CharacterSize): number {
   const sizeObject = SIZES.find(s => s.value === sizeId);
-  const sizeLabel = sizeObject ? sizeObject.label : sizeId; // Fallback to ID if label not found
-
-  switch (sizeLabel) {
-    case 'Colossal': return -8;
-    case 'Gargantuan': return -4;
-    case 'Huge': return -2;
-    case 'Large': return -1;
-    case 'Medium': return 0;
-    case 'Small': return 1;
-    case 'Tiny': return 2;
-    case 'Diminutive': return 4;
-    case 'Fine': return 8;
-    default: return 0;
-  }
+  return sizeObject ? sizeObject.acModifier : 0;
 }
 
 export function getSizeModifierGrapple(sizeId: CharacterSize): number {
   const sizeObject = SIZES.find(s => s.value === sizeId);
-  const sizeLabel = sizeObject ? sizeObject.label : sizeId; // Fallback to ID if label not found
-
-  switch (sizeLabel) {
+  // Grapple modifiers are typically opposite to AC for small/large and more extreme for others
+  // Fine: -16, Diminutive: -12, Tiny: -8, Small: -4, Medium: 0, Large: +4, Huge: +8, Gargantuan: +12, Colossal: +16
+  if (!sizeObject) return 0;
+  
+  // This logic can also be moved to the SIZES data if grapple modifiers are added there.
+  // For now, deriving from acModifier or label:
+  switch (sizeObject.label) {
     case 'Colossal': return 16;
     case 'Gargantuan': return 12;
     case 'Huge': return 8;
@@ -164,5 +155,3 @@ export const SAVING_THROW_ABILITIES: Record<SavingThrowType, AbilityName> = {
   reflex: 'dexterity',
   will: 'wisdom',
 };
-
-    
