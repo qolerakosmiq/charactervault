@@ -175,7 +175,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
         <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
             <Label htmlFor="grapple-damage-display" className="text-md font-medium block">Grapple Damage</Label>
             <div className="flex items-center justify-center">
-                <p id="grapple-damage-display" className="text-xl font-bold text-accent">
+                <p id="grapple-damage-display" className="text-2xl font-bold text-accent">
                   {displayedGrappleDamageTotal}
                 </p>
                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleGrappleDamageInfo}>
