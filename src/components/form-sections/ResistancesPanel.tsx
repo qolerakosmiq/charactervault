@@ -11,7 +11,7 @@ import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { InfoDisplayDialog, type ResistanceBreakdownDetails } from '@/components/InfoDisplayDialog';
-import { ComboboxPrimitive } from '@/components/ui/combobox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // Changed import
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 
@@ -76,7 +76,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
       return;
     }
     if (!newDrType || (typeof newDrType === 'string' && newDrType.trim() === '')) {
-        toast({ title: "DR Type Missing", description: "Please select or enter a DR type.", variant: "destructive"});
+        toast({ title: "DR Type Missing", description: "Please select a DR type.", variant: "destructive"});
         return;
     }
 
@@ -129,7 +129,6 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     if (dr.rule === 'vs-specific-type') {
       return `Specifically reduces damage from ${typeLabel} sources.`;
     }
-    // Fallback, should ideally not be reached if rule is one of the defined options
     return `Rule: ${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule}`;
   };
 
@@ -248,10 +247,10 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
               })}
             </div>
             <Separator className="my-6" />
-            <div>
+             <div>
               <h4 className="text-lg font-semibold mb-3 text-foreground/90">Damage Reduction</h4>
               <div className="grid md:grid-cols-2 gap-x-6 gap-y-4">
-                <div className="space-y-3"> {/* Left Column: List of DRs */}
+                <div className="space-y-3"> 
                   {characterData.damageReduction.length > 0 ? (
                     characterData.damageReduction.map(dr => (
                       <div key={dr.id} className="flex items-center justify-between p-2 border rounded-md bg-muted/5 text-sm">
@@ -272,7 +271,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                   )}
                 </div>
 
-                <div className="space-y-3 border md:border-l md:border-t-0 p-4 rounded-md md:pl-6"> {/* Right Column: Input for new DR */}
+                <div className="space-y-3 border md:border-l md:border-t-0 p-4 rounded-md md:pl-6">
                   <Label className="text-md font-medium">Custom Damage Reduction</Label>
                   <div className="space-y-1">
                       <Label htmlFor="form-dr-value" className="text-xs">Value</Label>
@@ -288,29 +287,33 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="form-dr-rule" className="text-xs">Rule</Label>
-                    <ComboboxPrimitive
-                      id="form-dr-rule"
-                      options={DAMAGE_REDUCTION_RULES_OPTIONS}
-                      value={newDrRule}
-                      onChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}
-                      placeholder="Select rule..."
-                      triggerClassName="h-9 text-sm"
-                      isEditable={false}
-                    />
+                    <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
+                        <SelectTrigger id="form-dr-rule" className="h-9 text-sm">
+                            <SelectValue placeholder="Select rule..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (
+                                <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-1">
                       <Label htmlFor="form-dr-type" className="text-xs">Type</Label>
-                      <ComboboxPrimitive
-                      id="form-dr-type"
-                      options={DAMAGE_REDUCTION_TYPES}
-                      value={newDrType}
-                      onChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}
-                      placeholder="Select type..."
-                      searchPlaceholder="Search types..."
-                      emptyPlaceholder="No type found."
-                      isEditable={false}
-                      triggerClassName="h-9 text-sm"
-                      />
+                      <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
+                          <SelectTrigger id="form-dr-type" className="h-9 text-sm">
+                              <SelectValue placeholder="Select type..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                              {DAMAGE_REDUCTION_TYPES.map(option => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                      {option.label}
+                                  </SelectItem>
+                              ))}
+                          </SelectContent>
+                      </Select>
                   </div>
                   <Button type="button" onClick={handleAddDamageReduction} size="sm" className="mt-3">
                       <PlusCircle className="mr-2 h-4 w-4" /> Add Damage Reduction
@@ -334,3 +337,4 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
   );
 }
 
+    
