@@ -10,28 +10,28 @@
       "grantedFeats": [
         { "featId": "class-barbarian-fast-movement", "note": "(+10ft speed)", "levelAcquired": 1 },
         { "featId": "class-barbarian-rage", "note": "(1/day)", "levelAcquired": 1 },
-        { "featId": "class-barbarian-uncanny-dodge", "note": "(Retain Dex to AC)", "levelAcquired": 2 },
+        { "featId": "class-barbarian-uncanny-dodge", "levelAcquired": 2 },
         { "featId": "class-barbarian-trap-sense", "note": "(+1)", "levelAcquired": 3 },
-        { "featId": "class-barbarian-rage", "note": "(now 2/day)", "levelAcquired": 4 },
-        { "featId": "class-barbarian-improved-uncanny-dodge", "note": "(Cannot be flanked)", "levelAcquired": 5 },
-        { "featId": "class-barbarian-trap-sense", "note": "(now +2)", "levelAcquired": 6 },
+        { "featId": "class-barbarian-rage", "note": "(2/day)", "levelAcquired": 4 },
+        { "featId": "class-barbarian-improved-uncanny-dodge", "levelAcquired": 5 },
+        { "featId": "class-barbarian-trap-sense", "note": "(+2)", "levelAcquired": 6 },
         { "featId": "class-barbarian-damage-reduction", "note": "(DR 1/-)", "levelAcquired": 7 },
-        { "featId": "class-barbarian-rage", "note": "(now 3/day)", "levelAcquired": 8 },
-        { "featId": "class-barbarian-trap-sense", "note": "(now +3)", "levelAcquired": 9 },
-        { "featId": "class-barbarian-damage-reduction", "note": "(now DR 2/-)", "levelAcquired": 10 },
-        { "featId": "class-barbarian-greater-rage", "note": "(Stronger rage)", "levelAcquired": 11 },
-        { "featId": "class-barbarian-rage", "note": "(now 4/day)", "levelAcquired": 12 },
-        { "featId": "class-barbarian-trap-sense", "note": "(now +4)", "levelAcquired": 12 },
-        { "featId": "class-barbarian-damage-reduction", "note": "(now DR 3/-)", "levelAcquired": 13 },
-        { "featId": "class-barbarian-indomitable-will", "note": "(+4 Will vs. enchantments in rage)", "levelAcquired": 14 },
-        { "featId": "class-barbarian-trap-sense", "note": "(now +5)", "levelAcquired": 15 },
-        { "featId": "class-barbarian-damage-reduction", "note": "(now DR 4/-)", "levelAcquired": 16 },
-        { "featId": "class-barbarian-rage", "note": "(now 5/day)", "levelAcquired": 16 },
-        { "featId": "class-barbarian-tireless-rage", "note": "(No fatigue after rage)", "levelAcquired": 17 },
-        { "featId": "class-barbarian-trap-sense", "note": "(now +6)", "levelAcquired": 18 },
-        { "featId": "class-barbarian-damage-reduction", "note": "(now DR 5/-)", "levelAcquired": 19 },
-        { "featId": "class-barbarian-mighty-rage", "note": "(Even stronger rage)", "levelAcquired": 20 },
-        { "featId": "class-barbarian-rage", "note": "(now 6/day)", "levelAcquired": 20 }
+        { "featId": "class-barbarian-rage", "note": "(3/day)", "levelAcquired": 8 },
+        { "featId": "class-barbarian-trap-sense", "note": "(+3)", "levelAcquired": 9 },
+        { "featId": "class-barbarian-damage-reduction", "note": "(DR 2/-)", "levelAcquired": 10 },
+        { "featId": "class-barbarian-greater-rage", "levelAcquired": 11 },
+        { "featId": "class-barbarian-rage", "note": "(4/day)", "levelAcquired": 12 },
+        { "featId": "class-barbarian-trap-sense", "note": "(+4)", "levelAcquired": 12 },
+        { "featId": "class-barbarian-damage-reduction", "note": "(DR 3/-)", "levelAcquired": 13 },
+        { "featId": "class-barbarian-indomitable-will", "levelAcquired": 14 },
+        { "featId": "class-barbarian-trap-sense", "note": "(+5)", "levelAcquired": 15 },
+        { "featId": "class-barbarian-damage-reduction", "note": "(DR 4/-)", "levelAcquired": 16 },
+        { "featId": "class-barbarian-rage", "note": "(5/day)", "levelAcquired": 16 },
+        { "featId": "class-barbarian-tireless-rage", "levelAcquired": 17 },
+        { "featId": "class-barbarian-trap-sense", "note": "(+6)", "levelAcquired": 18 },
+        { "featId": "class-barbarian-damage-reduction", "note": "(DR 5/-)", "levelAcquired": 19 },
+        { "featId": "class-barbarian-mighty-rage", "levelAcquired": 20 },
+        { "featId": "class-barbarian-rage", "note": "(6/day)", "levelAcquired": 20 }
       ]
     },
     {
@@ -84,21 +84,21 @@
         { "featId": "class-druid-trackless-step", "levelAcquired": 3 },
         { "featId": "class-druid-resist-natures-lure", "levelAcquired": 4 },
         { "featId": "class-druid-wild-shape", "note": "(1/day; Small/Medium animals)", "levelAcquired": 5 },
-        { "featId": "class-druid-wild-shape", "note": "(now 2/day)", "levelAcquired": 6 },
-        { "featId": "class-druid-wild-shape", "note": "(now 3/day)", "levelAcquired": 7 },
-        { "featId": "class-druid-wild-shape", "note": "(Large animal form option added)", "levelAcquired": 8 },
+        { "featId": "class-druid-wild-shape", "note": "(2/day)", "levelAcquired": 6 },
+        { "featId": "class-druid-wild-shape", "note": "(3/day)", "levelAcquired": 7 },
+        { "featId": "class-druid-wild-shape", "note": "(Large animal form option)", "levelAcquired": 8 },
         { "featId": "class-druid-venom-immunity", "levelAcquired": 9 },
-        { "featId": "class-druid-wild-shape", "note": "(now 4/day)", "levelAcquired": 10 },
-        { "featId": "class-druid-wild-shape", "note": "(Tiny animal form option added)", "levelAcquired": 11 },
-        { "featId": "class-druid-wild-shape-plant", "note": "(Can assume plant forms)", "levelAcquired": 12 },
+        { "featId": "class-druid-wild-shape", "note": "(4/day)", "levelAcquired": 10 },
+        { "featId": "class-druid-wild-shape", "note": "(Tiny animal form option)", "levelAcquired": 11 },
+        { "featId": "class-druid-wild-shape-plant", "levelAcquired": 12 },
         { "featId": "class-druid-a-thousand-faces", "levelAcquired": 13 },
-        { "featId": "class-druid-wild-shape", "note": "(now 5/day)", "levelAcquired": 14 },
+        { "featId": "class-druid-wild-shape", "note": "(5/day)", "levelAcquired": 14 },
         { "featId": "class-druid-timeless-body", "levelAcquired": 15 },
-        { "featId": "class-druid-wild-shape", "note": "(Huge animal form option added)", "levelAcquired": 15 },
-        { "featId": "class-druid-wild-shape-elemental", "note": "(Elemental form 1/day; Small, Medium or Large)", "levelAcquired": 16 },
-        { "featId": "class-druid-wild-shape", "note": "(now 6/day)", "levelAcquired": 18 },
-        { "featId": "class-druid-wild-shape-elemental", "note": "(now 2/day)", "levelAcquired": 18 },
-        { "featId": "class-druid-wild-shape-elemental", "note": "(now 3/day; Huge elemental form option added)", "levelAcquired": 20 }
+        { "featId": "class-druid-wild-shape", "note": "(Huge animal form option)", "levelAcquired": 15 },
+        { "featId": "class-druid-wild-shape-elemental", "note": "(1/day; Small, Medium or Large)", "levelAcquired": 16 },
+        { "featId": "class-druid-wild-shape", "note": "(6/day)", "levelAcquired": 18 },
+        { "featId": "class-druid-wild-shape-elemental", "note": "(2/day)", "levelAcquired": 18 },
+        { "featId": "class-druid-wild-shape-elemental", "note": "(3/day; Huge elemental form option)", "levelAcquired": 20 }
       ]
     },
     {
@@ -106,7 +106,20 @@
       "label": "Fighter",
       "hitDice": "d10",
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
-      "description": "<p>Fighters are masters of martial combat, excelling with all forms of weapons and armor.<br />They are the backbone of armies, the sellswords in taverns, and the dedicated protectors of kingdoms.</p><p><b>Bonus Feats:</b><br/>A fighter gains a bonus combat-oriented feat at 1st level, at 2nd level, and at every two fighter levels thereafter (4th, 6th, etc.). These bonus feats must be selected from those listed as fighter bonus feats.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Fighters may worship deities of war, strength, or protection, or none at all.</p><p><b>Background:</b><br />Varied, from noble knights to grizzled mercenaries or simple village guards.</p><p><b>Races:</b><br />All races produce skilled fighters, especially humans, dwarves, and half-orcs.</p>"
+      "description": "<p>Fighters are masters of martial combat, excelling with all forms of weapons and armor.<br />They are the backbone of armies, the sellswords in taverns, and the dedicated protectors of kingdoms.<br/><b>Bonus Feats:</b> A fighter gains a bonus combat-oriented feat at 1st level, at 2nd level, and at every two fighter levels thereafter (4th, 6th, 8th, 10th, 12th, 14th, 16th, 18th, and 20th). These bonus feats must be selected from those listed as fighter bonus feats in the Player's Handbook. These are in addition to the feat that any character gets at 1st level and every three levels thereafter, and the bonus feat for a human character.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Fighters may worship deities of war, strength, or protection, or none at all.</p><p><b>Background:</b><br />Varied, from noble knights to grizzled mercenaries or simple village guards.</p><p><b>Races:</b><br />All races produce skilled fighters, especially humans, dwarves, and half-orcs.</p>",
+      "grantedFeats": [
+        { "featId": "class-fighter-bonus-feat-slot", "note": "(1st Level)", "levelAcquired": 1 },
+        { "featId": "class-fighter-bonus-feat-slot", "note": "(2nd Level)", "levelAcquired": 2 },
+        { "featId": "class-fighter-bonus-feat-slot", "note": "(4th Level)", "levelAcquired": 4 },
+        { "featId": "class-fighter-bonus-feat-slot", "note": "(6th Level)", "levelAcquired": 6 },
+        { "featId": "class-fighter-bonus-feat-slot", "note": "(8th Level)", "levelAcquired": 8 },
+        { "featId": "class-fighter-bonus-feat-slot", "note": "(10th Level)", "levelAcquired": 10 },
+        { "featId": "class-fighter-bonus-feat-slot", "note": "(12th Level)", "levelAcquired": 12 },
+        { "featId": "class-fighter-bonus-feat-slot", "note": "(14th Level)", "levelAcquired": 14 },
+        { "featId": "class-fighter-bonus-feat-slot", "note": "(16th Level)", "levelAcquired": 16 },
+        { "featId": "class-fighter-bonus-feat-slot", "note": "(18th Level)", "levelAcquired": 18 },
+        { "featId": "class-fighter-bonus-feat-slot", "note": "(20th Level)", "levelAcquired": 20 }
+      ]
     },
     {
       "value": "monk",
@@ -166,5 +179,3 @@
     }
   ]
 }
-
-    
