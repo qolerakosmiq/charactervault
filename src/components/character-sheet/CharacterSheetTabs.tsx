@@ -1,14 +1,14 @@
 
 'use client';
 
-import type { Character, Skill, Item, CharacterClass, AbilityName, SavingThrows, ResistanceValue } from '@/types/character';
+import type { Character, Skill, Item, CharacterClass, AbilityName, SavingThrows, ResistanceValue, BabBreakdownDetails, InitiativeBreakdownDetails, GrappleModifierBreakdownDetails, GrappleDamageBreakdownDetails } from '@/types/character';
 import { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { CoreInfoSection } from './CoreInfoSection';
 import { AbilityScoresSection } from './AbilityScoresSection';
-import { CombatStatsSection } from './CombatStatsSection';
-import { SkillsListing } from '../SkillsListing';
+import { CombatPanel } from '../form-sections/CombatPanel'; // Changed from CombatStatsSection to CombatPanel
+import { SkillsListing } from '../SkillsListing'; // Corrected: This is likely from '../SkillsListing' not './SkillsListing'
 import { FeatsListing } from './FeatsListing';
 import { InventoryListing } from './InventoryListing';
 import { SpellsListing } from './SpellsListing';
@@ -26,6 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { InfoDisplayDialog } from '@/components/InfoDisplayDialog'; // Added import
 
 type ResistanceFieldKeySheet = Exclude<keyof Pick<Character,
   'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
@@ -43,6 +44,10 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
   const [character, setCharacter] = useState<Character>(initialCharacter);
   const { toast } = useToast();
   const router = useRouter();
+
+  const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false);
+  const [currentInfoDialogData, setCurrentInfoDialogData] = useState<Parameters<typeof InfoDisplayDialog>[0] | null>(null);
+
 
   useEffect(() => {
     setCharacter(initialCharacter);
@@ -175,6 +180,40 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
     }));
   }, []);
 
+  const handleOpenCombatStatInfoDialog = (
+    breakdownType: 'bab' | 'initiative' | 'grappleModifier' | 'grappleDamage',
+    details: BabBreakdownDetails | InitiativeBreakdownDetails | GrappleModifierBreakdownDetails | GrappleDamageBreakdownDetails
+  ) => {
+    let dialogTitle = '';
+    let dialogProps: Partial<React.ComponentProps<typeof InfoDisplayDialog>> = {};
+
+    switch (breakdownType) {
+        case 'bab':
+            dialogTitle = "Base Attack Bonus Breakdown";
+            dialogProps = { babBreakdown: details as BabBreakdownDetails };
+            break;
+        case 'initiative':
+            dialogTitle = "Initiative Breakdown";
+            dialogProps = { initiativeBreakdown: details as InitiativeBreakdownDetails };
+            break;
+        case 'grappleModifier':
+            dialogTitle = "Grapple Modifier Breakdown";
+            dialogProps = { grappleModifierBreakdown: details as GrappleModifierBreakdownDetails };
+            break;
+        case 'grappleDamage':
+            dialogTitle = "Grapple Damage Notes";
+            dialogProps = { grappleDamageBreakdown: details as GrappleDamageBreakdownDetails };
+            break;
+    }
+    setCurrentInfoDialogData({
+        isOpen: true,
+        onOpenChange: setIsInfoDialogOpen,
+        title: dialogTitle,
+        ...dialogProps
+    });
+  };
+
+
   if (!character) return <div>Loading character data...</div>;
 
   return (
@@ -234,9 +273,10 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
           />
         </TabsContent>
         <TabsContent value="combat" className="mt-4">
-          <CombatStatsSection 
+          <CombatPanel 
             character={character} 
             onCharacterUpdate={handleCharacterUpdate}
+            onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog} // Pass handler
           />
         </TabsContent>
         <TabsContent value="skills" className="mt-4">
@@ -268,8 +308,26 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
           <SpellsListing />
         </TabsContent>
       </Tabs>
+      {currentInfoDialogData && isInfoDialogOpen && (
+        <InfoDisplayDialog
+          isOpen={isInfoDialogOpen}
+          onOpenChange={setIsInfoDialogOpen}
+          title={currentInfoDialogData.title}
+          content={currentInfoDialogData.content}
+          abilityModifiers={currentInfoDialogData.abilityModifiers}
+          skillBonuses={currentInfoDialogData.skillBonuses}
+          grantedFeats={currentInfoDialogData.grantedFeats}
+          bonusFeatSlots={currentInfoDialogData.bonusFeatSlots}
+          abilityScoreBreakdown={currentInfoDialogData.abilityScoreBreakdown}
+          detailsList={currentInfoDialogData.detailsList}
+          skillModifierBreakdown={currentInfoDialogData.skillModifierBreakdown}
+          resistanceBreakdown={currentInfoDialogData.resistanceBreakdown}
+          babBreakdown={currentInfoDialogData.babBreakdown}
+          initiativeBreakdown={currentInfoDialogData.initiativeBreakdown}
+          grappleModifierBreakdown={currentInfoDialogData.grappleModifierBreakdown}
+          grappleDamageBreakdown={currentInfoDialogData.grappleDamageBreakdown}
+        />
+      )}
     </div>
   );
 }
-
-    
