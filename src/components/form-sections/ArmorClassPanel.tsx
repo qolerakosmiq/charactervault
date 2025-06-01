@@ -10,9 +10,11 @@ import { Button } from '@/components/ui/button';
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 import { getAbilityModifierByName, getSizeModifierAC } from '@/lib/dnd-utils';
 import { Skeleton } from '@/components/ui/skeleton';
+// DEFAULT_ABILITIES import is not strictly needed here if we rely on the guard for character.abilityScores
+// but can be kept if we want to be hyper-defensive for sub-properties later.
 
 interface ArmorClassPanelProps {
-  character?: Character; 
+  character?: Character; // Character prop is optional
 }
 
 type AcBreakdownDetail = { label: string; value: string | number; isBold?: boolean };
@@ -21,6 +23,8 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<{ title: string; detailsList: AcBreakdownDetail[] } | null>(null);
 
+  // Primary guard: If character data is not yet available, or essential parts are missing, show skeletons.
+  // This ensures the component doesn't crash and waits for valid data.
   if (!character || !character.abilityScores || !character.size) {
     return (
       <Card>
@@ -33,15 +37,30 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
-            <Label htmlFor="normal-ac-display" className="text-lg font-medium">Normal</Label>
+            <div className="flex items-center">
+              <Label htmlFor="normal-ac-display" className="text-lg font-medium">Normal</Label>
+              <Button variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" disabled>
+                <Info className="h-4 w-4" />
+              </Button>
+            </div>
             <Skeleton className="h-8 w-12" />
           </div>
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
-            <Label htmlFor="touch-ac-display" className="text-lg font-medium">Touch</Label>
+             <div className="flex items-center">
+              <Label htmlFor="touch-ac-display" className="text-lg font-medium">Touch</Label>
+               <Button variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" disabled>
+                <Info className="h-4 w-4" />
+              </Button>
+            </div>
             <Skeleton className="h-8 w-12" />
           </div>
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
-            <Label htmlFor="flat-footed-ac-display" className="text-lg font-medium">Flat-Footed</Label>
+            <div className="flex items-center">
+              <Label htmlFor="flat-footed-ac-display" className="text-lg font-medium">Flat-Footed</Label>
+              <Button variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" disabled>
+                <Info className="h-4 w-4" />
+              </Button>
+            </div>
             <Skeleton className="h-8 w-12" />
           </div>
         </CardContent>
@@ -49,6 +68,7 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
     );
   }
 
+  // If we've passed the guard, character, character.abilityScores, and character.size are defined.
   const dexModifier = getAbilityModifierByName(character.abilityScores, 'dexterity');
   const sizeModAC = getSizeModifierAC(character.size);
 
@@ -67,7 +87,7 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
     sizeModAC +
     (character.deflectionBonus || 0) +
     (character.dodgeBonus || 0) +
-    (character.acMiscModifier || 0);
+    (character.acMiscModifier || 0); // Dodge applies to touch unless denied for other reasons
 
   const flatFootedAC = 10 +
     (character.armorBonus || 0) +
@@ -75,15 +95,19 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
     sizeModAC +
     (character.naturalArmor || 0) +
     (character.deflectionBonus || 0) +
-    (character.acMiscModifier || 0);
+    (character.acMiscModifier || 0); // Dex and Dodge are denied
 
   const showAcBreakdown = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
     const detailsList: AcBreakdownDetail[] = [{ label: 'Base', value: 10 }];
     let totalCalculated = 10;
 
+    // These will use the valid character.abilityScores and character.size from the guarded section
+    const breakdownDexModifier = getAbilityModifierByName(character.abilityScores, 'dexterity');
+    const breakdownSizeModAC = getSizeModifierAC(character.size);
+
     if (acType === 'Normal') {
-      detailsList.push({ label: 'Dexterity Modifier', value: dexModifier });
-      detailsList.push({ label: 'Size Modifier', value: sizeModAC });
+      detailsList.push({ label: 'Dexterity Modifier', value: breakdownDexModifier });
+      detailsList.push({ label: 'Size Modifier', value: breakdownSizeModAC });
       detailsList.push({ label: 'Armor Bonus', value: character.armorBonus || 0 });
       detailsList.push({ label: 'Shield Bonus', value: character.shieldBonus || 0 });
       detailsList.push({ label: 'Natural Armor', value: character.naturalArmor || 0 });
@@ -92,14 +116,15 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
       detailsList.push({ label: 'Misc Modifier', value: character.acMiscModifier || 0 });
       totalCalculated = normalAC;
     } else if (acType === 'Touch') {
-      detailsList.push({ label: 'Dexterity Modifier', value: dexModifier });
-      detailsList.push({ label: 'Size Modifier', value: sizeModAC });
+      detailsList.push({ label: 'Dexterity Modifier', value: breakdownDexModifier }); // Dex applies
+      detailsList.push({ label: 'Size Modifier', value: breakdownSizeModAC });
       detailsList.push({ label: 'Deflection Bonus', value: character.deflectionBonus || 0 });
-      detailsList.push({ label: 'Dodge Bonus', value: character.dodgeBonus || 0 });
+      detailsList.push({ label: 'Dodge Bonus', value: character.dodgeBonus || 0 }); // Dodge applies
       detailsList.push({ label: 'Misc Modifier', value: character.acMiscModifier || 0 });
       totalCalculated = touchAC;
     } else if (acType === 'Flat-Footed') {
-      detailsList.push({ label: 'Size Modifier', value: sizeModAC });
+      // Dex and Dodge do not apply to Flat-Footed AC
+      detailsList.push({ label: 'Size Modifier', value: breakdownSizeModAC });
       detailsList.push({ label: 'Armor Bonus', value: character.armorBonus || 0 });
       detailsList.push({ label: 'Shield Bonus', value: character.shieldBonus || 0 });
       detailsList.push({ label: 'Natural Armor', value: character.naturalArmor || 0 });
@@ -165,3 +190,5 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
     </>
   );
 }
+
+    
