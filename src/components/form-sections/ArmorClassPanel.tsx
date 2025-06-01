@@ -82,18 +82,19 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
     (character.acMiscModifier || 0);
 
   const touchAC = 10 +
-    dexModifier +
+    dexModifier + // Dex applies to touch
     sizeModAC +
     (character.deflectionBonus || 0) +
-    (character.dodgeBonus || 0) +
+    (character.dodgeBonus || 0) + // Dodge applies to touch
     (character.acMiscModifier || 0);
 
   const flatFootedAC = 10 +
     (character.armorBonus || 0) +
     (character.shieldBonus || 0) +
-    sizeModAC +
+    sizeModAC + // Dex is denied
     (character.naturalArmor || 0) +
     (character.deflectionBonus || 0) +
+    // Dodge bonus is also denied
     (character.acMiscModifier || 0);
 
 
@@ -105,45 +106,39 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
     const breakdownSizeModAC = getSizeModifierAC(currentSize);
     const sizeLabel = SIZES.find(s => s.value === currentSize)?.label || currentSize;
 
-    // Always add Dex and Size modifier to the list for display, even if 0
-    detailsList.push({ label: 'Dexterity Modifier', value: breakdownDexModifier });
-    detailsList.push({ label: `Size Modifier (${sizeLabel})`, value: breakdownSizeModAC });
-
-    if (acType === 'Normal') {
-      if (character.armorBonus || 0) detailsList.push({ label: 'Armor Bonus', value: character.armorBonus || 0 });
-      if (character.shieldBonus || 0) detailsList.push({ label: 'Shield Bonus', value: character.shieldBonus || 0 });
-      if (character.naturalArmor || 0) detailsList.push({ label: 'Natural Armor', value: character.naturalArmor || 0 });
-      if (character.deflectionBonus || 0) detailsList.push({ label: 'Deflection Bonus', value: character.deflectionBonus || 0 });
-      if (character.dodgeBonus || 0) detailsList.push({ label: 'Dodge Bonus', value: character.dodgeBonus || 0 });
-      if (character.acMiscModifier || 0) detailsList.push({ label: 'Misc Modifier', value: character.acMiscModifier || 0 });
-      totalCalculated = normalAC;
-    } else if (acType === 'Touch') {
-      // Dex and Size are already added
-      if (character.deflectionBonus || 0) detailsList.push({ label: 'Deflection Bonus', value: character.deflectionBonus || 0 });
-      if (character.dodgeBonus || 0) detailsList.push({ label: 'Dodge Bonus', value: character.dodgeBonus || 0 });
-      if (character.acMiscModifier || 0) detailsList.push({ label: 'Misc Modifier', value: character.acMiscModifier || 0 });
-      totalCalculated = touchAC;
-    } else if (acType === 'Flat-Footed') {
-      // Size is already added. Dex and Dodge are denied.
-      if (character.armorBonus || 0) detailsList.push({ label: 'Armor Bonus', value: character.armorBonus || 0 });
-      if (character.shieldBonus || 0) detailsList.push({ label: 'Shield Bonus', value: character.shieldBonus || 0 });
-      if (character.naturalArmor || 0) detailsList.push({ label: 'Natural Armor', value: character.naturalArmor || 0 });
-      if (character.deflectionBonus || 0) detailsList.push({ label: 'Deflection Bonus', value: character.deflectionBonus || 0 });
-      if (character.acMiscModifier || 0) detailsList.push({ label: 'Misc Modifier', value: character.acMiscModifier || 0 });
-      totalCalculated = flatFootedAC;
+    // Dexterity Modifier (conditional: not for Flat-Footed)
+    if (acType === 'Normal' || acType === 'Touch') {
+      detailsList.push({ label: 'Dexterity Modifier', value: breakdownDexModifier });
     }
     
-    // Filter out optional components that are zero, but keep Base, Dex Mod, Size Mod, and Total
-    const essentialLabels = ['Base', 'Dexterity Modifier', `Size Modifier (${sizeLabel})`, 'Total'];
-    const finalDetailsList = detailsList.filter(detail => 
-        essentialLabels.includes(detail.label) || 
-        (typeof detail.value === 'number' && detail.value !== 0) ||
-        (typeof detail.value === 'string' && detail.value !== '0' && detail.value !== '+0')
-    );
-    
-    finalDetailsList.push({ label: 'Total', value: totalCalculated, isBold: true });
+    // Size Modifier (always shown)
+    detailsList.push({ label: `Size Modifier (${sizeLabel})`, value: breakdownSizeModAC });
 
-    setCurrentInfoDialogData({ title: `${acType} Armor Class Breakdown`, detailsList: finalDetailsList });
+    // Armor, Shield, Natural Armor (not for Touch AC)
+    if (acType === 'Normal' || acType === 'Flat-Footed') {
+      if (character.armorBonus || 0) detailsList.push({ label: 'Armor Bonus', value: character.armorBonus || 0 });
+      if (character.shieldBonus || 0) detailsList.push({ label: 'Shield Bonus', value: character.shieldBonus || 0 });
+      if (character.naturalArmor || 0) detailsList.push({ label: 'Natural Armor', value: character.naturalArmor || 0 });
+    }
+
+    // Deflection Bonus (applies to all)
+    if (character.deflectionBonus || 0) detailsList.push({ label: 'Deflection Bonus', value: character.deflectionBonus || 0 });
+    
+    // Dodge Bonus (not for Flat-Footed AC)
+    if (acType === 'Normal' || acType === 'Touch') {
+      if (character.dodgeBonus || 0) detailsList.push({ label: 'Dodge Bonus', value: character.dodgeBonus || 0 });
+    }
+    
+    // Misc Modifier (applies to all)
+    if (character.acMiscModifier || 0) detailsList.push({ label: 'Misc Modifier', value: character.acMiscModifier || 0 });
+    
+    if (acType === 'Normal') totalCalculated = normalAC;
+    else if (acType === 'Touch') totalCalculated = touchAC;
+    else if (acType === 'Flat-Footed') totalCalculated = flatFootedAC;
+    
+    detailsList.push({ label: 'Total', value: totalCalculated, isBold: true });
+
+    setCurrentInfoDialogData({ title: `${acType} Armor Class Breakdown`, detailsList });
     setIsInfoDialogOpen(true);
   };
 
@@ -198,3 +193,4 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
     </>
   );
 }
+
