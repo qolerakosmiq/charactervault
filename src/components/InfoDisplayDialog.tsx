@@ -150,7 +150,7 @@ export function InfoDisplayDialog({
     dialogTitle = title;
     sectionHeading = "Calculation:";
   } else if (babBreakdown) {
-    dialogTitle = title || "Base Attack Bonus Breakdown"; 
+    dialogTitle = "Base Attack Bonus Breakdown"; 
     sectionHeading = "Calculation:";
   } else if (initiativeBreakdown) {
     dialogTitle = title || "Initiative Breakdown";
@@ -306,7 +306,7 @@ export function InfoDisplayDialog({
                     <span className="font-bold text-accent">
                       {`${grappleDamageBreakdown.baseDamage.split(' ')[0] || '0'}${
                         (grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus) !== 0 
-                          ? ` ${(grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus) >= 0 ? '+' : ''}${grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus}` 
+                          ? `${(grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus) >= 0 ? '+' : ''}${grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus}` 
                           : ''
                       }`}
                     </span>
