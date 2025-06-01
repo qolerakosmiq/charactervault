@@ -14,7 +14,7 @@
     { "value": "deft-hands", "label": "Deft Hands", "description": "<b>Benefit:</b> You get a +2 bonus on all Sleight of Hand and Use Rope checks.", "effects": { "skills": { "sleight-of-hand": 2, "use-rope": 2 } }, "isClassFeature": false, "type": "special" },
     { "value": "diligent", "label": "Diligent", "description": "<b>Benefit:</b> You get a +2 bonus on all Appraise and Decipher Script checks.", "effects": { "skills": { "appraise": 2, "decipher-script": 2 } }, "isClassFeature": false, "type": "special" },
     { "value": "dodge", "label": "Dodge", "description": "<b>Benefit:</b> During your action, you designate an opponent and receive a +1 dodge bonus to Armor Class against attacks from that opponent.<br />You can select a new opponent on any action.<br /><b>Special:</b> A condition that makes you lose your Dexterity bonus to Armor Class (if any) also makes you lose dodge bonuses.<br />Also, dodge bonuses stack with each other, unlike most other types of bonuses.", "prerequisites": { "abilities": { "dexterity": 13 } }, "isClassFeature": false, "type": "special" },
-    { "value": "endurance", "label": "Endurance", "description": "<b>Benefit:</b> You gain a +4 bonus on the following checks and saves: Swim checks made to resist nonlethal damage, Constitution checks made to continue running, Constitution checks made to avoid nonlethal damage from a forced march, Constitution checks made to hold your breath, Constitution checks made to avoid nonlethal damage from starvation or thirst, Fortitude saves made to avoid nonlethal damage from hot or cold environments, and Fortitude saves made to resist damage from suffocation.<br />Also, you may sleep in light or medium armor without becoming fatigued.", "isClassFeature": false, "type": "special" },
+    { "value": "endurance", "label": "Endurance", "description": "<b>Benefit:</b> You gain a +4 bonus on the following checks and saves: Swim checks made to resist nonlethal damage, Constitution checks made to continue running, Constitution checks made to avoid nonlethal damage from a forced march, Constitution checks made to hold your breath, Constitution checks made to avoid nonlethal damage from starvation or thirst, Fortitude saves made to avoid nonlethal damage from hot or cold environments, and Fortitude saves made to resist damage from suffocation.<br />Also, you may sleep in light or medium armor without becoming fatigued.", "type": "special", "isClassFeature": false },
     { "value": "eschew-materials", "label": "Eschew Materials", "description": "<b>Benefit:</b> You can cast any spell that has a material component costing 1 gp or less without needing that component.<br />The casting of the spell still provokes attacks of opportunity as normal.<br />If the spell requires a material component that costs more than 1 gp, you must have the material component on hand to cast the spell, as normal.", "isClassFeature": false, "type": "special" },
     { "value": "exotic-weapon-proficiency", "label": "Exotic Weapon Proficiency", "description": "<b>Benefit:</b> Choose one exotic weapon, such as a bastard sword or whip.<br />You understand how to use that weapon in combat, and you can attack with it and incur no penalty.<br />You are proficient with that weapon.<br /><b>Normal:</b> A character who uses a weapon with which he or she is not proficient takes a –4 penalty on attack rolls.<br /><b>Special:</b> You can gain this feat multiple times.<br />Each time you take the feat, it applies to a new exotic weapon.", "prerequisites": { "bab": 1 , "special": "Proficiency with all martial weapons if the weapon is a ranged weapon"}, "canTakeMultipleTimes": true, "requiresSpecialization": "exotic weapon", "isClassFeature": false, "type": "special" },
     { "value": "far-shot", "label": "Far Shot", "description": "<b>Benefit:</b> When you use a projectile weapon, such as a bow, its range increment is increased by 50% (multiply by 1.5).<br />When you use a thrown weapon, its range increment is doubled.", "prerequisites": { "feats": ["point-blank-shot"] }, "isClassFeature": false, "type": "special" },
@@ -484,7 +484,7 @@
     {
       "value": "class-paladin-smite-evil",
       "label": "Smite Evil (Su)",
-      "description": "<b>Benefit:</b> Once per day, a paladin may attempt to smite evil with one normal melee attack. She adds her Charisma bonus (if any) to her attack roll and deals 1 extra point of damage per paladin level. If the paladin accidentally smites a creature that is not evil, the smite has no effect, but the ability is still used up for that day. Smite evil is a supernatural ability. At 5th level, and at every five levels thereafter, the paladin may smite evil one additional time per day, as indicated on Table: The Paladin.",
+      "description": "<b>Benefit:</b> Once per day, a paladin may attempt to smite evil with one normal melee attack. She adds her Charisma bonus (if any) to her attack roll and deals 1 extra point of damage per paladin level. If the paladin accidentally smites a creature that is not evil, the smite has no effect, but the ability is still used up for that day. Smite evil is a supernatural ability. At 5th level, and at every five levels thereafter, the paladin may smite evil one additional time per day.",
       "type": "special-su",
       "isClassFeature": true
     },
@@ -535,6 +535,83 @@
       "label": "Remove Disease (Sp)",
       "description": "<b>Benefit:</b> At 6th level, a paladin can produce a remove disease effect, as the spell, once per week. She can use this ability one additional time per week for every three levels after 6th (twice per week at 9th, three times at 12th, and so forth). Remove disease is a spell-like ability.",
       "type": "special-sp",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-ranger-favored-enemy",
+      "label": "Favored Enemy (Ex)",
+      "description": "<b>Benefit:</b> At 1st level, a ranger may select a type of creature from the Ranger Favored Enemies table. The ranger gains a +2 bonus on Bluff, Listen, Sense Motive, Spot, and Survival checks when using these skills against creatures of this type. Likewise, he gets a +2 bonus on weapon damage rolls against such creatures. At 5th level and every five levels thereafter (10th, 15th, and 20th level), the ranger may select an additional favored enemy from the table. In addition, at each such interval, the bonus against any one favored enemy (including the one just selected, if so desired) increases by 2. If the ranger chooses humanoids or outsiders as a favored enemy, he must also choose an associated subtype.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-ranger-wild-empathy",
+      "label": "Wild Empathy (Ex)",
+      "description": "<b>Benefit:</b> A ranger can improve the attitude of an animal. This ability functions just like a Diplomacy check made to improve the attitude of a person. The ranger rolls 1d20 and adds his ranger level and his Charisma modifier to determine the wild empathy check result. The typical domestic animal has a starting attitude of indifferent, while wild animals are usually unfriendly. To use wild empathy, the ranger and the animal must be able to study each other, which means that they must be within 30 feet of one another under normal conditions. Generally, influencing an animal in this way takes 1 minute but, as with influencing people, it might take more or less time.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-ranger-combat-style",
+      "label": "Combat Style (Ex)",
+      "description": "<b>Benefit:</b> At 2nd level, a ranger must select one of two combat styles to pursue: archery or two-weapon combat. This choice affects the character’s class features but does not restrict his selection of feats or special abilities in any way. If the ranger selects archery, he is treated as having the Rapid Shot feat, even if he does not have the normal prerequisites for that feat. If the ranger selects two-weapon combat, he is treated as having perpetrator Two-Weapon Fighting feat, even if he does not have the normal prerequisites for that feat. The benefits of the ranger’s chosen style apply only when he wears light or no armor. He loses all benefits of his combat style when wearing medium or heavy armor.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-ranger-animal-companion",
+      "label": "Animal Companion (Ex)",
+      "description": "<b>Benefit:</b> At 4th level, a ranger gains an animal companion selected from the list of animal companions available to druids. This animal is a loyal companion that accompanies the ranger on his adventures as appropriate for its kind. This ability functions like the druid ability of the same name, except that the ranger’s effective druid level is one-half his ranger level.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-ranger-improved-combat-style",
+      "label": "Improved Combat Style (Ex)",
+      "description": "<b>Benefit:</b> At 6th level, a ranger’s aptitude in his chosen combat style (archery or two-weapon combat) improves. If he selected archery at 2nd level, he is treated as having the Manyshot feat, even if he does not have the normal prerequisites for that feat. If the ranger selected two-weapon combat at 2nd level, he is treated as having the Improved Two-Weapon Fighting feat, even if he does not have the normal prerequisites for that feat. As before, the benefits of the ranger’s chosen style apply only when he wears light or no armor. He loses all benefits of his combat style when wearing medium or heavy armor.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-ranger-woodland-stride",
+      "label": "Woodland Stride (Ex)",
+      "description": "<b>Benefit:</b> Starting at 7th level, a ranger may move through any sort of undergrowth (such as natural thorns, briars, overgrown areas, and similar terrain) at his normal speed and without taking damage or suffering any other impairment. However, thorns, briars, and overgrown areas that are enchanted or magically manipulated to impede motion still affect him.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-ranger-swift-tracker",
+      "label": "Swift Tracker (Ex)",
+      "description": "<b>Benefit:</b> Beginning at 8th level, a ranger can move at his normal speed while following tracks without taking the normal –5 penalty. He takes only a –10 penalty (instead of the normal –20) when moving at up to twice normal speed while tracking.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-ranger-evasion",
+      "label": "Evasion (Ex)",
+      "description": "<b>Benefit:</b> At 9th level, a ranger can avoid even magical and unusual attacks with great agility. If he makes a successful Reflex saving throw against an attack that normally deals half damage on a successful save, he instead takes no damage. Evasion can be used only if a ranger is wearing light or no armor. A helpless ranger does not gain the benefit of evasion.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-ranger-combat-style-mastery",
+      "label": "Combat Style Mastery (Ex)",
+      "description": "<b>Benefit:</b> At 11th level, a ranger’s aptitude in his chosen combat style (archery or two-weapon combat) improves again. If he selected archery at 2nd level, he is_treated as having the Improved Precise Shot feat, even if he does not have the normal prerequisites for that feat. If the ranger selected two-weapon combat at 2nd level, he is treated as having the Greater Two-Weapon Fighting feat, even if he does not have the normal prerequisites for that feat. As before, the benefits of the ranger’s chosen style apply only when he wears light or no armor. He loses all benefits of his combat style when wearing medium or heavy armor.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-ranger-camouflage",
+      "label": "Camouflage (Ex)",
+      "description": "<b>Benefit:</b> A ranger of 13th level or higher can use the Hide skill in any sort of natural terrain, even if the terrain doesn’t grant cover or concealment. Camouflage is an extraordinary ability.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-ranger-hide-in-plain-sight",
+      "label": "Hide in Plain Sight (Ex)",
+      "description": "<b>Benefit:</b> While in any sort of natural terrain, a ranger of 17th level or higher can use the Hide skill even while being observed. Hide in plain sight is an extraordinary ability.",
+      "type": "special-ex",
       "isClassFeature": true
     }
   ]

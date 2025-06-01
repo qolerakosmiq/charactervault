@@ -218,8 +218,8 @@
         { "featId": "class-paladin-remove-disease", "note": "(2/week)", "levelAcquired": 9 },
         { "featId": "class-paladin-smite-evil", "note": "(3/day)", "levelAcquired": 10 },
         { "featId": "class-paladin-remove-disease", "note": "(3/week)", "levelAcquired": 12 },
-        { "featId": "class-paladin-remove-disease", "note": "(4/week)", "levelAcquired": 15 },
         { "featId": "class-paladin-smite-evil", "note": "(4/day)", "levelAcquired": 15 },
+        { "featId": "class-paladin-remove-disease", "note": "(4/week)", "levelAcquired": 15 },
         { "featId": "class-paladin-remove-disease", "note": "(5/week)", "levelAcquired": 18 },
         { "featId": "class-paladin-smite-evil", "note": "(5/day)", "levelAcquired": 20 }
       ]
@@ -232,8 +232,23 @@
       "saves": { "fortitude": "good", "reflex": "good", "will": "poor" },
       "description": "<p>Rangers are skilled hunters and trackers, at home in the wilderness and adept at fighting specific types of creatures.<br />They often possess some divine magic related to nature and an animal companion.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Rangers often revere nature deities or gods of the hunt.</p><p><b>Background:</b><br />Typically raised in borderlands, deep forests, or among reclusive communities.</p><p><b>Races:</b><br />Elves, half-elves, and humans make excellent rangers.</p>",
       "grantedFeats": [
+        { "featId": "class-ranger-favored-enemy", "note": "(1st)", "levelAcquired": 1 },
         { "featId": "track", "note": "(Ranger Bonus Feat)", "levelAcquired": 1 },
-        { "featId": "endurance", "note": "(Ranger Bonus Feat)", "levelAcquired": 3 }
+        { "featId": "class-ranger-wild-empathy", "levelAcquired": 1 },
+        { "featId": "class-ranger-combat-style", "note": "(Choice: Archery or Two-Weapon)", "levelAcquired": 2 },
+        { "featId": "endurance", "note": "(Ranger Bonus Feat)", "levelAcquired": 3 },
+        { "featId": "class-ranger-animal-companion", "levelAcquired": 4 },
+        { "featId": "class-ranger-favored-enemy", "note": "(2nd)", "levelAcquired": 5 },
+        { "featId": "class-ranger-improved-combat-style", "levelAcquired": 6 },
+        { "featId": "class-ranger-woodland-stride", "levelAcquired": 7 },
+        { "featId": "class-ranger-swift-tracker", "levelAcquired": 8 },
+        { "featId": "class-ranger-evasion", "levelAcquired": 9 },
+        { "featId": "class-ranger-favored-enemy", "note": "(3rd)", "levelAcquired": 10 },
+        { "featId": "class-ranger-combat-style-mastery", "levelAcquired": 11 },
+        { "featId": "class-ranger-camouflage", "levelAcquired": 13 },
+        { "featId": "class-ranger-favored-enemy", "note": "(4th)", "levelAcquired": 15 },
+        { "featId": "class-ranger-hide-in-plain-sight", "levelAcquired": 17 },
+        { "featId": "class-ranger-favored-enemy", "note": "(5th)", "levelAcquired": 20 }
       ]
     },
     {
