@@ -101,8 +101,8 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
                 id="bab-custom-mod"
                 value={character.babMiscModifier || 0}
                 onChange={(val) => onCharacterUpdate('babMiscModifier', val)}
-                min={-20} max={20}
-                inputClassName="h-8 text-sm" // Removed w-full
+                min={-20} // Max removed
+                inputClassName="h-8 text-sm w-20" // Width increased
                 buttonClassName="h-8 w-8"
               />
             </div>
@@ -127,8 +127,8 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
                 id="initiative-custom-mod"
                 value={character.initiativeMiscModifier || 0}
                 onChange={(val) => onCharacterUpdate('initiativeMiscModifier', val)}
-                min={-20} max={20}
-                inputClassName="h-8 text-sm" // Removed w-full
+                min={-20} // Max removed
+                inputClassName="h-8 text-sm w-20" // Width increased
                 buttonClassName="h-8 w-8"
               />
             </div>
@@ -153,8 +153,8 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
                 id="grapple-custom-mod"
                 value={character.grappleMiscModifier || 0}
                 onChange={(val) => onCharacterUpdate('grappleMiscModifier', val)}
-                min={-20} max={20}
-                inputClassName="h-8 text-sm" // Removed w-full
+                min={-20} // Max removed
+                inputClassName="h-8 text-sm w-20" // Width increased
                 buttonClassName="h-8 w-8"
               />
             </div>
@@ -182,7 +182,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
                           value={character.grappleDamage_baseNotes || ''}
                           onChange={(e) => onCharacterUpdate('grappleDamage_baseNotes', e.target.value)}
                           placeholder="e.g., 1d3, Unarmed"
-                          className="h-8 text-sm max-w-[150px]" // Removed w-full, added max-w
+                          className="h-8 text-sm max-w-[150px]" 
                       />
                     </div>
                 </div>
@@ -193,8 +193,8 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
                           id="grapple-damage-bonus"
                           value={character.grappleDamage_bonus || 0}
                           onChange={(val) => onCharacterUpdate('grappleDamage_bonus', val)}
-                          min={-20} max={20}
-                          inputClassName="h-8 text-sm" // Removed w-full
+                          min={-20} // Max removed
+                          inputClassName="h-8 text-sm w-20" // Width increased
                           buttonClassName="h-8 w-8"
                       />
                     </div>
