@@ -1,4 +1,5 @@
 
+
 import baseDataJson from '@/data/dnd-base.json';
 import customBaseDataJson from '@/data/custom-base.json';
 import racesDataJson from '@/data/dnd-races.json';
@@ -147,9 +148,9 @@ export const DAMAGE_REDUCTION_TYPES = [
 export type DamageReductionTypeValue = typeof DAMAGE_REDUCTION_TYPES[number]['value'];
 
 export const DAMAGE_REDUCTION_RULES_OPTIONS = [
-  { value: "standard-bypass", label: "Standard (Bypassed by Type)" },
-  { value: "vs-specific-type", label: "Versus Specific Type (DR X vs. Type)" },
-  { value: "immunity-except-vs-type", label: "Immunity (Except vs. Type, then DR applies)" },
+  { value: "bypassed-by-type", label: "Bypassed by Type" },
+  { value: "versus-specific-type", label: "Versus Specific Type" },
+  { value: "excepted-by-type", label: "Excepted by Type" },
 ] as const;
 export type DamageReductionRuleValue = typeof DAMAGE_REDUCTION_RULES_OPTIONS[number]['value'];
 
@@ -902,3 +903,4 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
+

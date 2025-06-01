@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -79,8 +80,8 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
         toast({ title: "DR Type Missing", description: "Please select a DR type.", variant: "destructive"});
         return;
     }
-     if (newDrRule === 'immunity-except-vs-type' && newDrType === 'none') {
-      toast({ title: "Invalid Combination", description: "The 'Immunity (Except vs. Type)' rule requires a specific damage type to be selected, not 'None'.", variant: "destructive"});
+     if (newDrRule === 'excepted-by-type' && newDrType === 'none') {
+      toast({ title: "Invalid Combination", description: "The 'Excepted by Type' rule requires a specific damage type to be selected, not 'None'.", variant: "destructive"});
       return;
     }
 
@@ -116,13 +117,13 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
   
   const getDrPrimaryNotation = (dr: DamageReductionInstance): string => {
     const typeLabel = getDrTypeUiLabel(dr.type);
-    if (dr.rule === 'standard-bypass') {
+    if (dr.rule === 'bypassed-by-type') {
       return dr.type === "none" ? `${dr.value}/—` : `${dr.value}/${typeLabel}`;
     }
-    if (dr.rule === 'vs-specific-type') {
+    if (dr.rule === 'versus-specific-type') {
       return `${dr.value} vs ${typeLabel}`;
     }
-    if (dr.rule === 'immunity-except-vs-type') {
+    if (dr.rule === 'excepted-by-type') {
       return `${dr.value} vs ${typeLabel} (Immunity Except)`;
     }
     return `${dr.value}/${typeLabel} (${dr.rule})`; 
@@ -130,13 +131,13 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
 
   const getDrRuleDescription = (dr: DamageReductionInstance): string => {
     const typeLabel = getDrTypeUiLabel(dr.type);
-    if (dr.rule === 'standard-bypass') {
+    if (dr.rule === 'bypassed-by-type') {
       return dr.type === "none" ? "Reduces damage from most physical attacks." : `Reduces damage unless attack is ${typeLabel}.`;
     }
-    if (dr.rule === 'vs-specific-type') {
+    if (dr.rule === 'versus-specific-type') {
       return `Specifically reduces damage from ${typeLabel} sources.`;
     }
-    if (dr.rule === 'immunity-except-vs-type') {
+    if (dr.rule === 'excepted-by-type') {
         return `Immune to damage unless from ${typeLabel} sources. ${typeLabel} sources deal damage reduced by ${dr.value}.`;
     }
     return `Rule: ${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule}`;
@@ -348,3 +349,4 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     </>
   );
 }
+
