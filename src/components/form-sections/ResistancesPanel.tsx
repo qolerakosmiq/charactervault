@@ -75,7 +75,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
         <CardContent className="space-y-6">
           <div>
             <h4 className="text-lg font-semibold mb-3 text-foreground/90">Energy Resistances</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {energyResistances.map(({ field, label, Icon, fieldPrefix }) => {
                 const resistance = characterData[field];
                 const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0);
@@ -86,7 +86,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                       {label}
                     </Label>
                     <div className="flex items-center justify-center">
-                      <p className="text-2xl font-bold text-accent min-w-[40px]">
+                      <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
                         {totalValue}
                       </p>
                       <Button
@@ -113,7 +113,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         max={200}
                         inputClassName="w-full h-8 text-sm text-center"
                         buttonClassName="h-8 w-8"
-                        buttonSize="sm"
+                        buttonSize="icon"
                       />
                     </div>
                   </div>
@@ -137,7 +137,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                       {label} {unit}
                     </Label>
                     <div className="flex items-center justify-center">
-                      <p className="text-2xl font-bold text-accent min-w-[40px]">
+                      <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
                         {totalValue}
                       </p>
                        <Button
@@ -164,7 +164,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         max={field === 'fortification' ? 100 : 200}
                         inputClassName="w-full h-8 text-sm text-center"
                         buttonClassName="h-8 w-8"
-                        buttonSize="sm"
+                        buttonSize="icon"
                       />
                     </div>
                   </div>

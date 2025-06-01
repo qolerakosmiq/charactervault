@@ -4,7 +4,7 @@
 import type { Character, AbilityScores, SavingThrows, CharacterClass, ResistanceValue } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Swords, Heart, Zap as InitiativeIcon, ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, Info, Brain } from 'lucide-react';
+import { Shield, Swords, Heart, Zap as InitiativeIcon, ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, Info, Brain, ShieldCheck } from 'lucide-react';
 import { 
   getAbilityModifierByName,
   getBab, 
@@ -117,6 +117,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                 max={character.maxHp > 0 ? character.maxHp + 20 : 999} 
                 inputClassName="w-24 h-10 text-lg"
                 buttonClassName="h-10 w-10"
+                buttonSize="icon"
               />
             </div>
             <div>
@@ -129,6 +130,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                 max={999}
                 inputClassName="w-24 h-10 text-lg"
                 buttonClassName="h-10 w-10"
+                buttonSize="icon"
               />
             </div>
             <div className="text-center md:text-left">
@@ -142,7 +144,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                   min={-20} max={20}
                   inputClassName="w-12 h-6 text-xs"
                   buttonClassName="h-6 w-6"
-                  buttonSize="sm"
+                  buttonSize="icon"
                 />
               </div>
             </div>
@@ -183,7 +185,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         value={character.savingThrows[saveType].magicMod} 
                         onChange={(val) => handleSavingThrowChange(saveType, 'magicMod', val)} 
                         min={-10} max={10}
-                        inputClassName="w-12 h-6 text-xs" buttonClassName="h-6 w-6" buttonSize="sm" />
+                        inputClassName="w-12 h-6 text-xs" buttonClassName="h-6 w-6" buttonSize="icon" />
                     </div>
                     <div className="flex items-center gap-1"><Label htmlFor={`st-misc-${saveType}`} className="shrink-0">Misc:</Label> 
                       <NumberSpinnerInput
@@ -191,7 +193,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         value={character.savingThrows[saveType].miscMod} 
                         onChange={(val) => handleSavingThrowChange(saveType, 'miscMod', val)}
                         min={-10} max={10}
-                        inputClassName="w-12 h-6 text-xs" buttonClassName="h-6 w-6" buttonSize="sm" />
+                        inputClassName="w-12 h-6 text-xs" buttonClassName="h-6 w-6" buttonSize="icon" />
                     </div>
                   </div>
                 </div>
@@ -213,12 +215,12 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
         </CardHeader>
         <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3 text-sm items-center">
-                <div className="flex items-center gap-1"><Label htmlFor="ac-armor" className="shrink-0">Armor Bonus:</Label> <NumberSpinnerInput id="ac-armor" value={character.armorBonus} onChange={(val) => onCharacterUpdate('armorBonus', val)} min={0} max={30} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-shield" className="shrink-0">Shield Bonus:</Label> <NumberSpinnerInput id="ac-shield" value={character.shieldBonus} onChange={(val) => onCharacterUpdate('shieldBonus', val)} min={0} max={15} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-natural" className="shrink-0">Natural Armor:</Label> <NumberSpinnerInput id="ac-natural" value={character.naturalArmor} onChange={(val) => onCharacterUpdate('naturalArmor', val)} min={0} max={20} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-deflection" className="shrink-0">Deflection Bonus:</Label> <NumberSpinnerInput id="ac-deflection" value={character.deflectionBonus} onChange={(val) => onCharacterUpdate('deflectionBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-dodge" className="shrink-0">Dodge Bonus:</Label> <NumberSpinnerInput id="ac-dodge" value={character.dodgeBonus} onChange={(val) => onCharacterUpdate('dodgeBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-misc" className="shrink-0">Misc Modifier:</Label> <NumberSpinnerInput id="ac-misc" value={character.acMiscModifier} onChange={(val) => onCharacterUpdate('acMiscModifier', val)} min={-10} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="sm" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-armor" className="shrink-0">Armor Bonus:</Label> <NumberSpinnerInput id="ac-armor" value={character.armorBonus} onChange={(val) => onCharacterUpdate('armorBonus', val)} min={0} max={30} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-shield" className="shrink-0">Shield Bonus:</Label> <NumberSpinnerInput id="ac-shield" value={character.shieldBonus} onChange={(val) => onCharacterUpdate('shieldBonus', val)} min={0} max={15} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-natural" className="shrink-0">Natural Armor:</Label> <NumberSpinnerInput id="ac-natural" value={character.naturalArmor} onChange={(val) => onCharacterUpdate('naturalArmor', val)} min={0} max={20} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-deflection" className="shrink-0">Deflection Bonus:</Label> <NumberSpinnerInput id="ac-deflection" value={character.deflectionBonus} onChange={(val) => onCharacterUpdate('deflectionBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-dodge" className="shrink-0">Dodge Bonus:</Label> <NumberSpinnerInput id="ac-dodge" value={character.dodgeBonus} onChange={(val) => onCharacterUpdate('dodgeBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
+                <div className="flex items-center gap-1"><Label htmlFor="ac-misc" className="shrink-0">Misc Modifier:</Label> <NumberSpinnerInput id="ac-misc" value={character.acMiscModifier} onChange={(val) => onCharacterUpdate('acMiscModifier', val)} min={-10} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
             </div>
         </CardContent>
       </Card>
@@ -234,7 +236,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
         <CardContent className="space-y-4">
           <div>
             <h4 className="text-md font-semibold mb-3 text-foreground/90">Energy Resistances</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {energyResistancesFields.map(({ field, label, Icon, fieldPrefix }) => {
                 const resistance = character[field] as ResistanceValue;
                 const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0);
@@ -245,7 +247,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                       {label}
                     </Label>
                     <div className="flex items-center justify-center">
-                      <p className="text-2xl font-bold text-accent min-w-[40px]">
+                      <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
                         {totalValue}
                       </p>
                       <Button
@@ -271,7 +273,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         min={-50} max={200}
                         inputClassName="w-full h-8 text-sm text-center"
                         buttonClassName="h-8 w-8"
-                        buttonSize="sm"
+                        buttonSize="icon"
                       />
                     </div>
                   </div>
@@ -293,7 +295,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                       {label} {unit}
                     </Label>
                     <div className="flex items-center justify-center">
-                      <p className="text-2xl font-bold text-accent min-w-[40px]">
+                      <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
                         {totalValue}
                       </p>
                       <Button
@@ -319,7 +321,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         min={0} max={field === 'fortification' ? 100 : 200}
                         inputClassName="w-full h-8 text-sm text-center"
                         buttonClassName="h-8 w-8"
-                        buttonSize="sm"
+                        buttonSize="icon"
                       />
                     </div>
                   </div>
