@@ -131,7 +131,7 @@ export interface ResistanceValue {
 }
 
 export const DAMAGE_REDUCTION_TYPES = [
-  { value: "none", label: "All Types" }, // For DR X/-
+  { value: "none", label: "None (DR X/—)" }, // Reverted Label
   { value: "magic", label: "Magic" },
   { value: "adamantine", label: "Adamantine" },
   { value: "silver", label: "Silver" },
@@ -151,7 +151,7 @@ export interface DamageReductionInstance {
   value: number;
   type: DamageReductionType | string; // string for custom user input not in the list
   isGranted?: boolean;
-  source?: string; // e.g., "Barbarian Level 7", "Amulet of Natural Armor"
+  source?: string; // e.g., "Barbarian Class", "Amulet of Natural Armor"
 }
 
 export interface Character {
@@ -894,3 +894,4 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
+
