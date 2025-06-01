@@ -44,7 +44,10 @@
       "label": "Monk",
       "hitDice": "d8",
       "saves": { "fortitude": "good", "reflex": "good", "will": "good" },
-      "description": "<p>Monks are disciplined warriors who perfect their bodies and minds to achieve extraordinary martial prowess.<br />They eschew armor and traditional weapons, relying on their ki-powered unarmed strikes and mystical abilities.</p><p><b>Alignment:</b><br />Must be lawful.</p><p><b>Religion:</b><br />Monks often follow philosophies of discipline and self-perfection, sometimes tied to specific deities of law or enlightenment.</p><p><b>Background:</b><br />Typically trained in remote monasteries.</p><p><b>Races:</b><br />Humans are the most common monks, but any race with discipline can walk the path.</p>"
+      "description": "<p>Monks are disciplined warriors who perfect their bodies and minds to achieve extraordinary martial prowess.<br />They eschew armor and traditional weapons, relying on their ki-powered unarmed strikes and mystical abilities.</p><p><b>Alignment:</b><br />Must be lawful.</p><p><b>Religion:</b><br />Monks often follow philosophies of discipline and self-perfection, sometimes tied to specific deities of law or enlightenment.</p><p><b>Background:</b><br />Typically trained in remote monasteries.</p><p><b>Races:</b><br />Humans are the most common monks, but any race with discipline can walk the path.</p>",
+      "grantedFeats": [
+        { "featId": "improved-unarmed-strike", "note": "(Monk Bonus Feat)", "levelAcquired": 1 }
+      ]
     },
     {
       "value": "paladin",
@@ -60,7 +63,10 @@
       "hitDice": "d8",
       "casting": { "type": "partial", "startsAtLevel": 4, "levelOffset": -3 },
       "saves": { "fortitude": "good", "reflex": "good", "will": "poor" },
-      "description": "<p>Rangers are skilled hunters and trackers, at home in the wilderness and adept at fighting specific types of creatures.<br />They often possess some divine magic related to nature and an animal companion.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Rangers often revere nature deities or gods of the hunt.</p><p><b>Background:</b><br />Typically raised in borderlands, deep forests, or among reclusive communities.</p><p><b>Races:</b><br />Elves, half-elves, and humans make excellent rangers.</p>"
+      "description": "<p>Rangers are skilled hunters and trackers, at home in the wilderness and adept at fighting specific types of creatures.<br />They often possess some divine magic related to nature and an animal companion.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Rangers often revere nature deities or gods of the hunt.</p><p><b>Background:</b><br />Typically raised in borderlands, deep forests, or among reclusive communities.</p><p><b>Races:</b><br />Elves, half-elves, and humans make excellent rangers.</p>",
+      "grantedFeats": [
+        { "featId": "track", "note": "(Ranger Bonus Feat)", "levelAcquired": 1 }
+      ]
     },
     {
       "value": "rogue",
