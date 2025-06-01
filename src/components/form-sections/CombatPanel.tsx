@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import * as React from 'react';
@@ -40,7 +39,11 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
 
   const unarmedGrappleDamageDice = getUnarmedGrappleDamage(character.size);
   const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
-  const displayedUnarmedGrappleDamage = `${unarmedGrappleDamageDice} (${sizeLabel} Unarmed)`;
+  const displayedUnarmedGrappleDamageNotes = `${unarmedGrappleDamageDice} (${sizeLabel} Unarmed)`;
+  
+  const baseGrappleDamageString = (character.grappleDamage_baseNotes || displayedUnarmedGrappleDamageNotes).split(' ')[0];
+  const totalNumericGrappleBonus = strModifier + (character.grappleDamage_bonus || 0);
+  const displayedGrappleDamageTotal = `${baseGrappleDamageString}${totalNumericGrappleBonus !== 0 ? ` ${totalNumericGrappleBonus >= 0 ? '+' : ''}${totalNumericGrappleBonus}` : ''}`;
 
 
   const handleBabInfo = () => {
@@ -48,6 +51,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
         baseBabFromClasses: baseBabArray,
         miscModifier: character.babMiscModifier || 0,
         totalBab: totalBabWithModifier,
+        characterClassLabel: DND_CLASSES.find(c => c.value === character.classes[0]?.className)?.label || character.classes[0]?.className
     };
     onOpenCombatStatInfoDialog('bab', details);
   };
@@ -74,8 +78,8 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
   
   const handleGrappleDamageInfo = () => {
     const details: GrappleDamageBreakdownDetails = {
-        baseDamage: character.grappleDamage_baseNotes, // This will now hold the size-based unarmed string
-        bonus: character.grappleDamage_bonus || 0, // This is the "Custom Modifier"
+        baseDamage: character.grappleDamage_baseNotes || displayedUnarmedGrappleDamageNotes,
+        bonus: character.grappleDamage_bonus || 0,
         strengthModifier: strModifier,
     };
     onOpenCombatStatInfoDialog('grappleDamage', details);
@@ -174,9 +178,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
             <Label htmlFor="grapple-damage-display" className="text-md font-medium block">Grapple Damage</Label>
             <div className="flex items-center justify-center">
                 <p id="grapple-damage-display" className="text-xl font-semibold text-accent">
-                    {character.grappleDamage_baseNotes || displayedUnarmedGrappleDamage}
-                    {strModifier !== 0 ? ` ${strModifier >= 0 ? '+' : ''}${strModifier} STR` : ''}
-                    {(character.grappleDamage_bonus || 0) !== 0 ? ` ${character.grappleDamage_bonus! >= 0 ? '+' : ''}${character.grappleDamage_bonus}` : ''}
+                  {displayedGrappleDamageTotal}
                 </p>
                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleGrappleDamageInfo}>
                     <Info className="h-4 w-4" />
@@ -184,10 +186,10 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
             </div>
             <div className="mt-auto space-y-2">
                 <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground block">Equipped Weapon</Label>
+                    <Label className="text-xs text-muted-foreground block">Weapon</Label>
                     <Select disabled>
                         <SelectTrigger className="h-8 text-sm w-full max-w-[200px] mx-auto">
-                            <SelectValue placeholder="Weapon Select (N/A)" />
+                            <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                             {/* Options will be added when weapons are implemented */}
