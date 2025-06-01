@@ -37,7 +37,7 @@ interface CombatStatsSectionProps {
     field: keyof Character | 
            `savingThrows.${keyof SavingThrows}.${'base'|'magicMod'|'miscMod'}` |
            `${ResistanceFieldKey}.customMod` | 
-           'damageReduction', // Changed to reflect array update
+           'damageReduction', 
     value: any
   ) => void;
 }
@@ -402,7 +402,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                   )}
                 </div>
                 <div className="mt-4 pt-4 border-t space-y-2">
-                  <Label className="text-sm font-medium">Add Custom DR</Label>
+                  <Label className="text-md font-medium">Add Custom Damage Reduction</Label>
                   <div className="flex flex-col sm:flex-row gap-2 items-end">
                       <div className="space-y-1 flex-grow">
                           <Label htmlFor="sheet-dr-value" className="text-xs">Value</Label>
@@ -417,7 +417,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                           />
                       </div>
                       <div className="space-y-1 flex-grow-[2]">
-                          <Label htmlFor="sheet-dr-type" className="text-xs">Type to Bypass (or '-' for None)</Label>
+                          <Label htmlFor="sheet-dr-type" className="text-xs">Type to Bypass</Label>
                           <ComboboxPrimitive
                           id="sheet-dr-type"
                           options={DAMAGE_REDUCTION_TYPES}
@@ -431,7 +431,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                           />
                       </div>
                       <Button type="button" onClick={handleAddDamageReduction} size="sm" className="h-9 sm:mt-1">
-                          <PlusCircle className="mr-2 h-4 w-4" /> Add DR
+                          <PlusCircle className="mr-2 h-4 w-4" /> Add Damage Reduction
                       </Button>
                   </div>
                 </div>
@@ -453,4 +453,3 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
     </>
   );
 }
-

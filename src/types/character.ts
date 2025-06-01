@@ -131,7 +131,7 @@ export interface ResistanceValue {
 }
 
 export const DAMAGE_REDUCTION_TYPES = [
-  { value: "none", label: "None (DR X/—)" }, // For DR X/-
+  { value: "none", label: "All Types" }, // For DR X/-
   { value: "magic", label: "Magic" },
   { value: "adamantine", label: "Adamantine" },
   { value: "silver", label: "Silver" },
@@ -190,7 +190,7 @@ export interface Character {
   sonicResistance: ResistanceValue;
   spellResistance: ResistanceValue;
   powerResistance: ResistanceValue;
-  damageReduction: DamageReductionInstance[]; // Changed to array
+  damageReduction: DamageReductionInstance[];
   fortification: ResistanceValue;
 }
 
@@ -894,5 +894,3 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
-
-    

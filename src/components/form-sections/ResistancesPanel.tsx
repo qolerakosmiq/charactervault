@@ -103,9 +103,9 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
   };
 
   const getDrTypeLabel = (type: DamageReductionType | string) => {
-    if (type === 'none') return '—'; // Special case for DR X/—
+    if (type === 'none') return '—'; // For DR X/—, which means "All Types" bypass it if 'none' is selected.
     const predefined = DAMAGE_REDUCTION_TYPES.find(dt => dt.value === type);
-    return predefined ? predefined.label : type; // Show custom string if not found
+    return predefined ? predefined.label : type; 
   };
 
 
@@ -246,7 +246,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
               </div>
 
               <div className="mt-4 pt-4 border-t space-y-2">
-                <Label className="text-md font-medium">Add Custom DR</Label>
+                <Label className="text-md font-medium">Add Custom Damage Reduction</Label>
                 <div className="flex flex-col sm:flex-row gap-2 items-end">
                     <div className="space-y-1 flex-grow">
                         <Label htmlFor="form-dr-value" className="text-xs">Value</Label>
@@ -261,7 +261,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         />
                     </div>
                     <div className="space-y-1 flex-grow-[2]">
-                        <Label htmlFor="form-dr-type" className="text-xs">Type to Bypass (or '-' for None)</Label>
+                        <Label htmlFor="form-dr-type" className="text-xs">Type to Bypass</Label>
                         <ComboboxPrimitive
                         id="form-dr-type"
                         options={DAMAGE_REDUCTION_TYPES}
@@ -275,7 +275,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         />
                     </div>
                     <Button type="button" onClick={handleAddDamageReduction} size="sm" className="h-9 sm:mt-1">
-                        <PlusCircle className="mr-2 h-4 w-4" /> Add DR
+                        <PlusCircle className="mr-2 h-4 w-4" /> Add Damage Reduction
                     </Button>
                 </div>
               </div>
@@ -294,4 +294,3 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     </>
   );
 }
-
