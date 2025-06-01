@@ -53,21 +53,23 @@ export function InfoDisplayDialog({
     positiveColor = "text-emerald-500",
     negativeColor = "text-destructive",
     zeroColor = "text-muted-foreground",
-    accentColor = "text-accent", 
+    accentColor = "text-accent",
     isTotal = false
   ) => {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
     if (isNaN(numValue)) {
-      return <span className="font-bold">{value}</span>; 
+      return <span className="font-bold">{value}</span>;
     }
 
     let colorClass = zeroColor;
-    if (isTotal) { // Total for AC breakdown specifically uses accent
+    if (isTotal) {
         colorClass = accentColor;
     } else if (numValue > 0) {
         colorClass = positiveColor;
     } else if (numValue < 0) {
         colorClass = negativeColor;
+    } else { // numValue === 0
+        colorClass = zeroColor; // Ensure zero gets a specific color
     }
 
     return (
@@ -77,7 +79,7 @@ export function InfoDisplayDialog({
           colorClass
         )}
       >
-        {numValue > 0 ? '+' : numValue < 0 ? '' : '+'}{numValue}
+        {numValue === 0 ? '+' : (numValue > 0 ? '+' : '')}{numValue}
       </span>
     );
   };
@@ -94,7 +96,7 @@ export function InfoDisplayDialog({
     dialogTitle = `${skillModifierBreakdown.skillName} Details`;
     sectionHeading = "Skill Modifier Breakdown:";
   } else if (title?.toLowerCase().includes("armor class breakdown")){
-    dialogTitle = title; 
+    dialogTitle = title;
     sectionHeading = "Calculation:";
   }
 
@@ -116,7 +118,7 @@ export function InfoDisplayDialog({
             />
           )}
 
-          {content && (skillModifierBreakdown || abilityScoreBreakdown) && (
+          {content && (skillModifierBreakdown || abilityScoreBreakdown || title?.toLowerCase().includes("armor class breakdown")) && (
              <div
               className="text-sm text-muted-foreground mb-3 leading-relaxed prose prose-sm dark:prose-invert max-w-none"
               dangerouslySetInnerHTML={{ __html: content }}
@@ -268,21 +270,27 @@ export function InfoDisplayDialog({
               {(content || anyBonusSectionWillRender) && (!title?.toLowerCase().includes("armor class breakdown")) && <Separator className="my-4" />}
               <div>
                 <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
-                {detailsList!.map((detail, index) => {
-                  const isTotalRow = detail.label.toLowerCase() === 'total';
-                  const isModifierRow = detail.label.toLowerCase().includes('modifier') || detail.label.toLowerCase().includes('bonus') || detail.label.toLowerCase().includes('penalty');
-                  
-                  const valueToRender = (typeof detail.value === 'number')
-                    ? renderModifierValue(detail.value, "text-emerald-500", "text-destructive", "text-muted-foreground", "text-accent", isTotalRow)
-                    : detail.value; // If it's a string, display as is (already formatted or non-numeric)
-
-                  return (
-                    <div key={index} className="flex justify-between text-sm mb-0.5">
-                      <span className="text-muted-foreground">{detail.label}:</span>
-                      <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{valueToRender}</span>
-                    </div>
-                  );
+                {detailsList!.filter(detail => detail.label.toLowerCase() !== 'total').map((detail, index) => {
+                    const valueToRender = (typeof detail.value === 'number')
+                        ? renderModifierValue(detail.value)
+                        : detail.value;
+                    return (
+                        <div key={index} className="flex justify-between text-sm mb-0.5">
+                        <span className="text-muted-foreground">{detail.label}:</span>
+                        <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{valueToRender}</span>
+                        </div>
+                    );
                 })}
+                
+                {detailsList!.find(detail => detail.label.toLowerCase() === 'total') && (
+                  <>
+                    <Separator className="my-2" />
+                    <div className="flex justify-between text-base">
+                      <span className="font-semibold">Total:</span>
+                      {renderModifierValue(detailsList!.find(detail => detail.label.toLowerCase() === 'total')!.value, undefined, undefined, undefined, "text-accent", true)}
+                    </div>
+                  </>
+                )}
               </div>
             </>
           )}
@@ -295,3 +303,5 @@ export function InfoDisplayDialog({
     </Dialog>
   );
 }
+
+    
