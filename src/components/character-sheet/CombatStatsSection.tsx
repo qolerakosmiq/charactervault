@@ -382,57 +382,60 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
             <Separator className="my-6" />
             <div>
                 <h4 className="text-md font-semibold mb-3 text-foreground/90">Damage Reduction</h4>
-                <div className="space-y-3">
-                  {character.damageReduction.length > 0 ? (
-                    character.damageReduction.map(dr => (
-                      <div key={dr.id} className="flex items-center justify-between p-2 border rounded-md bg-muted/5 text-sm">
-                        <div>
-                          <span className="font-semibold">{dr.value} / {getDrTypeLabel(dr.type)}</span>
-                          {dr.isGranted && dr.source && <Badge variant="secondary" className="ml-2 text-xs">{dr.source}</Badge>}
+                <div className="grid md:grid-cols-2 gap-x-6 gap-y-4">
+                  {/* Left Column: List of DRs */}
+                  <div className="space-y-3">
+                    {character.damageReduction.length > 0 ? (
+                      character.damageReduction.map(dr => (
+                        <div key={dr.id} className="flex items-center justify-between p-2 border rounded-md bg-muted/5 text-sm">
+                          <div>
+                            <span className="font-semibold">{dr.value} / {getDrTypeLabel(dr.type)}</span>
+                            {dr.isGranted && dr.source && <Badge variant="secondary" className="ml-2 text-xs">{dr.source}</Badge>}
+                          </div>
+                          {!dr.isGranted && (
+                            <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80" onClick={() => handleRemoveDamageReduction(dr.id)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
-                        {!dr.isGranted && (
-                          <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80" onClick={() => handleRemoveDamageReduction(dr.id)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No Damage Reduction entries.</p>
-                  )}
-                </div>
-                <div className="mt-4 pt-4 border-t space-y-2">
-                  <Label className="text-md font-medium">Add Custom Damage Reduction</Label>
-                  <div className="flex flex-col sm:flex-row gap-2 items-end">
-                      <div className="space-y-1 flex-grow">
-                          <Label htmlFor="sheet-dr-value" className="text-xs">Value</Label>
-                          <NumberSpinnerInput
-                          id="sheet-dr-value"
-                          value={newDrValue}
-                          onChange={setNewDrValue}
-                          min={1}
-                          inputClassName="h-9 text-sm w-20"
-                          buttonClassName="h-9 w-9"
-                          buttonSize="sm"
-                          />
-                      </div>
-                      <div className="space-y-1 flex-grow-[2]">
-                          <Label htmlFor="sheet-dr-type" className="text-xs">Type to Bypass</Label>
-                          <ComboboxPrimitive
-                          id="sheet-dr-type"
-                          options={DAMAGE_REDUCTION_TYPES}
-                          value={newDrType}
-                          onChange={setNewDrType}
-                          placeholder="Select type or enter custom..."
-                          searchPlaceholder="Search types..."
-                          emptyPlaceholder="No type found."
-                          isEditable={true}
-                          triggerClassName="h-9 text-sm"
-                          />
-                      </div>
-                      <Button type="button" onClick={handleAddDamageReduction} size="sm" className="h-9 sm:mt-1">
-                          <PlusCircle className="mr-2 h-4 w-4" /> Add Damage Reduction
-                      </Button>
+                      ))
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No Damage Reduction entries.</p>
+                    )}
+                  </div>
+
+                  {/* Right Column: Input for new DR */}
+                  <div className="space-y-2 border md:border-l md:border-t-0 p-4 rounded-md md:pl-6">
+                    <Label className="text-md font-medium">Add Custom Damage Reduction</Label>
+                    <div className="space-y-1">
+                        <Label htmlFor="sheet-dr-value" className="text-xs">Value</Label>
+                        <NumberSpinnerInput
+                        id="sheet-dr-value"
+                        value={newDrValue}
+                        onChange={setNewDrValue}
+                        min={1}
+                        inputClassName="h-9 text-sm w-20"
+                        buttonClassName="h-9 w-9"
+                        buttonSize="sm"
+                        />
+                    </div>
+                    <div className="space-y-1">
+                        <Label htmlFor="sheet-dr-type" className="text-xs">Type to Bypass</Label>
+                        <ComboboxPrimitive
+                        id="sheet-dr-type"
+                        options={DAMAGE_REDUCTION_TYPES}
+                        value={newDrType}
+                        onChange={setNewDrType}
+                        placeholder="Select type or enter custom..."
+                        searchPlaceholder="Search types..."
+                        emptyPlaceholder="No type found."
+                        isEditable={true}
+                        triggerClassName="h-9 text-sm"
+                        />
+                    </div>
+                    <Button type="button" onClick={handleAddDamageReduction} size="sm" className="mt-2">
+                        <PlusCircle className="mr-2 h-4 w-4" /> Add Damage Reduction
+                    </Button>
                   </div>
                 </div>
               </div>
