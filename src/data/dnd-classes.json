@@ -65,7 +65,8 @@
       "saves": { "fortitude": "good", "reflex": "good", "will": "poor" },
       "description": "<p>Rangers are skilled hunters and trackers, at home in the wilderness and adept at fighting specific types of creatures.<br />They often possess some divine magic related to nature and an animal companion.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Rangers often revere nature deities or gods of the hunt.</p><p><b>Background:</b><br />Typically raised in borderlands, deep forests, or among reclusive communities.</p><p><b>Races:</b><br />Elves, half-elves, and humans make excellent rangers.</p>",
       "grantedFeats": [
-        { "featId": "track", "note": "(Ranger Bonus Feat)", "levelAcquired": 1 }
+        { "featId": "track", "note": "(Ranger Bonus Feat)", "levelAcquired": 1 },
+        { "featId": "endurance", "note": "(Ranger Bonus Feat)", "levelAcquired": 3 }
       ]
     },
     {
