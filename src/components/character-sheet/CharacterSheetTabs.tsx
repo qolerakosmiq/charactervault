@@ -211,7 +211,7 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
         title: dialogTitle,
         ...dialogProps
     });
-    setIsInfoDialogOpen(true); // Ensure the dialog is set to open
+    setIsInfoDialogOpen(true); 
   };
 
 
