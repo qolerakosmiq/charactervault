@@ -1,5 +1,6 @@
 
 
+
 import baseDataJson from '@/data/dnd-base.json';
 import customBaseDataJson from '@/data/custom-base.json';
 import racesDataJson from '@/data/dnd-races.json';
@@ -145,12 +146,20 @@ export const DAMAGE_REDUCTION_TYPES = [
   { value: "lawful", label: "Lawful" },
   { value: "chaotic", label: "Chaotic" },
 ] as const;
-export type DamageReductionType = typeof DAMAGE_REDUCTION_TYPES[number]['value'];
+export type DamageReductionTypeValue = typeof DAMAGE_REDUCTION_TYPES[number]['value'];
+
+export const DAMAGE_REDUCTION_RULES_OPTIONS = [
+  { value: "reduces-damage-from-type", label: "Reduces Damage from Type" },
+  { value: "only-affected-by-type", label: "Only Affected by Type" },
+  { value: "reduces-damage-from-not-type", label: "Reduces Damage from Not the Specified Type" },
+] as const;
+export type DamageReductionRuleValue = typeof DAMAGE_REDUCTION_RULES_OPTIONS[number]['value'];
 
 export interface DamageReductionInstance {
   id: string; // Unique ID for this instance (e.g., UUID)
   value: number;
-  type: DamageReductionType | string; // string for custom user input not in the list
+  type: DamageReductionTypeValue | string; // string for custom user input not in the list
+  rule: DamageReductionRuleValue;
   isGranted?: boolean;
   source?: string; // e.g., "Barbarian Class", "Amulet of Natural Armor"
 }
@@ -895,5 +904,6 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
+
 
 

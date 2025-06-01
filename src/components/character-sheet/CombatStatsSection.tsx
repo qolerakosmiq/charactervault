@@ -1,8 +1,8 @@
 
 'use client';
 
-import type { Character, AbilityScores, SavingThrows, CharacterClass, ResistanceValue, DamageReductionInstance, DamageReductionType } from '@/types/character';
-import { DAMAGE_REDUCTION_TYPES } from '@/types/character';
+import type { Character, AbilityScores, SavingThrows, CharacterClass, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue } from '@/types/character';
+import { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, Swords, Heart, Zap as InitiativeIcon, ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, Info, Brain, ShieldCheck, PlusCircle, Trash2 } from 'lucide-react';
@@ -48,7 +48,9 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
   const { toast } = useToast();
 
   const [newDrValue, setNewDrValue] = React.useState(1);
-  const [newDrType, setNewDrType] = React.useState<DamageReductionType | string>('none');
+  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>('none');
+  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>('reduces-damage-from-type');
+
 
   const abilityScores = character.abilityScores;
   const classes = character.classes;
@@ -106,36 +108,49 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
       toast({ title: "Invalid DR Value", description: "DR value must be > 0.", variant: "destructive"});
       return;
     }
-    if (!newDrType || newDrType.trim() === '') {
-      toast({ title: "DR Type Missing", description: "Select/enter DR type.", variant: "destructive"});
-      return;
+     if (!newDrType || (typeof newDrType === 'string' && newDrType.trim() === '')) {
+        toast({ title: "DR Type Missing", description: "Select/enter DR type.", variant: "destructive"});
+        return;
     }
     const existingUserDrOfType = character.damageReduction.find(
-      dr => !dr.isGranted && dr.type === newDrType
+      dr => !dr.isGranted && dr.type === newDrType && dr.rule === newDrRule
     );
     if (existingUserDrOfType) {
-      toast({ title: "Duplicate DR Type", description: `Custom DR for type '${getDrTypeLabel(newDrType)}' already exists.`, variant: "destructive"});
+      toast({ title: "Duplicate DR Entry", description: `Custom DR with this type and rule already exists.`, variant: "destructive"});
       return;
     }
     const newInstance: DamageReductionInstance = {
       id: crypto.randomUUID(),
       value: newDrValue,
       type: newDrType,
+      rule: newDrRule,
       isGranted: false,
     };
     onCharacterUpdate('damageReduction', [...character.damageReduction, newInstance]);
     setNewDrValue(1);
     setNewDrType('none');
+    setNewDrRule('reduces-damage-from-type');
   };
 
   const handleRemoveDamageReduction = (idToRemove: string) => {
     onCharacterUpdate('damageReduction', character.damageReduction.filter(dr => dr.id !== idToRemove));
   };
 
-  const getDrTypeLabel = (type: DamageReductionType | string) => {
-    if (type === 'none') return '—';
-    const predefined = DAMAGE_REDUCTION_TYPES.find(dt => dt.value === type);
-    return predefined ? predefined.label : type;
+  const getDrDisplayString = (dr: DamageReductionInstance): string => {
+    const typeLabel = DAMAGE_REDUCTION_TYPES.find(t => t.value === dr.type)?.label || dr.type;
+    if (dr.type === "none") {
+        return `${dr.value}/—`;
+    }
+    switch (dr.rule) {
+        case "reduces-damage-from-type":
+            return `${dr.value} vs ${typeLabel}`;
+        case "only-affected-by-type":
+             return `${dr.value} vs ${typeLabel}`;
+        case "reduces-damage-from-not-type":
+            return `${dr.value} vs Non-${typeLabel}`;
+        default: // Fallback, should include standard bypass if rule was different
+            return `${dr.value}/${typeLabel}`; 
+    }
   };
   
   return (
@@ -289,9 +304,9 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
                     <div className="flex items-center justify-center">
                       <Icon className="h-5 w-5 mr-1.5 text-muted-foreground" />
-                      <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-sm font-medium">
+                      <span className="text-sm font-medium">
                         {label}
-                      </Label>
+                      </span>
                     </div>
                     <div className="flex items-center justify-center">
                       <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
@@ -340,9 +355,9 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
                      <div className="flex items-center justify-center">
                         <Icon className="h-5 w-5 mr-1.5 text-muted-foreground" />
-                        <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-sm font-medium">
+                        <span className="text-sm font-medium">
                           {label} {unit && `(${unit})`}
-                        </Label>
+                        </span>
                       </div>
                     <div className="flex items-center justify-center">
                       <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
@@ -383,13 +398,12 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
             <div>
                 <h4 className="text-md font-semibold mb-3 text-foreground/90">Damage Reduction</h4>
                 <div className="grid md:grid-cols-2 gap-x-6 gap-y-4">
-                  {/* Left Column: List of DRs */}
-                  <div className="space-y-3">
+                  <div className="space-y-3"> {/* Left Column: List of DRs */}
                     {character.damageReduction.length > 0 ? (
                       character.damageReduction.map(dr => (
                         <div key={dr.id} className="flex items-center justify-between p-2 border rounded-md bg-muted/5 text-sm">
                           <div>
-                            <span className="font-semibold">{dr.value} / {getDrTypeLabel(dr.type)}</span>
+                            <span className="font-semibold">{getDrDisplayString(dr)}</span>
                             {dr.isGranted && dr.source && <Badge variant="secondary" className="ml-2 text-xs">{dr.source}</Badge>}
                           </div>
                           {!dr.isGranted && (
@@ -404,8 +418,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                     )}
                   </div>
 
-                  {/* Right Column: Input for new DR */}
-                  <div className="space-y-2 border md:border-l md:border-t-0 p-4 rounded-md md:pl-6">
+                  <div className="space-y-3 border md:border-l md:border-t-0 p-4 rounded-md md:pl-6"> {/* Right Column: Input for new DR */}
                     <Label className="text-md font-medium">Add Custom Damage Reduction</Label>
                     <div className="space-y-1">
                         <Label htmlFor="sheet-dr-value" className="text-xs">Value</Label>
@@ -420,12 +433,23 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         />
                     </div>
                     <div className="space-y-1">
-                        <Label htmlFor="sheet-dr-type" className="text-xs">Type to Bypass</Label>
+                        <Label htmlFor="sheet-dr-rule" className="text-xs">Rule</Label>
+                        <ComboboxPrimitive
+                          id="sheet-dr-rule"
+                          options={DAMAGE_REDUCTION_RULES_OPTIONS}
+                          value={newDrRule}
+                          onChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}
+                          placeholder="Select rule..."
+                          triggerClassName="h-9 text-sm"
+                        />
+                    </div>
+                    <div className="space-y-1">
+                        <Label htmlFor="sheet-dr-type" className="text-xs">Type</Label>
                         <ComboboxPrimitive
                         id="sheet-dr-type"
                         options={DAMAGE_REDUCTION_TYPES}
                         value={newDrType}
-                        onChange={setNewDrType}
+                        onChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}
                         placeholder="Select type or enter custom..."
                         searchPlaceholder="Search types..."
                         emptyPlaceholder="No type found."
@@ -433,7 +457,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         triggerClassName="h-9 text-sm"
                         />
                     </div>
-                    <Button type="button" onClick={handleAddDamageReduction} size="sm" className="mt-2">
+                    <Button type="button" onClick={handleAddDamageReduction} size="sm" className="mt-3">
                         <PlusCircle className="mr-2 h-4 w-4" /> Add Damage Reduction
                     </Button>
                   </div>
@@ -456,3 +480,4 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
     </>
   );
 }
+
