@@ -16,6 +16,13 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 
+export interface ResistanceBreakdownDetails {
+  name: string;
+  base: number;
+  customMod: number;
+  total: number;
+}
+
 interface InfoDisplayDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -27,6 +34,7 @@ interface InfoDisplayDialogProps {
   bonusFeatSlots?: number;
   abilityScoreBreakdown?: AbilityScoreBreakdown;
   skillModifierBreakdown?: SkillModifierBreakdownDetails;
+  resistanceBreakdown?: ResistanceBreakdownDetails; // New prop
   detailsList?: Array<{ label: string; value: string | number; isBold?: boolean }>;
 }
 
@@ -41,6 +49,7 @@ export function InfoDisplayDialog({
   bonusFeatSlots,
   abilityScoreBreakdown,
   skillModifierBreakdown,
+  resistanceBreakdown, // Destructure new prop
   detailsList,
 }: InfoDisplayDialogProps) {
 
@@ -69,7 +78,7 @@ export function InfoDisplayDialog({
     } else if (numValue < 0) {
         colorClass = negativeColor;
     } else { // numValue === 0
-        colorClass = zeroColor; 
+        colorClass = zeroColor;
     }
     
     const prefix = numValue > 0 ? '+' : (numValue === 0 ? '+' : '');
@@ -98,6 +107,9 @@ export function InfoDisplayDialog({
   } else if (skillModifierBreakdown) {
     dialogTitle = `${skillModifierBreakdown.skillName} Details`;
     sectionHeading = "Skill Modifier Breakdown:";
+  } else if (resistanceBreakdown) {
+    dialogTitle = `${resistanceBreakdown.name} Breakdown`;
+    sectionHeading = "Resistance Calculation:";
   } else if (title?.toLowerCase().includes("armor class breakdown")){
     dialogTitle = title;
     sectionHeading = "Calculation:";
@@ -114,14 +126,14 @@ export function InfoDisplayDialog({
           </DialogTitle>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] pr-4 my-2">
-          {content && !abilityScoreBreakdown && !skillModifierBreakdown && !title?.toLowerCase().includes("armor class breakdown") && (
+          {content && !abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !title?.toLowerCase().includes("armor class breakdown") && (
              <div
               className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
               dangerouslySetInnerHTML={{ __html: content }}
             />
           )}
 
-          {content && (skillModifierBreakdown || abilityScoreBreakdown || title?.toLowerCase().includes("armor class breakdown")) && (
+          {content && (skillModifierBreakdown || abilityScoreBreakdown || resistanceBreakdown || title?.toLowerCase().includes("armor class breakdown")) && (
              <div
               className="text-sm text-muted-foreground mb-3 leading-relaxed prose prose-sm dark:prose-invert max-w-none"
               dangerouslySetInnerHTML={{ __html: content }}
@@ -216,9 +228,32 @@ export function InfoDisplayDialog({
             </div>
             </>
           )}
+          
+          {resistanceBreakdown && (
+            <>
+              {(content || abilityScoreBreakdown || skillModifierBreakdown) && <Separator className="my-3"/>}
+              <div>
+                <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span>Base Value:</span>
+                    <span className="font-bold">{resistanceBreakdown.base}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Custom Modifier:</span>
+                    {renderModifierValue(resistanceBreakdown.customMod)}
+                  </div>
+                  <Separator className="my-2" />
+                  <div className="flex justify-between text-base">
+                    <span className="font-semibold">Total Resistance:</span>
+                    <span className="font-bold text-accent">{resistanceBreakdown.total}</span>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
-
-          {!abilityScoreBreakdown && !skillModifierBreakdown && hasAbilityModifiers && (
+          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && hasAbilityModifiers && (
             <>
               {(content) && <Separator className="my-4" />}
               <div>
@@ -235,7 +270,7 @@ export function InfoDisplayDialog({
             </>
           )}
 
-          {!abilityScoreBreakdown && !skillModifierBreakdown && hasSkillBonuses && (
+          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && hasSkillBonuses && (
             <>
               {(content || hasAbilityModifiers) && <Separator className="my-4" />}
               <div>
@@ -252,7 +287,7 @@ export function InfoDisplayDialog({
             </>
           )}
 
-          {!abilityScoreBreakdown && !skillModifierBreakdown && hasFeatAdjustments ? (
+          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && hasFeatAdjustments ? (
              <>
               {(content || hasAbilityModifiers || hasSkillBonuses) && <Separator className="my-4" />}
               <div>
@@ -274,7 +309,7 @@ export function InfoDisplayDialog({
             </>
           ) : null}
 
-          {!abilityScoreBreakdown && !skillModifierBreakdown && hasDetailsList && (
+          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && hasDetailsList && (
              <>
               {(content || anyBonusSectionWillRender) && (!title?.toLowerCase().includes("armor class breakdown")) && <Separator className="my-4" />}
               <div>
