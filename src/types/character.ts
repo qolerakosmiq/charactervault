@@ -1,5 +1,4 @@
 
-
 import baseDataJson from '@/data/dnd-base.json';
 import customBaseDataJson from '@/data/custom-base.json';
 import racesDataJson from '@/data/dnd-races.json';
@@ -265,7 +264,7 @@ export type DndClassOption = {
     will: "good" | "poor";
   };
 };
-export type DndClassId = "barbarian" | "bard" | "cleric" | "druid" | "fighter" | "monk" | "paladin" | "ranger" | "rogue" | "sorcerer" | "wizard" | string;
+export type DndClassId = "barbarian" | "bard" | "cleric" | "druid" | "fighter" | "monk" | "paladin" | "ranger" | "rogue" | "sorcerer" | "wizard" | "soulknife" | string;
 const baseClassesData = (classesDataJson as any).DND_CLASSES_DATA || [];
 const customClassesDataFile = (customClassesDataJson as any).DND_CLASSES_DATA || [];
 export const DND_CLASSES: ReadonlyArray<DndClassOption> = mergeArrayData(baseClassesData, customClassesDataFile);
@@ -891,3 +890,5 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
+
+    

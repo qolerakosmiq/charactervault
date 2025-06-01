@@ -56,7 +56,9 @@
     { "value": "swim", "label": "Swim", "keyAbility": "strength", "description": "<p>You can move through water.</p>" },
     { "value": "tumble", "label": "Tumble", "keyAbility": "dexterity", "description": "<p>You can perform acrobatic maneuvers to avoid attacks or move through difficult terrain.</p>" },
     { "value": "use-magic-device", "label": "Use Magic Device", "keyAbility": "charisma", "description": "<p>You can activate magic items that you normally wouldn't be able to use, such as scrolls or wands of spells not on your class list.</p>" },
-    { "value": "use-rope", "label": "Use Rope", "keyAbility": "dexterity", "description": "<p>You can tie knots, secure ropes, and perform other tasks involving ropes.</p>" }
+    { "value": "use-rope", "label": "Use Rope", "keyAbility": "dexterity", "description": "<p>You can tie knots, secure ropes, and perform other tasks involving ropes.</p>" },
+    { "value": "autohypnosis", "label": "Autohypnosis", "keyAbility": "wisdom", "description": "<p>You can enter a self-induced trance to gain psionic benefits or resist certain effects.</p>" },
+    { "value": "knowledge-psionics", "label": "Knowledge (Psionics)", "keyAbility": "intelligence", "description": "<p>You know about psionic powers, manifestations, and psionic creatures.</p>" }
   ],
   "CLASS_SKILLS_DATA": {
     "barbarian": ["climb", "craft-alchemy", "craft-armorsmithing", "craft-bowmaking", "craft-weaponsmithing", "craft-trapmaking", "handle-animal", "intimidate", "jump", "listen", "ride", "survival", "swim"],
@@ -69,7 +71,8 @@
     "ranger": ["climb", "concentration", "craft-alchemy", "craft-armorsmithing", "craft-bowmaking", "craft-weaponsmithing", "craft-trapmaking", "handle-animal", "heal", "hide", "jump", "knowledge-dungeoneering", "knowledge-geography", "knowledge-nature", "listen", "move-silently", "profession-herbalist", "profession-sailor", "ride", "search", "spot", "survival", "swim", "use-rope"],
     "rogue": ["appraise", "balance", "bluff", "climb", "craft-alchemy", "craft-armorsmithing", "craft-bowmaking", "craft-weaponsmithing", "craft-trapmaking", "craft-pottery", "craft-painting", "decipher-script", "diplomacy", "disable-device", "disguise", "escape-artist", "forgery", "gather-information", "hide", "intimidate", "jump", "knowledge-local", "listen", "move-silently", "open-lock", "perform-act", "perform-sing", "perform-dance", "perform-oratory", "perform-string-instrument", "profession-herbalist", "profession-sailor", "search", "sense-motive", "sleight-of-hand", "spot", "swim", "tumble", "use-magic-device", "use-rope"],
     "sorcerer": ["bluff", "concentration", "craft-alchemy", "craft-armorsmithing", "craft-bowmaking", "craft-weaponsmithing", "craft-trapmaking", "knowledge-arcana", "profession-herbalist", "profession-sailor", "spellcraft"],
-    "wizard": ["concentration", "craft-alchemy", "craft-armorsmithing", "craft-bowmaking", "craft-weaponsmithing", "craft-trapmaking", "decipher-script", "knowledge-arcana", "knowledge-architecture-and-engineering", "knowledge-dungeoneering", "knowledge-geography", "knowledge-history", "knowledge-local", "knowledge-nature", "knowledge-nobility-and-royalty", "knowledge-religion", "knowledge-the-planes", "profession-herbalist", "profession-sailor", "spellcraft"]
+    "wizard": ["concentration", "craft-alchemy", "craft-armorsmithing", "craft-bowmaking", "craft-weaponsmithing", "craft-trapmaking", "decipher-script", "knowledge-arcana", "knowledge-architecture-and-engineering", "knowledge-dungeoneering", "knowledge-geography", "knowledge-history", "knowledge-local", "knowledge-nature", "knowledge-nobility-and-royalty", "knowledge-religion", "knowledge-the-planes", "profession-herbalist", "profession-sailor", "spellcraft"],
+    "soulknife": ["autohypnosis", "climb", "concentration", "craft-alchemy", "craft-armorsmithing", "craft-bowmaking", "craft-weaponsmithing", "craft-trapmaking", "hide", "jump", "knowledge-psionics", "listen", "move-silently", "profession-herbalist", "profession-sailor", "spot", "tumble"]
   },
   "CLASS_SKILL_POINTS_BASE_DATA": {
     "barbarian": 4,
@@ -82,7 +85,8 @@
     "ranger": 6,
     "rogue": 8,
     "sorcerer": 2,
-    "wizard": 2
+    "wizard": 2,
+    "soulknife": 4
   },
   "SKILL_SYNERGIES_DATA": {
     "bluff": [

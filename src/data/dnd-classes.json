@@ -310,6 +310,42 @@
         { "featId": "class-wizard-bonus-feat-slot", "levelAcquired": 15, "note": "(15th Level - Metamagic, Item Creation, or Spell Mastery)" },
         { "featId": "class-wizard-bonus-feat-slot", "levelAcquired": 20, "note": "(20th Level - Metamagic, Item Creation, or Spell Mastery)" }
       ]
+    },
+    {
+      "value": "soulknife",
+      "label": "Soulknife",
+      "hitDice": "d10",
+      "saves": { "fortitude": "poor", "reflex": "good", "will": "good" },
+      "description": "<p><b>Alignment:</b> Any.</p><p><b>Weapon and Armor Proficiency:</b> Soulknives are proficient with all simple weapons, with their own mind blades, and with light armor and shields (except tower shields).</p>",
+      "grantedFeats": [
+        { "featId": "class-soulknife-mind-blade", "levelAcquired": 1, "note": "(1d6, +0 enh)"},
+        { "featId": "weapon-focus-mind-blade", "levelAcquired": 1},
+        { "featId": "wild-talent", "levelAcquired": 1},
+        { "featId": "class-soulknife-throw-mind-blade", "levelAcquired": 2},
+        { "featId": "class-soulknife-psychic-strike", "levelAcquired": 3, "note": "(+1d8)"},
+        { "featId": "class-soulknife-mind-blade", "levelAcquired": 4, "note": "(+1 enh)"},
+        { "featId": "class-soulknife-free-draw", "levelAcquired": 5},
+        { "featId": "class-soulknife-shape-mind-blade", "levelAcquired": 5},
+        { "featId": "class-soulknife-mind-blade-enhancement", "levelAcquired": 6, "note": "(+1 value)"},
+        { "featId": "speed-of-thought", "levelAcquired": 6},
+        { "featId": "class-soulknife-psychic-strike", "levelAcquired": 7, "note": "(+2d8)"},
+        { "featId": "class-soulknife-mind-blade", "levelAcquired": 8, "note": "(+2 enh)"},
+        { "featId": "class-soulknife-bladewind", "levelAcquired": 9},
+        { "featId": "greater-weapon-focus-mind-blade", "levelAcquired": 9},
+        { "featId": "class-soulknife-mind-blade-enhancement", "levelAcquired": 10, "note": "(+2 value)"},
+        { "featId": "class-soulknife-psychic-strike", "levelAcquired": 11, "note": "(+3d8)"},
+        { "featId": "class-soulknife-mind-blade", "levelAcquired": 12, "note": "(+3 enh)"},
+        { "featId": "class-soulknife-knife-to-the-soul", "levelAcquired": 13},
+        { "featId": "class-soulknife-mind-blade-enhancement", "levelAcquired": 14, "note": "(+3 value)"},
+        { "featId": "class-soulknife-psychic-strike", "levelAcquired": 15, "note": "(+4d8)"},
+        { "featId": "class-soulknife-mind-blade", "levelAcquired": 16, "note": "(+4 enh)"},
+        { "featId": "class-soulknife-multiple-throw", "levelAcquired": 17},
+        { "featId": "class-soulknife-mind-blade-enhancement", "levelAcquired": 18, "note": "(+4 value)"},
+        { "featId": "class-soulknife-psychic-strike", "levelAcquired": 19, "note": "(+5d8)"},
+        { "featId": "class-soulknife-mind-blade", "levelAcquired": 20, "note": "(+5 enh)"}
+      ]
     }
   ]
 }
+
+    
