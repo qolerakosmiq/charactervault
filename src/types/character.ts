@@ -1,6 +1,7 @@
 
 
 
+
 import baseDataJson from '@/data/dnd-base.json';
 import customBaseDataJson from '@/data/custom-base.json';
 import racesDataJson from '@/data/dnd-races.json';
@@ -149,9 +150,8 @@ export const DAMAGE_REDUCTION_TYPES = [
 export type DamageReductionTypeValue = typeof DAMAGE_REDUCTION_TYPES[number]['value'];
 
 export const DAMAGE_REDUCTION_RULES_OPTIONS = [
-  { value: "reduces-damage-from-type", label: "Reduces Damage from Type" },
-  { value: "only-affected-by-type", label: "Only Affected by Type" },
-  { value: "reduces-damage-from-not-type", label: "Reduces Damage from Not the Specified Type" },
+  { value: "standard-bypass", label: "Reduces Damage from Type" }, // e.g. DR X/Magic - Bypassed BY Magic
+  { value: "vs-specific-type", label: "Versus Specific Type (DR X vs. Type)" }, // e.g. DR X vs Fire
 ] as const;
 export type DamageReductionRuleValue = typeof DAMAGE_REDUCTION_RULES_OPTIONS[number]['value'];
 
@@ -904,6 +904,7 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
+
 
 
 

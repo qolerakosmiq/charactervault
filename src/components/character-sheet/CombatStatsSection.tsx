@@ -48,8 +48,8 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
   const { toast } = useToast();
 
   const [newDrValue, setNewDrValue] = React.useState(1);
-  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>('none');
-  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>('standard-bypass');
+  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>(DAMAGE_REDUCTION_TYPES[0].value);
+  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>(DAMAGE_REDUCTION_RULES_OPTIONS[0].value);
 
 
   const abilityScores = character.abilityScores;
@@ -129,8 +129,8 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
     };
     onCharacterUpdate('damageReduction', [...character.damageReduction, newInstance]);
     setNewDrValue(1);
-    setNewDrType('none');
-    setNewDrRule('standard-bypass');
+    setNewDrType(DAMAGE_REDUCTION_TYPES[0].value);
+    setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0].value);
   };
 
   const handleRemoveDamageReduction = (idToRemove: string) => {
@@ -467,7 +467,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         <Label htmlFor="sheet-dr-type" className="text-xs">Type</Label>
                         <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
                             <SelectTrigger id="sheet-dr-type" className="h-9 text-sm">
-                               <SelectValue placeholder="Select type..." />
+                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                                 {DAMAGE_REDUCTION_TYPES.map(option => (
@@ -501,3 +501,4 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
     </>
   );
 }
+
