@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { Character, BabBreakdownDetails, InitiativeBreakdownDetails, GrappleModifierBreakdownDetails, GrappleDamageBreakdownDetails, CharacterSize } from '@/types/character';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -189,7 +189,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
                         value={character.grappleWeaponChoice}
                         onValueChange={(val) => onCharacterUpdate('grappleWeaponChoice', val)}
                     >
-                        <SelectTrigger className="h-8 text-sm w-full max-w-[200px] mx-auto text-center">
+                        <SelectTrigger className="h-8 text-sm w-full max-w-[200px] mx-auto [&>span]:text-center">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
