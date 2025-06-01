@@ -79,6 +79,11 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
         toast({ title: "DR Type Missing", description: "Please select a DR type.", variant: "destructive"});
         return;
     }
+     if (newDrRule === 'immunity-except-vs-type' && newDrType === 'none') {
+      toast({ title: "Invalid Combination", description: "The 'Immunity (Except vs. Type)' rule requires a specific damage type to be selected, not 'None'.", variant: "destructive"});
+      return;
+    }
+
 
     const existingUserDrOfTypeAndRule = characterData.damageReduction.find(
       dr => !dr.isGranted && dr.type === newDrType && dr.rule === newDrRule
@@ -111,14 +116,14 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
   
   const getDrPrimaryNotation = (dr: DamageReductionInstance): string => {
     const typeLabel = getDrTypeUiLabel(dr.type);
-    if (dr.type === "none" && dr.rule === 'standard-bypass') { 
-      return `${dr.value}/—`;
-    }
-    if (dr.rule === 'standard-bypass') { 
-      return `${dr.value}/${typeLabel}`;
+    if (dr.rule === 'standard-bypass') {
+      return dr.type === "none" ? `${dr.value}/—` : `${dr.value}/${typeLabel}`;
     }
     if (dr.rule === 'vs-specific-type') {
-      return `${dr.value} vs ${typeLabel}`; 
+      return `${dr.value} vs ${typeLabel}`;
+    }
+    if (dr.rule === 'immunity-except-vs-type') {
+      return `${dr.value} vs ${typeLabel} (Immunity Except)`;
     }
     return `${dr.value}/${typeLabel} (${dr.rule})`; 
   };
@@ -130,6 +135,9 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     }
     if (dr.rule === 'vs-specific-type') {
       return `Specifically reduces damage from ${typeLabel} sources.`;
+    }
+    if (dr.rule === 'immunity-except-vs-type') {
+        return `Immune to damage unless from ${typeLabel} sources. ${typeLabel} sources deal damage reduced by ${dr.value}.`;
     }
     return `Rule: ${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule}`;
   };
@@ -289,26 +297,26 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                       buttonSize="sm"
                       />
                   </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="form-dr-rule" className="text-xs">Rule</Label>
-                     <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
-                        <SelectTrigger id="form-dr-rule" className="h-9 text-sm">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (
-                                <SelectItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                  </div>
+                   <div className="space-y-1">
+                        <Label htmlFor="form-dr-rule" className="text-xs">Rule</Label>
+                         <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
+                            <SelectTrigger id="form-dr-rule" className="h-9 text-sm">
+                                <SelectValue/>
+                            </SelectTrigger>
+                            <SelectContent>
+                                {DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                   <div className="space-y-1">
                       <Label htmlFor="form-dr-type" className="text-xs">Type</Label>
                        <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
                           <SelectTrigger id="form-dr-type" className="h-9 text-sm">
-                             <SelectValue />
+                             <SelectValue placeholder="Select type..."/>
                           </SelectTrigger>
                           <SelectContent>
                               {DAMAGE_REDUCTION_TYPES.map(option => (
@@ -340,4 +348,3 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     </>
   );
 }
-
