@@ -14,7 +14,7 @@
     { "value": "deft-hands", "label": "Deft Hands", "description": "<b>Benefit:</b> You get a +2 bonus on all Sleight of Hand and Use Rope checks.", "effects": { "skills": { "sleight-of-hand": 2, "use-rope": 2 } }, "isClassFeature": false, "type": "special" },
     { "value": "diligent", "label": "Diligent", "description": "<b>Benefit:</b> You get a +2 bonus on all Appraise and Decipher Script checks.", "effects": { "skills": { "appraise": 2, "decipher-script": 2 } }, "isClassFeature": false, "type": "special" },
     { "value": "dodge", "label": "Dodge", "description": "<b>Benefit:</b> During your action, you designate an opponent and receive a +1 dodge bonus to Armor Class against attacks from that opponent.<br />You can select a new opponent on any action.<br /><b>Special:</b> A condition that makes you lose your Dexterity bonus to Armor Class (if any) also makes you lose dodge bonuses.<br />Also, dodge bonuses stack with each other, unlike most other types of bonuses.", "prerequisites": { "abilities": { "dexterity": 13 } }, "isClassFeature": false, "type": "special" },
-    { "value": "endurance", "label": "Endurance", "description": "<b>Benefit:</b> You gain a +4 bonus on the following checks and saves: Swim checks made to resist nonlethal damage, Constitution checks made to continue running, Constitution checks made to avoid nonlethal damage from a forced march, Constitution checks made to hold your breath, Constitution checks made to avoid nonlethal damage from starvation or thirst, Fortitude saves made to avoid nonlethal damage from hot or cold environments, and Fortitude saves made to resist damage from suffocation.<br />Also, you may sleep in light or medium armor without becoming fatigued.", "isClassFeature": false, "type": "special" },
+    { "value": "endurance", "label": "Endurance", "description": "<b>Benefit:</b> You gain a +4 bonus on the following checks and saves: Swim checks made to resist nonlethal damage, Constitution checks made to continue running, Constitution checks made to avoid nonlethal damage from a forced march, Constitution checks made to hold your breath, Constitution checks made to avoid nonlethal damage from starvation or thirst, Fortitude saves made to avoid nonlethal damage from hot or cold environments, and Fortitude saves made to resist damage from suffocation.<br />Also, you may sleep in light or medium armor without becoming fatigued.", "isClassFeature": true, "type": "special-ex" },
     { "value": "eschew-materials", "label": "Eschew Materials", "description": "<b>Benefit:</b> You can cast any spell that has a material component costing 1 gp or less without needing that component.<br />The casting of the spell still provokes attacks of opportunity as normal.<br />If the spell requires a material component that costs more than 1 gp, you must have the material component on hand to cast the spell, as normal.", "isClassFeature": false, "type": "special" },
     { "value": "exotic-weapon-proficiency", "label": "Exotic Weapon Proficiency", "description": "<b>Benefit:</b> Choose one exotic weapon, such as a bastard sword or whip.<br />You understand how to use that weapon in combat, and you can attack with it and incur no penalty.<br />You are proficient with that weapon.<br /><b>Normal:</b> A character who uses a weapon with which he or she is not proficient takes a –4 penalty on attack rolls.<br /><b>Special:</b> You can gain this feat multiple times.<br />Each time you take the feat, it applies to a new exotic weapon.", "prerequisites": { "bab": 1 , "special": "Proficiency with all martial weapons if the weapon is a ranged weapon"}, "canTakeMultipleTimes": true, "requiresSpecialization": "exotic weapon", "isClassFeature": false, "type": "special" },
     { "value": "far-shot", "label": "Far Shot", "description": "<b>Benefit:</b> When you use a projectile weapon, such as a bow, its range increment is increased by 50% (multiply by 1.5).<br />When you use a thrown weapon, its range increment is doubled.", "prerequisites": { "feats": ["point-blank-shot"] }, "isClassFeature": false, "type": "special" },
@@ -118,7 +118,7 @@
     {
       "value": "class-barbarian-damage-reduction",
       "label": "Damage Reduction (Ex)",
-      "description": "<b>Benefit:</b> At 7th level, a barbarian gains Damage Reduction. Subtract from the damage the barbarian takes each time he is dealt damage from a weapon or a natural attack. Damage reduction can reduce damage to 0 but not below 0.",
+      "description": "<b>Benefit:</b> At 7th level, a barbarian gains Damage Reduction. Subtract 1 from the damage the barbarian takes each time he is dealt damage from a weapon or a natural attack. This DR increases by 1 point for every three barbarian levels thereafter (10th, 13th, 16th, and 19th level). Damage reduction can reduce damage to 0 but not below 0.",
       "type": "special-ex",
       "isClassFeature": true,
       "effectsText": "DR X/- (scales with level)."
@@ -182,7 +182,7 @@
     {
       "value": "class-bard-inspire-courage",
       "label": "Inspire Courage (Su)",
-      "description": "<b>Benefit:</b> A bard with 3 or more ranks in a Perform skill can use song or poetics to inspire courage in his allies (including himself), bolstering them against fear and improving their combat abilities. To be affected, an ally must be able to hear the bard sing. The effect lasts for as long as the ally hears the bard sing and for 5 rounds thereafter. An affected ally receives a morale bonus on saving throws against charm and fear effects and a morale bonus on attack and weapon damage rolls. The bonus starts at +1 and increases with bard level. Inspire courage is a mind-affecting ability.",
+      "description": "<b>Benefit:</b> A bard with 3 or more ranks in a Perform skill can use song or poetics to inspire courage in his allies (including himself), bolstering them against fear and improving their combat abilities. To be affected, an ally must be able to hear the bard sing. The effect lasts for as long as the ally hears the bard sing and for 5 rounds thereafter. An affected ally receives a morale bonus on saving throws against charm and fear effects and a morale bonus on attack and weapon damage rolls. The bonus starts at +1 at 1st level, and increases to +2 at 8th level, +3 at 14th level, and +4 at 20th level. Inspire courage is a mind-affecting ability.",
       "type": "special-su",
       "isClassFeature": true
     },
@@ -226,6 +226,13 @@
       "label": "Mass Suggestion (Sp)",
       "description": "<b>Benefit:</b> This ability functions like suggestion, above, except that a bard of 18th level or higher with 21 or more ranks in a Perform skill can make the suggestion simultaneously to any number of creatures that he has already fascinated. Mass suggestion is an enchantment (compulsion), mind-affecting, language-dependent ability.",
       "type": "special-sp",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-cleric-turn-rebuke-undead",
+      "label": "Turn or Rebuke Undead (Su)",
+      "description": "<b>Benefit:</b> Any cleric, regardless of alignment, has the power to affect undead creatures by channeling the power of his faith through his holy (or unholy) symbol. A good cleric (or a neutral cleric who worships a good deity) can turn undead. An evil cleric (or a neutral cleric who worships an evil deity) can rebuke undead. A neutral cleric of a neutral deity can choose whether to turn or rebuke undead. If the character is a neutral cleric of a neutral deity, you must choose whether your turning ability is to turn or rebuke undead. This choice also determines whether the cleric can cast spontaneous cure or inflict spells. Once this choice is made, it cannot be reversed. This decision also determines whether the cleric can use spontaneous casting to convert prepared spells into cure spells or inflict spells. A cleric may attempt to turn undead a number of times per day equal to 3 + his Charisma modifier. A cleric with 5 or more ranks in Knowledge (religion) gets a +2 bonus on turning checks against undead.",
+      "type": "special-su",
       "isClassFeature": true
     },
     {
@@ -274,7 +281,7 @@
     {
       "value": "class-druid-wild-shape",
       "label": "Wild Shape (Su)",
-      "description": "<b>Benefit:</b> At 5th level, a druid gains the ability to turn herself into any Small or Medium animal and back again once per day. The druid can use this ability more times per day at 6th, 7th, 10th, 14th, and 18th level, as noted on Table: The Druid. In addition, the druid gains the ability to take the shape of a Large animal at 8th level, a Tiny animal at 11th level, and a Huge animal at 15th level. The new form must be that of an animal with which the druid is familiar. See the SRD for full details on Wild Shape.",
+      "description": "<b>Benefit:</b> At 5th level, a druid gains the ability to turn herself into any Small or Medium animal and back again. This ability can be used multiple times per day, increasing with level. At higher levels, the druid can take the form of Large (8th), Tiny (11th), and Huge (15th) animals. The new form must be that of an animal with which the druid is familiar. See the SRD for full details on Wild Shape.",
       "type": "special-su",
       "isClassFeature": true
     },
@@ -286,11 +293,34 @@
       "isClassFeature": true
     },
     {
-      "value": "class-cleric-turn-rebuke-undead",
-      "label": "Turn or Rebuke Undead (Su)",
-      "description": "<b>Benefit:</b> Any cleric, regardless of alignment, has the power to affect undead creatures by channeling the power of his faith through his holy (or unholy) symbol. A good cleric (or a neutral cleric who worships a good deity) can turn undead. An evil cleric (or a neutral cleric who worships an evil deity) can rebuke undead. A neutral cleric of a neutral deity can choose whether to turn or rebuke undead. If the character is a neutral cleric of a neutral deity, you must choose whether your turning ability is to turn or rebuke undead. This choice also determines whether the cleric can cast spontaneous cure or inflict spells. Once this choice is made, it cannot be reversed. This decision also determines whether the cleric can use spontaneous casting to convert prepared spells into cure spells or inflict spells. A cleric may attempt to turn undead a number of times per day equal to 3 + his Charisma modifier. A cleric with 5 or more ranks in Knowledge (religion) gets a +2 bonus on turning checks against undead.",
+      "value": "class-druid-wild-shape-plant",
+      "label": "Wild Shape (Plant) (Su)",
+      "description": "<b>Benefit:</b> At 12th level, a druid gains the ability to use wild shape to transform into a Small, Medium, or Large plant creature.",
+      "type": "special-su",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-druid-a-thousand-faces",
+      "label": "A Thousand Faces (Su)",
+      "description": "<b>Benefit:</b> At 13th level, a druid gains the ability to change her appearance at will, as if using the alter self spell, but only while in her normal form. This is a supernatural ability.",
+      "type": "special-su",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-druid-timeless-body",
+      "label": "Timeless Body (Ex)",
+      "description": "<b>Benefit:</b> After attaining 15th level, a druid no longer takes ability score penalties for aging and cannot be magically aged. Any penalties she may have already incurred, however, remain in place. Bonuses still accrue, and the druid still dies of old age when her time is up.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-druid-wild-shape-elemental",
+      "label": "Wild Shape (Elemental) (Su)",
+      "description": "<b>Benefit:</b> Beginning at 16th level, a druid can use wild shape to transform into a Small, Medium, or Large elemental (air, earth, fire, or water) once per day. These elemental forms are in addition to her normal wild shape usage. At 20th level, the druid can assume Huge elemental form.",
       "type": "special-su",
       "isClassFeature": true
     }
   ]
 }
+
+    
