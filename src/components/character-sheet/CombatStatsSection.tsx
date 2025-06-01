@@ -156,34 +156,35 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
     return DAMAGE_REDUCTION_TYPES.find(t => t.value === typeValue)?.label || String(typeValue);
   };
   
-  const getDrPrimaryNotation = (dr: DamageReductionInstance): string => {
+ const getDrPrimaryNotation = (dr: DamageReductionInstance): string => {
     const typeLabel = getDrTypeUiLabel(dr.type);
     if (dr.rule === 'bypassed-by-type') {
       return dr.type === "none" ? `${dr.value}/—` : `${dr.value}/${typeLabel}`;
     }
     if (dr.rule === 'versus-specific-type') {
-      return `${dr.value} vs ${typeLabel}`;
+      return `DR ${dr.value} vs ${typeLabel}`;
     }
     if (dr.rule === 'excepted-by-type') {
-       return `DR ${dr.value} vs ${typeLabel} (Immunity Except)`;
+       const displayType = typeLabel === "None" ? "—" : typeLabel;
+       return `${dr.value}/${displayType} (Immunity)`;
     }
-    return `${dr.value}/${typeLabel} (Rule: ${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule})`; 
+    return `${dr.value}/${typeLabel} (${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule})`;
   };
-
+  
   const getDrRuleDescription = (dr: DamageReductionInstance): string => {
     const typeLabel = getDrTypeUiLabel(dr.type);
     const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
 
     if (dr.rule === 'bypassed-by-type') {
-      return dr.type === "none" ? "Reduces damage from most physical attacks." : `Damage reduced unless attack is ${typeLabel}.`;
+      return dr.type === "none" ? "Reduces damage from most attacks." : `Reduces damage unless attack is ${typeLabel}.`;
     }
     if (dr.rule === 'versus-specific-type') {
-      return `Specifically reduces damage from ${typeLabel} sources.`;
+      return `Specifically reduces damage from ${typeLabel} sources by ${dr.value}.`;
     }
     if (dr.rule === 'excepted-by-type') {
         return `Immune to damage unless from ${typeLabel} sources. ${typeLabel} sources deal damage reduced by ${dr.value}.`;
     }
-    return `Rule: ${ruleDef ? ruleDef.label : dr.rule}`; // Fallback
+    return `Rule: ${ruleDef ? ruleDef.label : dr.rule}`; 
   };
   
   return (
@@ -440,7 +441,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                           <div>
                             <p className="font-semibold">{getDrPrimaryNotation(dr)}</p>
                              <div className="mt-0.5 flex items-center">
-                                <Badge variant="outline" className="text-xs font-normal h-5 mr-1">
+                                <Badge variant="outline" className="text-xs font-normal h-5 mr-1 whitespace-nowrap">
                                   {ruleLabel}
                                 </Badge>
                                 <span className="text-xs text-muted-foreground">{getDrRuleDescription(dr)}</span>
@@ -495,7 +496,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         <Label htmlFor="sheet-dr-type" className="text-xs">Type</Label>
                         <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
                             <SelectTrigger id="sheet-dr-type" className="h-9 text-sm">
-                               <SelectValue />
+                               <SelectValue placeholder="Select type..." />
                             </SelectTrigger>
                             <SelectContent>
                                 {DAMAGE_REDUCTION_TYPES.map(option => (

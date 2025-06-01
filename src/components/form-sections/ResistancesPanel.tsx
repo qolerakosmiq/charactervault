@@ -46,7 +46,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
   const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>("none");
   const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>(DAMAGE_REDUCTION_RULES_OPTIONS[0].value);
 
-  React.useEffect(() => {
+ React.useEffect(() => {
     if (newDrRule !== 'bypassed-by-type' && newDrType === 'none') {
       setNewDrType('magic');
     }
@@ -129,13 +129,13 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
       return dr.type === "none" ? `${dr.value}/—` : `${dr.value}/${typeLabel}`;
     }
     if (dr.rule === 'versus-specific-type') {
-      return `${dr.value} vs ${typeLabel}`;
+      return `DR ${dr.value} vs ${typeLabel}`;
     }
     if (dr.rule === 'excepted-by-type') {
-       return `DR ${dr.value} vs ${typeLabel} (Immunity Except)`;
+       const displayType = typeLabel === "None" ? "—" : typeLabel;
+       return `${dr.value}/${displayType} (Immunity)`;
     }
-    // Fallback, should ideally not happen if rules are exhaustive
-    return `${dr.value}/${typeLabel} (Rule: ${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule})`;
+    return `${dr.value}/${typeLabel} (${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule})`;
   };
   
   const getDrRuleDescription = (dr: DamageReductionInstance): string => {
@@ -143,15 +143,15 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
 
     if (dr.rule === 'bypassed-by-type') {
-      return dr.type === "none" ? "Reduces damage from most physical attacks." : `Damage reduced unless attack is ${typeLabel}.`;
+      return dr.type === "none" ? "Reduces damage from most attacks." : `Reduces damage unless attack is ${typeLabel}.`;
     }
     if (dr.rule === 'versus-specific-type') {
-      return `Specifically reduces damage from ${typeLabel} sources.`;
+      return `Specifically reduces damage from ${typeLabel} sources by ${dr.value}.`;
     }
     if (dr.rule === 'excepted-by-type') {
         return `Immune to damage unless from ${typeLabel} sources. ${typeLabel} sources deal damage reduced by ${dr.value}.`;
     }
-    return `Rule: ${ruleDef ? ruleDef.label : dr.rule}`; // Fallback
+    return `Rule: ${ruleDef ? ruleDef.label : dr.rule}`;
   };
 
 
@@ -281,7 +281,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                             <div>
                               <p className="font-semibold">{getDrPrimaryNotation(dr)}</p>
                               <div className="mt-0.5 flex items-center">
-                                <Badge variant="outline" className="text-xs font-normal h-5 mr-1">
+                                <Badge variant="outline" className="text-xs font-normal h-5 mr-1 whitespace-nowrap">
                                   {ruleLabel}
                                 </Badge>
                                 <span className="text-xs text-muted-foreground">{getDrRuleDescription(dr)}</span>
@@ -336,7 +336,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                       <Label htmlFor="form-dr-type" className="text-xs">Type</Label>
                        <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
                           <SelectTrigger id="form-dr-type" className="h-9 text-sm">
-                             <SelectValue />
+                             <SelectValue placeholder="Select type..." />
                           </SelectTrigger>
                           <SelectContent>
                               {DAMAGE_REDUCTION_TYPES.map(option => (
