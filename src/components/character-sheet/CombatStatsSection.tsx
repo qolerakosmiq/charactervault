@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import type { Character, AbilityScores, SavingThrows, CharacterClass, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue } from '@/types/character';
@@ -51,6 +50,12 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
   const [newDrValue, setNewDrValue] = React.useState(1);
   const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>(DAMAGE_REDUCTION_TYPES[0].value);
   const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>(DAMAGE_REDUCTION_RULES_OPTIONS[0].value);
+
+  React.useEffect(() => {
+    if (newDrRule !== 'bypassed-by-type' && newDrType === 'none') {
+      setNewDrType('magic');
+    }
+  }, [newDrRule, newDrType]);
 
 
   const abilityScores = character.abilityScores;
@@ -109,12 +114,16 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
       toast({ title: "Invalid DR Value", description: "DR value must be > 0.", variant: "destructive"});
       return;
     }
-     if (!newDrType && newDrType !== 'none') {
+     if (!newDrType) { // Removed && newDrType !== 'none' because 'none' is a valid type for 'bypassed-by-type'
         toast({ title: "DR Type Missing", description: "Select DR type.", variant: "destructive"});
         return;
     }
      if (newDrRule === 'excepted-by-type' && newDrType === 'none') {
       toast({ title: "Invalid Combination", description: "The 'Excepted by Type' rule requires a specific damage type to be selected, not 'None'.", variant: "destructive"});
+      return;
+    }
+    if (newDrRule === 'versus-specific-type' && newDrType === 'none') {
+      toast({ title: "Invalid Combination", description: "The 'Versus Specific Type' rule requires a specific damage type to be selected, not 'None'.", variant: "destructive"});
       return;
     }
 
@@ -135,8 +144,8 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
     };
     onCharacterUpdate('damageReduction', [...character.damageReduction, newInstance]);
     setNewDrValue(1);
-    setNewDrType(DAMAGE_REDUCTION_TYPES[0].value);
-    setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0].value);
+    setNewDrType(DAMAGE_REDUCTION_TYPES[0].value); // Reset to 'none'
+    setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0].value); // Reset to 'bypassed-by-type'
   };
 
   const handleRemoveDamageReduction = (idToRemove: string) => {
@@ -156,23 +165,26 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
       return `${dr.value} vs ${typeLabel}`;
     }
     if (dr.rule === 'excepted-by-type') {
-      return `${dr.value} vs ${typeLabel} (Immunity Except)`;
+      return `${dr.value} vs ${typeLabel}`;
     }
     return `${dr.value}/${typeLabel} (${dr.rule})`; 
   };
 
   const getDrRuleDescription = (dr: DamageReductionInstance): string => {
     const typeLabel = getDrTypeUiLabel(dr.type);
+    const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
+    const ruleLabel = ruleDef ? ruleDef.label : dr.rule;
+
     if (dr.rule === 'bypassed-by-type') {
-      return dr.type === "none" ? "Reduces damage from most physical attacks." : `Reduces damage unless attack is ${typeLabel}.`;
+      return dr.type === "none" ? "Reduces damage from most physical attacks." : `Rule: ${ruleLabel}. Damage reduced unless attack is ${typeLabel}.`;
     }
     if (dr.rule === 'versus-specific-type') {
-      return `Specifically reduces damage from ${typeLabel} sources.`;
+      return `Rule: ${ruleLabel}. Specifically reduces damage from ${typeLabel} sources.`;
     }
      if (dr.rule === 'excepted-by-type') {
-        return `Immune to damage unless from ${typeLabel} sources. ${typeLabel} sources deal damage reduced by ${dr.value}.`;
+        return `Rule: ${ruleLabel}. Immune to damage unless from ${typeLabel} sources. ${typeLabel} sources deal damage reduced by ${dr.value}.`;
     }
-    return `Rule: ${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule}`;
+    return `Rule: ${ruleLabel}`;
   };
   
   return (
@@ -476,11 +488,15 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         <Label htmlFor="sheet-dr-type" className="text-xs">Type</Label>
                         <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
                             <SelectTrigger id="sheet-dr-type" className="h-9 text-sm">
-                               <SelectValue placeholder="Select type..." />
+                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                                 {DAMAGE_REDUCTION_TYPES.map(option => (
-                                    <SelectItem key={option.value} value={option.value}>
+                                    <SelectItem 
+                                        key={option.value} 
+                                        value={option.value}
+                                        disabled={option.value === 'none' && newDrRule !== 'bypassed-by-type'}
+                                    >
                                         {option.label}
                                     </SelectItem>
                                 ))}
