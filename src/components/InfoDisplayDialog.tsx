@@ -118,7 +118,7 @@ export function InfoDisplayDialog({
         colorClass = zeroColor;
     }
     
-    const prefix = numValue > 0 ? '+' : (numValue === 0 ? '' : '');
+    const prefix = numValue > 0 ? '+' : (numValue === 0 ? '+' : '');
 
 
     return (
@@ -292,7 +292,7 @@ export function InfoDisplayDialog({
                     {grappleDamageBreakdown.baseDamage.toLowerCase().includes('unarmed') ? (
                         <span className="font-semibold text-muted-foreground">Unarmed</span>
                     ) : (
-                        renderModifierValue(0)
+                        renderModifierValue(0) // Placeholder for future weapon damage contribution
                     )}
                   </div>
                   <div className="flex justify-between">

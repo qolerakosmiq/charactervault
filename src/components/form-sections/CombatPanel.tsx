@@ -194,7 +194,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                             <SelectItem value="unarmed">Unarmed Strike</SelectItem>
+                             <SelectItem value="unarmed">Unarmed</SelectItem>
                             {/* Future weapon options will be added here */}
                         </SelectContent>
                     </Select>
