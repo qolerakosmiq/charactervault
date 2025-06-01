@@ -1,14 +1,14 @@
 
 'use client';
 
-import type { Character, Skill, Item, CharacterClass, AbilityName, SavingThrows } from '@/types/character';
+import type { Character, Skill, Item, CharacterClass, AbilityName, SavingThrows, ResistanceValue } from '@/types/character';
 import { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { CoreInfoSection } from './CoreInfoSection';
 import { AbilityScoresSection } from './AbilityScoresSection';
 import { CombatStatsSection } from './CombatStatsSection';
-import { SkillsListing } from '../SkillsListing'; // Corrected import for new structure
+import { SkillsListing } from '../SkillsListing';
 import { FeatsListing } from './FeatsListing';
 import { InventoryListing } from './InventoryListing';
 import { SpellsListing } from './SpellsListing';
@@ -26,6 +26,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+
+type ResistanceFieldKeySheet = Exclude<keyof Pick<Character,
+  'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
+  'spellResistance' | 'powerResistance' | 'fortification'
+>, 'damageReduction'>;
 
 
 interface CharacterSheetTabsProps {
@@ -71,8 +76,6 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
       if (newClasses[index]) {
         (newClasses[index] as any)[field] = value; // Type assertion for simplicity
       } else {
-        // Handle case where class doesn't exist, e.g., for adding new classes in future
-        // For now, assumes first class exists or is being created.
         newClasses[index] = { id: crypto.randomUUID(), className: '', level: 1, ...{[field]: value} };
       }
       return { ...prev, classes: newClasses };
@@ -89,23 +92,44 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
     }));
   }, []);
   
-  // Generic handler for combat stats and other direct character properties
-  const handleCharacterUpdate = useCallback((field: keyof Character | `savingThrows.${keyof SavingThrows}.${'base'|'magicMod'|'miscMod'}`, value: any) => {
+  const handleCharacterUpdate = useCallback((
+    field: keyof Character | 
+           `savingThrows.${keyof SavingThrows}.${'base'|'magicMod'|'miscMod'}` |
+           `${ResistanceFieldKeySheet}.customMod` |
+           'damageReduction', 
+    value: any
+  ) => {
     setCharacter(prev => {
-      if (typeof field === 'string' && field.startsWith('savingThrows.')) {
-        const parts = field.split('.');
-        const saveType = parts[1] as keyof SavingThrows;
-        const prop = parts[2] as 'base' | 'magicMod' | 'miscMod';
-        return {
-          ...prev,
-          savingThrows: {
-            ...prev.savingThrows,
-            [saveType]: {
-              ...prev.savingThrows[saveType],
-              [prop]: value,
+      const parts = String(field).split('.');
+      if (parts.length > 1) {
+        const mainKey = parts[0] as keyof Character;
+        const subKey = parts[1] as string;
+        const nestedKey = parts[2] as string | undefined;
+
+        if (mainKey === 'savingThrows' && nestedKey && (subKey === 'fortitude' || subKey === 'reflex' || subKey === 'will')) {
+          const saveType = subKey as keyof SavingThrows;
+          const prop = nestedKey as 'base' | 'magicMod' | 'miscMod';
+          return {
+            ...prev,
+            savingThrows: {
+              ...prev.savingThrows,
+              [saveType]: {
+                ...prev.savingThrows[saveType],
+                [prop]: value,
+              },
             },
-          },
-        };
+          };
+        } else if (Object.keys(prev).includes(mainKey) && (prev[mainKey] as any).hasOwnProperty('customMod') && subKey === 'customMod') {
+          // Handles updates like 'fireResistance.customMod'
+          const resistanceField = mainKey as ResistanceFieldKeySheet;
+           return {
+            ...prev,
+            [resistanceField]: {
+              ...(prev[resistanceField] as ResistanceValue),
+              customMod: value,
+            },
+          };
+        }
       }
       return { ...prev, [field as keyof Character]: value };
     });
@@ -247,3 +271,5 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
     </div>
   );
 }
+
+    

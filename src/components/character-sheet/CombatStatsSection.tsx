@@ -1,10 +1,10 @@
 
 'use client';
 
-import type { Character, AbilityScores, SavingThrows, CharacterClass } from '@/types/character';
+import type { Character, AbilityScores, SavingThrows, CharacterClass, ResistanceValue } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Swords, Heart, Zap as InitiativeIcon, ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma } from 'lucide-react';
+import { Shield, Swords, Heart, Zap as InitiativeIcon, ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain } from 'lucide-react';
 import { 
   getAbilityModifierByName,
   getBab, 
@@ -19,9 +19,20 @@ import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { ArmorClassPanel } from '../form-sections/ArmorClassPanel'; 
 import { Input } from '@/components/ui/input';
 
+type ResistanceFieldKey = Exclude<keyof Pick<Character,
+  'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
+  'spellResistance' | 'powerResistance' | 'fortification'
+>, 'damageReduction'>;
+
 interface CombatStatsSectionProps {
   character: Character;
-  onCharacterUpdate: (field: keyof Character | `savingThrows.${keyof SavingThrows}.${'base'|'magicMod'|'miscMod'}`, value: any) => void;
+  onCharacterUpdate: (
+    field: keyof Character | 
+           `savingThrows.${keyof SavingThrows}.${'base'|'magicMod'|'miscMod'}` |
+           `${ResistanceFieldKey}.customMod` | // Path for resistance custom mods
+           'damageReduction', // For direct damageReduction string
+    value: any
+  ) => void;
 }
 
 export function CombatStatsSection({ character, onCharacterUpdate }: CombatStatsSectionProps) {
@@ -52,12 +63,18 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
     onCharacterUpdate(`savingThrows.${saveType}.${field}`, value);
   };
 
-  const energyResistancesFields: Array<{ field: keyof Pick<Character, 'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance'>; label: string; Icon: React.ElementType }> = [
+  const energyResistancesFields: Array<{ field: ResistanceFieldKey; label: string; Icon: React.ElementType }> = [
     { field: 'fireResistance', label: 'Fire', Icon: Flame },
     { field: 'coldResistance', label: 'Cold', Icon: Snowflake },
     { field: 'acidResistance', label: 'Acid', Icon: Atom },
     { field: 'electricityResistance', label: 'Electricity', Icon: ElectricityIcon },
     { field: 'sonicResistance', label: 'Sonic', Icon: Waves },
+  ];
+
+  const otherNumericResistancesFields: Array<{ field: ResistanceFieldKey; label: string; Icon: React.ElementType; unit?: string }> = [
+    { field: 'spellResistance', label: 'Spell Resistance', Icon: Sigma },
+    { field: 'powerResistance', label: 'Power Resistance', Icon: Brain },
+    { field: 'fortification', label: 'Fortification', Icon: ShieldCheck, unit: '%' },
   ];
   
   return (
@@ -189,75 +206,72 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
         </CardContent>
       </Card>
 
-      {/* Resistances & Defenses Card */}
       <Card>
         <CardHeader>
           <div className="flex items-center space-x-2">
             <ShieldAlert className="h-6 w-6 text-primary" />
             <CardTitle className="font-serif">Resistances &amp; Other Defenses</CardTitle>
           </div>
-          <CardDescription>Manage energy resistances, damage reduction, spell resistance, and fortification.</CardDescription>
+          <CardDescription>Manage custom modifiers for energy resistances, spell/power resistance, damage reduction, and fortification.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
             <h4 className="text-md font-semibold mb-2 text-foreground/90">Energy Resistances</h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-4 gap-y-3">
-              {energyResistancesFields.map(({ field, label, Icon }) => (
-                <div key={field} className="space-y-1">
-                  <Label htmlFor={`res-${field}`} className="flex items-center text-sm">
-                    <Icon className="h-4 w-4 mr-1 text-muted-foreground" />
-                    {label}
-                  </Label>
-                  <NumberSpinnerInput
-                    id={`res-${field}`}
-                    value={(character[field] as number) || 0}
-                    onChange={(newValue) => onCharacterUpdate(field, newValue)}
-                    min={0}
-                    max={200}
-                    inputClassName="w-full h-9 text-sm"
-                    buttonClassName="h-9 w-9"
-                    buttonSize="sm"
-                  />
-                </div>
-              ))}
+              {energyResistancesFields.map(({ field, label, Icon }) => {
+                const resistance = character[field] as ResistanceValue;
+                const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0);
+                return (
+                  <div key={field} className="space-y-1">
+                    <Label htmlFor={`res-${field}-customMod`} className="flex items-center text-sm">
+                      <Icon className="h-4 w-4 mr-1 text-muted-foreground" />
+                      {label}
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl font-bold text-accent p-1 min-w-[30px] text-center">
+                        {totalValue}
+                      </span>
+                      <NumberSpinnerInput
+                        id={`res-${field}-customMod`}
+                        value={resistance?.customMod || 0}
+                        onChange={(newValue) => onCharacterUpdate(`${field}.customMod` as `${ResistanceFieldKey}.customMod`, newValue)}
+                        min={-50} max={200}
+                        inputClassName="w-full h-9 text-sm" buttonClassName="h-9 w-9" buttonSize="sm"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
           <Separator />
           <div>
             <h4 className="text-md font-semibold mb-2 text-foreground/90">Other Defenses</h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="space-y-1">
-                <Label htmlFor="res-spellResistance" className="flex items-center text-sm">
-                  <Sigma className="h-4 w-4 mr-1 text-muted-foreground" />
-                  Spell Resistance
-                </Label>
-                <NumberSpinnerInput
-                  id="res-spellResistance"
-                  value={character.spellResistance || 0}
-                  onChange={(newValue) => onCharacterUpdate('spellResistance', newValue)}
-                  min={0}
-                  max={100}
-                  inputClassName="w-full h-9 text-sm"
-                  buttonClassName="h-9 w-9"
-                  buttonSize="sm"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="res-fortification" className="flex items-center text-sm">
-                  <Shield className="h-4 w-4 mr-1 text-muted-foreground" />
-                  Fortification (%)
-                </Label>
-                <NumberSpinnerInput
-                  id="res-fortification"
-                  value={character.fortification || 0}
-                  onChange={(newValue) => onCharacterUpdate('fortification', newValue)}
-                  min={0}
-                  max={100}
-                  inputClassName="w-full h-9 text-sm"
-                  buttonClassName="h-9 w-9"
-                  buttonSize="sm"
-                />
-              </div>
+              {otherNumericResistancesFields.map(({ field, label, Icon, unit }) => {
+                const resistance = character[field] as ResistanceValue;
+                const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0);
+                return (
+                  <div key={field} className="space-y-1">
+                    <Label htmlFor={`res-${field}-customMod`} className="flex items-center text-sm">
+                      <Icon className="h-4 w-4 mr-1 text-muted-foreground" />
+                      {label} {unit}
+                    </Label>
+                     <div className="flex items-center gap-2">
+                      <span className="text-xl font-bold text-accent p-1 min-w-[30px] text-center">
+                        {totalValue}
+                      </span>
+                      <NumberSpinnerInput
+                        id={`res-${field}-customMod`}
+                        value={resistance?.customMod || 0}
+                        onChange={(newValue) => onCharacterUpdate(`${field}.customMod` as `${ResistanceFieldKey}.customMod`, newValue)}
+                        min={0} max={field === 'fortification' ? 100 : 200}
+                        inputClassName="w-full h-9 text-sm" buttonClassName="h-9 w-9" buttonSize="sm"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
               <div className="space-y-1">
                 <Label htmlFor="res-damageReduction" className="flex items-center text-sm">
                   <ShieldAlert className="h-4 w-4 mr-1 text-muted-foreground" />
@@ -279,3 +293,5 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
     </div>
   );
 }
+
+    

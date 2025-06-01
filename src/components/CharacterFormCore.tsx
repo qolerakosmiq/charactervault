@@ -8,7 +8,8 @@ import type {
   DndRaceId, AbilityScores, SavingThrows, SavingThrowType,
   Skill as SkillType, DndClassId, DndDeityId, GenderId,
   DndRaceOption, DetailedAbilityScores, AbilityScoreBreakdown,
-  FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData, CharacterSize
+  FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData, CharacterSize,
+  ResistanceValue // Added
 } from '@/types/character';
 import {
   SIZES,
@@ -26,6 +27,7 @@ import {
   calculateDetailedAbilityScores,
   DEFAULT_ABILITIES,
   DEFAULT_SAVING_THROWS,
+  DEFAULT_RESISTANCE_VALUE, // Added
   DND_RACE_MIN_ADULT_AGE_DATA,
   CLASS_SKILLS,
   SKILL_SYNERGIES,
@@ -45,7 +47,7 @@ import { SkillsFormSection } from '@/components/SkillsFormSection';
 import { FeatsFormSection } from '@/components/FeatsFormSection';
 import { SavingThrowsPanel } from '@/components/form-sections/SavingThrowsPanel';
 import { ArmorClassPanel } from '@/components/form-sections/ArmorClassPanel';
-import { ResistancesPanel } from '@/components/form-sections/ResistancesPanel'; // Import new panel
+import { ResistancesPanel } from '@/components/form-sections/ResistancesPanel';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 import { Separator } from '@/components/ui/separator';
@@ -59,6 +61,12 @@ interface CharacterFormCoreProps {
   onSave: (character: Character) => void;
   isCreating: boolean;
 }
+
+type ResistanceField = Exclude<keyof Pick<Character,
+  'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
+  'spellResistance' | 'powerResistance' | 'fortification'
+>, 'damageReduction'>;
+
 
 const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -124,15 +132,16 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       skills: initialSkills,
       feats: initialFeats,
       inventory: [], personalStory: '', portraitDataUrl: undefined,
-      // Initialize new resistance fields
-      fireResistance: 0,
-      coldResistance: 0,
-      acidResistance: 0,
-      electricityResistance: 0,
-      sonicResistance: 0,
-      spellResistance: 0,
+      // Initialize new resistance fields with ResistanceValue structure
+      fireResistance: { ...DEFAULT_RESISTANCE_VALUE },
+      coldResistance: { ...DEFAULT_RESISTANCE_VALUE },
+      acidResistance: { ...DEFAULT_RESISTANCE_VALUE },
+      electricityResistance: { ...DEFAULT_RESISTANCE_VALUE },
+      sonicResistance: { ...DEFAULT_RESISTANCE_VALUE },
+      spellResistance: { ...DEFAULT_RESISTANCE_VALUE },
+      powerResistance: { ...DEFAULT_RESISTANCE_VALUE }, // New
       damageReduction: '',
-      fortification: 0,
+      fortification: { ...DEFAULT_RESISTANCE_VALUE }, // Changed to ResistanceValue
     };
   });
 
@@ -142,7 +151,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<Parameters<typeof InfoDisplayDialog>[0] | null>(null);
   const [detailedAbilityScores, setDetailedAbilityScores] = React.useState<DetailedAbilityScores | null>(null);
 
-  // State for global definition dialogs
   const [isAddOrEditSkillDialogOpen, setIsAddOrEditSkillDialogOpen] = React.useState(false);
   const [skillToEdit, setSkillToEdit] = React.useState<CustomSkillDefinition | undefined>(undefined);
   const [isCustomFeatDialogOpen, setIsCustomFeatDialogOpen] = React.useState(false);
@@ -306,6 +314,20 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const handleCoreInfoFieldChange = (field: keyof Character, value: any) => {
      setCharacter(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleResistanceChange = (
+    field: ResistanceField,
+    subField: 'customMod', // Only customMod is editable for now
+    value: number
+  ) => {
+    setCharacter(prev => ({
+      ...prev,
+      [field]: {
+        ...(prev[field] as ResistanceValue),
+        [subField]: value,
+      },
+    }));
   };
 
   const handleBaseAbilityScoreChange = (ability: Exclude<AbilityName, 'none'>, value: number) => {
@@ -655,9 +677,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
         />
-
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <SavingThrowsPanel
+           <SavingThrowsPanel
               savingThrows={character.savingThrows}
               abilityScores={actualAbilityScoresForSavesAndSkills}
               characterClasses={character.classes}
@@ -667,8 +689,19 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         </div>
         
         <ResistancesPanel
-          characterData={character}
-          onFieldChange={handleCoreInfoFieldChange}
+          characterData={{
+            fireResistance: character.fireResistance,
+            coldResistance: character.coldResistance,
+            acidResistance: character.acidResistance,
+            electricityResistance: character.electricityResistance,
+            sonicResistance: character.sonicResistance,
+            spellResistance: character.spellResistance,
+            powerResistance: character.powerResistance,
+            damageReduction: character.damageReduction,
+            fortification: character.fortification,
+          }}
+          onResistanceChange={handleResistanceChange}
+          onDamageReductionChange={(value) => handleCoreInfoFieldChange('damageReduction', value)}
         />
 
 
@@ -780,3 +813,5 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
+
+    
