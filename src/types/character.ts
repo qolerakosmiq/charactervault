@@ -14,7 +14,7 @@ import skillsDataJson from '@/data/dnd-skills.json';
 import featsDataJson from '@/data/dnd-feats.json';
 // customFeatsDataJson import removed as it's unused
 
-import { getBab } from '@/lib/dnd-utils'; // getBaseSaves will be moved to dnd-utils
+import { getBab, getSizeModifierAC } from '@/lib/dnd-utils'; // getBaseSaves will be moved to dnd-utils
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 
 
@@ -177,7 +177,12 @@ export const DEFAULT_SAVING_THROWS: SavingThrows = mergeObjectData(baseDefaultSa
 const baseSizesData = (baseDataJson as any).SIZES_DATA || [];
 const customSizesData = (customBaseDataJson as any).SIZES_DATA || [];
 export const SIZES: ReadonlyArray<CharacterSizeObject> = mergeArrayData(baseSizesData, customSizesData);
-export type CharacterSizeObject = { value: CharacterSize; label: string; acModifier: number; };
+export type CharacterSizeObject = {
+  value: CharacterSize;
+  label: string;
+  acModifier: number;
+  skillModifiers?: Partial<Record<string, number>>; // e.g. { "hide": 4 } skillId to bonus
+};
 export type CharacterSize =
   | "fine" | "diminutive" | "tiny" | "small" | "medium" | "large" | "huge" | "gargantuan" | "colossal";
 
@@ -527,6 +532,16 @@ export function calculateRacialSkillBonus(skillId_kebab: string, raceId: DndRace
   const raceData = dndRacesData.find(r => r.value === raceId);
   if (raceData?.racialSkillBonuses && raceData.racialSkillBonuses[skillId_kebab] !== undefined) {
     return raceData.racialSkillBonuses[skillId_kebab];
+  }
+  return 0;
+}
+
+// New function to calculate skill bonus from character size
+export function calculateSizeSpecificSkillBonus(skillId_kebab: string, sizeId: CharacterSize | ''): number {
+  if (!sizeId) return 0;
+  const sizeData = SIZES.find(s => s.value === sizeId);
+  if (sizeData?.skillModifiers && sizeData.skillModifiers[skillId_kebab] !== undefined) {
+    return sizeData.skillModifiers[skillId_kebab];
   }
   return 0;
 }
@@ -890,3 +905,4 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
+

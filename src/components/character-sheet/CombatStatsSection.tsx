@@ -35,7 +35,12 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
   
   const babArray = getBab(classes);
   const baseSaves = getBaseSaves(classes);
+  
+  // Get the size modifier for AC (which is also used for attack rolls)
+  const sizeModAttackAC = getSizeModifierAC(character.size);
+  // Get the specific size modifier for Grapple
   const sizeModGrapple = getSizeModifierGrapple(character.size);
+
 
   // Normal AC calculation is now inside ArmorClassPanel, but individual components are still managed here.
   // We don't need to calculate totalAC directly here for display in this component anymore.
@@ -114,11 +119,12 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
             <div>
               <Label>Base Attack Bonus (BAB)</Label>
               <p className="text-2xl font-bold text-accent">{babArray.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</p>
+              <span className="text-xs text-muted-foreground">Note: General attack rolls also include Str/Dex mod, Size mod ({sizeModAttackAC >= 0 ? '+' : ''}{sizeModAttackAC}), etc.</span>
             </div>
             <div>
               <Label>Grapple Modifier</Label>
               <p className="text-2xl font-bold text-accent">{grapple >= 0 ? '+' : ''}{grapple}</p>
-              <span className="text-xs text-muted-foreground">BAB ({babArray[0] >= 0 ? '+' : ''}{babArray[0]}) + Str ({strModifier >= 0 ? '+' : ''}{strModifier}) + Size ({sizeModGrapple >= 0 ? '+' : ''}{sizeModGrapple})</span>
+              <span className="text-xs text-muted-foreground">BAB ({babArray[0] >= 0 ? '+' : ''}{babArray[0]}) + Str ({strModifier >= 0 ? '+' : ''}{strModifier}) + Size (Grapple) ({sizeModGrapple >= 0 ? '+' : ''}{sizeModGrapple})</span>
             </div>
           </div>
 

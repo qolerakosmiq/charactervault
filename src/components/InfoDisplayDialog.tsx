@@ -62,15 +62,17 @@ export function InfoDisplayDialog({
     }
 
     let colorClass = zeroColor;
-    if (isTotal) {
+     if (isTotal) {
         colorClass = accentColor;
     } else if (numValue > 0) {
         colorClass = positiveColor;
     } else if (numValue < 0) {
         colorClass = negativeColor;
     } else { // numValue === 0
-        colorClass = zeroColor; // Ensure zero gets a specific color
+        colorClass = zeroColor; 
     }
+    
+    const prefix = numValue > 0 ? '+' : (numValue < 0 ? '' : '+');
 
     return (
       <span
@@ -79,7 +81,7 @@ export function InfoDisplayDialog({
           colorClass
         )}
       >
-        {numValue === 0 ? '+' : (numValue > 0 ? '+' : '')}{numValue}
+        {prefix}{numValue}
       </span>
     );
   };
@@ -96,7 +98,7 @@ export function InfoDisplayDialog({
     dialogTitle = `${skillModifierBreakdown.skillName} Details`;
     sectionHeading = "Skill Modifier Breakdown:";
   } else if (title?.toLowerCase().includes("armor class breakdown")){
-    dialogTitle = title;
+    dialogTitle = title; // Use the title passed from ArmorClassPanel directly
     sectionHeading = "Calculation:";
   }
 
@@ -174,6 +176,12 @@ export function InfoDisplayDialog({
                     <span>Ranks:</span>
                     {renderModifierValue(skillModifierBreakdown.ranks)}
                   </div>
+                   {skillModifierBreakdown.sizeSpecificBonus !== 0 && (
+                    <div className="flex justify-between">
+                      <span>Size Bonus:</span>
+                      {renderModifierValue(skillModifierBreakdown.sizeSpecificBonus)}
+                    </div>
+                  )}
                   {skillModifierBreakdown.synergyBonus !== 0 && (
                     <div className="flex justify-between">
                       <span>Synergy Bonus:</span>
@@ -271,8 +279,8 @@ export function InfoDisplayDialog({
               <div>
                 <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
                 {detailsList!.filter(detail => detail.label.toLowerCase() !== 'total').map((detail, index) => {
-                    const valueToRender = (typeof detail.value === 'number')
-                        ? renderModifierValue(detail.value)
+                    const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value))))
+                        ? renderModifierValue(detail.value, undefined, undefined, undefined, (detail.label.toLowerCase() === "total" ? "text-accent" : undefined), detail.label.toLowerCase() === "total")
                         : detail.value;
                     return (
                         <div key={index} className="flex justify-between text-sm mb-0.5">
@@ -303,5 +311,3 @@ export function InfoDisplayDialog({
     </Dialog>
   );
 }
-
-    

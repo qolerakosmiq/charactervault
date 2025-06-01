@@ -2,8 +2,8 @@
 'use client';
 
 import * as React from 'react';
-import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, CharacterFeatInstance, DndRaceOption, SkillDefinitionJsonData, FeatDefinitionJsonData } from '@/types/character';
-import { CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES, DND_CLASSES } from '@/types/character';
+import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, CharacterFeatInstance, DndRaceOption, SkillDefinitionJsonData, FeatDefinitionJsonData, CharacterSize } from '@/types/character';
+import { CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES, DND_CLASSES, SIZES, calculateSizeSpecificSkillBonus } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -34,6 +34,7 @@ export interface SkillModifierBreakdownDetails {
   synergyBonus: number;
   featBonus: number;
   racialBonus: number;
+  sizeSpecificBonus: number; // Added for size-specific skill modifiers
   miscModifier: number;
   totalBonus: number;
 }
@@ -44,6 +45,7 @@ interface SkillsFormSectionProps {
   actualAbilityScores: AbilityScores;
   characterClasses: CharacterClass[];
   characterRace: DndRaceId | string;
+  characterSize: CharacterSize | ''; // Added for size-specific skill modifiers
   selectedFeats: CharacterFeatInstance[];
   allFeatDefinitions: (FeatDefinitionJsonData & {isCustom?: boolean})[];
   allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
@@ -58,6 +60,7 @@ export function SkillsFormSection({
   actualAbilityScores,
   characterClasses,
   characterRace,
+  characterSize, // Destructure characterSize
   selectedFeats,
   allFeatDefinitions,
   allPredefinedSkillDefinitions,
@@ -144,10 +147,11 @@ export function SkillsFormSection({
     const currentSynergyBonus = calculateTotalSynergyBonus(skill.id, characterSkillInstances, allPredefinedSkillDefinitions, allCustomSkillDefinitions);
     const currentFeatSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats, allFeatDefinitions);
     const currentRacialSkillBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, allPredefinedSkillDefinitions);
+    const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skill.id, characterSize); // Calculate size bonus
     const currentMiscModifier = skill.miscModifier || 0;
     const currentRanks = skill.ranks || 0;
 
-    const totalDisplayedModifierInTable = currentKeyAbilityModifier + currentSynergyBonus + currentFeatSkillBonus + currentRacialSkillBonus;
+    const totalDisplayedModifierInTable = currentKeyAbilityModifier + currentSynergyBonus + currentFeatSkillBonus + currentRacialSkillBonus + currentSizeSpecificBonus; // Add size bonus
     const totalSkillBonus = currentRanks + totalDisplayedModifierInTable + currentMiscModifier;
 
     const breakdown: SkillModifierBreakdownDetails = {
@@ -158,6 +162,7 @@ export function SkillsFormSection({
       synergyBonus: currentSynergyBonus,
       featBonus: currentFeatSkillBonus,
       racialBonus: currentRacialSkillBonus,
+      sizeSpecificBonus: currentSizeSpecificBonus, // Add to breakdown
       miscModifier: currentMiscModifier,
       totalBonus: totalSkillBonus,
     };
@@ -258,8 +263,9 @@ export function SkillsFormSection({
             const synergyBonus = calculateTotalSynergyBonus(skill.id, characterSkillInstances, allPredefinedSkillDefinitions, allCustomSkillDefinitions);
             const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats, allFeatDefinitions);
             const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, allPredefinedSkillDefinitions);
+            const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skill.id, characterSize); // Calculate size bonus
 
-            const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus + currentRacialBonus;
+            const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus; // Add size bonus
             const totalBonus = (skill.ranks || 0) + totalDisplayedModifier + (skill.miscModifier || 0);
             const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
             const skillCostDisplay = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 2;

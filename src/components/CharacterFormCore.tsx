@@ -8,7 +8,7 @@ import type {
   DndRaceId, AbilityScores, SavingThrows, SavingThrowType,
   Skill as SkillType, DndClassId, DndDeityId, GenderId,
   DndRaceOption, DetailedAbilityScores, AbilityScoreBreakdown,
-  FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData
+  FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData, CharacterSize
 } from '@/types/character';
 import {
   SIZES,
@@ -636,6 +636,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           actualAbilityScores={actualAbilityScoresForSavesAndSkills}
           characterClasses={character.classes}
           characterRace={character.race as DndRaceId}
+          characterSize={character.size as CharacterSize}
           selectedFeats={character.feats}
           allFeatDefinitions={allAvailableFeatDefinitions}
           allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
@@ -775,5 +776,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-
-    
