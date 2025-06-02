@@ -449,7 +449,7 @@ export function getNetAgingEffects(raceId: DndRaceId | '', age: number): AgingEf
 
 export interface RaceSpecialQualities {
   abilityEffects: Array<{ ability: Exclude<AbilityName, 'none'>; change: number }>;
-  skillBonuses?: Array<{ skillName: string; bonus: number }>; // skillName refers to label
+  skillBonuses?: Array<{ skillId: string; skillName: string; bonus: number }>;
   grantedFeats?: Array<{ featId: string; name: string; note?: string; levelAcquired?: number }>;
   bonusFeatSlots?: number;
 }
@@ -475,11 +475,13 @@ export function getRaceSpecialQualities(raceId: DndRaceId | ''): RaceSpecialQual
       appliedAbilityEffects.push({ ability, change: abilityModifiers[ability]! });
     }
   }
-  const appliedSkillBonuses: Array<{ skillName: string; bonus: number }> = [];
+  const appliedSkillBonuses: Array<{ skillId: string; skillName: string; bonus: number }> = [];
   if (raceData?.racialSkillBonuses) {
     for (const [skillId_kebab, bonus] of Object.entries(raceData.racialSkillBonuses)) {
       const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skillId_kebab);
-      if (skillDef && bonus !== 0) appliedSkillBonuses.push({ skillName: skillDef.label, bonus });
+      if (skillDef && bonus !== 0) {
+        appliedSkillBonuses.push({ skillId: skillDef.value, skillName: skillDef.label, bonus });
+      }
     }
     appliedSkillBonuses.sort((a, b) => a.skillName.localeCompare(b.skillName));
   }
