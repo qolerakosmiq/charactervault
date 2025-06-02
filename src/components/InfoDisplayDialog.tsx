@@ -60,7 +60,7 @@ type DerivedDialogData = {
   abilityModifiers?: Array<{ ability: Exclude<AbilityName, 'none'>; change: number }>;
   skillBonuses?: Array<{ skillName: string; bonus: number }>;
   grantedFeats?: Array<{ featId: string; name: string; note?: string; levelAcquired?: number }>;
-  bonusFeatSlots?: number;
+  bonusFeatSlots?: number; // Will be number > 0 or undefined
   abilityScoreBreakdown?: AbilityScoreBreakdown;
   skillModifierBreakdown?: SkillModifierBreakdownDetails;
   resistanceBreakdown?: ResistanceBreakdownDetails;
@@ -122,6 +122,7 @@ export function InfoDisplayDialog({
         if (racialSkillPointBonus > 0) {
           details.push({ label: "Bonus Skill Points/Level", value: `+${racialSkillPointBonus}`, isBold: true });
         }
+        const raceBonusFeatSlots = qualities.bonusFeatSlots;
 
         data = {
           title: raceData?.label || 'Race Information',
@@ -129,7 +130,7 @@ export function InfoDisplayDialog({
           abilityModifiers: qualities.abilityEffects,
           skillBonuses: qualities.skillBonuses,
           grantedFeats: qualities.grantedFeats,
-          bonusFeatSlots: qualities.bonusFeatSlots,
+          bonusFeatSlots: (raceBonusFeatSlots && raceBonusFeatSlots > 0) ? raceBonusFeatSlots : undefined,
           detailsList: details.length > 0 ? details : undefined,
         };
         break;
@@ -144,11 +145,7 @@ export function InfoDisplayDialog({
           classSpecificDetails.push({ label: "Reflex Save", value: classData.saves.reflex.charAt(0).toUpperCase() + classData.saves.reflex.slice(1) });
           classSpecificDetails.push({ label: "Will Save", value: classData.saves.will.charAt(0).toUpperCase() + classData.saves.will.slice(1) });
         }
-        const racialSkillPointBonus = getRaceSkillPointsBonusPerLevel(character.race);
-        if (racialSkillPointBonus > 0) {
-          // This seems like it should be in race details, but keeping if current design requires
-          // classSpecificDetails.push({ label: "Racial Bonus Skill Points/Level", value: `+${racialSkillPointBonus}`, isBold: true });
-        }
+        
         const grantedFeatsFormatted = classData?.grantedFeats?.map(gf => ({
             ...gf, name: allCombinedFeatDefinitions.find(f => f.value === gf.featId)?.label || gf.featId
         }));
@@ -253,7 +250,7 @@ export function InfoDisplayDialog({
         if ((contentType.acType === 'Normal' || contentType.acType === 'Touch') && character.dodgeBonus) {
           details.push({ label: 'Dodge Bonus', value: character.dodgeBonus });
         }
-        // Changed label from "Misc Modifier" to "Custom Modifier"
+        
         if (character.acMiscModifier) details.push({ label: 'Custom Modifier', value: character.acMiscModifier });
 
 
@@ -362,7 +359,7 @@ export function InfoDisplayDialog({
     abilityModifiers,
     skillBonuses,
     grantedFeats,
-    bonusFeatSlots,
+    bonusFeatSlots, // Note: this is now undefined if 0, or a positive number
     abilityScoreBreakdown,
     skillModifierBreakdown,
     resistanceBreakdown,
@@ -406,11 +403,11 @@ export function InfoDisplayDialog({
                   </div>
                    {babBreakdown.miscModifier !== 0 && (
                     <div className="flex justify-between">
-                        <span>Custom Modifier:</span> {/* Point 6 */}
+                        <span>Custom Modifier:</span>
                         {renderModifierValue(babBreakdown.miscModifier)}
                     </div>
                   )}
-                  <Separator className="my-3" /> {/* Point 7 */}
+                  <Separator className="my-3" />
                   <div className="flex justify-between text-base">
                     <span className="font-semibold">Total Base Attack Bonus:</span>
                     <span className="font-bold text-accent">{babBreakdown.totalBab.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
@@ -436,7 +433,7 @@ export function InfoDisplayDialog({
                         {renderModifierValue(initiativeBreakdown.miscModifier)}
                     </div>
                   )}
-                  <Separator className="my-3" /> {/* Point 7 */}
+                  <Separator className="my-3" />
                   <div className="flex justify-between text-base">
                     <span className="font-semibold">Total Initiative:</span>
                     {renderModifierValue(initiativeBreakdown.totalInitiative, undefined, undefined, undefined, "text-accent", true)}
@@ -470,7 +467,7 @@ export function InfoDisplayDialog({
                         {renderModifierValue(grappleModifierBreakdown.miscModifier)}
                     </div>
                   )}
-                  <Separator className="my-3" /> {/* Point 7 */}
+                  <Separator className="my-3" />
                   <div className="flex justify-between text-base">
                     <span className="font-semibold">Total Grapple Modifier:</span>
                     {renderModifierValue(grappleModifierBreakdown.totalGrappleModifier, undefined, undefined, undefined, "text-accent", true)}
@@ -510,7 +507,7 @@ export function InfoDisplayDialog({
                         {renderModifierValue(grappleDamageBreakdown.bonus)}
                     </div>
                   )}
-                  <Separator className="my-3" /> {/* Point 7 */}
+                  <Separator className="my-3" />
                   <div className="flex justify-between text-base">
                     <span className="font-semibold">Total:</span>
                     <span className="font-bold text-accent">
@@ -541,7 +538,7 @@ export function InfoDisplayDialog({
                       </div>
                     )
                   ))}
-                  <Separator className="my-3" /> {/* Point 3 */}
+                  <Separator className="my-3" />
                   <div className="flex justify-between text-base">
                     <span className="font-semibold">Final Score:</span>
                     <span className="font-bold text-accent">{abilityScoreBreakdown.finalScore}</span>
@@ -635,14 +632,14 @@ export function InfoDisplayDialog({
             </>
           )}
 
-          {/* Race Info: Granted Feats and Bonus Feat Slots */}
+          {/* Race Info: Racial Feat Adjustments */}
           {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && contentType?.type === 'race' && (
             <>
               {(htmlContent || (abilityModifiers && abilityModifiers.length > 0) || (skillBonuses && skillBonuses.length > 0)) && <Separator className="my-4" />}
               <div>
                 <h3 className="text-md font-semibold mb-2 text-foreground">Racial Feat Adjustments:</h3>
                 <div className="text-sm space-y-1">
-                  {bonusFeatSlots && bonusFeatSlots > 0 && (
+                  {bonusFeatSlots && ( // This implies bonusFeatSlots > 0 due to the change in derivedData
                     <div className="flex justify-between">
                       <span>Bonus Feat Slots:</span>
                       {renderModifierValue(bonusFeatSlots)}
@@ -656,7 +653,7 @@ export function InfoDisplayDialog({
                       </span>
                     </div>
                   )}
-                  {(!bonusFeatSlots || bonusFeatSlots === 0) && (!grantedFeats || grantedFeats.length === 0) && (
+                  {!bonusFeatSlots && (!grantedFeats || grantedFeats.length === 0) && (
                     <p className="text-muted-foreground">None</p>
                   )}
                 </div>
@@ -721,7 +718,6 @@ export function InfoDisplayDialog({
           {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && detailsList && detailsList.length > 0 && (
              <>
               {(htmlContent || hasAnyBonusSection) && (contentType?.type !== 'acBreakdown' && contentType?.type !== 'class') && <Separator className="my-4" />}
-              {/* Point 1: Added separator for class info if description exists */}
               {(htmlContent && contentType?.type === 'class') && <Separator className="my-3" />}
               <div>
                 <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
