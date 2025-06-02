@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue } from '@/types/character';
+import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet } from '@/types/character';
 import { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2 } from 'lucide-react';
@@ -10,15 +10,10 @@ import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { InfoDisplayDialog, type ResistanceBreakdownDetails } from '@/components/InfoDisplayDialog';
+// InfoDisplayDialog import removed
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-
-type ResistanceField = Exclude<keyof Pick<Character,
-  'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
-  'spellResistance' | 'powerResistance' | 'fortification'
->, 'damageReduction'>;
 
 
 interface ResistancesPanelProps {
@@ -33,13 +28,13 @@ interface ResistancesPanelProps {
     damageReduction: DamageReductionInstance[];
     fortification: ResistanceValue;
   };
-  onResistanceChange: (field: ResistanceField, subField: 'customMod', value: number) => void;
+  onResistanceChange: (field: ResistanceFieldKeySheet, subField: 'customMod', value: number) => void;
   onDamageReductionChange: (newDrArray: DamageReductionInstance[]) => void;
+  onOpenResistanceInfoDialog: (resistanceField: ResistanceFieldKeySheet) => void; // New prop
 }
 
-export function ResistancesPanel({ characterData, onResistanceChange, onDamageReductionChange }: ResistancesPanelProps) {
-  const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
-  const [currentResistanceBreakdown, setCurrentResistanceBreakdown] = React.useState<ResistanceBreakdownDetails | undefined>(undefined);
+export function ResistancesPanel({ characterData, onResistanceChange, onDamageReductionChange, onOpenResistanceInfoDialog }: ResistancesPanelProps) {
+  // Local state for InfoDisplayDialog removed
   const { toast } = useToast();
 
   const [newDrValue, setNewDrValue] = React.useState(1);
@@ -52,7 +47,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     }
   }, [newDrRule, newDrType]);
   
-  const energyResistances: Array<{ field: ResistanceField; label: string; Icon: React.ElementType; fieldPrefix?: string }> = [
+  const energyResistances: Array<{ field: ResistanceFieldKeySheet; label: string; Icon: React.ElementType; fieldPrefix?: string }> = [
     { field: 'fireResistance', label: 'Fire', Icon: Flame, fieldPrefix: 'form-res' },
     { field: 'coldResistance', label: 'Cold', Icon: Snowflake, fieldPrefix: 'form-res' },
     { field: 'acidResistance', label: 'Acid', Icon: Atom, fieldPrefix: 'form-res' },
@@ -60,20 +55,14 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     { field: 'sonicResistance', label: 'Sonic', Icon: Waves, fieldPrefix: 'form-res' },
   ];
 
-  const otherNumericResistances: Array<{ field: ResistanceField; label: string; Icon: React.ElementType; unit?: string; fieldPrefix?: string }> = [
+  const otherNumericResistances: Array<{ field: ResistanceFieldKeySheet; label: string; Icon: React.ElementType; unit?: string; fieldPrefix?: string }> = [
     { field: 'spellResistance', label: 'Spell Resistance', Icon: Sigma, fieldPrefix: 'form-res' },
     { field: 'powerResistance', label: 'Power Resistance', Icon: Brain, fieldPrefix: 'form-res' },
     { field: 'fortification', label: 'Fortification', Icon: ShieldCheck, unit: '%', fieldPrefix: 'form-res' },
   ];
 
-  const handleOpenResistanceInfoDialog = (
-    name: string,
-    base: number,
-    customMod: number,
-    total: number
-  ) => {
-    setCurrentResistanceBreakdown({ name, base, customMod, total });
-    setIsInfoDialogOpen(true);
+  const handleTriggerResistanceInfoDialog = (field: ResistanceFieldKeySheet) => {
+    onOpenResistanceInfoDialog(field);
   };
 
   const handleAddDamageReduction = () => {
@@ -189,12 +178,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         variant="ghost"
                         size="icon"
                         className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
-                        onClick={() => handleOpenResistanceInfoDialog(
-                          `${label} Resistance`,
-                          resistance.base || 0,
-                          resistance.customMod || 0,
-                          totalValue
-                        )}
+                        onClick={() => handleTriggerResistanceInfoDialog(field)}
                       >
                         <Info className="h-4 w-4" />
                       </Button>
@@ -242,12 +226,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         variant="ghost"
                         size="icon"
                         className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
-                        onClick={() => handleOpenResistanceInfoDialog(
-                          label,
-                          resistance.base || 0,
-                          resistance.customMod || 0,
-                          totalValue
-                        )}
+                        onClick={() => handleTriggerResistanceInfoDialog(field)}
                       >
                         <Info className="h-4 w-4" />
                       </Button>
@@ -361,15 +340,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
           </div>
         </CardContent>
       </Card>
-      {isInfoDialogOpen && currentResistanceBreakdown && (
-        <InfoDisplayDialog
-          isOpen={isInfoDialogOpen}
-          onOpenChange={setIsInfoDialogOpen}
-          title={`${currentResistanceBreakdown.name} Breakdown`}
-          resistanceBreakdown={currentResistanceBreakdown}
-        />
-      )}
+      {/* InfoDisplayDialog rendering removed, handled by parent */}
     </>
   );
 }
-

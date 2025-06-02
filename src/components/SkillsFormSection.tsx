@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, CharacterFeatInstance, DndRaceOption, SkillDefinitionJsonData, FeatDefinitionJsonData, CharacterSize } from '@/types/character';
+import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, CharacterFeatInstance, DndRaceOption, SkillDefinitionJsonData, FeatDefinitionJsonData, CharacterSize, InfoDialogContentType } from '@/types/character';
 import { CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES, DND_CLASSES, SIZES, calculateSizeSpecificSkillBonus } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,7 @@ import { calculateMaxRanks } from '@/lib/constants';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
-import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
+// InfoDisplayDialog import removed as it's managed by parent
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Badge } from '@/components/ui/badge';
 
@@ -34,7 +34,7 @@ export interface SkillModifierBreakdownDetails {
   synergyBonus: number;
   featBonus: number;
   racialBonus: number;
-  sizeSpecificBonus: number; // Added for size-specific skill modifiers
+  sizeSpecificBonus: number;
   miscModifier: number;
   totalBonus: number;
 }
@@ -45,13 +45,14 @@ interface SkillsFormSectionProps {
   actualAbilityScores: AbilityScores;
   characterClasses: CharacterClass[];
   characterRace: DndRaceId | string;
-  characterSize: CharacterSize | ''; // Added for size-specific skill modifiers
+  characterSize: CharacterSize | '';
   selectedFeats: CharacterFeatInstance[];
   allFeatDefinitions: (FeatDefinitionJsonData & {isCustom?: boolean})[];
   allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
   allCustomSkillDefinitions: readonly CustomSkillDefinition[];
   onSkillChange: (skillId: string, ranks: number, isClassSkill?: boolean) => void;
   onEditCustomSkillDefinition: (skillDefId: string) => void;
+  onOpenSkillInfoDialog: (skillId: string) => void; // New prop
 }
 
 export function SkillsFormSection({
@@ -60,16 +61,16 @@ export function SkillsFormSection({
   actualAbilityScores,
   characterClasses,
   characterRace,
-  characterSize, // Destructure characterSize
+  characterSize,
   selectedFeats,
   allFeatDefinitions,
   allPredefinedSkillDefinitions,
   allCustomSkillDefinitions,
   onSkillChange,
   onEditCustomSkillDefinition,
+  onOpenSkillInfoDialog, // Destructure new prop
 }: SkillsFormSectionProps) {
-  const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
-  const [currentSkillInfo, setCurrentSkillInfo] = React.useState<{ title: string; content?: string; skillModifierBreakdown?: SkillModifierBreakdownDetails } | null>(null);
+  // Local state for InfoDisplayDialog removed
 
   const firstClass = characterClasses[0];
   const characterLevel = firstClass?.level || 1;
@@ -139,40 +140,8 @@ export function SkillsFormSection({
     }
   };
 
-
-  const handleOpenSkillInfoDialog = (skill: SkillDisplayInfo) => {
-    const keyAbility = skill.keyAbility;
-    const currentKeyAbilityModifier = (keyAbility && keyAbility !== 'none') ? getAbilityModifierByName(actualAbilityScores, keyAbility) : 0;
-
-    const currentSynergyBonus = calculateTotalSynergyBonus(skill.id, characterSkillInstances, allPredefinedSkillDefinitions, allCustomSkillDefinitions);
-    const currentFeatSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats, allFeatDefinitions);
-    const currentRacialSkillBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, allPredefinedSkillDefinitions);
-    const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skill.id, characterSize); // Calculate size bonus
-    const currentMiscModifier = skill.miscModifier || 0;
-    const currentRanks = skill.ranks || 0;
-
-    const totalDisplayedModifierInTable = currentKeyAbilityModifier + currentSynergyBonus + currentFeatSkillBonus + currentRacialSkillBonus + currentSizeSpecificBonus; // Add size bonus
-    const totalSkillBonus = currentRanks + totalDisplayedModifierInTable + currentMiscModifier;
-
-    const breakdown: SkillModifierBreakdownDetails = {
-      skillName: skill.name,
-      keyAbilityName: (keyAbility && keyAbility !== 'none') ? (keyAbility.charAt(0).toUpperCase() + keyAbility.slice(1)) : undefined,
-      keyAbilityModifier: currentKeyAbilityModifier,
-      ranks: currentRanks,
-      synergyBonus: currentSynergyBonus,
-      featBonus: currentFeatSkillBonus,
-      racialBonus: currentRacialSkillBonus,
-      sizeSpecificBonus: currentSizeSpecificBonus, // Add to breakdown
-      miscModifier: currentMiscModifier,
-      totalBonus: totalSkillBonus,
-    };
-
-    setCurrentSkillInfo({
-      title: skill.name,
-      content: skill.description || "No description available for this skill.",
-      skillModifierBreakdown: breakdown,
-    });
-    setIsInfoDialogOpen(true);
+  const handleTriggerSkillInfoDialog = (skillId: string) => {
+    onOpenSkillInfoDialog(skillId); // Call the prop function
   };
 
   const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs";
@@ -263,9 +232,9 @@ export function SkillsFormSection({
             const synergyBonus = calculateTotalSynergyBonus(skill.id, characterSkillInstances, allPredefinedSkillDefinitions, allCustomSkillDefinitions);
             const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats, allFeatDefinitions);
             const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, allPredefinedSkillDefinitions);
-            const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skill.id, characterSize); // Calculate size bonus
+            const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skill.id, characterSize);
 
-            const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus; // Add size bonus
+            const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus;
             const totalBonus = (skill.ranks || 0) + totalDisplayedModifier + (skill.miscModifier || 0);
             const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
             const skillCostDisplay = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 2;
@@ -289,7 +258,7 @@ export function SkillsFormSection({
                         variant="ghost"
                         size="icon"
                         className="h-5 w-5 mr-1 text-muted-foreground hover:text-foreground"
-                        onClick={() => handleOpenSkillInfoDialog(skill)}
+                        onClick={() => handleTriggerSkillInfoDialog(skill.id)}
                         aria-label={`Info for ${skill.name}`}
                       >
                         <Info className="h-3 w-3" />
@@ -324,13 +293,12 @@ export function SkillsFormSection({
                 <span className="font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
                 <span className="text-xs text-muted-foreground text-center w-10">{keyAbilityDisplay}</span>
                 <span className="text-xs text-center w-10">{totalDisplayedModifier >= 0 ? '+' : ''}{totalDisplayedModifier}</span>
-                <div className="w-32 flex justify-center"> {/* Increased width for the spinner container */}
+                <div className="w-32 flex justify-center">
                   <NumberSpinnerInput
                     id={`skill_ranks_${skill.id}`}
                     value={skill.ranks || 0}
                     onChange={(newValue) => onSkillChange(skill.id, newValue, skill.isClassSkill)}
                     min={0}
-                    // max={maxRanksValue} // Max validation is visual via max column
                     step={currentStepForInput}
                     inputClassName="w-14 h-7 text-xs" 
                     buttonSize="sm"
@@ -350,16 +318,7 @@ export function SkillsFormSection({
         </div>
       </CardContent>
     </Card>
-    {currentSkillInfo && (
-      <InfoDisplayDialog
-        isOpen={isInfoDialogOpen}
-        onOpenChange={setIsInfoDialogOpen}
-        title={currentSkillInfo.title}
-        content={currentSkillInfo.content}
-        skillModifierBreakdown={currentSkillInfo.skillModifierBreakdown}
-      />
-    )}
+    {/* InfoDisplayDialog rendering removed, handled by parent */}
     </>
   );
 }
-

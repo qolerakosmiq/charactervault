@@ -2,14 +2,14 @@
 'use client';
 
 import type { Character, Skill, Item, CharacterClass, AbilityName, SavingThrows, ResistanceValue, InfoDialogContentType } from '@/types/character';
-import { DND_CLASSES } from '@/types/character'; // Import DND_CLASSES
+import { DND_CLASSES } from '@/types/character';
 import { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { CoreInfoSection } from './CoreInfoSection';
 import { AbilityScoresSection } from './AbilityScoresSection';
-import { CombatPanel } from '../form-sections/CombatPanel'; // Changed from CombatStatsSection to CombatPanel
-import { SkillsListing } from '../SkillsListing'; // Corrected: This is likely from '../SkillsListing' not './SkillsListing'
+import { CombatPanel } from '../form-sections/CombatPanel';
+import { SkillsListing } from '../SkillsListing';
 import { FeatsListing } from './FeatsListing';
 import { InventoryListing } from './InventoryListing';
 import { SpellsListing } from './SpellsListing';
@@ -80,7 +80,7 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
     setCharacter(prev => {
       const newClasses = [...prev.classes];
       if (newClasses[index]) {
-        (newClasses[index] as any)[field] = value; // Type assertion for simplicity
+        (newClasses[index] as any)[field] = value;
       } else {
         newClasses[index] = { id: crypto.randomUUID(), className: '', level: 1, ...{[field]: value} };
       }
@@ -126,7 +126,6 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
             },
           };
         } else if (Object.keys(prev).includes(mainKey) && (prev[mainKey] as any).hasOwnProperty('customMod') && subKey === 'customMod') {
-          // Handles updates like 'fireResistance.customMod'
           const resistanceField = mainKey as ResistanceFieldKeySheet;
            return {
             ...prev,
@@ -151,15 +150,15 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
     }));
   }, []);
 
-  const handleFeatAdd = useCallback((featId: string, name: string, description?: string) => { // Adjusted to match FeatsListing
-    setCharacter(prev => ({ ...prev, feats: [...prev.feats, { definitionId: featId, instanceId: crypto.randomUUID(), isGranted: false, specializationDetail: '' }] }));
+  const handleFeatAdd = useCallback((feat: Character['feats'][number]) => { 
+    setCharacter(prev => ({ ...prev, feats: [...prev.feats, feat ] }));
   }, []);
 
-  const handleFeatRemove = useCallback((instanceId: string) => { // Changed to instanceId
+  const handleFeatRemove = useCallback((instanceId: string) => { 
     setCharacter(prev => ({ ...prev, feats: prev.feats.filter(f => f.instanceId !== instanceId) }));
   }, []);
   
-  const handleFeatUpdate = useCallback((updatedFeatInstance: Character['feats'][number]) => { // Changed to instance
+  const handleFeatUpdate = useCallback((updatedFeatInstance: Character['feats'][number]) => { 
     setCharacter(prev => ({
       ...prev,
       feats: prev.feats.map(f => f.instanceId === updatedFeatInstance.instanceId ? updatedFeatInstance : f)
@@ -186,10 +185,12 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
     setIsInfoDialogOpen(true);
   };
 
-  const handleOpenCombatStatInfoDialog = (
-    breakdownType: 'bab' | 'initiative' | 'grappleModifier' | 'grappleDamage'
-  ) => {
-    openInfoDialog({ type: `${breakdownType}Breakdown` as InfoDialogContentType['type'] } as InfoDialogContentType);
+  const handleOpenCombatStatInfoDialog = (contentType: InfoDialogContentType) => {
+    openInfoDialog(contentType);
+  };
+  
+  const handleOpenAcBreakdownDialog = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
+    openInfoDialog({ type: 'acBreakdown', acType });
   };
 
 
@@ -256,6 +257,7 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
             character={character} 
             onCharacterUpdate={handleCharacterUpdate}
             onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog} 
+            onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
           />
         </TabsContent>
         <TabsContent value="skills" className="mt-4">
@@ -298,4 +300,3 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
     </div>
   );
 }
-```

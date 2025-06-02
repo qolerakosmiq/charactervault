@@ -2,12 +2,12 @@
 'use client';
 
 import *as React from 'react';
-import type { Character } from '@/types/character';
+import type { Character, InfoDialogContentType } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Shield, Info } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
+// InfoDisplayDialog import removed
 import { getAbilityModifierByName, getSizeModifierAC } from '@/lib/dnd-utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_ABILITIES, SIZES } from '@/types/character';
@@ -17,13 +17,11 @@ import { Separator } from '@/components/ui/separator';
 interface ArmorClassPanelProps {
   character?: Character;
   onCharacterUpdate?: (field: keyof Character, value: any) => void;
+  onOpenAcBreakdownDialog?: (acType: 'Normal' | 'Touch' | 'Flat-Footed') => void; // New prop
 }
 
-type AcBreakdownDetail = { label: string; value: string | number; isBold?: boolean };
-
-export function ArmorClassPanel({ character, onCharacterUpdate }: ArmorClassPanelProps) {
-  const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
-  const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<{ title: string; detailsList: AcBreakdownDetail[] } | null>(null);
+export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) {
+  // Local state for InfoDisplayDialog removed
 
   if (!character) {
     return (
@@ -97,64 +95,25 @@ export function ArmorClassPanel({ character, onCharacterUpdate }: ArmorClassPane
     (character.acMiscModifier || 0);
 
   const touchAC = 10 +
-    dexModifier + // Dex applies to touch
+    dexModifier +
     sizeModAC +
     (character.deflectionBonus || 0) +
-    (character.dodgeBonus || 0) + // Dodge applies to touch
+    (character.dodgeBonus || 0) +
     (character.acMiscModifier || 0);
 
   const flatFootedAC = 10 +
     (character.armorBonus || 0) +
     (character.shieldBonus || 0) +
-    sizeModAC + // Dex is denied
+    sizeModAC +
     (character.naturalArmor || 0) +
     (character.deflectionBonus || 0) +
-    // Dodge bonus is also denied
     (character.acMiscModifier || 0);
 
 
-  const showAcBreakdown = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
-    const detailsList: AcBreakdownDetail[] = [{ label: 'Base', value: 10 }];
-    let totalCalculated = 10;
-
-    const breakdownDexModifier = getAbilityModifierByName(currentAbilityScores, 'dexterity');
-    const breakdownSizeModAC = getSizeModifierAC(currentSize);
-    const sizeLabel = SIZES.find(s => s.value === currentSize)?.label || currentSize;
-
-    // Dexterity Modifier (conditional: not for Flat-Footed)
-    if (acType === 'Normal' || acType === 'Touch') {
-      detailsList.push({ label: 'Dexterity Modifier', value: breakdownDexModifier });
+  const handleShowAcBreakdown = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
+    if (onOpenAcBreakdownDialog) {
+      onOpenAcBreakdownDialog(acType);
     }
-    
-    // Size Modifier (always shown)
-    detailsList.push({ label: `Size Modifier (${sizeLabel})`, value: breakdownSizeModAC });
-
-    // Armor, Shield, Natural Armor (not for Touch AC)
-    if (acType === 'Normal' || acType === 'Flat-Footed') {
-      if (character.armorBonus || 0) detailsList.push({ label: 'Armor Bonus', value: character.armorBonus || 0 });
-      if (character.shieldBonus || 0) detailsList.push({ label: 'Shield Bonus', value: character.shieldBonus || 0 });
-      if (character.naturalArmor || 0) detailsList.push({ label: 'Natural Armor', value: character.naturalArmor || 0 });
-    }
-
-    // Deflection Bonus (applies to all)
-    if (character.deflectionBonus || 0) detailsList.push({ label: 'Deflection Bonus', value: character.deflectionBonus || 0 });
-    
-    // Dodge Bonus (not for Flat-Footed AC)
-    if (acType === 'Normal' || acType === 'Touch') {
-      if (character.dodgeBonus || 0) detailsList.push({ label: 'Dodge Bonus', value: character.dodgeBonus || 0 });
-    }
-    
-    // Custom Modifier (applies to all)
-    if (character.acMiscModifier || 0) detailsList.push({ label: 'Custom Modifier', value: character.acMiscModifier || 0 });
-    
-    if (acType === 'Normal') totalCalculated = normalAC;
-    else if (acType === 'Touch') totalCalculated = touchAC;
-    else if (acType === 'Flat-Footed') totalCalculated = flatFootedAC;
-    
-    detailsList.push({ label: 'Total', value: totalCalculated, isBold: true });
-
-    setCurrentInfoDialogData({ title: `${acType} Armor Class Breakdown`, detailsList });
-    setIsInfoDialogOpen(true);
   };
 
   const isEditable = !!onCharacterUpdate;
@@ -173,7 +132,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate }: ArmorClassPane
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
             <div className="flex items-center">
               <Label htmlFor="normal-ac-display" className="text-lg font-medium">Normal</Label>
-              <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => showAcBreakdown('Normal')}>
+              <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')} disabled={!onOpenAcBreakdownDialog}>
                 <Info className="h-4 w-4" />
               </Button>
             </div>
@@ -182,7 +141,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate }: ArmorClassPane
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
              <div className="flex items-center">
               <Label htmlFor="touch-ac-display" className="text-lg font-medium">Touch</Label>
-              <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => showAcBreakdown('Touch')}>
+              <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')} disabled={!onOpenAcBreakdownDialog}>
                 <Info className="h-4 w-4" />
               </Button>
             </div>
@@ -191,7 +150,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate }: ArmorClassPane
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
             <div className="flex items-center">
               <Label htmlFor="flat-footed-ac-display" className="text-lg font-medium">Flat-Footed</Label>
-              <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => showAcBreakdown('Flat-Footed')}>
+              <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Flat-Footed')} disabled={!onOpenAcBreakdownDialog}>
                 <Info className="h-4 w-4" />
               </Button>
             </div>
@@ -199,7 +158,6 @@ export function ArmorClassPanel({ character, onCharacterUpdate }: ArmorClassPane
           </div>
 
           <Separator className="my-3" />
-
           <div className="flex items-center justify-between pt-2">
             <Label htmlFor="ac-misc-modifier-input" className="text-sm font-medium">Custom Modifier</Label>
             <NumberSpinnerInput
@@ -211,23 +169,15 @@ export function ArmorClassPanel({ character, onCharacterUpdate }: ArmorClassPane
                 }
               }}
               disabled={!isEditable}
-              min={-20} // Example range
-              max={20}  // Example range
+              min={-20}
+              max={20}
               inputClassName="w-24 h-9 text-base"
               buttonClassName="h-9 w-9"
             />
           </div>
         </CardContent>
       </Card>
-      {currentInfoDialogData && (
-        <InfoDisplayDialog
-          isOpen={isInfoDialogOpen}
-          onOpenChange={setIsInfoDialogOpen}
-          title={currentInfoDialogData.title}
-          detailsList={currentInfoDialogData.detailsList}
-        />
-      )}
+      {/* InfoDisplayDialog rendering removed, handled by parent */}
     </>
   );
 }
-

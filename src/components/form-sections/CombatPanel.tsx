@@ -2,7 +2,7 @@
 'use client';
 
 import *as React from 'react';
-import type { Character, BabBreakdownDetails, InitiativeBreakdownDetails, GrappleModifierBreakdownDetails, GrappleDamageBreakdownDetails, CharacterSize } from '@/types/character';
+import type { Character, BabBreakdownDetails, InitiativeBreakdownDetails, GrappleModifierBreakdownDetails, GrappleDamageBreakdownDetails, CharacterSize, InfoDialogContentType } from '@/types/character';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -11,18 +11,17 @@ import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Swords, Info } from 'lucide-react';
 import { getAbilityModifierByName, getBab, calculateInitiative, calculateGrapple, getSizeModifierGrapple, getUnarmedGrappleDamage } from '@/lib/dnd-utils';
 import { SIZES, DND_CLASSES } from '@/types/character';
+import { ArmorClassPanel } from './ArmorClassPanel'; // Added import
 
 
 interface CombatPanelProps {
   character: Character;
   onCharacterUpdate: (field: keyof Character, value: any) => void;
-  onOpenCombatStatInfoDialog: (
-    breakdownType: 'bab' | 'initiative' | 'grappleModifier' | 'grappleDamage',
-    details: BabBreakdownDetails | InitiativeBreakdownDetails | GrappleModifierBreakdownDetails | GrappleDamageBreakdownDetails
-  ) => void;
+  onOpenCombatStatInfoDialog: (contentType: InfoDialogContentType) => void;
+  onOpenAcBreakdownDialog?: (acType: 'Normal' | 'Touch' | 'Flat-Footed') => void; // Prop for ArmorClassPanel
 }
 
-export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfoDialog }: CombatPanelProps) {
+export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfoDialog, onOpenAcBreakdownDialog }: CombatPanelProps) {
   const abilityScores = character.abilityScores || {};
   const classes = character.classes || [];
   const strModifier = getAbilityModifierByName(abilityScores, 'strength');
@@ -38,52 +37,29 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
   const totalGrappleModifier = baseGrappleModifier + (character.grappleMiscModifier || 0);
 
   
-  // Grapple Damage Display Logic
   const grappleDamageBaseDice = character.grappleDamage_baseNotes.split(' ')[0] || '0';
   const totalNumericGrappleBonus = strModifier + (character.grappleDamage_bonus || 0);
   const displayedGrappleDamageTotal = `${grappleDamageBaseDice}${totalNumericGrappleBonus !== 0 ? `${totalNumericGrappleBonus >= 0 ? '+' : ''}${totalNumericGrappleBonus}` : ''}`;
 
 
   const handleBabInfo = () => {
-    const details: BabBreakdownDetails = {
-        baseBabFromClasses: baseBabArray,
-        miscModifier: character.babMiscModifier || 0,
-        totalBab: totalBabWithModifier,
-        characterClassLabel: DND_CLASSES.find(c => c.value === character.classes[0]?.className)?.label || character.classes[0]?.className
-    };
-    onOpenCombatStatInfoDialog('bab', details);
+    onOpenCombatStatInfoDialog({ type: 'babBreakdown' });
   };
 
   const handleInitiativeInfo = () => {
-    const details: InitiativeBreakdownDetails = {
-        dexModifier: dexModifier,
-        miscModifier: character.initiativeMiscModifier || 0,
-        totalInitiative: baseInitiative,
-    };
-    onOpenCombatStatInfoDialog('initiative', details);
+    onOpenCombatStatInfoDialog({ type: 'initiativeBreakdown' });
   };
 
   const handleGrappleModifierInfo = () => {
-     const details: GrappleModifierBreakdownDetails = {
-        baseAttackBonus: baseBabArray[0] || 0,
-        strengthModifier: strModifier,
-        sizeModifierGrapple: sizeModGrapple,
-        miscModifier: character.grappleMiscModifier || 0,
-        totalGrappleModifier: totalGrappleModifier,
-    };
-    onOpenCombatStatInfoDialog('grappleModifier', details);
+    onOpenCombatStatInfoDialog({ type: 'grappleModifierBreakdown' });
   };
   
   const handleGrappleDamageInfo = () => {
-    const details: GrappleDamageBreakdownDetails = {
-        baseDamage: character.grappleDamage_baseNotes, 
-        bonus: character.grappleDamage_bonus || 0,
-        strengthModifier: strModifier,
-    };
-    onOpenCombatStatInfoDialog('grappleDamage', details);
-};
+    onOpenCombatStatInfoDialog({ type: 'grappleDamageBreakdown' });
+  };
 
   return (
+    <>
     <Card>
       <CardHeader>
         <div className="flex items-center space-x-3">
@@ -93,7 +69,6 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
         <CardDescription>Key offensive and grappling statistics.</CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-        {/* BAB Sub-panel */}
         <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
           <Label htmlFor="bab-display" className="text-md font-medium block">Base Attack Bonus</Label>
           <div className="flex items-center justify-center">
@@ -119,7 +94,6 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
           </div>
         </div>
 
-        {/* Initiative Sub-panel */}
         <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
           <Label htmlFor="initiative-display" className="text-md font-medium block">Initiative</Label>
            <div className="flex items-center justify-center">
@@ -145,7 +119,6 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
           </div>
         </div>
         
-        {/* Grapple Modifier Sub-panel */}
         <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
           <Label htmlFor="grapple-mod-display" className="text-md font-medium block">Grapple Modifier</Label>
           <div className="flex items-center justify-center">
@@ -171,7 +144,6 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
           </div>
         </div>
 
-        {/* Grapple Damage Sub-panel */}
         <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
             <Label htmlFor="grapple-damage-display" className="text-md font-medium block">Grapple Damage</Label>
             <div className="flex items-center justify-center">
@@ -194,7 +166,6 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
                         </SelectTrigger>
                         <SelectContent>
                              <SelectItem value="unarmed">Unarmed</SelectItem>
-                            {/* Future weapon options will be added here */}
                         </SelectContent>
                     </Select>
                 </div>
@@ -215,6 +186,11 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
         </div>
       </CardContent>
     </Card>
+    <ArmorClassPanel
+        character={character}
+        onCharacterUpdate={onCharacterUpdate}
+        onOpenAcBreakdownDialog={onOpenAcBreakdownDialog}
+    />
+    </>
   );
 }
-

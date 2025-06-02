@@ -13,9 +13,9 @@ import { Button } from '@/components/ui/button';
 import { Info } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
-  Character, AbilityName, AbilityScoreBreakdown, DetailedAbilityScores, RaceSpecialQualities, SkillModifierBreakdownDetails,
+  Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities, SkillModifierBreakdownDetails,
   InfoDialogContentType, ResistanceFieldKeySheet, DndRaceOption, DndClassOption, CharacterAlignmentObject, DndDeityOption,
-  FeatDefinitionJsonData, SkillDefinitionForDisplay, SkillDefinitionJsonData, Feat,
+  FeatDefinitionJsonData, SkillDefinitionForDisplay,
   BabBreakdownDetails as BabBreakdownDetailsType,
   InitiativeBreakdownDetails as InitiativeBreakdownDetailsType,
   GrappleModifierBreakdownDetails as GrappleModifierBreakdownDetailsType,
@@ -57,7 +57,7 @@ interface InfoDisplayDialogProps {
 type DerivedDialogData = {
   title: string;
   htmlContent?: string;
-  abilityModifiers?: Array<{ ability: AbilityName; change: number }>;
+  abilityModifiers?: Array<{ ability: Exclude<AbilityName, 'none'>; change: number }>;
   skillBonuses?: Array<{ skillName: string; bonus: number }>;
   grantedFeats?: Array<{ featId: string; name: string; note?: string; levelAcquired?: number }>;
   bonusFeatSlots?: number;
@@ -146,7 +146,8 @@ export function InfoDisplayDialog({
         }
         const racialSkillPointBonus = getRaceSkillPointsBonusPerLevel(character.race);
         if (racialSkillPointBonus > 0) {
-          classSpecificDetails.push({ label: "Racial Bonus Skill Points/Level", value: `+${racialSkillPointBonus}`, isBold: true });
+          // This seems like it should be in race details, but keeping if current design requires
+          // classSpecificDetails.push({ label: "Racial Bonus Skill Points/Level", value: `+${racialSkillPointBonus}`, isBold: true });
         }
         const grantedFeatsFormatted = classData?.grantedFeats?.map(gf => ({
             ...gf, name: allCombinedFeatDefinitions.find(f => f.value === gf.featId)?.label || gf.featId
@@ -252,13 +253,14 @@ export function InfoDisplayDialog({
         if ((contentType.acType === 'Normal' || contentType.acType === 'Touch') && character.dodgeBonus) {
           details.push({ label: 'Dodge Bonus', value: character.dodgeBonus });
         }
+        // Changed label from "Misc Modifier" to "Custom Modifier"
         if (character.acMiscModifier) details.push({ label: 'Custom Modifier', value: character.acMiscModifier });
+
 
         if (contentType.acType === 'Normal') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + dexMod + sizeModAC + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (character.acMiscModifier || 0);
         else if (contentType.acType === 'Touch') totalCalculated = 10 + dexMod + sizeModAC + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (character.acMiscModifier || 0);
         else if (contentType.acType === 'Flat-Footed') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + sizeModAC + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (character.acMiscModifier || 0);
         
-        details.forEach(d => { if (typeof d.value === 'number' && d.label !== 'Base' && d.label !== 'Total') totalCalculated += 0 /* already done above */; });
         details.push({ label: 'Total', value: totalCalculated, isBold: true });
         data = { title: `${contentType.acType} AC Breakdown`, detailsList: details };
         break;
@@ -404,11 +406,11 @@ export function InfoDisplayDialog({
                   </div>
                    {babBreakdown.miscModifier !== 0 && (
                     <div className="flex justify-between">
-                        <span>Misc Modifier:</span>
+                        <span>Custom Modifier:</span> {/* Point 6 */}
                         {renderModifierValue(babBreakdown.miscModifier)}
                     </div>
                   )}
-                  <Separator className="my-2" />
+                  <Separator className="my-3" /> {/* Point 7 */}
                   <div className="flex justify-between text-base">
                     <span className="font-semibold">Total Base Attack Bonus:</span>
                     <span className="font-bold text-accent">{babBreakdown.totalBab.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
@@ -434,7 +436,7 @@ export function InfoDisplayDialog({
                         {renderModifierValue(initiativeBreakdown.miscModifier)}
                     </div>
                   )}
-                  <Separator className="my-2" />
+                  <Separator className="my-3" /> {/* Point 7 */}
                   <div className="flex justify-between text-base">
                     <span className="font-semibold">Total Initiative:</span>
                     {renderModifierValue(initiativeBreakdown.totalInitiative, undefined, undefined, undefined, "text-accent", true)}
@@ -468,7 +470,7 @@ export function InfoDisplayDialog({
                         {renderModifierValue(grappleModifierBreakdown.miscModifier)}
                     </div>
                   )}
-                  <Separator className="my-2" />
+                  <Separator className="my-3" /> {/* Point 7 */}
                   <div className="flex justify-between text-base">
                     <span className="font-semibold">Total Grapple Modifier:</span>
                     {renderModifierValue(grappleModifierBreakdown.totalGrappleModifier, undefined, undefined, undefined, "text-accent", true)}
@@ -508,7 +510,7 @@ export function InfoDisplayDialog({
                         {renderModifierValue(grappleDamageBreakdown.bonus)}
                     </div>
                   )}
-                  <Separator className="my-2" />
+                  <Separator className="my-3" /> {/* Point 7 */}
                   <div className="flex justify-between text-base">
                     <span className="font-semibold">Total:</span>
                     <span className="font-bold text-accent">
@@ -539,7 +541,7 @@ export function InfoDisplayDialog({
                       </div>
                     )
                   ))}
-                  <Separator className="my-2" />
+                  <Separator className="my-3" /> {/* Point 3 */}
                   <div className="flex justify-between text-base">
                     <span className="font-semibold">Final Score:</span>
                     <span className="font-bold text-accent">{abilityScoreBreakdown.finalScore}</span>
@@ -633,7 +635,55 @@ export function InfoDisplayDialog({
             </>
           )}
 
-          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && abilityModifiers && abilityModifiers.length > 0 && (
+          {/* Race Info: Granted Feats and Bonus Feat Slots */}
+          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && contentType?.type === 'race' && (
+            <>
+              {(htmlContent || (abilityModifiers && abilityModifiers.length > 0) || (skillBonuses && skillBonuses.length > 0)) && <Separator className="my-4" />}
+              <div>
+                <h3 className="text-md font-semibold mb-2 text-foreground">Racial Feat Adjustments:</h3>
+                <div className="text-sm space-y-1">
+                  {bonusFeatSlots && bonusFeatSlots > 0 && (
+                    <div className="flex justify-between">
+                      <span>Bonus Feat Slots:</span>
+                      {renderModifierValue(bonusFeatSlots)}
+                    </div>
+                  )}
+                  {grantedFeats && grantedFeats.length > 0 && (
+                    <div>
+                      <span>Granted Feats: </span>
+                      <span className="text-foreground">
+                        {grantedFeats.map(feat => `${feat.name}${feat.note ? ` ${feat.note}` : ''}`).join(', ')}
+                      </span>
+                    </div>
+                  )}
+                  {(!bonusFeatSlots || bonusFeatSlots === 0) && (!grantedFeats || grantedFeats.length === 0) && (
+                    <p className="text-muted-foreground">None</p>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Class Info: Granted Feats */}
+           {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && contentType?.type === 'class' && grantedFeats && grantedFeats.length > 0 && (
+             <>
+              {(htmlContent || (detailsList && detailsList.length > 0)) && <Separator className="my-4" />}
+              <div>
+                <h3 className="text-md font-semibold mb-2 text-foreground">Class Features & Granted Feats:</h3>
+                <ul className="list-disc list-inside space-y-1 text-sm">
+                  {grantedFeats.map(({ featId, name, note, levelAcquired }, index) => (
+                    <li key={`${featId}-${index}`}>
+                      <span>{name}</span>
+                      {note && <span className="text-muted-foreground text-xs ml-1">{note}</span>}
+                      {levelAcquired !== undefined && <span className="text-muted-foreground text-xs ml-1">(Lvl {levelAcquired})</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          )}
+
+          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && abilityModifiers && abilityModifiers.length > 0 && contentType?.type === 'race' && (
             <>
               {(htmlContent) && <Separator className="my-4" />}
               <div>
@@ -650,7 +700,7 @@ export function InfoDisplayDialog({
             </>
           )}
 
-          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && skillBonuses && skillBonuses.length > 0 && (
+          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && skillBonuses && skillBonuses.length > 0 && contentType?.type === 'race' && (
             <>
               {(htmlContent || (abilityModifiers && abilityModifiers.length > 0)) && <Separator className="my-4" />}
               <div>
@@ -667,31 +717,12 @@ export function InfoDisplayDialog({
             </>
           )}
 
-          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && (grantedFeats?.length || bonusFeatSlots) ? (
-             <>
-              {(htmlContent || (abilityModifiers && abilityModifiers.length > 0) || (skillBonuses && skillBonuses.length > 0)) && <Separator className="my-4" />}
-              <div>
-                 <h3 className="text-md font-semibold mb-2 text-foreground">Racial Feat Adjustments:</h3>
-                 <ul className="space-y-1 text-sm">
-                  {bonusFeatSlots && bonusFeatSlots > 0 && (
-                    <li className="flex justify-between">
-                      <span>Bonus Feat Slots:</span>
-                       {renderModifierValue(bonusFeatSlots)}
-                    </li>
-                  )}
-                  {grantedFeats && grantedFeats.map(({ featId, name, note }, index) => (
-                    <li key={`${featId}-${index}`}>
-                      <span>{name} {note && <span className="text-muted-foreground text-xs">{note}</span>}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </>
-          ) : null}
 
           {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && detailsList && detailsList.length > 0 && (
              <>
               {(htmlContent || hasAnyBonusSection) && (contentType?.type !== 'acBreakdown' && contentType?.type !== 'class') && <Separator className="my-4" />}
+              {/* Point 1: Added separator for class info if description exists */}
+              {(htmlContent && contentType?.type === 'class') && <Separator className="my-3" />}
               <div>
                 <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
                 {detailsList!.filter(detail => detail.label.toLowerCase() !== 'total').map((detail, index) => {
@@ -727,3 +758,4 @@ export function InfoDisplayDialog({
     </Dialog>
   );
 }
+

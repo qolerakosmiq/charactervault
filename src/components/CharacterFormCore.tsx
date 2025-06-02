@@ -9,7 +9,7 @@ import type {
   Skill as SkillType, DndClassId, DndDeityId, GenderId,
   DndRaceOption, DetailedAbilityScores, AbilityScoreBreakdown,
   FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData, CharacterSize,
-  ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType
+  ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType, ResistanceFieldKeySheet
 } from '@/types/character';
 import {
   SIZES,
@@ -50,7 +50,7 @@ import { SkillsFormSection } from '@/components/SkillsFormSection';
 import { FeatsFormSection } from '@/components/FeatsFormSection';
 import { SavingThrowsPanel } from '@/components/form-sections/SavingThrowsPanel';
 import { ArmorClassPanel } from '@/components/form-sections/ArmorClassPanel';
-import { CombatPanel } from '@/components/form-sections/CombatPanel'; // New Import
+import { CombatPanel } from '@/components/form-sections/CombatPanel';
 import { ResistancesPanel } from '@/components/form-sections/ResistancesPanel';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
@@ -65,11 +65,6 @@ interface CharacterFormCoreProps {
   onSave: (character: Character) => void;
   isCreating: boolean;
 }
-
-type ResistanceField = Exclude<keyof Pick<Character,
-  'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
-  'spellResistance' | 'powerResistance' | 'fortification'
->, 'damageReduction'>;
 
 
 const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
@@ -101,7 +96,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     numericPointBuyBudgetFromStore = !isNaN(parsed) ? parsed : 25;
   }
   else {
-    numericPointBuyBudgetFromStore = 25; // Default if store value is invalid or not string/number
+    numericPointBuyBudgetFromStore = 25;
   }
   const pointBuyBudget = isClient ? numericPointBuyBudgetFromStore : 25;
 
@@ -163,9 +158,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
     if (initialCharacter) {
       return {
-        ...baseCharData, // Start with all defaults
-        ...initialCharacter, // Override with provided initial character
-        // Ensure nested objects that might be missing are present
+        ...baseCharData, 
+        ...initialCharacter, 
         alignment: initialCharacter.alignment || 'true-neutral',
         abilityScores: initialCharacter.abilityScores || defaultBaseAbilityScores,
         abilityScoreTempCustomModifiers: initialCharacter.abilityScoreTempCustomModifiers || defaultTempCustomMods,
@@ -313,7 +307,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }));
   }, [character.race, character.classes, allAvailableFeatDefinitions]);
 
-  // Effect to manage granted Barbarian Damage Reduction
   React.useEffect(() => {
     const barbarianClass = character.classes.find(c => c.className === 'barbarian');
     const barbarianLevel = barbarianClass?.level || 0;
@@ -391,7 +384,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     allAvailableSkillDefinitionsForDisplay
   ]);
 
-  // Effect to update grappleDamage_baseNotes when size or weapon choice changes
   React.useEffect(() => {
     let newBaseNotes = '';
     const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size || 'Unknown Size';
@@ -400,8 +392,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       const unarmedDamageDice = getUnarmedGrappleDamage(character.size);
       newBaseNotes = `${unarmedDamageDice} (${sizeLabel} Unarmed)`;
     } else {
-      // Logic for other weapons would go here if implemented
-      // For now, assume only unarmed or a custom note if not "unarmed"
       newBaseNotes = character.grappleDamage_baseNotes; 
     }
 
@@ -424,8 +414,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
 
   const handleResistanceChange = (
-    field: ResistanceField,
-    subField: 'customMod', // Only customMod is editable for now
+    field: ResistanceFieldKeySheet,
+    subField: 'customMod',
     value: number
   ) => {
     setCharacter(prev => ({
@@ -591,6 +581,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const handleCancel = () => { router.push('/'); };
 
+  // Info Dialog Open Handlers
   const openInfoDialog = (contentType: InfoDialogContentType) => {
     setActiveInfoDialogType(contentType);
     setIsInfoDialogOpen(true);
@@ -611,10 +602,17 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const handleOpenAbilityScoreBreakdownDialog = (ability: Exclude<AbilityName, 'none'>) => {
     openInfoDialog({ type: 'abilityScoreBreakdown', abilityName: ability });
   };
-  const handleOpenCombatStatInfoDialog = (
-    breakdownType: 'bab' | 'initiative' | 'grappleModifier' | 'grappleDamage'
-  ) => {
-    openInfoDialog({ type: `${breakdownType}Breakdown` as InfoDialogContentType['type'] } as InfoDialogContentType);
+  const handleOpenCombatStatInfoDialog = (contentType: InfoDialogContentType) => {
+    openInfoDialog(contentType);
+  };
+  const handleOpenSkillInfoDialog = (skillId: string) => {
+    openInfoDialog({ type: 'skillModifierBreakdown', skillId });
+  };
+  const handleOpenAcBreakdownDialog = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
+    openInfoDialog({ type: 'acBreakdown', acType });
+  };
+  const handleOpenResistanceInfoDialog = (resistanceField: ResistanceFieldKeySheet) => {
+    openInfoDialog({ type: 'resistanceBreakdown', resistanceField });
   };
 
 
@@ -639,7 +637,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       classes: character.classes.length > 0 ? character.classes : [{id: crypto.randomUUID(), className: '', level: 1}],
     };
     if (finalCharacterData.classes[0]) {
-        finalCharacterData.classes[0].level = 1; // Ensure level 1 for single class for now
+        finalCharacterData.classes[0].level = 1; 
     }
 
     onSave(finalCharacterData);
@@ -713,6 +711,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
           onSkillChange={handleSkillChange}
           onEditCustomSkillDefinition={handleOpenEditCustomSkillDialog}
+          onOpenSkillInfoDialog={handleOpenSkillInfoDialog}
         />
 
         <FeatsFormSection
@@ -737,6 +736,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           <ArmorClassPanel 
             character={character} 
             onCharacterUpdate={handleCharacterFieldUpdate} 
+            onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
           />
         </div>
         
@@ -744,6 +744,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             character={character}
             onCharacterUpdate={handleCharacterFieldUpdate}
             onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog}
+            onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
         />
 
         <ResistancesPanel
@@ -760,6 +761,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           }}
           onResistanceChange={handleResistanceChange}
           onDamageReductionChange={handleDamageReductionChange}
+          onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
         />
 
 
