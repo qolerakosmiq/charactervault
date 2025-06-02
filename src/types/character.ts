@@ -1,8 +1,4 @@
 
-
-
-
-
 import baseDataJson from '@/data/dnd-base.json';
 import customBaseDataJson from '@/data/custom-base.json';
 import racesDataJson from '@/data/dnd-races.json';
@@ -175,7 +171,8 @@ export interface Character {
   size: CharacterSize;
   age: number;
   gender: GenderId | string | '';
-  abilityScores: AbilityScores;
+  abilityScores: AbilityScores; // Base scores
+  abilityScoreTempCustomModifiers: AbilityScores; // Temporary custom modifiers
   hp: number;
   maxHp: number;
   armorBonus: number;
@@ -242,7 +239,7 @@ export type CharacterSizeObject = {
   label: string;
   acModifier: number;
   skillModifiers?: Partial<Record<string, number>>; // e.g. { "hide": 4 } skillId to bonus
-  grappleDamage?: string; // New property for grapple damage
+  grappleDamage?: string;
 };
 export type CharacterSize =
   | "fine" | "diminutive" | "tiny" | "small" | "medium" | "large" | "huge" | "gargantuan" | "colossal" | '';
@@ -833,6 +830,7 @@ export function calculateDetailedAbilityScores(character: Character, globalCusto
   const result: Partial<DetailedAbilityScores> = {};
   const racialQualities = getRaceSpecialQualities(character.race);
   const agingDetails = getNetAgingEffects(character.race, character.age);
+  const tempCustomModifiers = character.abilityScoreTempCustomModifiers || DEFAULT_ABILITIES; // Ensure it exists
 
   const allFeatDefs: (FeatDefinitionJsonData & { isCustom?: boolean })[] = [
     ...DND_FEATS_DEFINITIONS,
@@ -856,6 +854,12 @@ export function calculateDetailedAbilityScores(character: Character, globalCusto
     if (agingModObj && agingModObj.change !== 0) {
       currentScore += agingModObj.change;
       components.push({ source: `Aging (${agingDetails.categoryName})`, value: agingModObj.change });
+    }
+    
+    const tempCustomModValue = tempCustomModifiers[ability];
+    if (tempCustomModValue !== 0 && tempCustomModValue !== undefined) {
+      currentScore += tempCustomModValue;
+      components.push({ source: "Custom Temp Modifier", value: tempCustomModValue });
     }
 
     let featTotalMod = 0;
@@ -916,8 +920,3 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
-
-
-
-
-

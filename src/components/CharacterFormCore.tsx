@@ -1,7 +1,4 @@
 
-
-
-
 'use client';
 
 import *as React from 'react';
@@ -111,6 +108,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const [character, setCharacter] = React.useState<Character>(() => {
     const defaultBaseAbilityScores = { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES)) as AbilityScores) };
+    const defaultTempCustomMods: AbilityScores = { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 };
     const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: '', level: 1 }];
     const defaultSize: CharacterSize = 'medium';
     const defaultUnarmedGrappleDice = getUnarmedGrappleDamage(defaultSize);
@@ -131,11 +129,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
     let initialSkills = initialCharacter?.skills || getInitialCharacterSkills(defaultClasses);
 
-
-    return initialCharacter || {
+    const baseCharData = {
       id: crypto.randomUUID(),
       name: '', race: '', alignment: 'true-neutral', deity: '', size: defaultSize, age: 20, gender: '',
-      abilityScores: defaultBaseAbilityScores, hp: 10, maxHp: 10,
+      abilityScores: defaultBaseAbilityScores,
+      abilityScoreTempCustomModifiers: defaultTempCustomMods,
+      hp: 10, maxHp: 10,
       armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0,
       deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, 
       
@@ -161,6 +160,31 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       damageReduction: [],
       fortification: { ...DEFAULT_RESISTANCE_VALUE },
     };
+
+    if (initialCharacter) {
+      return {
+        ...baseCharData, // Start with all defaults
+        ...initialCharacter, // Override with provided initial character
+        // Ensure nested objects that might be missing are present
+        abilityScores: initialCharacter.abilityScores || defaultBaseAbilityScores,
+        abilityScoreTempCustomModifiers: initialCharacter.abilityScoreTempCustomModifiers || defaultTempCustomMods,
+        savingThrows: initialCharacter.savingThrows || JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)),
+        classes: initialCharacter.classes && initialCharacter.classes.length > 0 ? initialCharacter.classes : defaultClasses,
+        skills: initialCharacter.skills || initialSkills,
+        feats: initialCharacter.feats || initialFeats,
+        fireResistance: initialCharacter.fireResistance || { ...DEFAULT_RESISTANCE_VALUE },
+        coldResistance: initialCharacter.coldResistance || { ...DEFAULT_RESISTANCE_VALUE },
+        acidResistance: initialCharacter.acidResistance || { ...DEFAULT_RESISTANCE_VALUE },
+        electricityResistance: initialCharacter.electricityResistance || { ...DEFAULT_RESISTANCE_VALUE },
+        sonicResistance: initialCharacter.sonicResistance || { ...DEFAULT_RESISTANCE_VALUE },
+        spellResistance: initialCharacter.spellResistance || { ...DEFAULT_RESISTANCE_VALUE },
+        powerResistance: initialCharacter.powerResistance || { ...DEFAULT_RESISTANCE_VALUE },
+        damageReduction: initialCharacter.damageReduction || [],
+        fortification: initialCharacter.fortification || { ...DEFAULT_RESISTANCE_VALUE },
+        grappleWeaponChoice: initialCharacter.grappleWeaponChoice || 'unarmed',
+      };
+    }
+    return baseCharData;
   });
 
   const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<CharacterFormCoreInfoSectionProps['ageEffectsDetails']>(null);
@@ -206,7 +230,13 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const actualAbilityScoresForSavesAndSkills = React.useMemo(() => {
     if (!detailedAbilityScores) {
-      return character.abilityScores;
+      // Fallback if detailed scores are not yet calculated
+      // This should ideally be rare, but handles initial render before effect
+      const scoresWithTemp: Partial<AbilityScores> = {};
+      for (const ability of abilityNames) {
+        scoresWithTemp[ability] = (character.abilityScores[ability] || 0) + (character.abilityScoreTempCustomModifiers?.[ability] || 0);
+      }
+      return scoresWithTemp as AbilityScores;
     }
     const finalScores: Partial<AbilityScores> = {};
     for (const ability of abilityNames) {
@@ -214,7 +244,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       finalScores[ability] = detailedAbilityScores[ability].finalScore;
     }
     return finalScores as AbilityScores;
-  }, [detailedAbilityScores, character.abilityScores]);
+  }, [detailedAbilityScores, character.abilityScores, character.abilityScoreTempCustomModifiers]);
 
 
   React.useEffect(() => {
@@ -369,11 +399,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       const unarmedDamageDice = getUnarmedGrappleDamage(character.size);
       newBaseNotes = `${unarmedDamageDice} (${sizeLabel} Unarmed)`;
     } else {
-      // Future: Handle selected weapon's damage dice
-      // For now, if it's not 'unarmed', we'll use a placeholder or the current notes if they exist.
-      // This part will need to be fleshed out when weapons are implemented.
-      // newBaseNotes = `0 (Weapon: ${character.grappleWeaponChoice})`; // Placeholder
-      newBaseNotes = character.grappleDamage_baseNotes; // Keep existing notes if not unarmed and not yet implemented
+      newBaseNotes = character.grappleDamage_baseNotes; 
     }
 
     if (character.grappleDamage_baseNotes !== newBaseNotes) {
@@ -421,6 +447,17 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       },
     }));
   };
+
+  const handleAbilityScoreTempCustomModifierChange = (ability: Exclude<AbilityName, 'none'>, value: number) => {
+    setCharacter(prev => ({
+      ...prev,
+      abilityScoreTempCustomModifiers: {
+        ...prev.abilityScoreTempCustomModifiers,
+        [ability]: value,
+      },
+    }));
+  };
+
 
   const handleMultipleBaseAbilityScoresChange = (newScores: AbilityScores) => {
     setCharacter(prev => ({ ...prev, abilityScores: newScores }));
@@ -772,8 +809,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         <CharacterFormAbilityScoresSection
           baseAbilityScores={character.abilityScores}
           detailedAbilityScores={detailedAbilityScores}
+          abilityScoreTempCustomModifiers={character.abilityScoreTempCustomModifiers}
           onBaseAbilityScoreChange={handleBaseAbilityScoreChange}
           onMultipleBaseAbilityScoresChange={handleMultipleBaseAbilityScoresChange}
+          onAbilityScoreTempCustomModifierChange={handleAbilityScoreTempCustomModifierChange}
           onOpenAbilityScoreBreakdownDialog={handleOpenAbilityScoreBreakdownDialog}
           isCreating={isCreating}
         />
@@ -961,4 +1000,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-
