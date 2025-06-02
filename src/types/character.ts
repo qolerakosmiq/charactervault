@@ -859,7 +859,7 @@ export function calculateDetailedAbilityScores(character: Character, globalCusto
     const tempCustomModValue = tempCustomModifiers[ability];
     if (tempCustomModValue !== 0 && tempCustomModValue !== undefined) {
       currentScore += tempCustomModValue;
-      components.push({ source: "Custom Temp Modifier", value: tempCustomModValue });
+      components.push({ source: "Custom Temporary Modifier", value: tempCustomModValue });
     }
 
     let featTotalMod = 0;
