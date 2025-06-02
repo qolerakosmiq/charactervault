@@ -60,7 +60,7 @@ type DerivedDialogData = {
   abilityModifiers?: Array<{ ability: Exclude<AbilityName, 'none'>; change: number }>;
   skillBonuses?: Array<{ skillName: string; bonus: number }>;
   grantedFeats?: Array<{ featId: string; name: string; note?: string; levelAcquired?: number }>;
-  bonusFeatSlots?: number;
+  bonusFeatSlots?: number | undefined; // Changed to allow undefined
   abilityScoreBreakdown?: AbilityScoreBreakdown;
   skillModifierBreakdown?: SkillModifierBreakdownDetails;
   resistanceBreakdown?: ResistanceBreakdownDetails;
@@ -347,7 +347,8 @@ export function InfoDisplayDialog({
     } else { 
         colorClass = zeroColor;
     }
-    const prefix = numValue > 0 ? '+' : (numValue === 0 ? '+' : '');
+    const prefix = numValue > 0 ? '+' : (numValue === 0 ? '' : ''); // No plus for zero unless it's a specific case
+    if (value === 0 && !isTotal) return <span className={cn("font-bold", colorClass)}>0</span>; // Display 0 plainly if not total
     return <span className={cn("font-bold", colorClass)}>{prefix}{numValue}</span>;
   };
 
@@ -371,10 +372,10 @@ export function InfoDisplayDialog({
   } = derivedData;
   
   const sectionHeadingBaseClass = "text-md font-semibold mb-2";
-  const sectionHeadingClass = `${sectionHeadingBaseClass} text-foreground/80`;
+  const sectionHeadingClass = `${sectionHeadingBaseClass} text-primary`;
 
   const sectionHeading = abilityScoreBreakdown || skillModifierBreakdown || resistanceBreakdown || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || (detailsList && (contentType?.type === 'acBreakdown' || contentType?.type === 'class')) ? "Calculation:" : "Details:";
-  const hasAnyBonusSection = abilityModifiers?.length || skillBonuses?.length || grantedFeats?.length || bonusFeatSlots;
+  const hasAnyBonusSection = abilityModifiers?.length || skillBonuses?.length || grantedFeats?.length || bonusFeatSlots !== undefined;
 
 
   return (
@@ -432,7 +433,7 @@ export function InfoDisplayDialog({
                   </div>
                   {initiativeBreakdown.miscModifier !== 0 && (
                     <div className="flex justify-between">
-                        <span>Misc Modifier:</span>
+                        <span>Custom Modifier:</span>
                         {renderModifierValue(initiativeBreakdown.miscModifier)}
                     </div>
                   )}
@@ -466,7 +467,7 @@ export function InfoDisplayDialog({
                   </div>
                   {grappleModifierBreakdown.miscModifier !== 0 && (
                     <div className="flex justify-between">
-                        <span>Misc Modifier:</span>
+                        <span>Custom Modifier:</span>
                         {renderModifierValue(grappleModifierBreakdown.miscModifier)}
                     </div>
                   )}
@@ -650,13 +651,13 @@ export function InfoDisplayDialog({
                   )}
                   {grantedFeats && grantedFeats.length > 0 && (
                     <div>
-                      <span className="text-foreground/80">Granted Feats: </span>
+                      <span className="text-primary">Granted Feats: </span>
                       <span className="text-foreground">
                         {grantedFeats.map(feat => `${feat.name}${feat.note ? ` ${feat.note}` : ''}`).join(', ')}
                       </span>
                     </div>
                   )}
-                  {!bonusFeatSlots && (!grantedFeats || grantedFeats.length === 0) && (
+                  {bonusFeatSlots === undefined && (!grantedFeats || grantedFeats.length === 0) && (
                     <p className="text-foreground">None</p>
                   )}
                 </div>
@@ -664,11 +665,23 @@ export function InfoDisplayDialog({
             </>
           )}
 
-          {/* Class Info: Granted Feats */}
-           {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && contentType?.type === 'class' && grantedFeats && grantedFeats.length > 0 && (
+          {/* Class Info: Granted Feats & DetailsList*/}
+           {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && contentType?.type === 'class' && (
              <>
-              {(htmlContent || (detailsList && detailsList.length > 0)) && <Separator className="my-4" />}
-              <div>
+              {(htmlContent) && <Separator className="my-3" />}
+              {detailsList && detailsList.length > 0 && (
+                <div className="mb-3">
+                  <h3 className={sectionHeadingClass}>Details:</h3>
+                  {detailsList!.map((detail, index) => (
+                      <div key={index} className="flex justify-between text-sm mb-0.5">
+                      <span className="text-muted-foreground">{detail.label}:</span>
+                      <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value}</span>
+                      </div>
+                  ))}
+                </div>
+              )}
+              {grantedFeats && grantedFeats.length > 0 && (
+                <div>
                 <h3 className={sectionHeadingClass}>Class Features & Granted Feats:</h3>
                 <ul className="list-disc list-inside space-y-1 text-sm">
                   {grantedFeats.map(({ featId, name, note, levelAcquired }, index) => (
@@ -680,6 +693,7 @@ export function InfoDisplayDialog({
                   ))}
                 </ul>
               </div>
+              )}
             </>
           )}
 
@@ -718,10 +732,10 @@ export function InfoDisplayDialog({
           )}
 
 
-          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && detailsList && detailsList.length > 0 && (
+          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && detailsList && detailsList.length > 0 && (contentType?.type !== 'class') && (
              <>
-              {(htmlContent || hasAnyBonusSection) && (contentType?.type !== 'acBreakdown' && contentType?.type !== 'class') && <Separator className="my-4" />}
-              {(htmlContent && (contentType?.type === 'class' || contentType?.type === 'acBreakdown')) && <Separator className="my-3" />}
+              {(htmlContent || hasAnyBonusSection) && (contentType?.type !== 'acBreakdown') && <Separator className="my-4" />}
+              {(htmlContent && (contentType?.type === 'acBreakdown')) && <Separator className="my-3" />}
               <div>
                 <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 {detailsList!.filter(detail => detail.label.toLowerCase() !== 'total').map((detail, index) => {
@@ -751,10 +765,9 @@ export function InfoDisplayDialog({
 
         </ScrollArea>
         <DialogFooter className="mt-2">
-          <Button onClick={() => onOpenChange(false)} type="button">Close</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)} type="button">Close</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
-
