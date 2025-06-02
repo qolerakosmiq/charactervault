@@ -60,7 +60,7 @@ type DerivedDialogData = {
   abilityModifiers?: Array<{ ability: Exclude<AbilityName, 'none'>; change: number }>;
   skillBonuses?: Array<{ skillName: string; bonus: number }>;
   grantedFeats?: Array<{ featId: string; name: string; note?: string; levelAcquired?: number }>;
-  bonusFeatSlots?: number; // Will be number > 0 or undefined
+  bonusFeatSlots?: number;
   abilityScoreBreakdown?: AbilityScoreBreakdown;
   skillModifierBreakdown?: SkillModifierBreakdownDetails;
   resistanceBreakdown?: ResistanceBreakdownDetails;
@@ -129,8 +129,8 @@ export function InfoDisplayDialog({
           htmlContent: raceData?.description || '<p>No description available.</p>',
           abilityModifiers: qualities.abilityEffects,
           skillBonuses: qualities.skillBonuses,
-          grantedFeats: qualities.grantedFeats,
           bonusFeatSlots: (raceBonusFeatSlots && raceBonusFeatSlots > 0) ? raceBonusFeatSlots : undefined,
+          grantedFeats: qualities.grantedFeats,
           detailsList: details.length > 0 ? details : undefined,
         };
         break;
@@ -359,7 +359,7 @@ export function InfoDisplayDialog({
     abilityModifiers,
     skillBonuses,
     grantedFeats,
-    bonusFeatSlots, // Note: this is now undefined if 0, or a positive number
+    bonusFeatSlots,
     abilityScoreBreakdown,
     skillModifierBreakdown,
     resistanceBreakdown,
@@ -370,6 +370,9 @@ export function InfoDisplayDialog({
     grappleDamageBreakdown,
   } = derivedData;
   
+  const sectionHeadingBaseClass = "text-md font-semibold mb-2";
+  const sectionHeadingClass = `${sectionHeadingBaseClass} text-foreground/80`;
+
   const sectionHeading = abilityScoreBreakdown || skillModifierBreakdown || resistanceBreakdown || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || (detailsList && (contentType?.type === 'acBreakdown' || contentType?.type === 'class')) ? "Calculation:" : "Details:";
   const hasAnyBonusSection = abilityModifiers?.length || skillBonuses?.length || grantedFeats?.length || bonusFeatSlots;
 
@@ -395,7 +398,7 @@ export function InfoDisplayDialog({
             <>
             {(htmlContent) && <Separator className="my-3"/>}
             <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
+                <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span>{babBreakdown.characterClassLabel || 'Class'} Base Attack Bonus:</span>
@@ -421,7 +424,7 @@ export function InfoDisplayDialog({
              <>
             {(htmlContent || babBreakdown) && <Separator className="my-3"/>}
             <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
+                <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span>Dexterity Modifier:</span>
@@ -447,7 +450,7 @@ export function InfoDisplayDialog({
             <>
             {(htmlContent || babBreakdown || initiativeBreakdown) && <Separator className="my-3"/>}
             <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
+                <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span>Base Attack Bonus:</span>
@@ -481,7 +484,7 @@ export function InfoDisplayDialog({
             <>
             {(htmlContent || babBreakdown || initiativeBreakdown || grappleModifierBreakdown) && <Separator className="my-3"/>}
             <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
+                <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span>Base Damage:</span>
@@ -524,7 +527,7 @@ export function InfoDisplayDialog({
             <>
             {(htmlContent || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown) && <Separator className="my-3"/>}
             <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
+                <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span>Base Score:</span>
@@ -556,7 +559,7 @@ export function InfoDisplayDialog({
             <>
             {(htmlContent || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || abilityScoreBreakdown) && <Separator className="my-3"/>}
             <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
+                <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
                   {skillModifierBreakdown.keyAbilityName && (
                     <div className="flex justify-between">
@@ -612,7 +615,7 @@ export function InfoDisplayDialog({
             <>
               {(htmlContent || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || abilityScoreBreakdown || skillModifierBreakdown) && <Separator className="my-3"/>}
               <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
+                <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span>Base Value:</span>
@@ -637,9 +640,9 @@ export function InfoDisplayDialog({
             <>
               {(htmlContent || (abilityModifiers && abilityModifiers.length > 0) || (skillBonuses && skillBonuses.length > 0)) && <Separator className="my-4" />}
               <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">Racial Feat Adjustments:</h3>
+                <h3 className={sectionHeadingClass}>Racial Feat Adjustments:</h3>
                 <div className="text-sm space-y-1">
-                  {bonusFeatSlots && ( // This implies bonusFeatSlots > 0 due to the change in derivedData
+                  {bonusFeatSlots && ( 
                     <div className="flex justify-between">
                       <span>Bonus Feat Slots:</span>
                       {renderModifierValue(bonusFeatSlots)}
@@ -647,14 +650,14 @@ export function InfoDisplayDialog({
                   )}
                   {grantedFeats && grantedFeats.length > 0 && (
                     <div>
-                      <span>Granted Feats: </span>
+                      <span className="text-foreground/80">Granted Feats: </span>
                       <span className="text-foreground">
                         {grantedFeats.map(feat => `${feat.name}${feat.note ? ` ${feat.note}` : ''}`).join(', ')}
                       </span>
                     </div>
                   )}
                   {!bonusFeatSlots && (!grantedFeats || grantedFeats.length === 0) && (
-                    <p className="text-muted-foreground">None</p>
+                    <p className="text-foreground">None</p>
                   )}
                 </div>
               </div>
@@ -666,7 +669,7 @@ export function InfoDisplayDialog({
              <>
               {(htmlContent || (detailsList && detailsList.length > 0)) && <Separator className="my-4" />}
               <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">Class Features & Granted Feats:</h3>
+                <h3 className={sectionHeadingClass}>Class Features & Granted Feats:</h3>
                 <ul className="list-disc list-inside space-y-1 text-sm">
                   {grantedFeats.map(({ featId, name, note, levelAcquired }, index) => (
                     <li key={`${featId}-${index}`}>
@@ -684,7 +687,7 @@ export function InfoDisplayDialog({
             <>
               {(htmlContent) && <Separator className="my-4" />}
               <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">Ability Score Adjustments:</h3>
+                <h3 className={sectionHeadingClass}>Ability Score Adjustments:</h3>
                 <ul className="space-y-1 text-sm">
                   {abilityModifiers!.map(({ ability, change }) => (
                     <li key={ability} className="flex justify-between">
@@ -701,7 +704,7 @@ export function InfoDisplayDialog({
             <>
               {(htmlContent || (abilityModifiers && abilityModifiers.length > 0)) && <Separator className="my-4" />}
               <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">Racial Skill Bonuses:</h3>
+                <h3 className={sectionHeadingClass}>Racial Skill Bonuses:</h3>
                 <ul className="space-y-1 text-sm">
                   {skillBonuses!.map(({ skillName, bonus }) => (
                     <li key={skillName} className="flex justify-between">
@@ -718,9 +721,9 @@ export function InfoDisplayDialog({
           {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && detailsList && detailsList.length > 0 && (
              <>
               {(htmlContent || hasAnyBonusSection) && (contentType?.type !== 'acBreakdown' && contentType?.type !== 'class') && <Separator className="my-4" />}
-              {(htmlContent && contentType?.type === 'class') && <Separator className="my-3" />}
+              {(htmlContent && (contentType?.type === 'class' || contentType?.type === 'acBreakdown')) && <Separator className="my-3" />}
               <div>
-                <h3 className="text-md font-semibold mb-2 text-foreground">{sectionHeading}</h3>
+                <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 {detailsList!.filter(detail => detail.label.toLowerCase() !== 'total').map((detail, index) => {
                     const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value))))
                         ? renderModifierValue(detail.value, undefined, undefined, undefined, (detail.label.toLowerCase() === "total" ? "text-accent" : undefined), detail.label.toLowerCase() === "total")
