@@ -60,7 +60,7 @@ type DerivedDialogData = {
   abilityModifiers?: Array<{ ability: Exclude<AbilityName, 'none'>; change: number }>;
   skillBonuses?: Array<{ skillName: string; bonus: number }>;
   grantedFeats?: Array<{ featId: string; name: string; note?: string; levelAcquired?: number }>;
-  bonusFeatSlots?: number | undefined; // Changed to allow undefined
+  bonusFeatSlots?: number | undefined;
   abilityScoreBreakdown?: AbilityScoreBreakdown;
   skillModifierBreakdown?: SkillModifierBreakdownDetails;
   resistanceBreakdown?: ResistanceBreakdownDetails;
@@ -69,6 +69,15 @@ type DerivedDialogData = {
   initiativeBreakdown?: InitiativeBreakdownDetails;
   grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
   grappleDamageBreakdown?: GrappleDamageBreakdownDetails;
+};
+
+const ABILITY_DISPLAY_NAMES: Record<Exclude<AbilityName, 'none'>, { abbr: string; full: string }> = {
+  strength: { abbr: 'STR', full: 'Strength' },
+  dexterity: { abbr: 'DEX', full: 'Dexterity' },
+  constitution: { abbr: 'CON', full: 'Constitution' },
+  intelligence: { abbr: 'INT', full: 'Intelligence' },
+  wisdom: { abbr: 'WIS', full: 'Wisdom' },
+  charisma: { abbr: 'CHA', full: 'Charisma' },
 };
 
 
@@ -177,8 +186,10 @@ export function InfoDisplayDialog({
         break;
       case 'abilityScoreBreakdown':
         const detailedScores = calculateDetailedAbilityScores(character, customFeatDefinitions);
+        const abilityKeyForTitle = contentType.abilityName as Exclude<AbilityName, 'none'>;
+        const displayNameForTitle = ABILITY_DISPLAY_NAMES[abilityKeyForTitle];
         data = {
-          title: `${contentType.abilityName.charAt(0).toUpperCase() + contentType.abilityName.slice(1)} Score Calculation`,
+          title: `${displayNameForTitle.abbr}\u00A0(${displayNameForTitle.full}) Score Calculation`,
           abilityScoreBreakdown: detailedScores[contentType.abilityName],
         };
         break;
@@ -428,7 +439,10 @@ export function InfoDisplayDialog({
                 <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span>Dexterity Modifier:</span>
+                    <span>
+                      {ABILITY_DISPLAY_NAMES.dexterity.abbr}{'\u00A0'}
+                      <span className="text-xs text-muted-foreground">({ABILITY_DISPLAY_NAMES.dexterity.full})</span> Modifier:
+                    </span>
                     {renderModifierValue(initiativeBreakdown.dexModifier)}
                   </div>
                   {initiativeBreakdown.miscModifier !== 0 && (
@@ -458,7 +472,10 @@ export function InfoDisplayDialog({
                     {renderModifierValue(grappleModifierBreakdown.baseAttackBonus)}
                   </div>
                   <div className="flex justify-between">
-                    <span>Strength Modifier:</span>
+                    <span>
+                      {ABILITY_DISPLAY_NAMES.strength.abbr}{'\u00A0'}
+                      <span className="text-xs text-muted-foreground">({ABILITY_DISPLAY_NAMES.strength.full})</span> Modifier:
+                    </span>
                     {renderModifierValue(grappleModifierBreakdown.strengthModifier)}
                   </div>
                   <div className="flex justify-between">
@@ -502,7 +519,10 @@ export function InfoDisplayDialog({
                     )}
                   </div>
                   <div className="flex justify-between">
-                    <span>Strength Modifier:</span>
+                     <span>
+                      {ABILITY_DISPLAY_NAMES.strength.abbr}{'\u00A0'}
+                      <span className="text-xs text-muted-foreground">({ABILITY_DISPLAY_NAMES.strength.full})</span> Modifier:
+                    </span>
                     {renderModifierValue(grappleDamageBreakdown.strengthModifier)}
                   </div>
                    {grappleDamageBreakdown.bonus !== 0 && (
@@ -562,12 +582,19 @@ export function InfoDisplayDialog({
             <div>
                 <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
-                  {skillModifierBreakdown.keyAbilityName && (
-                    <div className="flex justify-between">
-                      <span>Key Ability ({skillModifierBreakdown.keyAbilityName.substring(0,3).toUpperCase()}):</span>
-                      {renderModifierValue(skillModifierBreakdown.keyAbilityModifier)}
-                    </div>
-                  )}
+                  {skillModifierBreakdown.keyAbilityName && (() => {
+                    const keyAbility = skillModifierBreakdown.keyAbilityName as Exclude<AbilityName, 'none'>;
+                    const displayName = ABILITY_DISPLAY_NAMES[keyAbility];
+                    return (
+                      <div className="flex justify-between">
+                        <span>
+                          Key Ability ({displayName.abbr}{'\u00A0'}
+                          <span className="text-xs text-muted-foreground">({displayName.full})</span>):
+                        </span>
+                        {renderModifierValue(skillModifierBreakdown.keyAbilityModifier)}
+                      </div>
+                    );
+                  })()}
                   <div className="flex justify-between">
                     <span>Ranks:</span>
                     {renderModifierValue(skillModifierBreakdown.ranks)}
@@ -643,7 +670,7 @@ export function InfoDisplayDialog({
               <div>
                 <h3 className={sectionHeadingClass}>Racial Feat Adjustments:</h3>
                 <div className="text-sm space-y-1">
-                  {bonusFeatSlots && ( 
+                  {bonusFeatSlots && bonusFeatSlots > 0 && ( 
                     <div className="flex justify-between">
                       <span>Bonus Feat Slots:</span>
                       {renderModifierValue(bonusFeatSlots)}
@@ -703,12 +730,18 @@ export function InfoDisplayDialog({
               <div>
                 <h3 className={sectionHeadingClass}>Ability Score Adjustments:</h3>
                 <ul className="space-y-1 text-sm">
-                  {abilityModifiers!.map(({ ability, change }) => (
-                    <li key={ability} className="flex justify-between">
-                      <span className="capitalize">{ability}:</span>
-                      {renderModifierValue(change)}
-                    </li>
-                  ))}
+                  {abilityModifiers!.map(({ ability, change }) => {
+                    const displayName = ABILITY_DISPLAY_NAMES[ability];
+                    return (
+                      <li key={ability} className="flex justify-between">
+                        <span>
+                          {displayName.abbr}{'\u00A0'}
+                          <span className="text-xs text-muted-foreground">({displayName.full})</span>:
+                        </span>
+                        {renderModifierValue(change)}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             </>
@@ -742,9 +775,29 @@ export function InfoDisplayDialog({
                     const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value))))
                         ? renderModifierValue(detail.value, undefined, undefined, undefined, (detail.label.toLowerCase() === "total" ? "text-accent" : undefined), detail.label.toLowerCase() === "total")
                         : detail.value;
+                    let labelContent = <span className="text-muted-foreground">{detail.label}:</span>;
+                    if (detail.label.toLowerCase() === "dexterity modifier") {
+                        const displayName = ABILITY_DISPLAY_NAMES.dexterity;
+                        labelContent = (
+                            <span className="text-muted-foreground">
+                                {displayName.abbr}{'\u00A0'}
+                                <span className="text-xs text-muted-foreground">({displayName.full})</span> Modifier:
+                            </span>
+                        );
+                    } else if (detail.label.toLowerCase() === "strength modifier") {
+                         const displayName = ABILITY_DISPLAY_NAMES.strength;
+                        labelContent = (
+                            <span className="text-muted-foreground">
+                                {displayName.abbr}{'\u00A0'}
+                                <span className="text-xs text-muted-foreground">({displayName.full})</span> Modifier:
+                            </span>
+                        );
+                    }
+
+
                     return (
                         <div key={index} className="flex justify-between text-sm mb-0.5">
-                        <span className="text-muted-foreground">{detail.label}:</span>
+                        {labelContent}
                         <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{valueToRender}</span>
                         </div>
                     );
