@@ -64,15 +64,15 @@ export function ArmorClassPanel({ character, onCharacterUpdate }: ArmorClassPane
             <Skeleton className="h-8 w-12" />
           </div>
           <Separator className="my-3" />
-          <div className="space-y-1">
-            <Label htmlFor="custom-ac-mod-display" className="text-sm">Custom AC Modifier</Label>
+          <div className="flex items-center justify-between pt-2">
+            <Label htmlFor="custom-ac-mod-display" className="text-sm font-medium">Custom Modifier</Label>
             <NumberSpinnerInput
               id="custom-ac-mod-display"
               value={0}
               onChange={() => {}}
               disabled={true}
-              inputClassName="w-20 h-8 text-sm"
-              buttonClassName="h-8 w-8"
+              inputClassName="w-24 h-9 text-base"
+              buttonClassName="h-9 w-9"
             />
           </div>
         </CardContent>
@@ -200,8 +200,8 @@ export function ArmorClassPanel({ character, onCharacterUpdate }: ArmorClassPane
 
           <Separator className="my-3" />
 
-          <div className="pt-2 space-y-1">
-            <Label htmlFor="ac-misc-modifier-input" className="text-sm font-medium">Custom AC Modifier</Label>
+          <div className="flex items-center justify-between pt-2">
+            <Label htmlFor="ac-misc-modifier-input" className="text-sm font-medium">Custom Modifier</Label>
             <NumberSpinnerInput
               id="ac-misc-modifier-input"
               value={character.acMiscModifier || 0}
@@ -216,7 +216,6 @@ export function ArmorClassPanel({ character, onCharacterUpdate }: ArmorClassPane
               inputClassName="w-24 h-9 text-base"
               buttonClassName="h-9 w-9"
             />
-            <p className="text-xs text-muted-foreground">Adjusts Normal, Touch, and Flat-Footed AC.</p>
           </div>
         </CardContent>
       </Card>
