@@ -81,6 +81,18 @@ const ABILITY_DISPLAY_NAMES: Record<Exclude<AbilityName, 'none'>, { abbr: string
   charisma: { abbr: 'CHA', full: 'Charisma' },
 };
 
+export interface SkillModifierBreakdownDetails {
+  skillName: string;
+  keyAbilityName?: string;
+  keyAbilityModifier: number;
+  ranks: number;
+  synergyBonus: number;
+  featBonus: number;
+  racialBonus: number;
+  sizeSpecificBonus: number;
+  miscModifier: number;
+  totalBonus: number;
+}
 
 export function InfoDisplayDialog({
   isOpen,
@@ -132,14 +144,18 @@ export function InfoDisplayDialog({
         if (racialSkillPointBonus > 0) {
           details.push({ label: "Bonus Skill Points/Level", value: `+${racialSkillPointBonus}`, isBold: true });
         }
-        const raceBonusFeatSlots = qualities.bonusFeatSlots;
+        
+        let raceBonusFeatSlotsValue = qualities.bonusFeatSlots;
+        if (raceBonusFeatSlotsValue !== undefined && raceBonusFeatSlotsValue <= 0) {
+            raceBonusFeatSlotsValue = undefined; // Ensure 0 is not passed to renderModifierValue
+        }
 
         data = {
           title: raceData?.label || 'Race Information',
           htmlContent: raceData?.description || '<p>No description available.</p>',
           abilityModifiers: qualities.abilityEffects,
           skillBonuses: qualities.skillBonuses,
-          bonusFeatSlots: (raceBonusFeatSlots && raceBonusFeatSlots > 0) ? raceBonusFeatSlots : undefined,
+          bonusFeatSlots: raceBonusFeatSlotsValue,
           grantedFeats: qualities.grantedFeats,
           detailsList: details.length > 0 ? details : undefined,
         };
@@ -694,7 +710,7 @@ export function InfoDisplayDialog({
           {/* Class Info: Granted Feats & DetailsList*/}
            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && contentType?.type === 'class' && (
              <>
-              {(htmlContent) && <Separator className="my-3" />}
+              {(htmlContent && detailsList && detailsList.length > 0) && <Separator className="my-3" />}
               {detailsList && detailsList.length > 0 && (
                 <div className="mb-3">
                   <h3 className={sectionHeadingClass}>Details:</h3>
@@ -714,7 +730,7 @@ export function InfoDisplayDialog({
                     {grantedFeats.map(({ featId, name, note, levelAcquired }, index) => (
                       <li key={`${featId}-${index}`} className="flex items-center text-foreground">
                         {levelAcquired !== undefined && (
-                           <Badge variant="secondary" className="text-xs font-normal h-5 mr-2 whitespace-nowrap">
+                           <Badge variant="outline" className="text-xs font-normal h-5 mr-2 whitespace-nowrap">
                             Level {levelAcquired}
                           </Badge>
                         )}
@@ -825,4 +841,3 @@ export function InfoDisplayDialog({
     </Dialog>
   );
 }
-
