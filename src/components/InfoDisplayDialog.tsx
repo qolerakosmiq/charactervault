@@ -21,14 +21,14 @@ import type {
   GrappleModifierBreakdownDetails as GrappleModifierBreakdownDetailsType,
   GrappleDamageBreakdownDetails as GrappleDamageBreakdownDetailsType,
   ResistanceValue,
-  PrerequisiteMessage // Import PrerequisiteMessage
+  PrerequisiteMessage
 } from '@/types/character';
-import { DND_RACES, DND_CLASSES, DND_DEITIES, ALIGNMENTS, SKILL_DEFINITIONS, SIZES, DND_FEATS_DEFINITIONS, getRaceSpecialQualities, getRaceSkillPointsBonusPerLevel, calculateDetailedAbilityScores, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, SKILL_SYNERGIES, CLASS_SKILLS, calculateSizeSpecificSkillBonus, checkFeatPrerequisites } from '@/types/character'; // Added checkFeatPrerequisites
+import { DND_RACES, DND_CLASSES, DND_DEITIES, ALIGNMENTS, SKILL_DEFINITIONS, SIZES, DND_FEATS_DEFINITIONS, getRaceSpecialQualities, getRaceSkillPointsBonusPerLevel, calculateDetailedAbilityScores, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, SKILL_SYNERGIES, CLASS_SKILLS, calculateSizeSpecificSkillBonus, checkFeatPrerequisites } from '@/types/character';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'; // Added Popover imports
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 
 import {
   calculateAbilityModifier, getAbilityModifierByName, getBab, getSizeModifierAC, getSizeModifierGrapple,
@@ -57,23 +57,6 @@ interface InfoDisplayDialogProps {
   character: Character;
   contentType: InfoDialogContentType | null;
 }
-
-type DerivedDialogData = {
-  title: string;
-  htmlContent?: string;
-  abilityModifiers?: Array<{ ability: Exclude<AbilityName, 'none'>; change: number }>;
-  skillBonuses?: Array<{ skillId: string; skillName: string; bonus: number }>; // Added skillId
-  grantedFeats?: Array<{ featId: string; name: string; note?: string; levelAcquired?: number }>;
-  bonusFeatSlots?: number | undefined;
-  abilityScoreBreakdown?: AbilityScoreBreakdown;
-  skillModifierBreakdown?: SkillModifierBreakdownDetails;
-  resistanceBreakdown?: ResistanceBreakdownDetails;
-  detailsList?: Array<{ label: string; value: string | number; isBold?: boolean }>;
-  babBreakdown?: BabBreakdownDetails;
-  initiativeBreakdown?: InitiativeBreakdownDetails;
-  grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
-  grappleDamageBreakdown?: GrappleDamageBreakdownDetails;
-};
 
 const ABILITY_DISPLAY_NAMES: Record<Exclude<AbilityName, 'none'>, { abbr: string; full: string }> = {
   strength: { abbr: 'STR', full: 'Strength' },
@@ -104,13 +87,13 @@ const FeatPopoverContent: React.FC<{ featId: string; character: Character; allFe
   const prereqMessages = checkFeatPrerequisites(featDef, character, allFeats, allSkills, customSkills);
 
   return (
-    <div className="p-4 space-y-2 max-w-md">
+    <div className="space-y-2">
       <h4 className="font-semibold text-primary">{featDef.label}</h4>
-      {featDef.description && <div className="text-xs prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: featDef.description }} />}
+      {featDef.description && <div className="text-sm prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: featDef.description }} />}
       {prereqMessages.length > 0 && (
         <div className="mt-2">
-          <p className="text-xs font-medium text-muted-foreground">Prerequisites:</p>
-          <ul className="list-disc list-inside text-xs">
+          <p className="text-sm font-medium text-muted-foreground">Prerequisites:</p>
+          <ul className="list-disc list-inside text-sm">
             {prereqMessages.map((msg, index) => (
               <li key={index} className={cn(!msg.isMet && "text-destructive")}>
                 <span dangerouslySetInnerHTML={{ __html: msg.text }}></span>
@@ -121,8 +104,8 @@ const FeatPopoverContent: React.FC<{ featId: string; character: Character; allFe
       )}
       {featDef.effectsText && (
         <div className="mt-2">
-          <p className="text-xs font-medium text-muted-foreground">Effects:</p>
-          <p className="text-xs">{featDef.effectsText}</p>
+          <p className="text-sm font-medium text-muted-foreground">Effects:</p>
+          <p className="text-sm">{featDef.effectsText}</p>
         </div>
       )}
     </div>
@@ -411,8 +394,8 @@ export function InfoDisplayDialog({
     } else { 
         colorClass = zeroColor;
     }
-    const prefix = numValue > 0 ? '+' : (numValue === 0 ? '' : ''); // No plus for zero unless it's a specific case
-    if (value === 0 && !isTotal) return <span className={cn("font-bold", colorClass)}>0</span>; // Display 0 plainly if not total
+    const prefix = numValue > 0 ? '+' : (numValue === 0 ? '' : '');
+    if (value === 0 && !isTotal) return <span className={cn("font-bold", colorClass)}>0</span>;
     return <span className={cn("font-bold", colorClass)}>{prefix}{numValue}</span>;
   };
 
@@ -715,44 +698,111 @@ export function InfoDisplayDialog({
             </>
           )}
 
-          {/* Race Info: Racial Feat Adjustments */}
+          {/* Race Info: Details */}
           {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && contentType?.type === 'race' && (
             <>
-              {(htmlContent || (abilityModifiers && abilityModifiers.length > 0) || (skillBonuses && skillBonuses.length > 0)) && <Separator className="my-4" />}
-              <div>
-                <h3 className={sectionHeadingClass}>Racial Feat Adjustments:</h3>
-                <div className="text-sm space-y-1">
-                  {bonusFeatSlots !== undefined && bonusFeatSlots > 0 && ( 
-                    <div className="flex justify-between">
-                      <span className="text-foreground">Bonus Feat Slots:</span>
-                      {renderModifierValue(bonusFeatSlots)}
-                    </div>
-                  )}
-                  {grantedFeats && grantedFeats.length > 0 ? (
-                    <div>
-                      <span className="text-primary mr-1">Granted Feats:</span>
-                      {grantedFeats.map((feat, index) => (
-                        <React.Fragment key={feat.featId + "-" + index}>
+             {detailsList && detailsList.length > 0 && (
+                <>
+                  {(htmlContent) && <Separator className="my-4" />}
+                  <div>
+                    <h3 className={sectionHeadingClass}>Details:</h3>
+                     {detailsList!.map((detail, index) => (
+                      <div key={index} className="flex justify-between text-sm mb-0.5">
+                      <span className="text-foreground">{detail.label}:</span>
+                      <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+              {(htmlContent || (detailsList && detailsList.length > 0)) && (abilityModifiers && abilityModifiers.length > 0 || skillBonuses && skillBonuses.length > 0 || grantedFeats && grantedFeats.length > 0 || bonusFeatSlots !== undefined) && <Separator className="my-4" />}
+              
+              {abilityModifiers && abilityModifiers.length > 0 && (
+                <div className="mb-3">
+                  <h3 className={sectionHeadingClass}>Ability Score Adjustments:</h3>
+                  <ul className="space-y-1 text-sm">
+                    {abilityModifiers!.map(({ ability, change }) => {
+                       const displayName = ABILITY_DISPLAY_NAMES[ability];
+                      return (
+                        <li key={ability} className="flex justify-between text-foreground">
+                           <span>
+                            {displayName.abbr}{'\u00A0'}
+                            <span className="text-xs text-muted-foreground">({displayName.full})</span>:
+                          </span>
+                          {renderModifierValue(change)}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
+              
+              {skillBonuses && skillBonuses.length > 0 && (
+                <div className="mb-3">
+                  <h3 className={sectionHeadingClass}>Racial Skill Bonuses:</h3>
+                  <ul className="space-y-1 text-sm">
+                    {skillBonuses!.map(({ skillId, skillName, bonus }) => {
+                       const skillDef = allCombinedSkillDefinitionsForDisplay.find(s => s.id === skillId);
+                       return (
+                        <li key={skillId} className="flex justify-between text-foreground">
                           <Popover>
                             <PopoverTrigger asChild>
-                              <Button variant="link" size="sm" className="p-0 h-auto text-foreground hover:text-primary text-sm font-normal inline">
-                                {feat.name}
+                              <Button variant="link" size="sm" className="p-0 h-auto text-sm font-normal text-foreground hover:text-primary inline">
+                                {skillName}:
                               </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-80">
-                              <FeatPopoverContent featId={feat.featId} character={character} allFeats={allCombinedFeatDefinitions} allSkills={SKILL_DEFINITIONS} customSkills={customSkillDefinitions}/>
+                            <PopoverContent className="w-80 p-3 text-sm">
+                              {skillDef?.description ? (
+                                <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: skillDef.description }} />
+                              ) : (
+                                <p className="text-muted-foreground">No description available.</p>
+                              )}
                             </PopoverContent>
                           </Popover>
-                          {feat.note && <span className="text-muted-foreground text-xs ml-1">{feat.note}</span>}
-                          {index < grantedFeats.length - 1 && <span className="text-foreground">, </span>}
-                        </React.Fragment>
-                      ))}
-                    </div>
-                  ) : (
-                    (bonusFeatSlots === undefined || bonusFeatSlots === 0) && <p className="text-foreground">None</p>
-                  )}
+                          {renderModifierValue(bonus)}
+                        </li>
+                       );
+                    })}
+                  </ul>
                 </div>
-              </div>
+              )}
+
+              {(grantedFeats && grantedFeats.length > 0) || (bonusFeatSlots !== undefined) ? (
+                <div>
+                  <h3 className={sectionHeadingClass}>Racial Feat Adjustments:</h3>
+                  <div className="text-sm space-y-1">
+                    {bonusFeatSlots !== undefined && ( 
+                      <div className="flex justify-between">
+                        <span className="text-foreground">Bonus Feat Slots:</span>
+                        {renderModifierValue(bonusFeatSlots)}
+                      </div>
+                    )}
+                    {grantedFeats && grantedFeats.length > 0 ? (
+                      <div>
+                        <span className="text-primary mr-1">Granted Feats:</span>
+                        {grantedFeats.map((feat, index) => (
+                          <React.Fragment key={feat.featId + "-" + index}>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button variant="link" size="sm" className="p-0 h-auto text-foreground hover:text-primary text-sm font-normal inline">
+                                  {feat.name}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-80 p-3 text-sm">
+                                <FeatPopoverContent featId={feat.featId} character={character} allFeats={allCombinedFeatDefinitions} allSkills={SKILL_DEFINITIONS} customSkills={customSkillDefinitions}/>
+                              </PopoverContent>
+                            </Popover>
+                            {feat.note && <span className="text-muted-foreground text-xs ml-1">{feat.note}</span>}
+                            {index < grantedFeats.length - 1 && <span className="text-foreground">, </span>}
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    ) : (
+                       (bonusFeatSlots === undefined) && <p className="text-foreground">None</p>
+                    )}
+                  </div>
+                </div>
+              ) : null}
             </>
           )}
 
@@ -789,7 +839,7 @@ export function InfoDisplayDialog({
                               {name}
                             </Button>
                           </PopoverTrigger>
-                           <PopoverContent className="w-80">
+                           <PopoverContent className="w-80 p-3 text-sm">
                              <FeatPopoverContent featId={featId} character={character} allFeats={allCombinedFeatDefinitions} allSkills={SKILL_DEFINITIONS} customSkills={customSkillDefinitions}/>
                            </PopoverContent>
                         </Popover>
@@ -801,65 +851,9 @@ export function InfoDisplayDialog({
               )}
             </>
           )}
-
-          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && abilityModifiers && abilityModifiers.length > 0 && contentType?.type === 'race' && (
-            <>
-              {(htmlContent) && <Separator className="my-4" />}
-              <div>
-                <h3 className={sectionHeadingClass}>Ability Score Adjustments:</h3>
-                <ul className="space-y-1 text-sm">
-                  {abilityModifiers!.map(({ ability, change }) => {
-                    const displayName = ABILITY_DISPLAY_NAMES[ability];
-                    return (
-                      <li key={ability} className="flex justify-between text-foreground">
-                        <span>
-                          {displayName.abbr}{'\u00A0'}
-                          <span className="text-xs text-muted-foreground">({displayName.full})</span>:
-                        </span>
-                        {renderModifierValue(change)}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            </>
-          )}
-
-          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && skillBonuses && skillBonuses.length > 0 && contentType?.type === 'race' && (
-            <>
-              {(htmlContent || (abilityModifiers && abilityModifiers.length > 0)) && <Separator className="my-4" />}
-              <div>
-                <h3 className={sectionHeadingClass}>Racial Skill Bonuses:</h3>
-                <ul className="space-y-1 text-sm">
-                  {skillBonuses!.map(({ skillId, skillName, bonus }) => {
-                     const skillDef = allCombinedSkillDefinitionsForDisplay.find(s => s.id === skillId);
-                     return (
-                      <li key={skillId} className="flex justify-between text-foreground">
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button variant="link" size="sm" className="p-0 h-auto text-sm font-normal text-foreground hover:text-primary inline">
-                              {skillName}:
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-80">
-                            {skillDef?.description ? (
-                              <div className="p-4 text-xs prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: skillDef.description }} />
-                            ) : (
-                              <p className="p-4 text-xs text-muted-foreground">No description available.</p>
-                            )}
-                          </PopoverContent>
-                        </Popover>
-                        {renderModifierValue(bonus)}
-                      </li>
-                     );
-                  })}
-                </ul>
-              </div>
-            </>
-          )}
-
-
-          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && detailsList && detailsList.length > 0 && (contentType?.type !== 'class') && (
+          
+          {/* AC Breakdown and Generic DetailsList */}
+          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && detailsList && detailsList.length > 0 && (contentType?.type !== 'class' && contentType?.type !== 'race') && (
              <>
               {(htmlContent || hasAnyBonusSection) && (contentType?.type !== 'acBreakdown') && <Separator className="my-4" />}
               {(htmlContent && (contentType?.type === 'acBreakdown')) && <Separator className="my-3" />}
@@ -915,3 +909,4 @@ export function InfoDisplayDialog({
     </Dialog>
   );
 }
+
