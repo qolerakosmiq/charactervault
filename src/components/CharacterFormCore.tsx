@@ -1,9 +1,10 @@
 
 
 
+
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import type {
   AbilityName, Character, CharacterClass,
@@ -818,7 +819,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               characterClasses={character.classes}
               onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
           />
-          <ArmorClassPanel character={character} />
+          <ArmorClassPanel 
+            character={character} 
+            onCharacterUpdate={handleCharacterFieldUpdate} 
+          />
         </div>
         
         <CombatPanel

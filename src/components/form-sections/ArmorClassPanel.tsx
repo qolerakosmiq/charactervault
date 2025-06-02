@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { Character } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Shield, Info } from 'lucide-react';
@@ -11,14 +11,17 @@ import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 import { getAbilityModifierByName, getSizeModifierAC } from '@/lib/dnd-utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_ABILITIES, SIZES } from '@/types/character';
+import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
+import { Separator } from '@/components/ui/separator';
 
 interface ArmorClassPanelProps {
   character?: Character;
+  onCharacterUpdate?: (field: keyof Character, value: any) => void;
 }
 
 type AcBreakdownDetail = { label: string; value: string | number; isBold?: boolean };
 
-export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
+export function ArmorClassPanel({ character, onCharacterUpdate }: ArmorClassPanelProps) {
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
   const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<{ title: string; detailsList: AcBreakdownDetail[] } | null>(null);
 
@@ -59,6 +62,18 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
               </Button>
             </div>
             <Skeleton className="h-8 w-12" />
+          </div>
+          <Separator className="my-3" />
+          <div className="space-y-1">
+            <Label htmlFor="custom-ac-mod-display" className="text-sm">Custom AC Modifier</Label>
+            <NumberSpinnerInput
+              id="custom-ac-mod-display"
+              value={0}
+              onChange={() => {}}
+              disabled={true}
+              inputClassName="w-20 h-8 text-sm"
+              buttonClassName="h-8 w-8"
+            />
           </div>
         </CardContent>
       </Card>
@@ -142,6 +157,8 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
     setIsInfoDialogOpen(true);
   };
 
+  const isEditable = !!onCharacterUpdate;
+
   return (
     <>
       <Card>
@@ -179,6 +196,27 @@ export function ArmorClassPanel({ character }: ArmorClassPanelProps) {
               </Button>
             </div>
             <p id="flat-footed-ac-display" className="text-3xl font-bold text-accent">{flatFootedAC}</p>
+          </div>
+
+          <Separator className="my-3" />
+
+          <div className="pt-2 space-y-1">
+            <Label htmlFor="ac-misc-modifier-input" className="text-sm font-medium">Custom AC Modifier</Label>
+            <NumberSpinnerInput
+              id="ac-misc-modifier-input"
+              value={character.acMiscModifier || 0}
+              onChange={(newValue) => {
+                if (onCharacterUpdate) {
+                  onCharacterUpdate('acMiscModifier', newValue);
+                }
+              }}
+              disabled={!isEditable}
+              min={-20} // Example range
+              max={20}  // Example range
+              inputClassName="w-24 h-9 text-base"
+              buttonClassName="h-9 w-9"
+            />
+            <p className="text-xs text-muted-foreground">Adjusts Normal, Touch, and Flat-Footed AC.</p>
           </div>
         </CardContent>
       </Card>
