@@ -22,7 +22,7 @@ import type {
   GrappleDamageBreakdownDetails as GrappleDamageBreakdownDetailsType,
   ResistanceValue
 } from '@/types/character';
-import { DND_RACES, DND_CLASSES, DND_DEITIES, ALIGNMENTS, SKILL_DEFINITIONS, SIZES, DND_FEATS_DEFINITIONS, getRaceSpecialQualities, getRaceSkillPointsBonusPerLevel, calculateDetailedAbilityScores, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, calculateSizeSpecificSkillBonus } from '@/types/character';
+import { DND_RACES, DND_CLASSES, DND_DEITIES, ALIGNMENTS, SKILL_DEFINITIONS, SIZES, DND_FEATS_DEFINITIONS, getRaceSpecialQualities, getRaceSkillPointsBonusPerLevel, calculateDetailedAbilityScores, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, SKILL_SYNERGIES, CLASS_SKILLS, calculateSizeSpecificSkillBonus } from '@/types/character';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
@@ -95,7 +95,7 @@ export function InfoDisplayDialog({
       keyAbility: sd.keyAbility as AbilityName,
       description: sd.description,
       isCustom: false,
-      providesSynergies: [], // placeholder, actual synergy lookup complex
+      providesSynergies: (SKILL_SYNERGIES as Record<string, any>)[sd.value] || [],
     }));
     const custom = customSkillDefinitions.map(csd => ({
       ...csd,
@@ -189,7 +189,7 @@ export function InfoDisplayDialog({
         const skillDef = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === contentType.skillId);
         if (skillInstance && skillDef) {
           const actualAbilityScores = calculateDetailedAbilityScores(character, customFeatDefinitions);
-          const finalAbilityScores: AbilityScores = ABILITY_ORDER_INTERNAL.reduce((acc, ability) => {
+          const finalAbilityScores: AbilityScores = (['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'] as Exclude<AbilityName, 'none'>[]).reduce((acc, ability) => {
               acc[ability] = actualAbilityScores[ability].finalScore;
               return acc;
           }, {} as AbilityScores);
@@ -727,4 +727,3 @@ export function InfoDisplayDialog({
     </Dialog>
   );
 }
-```
