@@ -144,8 +144,8 @@ export function ArmorClassPanel({ character, onCharacterUpdate }: ArmorClassPane
       if (character.dodgeBonus || 0) detailsList.push({ label: 'Dodge Bonus', value: character.dodgeBonus || 0 });
     }
     
-    // Misc Modifier (applies to all)
-    if (character.acMiscModifier || 0) detailsList.push({ label: 'Misc Modifier', value: character.acMiscModifier || 0 });
+    // Custom Modifier (applies to all)
+    if (character.acMiscModifier || 0) detailsList.push({ label: 'Custom Modifier', value: character.acMiscModifier || 0 });
     
     if (acType === 'Normal') totalCalculated = normalAC;
     else if (acType === 'Touch') totalCalculated = touchAC;
