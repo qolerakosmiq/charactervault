@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Character, Skill, Item, CharacterClass, AbilityName, SavingThrows, ResistanceValue, BabBreakdownDetails, InitiativeBreakdownDetails, GrappleModifierBreakdownDetails, GrappleDamageBreakdownDetails } from '@/types/character';
+import type { Character, Skill, Item, CharacterClass, AbilityName, SavingThrows, ResistanceValue, InfoDialogContentType } from '@/types/character';
 import { DND_CLASSES } from '@/types/character'; // Import DND_CLASSES
 import { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -27,7 +27,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { InfoDisplayDialog } from '@/components/InfoDisplayDialog'; // Added import
+import { InfoDisplayDialog } from '@/components/InfoDisplayDialog'; 
 
 type ResistanceFieldKeySheet = Exclude<keyof Pick<Character,
   'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
@@ -46,8 +46,8 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
   const { toast } = useToast();
   const router = useRouter();
 
+  const [activeInfoDialogType, setActiveInfoDialogType] = useState<InfoDialogContentType | null>(null);
   const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false);
-  const [currentInfoDialogData, setCurrentInfoDialogData] = useState<Parameters<typeof InfoDisplayDialog>[0] | null>(null);
 
 
   useEffect(() => {
@@ -181,44 +181,15 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
     }));
   }, []);
 
+  const openInfoDialog = (contentType: InfoDialogContentType) => {
+    setActiveInfoDialogType(contentType);
+    setIsInfoDialogOpen(true);
+  };
+
   const handleOpenCombatStatInfoDialog = (
-    breakdownType: 'bab' | 'initiative' | 'grappleModifier' | 'grappleDamage',
-    details: BabBreakdownDetails | InitiativeBreakdownDetails | GrappleModifierBreakdownDetails | GrappleDamageBreakdownDetails
+    breakdownType: 'bab' | 'initiative' | 'grappleModifier' | 'grappleDamage'
   ) => {
-    let dialogTitle = '';
-    let dialogProps: Partial<React.ComponentProps<typeof InfoDisplayDialog>> = {};
-    let characterClassLabel: string | undefined = undefined;
-
-    if (character.classes[0]?.className) {
-        const classDef = DND_CLASSES.find(c => c.value === character.classes[0].className);
-        characterClassLabel = classDef?.label || character.classes[0].className;
-    }
-
-    switch (breakdownType) {
-        case 'bab':
-            dialogTitle = "Base Attack Bonus Breakdown";
-            dialogProps = { babBreakdown: { ...(details as BabBreakdownDetails), characterClassLabel } };
-            break;
-        case 'initiative':
-            dialogTitle = "Initiative Breakdown";
-            dialogProps = { initiativeBreakdown: details as InitiativeBreakdownDetails };
-            break;
-        case 'grappleModifier':
-            dialogTitle = "Grapple Modifier Breakdown";
-            dialogProps = { grappleModifierBreakdown: details as GrappleModifierBreakdownDetails };
-            break;
-        case 'grappleDamage':
-            dialogTitle = "Grapple Damage Breakdown";
-            dialogProps = { grappleDamageBreakdown: details as GrappleDamageBreakdownDetails };
-            break;
-    }
-    setCurrentInfoDialogData({
-        isOpen: true, 
-        onOpenChange: setIsInfoDialogOpen, 
-        title: dialogTitle,
-        ...dialogProps
-    });
-    setIsInfoDialogOpen(true); 
+    openInfoDialog({ type: `${breakdownType}Breakdown` as InfoDialogContentType['type'] } as InfoDialogContentType);
   };
 
 
@@ -316,26 +287,15 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
           <SpellsListing />
         </TabsContent>
       </Tabs>
-      {currentInfoDialogData && isInfoDialogOpen && (
+      {isInfoDialogOpen && activeInfoDialogType && (
         <InfoDisplayDialog
           isOpen={isInfoDialogOpen}
           onOpenChange={setIsInfoDialogOpen}
-          title={currentInfoDialogData.title}
-          content={currentInfoDialogData.content}
-          abilityModifiers={currentInfoDialogData.abilityModifiers}
-          skillBonuses={currentInfoDialogData.skillBonuses}
-          grantedFeats={currentInfoDialogData.grantedFeats}
-          bonusFeatSlots={currentInfoDialogData.bonusFeatSlots}
-          abilityScoreBreakdown={currentInfoDialogData.abilityScoreBreakdown}
-          detailsList={currentInfoDialogData.detailsList}
-          skillModifierBreakdown={currentInfoDialogData.skillModifierBreakdown}
-          resistanceBreakdown={currentInfoDialogData.resistanceBreakdown}
-          babBreakdown={currentInfoDialogData.babBreakdown}
-          initiativeBreakdown={currentInfoDialogData.initiativeBreakdown}
-          grappleModifierBreakdown={currentInfoDialogData.grappleModifierBreakdown}
-          grappleDamageBreakdown={currentInfoDialogData.grappleDamageBreakdown}
+          character={character}
+          contentType={activeInfoDialogType}
         />
       )}
     </div>
   );
 }
+```

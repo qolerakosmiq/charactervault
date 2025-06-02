@@ -9,7 +9,7 @@ import type {
   Skill as SkillType, DndClassId, DndDeityId, GenderId,
   DndRaceOption, DetailedAbilityScores, AbilityScoreBreakdown,
   FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData, CharacterSize,
-  ResistanceValue, DamageReductionInstance, DamageReductionType
+  ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType
 } from '@/types/character';
 import {
   SIZES,
@@ -42,7 +42,7 @@ import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitio
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
-import { InfoDisplayDialog, type BabBreakdownDetails, type InitiativeBreakdownDetails, type GrappleModifierBreakdownDetails, type GrappleDamageBreakdownDetails } from '@/components/InfoDisplayDialog';
+import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 import { CharacterFormCoreInfoSection } from '@/components/form-sections/CharacterFormCoreInfoSection';
 import { CharacterFormAbilityScoresSection } from '@/components/form-sections/CharacterFormAbilityScoresSection';
 import { CharacterFormStoryPortraitSection } from '@/components/form-sections/CharacterFormStoryPortraitSection';
@@ -131,7 +131,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
     const baseCharData = {
       id: crypto.randomUUID(),
-      name: '', race: '', alignment: 'true-neutral', deity: '', size: defaultSize, age: 20, gender: '',
+      name: '', race: '', alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
       abilityScores: defaultBaseAbilityScores,
       abilityScoreTempCustomModifiers: defaultTempCustomMods,
       hp: 10, maxHp: 10,
@@ -166,6 +166,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         ...baseCharData, // Start with all defaults
         ...initialCharacter, // Override with provided initial character
         // Ensure nested objects that might be missing are present
+        alignment: initialCharacter.alignment || 'true-neutral',
         abilityScores: initialCharacter.abilityScores || defaultBaseAbilityScores,
         abilityScoreTempCustomModifiers: initialCharacter.abilityScoreTempCustomModifiers || defaultTempCustomMods,
         savingThrows: initialCharacter.savingThrows || JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)),
@@ -189,8 +190,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<CharacterFormCoreInfoSectionProps['ageEffectsDetails']>(null);
   const [raceSpecialQualities, setRaceSpecialQualities] = React.useState<CharacterFormCoreInfoSectionProps['raceSpecialQualities']>(null);
+  
+  const [activeInfoDialogType, setActiveInfoDialogType] = React.useState<InfoDialogContentType | null>(null);
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
-  const [currentInfoDialogData, setCurrentInfoDialogData] = React.useState<Parameters<typeof InfoDisplayDialog>[0] | null>(null);
+  
   const [detailedAbilityScores, setDetailedAbilityScores] = React.useState<DetailedAbilityScores | null>(null);
 
   const [isAddOrEditSkillDialogOpen, setIsAddOrEditSkillDialogOpen] = React.useState(false);
@@ -230,8 +233,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const actualAbilityScoresForSavesAndSkills = React.useMemo(() => {
     if (!detailedAbilityScores) {
-      // Fallback if detailed scores are not yet calculated
-      // This should ideally be rare, but handles initial render before effect
       const scoresWithTemp: Partial<AbilityScores> = {};
       for (const ability of abilityNames) {
         scoresWithTemp[ability] = (character.abilityScores[ability] || 0) + (character.abilityScoreTempCustomModifiers?.[ability] || 0);
@@ -399,6 +400,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       const unarmedDamageDice = getUnarmedGrappleDamage(character.size);
       newBaseNotes = `${unarmedDamageDice} (${sizeLabel} Unarmed)`;
     } else {
+      // Logic for other weapons would go here if implemented
+      // For now, assume only unarmed or a custom note if not "unarmed"
       newBaseNotes = character.grappleDamage_baseNotes; 
     }
 
@@ -588,158 +591,31 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const handleCancel = () => { router.push('/'); };
 
-  const handleOpenRaceInfoDialog = () => {
-    const selectedRace = DND_RACES.find(r => r.value === character.race);
-    if (selectedRace) {
-      const qualities = getRaceSpecialQualities(selectedRace.value as DndRaceId);
-      const details: Array<{ label: string; value: string; isBold?: boolean }> = [];
-
-      const racialSkillPointBonus = getRaceSkillPointsBonusPerLevel(selectedRace.value as DndRaceId);
-      if (racialSkillPointBonus > 0) {
-        details.push({
-          label: "Bonus Skill Points/Level",
-          value: `+${racialSkillPointBonus}`,
-          isBold: true
-        });
-      }
-
-      setCurrentInfoDialogData({
-        isOpen: true,
-        onOpenChange: setIsInfoDialogOpen,
-        title: selectedRace.label,
-        content: selectedRace.description,
-        abilityModifiers: qualities.abilityEffects,
-        skillBonuses: qualities.skillBonuses,
-        grantedFeats: qualities.grantedFeats,
-        bonusFeatSlots: qualities.bonusFeatSlots,
-        detailsList: details.length > 0 ? details : undefined,
-      });
-      setIsInfoDialogOpen(true);
-    }
-  };
-
-  const handleOpenClassInfoDialog = () => {
-    const classData = DND_CLASSES.find(c => c.value === character.classes[0]?.className);
-    if (classData) {
-        const classSpecificDetails = [];
-        if (classData.hitDice) {
-            classSpecificDetails.push({ label: "Hit Dice", value: classData.hitDice, isBold: true });
-        }
-        if (classData.saves) {
-            classSpecificDetails.push({ label: "Fortitude Save", value: classData.saves.fortitude.charAt(0).toUpperCase() + classData.saves.fortitude.slice(1) });
-            classSpecificDetails.push({ label: "Reflex Save", value: classData.saves.reflex.charAt(0).toUpperCase() + classData.saves.reflex.slice(1) });
-            classSpecificDetails.push({ label: "Will Save", value: classData.saves.will.charAt(0).toUpperCase() + classData.saves.will.slice(1) });
-        }
-        
-        if (character.race) {
-          const racialSkillPointBonus = getRaceSkillPointsBonusPerLevel(character.race as DndRaceId);
-          if (racialSkillPointBonus > 0) {
-            classSpecificDetails.push({
-              label: "Racial Bonus Skill Points/Level",
-              value: `+${racialSkillPointBonus}`,
-              isBold: true
-            });
-          }
-        }
-
-         const grantedFeatsFormatted = classData.grantedFeats?.map(gf => ({
-            ...gf,
-            name: allAvailableFeatDefinitions.find(f => f.value === gf.featId)?.label || gf.featId
-        }));
-        setCurrentInfoDialogData({
-            isOpen: true,
-            onOpenChange: setIsInfoDialogOpen,
-            title: classData.label,
-            content: classData.description,
-            grantedFeats: grantedFeatsFormatted,
-            detailsList: classSpecificDetails
-        });
-        setIsInfoDialogOpen(true);
-    }
-  };
-
-  const handleOpenAlignmentInfoDialog = () => {
-    const allAlignmentDescriptions = ALIGNMENTS.map(
-     (align) => `<p><b>${align.label}:</b><br />${align.description}</p>`
-   ).join('');
-   setCurrentInfoDialogData({ isOpen: true, onOpenChange: setIsInfoDialogOpen, title: "Alignments", content: allAlignmentDescriptions });
-   setIsInfoDialogOpen(true);
- };
-
-  const handleOpenDeityInfoDialog = () => {
-      const deityData = DND_DEITIES.find(d => d.value === character.deity);
-      if (deityData) {
-        setCurrentInfoDialogData({
-            isOpen: true,
-            onOpenChange: setIsInfoDialogOpen,
-            title: deityData.label,
-            content: deityData.description || `<p>No detailed description available for ${deityData.label}.</p>`
-        });
-      } else if (character.deity && character.deity.trim() !== '') {
-        setCurrentInfoDialogData({
-            isOpen: true,
-            onOpenChange: setIsInfoDialogOpen,
-            title: character.deity,
-            content: `<p>Custom deity. No predefined information available.</p>`
-        });
-      } else {
-         setCurrentInfoDialogData({
-            isOpen: true,
-            onOpenChange: setIsInfoDialogOpen,
-            title: "Deity Information",
-            content: "<p>Select or type a deity to see more information.</p>"
-        });
-      }
-      setIsInfoDialogOpen(true);
-  };
-
-  const handleOpenAbilityScoreBreakdownDialog = (ability: Exclude<AbilityName, 'none'>) => {
-    if (detailedAbilityScores && detailedAbilityScores[ability]) {
-      setCurrentInfoDialogData({ isOpen: true, onOpenChange: setIsInfoDialogOpen, abilityScoreBreakdown: detailedAbilityScores[ability] });
-      setIsInfoDialogOpen(true);
-    }
-  };
-
-  const handleOpenCombatStatInfoDialog = React.useCallback((
-    breakdownType: 'bab' | 'initiative' | 'grappleModifier' | 'grappleDamage',
-    details: BabBreakdownDetails | InitiativeBreakdownDetails | GrappleModifierBreakdownDetails | GrappleDamageBreakdownDetails
-  ) => {
-    let dialogTitle = '';
-    let dialogProps: Partial<React.ComponentProps<typeof InfoDisplayDialog>> = {};
-    let characterClassLabel: string | undefined = undefined;
-
-    if (character.classes[0]?.className) {
-        const classDef = DND_CLASSES.find(c => c.value === character.classes[0].className);
-        characterClassLabel = classDef?.label || character.classes[0].className;
-    }
-
-
-    switch (breakdownType) {
-        case 'bab':
-            dialogTitle = "Base Attack Bonus Breakdown";
-            dialogProps = { babBreakdown: { ...(details as BabBreakdownDetails), characterClassLabel } };
-            break;
-        case 'initiative':
-            dialogTitle = "Initiative Breakdown";
-            dialogProps = { initiativeBreakdown: details as InitiativeBreakdownDetails };
-            break;
-        case 'grappleModifier':
-            dialogTitle = "Grapple Modifier Breakdown";
-            dialogProps = { grappleModifierBreakdown: details as GrappleModifierBreakdownDetails };
-            break;
-        case 'grappleDamage':
-            dialogTitle = "Grapple Damage Breakdown";
-            dialogProps = { grappleDamageBreakdown: details as GrappleDamageBreakdownDetails };
-            break;
-    }
-    setCurrentInfoDialogData({
-        isOpen: true,
-        onOpenChange: setIsInfoDialogOpen,
-        title: dialogTitle,
-        ...dialogProps
-    });
+  const openInfoDialog = (contentType: InfoDialogContentType) => {
+    setActiveInfoDialogType(contentType);
     setIsInfoDialogOpen(true);
-}, [character.classes]);
+  };
+  
+  const handleOpenRaceInfoDialog = () => {
+    if (character.race) {
+        openInfoDialog({ type: 'race' });
+    }
+  };
+  const handleOpenClassInfoDialog = () => {
+    if (character.classes[0]?.className) {
+        openInfoDialog({ type: 'class' });
+    }
+  };
+  const handleOpenAlignmentInfoDialog = () => openInfoDialog({ type: 'alignmentSummary' });
+  const handleOpenDeityInfoDialog = () => openInfoDialog({ type: 'deity' });
+  const handleOpenAbilityScoreBreakdownDialog = (ability: Exclude<AbilityName, 'none'>) => {
+    openInfoDialog({ type: 'abilityScoreBreakdown', abilityName: ability });
+  };
+  const handleOpenCombatStatInfoDialog = (
+    breakdownType: 'bab' | 'initiative' | 'grappleModifier' | 'grappleDamage'
+  ) => {
+    openInfoDialog({ type: `${breakdownType}Breakdown` as InfoDialogContentType['type'] } as InfoDialogContentType);
+  };
 
 
   const handleSubmit = (e: FormEvent) => {
@@ -960,24 +836,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         </div>
       </form>
 
-      {currentInfoDialogData && isInfoDialogOpen && (
+      {isInfoDialogOpen && activeInfoDialogType && (
         <InfoDisplayDialog
           isOpen={isInfoDialogOpen}
           onOpenChange={setIsInfoDialogOpen}
-          title={currentInfoDialogData.title}
-          content={currentInfoDialogData.content}
-          abilityModifiers={currentInfoDialogData.abilityModifiers}
-          skillBonuses={currentInfoDialogData.skillBonuses}
-          grantedFeats={currentInfoDialogData.grantedFeats}
-          bonusFeatSlots={currentInfoDialogData.bonusFeatSlots}
-          abilityScoreBreakdown={currentInfoDialogData.abilityScoreBreakdown}
-          detailsList={currentInfoDialogData.detailsList}
-          skillModifierBreakdown={currentInfoDialogData.skillModifierBreakdown}
-          resistanceBreakdown={currentInfoDialogData.resistanceBreakdown}
-          babBreakdown={currentInfoDialogData.babBreakdown}
-          initiativeBreakdown={currentInfoDialogData.initiativeBreakdown}
-          grappleModifierBreakdown={currentInfoDialogData.grappleModifierBreakdown}
-          grappleDamageBreakdown={currentInfoDialogData.grappleDamageBreakdown}
+          character={character}
+          contentType={activeInfoDialogType}
         />
       )}
       <AddCustomSkillDialog

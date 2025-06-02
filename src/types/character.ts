@@ -25,7 +25,7 @@ export interface CharacterClass {
 }
 
 export interface CustomSynergyRule {
-  id: string;
+  id:string;
   targetSkillName: string; // This should be skill ID (value)
   ranksInThisSkillRequired: number;
   bonusGranted: number;
@@ -281,7 +281,7 @@ export type CharacterAlignmentObject = { value: CharacterAlignment; label: strin
 export type CharacterAlignment =
   | "lawful-good" | "neutral-good" | "chaotic-good"
   | "lawful-neutral" | "true-neutral" | "chaotic-neutral"
-  | "lawful-evil" | "neutral-evil" | "chaotic-evil";
+  | "lawful-evil" | "neutral-evil" | "chaotic-evil" | '';
 
 export const ALIGNMENT_PREREQUISITE_OPTIONS: ReadonlyArray<{ value: string; label: string }> = [
   ...ALIGNMENTS.map(a => ({ value: a.value, label: a.label })),
@@ -920,3 +920,65 @@ export function isAlignmentCompatible(
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
   return lcDiff <= 1 && geDiff <= 1;
 }
+
+
+// New Types for Refactored InfoDisplayDialog
+export type ResistanceFieldKeySheet = Exclude<keyof Pick<Character,
+  'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
+  'spellResistance' | 'powerResistance' | 'fortification'
+>, 'damageReduction'>;
+
+export type InfoDialogContentType =
+  | { type: 'race' }
+  | { type: 'class' }
+  | { type: 'alignmentSummary' }
+  | { type: 'deity' }
+  | { type: 'abilityScoreBreakdown'; abilityName: Exclude<AbilityName, 'none'> }
+  | { type: 'skillModifierBreakdown'; skillId: string }
+  | { type: 'resistanceBreakdown'; resistanceField: ResistanceFieldKeySheet }
+  | { type: 'acBreakdown'; acType: 'Normal' | 'Touch' | 'Flat-Footed' }
+  | { type: 'babBreakdown' }
+  | { type: 'initiativeBreakdown' }
+  | { type: 'grappleModifierBreakdown' }
+  | { type: 'grappleDamageBreakdown' }
+  | { type: 'genericHtml'; title: string; content: string };
+
+// For displaying skills in the dialog or other UI components, combining predefined and custom
+export interface SkillDefinitionForDisplay {
+  id: string;
+  name: string;
+  keyAbility: AbilityName;
+  description?: string;
+  isCustom: boolean;
+  providesSynergies?: CustomSynergyRule[];
+}
+
+export interface BabBreakdownDetails {
+  baseBabFromClasses: number[];
+  miscModifier: number;
+  totalBab: number[];
+  characterClassLabel?: string;
+}
+
+export interface InitiativeBreakdownDetails {
+  dexModifier: number;
+  miscModifier: number;
+  totalInitiative: number;
+}
+
+export interface GrappleModifierBreakdownDetails {
+    baseAttackBonus: number;
+    strengthModifier: number;
+    sizeModifierGrapple: number;
+    miscModifier: number;
+    totalGrappleModifier: number;
+}
+
+export interface GrappleDamageBreakdownDetails {
+    baseDamage: string;
+    bonus: number;
+    strengthModifier: number;
+}
+
+// TODO: Define other specific breakdown detail types (e.g., ACBreakdownDetails, SkillModifierBreakdownDetails)
+// if they need to be distinct from how the dialog currently structures `detailsList`.
