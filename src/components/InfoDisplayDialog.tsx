@@ -26,6 +26,7 @@ import { DND_RACES, DND_CLASSES, DND_DEITIES, ALIGNMENTS, SKILL_DEFINITIONS, SIZ
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 import {
   calculateAbilityModifier, getAbilityModifierByName, getBab, getSizeModifierAC, getSizeModifierGrapple,
   calculateInitiative, calculateGrapple, getUnarmedGrappleDamage
@@ -705,19 +706,24 @@ export function InfoDisplayDialog({
                   ))}
                 </div>
               )}
+              {detailsList && detailsList.length > 0 && grantedFeats && grantedFeats.length > 0 && <Separator className="my-3" />}
               {grantedFeats && grantedFeats.length > 0 && (
                 <div>
-                <h3 className={sectionHeadingClass}>Class Features & Granted Feats:</h3>
-                <ul className="list-disc list-inside space-y-1 text-sm">
-                  {grantedFeats.map(({ featId, name, note, levelAcquired }, index) => (
-                    <li key={`${featId}-${index}`} className="text-foreground">
-                      <span>{name}</span>
-                      {note && <span className="text-muted-foreground text-xs ml-1">{note}</span>}
-                      {levelAcquired !== undefined && <span className="text-muted-foreground text-xs ml-1">(Lvl {levelAcquired})</span>}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                  <h3 className={sectionHeadingClass}>Class Features & Granted Feats:</h3>
+                  <ul className="space-y-2 text-sm">
+                    {grantedFeats.map(({ featId, name, note, levelAcquired }, index) => (
+                      <li key={`${featId}-${index}`} className="flex items-center text-foreground">
+                        {levelAcquired !== undefined && (
+                           <Badge variant="secondary" className="text-xs font-normal h-5 mr-2 whitespace-nowrap">
+                            Level {levelAcquired}
+                          </Badge>
+                        )}
+                        <span>{name}</span>
+                        {note && <span className="text-muted-foreground text-xs ml-1">{note}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               )}
             </>
           )}
