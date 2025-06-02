@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Info } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
-  Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities, SkillModifierBreakdownDetails,
+  Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
   InfoDialogContentType, ResistanceFieldKeySheet, DndRaceOption, DndClassOption, CharacterAlignmentObject, DndDeityOption,
   FeatDefinitionJsonData, SkillDefinitionForDisplay,
   BabBreakdownDetails as BabBreakdownDetailsType,
@@ -382,8 +382,7 @@ export function InfoDisplayDialog({
     grappleDamageBreakdown,
   } = derivedData;
   
-  const sectionHeadingBaseClass = "text-md font-semibold mb-2";
-  const sectionHeadingClass = `${sectionHeadingBaseClass} text-primary`;
+  const sectionHeadingClass = "text-md font-semibold mb-2 text-primary";
 
   const sectionHeading = abilityScoreBreakdown || skillModifierBreakdown || resistanceBreakdown || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || (detailsList && (contentType?.type === 'acBreakdown' || contentType?.type === 'class')) ? "Calculation:" : "Details:";
   const hasAnyBonusSection = abilityModifiers?.length || skillBonuses?.length || grantedFeats?.length || bonusFeatSlots !== undefined;
@@ -439,7 +438,7 @@ export function InfoDisplayDialog({
                 <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span>
+                     <span>
                       {ABILITY_DISPLAY_NAMES.dexterity.abbr}{'\u00A0'}
                       <span className="text-xs text-muted-foreground">({ABILITY_DISPLAY_NAMES.dexterity.full})</span> Modifier:
                     </span>
@@ -670,22 +669,21 @@ export function InfoDisplayDialog({
               <div>
                 <h3 className={sectionHeadingClass}>Racial Feat Adjustments:</h3>
                 <div className="text-sm space-y-1">
-                  {bonusFeatSlots && bonusFeatSlots > 0 && ( 
+                  {bonusFeatSlots !== undefined && bonusFeatSlots > 0 && ( 
                     <div className="flex justify-between">
-                      <span>Bonus Feat Slots:</span>
+                      <span className="text-foreground">Bonus Feat Slots:</span>
                       {renderModifierValue(bonusFeatSlots)}
                     </div>
                   )}
-                  {grantedFeats && grantedFeats.length > 0 && (
+                  {grantedFeats && grantedFeats.length > 0 ? (
                     <div>
                       <span className="text-primary">Granted Feats: </span>
                       <span className="text-foreground">
                         {grantedFeats.map(feat => `${feat.name}${feat.note ? ` ${feat.note}` : ''}`).join(', ')}
                       </span>
                     </div>
-                  )}
-                  {bonusFeatSlots === undefined && (!grantedFeats || grantedFeats.length === 0) && (
-                    <p className="text-foreground">None</p>
+                  ) : (
+                    (bonusFeatSlots === undefined || bonusFeatSlots === 0) && <p className="text-foreground">None</p>
                   )}
                 </div>
               </div>
@@ -701,7 +699,7 @@ export function InfoDisplayDialog({
                   <h3 className={sectionHeadingClass}>Details:</h3>
                   {detailsList!.map((detail, index) => (
                       <div key={index} className="flex justify-between text-sm mb-0.5">
-                      <span className="text-muted-foreground">{detail.label}:</span>
+                      <span className="text-foreground">{detail.label}:</span>
                       <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value}</span>
                       </div>
                   ))}
@@ -712,7 +710,7 @@ export function InfoDisplayDialog({
                 <h3 className={sectionHeadingClass}>Class Features & Granted Feats:</h3>
                 <ul className="list-disc list-inside space-y-1 text-sm">
                   {grantedFeats.map(({ featId, name, note, levelAcquired }, index) => (
-                    <li key={`${featId}-${index}`}>
+                    <li key={`${featId}-${index}`} className="text-foreground">
                       <span>{name}</span>
                       {note && <span className="text-muted-foreground text-xs ml-1">{note}</span>}
                       {levelAcquired !== undefined && <span className="text-muted-foreground text-xs ml-1">(Lvl {levelAcquired})</span>}
@@ -733,7 +731,7 @@ export function InfoDisplayDialog({
                   {abilityModifiers!.map(({ ability, change }) => {
                     const displayName = ABILITY_DISPLAY_NAMES[ability];
                     return (
-                      <li key={ability} className="flex justify-between">
+                      <li key={ability} className="flex justify-between text-foreground">
                         <span>
                           {displayName.abbr}{'\u00A0'}
                           <span className="text-xs text-muted-foreground">({displayName.full})</span>:
@@ -754,7 +752,7 @@ export function InfoDisplayDialog({
                 <h3 className={sectionHeadingClass}>Racial Skill Bonuses:</h3>
                 <ul className="space-y-1 text-sm">
                   {skillBonuses!.map(({ skillName, bonus }) => (
-                    <li key={skillName} className="flex justify-between">
+                    <li key={skillName} className="flex justify-between text-foreground">
                       <span>{skillName}:</span>
                       {renderModifierValue(bonus)}
                     </li>
@@ -775,25 +773,22 @@ export function InfoDisplayDialog({
                     const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value))))
                         ? renderModifierValue(detail.value, undefined, undefined, undefined, (detail.label.toLowerCase() === "total" ? "text-accent" : undefined), detail.label.toLowerCase() === "total")
                         : detail.value;
-                    let labelContent = <span className="text-muted-foreground">{detail.label}:</span>;
-                    if (detail.label.toLowerCase() === "dexterity modifier") {
-                        const displayName = ABILITY_DISPLAY_NAMES.dexterity;
-                        labelContent = (
-                            <span className="text-muted-foreground">
-                                {displayName.abbr}{'\u00A0'}
-                                <span className="text-xs text-muted-foreground">({displayName.full})</span> Modifier:
-                            </span>
-                        );
-                    } else if (detail.label.toLowerCase() === "strength modifier") {
-                         const displayName = ABILITY_DISPLAY_NAMES.strength;
-                        labelContent = (
-                            <span className="text-muted-foreground">
-                                {displayName.abbr}{'\u00A0'}
-                                <span className="text-xs text-muted-foreground">({displayName.full})</span> Modifier:
-                            </span>
-                        );
-                    }
+                    
+                    let labelContent: React.ReactNode;
+                    const defaultLabelClass = "text-foreground"; 
 
+                    if (detail.label.toLowerCase().includes("modifier") && (detail.label.toLowerCase().includes("dexterity") || detail.label.toLowerCase().includes("strength"))) {
+                        const ability = detail.label.toLowerCase().includes("dexterity") ? 'dexterity' : 'strength';
+                        const displayName = ABILITY_DISPLAY_NAMES[ability];
+                        labelContent = (
+                            <span className={defaultLabelClass}>
+                                {displayName.abbr}{'\u00A0'}
+                                <span className="text-xs text-muted-foreground">({displayName.full})</span> Modifier:
+                            </span>
+                        );
+                    } else {
+                         labelContent = <span className={defaultLabelClass}>{detail.label}:</span>;
+                    }
 
                     return (
                         <div key={index} className="flex justify-between text-sm mb-0.5">
@@ -824,3 +819,4 @@ export function InfoDisplayDialog({
     </Dialog>
   );
 }
+
