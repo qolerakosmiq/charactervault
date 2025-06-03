@@ -10,26 +10,25 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Info, ChevronDown, ChevronUp } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
   InfoDialogContentType, ResistanceFieldKeySheet, DndRaceOption, DndClassOption, CharacterAlignmentObject, DndDeityOption,
-  FeatDefinitionJsonData, SkillDefinitionForDisplay, SkillDefinitionJsonData, // Added SkillDefinitionJsonData
+  FeatDefinitionJsonData, SkillDefinitionForDisplay, SkillDefinitionJsonData,
   BabBreakdownDetails as BabBreakdownDetailsType,
   InitiativeBreakdownDetails as InitiativeBreakdownDetailsType,
   GrappleModifierBreakdownDetails as GrappleModifierBreakdownDetailsType,
   GrappleDamageBreakdownDetails as GrappleDamageBreakdownDetailsType,
   ResistanceValue,
-  PrerequisiteMessage // Added PrerequisiteMessage
+  PrerequisiteMessage
 } from '@/types/character';
-import { DND_RACES, DND_CLASSES, DND_DEITIES, ALIGNMENTS, SKILL_DEFINITIONS, SIZES, DND_FEATS_DEFINITIONS, getRaceSpecialQualities, getRaceSkillPointsBonusPerLevel, calculateDetailedAbilityScores, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, SKILL_SYNERGIES, CLASS_SKILLS, calculateSizeSpecificSkillBonus, checkFeatPrerequisites } from '@/types/character'; // Added checkFeatPrerequisites
+import { DND_RACES, DND_CLASSES, DND_DEITIES, ALIGNMENTS, SKILL_DEFINITIONS, SIZES, DND_FEATS_DEFINITIONS, getRaceSpecialQualities, getRaceSkillPointsBonusPerLevel, calculateDetailedAbilityScores, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, SKILL_SYNERGIES, CLASS_SKILLS, calculateSizeSpecificSkillBonus, checkFeatPrerequisites } from '@/types/character';
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-// Popover imports removed
-// Sheet imports removed
+
 
 import {
   calculateAbilityModifier, getAbilityModifierByName, getBab, getSizeModifierAC, getSizeModifierGrapple,
@@ -81,12 +80,12 @@ export interface SkillModifierBreakdownDetails {
   totalBonus: number;
 }
 
-const FeatDetailContent: React.FC<{ // Renamed from FeatPopoverContent
+const FeatDetailContent: React.FC<{
   featId: string;
   character: Character;
   allFeats: readonly (FeatDefinitionJsonData & {isCustom?: boolean})[];
-  allSkills: readonly SkillDefinitionJsonData[]; // Ensure this is passed correctly
-  customSkills: readonly CustomSkillDefinition[]; // Ensure this is passed correctly
+  allSkills: readonly SkillDefinitionJsonData[];
+  customSkills: readonly CustomSkillDefinition[];
 }> = ({ featId, character, allFeats, allSkills, customSkills }) => {
   const featDef = allFeats.find(f => f.value === featId);
   if (!featDef) return <p className="text-sm text-muted-foreground">Feat details not found.</p>;
@@ -95,7 +94,7 @@ const FeatDetailContent: React.FC<{ // Renamed from FeatPopoverContent
 
   return (
     <div className="space-y-2 p-3 text-sm">
-      <h4 className="font-semibold text-primary">{featDef.label}</h4>
+      {/* Title removed as per user request, trigger serves as title */}
       {featDef.description && <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: featDef.description }} />}
       {prereqMessages.length > 0 && (
         <div className="mt-2">
@@ -147,7 +146,7 @@ export function InfoDisplayDialog({
 
   React.useEffect(() => {
     if (!isOpen) {
-      setExpandedItems(new Set()); // Reset expanded items when dialog closes
+      setExpandedItems(new Set());
     }
   }, [isOpen]);
 
@@ -772,18 +771,18 @@ export function InfoDisplayDialog({
                     {skillBonuses!.map(({ skillId, skillName, bonus }, index) => {
                        const skillDef = allCombinedSkillDefinitionsForDisplay.find(s => s.id === skillId);
                        const isExpanded = expandedItems.has(`skill-${skillId}`);
+                       const uniqueKey = `skill-${skillId}-${index}`;
                        return (
-                        <li key={`skill-${skillId}-${index}`} className="text-foreground">
+                        <li key={uniqueKey} className="text-foreground">
                           <div className="flex justify-between items-center">
                             <Button
                               variant="link"
                               size="sm"
-                              onClick={() => toggleExpanded(`skill-${skillId}`)}
-                              className="p-0 h-auto text-sm font-normal text-foreground hover:text-primary inline-flex items-center"
+                              onClick={() => toggleExpanded(uniqueKey)}
+                              className="p-0 h-auto text-sm font-normal text-foreground hover:text-primary inline-flex items-center text-left"
                               aria-expanded={isExpanded}
                             >
                               {skillName}:
-                              {isExpanded ? <ChevronUp className="h-3 w-3 ml-1" /> : <ChevronDown className="h-3 w-3 ml-1" />}
                             </Button>
                             {renderModifierValue(bonus)}
                           </div>
@@ -807,7 +806,7 @@ export function InfoDisplayDialog({
                 <div>
                   <h3 className={sectionHeadingClass}>Racial Feat Adjustments:</h3>
                   <div className="text-sm space-y-1">
-                    {bonusFeatSlots !== undefined && ( 
+                    {bonusFeatSlots !== undefined && bonusFeatSlots > 0 && ( 
                       <div className="flex justify-between">
                         <span className="text-foreground">Bonus Feat Slots:</span>
                         {renderModifierValue(bonusFeatSlots)}
@@ -824,16 +823,15 @@ export function InfoDisplayDialog({
                                 variant="link"
                                 size="sm"
                                 onClick={() => toggleExpanded(uniqueKey)}
-                                className="p-0 h-auto text-foreground hover:text-primary text-sm font-normal inline-flex items-center"
+                                className="p-0 h-auto text-foreground hover:text-primary text-sm font-normal inline-flex items-center text-left"
                                 aria-expanded={isExpanded}
                               >
                                 {feat.name}
                                 {feat.note && <span className="text-muted-foreground text-xs ml-1">{feat.note}</span>}
-                                {isExpanded ? <ChevronUp className="h-3 w-3 ml-1" /> : <ChevronDown className="h-3 w-3 ml-1" />}
                               </Button>
                             {isExpanded && (
                               <div className="mt-1 border rounded-md bg-muted/20 max-h-[300px] overflow-y-auto">
-                                <ScrollArea className="h-full"> {/* Use ScrollArea for themed scrollbar */}
+                                <ScrollArea className="h-full">
                                   <FeatDetailContent
                                     featId={feat.featId}
                                     character={character}
@@ -848,7 +846,7 @@ export function InfoDisplayDialog({
                         )})}
                       </ul>
                     ) : (
-                       (bonusFeatSlots === undefined) && <p className="text-foreground">None</p>
+                       (bonusFeatSlots === undefined || bonusFeatSlots <= 0) && <p className="text-foreground">None</p>
                     )}
                   </div>
                 </div>
@@ -895,7 +893,6 @@ export function InfoDisplayDialog({
                               aria-expanded={isExpanded}
                             >
                               <span className="mr-1">{name}</span>
-                              {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                             </Button>
                         </div>
                         {note && !isExpanded && <p className="text-xs text-muted-foreground ml-2 mt-0.5">{note}</p>}
@@ -906,8 +903,8 @@ export function InfoDisplayDialog({
                                   featId={featId}
                                   character={character}
                                   allFeats={allCombinedFeatDefinitions}
-                                  allSkills={SKILL_DEFINITIONS} // Pass predefined skill definitions
-                                  customSkills={customSkillDefinitions} // Pass custom skill definitions
+                                  allSkills={SKILL_DEFINITIONS}
+                                  customSkills={customSkillDefinitions}
                                 />
                               </ScrollArea>
                             </div>
@@ -995,5 +992,3 @@ interface DerivedDialogData {
   grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
   grappleDamageBreakdown?: GrappleDamageBreakdownDetails;
 }
-
-    
