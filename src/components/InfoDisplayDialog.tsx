@@ -80,6 +80,7 @@ export interface SkillModifierBreakdownDetails {
   totalBonus: number;
 }
 
+// Renamed from FeatPopoverContent
 const FeatDetailContent: React.FC<{
   featId: string;
   character: Character;
@@ -93,8 +94,7 @@ const FeatDetailContent: React.FC<{
   const prereqMessages = checkFeatPrerequisites(featDef, character, allFeats, allSkills, customSkills);
 
   return (
-    <div className="space-y-2 p-3 text-sm">
-      {/* Title removed from here based on user request */}
+    <div className="space-y-2 text-sm">
       {featDef.description && <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: featDef.description }} />}
       {prereqMessages.length > 0 && (
         <div className="mt-2">
@@ -779,10 +779,10 @@ export function InfoDisplayDialog({
                               variant="link"
                               size="sm"
                               onClick={() => toggleExpanded(uniqueKey)}
-                              className="p-0 h-auto text-sm font-normal text-foreground hover:text-primary inline-flex items-center text-left"
+                              className="p-0 h-auto text-sm font-normal text-foreground hover:text-primary inline-flex items-center text-left justify-start"
                               aria-expanded={isExpanded}
                             >
-                              {skillName}:
+                              {skillName}
                             </Button>
                             {renderModifierValue(bonus)}
                           </div>
@@ -827,14 +827,14 @@ export function InfoDisplayDialog({
                                 variant="link"
                                 size="sm"
                                 onClick={() => toggleExpanded(uniqueKey)}
-                                className="p-0 h-auto text-foreground hover:text-primary text-sm font-normal inline-flex items-center text-left"
+                                className="p-0 h-auto text-foreground hover:text-primary text-sm font-normal inline-flex items-center text-left justify-start"
                                 aria-expanded={isExpanded}
                               >
                                 {feat.name}
                                 {feat.note && <span className="text-muted-foreground text-xs ml-1">{feat.note}</span>}
                               </Button>
                             {isExpanded && (
-                               <div className="mt-1 ml-[calc(0.5rem+1px)]">
+                               <div className="mt-1.5 p-3 rounded-md bg-muted/20 border border-border/30">
                                 <FeatDetailContent
                                   featId={feat.featId}
                                   character={character}
@@ -896,14 +896,14 @@ export function InfoDisplayDialog({
                             >
                               {name}
                               {note && (
-                                <span className="text-xs text-muted-foreground no-underline ml-1">
+                                <span className="text-xs text-muted-foreground inline-block no-underline hover:no-underline ml-[0.2em]">
                                   {note}
                                 </span>
                               )}
                             </Button>
                         </div>
                         {isExpanded && (
-                            <div className="mt-1 ml-[calc(0.5rem+1px)]">
+                            <div className="mt-1.5 p-3 rounded-md bg-muted/20 border border-border/30">
                               <FeatDetailContent
                                 featId={featId}
                                 character={character}
@@ -996,4 +996,3 @@ interface DerivedDialogData {
   grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
   grappleDamageBreakdown?: GrappleDamageBreakdownDetails;
 }
-
