@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Info } from 'lucide-react';
+import { Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
@@ -94,6 +94,7 @@ const FeatDetailContent: React.FC<{
 
   return (
     <div className="space-y-2 p-3 text-sm">
+      {/* Title removed from here based on user request */}
       {featDef.description && <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: featDef.description }} />}
       {prereqMessages.length > 0 && (
         <div className="mt-2">
@@ -769,8 +770,8 @@ export function InfoDisplayDialog({
                   <ul className="space-y-1 text-sm">
                     {skillBonuses!.map(({ skillId, skillName, bonus }, index) => {
                        const skillDef = allCombinedSkillDefinitionsForDisplay.find(s => s.id === skillId);
-                       const isExpanded = expandedItems.has(`skill-${skillId}`);
                        const uniqueKey = `skill-${skillId}-${index}`;
+                       const isExpanded = expandedItems.has(uniqueKey);
                        return (
                         <li key={uniqueKey} className="text-foreground">
                           <div className="flex justify-between items-center">
@@ -785,17 +786,18 @@ export function InfoDisplayDialog({
                             </Button>
                             {renderModifierValue(bonus)}
                           </div>
-                           {isExpanded && (
+                           {isExpanded && skillDef?.description && (
                             <div className="mt-1 pl-4 border-l border-border/30 ml-[calc(0.5rem+1px)]">
-                                {skillDef?.description ? (
-                                    <div className="text-xs text-muted-foreground prose prose-sm dark:prose-invert max-w-none bg-muted/20 p-2 rounded-md"
-                                        dangerouslySetInnerHTML={{ __html: skillDef.description }} />
-                                ) : (
-                                    <div className="mt-1 pl-4 text-xs text-muted-foreground italic bg-muted/20 p-2 rounded-md">
-                                    No description available for this skill.
-                                    </div>
-                                )}
+                                <div className="text-xs text-muted-foreground prose prose-sm dark:prose-invert max-w-none bg-muted/20 p-2 rounded-md"
+                                    dangerouslySetInnerHTML={{ __html: skillDef.description }} />
                             </div>
+                           )}
+                           {isExpanded && !skillDef?.description && (
+                             <div className="mt-1 pl-4 border-l border-border/30 ml-[calc(0.5rem+1px)]">
+                               <div className="mt-1 pl-4 text-xs text-muted-foreground italic bg-muted/20 p-2 rounded-md">
+                                  No description available for this skill.
+                               </div>
+                             </div>
                            )}
                         </li>
                        );
@@ -832,7 +834,7 @@ export function InfoDisplayDialog({
                                 {feat.note && <span className="text-muted-foreground text-xs ml-1">{feat.note}</span>}
                               </Button>
                             {isExpanded && (
-                               <div className="mt-1 pl-4 border-l border-border/30 ml-[calc(0.5rem+1px)]">
+                               <div className="mt-1 ml-[calc(0.5rem+1px)]">
                                 <FeatDetailContent
                                   featId={feat.featId}
                                   character={character}
@@ -893,12 +895,15 @@ export function InfoDisplayDialog({
                               aria-expanded={isExpanded}
                             >
                               {name}
+                              {note && (
+                                <span className="text-xs text-muted-foreground no-underline ml-1">
+                                  {note}
+                                </span>
+                              )}
                             </Button>
                         </div>
-                        {note && !isExpanded && <p className="text-xs text-muted-foreground ml-2 mt-0.5 pl-[calc(theme(spacing.2)_+_1.25rem)]">{note}</p>}
-                        {isExpanded && note && <p className="text-xs text-muted-foreground ml-2 mt-0.5 pl-[calc(theme(spacing.2)_+_1.25rem)]">{note}</p>}
                         {isExpanded && (
-                            <div className="mt-1 pl-4 border-l border-border/30 ml-[calc(0.5rem+1px)]">
+                            <div className="mt-1 ml-[calc(0.5rem+1px)]">
                               <FeatDetailContent
                                 featId={featId}
                                 character={character}
