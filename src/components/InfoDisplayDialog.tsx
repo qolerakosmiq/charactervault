@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Info, ChevronDown, ChevronUp } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
@@ -778,7 +778,7 @@ export function InfoDisplayDialog({
                               variant="link"
                               size="sm"
                               onClick={() => toggleExpanded(uniqueKey)}
-                              className="p-0 h-auto text-sm font-normal text-foreground hover:text-primary inline-flex items-center text-left justify-start"
+                              className="p-0 h-auto text-sm font-normal text-foreground hover:text-primary inline-flex items-center text-left justify-start no-underline hover:no-underline"
                               aria-expanded={isExpanded}
                             >
                               {skillName}
@@ -816,7 +816,7 @@ export function InfoDisplayDialog({
                       </div>
                     )}
                     {grantedFeats && grantedFeats.length > 0 ? (
-                      <ul className="space-y-1">
+                      <ul className="space-y-2">
                         {grantedFeats.map((feat, index) => {
                           const uniqueKey = `racefeat-${feat.featId}-${index}`;
                           const isExpanded = expandedItems.has(uniqueKey);
@@ -826,11 +826,11 @@ export function InfoDisplayDialog({
                                 variant="link"
                                 size="sm"
                                 onClick={() => toggleExpanded(uniqueKey)}
-                                className="p-0 h-auto text-foreground hover:text-primary text-sm font-normal inline-flex items-center text-left justify-start"
+                                className="p-0 h-auto text-foreground hover:text-primary text-sm font-normal inline-flex items-center text-left justify-start no-underline hover:no-underline"
                                 aria-expanded={isExpanded}
                               >
                                 {feat.name}
-                                {feat.note && <span className="text-muted-foreground text-xs ml-1">{feat.note}</span>}
+                                {feat.note && <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline"> {feat.note}</span>}
                               </Button>
                             {isExpanded && (
                               <div className="mt-1.5 p-3 rounded-md bg-muted/20 border border-border/30">
@@ -880,9 +880,9 @@ export function InfoDisplayDialog({
                       const isExpanded = expandedItems.has(uniqueKey);
                       return (
                       <li key={uniqueKey}>
-                        <div className="flex items-center text-foreground">
+                        <div className="flex items-start text-foreground">
                            {levelAcquired !== undefined && (
-                             <Badge variant="outline" className="text-xs font-normal h-5 mr-2 whitespace-nowrap">
+                             <Badge variant="outline" className="text-xs font-normal h-5 mr-2 mt-[1px] whitespace-nowrap self-start">
                               Level {levelAcquired}
                             </Badge>
                           )}
@@ -892,14 +892,14 @@ export function InfoDisplayDialog({
                               onClick={() => toggleExpanded(uniqueKey)}
                               className={cn(
                                 "p-0 h-auto text-sm font-normal text-left justify-start text-foreground hover:text-primary flex-grow no-underline hover:no-underline",
-                                { "flex-1": !levelAcquired } // Take full width if no badge
+                                { "flex-1": !levelAcquired } 
                               )}
                               aria-expanded={isExpanded}
                             >
                               {name}
                               {note && (
                                 <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline">
-                                  {'\u00A0'}({note})
+                                  {'\u00A0'}{note}
                                 </span>
                               )}
                             </Button>
@@ -999,3 +999,4 @@ interface DerivedDialogData {
   grappleDamageBreakdown?: GrappleDamageBreakdownDetails;
 }
 
+    
