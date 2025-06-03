@@ -10,25 +10,26 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Info } from 'lucide-react';
+import { Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
   InfoDialogContentType, ResistanceFieldKeySheet, DndRaceOption, DndClassOption, CharacterAlignmentObject, DndDeityOption,
-  FeatDefinitionJsonData, SkillDefinitionForDisplay,
+  FeatDefinitionJsonData, SkillDefinitionForDisplay, SkillDefinitionJsonData, // Added SkillDefinitionJsonData
   BabBreakdownDetails as BabBreakdownDetailsType,
   InitiativeBreakdownDetails as InitiativeBreakdownDetailsType,
   GrappleModifierBreakdownDetails as GrappleModifierBreakdownDetailsType,
   GrappleDamageBreakdownDetails as GrappleDamageBreakdownDetailsType,
   ResistanceValue,
-  PrerequisiteMessage
+  PrerequisiteMessage // Added PrerequisiteMessage
 } from '@/types/character';
-import { DND_RACES, DND_CLASSES, DND_DEITIES, ALIGNMENTS, SKILL_DEFINITIONS, SIZES, DND_FEATS_DEFINITIONS, getRaceSpecialQualities, getRaceSkillPointsBonusPerLevel, calculateDetailedAbilityScores, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, SKILL_SYNERGIES, CLASS_SKILLS, calculateSizeSpecificSkillBonus, checkFeatPrerequisites } from '@/types/character';
-import { useDefinitionsStore } from '@/lib/definitions-store';
+import { DND_RACES, DND_CLASSES, DND_DEITIES, ALIGNMENTS, SKILL_DEFINITIONS, SIZES, DND_FEATS_DEFINITIONS, getRaceSpecialQualities, getRaceSkillPointsBonusPerLevel, calculateDetailedAbilityScores, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, SKILL_SYNERGIES, CLASS_SKILLS, calculateSizeSpecificSkillBonus, checkFeatPrerequisites } from '@/types/character'; // Added checkFeatPrerequisites
+import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+// Popover imports removed
+// Sheet imports removed
 
 import {
   calculateAbilityModifier, getAbilityModifierByName, getBab, getSizeModifierAC, getSizeModifierGrapple,
@@ -80,16 +81,22 @@ export interface SkillModifierBreakdownDetails {
   totalBonus: number;
 }
 
-const FeatPopoverContent: React.FC<{ featId: string; character: Character; allFeats: readonly FeatDefinitionJsonData[], allSkills: readonly SkillDefinitionJsonData[], customSkills: readonly import('@/lib/definitions-store').CustomSkillDefinition[] }> = ({ featId, character, allFeats, allSkills, customSkills }) => {
+const FeatDetailContent: React.FC<{ // Renamed from FeatPopoverContent
+  featId: string;
+  character: Character;
+  allFeats: readonly (FeatDefinitionJsonData & {isCustom?: boolean})[];
+  allSkills: readonly SkillDefinitionJsonData[]; // Ensure this is passed correctly
+  customSkills: readonly CustomSkillDefinition[]; // Ensure this is passed correctly
+}> = ({ featId, character, allFeats, allSkills, customSkills }) => {
   const featDef = allFeats.find(f => f.value === featId);
   if (!featDef) return <p className="text-sm text-muted-foreground">Feat details not found.</p>;
 
   const prereqMessages = checkFeatPrerequisites(featDef, character, allFeats, allSkills, customSkills);
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 p-3 text-sm">
       <h4 className="font-semibold text-primary">{featDef.label}</h4>
-      {featDef.description && <div className="text-sm prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: featDef.description }} />}
+      {featDef.description && <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: featDef.description }} />}
       {prereqMessages.length > 0 && (
         <div className="mt-2">
           <p className="text-sm font-medium text-muted-foreground">Prerequisites:</p>
@@ -123,6 +130,27 @@ export function InfoDisplayDialog({
     customFeatDefinitions: state.customFeatDefinitions,
     customSkillDefinitions: state.customSkillDefinitions,
   }));
+
+  const [expandedItems, setExpandedItems] = React.useState<Set<string>>(new Set());
+
+  const toggleExpanded = (itemId: string) => {
+    setExpandedItems(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(itemId)) {
+        newSet.delete(itemId);
+      } else {
+        newSet.add(itemId);
+      }
+      return newSet;
+    });
+  };
+
+  React.useEffect(() => {
+    if (!isOpen) {
+      setExpandedItems(new Set()); // Reset expanded items when dialog closes
+    }
+  }, [isOpen]);
+
 
   const allCombinedFeatDefinitions = React.useMemo(() => [
     ...DND_FEATS_DEFINITIONS.map(def => ({ ...def, isCustom: false as const })),
@@ -433,7 +461,7 @@ export function InfoDisplayDialog({
             {finalTitle}
           </DialogTitle>
         </DialogHeader>
-        <ScrollArea className="max-h-[60vh] pr-4 my-2">
+        <ScrollArea className="max-h-[70vh] pr-4 my-2">
           {htmlContent && (
              <div
               className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
@@ -741,25 +769,33 @@ export function InfoDisplayDialog({
                 <div className="mb-3">
                   <h3 className={sectionHeadingClass}>Racial Skill Bonuses:</h3>
                   <ul className="space-y-1 text-sm">
-                    {skillBonuses!.map(({ skillId, skillName, bonus }) => {
+                    {skillBonuses!.map(({ skillId, skillName, bonus }, index) => {
                        const skillDef = allCombinedSkillDefinitionsForDisplay.find(s => s.id === skillId);
+                       const isExpanded = expandedItems.has(`skill-${skillId}`);
                        return (
-                        <li key={skillId} className="flex justify-between text-foreground">
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button variant="link" size="sm" className="p-0 h-auto text-sm font-normal text-foreground hover:text-primary inline">
-                                {skillName}:
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-80 p-3 text-sm">
-                              {skillDef?.description ? (
-                                <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: skillDef.description }} />
-                              ) : (
-                                <p className="text-muted-foreground">No description available.</p>
-                              )}
-                            </PopoverContent>
-                          </Popover>
-                          {renderModifierValue(bonus)}
+                        <li key={`skill-${skillId}-${index}`} className="text-foreground">
+                          <div className="flex justify-between items-center">
+                            <Button
+                              variant="link"
+                              size="sm"
+                              onClick={() => toggleExpanded(`skill-${skillId}`)}
+                              className="p-0 h-auto text-sm font-normal text-foreground hover:text-primary inline-flex items-center"
+                              aria-expanded={isExpanded}
+                            >
+                              {skillName}:
+                              {isExpanded ? <ChevronUp className="h-3 w-3 ml-1" /> : <ChevronDown className="h-3 w-3 ml-1" />}
+                            </Button>
+                            {renderModifierValue(bonus)}
+                          </div>
+                           {isExpanded && skillDef?.description && (
+                            <div className="mt-1 pl-4 text-xs text-muted-foreground prose prose-sm dark:prose-invert max-w-none bg-muted/20 p-2 rounded-md"
+                                 dangerouslySetInnerHTML={{ __html: skillDef.description }} />
+                          )}
+                          {isExpanded && !skillDef?.description && (
+                            <div className="mt-1 pl-4 text-xs text-muted-foreground italic bg-muted/20 p-2 rounded-md">
+                              No description available for this skill.
+                            </div>
+                          )}
                         </li>
                        );
                     })}
@@ -778,25 +814,39 @@ export function InfoDisplayDialog({
                       </div>
                     )}
                     {grantedFeats && grantedFeats.length > 0 ? (
-                      <div>
-                        <span className="text-primary mr-1">Granted Feats:</span>
-                        {grantedFeats.map((feat, index) => (
-                          <React.Fragment key={feat.featId + "-" + index}>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button variant="link" size="sm" className="p-0 h-auto text-foreground hover:text-primary text-sm font-normal inline">
-                                  {feat.name}
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-80 p-3 text-sm">
-                                <FeatPopoverContent featId={feat.featId} character={character} allFeats={allCombinedFeatDefinitions} allSkills={SKILL_DEFINITIONS} customSkills={customSkillDefinitions}/>
-                              </PopoverContent>
-                            </Popover>
-                            {feat.note && <span className="text-muted-foreground text-xs ml-1">{feat.note}</span>}
-                            {index < grantedFeats.length - 1 && <span className="text-foreground">, </span>}
-                          </React.Fragment>
-                        ))}
-                      </div>
+                      <ul className="space-y-1">
+                        {grantedFeats.map((feat, index) => {
+                          const uniqueKey = `racefeat-${feat.featId}-${index}`;
+                          const isExpanded = expandedItems.has(uniqueKey);
+                          return (
+                          <li key={uniqueKey}>
+                             <Button
+                                variant="link"
+                                size="sm"
+                                onClick={() => toggleExpanded(uniqueKey)}
+                                className="p-0 h-auto text-foreground hover:text-primary text-sm font-normal inline-flex items-center"
+                                aria-expanded={isExpanded}
+                              >
+                                {feat.name}
+                                {feat.note && <span className="text-muted-foreground text-xs ml-1">{feat.note}</span>}
+                                {isExpanded ? <ChevronUp className="h-3 w-3 ml-1" /> : <ChevronDown className="h-3 w-3 ml-1" />}
+                              </Button>
+                            {isExpanded && (
+                              <div className="mt-1 border rounded-md bg-muted/20 max-h-[300px] overflow-y-auto">
+                                <ScrollArea className="h-full"> {/* Use ScrollArea for themed scrollbar */}
+                                  <FeatDetailContent
+                                    featId={feat.featId}
+                                    character={character}
+                                    allFeats={allCombinedFeatDefinitions}
+                                    allSkills={SKILL_DEFINITIONS}
+                                    customSkills={customSkillDefinitions}
+                                  />
+                                </ScrollArea>
+                              </div>
+                            )}
+                          </li>
+                        )})}
+                      </ul>
                     ) : (
                        (bonusFeatSlots === undefined) && <p className="text-foreground">None</p>
                     )}
@@ -826,26 +876,44 @@ export function InfoDisplayDialog({
                 <div>
                   <h3 className={sectionHeadingClass}>Class Features & Granted Feats:</h3>
                   <ul className="space-y-2 text-sm">
-                    {grantedFeats.map(({ featId, name, note, levelAcquired }, index) => (
-                      <li key={`${featId}-${index}`} className="flex items-center text-foreground">
-                        {levelAcquired !== undefined && (
-                           <Badge variant="outline" className="text-xs font-normal h-5 mr-2 whitespace-nowrap">
-                            Level {levelAcquired}
-                          </Badge>
-                        )}
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button variant="link" size="sm" className="p-0 h-auto text-sm font-normal text-foreground hover:text-primary inline">
-                              {name}
+                    {grantedFeats.map(({ featId, name, note, levelAcquired }, index) => {
+                      const uniqueKey = `classfeat-${featId}-${index}`;
+                      const isExpanded = expandedItems.has(uniqueKey);
+                      return (
+                      <li key={uniqueKey}>
+                        <div className="flex items-center text-foreground">
+                           {levelAcquired !== undefined && (
+                             <Badge variant="outline" className="text-xs font-normal h-5 mr-2 whitespace-nowrap">
+                              Level {levelAcquired}
+                            </Badge>
+                          )}
+                           <Button
+                              variant="link"
+                              size="sm"
+                              onClick={() => toggleExpanded(uniqueKey)}
+                              className="p-0 h-auto text-sm font-normal text-foreground hover:text-primary inline-flex items-center flex-grow text-left"
+                              aria-expanded={isExpanded}
+                            >
+                              <span className="mr-1">{name}</span>
+                              {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                             </Button>
-                          </PopoverTrigger>
-                           <PopoverContent className="w-80 p-3 text-sm">
-                             <FeatPopoverContent featId={featId} character={character} allFeats={allCombinedFeatDefinitions} allSkills={SKILL_DEFINITIONS} customSkills={customSkillDefinitions}/>
-                           </PopoverContent>
-                        </Popover>
-                        {note && <span className="text-muted-foreground text-xs ml-1">{note}</span>}
+                        </div>
+                        {note && !isExpanded && <p className="text-xs text-muted-foreground ml-2 mt-0.5">{note}</p>}
+                        {isExpanded && (
+                            <div className="mt-1 border rounded-md bg-muted/20 max-h-[300px] overflow-y-auto">
+                              <ScrollArea className="h-full">
+                                <FeatDetailContent
+                                  featId={featId}
+                                  character={character}
+                                  allFeats={allCombinedFeatDefinitions}
+                                  allSkills={SKILL_DEFINITIONS} // Pass predefined skill definitions
+                                  customSkills={customSkillDefinitions} // Pass custom skill definitions
+                                />
+                              </ScrollArea>
+                            </div>
+                        )}
                       </li>
-                    ))}
+                    )})}
                   </ul>
                 </div>
               )}
@@ -910,3 +978,22 @@ export function InfoDisplayDialog({
   );
 }
 
+// Helper type for derivedData structure
+interface DerivedDialogData {
+  title: string;
+  htmlContent?: string;
+  abilityModifiers?: Array<{ ability: Exclude<AbilityName, 'none'>; change: number }>;
+  skillBonuses?: Array<{ skillId: string; skillName: string; bonus: number }>;
+  grantedFeats?: Array<{ featId: string; name: string; note?: string; levelAcquired?: number }>;
+  bonusFeatSlots?: number;
+  abilityScoreBreakdown?: AbilityScoreBreakdown;
+  skillModifierBreakdown?: SkillModifierBreakdownDetails;
+  resistanceBreakdown?: ResistanceBreakdownDetails;
+  detailsList?: Array<{ label: string; value: string | number; isBold?: boolean }>;
+  babBreakdown?: BabBreakdownDetails;
+  initiativeBreakdown?: InitiativeBreakdownDetails;
+  grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
+  grappleDamageBreakdown?: GrappleDamageBreakdownDetails;
+}
+
+    
