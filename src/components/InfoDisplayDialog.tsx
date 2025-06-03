@@ -94,7 +94,6 @@ const FeatDetailContent: React.FC<{
 
   return (
     <div className="space-y-2 text-sm">
-      {/* Title removed from here */}
       {featDef.description && <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: featDef.description }} />}
       {prereqMessages.length > 0 && (
         <div className="mt-2">
@@ -834,7 +833,7 @@ export function InfoDisplayDialog({
                                 {feat.note && <span className="text-muted-foreground text-xs ml-1">{feat.note}</span>}
                               </Button>
                             {isExpanded && (
-                               <div className="mt-1.5 p-3 rounded-md bg-muted/20 border border-border/30">
+                              <div className="mt-1.5 p-3 rounded-md bg-muted/20 border border-border/30">
                                 <FeatDetailContent
                                   featId={feat.featId}
                                   character={character}
@@ -891,13 +890,16 @@ export function InfoDisplayDialog({
                               variant="link"
                               size="sm"
                               onClick={() => toggleExpanded(uniqueKey)}
-                              className="p-0 h-auto text-sm font-normal text-left hover:text-primary flex-grow justify-start"
+                              className={cn(
+                                "p-0 h-auto text-sm font-normal text-left justify-start text-foreground hover:text-primary flex-grow no-underline hover:no-underline",
+                                { "flex-1": !levelAcquired } // Take full width if no badge
+                              )}
                               aria-expanded={isExpanded}
                             >
                               {name}
                               {note && (
-                                <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline ml-[0.2em]">
-                                  {note}
+                                <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline">
+                                  {'\u00A0'}({note})
                                 </span>
                               )}
                             </Button>
