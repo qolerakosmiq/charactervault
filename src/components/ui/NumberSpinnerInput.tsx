@@ -130,7 +130,7 @@ export function NumberSpinnerInput({
         type="button"
         variant="ghost"
         size={buttonSize}
-        className={cn("p-0", buttonClassName)}
+        className={cn("p-0 aspect-square", buttonClassName)}
         onClick={handleDecrement}
         disabled={disabled || Number(value) <= (min === -Infinity ? -Infinity : (Number.isFinite(min) ? min! : -Infinity))}
         aria-label="Decrement"
@@ -158,7 +158,7 @@ export function NumberSpinnerInput({
         type="button"
         variant="ghost"
         size={buttonSize}
-        className={cn("p-0", buttonClassName)}
+        className={cn("p-0 aspect-square", buttonClassName)}
         onClick={handleIncrement}
         disabled={disabled || Number(value) >= (max === Infinity ? Infinity : (Number.isFinite(max) ? max! : Infinity)) || isIncrementDisabled} // Use isIncrementDisabled
         aria-label="Increment"
