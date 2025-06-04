@@ -204,7 +204,7 @@ export function FeatsFormSection({
                   <div className="flex-grow mr-2">
                     <div className="flex items-baseline flex-wrap gap-x-1.5 mb-1">
                       {featSource && <Badge variant="secondary" className="text-xs font-normal h-5">{featSource}</Badge>}
-                      <h4 className="font-medium text-foreground inline">
+                      <h4 className="font-medium text-foreground inline-flex items-center">
                         {definition.label}
                       </h4>
                       {featTypeLabel && <Badge variant="outline" className="text-xs font-normal h-5">{featTypeLabel}</Badge>}
