@@ -30,7 +30,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollText, Info } from 'lucide-react';
-// ComboboxPrimitive import removed
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -43,14 +42,16 @@ interface CharacterFormCoreInfoSectionProps {
   ageEffectsDetails: AgingEffectsDetails | null;
   raceSpecialQualities: RaceSpecialQualities | null;
   selectedClassInfo: DndClassOption | undefined;
-  isPredefinedRace: boolean;
-  isPredefinedClass: boolean;
+  isPredefinedRace: boolean; // This prop might become less relevant if custom race input is removed
+  isPredefinedClass: boolean; // This prop might become less relevant if custom class input is removed
   currentMinAgeForInput: number;
   onOpenRaceInfoDialog: () => void;
   onOpenClassInfoDialog: () => void;
   onOpenAlignmentInfoDialog: () => void;
   onOpenDeityInfoDialog: () => void;
 }
+
+const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__"; // Special non-empty value for "None" option
 
 export function CharacterFormCoreInfoSection({
   characterData,
@@ -59,8 +60,8 @@ export function CharacterFormCoreInfoSection({
   ageEffectsDetails,
   raceSpecialQualities,
   selectedClassInfo,
-  isPredefinedRace,
-  isPredefinedClass,
+  isPredefinedRace, // Keep for now, might be useful for display variants
+  isPredefinedClass, // Keep for now
   currentMinAgeForInput,
   onOpenRaceInfoDialog,
   onOpenClassInfoDialog,
@@ -75,10 +76,10 @@ export function CharacterFormCoreInfoSection({
     if (!characterData.classes[0]?.className) {
       onClassChange('fighter' as DndClassId);
     }
-    if (characterData.deity === undefined) { // Set "None" (empty string) if deity is initially undefined
-      onFieldChange('deity', '');
+    if (characterData.deity === undefined) { 
+      onFieldChange('deity', ''); // Default to empty string for "None" in actual data
     }
-  }, []); // Ensure this runs only once on mount if dependencies are truly static relative to this goal
+  }, []); 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -100,7 +101,7 @@ export function CharacterFormCoreInfoSection({
   }, [characterData.alignment]);
   
   const deitySelectOptions = React.useMemo(() => {
-    return [{ value: "", label: "None" }, ...filteredDeities];
+    return [{ value: DEITY_NONE_OPTION_VALUE, label: "None" }, ...filteredDeities];
   }, [filteredDeities]);
 
 
@@ -108,7 +109,7 @@ export function CharacterFormCoreInfoSection({
     if (characterData.alignment && characterData.deity) {
       const currentDeity = DND_DEITIES.find(d => d.value === characterData.deity);
       if (currentDeity && !isAlignmentCompatible(characterData.alignment, currentDeity.alignment)) {
-        onFieldChange('deity', ''); // Set to "None" (empty string)
+        onFieldChange('deity', ''); 
       }
     }
   }, [characterData.alignment, characterData.deity, onFieldChange]);
@@ -154,7 +155,6 @@ export function CharacterFormCoreInfoSection({
                   </SelectContent>
                 </Select>
               </div>
-              {/* Customize button removed */}
               <Button
                 type="button"
                 variant="ghost"
@@ -228,7 +228,6 @@ export function CharacterFormCoreInfoSection({
                   </SelectContent>
                 </Select>
               </div>
-              {/* Customize button removed */}
               <Button
                 type="button"
                 variant="ghost"
@@ -278,8 +277,10 @@ export function CharacterFormCoreInfoSection({
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
                   <Select
-                    value={characterData.deity || ""} // Empty string for "None"
-                    onValueChange={(value) => handleSelectChange('deity', value)}
+                    value={characterData.deity || DEITY_NONE_OPTION_VALUE} 
+                    onValueChange={(value) => {
+                        handleSelectChange('deity', value === DEITY_NONE_OPTION_VALUE ? '' : value);
+                    }}
                   >
                     <SelectTrigger id="deity">
                       <SelectValue placeholder="Select deity" />
@@ -417,4 +418,3 @@ export function CharacterFormCoreInfoSection({
     </Card>
   );
 }
-
