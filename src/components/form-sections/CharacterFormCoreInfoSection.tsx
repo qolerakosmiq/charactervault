@@ -43,8 +43,8 @@ interface CharacterFormCoreInfoSectionProps {
   ageEffectsDetails: AgingEffectsDetails | null;
   raceSpecialQualities: RaceSpecialQualities | null;
   selectedClassInfo: DndClassOption | undefined;
-  isPredefinedRace: boolean; 
-  isPredefinedClass: boolean; 
+  isPredefinedRace: boolean;
+  isPredefinedClass: boolean;
   currentMinAgeForInput: number;
   onOpenRaceInfoDialog: () => void;
   onOpenClassInfoDialog: () => void;
@@ -52,7 +52,7 @@ interface CharacterFormCoreInfoSectionProps {
   onOpenDeityInfoDialog: () => void;
 }
 
-const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__"; 
+const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__";
 
 export function CharacterFormCoreInfoSection({
   characterData,
@@ -61,15 +61,15 @@ export function CharacterFormCoreInfoSection({
   ageEffectsDetails,
   raceSpecialQualities,
   selectedClassInfo,
-  isPredefinedRace, 
-  isPredefinedClass, 
+  isPredefinedRace,
+  isPredefinedClass,
   currentMinAgeForInput,
   onOpenRaceInfoDialog,
   onOpenClassInfoDialog,
   onOpenAlignmentInfoDialog,
   onOpenDeityInfoDialog,
 }: CharacterFormCoreInfoSectionProps) {
-  
+
   React.useEffect(() => {
     if (!characterData.race) {
       onFieldChange('race', 'human' as DndRaceId);
@@ -77,10 +77,10 @@ export function CharacterFormCoreInfoSection({
     if (!characterData.classes[0]?.className) {
       onClassChange('fighter' as DndClassId);
     }
-    if (characterData.deity === undefined || characterData.deity === null) { 
-      onFieldChange('deity', DEITY_NONE_OPTION_VALUE); 
+    if (characterData.deity === undefined || characterData.deity === null) {
+      onFieldChange('deity', DEITY_NONE_OPTION_VALUE);
     }
-  }, []); 
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -100,7 +100,7 @@ export function CharacterFormCoreInfoSection({
       isAlignmentCompatible(characterData.alignment, deity.alignment)
     );
   }, [characterData.alignment]);
-  
+
   const deitySelectOptions = React.useMemo(() => {
     return [{ value: DEITY_NONE_OPTION_VALUE, label: "None" }, ...filteredDeities];
   }, [filteredDeities]);
@@ -110,7 +110,7 @@ export function CharacterFormCoreInfoSection({
     if (characterData.alignment && characterData.deity && characterData.deity !== DEITY_NONE_OPTION_VALUE) {
       const currentDeity = DND_DEITIES.find(d => d.value === characterData.deity);
       if (currentDeity && !isAlignmentCompatible(characterData.alignment, currentDeity.alignment)) {
-        onFieldChange('deity', DEITY_NONE_OPTION_VALUE); 
+        onFieldChange('deity', DEITY_NONE_OPTION_VALUE);
       }
     }
   }, [characterData.alignment, characterData.deity, onFieldChange]);
@@ -168,7 +168,7 @@ export function CharacterFormCoreInfoSection({
               </Button>
             </div>
             {isPredefinedRace && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
-               <div className="flex flex-wrap gap-1 pt-[6px] ml-1">
+               <div className="flex flex-wrap items-baseline gap-1 pt-[6px] ml-1">
                 {raceSpecialQualities.abilityEffects.map((effect) => {
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
                   let badgeClassName = "text-xs font-normal";
@@ -238,7 +238,7 @@ export function CharacterFormCoreInfoSection({
               </Button>
             </div>
             {selectedClassInfo?.hitDice && (
-              <div className="pt-[6px] ml-1">
+              <div className="flex items-baseline gap-1 pt-[6px] ml-1">
                 <Badge
                   variant="secondary"
                   className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground"
@@ -275,7 +275,7 @@ export function CharacterFormCoreInfoSection({
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
                   <Select
-                    value={characterData.deity || DEITY_NONE_OPTION_VALUE} 
+                    value={characterData.deity && characterData.deity.trim() !== '' ? characterData.deity : DEITY_NONE_OPTION_VALUE}
                     onValueChange={(value) => {
                         handleSelectChange('deity', value === DEITY_NONE_OPTION_VALUE ? '' : value);
                     }}
@@ -320,7 +320,7 @@ export function CharacterFormCoreInfoSection({
               buttonSize="icon"
             />
             {ageEffectsDetails && (ageEffectsDetails.categoryName !== 'Adult' || ageEffectsDetails.effects.length > 0) && (
-              <div className="flex flex-wrap items-center justify-center gap-1 pt-[6px] ml-1">
+              <div className="flex flex-wrap items-baseline justify-center gap-1 pt-[6px] ml-1">
                 <Badge
                   variant="secondary"
                   className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground"
@@ -376,7 +376,7 @@ export function CharacterFormCoreInfoSection({
                 {SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
               </SelectContent>
             </Select>
-            <div className="flex flex-wrap items-center gap-1 pt-[6px] ml-1">
+            <div className="flex items-baseline gap-1 pt-[6px] ml-1">
               {characterData.size && (() => {
                 const selectedSizeObject = SIZES.find(s => s.value === characterData.size);
                 if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
@@ -412,4 +412,3 @@ export function CharacterFormCoreInfoSection({
     </Card>
   );
 }
-
