@@ -9,7 +9,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Info } from 'lucide-react';
+import { Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
@@ -444,6 +444,18 @@ export function InfoDisplayDialog({
 
   const sectionHeading = abilityScoreBreakdown || skillModifierBreakdown || resistanceBreakdown || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || (detailsList && (contentType?.type === 'acBreakdown' || contentType?.type === 'class')) ? "Calculation:" : "Details:";
   const hasAnyBonusSection = abilityModifiers?.length || skillBonuses?.length || grantedFeats?.length || bonusFeatSlots !== undefined;
+  
+  let hasRenderedContentBlock = false;
+  const renderSeparatorIfNeeded = () => {
+    if (hasRenderedContentBlock) {
+      return <Separator className="my-3" />;
+    }
+    return null;
+  };
+  
+  const markContentRendered = () => {
+    hasRenderedContentBlock = true;
+  };
 
 
   return (
@@ -457,15 +469,19 @@ export function InfoDisplayDialog({
         </DialogHeader>
         <ScrollArea className="max-h-[70vh] pr-4 my-2">
           {htmlContent && (
-             <div
-              className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: htmlContent }}
-            />
+             <>
+              {renderSeparatorIfNeeded()}
+              <div
+                className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+                dangerouslySetInnerHTML={{ __html: htmlContent }}
+              />
+              {markContentRendered()}
+            </>
           )}
 
           {babBreakdown && (
             <>
-            {(htmlContent) && <Separator className="my-3"/>}
+            {renderSeparatorIfNeeded()}
             <div>
                 <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
@@ -486,12 +502,13 @@ export function InfoDisplayDialog({
                   </div>
                 </div>
               </div>
+              {markContentRendered()}
             </>
           )}
 
           {initiativeBreakdown && (
              <>
-            {(htmlContent || babBreakdown) && <Separator className="my-3"/>}
+            {renderSeparatorIfNeeded()}
             <div>
                 <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
@@ -515,12 +532,13 @@ export function InfoDisplayDialog({
                   </div>
                 </div>
               </div>
+              {markContentRendered()}
             </>
           )}
 
           {grappleModifierBreakdown && (
             <>
-            {(htmlContent || babBreakdown || initiativeBreakdown) && <Separator className="my-3"/>}
+            {renderSeparatorIfNeeded()}
             <div>
                 <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
@@ -552,12 +570,13 @@ export function InfoDisplayDialog({
                   </div>
                 </div>
               </div>
+              {markContentRendered()}
             </>
           )}
           
           {grappleDamageBreakdown && (
             <>
-            {(htmlContent || babBreakdown || initiativeBreakdown || grappleModifierBreakdown) && <Separator className="my-3"/>}
+            {renderSeparatorIfNeeded()}
             <div>
                 <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
@@ -597,13 +616,14 @@ export function InfoDisplayDialog({
                   </div>
                 </div>
               </div>
+              {markContentRendered()}
             </>
           )}
 
 
           {abilityScoreBreakdown && (
             <>
-            {(htmlContent || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown) && <Separator className="my-3"/>}
+            {renderSeparatorIfNeeded()}
             <div>
                 <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
@@ -630,12 +650,13 @@ export function InfoDisplayDialog({
                   </div>
                 </div>
               </div>
+              {markContentRendered()}
             </>
           )}
 
           {skillModifierBreakdown && (
             <>
-            {(htmlContent || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || abilityScoreBreakdown) && <Separator className="my-3"/>}
+            {renderSeparatorIfNeeded()}
             <div>
                 <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
@@ -693,12 +714,13 @@ export function InfoDisplayDialog({
                   </div>
                 </div>
             </div>
+            {markContentRendered()}
             </>
           )}
           
           {resistanceBreakdown && (
             <>
-              {(htmlContent || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || abilityScoreBreakdown || skillModifierBreakdown) && <Separator className="my-3"/>}
+              {renderSeparatorIfNeeded()}
               <div>
                 <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 <div className="space-y-1 text-sm">
@@ -717,6 +739,7 @@ export function InfoDisplayDialog({
                   </div>
                 </div>
               </div>
+              {markContentRendered()}
             </>
           )}
 
@@ -725,7 +748,7 @@ export function InfoDisplayDialog({
             <>
              {detailsList && detailsList.length > 0 && (
                 <>
-                  {(htmlContent) && <Separator className="my-4" />}
+                  {renderSeparatorIfNeeded()}
                   <div>
                     <h3 className={sectionHeadingClass}>Details:</h3>
                      {detailsList!.map((detail, index) => (
@@ -735,13 +758,15 @@ export function InfoDisplayDialog({
                       </div>
                     ))}
                   </div>
+                  {markContentRendered()}
                 </>
               )}
-              {(htmlContent || (detailsList && detailsList.length > 0)) && (abilityModifiers && abilityModifiers.length > 0 || skillBonuses && skillBonuses.length > 0 || grantedFeats && grantedFeats.length > 0 || bonusFeatSlots !== undefined) && <Separator className="my-4" />}
               
               {abilityModifiers && abilityModifiers.length > 0 && (
+                <>
+                {renderSeparatorIfNeeded()}
                 <div className="mb-3">
-                  <h3 className={sectionHeadingClass}>Ability Score Adjustments:</h3>
+                  <h3 className={sectionHeadingClass}>Ability Score Adjustments</h3>
                   <ul className="space-y-1 text-sm">
                     {abilityModifiers!.map(({ ability, change }) => {
                        const displayName = ABILITY_DISPLAY_NAMES[ability];
@@ -757,11 +782,15 @@ export function InfoDisplayDialog({
                     })}
                   </ul>
                 </div>
+                {markContentRendered()}
+                </>
               )}
               
               {skillBonuses && skillBonuses.length > 0 && (
+                <>
+                {renderSeparatorIfNeeded()}
                 <div className="mb-3">
-                  <h3 className={sectionHeadingClass}>Racial Skill Bonuses:</h3>
+                  <h3 className={sectionHeadingClass}>Racial Skill Bonuses</h3>
                   <ul className="space-y-1 text-sm">
                     {skillBonuses!.map(({ skillId, skillName, bonus }, index) => {
                        const skillDef = allCombinedSkillDefinitionsForDisplay.find(s => s.id === skillId);
@@ -801,11 +830,15 @@ export function InfoDisplayDialog({
                     })}
                   </ul>
                 </div>
+                {markContentRendered()}
+                </>
               )}
 
               {(grantedFeats && grantedFeats.length > 0) || (bonusFeatSlots !== undefined) ? (
+                <>
+                {renderSeparatorIfNeeded()}
                 <div>
-                  <h3 className={sectionHeadingClass}>Racial Feat Adjustments:</h3>
+                  <h3 className={sectionHeadingClass}>Racial Feat Adjustments</h3>
                   <div className="text-sm space-y-1">
                     {bonusFeatSlots !== undefined && bonusFeatSlots > 0 && ( 
                       <div className="flex justify-between">
@@ -828,7 +861,7 @@ export function InfoDisplayDialog({
                                 aria-expanded={isExpanded}
                               >
                                 {feat.name}
-                                {feat.note && <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline"> {feat.note}</span>}
+                                {feat.note && (<span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline">{feat.note}</span>)}
                               </Button>
                             {isExpanded && (
                               <ExpandableDetailWrapper>
@@ -849,6 +882,8 @@ export function InfoDisplayDialog({
                     )}
                   </div>
                 </div>
+                {markContentRendered()}
+                </>
               ) : null}
             </>
           )}
@@ -856,8 +891,9 @@ export function InfoDisplayDialog({
           {/* Class Info: Granted Feats & DetailsList*/}
            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && contentType?.type === 'class' && (
              <>
-              {(htmlContent && detailsList && detailsList.length > 0) && <Separator className="my-3" />}
               {detailsList && detailsList.length > 0 && (
+                <>
+                {renderSeparatorIfNeeded()}
                 <div className="mb-3">
                   <h3 className={sectionHeadingClass}>Details:</h3>
                   {detailsList!.map((detail, index) => (
@@ -867,9 +903,12 @@ export function InfoDisplayDialog({
                       </div>
                   ))}
                 </div>
+                {markContentRendered()}
+                </>
               )}
-              {( (htmlContent || (detailsList && detailsList.length > 0)) && grantedFeats && grantedFeats.length > 0) && <Separator className="my-3" />}
               {grantedFeats && grantedFeats.length > 0 && (
+                <>
+                {renderSeparatorIfNeeded()}
                 <div>
                   <h3 className={sectionHeadingClass}>Class Features & Granted Feats:</h3>
                   <ul className="space-y-2 text-sm">
@@ -895,11 +934,11 @@ export function InfoDisplayDialog({
                               aria-expanded={isExpanded}
                             >
                               {name}
-                              {note && <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline">{note}</span>}
+                              {note && (<span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline"> {note}</span>)}
                             </Button>
                         </div>
                         {isExpanded && (
-                           <ExpandableDetailWrapper>
+                           <div className="mt-1.5 p-3 rounded-md bg-muted/20 border border-border/30">
                             <FeatDetailContent
                               featId={featId}
                               character={character}
@@ -907,12 +946,14 @@ export function InfoDisplayDialog({
                               allSkills={SKILL_DEFINITIONS}
                               customSkills={customSkillDefinitions}
                             />
-                          </ExpandableDetailWrapper>
+                          </div>
                         )}
                       </li>
                     )})}
                   </ul>
                 </div>
+                {markContentRendered()}
+                </>
               )}
             </>
           )}
@@ -920,8 +961,7 @@ export function InfoDisplayDialog({
           {/* AC Breakdown and Generic DetailsList */}
           {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && detailsList && detailsList.length > 0 && (contentType?.type !== 'class' && contentType?.type !== 'race') && (
              <>
-              {(htmlContent || hasAnyBonusSection) && (contentType?.type !== 'acBreakdown') && <Separator className="my-4" />}
-              {(htmlContent && (contentType?.type === 'acBreakdown')) && <Separator className="my-3" />}
+              {renderSeparatorIfNeeded()}
               <div>
                 <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                 {detailsList!.filter(detail => detail.label.toLowerCase() !== 'total').map((detail, index) => {
@@ -934,7 +974,7 @@ export function InfoDisplayDialog({
 
                     if (detail.label.toLowerCase().includes("modifier") && (detail.label.toLowerCase().includes("dexterity") || detail.label.toLowerCase().includes("strength"))) {
                         const ability = detail.label.toLowerCase().includes("dexterity") ? 'dexterity' : 'strength';
-                        const displayName = ABILITY_DISPLAY_NAMES[ability];
+                        const displayName = ABILITY_DISPLAY_NAMES[ability as Exclude<AbilityName, 'none'>];
                         labelContent = (
                             <span className={defaultLabelClass}>
                                 {displayName.abbr}{'\u00A0'}
@@ -963,6 +1003,7 @@ export function InfoDisplayDialog({
                   </>
                 )}
               </div>
+              {markContentRendered()}
             </>
           )}
 
