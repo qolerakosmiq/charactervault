@@ -798,7 +798,7 @@ export function InfoDisplayDialog({
                            {isExpanded && skillDef?.description && (
                               <ExpandableDetailWrapper>
                                 <div
-                                  className="text-xs text-muted-foreground prose prose-sm dark:prose-invert max-w-none"
+                                  className="text-muted-foreground prose prose-sm dark:prose-invert max-w-none"
                                   dangerouslySetInnerHTML={{ __html: skillDef.description }}
                                 />
                               </ExpandableDetailWrapper>
@@ -842,10 +842,10 @@ export function InfoDisplayDialog({
                                 aria-expanded={isExpanded}
                               >
                                 {feat.name}
-                                {feat.note && <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline">{feat.note}</span>}
+                                {feat.note && <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline ml-[0.2em]">{feat.note}</span>}
                               </Button>
                             {isExpanded && (
-                               <ExpandableDetailWrapper>
+                              <ExpandableDetailWrapper>
                                 <FeatDetailContent
                                   featId={feat.featId}
                                   character={character}
@@ -909,19 +909,19 @@ export function InfoDisplayDialog({
                               aria-expanded={isExpanded}
                             >
                               {name}
-                              {note && <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline">{note}</span>}
+                              {note && <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline ml-[0.2em]">{note}</span>}
                             </Button>
                         </div>
                         {isExpanded && (
-                           <ExpandableDetailWrapper>
-                              <FeatDetailContent
-                                featId={featId}
-                                character={character}
-                                allFeats={allCombinedFeatDefinitions}
-                                allSkills={SKILL_DEFINITIONS}
-                                customSkills={customSkillDefinitions}
-                              />
-                            </ExpandableDetailWrapper>
+                          <ExpandableDetailWrapper>
+                            <FeatDetailContent
+                              featId={featId}
+                              character={character}
+                              allFeats={allCombinedFeatDefinitions}
+                              allSkills={SKILL_DEFINITIONS}
+                              customSkills={customSkillDefinitions}
+                            />
+                          </ExpandableDetailWrapper>
                         )}
                       </li>
                     )})}
@@ -1006,3 +1006,4 @@ interface DerivedDialogData {
   grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
   grappleDamageBreakdown?: GrappleDamageBreakdownDetails;
 }
+
