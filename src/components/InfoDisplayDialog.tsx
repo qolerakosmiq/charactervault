@@ -804,7 +804,7 @@ export function InfoDisplayDialog({
                                 variant="link"
                                 size="sm"
                                 onClick={() => toggleExpanded(uniqueKey)}
-                                className="p-0 h-auto text-sm font-normal text-foreground hover:text-primary inline-flex items-center text-left justify-start no-underline hover:no-underline"
+                                className="p-0 h-auto text-sm font-normal text-foreground inline-flex items-center text-left justify-start no-underline hover:no-underline items-baseline"
                                 aria-expanded={isExpanded}
                               >
                                 {skillName}
@@ -858,7 +858,7 @@ export function InfoDisplayDialog({
                                   variant="link"
                                   size="sm"
                                   onClick={() => toggleExpanded(uniqueKey)}
-                                  className="p-0 h-auto text-foreground hover:text-primary text-sm font-normal inline-flex items-center text-left justify-start no-underline hover:no-underline"
+                                  className="p-0 h-auto text-foreground text-sm font-normal inline-flex items-center text-left justify-start no-underline hover:no-underline items-baseline"
                                   aria-expanded={isExpanded}
                                 >
                                   {feat.name}
