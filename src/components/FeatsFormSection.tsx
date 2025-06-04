@@ -202,7 +202,7 @@ export function FeatsFormSection({
               return (
                 <div key={instance.instanceId} className="group flex items-start justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors">
                   <div className="flex-grow mr-2">
-                    <div className="flex items-center flex-wrap gap-x-1.5">
+                    <div className="flex items-baseline flex-wrap gap-x-1.5">
                       {featSource && <Badge variant="secondary" className="text-xs font-normal h-5">{featSource}</Badge>}
                       <h4 className="font-medium text-foreground inline">
                         {definition.label}
