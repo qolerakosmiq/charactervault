@@ -110,8 +110,8 @@ export function CharacterFormAbilityScoresSection({
 
               return (
                 <div key={ability} className="flex flex-col items-center space-y-1.5 p-3 border rounded-md bg-card shadow-sm">
-                  <Label htmlFor={`base-score-${ability}`} className="text-center text-md font-medium">
-                    {ability.substring(0, 3).toUpperCase()}{' '}
+                  <Label htmlFor={`base-score-${ability}`} className="text-center text-md font-medium flex flex-col items-center">
+                    <span>{ability.substring(0, 3).toUpperCase()}</span>
                     <span className="text-xs font-normal text-muted-foreground">{abilityDisplayName}</span>
                   </Label>
 
