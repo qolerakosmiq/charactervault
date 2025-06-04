@@ -12,11 +12,9 @@ import type {
   CharacterSize,
   GenderId,
   AgingEffectsDetails,
-  // SizeAbilityEffectsDetails, // Removed as size no longer directly affects abilities
   RaceSpecialQualities,
   DndRaceOption,
   DndClassOption,
-  DndDeityOption,
 } from '@/types/character';
 import {
   SIZES,
@@ -43,7 +41,6 @@ interface CharacterFormCoreInfoSectionProps {
   onFieldChange: (field: keyof Character, value: any) => void;
   onClassChange: (className: DndClassId | string) => void;
   ageEffectsDetails: AgingEffectsDetails | null;
-  // sizeAbilityEffectsDetails: SizeAbilityEffectsDetails | null; // Removed
   raceSpecialQualities: RaceSpecialQualities | null;
   selectedClassInfo: DndClassOption | undefined;
   isPredefinedRace: boolean;
@@ -60,7 +57,6 @@ export function CharacterFormCoreInfoSection({
   onFieldChange,
   onClassChange,
   ageEffectsDetails,
-  // sizeAbilityEffectsDetails, // Removed
   raceSpecialQualities,
   selectedClassInfo,
   isPredefinedRace, 
@@ -74,7 +70,6 @@ export function CharacterFormCoreInfoSection({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const field = name as keyof Character;
-    // Age is handled by NumberSpinnerInput now
     onFieldChange(field, value);
   };
 
@@ -137,12 +132,17 @@ export function CharacterFormCoreInfoSection({
                   isEditable={true}
                 />
               </div>
-              {isPredefinedRace && characterData.race && (
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenRaceInfoDialog}>
-                  <Info className="h-5 w-5" />
-                </Button>
-              )}
-               {characterData.race && !isPredefinedRace && characterData.race.trim() !== '' && (
+              <Button 
+                type="button" 
+                variant="ghost" 
+                size="icon" 
+                className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" 
+                onClick={onOpenRaceInfoDialog}
+                disabled={!characterData.race}
+              >
+                <Info className="h-5 w-5" />
+              </Button>
+              {characterData.race && !isPredefinedRace && characterData.race.trim() !== '' && (
                 <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
               )}
             </div>
@@ -204,12 +204,16 @@ export function CharacterFormCoreInfoSection({
                   isEditable={true}
                 />
               </div>
-              {isPredefinedClass && characterData.classes[0]?.className && (
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
-                  onClick={onOpenClassInfoDialog}>
-                  <Info className="h-5 w-5" />
-                </Button>
-              )}
+              <Button 
+                type="button" 
+                variant="ghost" 
+                size="icon" 
+                className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
+                onClick={onOpenClassInfoDialog}
+                disabled={!characterData.classes[0]?.className}
+              >
+                <Info className="h-5 w-5" />
+              </Button>
               {characterData.classes[0]?.className && !isPredefinedClass && characterData.classes[0]?.className.trim() !== '' && (
                 <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
               )}
@@ -261,12 +265,16 @@ export function CharacterFormCoreInfoSection({
                     isEditable={true}
                   />
                 </div>
-                {characterData.deity && characterData.deity.trim() !== '' && (
-                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
-                    onClick={onOpenDeityInfoDialog}>
-                    <Info className="h-5 w-5" />
-                  </Button>
-                )}
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size="icon" 
+                  className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
+                  onClick={onOpenDeityInfoDialog}
+                  disabled={!characterData.deity || characterData.deity.trim() === ''}
+                >
+                  <Info className="h-5 w-5" />
+                </Button>
               </div>
             </div>
         </div>
@@ -281,8 +289,8 @@ export function CharacterFormCoreInfoSection({
               value={characterData.age}
               onChange={(newValue) => onFieldChange('age', newValue)}
               min={currentMinAgeForInput}
-              max={1000} // A reasonable upper limit for age
-              inputClassName="w-full h-10 text-base text-center" 
+              max={1000} 
+              inputClassName="w-20 h-10 text-base text-center" 
               buttonClassName="h-10 w-10"
               buttonSize="icon"
             />
@@ -344,8 +352,6 @@ export function CharacterFormCoreInfoSection({
               </SelectContent>
             </Select>
             <div className="flex flex-wrap items-center gap-1 pt-[6px] ml-1">
-              {/* Removed display of ability score modifications from size here */}
-              {/* AC Modifier Badge for Size */}
               {characterData.size && (() => {
                 const selectedSizeObject = SIZES.find(s => s.value === characterData.size);
                 if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
@@ -353,13 +359,13 @@ export function CharacterFormCoreInfoSection({
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
                   let badgeClassNameForAc = "text-xs font-normal";
 
-                  if (acMod > 0) { // Positive AC mod is good (smaller creatures get AC bonus)
+                  if (acMod > 0) { 
                     badgeClassNameForAc = cn(
                       badgeClassNameForAc,
                       "bg-emerald-700 text-emerald-100 border-emerald-600",
                       "hover:bg-emerald-700 hover:text-emerald-100"
                     );
-                  } else if (acMod < 0) { // Negative AC mod is bad (larger creatures get AC penalty)
+                  } else if (acMod < 0) { 
                     badgeVariantProp = "destructive";
                     badgeClassNameForAc = cn(badgeClassNameForAc, "hover:bg-destructive");
                   }
