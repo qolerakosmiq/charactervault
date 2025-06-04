@@ -263,8 +263,11 @@ export function SkillsFormSection({
                       >
                         <Info className="h-3 w-3" />
                       </Button>
-                    <Label htmlFor={`skill_ranks_${skill.id}`} className="text-xs pr-1 leading-tight flex-grow">
-                          {skill.name} {skill.isCustom && <span className="text-primary/70 text-xs">(Custom)</span>}
+                    <Label htmlFor={`skill_ranks_${skill.id}`} className="text-xs pr-1 leading-tight flex-grow flex items-center">
+                        {skill.name}
+                        {skill.isCustom && (
+                            <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 ml-1.5 font-normal">Custom</Badge>
+                        )}
                     </Label>
                   {skill.isCustom && (
                     <div className="flex items-center ml-auto">
@@ -322,3 +325,4 @@ export function SkillsFormSection({
     </>
   );
 }
+
