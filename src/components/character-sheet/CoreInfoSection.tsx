@@ -83,8 +83,9 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
               onChange={(newValue) => handleClassFieldChange(0, 'level', newValue)}
               min={1}
               max={20} // Common D&D max level
-              inputClassName="w-24 h-10 text-base" // Adjusted width for level
+              inputClassName="w-24 h-10 text-base text-center" // Ensure text is centered in input
               buttonClassName="h-10 w-10"
+              className="justify-center" // Center the spinner's internal content
             />
           </div>
         </div>
@@ -107,7 +108,7 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="flex flex-col items-center">
+          <div>
             <Label htmlFor="age-cs" className="inline-block w-full text-center">Age</Label>
             <NumberSpinnerInput
               id="age-cs"
@@ -115,9 +116,9 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
               onChange={(newValue) => onCoreValueChange('age', newValue)}
               min={1} // Or a race-specific min
               max={1000}
-              inputClassName="w-24 h-10 text-base"
+              inputClassName="w-24 h-10 text-base text-center" // Ensure text is centered
               buttonClassName="h-10 w-10"
-              className="justify-center"
+              className="justify-center" // Center the spinner's internal content
             />
           </div>
           <div>
