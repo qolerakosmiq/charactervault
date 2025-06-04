@@ -212,11 +212,11 @@ export function FeatsFormSection({
                        {instance.grantedNote && !featSource && <span className="text-xs text-muted-foreground italic">{instance.grantedNote}</span>}
                        {instance.grantedNote && featSource && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
                     </div>
-                    {definition.requiresSpecialization && instance.specializationDetail && <p className="text-xs text-muted-foreground mt-0.5 ml-1">({instance.specializationDetail})</p>}
-                    {definition.description && <div className="text-xs text-muted-foreground mt-0.5 whitespace-normal" dangerouslySetInnerHTML={{ __html: definition.description }} />}
-                    {definition.effectsText && <p className="text-xs text-muted-foreground mt-0.5 whitespace-normal">Effects: {definition.effectsText}</p>}
+                    {definition.requiresSpecialization && instance.specializationDetail && <p className="text-sm text-muted-foreground mt-0.5 ml-1">({instance.specializationDetail})</p>}
+                    {definition.description && <div className="text-sm text-muted-foreground mt-0.5 whitespace-normal" dangerouslySetInnerHTML={{ __html: definition.description }} />}
+                    {definition.effectsText && <p className="text-sm text-muted-foreground mt-0.5 whitespace-normal">Effects: {definition.effectsText}</p>}
                     {prereqMessages.length > 0 ? (
-                      <div className="text-xs mt-0.5 whitespace-normal text-muted-foreground">
+                      <div className="text-sm mt-0.5 whitespace-normal text-muted-foreground">
                         <strong>Prerequisites:</strong>{' '}
                         {prereqMessages.map((msg, idx, arr) => (
                           <React.Fragment key={idx}>
@@ -226,7 +226,7 @@ export function FeatsFormSection({
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground"><strong>Prerequisites:</strong> None</p>
+                      <p className="text-sm mt-0.5 whitespace-normal text-muted-foreground"><strong>Prerequisites:</strong> None</p>
                     )}
                   </div>
                   <div className="flex items-center shrink-0">
