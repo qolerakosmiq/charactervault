@@ -19,8 +19,8 @@ interface NumberSpinnerInputProps {
   buttonClassName?: string;
   buttonSize?: 'default' | 'sm' | 'lg' | 'icon';
   id?: string;
-  readOnly?: boolean; // New prop
-  isIncrementDisabled?: boolean; // New prop
+  readOnly?: boolean;
+  isIncrementDisabled?: boolean;
 }
 
 export function NumberSpinnerInput({
@@ -35,13 +35,12 @@ export function NumberSpinnerInput({
   buttonClassName,
   buttonSize = 'icon',
   id,
-  readOnly = false, // Default to false
-  isIncrementDisabled = false, // Default to false
+  readOnly = false,
+  isIncrementDisabled = false,
 }: NumberSpinnerInputProps) {
   const [internalDisplayValue, setInternalDisplayValue] = React.useState(String(value));
 
   React.useEffect(() => {
-    // Only update internal display if not focused or if it's readOnly (to reflect external changes)
     if (readOnly || document.activeElement !== document.getElementById(id || '')) {
       setInternalDisplayValue(String(value));
     }
@@ -70,7 +69,6 @@ export function NumberSpinnerInput({
     if (finalNum !== value || String(finalNum) !== String(value)) {
         onChange(finalNum);
     }
-    // Always update display to reflect committed value, especially if it was clamped or corrected
     setInternalDisplayValue(String(finalNum));
   };
 
@@ -85,7 +83,7 @@ export function NumberSpinnerInput({
   };
 
   const handleIncrement = () => {
-    if (disabled || isIncrementDisabled) return; // Check external disable
+    if (disabled || isIncrementDisabled) return;
     const currentNumericValue = Number(value); 
     if (isNaN(currentNumericValue)) {
         handleCommit(min !== -Infinity && Number.isFinite(min) ? min : 0);
@@ -106,7 +104,6 @@ export function NumberSpinnerInput({
   
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (readOnly) {
-        // Allow arrows for accessibility if buttons are focused, but not direct input change
         if (e.key === 'ArrowUp') { e.preventDefault(); handleIncrement(); }
         else if (e.key === 'ArrowDown') { e.preventDefault(); handleDecrement(); }
         return;
@@ -130,7 +127,7 @@ export function NumberSpinnerInput({
         type="button"
         variant="ghost"
         size={buttonSize}
-        className={cn("p-0 aspect-square", buttonClassName)}
+        className={cn("p-0 aspect-square flex-none", buttonClassName)}
         onClick={handleDecrement}
         disabled={disabled || Number(value) <= (min === -Infinity ? -Infinity : (Number.isFinite(min) ? min! : -Infinity))}
         aria-label="Decrement"
@@ -146,7 +143,7 @@ export function NumberSpinnerInput({
         onBlur={handleInputBlur}
         onKeyDown={handleInputKeyDown}
         disabled={disabled}
-        readOnly={readOnly} // Apply readOnly here
+        readOnly={readOnly}
         className={cn(
             "w-12 h-8 text-center appearance-none", 
             inputClassName
@@ -158,9 +155,9 @@ export function NumberSpinnerInput({
         type="button"
         variant="ghost"
         size={buttonSize}
-        className={cn("p-0 aspect-square", buttonClassName)}
+        className={cn("p-0 aspect-square flex-none", buttonClassName)}
         onClick={handleIncrement}
-        disabled={disabled || Number(value) >= (max === Infinity ? Infinity : (Number.isFinite(max) ? max! : Infinity)) || isIncrementDisabled} // Use isIncrementDisabled
+        disabled={disabled || Number(value) >= (max === Infinity ? Infinity : (Number.isFinite(max) ? max! : Infinity)) || isIncrementDisabled}
         aria-label="Increment"
       >
         <PlusCircle className="h-4 w-4" />
