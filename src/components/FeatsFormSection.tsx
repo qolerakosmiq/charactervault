@@ -217,7 +217,7 @@ export function FeatsFormSection({
                     {definition.effectsText && <p className="text-xs text-muted-foreground mt-0.5 whitespace-normal">Effects: {definition.effectsText}</p>}
                     {prereqMessages.length > 0 ? (
                       <div className="text-xs mt-0.5 whitespace-normal text-muted-foreground">
-                        Prerequisites:{' '}
+                        <strong>Prerequisites:</strong>{' '}
                         {prereqMessages.map((msg, idx, arr) => (
                           <React.Fragment key={idx}>
                             <span className={cn(!msg.isMet ? 'text-destructive' : 'text-muted-foreground')} dangerouslySetInnerHTML={{ __html: msg.text }} />
@@ -226,7 +226,7 @@ export function FeatsFormSection({
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground">Prerequisites: None</p>
+                      <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground"><strong>Prerequisites:</strong> None</p>
                     )}
                   </div>
                   <div className="flex items-center shrink-0">
