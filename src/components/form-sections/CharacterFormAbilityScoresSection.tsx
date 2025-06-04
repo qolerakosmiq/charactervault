@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { AbilityName, AbilityScores, DetailedAbilityScores } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -111,11 +111,11 @@ export function CharacterFormAbilityScoresSection({
               return (
                 <div key={ability} className="flex flex-col items-center space-y-1.5 p-3 border rounded-md bg-card shadow-sm">
                   <Label htmlFor={`base-score-${ability}`} className="text-center text-md font-medium">
-                    {ability.substring(0, 3).toUpperCase()} 
-                    <span className="block text-xs font-normal text-muted-foreground">({abilityDisplayName})</span>
+                    {ability.substring(0, 3).toUpperCase()}{' '}
+                    <span className="text-xs font-normal text-muted-foreground">{abilityDisplayName}</span>
                   </Label>
 
-                  <div className="flex items-baseline justify-center space-x-1 mb-1">
+                  <div className="flex items-center justify-center space-x-1 mb-1">
                     <span className="text-3xl font-bold text-accent">{totalScore}</span>
                     <span className="text-xl text-accent">({actualModifier >= 0 ? '+' : ''}{actualModifier})</span>
                     {actualScoreData && (
@@ -132,30 +132,30 @@ export function CharacterFormAbilityScoresSection({
                   </div>
                   
                   <div className="w-full space-y-0.5">
-                    <Label htmlFor={`base-score-${ability}`} className="text-xs text-muted-foreground text-center block">Base</Label>
+                    <Label htmlFor={`base-score-${ability}`} className="text-xs text-muted-foreground text-center block">Base Score</Label>
                     <NumberSpinnerInput
                       id={`base-score-${ability}`}
                       value={baseScore}
                       onChange={(newValue) => onBaseAbilityScoreChange(ability, newValue)}
                       min={1}
-                      inputClassName="h-9 text-base text-center"
+                      inputClassName="h-8 text-base text-center"
                       buttonSize="icon"
-                      buttonClassName="h-9 w-9"
+                      buttonClassName="h-8 w-8"
                       className="w-full justify-center"
                     />
                   </div>
                   
                   <div className="w-full space-y-0.5 pt-1">
-                    <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">Temp Mod</Label>
+                    <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">Custom Temp Mod</Label>
                     <NumberSpinnerInput
                       id={`temp-mod-${ability}`}
                       value={tempCustomMod}
                       onChange={(newValue) => onAbilityScoreTempCustomModifierChange(ability, newValue)}
                       min={-20}
                       max={20}
-                      inputClassName="h-9 text-base text-center"
+                      inputClassName="h-8 text-base text-center"
                       buttonSize="icon"
-                      buttonClassName="h-9 w-9"
+                      buttonClassName="h-8 w-8"
                       className="w-full justify-center"
                     />
                   </div>
