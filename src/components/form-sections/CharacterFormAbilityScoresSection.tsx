@@ -130,9 +130,9 @@ export function CharacterFormAbilityScoresSection({
                       onChange={(newValue) => onAbilityScoreTempCustomModifierChange(ability, newValue)}
                       min={-20}
                       max={20}
-                      inputClassName="flex-1 h-7 text-sm text-center"
+                      inputClassName="flex-1 h-8 text-base text-center"
                       buttonSize="icon"
-                      buttonClassName="h-7 w-7"
+                      buttonClassName="h-8 w-8"
                       className="w-full justify-center"
                     />
                   </div>
