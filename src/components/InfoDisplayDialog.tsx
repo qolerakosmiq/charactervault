@@ -862,7 +862,7 @@ export function InfoDisplayDialog({
                                   aria-expanded={isExpanded}
                                 >
                                   {feat.name}
-                                  {feat.note && (<span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline ml-[0.2em]">{feat.note}</span>)}
+                                  {feat.note && (<span className="text-xs text-muted-foreground">{feat.note}</span>)}
                                 </Button>
                               {isExpanded && (
                                 <ExpandableDetailWrapper>
@@ -935,7 +935,7 @@ export function InfoDisplayDialog({
                                 aria-expanded={isExpanded}
                               >
                                 {name}
-                                {note && <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline">{note}</span>}
+                                {note && <span className="text-xs text-muted-foreground">{note}</span>}
                               </Button>
                           </div>
                           {isExpanded && (

@@ -123,7 +123,7 @@ export function CharacterFormAbilityScoresSection({
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5"
+                        className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5 mt-0.5"
                         onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
                       >
                         <Info className="h-3.5 w-3.5" />
