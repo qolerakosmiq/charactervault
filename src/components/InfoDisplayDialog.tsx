@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -9,7 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Info, ChevronDown, ChevronUp } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
@@ -468,545 +469,546 @@ export function InfoDisplayDialog({
           </DialogTitle>
         </DialogHeader>
         <ScrollArea className="max-h-[70vh] pr-4 my-2">
-          {htmlContent && (
-             <>
-              {renderSeparatorIfNeeded()}
-              <div
-                className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: htmlContent }}
-              />
-              {markContentRendered()}
-            </>
-          )}
+          <div className="pb-4"> {/* Wrapper for bottom padding */}
+            {htmlContent && (
+              <>
+                {renderSeparatorIfNeeded()}
+                <div
+                  className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+                  dangerouslySetInnerHTML={{ __html: htmlContent }}
+                />
+                {markContentRendered()}
+              </>
+            )}
 
-          {babBreakdown && (
-            <>
-            {renderSeparatorIfNeeded()}
-            <div>
-                <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span>{babBreakdown.characterClassLabel || 'Class'} Base Attack Bonus:</span>
-                    <span className="font-bold">{babBreakdown.baseBabFromClasses.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
-                  </div>
-                   {babBreakdown.miscModifier !== 0 && (
-                    <div className="flex justify-between">
-                        <span>Custom Modifier:</span>
-                        {renderModifierValue(babBreakdown.miscModifier)}
-                    </div>
-                  )}
-                  <Separator className="my-3" />
-                  <div className="flex justify-between text-base">
-                    <span className="font-semibold">Total Base Attack Bonus:</span>
-                    <span className="font-bold text-accent">{babBreakdown.totalBab.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
-                  </div>
-                </div>
-              </div>
-              {markContentRendered()}
-            </>
-          )}
-
-          {initiativeBreakdown && (
-             <>
-            {renderSeparatorIfNeeded()}
-            <div>
-                <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                     <span>
-                      {ABILITY_DISPLAY_NAMES.dexterity.abbr}{'\u00A0'}
-                      <span className="text-xs text-muted-foreground">({ABILITY_DISPLAY_NAMES.dexterity.full})</span> Modifier:
-                    </span>
-                    {renderModifierValue(initiativeBreakdown.dexModifier)}
-                  </div>
-                  {initiativeBreakdown.miscModifier !== 0 && (
-                    <div className="flex justify-between">
-                        <span>Custom Modifier:</span>
-                        {renderModifierValue(initiativeBreakdown.miscModifier)}
-                    </div>
-                  )}
-                  <Separator className="my-3" />
-                  <div className="flex justify-between text-base">
-                    <span className="font-semibold">Total Initiative:</span>
-                    {renderModifierValue(initiativeBreakdown.totalInitiative, undefined, undefined, undefined, "text-accent", true)}
-                  </div>
-                </div>
-              </div>
-              {markContentRendered()}
-            </>
-          )}
-
-          {grappleModifierBreakdown && (
-            <>
-            {renderSeparatorIfNeeded()}
-            <div>
-                <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span>Base Attack Bonus:</span>
-                    {renderModifierValue(grappleModifierBreakdown.baseAttackBonus)}
-                  </div>
-                  <div className="flex justify-between">
-                     <span>
-                      {ABILITY_DISPLAY_NAMES.strength.abbr}{'\u00A0'}
-                      <span className="text-xs text-muted-foreground">({ABILITY_DISPLAY_NAMES.strength.full})</span> Modifier:
-                    </span>
-                    {renderModifierValue(grappleModifierBreakdown.strengthModifier)}
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Size Modifier:</span>
-                    {renderModifierValue(grappleModifierBreakdown.sizeModifierGrapple)}
-                  </div>
-                  {grappleModifierBreakdown.miscModifier !== 0 && (
-                    <div className="flex justify-between">
-                        <span>Custom Modifier:</span>
-                        {renderModifierValue(grappleModifierBreakdown.miscModifier)}
-                    </div>
-                  )}
-                  <Separator className="my-3" />
-                  <div className="flex justify-between text-base">
-                    <span className="font-semibold">Total Grapple Modifier:</span>
-                    {renderModifierValue(grappleModifierBreakdown.totalGrappleModifier, undefined, undefined, undefined, "text-accent", true)}
-                  </div>
-                </div>
-              </div>
-              {markContentRendered()}
-            </>
-          )}
-          
-          {grappleDamageBreakdown && (
-            <>
-            {renderSeparatorIfNeeded()}
-            <div>
-                <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span>Base Damage:</span>
-                    <span className="font-bold">
-                      {grappleDamageBreakdown.baseDamage.split(' ')[0] || 'N/A'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Weapon Damage:</span>
-                    {grappleDamageBreakdown.baseDamage.toLowerCase().includes('unarmed') ? (
-                        <span className="font-semibold text-muted-foreground">Unarmed</span>
-                    ) : (
-                        renderModifierValue(0) 
-                    )}
-                  </div>
-                  <div className="flex justify-between">
-                     <span>
-                      {ABILITY_DISPLAY_NAMES.strength.abbr}{'\u00A0'}
-                      <span className="text-xs text-muted-foreground">({ABILITY_DISPLAY_NAMES.strength.full})</span> Modifier:
-                    </span>
-                    {renderModifierValue(grappleDamageBreakdown.strengthModifier)}
-                  </div>
-                   {grappleDamageBreakdown.bonus !== 0 && (
-                    <div className="flex justify-between">
-                        <span>Custom Modifier:</span>
-                        {renderModifierValue(grappleDamageBreakdown.bonus)}
-                    </div>
-                  )}
-                  <Separator className="my-3" />
-                  <div className="flex justify-between text-base">
-                    <span className="font-semibold">Total:</span>
-                    <span className="font-bold text-accent">
-                      {`${grappleDamageBreakdown.baseDamage.split(' ')[0] || '0'}${(grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus) !== 0 ? `${(grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus) >= 0 ? '+' : ''}${grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus}`: ''}`}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              {markContentRendered()}
-            </>
-          )}
-
-
-          {abilityScoreBreakdown && (
-            <>
-            {renderSeparatorIfNeeded()}
-            <div>
-                <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span>Base Score:</span>
-                    <span className="font-bold">{abilityScoreBreakdown.base}</span>
-                  </div>
-                  {abilityScoreBreakdown.components.map((comp, index) => (
-                    comp.value !== 0 && (
-                      <div key={index} className="flex justify-between">
-                        <span>{comp.source}:</span>
-                        {renderModifierValue(comp.value)}
-                      </div>
-                    )
-                  ))}
-                  <Separator className="my-3" />
-                  <div className="flex justify-between text-base">
-                    <span className="font-semibold">Final Score:</span>
-                    <span className="font-bold text-accent">{abilityScoreBreakdown.finalScore}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Final Modifier:</span>
-                    {renderModifierValue(calculateAbilityModifier(abilityScoreBreakdown.finalScore))}
-                  </div>
-                </div>
-              </div>
-              {markContentRendered()}
-            </>
-          )}
-
-          {skillModifierBreakdown && (
-            <>
-            {renderSeparatorIfNeeded()}
-            <div>
-                <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
-                <div className="space-y-1 text-sm">
-                  {skillModifierBreakdown.keyAbilityName && (() => {
-                    const keyAbility = skillModifierBreakdown.keyAbilityName as Exclude<AbilityName, 'none'>;
-                    const displayName = ABILITY_DISPLAY_NAMES[keyAbility];
-                    return (
-                      <div className="flex justify-between">
-                        <span>
-                          Key Ability ({displayName.abbr}{'\u00A0'}
-                          <span className="text-xs text-muted-foreground">({displayName.full})</span>):
-                        </span>
-                        {renderModifierValue(skillModifierBreakdown.keyAbilityModifier)}
-                      </div>
-                    );
-                  })()}
-                  <div className="flex justify-between">
-                    <span>Ranks:</span>
-                    {renderModifierValue(skillModifierBreakdown.ranks)}
-                  </div>
-                   {skillModifierBreakdown.sizeSpecificBonus !== 0 && (
-                    <div className="flex justify-between">
-                      <span>Size Modifier:</span>
-                      {renderModifierValue(skillModifierBreakdown.sizeSpecificBonus)}
-                    </div>
-                  )}
-                  {skillModifierBreakdown.synergyBonus !== 0 && (
-                    <div className="flex justify-between">
-                      <span>Synergy Bonus:</span>
-                      {renderModifierValue(skillModifierBreakdown.synergyBonus)}
-                    </div>
-                  )}
-                  {skillModifierBreakdown.featBonus !== 0 && (
-                    <div className="flex justify-between">
-                      <span>Feat Bonus:</span>
-                      {renderModifierValue(skillModifierBreakdown.featBonus)}
-                    </div>
-                  )}
-                  {skillModifierBreakdown.racialBonus !== 0 && (
-                     <div className="flex justify-between">
-                      <span>Racial Bonus:</span>
-                      {renderModifierValue(skillModifierBreakdown.racialBonus)}
-                    </div>
-                  )}
-                  {skillModifierBreakdown.miscModifier !== 0 && (
-                    <div className="flex justify-between">
-                      <span>Misc Modifier:</span>
-                      {renderModifierValue(skillModifierBreakdown.miscModifier)}
-                    </div>
-                  )}
-                  <Separator className="my-2" />
-                  <div className="flex justify-between text-base">
-                    <span className="font-semibold">Total Bonus:</span>
-                    {renderModifierValue(skillModifierBreakdown.totalBonus, undefined, undefined, undefined, "text-accent", true)}
-                  </div>
-                </div>
-            </div>
-            {markContentRendered()}
-            </>
-          )}
-          
-          {resistanceBreakdown && (
-            <>
+            {babBreakdown && (
+              <>
               {renderSeparatorIfNeeded()}
               <div>
-                <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span>Base Value:</span>
-                    <span className="font-bold">{resistanceBreakdown.base}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Custom Modifier:</span>
-                    {renderModifierValue(resistanceBreakdown.customMod)}
-                  </div>
-                  <Separator className="my-2" />
-                  <div className="flex justify-between text-base">
-                    <span className="font-semibold">Total Resistance:</span>
-                    <span className="font-bold text-accent">{resistanceBreakdown.total}</span>
-                  </div>
-                </div>
-              </div>
-              {markContentRendered()}
-            </>
-          )}
-
-          {/* Race Info: Details */}
-          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && contentType?.type === 'race' && (
-            <>
-             {detailsList && detailsList.length > 0 && (
-                <>
-                  {renderSeparatorIfNeeded()}
-                  <div>
-                    <h3 className={sectionHeadingClass}>Details:</h3>
-                     {detailsList!.map((detail, index) => (
-                      <div key={index} className="flex justify-between text-sm mb-0.5">
-                      <span className="text-foreground">{detail.label}:</span>
-                      <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                  {markContentRendered()}
-                </>
-              )}
-              
-              {abilityModifiers && abilityModifiers.length > 0 && (
-                <>
-                {renderSeparatorIfNeeded()}
-                <div className="mb-3">
-                  <h3 className={sectionHeadingClass}>Ability Score Adjustments</h3>
-                  <ul className="space-y-1 text-sm">
-                    {abilityModifiers!.map(({ ability, change }) => {
-                       const displayName = ABILITY_DISPLAY_NAMES[ability];
-                      return (
-                        <li key={ability} className="flex justify-between text-foreground">
-                           <span>
-                            {displayName.abbr}{'\u00A0'}
-                            <span className="text-xs text-muted-foreground">({displayName.full})</span>
-                          </span>
-                          {renderModifierValue(change)}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-                {markContentRendered()}
-                </>
-              )}
-              
-              {skillBonuses && skillBonuses.length > 0 && (
-                <>
-                {renderSeparatorIfNeeded()}
-                <div className="mb-3">
-                  <h3 className={sectionHeadingClass}>Racial Skill Bonuses</h3>
-                  <ul className="space-y-1 text-sm">
-                    {skillBonuses!.map(({ skillId, skillName, bonus }, index) => {
-                       const skillDef = allCombinedSkillDefinitionsForDisplay.find(s => s.id === skillId);
-                       const uniqueKey = `skill-${skillId}-${index}`;
-                       const isExpanded = expandedItems.has(uniqueKey);
-                       return (
-                        <li key={uniqueKey} className="text-foreground">
-                          <div className="flex justify-between items-center">
-                            <Button
-                              variant="link"
-                              size="sm"
-                              onClick={() => toggleExpanded(uniqueKey)}
-                              className="p-0 h-auto text-sm font-normal text-foreground hover:text-primary inline-flex items-center text-left justify-start no-underline hover:no-underline"
-                              aria-expanded={isExpanded}
-                            >
-                              {skillName}
-                            </Button>
-                            {renderModifierValue(bonus)}
-                          </div>
-                           {isExpanded && skillDef?.description && (
-                              <ExpandableDetailWrapper>
-                                <div
-                                  className="text-muted-foreground prose prose-sm dark:prose-invert max-w-none"
-                                  dangerouslySetInnerHTML={{ __html: skillDef.description }}
-                                />
-                              </ExpandableDetailWrapper>
-                           )}
-                           {isExpanded && !skillDef?.description && (
-                             <ExpandableDetailWrapper>
-                               <div className="mt-1 pl-4 text-xs text-muted-foreground italic">
-                                  No description available for this skill.
-                               </div>
-                             </ExpandableDetailWrapper>
-                           )}
-                        </li>
-                       );
-                    })}
-                  </ul>
-                </div>
-                {markContentRendered()}
-                </>
-              )}
-
-              {(grantedFeats && grantedFeats.length > 0) || (bonusFeatSlots !== undefined) ? (
-                <>
-                {renderSeparatorIfNeeded()}
-                <div>
-                  <h3 className={sectionHeadingClass}>Racial Feat Adjustments</h3>
-                  <div className="text-sm space-y-1">
-                    {bonusFeatSlots !== undefined && bonusFeatSlots > 0 && ( 
+                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span>{babBreakdown.characterClassLabel || 'Class'} Base Attack Bonus:</span>
+                      <span className="font-bold">{babBreakdown.baseBabFromClasses.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
+                    </div>
+                    {babBreakdown.miscModifier !== 0 && (
                       <div className="flex justify-between">
-                        <span className="text-foreground">Bonus Feat Slots:</span>
-                        {renderModifierValue(bonusFeatSlots)}
+                          <span>Custom Modifier:</span>
+                          {renderModifierValue(babBreakdown.miscModifier)}
                       </div>
                     )}
-                    {grantedFeats && grantedFeats.length > 0 ? (
-                      <ul className="space-y-2">
-                        {grantedFeats.map((feat, index) => {
-                          const uniqueKey = `racefeat-${feat.featId}-${index}`;
-                          const isExpanded = expandedItems.has(uniqueKey);
-                          return (
-                          <li key={uniqueKey}>
-                             <Button
+                    <Separator className="my-3" />
+                    <div className="flex justify-between text-base">
+                      <span className="font-semibold">Total Base Attack Bonus:</span>
+                      <span className="font-bold text-accent">{babBreakdown.totalBab.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
+                    </div>
+                  </div>
+                </div>
+                {markContentRendered()}
+              </>
+            )}
+
+            {initiativeBreakdown && (
+              <>
+              {renderSeparatorIfNeeded()}
+              <div>
+                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span>
+                        {ABILITY_DISPLAY_NAMES.dexterity.abbr}{'\u00A0'}
+                        <span className="text-xs text-muted-foreground">({ABILITY_DISPLAY_NAMES.dexterity.full})</span> Modifier:
+                      </span>
+                      {renderModifierValue(initiativeBreakdown.dexModifier)}
+                    </div>
+                    {initiativeBreakdown.miscModifier !== 0 && (
+                      <div className="flex justify-between">
+                          <span>Custom Modifier:</span>
+                          {renderModifierValue(initiativeBreakdown.miscModifier)}
+                      </div>
+                    )}
+                    <Separator className="my-3" />
+                    <div className="flex justify-between text-base">
+                      <span className="font-semibold">Total Initiative:</span>
+                      {renderModifierValue(initiativeBreakdown.totalInitiative, undefined, undefined, undefined, "text-accent", true)}
+                    </div>
+                  </div>
+                </div>
+                {markContentRendered()}
+              </>
+            )}
+
+            {grappleModifierBreakdown && (
+              <>
+              {renderSeparatorIfNeeded()}
+              <div>
+                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span>Base Attack Bonus:</span>
+                      {renderModifierValue(grappleModifierBreakdown.baseAttackBonus)}
+                    </div>
+                    <div className="flex justify-between">
+                      <span>
+                        {ABILITY_DISPLAY_NAMES.strength.abbr}{'\u00A0'}
+                        <span className="text-xs text-muted-foreground">({ABILITY_DISPLAY_NAMES.strength.full})</span> Modifier:
+                      </span>
+                      {renderModifierValue(grappleModifierBreakdown.strengthModifier)}
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Size Modifier:</span>
+                      {renderModifierValue(grappleModifierBreakdown.sizeModifierGrapple)}
+                    </div>
+                    {grappleModifierBreakdown.miscModifier !== 0 && (
+                      <div className="flex justify-between">
+                          <span>Custom Modifier:</span>
+                          {renderModifierValue(grappleModifierBreakdown.miscModifier)}
+                      </div>
+                    )}
+                    <Separator className="my-3" />
+                    <div className="flex justify-between text-base">
+                      <span className="font-semibold">Total Grapple Modifier:</span>
+                      {renderModifierValue(grappleModifierBreakdown.totalGrappleModifier, undefined, undefined, undefined, "text-accent", true)}
+                    </div>
+                  </div>
+                </div>
+                {markContentRendered()}
+              </>
+            )}
+            
+            {grappleDamageBreakdown && (
+              <>
+              {renderSeparatorIfNeeded()}
+              <div>
+                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span>Base Damage:</span>
+                      <span className="font-bold">
+                        {grappleDamageBreakdown.baseDamage.split(' ')[0] || 'N/A'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Weapon Damage:</span>
+                      {grappleDamageBreakdown.baseDamage.toLowerCase().includes('unarmed') ? (
+                          <span className="font-semibold text-muted-foreground">Unarmed</span>
+                      ) : (
+                          renderModifierValue(0) 
+                      )}
+                    </div>
+                    <div className="flex justify-between">
+                      <span>
+                        {ABILITY_DISPLAY_NAMES.strength.abbr}{'\u00A0'}
+                        <span className="text-xs text-muted-foreground">({ABILITY_DISPLAY_NAMES.strength.full})</span> Modifier:
+                      </span>
+                      {renderModifierValue(grappleDamageBreakdown.strengthModifier)}
+                    </div>
+                    {grappleDamageBreakdown.bonus !== 0 && (
+                      <div className="flex justify-between">
+                          <span>Custom Modifier:</span>
+                          {renderModifierValue(grappleDamageBreakdown.bonus)}
+                      </div>
+                    )}
+                    <Separator className="my-3" />
+                    <div className="flex justify-between text-base">
+                      <span className="font-semibold">Total:</span>
+                      <span className="font-bold text-accent">
+                        {`${grappleDamageBreakdown.baseDamage.split(' ')[0] || '0'}${(grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus) !== 0 ? `${(grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus) >= 0 ? '+' : ''}${grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus}`: ''}`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                {markContentRendered()}
+              </>
+            )}
+
+
+            {abilityScoreBreakdown && (
+              <>
+              {renderSeparatorIfNeeded()}
+              <div>
+                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span>Base Score:</span>
+                      <span className="font-bold">{abilityScoreBreakdown.base}</span>
+                    </div>
+                    {abilityScoreBreakdown.components.map((comp, index) => (
+                      comp.value !== 0 && (
+                        <div key={index} className="flex justify-between">
+                          <span>{comp.source}:</span>
+                          {renderModifierValue(comp.value)}
+                        </div>
+                      )
+                    ))}
+                    <Separator className="my-3" />
+                    <div className="flex justify-between text-base">
+                      <span className="font-semibold">Final Score:</span>
+                      <span className="font-bold text-accent">{abilityScoreBreakdown.finalScore}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-semibold">Final Modifier:</span>
+                      {renderModifierValue(calculateAbilityModifier(abilityScoreBreakdown.finalScore))}
+                    </div>
+                  </div>
+                </div>
+                {markContentRendered()}
+              </>
+            )}
+
+            {skillModifierBreakdown && (
+              <>
+              {renderSeparatorIfNeeded()}
+              <div>
+                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  <div className="space-y-1 text-sm">
+                    {skillModifierBreakdown.keyAbilityName && (() => {
+                      const keyAbility = skillModifierBreakdown.keyAbilityName as Exclude<AbilityName, 'none'>;
+                      const displayName = ABILITY_DISPLAY_NAMES[keyAbility];
+                      return (
+                        <div className="flex justify-between">
+                          <span>
+                            Key Ability ({displayName.abbr}{'\u00A0'}
+                            <span className="text-xs text-muted-foreground">({displayName.full})</span>)
+                          </span>
+                          {renderModifierValue(skillModifierBreakdown.keyAbilityModifier)}
+                        </div>
+                      );
+                    })()}
+                    <div className="flex justify-between">
+                      <span>Ranks:</span>
+                      {renderModifierValue(skillModifierBreakdown.ranks)}
+                    </div>
+                    {skillModifierBreakdown.sizeSpecificBonus !== 0 && (
+                      <div className="flex justify-between">
+                        <span>Size Modifier:</span>
+                        {renderModifierValue(skillModifierBreakdown.sizeSpecificBonus)}
+                      </div>
+                    )}
+                    {skillModifierBreakdown.synergyBonus !== 0 && (
+                      <div className="flex justify-between">
+                        <span>Synergy Bonus:</span>
+                        {renderModifierValue(skillModifierBreakdown.synergyBonus)}
+                      </div>
+                    )}
+                    {skillModifierBreakdown.featBonus !== 0 && (
+                      <div className="flex justify-between">
+                        <span>Feat Bonus:</span>
+                        {renderModifierValue(skillModifierBreakdown.featBonus)}
+                      </div>
+                    )}
+                    {skillModifierBreakdown.racialBonus !== 0 && (
+                      <div className="flex justify-between">
+                        <span>Racial Bonus:</span>
+                        {renderModifierValue(skillModifierBreakdown.racialBonus)}
+                      </div>
+                    )}
+                    {skillModifierBreakdown.miscModifier !== 0 && (
+                      <div className="flex justify-between">
+                        <span>Misc Modifier:</span>
+                        {renderModifierValue(skillModifierBreakdown.miscModifier)}
+                      </div>
+                    )}
+                    <Separator className="my-2" />
+                    <div className="flex justify-between text-base">
+                      <span className="font-semibold">Total Bonus:</span>
+                      {renderModifierValue(skillModifierBreakdown.totalBonus, undefined, undefined, undefined, "text-accent", true)}
+                    </div>
+                  </div>
+              </div>
+              {markContentRendered()}
+              </>
+            )}
+            
+            {resistanceBreakdown && (
+              <>
+                {renderSeparatorIfNeeded()}
+                <div>
+                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span>Base Value:</span>
+                      <span className="font-bold">{resistanceBreakdown.base}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Custom Modifier:</span>
+                      {renderModifierValue(resistanceBreakdown.customMod)}
+                    </div>
+                    <Separator className="my-2" />
+                    <div className="flex justify-between text-base">
+                      <span className="font-semibold">Total Resistance:</span>
+                      <span className="font-bold text-accent">{resistanceBreakdown.total}</span>
+                    </div>
+                  </div>
+                </div>
+                {markContentRendered()}
+              </>
+            )}
+
+            {/* Race Info: Details */}
+            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && contentType?.type === 'race' && (
+              <>
+              {detailsList && detailsList.length > 0 && (
+                  <>
+                    {renderSeparatorIfNeeded()}
+                    <div>
+                      <h3 className={sectionHeadingClass}>Details</h3>
+                      {detailsList!.map((detail, index) => (
+                        <div key={index} className="flex justify-between text-sm mb-0.5">
+                        <span className="text-foreground">{detail.label}</span>
+                        <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {markContentRendered()}
+                  </>
+                )}
+                
+                {abilityModifiers && abilityModifiers.length > 0 && (
+                  <>
+                  {renderSeparatorIfNeeded()}
+                  <div className="mb-3">
+                    <h3 className={sectionHeadingClass}>Ability Score Adjustments</h3>
+                    <ul className="space-y-1 text-sm">
+                      {abilityModifiers!.map(({ ability, change }) => {
+                        const displayName = ABILITY_DISPLAY_NAMES[ability];
+                        return (
+                          <li key={ability} className="flex justify-between text-foreground">
+                            <span>
+                              {displayName.abbr}{'\u00A0'}
+                              <span className="text-xs text-muted-foreground">({displayName.full})</span>
+                            </span>
+                            {renderModifierValue(change)}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                  {markContentRendered()}
+                  </>
+                )}
+                
+                {skillBonuses && skillBonuses.length > 0 && (
+                  <>
+                  {renderSeparatorIfNeeded()}
+                  <div className="mb-3">
+                    <h3 className={sectionHeadingClass}>Racial Skill Bonuses</h3>
+                    <ul className="space-y-1 text-sm">
+                      {skillBonuses!.map(({ skillId, skillName, bonus }, index) => {
+                        const skillDef = allCombinedSkillDefinitionsForDisplay.find(s => s.id === skillId);
+                        const uniqueKey = `skill-${skillId}-${index}`;
+                        const isExpanded = expandedItems.has(uniqueKey);
+                        return (
+                          <li key={uniqueKey} className="text-foreground">
+                            <div className="flex justify-between items-center">
+                              <Button
                                 variant="link"
                                 size="sm"
                                 onClick={() => toggleExpanded(uniqueKey)}
-                                className="p-0 h-auto text-foreground hover:text-primary text-sm font-normal inline-flex items-center text-left justify-start no-underline hover:no-underline"
+                                className="p-0 h-auto text-sm font-normal text-foreground hover:text-primary inline-flex items-center text-left justify-start no-underline hover:no-underline"
                                 aria-expanded={isExpanded}
                               >
-                                {feat.name}
-                                {feat.note && (<span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline">{feat.note}</span>)}
+                                {skillName}
                               </Button>
-                            {isExpanded && (
+                              {renderModifierValue(bonus)}
+                            </div>
+                            {isExpanded && skillDef?.description && (
+                                <ExpandableDetailWrapper>
+                                  <div
+                                    className="text-muted-foreground prose prose-sm dark:prose-invert max-w-none"
+                                    dangerouslySetInnerHTML={{ __html: skillDef.description }}
+                                  />
+                                </ExpandableDetailWrapper>
+                            )}
+                            {isExpanded && !skillDef?.description && (
                               <ExpandableDetailWrapper>
-                                <FeatDetailContent
-                                  featId={feat.featId}
-                                  character={character}
-                                  allFeats={allCombinedFeatDefinitions}
-                                  allSkills={SKILL_DEFINITIONS}
-                                  customSkills={customSkillDefinitions}
-                                />
+                                <div className="mt-1 pl-4 text-xs text-muted-foreground italic">
+                                    No description available for this skill.
+                                </div>
                               </ExpandableDetailWrapper>
                             )}
                           </li>
-                        )})}
-                      </ul>
-                    ) : (
-                       (bonusFeatSlots === undefined || bonusFeatSlots <= 0) && <p className="text-foreground">None</p>
-                    )}
-                  </div>
-                </div>
-                {markContentRendered()}
-                </>
-              ) : null}
-            </>
-          )}
-
-          {/* Class Info: Granted Feats & DetailsList*/}
-           {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && contentType?.type === 'class' && (
-             <>
-              {detailsList && detailsList.length > 0 && (
-                <>
-                {renderSeparatorIfNeeded()}
-                <div className="mb-3">
-                  <h3 className={sectionHeadingClass}>Details:</h3>
-                  {detailsList!.map((detail, index) => (
-                      <div key={index} className="flex justify-between text-sm mb-0.5">
-                      <span className="text-foreground">{detail.label}:</span>
-                      <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value}</span>
-                      </div>
-                  ))}
-                </div>
-                {markContentRendered()}
-                </>
-              )}
-              {grantedFeats && grantedFeats.length > 0 && (
-                <>
-                {renderSeparatorIfNeeded()}
-                <div>
-                  <h3 className={sectionHeadingClass}>Class Features & Granted Feats:</h3>
-                  <ul className="space-y-2 text-sm">
-                    {grantedFeats.map(({ featId, name, note, levelAcquired }, index) => {
-                      const uniqueKey = `classfeat-${featId}-${index}`;
-                      const isExpanded = expandedItems.has(uniqueKey);
-                      return (
-                      <li key={uniqueKey}>
-                        <div className="flex items-start text-foreground">
-                           {levelAcquired !== undefined && (
-                             <Badge variant="outline" className="text-xs font-normal h-5 mr-2 mt-[1px] whitespace-nowrap self-start">
-                              Level {levelAcquired}
-                            </Badge>
-                          )}
-                           <Button
-                              variant="link"
-                              size="sm"
-                              onClick={() => toggleExpanded(uniqueKey)}
-                              className={cn(
-                                "p-0 h-auto text-sm font-normal text-left justify-start text-foreground hover:text-primary flex-grow no-underline hover:no-underline",
-                                { "flex-1": !levelAcquired } 
-                              )}
-                              aria-expanded={isExpanded}
-                            >
-                              {name}
-                              {note && (<span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline"> {note}</span>)}
-                            </Button>
-                        </div>
-                        {isExpanded && (
-                           <div className="mt-1.5 p-3 rounded-md bg-muted/20 border border-border/30">
-                            <FeatDetailContent
-                              featId={featId}
-                              character={character}
-                              allFeats={allCombinedFeatDefinitions}
-                              allSkills={SKILL_DEFINITIONS}
-                              customSkills={customSkillDefinitions}
-                            />
-                          </div>
-                        )}
-                      </li>
-                    )})}
-                  </ul>
-                </div>
-                {markContentRendered()}
-                </>
-              )}
-            </>
-          )}
-          
-          {/* AC Breakdown and Generic DetailsList */}
-          {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && detailsList && detailsList.length > 0 && (contentType?.type !== 'class' && contentType?.type !== 'race') && (
-             <>
-              {renderSeparatorIfNeeded()}
-              <div>
-                <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
-                {detailsList!.filter(detail => detail.label.toLowerCase() !== 'total').map((detail, index) => {
-                    const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value))))
-                        ? renderModifierValue(detail.value, undefined, undefined, undefined, (detail.label.toLowerCase() === "total" ? "text-accent" : undefined), detail.label.toLowerCase() === "total")
-                        : detail.value;
-                    
-                    let labelContent: React.ReactNode;
-                    const defaultLabelClass = "text-foreground"; 
-
-                    if (detail.label.toLowerCase().includes("modifier") && (detail.label.toLowerCase().includes("dexterity") || detail.label.toLowerCase().includes("strength"))) {
-                        const ability = detail.label.toLowerCase().includes("dexterity") ? 'dexterity' : 'strength';
-                        const displayName = ABILITY_DISPLAY_NAMES[ability as Exclude<AbilityName, 'none'>];
-                        labelContent = (
-                            <span className={defaultLabelClass}>
-                                {displayName.abbr}{'\u00A0'}
-                                <span className="text-xs text-muted-foreground">({displayName.full})</span> Modifier:
-                            </span>
                         );
-                    } else {
-                         labelContent = <span className={defaultLabelClass}>{detail.label}:</span>;
-                    }
-
-                    return (
-                        <div key={index} className="flex justify-between text-sm mb-0.5">
-                        {labelContent}
-                        <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{valueToRender}</span>
-                        </div>
-                    );
-                })}
-                
-                {detailsList!.find(detail => detail.label.toLowerCase() === 'total') && (
-                  <>
-                    <Separator className="my-2" />
-                    <div className="flex justify-between text-base">
-                      <span className="font-semibold">Total:</span>
-                      {renderModifierValue(detailsList!.find(detail => detail.label.toLowerCase() === 'total')!.value, undefined, undefined, undefined, "text-accent", true)}
-                    </div>
+                      })}
+                    </ul>
+                  </div>
+                  {markContentRendered()}
                   </>
                 )}
-              </div>
-              {markContentRendered()}
-            </>
-          )}
 
+                {(grantedFeats && grantedFeats.length > 0) || (bonusFeatSlots !== undefined) ? (
+                  <>
+                  {renderSeparatorIfNeeded()}
+                  <div>
+                    <h3 className={sectionHeadingClass}>Racial Feat Adjustments</h3>
+                    <div className="text-sm space-y-1">
+                      {bonusFeatSlots !== undefined && bonusFeatSlots > 0 && ( 
+                        <div className="flex justify-between">
+                          <span className="text-foreground">Bonus Feat Slots</span>
+                          {renderModifierValue(bonusFeatSlots)}
+                        </div>
+                      )}
+                      {grantedFeats && grantedFeats.length > 0 ? (
+                        <ul className="space-y-2">
+                          {grantedFeats.map((feat, index) => {
+                            const uniqueKey = `racefeat-${feat.featId}-${index}`;
+                            const isExpanded = expandedItems.has(uniqueKey);
+                            return (
+                            <li key={uniqueKey}>
+                              <Button
+                                  variant="link"
+                                  size="sm"
+                                  onClick={() => toggleExpanded(uniqueKey)}
+                                  className="p-0 h-auto text-foreground hover:text-primary text-sm font-normal inline-flex items-center text-left justify-start no-underline hover:no-underline"
+                                  aria-expanded={isExpanded}
+                                >
+                                  {feat.name}
+                                  {feat.note && (<span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline ml-[0.2em]">{feat.note}</span>)}
+                                </Button>
+                              {isExpanded && (
+                                <ExpandableDetailWrapper>
+                                  <FeatDetailContent
+                                    featId={feat.featId}
+                                    character={character}
+                                    allFeats={allCombinedFeatDefinitions}
+                                    allSkills={SKILL_DEFINITIONS}
+                                    customSkills={customSkillDefinitions}
+                                  />
+                                </ExpandableDetailWrapper>
+                              )}
+                            </li>
+                          )})}
+                        </ul>
+                      ) : (
+                        (bonusFeatSlots === undefined || bonusFeatSlots <= 0) && <p className="text-foreground">None</p>
+                      )}
+                    </div>
+                  </div>
+                  {markContentRendered()}
+                  </>
+                ) : null}
+              </>
+            )}
+
+            {/* Class Info: Granted Feats & DetailsList*/}
+            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && contentType?.type === 'class' && (
+              <>
+                {detailsList && detailsList.length > 0 && (
+                  <>
+                  {renderSeparatorIfNeeded()}
+                  <div className="mb-3">
+                    <h3 className={sectionHeadingClass}>Details</h3>
+                    {detailsList!.map((detail, index) => (
+                        <div key={index} className="flex justify-between text-sm mb-0.5">
+                        <span className="text-foreground">{detail.label}</span>
+                        <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value}</span>
+                        </div>
+                    ))}
+                  </div>
+                  {markContentRendered()}
+                  </>
+                )}
+                {grantedFeats && grantedFeats.length > 0 && (
+                  <>
+                  {renderSeparatorIfNeeded()}
+                  <div>
+                    <h3 className={sectionHeadingClass}>Class Features & Granted Feats</h3>
+                    <ul className="space-y-2 text-sm">
+                      {grantedFeats.map(({ featId, name, note, levelAcquired }, index) => {
+                        const uniqueKey = `classfeat-${featId}-${index}`;
+                        const isExpanded = expandedItems.has(uniqueKey);
+                        return (
+                        <li key={uniqueKey}>
+                          <div className="flex items-start text-foreground">
+                            {levelAcquired !== undefined && (
+                              <Badge variant="outline" className="text-xs font-normal h-5 mr-2 mt-[1px] whitespace-nowrap self-start">
+                                Level {levelAcquired}
+                              </Badge>
+                            )}
+                            <Button
+                                variant="link"
+                                size="sm"
+                                onClick={() => toggleExpanded(uniqueKey)}
+                                className={cn(
+                                  "p-0 h-auto text-sm font-normal text-left justify-start text-foreground hover:text-primary flex-grow no-underline hover:no-underline",
+                                  { "flex-1": !levelAcquired } 
+                                )}
+                                aria-expanded={isExpanded}
+                              >
+                                {name}
+                                {note && <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline">{note}</span>}
+                              </Button>
+                          </div>
+                          {isExpanded && (
+                            <ExpandableDetailWrapper>
+                              <FeatDetailContent
+                                featId={featId}
+                                character={character}
+                                allFeats={allCombinedFeatDefinitions}
+                                allSkills={SKILL_DEFINITIONS}
+                                customSkills={customSkillDefinitions}
+                              />
+                            </ExpandableDetailWrapper>
+                          )}
+                        </li>
+                      )})}
+                    </ul>
+                  </div>
+                  {markContentRendered()}
+                  </>
+                )}
+              </>
+            )}
+            
+            {/* AC Breakdown and Generic DetailsList */}
+            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && detailsList && detailsList.length > 0 && (contentType?.type !== 'class' && contentType?.type !== 'race') && (
+              <>
+                {renderSeparatorIfNeeded()}
+                <div>
+                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  {detailsList!.filter(detail => detail.label.toLowerCase() !== 'total').map((detail, index) => {
+                      const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value))))
+                          ? renderModifierValue(detail.value, undefined, undefined, undefined, (detail.label.toLowerCase() === "total" ? "text-accent" : undefined), detail.label.toLowerCase() === "total")
+                          : detail.value;
+                      
+                      let labelContent: React.ReactNode;
+                      const defaultLabelClass = "text-foreground"; 
+
+                      if (detail.label.toLowerCase().includes("modifier") && (detail.label.toLowerCase().includes("dexterity") || detail.label.toLowerCase().includes("strength"))) {
+                          const ability = detail.label.toLowerCase().includes("dexterity") ? 'dexterity' : 'strength';
+                          const displayName = ABILITY_DISPLAY_NAMES[ability as Exclude<AbilityName, 'none'>];
+                          labelContent = (
+                              <span className={defaultLabelClass}>
+                                  {displayName.abbr}{'\u00A0'}
+                                  <span className="text-xs text-muted-foreground">({displayName.full})</span> Modifier
+                              </span>
+                          );
+                      } else {
+                          labelContent = <span className={defaultLabelClass}>{detail.label}</span>;
+                      }
+
+                      return (
+                          <div key={index} className="flex justify-between text-sm mb-0.5">
+                          {labelContent}
+                          <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{valueToRender}</span>
+                          </div>
+                      );
+                  })}
+                  
+                  {detailsList!.find(detail => detail.label.toLowerCase() === 'total') && (
+                    <>
+                      <Separator className="my-2" />
+                      <div className="flex justify-between text-base">
+                        <span className="font-semibold">Total</span>
+                        {renderModifierValue(detailsList!.find(detail => detail.label.toLowerCase() === 'total')!.value, undefined, undefined, undefined, "text-accent", true)}
+                      </div>
+                    </>
+                  )}
+                </div>
+                {markContentRendered()}
+              </>
+            )}
+          </div>
         </ScrollArea>
         <DialogFooter className="mt-2">
           <Button variant="outline" onClick={() => onOpenChange(false)} type="button">Close</Button>
@@ -1033,4 +1035,5 @@ interface DerivedDialogData {
   grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
   grappleDamageBreakdown?: GrappleDamageBreakdownDetails;
 }
+
 
