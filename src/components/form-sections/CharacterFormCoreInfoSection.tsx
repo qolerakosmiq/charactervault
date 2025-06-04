@@ -34,6 +34,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Badge } from '@/components/ui/badge';
+import { ComboboxPrimitive } from '@/components/ui/combobox';
 
 interface CharacterFormCoreInfoSectionProps {
   characterData: Pick<Character, 'name' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
@@ -76,8 +77,8 @@ export function CharacterFormCoreInfoSection({
     if (!characterData.classes[0]?.className) {
       onClassChange('fighter' as DndClassId);
     }
-    if (characterData.deity === undefined) { 
-      onFieldChange('deity', ''); 
+    if (characterData.deity === undefined || characterData.deity === null) { 
+      onFieldChange('deity', DEITY_NONE_OPTION_VALUE); 
     }
   }, []); 
 
@@ -106,10 +107,10 @@ export function CharacterFormCoreInfoSection({
 
 
   React.useEffect(() => {
-    if (characterData.alignment && characterData.deity) {
+    if (characterData.alignment && characterData.deity && characterData.deity !== DEITY_NONE_OPTION_VALUE) {
       const currentDeity = DND_DEITIES.find(d => d.value === characterData.deity);
       if (currentDeity && !isAlignmentCompatible(characterData.alignment, currentDeity.alignment)) {
-        onFieldChange('deity', ''); 
+        onFieldChange('deity', DEITY_NONE_OPTION_VALUE); 
       }
     }
   }, [characterData.alignment, characterData.deity, onFieldChange]);
@@ -202,7 +203,6 @@ export function CharacterFormCoreInfoSection({
                 })}
               </div>
             )}
-            {/* Removed the "No ability score adjustments" text block */}
           </div>
         </div>
 
@@ -296,7 +296,7 @@ export function CharacterFormCoreInfoSection({
                   size="icon"
                   className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
                   onClick={onOpenDeityInfoDialog}
-                  disabled={!characterData.deity || characterData.deity.trim() === ''}
+                  disabled={!characterData.deity || characterData.deity.trim() === '' || characterData.deity === DEITY_NONE_OPTION_VALUE}
                 >
                   <Info className="h-5 w-5" />
                 </Button>
@@ -358,19 +358,15 @@ export function CharacterFormCoreInfoSection({
             </div>
           <div className="space-y-1.5">
             <Label htmlFor="gender">Gender</Label>
-            <Select
-              value={characterData.gender || ""}
-              onValueChange={(value) => handleSelectChange('gender', value)}
-            >
-              <SelectTrigger id="gender">
-                <SelectValue placeholder="Select gender" />
-              </SelectTrigger>
-              <SelectContent>
-                {GENDERS.map(g => (
-                  <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+             <ComboboxPrimitive
+                options={GENDERS}
+                value={characterData.gender || ""}
+                onChange={(value) => handleSelectChange('gender', value)}
+                placeholder="Select or type gender..."
+                searchPlaceholder="Search genders..."
+                emptyPlaceholder="No gender found."
+                isEditable={true}
+              />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="size">Size</Label>
@@ -416,3 +412,4 @@ export function CharacterFormCoreInfoSection({
     </Card>
   );
 }
+
