@@ -210,7 +210,7 @@ export function SkillsFormSection({
         </div>
 
         <div className="space-y-1 -mx-1">
-          <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-xs">
+          <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
             <span className="text-center w-10">Class?</span>
             <span className="pl-1">Skill</span>
             <span className="text-center w-10">Total</span>
@@ -263,7 +263,7 @@ export function SkillsFormSection({
                       >
                         <Info className="h-3 w-3" />
                       </Button>
-                    <Label htmlFor={`skill_ranks_${skill.id}`} className="text-xs pr-1 leading-tight flex-grow flex items-center">
+                    <Label htmlFor={`skill_ranks_${skill.id}`} className="text-sm pr-1 leading-tight flex-grow flex items-center">
                         {skill.name}
                         {skill.isCustom && (
                             <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 ml-1.5 font-normal">Custom</Badge>
@@ -294,8 +294,8 @@ export function SkillsFormSection({
                   )}
                 </div>
                 <span className="font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
-                <span className="text-xs text-muted-foreground text-center w-10">{keyAbilityDisplay}</span>
-                <span className="text-xs text-center w-10">{totalDisplayedModifier >= 0 ? '+' : ''}{totalDisplayedModifier}</span>
+                <span className="text-sm text-muted-foreground text-center w-10">{keyAbilityDisplay}</span>
+                <span className="text-sm text-center w-10">{totalDisplayedModifier >= 0 ? '+' : ''}{totalDisplayedModifier}</span>
                 <div className="w-32 flex justify-center">
                   <NumberSpinnerInput
                     id={`skill_ranks_${skill.id}`}
@@ -303,14 +303,14 @@ export function SkillsFormSection({
                     onChange={(newValue) => onSkillChange(skill.id, newValue, skill.isClassSkill)}
                     min={0}
                     step={currentStepForInput}
-                    inputClassName="w-14 h-7 text-xs" 
+                    inputClassName="w-14 h-7 text-sm" 
                     buttonSize="sm"
                     buttonClassName="h-7 w-7"
                   />
                 </div>
-                <span className="text-xs text-muted-foreground text-center w-12">{skillCostDisplay}</span>
+                <span className="text-sm text-muted-foreground text-center w-12">{skillCostDisplay}</span>
                 <span className={cn(
-                    "text-xs text-center w-10",
+                    "text-sm text-center w-10",
                     (skill.ranks || 0) > maxRanksValue ? "text-destructive font-bold" : "text-muted-foreground"
                   )}>
                     {maxRanksValue}
