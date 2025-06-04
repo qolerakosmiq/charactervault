@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -668,7 +669,7 @@ export function InfoDisplayDialog({
                           <span>
                             Key Ability
                             {" "}
-                            <span className="text-muted-foreground">({displayName.full})</span>
+                            <span className="text-muted-foreground">({displayName.abbr})</span>
                           </span>
                           {renderModifierValue(skillModifierBreakdown.keyAbilityModifier)}
                         </div>
@@ -1036,3 +1037,15 @@ interface DerivedDialogData {
   grappleDamageBreakdown?: GrappleDamageBreakdownDetails;
 }
 
+interface SkillModifierBreakdownDetails {
+  skillName: string;
+  keyAbilityName?: string;
+  keyAbilityModifier: number;
+  ranks: number;
+  synergyBonus: number;
+  featBonus: number;
+  racialBonus: number;
+  sizeSpecificBonus: number;
+  miscModifier: number;
+  totalBonus: number;
+}
