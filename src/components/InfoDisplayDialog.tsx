@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -67,18 +66,14 @@ const ABILITY_DISPLAY_NAMES: Record<Exclude<AbilityName, 'none'>, { abbr: string
   charisma: { abbr: 'CHA', full: 'Charisma' },
 };
 
-export interface SkillModifierBreakdownDetails {
-  skillName: string;
-  keyAbilityName?: string;
-  keyAbilityModifier: number;
-  ranks: number;
-  synergyBonus: number;
-  featBonus: number;
-  racialBonus: number;
-  sizeSpecificBonus: number;
-  miscModifier: number;
-  totalBonus: number;
-}
+
+const ExpandableDetailWrapper = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="mt-1.5 p-3 rounded-md bg-muted/20 border border-border/30">
+      {children}
+    </div>
+  );
+};
 
 // Internal component for displaying feat details
 const FeatDetailContent: React.FC<{
@@ -114,15 +109,6 @@ const FeatDetailContent: React.FC<{
           <p className="text-sm">{featDef.effectsText}</p>
         </div>
       )}
-    </div>
-  );
-};
-
-// New internal wrapper component for consistent styling of expanded details
-const ExpandableDetailWrapper = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <div className="mt-1.5 p-3 rounded-md bg-muted/20 border border-border/30">
-      {children}
     </div>
   );
 };
@@ -763,7 +749,7 @@ export function InfoDisplayDialog({
                         <li key={ability} className="flex justify-between text-foreground">
                            <span>
                             {displayName.abbr}{'\u00A0'}
-                            <span className="text-xs text-muted-foreground">({displayName.full})</span>:
+                            <span className="text-xs text-muted-foreground">({displayName.full})</span>
                           </span>
                           {renderModifierValue(change)}
                         </li>
@@ -842,7 +828,7 @@ export function InfoDisplayDialog({
                                 aria-expanded={isExpanded}
                               >
                                 {feat.name}
-                                {feat.note && <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline ml-[0.2em]">{feat.note}</span>}
+                                {feat.note && <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline"> {feat.note}</span>}
                               </Button>
                             {isExpanded && (
                               <ExpandableDetailWrapper>
@@ -909,11 +895,11 @@ export function InfoDisplayDialog({
                               aria-expanded={isExpanded}
                             >
                               {name}
-                              {note && <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline ml-[0.2em]">{note}</span>}
+                              {note && <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline">{note}</span>}
                             </Button>
                         </div>
                         {isExpanded && (
-                          <ExpandableDetailWrapper>
+                           <ExpandableDetailWrapper>
                             <FeatDetailContent
                               featId={featId}
                               character={character}
