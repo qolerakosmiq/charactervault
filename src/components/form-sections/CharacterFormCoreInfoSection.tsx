@@ -132,6 +132,9 @@ export function CharacterFormCoreInfoSection({
                   isEditable={true}
                 />
               </div>
+              {characterData.race && !isPredefinedRace && characterData.race.trim() !== '' && (
+                <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
+              )}
               <Button 
                 type="button" 
                 variant="ghost" 
@@ -142,9 +145,6 @@ export function CharacterFormCoreInfoSection({
               >
                 <Info className="h-5 w-5" />
               </Button>
-              {characterData.race && !isPredefinedRace && characterData.race.trim() !== '' && (
-                <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
-              )}
             </div>
             {isPredefinedRace && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
                <div className="flex flex-wrap gap-1 pt-[6px] ml-1">
@@ -204,6 +204,9 @@ export function CharacterFormCoreInfoSection({
                   isEditable={true}
                 />
               </div>
+              {characterData.classes[0]?.className && !isPredefinedClass && characterData.classes[0]?.className.trim() !== '' && (
+                <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
+              )}
               <Button 
                 type="button" 
                 variant="ghost" 
@@ -214,9 +217,6 @@ export function CharacterFormCoreInfoSection({
               >
                 <Info className="h-5 w-5" />
               </Button>
-              {characterData.classes[0]?.className && !isPredefinedClass && characterData.classes[0]?.className.trim() !== '' && (
-                <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
-              )}
             </div>
             {selectedClassInfo?.hitDice && (
               <div className="pt-[6px] ml-1">
