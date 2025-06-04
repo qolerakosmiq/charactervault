@@ -109,16 +109,16 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <Label htmlFor="age-cs" className="block w-full text-center">Age</Label>
+            <Label htmlFor="age-cs" className="inline-block w-full text-center">Age</Label>
             <NumberSpinnerInput
               id="age-cs"
               value={character.age}
               onChange={(newValue) => onCoreValueChange('age', newValue)}
               min={1} // Or a race-specific min
               max={1000}
-              inputClassName="w-24 h-10 text-base text-center" // Ensure text is centered
+              inputClassName="w-24 h-10 text-base text-center"
               buttonClassName="h-10 w-10"
-              className="justify-center" // Center the spinner's internal content
+              className="justify-center"
             />
           </div>
           <div>
