@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { UserCircle2 } from 'lucide-react';
 import { SIZES, ALIGNMENTS } from '@/types/character';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput'; // Added import
+import { cn } from '@/lib/utils';
 
 interface CoreInfoSectionProps {
   character: Pick<Character, 'name' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
@@ -106,17 +107,8 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <Label htmlFor="size">Size</Label>
-            <Select name="size" value={character.size} onValueChange={(value) => handleSelectChange('size', value)}>
-              <SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger>
-              <SelectContent>
-                {SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="age-cs">Age</Label>
+          <div className="flex flex-col items-center">
+            <Label htmlFor="age-cs" className="inline-block w-full text-center">Age</Label>
             <NumberSpinnerInput
               id="age-cs"
               value={character.age}
@@ -125,11 +117,21 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
               max={1000}
               inputClassName="w-24 h-10 text-base"
               buttonClassName="h-10 w-10"
+              className="justify-center"
             />
           </div>
           <div>
             <Label htmlFor="gender">Gender</Label>
             <Input id="gender" name="gender" value={character.gender as string} onChange={handleInputChange} />
+          </div>
+          <div>
+            <Label htmlFor="size">Size</Label>
+            <Select name="size" value={character.size} onValueChange={(value) => handleSelectChange('size', value)}>
+              <SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger>
+              <SelectContent>
+                {SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </CardContent>
