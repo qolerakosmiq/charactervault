@@ -30,7 +30,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollText, Info } from 'lucide-react';
-import { ComboboxPrimitive } from '@/components/ui/combobox';
+// ComboboxPrimitive import removed
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -59,14 +59,27 @@ export function CharacterFormCoreInfoSection({
   ageEffectsDetails,
   raceSpecialQualities,
   selectedClassInfo,
-  isPredefinedRace, 
-  isPredefinedClass, 
+  isPredefinedRace,
+  isPredefinedClass,
   currentMinAgeForInput,
   onOpenRaceInfoDialog,
   onOpenClassInfoDialog,
   onOpenAlignmentInfoDialog,
   onOpenDeityInfoDialog,
 }: CharacterFormCoreInfoSectionProps) {
+  
+  React.useEffect(() => {
+    if (!characterData.race) {
+      onFieldChange('race', 'human' as DndRaceId);
+    }
+    if (!characterData.classes[0]?.className) {
+      onClassChange('fighter' as DndClassId);
+    }
+    if (characterData.deity === undefined) { // Set "None" (empty string) if deity is initially undefined
+      onFieldChange('deity', '');
+    }
+  }, []); // Ensure this runs only once on mount if dependencies are truly static relative to this goal
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const field = name as keyof Character;
@@ -79,18 +92,23 @@ export function CharacterFormCoreInfoSection({
 
   const filteredDeities = React.useMemo(() => {
     if (!characterData.alignment) {
-      return DND_DEITIES; 
+      return DND_DEITIES;
     }
     return DND_DEITIES.filter(deity =>
       isAlignmentCompatible(characterData.alignment, deity.alignment)
     );
   }, [characterData.alignment]);
+  
+  const deitySelectOptions = React.useMemo(() => {
+    return [{ value: "", label: "None" }, ...filteredDeities];
+  }, [filteredDeities]);
+
 
   React.useEffect(() => {
     if (characterData.alignment && characterData.deity) {
       const currentDeity = DND_DEITIES.find(d => d.value === characterData.deity);
       if (currentDeity && !isAlignmentCompatible(characterData.alignment, currentDeity.alignment)) {
-        onFieldChange('deity', '');
+        onFieldChange('deity', ''); // Set to "None" (empty string)
       }
     }
   }, [characterData.alignment, characterData.deity, onFieldChange]);
@@ -122,24 +140,26 @@ export function CharacterFormCoreInfoSection({
             <Label htmlFor="race">Race</Label>
             <div className="flex items-center gap-2">
               <div className="flex-grow">
-                <ComboboxPrimitive
-                  options={DND_RACES}
-                  value={characterData.race}
-                  onChange={(value) => handleSelectChange('race', value)}
-                  placeholder="Select or type race"
-                  searchPlaceholder="Search races..."
-                  emptyPlaceholder="No race found. Type to add custom."
-                  isEditable={true}
-                />
+                <Select
+                  value={characterData.race || 'human'}
+                  onValueChange={(value) => handleSelectChange('race', value as DndRaceId)}
+                >
+                  <SelectTrigger id="race">
+                    <SelectValue placeholder="Select race" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DND_RACES.map(race => (
+                      <SelectItem key={race.value} value={race.value}>{race.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              {characterData.race && !isPredefinedRace && characterData.race.trim() !== '' && (
-                <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
-              )}
-              <Button 
-                type="button" 
-                variant="ghost" 
-                size="icon" 
-                className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" 
+              {/* Customize button removed */}
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
                 onClick={onOpenRaceInfoDialog}
                 disabled={!characterData.race}
               >
@@ -152,16 +172,16 @@ export function CharacterFormCoreInfoSection({
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
                   let badgeClassName = "text-xs font-normal";
 
-                  if (effect.change > 0) { 
+                  if (effect.change > 0) {
                     badgeClassName = cn(
                       badgeClassName,
                       "bg-emerald-700 text-emerald-100 border-emerald-600",
                       "hover:bg-emerald-700 hover:text-emerald-100"
                     );
-                  } else if (effect.change < 0) { 
+                  } else if (effect.change < 0) {
                     badgeVariantProp = "destructive";
                      badgeClassName = cn(badgeClassName, "hover:bg-destructive");
-                  } else { 
+                  } else {
                      badgeClassName = cn(
                       badgeClassName,
                       "bg-muted/50 text-muted-foreground border-border",
@@ -194,23 +214,25 @@ export function CharacterFormCoreInfoSection({
             <Label htmlFor="className">Class</Label>
             <div className="flex items-center gap-2">
               <div className="flex-grow">
-                <ComboboxPrimitive
-                  options={DND_CLASSES}
-                  value={characterData.classes[0]?.className || ''}
-                  onChange={(value) => onClassChange(value)}
-                  placeholder="Select or type class"
-                  searchPlaceholder="Search classes..."
-                  emptyPlaceholder="No class found. Type to add custom."
-                  isEditable={true}
-                />
+                <Select
+                  value={characterData.classes[0]?.className || 'fighter'}
+                  onValueChange={(value) => onClassChange(value as DndClassId)}
+                >
+                  <SelectTrigger id="className">
+                    <SelectValue placeholder="Select class" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DND_CLASSES.map(c => (
+                      <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              {characterData.classes[0]?.className && !isPredefinedClass && characterData.classes[0]?.className.trim() !== '' && (
-                <Button type="button" variant="outline" size="sm" className="shrink-0 h-10">Customize...</Button>
-              )}
-              <Button 
-                type="button" 
-                variant="ghost" 
-                size="icon" 
+              {/* Customize button removed */}
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
                 className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
                 onClick={onOpenClassInfoDialog}
                 disabled={!characterData.classes[0]?.className}
@@ -255,20 +277,24 @@ export function CharacterFormCoreInfoSection({
               <Label htmlFor="deity">Deity</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
-                  <ComboboxPrimitive
-                    options={filteredDeities}
-                    value={characterData.deity || ''}
-                    onChange={(value) => handleSelectChange('deity', value as DndDeityId | string)}
-                    placeholder="Select or type deity"
-                    searchPlaceholder="Search deities..."
-                    emptyPlaceholder="No deity found. Type to add."
-                    isEditable={true}
-                  />
+                  <Select
+                    value={characterData.deity || ""} // Empty string for "None"
+                    onValueChange={(value) => handleSelectChange('deity', value)}
+                  >
+                    <SelectTrigger id="deity">
+                      <SelectValue placeholder="Select deity" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {deitySelectOptions.map(opt => (
+                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <Button 
-                  type="button" 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
                   className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
                   onClick={onOpenDeityInfoDialog}
                   disabled={!characterData.deity || characterData.deity.trim() === ''}
@@ -289,8 +315,8 @@ export function CharacterFormCoreInfoSection({
               value={characterData.age}
               onChange={(newValue) => onFieldChange('age', newValue)}
               min={currentMinAgeForInput}
-              max={1000} 
-              inputClassName="w-full h-10 text-base text-center" 
+              max={1000}
+              inputClassName="w-full h-10 text-base text-center"
               buttonClassName="h-10 w-10"
               buttonSize="icon"
             />
@@ -310,11 +336,11 @@ export function CharacterFormCoreInfoSection({
                     badgeClassName = cn(
                       badgeClassName,
                       "bg-emerald-700 text-emerald-100 border-emerald-600",
-                      "hover:bg-emerald-700 hover:text-emerald-100" 
+                      "hover:bg-emerald-700 hover:text-emerald-100"
                     );
                   } else if (effect.change < 0) {
                     badgeVariantProp = "destructive";
-                    badgeClassName = cn(badgeClassName, "hover:bg-destructive"); 
+                    badgeClassName = cn(badgeClassName, "hover:bg-destructive");
                   }
                   return (
                     <Badge
@@ -333,15 +359,19 @@ export function CharacterFormCoreInfoSection({
             </div>
           <div className="space-y-1.5">
             <Label htmlFor="gender">Gender</Label>
-            <ComboboxPrimitive
-              options={GENDERS}
-              value={characterData.gender}
-              onChange={(value) => handleSelectChange('gender', value as GenderId | string)}
-              placeholder="Select or type gender"
-              searchPlaceholder="Search genders..."
-              emptyPlaceholder="No gender found. Type to add."
-              isEditable={true}
-            />
+            <Select
+              value={characterData.gender || ""}
+              onValueChange={(value) => handleSelectChange('gender', value)}
+            >
+              <SelectTrigger id="gender">
+                <SelectValue placeholder="Select gender" />
+              </SelectTrigger>
+              <SelectContent>
+                {GENDERS.map(g => (
+                  <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="size">Size</Label>
@@ -359,13 +389,13 @@ export function CharacterFormCoreInfoSection({
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
                   let badgeClassNameForAc = "text-xs font-normal";
 
-                  if (acMod > 0) { 
+                  if (acMod > 0) {
                     badgeClassNameForAc = cn(
                       badgeClassNameForAc,
                       "bg-emerald-700 text-emerald-100 border-emerald-600",
                       "hover:bg-emerald-700 hover:text-emerald-100"
                     );
-                  } else if (acMod < 0) { 
+                  } else if (acMod < 0) {
                     badgeVariantProp = "destructive";
                     badgeClassNameForAc = cn(badgeClassNameForAc, "hover:bg-destructive");
                   }
