@@ -929,7 +929,7 @@ export function InfoDisplayDialog({
                                 size="sm"
                                 onClick={() => toggleExpanded(uniqueKey)}
                                 className={cn(
-                                  "p-0 h-auto text-sm font-normal text-left justify-start text-foreground hover:text-primary flex-grow no-underline hover:no-underline",
+                                  "p-0 h-auto text-sm font-normal text-left justify-start text-foreground flex-grow no-underline hover:no-underline items-baseline",
                                   { "flex-1": !levelAcquired } 
                                 )}
                                 aria-expanded={isExpanded}
