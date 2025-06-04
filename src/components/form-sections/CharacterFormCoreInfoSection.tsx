@@ -290,7 +290,7 @@ export function CharacterFormCoreInfoSection({
               onChange={(newValue) => onFieldChange('age', newValue)}
               min={currentMinAgeForInput}
               max={1000} 
-              inputClassName="w-20 h-10 text-base text-center" 
+              inputClassName="w-full h-10 text-base text-center" 
               buttonClassName="h-10 w-10"
               buttonSize="icon"
             />
