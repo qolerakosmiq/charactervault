@@ -109,7 +109,7 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <Label htmlFor="age-cs" className="inline-block w-full text-center">Age</Label>
+            <Label htmlFor="age-cs" className="block w-full text-center">Age</Label>
             <NumberSpinnerInput
               id="age-cs"
               value={character.age}
