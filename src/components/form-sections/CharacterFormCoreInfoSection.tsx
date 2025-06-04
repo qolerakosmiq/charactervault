@@ -42,8 +42,8 @@ interface CharacterFormCoreInfoSectionProps {
   ageEffectsDetails: AgingEffectsDetails | null;
   raceSpecialQualities: RaceSpecialQualities | null;
   selectedClassInfo: DndClassOption | undefined;
-  isPredefinedRace: boolean; // This prop might become less relevant if custom race input is removed
-  isPredefinedClass: boolean; // This prop might become less relevant if custom class input is removed
+  isPredefinedRace: boolean; 
+  isPredefinedClass: boolean; 
   currentMinAgeForInput: number;
   onOpenRaceInfoDialog: () => void;
   onOpenClassInfoDialog: () => void;
@@ -51,7 +51,7 @@ interface CharacterFormCoreInfoSectionProps {
   onOpenDeityInfoDialog: () => void;
 }
 
-const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__"; // Special non-empty value for "None" option
+const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__"; 
 
 export function CharacterFormCoreInfoSection({
   characterData,
@@ -60,8 +60,8 @@ export function CharacterFormCoreInfoSection({
   ageEffectsDetails,
   raceSpecialQualities,
   selectedClassInfo,
-  isPredefinedRace, // Keep for now, might be useful for display variants
-  isPredefinedClass, // Keep for now
+  isPredefinedRace, 
+  isPredefinedClass, 
   currentMinAgeForInput,
   onOpenRaceInfoDialog,
   onOpenClassInfoDialog,
@@ -77,7 +77,7 @@ export function CharacterFormCoreInfoSection({
       onClassChange('fighter' as DndClassId);
     }
     if (characterData.deity === undefined) { 
-      onFieldChange('deity', ''); // Default to empty string for "None" in actual data
+      onFieldChange('deity', ''); 
     }
   }, []); 
 
@@ -202,9 +202,7 @@ export function CharacterFormCoreInfoSection({
                 })}
               </div>
             )}
-            {isPredefinedRace && (!raceSpecialQualities?.abilityEffects || raceSpecialQualities.abilityEffects.length === 0) && (
-                <div className="pt-[6px] ml-1"><p className="text-xs text-muted-foreground">No ability score adjustments.</p></div>
-            )}
+            {/* Removed the "No ability score adjustments" text block */}
           </div>
         </div>
 
