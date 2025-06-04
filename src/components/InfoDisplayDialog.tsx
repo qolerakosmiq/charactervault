@@ -80,6 +80,7 @@ export interface SkillModifierBreakdownDetails {
   totalBonus: number;
 }
 
+// Internal component for displaying feat details
 const FeatDetailContent: React.FC<{
   featId: string;
   character: Character;
@@ -113,6 +114,15 @@ const FeatDetailContent: React.FC<{
           <p className="text-sm">{featDef.effectsText}</p>
         </div>
       )}
+    </div>
+  );
+};
+
+// New internal wrapper component for consistent styling of expanded details
+const ExpandableDetailWrapper = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="mt-1.5 p-3 rounded-md bg-muted/20 border border-border/30">
+      {children}
     </div>
   );
 };
@@ -786,17 +796,19 @@ export function InfoDisplayDialog({
                             {renderModifierValue(bonus)}
                           </div>
                            {isExpanded && skillDef?.description && (
-                            <div className="mt-1 pl-4 border-l border-border/30 ml-[calc(0.5rem+1px)]">
-                                <div className="text-xs text-muted-foreground prose prose-sm dark:prose-invert max-w-none bg-muted/20 p-2 rounded-md"
-                                    dangerouslySetInnerHTML={{ __html: skillDef.description }} />
-                            </div>
+                              <ExpandableDetailWrapper>
+                                <div
+                                  className="text-xs text-muted-foreground prose prose-sm dark:prose-invert max-w-none"
+                                  dangerouslySetInnerHTML={{ __html: skillDef.description }}
+                                />
+                              </ExpandableDetailWrapper>
                            )}
                            {isExpanded && !skillDef?.description && (
-                             <div className="mt-1 pl-4 border-l border-border/30 ml-[calc(0.5rem+1px)]">
-                               <div className="mt-1 pl-4 text-xs text-muted-foreground italic bg-muted/20 p-2 rounded-md">
+                             <ExpandableDetailWrapper>
+                               <div className="mt-1 pl-4 text-xs text-muted-foreground italic">
                                   No description available for this skill.
                                </div>
-                             </div>
+                             </ExpandableDetailWrapper>
                            )}
                         </li>
                        );
@@ -833,7 +845,7 @@ export function InfoDisplayDialog({
                                 {feat.note && <span className="text-xs text-muted-foreground inline-block !no-underline hover:!no-underline">{feat.note}</span>}
                               </Button>
                             {isExpanded && (
-                              <div className="mt-1.5 p-3 rounded-md bg-muted/20 border border-border/30">
+                               <ExpandableDetailWrapper>
                                 <FeatDetailContent
                                   featId={feat.featId}
                                   character={character}
@@ -841,7 +853,7 @@ export function InfoDisplayDialog({
                                   allSkills={SKILL_DEFINITIONS}
                                   customSkills={customSkillDefinitions}
                                 />
-                              </div>
+                              </ExpandableDetailWrapper>
                             )}
                           </li>
                         )})}
@@ -901,7 +913,7 @@ export function InfoDisplayDialog({
                             </Button>
                         </div>
                         {isExpanded && (
-                           <div className="mt-1.5 p-3 rounded-md bg-muted/20 border border-border/30">
+                           <ExpandableDetailWrapper>
                               <FeatDetailContent
                                 featId={featId}
                                 character={character}
@@ -909,7 +921,7 @@ export function InfoDisplayDialog({
                                 allSkills={SKILL_DEFINITIONS}
                                 customSkills={customSkillDefinitions}
                               />
-                            </div>
+                            </ExpandableDetailWrapper>
                         )}
                       </li>
                     )})}
@@ -994,5 +1006,3 @@ interface DerivedDialogData {
   grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
   grappleDamageBreakdown?: GrappleDamageBreakdownDetails;
 }
-
-    
