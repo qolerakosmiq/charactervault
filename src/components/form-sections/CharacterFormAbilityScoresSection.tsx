@@ -14,7 +14,16 @@ import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog'
 import { AbilityScorePointBuyDialog } from '@/components/AbilityScorePointBuyDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 
-const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+
+const ABILITY_DISPLAY_NAMES_FULL: Record<Exclude<AbilityName, 'none'>, string> = {
+  strength: 'Strength',
+  dexterity: 'Dexterity',
+  constitution: 'Constitution',
+  intelligence: 'Intelligence',
+  wisdom: 'Wisdom',
+  charisma: 'Charisma',
+};
 
 interface CharacterFormAbilityScoresSectionProps {
   baseAbilityScores: AbilityScores;
@@ -52,7 +61,7 @@ export function CharacterFormAbilityScoresSection({
     const parsed = parseFloat(rawPointBuyBudgetFromStore);
     numericPointBuyBudget = !isNaN(parsed) ? parsed : 25;
   } else {
-    numericPointBuyBudget = 25; // Default if store value is invalid or not string/number
+    numericPointBuyBudget = 25; 
   }
   const pointBuyBudget = numericPointBuyBudget;
 
@@ -88,77 +97,68 @@ export function CharacterFormAbilityScoresSection({
             )}
           </div>
         </CardHeader>
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-            {abilityNames.map(ability => {
+        <CardContent className="pt-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+            {abilityKeys.map(ability => {
               const baseScore = baseAbilityScores[ability];
-              const baseModifier = calculateAbilityModifier(baseScore);
               const tempCustomMod = abilityScoreTempCustomModifiers?.[ability] ?? 0;
+              
               const actualScoreData = detailedAbilityScores ? detailedAbilityScores[ability] : null;
-              const actualModifier = actualScoreData ? calculateAbilityModifier(actualScoreData.finalScore) : baseModifier + tempCustomMod;
+              const totalScore = actualScoreData ? actualScoreData.finalScore : baseScore + tempCustomMod;
+              const actualModifier = calculateAbilityModifier(totalScore);
+              const abilityDisplayName = ABILITY_DISPLAY_NAMES_FULL[ability];
 
               return (
-                <div key={ability} className="space-y-1 flex flex-col items-center">
-                  <Label htmlFor={ability} className="capitalize text-sm font-semibold">
-                    {ability.substring(0, 3).toUpperCase()}
+                <div key={ability} className="flex flex-col items-center space-y-1.5 p-3 border rounded-md bg-card shadow-sm">
+                  <Label htmlFor={`base-score-${ability}`} className="text-center text-md font-medium">
+                    {ability.substring(0, 3).toUpperCase()} 
+                    <span className="block text-xs font-normal text-muted-foreground">({abilityDisplayName})</span>
                   </Label>
-                  <p className="text-xs text-muted-foreground capitalize mb-0.5">
-                    {ability}
-                  </p>
-                  <NumberSpinnerInput
-                    id={ability}
-                    value={baseScore}
-                    onChange={(newValue) => onBaseAbilityScoreChange(ability, newValue)}
-                    min={1}
-                    inputClassName="flex-1 h-8 text-base text-center"
-                    buttonSize="icon"
-                    buttonClassName="h-8 w-8"
-                    className="w-full justify-center"
-                  />
-                  <p className="text-center text-sm mt-1">
-                    <span className="text-accent">Modifier: </span>
-                    <span className={cn("font-bold", baseModifier > 0 && "text-emerald-500", baseModifier < 0 && "text-destructive", baseModifier === 0 && "text-accent")}>
-                      {baseModifier >= 0 ? '+' : ''}{baseModifier}
-                    </span>
-                  </p>
+
+                  <div className="flex items-baseline justify-center space-x-1 mb-1">
+                    <span className="text-3xl font-bold text-accent">{totalScore}</span>
+                    <span className="text-xl text-accent">({actualModifier >= 0 ? '+' : ''}{actualModifier})</span>
+                    {actualScoreData && (
+                       <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5"
+                        onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
+                      >
+                        <Info className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                  </div>
                   
-                  <div className="mt-1 w-full">
-                    <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block mb-0.5">Custom Temp Mod</Label>
+                  <div className="w-full space-y-0.5">
+                    <Label htmlFor={`base-score-${ability}`} className="text-xs text-muted-foreground text-center block">Base</Label>
+                    <NumberSpinnerInput
+                      id={`base-score-${ability}`}
+                      value={baseScore}
+                      onChange={(newValue) => onBaseAbilityScoreChange(ability, newValue)}
+                      min={1}
+                      inputClassName="h-9 text-base text-center"
+                      buttonSize="icon"
+                      buttonClassName="h-9 w-9"
+                      className="w-full justify-center"
+                    />
+                  </div>
+                  
+                  <div className="w-full space-y-0.5 pt-1">
+                    <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">Temp Mod</Label>
                     <NumberSpinnerInput
                       id={`temp-mod-${ability}`}
                       value={tempCustomMod}
                       onChange={(newValue) => onAbilityScoreTempCustomModifierChange(ability, newValue)}
                       min={-20}
                       max={20}
-                      inputClassName="flex-1 h-8 text-base text-center"
+                      inputClassName="h-9 text-base text-center"
                       buttonSize="icon"
-                      buttonClassName="h-8 w-8"
+                      buttonClassName="h-9 w-9"
                       className="w-full justify-center"
                     />
                   </div>
-
-                  {actualScoreData && (
-                    <div className="text-center text-sm mt-1.5 flex items-center justify-center gap-1">
-                      <span className="text-accent">Actual: </span>
-                      <span className={cn(
-                        "font-bold",
-                        actualModifier > 0 && "text-emerald-500",
-                        actualModifier < 0 && "text-destructive",
-                        actualModifier === 0 && "text-accent"
-                      )}>
-                        {actualModifier >= 0 ? '+' : ''}{actualModifier}
-                      </span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-5 w-5 p-0 text-muted-foreground hover:text-primary"
-                        onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
-                      >
-                        <Info className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -184,3 +184,4 @@ export function CharacterFormAbilityScoresSection({
     </>
   );
 }
+
