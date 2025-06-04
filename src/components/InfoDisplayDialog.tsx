@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -919,9 +918,9 @@ export function InfoDisplayDialog({
                         const isExpanded = expandedItems.has(uniqueKey);
                         return (
                         <li key={uniqueKey}>
-                          <div className="flex items-start text-foreground">
+                          <div className="flex items-baseline gap-x-2 text-foreground">
                             {levelAcquired !== undefined && (
-                              <Badge variant="outline" className="text-xs font-normal h-5 mr-2 mt-[1px] whitespace-nowrap self-start">
+                              <Badge variant="outline" className="text-xs font-normal h-5 whitespace-nowrap">
                                 Level {levelAcquired}
                               </Badge>
                             )}
@@ -1035,5 +1034,4 @@ interface DerivedDialogData {
   grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
   grappleDamageBreakdown?: GrappleDamageBreakdownDetails;
 }
-
 
