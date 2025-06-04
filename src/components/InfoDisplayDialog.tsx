@@ -416,8 +416,7 @@ export function InfoDisplayDialog({
     } else { 
         colorClass = zeroColor;
     }
-    const prefix = numValue > 0 ? '+' : (numValue === 0 ? '' : '');
-    if (value === 0 && !isTotal) return <span className={cn("font-bold", colorClass)}>0</span>;
+    const prefix = numValue >= 0 ? '+' : (numValue === 0 ? '' : '');
     return <span className={cn("font-bold", colorClass)}>{prefix}{numValue}</span>;
   };
 
@@ -442,7 +441,7 @@ export function InfoDisplayDialog({
   
   const sectionHeadingClass = "text-md font-semibold mb-2 text-primary";
 
-  const sectionHeading = abilityScoreBreakdown || skillModifierBreakdown || resistanceBreakdown || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || (detailsList && (contentType?.type === 'acBreakdown' || contentType?.type === 'class')) ? "Calculation:" : "Details:";
+  const sectionHeading = abilityScoreBreakdown || skillModifierBreakdown || resistanceBreakdown || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || (detailsList && (contentType?.type === 'acBreakdown' || contentType?.type === 'class')) ? "Calculation" : "Details:";
   const hasAnyBonusSection = abilityModifiers?.length || skillBonuses?.length || grantedFeats?.length || bonusFeatSlots !== undefined;
   
   let hasRenderedContentBlock = false;
@@ -629,24 +628,24 @@ export function InfoDisplayDialog({
                   <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
-                      <span>Base Score:</span>
+                      <span>Base Score</span>
                       <span className="font-bold">{abilityScoreBreakdown.base}</span>
                     </div>
                     {abilityScoreBreakdown.components.map((comp, index) => (
                       comp.value !== 0 && (
                         <div key={index} className="flex justify-between">
-                          <span>{comp.source}:</span>
+                          <span>{comp.source}</span>
                           {renderModifierValue(comp.value)}
                         </div>
                       )
                     ))}
                     <Separator className="my-3" />
                     <div className="flex justify-between text-base">
-                      <span className="font-semibold">Final Score:</span>
+                      <span className="font-semibold">Final Score</span>
                       <span className="font-bold text-accent">{abilityScoreBreakdown.finalScore}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="font-semibold">Final Modifier:</span>
+                      <span className="font-semibold">Final Modifier</span>
                       {renderModifierValue(calculateAbilityModifier(abilityScoreBreakdown.finalScore))}
                     </div>
                   </div>
@@ -667,50 +666,51 @@ export function InfoDisplayDialog({
                       return (
                         <div className="flex justify-between">
                           <span>
-                            Key Ability ({displayName.abbr}{'\u00A0'}
-                            <span className="text-xs text-muted-foreground">({displayName.full})</span>)
+                            Key Ability
+                            {" "}
+                            <span className="text-muted-foreground">({displayName.full})</span>
                           </span>
                           {renderModifierValue(skillModifierBreakdown.keyAbilityModifier)}
                         </div>
                       );
                     })()}
                     <div className="flex justify-between">
-                      <span>Ranks:</span>
+                      <span>Ranks</span>
                       {renderModifierValue(skillModifierBreakdown.ranks)}
                     </div>
                     {skillModifierBreakdown.sizeSpecificBonus !== 0 && (
                       <div className="flex justify-between">
-                        <span>Size Modifier:</span>
+                        <span>Size Modifier</span>
                         {renderModifierValue(skillModifierBreakdown.sizeSpecificBonus)}
                       </div>
                     )}
                     {skillModifierBreakdown.synergyBonus !== 0 && (
                       <div className="flex justify-between">
-                        <span>Synergy Bonus:</span>
+                        <span>Synergy Bonus</span>
                         {renderModifierValue(skillModifierBreakdown.synergyBonus)}
                       </div>
                     )}
                     {skillModifierBreakdown.featBonus !== 0 && (
                       <div className="flex justify-between">
-                        <span>Feat Bonus:</span>
+                        <span>Feat Bonus</span>
                         {renderModifierValue(skillModifierBreakdown.featBonus)}
                       </div>
                     )}
                     {skillModifierBreakdown.racialBonus !== 0 && (
                       <div className="flex justify-between">
-                        <span>Racial Bonus:</span>
+                        <span>Racial Bonus</span>
                         {renderModifierValue(skillModifierBreakdown.racialBonus)}
                       </div>
                     )}
                     {skillModifierBreakdown.miscModifier !== 0 && (
                       <div className="flex justify-between">
-                        <span>Misc Modifier:</span>
+                        <span>Misc Modifier</span>
                         {renderModifierValue(skillModifierBreakdown.miscModifier)}
                       </div>
                     )}
                     <Separator className="my-2" />
                     <div className="flex justify-between text-base">
-                      <span className="font-semibold">Total Bonus:</span>
+                      <span className="font-semibold">Total Bonus</span>
                       {renderModifierValue(skillModifierBreakdown.totalBonus, undefined, undefined, undefined, "text-accent", true)}
                     </div>
                   </div>
@@ -774,7 +774,8 @@ export function InfoDisplayDialog({
                         return (
                           <li key={ability} className="flex justify-between text-foreground">
                             <span>
-                              {displayName.abbr}{'\u00A0'}
+                              {displayName.abbr}
+                              {" "}
                               <span className="text-xs text-muted-foreground">({displayName.full})</span>
                             </span>
                             {renderModifierValue(change)}
