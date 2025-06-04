@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type {
   Character,
   CharacterClass,
@@ -119,11 +119,11 @@ export function CharacterFormCoreInfoSection({
       <CardContent className="space-y-6 pt-6">
         {/* Name and Race */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <Label htmlFor="name">Name</Label>
             <Input id="name" name="name" value={characterData.name} onChange={handleInputChange} />
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <Label htmlFor="race">Race</Label>
             <div className="flex items-center gap-2">
               <div className="flex-grow">
@@ -190,7 +190,7 @@ export function CharacterFormCoreInfoSection({
 
         {/* Class and Alignment */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-           <div className="space-y-1">
+           <div className="space-y-1.5">
             <Label htmlFor="className">Class</Label>
             <div className="flex items-center gap-2">
               <div className="flex-grow">
@@ -226,7 +226,7 @@ export function CharacterFormCoreInfoSection({
               </div>
             )}
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <Label htmlFor="alignment">Alignment</Label>
             <div className="flex items-center gap-2">
               <div className="flex-grow">
@@ -247,7 +247,7 @@ export function CharacterFormCoreInfoSection({
 
         {/* Deity */}
          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <Label htmlFor="deity">Deity</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
@@ -274,20 +274,20 @@ export function CharacterFormCoreInfoSection({
 
         {/* Age, Gender, Size */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-          <div className="space-y-1">
-            <Label htmlFor="age">Age</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="age" className="inline-block w-full text-center">Age</Label>
             <NumberSpinnerInput
               id="age"
               value={characterData.age}
               onChange={(newValue) => onFieldChange('age', newValue)}
               min={currentMinAgeForInput}
               max={1000} // A reasonable upper limit for age
-              inputClassName="w-full h-10 text-base" 
+              inputClassName="w-full h-10 text-base text-center" 
               buttonClassName="h-10 w-10"
               buttonSize="icon"
             />
             {ageEffectsDetails && (ageEffectsDetails.categoryName !== 'Adult' || ageEffectsDetails.effects.length > 0) && (
-              <div className="flex flex-wrap items-center gap-1 pt-[6px] ml-1">
+              <div className="flex flex-wrap items-center justify-center gap-1 pt-[6px] ml-1">
                 <Badge
                   variant="secondary"
                   className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground"
@@ -323,7 +323,7 @@ export function CharacterFormCoreInfoSection({
               </div>
             )}
             </div>
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <Label htmlFor="gender">Gender</Label>
             <ComboboxPrimitive
               options={GENDERS}
@@ -335,7 +335,7 @@ export function CharacterFormCoreInfoSection({
               isEditable={true}
             />
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <Label htmlFor="size">Size</Label>
             <Select name="size" value={characterData.size} onValueChange={(value) => handleSelectChange('size', value as CharacterSize)}>
               <SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger>
