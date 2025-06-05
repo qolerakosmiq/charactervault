@@ -631,7 +631,8 @@ export function calculateSpeedBreakdown(
   character: Pick<Character, 'race' | 'size' | 'classes' | 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed' | 'armorSpeedPenalty' | 'loadSpeedPenalty'>,
   DND_RACES: readonly DndRaceOption[],
   DND_CLASSES: readonly DndClassOption[],
-  SIZES: readonly CharacterSizeObject[]
+  SIZES: readonly CharacterSizeObject[],
+  uiStrings: Record<string, string>
 ): SpeedBreakdownDetails {
   const components: { source: string; value: number | string }[] = [];
   let currentTotal = 0;
@@ -690,10 +691,17 @@ export function calculateSpeedBreakdown(
     }
   }
   
-  const speedLabel = speedType.charAt(0).toUpperCase() + speedType.slice(1) + " Speed";
+  const speedTypeToLabelKey: Record<SpeedType, string> = {
+    land: 'speedLabelLand',
+    burrow: 'speedLabelBurrow',
+    climb: 'speedLabelClimb',
+    fly: 'speedLabelFly',
+    swim: 'speedLabelSwim',
+  };
+  const speedName = uiStrings[speedTypeToLabelKey[speedType]] || speedType.charAt(0).toUpperCase() + speedType.slice(1);
 
   return {
-    name: speedLabel,
+    name: speedName,
     components,
     total: Math.max(0, currentTotal), // Speed cannot be negative
   };
@@ -721,6 +729,7 @@ export * from './character-core';
 // For example, if SIZES or ALIGNMENTS were truly static and not i18n, they could be re-exported.
 // However, given the current setup, they are i18n-dependent and sourced via useI18n.
 // export { SIZES, ALIGNMENTS } from './character-core'; // Example, but likely not applicable now
+
 
 
 

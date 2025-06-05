@@ -464,8 +464,8 @@ export function InfoDisplayDialog({
         break;
       }
       case 'speedBreakdown': {
-        const speedBreakdownDetails = calculateSpeedBreakdown(contentType.speedType, character, DND_RACES, DND_CLASSES, SIZES);
-        const speedNameString = speedBreakdownDetails.name.replace(" Speed", "").replace(" Vitesse","");
+        const speedBreakdownDetails = calculateSpeedBreakdown(contentType.speedType, character, DND_RACES, DND_CLASSES, SIZES, UI_STRINGS);
+        const speedNameString = speedBreakdownDetails.name; // Name is now already translated (e.g., "Land", "Sol")
         data = {
           title: (UI_STRINGS.infoDialogTitleSpeedBreakdown || "{speedName} Breakdown").replace("{speedName}", speedNameString),
           speedBreakdown: speedBreakdownDetails,
@@ -559,6 +559,105 @@ export function InfoDisplayDialog({
                   dangerouslySetInnerHTML={{ __html: htmlContent }}
                 />
                 {markContentRendered()}
+              </>
+            )}
+            
+            {hasAnyBonusSection && (contentType?.type === 'race' || contentType?.type === 'class') && (
+                 <>
+                    {renderSeparatorIfNeeded()}
+                    <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogListHeadingDetails || "Details"}</h3>
+                    {markContentRendered()}
+                 </>
+            )}
+
+            {abilityModifiers && abilityModifiers.length > 0 && (
+              <>
+                <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments || "Ability Score Adjustments"}</h4>
+                <div className="space-y-0.5 text-sm mb-2">
+                  {abilityModifiers.map(mod => (
+                    <div key={mod.ability} className="flex justify-between">
+                      <span>{translations.ABILITY_LABELS.find(al => al.value === mod.ability)?.label || mod.ability}:</span>
+                      {renderModifierValue(mod.change)}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+            {skillBonuses && skillBonuses.length > 0 && (
+              <>
+                <h4 className="text-sm font-medium text-muted-foreground mb-1 mt-2">{UI_STRINGS.infoDialogRacialSkillBonuses || "Racial Skill Bonuses"}</h4>
+                <div className="space-y-0.5 text-sm mb-2">
+                  {skillBonuses.map(bonus => (
+                    <div key={bonus.skillId} className="flex justify-between">
+                      <span>{bonus.skillName}:</span>
+                      {renderModifierValue(bonus.bonus)}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+            {speeds && Object.keys(speeds).length > 0 && (
+              <>
+                <h4 className="text-sm font-medium text-muted-foreground mb-1 mt-2">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</h4>
+                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm mb-2">
+                  {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
+                    .map(([type, speedVal]) => {
+                    const speedTypeKey = `speedLabel${type.charAt(0).toUpperCase() + type.slice(1)}` as keyof typeof UI_STRINGS;
+                    const speedName = UI_STRINGS[speedTypeKey] || type;
+                    return (
+                      <div key={type} className="flex justify-between">
+                        <span>{speedName}:</span>
+                        <span className="font-semibold">{speedVal} {UI_STRINGS.speedUnit || "ft."}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+            {bonusFeatSlots !== undefined && bonusFeatSlots > 0 && (
+              <>
+                <h4 className="text-sm font-medium text-muted-foreground mb-1 mt-2">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</h4>
+                <p className="text-sm">{renderModifierValue(bonusFeatSlots)}</p>
+              </>
+            )}
+            {grantedFeats && grantedFeats.length > 0 && (
+              <>
+                <h4 className="text-sm font-medium text-muted-foreground mb-1 mt-2">{UI_STRINGS.infoDialogClassFeaturesAndFeats || "Class Features & Granted Feats"}</h4>
+                <ul className="list-none space-y-2 text-sm">
+                  {grantedFeats.map(feat => (
+                    <li key={feat.featId + (feat.note || '')} className="border-b border-border/30 pb-1 last:border-b-0">
+                      <div className="flex justify-between items-center">
+                          <span className="font-semibold">{feat.name}</span>
+                          <Button
+                            type="button"
+                            variant="link"
+                            size="sm"
+                            className="h-auto p-0 text-xs text-primary/80 hover:text-primary"
+                            onClick={() => toggleExpanded(feat.featId + (feat.note || ''))}
+                          >
+                            {expandedItems.has(feat.featId + (feat.note || '')) ? (UI_STRINGS.infoDialogCollapseLink || "Collapse") : (UI_STRINGS.infoDialogExpandLink || "Expand")}
+                          </Button>
+                      </div>
+                      {feat.note && <p className="text-xs text-muted-foreground italic">({feat.note})</p>}
+                      {expandedItems.has(feat.featId + (feat.note || '')) && (
+                        <ExpandableDetailWrapper>
+                            <FeatDetailContent
+                                featId={feat.featId}
+                                character={character}
+                                allFeats={allCombinedFeatDefinitions}
+                                allPredefinedSkills={translations.SKILL_DEFINITIONS}
+                                allCustomSkills={customSkillDefinitions}
+                                allClasses={translations.DND_CLASSES}
+                                allRaces={translations.DND_RACES}
+                                abilityLabels={translations.ABILITY_LABELS}
+                                alignmentPrereqOptions={translations.ALIGNMENT_PREREQUISITE_OPTIONS}
+                                uiStrings={UI_STRINGS}
+                            />
+                        </ExpandableDetailWrapper>
+                      )}
+                    </li>
+                  ))}
+                </ul>
               </>
             )}
 
@@ -843,8 +942,8 @@ export function InfoDisplayDialog({
                     })}
                     <Separator className="my-2" />
                     <div className="flex justify-between text-base">
-                      <span className="font-semibold">{(UI_STRINGS.infoDialogSpeedTotalPrefixLabel || "Total")} {speedBreakdown.name.replace(" Speed", "").replace(" Vitesse","")}:</span>
-                      <span className="font-bold text-accent">{speedBreakdown.total} ft.</span>
+                      <span className="font-semibold">{(UI_STRINGS.infoDialogSpeedTotalPrefixLabel || "Total")} {speedBreakdown.name}:</span>
+                      <span className="font-bold text-accent">{speedBreakdown.total} {UI_STRINGS.speedUnit || "ft."}</span>
                     </div>
                   </div>
                 </div>
@@ -950,4 +1049,5 @@ interface SkillModifierBreakdownDetails {
   miscModifier: number;
   totalBonus: number;
 }
+
 
