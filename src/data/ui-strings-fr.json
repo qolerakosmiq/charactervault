@@ -189,6 +189,7 @@
     "featSelectionDialogLoadingDescription": "Chargement des informations sur les dons...",
     "featSelectionDialogCancelButton": "Annuler",
     "prereqBabLabel": "BBA",
-    "prereqSkillRanksLabel": "Rangs"
+    "prereqSkillRanksLabel": "Rangs",
+    "prereqCasterLevelLabel": "Niv. de lanceur de sorts"
   }
 }

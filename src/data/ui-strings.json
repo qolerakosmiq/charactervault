@@ -189,7 +189,7 @@
     "featSelectionDialogLoadingDescription": "Loading feat information...",
     "featSelectionDialogCancelButton": "Cancel",
     "prereqBabLabel": "BAB",
-    "prereqSkillRanksLabel": "Ranks"
+    "prereqSkillRanksLabel": "Ranks",
+    "prereqCasterLevelLabel": "Caster Level"
   }
 }
-

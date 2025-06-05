@@ -453,7 +453,8 @@ export function checkFeatPrerequisites(
       }
     });
     const isMet = calculatedCharacterCasterLevel >= prerequisites.casterLevel;
-    messages.push({ text: `Caster Level ${prerequisites.casterLevel}`, isMet, orderKey: 'casterLevel', originalText: `Caster Level` });
+    const casterLevelLabel = uiStrings.prereqCasterLevelLabel || 'Caster Level';
+    messages.push({ text: `${casterLevelLabel} ${prerequisites.casterLevel}`, isMet, orderKey: 'casterLevel', originalText: casterLevelLabel });
   }
 
   if (prerequisites.abilities) {
@@ -712,4 +713,5 @@ export * from './character-core';
 // For example, if SIZES or ALIGNMENTS were truly static and not i18n, they could be re-exported.
 // However, given the current setup, they are i18n-dependent and sourced via useI18n.
 // export { SIZES, ALIGNMENTS } from './character-core'; // Example, but likely not applicable now
+
 
