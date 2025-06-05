@@ -204,7 +204,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         {label}
                       </span>
                     </div>
-                    <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-center space-x-1">
                       <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
                         {totalValue}
                       </p>
@@ -212,7 +212,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
+                        className="h-6 w-6 text-muted-foreground hover:text-foreground"
                         onClick={() => handleTriggerResistanceInfoDialog(field)}
                       >
                         <Info className="h-4 w-4" />
@@ -253,7 +253,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                           {label} {unit && `(${unit})`}
                         </span>
                       </div>
-                    <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-center space-x-1">
                       <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
                         {totalValue}
                       </p>
@@ -261,7 +261,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
+                        className="h-6 w-6 text-muted-foreground hover:text-foreground"
                         onClick={() => handleTriggerResistanceInfoDialog(field)}
                       >
                         <Info className="h-4 w-4" />
@@ -321,7 +321,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
 
                 <div className="space-y-3 border md:border-l md:border-t-0 p-4 rounded-md md:pl-6">
                   <Label className="text-md font-medium">{UI_STRINGS.resistancesPanelAddCustomDrLabel}</Label>
-                  <div className="space-y-1 w-fit">
+                  <div className="w-fit space-y-1">
                       <Label htmlFor="form-dr-value" className="text-xs text-center block">{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
                       <NumberSpinnerInput
                       id="form-dr-value"
@@ -331,6 +331,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                       inputClassName="h-9 text-sm w-20"
                       buttonClassName="h-9 w-9"
                       buttonSize="sm"
+                      className="justify-center"
                       />
                   </div>
                    <div className="space-y-1">
