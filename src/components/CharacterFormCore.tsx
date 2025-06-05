@@ -667,7 +667,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     <>
       <form onSubmit={handleSubmit} className="space-y-8">
         <CharacterFormCoreInfoSection
-          character={{
+          characterData={{
             name: character.name,
             race: character.race,
             alignment: character.alignment,
@@ -748,14 +748,13 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
         />
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
            <SavingThrowsPanel
               character={{
                 savingThrows: character.savingThrows,
                 classes: character.classes,
-                // abilityScores: character.abilityScores, // Base scores if needed, but actual is preferred
               }}
-              abilityScores={actualAbilityScoresForSavesAndSkills} // Pass calculated scores
+              abilityScores={actualAbilityScoresForSavesAndSkills} 
               onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
           />
           <ArmorClassPanel 
@@ -769,11 +768,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             character={character}
             onCharacterUpdate={handleCharacterFieldUpdate}
             onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog}
-            onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
+            onOpenAcBreakdownDialog={onOpenAcBreakdownDialog}
         />
 
         <ResistancesPanel
-          characterData={{ // This component was already using a Pick-like structure
+          characterData={{ 
             fireResistance: character.fireResistance,
             coldResistance: character.coldResistance,
             acidResistance: character.acidResistance,
