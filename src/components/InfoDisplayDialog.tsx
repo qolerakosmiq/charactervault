@@ -1031,30 +1031,31 @@ export function InfoDisplayDialog({
                         const isExpanded = expandedItems.has(uniqueKey);
                         return (
                         <li key={uniqueKey}>
-                          <div className="flex items-center gap-x-2 text-foreground">
+                          <div className="flex items-start gap-x-2 text-foreground"> {/* items-start for badge alignment */}
                             {levelAcquired !== undefined && (
-                              <Badge variant="outline" className="text-xs font-normal h-5 whitespace-nowrap shrink-0">
+                              <Badge variant="outline" className="text-xs font-normal h-5 whitespace-nowrap shrink-0 mt-[1px]"> {/* mt-[1px] for badge alignment */}
                                 {translations.UI_STRINGS.levelLabel || "Level"} {levelAcquired}
                               </Badge>
                             )}
-                            <Button
-                                variant="link"
-                                size="sm"
-                                onClick={() => toggleExpanded(uniqueKey)}
-                                className={cn(
-                                  "p-0 h-auto text-sm font-normal text-left justify-start text-foreground flex-grow no-underline hover:no-underline items-baseline break-words",
-                                  { "flex-1": !levelAcquired } 
+                            <div className="flex-grow min-w-0"> {/* Wrapper for title and note */}
+                              <Button
+                                  variant="link"
+                                  size="sm"
+                                  onClick={() => toggleExpanded(uniqueKey)}
+                                  className={cn(
+                                    "p-0 h-auto text-sm font-normal text-left justify-start text-foreground no-underline hover:no-underline items-baseline break-words w-full"
+                                  )}
+                                  aria-expanded={isExpanded}
+                                >
+                                  {name}
+                                </Button>
+                                {note && (
+                                  <p className="text-xs text-muted-foreground mt-0.5"> {/* Removed ml-2 pl-1 */}
+                                    {note}
+                                  </p>
                                 )}
-                                aria-expanded={isExpanded}
-                              >
-                                {name}
-                              </Button>
+                            </div>
                           </div>
-                          {note && (
-                            <p className="text-xs text-muted-foreground mt-0.5 ml-2 pl-1">
-                              {note}
-                            </p>
-                          )}
                           {isExpanded && translations && (
                             <ExpandableDetailWrapper>
                               <FeatDetailContent
