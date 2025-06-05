@@ -65,8 +65,6 @@ export function SkillsFormSection({
   const characterRace = character.race as DndRaceId;
   const characterSize = character.size as CharacterSize;
   const selectedFeats = character.feats;
-  // Base ability scores from character object, if needed for display or other non-calculation logic
-  // const baseAbilityScores = character.abilityScores; 
 
   const firstClass = characterClasses[0];
   const characterLevel = firstClass?.level || 1;
@@ -206,12 +204,13 @@ export function SkillsFormSection({
         </div>
 
         <div className="space-y-1 -mx-1">
-          <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
+          <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
             <span className="text-center w-10">Class?</span>
             <span className="pl-1">Skill</span>
             <span className="text-center w-10">Total</span>
             <span className="text-center w-10">Key</span>
-            <span className="text-center w-10">Mod</span>
+            <span className="text-center w-12">Ability<br/>Mod</span>
+            <span className="text-center w-12">Misc<br/>Mod</span>
             <span className="text-center w-32">Ranks</span>
             <span className="text-center w-12">Cost</span>
             <span className="text-center w-10">Max</span>
@@ -229,15 +228,17 @@ export function SkillsFormSection({
             const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats, allFeatDefinitions);
             const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, allPredefinedSkillDefinitions);
             const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skill.id, characterSize);
-
-            const totalDisplayedModifier = baseAbilityMod + synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus;
-            const totalBonus = (skill.ranks || 0) + totalDisplayedModifier + (skill.miscModifier || 0);
+            
+            const calculatedMiscModifier = synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus;
+            // The skill.miscModifier is the user-editable one, which is NOT directly edited in this form section, but still contributes to total.
+            const totalBonus = (skill.ranks || 0) + baseAbilityMod + calculatedMiscModifier + (skill.miscModifier || 0);
+            
             const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
             const skillCostDisplay = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 2;
             const currentStepForInput = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 0.5;
 
             return (
-              <div key={skill.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">
+              <div key={skill.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">
                 <div className="flex justify-center w-10">
                   <Checkbox
                     id={`skill_class_${skill.id}`}
@@ -291,7 +292,8 @@ export function SkillsFormSection({
                 </div>
                 <span className="font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
                 <span className="text-sm text-muted-foreground text-center w-10">{keyAbilityDisplay}</span>
-                <span className="text-sm text-center w-10">{totalDisplayedModifier >= 0 ? '+' : ''}{totalDisplayedModifier}</span>
+                <span className="text-sm text-center w-12">{baseAbilityMod >= 0 ? '+' : ''}{baseAbilityMod}</span>
+                <span className="text-sm text-center w-12">{calculatedMiscModifier >= 0 ? '+' : ''}{calculatedMiscModifier}</span>
                 <div className="w-32 flex justify-center">
                   <NumberSpinnerInput
                     id={`skill_ranks_${skill.id}`}
@@ -320,3 +322,4 @@ export function SkillsFormSection({
     </>
   );
 }
+
