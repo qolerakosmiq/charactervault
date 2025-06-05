@@ -226,7 +226,7 @@ export function SkillsFormSection({
       </Card>
     );
   }
-  const { DND_CLASSES, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES, SIZES } = translations;
+  const { DND_CLASSES, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES, SIZES, UI_STRINGS } = translations;
 
   return (
     <>
@@ -235,9 +235,9 @@ export function SkillsFormSection({
         <div className="flex items-center space-x-3">
           <ScrollText className="h-8 w-8 text-primary" />
           <div>
-            <CardTitle className="text-2xl font-serif">Skills</CardTitle>
+            <CardTitle className="text-2xl font-serif">{UI_STRINGS.skillsPanelTitle || "Skills"}</CardTitle>
             <CardDescription>
-              Invest points in your character's abilities.
+              {UI_STRINGS.skillsPanelDescription || "Invest points in your character's abilities."}
             </CardDescription>
           </div>
         </div>
@@ -246,10 +246,10 @@ export function SkillsFormSection({
         <div className="mb-4 p-3 border rounded-md bg-muted/30">
           <div className="flex justify-between items-center">
             <p className="text-sm font-medium">
-              Skill Points Available: <span className="text-lg font-bold text-primary">{totalSkillPointsAvailable}</span>
+              {UI_STRINGS.skillPointsAvailableLabel || "Skill Points Available:"} <span className="text-lg font-bold text-primary">{totalSkillPointsAvailable}</span>
             </p>
             <p className="text-sm font-medium">
-              Skill Points Left: <span className={cn(
+              {UI_STRINGS.skillPointsLeftLabel || "Skill Points Left:"} <span className={cn(
                 "text-lg font-bold",
                 skillPointsLeft > 0 && "text-emerald-500",
                 skillPointsLeft < 0 && "text-destructive",
@@ -261,31 +261,31 @@ export function SkillsFormSection({
              {firstClass?.className && classLabel ? (
                 <>
                   <p>
-                    ({classLabel} Base <Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
-                    {' + '}Intelligence Modifier <Badge variant="outline" className={badgeClassName}>{intelligenceModifier}</Badge>
+                    ({(UI_STRINGS.skillPointFormulaClassBaseLabel || "{classLabel} Base").replace("{classLabel}", classLabel)} <Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
+                    {' + '} {UI_STRINGS.skillPointFormulaIntModLabel || "Intelligence Modifier"} <Badge variant="outline" className={badgeClassName}>{intelligenceModifier}</Badge>
                     {(racialBonusSkillPoints || 0) !== 0 && (
                         <>
-                        {' + '}Racial Modifier <Badge variant="outline" className={badgeClassName}>{racialBonusSkillPoints || 0}</Badge>
+                        {' + '} {UI_STRINGS.skillPointFormulaRacialModLabel || "Racial Modifier"} <Badge variant="outline" className={badgeClassName}>{racialBonusSkillPoints || 0}</Badge>
                         </>
                     )}
-                    , Minimum 1) × <Badge variant="outline" className={badgeClassName}>4</Badge> First Level
+                    {UI_STRINGS.skillPointFormulaMinOneLabel || ", Minimum 1"}) × <Badge variant="outline" className={badgeClassName}>4</Badge> {UI_STRINGS.skillPointFormulaFirstLevelFactor || "First Level"}
                     {' = '} <span className="font-bold text-primary">{pointsForFirstLevel}</span>
                   </p>
                   <p>
-                    + ({classLabel} Base <Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
-                    {' + '}Intelligence Modifier <Badge variant="outline" className={badgeClassName}>{intelligenceModifier}</Badge>
+                    + ({(UI_STRINGS.skillPointFormulaClassBaseLabel || "{classLabel} Base").replace("{classLabel}", classLabel)} <Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
+                    {' + '} {UI_STRINGS.skillPointFormulaIntModLabel || "Intelligence Modifier"} <Badge variant="outline" className={badgeClassName}>{intelligenceModifier}</Badge>
                     {(racialBonusSkillPoints || 0) !== 0 && (
                         <>
-                        {' + '}Racial Modifier <Badge variant="outline" className={badgeClassName}>{racialBonusSkillPoints || 0}</Badge>
+                        {' + '} {UI_STRINGS.skillPointFormulaRacialModLabel || "Racial Modifier"} <Badge variant="outline" className={badgeClassName}>{racialBonusSkillPoints || 0}</Badge>
                         </>
                     )}
-                    , Minimum 1) × <Badge variant="outline" className={badgeClassName}>{characterLevel > 1 ? (characterLevel -1) : 0}</Badge> Level Progression
+                    {UI_STRINGS.skillPointFormulaMinOneLabel || ", Minimum 1"}) × <Badge variant="outline" className={badgeClassName}>{characterLevel > 1 ? (characterLevel -1) : 0}</Badge> {UI_STRINGS.skillPointFormulaLevelProgressionFactor || "Level Progression"}
                     {' = '} <span className="font-bold text-primary">{pointsFromLevelProgression}</span>
                   </p>
                 </>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Select a class to see available skill points.
+                  {UI_STRINGS.skillPointFormulaSelectClassPrompt || "Select a class to see available skill points."}
                 </p>
               )}
            </div>
@@ -294,15 +294,15 @@ export function SkillsFormSection({
           <div className="space-y-1 min-w-[680px]"> {/* Adjusted min-width */}
             {/* Header Row */}
             <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
-              <span className="text-center w-10">Class?</span>
-              <span className="pl-1">Skill</span>
-              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: "Skill<br/>Mod" }} />
-              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: "Key<br/>Ability" }} />
-              <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: "Ability<br/>Mod" }} />
-              <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: "Misc<br/>Mod" }} />
-              <span className="text-center w-32">Ranks</span>
-              <span className="text-center w-12">Cost</span>
-              <span className="text-center w-10">Max</span>
+              <span className="text-center w-10">{UI_STRINGS.skillsTableHeaderClassLabel || "Class?"}</span>
+              <span className="pl-1">{UI_STRINGS.skillsTableHeaderSkillLabel || "Skill"}</span>
+              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderSkillModLabel || "Skill<br/>Mod" }} />
+              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderKeyAbilityLabel || "Key<br/>Ability" }} />
+              <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderAbilityModLabel || "Ability<br/>Mod" }} />
+              <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderMiscModLabel || "Misc<br/>Mod" }} />
+              <span className="text-center w-32">{UI_STRINGS.skillsTableHeaderRanksLabel || "Ranks"}</span>
+              <span className="text-center w-12">{UI_STRINGS.skillsTableHeaderCostLabel || "Cost"}</span>
+              <span className="text-center w-10">{UI_STRINGS.skillsTableHeaderMaxLabel || "Max"}</span>
             </div>
 
             {skillsForDisplay.map(skill => {
@@ -344,7 +344,7 @@ export function SkillsFormSection({
                           size="icon"
                           className="h-5 w-5 mr-1 text-muted-foreground hover:text-foreground"
                           onClick={() => handleTriggerSkillInfoDialog(skill.id)}
-                          aria-label={`Info for ${skill.name}`}
+                          aria-label={(UI_STRINGS.skillsTableTooltipInfoForSkill || "Info for {skillName}").replace("{skillName}", skill.name)}
                         >
                           <Info className="h-3 w-3" />
                         </Button>
@@ -365,13 +365,13 @@ export function SkillsFormSection({
                                 size="icon"
                                 className="h-5 w-5 text-muted-foreground hover:text-foreground"
                                 onClick={() => handleOpenEditDialog(skill)}
-                                aria-label={`Edit custom skill definition ${skill.name}`}
+                                aria-label={(UI_STRINGS.skillsTableTooltipEditCustom || "Edit Custom Skill Definition").replace("{skillName}", skill.name)}
                               >
                                 <Pencil className="h-3 w-3" />
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent side="top" className="p-1 text-xs">
-                              <p>Edit Custom Skill Definition</p>
+                              <p>{UI_STRINGS.skillsTableTooltipEditCustom || "Edit Custom Skill Definition"}</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -412,3 +412,4 @@ export function SkillsFormSection({
   );
 }
 
+    

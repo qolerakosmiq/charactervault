@@ -143,8 +143,30 @@
     "hairLabel": "Hair",
     "hairPlaceholder": "e.g., Raven Black, Tousled",
     "skinLabel": "Skin",
-    "skinPlaceholder": "e.g., Fair, Tanned"
+    "skinPlaceholder": "e.g., Fair, Tanned",
+    "skillsPanelTitle": "Skills",
+    "skillsPanelDescription": "Invest points in your character's abilities.",
+    "skillPointsAvailableLabel": "Skill Points Available:",
+    "skillPointsLeftLabel": "Skill Points Left:",
+    "skillPointFormulaClassBaseLabel": "{classLabel} Base",
+    "skillPointFormulaIntModLabel": "Intelligence Modifier",
+    "skillPointFormulaRacialModLabel": "Racial Modifier",
+    "skillPointFormulaMinOneLabel": ", Minimum 1",
+    "skillPointFormulaFirstLevelFactor": "First Level",
+    "skillPointFormulaLevelProgressionFactor": "Level Progression",
+    "skillPointFormulaSelectClassPrompt": "Select a class to see available skill points.",
+    "skillsTableHeaderClassLabel": "Class?",
+    "skillsTableHeaderSkillLabel": "Skill",
+    "skillsTableHeaderSkillModLabel": "Skill<br/>Mod",
+    "skillsTableHeaderKeyAbilityLabel": "Key<br/>Ability",
+    "skillsTableHeaderAbilityModLabel": "Ability<br/>Mod",
+    "skillsTableHeaderMiscModLabel": "Misc<br/>Mod",
+    "skillsTableHeaderRanksLabel": "Ranks",
+    "skillsTableHeaderCostLabel": "Cost",
+    "skillsTableHeaderMaxLabel": "Max",
+    "skillsTableTooltipMaxRanks": "Max Ranks: {maxRanksValue}",
+    "skillsTableTooltipEditCustom": "Edit Custom Skill Definition",
+    "skillsTableTooltipInfoForSkill": "Info for {skillName}"
   }
 }
-
     

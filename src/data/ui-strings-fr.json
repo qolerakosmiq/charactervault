@@ -143,8 +143,30 @@
     "hairLabel": "Cheveux",
     "hairPlaceholder": "Ex : Noir Corbeau, Ébouriffés",
     "skinLabel": "Peau",
-    "skinPlaceholder": "Ex : Claire, Hâlée"
+    "skinPlaceholder": "Ex : Claire, Hâlée",
+    "skillsPanelTitle": "Compétences",
+    "skillsPanelDescription": "Investissez des points dans les capacités de votre personnage.",
+    "skillPointsAvailableLabel": "Points de Compétence Disponibles :",
+    "skillPointsLeftLabel": "Points de Compétence Restants :",
+    "skillPointFormulaClassBaseLabel": "Base ({classLabel})",
+    "skillPointFormulaIntModLabel": "Modificateur d'Intelligence",
+    "skillPointFormulaRacialModLabel": "Modificateur Racial",
+    "skillPointFormulaMinOneLabel": ", Minimum 1",
+    "skillPointFormulaFirstLevelFactor": "Premier Niveau",
+    "skillPointFormulaLevelProgressionFactor": "Progression de Niveau",
+    "skillPointFormulaSelectClassPrompt": "Choisissez une classe pour voir les points de compétence disponibles.",
+    "skillsTableHeaderClassLabel": "Classe ?",
+    "skillsTableHeaderSkillLabel": "Compétence",
+    "skillsTableHeaderSkillModLabel": "Mod.<br/>Comp.",
+    "skillsTableHeaderKeyAbilityLabel": "Carac.<br/>Clé",
+    "skillsTableHeaderAbilityModLabel": "Mod.<br/>Carac.",
+    "skillsTableHeaderMiscModLabel": "Mod.<br/>Div.",
+    "skillsTableHeaderRanksLabel": "Rangs",
+    "skillsTableHeaderCostLabel": "Coût",
+    "skillsTableHeaderMaxLabel": "Max",
+    "skillsTableTooltipMaxRanks": "Rangs Max : {maxRanksValue}",
+    "skillsTableTooltipEditCustom": "Modifier la Définition de Compétence Personnalisée",
+    "skillsTableTooltipInfoForSkill": "Infos pour {skillName}"
   }
 }
-
     
