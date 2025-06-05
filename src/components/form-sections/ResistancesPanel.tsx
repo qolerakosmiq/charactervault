@@ -204,7 +204,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         {label}
                       </span>
                     </div>
-                    <div className="flex items-center justify-center space-x-1">
+                    <div className="flex items-center justify-center space-x-0.5">
                       <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
                         {totalValue}
                       </p>
@@ -253,7 +253,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                           {label} {unit && `(${unit})`}
                         </span>
                       </div>
-                    <div className="flex items-center justify-center space-x-1">
+                    <div className="flex items-center justify-center space-x-0.5">
                       <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
                         {totalValue}
                       </p>
