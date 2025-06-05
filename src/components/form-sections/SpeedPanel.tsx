@@ -27,20 +27,6 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
     onCharacterUpdate(fieldKey, newValue);
   };
 
-  const speedTypesConfig: Array<{
-    type: SpeedType;
-    labelKey: keyof typeof translations.UI_STRINGS; // Key for translations
-    Icon: React.ElementType;
-    fieldKey: keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>;
-  }> = translations ? [
-    { type: 'land', labelKey: 'speedLabelLand', Icon: Wind, fieldKey: 'landSpeed' },
-    { type: 'burrow', labelKey: 'speedLabelBurrow', Icon: Shell, fieldKey: 'burrowSpeed' },
-    { type: 'climb', labelKey: 'speedLabelClimb', Icon: MoveVertical, fieldKey: 'climbSpeed' },
-    { type: 'fly', labelKey: 'speedLabelFly', Icon: Feather, fieldKey: 'flySpeed' },
-    { type: 'swim', labelKey: 'speedLabelSwim', Icon: Waves, fieldKey: 'swimSpeed' },
-  ] : [];
-
-
   if (translationsLoading || !translations) {
     return (
       <Card>
@@ -52,7 +38,7 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
           <CardDescription>{translations?.UI_STRINGS.speedPanelDescription || "Manage your character's various movement capabilities and penalties."}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {translationsLoading ? (
+          {translationsLoading || !translations ? ( // Double check for safety, though outer guard should catch
             <div className="flex justify-center items-center py-10">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.speedPanelLoadingSpeeds || "Loading speed details..."}</p>
@@ -90,6 +76,19 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
   const { DND_RACES, DND_CLASSES, SIZES, UI_STRINGS } = translations;
   const speedUnit = UI_STRINGS.speedUnit || "ft.";
 
+  const speedTypesConfig: Array<{
+    type: SpeedType;
+    labelKey: keyof typeof UI_STRINGS; // Now UI_STRINGS is guaranteed to be an object
+    Icon: React.ElementType;
+    fieldKey: keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>;
+  }> = [
+    { type: 'land', labelKey: 'speedLabelLand', Icon: Wind, fieldKey: 'landSpeed' },
+    { type: 'burrow', labelKey: 'speedLabelBurrow', Icon: Shell, fieldKey: 'burrowSpeed' },
+    { type: 'climb', labelKey: 'speedLabelClimb', Icon: MoveVertical, fieldKey: 'climbSpeed' },
+    { type: 'fly', labelKey: 'speedLabelFly', Icon: Feather, fieldKey: 'flySpeed' },
+    { type: 'swim', labelKey: 'speedLabelSwim', Icon: Waves, fieldKey: 'swimSpeed' },
+  ];
+
   return (
     <Card>
       <CardHeader>
@@ -102,9 +101,9 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {speedTypesConfig.map(({ type, labelKey, Icon, fieldKey }) => {
-            const speedData = calculateSpeedBreakdown(type, character, DND_RACES, DND_CLASSES, SIZES);
+            const speedData = calculateSpeedBreakdown(type, character, DND_RACES, DND_CLASSES, SIZES, UI_STRINGS);
             const currentMiscMod = character[fieldKey]?.miscModifier || 0;
-            const label = UI_STRINGS[labelKey as keyof typeof UI_STRINGS] || type;
+            const label = UI_STRINGS[labelKey] || type;
 
             return (
               <div key={type} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
@@ -197,6 +196,3 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
     </Card>
   );
 }
-
-
-    
