@@ -169,6 +169,31 @@ export function InfoDisplayDialog({
   }, [customSkillDefinitions]);
 
 
+  const renderModifierValue = (value: number | string,
+    positiveColor = "text-emerald-500",
+    negativeColor = "text-destructive",
+    zeroColor = "text-muted-foreground",
+    accentColor = "text-accent",
+    isTotal = false
+  ) => {
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(numValue)) {
+      return <span className="font-bold">{value}</span>;
+    }
+    let colorClass = zeroColor;
+     if (isTotal) {
+        colorClass = accentColor;
+    } else if (numValue > 0) {
+        colorClass = positiveColor;
+    } else if (numValue < 0) {
+        colorClass = negativeColor;
+    } else { 
+        colorClass = zeroColor;
+    }
+    const prefix = numValue > 0 ? '+' : (numValue === 0 ? '' : ''); // Only add '+' for positive numbers
+    return <span className={cn("font-bold", colorClass)}>{prefix}{numValue}</span>;
+  };
+
   const derivedData = React.useMemo((): DerivedDialogData | null => {
     if (!isOpen || !contentType || !character) {
       return null;
@@ -182,9 +207,9 @@ export function InfoDisplayDialog({
         const raceData = DND_RACES.find(r => r.value === raceId);
         const qualities = getRaceSpecialQualities(raceId);
         const racialSkillPointBonus = getRaceSkillPointsBonusPerLevel(raceId);
-        const details: Array<{ label: string; value: string | number; isBold?: boolean }> = [];
+        const details: Array<{ label: string; value: string | number | React.ReactNode; isBold?: boolean }> = [];
         if (racialSkillPointBonus > 0) {
-          details.push({ label: "Bonus Skill Points/Level", value: `+${racialSkillPointBonus}`, isBold: true });
+          details.push({ label: "Bonus Skill Points Per Level", value: renderModifierValue(racialSkillPointBonus), isBold: true });
         }
         
         let raceBonusFeatSlotsValue = qualities.bonusFeatSlots;
@@ -274,7 +299,7 @@ export function InfoDisplayDialog({
             htmlContent: skillDef.description,
             skillModifierBreakdown: {
               skillName: skillDef.name,
-              keyAbilityName: skillDef.keyAbility !== 'none' ? skillDef.keyAbility : undefined,
+              keyAbilityName: skillDef.keyAbility !== 'none' ? ABILITY_DISPLAY_NAMES[skillDef.keyAbility as Exclude<AbilityName, 'none'>].abbr : undefined,
               keyAbilityModifier: keyAbilityMod,
               ranks: skillInstance.ranks || 0,
               synergyBonus, featBonus, racialBonus, sizeSpecificBonus: sizeBonus,
@@ -393,33 +418,8 @@ export function InfoDisplayDialog({
         break;
     }
     return data;
-  }, [isOpen, contentType, character, customFeatDefinitions, customSkillDefinitions, allCombinedFeatDefinitions, allCombinedSkillDefinitionsForDisplay]);
+  }, [isOpen, contentType, character, customFeatDefinitions, customSkillDefinitions, allCombinedFeatDefinitions, allCombinedSkillDefinitionsForDisplay, renderModifierValue]); // Added renderModifierValue to dependencies
 
-
-  const renderModifierValue = (value: number | string,
-    positiveColor = "text-emerald-500",
-    negativeColor = "text-destructive",
-    zeroColor = "text-muted-foreground",
-    accentColor = "text-accent",
-    isTotal = false
-  ) => {
-    const numValue = typeof value === 'string' ? parseFloat(value) : value;
-    if (isNaN(numValue)) {
-      return <span className="font-bold">{value}</span>;
-    }
-    let colorClass = zeroColor;
-     if (isTotal) {
-        colorClass = accentColor;
-    } else if (numValue > 0) {
-        colorClass = positiveColor;
-    } else if (numValue < 0) {
-        colorClass = negativeColor;
-    } else { 
-        colorClass = zeroColor;
-    }
-    const prefix = numValue >= 0 ? '+' : (numValue === 0 ? '' : '');
-    return <span className={cn("font-bold", colorClass)}>{prefix}{numValue}</span>;
-  };
 
   if (!isOpen || !derivedData) return null;
 
@@ -661,20 +661,16 @@ export function InfoDisplayDialog({
               <div>
                   <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                   <div className="space-y-1 text-sm">
-                    {skillModifierBreakdown.keyAbilityName && (() => {
-                      const keyAbility = skillModifierBreakdown.keyAbilityName as Exclude<AbilityName, 'none'>;
-                      const displayName = ABILITY_DISPLAY_NAMES[keyAbility];
-                      return (
+                    {skillModifierBreakdown.keyAbilityName && (
                         <div className="flex justify-between">
                           <span>
                             Key Ability
                             {" "}
-                            <span className="text-muted-foreground">({displayName.abbr})</span>
+                            <span className="text-muted-foreground">({skillModifierBreakdown.keyAbilityName})</span>
                           </span>
                           {renderModifierValue(skillModifierBreakdown.keyAbilityModifier)}
                         </div>
-                      );
-                    })()}
+                    )}
                     <div className="flex justify-between">
                       <span>Ranks</span>
                       {renderModifierValue(skillModifierBreakdown.ranks)}
@@ -756,7 +752,7 @@ export function InfoDisplayDialog({
                       {detailsList!.map((detail, index) => (
                         <div key={index} className="flex justify-between text-sm mb-0.5">
                         <span className="text-foreground">{detail.label}</span>
-                        <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value}</span>
+                        <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value as React.ReactNode}</span>
                         </div>
                       ))}
                     </div>
@@ -864,7 +860,7 @@ export function InfoDisplayDialog({
                                   aria-expanded={isExpanded}
                                 >
                                   {feat.name}
-                                  {feat.note && (<span className="text-xs text-muted-foreground">{feat.note}</span>)}
+                                  {feat.note && (<span className="text-xs text-muted-foreground ml-1">({feat.note})</span>)}
                                 </Button>
                               {isExpanded && (
                                 <ExpandableDetailWrapper>
@@ -902,7 +898,7 @@ export function InfoDisplayDialog({
                     {detailsList!.map((detail, index) => (
                         <div key={index} className="flex justify-between text-sm mb-0.5">
                         <span className="text-foreground">{detail.label}</span>
-                        <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value}</span>
+                        <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value as React.ReactNode}</span>
                         </div>
                     ))}
                   </div>
@@ -937,7 +933,7 @@ export function InfoDisplayDialog({
                                 aria-expanded={isExpanded}
                               >
                                 {name}
-                                {note && <span className="text-xs text-muted-foreground">{note}</span>}
+                                {note && <span className="text-xs text-muted-foreground ml-1">({note})</span>}
                               </Button>
                           </div>
                           {isExpanded && (
@@ -968,8 +964,8 @@ export function InfoDisplayDialog({
                 <div>
                   <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
                   {detailsList!.filter(detail => detail.label.toLowerCase() !== 'total').map((detail, index) => {
-                      const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value))))
-                          ? renderModifierValue(detail.value, undefined, undefined, undefined, (detail.label.toLowerCase() === "total" ? "text-accent" : undefined), detail.label.toLowerCase() === "total")
+                      const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string))))
+                          ? renderModifierValue(detail.value as number | string, undefined, undefined, undefined, (detail.label.toLowerCase() === "total" ? "text-accent" : undefined), detail.label.toLowerCase() === "total")
                           : detail.value;
                       
                       let labelContent: React.ReactNode;
@@ -991,7 +987,7 @@ export function InfoDisplayDialog({
                       return (
                           <div key={index} className="flex justify-between text-sm mb-0.5">
                           {labelContent}
-                          <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{valueToRender}</span>
+                          <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{valueToRender as React.ReactNode}</span>
                           </div>
                       );
                   })}
@@ -1001,7 +997,7 @@ export function InfoDisplayDialog({
                       <Separator className="my-2" />
                       <div className="flex justify-between text-base">
                         <span className="font-semibold">Total</span>
-                        {renderModifierValue(detailsList!.find(detail => detail.label.toLowerCase() === 'total')!.value, undefined, undefined, undefined, "text-accent", true)}
+                        {renderModifierValue(detailsList!.find(detail => detail.label.toLowerCase() === 'total')!.value as number | string, undefined, undefined, undefined, "text-accent", true)}
                       </div>
                     </>
                   )}
@@ -1030,7 +1026,7 @@ interface DerivedDialogData {
   abilityScoreBreakdown?: AbilityScoreBreakdown;
   skillModifierBreakdown?: SkillModifierBreakdownDetails;
   resistanceBreakdown?: ResistanceBreakdownDetails;
-  detailsList?: Array<{ label: string; value: string | number; isBold?: boolean }>;
+  detailsList?: Array<{ label: string; value: string | number | React.ReactNode; isBold?: boolean }>;
   babBreakdown?: BabBreakdownDetails;
   initiativeBreakdown?: InitiativeBreakdownDetails;
   grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
@@ -1039,7 +1035,7 @@ interface DerivedDialogData {
 
 interface SkillModifierBreakdownDetails {
   skillName: string;
-  keyAbilityName?: string;
+  keyAbilityName?: string; // Will store the abbreviation (e.g. "STR")
   keyAbilityModifier: number;
   ranks: number;
   synergyBonus: number;
@@ -1049,4 +1045,5 @@ interface SkillModifierBreakdownDetails {
   miscModifier: number;
   totalBonus: number;
 }
+
 
