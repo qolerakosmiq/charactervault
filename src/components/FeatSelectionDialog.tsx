@@ -122,7 +122,7 @@ export function FeatSelectionDialog({
                       )}
                       {prereqMessages.length > 0 ? (
                         <p className="text-xs mt-0.5 whitespace-normal">
-                          <strong className="font-semibold text-muted-foreground">Prerequisites:</strong>{' '}
+                          <strong className="font-bold text-muted-foreground">Prerequisites:</strong>{' '}
                           {prereqMessages.map((msg, index) => (
                             <React.Fragment key={index}>
                               <span className={cn("text-xs", !msg.isMet ? 'text-destructive' : 'text-muted-foreground/80')}
@@ -143,7 +143,7 @@ export function FeatSelectionDialog({
             </CommandList>
           </ScrollArea>
         </Command>
-        <DialogFooter className="mt-4 pt-4">
+        <DialogFooter className="mt-4 pt-0"> {/* Removed pt-4 and border-t */}
           <Button variant="outline" onClick={() => { onOpenChange(false); }}>
             Cancel
           </Button>
