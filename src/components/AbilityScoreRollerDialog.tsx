@@ -142,12 +142,12 @@ export function AbilityScoreRollerDialog({
           <DialogHeader>
             <DialogTitle className="flex items-center font-serif">
               <Dices className="mr-2 h-6 w-6 text-primary" />
-              Loading...
+              {translations?.UI_STRINGS.rollerDialogTitleLoading || "Roll Initial Ability Scores"}
             </DialogTitle>
           </DialogHeader>
           <div className="flex justify-center items-center py-10">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">Loading options...</p>
+            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingOptionsTitle || "Loading options..."}</p>
           </div>
           <DialogFooter className="mt-6">
             <Button variant="outline" onClick={() => onOpenChange(false)} disabled>Cancel</Button>
@@ -245,3 +245,5 @@ export function AbilityScoreRollerDialog({
     </Dialog>
   );
 }
+
+    

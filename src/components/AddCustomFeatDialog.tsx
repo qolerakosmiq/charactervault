@@ -273,12 +273,12 @@ export function AddCustomFeatDialog({
                 <DialogHeader>
                     <DialogTitle className="flex items-center font-serif">
                         {isEditing ? <Pencil className="mr-2 h-6 w-6 text-primary" /> : <PlusCircle className="mr-2 h-6 w-6 text-primary" />}
-                        Loading Feat Definition...
+                        {translations?.UI_STRINGS.loadingFeatDefinitionTitle || "Loading Feat Definition..."}
                     </DialogTitle>
                 </DialogHeader>
                 <div className="flex justify-center items-center py-10">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    <p className="ml-3 text-muted-foreground">Loading options...</p>
+                    <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingOptionsTitle || "Loading options..."}</p>
                 </div>
                 <DialogFooter className="mt-2 pt-4 border-t">
                     <Button variant="outline" onClick={() => onOpenChange(false)} type="button" disabled>
@@ -545,3 +545,12 @@ export function AddCustomFeatDialog({
   );
 }
 
+interface PrerequisiteListItem {
+  tempId: string;
+  type: 'ability' | 'skill' | 'feat';
+  itemId: string;
+  itemLabel: string;
+  value?: number;
+}
+
+    

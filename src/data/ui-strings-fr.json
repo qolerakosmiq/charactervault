@@ -272,6 +272,27 @@
     "dmSettingsPointBuyBudgetLabel": "Budget d'Achat par Points pour les Caractéristiques",
     "dmSettingsPointBuyBudgetDescription": "Par défaut, 25 points pour l'achat par points standard de D&D 3.5.",
     "dmSettingsAddCustomSkillButton": "Ajouter une Nouvelle Définition de Compétence Personnalisée",
-    "dmSettingsAddCustomFeatButton": "Ajouter une Nouvelle Définition de Don Personnalisé"
+    "dmSettingsAddCustomFeatButton": "Ajouter une Nouvelle Définition de Don Personnalisé",
+    "toastCharacterForgedTitle": "Personnage Forgé !",
+    "toastCharacterForgedDescription": "{characterName} a été créé avec succès.",
+    "dashboardLoadingCharacters": "Chargement des personnages...",
+    "dashboardTitle": "Vos Aventuriers",
+    "dashboardButtonCreateNew": "Créer un Nouveau Personnage",
+    "dashboardImageAltEmptyScroll": "Parchemin vide",
+    "dashboardEmptyStateTitle": "Aucun aventurier pour le moment !",
+    "dashboardEmptyStateDescription": "Votre saga vous attend. Cliquez sur \"Créer un Nouveau Personnage\" pour commencer une épopée.",
+    "dashboardEmptyStateButtonStart": "Commencez Votre Première Aventure",
+    "characterSheetLoadingCharacter": "Chargement de la fiche de personnage...",
+    "characterSheetNotFoundTitle": "Personnage Introuvable",
+    "characterSheetNotFoundDescription": "Le personnage demandé n'existe pas ou n'a pas pu être chargé.",
+    "characterSheetNotFoundBackButton": "Retour au Tableau de Bord",
+    "loadingCharacterDetailsTitle": "Chargement des détails du personnage...",
+    "loadingFeatDefinitionTitle": "Chargement de la définition du don...",
+    "loadingOptionsTitle": "Chargement des options...",
+    "loadingAbilityNamesTitle": "Chargement des noms de caractéristiques...",
+    "pointBuyDialogTitleLoading": "Achat par Points des Caractéristiques",
+    "rollerDialogTitleLoading": "Lancer les Caractéristiques Initiales"
   }
 }
+
+    

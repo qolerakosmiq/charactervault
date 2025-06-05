@@ -272,6 +272,27 @@
     "dmSettingsPointBuyBudgetLabel": "Point Buy Budget for Ability Scores",
     "dmSettingsPointBuyBudgetDescription": "Default is 25 points for standard D&D 3.5 point buy.",
     "dmSettingsAddCustomSkillButton": "Add New Custom Skill Definition",
-    "dmSettingsAddCustomFeatButton": "Add New Custom Feat Definition"
+    "dmSettingsAddCustomFeatButton": "Add New Custom Feat Definition",
+    "toastCharacterForgedTitle": "Character Forged!",
+    "toastCharacterForgedDescription": "{characterName} has been successfully created.",
+    "dashboardLoadingCharacters": "Loading characters...",
+    "dashboardTitle": "Your Adventurers",
+    "dashboardButtonCreateNew": "Create New Character",
+    "dashboardImageAltEmptyScroll": "Empty scroll",
+    "dashboardEmptyStateTitle": "No adventurers yet!",
+    "dashboardEmptyStateDescription": "Your saga awaits. Click \"Create New Character\" to begin an epic journey.",
+    "dashboardEmptyStateButtonStart": "Start Your First Adventure",
+    "characterSheetLoadingCharacter": "Loading character sheet...",
+    "characterSheetNotFoundTitle": "Character Not Found",
+    "characterSheetNotFoundDescription": "The requested character does not exist or could not be loaded.",
+    "characterSheetNotFoundBackButton": "Back to Dashboard",
+    "loadingCharacterDetailsTitle": "Loading Character Details...",
+    "loadingFeatDefinitionTitle": "Loading Feat Definition...",
+    "loadingOptionsTitle": "Loading options...",
+    "loadingAbilityNamesTitle": "Loading ability names...",
+    "pointBuyDialogTitleLoading": "Point Buy Ability Scores",
+    "rollerDialogTitleLoading": "Roll Initial Ability Scores"
   }
 }
+
+    

@@ -329,7 +329,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         }
       }
     }
-  }, [character?.race, character?.age, translations]); // Added character.age to dependencies
+  }, [character?.race, character?.age, translations]); 
 
  React.useEffect(() => {
     if (!character || !translations) return;
@@ -686,15 +686,15 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     onSave(finalCharacterData);
   };
 
-  if (translationsLoading || !translations || !character) {
+  if (translationsLoading || !character || !translations) { // Ensure translations are also loaded
     return (
       <div className="container mx-auto px-4 py-8 space-y-8">
-        <div className="flex items-center space-x-3"> <Skeleton className="h-8 w-8 rounded-full" /> <Skeleton className="h-7 w-1/3" /> </div>
-        <Skeleton className="h-40 w-full" />
-        <Skeleton className="h-64 w-full" />
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-48 w-full" />
-        <div className="flex justify-between mt-12 pt-8 border-t"> <Skeleton className="h-12 w-24" /> <Skeleton className="h-12 w-36" /> </div>
+        <div className="flex justify-center items-center py-10 min-h-[50vh]">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          <p className="ml-4 text-muted-foreground text-lg">
+            {translations?.UI_STRINGS.loadingCharacterDetailsTitle || "Loading Character Details..."}
+          </p>
+        </div>
       </div>
     );
   }
@@ -935,3 +935,5 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
+
+    

@@ -125,12 +125,12 @@ export function AbilityScorePointBuyDialog({
           <DialogHeader>
             <DialogTitle className="flex items-center font-serif">
               <Calculator className="mr-2 h-6 w-6 text-primary" />
-              Point Buy Ability Scores {/* This will be briefly visible before translations load */}
+              {translations?.UI_STRINGS.pointBuyDialogTitleLoading || "Point Buy Ability Scores"}
             </DialogTitle>
           </DialogHeader>
           <div className="flex justify-center items-center py-10">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">Loading ability names...</p> {/* This will be briefly visible */}
+            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingAbilityNamesTitle || "Loading ability names..."}</p>
           </div>
            <DialogFooter className="mt-6 pt-4 border-t">
             <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
