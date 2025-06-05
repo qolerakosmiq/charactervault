@@ -38,7 +38,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
     );
   }
 
-  const { DND_CLASSES, SIZES } = translations;
+  const { DND_CLASSES, SIZES, UI_STRINGS } = translations;
 
   const abilityScores = character.abilityScores || {};
   const classes = character.classes || [];
@@ -82,13 +82,13 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
       <CardHeader>
         <div className="flex items-center space-x-3">
           <Swords className="h-8 w-8 text-primary" />
-          <CardTitle className="text-2xl font-serif">Combat Stats</CardTitle>
+          <CardTitle className="text-2xl font-serif">{UI_STRINGS.combatPanelTitle || "Combat Stats"}</CardTitle>
         </div>
-        <CardDescription>Key offensive and grappling statistics.</CardDescription>
+        <CardDescription>{UI_STRINGS.combatPanelDescription || "Key offensive and grappling statistics."}</CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
         <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
-          <Label htmlFor="bab-display" className="text-md font-medium block">Base Attack Bonus</Label>
+          <Label htmlFor="bab-display" className="text-md font-medium block">{UI_STRINGS.combatPanelBabLabel || "Base Attack Bonus"}</Label>
           <div className="flex items-center justify-center">
             <p id="bab-display" className="text-2xl font-bold text-accent">
               {totalBabWithModifier.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}
@@ -98,7 +98,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
             </Button>
           </div>
           <div className="mt-auto space-y-1">
-            <Label htmlFor="bab-custom-mod" className="text-xs text-muted-foreground block">Custom Modifier</Label>
+            <Label htmlFor="bab-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Custom Modifier"}</Label>
             <div className="flex justify-center">
               <NumberSpinnerInput
                 id="bab-custom-mod"
@@ -113,7 +113,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
         </div>
 
         <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
-          <Label htmlFor="initiative-display" className="text-md font-medium block">Initiative</Label>
+          <Label htmlFor="initiative-display" className="text-md font-medium block">{UI_STRINGS.combatPanelInitiativeLabel || "Initiative"}</Label>
            <div className="flex items-center justify-center">
             <p id="initiative-display" className="text-2xl font-bold text-accent">
               {baseInitiative >= 0 ? '+' : ''}{baseInitiative}
@@ -123,7 +123,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
             </Button>
           </div>
           <div className="mt-auto space-y-1">
-            <Label htmlFor="initiative-custom-mod" className="text-xs text-muted-foreground block">Custom Modifier</Label>
+            <Label htmlFor="initiative-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Custom Modifier"}</Label>
             <div className="flex justify-center">
               <NumberSpinnerInput
                 id="initiative-custom-mod"
@@ -138,7 +138,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
         </div>
         
         <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
-          <Label htmlFor="grapple-mod-display" className="text-md font-medium block">Grapple Modifier</Label>
+          <Label htmlFor="grapple-mod-display" className="text-md font-medium block">{UI_STRINGS.combatPanelGrappleModifierLabel || "Grapple Modifier"}</Label>
           <div className="flex items-center justify-center">
             <p id="grapple-mod-display" className="text-2xl font-bold text-accent">
               {totalGrappleModifier >= 0 ? '+' : ''}{totalGrappleModifier}
@@ -148,7 +148,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
             </Button>
           </div>
           <div className="mt-auto space-y-1">
-            <Label htmlFor="grapple-custom-mod" className="text-xs text-muted-foreground block">Custom Modifier</Label>
+            <Label htmlFor="grapple-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Custom Modifier"}</Label>
             <div className="flex justify-center">
               <NumberSpinnerInput
                 id="grapple-custom-mod"
@@ -163,7 +163,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
         </div>
 
         <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
-            <Label htmlFor="grapple-damage-display" className="text-md font-medium block">Grapple Damage</Label>
+            <Label htmlFor="grapple-damage-display" className="text-md font-medium block">{UI_STRINGS.combatPanelGrappleDamageLabel || "Grapple Damage"}</Label>
             <div className="flex items-center justify-center">
                 <p id="grapple-damage-display" className="text-2xl font-bold text-accent">
                   {displayedGrappleDamageTotal}
@@ -174,7 +174,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
             </div>
             <div className="mt-auto space-y-2">
                 <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground block">Weapon</Label>
+                    <Label className="text-xs text-muted-foreground block">{UI_STRINGS.combatPanelGrappleWeaponLabel || "Weapon"}</Label>
                     <Select 
                         value={character.grappleWeaponChoice}
                         onValueChange={(val) => onCharacterUpdate('grappleWeaponChoice', val)}
@@ -183,12 +183,12 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                             <SelectItem value="unarmed">Unarmed</SelectItem>
+                             <SelectItem value="unarmed">{UI_STRINGS.infoDialogGrappleDmgUnarmedLabel || "Unarmed"}</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
                 <div className="space-y-1">
-                    <Label htmlFor="grapple-damage-custom-mod" className="text-xs text-muted-foreground block">Custom Modifier</Label>
+                    <Label htmlFor="grapple-damage-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Custom Modifier"}</Label>
                     <div className="flex justify-center">
                       <NumberSpinnerInput
                           id="grapple-damage-custom-mod"
@@ -207,3 +207,5 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
     </>
   );
 }
+
+    

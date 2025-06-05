@@ -220,6 +220,15 @@
     "armorPenaltyCardTitle": "Malus d'Armure",
     "armorPenaltyDescriptionFormat": "Malus à la vitesse au sol dû à l'armure portée ({unit}).",
     "loadPenaltyCardTitle": "Malus de Charge",
-    "loadPenaltyDescriptionFormat": "Malus à la vitesse au sol dû à l'encombrement ({unit})."
+    "loadPenaltyDescriptionFormat": "Malus à la vitesse au sol dû à l'encombrement ({unit}).",
+    "combatPanelTitle": "Statistiques de Combat",
+    "combatPanelDescription": "Statistiques offensives et de lutte clés.",
+    "combatPanelBabLabel": "Bonus de Base à l'Attaque",
+    "combatPanelInitiativeLabel": "Initiative",
+    "combatPanelGrappleModifierLabel": "Modificateur de Lutte",
+    "combatPanelGrappleDamageLabel": "Dégâts de Lutte",
+    "combatPanelGrappleWeaponLabel": "Arme"
   }
 }
+
+    
