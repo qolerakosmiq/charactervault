@@ -191,7 +191,13 @@
     "prereqBabLabel": "Bonus de base à l'attaque",
     "prereqSkillRanksLabel": "Rang",
     "prereqCasterLevelLabel": "Niv. de lanceur de sorts",
-    "skillRankPrereqFormat": "{skillName} {ranksLabel} {ranksValue}"
+    "skillRankPrereqFormat": "{skillName} {ranksLabel} {ranksValue}",
+    "savingThrowsPanelTitle": "Jets de Sauvegarde",
+    "savingThrowsPanelLoading": "Chargement des détails des jets de sauvegarde...",
+    "savingThrowsRowLabelTotal": "Total",
+    "savingThrowsRowLabelBase": "Base",
+    "savingThrowsRowLabelAbilityModifier": "Mod.<br />Carac.",
+    "savingThrowsRowLabelCustomModifier": "Mod.<br />Perso."
   }
 }
 

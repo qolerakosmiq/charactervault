@@ -191,7 +191,13 @@
     "prereqBabLabel": "Base Attack Bonus",
     "prereqSkillRanksLabel": "Ranks",
     "prereqCasterLevelLabel": "Caster Level",
-    "skillRankPrereqFormat": "{skillName} {ranksValue} {ranksLabel}"
+    "skillRankPrereqFormat": "{skillName} {ranksValue} {ranksLabel}",
+    "savingThrowsPanelTitle": "Saving Throws",
+    "savingThrowsPanelLoading": "Loading saving throw details...",
+    "savingThrowsRowLabelTotal": "Total",
+    "savingThrowsRowLabelBase": "Base",
+    "savingThrowsRowLabelAbilityModifier": "Ability<br />Modifier",
+    "savingThrowsRowLabelCustomModifier": "Custom<br />Modifier"
   }
 }
 

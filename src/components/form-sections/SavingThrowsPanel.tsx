@@ -37,20 +37,24 @@ export function SavingThrowsPanel({
         <CardHeader>
           <div className="flex items-center space-x-3">
             <Zap className="h-8 w-8 text-primary" />
-            <CardTitle className="text-2xl font-serif">Saving Throws</CardTitle>
+            <CardTitle className="text-2xl font-serif">
+              {translations?.UI_STRINGS.savingThrowsPanelTitle || "Saving Throws"}
+            </CardTitle>
           </div>
         </CardHeader>
         <CardContent className="pt-4">
           <div className="flex justify-center items-center py-10">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">Loading saving throw details...</p>
+            <p className="ml-3 text-muted-foreground">
+              {translations?.UI_STRINGS.savingThrowsPanelLoading || "Loading saving throw details..."}
+            </p>
           </div>
         </CardContent>
       </Card>
     );
   }
 
-  const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS } = translations;
+  const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations;
   
   const calculatedBaseSaves = getBaseSaves(characterClasses, DND_CLASSES);
   
@@ -60,7 +64,7 @@ export function SavingThrowsPanel({
     rowKey: string;
   }> = [
     {
-      label: "Total",
+      label: UI_STRINGS.savingThrowsRowLabelTotal || "Total",
       getValue: (saveData, baseSave, abilityMod, total) => (
         <span className={cn("text-lg font-bold", total >= 0 ? "text-accent" : "text-destructive")}>
           {total >= 0 ? '+' : ''}{total}
@@ -69,18 +73,12 @@ export function SavingThrowsPanel({
       rowKey: 'total',
     },
     {
-      label: "Base",
+      label: UI_STRINGS.savingThrowsRowLabelBase || "Base",
       getValue: (saveData, baseSave) => baseSave,
       rowKey: 'base',
     },
     {
-      label: (
-        <>
-          Ability
-          <br />
-          Modifier
-        </>
-      ),
+      label: <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability<br />Modifier" }} />,
       getValue: (saveData, baseSave, abilityMod, total, saveType?: SavingThrowType) => {
         if (!saveType) return abilityMod >= 0 ? `+${abilityMod}` : abilityMod;
         const abilityKey = SAVING_THROW_ABILITIES[saveType];
@@ -96,13 +94,7 @@ export function SavingThrowsPanel({
       rowKey: 'abilityMod',
     },
     {
-      label: (
-        <>
-          Custom
-          <br />
-          Modifier
-        </>
-      ),
+      label: <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsRowLabelCustomModifier || "Custom<br />Modifier" }} />,
       getValue: (saveData, baseSave, abilityMod, total, saveType?: SavingThrowType, onMiscChange?: (type: SavingThrowType, val: number) => void) => (
         <div className="flex justify-center">
           <NumberSpinnerInput
@@ -126,7 +118,7 @@ export function SavingThrowsPanel({
       <CardHeader>
         <div className="flex items-center space-x-3">
           <Zap className="h-8 w-8 text-primary" />
-          <CardTitle className="text-2xl font-serif">Saving Throws</CardTitle>
+          <CardTitle className="text-2xl font-serif">{UI_STRINGS.savingThrowsPanelTitle || "Saving Throws"}</CardTitle>
         </div>
       </CardHeader>
       <CardContent>
@@ -171,3 +163,5 @@ export function SavingThrowsPanel({
     </Card>
   );
 }
+
+    
