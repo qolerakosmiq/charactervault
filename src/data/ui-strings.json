@@ -19,6 +19,7 @@
     "selectDeityPlaceholder": "Select deity",
     "selectGenderPlaceholder": "Select or type gender...",
     "selectSizePlaceholder": "Select size",
-    "hitDiceLabel": "Hit Dice"
+    "hitDiceLabel": "Hit Dice",
+    "levelLabel": "Level"
   }
 }

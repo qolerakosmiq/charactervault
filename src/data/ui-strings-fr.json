@@ -19,6 +19,7 @@
     "selectDeityPlaceholder": "Choisir une divinité",
     "selectGenderPlaceholder": "Choisir ou écrire un genre...",
     "selectSizePlaceholder": "Choisir une taille",
-    "hitDiceLabel": "Dés de Vie"
+    "hitDiceLabel": "Dés de Vie",
+    "levelLabel": "Niveau"
   }
 }

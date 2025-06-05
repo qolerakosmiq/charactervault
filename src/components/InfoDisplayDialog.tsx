@@ -39,7 +39,7 @@ import {
   checkFeatPrerequisites,
   calculateSpeedBreakdown,
   ABILITY_ORDER_INTERNAL,
-  getRaceSkillPointsBonusPerLevel // Added import
+  getRaceSkillPointsBonusPerLevel
 } from '@/types/character';
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
 import { useI18n } from '@/context/I18nProvider';
@@ -1025,16 +1025,16 @@ export function InfoDisplayDialog({
                   {renderSeparatorIfNeeded()}
                   <div>
                     <h3 className={sectionHeadingClass}>Class Features & Granted Feats</h3>
-                    <ul className="space-y-2 text-sm">
+                    <ul className="space-y-1.5 text-sm">
                       {grantedFeats.map(({ featId, name, note, levelAcquired }, index) => {
                         const uniqueKey = `classfeat-${featId}-${index}`;
                         const isExpanded = expandedItems.has(uniqueKey);
                         return (
                         <li key={uniqueKey}>
-                          <div className="flex items-baseline gap-x-2 text-foreground">
+                          <div className="flex items-center gap-x-2 text-foreground">
                             {levelAcquired !== undefined && (
-                              <Badge variant="outline" className="text-xs font-normal h-5 whitespace-nowrap">
-                                Level {levelAcquired}
+                              <Badge variant="outline" className="text-xs font-normal h-5 whitespace-nowrap shrink-0">
+                                {translations.UI_STRINGS.levelLabel || "Level"} {levelAcquired}
                               </Badge>
                             )}
                             <Button
@@ -1042,16 +1042,20 @@ export function InfoDisplayDialog({
                                 size="sm"
                                 onClick={() => toggleExpanded(uniqueKey)}
                                 className={cn(
-                                  "p-0 h-auto text-sm font-normal text-left justify-start text-foreground flex-grow no-underline hover:no-underline items-baseline",
+                                  "p-0 h-auto text-sm font-normal text-left justify-start text-foreground flex-grow no-underline hover:no-underline items-baseline break-words",
                                   { "flex-1": !levelAcquired } 
                                 )}
                                 aria-expanded={isExpanded}
                               >
                                 {name}
-                                {note && <span className="text-xs text-muted-foreground ml-1">({note})</span>}
                               </Button>
                           </div>
-                          {isExpanded && translations &&(
+                          {note && (
+                            <p className="text-xs text-muted-foreground mt-0.5 ml-2 pl-1">
+                              {note}
+                            </p>
+                          )}
+                          {isExpanded && translations && (
                             <ExpandableDetailWrapper>
                               <FeatDetailContent
                                 featId={featId}
