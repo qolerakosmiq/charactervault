@@ -11,14 +11,14 @@ import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Swords, Info } from 'lucide-react';
 import { getAbilityModifierByName, getBab, calculateInitiative, calculateGrapple, getSizeModifierGrapple, getUnarmedGrappleDamage } from '@/lib/dnd-utils';
 import { SIZES, DND_CLASSES } from '@/types/character';
-import { ArmorClassPanel } from './ArmorClassPanel'; // Added import
+// ArmorClassPanel import removed as it's no longer used here directly. It's part of CharacterFormCore layout.
 
 
 interface CombatPanelProps {
   character: Character;
   onCharacterUpdate: (field: keyof Character, value: any) => void;
   onOpenCombatStatInfoDialog: (contentType: InfoDialogContentType) => void;
-  onOpenAcBreakdownDialog?: (acType: 'Normal' | 'Touch' | 'Flat-Footed') => void; // Prop for ArmorClassPanel
+  onOpenAcBreakdownDialog?: (acType: 'Normal' | 'Touch' | 'Flat-Footed') => void; 
 }
 
 export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfoDialog, onOpenAcBreakdownDialog }: CombatPanelProps) {
@@ -186,11 +186,6 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
         </div>
       </CardContent>
     </Card>
-    <ArmorClassPanel
-        character={character}
-        onCharacterUpdate={onCharacterUpdate}
-        onOpenAcBreakdownDialog={onOpenAcBreakdownDialog}
-    />
     </>
   );
 }
