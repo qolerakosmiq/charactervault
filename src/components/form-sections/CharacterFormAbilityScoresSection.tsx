@@ -82,17 +82,17 @@ export function CharacterFormAbilityScoresSection({
     <>
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
             <div className="flex items-center space-x-3">
               <Dices className="h-8 w-8 text-primary" />
               <CardTitle className="text-2xl font-serif">Ability Scores</CardTitle>
             </div>
             {isCreating && (
-              <div className="flex gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)}>
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-3 sm:mt-0">
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto">
                   <Dices className="mr-2 h-4 w-4" /> Roll Scores
                 </Button>
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)}>
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} className="w-full sm:w-auto">
                   <Calculator className="mr-2 h-4 w-4" /> Point Buy
                 </Button>
               </div>
