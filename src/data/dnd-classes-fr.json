@@ -1,0 +1,108 @@
+
+{
+  "DND_CLASSES_DATA": [
+    {
+      "value": "barbarian",
+      "label": "FR: Barbarian",
+      "hitDice": "d12",
+      "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
+      "description": "<p>FR: Barbarians are savage warriors...</p>",
+      "grantedFeats": []
+    },
+    {
+      "value": "bard",
+      "label": "FR: Bard",
+      "hitDice": "d6",
+      "casting": { "type": "full" },
+      "saves": { "fortitude": "poor", "reflex": "good", "will": "good" },
+      "description": "<p>FR: Bards are versatile performers...</p>",
+      "grantedFeats": []
+    },
+    {
+      "value": "cleric",
+      "label": "FR: Cleric",
+      "hitDice": "d8",
+      "casting": { "type": "full" },
+      "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
+      "description": "<p>FR: Clerics are divine agents...</p>",
+      "grantedFeats": []
+    },
+    {
+      "value": "druid",
+      "label": "FR: Druid",
+      "hitDice": "d8",
+      "casting": { "type": "full" },
+      "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
+      "description": "<p>FR: Druids are guardians of the natural world...</p>",
+      "grantedFeats": []
+    },
+    {
+      "value": "fighter",
+      "label": "FR: Fighter",
+      "hitDice": "d10",
+      "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
+      "description": "<p>FR: Fighters are masters of martial combat...</p>",
+      "grantedFeats": []
+    },
+    {
+      "value": "monk",
+      "label": "FR: Monk",
+      "hitDice": "d8",
+      "saves": { "fortitude": "good", "reflex": "good", "will": "good" },
+      "description": "<p>FR: Monks are disciplined warriors...</p>",
+      "grantedFeats": []
+    },
+    {
+      "value": "paladin",
+      "label": "FR: Paladin",
+      "hitDice": "d10",
+      "casting": { "type": "partial", "startsAtLevel": 4, "levelOffset": -3 },
+      "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
+      "description": "<p>FR: Paladins are holy champions...</p>",
+      "grantedFeats": []
+    },
+    {
+      "value": "ranger",
+      "label": "FR: Ranger",
+      "hitDice": "d8",
+      "casting": { "type": "partial", "startsAtLevel": 4, "levelOffset": -3 },
+      "saves": { "fortitude": "good", "reflex": "good", "will": "poor" },
+      "description": "<p>FR: Rangers are skilled hunters...</p>",
+      "grantedFeats": []
+    },
+    {
+      "value": "rogue",
+      "label": "FR: Rogue",
+      "hitDice": "d6",
+      "saves": { "fortitude": "poor", "reflex": "good", "will": "poor" },
+      "description": "<p>FR: Rogues are masters of stealth...</p>",
+      "grantedFeats": []
+    },
+    {
+      "value": "sorcerer",
+      "label": "FR: Sorcerer",
+      "hitDice": "d4",
+      "casting": { "type": "full" },
+      "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
+      "description": "<p>FR: Sorcerers wield arcane magic...</p>",
+      "grantedFeats": []
+    },
+    {
+      "value": "wizard",
+      "label": "FR: Wizard",
+      "hitDice": "d4",
+      "casting": { "type": "full" },
+      "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
+      "description": "<p>FR: Wizards are scholars of the arcane...</p>",
+      "grantedFeats": []
+    },
+    {
+      "value": "soulknife",
+      "label": "FR: Soulknife",
+      "hitDice": "d10",
+      "saves": { "fortitude": "poor", "reflex": "good", "will": "good" },
+      "description": "<p>FR: A soulknife is the warrior ideal...</p>",
+      "grantedFeats": []
+    }
+  ]
+}

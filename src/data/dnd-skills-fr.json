@@ -1,0 +1,30 @@
+
+{
+  "SKILL_DEFINITIONS_DATA": [
+    { "value": "appraise", "label": "FR: Appraise", "keyAbility": "intelligence", "description": "<p>FR: You can estimate the monetary value of an item.</p>" },
+    { "value": "balance", "label": "FR: Balance", "keyAbility": "dexterity", "description": "<p>FR: You can keep your balance when walking on a narrow or treacherous surface.</p>" }
+    // ... Add FR placeholders for all other skills
+  ],
+  "CLASS_SKILLS_DATA": {
+    "barbarian": ["climb", "craft-alchemy", "handle-animal", "intimidate", "jump", "listen", "ride", "survival", "swim"],
+    "bard": ["appraise", "balance", "bluff", "climb", "concentration", "craft-alchemy", "decipher-script", "diplomacy", "disguise", "escape-artist", "gather-information", "hide", "jump", "knowledge-arcana", "knowledge-history", "knowledge-local", "knowledge-nature", "knowledge-nobility-and-royalty", "knowledge-religion", "knowledge-the-planes", "listen", "move-silently", "perform-act", "perform-sing", "sense-motive", "sleight-of-hand", "speak-language", "spellcraft", "swim", "tumble", "use-magic-device"],
+    "cleric": ["concentration", "craft-alchemy", "diplomacy", "heal", "knowledge-arcana", "knowledge-history", "knowledge-religion", "knowledge-the-planes", "spellcraft"],
+    "druid": ["concentration", "craft-alchemy", "diplomacy", "handle-animal", "heal", "knowledge-nature", "listen", "ride", "spellcraft", "spot", "survival", "swim"],
+    "fighter": ["climb", "craft-alchemy", "handle-animal", "intimidate", "jump", "ride", "swim"],
+    "monk": ["balance", "climb", "concentration", "craft-alchemy", "diplomacy", "escape-artist", "hide", "jump", "knowledge-arcana", "knowledge-religion", "listen", "move-silently", "perform-act", "sense-motive", "spot", "swim", "tumble"],
+    "paladin": ["concentration", "craft-alchemy", "diplomacy", "handle-animal", "heal", "knowledge-nobility-and-royalty", "knowledge-religion", "ride", "sense-motive"],
+    "ranger": ["climb", "concentration", "craft-alchemy", "handle-animal", "heal", "hide", "jump", "knowledge-dungeoneering", "knowledge-geography", "knowledge-nature", "listen", "move-silently", "ride", "search", "spot", "survival", "swim", "use-rope"],
+    "rogue": ["appraise", "balance", "bluff", "climb", "craft-alchemy", "decipher-script", "diplomacy", "disable-device", "disguise", "escape-artist", "forgery", "gather-information", "hide", "intimidate", "jump", "knowledge-local", "listen", "move-silently", "open-lock", "perform-act", "search", "sense-motive", "sleight-of-hand", "spot", "swim", "tumble", "use-magic-device", "use-rope"],
+    "sorcerer": ["bluff", "concentration", "craft-alchemy", "knowledge-arcana", "spellcraft"],
+    "wizard": ["concentration", "craft-alchemy", "decipher-script", "knowledge-arcana", "knowledge-architecture-and-engineering", "knowledge-dungeoneering", "knowledge-geography", "knowledge-history", "knowledge-local", "knowledge-nature", "knowledge-nobility-and-royalty", "knowledge-religion", "knowledge-the-planes", "spellcraft"],
+    "soulknife": ["autohypnosis", "climb", "concentration", "craft-alchemy", "hide", "jump", "knowledge-psionics", "listen", "move-silently", "spot", "tumble"]
+  },
+  "CLASS_SKILL_POINTS_BASE_DATA": {
+    "barbarian": 4, "bard": 6, "cleric": 2, "druid": 4, "fighter": 2, "monk": 4, "paladin": 2, "ranger": 6, "rogue": 8, "sorcerer": 2, "wizard": 2, "soulknife": 4
+  },
+  "SKILL_SYNERGIES_DATA": {
+    "bluff": [ {"targetSkill": "diplomacy", "ranksRequired": 5, "bonus": 2}, {"targetSkill": "intimidate", "ranksRequired": 5, "bonus": 2} ],
+    "handle-animal": [ {"targetSkill": "ride", "ranksRequired": 5, "bonus": 2} ],
+    "tumble": [ {"targetSkill": "jump", "ranksRequired": 5, "bonus": 2} ]
+  }
+}

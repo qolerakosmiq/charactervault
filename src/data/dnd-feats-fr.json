@@ -1,0 +1,16 @@
+
+{
+  "DND_FEATS_DATA": [
+    { "value": "acrobatic", "label": "FR: Acrobatic", "description": "<b>FR: Benefit:</b> You get a +2 bonus on all Balance and Jump checks.", "effects": { "skills": { "balance": 2, "jump": 2 } }, "type": "special" },
+    { "value": "agile", "label": "FR: Agile", "description": "<b>FR: Benefit:</b> You get a +2 bonus on all Balance and Escape Artist checks.", "effects": { "skills": { "balance": 2, "escape-artist": 2 } }, "type": "special" }
+    // ... Add FR placeholders for all other feats
+  ],
+  "FEAT_TYPES_DATA": [
+    { "value": "special", "label": "FR: Special" },
+    { "value": "special-ex", "label": "FR: Extraordinary Ability" },
+    { "value": "special-sp", "label": "FR: Spell-Like Ability" },
+    { "value": "special-su", "label": "FR: Supernatural Ability" },
+    { "value": "special-ps", "label": "FR: Psi-Like Ability" },
+    { "value": "special-ex-su", "label": "FR: Extraordinary/Supernatural Ability" }
+  ]
+}

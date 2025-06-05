@@ -1,0 +1,50 @@
+
+{
+  "ALIGNMENTS_DATA": [
+    {
+      "value": "lawful-good",
+      "label": "FR: Lawful Good",
+      "description": "<p>FR: Characters of this alignment believe that an orderly, strong society...</p>"
+    },
+    {
+      "value": "neutral-good",
+      "label": "FR: Neutral Good",
+      "description": "<p>FR: Neutral good characters believe that a balance of forces is important...</p>"
+    },
+    {
+      "value": "chaotic-good",
+      "label": "FR: Chaotic Good",
+      "description": "<p>FR: Chaotic good characters are strong individualists...</p>"
+    },
+    {
+      "value": "lawful-neutral",
+      "label": "FR: Lawful Neutral",
+      "description": "<p>FR: Order and organization are of paramount importance...</p>"
+    },
+    {
+      "value": "true-neutral",
+      "label": "FR: True Neutral",
+      "description": "<p>FR: True neutral characters believe in the ultimate balance of forces...</p>"
+    },
+    {
+      "value": "chaotic-neutral",
+      "label": "FR: Chaotic Neutral",
+      "description": "<p>FR: Chaotic neutral characters believe that there is no order to anything...</p>"
+    },
+    {
+      "value": "lawful-evil",
+      "label": "FR: Lawful Evil",
+      "description": "<p>FR: Lawful evil characters believe in using society and its laws...</p>"
+    },
+    {
+      "value": "neutral-evil",
+      "label": "FR: Neutral Evil",
+      "description": "<p>FR: Neutral evil characters are primarily concerned with themselves...</p>"
+    },
+    {
+      "value": "chaotic-evil",
+      "label": "FR: Chaotic Evil",
+      "description": "<p>FR: Chaotic evil characters are motivated by the desire for personal gain...</p>"
+    }
+  ]
+}

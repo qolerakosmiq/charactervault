@@ -14,18 +14,18 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Calculator } from 'lucide-react';
+import { Calculator, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput'; // Import NumberSpinnerInput
-import { ABILITY_LABELS } from '@/types/character';
+import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
+import { useI18n } from '@/context/I18nProvider'; // Import useI18n
 
 interface AbilityScorePointBuyDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onScoresApplied: (scores: AbilityScores) => void;
-  totalPointsBudget: number | string; // Prop from parent, can be string or number initially
+  totalPointsBudget: number | string;
 }
 
 const ABILITY_ORDER: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
@@ -53,6 +53,8 @@ export function AbilityScorePointBuyDialog({
   onScoresApplied,
   totalPointsBudget,
 }: AbilityScorePointBuyDialogProps) {
+  const { translations, isLoading: translationsLoading } = useI18n();
+
   const [currentScores, setCurrentScores] = React.useState<AbilityScores>(() => {
     const scores: Partial<AbilityScores> = {};
     ABILITY_ORDER.forEach(ability => scores[ability] = DEFAULT_SCORE);
@@ -89,13 +91,11 @@ export function AbilityScorePointBuyDialog({
 
 
   const handleScoreChange = (ability: Exclude<AbilityName, 'none'>, newScore: number) => {
-    // Clamping is handled by NumberSpinnerInput's min/max, but good to double-check
     if (newScore < MIN_SCORE || newScore > MAX_SCORE) return;
 
     const tempScores = { ...currentScores, [ability]: newScore };
     const tempSpent = calculatePointsSpent(tempScores);
 
-    // Allow decrement even if over budget, but not increment if it goes over.
     if (newScore < currentScores[ability] || tempSpent <= safeBudgetForCalculations) {
       setCurrentScores(tempScores);
     }
@@ -106,12 +106,40 @@ export function AbilityScorePointBuyDialog({
       onScoresApplied(currentScores);
       onOpenChange(false);
     } else {
-      // This case should ideally be prevented by disabling the apply button
       console.error("Error: Cannot apply scores, points spent do not match total points or budget is invalid.");
     }
   };
 
-  const isApplyDisabled = pointsRemaining !== 0 || !isValidBudgetProp;
+  const isApplyDisabled = pointsRemaining !== 0 || !isValidBudgetProp || translationsLoading;
+
+  if (translationsLoading || !translations) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-lg md:max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center font-serif">
+              <Calculator className="mr-2 h-6 w-6 text-primary" />
+              Point Buy Ability Scores
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex justify-center items-center py-10">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="ml-3 text-muted-foreground">Loading ability names...</p>
+          </div>
+           <DialogFooter className="mt-6 pt-4 border-t">
+            <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
+              Cancel
+            </Button>
+            <Button disabled type="button">
+              Apply Scores
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+  const { ABILITY_LABELS } = translations;
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -174,10 +202,10 @@ export function AbilityScorePointBuyDialog({
                               max={MAX_SCORE}
                               readOnly={true}
                               isIncrementDisabled={incrementWouldExceedBudget || score >= MAX_SCORE}
-                              inputClassName="w-16 h-10 text-center text-xl" // Adjusted size
-                              buttonClassName="h-10 w-10" // Adjusted button size
-                              buttonSize="icon" // Ensures buttons are icon-sized
-                              className="justify-center" // Center the spinner itself
+                              inputClassName="w-16 h-10 text-center text-xl" 
+                              buttonClassName="h-10 w-10" 
+                              buttonSize="icon" 
+                              className="justify-center" 
                            />
                         </div>
                     </div>
