@@ -867,7 +867,7 @@ export function calculateDetailedAbilityScores(character: Character, globalCusto
     const tempCustomModValue = tempCustomModifiers[ability];
     if (tempCustomModValue !== 0 && tempCustomModValue !== undefined) {
       currentScore += tempCustomModValue;
-      components.push({ source: "Custom Temporary Modifier", value: tempCustomModValue });
+      components.push({ source: "Temporary Modifier", value: tempCustomModValue });
     }
 
     let featTotalMod = 0;
@@ -990,3 +990,4 @@ export interface GrappleDamageBreakdownDetails {
 
 // TODO: Define other specific breakdown detail types (e.g., ACBreakdownDetails, SkillModifierBreakdownDetails)
 // if they need to be distinct from how the dialog currently structures `detailsList`.
+
