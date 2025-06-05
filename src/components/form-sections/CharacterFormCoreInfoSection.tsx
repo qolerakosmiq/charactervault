@@ -259,7 +259,7 @@ export function CharacterFormCoreInfoSection({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
           <div className="space-y-1.5">
-            <Label htmlFor="age" className="inline-block w-full text-center md:text-left">{UI_STRINGS.ageLabel || "Age"}</Label>
+            <Label htmlFor="age" className="inline-block w-full text-center md:text-center">{UI_STRINGS.ageLabel || "Age"}</Label>
             <NumberSpinnerInput 
               id="age" 
               value={characterData?.age || currentMinAgeForInput} 
