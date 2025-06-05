@@ -1,5 +1,4 @@
 
-
 import baseDataJson from '@/data/dnd-base.json';
 import customBaseDataJson from '@/data/custom-base.json';
 import racesDataJson from '@/data/dnd-races.json';
@@ -163,6 +162,11 @@ export interface DamageReductionInstance {
   source?: string; // e.g., "Barbarian Class", "Amulet of Natural Armor"
 }
 
+export interface SpeedDetails {
+  base: number; // Base is determined by race and some class features, not directly set by user here.
+  miscModifier: number;
+}
+
 export interface Character {
   id: string;
   name: string;
@@ -216,6 +220,15 @@ export interface Character {
   powerResistance: ResistanceValue;
   damageReduction: DamageReductionInstance[];
   fortification: ResistanceValue;
+
+  // Speeds
+  landSpeed: SpeedDetails;
+  burrowSpeed: SpeedDetails;
+  climbSpeed: SpeedDetails;
+  flySpeed: SpeedDetails;
+  swimSpeed: SpeedDetails;
+  armorSpeedPenalty: number;
+  loadSpeedPenalty: number;
 }
 
 function mergeArrayData<T extends { value: string }>(base: T[], custom: T[]): T[] {
@@ -237,6 +250,10 @@ const customDefaultSavingThrows = (customBaseDataJson as any).DEFAULT_SAVING_THR
 export const DEFAULT_SAVING_THROWS: SavingThrows = mergeObjectData(baseDefaultSavingThrows, customDefaultSavingThrows);
 
 export const DEFAULT_RESISTANCE_VALUE: ResistanceValue = { base: 0, customMod: 0 };
+
+export const DEFAULT_SPEED_DETAILS: SpeedDetails = { base: 0, miscModifier: 0 };
+export const DEFAULT_SPEED_PENALTIES = { armorSpeedPenalty: 0, loadSpeedPenalty: 0 };
+
 
 const baseSizesData = (baseDataJson as any).SIZES_DATA || [];
 const customSizesData = (customBaseDataJson as any).SIZES_DATA || [];
@@ -279,7 +296,7 @@ const DND_RACE_ABILITY_MODIFIERS_DATA: Readonly<Record<string, Partial<Record<Ex
 
 const baseRaceSkillPointsBonus = (baseDataJson as any).DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA || {};
 const customRaceSkillPointsBonus = (customBaseDataJson as any).DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA || {};
-const DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA: Readonly<Record<string, number>> = mergeObjectData(baseRaceSkillPointsBonus, customRaceSkillPointsBonus);
+export const DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA: Readonly<Record<string, number>> = mergeObjectData(baseRaceSkillPointsBonus, customRaceSkillPointsBonus);
 
 const baseAlignmentsData = (alignmentsDataJson as any).ALIGNMENTS_DATA || [];
 const customAlignmentsDataFile = (customAlignmentsDataJson as any).ALIGNMENTS_DATA || [];
@@ -312,6 +329,7 @@ export type DndRaceOption = {
   bonusFeatSlots?: number;
   racialSkillBonuses?: Record<string, number>; // skillId (value) to bonus
   grantedFeats?: Array<{ featId: string; note?: string; levelAcquired?: number }>;
+  speeds?: Partial<Record<'land' | 'burrow' | 'climb' | 'fly' | 'swim', number>>;
 };
 export type DndRaceId = "human" | "elf" | "dwarf" | "halfling" | "gnome" | "half-elf" | "half-orc" | string;
 const baseRacesData = (racesDataJson as any).DND_RACES_DATA || [];
@@ -459,10 +477,11 @@ export interface RaceSpecialQualities {
   skillBonuses?: Array<{ skillId: string; skillName: string; bonus: number }>;
   grantedFeats?: Array<{ featId: string; name: string; note?: string; levelAcquired?: number }>;
   bonusFeatSlots?: number;
+  speeds?: Partial<Record<'land' | 'burrow' | 'climb' | 'fly' | 'swim', number>>;
 }
 
 export function getRaceSpecialQualities(raceId: DndRaceId | ''): RaceSpecialQualities {
-  if (!raceId) return { abilityEffects: [], skillBonuses: [], grantedFeats: [], bonusFeatSlots: 0 };
+  if (!raceId) return { abilityEffects: [], skillBonuses: [], grantedFeats: [], bonusFeatSlots: 0, speeds: {} };
   const raceData = DND_RACES.find(r => r.value === raceId);
   const abilityModifiers = raceId ? DND_RACE_ABILITY_MODIFIERS_DATA[raceId as DndRaceId] : undefined;
   const appliedAbilityEffects: Array<{ ability: Exclude<AbilityName, 'none'>; change: number }> = [];
@@ -501,6 +520,7 @@ export function getRaceSpecialQualities(raceId: DndRaceId | ''): RaceSpecialQual
     skillBonuses: appliedSkillBonuses.length > 0 ? appliedSkillBonuses : undefined,
     grantedFeats: formattedGrantedFeats.length > 0 ? formattedGrantedFeats : undefined,
     bonusFeatSlots: raceData?.bonusFeatSlots || 0,
+    speeds: raceData?.speeds || {},
   };
 }
 
@@ -937,6 +957,8 @@ export type ResistanceFieldKeySheet = Exclude<keyof Pick<Character,
   'spellResistance' | 'powerResistance' | 'fortification'
 >, 'damageReduction'>;
 
+export type SpeedType = 'land' | 'burrow' | 'climb' | 'fly' | 'swim';
+
 export type InfoDialogContentType =
   | { type: 'race' }
   | { type: 'class' }
@@ -950,6 +972,7 @@ export type InfoDialogContentType =
   | { type: 'initiativeBreakdown' }
   | { type: 'grappleModifierBreakdown' }
   | { type: 'grappleDamageBreakdown' }
+  | { type: 'speedBreakdown'; speedType: SpeedType }
   | { type: 'genericHtml'; title: string; content: string };
 
 // For displaying skills in the dialog or other UI components, combining predefined and custom
@@ -989,5 +1012,83 @@ export interface GrappleDamageBreakdownDetails {
     strengthModifier: number;
 }
 
-// TODO: Define other specific breakdown detail types (e.g., ACBreakdownDetails, SkillModifierBreakdownDetails)
-// if they need to be distinct from how the dialog currently structures `detailsList`.
+export interface SpeedComponent {
+  source: string;
+  value: number | string; // Can be string for base dice, or number for modifiers
+}
+export interface SpeedBreakdownDetails {
+  name: string; // e.g., "Land Speed"
+  components: SpeedComponent[];
+  total: number;
+}
+
+export function calculateSpeedBreakdown(
+  speedType: SpeedType,
+  character: Character,
+  allRaces: readonly DndRaceOption[],
+  allClasses: readonly DndClassOption[]
+): SpeedBreakdownDetails {
+  const components: SpeedComponent[] = [];
+  let currentTotal = 0;
+
+  const raceData = allRaces.find(r => r.value === character.race);
+  let baseSpeedFromRace = 0;
+
+  if (raceData?.speeds && raceData.speeds[speedType] !== undefined) {
+    baseSpeedFromRace = raceData.speeds[speedType] as number;
+  } else if (speedType === 'land') {
+    const sizeData = SIZES.find(s => s.value === character.size);
+    baseSpeedFromRace = (sizeData?.value === 'small' || sizeData?.value === 'tiny' || sizeData?.value === 'diminutive' || sizeData?.value === 'fine') ? 20 : 30;
+  }
+  components.push({ source: "Base (Race)", value: baseSpeedFromRace });
+  currentTotal += baseSpeedFromRace;
+
+  const charSpeedDetails = character[`${speedType}Speed` as keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>];
+  if (charSpeedDetails?.miscModifier && charSpeedDetails.miscModifier !== 0) {
+    components.push({ source: "Misc Modifier", value: charSpeedDetails.miscModifier });
+    currentTotal += charSpeedDetails.miscModifier;
+  }
+
+  // Class Features (mainly for Land Speed)
+  if (speedType === 'land') {
+    const monkClass = character.classes.find(c => c.className === 'monk');
+    if (monkClass) {
+      const monkLevel = monkClass.level;
+      let monkSpeedBonus = 0;
+      if (monkLevel >= 18) monkSpeedBonus = 60;
+      else if (monkLevel >= 15) monkSpeedBonus = 50;
+      else if (monkLevel >= 12) monkSpeedBonus = 40;
+      else if (monkLevel >= 9) monkSpeedBonus = 30;
+      else if (monkLevel >= 6) monkSpeedBonus = 20;
+      else if (monkLevel >= 3) monkSpeedBonus = 10;
+      if (monkSpeedBonus > 0) {
+        components.push({ source: "Monk Unarmored Speed", value: monkSpeedBonus });
+        currentTotal += monkSpeedBonus;
+      }
+    }
+
+    const barbarianClass = character.classes.find(c => c.className === 'barbarian');
+    if (barbarianClass && barbarianClass.level >= 1) {
+        // Note: This does not check armor/load for Barbarian Fast Movement for simplicity in this function
+        components.push({ source: "Barbarian Fast Movement", value: 10 });
+        currentTotal += 10;
+    }
+
+    if (character.armorSpeedPenalty !== 0) {
+      components.push({ source: "Armor Penalty", value: -character.armorSpeedPenalty });
+      currentTotal -= character.armorSpeedPenalty;
+    }
+    if (character.loadSpeedPenalty !== 0) {
+      components.push({ source: "Load Penalty", value: -character.loadSpeedPenalty });
+      currentTotal -= character.loadSpeedPenalty;
+    }
+  }
+  
+  const speedLabel = speedType.charAt(0).toUpperCase() + speedType.slice(1) + " Speed";
+
+  return {
+    name: speedLabel,
+    components,
+    total: Math.max(0, currentTotal), // Speed cannot be negative
+  };
+}

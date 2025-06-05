@@ -5,38 +5,45 @@
       "value": "human",
       "label": "Human",
       "description": "<p>Humans are the most adaptable and ambitious people among the common races.<br />Whatever their goals, humans are the innovators, the achievers, and the pioneers of the worlds.</p>",
-      "bonusFeatSlots": 1
+      "bonusFeatSlots": 1,
+      "speeds": { "land": 30 }
     },
     {
       "value": "elf",
       "label": "Elf",
       "description": "<p>Elves are a magical people of otherworldly grace, living in the world but not entirely part of it.<br />They live in places of ethereal beauty, in the midst of ancient forests or in spires glittering with faerie light, where soft music drifts through the air and gentle fragrances waft on the breeze.<br />Elves love nature and magic, art and artistry, music and poetry, and the good things of the world.</p>",
-      "racialSkillBonuses": { "listen": 2, "search": 2, "spot": 2 }
+      "racialSkillBonuses": { "listen": 2, "search": 2, "spot": 2 },
+      "speeds": { "land": 30 }
     },
     {
       "value": "dwarf",
       "label": "Dwarf",
-      "description": "<p>Dwarves are known for their skill in warfare, their ability to withstand physical and magical punishment, their knowledge of the earth’s secrets, their hard work, and their capacity for drinking ale.<br />Their kingdoms are spread across the mountains of the world, where they mine gems and precious metals and forge items of wonder.</p>"
+      "description": "<p>Dwarves are known for their skill in warfare, their ability to withstand physical and magical punishment, their knowledge of the earth’s secrets, their hard work, and their capacity for drinking ale.<br />Their kingdoms are spread across the mountains of the world, where they mine gems and precious metals and forge items of wonder.</p>",
+      "speeds": { "land": 20 }
     },
     {
       "value": "halfling",
       "label": "Halfling",
-      "description": "<p>Halflings are an affable and cheerful people.<br />They cherish the bonds of family and friendship as well as the comforts of hearth and home, harboring few dreams of gold or glory.<br />Even adventurers among them usually venture into the world for reasons of community, friendship, wanderlust, or curiosity.</p>"
+      "description": "<p>Halflings are an affable and cheerful people.<br />They cherish the bonds of family and friendship as well as the comforts of hearth and home, harboring few dreams of gold or glory.<br />Even adventurers among them usually venture into the world for reasons of community, friendship, wanderlust, or curiosity.</p>",
+      "speeds": { "land": 20 }
     },
     {
       "value": "gnome",
       "label": "Gnome",
-      "description": "<p>Gnomes are welcome everywhere as technicians, alchemists, and inventors.<br />Despite the demand for their skills, most gnomes prefer to remain among their own kind, living in comfortable burrows beneath rolling, wooded hills.</p>"
+      "description": "<p>Gnomes are welcome everywhere as technicians, alchemists, and inventors.<br />Despite the demand for their skills, most gnomes prefer to remain among their own kind, living in comfortable burrows beneath rolling, wooded hills.</p>",
+      "speeds": { "land": 20 }
     },
     {
       "value": "half-elf",
       "label": "Half-Elf",
-      "description": "<p>Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves.</p>"
+      "description": "<p>Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves.</p>",
+      "speeds": { "land": 30 }
     },
     {
       "value": "half-orc",
       "label": "Half-Orc",
-      "description": "<p>Half-orcs’ grayish pigmentation, sloping foreheads, jutting jaws, prominent teeth, and towering builds make their orcish heritage plain for all to see.<br />Whether united under the leadership of a mighty warlock or having fought their way to freedom, half-orcs are driven by a fierce determination to prove their worth.</p>"
+      "description": "<p>Half-orcs’ grayish pigmentation, sloping foreheads, jutting jaws, prominent teeth, and towering builds make their orcish heritage plain for all to see.<br />Whether united under the leadership of a mighty warlock or having fought their way to freedom, half-orcs are driven by a fierce determination to prove their worth.</p>",
+      "speeds": { "land": 30 }
     }
   ]
 }

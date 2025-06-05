@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Info } from 'lucide-react';
+import { Info, Wind, Waves, MoveVertical, Shell, Feather } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
@@ -21,9 +21,12 @@ import type {
   GrappleModifierBreakdownDetails as GrappleModifierBreakdownDetailsType,
   GrappleDamageBreakdownDetails as GrappleDamageBreakdownDetailsType,
   ResistanceValue,
-  PrerequisiteMessage
+  PrerequisiteMessage,
+  SpeedType,
+  SpeedBreakdownDetails as SpeedBreakdownDetailsType,
+  SpeedComponent
 } from '@/types/character';
-import { DND_RACES, DND_CLASSES, DND_DEITIES, ALIGNMENTS, SKILL_DEFINITIONS, SIZES, DND_FEATS_DEFINITIONS, getRaceSpecialQualities, getRaceSkillPointsBonusPerLevel, calculateDetailedAbilityScores, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, SKILL_SYNERGIES, CLASS_SKILLS, calculateSizeSpecificSkillBonus, checkFeatPrerequisites } from '@/types/character';
+import { DND_RACES, DND_CLASSES, DND_DEITIES, ALIGNMENTS, SKILL_DEFINITIONS, SIZES, DND_FEATS_DEFINITIONS, getRaceSpecialQualities, getRaceSkillPointsBonusPerLevel, calculateDetailedAbilityScores, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, SKILL_SYNERGIES, CLASS_SKILLS, calculateSizeSpecificSkillBonus, checkFeatPrerequisites, calculateSpeedBreakdown } from '@/types/character';
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
@@ -49,6 +52,7 @@ export interface BabBreakdownDetails extends BabBreakdownDetailsType {
 export interface InitiativeBreakdownDetails extends InitiativeBreakdownDetailsType {}
 export interface GrappleModifierBreakdownDetails extends GrappleModifierBreakdownDetailsType {}
 export interface GrappleDamageBreakdownDetails extends GrappleDamageBreakdownDetailsType {}
+export interface SpeedBreakdownDetails extends SpeedBreakdownDetailsType {}
 
 
 interface InfoDisplayDialogProps {
@@ -65,6 +69,14 @@ const ABILITY_DISPLAY_NAMES: Record<Exclude<AbilityName, 'none'>, { abbr: string
   intelligence: { abbr: 'INT', full: 'Intelligence' },
   wisdom: { abbr: 'WIS', full: 'Wisdom' },
   charisma: { abbr: 'CHA', full: 'Charisma' },
+};
+
+const SPEED_ICONS: Record<SpeedType, React.ElementType> = {
+  land: Wind,
+  burrow: Shell,
+  climb: MoveVertical,
+  fly: Feather,
+  swim: Waves,
 };
 
 
@@ -190,7 +202,7 @@ export function InfoDisplayDialog({
     } else { 
         colorClass = zeroColor;
     }
-    const prefix = numValue > 0 ? '+' : (numValue === 0 ? '+' : ''); // Add '+' for positive and zero numbers
+    const prefix = numValue > 0 ? '+' : (numValue === 0 && isTotal ? '' : (numValue === 0 ? '+' : ''));
     return <span className={cn("font-bold", colorClass)}>{prefix}{numValue}</span>;
   };
 
@@ -225,6 +237,7 @@ export function InfoDisplayDialog({
           bonusFeatSlots: raceBonusFeatSlotsValue,
           grantedFeats: qualities.grantedFeats,
           detailsList: details.length > 0 ? details : undefined,
+          speeds: qualities.speeds,
         };
         break;
       }
@@ -413,6 +426,14 @@ export function InfoDisplayDialog({
         };
         break;
       }
+      case 'speedBreakdown': {
+        const speedBreakdownDetails = calculateSpeedBreakdown(contentType.speedType, character, DND_RACES, DND_CLASSES);
+        data = {
+          title: speedBreakdownDetails.name + " Breakdown",
+          speedBreakdown: speedBreakdownDetails,
+        };
+        break;
+      }
       case 'genericHtml':
         data = { title: contentType.title, htmlContent: contentType.content };
         break;
@@ -438,12 +459,14 @@ export function InfoDisplayDialog({
     initiativeBreakdown,
     grappleModifierBreakdown,
     grappleDamageBreakdown,
+    speeds,
+    speedBreakdown,
   } = derivedData;
   
   const sectionHeadingClass = "text-md font-semibold mb-2 text-primary";
 
-  const sectionHeading = abilityScoreBreakdown || skillModifierBreakdown || resistanceBreakdown || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || (detailsList && (contentType?.type === 'acBreakdown' || contentType?.type === 'class')) ? "Calculation" : "Details:";
-  const hasAnyBonusSection = abilityModifiers?.length || skillBonuses?.length || grantedFeats?.length || bonusFeatSlots !== undefined;
+  const sectionHeading = abilityScoreBreakdown || skillModifierBreakdown || resistanceBreakdown || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || speedBreakdown || (detailsList && (contentType?.type === 'acBreakdown' || contentType?.type === 'class')) ? "Calculation" : "Details:";
+  const hasAnyBonusSection = abilityModifiers?.length || skillBonuses?.length || grantedFeats?.length || bonusFeatSlots !== undefined || speeds;
   
   let hasRenderedContentBlock = false;
   const renderSeparatorIfNeeded = () => {
@@ -463,7 +486,8 @@ export function InfoDisplayDialog({
       <DialogContent className="sm:max-w-md md:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif text-left">
-            <Info className="mr-2 h-6 w-6 text-primary" />
+            { contentType?.type === 'speedBreakdown' && SPEED_ICONS[contentType.speedType] && React.createElement(SPEED_ICONS[contentType.speedType], { className: "mr-2 h-6 w-6 text-primary" }) }
+            { contentType?.type !== 'speedBreakdown' && <Info className="mr-2 h-6 w-6 text-primary" /> }
             {finalTitle}
           </DialogTitle>
         </DialogHeader>
@@ -621,7 +645,6 @@ export function InfoDisplayDialog({
               </>
             )}
 
-
             {abilityScoreBreakdown && (
               <>
               {renderSeparatorIfNeeded()}
@@ -741,8 +764,32 @@ export function InfoDisplayDialog({
               </>
             )}
 
+             {speedBreakdown && (
+              <>
+                {renderSeparatorIfNeeded()}
+                <div>
+                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  <div className="space-y-1 text-sm">
+                    {speedBreakdown.components.map((comp, index) => (
+                      <div key={index} className="flex justify-between">
+                        <span>{comp.source}:</span>
+                        {renderModifierValue(comp.value)}
+                      </div>
+                    ))}
+                    <Separator className="my-2" />
+                    <div className="flex justify-between text-base">
+                      <span className="font-semibold">Total {speedBreakdown.name}:</span>
+                      <span className="font-bold text-accent">{speedBreakdown.total} ft.</span>
+                    </div>
+                  </div>
+                </div>
+                {markContentRendered()}
+              </>
+            )}
+
+
             {/* Race Info: Details */}
-            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && contentType?.type === 'race' && (
+            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && !speedBreakdown && contentType?.type === 'race' && (
               <>
               {detailsList && detailsList.length > 0 && (
                   <>
@@ -832,6 +879,27 @@ export function InfoDisplayDialog({
                   {markContentRendered()}
                   </>
                 )}
+                {speeds && Object.keys(speeds).length > 0 && (
+                  <>
+                  {renderSeparatorIfNeeded()}
+                  <div className="mb-3">
+                    <h3 className={sectionHeadingClass}>Base Speeds</h3>
+                    <ul className="space-y-1 text-sm">
+                      {Object.entries(speeds).map(([speedType, speedValue]) => {
+                        if (speedValue === 0 && speedType !== 'land') return null; // Don't show 0 speeds unless it's land
+                        const label = speedType.charAt(0).toUpperCase() + speedType.slice(1);
+                        return (
+                          <li key={speedType} className="flex justify-between text-foreground">
+                            <span>{label}</span>
+                            <span className="font-bold">{speedValue} ft.</span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                  {markContentRendered()}
+                  </>
+                )}
 
                 {(grantedFeats && grantedFeats.length > 0) || (bonusFeatSlots !== undefined) ? (
                   <>
@@ -888,7 +956,7 @@ export function InfoDisplayDialog({
             )}
 
             {/* Class Info: Granted Feats & DetailsList*/}
-            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && contentType?.type === 'class' && (
+            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && !speedBreakdown && contentType?.type === 'class' && (
               <>
                 {detailsList && detailsList.length > 0 && (
                   <>
@@ -958,7 +1026,7 @@ export function InfoDisplayDialog({
             )}
             
             {/* AC Breakdown and Generic DetailsList */}
-            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && detailsList && detailsList.length > 0 && (contentType?.type !== 'class' && contentType?.type !== 'race') && (
+            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && !speedBreakdown && detailsList && detailsList.length > 0 && (contentType?.type !== 'class' && contentType?.type !== 'race') && (
               <>
                 {renderSeparatorIfNeeded()}
                 <div>
@@ -1031,6 +1099,8 @@ interface DerivedDialogData {
   initiativeBreakdown?: InitiativeBreakdownDetails;
   grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
   grappleDamageBreakdown?: GrappleDamageBreakdownDetails;
+  speeds?: Partial<Record<SpeedType, number>>;
+  speedBreakdown?: SpeedBreakdownDetails;
 }
 
 interface SkillModifierBreakdownDetails {
@@ -1045,3 +1115,4 @@ interface SkillModifierBreakdownDetails {
   miscModifier: number;
   totalBonus: number;
 }
+

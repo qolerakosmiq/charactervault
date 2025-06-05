@@ -28,6 +28,8 @@
     "reflex": { "base": 0, "magicMod": 0, "miscMod": 0 },
     "will": { "base": 0, "magicMod": 0, "miscMod": 0 }
   },
+  "DEFAULT_SPEED_DETAILS": { "base": 0, "miscModifier": 0 },
+  "DEFAULT_SPEED_PENALTIES": { "armorSpeedPenalty": 0, "loadSpeedPenalty": 0 },
   "DND_RACE_MIN_ADULT_AGE_DATA": {
     "human": 15,
     "elf": 110,
@@ -112,5 +114,3 @@
     "human": 1
   }
 }
-
-    

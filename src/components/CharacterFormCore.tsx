@@ -9,7 +9,8 @@ import type {
   Skill as SkillType, DndClassId, DndDeityId, GenderId,
   DndRaceOption, DetailedAbilityScores, AbilityScoreBreakdown,
   FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData, CharacterSize,
-  ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType, ResistanceFieldKeySheet
+  ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType, ResistanceFieldKeySheet,
+  SpeedDetails, SpeedType
 } from '@/types/character';
 import {
   SIZES,
@@ -32,7 +33,9 @@ import {
   CLASS_SKILLS,
   SKILL_SYNERGIES,
   getRaceSkillPointsBonusPerLevel,
-  DAMAGE_REDUCTION_TYPES
+  DAMAGE_REDUCTION_TYPES,
+  DEFAULT_SPEED_DETAILS,
+  DEFAULT_SPEED_PENALTIES
 } from '@/types/character';
 import { getUnarmedGrappleDamage } from '@/lib/dnd-utils';
 
@@ -50,6 +53,7 @@ import { SkillsFormSection } from '@/components/SkillsFormSection';
 import { FeatsFormSection } from '@/components/FeatsFormSection';
 import { SavingThrowsPanel } from '@/components/form-sections/SavingThrowsPanel';
 import { ArmorClassPanel } from '@/components/form-sections/ArmorClassPanel';
+import { SpeedPanel } from '@/components/form-sections/SpeedPanel';
 import { CombatPanel } from '@/components/form-sections/CombatPanel';
 import { ResistancesPanel } from '@/components/form-sections/ResistancesPanel';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
@@ -127,7 +131,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     const baseCharData = {
       id: crypto.randomUUID(),
       name: '',
-      playerName: '', // Initialize playerName
+      playerName: '', 
       race: '', alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
       height: '', weight: '', eyes: '', hair: '', skin: '',
       abilityScores: defaultBaseAbilityScores,
@@ -157,13 +161,20 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       powerResistance: { ...DEFAULT_RESISTANCE_VALUE },
       damageReduction: [],
       fortification: { ...DEFAULT_RESISTANCE_VALUE },
+      landSpeed: { ...DEFAULT_SPEED_DETAILS },
+      burrowSpeed: { ...DEFAULT_SPEED_DETAILS },
+      climbSpeed: { ...DEFAULT_SPEED_DETAILS },
+      flySpeed: { ...DEFAULT_SPEED_DETAILS },
+      swimSpeed: { ...DEFAULT_SPEED_DETAILS },
+      armorSpeedPenalty: DEFAULT_SPEED_PENALTIES.armorSpeedPenalty,
+      loadSpeedPenalty: DEFAULT_SPEED_PENALTIES.loadSpeedPenalty,
     };
 
     if (initialCharacter) {
       return {
         ...baseCharData,
         ...initialCharacter,
-        playerName: initialCharacter.playerName || '', // Ensure playerName is loaded
+        playerName: initialCharacter.playerName || '', 
         alignment: initialCharacter.alignment || 'true-neutral',
         abilityScores: initialCharacter.abilityScores || defaultBaseAbilityScores,
         abilityScoreTempCustomModifiers: initialCharacter.abilityScoreTempCustomModifiers || defaultTempCustomMods,
@@ -186,6 +197,13 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         eyes: initialCharacter.eyes || '',
         hair: initialCharacter.hair || '',
         skin: initialCharacter.skin || '',
+        landSpeed: initialCharacter.landSpeed || { ...DEFAULT_SPEED_DETAILS },
+        burrowSpeed: initialCharacter.burrowSpeed || { ...DEFAULT_SPEED_DETAILS },
+        climbSpeed: initialCharacter.climbSpeed || { ...DEFAULT_SPEED_DETAILS },
+        flySpeed: initialCharacter.flySpeed || { ...DEFAULT_SPEED_DETAILS },
+        swimSpeed: initialCharacter.swimSpeed || { ...DEFAULT_SPEED_DETAILS },
+        armorSpeedPenalty: initialCharacter.armorSpeedPenalty ?? DEFAULT_SPEED_PENALTIES.armorSpeedPenalty,
+        loadSpeedPenalty: initialCharacter.loadSpeedPenalty ?? DEFAULT_SPEED_PENALTIES.loadSpeedPenalty,
       };
     }
     return baseCharData;
@@ -417,8 +435,24 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
      setCharacter(prev => ({ ...prev, [field]: value }));
   };
   
-  const handleCharacterFieldUpdate = (field: keyof Character, value: any) => {
-     setCharacter(prev => ({ ...prev, [field]: value }));
+  const handleCharacterFieldUpdate = (
+    field: keyof Character | `${SpeedType}Speed.miscModifier`,
+    value: any
+  ) => {
+     setCharacter(prev => {
+        if (typeof field === 'string' && field.endsWith('Speed.miscModifier')) {
+            const speedType = field.split('Speed.miscModifier')[0] as SpeedType;
+            const speedFieldKey = `${speedType}Speed` as keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>;
+            return {
+                ...prev,
+                [speedFieldKey]: {
+                    ...(prev[speedFieldKey] as SpeedDetails),
+                    miscModifier: value,
+                }
+            };
+        }
+        return { ...prev, [field as keyof Character]: value };
+     });
   };
 
 
@@ -619,6 +653,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const handleOpenResistanceInfoDialog = (resistanceField: ResistanceFieldKeySheet) => {
     openInfoDialog({ type: 'resistanceBreakdown', resistanceField });
   };
+  const handleOpenSpeedInfoDialog = (speedType: SpeedType) => {
+    openInfoDialog({ type: 'speedBreakdown', speedType });
+  };
 
 
   const handleSubmit = (e: FormEvent) => {
@@ -725,13 +762,13 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         <SkillsFormSection
           character={{
             skills: character.skills,
-            abilityScores: character.abilityScores, // Pass base scores via character object
+            abilityScores: character.abilityScores, 
             classes: character.classes,
             race: character.race,
             size: character.size,
             feats: character.feats,
           }}
-          actualAbilityScores={actualAbilityScoresForSavesAndSkills} // Pass calculated scores separately
+          actualAbilityScores={actualAbilityScoresForSavesAndSkills} 
           allFeatDefinitions={allAvailableFeatDefinitions}
           allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
@@ -746,7 +783,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           chosenFeatInstances={character.feats}
           onFeatInstancesChange={handleFeatInstancesChange}
           onEditCustomFeatDefinition={handleOpenEditCustomFeatDefinitionDialog}
-          abilityScores={actualAbilityScoresForSavesAndSkills} // This is the final calculated score
+          abilityScores={actualAbilityScoresForSavesAndSkills} 
           skills={character.skills}
           allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
@@ -761,10 +798,17 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               abilityScores={actualAbilityScoresForSavesAndSkills}
               onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
           />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <ArmorClassPanel
             character={character}
             onCharacterUpdate={handleCharacterFieldUpdate}
             onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
+          />
+          <SpeedPanel
+            character={character}
+            onCharacterUpdate={handleCharacterFieldUpdate}
+            onOpenSpeedInfoDialog={handleOpenSpeedInfoDialog}
           />
         </div>
         
@@ -830,7 +874,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                         buttonSize="sm"
                     />
                      <p className="text-xs text-muted-foreground">
-                        Default is 25 points for standard D&D 3.5 point buy.
+                        Default is 25 points for standard D&amp;D 3.5 point buy.
                     </p>
                 </div>
             </div>
