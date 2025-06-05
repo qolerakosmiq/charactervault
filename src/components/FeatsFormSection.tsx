@@ -157,7 +157,7 @@ export function FeatsFormSection({
           </div>
         </CardHeader>
         <CardContent className="flex flex-col">
-          <div className="mb-6 p-3 border rounded-md bg-muted/30">
+          <div className="mb-3 p-3 border rounded-md bg-muted/30">
             <div className="flex justify-between items-center">
               <p className="text-sm font-medium">
                 Feats Available: <span className="text-lg font-bold text-primary">{availableFeatSlots}</span>
@@ -185,7 +185,7 @@ export function FeatsFormSection({
             </p>
           </div>
 
-          <div className="space-y-2 mb-4">
+          <div className="space-y-1 mb-3">
             {chosenFeatInstances.map((instance) => {
               const definition = allAvailableFeatDefinitions.find(def => def.value === instance.definitionId);
               if (!definition) return null;
