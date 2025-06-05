@@ -8,10 +8,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Swords, Info } from 'lucide-react';
+import { Swords, Info, Loader2 } from 'lucide-react';
 import { getAbilityModifierByName, getBab, calculateInitiative, calculateGrapple, getSizeModifierGrapple, getUnarmedGrappleDamage } from '@/lib/dnd-utils';
-import { SIZES, DND_CLASSES } from '@/types/character';
-// ArmorClassPanel import removed as it's no longer used here directly. It's part of CharacterFormCore layout.
+import { useI18n } from '@/context/I18nProvider';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 interface CombatPanelProps {
@@ -21,23 +21,41 @@ interface CombatPanelProps {
   onOpenAcBreakdownDialog?: (acType: 'Normal' | 'Touch' | 'Flat-Footed') => void; 
 }
 
-export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfoDialog, onOpenAcBreakdownDialog }: CombatPanelProps) {
+export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfoDialog }: CombatPanelProps) {
+  const { translations, isLoading: translationsLoading } = useI18n();
+
+  if (translationsLoading || !translations || !character) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-3"> <Swords className="h-8 w-8 text-primary" /> <Skeleton className="h-7 w-1/2" /> </div>
+          <Skeleton className="h-4 w-3/4" />
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-32 rounded-md" />)}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const { DND_CLASSES, SIZES } = translations;
+
   const abilityScores = character.abilityScores || {};
   const classes = character.classes || [];
   const strModifier = getAbilityModifierByName(abilityScores, 'strength');
   const dexModifier = getAbilityModifierByName(abilityScores, 'dexterity');
-  const sizeModGrapple = getSizeModifierGrapple(character.size);
+  const sizeModGrapple = getSizeModifierGrapple(character.size, SIZES);
 
-  const baseBabArray = getBab(classes);
+  const baseBabArray = getBab(classes, DND_CLASSES);
   const totalBabWithModifier = baseBabArray.map(bab => bab + (character.babMiscModifier || 0));
 
   const baseInitiative = calculateInitiative(dexModifier, character.initiativeMiscModifier || 0);
 
-  const baseGrappleModifier = calculateGrapple(baseBabArray, strModifier, sizeModGrapple);
+  const baseGrappleModifier = calculateGrapple(classes, strModifier, sizeModGrapple, DND_CLASSES);
   const totalGrappleModifier = baseGrappleModifier + (character.grappleMiscModifier || 0);
 
-  
-  const grappleDamageBaseDice = character.grappleDamage_baseNotes.split(' ')[0] || '0';
+  const grappleDamageBaseNotes = character.grappleDamage_baseNotes || getUnarmedGrappleDamage(character.size, SIZES);
+  const grappleDamageBaseDice = grappleDamageBaseNotes.split(' ')[0] || '0';
   const totalNumericGrappleBonus = strModifier + (character.grappleDamage_bonus || 0);
   const displayedGrappleDamageTotal = `${grappleDamageBaseDice}${totalNumericGrappleBonus !== 0 ? `${totalNumericGrappleBonus >= 0 ? '+' : ''}${totalNumericGrappleBonus}` : ''}`;
 

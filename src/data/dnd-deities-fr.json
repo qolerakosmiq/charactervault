@@ -2,7 +2,6 @@
 {
   "DND_DEITIES_DATA": [
     { "value": "boccob", "label": "FR: Boccob", "alignment": "true-neutral", "description": "<b>FR: The Uncaring, Lord of All Magics</b><p>FR: Details...</p>" },
-    { "value": "corellon-larethian", "label": "FR: Corellon Larethian", "alignment": "chaotic-good", "description": "<b>FR: Creator of the Elves, The Protector</b><p>FR: Details...</p>"
-    // ... Add FR placeholders for all other deities
+    { "value": "corellon-larethian", "label": "FR: Corellon Larethian", "alignment": "chaotic-good", "description": "<b>FR: Creator of the Elves, The Protector</b><p>FR: Details...</p>" }
   ]
 }

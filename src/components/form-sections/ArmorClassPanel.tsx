@@ -11,7 +11,7 @@ import { getAbilityModifierByName, getSizeModifierAC } from '@/lib/dnd-utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Separator } from '@/components/ui/separator';
-import { useI18n } from '@/context/I18nProvider'; // Import useI18n
+import { useI18n } from '@/context/I18nProvider';
 
 interface ArmorClassPanelProps {
   character?: Character;

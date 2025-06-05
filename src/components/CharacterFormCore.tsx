@@ -10,7 +10,7 @@ import type {
   DndRaceOption, DetailedAbilityScores, AbilityScoreBreakdown,
   FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData, CharacterSize,
   ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType, ResistanceFieldKeySheet,
-  SpeedDetails, SpeedType, CharacterAlignment // Added CharacterAlignment
+  SpeedDetails, SpeedType, CharacterAlignment
 } from '@/types/character';
 import {
   getNetAgingEffects,
@@ -24,7 +24,7 @@ import {
 import { getUnarmedGrappleDamage } from '@/lib/dnd-utils';
 
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
-import { useI18n } from '@/context/I18nProvider'; // Import useI18n
+import { useI18n } from '@/context/I18nProvider';
 
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
@@ -205,7 +205,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     } else {
       setCharacter(baseCharData);
     }
-  // Dependencies need to be carefully managed. `initialCharacter`, `isCreating`, `isClient`, `translationsLoading`, `translations`, `globalCustomFeatDefinitionsFromStore` are key.
   }, [isClient, translationsLoading, translations, initialCharacter, isCreating, globalCustomFeatDefinitionsFromStore]);
 
 
@@ -255,7 +254,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         translations.DND_RACE_BASE_MAX_AGE_DATA,
         translations.RACE_TO_AGING_CATEGORY_MAP_DATA,
         translations.DND_RACE_AGING_EFFECTS_DATA,
-        translations.DND_FEATS_DEFINITIONS, // Pass predefined feats here
+        translations.DND_FEATS_DEFINITIONS, 
         translations.ABILITY_LABELS
       ));
     }
@@ -358,7 +357,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             return (defA?.label || '').localeCompare(defB?.label || '');
         }),
     }) : null);
-  }, [character?.race, character?.classes, allAvailableFeatDefinitions, translations]); // character itself should not be a direct dep, specific fields should
+  }, [character?.race, character?.classes, allAvailableFeatDefinitions, translations]); 
 
   React.useEffect(() => {
     if (!character) return;
@@ -673,7 +672,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       classes: character.classes.length > 0 ? character.classes : [{id: crypto.randomUUID(), className: '', level: 1}],
     };
     if (finalCharacterData.classes[0]) {
-        finalCharacterData.classes[0].level = 1; // This is likely wrong, level should be maintained
+        finalCharacterData.classes[0].level = 1; 
     }
 
     onSave(finalCharacterData);

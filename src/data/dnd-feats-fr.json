@@ -3,7 +3,6 @@
   "DND_FEATS_DATA": [
     { "value": "acrobatic", "label": "FR: Acrobatic", "description": "<b>FR: Benefit:</b> You get a +2 bonus on all Balance and Jump checks.", "effects": { "skills": { "balance": 2, "jump": 2 } }, "type": "special" },
     { "value": "agile", "label": "FR: Agile", "description": "<b>FR: Benefit:</b> You get a +2 bonus on all Balance and Escape Artist checks.", "effects": { "skills": { "balance": 2, "escape-artist": 2 } }, "type": "special" }
-    // ... Add FR placeholders for all other feats
   ],
   "FEAT_TYPES_DATA": [
     { "value": "special", "label": "FR: Special" },
