@@ -315,7 +315,7 @@ export function InfoDisplayDialog({
         }
         break;
       case 'abilityScoreBreakdown':
-        const detailedScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
+        const detailedScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS, UI_STRINGS);
         const abilityKeyForTitle = contentType.abilityName as Exclude<AbilityName, 'none'>;
         const abilityLabelForTitle = ABILITY_LABELS.find(al => al.value === abilityKeyForTitle);
         const abilityNameString = abilityLabelForTitle?.label || abilityKeyForTitle;
@@ -328,7 +328,7 @@ export function InfoDisplayDialog({
         const skillInstance = character.skills.find(s => s.id === contentType.skillId);
         const skillDef = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === contentType.skillId);
         if (skillInstance && skillDef) {
-          const actualAbilityScoresResult = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
+          const actualAbilityScoresResult = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS, UI_STRINGS);
           const finalAbilityScores: AbilityScores = (ABILITY_ORDER_INTERNAL).reduce((acc, ability) => {
               acc[ability] = actualAbilityScoresResult[ability].finalScore;
               return acc;
@@ -362,7 +362,9 @@ export function InfoDisplayDialog({
       }
       case 'resistanceBreakdown':
         const resistanceValue = character[contentType.resistanceField] as ResistanceValue;
-        const resistanceLabel = contentType.resistanceField.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).replace(' Resistance', '');
+        const resistanceFieldLabelKey = `resistanceLabel${contentType.resistanceField.charAt(0).toUpperCase() + contentType.resistanceField.slice(1).replace('Resistance', '')}` as keyof typeof UI_STRINGS;
+        const resistanceLabel = UI_STRINGS[resistanceFieldLabelKey] || contentType.resistanceField.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).replace(' Resistance', '');
+
         data = {
           title: (UI_STRINGS.infoDialogTitleResistanceBreakdown || "{resistanceName} Resistance Breakdown").replace("{resistanceName}", resistanceLabel),
           resistanceBreakdown: {
@@ -374,14 +376,14 @@ export function InfoDisplayDialog({
         };
         break;
       case 'acBreakdown': {
-        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
+        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS, UI_STRINGS);
         const dexMod = calculateAbilityModifier(detailedCharScores.dexterity.finalScore);
         const sizeModACVal = getSizeModifierAC(character.size, SIZES);
         const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
         const details: Array<{ label: string; value: string | number; isBold?: boolean }> = [];
         let totalCalculated = 10; 
         
-        details.push({ label: 'Base', value: 10 });
+        details.push({ label: UI_STRINGS.acBreakdownBaseLabel || 'Base', value: 10 });
 
         if (contentType.acType === 'Normal' || contentType.acType === 'Touch') {
           details.push({ label: (UI_STRINGS.infoDialogInitiativeAbilityModLabel || "{abilityAbbr} ({abilityFull}) Modifier:").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX').replace("{abilityFull}", ABILITY_LABELS.find(al => al.value === 'dexterity')?.label || 'Dexterity'), value: dexMod });
@@ -389,13 +391,13 @@ export function InfoDisplayDialog({
         details.push({ label: `${(UI_STRINGS.infoDialogSizeModifierLabel || "Size Modifier")} (${sizeLabel})`, value: sizeModACVal });
 
         if (contentType.acType === 'Normal' || contentType.acType === 'Flat-Footed') {
-          if (character.armorBonus) details.push({ label: 'Armor Bonus', value: character.armorBonus });
-          if (character.shieldBonus) details.push({ label: 'Shield Bonus', value: character.shieldBonus });
-          if (character.naturalArmor) details.push({ label: 'Natural Armor', value: character.naturalArmor });
+          if (character.armorBonus) details.push({ label: UI_STRINGS.acBreakdownArmorBonusLabel || 'Armor Bonus', value: character.armorBonus });
+          if (character.shieldBonus) details.push({ label: UI_STRINGS.acBreakdownShieldBonusLabel || 'Shield Bonus', value: character.shieldBonus });
+          if (character.naturalArmor) details.push({ label: UI_STRINGS.acBreakdownNaturalArmorLabel || 'Natural Armor', value: character.naturalArmor });
         }
-        if (character.deflectionBonus) details.push({ label: 'Deflection Bonus', value: character.deflectionBonus });
+        if (character.deflectionBonus) details.push({ label: UI_STRINGS.acBreakdownDeflectionBonusLabel || 'Deflection Bonus', value: character.deflectionBonus });
         if ((contentType.acType === 'Normal' || contentType.acType === 'Touch') && character.dodgeBonus) {
-          details.push({ label: 'Dodge Bonus', value: character.dodgeBonus });
+          details.push({ label: UI_STRINGS.acBreakdownDodgeBonusLabel || 'Dodge Bonus', value: character.dodgeBonus });
         }
         
         if (character.acMiscModifier) details.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || 'Custom Modifier', value: character.acMiscModifier });
@@ -422,7 +424,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'initiativeBreakdown': {
-        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
+        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS, UI_STRINGS);
         const dexMod = calculateAbilityModifier(detailedCharScores.dexterity.finalScore);
         data = {
           title: UI_STRINGS.infoDialogTitleInitiativeBreakdown || 'Initiative Breakdown',
@@ -435,7 +437,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'grappleModifierBreakdown': {
-        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
+        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS, UI_STRINGS);
         const strMod = calculateAbilityModifier(detailedCharScores.strength.finalScore);
         const baseBabArrayVal = getBab(character.classes, DND_CLASSES);
         const sizeModGrappleVal = getSizeModifierGrapple(character.size, SIZES);
@@ -452,7 +454,7 @@ export function InfoDisplayDialog({
         break;
       }
        case 'grappleDamageBreakdown': {
-        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
+        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS, UI_STRINGS);
         const strMod = calculateAbilityModifier(detailedCharScores.strength.finalScore);
         data = {
           title: UI_STRINGS.infoDialogTitleGrappleDamageBreakdown || 'Grapple Damage Breakdown',
@@ -624,7 +626,7 @@ export function InfoDisplayDialog({
             )}
             {grantedFeats && grantedFeats.length > 0 && (
               <>
-                <h4 className="text-sm font-medium text-muted-foreground mb-1 mt-2">{UI_STRINGS.infoDialogClassFeaturesAndFeats || "Class Features & Granted Feats"}</h4>
+                <h4 className="text-sm font-medium text-muted-foreground mb-1 mt-2">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h4>
                 <ul className="list-none space-y-2 text-sm">
                   {grantedFeats.map(feat => (
                     <li key={feat.featId + (feat.note || '')} className="border-b border-border/30 pb-1 last:border-b-0">
@@ -954,7 +956,8 @@ export function InfoDisplayDialog({
             )}
 
 
-            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && !speedBreakdown && detailsList && detailsList.length > 0 && (contentType?.type !== 'class' && contentType?.type !== 'race') && (
+            {/* Generic detailsList rendering for AC */}
+            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && !speedBreakdown && detailsList && detailsList.length > 0 && (contentType?.type === 'acBreakdown') && (
               <>
                 {renderSeparatorIfNeeded()}
                 <div>
@@ -964,23 +967,22 @@ export function InfoDisplayDialog({
                           ? renderModifierValue(detail.value as number | string, undefined, undefined, undefined, undefined, false)
                           : detail.value;
                       
-                      let labelContent: React.ReactNode;
-                      const defaultLabelClass = "text-foreground"; 
-
-                      if (detail.label.toLowerCase().includes("modifier") && (detail.label.toLowerCase().includes("dexterity") || detail.label.toLowerCase().includes("strength"))) {
-                          const abilityKey = detail.label.toLowerCase().includes("dexterity") ? 'dexterity' : 'strength';
-                          const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.value === abilityKey);
-                          const abbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
-                          const full = abilityLabelInfo?.label || abilityKey.charAt(0).toUpperCase() + abilityKey.slice(1);
-
-                          labelContent = (
-                              <span className={defaultLabelClass}>
-                                  {abbr}{'\u00A0'}
-                                  <span className="text-xs text-muted-foreground">({full})</span> Modifier
-                              </span>
-                          );
-                      } else {
-                          labelContent = <span className={defaultLabelClass}>{detail.label}</span>;
+                      let labelContent: React.ReactNode = <span className="text-foreground">{detail.label}</span>;
+                      if (typeof detail.label === 'string') {
+                        const abilityMatch = (detail.label as string).match(/{abilityAbbr}\s\({abilityFull}\)\sModifier:/);
+                        if (abilityMatch) {
+                            const abilityKey = (detail.label as string).toLowerCase().includes("dexterity") ? 'dexterity' : 'strength'; // Assuming these are the only two for AC context
+                            const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.value === abilityKey);
+                            const abbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
+                            const full = abilityLabelInfo?.label || abilityKey.charAt(0).toUpperCase() + abilityKey.slice(1);
+                            labelContent = (
+                                <span className="text-foreground">
+                                    {(UI_STRINGS.infoDialogInitiativeAbilityModLabel || "{abilityAbbr} ({abilityFull}) Modifier:")
+                                        .replace("{abilityAbbr}", abbr)
+                                        .replace("{abilityFull}", full)}
+                                </span>
+                            );
+                        }
                       }
 
                       return (
@@ -1010,6 +1012,23 @@ export function InfoDisplayDialog({
                 {markContentRendered()}
               </>
             )}
+             {/* Generic detailsList rendering for Class/Race (without the special total handling above) */}
+            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && !speedBreakdown && detailsList && detailsList.length > 0 && (contentType?.type === 'class' || contentType?.type === 'race') && (
+                <>
+                  {renderSeparatorIfNeeded()}
+                  <div>
+                    <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                    {detailsList!.map((detail, index) => (
+                        <div key={index} className="flex justify-between text-sm mb-0.5">
+                        <span className="text-foreground">{detail.label}</span>
+                        <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value as React.ReactNode}</span>
+                        </div>
+                    ))}
+                  </div>
+                  {markContentRendered()}
+                </>
+            )}
+
           </div>
         </ScrollArea>
         <DialogFooter className="mt-2">
@@ -1051,5 +1070,3 @@ interface SkillModifierBreakdownDetails {
   miscModifier: number;
   totalBonus: number;
 }
-
-
