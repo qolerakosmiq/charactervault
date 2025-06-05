@@ -14,8 +14,8 @@ import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog'
 import { AbilityScorePointBuyDialog } from '@/components/AbilityScorePointBuyDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { Badge } from '@/components/ui/badge';
-import { useI18n } from '@/context/I18nProvider'; // Import useI18n
-import { Skeleton } from '@/components/ui/skeleton'; // For loading state
+import { useI18n } from '@/context/I18nProvider';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -40,7 +40,7 @@ export function CharacterFormAbilityScoresSection({
 }: CharacterFormAbilityScoresSectionProps) {
   const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
   const [isPointBuyDialogOpen, setIsPointBuyDialogOpen] = React.useState(false);
-  const { translations, isLoading: translationsLoading } = useI18n(); // Use I18n
+  const { translations, isLoading: translationsLoading } = useI18n();
 
   const { rerollOnesForAbilityScores, pointBuyBudget: rawPointBuyBudgetFromStore } = useDefinitionsStore(state => ({
     rerollOnesForAbilityScores: state.rerollOnesForAbilityScores,
@@ -54,7 +54,7 @@ export function CharacterFormAbilityScoresSection({
     const parsed = parseFloat(rawPointBuyBudgetFromStore);
     numericPointBuyBudget = !isNaN(parsed) ? parsed : 25;
   } else {
-    numericPointBuyBudget = 25; 
+    numericPointBuyBudget = 25;
   }
   const pointBuyBudget = numericPointBuyBudget;
 
@@ -135,11 +135,11 @@ export function CharacterFormAbilityScoresSection({
             {abilityKeys.map(ability => {
               const baseScore = baseAbilityScores[ability];
               const tempCustomMod = abilityScoreTempCustomModifiers?.[ability] ?? 0;
-              
+
               const actualScoreData = detailedAbilityScores ? detailedAbilityScores[ability] : null;
               const totalScore = actualScoreData ? actualScoreData.finalScore : baseScore + tempCustomMod;
               const actualModifier = calculateAbilityModifier(totalScore);
-              
+
               const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === ability);
               const abilityDisplayName = abilityLabelInfo?.label || ability;
               const abilityAbbr = abilityLabelInfo?.abbr || ability.substring(0,3).toUpperCase();
@@ -167,7 +167,7 @@ export function CharacterFormAbilityScoresSection({
                       </Button>
                     )}
                   </div>
-                  
+
                   <div className="w-full space-y-0.5">
                     <Label htmlFor={`base-score-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresBaseScoreLabel || "Base Score"}</Label>
                     <NumberSpinnerInput
@@ -181,7 +181,7 @@ export function CharacterFormAbilityScoresSection({
                       className="w-full justify-center"
                     />
                   </div>
-                  
+
                   <div className="w-full space-y-0.5 pt-1">
                     <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresTempModLabel || "Temporary Modifier"}</Label>
                     <NumberSpinnerInput
@@ -198,18 +198,17 @@ export function CharacterFormAbilityScoresSection({
               );
             })}
           </div>
-           <p className="text-xs text-muted-foreground mt-4 pt-2 border-t border-border/30"
-             dangerouslySetInnerHTML={{ 
-                 __html: UI_STRINGS.abilityScoresNote?.replace(
-                     /<0>(.*?)<\/0>/g, 
-                     '<Badge variant="outline" class="text-xs font-normal border-muted-foreground/60 text-muted-foreground px-1.5 py-0.5 align-baseline">$1</Badge>'
-                 ).replace(
-                     /<1>(.*?)<\/1>/g,
-                     '<Badge variant="outline" class="text-xs font-normal border-muted-foreground/60 text-muted-foreground px-1.5 py-0.5 align-baseline">$1</Badge>'
-                 ) || 
-                 "<strong>Note:</strong> The <Badge variant=\"outline\" class=\"text-xs font-normal border-muted-foreground/60 text-muted-foreground px-1.5 py-0.5 align-baseline\">Temporary Modifier</Badge> field adjusts the <Badge variant=\"outline\" class=\"text-xs font-normal border-muted-foreground/60 text-muted-foreground px-1.5 py-0.5 align-baseline\">Base Score</Badge> directly, not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score."
-             }}
-           />
+           <p className="text-xs text-muted-foreground mt-4 pt-2 border-t border-border/30">
+            <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.abilityScoresNote_prefix || "<strong>Note:</strong> The " }} />
+            <Badge variant="outline" className="text-xs font-normal px-1 py-0.5 align-baseline mx-0.5">
+              {UI_STRINGS.abilityScoresNote_badge0_text || "Temporary Modifier"}
+            </Badge>
+            {UI_STRINGS.abilityScoresNote_text_after_badge0 || " field adjusts the "}
+            <Badge variant="outline" className="text-xs font-normal px-1 py-0.5 align-baseline mx-0.5">
+              {UI_STRINGS.abilityScoresNote_badge1_text || "Base Score"}
+            </Badge>
+            {UI_STRINGS.abilityScoresNote_suffix || " directly, not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score."}
+           </p>
         </CardContent>
       </Card>
       {isCreating && (

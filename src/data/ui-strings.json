@@ -92,12 +92,15 @@
     "featEffectsLabel": "Effects:",
     "saveProgressionGood": "Good",
     "saveProgressionPoor": "Poor",
-
     "abilityScoresSectionTitle": "Ability Scores",
     "abilityScoresRollButton": "Roll Scores",
     "abilityScoresPointBuyButton": "Point Buy",
     "abilityScoresBaseScoreLabel": "Base Score",
     "abilityScoresTempModLabel": "Temporary Modifier",
-    "abilityScoresNote": "<strong>Note:</strong> The <0>Temporary Modifier</0> field adjusts the <1>Base Score</1> directly, not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score."
+    "abilityScoresNote_prefix": "<strong>Note:</strong> The ",
+    "abilityScoresNote_badge0_text": "Temporary Modifier",
+    "abilityScoresNote_text_after_badge0": " field adjusts the ",
+    "abilityScoresNote_badge1_text": "Base Score",
+    "abilityScoresNote_suffix": " directly, not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score."
   }
 }
