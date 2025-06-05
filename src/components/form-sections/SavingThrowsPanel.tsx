@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import type { AbilityScores, CharacterClass, SavingThrows, SavingThrowType, DndClassOption, SingleSavingThrow, Character } from '@/types/character';
+import type { AbilityScores, CharacterClass, SavingThrows, SavingThrowType, DndClassOption, SingleSavingThrow, Character, AbilityName } from '@/types/character';
 import { DND_CLASSES }
 from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,6 +23,16 @@ const SAVE_DISPLAY_NAMES: Record<SavingThrowType, string> = {
   reflex: 'Reflex',
   will: 'Will',
 };
+
+const ABILITY_FULL_NAMES: Record<Exclude<AbilityName, 'none'>, string> = {
+  strength: 'Strength',
+  dexterity: 'Dexterity',
+  constitution: 'Constitution',
+  intelligence: 'Intelligence',
+  wisdom: 'Wisdom',
+  charisma: 'Charisma',
+};
+
 
 export function SavingThrowsPanel({
   character,
@@ -53,13 +63,14 @@ export function SavingThrowsPanel({
     {
       label: "Ability Modifier",
       getValue: (saveType: SavingThrowType) => {
-        const abilityKey = SAVING_THROW_ABILITIES[saveType];
+        const abilityKey = SAVING_THROW_ABILITIES[saveType] as Exclude<AbilityName, 'none'>;
         const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
+        const fullAbilityName = ABILITY_FULL_NAMES[abilityKey];
         return (
-          <>
-            {abilityModifier >= 0 ? '+' : ''}{abilityModifier}
-            <span className="ml-1 text-xs">({abilityKey.substring(0, 3).toUpperCase()})</span>
-          </>
+          <div className="flex flex-col items-center -my-1"> {/* Added negative margin to possibly tighten vertical space if needed */}
+            <span className="text-xs leading-tight">{fullAbilityName}</span>
+            <span className="leading-tight">{abilityModifier >= 0 ? '+' : ''}{abilityModifier}</span>
+          </div>
         );
       },
     },
@@ -116,3 +127,4 @@ export function SavingThrowsPanel({
     </Card>
   );
 }
+
