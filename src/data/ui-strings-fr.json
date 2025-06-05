@@ -89,6 +89,8 @@
     "infoDialogGrappleDmgAbilityLabel": "Mod. de {abilityAbbr} ({abilityFull}) :",
     "infoDialogGrappleDmgTotalLabel": "Total :",
     "featPrerequisitesLabel": "Prérequis :",
-    "featEffectsLabel": "Effets :"
+    "featEffectsLabel": "Effets :",
+    "saveProgressionGood": "Bon",
+    "saveProgressionPoor": "Mauvais"
   }
 }

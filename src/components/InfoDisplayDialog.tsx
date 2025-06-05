@@ -271,9 +271,17 @@ export function InfoDisplayDialog({
         const classSpecificDetails: Array<{ label: string; value: string | number; isBold?: boolean }> = [];
         if (classData?.hitDice) classSpecificDetails.push({ label: UI_STRINGS.hitDiceLabel || "Hit Dice", value: classData.hitDice, isBold: true });
         if (classData?.saves) {
-          classSpecificDetails.push({ label: SAVING_THROW_LABELS.find(l => l.value === 'fortitude')?.label || "Fortitude Save", value: classData.saves.fortitude.charAt(0).toUpperCase() + classData.saves.fortitude.slice(1) });
-          classSpecificDetails.push({ label: SAVING_THROW_LABELS.find(l => l.value === 'reflex')?.label || "Reflex Save", value: classData.saves.reflex.charAt(0).toUpperCase() + classData.saves.reflex.slice(1) });
-          classSpecificDetails.push({ label: SAVING_THROW_LABELS.find(l => l.value === 'will')?.label || "Will Save", value: classData.saves.will.charAt(0).toUpperCase() + classData.saves.will.slice(1) });
+          const fortSaveLabel = SAVING_THROW_LABELS.find(l => l.value === 'fortitude')?.label || "Fortitude Save";
+          const reflexSaveLabel = SAVING_THROW_LABELS.find(l => l.value === 'reflex')?.label || "Reflex Save";
+          const willSaveLabel = SAVING_THROW_LABELS.find(l => l.value === 'will')?.label || "Will Save";
+
+          const fortProgression = classData.saves.fortitude === 'good' ? (UI_STRINGS.saveProgressionGood || 'Good') : (UI_STRINGS.saveProgressionPoor || 'Poor');
+          const reflexProgression = classData.saves.reflex === 'good' ? (UI_STRINGS.saveProgressionGood || 'Good') : (UI_STRINGS.saveProgressionPoor || 'Poor');
+          const willProgression = classData.saves.will === 'good' ? (UI_STRINGS.saveProgressionGood || 'Good') : (UI_STRINGS.saveProgressionPoor || 'Poor');
+
+          classSpecificDetails.push({ label: fortSaveLabel, value: fortProgression });
+          classSpecificDetails.push({ label: reflexSaveLabel, value: reflexProgression });
+          classSpecificDetails.push({ label: willSaveLabel, value: willProgression });
         }
         
         const grantedFeatsFormatted = classData?.grantedFeats?.map(gf => ({
@@ -298,7 +306,7 @@ export function InfoDisplayDialog({
         const deityId = character.deity;
         const deityData = DND_DEITIES.find(d => d.value === deityId);
         if (deityData) {
-            data = { title: deityData.label, htmlContent: deityData.description || `<p>${UI_STRINGS.infoDialogNoSkillDescription || 'No detailed description available for'} ${deityData.label}.</p>` };
+            data = { title: deityData.label, htmlContent: deityData.description || `<p>${(UI_STRINGS.infoDialogNoSkillDescription || 'No detailed description available for').replace('{itemName}', deityData.label)}</p>` };
         } else if (deityId && deityId.trim() !== '') {
             data = { title: deityId, htmlContent: `<p>${UI_STRINGS.infoDialogDeityPlaceholder || 'Custom deity. No predefined information available.'}</p>` };
         } else {
@@ -454,7 +462,7 @@ export function InfoDisplayDialog({
       }
       case 'speedBreakdown': {
         const speedBreakdownDetails = calculateSpeedBreakdown(contentType.speedType, character, DND_RACES, DND_CLASSES, SIZES);
-        const speedNameString = speedBreakdownDetails.name.replace(" Speed", "");
+        const speedNameString = speedBreakdownDetails.name.replace(" Speed", "").replace(" Vitesse", "");
         data = {
           title: (UI_STRINGS.infoDialogTitleSpeedBreakdown || "{speedName} Breakdown").replace("{speedName}", speedNameString),
           speedBreakdown: speedBreakdownDetails,
@@ -832,7 +840,7 @@ export function InfoDisplayDialog({
                     })}
                     <Separator className="my-2" />
                     <div className="flex justify-between text-base">
-                      <span className="font-semibold">{(UI_STRINGS.infoDialogSpeedTotalPrefixLabel || "Total")} {speedBreakdown.name.replace(" Speed", "")}:</span>
+                      <span className="font-semibold">{(UI_STRINGS.infoDialogSpeedTotalPrefixLabel || "Total")} {speedBreakdown.name.replace(" Speed", "").replace(" Vitesse","")}:</span>
                       <span className="font-bold text-accent">{speedBreakdown.total} ft.</span>
                     </div>
                   </div>
@@ -1185,4 +1193,3 @@ interface SkillModifierBreakdownDetails {
   miscModifier: number;
   totalBonus: number;
 }
-
