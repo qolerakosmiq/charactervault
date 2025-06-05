@@ -38,7 +38,8 @@ import {
   calculateSizeSpecificSkillBonus,
   checkFeatPrerequisites,
   calculateSpeedBreakdown,
-  ABILITY_ORDER_INTERNAL
+  ABILITY_ORDER_INTERNAL,
+  getRaceSkillPointsBonusPerLevel // Added import
 } from '@/types/character';
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
 import { useI18n } from '@/context/I18nProvider';
@@ -1166,3 +1167,4 @@ interface SkillModifierBreakdownDetails {
   miscModifier: number;
   totalBonus: number;
 }
+
