@@ -202,120 +202,121 @@ export function SkillsFormSection({
               )}
            </div>
         </div>
+        <div className="overflow-x-auto">
+          <div className="space-y-1 -mx-1 min-w-[700px]"> {/* Added min-w here to ensure table content dictates scroll */}
+            <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
+              <span className="text-center w-10">Class?</span>
+              <span className="pl-1">Skill</span>
+              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: "Skill<br/>Mod" }} />
+              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: "Key<br/>Ability" }} />
+              <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: "Ability<br/>Mod" }} />
+              <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: "Misc<br/>Mod" }} />
+              <span className="text-center w-32">Ranks</span>
+              <span className="text-center w-12">Cost</span>
+              <span className="text-center w-10">Max</span>
+            </div>
 
-        <div className="space-y-1 -mx-1">
-          <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
-            <span className="text-center w-10">Class?</span>
-            <span className="pl-1">Skill</span>
-            <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: "Skill<br/>Mod" }} />
-            <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: "Key<br/>Ability" }} />
-            <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: "Ability<br/>Mod" }} />
-            <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: "Misc<br/>Mod" }} />
-            <span className="text-center w-32">Ranks</span>
-            <span className="text-center w-12">Cost</span>
-            <span className="text-center w-10">Max</span>
+            {skillsForDisplay.map(skill => {
+              const keyAbility = skill.keyAbility;
+              const keyAbilityDisplay = (keyAbility && keyAbility !== 'none') ? keyAbility.substring(0, 3).toUpperCase() : 'N/A';
+
+              const baseAbilityMod = (keyAbility && keyAbility !== 'none')
+                ? getAbilityModifierByName(actualAbilityScores, keyAbility)
+                : 0;
+
+              const synergyBonus = calculateTotalSynergyBonus(skill.id, characterSkillInstances, allPredefinedSkillDefinitions, allCustomSkillDefinitions);
+              const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats, allFeatDefinitions);
+              const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, allPredefinedSkillDefinitions);
+              const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skill.id, characterSize);
+              
+              const calculatedMiscModifier = synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus;
+              // The skill.miscModifier is the user-editable one, which is NOT directly edited in this form section, but still contributes to total.
+              const totalBonus = (skill.ranks || 0) + baseAbilityMod + calculatedMiscModifier + (skill.miscModifier || 0);
+              
+              const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
+              const skillCostDisplay = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 2;
+              const currentStepForInput = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 0.5;
+
+              return (
+                <div key={skill.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">
+                  <div className="flex justify-center w-10">
+                    <Checkbox
+                      id={`skill_class_${skill.id}`}
+                      checked={skill.isClassSkill}
+                      onCheckedChange={(checked) => {
+                          onSkillChange(skill.id, skill.ranks, !!checked);
+                      }}
+                      className="h-3.5 w-3.5"
+                    />
+                  </div>
+                  <div className="flex items-center">
+                       <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5 mr-1 text-muted-foreground hover:text-foreground"
+                          onClick={() => handleTriggerSkillInfoDialog(skill.id)}
+                          aria-label={`Info for ${skill.name}`}
+                        >
+                          <Info className="h-3 w-3" />
+                        </Button>
+                      <Label htmlFor={`skill_ranks_${skill.id}`} className="text-sm pr-1 leading-tight flex-grow flex items-center">
+                          {skill.name}
+                          {skill.isCustom && (
+                              <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 ml-1.5 font-normal">Custom</Badge>
+                          )}
+                      </Label>
+                    {skill.isCustom && (
+                      <div className="flex items-center ml-auto">
+                        <TooltipProvider delayDuration={100}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                               <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-5 w-5 text-muted-foreground hover:text-foreground"
+                                onClick={() => handleOpenEditDialog(skill)}
+                                aria-label={`Edit custom skill definition ${skill.name}`}
+                              >
+                                <Pencil className="h-3 w-3" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="p-1 text-xs">
+                              <p>Edit Custom Skill Definition</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                       </div>
+                    )}
+                  </div>
+                  <span className="font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
+                  <span className="text-sm text-muted-foreground text-center w-10">{keyAbilityDisplay}</span>
+                  <span className="text-sm text-center w-12">{baseAbilityMod >= 0 ? '+' : ''}{baseAbilityMod}</span>
+                  <span className="text-sm text-center w-12">{calculatedMiscModifier >= 0 ? '+' : ''}{calculatedMiscModifier}</span>
+                  <div className="w-32 flex justify-center">
+                    <NumberSpinnerInput
+                      id={`skill_ranks_${skill.id}`}
+                      value={skill.ranks || 0}
+                      onChange={(newValue) => onSkillChange(skill.id, newValue, skill.isClassSkill)}
+                      min={0}
+                      step={currentStepForInput}
+                      inputClassName="w-14 h-7 text-sm" 
+                      buttonSize="sm"
+                      buttonClassName="h-7 w-7"
+                    />
+                  </div>
+                  <span className="text-sm text-muted-foreground text-center w-12">{skillCostDisplay}</span>
+                  <span className={cn(
+                      "text-sm text-center w-10",
+                      (skill.ranks || 0) > maxRanksValue ? "text-destructive font-bold" : "text-muted-foreground"
+                    )}>
+                      {maxRanksValue}
+                  </span>
+                </div>
+              );
+            })}
           </div>
-
-          {skillsForDisplay.map(skill => {
-            const keyAbility = skill.keyAbility;
-            const keyAbilityDisplay = (keyAbility && keyAbility !== 'none') ? keyAbility.substring(0, 3).toUpperCase() : 'N/A';
-
-            const baseAbilityMod = (keyAbility && keyAbility !== 'none')
-              ? getAbilityModifierByName(actualAbilityScores, keyAbility)
-              : 0;
-
-            const synergyBonus = calculateTotalSynergyBonus(skill.id, characterSkillInstances, allPredefinedSkillDefinitions, allCustomSkillDefinitions);
-            const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats, allFeatDefinitions);
-            const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, allPredefinedSkillDefinitions);
-            const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skill.id, characterSize);
-            
-            const calculatedMiscModifier = synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus;
-            // The skill.miscModifier is the user-editable one, which is NOT directly edited in this form section, but still contributes to total.
-            const totalBonus = (skill.ranks || 0) + baseAbilityMod + calculatedMiscModifier + (skill.miscModifier || 0);
-            
-            const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
-            const skillCostDisplay = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 2;
-            const currentStepForInput = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 0.5;
-
-            return (
-              <div key={skill.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 hover:bg-muted/10 transition-colors text-sm">
-                <div className="flex justify-center w-10">
-                  <Checkbox
-                    id={`skill_class_${skill.id}`}
-                    checked={skill.isClassSkill}
-                    onCheckedChange={(checked) => {
-                        onSkillChange(skill.id, skill.ranks, !!checked);
-                    }}
-                    className="h-3.5 w-3.5"
-                  />
-                </div>
-                <div className="flex items-center">
-                     <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-5 w-5 mr-1 text-muted-foreground hover:text-foreground"
-                        onClick={() => handleTriggerSkillInfoDialog(skill.id)}
-                        aria-label={`Info for ${skill.name}`}
-                      >
-                        <Info className="h-3 w-3" />
-                      </Button>
-                    <Label htmlFor={`skill_ranks_${skill.id}`} className="text-sm pr-1 leading-tight flex-grow flex items-center">
-                        {skill.name}
-                        {skill.isCustom && (
-                            <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 ml-1.5 font-normal">Custom</Badge>
-                        )}
-                    </Label>
-                  {skill.isCustom && (
-                    <div className="flex items-center ml-auto">
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                             <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="h-5 w-5 text-muted-foreground hover:text-foreground"
-                              onClick={() => handleOpenEditDialog(skill)}
-                              aria-label={`Edit custom skill definition ${skill.name}`}
-                            >
-                              <Pencil className="h-3 w-3" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="p-1 text-xs">
-                            <p>Edit Custom Skill Definition</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                     </div>
-                  )}
-                </div>
-                <span className="font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
-                <span className="text-sm text-muted-foreground text-center w-10">{keyAbilityDisplay}</span>
-                <span className="text-sm text-center w-12">{baseAbilityMod >= 0 ? '+' : ''}{baseAbilityMod}</span>
-                <span className="text-sm text-center w-12">{calculatedMiscModifier >= 0 ? '+' : ''}{calculatedMiscModifier}</span>
-                <div className="w-32 flex justify-center">
-                  <NumberSpinnerInput
-                    id={`skill_ranks_${skill.id}`}
-                    value={skill.ranks || 0}
-                    onChange={(newValue) => onSkillChange(skill.id, newValue, skill.isClassSkill)}
-                    min={0}
-                    step={currentStepForInput}
-                    inputClassName="w-14 h-7 text-sm" 
-                    buttonSize="sm"
-                    buttonClassName="h-7 w-7"
-                  />
-                </div>
-                <span className="text-sm text-muted-foreground text-center w-12">{skillCostDisplay}</span>
-                <span className={cn(
-                    "text-sm text-center w-10",
-                    (skill.ranks || 0) > maxRanksValue ? "text-destructive font-bold" : "text-muted-foreground"
-                  )}>
-                    {maxRanksValue}
-                </span>
-              </div>
-            );
-          })}
         </div>
       </CardContent>
     </Card>
