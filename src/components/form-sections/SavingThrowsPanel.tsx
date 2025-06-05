@@ -44,7 +44,7 @@ export function SavingThrowsPanel({
 
   const calculatedBaseSaves = getBaseSaves(characterClasses, DND_CLASSES);
 
-  const dataRows = [
+  const dataColumns = [
     {
       label: "Total",
       getValue: (saveType: SavingThrowType) => {
@@ -106,25 +106,24 @@ export function SavingThrowsPanel({
           <table className="w-full min-w-[300px]">
             <thead>
               <tr className="border-b">
-                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground" />
-                {SAVE_TYPES.map((saveType) => (
-                  <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-muted-foreground capitalize">
-                    {SAVE_DISPLAY_NAMES[saveType]}
+                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground">Save</th>
+                {dataColumns.map((col) => (
+                  <th key={col.label} className="py-2 px-1 text-center text-sm font-medium text-muted-foreground capitalize">
+                    {col.label}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {dataRows.map((row) => {
-                const labelKey = typeof row.label === 'string' ? row.label.replace(/\s+/g, '-') : Math.random().toString();
+              {SAVE_TYPES.map((saveType) => {
                 return (
-                  <tr key={labelKey} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
-                    <td className="py-2 px-1 text-sm font-medium text-foreground align-middle whitespace-nowrap">
-                      {row.label}
+                  <tr key={saveType} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
+                    <td className="py-2 px-1 text-sm font-medium text-foreground align-middle whitespace-nowrap capitalize">
+                      {SAVE_DISPLAY_NAMES[saveType]}
                     </td>
-                    {SAVE_TYPES.map((saveType) => (
-                      <td key={`${labelKey}-${saveType}`} className="py-2 px-0.5 text-center text-sm text-muted-foreground align-middle">
-                        {row.getValue(saveType)}
+                    {dataColumns.map((col) => (
+                      <td key={`${saveType}-${col.label}`} className="py-2 px-0.5 text-center text-sm text-muted-foreground align-middle">
+                        {col.getValue(saveType)}
                       </td>
                     ))}
                   </tr>
@@ -137,3 +136,4 @@ export function SavingThrowsPanel({
     </Card>
   );
 }
+
