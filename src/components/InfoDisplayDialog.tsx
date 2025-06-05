@@ -236,6 +236,7 @@ export function InfoDisplayDialog({
     } = translations;
 
     let data: DerivedDialogData = { title: UI_STRINGS.infoDialogDefaultTitle || 'Information' };
+    const speedUnit = UI_STRINGS.speedUnit || "ft.";
 
     switch (contentType.type) {
       case 'race': {
@@ -465,7 +466,7 @@ export function InfoDisplayDialog({
       }
       case 'speedBreakdown': {
         const speedBreakdownDetails = calculateSpeedBreakdown(contentType.speedType, character, DND_RACES, DND_CLASSES, SIZES, UI_STRINGS);
-        const speedNameString = speedBreakdownDetails.name; // Name is now already translated (e.g., "Land", "Sol")
+        const speedNameString = speedBreakdownDetails.name;
         data = {
           title: (UI_STRINGS.infoDialogTitleSpeedBreakdown || "{speedName} Breakdown").replace("{speedName}", speedNameString),
           speedBreakdown: speedBreakdownDetails,
@@ -501,6 +502,7 @@ export function InfoDisplayDialog({
     );
   }
   const { UI_STRINGS } = translations;
+  const speedUnit = UI_STRINGS.speedUnit || "ft.";
 
   const {
     title: finalTitle,
@@ -607,7 +609,7 @@ export function InfoDisplayDialog({
                     return (
                       <div key={type} className="flex justify-between">
                         <span>{speedName}:</span>
-                        <span className="font-semibold">{speedVal} {UI_STRINGS.speedUnit || "ft."}</span>
+                        <span className="font-semibold">{speedVal} {speedUnit}</span>
                       </div>
                     );
                   })}
@@ -943,7 +945,7 @@ export function InfoDisplayDialog({
                     <Separator className="my-2" />
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{(UI_STRINGS.infoDialogSpeedTotalPrefixLabel || "Total")} {speedBreakdown.name}:</span>
-                      <span className="font-bold text-accent">{speedBreakdown.total} {UI_STRINGS.speedUnit || "ft."}</span>
+                      <span className="font-bold text-accent">{speedBreakdown.total} {speedUnit}</span>
                     </div>
                   </div>
                 </div>
