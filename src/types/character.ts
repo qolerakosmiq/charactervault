@@ -366,7 +366,7 @@ export function checkFeatPrerequisites(
   DND_RACES: readonly DndRaceOption[],
   ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[],
   ALIGNMENT_PREREQUISITE_OPTIONS: readonly { value: string; label: string }[],
-  uiStrings: Record<string, string> // Added uiStrings parameter
+  uiStrings: Record<string, string>
 ): PrerequisiteMessage[] {
   const { prerequisites } = featDefinitionToCheck;
   const messages: PrerequisiteMessage[] = [];
@@ -473,7 +473,8 @@ export function checkFeatPrerequisites(
       const skillDef = combinedSkillDefsForPrereq.find(sd => sd.id === skillReq.id);
       const skillName = skillDef?.label || skillReq.id;
       const isMet = charSkillInstance ? charSkillInstance.ranks >= skillReq.ranks : false;
-      messages.push({ text: `${skillName} ${skillReq.ranks} Ranks`, isMet, orderKey: `skill_${skillReq.id}`, originalText: skillName });
+      const ranksLabel = uiStrings.prereqSkillRanksLabel || "Ranks";
+      messages.push({ text: `${skillName} ${skillReq.ranks} ${ranksLabel}`, isMet, orderKey: `skill_${skillReq.id}`, originalText: skillName });
     }
   }
 
@@ -711,3 +712,4 @@ export * from './character-core';
 // For example, if SIZES or ALIGNMENTS were truly static and not i18n, they could be re-exported.
 // However, given the current setup, they are i18n-dependent and sourced via useI18n.
 // export { SIZES, ALIGNMENTS } from './character-core'; // Example, but likely not applicable now
+

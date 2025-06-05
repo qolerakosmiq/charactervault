@@ -188,6 +188,7 @@
     "featSelectionDialogEmpty": "Aucun don trouvé.",
     "featSelectionDialogLoadingDescription": "Chargement des informations sur les dons...",
     "featSelectionDialogCancelButton": "Annuler",
-    "prereqBabLabel": "BBA"
+    "prereqBabLabel": "BBA",
+    "prereqSkillRanksLabel": "Rangs"
   }
 }

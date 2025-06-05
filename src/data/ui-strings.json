@@ -188,6 +188,8 @@
     "featSelectionDialogEmpty": "No feats found.",
     "featSelectionDialogLoadingDescription": "Loading feat information...",
     "featSelectionDialogCancelButton": "Cancel",
-    "prereqBabLabel": "BAB"
+    "prereqBabLabel": "BAB",
+    "prereqSkillRanksLabel": "Ranks"
   }
 }
+
