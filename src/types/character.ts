@@ -166,6 +166,7 @@ export interface DamageReductionInstance {
 export interface Character {
   id: string;
   name: string;
+  playerName?: string;
   race: DndRaceId | '';
   alignment: CharacterAlignment;
   deity?: DndDeityId | string;
@@ -990,4 +991,3 @@ export interface GrappleDamageBreakdownDetails {
 
 // TODO: Define other specific breakdown detail types (e.g., ACBreakdownDetails, SkillModifierBreakdownDetails)
 // if they need to be distinct from how the dialog currently structures `detailsList`.
-

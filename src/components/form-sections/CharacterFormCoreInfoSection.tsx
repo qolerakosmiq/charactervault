@@ -37,7 +37,7 @@ import { Badge } from '@/components/ui/badge';
 import { ComboboxPrimitive } from '@/components/ui/combobox';
 
 interface CharacterFormCoreInfoSectionProps {
-  characterData: Pick<Character, 'name' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
+  characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
   onFieldChange: (field: keyof Character, value: any) => void;
   onClassChange: (className: DndClassId | string) => void;
   ageEffectsDetails: AgingEffectsDetails | null;
@@ -136,11 +136,15 @@ export function CharacterFormCoreInfoSection({
         </div>
       </CardHeader>
       <CardContent className="space-y-6 pt-6">
-        {/* Name and Race */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+        {/* Name, Player Name, Race */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
           <div className="space-y-1.5">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">Character Name</Label>
             <Input id="name" name="name" value={characterData?.name || ''} onChange={handleInputChange} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="playerName">Player Name</Label>
+            <Input id="playerName" name="playerName" value={characterData?.playerName || ''} onChange={handleInputChange} />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="race">Race</Label>

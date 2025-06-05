@@ -126,7 +126,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
     const baseCharData = {
       id: crypto.randomUUID(),
-      name: '', race: '', alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
+      name: '',
+      playerName: '', // Initialize playerName
+      race: '', alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
       height: '', weight: '', eyes: '', hair: '', skin: '',
       abilityScores: defaultBaseAbilityScores,
       abilityScoreTempCustomModifiers: defaultTempCustomMods,
@@ -161,6 +163,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       return {
         ...baseCharData,
         ...initialCharacter,
+        playerName: initialCharacter.playerName || '', // Ensure playerName is loaded
         alignment: initialCharacter.alignment || 'true-neutral',
         abilityScores: initialCharacter.abilityScores || defaultBaseAbilityScores,
         abilityScoreTempCustomModifiers: initialCharacter.abilityScoreTempCustomModifiers || defaultTempCustomMods,
@@ -669,6 +672,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         <CharacterFormCoreInfoSection
           characterData={{
             name: character.name,
+            playerName: character.playerName,
             race: character.race,
             alignment: character.alignment,
             deity: character.deity,
