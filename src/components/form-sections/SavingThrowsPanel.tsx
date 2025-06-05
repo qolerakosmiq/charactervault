@@ -129,7 +129,7 @@ export function SavingThrowsPanel({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
           <table className="w-full min-w-[400px]">
             <thead>
               <tr className="border-b">
@@ -170,3 +170,4 @@ export function SavingThrowsPanel({
     </Card>
   );
 }
+
