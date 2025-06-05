@@ -16,16 +16,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Award, PlusCircle, Trash2, Pencil } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
-// AddCustomFeatDialog import removed
 import { useToast } from "@/hooks/use-toast";
-import { Badge } from '@/components/ui/badge'; 
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 interface FeatsFormSectionProps {
   character: Character;
   allAvailableFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
   chosenFeatInstances: CharacterFeatInstance[];
   onFeatInstancesChange: (updatedInstances: CharacterFeatInstance[]) => void;
-  onEditCustomFeatDefinition: (featDefId: string) => void; // Callback to CharacterFormCore
+  onEditCustomFeatDefinition: (featDefId: string) => void;
   abilityScores: AbilityScores;
   skills: Skill[];
   allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
@@ -47,7 +47,6 @@ export function FeatsFormSection({
   const { toast } = useToast();
 
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
-  // State for AddCustomFeatDialog moved to CharacterFormCore
 
   const featSlotsBreakdown = React.useMemo(() => {
     return calculateAvailableFeats(character.race, characterLevel, character.classes);
@@ -55,8 +54,23 @@ export function FeatsFormSection({
 
   const { total: availableFeatSlots, base: baseFeat, racial: racialBonus, levelProgression: levelProgressionFeats, classBonus: classBonusFeats } = featSlotsBreakdown;
 
+  const sortInstancesByLabel = (instances: CharacterFeatInstance[]) => {
+    return [...instances].sort((a, b) => {
+      const defA = allAvailableFeatDefinitions.find(d => d.value === a.definitionId);
+      const defB = allAvailableFeatDefinitions.find(d => d.value === b.definitionId);
+      return (defA?.label || '').localeCompare(defB?.label || '');
+    });
+  };
 
-  const userChosenFeatInstancesCount = chosenFeatInstances.filter(f => !f.isGranted).length;
+  const userChosenFeatInstances = React.useMemo(() => {
+    return sortInstancesByLabel(chosenFeatInstances.filter(f => !f.isGranted));
+  }, [chosenFeatInstances, allAvailableFeatDefinitions]);
+
+  const grantedFeatInstances = React.useMemo(() => {
+    return sortInstancesByLabel(chosenFeatInstances.filter(f => f.isGranted));
+  }, [chosenFeatInstances, allAvailableFeatDefinitions]);
+
+  const userChosenFeatInstancesCount = userChosenFeatInstances.length;
   const featSlotsLeft = availableFeatSlots - userChosenFeatInstancesCount;
 
   const characterForPrereqCheck = React.useMemo(() => ({
@@ -66,7 +80,6 @@ export function FeatsFormSection({
   }), [character, abilityScores, skills]);
 
   const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs";
-
 
   const handleAddOrUpdateChosenFeatInstance = (definitionId: string, specializationDetail?: string) => {
     const definition = allAvailableFeatDefinitions.find(def => def.value === definitionId);
@@ -92,13 +105,9 @@ export function FeatsFormSection({
         return;
       }
     }
-    // If it can be taken multiple times, these checks are bypassed for chosen instances.
-    // However, even multi-take feats shouldn't be re-added if they are *granted* (unless the grant itself is stackable, which is rare).
-    // For simplicity, we'll assume granted feats (even if multi-take by definition) are only granted once by a source.
-
-    let newInstanceId = definition.value; // Default for non-multi-take or first instance of multi-take
+    
+    let newInstanceId = definition.value; 
     if (definition.canTakeMultipleTimes) {
-      // Ensure instance ID is unique for multi-take feats by appending a UUID
       newInstanceId = `${definition.value}-MULTI-INSTANCE-${crypto.randomUUID()}`;
     }
     
@@ -136,7 +145,6 @@ export function FeatsFormSection({
       const parts = definitionValue.split('-');
       if (parts.length > 1) {
         const className = parts[1];
-        // Find class label for proper capitalization if available
         const classDef = DND_CLASSES.find(c => c.value === className);
         return classDef ? classDef.label : className.charAt(0).toUpperCase() + className.slice(1);
       }
@@ -144,6 +152,70 @@ export function FeatsFormSection({
     return null;
   };
 
+  const renderFeatInstance = (instance: CharacterFeatInstance) => {
+    const definition = allAvailableFeatDefinitions.find(def => def.value === instance.definitionId);
+    if (!definition) return null;
+
+    const prereqMessages = checkFeatPrerequisites(definition, characterForPrereqCheck, allAvailableFeatDefinitions, allPredefinedSkillDefinitions, allCustomSkillDefinitions);
+    const isCustomDefinition = definition.isCustom;
+    
+    const featTypeLabel = definition.type && definition.type !== "special" 
+      ? FEAT_TYPES.find(ft => ft.value === definition.type)?.label
+      : null;
+
+    const featSource = (instance.isGranted && definition.isClassFeature) ? getFeatSource(definition.value) : null;
+
+    return (
+      <div key={instance.instanceId} className="group flex items-start justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors">
+        <div className="flex-grow mr-2">
+          <div className="flex items-baseline flex-wrap gap-x-1.5 mb-1">
+            {featSource && <Badge variant="secondary" className="text-xs font-normal h-5">{featSource}</Badge>}
+            <h4 className="font-medium text-foreground inline-flex items-center">
+              {definition.label}
+            </h4>
+            {featTypeLabel && <Badge variant="outline" className="text-xs font-normal h-5">{featTypeLabel}</Badge>}
+            {isCustomDefinition && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5">Custom</Badge>}
+            {instance.grantedNote && !featSource && <span className="text-xs text-muted-foreground italic">{instance.grantedNote}</span>}
+            {instance.grantedNote && featSource && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
+          </div>
+          {definition.requiresSpecialization && instance.specializationDetail && <p className="text-sm text-muted-foreground mt-0.5 ml-1">({instance.specializationDetail})</p>}
+          {definition.description && <div className="text-sm text-muted-foreground mt-0.5 whitespace-normal" dangerouslySetInnerHTML={{ __html: definition.description }} />}
+          {definition.effectsText && <p className="text-sm text-muted-foreground mt-0.5 whitespace-normal">Effects: {definition.effectsText}</p>}
+          {prereqMessages.length > 0 ? (
+            <div className="text-sm mt-0.5 whitespace-normal text-muted-foreground">
+              <strong>Prerequisites:</strong>{' '}
+              {prereqMessages.map((msg, idx, arr) => (
+                <React.Fragment key={idx}>
+                  <span className={cn(!msg.isMet ? 'text-destructive' : 'text-muted-foreground')} dangerouslySetInnerHTML={{ __html: msg.text }} />
+                  {idx < arr.length - 1 && ', '}
+                </React.Fragment>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm mt-0.5 whitespace-normal text-muted-foreground"><strong>Prerequisites:</strong> None</p>
+          )}
+        </div>
+        <div className="flex items-center shrink-0">
+          {isCustomDefinition && ( 
+            <Button
+              type="button" variant="ghost" size="icon"
+              onClick={() => handleOpenEditDialog(instance.definitionId)}
+              className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-50 group-hover:opacity-100 transition-opacity"
+              aria-label={`Edit custom feat definition ${definition.label}`}
+            ><Pencil className="h-4 w-4" /></Button>
+          )}
+          {!instance.isGranted && (
+            <Button
+              type="button" variant="ghost" size="icon"
+              onClick={() => handleRemoveChosenFeatInstance(instance.instanceId)}
+              className="h-8 w-8 text-destructive hover:text-destructive/80 opacity-50 group-hover:opacity-100 transition-opacity"
+              aria-label={`Remove feat instance`}
+            ><Trash2 className="h-4 w-4" /></Button>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -163,7 +235,7 @@ export function FeatsFormSection({
                 Feats Available: <span className="text-lg font-bold text-primary">{availableFeatSlots}</span>
               </p>
               <p className="text-sm font-medium">
-                Feats Left: <span className={cn(
+                Feats Left to Choose: <span className={cn(
                   "text-lg font-bold",
                   featSlotsLeft >= 0 ? "text-emerald-500" : "text-destructive"
                 )}>{featSlotsLeft}</span>
@@ -185,79 +257,35 @@ export function FeatsFormSection({
             </p>
           </div>
 
-          <div className="space-y-1 mb-3">
-            {chosenFeatInstances.map((instance) => {
-              const definition = allAvailableFeatDefinitions.find(def => def.value === instance.definitionId);
-              if (!definition) return null;
-
-              const prereqMessages = checkFeatPrerequisites(definition, characterForPrereqCheck, allAvailableFeatDefinitions, allPredefinedSkillDefinitions, allCustomSkillDefinitions);
-              const isCustomDefinition = definition.isCustom;
-              
-              const featTypeLabel = definition.type && definition.type !== "special" 
-                ? FEAT_TYPES.find(ft => ft.value === definition.type)?.label
-                : null;
-
-              const featSource = (instance.isGranted && definition.isClassFeature) ? getFeatSource(definition.value) : null;
-
-              return (
-                <div key={instance.instanceId} className="group flex items-start justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors">
-                  <div className="flex-grow mr-2">
-                    <div className="flex items-baseline flex-wrap gap-x-1.5 mb-1">
-                      {featSource && <Badge variant="secondary" className="text-xs font-normal h-5">{featSource}</Badge>}
-                      <h4 className="font-medium text-foreground inline-flex items-center">
-                        {definition.label}
-                      </h4>
-                      {featTypeLabel && <Badge variant="outline" className="text-xs font-normal h-5">{featTypeLabel}</Badge>}
-                      {isCustomDefinition && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5">Custom</Badge>}
-                       {instance.grantedNote && !featSource && <span className="text-xs text-muted-foreground italic">{instance.grantedNote}</span>}
-                       {instance.grantedNote && featSource && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
-                    </div>
-                    {definition.requiresSpecialization && instance.specializationDetail && <p className="text-sm text-muted-foreground mt-0.5 ml-1">({instance.specializationDetail})</p>}
-                    {definition.description && <div className="text-sm text-muted-foreground mt-0.5 whitespace-normal" dangerouslySetInnerHTML={{ __html: definition.description }} />}
-                    {definition.effectsText && <p className="text-sm text-muted-foreground mt-0.5 whitespace-normal">Effects: {definition.effectsText}</p>}
-                    {prereqMessages.length > 0 ? (
-                      <div className="text-sm mt-0.5 whitespace-normal text-muted-foreground">
-                        <strong>Prerequisites:</strong>{' '}
-                        {prereqMessages.map((msg, idx, arr) => (
-                          <React.Fragment key={idx}>
-                            <span className={cn(!msg.isMet ? 'text-destructive' : 'text-muted-foreground')} dangerouslySetInnerHTML={{ __html: msg.text }} />
-                            {idx < arr.length - 1 && ', '}
-                          </React.Fragment>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm mt-0.5 whitespace-normal text-muted-foreground"><strong>Prerequisites:</strong> None</p>
-                    )}
-                  </div>
-                  <div className="flex items-center shrink-0">
-                    {isCustomDefinition && ( 
-                      <Button
-                        type="button" variant="ghost" size="icon"
-                        onClick={() => handleOpenEditDialog(instance.definitionId)}
-                        className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-50 group-hover:opacity-100 transition-opacity"
-                        aria-label={`Edit custom feat definition ${definition.label}`}
-                      ><Pencil className="h-4 w-4" /></Button>
-                    )}
-                    {!instance.isGranted && (
-                      <Button
-                        type="button" variant="ghost" size="icon"
-                        onClick={() => handleRemoveChosenFeatInstance(instance.instanceId)}
-                        className="h-8 w-8 text-destructive hover:text-destructive/80 opacity-50 group-hover:opacity-100 transition-opacity"
-                        aria-label={`Remove feat instance`}
-                      ><Trash2 className="h-4 w-4" /></Button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="mt-2 flex gap-2">
+          <div className="mt-2 mb-4 flex gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setIsFeatDialogOpen(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" /> Add Feat
+              <PlusCircle className="mr-2 h-4 w-4" /> Add Chosen Feat
             </Button>
-            {/* "Add New Custom Feat Definition" button moved to CharacterFormCore */}
           </div>
+
+          {userChosenFeatInstances.length > 0 && (
+            <>
+              <h3 className="text-lg font-semibold mt-4 mb-2 text-primary">Chosen Feats</h3>
+              <div className="space-y-1 mb-3">
+                {userChosenFeatInstances.map(renderFeatInstance)}
+              </div>
+            </>
+          )}
+
+          {grantedFeatInstances.length > 0 && (
+            <>
+              {userChosenFeatInstances.length > 0 && <Separator className="my-4" />}
+              <h3 className="text-lg font-semibold mb-2 text-primary">Granted Feats</h3>
+              <div className="space-y-1 mb-3">
+                {grantedFeatInstances.map(renderFeatInstance)}
+              </div>
+            </>
+          )}
+          
+          {userChosenFeatInstances.length === 0 && grantedFeatInstances.length === 0 && (
+             <p className="text-sm text-muted-foreground mt-4">No feats selected or granted yet.</p>
+          )}
+
         </CardContent>
       </Card>
       <FeatSelectionDialog
@@ -269,8 +297,7 @@ export function FeatsFormSection({
         allPredefinedSkillDefinitions={allPredefinedSkillDefinitions}
         allCustomSkillDefinitions={allCustomSkillDefinitions}
       />
-      {/* AddCustomFeatDialog rendering removed from here */}
     </>
   );
 }
-
+    
