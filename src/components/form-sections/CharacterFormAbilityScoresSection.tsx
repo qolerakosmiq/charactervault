@@ -152,7 +152,6 @@ export function CharacterFormAbilityScoresSection({
                       id={`temp-mod-${ability}`}
                       value={tempCustomMod}
                       onChange={(newValue) => onAbilityScoreTempCustomModifierChange(ability, newValue)}
-                      min={-Infinity} // Allow large negative modifiers
                       inputClassName="h-8 text-base text-center"
                       buttonSize="icon"
                       buttonClassName="h-8 w-8"
@@ -163,6 +162,9 @@ export function CharacterFormAbilityScoresSection({
               );
             })}
           </div>
+          <p className="text-xs text-muted-foreground mt-4 pt-2 border-t border-border/30">
+            Note: The 'Temporary Modifier' field adjusts the 'Base Score' directly, not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score.
+          </p>
         </CardContent>
       </Card>
       {isCreating && (
