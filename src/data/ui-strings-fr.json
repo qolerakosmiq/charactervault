@@ -81,7 +81,6 @@
     "speedUnit": "m",
     "speedStepIncrement": "1",
     "infoDialogBabClassLabel": "Bonus de base à l'attaque de {classLabel} :",
-    "infoDialogBabTotalLabel": "Bonus de Base à l'Attaque Total :",
     "infoDialogInitiativeAbilityModLabel": "Mod. de {abilityAbbr} ({abilityFull}) :",
     "infoDialogInitiativeTotalLabel": "Initiative Totale :",
     "infoDialogGrappleModBabLabel": "Bonus de base à l'attaque :",
@@ -266,6 +265,13 @@
     "abilityScoreSourceTempMod": "Modificateur Temporaire",
     "abilityScoreSourceFeats": "Dons",
     "abilityScoreSourceRace": "Race ({raceLabel})",
-    "abilityScoreSourceAging": "Vieillissement ({categoryName})"
+    "abilityScoreSourceAging": "Vieillissement ({categoryName})",
+    "dmSettingsPanelTitle": "Paramètres du Maître du Donjon",
+    "dmSettingsRerollOnesLabel": "Relancer les 1 pour les Lancers de Caractéristiques",
+    "dmSettingsRerollOnesDescription": "Lors de l'utilisation de 4d6 (garder les 3 meilleurs), relancez tout dé affichant un 1 jusqu'à ce qu'il ne soit plus un 1.",
+    "dmSettingsPointBuyBudgetLabel": "Budget d'Achat par Points pour les Caractéristiques",
+    "dmSettingsPointBuyBudgetDescription": "Par défaut, 25 points pour l'achat par points standard de D&D 3.5.",
+    "dmSettingsAddCustomSkillButton": "Ajouter une Nouvelle Définition de Compétence Personnalisée",
+    "dmSettingsAddCustomFeatButton": "Ajouter une Nouvelle Définition de Don Personnalisé"
   }
 }

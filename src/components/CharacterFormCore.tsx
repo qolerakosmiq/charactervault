@@ -698,6 +698,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       </div>
     );
   }
+  const { UI_STRINGS } = translations;
 
   const selectedClassInfo = translations.DND_CLASSES.find(c => c.value === character.classes[0]?.className);
   const isPredefinedRace = !!translations.DND_RACES.find(r => r.value === character.race);
@@ -839,7 +840,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         <div className="space-y-4 p-4 border rounded-lg shadow-sm bg-card">
             <h3 className="text-xl font-serif text-foreground/80 flex items-center">
                 <Settings className="mr-3 h-6 w-6 text-primary/70" />
-                Dungeon Master Settings
+                {UI_STRINGS.dmSettingsPanelTitle || "Dungeon Master Settings"}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                 <div className="space-y-2">
@@ -850,16 +851,16 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                             onCheckedChange={definitionsActions.toggleRerollOnesForAbilityScores}
                             className="mr-2"
                         />
-                        Reroll 1s for Ability Score Rolls
+                        {UI_STRINGS.dmSettingsRerollOnesLabel || "Reroll 1s for Ability Score Rolls"}
                     </Label>
                     <p className="text-xs text-muted-foreground pl-6">
-                        When using 4d6 drop lowest, reroll any die that shows a 1 until it is not a 1.
+                        {UI_STRINGS.dmSettingsRerollOnesDescription || "When using 4d6 drop lowest, reroll any die that shows a 1 until it is not a 1."}
                     </p>
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="dm-point-buy-budget" className="flex items-center">
                         <Calculator className="mr-2 h-4 w-4 text-muted-foreground" />
-                        Point Buy Budget for Ability Scores
+                        {UI_STRINGS.dmSettingsPointBuyBudgetLabel || "Point Buy Budget for Ability Scores"}
                     </Label>
                     <NumberSpinnerInput
                         id="dm-point-buy-budget"
@@ -871,7 +872,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                         buttonSize="sm"
                     />
                      <p className="text-xs text-muted-foreground">
-                        Default is 25 points for standard D&amp;D 3.5 point buy.
+                        {UI_STRINGS.dmSettingsPointBuyBudgetDescription || "Default is 25 points for standard D&D 3.5 point buy."}
                     </p>
                 </div>
             </div>
@@ -883,7 +884,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     onClick={() => { setSkillToEdit(undefined); setIsAddOrEditSkillDialogOpen(true); }}
                     className="w-full sm:w-auto"
                 >
-                    <BookOpenCheck className="mr-2 h-5 w-5" /> Add New Custom Skill Definition
+                    <BookOpenCheck className="mr-2 h-5 w-5" /> {UI_STRINGS.dmSettingsAddCustomSkillButton || "Add New Custom Skill Definition"}
                 </Button>
                 <Button
                     type="button"
@@ -891,7 +892,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     onClick={() => { setEditingCustomFeatDefinition(undefined); setIsCustomFeatDialogOpen(true); }}
                     className="w-full sm:w-auto"
                 >
-                    <ShieldPlus className="mr-2 h-5 w-5" /> Add New Custom Feat Definition
+                    <ShieldPlus className="mr-2 h-5 w-5" /> {UI_STRINGS.dmSettingsAddCustomFeatButton || "Add New Custom Feat Definition"}
                 </Button>
             </div>
         </div>

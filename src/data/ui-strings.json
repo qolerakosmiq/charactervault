@@ -81,7 +81,6 @@
     "speedUnit": "ft.",
     "speedStepIncrement": "1.5",
     "infoDialogBabClassLabel": "{classLabel} Base Attack Bonus:",
-    "infoDialogBabTotalLabel": "Total Base Attack Bonus:",
     "infoDialogInitiativeAbilityModLabel": "{abilityAbbr} ({abilityFull}) Modifier:",
     "infoDialogInitiativeTotalLabel": "Total Initiative:",
     "infoDialogGrappleModBabLabel": "Base Attack Bonus:",
@@ -266,6 +265,13 @@
     "abilityScoreSourceTempMod": "Temporary Modifier",
     "abilityScoreSourceFeats": "Feats",
     "abilityScoreSourceRace": "Race ({raceLabel})",
-    "abilityScoreSourceAging": "Aging ({categoryName})"
+    "abilityScoreSourceAging": "Aging ({categoryName})",
+    "dmSettingsPanelTitle": "Dungeon Master Settings",
+    "dmSettingsRerollOnesLabel": "Reroll 1s for Ability Score Rolls",
+    "dmSettingsRerollOnesDescription": "When using 4d6 drop lowest, reroll any die that shows a 1 until it is not a 1.",
+    "dmSettingsPointBuyBudgetLabel": "Point Buy Budget for Ability Scores",
+    "dmSettingsPointBuyBudgetDescription": "Default is 25 points for standard D&D 3.5 point buy.",
+    "dmSettingsAddCustomSkillButton": "Add New Custom Skill Definition",
+    "dmSettingsAddCustomFeatButton": "Add New Custom Feat Definition"
   }
 }
