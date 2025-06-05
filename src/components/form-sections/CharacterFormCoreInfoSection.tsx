@@ -15,20 +15,20 @@ import type {
   RaceSpecialQualities,
   DndRaceOption,
   DndClassOption,
-} from '@/types/character-core'; // Use character-core
-// SIZES, ALIGNMENTS, DND_RACES, DND_CLASSES, GENDERS, DND_DEITIES are now from context
-import { isAlignmentCompatible } from '@/types/character'; // Utility function can stay
+} from '@/types/character-core';
+import { isAlignmentCompatible } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollText, Info } from 'lucide-react';
+import { ScrollText, Info, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Badge } from '@/components/ui/badge';
 import { ComboboxPrimitive } from '@/components/ui/combobox';
-import { useI18n } from '@/context/I18nProvider'; // Import useI18n
+import { useI18n } from '@/context/I18nProvider';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface CharacterFormCoreInfoSectionProps {
   characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
@@ -36,9 +36,6 @@ interface CharacterFormCoreInfoSectionProps {
   onClassChange: (className: DndClassId | string) => void;
   ageEffectsDetails: AgingEffectsDetails | null;
   raceSpecialQualities: RaceSpecialQualities | null;
-  // selectedClassInfo will be derived from context data
-  // isPredefinedRace will be derived from context data
-  // isPredefinedClass will be derived from context data
   currentMinAgeForInput: number;
   onOpenRaceInfoDialog: () => void;
   onOpenClassInfoDialog: () => void;
@@ -96,8 +93,6 @@ export function CharacterFormCoreInfoSection({
     return !!translations.DND_RACES.find(r => r.value === characterData.race);
   }, [translations, characterData.race]);
 
-  // isPredefinedClass is implicitly handled by selectedClassInfo
-
   const filteredDeities = React.useMemo(() => {
     if (!translations || !characterData.alignment) {
       return translations?.DND_DEITIES || [];
@@ -108,8 +103,9 @@ export function CharacterFormCoreInfoSection({
   }, [translations, characterData.alignment]);
 
   const deitySelectOptions = React.useMemo(() => {
-    if (!translations) return [{ value: DEITY_NONE_OPTION_VALUE, label: "None" }];
-    return [{ value: DEITY_NONE_OPTION_VALUE, label: "None" }, ...filteredDeities];
+    if (!translations) return [{ value: DEITY_NONE_OPTION_VALUE, label: "Loading..." }];
+    const noneOptionLabel = translations.UI_STRINGS?.deityNoneOption || "None";
+    return [{ value: DEITY_NONE_OPTION_VALUE, label: noneOptionLabel }, ...filteredDeities];
   }, [translations, filteredDeities]);
 
   React.useEffect(() => {
@@ -129,19 +125,23 @@ export function CharacterFormCoreInfoSection({
         <CardHeader>
           <div className="flex items-center space-x-3">
             <ScrollText className="h-8 w-8 text-primary" />
-            <CardTitle className="text-2xl font-serif">Core Attributes</CardTitle>
+            <Skeleton className="h-7 w-1/3" />
           </div>
+           <Skeleton className="h-4 w-3/4 mt-1" />
         </CardHeader>
-        <CardContent className="space-y-4 pt-6">
-          <div className="h-10 bg-muted rounded w-full animate-pulse"></div>
-          <div className="h-10 bg-muted rounded w-full animate-pulse"></div>
-          <div className="h-10 bg-muted rounded w-full animate-pulse"></div>
+        <CardContent className="space-y-6 pt-6">
+          {[1,2,3,4].map(i => (
+            <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+              <div className="space-y-1.5"> <Skeleton className="h-5 w-1/4 mb-1" /> <Skeleton className="h-10 w-full" /> </div>
+              <div className="space-y-1.5"> <Skeleton className="h-5 w-1/4 mb-1" /> <Skeleton className="h-10 w-full" /> </div>
+            </div>
+          ))}
         </CardContent>
       </Card>
     );
   }
 
-  const { ALIGNMENTS, DND_RACES, DND_CLASSES, GENDERS, SIZES } = translations;
+  const { ALIGNMENTS, DND_RACES, DND_CLASSES, GENDERS, SIZES, UI_STRINGS } = translations;
 
   return (
     <Card>
@@ -150,10 +150,10 @@ export function CharacterFormCoreInfoSection({
           <ScrollText className="h-8 w-8 text-primary" />
           <div>
             <CardTitle className="text-2xl font-serif">
-              Core Attributes
+              {UI_STRINGS.coreAttributesTitle || "Core Attributes"}
             </CardTitle>
             <CardDescription>
-              Define the fundamental aspects of your adventurer.
+              {UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer."}
             </CardDescription>
           </div>
         </div>
@@ -161,18 +161,18 @@ export function CharacterFormCoreInfoSection({
       <CardContent className="space-y-6 pt-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           <div className="space-y-1.5">
-            <Label htmlFor="name">Character Name</Label>
+            <Label htmlFor="name">{UI_STRINGS.characterNameLabel || "Character Name"}</Label>
             <Input id="name" name="name" value={characterData?.name || ''} onChange={handleInputChange} />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="playerName">Player Name</Label>
+            <Label htmlFor="playerName">{UI_STRINGS.playerNameLabel || "Player Name"}</Label>
             <Input id="playerName" name="playerName" value={characterData?.playerName || ''} onChange={handleInputChange} />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           <div className="space-y-1.5">
-            <Label htmlFor="race">Race</Label>
+            <Label htmlFor="race">{UI_STRINGS.raceLabel || "Race"}</Label>
             <div className="flex items-center gap-2">
               <div className="flex-grow">
                 <Select
@@ -180,7 +180,7 @@ export function CharacterFormCoreInfoSection({
                   onValueChange={(value) => handleSelectChange('race', value as DndRaceId)}
                 >
                   <SelectTrigger id="race">
-                    <SelectValue placeholder="Select race" />
+                    <SelectValue placeholder={UI_STRINGS.selectRacePlaceholder || "Select race"} />
                   </SelectTrigger>
                   <SelectContent>
                     {DND_RACES.map(race => (
@@ -207,14 +207,14 @@ export function CharacterFormCoreInfoSection({
             )}
           </div>
            <div className="space-y-1.5">
-            <Label htmlFor="className">Class</Label>
+            <Label htmlFor="className">{UI_STRINGS.classLabel || "Class"}</Label>
             <div className="flex items-center gap-2">
               <div className="flex-grow">
                 <Select
                   value={characterData?.classes[0]?.className || DND_CLASSES[0]?.value || ''}
                   onValueChange={(value) => onClassChange(value as DndClassId)}
                 >
-                  <SelectTrigger id="className"> <SelectValue placeholder="Select class" /> </SelectTrigger>
+                  <SelectTrigger id="className"> <SelectValue placeholder={UI_STRINGS.selectClassPlaceholder || "Select class"} /> </SelectTrigger>
                   <SelectContent> {DND_CLASSES.map(c => ( <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem> ))} </SelectContent>
                 </Select>
               </div>
@@ -230,11 +230,11 @@ export function CharacterFormCoreInfoSection({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           <div className="space-y-1.5">
-            <Label htmlFor="alignment">Alignment</Label>
+            <Label htmlFor="alignment">{UI_STRINGS.alignmentLabel || "Alignment"}</Label>
             <div className="flex items-center gap-2">
               <div className="flex-grow">
                 <Select name="alignment" value={characterData?.alignment} onValueChange={(value) => handleSelectChange('alignment', value as CharacterAlignment)}>
-                  <SelectTrigger><SelectValue placeholder="Select alignment" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={UI_STRINGS.selectAlignmentPlaceholder || "Select alignment"} /></SelectTrigger>
                   <SelectContent> {ALIGNMENTS.map(align => <SelectItem key={align.value} value={align.value}>{align.label}</SelectItem>)} </SelectContent>
                 </Select>
               </div>
@@ -242,11 +242,11 @@ export function CharacterFormCoreInfoSection({
             </div>
           </div>
           <div className="space-y-1.5">
-              <Label htmlFor="deity">Deity</Label>
+              <Label htmlFor="deity">{UI_STRINGS.deityLabel || "Deity"}</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
                   <Select value={(characterData?.deity && characterData.deity.trim() !== '') ? characterData.deity : DEITY_NONE_OPTION_VALUE} onValueChange={(value) => { handleSelectChange('deity', value === DEITY_NONE_OPTION_VALUE ? '' : value); }} >
-                    <SelectTrigger id="deity"> <SelectValue placeholder="Select deity" /> </SelectTrigger>
+                    <SelectTrigger id="deity"> <SelectValue placeholder={UI_STRINGS.selectDeityPlaceholder || "Select deity"} /> </SelectTrigger>
                     <SelectContent> {deitySelectOptions.map(opt => ( <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem> ))} </SelectContent>
                   </Select>
                 </div>
@@ -259,7 +259,7 @@ export function CharacterFormCoreInfoSection({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
           <div className="space-y-1.5">
-            <Label htmlFor="age" className="inline-block w-full text-center md:text-left">Age</Label>
+            <Label htmlFor="age" className="inline-block w-full text-center md:text-left">{UI_STRINGS.ageLabel || "Age"}</Label>
             <NumberSpinnerInput id="age" value={characterData?.age || currentMinAgeForInput} onChange={(newValue) => onFieldChange('age', newValue)} min={currentMinAgeForInput} max={1000} inputClassName="w-full h-10 text-base text-center" buttonClassName="h-10 w-10" buttonSize="icon" />
             {ageEffectsDetails && (ageEffectsDetails.categoryName !== 'Adult' || ageEffectsDetails.effects.length > 0) && (
               <div className="flex flex-wrap items-baseline justify-center md:justify-start gap-1 pt-[6px] ml-1">
@@ -275,13 +275,21 @@ export function CharacterFormCoreInfoSection({
             )}
             </div>
           <div className="space-y-1.5">
-            <Label htmlFor="gender">Gender</Label>
-             <ComboboxPrimitive options={GENDERS} value={characterData?.gender || ""} onChange={(value) => handleSelectChange('gender', value)} placeholder="Select or type gender..." searchPlaceholder="Search genders..." emptyPlaceholder="No gender found." isEditable={true} />
+            <Label htmlFor="gender">{UI_STRINGS.genderLabel || "Gender"}</Label>
+             <ComboboxPrimitive 
+                options={GENDERS} 
+                value={characterData?.gender || ""} 
+                onChange={(value) => handleSelectChange('gender', value)} 
+                placeholder={UI_STRINGS.selectGenderPlaceholder || "Select or type gender..."} 
+                searchPlaceholder="Search genders..." 
+                emptyPlaceholder="No gender found." 
+                isEditable={true} 
+            />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="size">Size</Label>
+            <Label htmlFor="size">{UI_STRINGS.sizeLabel || "Size"}</Label>
             <Select name="size" value={characterData?.size} onValueChange={(value) => handleSelectChange('size', value as CharacterSize)}>
-              <SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={UI_STRINGS.selectSizePlaceholder || "Select size"} /></SelectTrigger>
               <SelectContent> {SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)} </SelectContent>
             </Select>
             <div className="flex items-baseline gap-1 pt-[6px] ml-1">

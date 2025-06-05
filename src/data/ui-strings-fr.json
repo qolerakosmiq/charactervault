@@ -1,0 +1,23 @@
+
+{
+  "UI_STRINGS_DATA": {
+    "coreAttributesTitle": "Attributs Principaux",
+    "coreAttributesDescription": "Définissez les aspects fondamentaux de votre aventurier.",
+    "characterNameLabel": "Nom du Personnage",
+    "playerNameLabel": "Nom du Joueur",
+    "raceLabel": "Race",
+    "classLabel": "Classe",
+    "alignmentLabel": "Alignement",
+    "deityLabel": "Divinité",
+    "ageLabel": "Âge",
+    "genderLabel": "Genre",
+    "sizeLabel": "Taille",
+    "deityNoneOption": "Aucune",
+    "selectRacePlaceholder": "Choisir une race",
+    "selectClassPlaceholder": "Choisir une classe",
+    "selectAlignmentPlaceholder": "Choisir un alignement",
+    "selectDeityPlaceholder": "Choisir une divinité",
+    "selectGenderPlaceholder": "Choisir ou écrire un genre...",
+    "selectSizePlaceholder": "Choisir une taille"
+  }
+}

@@ -5,7 +5,8 @@ import type { LanguageCode } from './config';
 export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBundle> {
   const [
     alignments, base, classes, deities, feats, races, skills,
-    customAlignments, customBase, customClasses, customDeities, customFeats, customRaces, customSkills
+    customAlignments, customBase, customClasses, customDeities, customFeats, customRaces, customSkills,
+    uiStrings, customUiStrings
   ] = await Promise.all([
     import(`../data/dnd-alignments${lang === 'en' ? '' : '-fr'}.json`),
     import(`../data/dnd-base${lang === 'en' ? '' : '-fr'}.json`),
@@ -21,6 +22,8 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
     import(`../data/custom-feats${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ DND_FEATS_DATA: [], FEAT_TYPES_DATA: [] })),
     import(`../data/custom-races${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ DND_RACES_DATA: [] })),
     import(`../data/custom-skills${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ SKILL_DEFINITIONS_DATA: [], CLASS_SKILLS_DATA: {}, CLASS_SKILL_POINTS_BASE_DATA: {}, SKILL_SYNERGIES_DATA: {} })),
+    import(`../data/ui-strings${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ UI_STRINGS_DATA: {} })),
+    import(`../data/custom-ui-strings${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ UI_STRINGS_DATA: {} })),
   ]);
 
   return {
@@ -31,6 +34,7 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
     feats: feats.default || feats,
     races: races.default || races,
     skills: skills.default || skills,
+    uiStrings: uiStrings.default || uiStrings,
     customAlignments: customAlignments.default || customAlignments,
     customBase: customBase.default || customBase,
     customClasses: customClasses.default || customClasses,
@@ -38,5 +42,6 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
     customFeats: customFeats.default || customFeats,
     customRaces: customRaces.default || customRaces,
     customSkills: customSkills.default || customSkills,
+    customUiStrings: customUiStrings.default || customUiStrings,
   };
 }

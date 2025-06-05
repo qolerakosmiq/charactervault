@@ -18,22 +18,20 @@ import type {
   DamageReductionRuleValue,
   FeatTypeString,
   ClassCastingDetails,
-  CharacterSizeObject, // Assuming this will be used for processed sizes
-  CharacterAlignmentObject, // Assuming this will be used for processed alignments
+  CharacterSizeObject,
+  CharacterAlignmentObject,
   DndRaceOption,
   DndClassOption,
   DndDeityOption,
-  AbilityScores, // Added for DEFAULT_ABILITIES_DATA
-  SavingThrows,   // Added for DEFAULT_SAVING_THROWS_DATA
-  ResistanceValue, // Added for DEFAULT_RESISTANCE_VALUE_DATA
-  SpeedDetails,    // Added for DEFAULT_SPEED_DETAILS_DATA
-  CharacterClass  // For classes array in Character
-} from '@/types/character-core'; // We'll move core types here
+  AbilityScores,
+  SavingThrows,
+  ResistanceValue,
+  SpeedDetails,
+  CharacterClass
+} from '@/types/character-core';
 
 // Define types for the structure of each JSON file's data
-// These should match the *_DATA keys in your JSON files
 
-// From dnd-alignments.json
 export interface AlignmentDataEntry {
   value: CharacterAlignment;
   label: string;
@@ -43,7 +41,6 @@ export interface AlignmentsJson {
   ALIGNMENTS_DATA: AlignmentDataEntry[];
 }
 
-// From dnd-base.json
 export interface SizeDataEntry {
   value: CharacterSize;
   label: string;
@@ -52,7 +49,7 @@ export interface SizeDataEntry {
   grappleDamage?: string;
 }
 export interface GenderDataEntry {
-  value: string; // GenderId is a string
+  value: string;
   label: string;
 }
 export interface AbilityLabelEntry {
@@ -79,11 +76,11 @@ export interface AlignmentPrerequisiteGenericLabelEntry {
 export interface BaseJson {
   SIZES_DATA: SizeDataEntry[];
   GENDERS_DATA: GenderDataEntry[];
-  DEFAULT_ABILITIES_DATA: AbilityScores; // Changed key
-  DEFAULT_SAVING_THROWS_DATA: SavingThrows; // Changed key
-  DEFAULT_RESISTANCE_VALUE_DATA: ResistanceValue; // Added
-  DEFAULT_SPEED_DETAILS_DATA: SpeedDetails; // Changed key
-  DEFAULT_SPEED_PENALTIES_DATA: { armorSpeedPenalty: number; loadSpeedPenalty: number }; // Changed key
+  DEFAULT_ABILITIES_DATA: AbilityScores;
+  DEFAULT_SAVING_THROWS_DATA: SavingThrows;
+  DEFAULT_RESISTANCE_VALUE_DATA: ResistanceValue;
+  DEFAULT_SPEED_DETAILS_DATA: SpeedDetails;
+  DEFAULT_SPEED_PENALTIES_DATA: { armorSpeedPenalty: number; loadSpeedPenalty: number };
   DND_RACE_MIN_ADULT_AGE_DATA: Record<string, number>;
   DND_RACE_BASE_MAX_AGE_DATA: Record<string, number>;
   RACE_TO_AGING_CATEGORY_MAP_DATA: Record<string, string>;
@@ -97,7 +94,6 @@ export interface BaseJson {
   ALIGNMENT_PREREQUISITE_GENERIC_LABELS_DATA: AlignmentPrerequisiteGenericLabelEntry[];
 }
 
-// From dnd-classes.json
 export interface ClassDataEntry {
   value: DndClassId | string;
   label: string;
@@ -111,7 +107,6 @@ export interface ClassesJson {
   DND_CLASSES_DATA: ClassDataEntry[];
 }
 
-// From dnd-deities.json
 export interface DeityDataEntry {
   value: DndDeityId | string;
   label: string;
@@ -122,8 +117,7 @@ export interface DeitiesJson {
   DND_DEITIES_DATA: DeityDataEntry[];
 }
 
-// From dnd-feats.json
-export interface FeatDataEntry extends FeatDefinitionJsonData {} // Assuming FeatDefinitionJsonData is suitable
+export interface FeatDataEntry extends FeatDefinitionJsonData {}
 export interface FeatTypeDataEntry {
   value: FeatTypeString;
   label: string;
@@ -133,14 +127,12 @@ export interface FeatsJson {
   FEAT_TYPES_DATA: FeatTypeDataEntry[];
 }
 
-// From dnd-races.json
-export interface RaceDataEntry extends DndRaceOption {} // Assuming DndRaceOption is suitable
+export interface RaceDataEntry extends DndRaceOption {}
 export interface RacesJson {
   DND_RACES_DATA: RaceDataEntry[];
 }
 
-// From dnd-skills.json
-export interface SkillDefinitionDataEntry extends SkillDefinitionJsonData {} // Assuming SkillDefinitionJsonData is suitable
+export interface SkillDefinitionDataEntry extends SkillDefinitionJsonData {}
 export interface SkillsJson {
   SKILL_DEFINITIONS_DATA: SkillDefinitionDataEntry[];
   CLASS_SKILLS_DATA: ClassSkillsJsonData;
@@ -148,7 +140,10 @@ export interface SkillsJson {
   SKILL_SYNERGIES_DATA: SkillSynergiesJsonData;
 }
 
-// Bundle of all raw locale data (content of JSON files)
+export interface UiStringsJson {
+  UI_STRINGS_DATA: Record<string, string>;
+}
+
 export interface LocaleDataBundle {
   alignments: AlignmentsJson;
   base: BaseJson;
@@ -157,17 +152,17 @@ export interface LocaleDataBundle {
   feats: FeatsJson;
   races: RacesJson;
   skills: SkillsJson;
-  // Custom data files (can be optional or empty if not always present/translated)
-  customAlignments?: AlignmentsJson; // Assuming same structure
-  customBase?: Partial<BaseJson>; // Could be partial if only overriding some base values
+  uiStrings?: UiStringsJson;
+  customAlignments?: AlignmentsJson;
+  customBase?: Partial<BaseJson>;
   customClasses?: ClassesJson;
   customDeities?: DeitiesJson;
   customFeats?: FeatsJson;
   customRaces?: RacesJson;
   customSkills?: SkillsJson;
+  customUiStrings?: UiStringsJson;
 }
 
-// Fully processed data structures that components will use
 export interface ProcessedSiteData {
   ALIGNMENTS: readonly CharacterAlignmentObject[];
   SIZES: readonly CharacterSizeObject[];
@@ -183,15 +178,11 @@ export interface ProcessedSiteData {
   DAMAGE_REDUCTION_TYPES: readonly DamageReductionTypeEntry[];
   DAMAGE_REDUCTION_RULES_OPTIONS: readonly DamageReductionRuleEntry[];
   ALIGNMENT_PREREQUISITE_OPTIONS: readonly { value: string; label: string }[];
-  
-  // Default values from base.json
   DEFAULT_ABILITIES: AbilityScores;
   DEFAULT_SAVING_THROWS: SavingThrows;
   DEFAULT_RESISTANCE_VALUE: ResistanceValue;
   DEFAULT_SPEED_DETAILS: SpeedDetails;
   DEFAULT_SPEED_PENALTIES: { armorSpeedPenalty: number; loadSpeedPenalty: number };
-
-  // Also include raw data parts needed for lookups, e.g.:
   DND_RACE_MIN_ADULT_AGE_DATA: BaseJson['DND_RACE_MIN_ADULT_AGE_DATA'];
   DND_RACE_BASE_MAX_AGE_DATA: BaseJson['DND_RACE_BASE_MAX_AGE_DATA'];
   RACE_TO_AGING_CATEGORY_MAP_DATA: BaseJson['RACE_TO_AGING_CATEGORY_MAP_DATA'];
@@ -201,23 +192,25 @@ export interface ProcessedSiteData {
   CLASS_SKILLS: SkillsJson['CLASS_SKILLS_DATA'];
   CLASS_SKILL_POINTS_BASE: SkillsJson['CLASS_SKILL_POINTS_BASE_DATA'];
   SKILL_SYNERGIES: SkillsJson['SKILL_SYNERGIES_DATA'];
+  UI_STRINGS: Record<string, string>;
 }
 
-// Helper to merge base and custom data
 function mergeArrayData<T extends { value: string; label?: string }>(base: T[] = [], custom?: T[]): T[] {
   if (!custom) return base;
   const combinedMap = new Map<string, T>();
   base.forEach(item => combinedMap.set(item.value, item));
-  custom.forEach(item => combinedMap.set(item.value, item)); // Custom overrides base if values match
+  custom.forEach(item => combinedMap.set(item.value, item));
   return Array.from(combinedMap.values()).sort((a, b) => (a.label || a.value).localeCompare(b.label || b.value));
 }
-
 
 function mergeObjectData<T extends Record<string, any>>(base: T, custom?: Partial<T>): T {
   return { ...base, ...custom };
 }
 
-// Processing function
+function mergeUiStrings(base?: Record<string, string>, custom?: Record<string, string>): Record<string, string> {
+  return { ...(base || {}), ...(custom || {}) };
+}
+
 export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteData {
   const baseAlignments = bundle.alignments.ALIGNMENTS_DATA;
   const customAlignments = bundle.customAlignments?.ALIGNMENTS_DATA;
@@ -261,6 +254,10 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
   const genericAlignmentOptions = bundle.base.ALIGNMENT_PREREQUISITE_GENERIC_LABELS_DATA;
   const ALIGNMENT_PREREQUISITE_OPTIONS = [...specificAlignmentOptions, ...genericAlignmentOptions].sort((a,b) => a.label.localeCompare(b.label));
 
+  const baseUiStrings = bundle.uiStrings?.UI_STRINGS_DATA;
+  const customUiStrings = bundle.customUiStrings?.UI_STRINGS_DATA;
+  const UI_STRINGS = mergeUiStrings(baseUiStrings, customUiStrings);
+
   return {
     ALIGNMENTS,
     SIZES,
@@ -276,13 +273,11 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
     DAMAGE_REDUCTION_TYPES,
     DAMAGE_REDUCTION_RULES_OPTIONS,
     ALIGNMENT_PREREQUISITE_OPTIONS,
-    // Default values
     DEFAULT_ABILITIES: mergeObjectData(bundle.base.DEFAULT_ABILITIES_DATA, bundle.customBase?.DEFAULT_ABILITIES_DATA),
     DEFAULT_SAVING_THROWS: mergeObjectData(bundle.base.DEFAULT_SAVING_THROWS_DATA, bundle.customBase?.DEFAULT_SAVING_THROWS_DATA),
     DEFAULT_RESISTANCE_VALUE: mergeObjectData(bundle.base.DEFAULT_RESISTANCE_VALUE_DATA, bundle.customBase?.DEFAULT_RESISTANCE_VALUE_DATA),
     DEFAULT_SPEED_DETAILS: mergeObjectData(bundle.base.DEFAULT_SPEED_DETAILS_DATA, bundle.customBase?.DEFAULT_SPEED_DETAILS_DATA),
     DEFAULT_SPEED_PENALTIES: mergeObjectData(bundle.base.DEFAULT_SPEED_PENALTIES_DATA, bundle.customBase?.DEFAULT_SPEED_PENALTIES_DATA),
-    // Raw data passthrough
     DND_RACE_MIN_ADULT_AGE_DATA: mergeObjectData(bundle.base.DND_RACE_MIN_ADULT_AGE_DATA, bundle.customBase?.DND_RACE_MIN_ADULT_AGE_DATA),
     DND_RACE_BASE_MAX_AGE_DATA: mergeObjectData(bundle.base.DND_RACE_BASE_MAX_AGE_DATA, bundle.customBase?.DND_RACE_BASE_MAX_AGE_DATA),
     RACE_TO_AGING_CATEGORY_MAP_DATA: mergeObjectData(bundle.base.RACE_TO_AGING_CATEGORY_MAP_DATA, bundle.customBase?.RACE_TO_AGING_CATEGORY_MAP_DATA),
@@ -292,5 +287,6 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
     CLASS_SKILLS: mergeObjectData(bundle.skills.CLASS_SKILLS_DATA, bundle.customSkills?.CLASS_SKILLS_DATA),
     CLASS_SKILL_POINTS_BASE: mergeObjectData(bundle.skills.CLASS_SKILL_POINTS_BASE_DATA, bundle.customSkills?.CLASS_SKILL_POINTS_BASE_DATA),
     SKILL_SYNERGIES: mergeObjectData(bundle.skills.SKILL_SYNERGIES_DATA, bundle.customSkills?.SKILL_SYNERGIES_DATA),
+    UI_STRINGS,
   };
 }

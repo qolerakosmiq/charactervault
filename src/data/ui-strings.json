@@ -1,0 +1,23 @@
+
+{
+  "UI_STRINGS_DATA": {
+    "coreAttributesTitle": "Core Attributes",
+    "coreAttributesDescription": "Define the fundamental aspects of your adventurer.",
+    "characterNameLabel": "Character Name",
+    "playerNameLabel": "Player Name",
+    "raceLabel": "Race",
+    "classLabel": "Class",
+    "alignmentLabel": "Alignment",
+    "deityLabel": "Deity",
+    "ageLabel": "Age",
+    "genderLabel": "Gender",
+    "sizeLabel": "Size",
+    "deityNoneOption": "None",
+    "selectRacePlaceholder": "Select race",
+    "selectClassPlaceholder": "Select class",
+    "selectAlignmentPlaceholder": "Select alignment",
+    "selectDeityPlaceholder": "Select deity",
+    "selectGenderPlaceholder": "Select or type gender...",
+    "selectSizePlaceholder": "Select size"
+  }
+}
