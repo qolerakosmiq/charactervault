@@ -3,6 +3,5 @@
   "DND_RACES_DATA": [
     { "value": "human", "label": "FR: Human", "description": "<p>FR: Humans are the most adaptable...</p>", "bonusFeatSlots": 1, "speeds": { "land": 30 } },
     { "value": "elf", "label": "FR: Elf", "description": "<p>FR: Elves are a magical people...</p>", "racialSkillBonuses": { "listen": 2, "search": 2, "spot": 2 }, "speeds": { "land": 30 } }
-    // ... Add FR placeholders for all other races
   ]
 }
