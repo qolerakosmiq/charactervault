@@ -113,15 +113,18 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
                   <Icon className="h-5 w-5 mr-1.5 text-muted-foreground" />
                   <span className="text-sm font-medium">{label}</span>
                 </div>
-                <div className="flex items-center justify-center">
-                  <p className="text-3xl font-bold text-accent min-w-[50px] text-center">
-                    {speedData.total}<span className="text-base font-normal text-muted-foreground ml-1">{speedUnit}</span>
-                  </p>
+                <div className="flex items-center justify-center space-x-1 h-9"> {/* Ensure this container has a defined height if needed for alignment consistency */}
+                  <span className="text-3xl font-bold text-accent">
+                    {speedData.total}
+                  </span>
+                  <span className="text-base font-normal text-muted-foreground">
+                    {speedUnit}
+                  </span>
                   <Button
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground"
+                    className="h-7 w-7 text-muted-foreground hover:text-foreground"
                     onClick={() => onOpenSpeedInfoDialog(type)}
                   >
                     <Info className="h-4 w-4" />
