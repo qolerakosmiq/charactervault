@@ -10,6 +10,7 @@ import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '
 import { Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
+import { Label } from '@/components/ui/label'; // Added Label for consistency
 
 interface SavingThrowsPanelProps {
   character: Pick<Character, 'savingThrows' | 'classes'>;
@@ -36,62 +37,13 @@ const ABILITY_FULL_NAMES: Record<Exclude<AbilityName, 'none'>, string> = {
 
 export function SavingThrowsPanel({
   character,
-  abilityScores, // This is actualAbilityScores (final scores with all mods)
+  abilityScores,
   onSavingThrowMiscModChange,
 }: SavingThrowsPanelProps) {
   const savingThrows = character.savingThrows;
   const characterClasses = character.classes;
 
   const calculatedBaseSaves = getBaseSaves(characterClasses, DND_CLASSES);
-
-  const dataColumns = [
-    {
-      label: "Total",
-      getValue: (saveType: SavingThrowType) => {
-        const currentSaveData: SingleSavingThrow = savingThrows[saveType];
-        const baseSaveValue = calculatedBaseSaves[saveType];
-        const abilityKey = SAVING_THROW_ABILITIES[saveType];
-        const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
-        const totalSave = baseSaveValue + abilityModifier + currentSaveData.miscMod + (currentSaveData.magicMod || 0);
-        return <span className={cn("text-lg font-bold", totalSave >= 0 ? "text-accent" : "text-destructive")}>{totalSave >= 0 ? '+' : ''}{totalSave}</span>;
-      },
-    },
-    {
-      label: "Base",
-      getValue: (saveType: SavingThrowType) => calculatedBaseSaves[saveType],
-    },
-    {
-      label: "Ability Modifier",
-      getValue: (saveType: SavingThrowType) => {
-        const abilityKey = SAVING_THROW_ABILITIES[saveType] as Exclude<AbilityName, 'none'>;
-        const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
-        const fullAbilityName = ABILITY_FULL_NAMES[abilityKey];
-        return (
-          <div className="flex flex-col items-center -my-1">
-            <span className="text-xs leading-tight">{fullAbilityName}</span>
-            <span className="leading-tight">{abilityModifier >= 0 ? '+' : ''}{abilityModifier}</span>
-          </div>
-        );
-      },
-    },
-    {
-      label: "Custom Modifier",
-      getValue: (saveType: SavingThrowType) => (
-        <div className="flex justify-center">
-          <NumberSpinnerInput
-            value={savingThrows[saveType].miscMod}
-            onChange={(newValue) => onSavingThrowMiscModChange(saveType, newValue)}
-            min={-20}
-            max={20}
-            inputClassName="w-10 h-7 text-sm"
-            buttonSize="sm"
-            buttonClassName="h-7 w-7"
-          />
-        </div>
-      ),
-    },
-  ];
-
 
   return (
     <Card>
@@ -103,29 +55,73 @@ export function SavingThrowsPanel({
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[300px]">
+          <table className="w-full min-w-[400px]"> {/* Adjusted min-width for new layout */}
             <thead>
               <tr className="border-b">
-                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground">Save</th>
-                {dataColumns.map((col) => (
-                  <th key={col.label} className="py-2 px-1 text-center text-sm font-medium text-muted-foreground capitalize">
-                    {col.label}
-                  </th>
-                ))}
+                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground w-[100px]">
+                  {/* Empty, was "Save" */}
+                </th>
+                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground w-[60px]">
+                  Total
+                </th>
+                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground w-[60px]">
+                  Base
+                </th>
+                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground w-[120px]">
+                  <div className="flex flex-col items-center">
+                    <span>Ability</span>
+                    <span>Modifier</span>
+                  </div>
+                </th>
+                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground w-[120px]">
+                  <div className="flex flex-col items-center">
+                    <span>Custom</span>
+                    <span>Modifier</span>
+                  </div>
+                </th>
               </tr>
             </thead>
             <tbody>
               {SAVE_TYPES.map((saveType) => {
+                const currentSaveData = savingThrows[saveType];
+                const baseSaveValue = calculatedBaseSaves[saveType];
+                const abilityKey = SAVING_THROW_ABILITIES[saveType];
+                const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
+                const totalSave = baseSaveValue + abilityModifier + currentSaveData.miscMod + (currentSaveData.magicMod || 0);
+                const abilityFullName = ABILITY_FULL_NAMES[abilityKey as Exclude<AbilityName, 'none'>];
+
                 return (
                   <tr key={saveType} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
-                    <td className="py-2 px-1 text-sm font-medium text-foreground align-middle whitespace-nowrap capitalize">
+                    <td className="py-3 px-1 text-sm font-medium text-foreground align-middle whitespace-nowrap capitalize">
                       {SAVE_DISPLAY_NAMES[saveType]}
                     </td>
-                    {dataColumns.map((col) => (
-                      <td key={`${saveType}-${col.label}`} className="py-2 px-0.5 text-center text-sm text-muted-foreground align-middle">
-                        {col.getValue(saveType)}
-                      </td>
-                    ))}
+                    <td className="py-3 px-1 text-center text-sm text-muted-foreground align-middle">
+                      <span className={cn("text-lg font-bold", totalSave >= 0 ? "text-accent" : "text-destructive")}>
+                        {totalSave >= 0 ? '+' : ''}{totalSave}
+                      </span>
+                    </td>
+                    <td className="py-3 px-1 text-center text-sm text-muted-foreground align-middle">
+                      {baseSaveValue}
+                    </td>
+                    <td className="py-3 px-1 text-center text-sm text-muted-foreground align-middle">
+                      <div className="flex flex-col items-center -my-1">
+                        <span className="text-xs leading-tight">{abilityFullName}</span>
+                        <span className="leading-tight">{abilityModifier >= 0 ? '+' : ''}{abilityModifier}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-1 text-center text-sm text-muted-foreground align-middle">
+                      <div className="flex justify-center">
+                        <NumberSpinnerInput
+                          value={currentSaveData.miscMod}
+                          onChange={(newValue) => onSavingThrowMiscModChange(saveType, newValue)}
+                          min={-20}
+                          max={20}
+                          inputClassName="w-16 h-8 text-sm" // Adjusted width
+                          buttonSize="icon" // Using icon size for buttons
+                          buttonClassName="h-8 w-8" // Matched button height to input
+                        />
+                      </div>
+                    </td>
                   </tr>
                 );
               })}
@@ -136,4 +132,3 @@ export function SavingThrowsPanel({
     </Card>
   );
 }
-
