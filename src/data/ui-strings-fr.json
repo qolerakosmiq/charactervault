@@ -97,7 +97,8 @@
     "abilityScoresPointBuyButton": "Achat par Points",
     "abilityScoresBaseScoreLabel": "Score de Base",
     "abilityScoresTempModLabel": "Modificateur Temporaire",
-    "abilityScoresNote_prefix": "<strong>Note :</strong> Le champ ",
+    "abilityScoresNote_prefix_strong": "<strong>Note :</strong>",
+    "abilityScoresNote_text_before_badge0": "Le champ ",
     "abilityScoresNote_badge0_text": "Modificateur Temporaire",
     "abilityScoresNote_text_after_badge0": " ajuste directement le ",
     "abilityScoresNote_badge1_text": "Score de Base",
@@ -148,7 +149,7 @@
     "skillsPanelDescription": "Investissez des points dans les capacités de votre personnage.",
     "skillPointsAvailableLabel": "Points de Compétence Disponibles :",
     "skillPointsLeftLabel": "Points de Compétence Restants :",
-    "skillPointFormulaClassBaseLabel": "Base ({classLabel})",
+    "skillPointFormulaClassBaseLabel": "Base {classLabel}",
     "skillPointFormulaIntModLabel": "Modificateur d'Intelligence",
     "skillPointFormulaRacialModLabel": "Modificateur Racial",
     "skillPointFormulaMinOneLabel": ", Minimum 1",
@@ -169,4 +170,3 @@
     "skillsTableTooltipInfoForSkill": "Infos pour {skillName}"
   }
 }
-    
