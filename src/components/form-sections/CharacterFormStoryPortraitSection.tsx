@@ -1,7 +1,7 @@
 
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -37,8 +37,8 @@ export function CharacterFormStoryPortraitSection({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-6 pt-6">
-        <div className="space-y-1.5 mb-6">
+      <CardContent className="space-y-4 pt-2">
+        <div className="space-y-1.5 mb-4">
             <Label htmlFor="campaign">Campaign</Label>
             <Input 
               id="campaign" 
@@ -88,7 +88,7 @@ export function CharacterFormStoryPortraitSection({
           </div>
         </div>
 
-        <div className="mt-6 pt-6 border-t border-border/40">
+        <div className="mt-4 pt-4 border-t border-border/40">
             <h3 className="text-lg font-semibold mb-3 text-foreground/90">Physical Appearance</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
