@@ -180,6 +180,7 @@ export function FeatsFormSection({
       : null;
 
     const featSource = (instance.isGranted && definition.isClassFeature) ? getFeatSource(definition.value) : null;
+    const { UI_STRINGS } = translations;
 
     return (
       <div key={instance.instanceId} className="group flex items-start justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors">
@@ -190,7 +191,7 @@ export function FeatsFormSection({
               {definition.label}
             </h4>
             {featTypeLabel && <Badge variant="outline" className="text-xs font-normal h-5">{featTypeLabel}</Badge>}
-            {isCustomDefinition && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5">Custom</Badge>}
+            {isCustomDefinition && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
             {instance.grantedNote && !featSource && <span className="text-xs text-muted-foreground italic">{instance.grantedNote}</span>}
             {instance.grantedNote && featSource && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
           </div>
@@ -199,7 +200,7 @@ export function FeatsFormSection({
           {definition.effectsText && <p className="text-sm text-muted-foreground mt-0.5 whitespace-normal">Effects: {definition.effectsText}</p>}
           {prereqMessages.length > 0 ? (
             <div className="text-sm mt-0.5 whitespace-normal text-muted-foreground">
-              <strong>Prerequisites:</strong>{' '}
+              <strong>{UI_STRINGS.featPrerequisitesLabel || "Prerequisites:"}</strong>{' '}
               {prereqMessages.map((msg, idx, arr) => (
                 <React.Fragment key={idx}>
                   <span className={cn(!msg.isMet ? 'text-destructive' : 'text-muted-foreground')} dangerouslySetInnerHTML={{ __html: msg.text }} />
@@ -208,7 +209,9 @@ export function FeatsFormSection({
               ))}
             </div>
           ) : (
-            <p className="text-sm mt-0.5 whitespace-normal text-muted-foreground"><strong>Prerequisites:</strong> None</p>
+            <p className="text-sm mt-0.5 whitespace-normal text-muted-foreground">
+              <strong>{UI_STRINGS.featPrerequisitesLabel || "Prerequisites:"}</strong> {UI_STRINGS.featPrerequisitesNoneLabel || "None"}
+            </p>
           )}
         </div>
         <div className="flex items-center shrink-0">
@@ -217,7 +220,7 @@ export function FeatsFormSection({
               type="button" variant="ghost" size="icon"
               onClick={() => handleOpenEditDialog(instance.definitionId)}
               className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-50 group-hover:opacity-100 transition-opacity"
-              aria-label={`Edit custom feat definition ${definition.label}`}
+              aria-label={(UI_STRINGS.featInstanceEditAriaLabel || "Edit custom feat definition {featLabel}").replace("{featLabel}", definition.label)}
             ><Pencil className="h-4 w-4" /></Button>
           )}
           {!instance.isGranted && (
@@ -225,7 +228,7 @@ export function FeatsFormSection({
               type="button" variant="ghost" size="icon"
               onClick={() => handleRemoveChosenFeatInstance(instance.instanceId)}
               className="h-8 w-8 text-destructive hover:text-destructive/80 opacity-50 group-hover:opacity-100 transition-opacity"
-              aria-label={`Remove feat instance`}
+              aria-label={UI_STRINGS.featInstanceRemoveAriaLabel || "Remove feat instance"}
             ><Trash2 className="h-4 w-4" /></Button>
           )}
         </div>
@@ -252,7 +255,7 @@ export function FeatsFormSection({
       </Card>
     );
   }
-  const { DND_CLASSES, DND_RACES, ABILITY_LABELS, ALIGNMENT_PREREQUISITE_OPTIONS } = translations;
+  const { DND_CLASSES, DND_RACES, ABILITY_LABELS, ALIGNMENT_PREREQUISITE_OPTIONS, UI_STRINGS } = translations;
 
   return (
     <>
@@ -261,7 +264,7 @@ export function FeatsFormSection({
           <div className="flex items-center space-x-3">
             <Award className="h-8 w-8 text-primary" />
             <div>
-              <CardTitle className="text-2xl font-serif">Feats</CardTitle>
+              <CardTitle className="text-2xl font-serif">{UI_STRINGS.featsPanelTitle || "Feats"}</CardTitle>
             </div>
           </div>
         </CardHeader>
@@ -269,26 +272,26 @@ export function FeatsFormSection({
           <div className="mb-3 p-3 border rounded-md bg-muted/30">
             <div className="flex justify-between items-center">
               <p className="text-sm font-medium">
-                Feats Available: <span className="text-lg font-bold text-primary">{availableFeatSlots}</span>
+                {UI_STRINGS.featsPanelFeatsAvailableLabel || "Feats Available:"} <span className="text-lg font-bold text-primary">{availableFeatSlots}</span>
               </p>
               <p className="text-sm font-medium">
-                Feats Left to Choose: <span className={cn(
+                {UI_STRINGS.featsPanelFeatsLeftLabel || "Feats Left to Choose:"} <span className={cn(
                   "text-lg font-bold",
                   featSlotsLeft >= 0 ? "text-emerald-500" : "text-destructive"
                 )}>{featSlotsLeft}</span>
               </p>
             </div>
              <p className="text-xs text-muted-foreground mt-1">
-              Base <Badge variant="outline" className={badgeClassName}>{baseFeat}</Badge>
+              {UI_STRINGS.featsPanelBreakdownBaseLabel || "Base"} <Badge variant="outline" className={badgeClassName}>{baseFeat}</Badge>
               {racialBonus > 0 && (
                 <>
-                  {' + '}Racial Bonus <Badge variant="outline" className={badgeClassName}>{racialBonus}</Badge>
+                  {' + '} {UI_STRINGS.featsPanelBreakdownRacialLabel || "Racial Bonus"} <Badge variant="outline" className={badgeClassName}>{racialBonus}</Badge>
                 </>
               )}
-              {' + '}Level Progression <Badge variant="outline" className={badgeClassName}>{levelProgressionFeats}</Badge>
+              {' + '} {UI_STRINGS.featsPanelBreakdownLevelProgressionLabel || "Level Progression"} <Badge variant="outline" className={badgeClassName}>{levelProgressionFeats}</Badge>
               {classBonusFeats > 0 && (
                 <>
-                  {' + '}Class Granted <Badge variant="outline" className={badgeClassName}>{classBonusFeats}</Badge>
+                  {' + '} {UI_STRINGS.featsPanelBreakdownClassGrantedLabel || "Class Granted"} <Badge variant="outline" className={badgeClassName}>{classBonusFeats}</Badge>
                 </>
               )}
             </p>
@@ -296,13 +299,13 @@ export function FeatsFormSection({
 
           <div className="mt-2 mb-4 flex gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setIsFeatDialogOpen(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" /> Add Chosen Feat
+              <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.featsPanelAddButton || "Add Chosen Feat"}
             </Button>
           </div>
 
           {userChosenFeatInstances.length > 0 && (
             <>
-              <h3 className="text-lg font-semibold mt-4 mb-2 text-primary">Chosen Feats</h3>
+              <h3 className="text-lg font-semibold mt-4 mb-2 text-primary">{UI_STRINGS.featsPanelChosenFeatsTitle || "Chosen Feats"}</h3>
               <div className="space-y-1 mb-3">
                 {userChosenFeatInstances.map(renderFeatInstance)}
               </div>
@@ -312,7 +315,7 @@ export function FeatsFormSection({
           {grantedFeatInstances.length > 0 && (
             <>
               {userChosenFeatInstances.length > 0 && <Separator className="my-4" />}
-              <h3 className="text-lg font-semibold mb-2 text-primary">Granted Feats</h3>
+              <h3 className="text-lg font-semibold mb-2 text-primary">{UI_STRINGS.featsPanelGrantedFeatsTitle || "Granted Feats"}</h3>
               <div className="space-y-1 mb-3">
                 {grantedFeatInstances.map(renderFeatInstance)}
               </div>
@@ -320,7 +323,7 @@ export function FeatsFormSection({
           )}
           
           {userChosenFeatInstances.length === 0 && grantedFeatInstances.length === 0 && (
-             <p className="text-sm text-muted-foreground mt-4">No feats selected or granted yet.</p>
+             <p className="text-sm text-muted-foreground mt-4">{UI_STRINGS.featsPanelNoFeatsYet || "No feats selected or granted yet."}</p>
           )}
 
         </CardContent>

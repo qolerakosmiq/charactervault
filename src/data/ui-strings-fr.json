@@ -90,6 +90,7 @@
     "infoDialogGrappleDmgTotalLabel": "Total :",
     "featPrerequisitesLabel": "Prérequis :",
     "featEffectsLabel": "Effets :",
+    "featPrerequisitesNoneLabel": "Aucun",
     "saveProgressionGood": "Bon",
     "saveProgressionPoor": "Mauvais",
     "abilityScoresSectionTitle": "Caractéristiques",
@@ -167,6 +168,19 @@
     "skillsTableTooltipMaxRanks": "Rangs Max : {maxRanksValue}",
     "skillsTableTooltipEditCustom": "Modifier la Définition de Compétence Personnalisée",
     "skillsTableTooltipInfoForSkill": "Infos pour {skillName}",
-    "badgeCustomLabel": "Personnalisé"
+    "badgeCustomLabel": "Personnalisé",
+    "featsPanelTitle": "Dons",
+    "featsPanelFeatsAvailableLabel": "Dons Disponibles :",
+    "featsPanelFeatsLeftLabel": "Dons Restants à Choisir :",
+    "featsPanelBreakdownBaseLabel": "Base",
+    "featsPanelBreakdownRacialLabel": "Bonus Racial",
+    "featsPanelBreakdownLevelProgressionLabel": "Progression de Niveau",
+    "featsPanelBreakdownClassGrantedLabel": "Accordé par Classe",
+    "featsPanelAddButton": "Ajouter un Don Choisi",
+    "featsPanelChosenFeatsTitle": "Dons Choisis",
+    "featsPanelGrantedFeatsTitle": "Dons Accordés",
+    "featsPanelNoFeatsYet": "Aucun don sélectionné ou accordé pour l'instant.",
+    "featInstanceEditAriaLabel": "Modifier la définition du don personnalisé {featLabel}",
+    "featInstanceRemoveAriaLabel": "Supprimer l'instance du don"
   }
 }

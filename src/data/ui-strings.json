@@ -90,6 +90,7 @@
     "infoDialogGrappleDmgTotalLabel": "Total:",
     "featPrerequisitesLabel": "Prerequisites:",
     "featEffectsLabel": "Effects:",
+    "featPrerequisitesNoneLabel": "None",
     "saveProgressionGood": "Good",
     "saveProgressionPoor": "Poor",
     "abilityScoresSectionTitle": "Ability Scores",
@@ -167,6 +168,19 @@
     "skillsTableTooltipMaxRanks": "Max Ranks: {maxRanksValue}",
     "skillsTableTooltipEditCustom": "Edit Custom Skill Definition",
     "skillsTableTooltipInfoForSkill": "Info for {skillName}",
-    "badgeCustomLabel": "Custom"
+    "badgeCustomLabel": "Custom",
+    "featsPanelTitle": "Feats",
+    "featsPanelFeatsAvailableLabel": "Feats Available:",
+    "featsPanelFeatsLeftLabel": "Feats Left to Choose:",
+    "featsPanelBreakdownBaseLabel": "Base",
+    "featsPanelBreakdownRacialLabel": "Racial Bonus",
+    "featsPanelBreakdownLevelProgressionLabel": "Level Progression",
+    "featsPanelBreakdownClassGrantedLabel": "Class Granted",
+    "featsPanelAddButton": "Add Chosen Feat",
+    "featsPanelChosenFeatsTitle": "Chosen Feats",
+    "featsPanelGrantedFeatsTitle": "Granted Feats",
+    "featsPanelNoFeatsYet": "No feats selected or granted yet.",
+    "featInstanceEditAriaLabel": "Edit custom feat definition {featLabel}",
+    "featInstanceRemoveAriaLabel": "Remove feat instance"
   }
 }
