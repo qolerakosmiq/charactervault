@@ -52,7 +52,6 @@ export function FeatsFormSection({
 
   const featSlotsBreakdown = React.useMemo(() => {
     if (translationsLoading || !translations) return { total: 0, base: 0, racial: 0, levelProgression: 0, classBonus: 0 };
-    // DND_RACES is now from translations
     return calculateAvailableFeats(character.race, characterLevel, character.classes, translations.DND_RACES);
   }, [character.race, characterLevel, character.classes, translations, translationsLoading]);
 
@@ -253,6 +252,7 @@ export function FeatsFormSection({
       </Card>
     );
   }
+  const { DND_CLASSES, DND_RACES, ABILITY_LABELS, ALIGNMENT_PREREQUISITE_OPTIONS } = translations;
 
   return (
     <>
@@ -333,10 +333,13 @@ export function FeatsFormSection({
         character={characterForPrereqCheck}
         allPredefinedSkillDefinitions={allPredefinedSkillDefinitions}
         allCustomSkillDefinitions={allCustomSkillDefinitions}
+        allClasses={DND_CLASSES}
+        allRaces={DND_RACES}
+        abilityLabels={ABILITY_LABELS}
+        alignmentPrereqOptions={ALIGNMENT_PREREQUISITE_OPTIONS}
+        isLoadingTranslations={translationsLoading}
       />
     </>
   );
 }
-    
-
     

@@ -19,10 +19,13 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import type { FeatDefinitionJsonData, Character, PrerequisiteMessage, SkillDefinitionJsonData } from '@/types/character';
+import type {
+  FeatDefinitionJsonData, Character, PrerequisiteMessage, SkillDefinitionJsonData,
+  DndClassOption, DndRaceOption, AbilityName
+} from '@/types/character';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { BookOpenText } from 'lucide-react';
+import { BookOpenText, Loader2 } from 'lucide-react';
 import { checkFeatPrerequisites } from '@/types/character';
 import { cn } from '@/lib/utils';
 
@@ -34,6 +37,12 @@ interface FeatSelectionDialogProps {
   character: Character;
   allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
   allCustomSkillDefinitions: readonly CustomSkillDefinition[];
+  // Added i18n props
+  allClasses: readonly DndClassOption[];
+  allRaces: readonly DndRaceOption[];
+  abilityLabels: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
+  alignmentPrereqOptions: readonly { value: string; label: string }[];
+  isLoadingTranslations?: boolean; // Optional prop to indicate if translations are loading
 }
 
 const stripHtml = (html: string): string => {
@@ -53,16 +62,21 @@ export function FeatSelectionDialog({
   character,
   allPredefinedSkillDefinitions,
   allCustomSkillDefinitions,
+  allClasses,
+  allRaces,
+  abilityLabels,
+  alignmentPrereqOptions,
+  isLoadingTranslations = false,
 }: FeatSelectionDialogProps) {
   const [searchTerm, setSearchTerm] = React.useState('');
   const scrollAreaRef = React.useRef<HTMLDivElement>(null);
 
   const sortedAndFilteredFeats = React.useMemo(() => {
-    // Filter out feats that are marked as class features, then sort
+    if (isLoadingTranslations) return [];
     return [...allFeats]
-      .filter(featDef => featDef.isClassFeature !== true) // Only show if NOT a class feature
+      .filter(featDef => featDef.isClassFeature !== true)
       .sort((a, b) => a.label.localeCompare(b.label));
-  }, [allFeats]);
+  }, [allFeats, isLoadingTranslations]);
 
   React.useEffect(() => {
     if (isOpen && scrollAreaRef.current) {
@@ -71,8 +85,34 @@ export function FeatSelectionDialog({
         viewport.scrollTop = 0;
       }
     }
-    if(!isOpen) setSearchTerm(''); // Clear search on close
-  }, [isOpen, searchTerm]); // Rerun on search term change too to reset scroll
+    if(!isOpen) setSearchTerm('');
+  }, [isOpen, searchTerm]);
+
+  if (isLoadingTranslations) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-xl md:max-w-2xl flex flex-col h-[75vh]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center font-serif">
+              <BookOpenText className="mr-2 h-6 w-6 text-primary" /> Select a Feat
+            </DialogTitle>
+            <DialogDescription>
+              Loading feat information...
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex-grow flex items-center justify-center">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          </div>
+          <DialogFooter className="mt-4 pt-0">
+            <Button variant="outline" onClick={() => { onOpenChange(false); }}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -97,11 +137,15 @@ export function FeatSelectionDialog({
               <CommandGroup>
                 {sortedAndFilteredFeats.map((featDef) => {
                   const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(
-                    featDef, 
-                    character, 
-                    allFeats, 
+                    featDef,
+                    character,
+                    allFeats,
                     allPredefinedSkillDefinitions,
-                    allCustomSkillDefinitions
+                    allCustomSkillDefinitions,
+                    allClasses,         // Pass down from props
+                    allRaces,           // Pass down from props
+                    abilityLabels,      // Pass down from props
+                    alignmentPrereqOptions // Pass down from props
                   );
                   return (
                     <CommandItem
