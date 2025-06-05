@@ -14,17 +14,9 @@ import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog'
 import { AbilityScorePointBuyDialog } from '@/components/AbilityScorePointBuyDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { Badge } from '@/components/ui/badge';
+import { ABILITY_LABELS } from '@/types/character';
 
 const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
-
-const ABILITY_DISPLAY_NAMES_FULL: Record<Exclude<AbilityName, 'none'>, string> = {
-  strength: 'Strength',
-  dexterity: 'Dexterity',
-  constitution: 'Constitution',
-  intelligence: 'Intelligence',
-  wisdom: 'Wisdom',
-  charisma: 'Charisma',
-};
 
 interface CharacterFormAbilityScoresSectionProps {
   character: Pick<Character, 'abilityScores' | 'abilityScoreTempCustomModifiers'>;
@@ -108,12 +100,16 @@ export function CharacterFormAbilityScoresSection({
               const actualScoreData = detailedAbilityScores ? detailedAbilityScores[ability] : null;
               const totalScore = actualScoreData ? actualScoreData.finalScore : baseScore + tempCustomMod;
               const actualModifier = calculateAbilityModifier(totalScore);
-              const abilityDisplayName = ABILITY_DISPLAY_NAMES_FULL[ability];
+              
+              const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === ability);
+              const abilityDisplayName = abilityLabelInfo?.label || ability;
+              const abilityAbbr = abilityLabelInfo?.abbr || ability.substring(0,3).toUpperCase();
+
 
               return (
                 <div key={ability} className="flex flex-col items-center space-y-1.5 p-3 border rounded-md bg-card shadow-sm">
                   <Label htmlFor={`base-score-${ability}`} className="text-center text-md font-medium flex flex-col items-center">
-                    <span>{ability.substring(0, 3).toUpperCase()}</span>
+                    <span>{abilityAbbr}</span>
                     <span className="text-xs font-normal text-muted-foreground">{abilityDisplayName}</span>
                   </Label>
 

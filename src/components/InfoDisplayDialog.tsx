@@ -26,7 +26,7 @@ import type {
   SpeedBreakdownDetails as SpeedBreakdownDetailsType,
   SpeedComponent
 } from '@/types/character';
-import { DND_RACES, DND_CLASSES, DND_DEITIES, ALIGNMENTS, SKILL_DEFINITIONS, SIZES, DND_FEATS_DEFINITIONS, getRaceSpecialQualities, getRaceSkillPointsBonusPerLevel, calculateDetailedAbilityScores, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, SKILL_SYNERGIES, CLASS_SKILLS, calculateSizeSpecificSkillBonus, checkFeatPrerequisites, calculateSpeedBreakdown } from '@/types/character';
+import { DND_RACES, DND_CLASSES, DND_DEITIES, ALIGNMENTS, SKILL_DEFINITIONS, SIZES, DND_FEATS_DEFINITIONS, getRaceSpecialQualities, getRaceSkillPointsBonusPerLevel, calculateDetailedAbilityScores, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, SKILL_SYNERGIES, CLASS_SKILLS, calculateSizeSpecificSkillBonus, checkFeatPrerequisites, calculateSpeedBreakdown, ABILITY_LABELS } from '@/types/character';
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
@@ -61,15 +61,6 @@ interface InfoDisplayDialogProps {
   character: Character;
   contentType: InfoDialogContentType | null;
 }
-
-const ABILITY_DISPLAY_NAMES: Record<Exclude<AbilityName, 'none'>, { abbr: string; full: string }> = {
-  strength: { abbr: 'STR', full: 'Strength' },
-  dexterity: { abbr: 'DEX', full: 'Dexterity' },
-  constitution: { abbr: 'CON', full: 'Constitution' },
-  intelligence: { abbr: 'INT', full: 'Intelligence' },
-  wisdom: { abbr: 'WIS', full: 'Wisdom' },
-  charisma: { abbr: 'CHA', full: 'Charisma' },
-};
 
 const SPEED_ICONS: Record<SpeedType, React.ElementType> = {
   land: Wind,
@@ -284,9 +275,9 @@ export function InfoDisplayDialog({
       case 'abilityScoreBreakdown':
         const detailedScores = calculateDetailedAbilityScores(character, customFeatDefinitions);
         const abilityKeyForTitle = contentType.abilityName as Exclude<AbilityName, 'none'>;
-        const displayNameForTitle = ABILITY_DISPLAY_NAMES[abilityKeyForTitle];
+        const abilityLabelForTitle = ABILITY_LABELS.find(al => al.value === abilityKeyForTitle);
         data = {
-          title: `${displayNameForTitle.full} Score Calculation`,
+          title: `${abilityLabelForTitle?.label || abilityKeyForTitle} Score Calculation`,
           abilityScoreBreakdown: detailedScores[contentType.abilityName],
         };
         break;
@@ -307,12 +298,13 @@ export function InfoDisplayDialog({
           const sizeBonus = calculateSizeSpecificSkillBonus(skillDef.id, character.size);
           const totalMod = keyAbilityMod + synergyBonus + featBonus + racialBonus + sizeBonus;
           const totalSkillBonus = (skillInstance.ranks || 0) + totalMod + (skillInstance.miscModifier || 0);
+          const keyAbilityLabel = skillDef.keyAbility && skillDef.keyAbility !== 'none' ? ABILITY_LABELS.find(al => al.value === skillDef.keyAbility)?.abbr : undefined;
           data = {
             title: `${skillDef.name} Modifier Breakdown`,
             htmlContent: skillDef.description,
             skillModifierBreakdown: {
               skillName: skillDef.name,
-              keyAbilityName: skillDef.keyAbility !== 'none' ? ABILITY_DISPLAY_NAMES[skillDef.keyAbility as Exclude<AbilityName, 'none'>].abbr : undefined,
+              keyAbilityName: keyAbilityLabel,
               keyAbilityModifier: keyAbilityMod,
               ranks: skillInstance.ranks || 0,
               synergyBonus, featBonus, racialBonus, sizeSpecificBonus: sizeBonus,
@@ -539,8 +531,8 @@ export function InfoDisplayDialog({
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span>
-                        {ABILITY_DISPLAY_NAMES.dexterity.abbr}{'\u00A0'}
-                        <span className="text-xs text-muted-foreground">({ABILITY_DISPLAY_NAMES.dexterity.full})</span> Modifier:
+                        {(ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX')}{'\u00A0'}
+                        <span className="text-xs text-muted-foreground">({(ABILITY_LABELS.find(al => al.value === 'dexterity')?.label || 'Dexterity')})</span> Modifier:
                       </span>
                       {renderModifierValue(initiativeBreakdown.dexModifier)}
                     </div>
@@ -573,8 +565,8 @@ export function InfoDisplayDialog({
                     </div>
                     <div className="flex justify-between">
                       <span>
-                        {ABILITY_DISPLAY_NAMES.strength.abbr}{'\u00A0'}
-                        <span className="text-xs text-muted-foreground">({ABILITY_DISPLAY_NAMES.strength.full})</span> Modifier:
+                         {(ABILITY_LABELS.find(al => al.value === 'strength')?.abbr || 'STR')}{'\u00A0'}
+                        <span className="text-xs text-muted-foreground">({(ABILITY_LABELS.find(al => al.value === 'strength')?.label || 'Strength')})</span> Modifier:
                       </span>
                       {renderModifierValue(grappleModifierBreakdown.strengthModifier)}
                     </div>
@@ -621,8 +613,8 @@ export function InfoDisplayDialog({
                     </div>
                     <div className="flex justify-between">
                       <span>
-                        {ABILITY_DISPLAY_NAMES.strength.abbr}{'\u00A0'}
-                        <span className="text-xs text-muted-foreground">({ABILITY_DISPLAY_NAMES.strength.full})</span> Modifier:
+                        {(ABILITY_LABELS.find(al => al.value === 'strength')?.abbr || 'STR')}{'\u00A0'}
+                        <span className="text-xs text-muted-foreground">({(ABILITY_LABELS.find(al => al.value === 'strength')?.label || 'Strength')})</span> Modifier:
                       </span>
                       {renderModifierValue(grappleDamageBreakdown.strengthModifier)}
                     </div>
@@ -814,13 +806,15 @@ export function InfoDisplayDialog({
                     <h3 className={sectionHeadingClass}>Ability Score Adjustments</h3>
                     <ul className="space-y-1 text-sm">
                       {abilityModifiers!.map(({ ability, change }) => {
-                        const displayName = ABILITY_DISPLAY_NAMES[ability];
+                        const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === ability);
+                        const abbr = abilityLabelInfo?.abbr || ability.substring(0,3).toUpperCase();
+                        const full = abilityLabelInfo?.label || ability;
                         return (
                           <li key={ability} className="flex justify-between text-foreground">
                             <span>
-                              {displayName.abbr}
+                              {abbr}
                               {" "}
-                              <span className="text-xs text-muted-foreground">({displayName.full})</span>
+                              <span className="text-xs text-muted-foreground">({full})</span>
                             </span>
                             {renderModifierValue(change)}
                           </li>
@@ -1040,12 +1034,15 @@ export function InfoDisplayDialog({
                       const defaultLabelClass = "text-foreground"; 
 
                       if (detail.label.toLowerCase().includes("modifier") && (detail.label.toLowerCase().includes("dexterity") || detail.label.toLowerCase().includes("strength"))) {
-                          const ability = detail.label.toLowerCase().includes("dexterity") ? 'dexterity' : 'strength';
-                          const displayName = ABILITY_DISPLAY_NAMES[ability as Exclude<AbilityName, 'none'>];
+                          const abilityKey = detail.label.toLowerCase().includes("dexterity") ? 'dexterity' : 'strength';
+                          const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === abilityKey);
+                          const abbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
+                          const full = abilityLabelInfo?.label || abilityKey.charAt(0).toUpperCase() + abilityKey.slice(1);
+
                           labelContent = (
                               <span className={defaultLabelClass}>
-                                  {displayName.abbr}{'\u00A0'}
-                                  <span className="text-xs text-muted-foreground">({displayName.full})</span> Modifier
+                                  {abbr}{'\u00A0'}
+                                  <span className="text-xs text-muted-foreground">({full})</span> Modifier
                               </span>
                           );
                       } else {

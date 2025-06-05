@@ -19,6 +19,7 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput'; // Import NumberSpinnerInput
+import { ABILITY_LABELS } from '@/types/character';
 
 interface AbilityScorePointBuyDialogProps {
   isOpen: boolean;
@@ -44,15 +45,6 @@ const POINT_BUY_COST: Record<number, number> = {
   16: 10,
   17: 13,
   18: 16,
-};
-
-const ABILITY_DISPLAY_NAMES_FULL: Record<Exclude<AbilityName, 'none'>, string> = {
-  strength: 'STR (Strength)',
-  dexterity: 'DEX (Dexterity)',
-  constitution: 'CON (Constitution)',
-  intelligence: 'INT (Intelligence)',
-  wisdom: 'WIS (Wisdom)',
-  charisma: 'CHA (Charisma)',
 };
 
 export function AbilityScorePointBuyDialog({
@@ -156,11 +148,11 @@ export function AbilityScorePointBuyDialog({
                 {ABILITY_ORDER.map((ability) => {
                     const score = currentScores[ability];
                     const cost = POINT_BUY_COST[score];
-                    const fullDisplayNameFromMap = ABILITY_DISPLAY_NAMES_FULL[ability];
                     
-                    const match = fullDisplayNameFromMap.match(/^([A-Z]{3})\s*\(([^)]+)\)$/);
-                    const abbreviationPart = match ? match[1] : fullDisplayNameFromMap;
-                    const fullNamePart = match ? match[2] : '';
+                    const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === ability);
+                    const abbreviationPart = abilityLabelInfo?.abbr || ability.substring(0,3).toUpperCase();
+                    const fullNamePart = abilityLabelInfo?.label || ability;
+
 
                     const incrementWouldExceedBudget = (calculatePointsSpent({ ...currentScores, [ability]: score + 1 })) > safeBudgetForCalculations;
 

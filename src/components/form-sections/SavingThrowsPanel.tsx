@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import type { AbilityScores, CharacterClass, SavingThrows, SavingThrowType, DndClassOption, SingleSavingThrow, Character, AbilityName } from '@/types/character';
-import { DND_CLASSES }
+import { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS }
 from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
@@ -19,34 +19,10 @@ interface SavingThrowsPanelProps {
 }
 
 const SAVE_TYPES: SavingThrowType[] = ['fortitude', 'reflex', 'will'];
-const SAVE_DISPLAY_NAMES: Record<SavingThrowType, string> = {
-  fortitude: 'Fortitude',
-  reflex: 'Reflex',
-  will: 'Will',
-};
-
-const ABILITY_FULL_NAMES: Record<Exclude<AbilityName, 'none'>, string> = {
-  strength: 'Strength',
-  dexterity: 'Dexterity',
-  constitution: 'Constitution',
-  intelligence: 'Intelligence',
-  wisdom: 'Wisdom',
-  charisma: 'Charisma',
-};
-
-const ABILITY_ABBREVIATIONS: Record<Exclude<AbilityName, 'none'>, string> = {
-  strength: 'STR',
-  dexterity: 'DEX',
-  constitution: 'CON',
-  intelligence: 'INT',
-  wisdom: 'WIS',
-  charisma: 'CHA',
-};
-
 
 const dataRows: Array<{
   label: React.ReactNode; // Allow JSX for multi-line headers
-  getValue: (saveData: SingleSavingThrow, baseSave: number, abilityMod: number, total: number) => React.ReactNode;
+  getValue: (saveData: SingleSavingThrow, baseSave: number, abilityMod: number, total: number, saveType?: SavingThrowType, onMiscChange?: (type: SavingThrowType, val: number) => void) => React.ReactNode;
   rowKey: string;
 }> = [
   {
@@ -74,7 +50,8 @@ const dataRows: Array<{
     getValue: (saveData, baseSave, abilityMod, total, saveType?: SavingThrowType) => {
       if (!saveType) return abilityMod >= 0 ? `+${abilityMod}` : abilityMod;
       const abilityKey = SAVING_THROW_ABILITIES[saveType];
-      const abilityAbbr = ABILITY_ABBREVIATIONS[abilityKey as Exclude<AbilityName, 'none'>];
+      const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === abilityKey);
+      const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
       return (
         <div className="flex flex-col items-center -my-1">
           <span className="text-xs leading-tight">{abilityAbbr}</span>
@@ -136,7 +113,7 @@ export function SavingThrowsPanel({
                 <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground w-[100px]"></th>
                 {SAVE_TYPES.map((saveType) => (
                   <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-foreground capitalize">
-                    {SAVE_DISPLAY_NAMES[saveType]}
+                    {SAVING_THROW_LABELS.find(stl => stl.value === saveType)?.label || saveType}
                   </th>
                 ))}
               </tr>
@@ -155,7 +132,7 @@ export function SavingThrowsPanel({
                       const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
                       const totalSave = baseSaveValue + abilityModifier + currentSaveData.miscMod + (currentSaveData.magicMod || 0);
                       return (
-                        <td key={`${saveType}-${dataRow.rowKey}`} className="py-3 px-1 text-center text-sm text-muted-foreground align-middle">
+                        <td key={`${saveType}-${dataRow.rowKey}`} className="py-3 px-1 text-center text-sm text-foreground align-middle">
                           {dataRow.getValue(currentSaveData, baseSaveValue, abilityModifier, totalSave, saveType, onSavingThrowMiscModChange)}
                         </td>
                       );

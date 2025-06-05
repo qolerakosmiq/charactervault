@@ -182,5 +182,13 @@
     { "value": "greater-weapon-focus-mind-blade", "label": "Greater Weapon Focus (Mind Blade)", "description": "<b>Benefit:</b> You gain an additional +1 bonus on all attack rolls you make using your mind blade. This stacks with Weapon Focus.", "type": "special", "isClassFeature": true, "effectsText": "Additional +1 to attack rolls with Mind Blade." },
     { "value": "class-soulknife-knife-to-the-soul", "label": "Knife to the Soul", "description": "Beginning at 13th level, when a soulknife executes a psychic strike, he can choose to substitute Intelligence, Wisdom, or Charisma damage (his choice) for extra dice of damage. For each die of extra damage he gives up, he deals 1 point of damage to the ability score he chooses. A soulknife can combine extra dice of damage and ability damage in any combination.<br /><br />The soulknife decides which ability score his psychic strike damages and the division of ability damage and extra dice of damage when he imbues his mind blade with the psychic strike energy.", "type": "special-su", "isClassFeature": true },
     { "value": "class-soulknife-multiple-throw", "label": "Multiple Throw", "description": "At 17th level and higher, a soulknife can throw a number of mind blades per round equal to the number of melee attacks he could make.", "type": "special-ex", "isClassFeature": true }
+  ],
+  "FEAT_TYPES_DATA": [
+    { "value": "special", "label": "Special" },
+    { "value": "special-ex", "label": "Extraordinary Ability" },
+    { "value": "special-sp", "label": "Spell-Like Ability" },
+    { "value": "special-su", "label": "Supernatural Ability" },
+    { "value": "special-ps", "label": "Psi-Like Ability" },
+    { "value": "special-ex-su", "label": "Extraordinary/Supernatural Ability" }
   ]
 }

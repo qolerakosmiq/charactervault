@@ -38,12 +38,14 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
   const { toast } = useToast();
 
   const [newDrValue, setNewDrValue] = React.useState(1);
-  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>("none");
-  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>(DAMAGE_REDUCTION_RULES_OPTIONS[0].value);
+  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>(DAMAGE_REDUCTION_TYPES[0]?.value || "none");
+  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.value);
 
  React.useEffect(() => {
     if (newDrRule !== 'bypassed-by-type' && newDrType === 'none') {
-      setNewDrType('magic');
+      // Find the first non-'none' type, default to 'magic' if none others exist
+      const firstNonNoneType = DAMAGE_REDUCTION_TYPES.find(t => t.value !== 'none')?.value || 'magic';
+      setNewDrType(firstNonNoneType);
     }
   }, [newDrRule, newDrType]);
   
@@ -74,12 +76,8 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
         toast({ title: "DR Type Missing", description: "Please select a DR type.", variant: "destructive"});
         return;
     }
-    if (newDrRule === 'excepted-by-type' && newDrType === 'none') {
-      toast({ title: "Invalid Combination", description: "The 'Excepted by Type' rule requires a specific damage type (not 'None').", variant: "destructive"});
-      return;
-    }
-     if (newDrRule === 'versus-specific-type' && newDrType === 'none') {
-      toast({ title: "Invalid Combination", description: "The 'Versus Specific Type' rule requires a specific damage type (not 'None').", variant: "destructive"});
+    if ((newDrRule === 'excepted-by-type' || newDrRule === 'versus-specific-type') && newDrType === 'none') {
+      toast({ title: "Invalid Combination", description: `The '${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === newDrRule)?.label}' rule requires a specific damage type (not 'None').`, variant: "destructive"});
       return;
     }
 
@@ -100,8 +98,8 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     };
     onDamageReductionChange([...characterData.damageReduction, newInstance]);
     setNewDrValue(1);
-    setNewDrType(DAMAGE_REDUCTION_TYPES[0].value);
-    setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0].value);
+    setNewDrType(DAMAGE_REDUCTION_TYPES[0]?.value || "none");
+    setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.value);
   };
 
   const handleRemoveDamageReduction = (idToRemove: string) => {
@@ -254,7 +252,8 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                   <div className="space-y-3"> 
                     {characterData.damageReduction.length > 0 ? (
                       characterData.damageReduction.map(dr => {
-                        const ruleLabel = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule;
+                        const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
+                        const ruleLabel = ruleDef?.label || dr.rule;
                         return (
                           <div key={dr.id} className="flex items-start justify-between p-2 border rounded-md bg-muted/5 text-sm">
                             <div>

@@ -112,5 +112,45 @@
   },
   "DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA": {
     "human": 1
-  }
+  },
+  "ABILITY_LABELS_DATA": [
+    { "value": "strength", "label": "Strength", "abbr": "STR" },
+    { "value": "dexterity", "label": "Dexterity", "abbr": "DEX" },
+    { "value": "constitution", "label": "Constitution", "abbr": "CON" },
+    { "value": "intelligence", "label": "Intelligence", "abbr": "INT" },
+    { "value": "wisdom", "label": "Wisdom", "abbr": "WIS" },
+    { "value": "charisma", "label": "Charisma", "abbr": "CHA" }
+  ],
+  "SAVING_THROW_LABELS_DATA": [
+    { "value": "fortitude", "label": "Fortitude" },
+    { "value": "reflex", "label": "Reflex" },
+    { "value": "will", "label": "Will" }
+  ],
+  "DAMAGE_REDUCTION_TYPES_DATA": [
+    { "value": "none", "label": "None" },
+    { "value": "magic", "label": "Magic" },
+    { "value": "adamantine", "label": "Adamantine" },
+    { "value": "silver", "label": "Silver" },
+    { "value": "cold-iron", "label": "Cold Iron" },
+    { "value": "slashing", "label": "Slashing" },
+    { "value": "piercing", "label": "Piercing" },
+    { "value": "bludgeoning", "label": "Bludgeoning" },
+    { "value": "good", "label": "Good" },
+    { "value": "evil", "label": "Evil" },
+    { "value": "lawful", "label": "Lawful" },
+    { "value": "chaotic", "label": "Chaotic" }
+  ],
+  "DAMAGE_REDUCTION_RULES_OPTIONS_DATA": [
+    { "value": "bypassed-by-type", "label": "Bypassed by Type" },
+    { "value": "versus-specific-type", "label": "Versus Specific Type" },
+    { "value": "excepted-by-type", "label": "Excepted by Type" }
+  ],
+  "ALIGNMENT_PREREQUISITE_GENERIC_LABELS_DATA": [
+    { "value": "lawful", "label": "Any Lawful" },
+    { "value": "neutral-lc", "label": "Any Neutral (Law/Chaos Axis)" },
+    { "value": "chaotic", "label": "Any Chaotic" },
+    { "value": "good", "label": "Any Good" },
+    { "value": "neutral-ge", "label": "Any Neutral (Good/Evil Axis)" },
+    { "value": "evil", "label": "Any Evil" }
+  ]
 }

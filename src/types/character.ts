@@ -1,4 +1,5 @@
 
+
 import baseDataJson from '@/data/dnd-base.json';
 import customBaseDataJson from '@/data/custom-base.json';
 import racesDataJson from '@/data/dnd-races.json';
@@ -57,16 +58,19 @@ export interface FeatEffectDetails {
   abilities?: Partial<Record<Exclude<AbilityName, 'none'>, number>>;
 }
 
-export const FEAT_TYPES = [
-  { value: "special", label: "Special" },
-  { value: "special-ex", label: "Extraordinary Ability" },
-  { value: "special-sp", label: "Spell-Like Ability" },
-  { value: "special-su", label: "Supernatural Ability" },
-  { value: "special-ps", label: "Psi-Like Ability" }, // Assuming 'Psionic' might be preferred or 'Psi-Like'
-  { value: "special-ex-su", label: "Extraordinary/Supernatural Ability" },
-] as const;
+// --- Data Sourced from JSON ---
+const DND_FEATS_TYPES_DATA: ReadonlyArray<{ value: string; label: string }> = (featsDataJson as any).FEAT_TYPES_DATA || [];
+const DND_DAMAGE_REDUCTION_TYPES_DATA: ReadonlyArray<{ value: string; label: string }> = (baseDataJson as any).DAMAGE_REDUCTION_TYPES_DATA || [];
+const DND_DAMAGE_REDUCTION_RULES_OPTIONS_DATA: ReadonlyArray<{ value: string; label: string }> = (baseDataJson as any).DAMAGE_REDUCTION_RULES_OPTIONS_DATA || [];
+const ALIGNMENT_PREREQUISITE_GENERIC_LABELS_DATA: ReadonlyArray<{ value: string; label: string }> = (baseDataJson as any).ALIGNMENT_PREREQUISITE_GENERIC_LABELS_DATA || [];
+export const ABILITY_LABELS: ReadonlyArray<{ value: Exclude<AbilityName, 'none'>; label: string; abbr: string }> = (baseDataJson as any).ABILITY_LABELS_DATA || [];
+export const SAVING_THROW_LABELS: ReadonlyArray<{ value: SavingThrowType; label: string }> = (baseDataJson as any).SAVING_THROW_LABELS_DATA || [];
+// --- End Data Sourced from JSON ---
 
-export type FeatTypeString = typeof FEAT_TYPES[number]['value'];
+
+export const FEAT_TYPES: ReadonlyArray<{ value: FeatTypeString; label: string }> = DND_FEATS_TYPES_DATA;
+export type FeatTypeString = typeof DND_FEATS_TYPES_DATA[number]['value'];
+
 
 export type FeatDefinitionJsonData = {
   value: string; // Unique ID for the feat definition (kebab-case for predefined, UUID for custom)
@@ -130,28 +134,11 @@ export interface ResistanceValue {
   customMod: number;
 }
 
-export const DAMAGE_REDUCTION_TYPES = [
-  { value: "none", label: "None" },
-  { value: "magic", label: "Magic" },
-  { value: "adamantine", label: "Adamantine" },
-  { value: "silver", label: "Silver" },
-  { value: "cold-iron", label: "Cold Iron" },
-  { value: "slashing", label: "Slashing" },
-  { value: "piercing", label: "Piercing" },
-  { value: "bludgeoning", label: "Bludgeoning" },
-  { value: "good", label: "Good" },
-  { value: "evil", label: "Evil" },
-  { value: "lawful", label: "Lawful" },
-  { value: "chaotic", label: "Chaotic" },
-] as const;
-export type DamageReductionTypeValue = typeof DAMAGE_REDUCTION_TYPES[number]['value'];
+export const DAMAGE_REDUCTION_TYPES: ReadonlyArray<{ value: DamageReductionTypeValue; label: string }> = DND_DAMAGE_REDUCTION_TYPES_DATA;
+export type DamageReductionTypeValue = typeof DND_DAMAGE_REDUCTION_TYPES_DATA[number]['value'];
 
-export const DAMAGE_REDUCTION_RULES_OPTIONS = [
-  { value: "bypassed-by-type", label: "Bypassed by Type" },
-  { value: "versus-specific-type", label: "Versus Specific Type" },
-  { value: "excepted-by-type", label: "Excepted by Type" },
-] as const;
-export type DamageReductionRuleValue = typeof DAMAGE_REDUCTION_RULES_OPTIONS[number]['value'];
+export const DAMAGE_REDUCTION_RULES_OPTIONS: ReadonlyArray<{ value: DamageReductionRuleValue; label: string }> = DND_DAMAGE_REDUCTION_RULES_OPTIONS_DATA;
+export type DamageReductionRuleValue = typeof DND_DAMAGE_REDUCTION_RULES_OPTIONS_DATA[number]['value'];
 
 export interface DamageReductionInstance {
   id: string; // Unique ID for this instance (e.g., UUID)
@@ -308,15 +295,13 @@ export type CharacterAlignment =
   | "lawful-neutral" | "true-neutral" | "chaotic-neutral"
   | "lawful-evil" | "neutral-evil" | "chaotic-evil" | '';
 
+const specificAlignmentOptions = ALIGNMENTS.map(a => ({ value: a.value, label: a.label }));
+const genericAlignmentOptions = ALIGNMENT_PREREQUISITE_GENERIC_LABELS_DATA;
 export const ALIGNMENT_PREREQUISITE_OPTIONS: ReadonlyArray<{ value: string; label: string }> = [
-  ...ALIGNMENTS.map(a => ({ value: a.value, label: a.label })),
-  { value: 'lawful', label: 'Any Lawful' },
-  { value: 'neutral-lc', label: 'Any Neutral (Law/Chaos Axis)' },
-  { value: 'chaotic', label: 'Any Chaotic' },
-  { value: 'good', label: 'Any Good' },
-  { value: 'neutral-ge', label: 'Any Neutral (Good/Evil Axis)' },
-  { value: 'evil', label: 'Any Evil' },
+  ...specificAlignmentOptions,
+  ...genericAlignmentOptions,
 ];
+
 
 export interface ClassCastingDetails {
   type: 'full' | 'partial' | 'none';
@@ -799,8 +784,8 @@ export function checkFeatPrerequisites(
       const ability = abilityKey as Exclude<AbilityName, 'none'>;
       const charScore = character.abilityScores[ability];
       const isMet = charScore >= requiredScore!;
-      const abilityLabel = ability.charAt(0).toUpperCase() + ability.slice(1);
-      messages.push({ text: `${abilityLabel} ${requiredScore}`, isMet, orderKey: `ability_${abilityKey}`, originalText: abilityLabel });
+      const abilityLabelFull = ABILITY_LABELS.find(al => al.value === ability)?.label || ability.charAt(0).toUpperCase() + ability.slice(1);
+      messages.push({ text: `${abilityLabelFull} ${requiredScore}`, isMet, orderKey: `ability_${abilityKey}`, originalText: abilityLabelFull });
     }
   }
 
@@ -1093,3 +1078,4 @@ export function calculateSpeedBreakdown(
     total: Math.max(0, currentTotal), // Speed cannot be negative
   };
 }
+

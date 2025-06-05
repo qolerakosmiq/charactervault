@@ -2,7 +2,7 @@
 'use client';
 
 import type { Character, AbilityScores, SavingThrows, CharacterClass, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue } from '@/types/character';
-import { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS } from '@/types/character';
+import { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS, ABILITY_LABELS, SAVING_THROW_LABELS } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, Swords, Heart, Zap as InitiativeIcon, ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, Info, Brain, ShieldCheck, PlusCircle, Trash2 } from 'lucide-react';
@@ -13,14 +13,15 @@ import {
   calculateInitiative, 
   calculateGrapple, 
   getSizeModifierAC,
-  getSizeModifierGrapple
+  getSizeModifierGrapple,
+  SAVING_THROW_ABILITIES
 } from '@/lib/dnd-utils';
 import { Separator } from '../ui/separator';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { ArmorClassPanel } from '../form-sections/ArmorClassPanel'; 
 import { Button } from '@/components/ui/button';
 import { InfoDisplayDialog, type ResistanceBreakdownDetails } from '@/components/InfoDisplayDialog';
-import * as React from 'react';
+import *as React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -48,12 +49,14 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
   const { toast } = useToast();
 
   const [newDrValue, setNewDrValue] = React.useState(1);
-  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>("none");
-  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>(DAMAGE_REDUCTION_RULES_OPTIONS[0].value);
+  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>(DAMAGE_REDUCTION_TYPES[0]?.value || "none");
+  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.value);
+
 
   React.useEffect(() => {
     if (newDrRule !== 'bypassed-by-type' && newDrType === 'none') {
-      setNewDrType('magic');
+      const firstNonNoneType = DAMAGE_REDUCTION_TYPES.find(t => t.value !== 'none')?.value || 'magic';
+      setNewDrType(firstNonNoneType);
     }
   }, [newDrRule, newDrType]);
 
@@ -118,12 +121,8 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
         toast({ title: "DR Type Missing", description: "Select DR type.", variant: "destructive"});
         return;
     }
-     if (newDrRule === 'excepted-by-type' && newDrType === 'none') {
-      toast({ title: "Invalid Combination", description: "The 'Excepted by Type' rule requires a specific damage type (not 'None').", variant: "destructive"});
-      return;
-    }
-    if (newDrRule === 'versus-specific-type' && newDrType === 'none') {
-      toast({ title: "Invalid Combination", description: "The 'Versus Specific Type' rule requires a specific damage type (not 'None').", variant: "destructive"});
+     if ((newDrRule === 'excepted-by-type' || newDrRule === 'versus-specific-type') && newDrType === 'none') {
+      toast({ title: "Invalid Combination", description: `The '${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === newDrRule)?.label}' rule requires a specific damage type (not 'None').`, variant: "destructive"});
       return;
     }
 
@@ -144,8 +143,8 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
     };
     onCharacterUpdate('damageReduction', [...character.damageReduction, newInstance]);
     setNewDrValue(1);
-    setNewDrType(DAMAGE_REDUCTION_TYPES[0].value); 
-    setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0].value); 
+    setNewDrType(DAMAGE_REDUCTION_TYPES[0]?.value || "none"); 
+    setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.value); 
   };
 
   const handleRemoveDamageReduction = (idToRemove: string) => {
@@ -268,11 +267,11 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {(['fortitude', 'reflex', 'will'] as const).map(saveType => (
                 <div key={saveType} className="p-3 border rounded-md bg-background/30">
-                  <Label className="capitalize font-medium">{saveType}</Label>
+                  <Label className="capitalize font-medium">{SAVING_THROW_LABELS.find(stl => stl.value === saveType)?.label || saveType}</Label>
                   <p className="text-3xl font-bold text-accent">{calculatedSaves[saveType] >= 0 ? '+' : ''}{calculatedSaves[saveType]}</p>
                   <div className="text-xs space-y-1 mt-1">
                     <p>Base: {baseSaves[saveType]}</p>
-                    <p>Ability Mod: {saveType === 'fortitude' ? conModifier : saveType === 'reflex' ? dexModifier : wisModifier}</p>
+                    <p>Ability Mod: {getAbilityModifierByName(abilityScores, SAVING_THROW_ABILITIES[saveType]) >= 0 ? '+' : ''}{getAbilityModifierByName(abilityScores, SAVING_THROW_ABILITIES[saveType])} ({(ABILITY_LABELS.find(al => al.value === SAVING_THROW_ABILITIES[saveType])?.abbr || SAVING_THROW_ABILITIES[saveType].substring(0,3).toUpperCase())})</p>
                     <div className="flex items-center gap-1"><Label htmlFor={`st-magic-${saveType}`} className="shrink-0">Magic:</Label> 
                       <NumberSpinnerInput 
                         id={`st-magic-${saveType}`}
@@ -297,7 +296,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
         </CardContent>
       </Card>
       
-      <ArmorClassPanel character={character} />
+      {/* ArmorClassPanel is now expected to be a sibling component in CharacterSheetTabs, not rendered here */}
 
       <Card>
         <CardHeader>
@@ -435,7 +434,8 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                   <div className="space-y-3"> 
                     {character.damageReduction.length > 0 ? (
                       character.damageReduction.map(dr => {
-                        const ruleLabel = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule;
+                        const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
+                        const ruleLabel = ruleDef?.label || dr.rule;
                         return (
                         <div key={dr.id} className="flex items-start justify-between p-2 border rounded-md bg-muted/5 text-sm">
                           <div>
@@ -527,8 +527,8 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
         <InfoDisplayDialog
           isOpen={isInfoDialogOpen}
           onOpenChange={setIsInfoDialogOpen}
-          title={`${currentResistanceBreakdown.name} Breakdown`}
-          resistanceBreakdown={currentResistanceBreakdown}
+          character={character} /* Pass the full character object */
+          contentType={{ type: 'resistanceBreakdown', resistanceField: 'fireResistance' }} /* Dummy, real value is in state or derived */
         />
       )}
     </>

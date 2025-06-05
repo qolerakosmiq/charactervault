@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import type { FeatDefinitionJsonData, FeatPrerequisiteDetails, AbilityName, DndClassOption, DndClassId, DndRaceOption, CharacterAlignmentObject, DndRaceId, FeatTypeString } from '@/types/character';
-import { ALIGNMENT_PREREQUISITE_OPTIONS, FEAT_TYPES } from '@/types/character';
+import { ALIGNMENT_PREREQUISITE_OPTIONS, FEAT_TYPES, ABILITY_LABELS } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -36,14 +36,7 @@ interface AddCustomFeatDialogProps {
   allRaces: readonly DndRaceOption[];
 }
 
-const abilityOptions: Array<{ value: Exclude<AbilityName, 'none'>; label: string }> = [
-  { value: 'strength', label: 'Strength (STR)' },
-  { value: 'dexterity', label: 'Dexterity (DEX)' },
-  { value: 'constitution', label: 'Constitution (CON)' },
-  { value: 'intelligence', label: 'Intelligence (INT)' },
-  { value: 'wisdom', label: 'Wisdom (WIS)' },
-  { value: 'charisma', label: 'Charisma (CHA)' },
-];
+const abilityOptions: Array<{ value: Exclude<AbilityName, 'none'>; label: string }> = ABILITY_LABELS.map(al => ({ value: al.value, label: `${al.label} (${al.abbr})` }));
 
 type PrerequisiteListItem = {
   tempId: string;
