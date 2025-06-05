@@ -260,7 +260,17 @@ export function CharacterFormCoreInfoSection({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
           <div className="space-y-1.5">
             <Label htmlFor="age" className="inline-block w-full text-center md:text-left">{UI_STRINGS.ageLabel || "Age"}</Label>
-            <NumberSpinnerInput id="age" value={characterData?.age || currentMinAgeForInput} onChange={(newValue) => onFieldChange('age', newValue)} min={currentMinAgeForInput} max={1000} inputClassName="w-full h-10 text-base text-center" buttonClassName="h-10 w-10" buttonSize="icon" />
+            <NumberSpinnerInput 
+              id="age" 
+              value={characterData?.age || currentMinAgeForInput} 
+              onChange={(newValue) => onFieldChange('age', newValue)} 
+              min={currentMinAgeForInput} 
+              max={1000} 
+              inputClassName="w-full h-10 text-base text-center" 
+              buttonClassName="h-10 w-10" 
+              buttonSize="icon" 
+              className="justify-center"
+            />
             {ageEffectsDetails && (ageEffectsDetails.categoryName !== 'Adult' || ageEffectsDetails.effects.length > 0) && (
               <div className="flex flex-wrap items-baseline justify-center md:justify-start gap-1 pt-[6px] ml-1">
                 <Badge variant="secondary" className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground"> {ageEffectsDetails.categoryName} </Badge>
@@ -311,3 +321,4 @@ export function CharacterFormCoreInfoSection({
     </Card>
   );
 }
+
