@@ -188,9 +188,11 @@
     "featSelectionDialogEmpty": "No feats found.",
     "featSelectionDialogLoadingDescription": "Loading feat information...",
     "featSelectionDialogCancelButton": "Cancel",
-    "prereqBabLabel": "BAB",
+    "prereqBabLabel": "Base Attack Bonus",
     "prereqSkillRanksLabel": "Ranks",
     "prereqCasterLevelLabel": "Caster Level",
     "skillRankPrereqFormat": "{skillName} {ranksValue} {ranksLabel}"
   }
 }
+
+    

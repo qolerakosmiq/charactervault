@@ -188,9 +188,11 @@
     "featSelectionDialogEmpty": "Aucun don trouvé.",
     "featSelectionDialogLoadingDescription": "Chargement des informations sur les dons...",
     "featSelectionDialogCancelButton": "Annuler",
-    "prereqBabLabel": "BBA",
+    "prereqBabLabel": "Bonus de base à l'attaque",
     "prereqSkillRanksLabel": "Rang",
     "prereqCasterLevelLabel": "Niv. de lanceur de sorts",
     "skillRankPrereqFormat": "{skillName} {ranksLabel} {ranksValue}"
   }
 }
+
+    
