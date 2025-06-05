@@ -203,7 +203,7 @@ export function SkillsFormSection({
            </div>
         </div>
         <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
-          <div className="space-y-1"> {/* Removed min-w-[700px] */}
+          <div className="space-y-1 min-w-[700px]">
             {/* Header Row */}
             <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
               <span className="text-center w-10">Class?</span>
