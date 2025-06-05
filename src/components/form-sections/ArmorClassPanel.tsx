@@ -28,21 +28,21 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
         <CardHeader>
           <div className="flex items-center space-x-3">
             <Shield className="h-8 w-8 text-primary" />
-            <CardTitle className="text-2xl font-serif">Armor Class</CardTitle>
+            <CardTitle className="text-2xl font-serif">{translations?.UI_STRINGS.armorClassPanelTitle || "Armor Class"}</CardTitle>
           </div>
-          <CardDescription>Details about your character's defenses.</CardDescription>
+          <CardDescription>{translations?.UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {translationsLoading || !translations ? (
             <div className="flex justify-center items-center py-10">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="ml-3 text-muted-foreground">Loading AC details...</p>
+              <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.armorClassPanelLoading || "Loading AC details..."}</p>
             </div>
           ) : (
             <>
               <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
                 <div className="flex items-center">
-                  <Label htmlFor="normal-ac-display" className="text-lg font-medium">Normal</Label>
+                  <Label htmlFor="normal-ac-display" className="text-lg font-medium">{translations?.UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" disabled>
                     <Info className="h-4 w-4" />
                   </Button>
@@ -51,7 +51,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
               </div>
               <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
                 <div className="flex items-center">
-                  <Label htmlFor="touch-ac-display" className="text-lg font-medium">Touch</Label>
+                  <Label htmlFor="touch-ac-display" className="text-lg font-medium">{translations?.UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" disabled>
                     <Info className="h-4 w-4" />
                   </Button>
@@ -60,7 +60,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
               </div>
               <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
                 <div className="flex items-center">
-                  <Label htmlFor="flat-footed-ac-display" className="text-lg font-medium">Flat-Footed</Label>
+                  <Label htmlFor="flat-footed-ac-display" className="text-lg font-medium">{translations?.UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" disabled>
                     <Info className="h-4 w-4" />
                   </Button>
@@ -69,7 +69,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
               </div>
               <Separator className="my-3" />
               <div className="flex items-center justify-between pt-2">
-                <Label htmlFor="custom-ac-mod-display" className="text-sm font-medium">Custom Modifier</Label>
+                <Label htmlFor="custom-ac-mod-display" className="text-sm font-medium">{translations?.UI_STRINGS.armorClassCustomModifierLabel || "Custom Modifier"}</Label>
                 <NumberSpinnerInput
                   id="custom-ac-mod-display"
                   value={0}
@@ -86,7 +86,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
     );
   }
 
-  const { DEFAULT_ABILITIES, SIZES } = translations;
+  const { DEFAULT_ABILITIES, SIZES, UI_STRINGS } = translations;
   const currentAbilityScores = character.abilityScores || DEFAULT_ABILITIES;
   const currentSize = character.size || 'medium';
 
@@ -133,14 +133,14 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
         <CardHeader>
           <div className="flex items-center space-x-3">
             <Shield className="h-8 w-8 text-primary" />
-            <CardTitle className="text-2xl font-serif">Armor Class</CardTitle>
+            <CardTitle className="text-2xl font-serif">{UI_STRINGS.armorClassPanelTitle || "Armor Class"}</CardTitle>
           </div>
-          <CardDescription>Details about your character's defenses.</CardDescription>
+          <CardDescription>{UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
             <div className="flex items-center">
-              <Label htmlFor="normal-ac-display" className="text-lg font-medium">Normal</Label>
+              <Label htmlFor="normal-ac-display" className="text-lg font-medium">{UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
               <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')} disabled={!onOpenAcBreakdownDialog}>
                 <Info className="h-4 w-4" />
               </Button>
@@ -149,7 +149,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
           </div>
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
              <div className="flex items-center">
-              <Label htmlFor="touch-ac-display" className="text-lg font-medium">Touch</Label>
+              <Label htmlFor="touch-ac-display" className="text-lg font-medium">{UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
               <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')} disabled={!onOpenAcBreakdownDialog}>
                 <Info className="h-4 w-4" />
               </Button>
@@ -158,7 +158,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
           </div>
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
             <div className="flex items-center">
-              <Label htmlFor="flat-footed-ac-display" className="text-lg font-medium">Flat-Footed</Label>
+              <Label htmlFor="flat-footed-ac-display" className="text-lg font-medium">{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
               <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Flat-Footed')} disabled={!onOpenAcBreakdownDialog}>
                 <Info className="h-4 w-4" />
               </Button>
@@ -168,7 +168,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
 
           <Separator className="my-3" />
           <div className="flex items-center justify-between pt-2">
-            <Label htmlFor="ac-misc-modifier-input" className="text-sm font-medium">Custom Modifier</Label>
+            <Label htmlFor="ac-misc-modifier-input" className="text-sm font-medium">{UI_STRINGS.armorClassCustomModifierLabel || "Custom Modifier"}</Label>
             <NumberSpinnerInput
               id="ac-misc-modifier-input"
               value={character.acMiscModifier || 0}
