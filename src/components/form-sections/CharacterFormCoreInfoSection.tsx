@@ -71,6 +71,8 @@ export function CharacterFormCoreInfoSection({
 }: CharacterFormCoreInfoSectionProps) {
 
   React.useEffect(() => {
+    if (!characterData) return;
+
     if (!characterData.race) {
       onFieldChange('race', 'human' as DndRaceId);
     }
@@ -80,7 +82,7 @@ export function CharacterFormCoreInfoSection({
     if (characterData.deity === undefined || characterData.deity === null) {
       onFieldChange('deity', DEITY_NONE_OPTION_VALUE);
     }
-  }, []);
+  }, []); // This effect sets initial defaults and should run once on mount
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -93,13 +95,13 @@ export function CharacterFormCoreInfoSection({
   };
 
   const filteredDeities = React.useMemo(() => {
-    if (!characterData.alignment) {
+    if (!characterData || !characterData.alignment) {
       return DND_DEITIES;
     }
     return DND_DEITIES.filter(deity =>
       isAlignmentCompatible(characterData.alignment, deity.alignment)
     );
-  }, [characterData.alignment]);
+  }, [characterData]); // Changed dependency to characterData
 
   const deitySelectOptions = React.useMemo(() => {
     return [{ value: DEITY_NONE_OPTION_VALUE, label: "None" }, ...filteredDeities];
@@ -107,13 +109,15 @@ export function CharacterFormCoreInfoSection({
 
 
   React.useEffect(() => {
+    if (!characterData) return; // Guard against undefined characterData
+
     if (characterData.alignment && characterData.deity && characterData.deity !== DEITY_NONE_OPTION_VALUE) {
       const currentDeity = DND_DEITIES.find(d => d.value === characterData.deity);
       if (currentDeity && !isAlignmentCompatible(characterData.alignment, currentDeity.alignment)) {
         onFieldChange('deity', DEITY_NONE_OPTION_VALUE);
       }
     }
-  }, [characterData.alignment, characterData.deity, onFieldChange]);
+  }, [characterData, onFieldChange]); // Changed dependencies
 
 
   return (
@@ -136,14 +140,14 @@ export function CharacterFormCoreInfoSection({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           <div className="space-y-1.5">
             <Label htmlFor="name">Name</Label>
-            <Input id="name" name="name" value={characterData.name} onChange={handleInputChange} />
+            <Input id="name" name="name" value={characterData?.name || ''} onChange={handleInputChange} />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="race">Race</Label>
             <div className="flex items-center gap-2">
               <div className="flex-grow">
                 <Select
-                  value={characterData.race || 'human'}
+                  value={characterData?.race || 'human'}
                   onValueChange={(value) => handleSelectChange('race', value as DndRaceId)}
                 >
                   <SelectTrigger id="race">
@@ -162,7 +166,7 @@ export function CharacterFormCoreInfoSection({
                 size="icon"
                 className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
                 onClick={onOpenRaceInfoDialog}
-                disabled={!characterData.race}
+                disabled={!characterData?.race}
               >
                 <Info className="h-5 w-5" />
               </Button>
@@ -213,7 +217,7 @@ export function CharacterFormCoreInfoSection({
             <div className="flex items-center gap-2">
               <div className="flex-grow">
                 <Select
-                  value={characterData.classes[0]?.className || 'fighter'}
+                  value={characterData?.classes[0]?.className || 'fighter'}
                   onValueChange={(value) => onClassChange(value as DndClassId)}
                 >
                   <SelectTrigger id="className">
@@ -232,7 +236,7 @@ export function CharacterFormCoreInfoSection({
                 size="icon"
                 className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
                 onClick={onOpenClassInfoDialog}
-                disabled={!characterData.classes[0]?.className}
+                disabled={!characterData?.classes[0]?.className}
               >
                 <Info className="h-5 w-5" />
               </Button>
@@ -253,7 +257,7 @@ export function CharacterFormCoreInfoSection({
             <Label htmlFor="alignment">Alignment</Label>
             <div className="flex items-center gap-2">
               <div className="flex-grow">
-                <Select name="alignment" value={characterData.alignment} onValueChange={(value) => handleSelectChange('alignment', value as CharacterAlignment)}>
+                <Select name="alignment" value={characterData?.alignment} onValueChange={(value) => handleSelectChange('alignment', value as CharacterAlignment)}>
                   <SelectTrigger><SelectValue placeholder="Select alignment" /></SelectTrigger>
                   <SelectContent>
                     {ALIGNMENTS.map(align => <SelectItem key={align.value} value={align.value}>{align.label}</SelectItem>)}
@@ -275,7 +279,7 @@ export function CharacterFormCoreInfoSection({
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
                   <Select
-                    value={characterData.deity && characterData.deity.trim() !== '' ? characterData.deity : DEITY_NONE_OPTION_VALUE}
+                    value={(characterData?.deity && characterData.deity.trim() !== '') ? characterData.deity : DEITY_NONE_OPTION_VALUE}
                     onValueChange={(value) => {
                         handleSelectChange('deity', value === DEITY_NONE_OPTION_VALUE ? '' : value);
                     }}
@@ -296,7 +300,7 @@ export function CharacterFormCoreInfoSection({
                   size="icon"
                   className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10"
                   onClick={onOpenDeityInfoDialog}
-                  disabled={!characterData.deity || characterData.deity.trim() === '' || characterData.deity === DEITY_NONE_OPTION_VALUE}
+                  disabled={!characterData?.deity || characterData.deity.trim() === '' || characterData.deity === DEITY_NONE_OPTION_VALUE}
                 >
                   <Info className="h-5 w-5" />
                 </Button>
@@ -311,7 +315,7 @@ export function CharacterFormCoreInfoSection({
             <Label htmlFor="age" className="inline-block w-full text-center">Age</Label>
             <NumberSpinnerInput
               id="age"
-              value={characterData.age}
+              value={characterData?.age || currentMinAgeForInput}
               onChange={(newValue) => onFieldChange('age', newValue)}
               min={currentMinAgeForInput}
               max={1000}
@@ -360,7 +364,7 @@ export function CharacterFormCoreInfoSection({
             <Label htmlFor="gender">Gender</Label>
              <ComboboxPrimitive
                 options={GENDERS}
-                value={characterData.gender || ""}
+                value={characterData?.gender || ""}
                 onChange={(value) => handleSelectChange('gender', value)}
                 placeholder="Select or type gender..."
                 searchPlaceholder="Search genders..."
@@ -370,14 +374,14 @@ export function CharacterFormCoreInfoSection({
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="size">Size</Label>
-            <Select name="size" value={characterData.size} onValueChange={(value) => handleSelectChange('size', value as CharacterSize)}>
+            <Select name="size" value={characterData?.size} onValueChange={(value) => handleSelectChange('size', value as CharacterSize)}>
               <SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger>
               <SelectContent>
                 {SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
               </SelectContent>
             </Select>
             <div className="flex items-baseline gap-1 pt-[6px] ml-1">
-              {characterData.size && (() => {
+              {characterData?.size && (() => {
                 const selectedSizeObject = SIZES.find(s => s.value === characterData.size);
                 if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
                   const acMod = selectedSizeObject.acModifier;
@@ -412,3 +416,4 @@ export function CharacterFormCoreInfoSection({
     </Card>
   );
 }
+
