@@ -40,7 +40,7 @@ export interface SkillModifierBreakdownDetails {
 
 interface SkillsFormSectionProps {
   character: Pick<Character, 'skills' | 'abilityScores' | 'classes' | 'race' | 'size' | 'feats'>;
-  actualAbilityScores: AbilityScores; // For calculations based on final/detailed scores
+  actualAbilityScores: AbilityScores; 
   allFeatDefinitions: (FeatDefinitionJsonData & {isCustom?: boolean})[];
   allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
   allCustomSkillDefinitions: readonly CustomSkillDefinition[];
@@ -51,7 +51,7 @@ interface SkillsFormSectionProps {
 
 export function SkillsFormSection({
   character,
-  actualAbilityScores, // This prop already represents the *final* ability scores for calculations
+  actualAbilityScores, 
   allFeatDefinitions,
   allPredefinedSkillDefinitions,
   allCustomSkillDefinitions,
@@ -202,8 +202,8 @@ export function SkillsFormSection({
               )}
            </div>
         </div>
-        <div className="overflow-x-auto">
-          <div className="space-y-1 -mx-1 min-w-[700px]"> {/* Added min-w here to ensure table content dictates scroll */}
+        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
+          <div className="space-y-1 -mx-1 min-w-[700px]">
             <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
               <span className="text-center w-10">Class?</span>
               <span className="pl-1">Skill</span>
@@ -230,7 +230,6 @@ export function SkillsFormSection({
               const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skill.id, characterSize);
               
               const calculatedMiscModifier = synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus;
-              // The skill.miscModifier is the user-editable one, which is NOT directly edited in this form section, but still contributes to total.
               const totalBonus = (skill.ranks || 0) + baseAbilityMod + calculatedMiscModifier + (skill.miscModifier || 0);
               
               const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
@@ -324,3 +323,4 @@ export function SkillsFormSection({
   );
 }
 
+    

@@ -117,9 +117,9 @@ export default {
             },
           },
         },
-        invert: { // For dark mode specifically if needed, or just use dark:prose-invert
+        invert: { 
           css: {
-            color: theme('colors.foreground'), // Assuming foreground is already light for dark mode
+            color: theme('colors.foreground'), 
              a: {
               color: theme('colors.primary.DEFAULT'),
               '&:hover': {
@@ -147,7 +147,8 @@ export default {
   },
   plugins: [
     require("tailwindcss-animate"),
-    require('@tailwindcss/typography')
+    require('@tailwindcss/typography'),
+    require('tailwind-scrollbar'),
   ],
 } satisfies Config;
 
