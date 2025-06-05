@@ -104,7 +104,14 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
     const defaultBaseAbilityScores = { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES_DATA)) as AbilityScores) };
     const defaultTempCustomMods: AbilityScores = { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 };
-    const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: DND_CLASSES[0]?.value || '', level: 1 }];
+    
+    const defaultHumanRace = DND_RACES.find(r => r.value === 'human');
+    const defaultRaceValue = defaultHumanRace?.value || DND_RACES[0]?.value || '';
+
+    const defaultFighterClass = DND_CLASSES.find(c => c.value === 'fighter');
+    const defaultClassNameValue = defaultFighterClass?.value || DND_CLASSES[0]?.value || '';
+    const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: defaultClassNameValue, level: 1 }];
+
     const defaultSize: CharacterSize = 'medium';
     const sizeLabel = SIZES.find(s => s.value === defaultSize)?.label || defaultSize;
     const defaultUnarmedGrappleDice = getUnarmedGrappleDamage(defaultSize, SIZES);
@@ -116,7 +123,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     ];
 
     const initialFeats = getGrantedFeatsForCharacter(
-      initialCharacter?.race || DND_RACES[0]?.value || '',
+      initialCharacter?.race || defaultRaceValue,
       initialCharacter?.classes || defaultClasses,
       initialCharacter?.classes?.reduce((sum, c) => sum + c.level, 0) || 1,
       allInitialFeatDefsForGranting, DND_RACES, DND_CLASSES
@@ -129,7 +136,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       name: '',
       playerName: '',
       campaign: '',
-      race: DND_RACES[0]?.value || '', alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
+      race: defaultRaceValue, 
+      alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
       height: '', weight: '', eyes: '', hair: '', skin: '',
       abilityScores: defaultBaseAbilityScores,
       abilityScoreTempCustomModifiers: defaultTempCustomMods,
@@ -171,7 +179,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         ...initialCharacter,
         playerName: initialCharacter.playerName || '',
         campaign: initialCharacter.campaign || '',
-        race: initialCharacter.race || DND_RACES[0]?.value || '',
+        race: initialCharacter.race || defaultRaceValue,
         alignment: initialCharacter.alignment || 'true-neutral',
         abilityScores: initialCharacter.abilityScores || defaultBaseAbilityScores,
         abilityScoreTempCustomModifiers: initialCharacter.abilityScoreTempCustomModifiers || defaultTempCustomMods,
@@ -321,7 +329,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         }
       }
     }
-  }, [character, translations, setCharacter]);
+  }, [character?.race, character?.age, translations]); // Added character.age to dependencies
 
  React.useEffect(() => {
     if (!character || !translations) return;
