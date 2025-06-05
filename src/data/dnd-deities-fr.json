@@ -1,7 +1,265 @@
 
 {
   "DND_DEITIES_DATA": [
-    { "value": "boccob", "label": "FR: Boccob", "alignment": "true-neutral", "description": "<b>FR: The Uncaring, Lord of All Magics</b><p>FR: Details...</p>" },
-    { "value": "corellon-larethian", "label": "FR: Corellon Larethian", "alignment": "chaotic-good", "description": "<b>FR: Creator of the Elves, The Protector</b><p>FR: Details...</p>" }
+    {
+      "value": "boccob",
+      "label": "Boccob",
+      "alignment": "true-neutral",
+      "description": "<b>Le Négligent, Seigneur de Toutes les Magies</b><p><b>Alignement :</b> Neutre<br/><b>Portefeuille :</b> Magie, connaissance des arcanes, équilibre, prévoyance<br/><b>Adorateurs :</b> Mages, sorciers, sages et ceux qui recherchent la connaissance ou pratiquent la magie<br/><b>Domaines :</b> Connaissance, Magie, Ruse<br/><b>Arme de prédilection :</b> Bâton</p>"
+    },
+    {
+      "value": "corellon-larethian",
+      "label": "Corellon Larethian",
+      "alignment": "chaotic-good",
+      "description": "<b>Créateur des Elfes, Le Protecteur</b><p><b>Alignement :</b> Chaotique Bon<br/><b>Portefeuille :</b> Elfes, magie, musique, arts, artisanat, guerre, poésie<br/><b>Adorateurs :</b> Elfes, demi-elfes, bardes, artistes, guerriers<br/><b>Domaines :</b> Chaos, Bien, Magie, Protection, Guerre<br/><b>Arme de prédilection :</b> Épée longue</p>"
+    },
+    {
+      "value": "ehlonna",
+      "label": "Ehlonna",
+      "alignment": "neutral-good",
+      "description": "<b>Ehlonna des Forêts</b><p><b>Alignement :</b> Neutre Bon<br/><b>Portefeuille :</b> Forêts, bois, flore, faune, fertilité<br/><b>Adorateurs :</b> Rôdeurs, druides, chasseurs, elfes, hommes des bois<br/><b>Domaines :</b> Animal, Bien, Plante, Soleil<br/><b>Arme de prédilection :</b> Arc long</p>"
+    },
+    {
+      "value": "erythnul",
+      "label": "Erythnul",
+      "alignment": "chaotic-evil",
+      "description": "<b>Le Multiple, Dieu du Massacre</b><p><b>Alignement :</b> Chaotique Mauvais<br/><b>Portefeuille :</b> Malice, envie, massacre, panique, laideur<br/><b>Adorateurs :</b> Guerriers mauvais, bandits, sadiques, ceux qui se délectent de la destruction<br/><b>Domaines :</b> Chaos, Mal, Ruse, Guerre<br/><b>Arme de prédilection :</b> Morgenstern</p>"
+    },
+    {
+      "value": "fharlanghn",
+      "label": "Fharlanghn",
+      "alignment": "true-neutral",
+      "description": "<b>Habitant de l'Horizon, Le Voyageur</b><p><b>Alignement :</b> Neutre<br/><b>Portefeuille :</b> Horizons, distance, voyage, routes<br/><b>Adorateurs :</b> Voyageurs, explorateurs, marchands, aventuriers<br/><b>Domaines :</b> Chance, Protection, Voyage<br/><b>Arme de prédilection :</b> Bâton</p>"
+    },
+    {
+      "value": "garl-glittergold",
+      "label": "Garl Brille-d'Or",
+      "alignment": "neutral-good",
+      "description": "<b>Le Protecteur Vigilant, Le farceur</b><p><b>Alignement :</b> Neutre Bon<br/><b>Portefeuille :</b> Gnomes, humour, esprit, taille de gemmes, protection, ruse<br/><b>Adorateurs :</b> Gnomes, bouffons, joailliers, farceurs<br/><b>Domaines :</b> Bien, Protection, Ruse<br/><b>Arme de prédilection :</b> Hache de guerre</p>"
+    },
+    {
+      "value": "gruumsh",
+      "label": "Gruumsh",
+      "alignment": "chaotic-evil",
+      "description": "<b>Celui-qui-ne-dort-jamais, L'Œil Unique</b><p><b>Alignement :</b> Chaotique Mauvais<br/><b>Portefeuille :</b> Orques, guerre, territoire, force<br/><b>Adorateurs :</b> Orques et demi-orques<br/><b>Domaines :</b> Chaos, Mal, Force, Guerre<br/><b>Arme de prédilection :</b> Lance</p>"
+    },
+    {
+      "value": "heironeous",
+      "label": "Heironeous",
+      "alignment": "lawful-good",
+      "description": "<b>L'Invincible, Le Chevalier Valeureux</b><p><b>Alignement :</b> Loyal Bon<br/><b>Portefeuille :</b> Valeur, chevalerie, justice, honneur, guerre, audace<br/><b>Adorateurs :</b> Paladins, bons combattants et guerriers, gardes, chefs<br/><b>Domaines :</b> Bien, Loi, Guerre<br/><b>Arme de prédilection :</b> Épée longue</p>"
+    },
+    {
+      "value": "hextor",
+      "label": "Hextor",
+      "alignment": "lawful-evil",
+      "description": "<b>Fléau de la Bataille, Champion du Mal</b><p><b>Alignement :</b> Loyal Mauvais<br/><b>Portefeuille :</b> Guerre, discorde, massacre, conflit, forme physique, tyrannie<br/><b>Adorateurs :</b> Combattants et moines mauvais, tyrans, conquérants<br/><b>Domaines :</b> Destruction, Mal, Loi, Guerre<br/><b>Arme de prédilection :</b> Fléau d'armes</p>"
+    },
+    {
+      "value": "kord",
+      "label": "Kord",
+      "alignment": "chaotic-good",
+      "description": "<b>Le Bagarreur, Le Puissant</b><p><b>Alignement :</b> Chaotique Bon<br/><b>Portefeuille :</b> Force, athlétisme, sports, bagarre, courage<br/><b>Adorateurs :</b> Barbares, combattants, athlètes et ceux qui valorisent la force<br/><b>Domaines :</b> Chaos, Bien, Chance, Force<br/><b>Arme de prédilection :</b> Espadon</p>"
+    },
+    {
+      "value": "moradin",
+      "label": "Moradin",
+      "alignment": "lawful-good",
+      "description": "<b>Forgeur d'Âmes, Père des Nains</b><p><b>Alignement :</b> Loyal Bon<br/><b>Portefeuille :</b> Nains, création, forge, protection, travail du métal, travail de la pierre<br/><b>Adorateurs :</b> Nains, forgerons, ingénieurs, architectes<br/><b>Domaines :</b> Terre, Bien, Loi, Protection<br/><b>Arme de prédilection :</b> Marteau de guerre</p>"
+    },
+    {
+      "value": "nerull",
+      "label": "Nerull",
+      "alignment": "neutral-evil",
+      "description": "<b>Le Faucheur, Ennemi de Tout Bien</b><p><b>Alignement :</b> Neutre Mauvais<br/><b>Portefeuille :</b> Mort, ténèbres, meurtre, enfers<br/><b>Adorateurs :</b> Assassins, nécromanciens, cultistes mauvais, ceux qui profitent de la mort<br/><b>Domaines :</b> Mort, Mal, Ruse<br/><b>Arme de prédilection :</b> Faux</p>"
+    },
+    {
+      "value": "obad-hai",
+      "label": "Obad-Hai",
+      "alignment": "true-neutral",
+      "description": "<b>Le Shalm, Le Lanceur de Sorts des Bois Caché</b><p><b>Alignement :</b> Neutre<br/><b>Portefeuille :</b> Nature, forêts, liberté, chasse, bêtes<br/><b>Adorateurs :</b> Druides, rôdeurs, chasseurs, barbares, ceux qui vivent en harmonie avec la nature<br/><b>Domaines :</b> Air, Animal, Terre, Feu, Plante, Eau<br/><b>Arme de prédilection :</b> Bâton</p>"
+    },
+    {
+      "value": "olidammara",
+      "label": "Olidammara",
+      "alignment": "chaotic-neutral",
+      "description": "<b>Le Roublard Rieur</b><p><b>Alignement :</b> Chaotique Neutre<br/><b>Portefeuille :</b> Musique, réjouissances, vin, roublards, humour, tours<br/><b>Adorateurs :</b> Roublards, bardes, ménestrels, hédonistes, bouffons<br/><b>Domaines :</b> Chaos, Chance, Ruse<br/><b>Arme de prédilection :</b> Rapière</p>"
+    },
+    {
+      "value": "pelor",
+      "label": "Pelor",
+      "alignment": "neutral-good",
+      "description": "<b>Le Père Soleil, Le Lumineux</b><p><b>Alignement :</b> Neutre Bon<br/><b>Portefeuille :</b> Soleil, lumière, force, guérison, vie<br/><b>Adorateurs :</b> Guérisseurs, protecteurs, gens du commun, ceux qui luttent contre les ténèbres et les morts-vivants<br/><b>Domaines :</b> Bien, Guérison, Force, Soleil<br/><b>Arme de prédilection :</b> Masse d'armes (lourde ou légère)</p>"
+    },
+    {
+      "value": "st-cuthbert",
+      "label": "Saint Cuthbert",
+      "alignment": "lawful-neutral",
+      "description": "<b>Saint Cuthbert de la Matraque</b><p><b>Alignement :</b> Loyal Neutre<br/><b>Portefeuille :</b> Bon sens, sagesse, zèle, honnêteté, vérité, discipline<br/><b>Adorateurs :</b> Juges, gardes, gens du commun qui valorisent l'ordre et la vérité<br/><b>Domaines :</b> Destruction, Loi, Protection, Force<br/><b>Arme de prédilection :</b> Masse d'armes (lourde ou légère)</p>"
+    },
+    {
+      "value": "vecna",
+      "label": "Vecna",
+      "alignment": "neutral-evil",
+      "description": "<b>Le Seigneur Mutilé, Celui dont on Murmure le Nom</b><p><b>Alignement :</b> Neutre Mauvais<br/><b>Portefeuille :</b> Morts-vivants, secrets maléfiques, nécromancie, savoir interdit<br/><b>Adorateurs :</b> Nécromanciens mauvais, mages avides de pouvoir, chercheurs de savoir interdit<br/><b>Domaines :</b> Mal, Connaissance, Magie<br/><b>Arme de prédilection :</b> Dague</p>"
+    },
+    {
+      "value": "wee-jas",
+      "label": "Wee Jas",
+      "alignment": "lawful-neutral",
+      "description": "<b>La Sorcière Rubis, Dame Sévère</b><p><b>Alignement :</b> Loyal Neutre<br/><b>Portefeuille :</b> Magie, mort, vanité, loi, ordre dans la mort<br/><b>Adorateurs :</b> Mages, nécromanciens, juges, ceux qui respectent l'ordre et la finalité de la mort<br/><b>Domaines :</b> Mort, Loi, Magie<br/><b>Arme de prédilection :</b> Dague</p>"
+    },
+    {
+      "value": "yondalla",
+      "label": "Yondalla",
+      "alignment": "lawful-good",
+      "description": "<b>La Protectrice et Pourvoyeuse, La Matriarche Nourricière</b><p><b>Alignement :</b> Loyal Bon<br/><b>Portefeuille :</b> Halfelins, protection, abondance, famille, tradition<br/><b>Adorateurs :</b> Halfelins, chefs de communauté, protecteurs<br/><b>Domaines :</b> Bien, Loi, Protection<br/><b>Arme de prédilection :</b> Épée courte</p>"
+    },
+    {
+      "value": "bane",
+      "label": "Bane",
+      "alignment": "lawful-evil",
+      "description": "<b>Le Seigneur Noir, Seigneur des Ténèbres</b><p><b>Alignement :</b> Loyal Mauvais<br/><b>Portefeuille :</b> Conflit, haine, tyrannie, peur<br/><b>Adorateurs :</b> Tyrans, conquérants, guerriers mauvais, ceux qui cherchent à dominer les autres<br/><b>Domaines :</b> Mal, Destruction, Haine, Loi, Tyrannie<br/><b>Arme de prédilection :</b> Morgenstern</p>"
+    },
+    {
+      "value": "chauntea",
+      "label": "Chauntéa",
+      "alignment": "neutral-good",
+      "description": "<b>La Grande Mère, Déesse des Grains</b><p><b>Alignement :</b> Neutre Bon<br/><b>Portefeuille :</b> Agriculture, plantes cultivées par les humains, fermiers, jardiniers, été<br/><b>Adorateurs :</b> Fermiers, jardiniers, gens du commun<br/><b>Domaines :</b> Terre, Bien, Plante, Protection, Renouveau<br/><b>Arme de prédilection :</b> Faux</p>"
+    },
+    {
+      "value": "cyric",
+      "label": "Cyric",
+      "alignment": "chaotic-evil",
+      "description": "<b>Le Prince des Mensonges, Le Soleil Sombre</b><p><b>Alignement :</b> Chaotique Mauvais<br/><b>Portefeuille :</b> Meurtre, mensonges, intrigue, déception, illusion<br/><b>Adorateurs :</b> Assassins, menteurs, fous, ceux qui prospèrent dans le chaos et la tromperie<br/><b>Domaines :</b> Chaos, Destruction, Mal, Illusion, Ruse<br/><b>Arme de prédilection :</b> Épée longue</p>"
+    },
+    {
+      "value": "helm",
+      "label": "Heaum",
+      "alignment": "lawful-neutral",
+      "description": "<b>Le Vigilant, Le Guetteur</b><p><b>Alignement :</b> Loyal Neutre<br/><b>Portefeuille :</b> Gardiens, protecteurs, protection, vigilance<br/><b>Adorateurs :</b> Gardes, sentinelles, ceux qui protègent les autres<br/><b>Domaines :</b> Loi, Planification, Protection, Force<br/><b>Arme de prédilection :</b> Épée bâtarde</p>"
+    },
+    {
+      "value": "ilmater",
+      "label": "Ilmater",
+      "alignment": "lawful-good",
+      "description": "<b>Le Dieu qui Pleure, Le Seigneur Brisé sur le Chevalet</b><p><b>Alignement :</b> Loyal Bon<br/><b>Portefeuille :</b> Endurance, souffrance, martyre, persévérance<br/><b>Adorateurs :</b> Les opprimés, les persécutés, les pauvres, les moines<br/><b>Domaines :</b> Bien, Guérison, Loi, Force, Souffrance<br/><b>Arme de prédilection :</b> Frappe à mains nues</p>"
+    },
+    {
+      "value": "kelemvor",
+      "label": "Kelemvor",
+      "alignment": "lawful-neutral",
+      "description": "<b>Seigneur des Morts, Juge des Damnés</b><p><b>Alignement :</b> Loyal Neutre<br/><b>Portefeuille :</b> Mort, les morts<br/><b>Adorateurs :</b> Ceux qui cherchent un passage paisible, les endeuillés, les entrepreneurs de pompes funèbres<br/><b>Domaines :</b> Mort, Destin, Loi, Protection, Voyage<br/><b>Arme de prédilection :</b> Épée bâtarde</p>"
+    },
+    {
+      "value": "lathander",
+      "label": "Lathandre",
+      "alignment": "neutral-good",
+      "description": "<b>Le Seigneur du Matin, Aube de l'Inspiration</b><p><b>Alignement :</b> Neutre Bon<br/><b>Portefeuille :</b> Printemps, aube, naissance, renouveau, créativité, jeunesse, vitalité, athlétisme<br/><b>Adorateurs :</b> Artistes, athlètes, roturiers, marchands, les jeunes<br/><b>Domaines :</b> Bien, Noblesse, Protection, Renouveau, Force, Soleil<br/><b>Arme de prédilection :</b> Masse d'armes (lourde ou légère)</p>"
+    },
+    {
+      "value": "mystra",
+      "label": "Mystra",
+      "alignment": "neutral-good",
+      "description": "<b>La Mère de Toute Magie, La Dame des Mystères</b><p><b>Alignement :</b> Neutre Bon<br/><b>Portefeuille :</b> Magie, sorts, la Toile<br/><b>Adorateurs :</b> Mages, sorciers, bardes, tous les utilisateurs de magie<br/><b>Domaines :</b> Bien, Illusion, Connaissance, Magie, Rune, Sort<br/><b>Arme de prédilection :</b> Bâton</p>"
+    },
+    {
+      "value": "oghma",
+      "label": "Oghma",
+      "alignment": "true-neutral",
+      "description": "<b>Le Seigneur du Savoir, Le Lieur</b><p><b>Alignement :</b> Neutre<br/><b>Portefeuille :</b> Savoir, invention, inspiration, bardes<br/><b>Adorateurs :</b> Sages, érudits, inventeurs, bardes, maîtres du savoir<br/><b>Domaines :</b> Charme, Connaissance, Chance, Voyage, Ruse<br/><b>Arme de prédilection :</b> Épée longue</p>"
+    },
+    {
+      "value": "selune",
+      "label": "Séluné",
+      "alignment": "chaotic-good",
+      "description": "<b>Notre Dame d'Argent, Jeune Fille Lunaire</b><p><b>Alignement :</b> Chaotique Bon<br/><b>Portefeuille :</b> Lune, étoiles, navigation, navigateurs, errants, quêteurs, lycanthropes bons et neutres<br/><b>Adorateurs :</b> Marins, voyageurs, lycanthropes bons, ceux qui cherchent conseil ou protection la nuit<br/><b>Domaines :</b> Chaos, Bien, Lune, Protection, Voyage<br/><b>Arme de prédilection :</b> Masse d'armes lourde</p>"
+    },
+    {
+      "value": "shar",
+      "label": "Shar",
+      "alignment": "neutral-evil",
+      "description": "<b>Maîtresse de la Nuit, Dame de la Perte</b><p><b>Alignement :</b> Neutre Mauvais<br/><b>Portefeuille :</b> Obscurité, nuit, perte, oubli, secrets, cavernes, donjons, Outreterre<br/><b>Adorateurs :</b> Ceux qui habitent dans les ténèbres, nihilistes, ceux qui ont subi une grande perte<br/><b>Domaines :</b> Caverne, Ténèbres, Mal, Connaissance<br/><b>Arme de prédilection :</b> Chakram (traiter comme un shuriken)</p>"
+    },
+    {
+      "value": "silvanus",
+      "label": "Silvanus",
+      "alignment": "true-neutral",
+      "description": "<b>Père Chêne, Père Forêt</b><p><b>Alignement :</b> Neutre<br/><b>Portefeuille :</b> Nature sauvage, druides<br/><b>Adorateurs :</b> Druides, rôdeurs, ceux qui vivent dans des terres sauvages et indomptées<br/><b>Domaines :</b> Animal, Plante, Protection, Renouveau, Eau<br/><b>Arme de prédilection :</b> Grand gourdin</p>"
+    },
+    {
+      "value": "sune",
+      "label": "Sunie",
+      "alignment": "chaotic-good",
+      "description": "<b>Dame Chevelure de Feu, La Dame de l'Amour</b><p><b>Alignement :</b> Chaotique Bon<br/><b>Portefeuille :</b> Beauté, amour, passion<br/><b>Adorateurs :</b> Amoureux, artistes, hédonistes, ceux qui apprécient la beauté<br/><b>Domaines :</b> Chaos, Charme, Bien, Protection<br/><b>Arme de prédilection :</b> Fouet</p>"
+    },
+    {
+      "value": "talos",
+      "label": "Talos",
+      "alignment": "chaotic-evil",
+      "description": "<b>Le Seigneur des Tempêtes, Le Destructeur</b><p><b>Alignement :</b> Chaotique Mauvais<br/><b>Portefeuille :</b> Tempêtes, destruction, rébellion, conflagrations, tremblements de terre, vortex<br/><b>Adorateurs :</b> Ceux qui se délectent de la destruction, barbares, pillards<br/><b>Domaines :</b> Chaos, Destruction, Mal, Feu, Tempête<br/><b>Arme de prédilection :</b> Lance</p>"
+    },
+    {
+      "value": "tempus",
+      "label": "Tempus",
+      "alignment": "true-neutral",
+      "description": "<b>Seigneur des Batailles, Marteau-Ennemi</b><p><b>Alignement :</b> Neutre<br/><b>Portefeuille :</b> Guerre, bataille, guerriers<br/><b>Adorateurs :</b> Combattants, barbares, rôdeurs, soldats, mercenaires<br/><b>Domaines :</b> Protection, Force, Guerre<br/><b>Arme de prédilection :</b> Hache de guerre</p>"
+    },
+    {
+      "value": "torm",
+      "label": "Torm",
+      "alignment": "lawful-good",
+      "description": "<b>Le Vrai, La Furie Loyale</b><p><b>Alignement :</b> Loyal Bon<br/><b>Portefeuille :</b> Devoir, loyauté, obéissance, paladins<br/><b>Adorateurs :</b> Paladins, gardes, ceux qui servent une cause ou un maître<br/><b>Domaines :</b> Bien, Guérison, Loi, Protection, Force<br/><b>Arme de prédilection :</b> Espadon</p>"
+    },
+    {
+      "value": "tymora",
+      "label": "Tymora",
+      "alignment": "chaotic-good",
+      "description": "<b>Dame Chance, Notre Dame Souriante</b><p><b>Alignement :</b> Chaotique Bon<br/><b>Portefeuille :</b> Bonne fortune, compétence, victoire, aventuriers<br/><b>Adorateurs :</b> Aventuriers, joueurs, preneurs de risques<br/><b>Domaines :</b> Chaos, Bien, Chance, Protection, Voyage<br/><b>Arme de prédilection :</b> Shuriken</p>"
+    },
+    {
+      "value": "tyr",
+      "label": "Tyr",
+      "alignment": "lawful-good",
+      "description": "<b>Le Dieu Mutilé, Le Juste</b><p><b>Alignement :</b> Loyal Bon<br/><b>Portefeuille :</b> Justice<br/><b>Adorateurs :</b> Juges, avocats, paladins, ceux qui cherchent la justice<br/><b>Domaines :</b> Bien, Connaissance, Loi, Rétribution, Guerre<br/><b>Arme de prédilection :</b> Épée longue</p>"
+    },
+    {
+      "value": "umberlee",
+      "label": "Umberlie",
+      "alignment": "chaotic-evil",
+      "description": "<b>La Reine Garce, Reine des Profondeurs</b><p><b>Alignement :</b> Chaotique Mauvais<br/><b>Portefeuille :</b> Océans, courants, vagues, vents marins<br/><b>Adorateurs :</b> Marins, pirates, ceux qui vivent de la mer et craignent sa colère<br/><b>Domaines :</b> Chaos, Destruction, Mal, Océan, Tempête, Eau<br/><b>Arme de prédilection :</b> Trident</p>"
+    },
+    {
+      "value": "lolth",
+      "label": "Lolth",
+      "alignment": "chaotic-evil",
+      "description": "<b>Reine des Araignées, Reine des Fosses Démoniaques de la Toile</b><p><b>Alignement :</b> Chaotique Mauvais<br/><b>Portefeuille :</b> Drows, araignées, mal, ténèbres, chaos<br/><b>Adorateurs :</b> Drows, certains arcanistes mauvais<br/><b>Domaines :</b> Chaos, Destruction, Drow, Mal, Araignée, Ruse<br/><b>Arme de prédilection :</b> Fouet (ressemble à une patte d'araignée, ou un fléau avec des queues en forme d'araignée ou terminées par des araignées)</p>"
+    },
+    {
+      "value": "tiamat",
+      "label": "Tiamat",
+      "alignment": "lawful-evil",
+      "description": "<b>Le Dragon Chromatique, Reine Dragon</b><p><b>Alignement :</b> Loyal Mauvais<br/><b>Portefeuille :</b> Dragons mauvais, conquête, cupidité, vengeance<br/><b>Adorateurs :</b> Dragons mauvais, cultistes qui cherchent le pouvoir par les dragons<br/><b>Domaines :</b> Destruction, Mal, Loi, Peau écailleuse, Ruse, Tyrannie<br/><b>Arme de prédilection :</b> Pic de guerre lourd (sa pointe de tête)</p>"
+    },
+    {
+      "value": "bahamut",
+      "label": "Bahamut",
+      "alignment": "lawful-good",
+      "description": "<b>Le Dragon de Platine, Roi des Dragons Bons</b><p><b>Alignement :</b> Loyal Bon<br/><b>Portefeuille :</b> Dragons bons, sagesse, vent, justice, protection<br/><b>Adorateurs :</b> Dragons bons, ceux qui cherchent la justice et la protection<br/><b>Domaines :</b> Air, Bien, Chance, Noblesse, Protection, Tempête<br/><b>Arme de prédilection :</b> Épée longue (morsure)</p>"
+    },
+    {
+      "value": "kurtulmak",
+      "label": "Kurtulmak",
+      "alignment": "lawful-evil",
+      "description": "<b>Écaille d'Acier, Le Rusé</b><p><b>Alignement :</b> Loyal Mauvais<br/><b>Portefeuille :</b> Kobolds, pièges, exploitation minière<br/><b>Adorateurs :</b> Kobolds<br/><b>Domaines :</b> Terre, Mal, Loi, Chance, Ruse<br/><b>Arme de prédilection :</b> Pic de guerre lourd</p>"
+    },
+    {
+      "value": "maglubiyet",
+      "label": "Maglubiyet",
+      "alignment": "lawful-evil",
+      "description": "<b>Le Puissant, Le Seigneur de la Bataille</b><p><b>Alignement :</b> Loyal Mauvais<br/><b>Portefeuille :</b> Gobelins, hobgobelins, guerre, gouvernance<br/><b>Adorateurs :</b> Gobelins, hobgobelins et autres gobelinoïdes<br/><b>Domaines :</b> Destruction, Mal, Loi, Ruse, Guerre<br/><b>Arme de prédilection :</b> Hache de guerre</p>"
+    }
   ]
 }
+
+    
