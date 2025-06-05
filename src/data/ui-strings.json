@@ -166,7 +166,7 @@
     "skillsTableHeaderMaxLabel": "Max",
     "skillsTableTooltipMaxRanks": "Max Ranks: {maxRanksValue}",
     "skillsTableTooltipEditCustom": "Edit Custom Skill Definition",
-    "skillsTableTooltipInfoForSkill": "Info for {skillName}"
+    "skillsTableTooltipInfoForSkill": "Info for {skillName}",
+    "badgeCustomLabel": "Custom"
   }
 }
-    

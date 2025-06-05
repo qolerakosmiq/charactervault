@@ -20,7 +20,6 @@
     "selectGenderPlaceholder": "Choisir ou écrire un genre...",
     "selectSizePlaceholder": "Choisir une taille",
     "hitDiceLabel": "Dés de Vie",
-    "levelLabel": "Niveau",
     "infoDialogLoadingTitle": "Chargement des Informations...",
     "infoDialogLoadingDescription": "Récupération des détails...",
     "infoDialogDefaultTitle": "Information",
@@ -156,7 +155,7 @@
     "skillPointFormulaFirstLevelFactor": "Premier Niveau",
     "skillPointFormulaLevelProgressionFactor": "Progression de Niveau",
     "skillPointFormulaSelectClassPrompt": "Choisissez une classe pour voir les points de compétence disponibles.",
-    "skillsTableHeaderClassLabel": "Classe ?",
+    "skillsTableHeaderClassLabel": "Classe&nbsp;?",
     "skillsTableHeaderSkillLabel": "Compétence",
     "skillsTableHeaderSkillModLabel": "Mod.<br/>Comp.",
     "skillsTableHeaderKeyAbilityLabel": "Carac.<br/>Clé",
@@ -167,6 +166,7 @@
     "skillsTableHeaderMaxLabel": "Max",
     "skillsTableTooltipMaxRanks": "Rangs Max : {maxRanksValue}",
     "skillsTableTooltipEditCustom": "Modifier la Définition de Compétence Personnalisée",
-    "skillsTableTooltipInfoForSkill": "Infos pour {skillName}"
+    "skillsTableTooltipInfoForSkill": "Infos pour {skillName}",
+    "badgeCustomLabel": "Perso."
   }
 }

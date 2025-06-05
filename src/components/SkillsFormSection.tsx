@@ -226,7 +226,7 @@ export function SkillsFormSection({
       </Card>
     );
   }
-  const { DND_CLASSES, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES, SIZES, UI_STRINGS } = translations;
+  const { DND_CLASSES, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES, SIZES, UI_STRINGS, ABILITY_LABELS } = translations;
 
   return (
     <>
@@ -294,7 +294,7 @@ export function SkillsFormSection({
           <div className="space-y-1 min-w-[680px]"> {/* Adjusted min-width */}
             {/* Header Row */}
             <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
-              <span className="text-center w-10">{UI_STRINGS.skillsTableHeaderClassLabel || "Class?"}</span>
+              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderClassLabel || "Class?" }} />
               <span className="pl-1">{UI_STRINGS.skillsTableHeaderSkillLabel || "Skill"}</span>
               <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderSkillModLabel || "Skill<br/>Mod" }} />
               <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderKeyAbilityLabel || "Key<br/>Ability" }} />
@@ -307,7 +307,9 @@ export function SkillsFormSection({
 
             {skillsForDisplay.map(skill => {
               const keyAbility = skill.keyAbility;
-              const keyAbilityDisplay = (keyAbility && keyAbility !== 'none') ? keyAbility.substring(0, 3).toUpperCase() : 'N/A';
+              const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === keyAbility);
+              const keyAbilityDisplay = (keyAbility && keyAbility !== 'none' && abilityLabelInfo) ? abilityLabelInfo.abbr : 'N/A';
+
 
               const baseAbilityMod = (keyAbility && keyAbility !== 'none')
                 ? getAbilityModifierByName(actualAbilityScores, keyAbility)
@@ -351,7 +353,7 @@ export function SkillsFormSection({
                       <Label htmlFor={`skill_ranks_${skill.id}`} className="text-sm pr-1 leading-tight flex-grow flex items-center">
                           {skill.name}
                           {skill.isCustom && (
-                              <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 ml-1.5 font-normal">Custom</Badge>
+                              <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 ml-1.5 font-normal">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>
                           )}
                       </Label>
                     {skill.isCustom && (
@@ -411,5 +413,3 @@ export function SkillsFormSection({
     </>
   );
 }
-
-    
