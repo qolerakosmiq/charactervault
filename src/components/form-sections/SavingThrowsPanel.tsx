@@ -135,7 +135,7 @@ export function SavingThrowsPanel({
               <tr className="border-b">
                 <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground w-[100px]"></th>
                 {SAVE_TYPES.map((saveType) => (
-                  <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-muted-foreground capitalize">
+                  <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-foreground capitalize">
                     {SAVE_DISPLAY_NAMES[saveType]}
                   </th>
                 ))}
@@ -145,7 +145,7 @@ export function SavingThrowsPanel({
               {dataRows.map((dataRow) => {
                 return (
                   <tr key={dataRow.rowKey} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
-                    <td className="py-3 px-1 text-left text-sm font-medium text-foreground align-middle whitespace-nowrap">
+                    <td className="py-3 px-1 text-left text-sm font-medium text-muted-foreground align-middle whitespace-nowrap">
                       {dataRow.label}
                     </td>
                     {SAVE_TYPES.map((saveType) => {
