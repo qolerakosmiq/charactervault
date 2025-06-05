@@ -1,4 +1,5 @@
 
+
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -469,13 +470,20 @@ export function checkFeatPrerequisites(
   }
 
   if (prerequisites.skills) {
+    const formatString = uiStrings.skillRankPrereqFormat || "{skillName} {ranksValue} {ranksLabel}";
+    const ranksLabel = uiStrings.prereqSkillRanksLabel || "Ranks";
     for (const skillReq of prerequisites.skills) {
       const charSkillInstance = character.skills.find(s => s.id === skillReq.id);
       const skillDef = combinedSkillDefsForPrereq.find(sd => sd.id === skillReq.id);
       const skillName = skillDef?.label || skillReq.id;
       const isMet = charSkillInstance ? charSkillInstance.ranks >= skillReq.ranks : false;
-      const ranksLabel = uiStrings.prereqSkillRanksLabel || "Ranks";
-      messages.push({ text: `${skillName} ${skillReq.ranks} ${ranksLabel}`, isMet, orderKey: `skill_${skillReq.id}`, originalText: skillName });
+      
+      const messageText = formatString
+        .replace("{skillName}", skillName)
+        .replace("{ranksValue}", String(skillReq.ranks))
+        .replace("{ranksLabel}", ranksLabel);
+      
+      messages.push({ text: messageText, isMet, orderKey: `skill_${skillReq.id}`, originalText: skillName });
     }
   }
 
@@ -713,5 +721,6 @@ export * from './character-core';
 // For example, if SIZES or ALIGNMENTS were truly static and not i18n, they could be re-exported.
 // However, given the current setup, they are i18n-dependent and sourced via useI18n.
 // export { SIZES, ALIGNMENTS } from './character-core'; // Example, but likely not applicable now
+
 
 

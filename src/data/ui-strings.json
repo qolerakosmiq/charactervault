@@ -190,6 +190,7 @@
     "featSelectionDialogCancelButton": "Cancel",
     "prereqBabLabel": "BAB",
     "prereqSkillRanksLabel": "Ranks",
-    "prereqCasterLevelLabel": "Caster Level"
+    "prereqCasterLevelLabel": "Caster Level",
+    "skillRankPrereqFormat": "{skillName} {ranksValue} {ranksLabel}"
   }
 }

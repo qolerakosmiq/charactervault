@@ -190,6 +190,7 @@
     "featSelectionDialogCancelButton": "Annuler",
     "prereqBabLabel": "BBA",
     "prereqSkillRanksLabel": "Rangs",
-    "prereqCasterLevelLabel": "Niv. de lanceur de sorts"
+    "prereqCasterLevelLabel": "Niv. de lanceur de sorts",
+    "skillRankPrereqFormat": "{skillName} {ranksLabel} {ranksValue}"
   }
 }
