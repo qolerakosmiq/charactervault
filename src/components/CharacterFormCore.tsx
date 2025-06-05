@@ -127,6 +127,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     const baseCharData = {
       id: crypto.randomUUID(),
       name: '', race: '', alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
+      height: '', weight: '', eyes: '', hair: '', skin: '',
       abilityScores: defaultBaseAbilityScores,
       abilityScoreTempCustomModifiers: defaultTempCustomMods,
       hp: 10, maxHp: 10,
@@ -177,6 +178,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         damageReduction: initialCharacter.damageReduction || [],
         fortification: initialCharacter.fortification || { ...DEFAULT_RESISTANCE_VALUE },
         grappleWeaponChoice: initialCharacter.grappleWeaponChoice || 'unarmed',
+        height: initialCharacter.height || '',
+        weight: initialCharacter.weight || '',
+        eyes: initialCharacter.eyes || '',
+        hair: initialCharacter.hair || '',
+        skin: initialCharacter.skin || '',
       };
     }
     return baseCharData;
@@ -549,10 +555,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   }, [allAvailableSkillDefinitionsForDisplay, skillToEdit]);
 
 
-  const handlePersonalStoryChange = (story: string) => {
-    setCharacter(prev => ({ ...prev, personalStory: story }));
-  };
-
   const handlePortraitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -694,7 +696,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         <CharacterFormStoryPortraitSection
           personalStory={character.personalStory}
           portraitDataUrl={character.portraitDataUrl}
-          onPersonalStoryChange={handlePersonalStoryChange}
+          height={character.height}
+          weight={character.weight}
+          eyes={character.eyes}
+          hair={character.hair}
+          skin={character.skin}
+          onFieldChange={handleCoreInfoFieldChange}
           onPortraitChange={handlePortraitChange}
         />
 

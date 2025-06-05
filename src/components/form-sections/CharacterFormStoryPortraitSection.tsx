@@ -1,25 +1,37 @@
 
 'use client';
 
-import * as React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import *as React from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import { UserSquare2, Palette } from 'lucide-react';
+import type { Character } from '@/types/character';
+
 
 interface CharacterFormStoryPortraitSectionProps {
   personalStory: string | undefined;
   portraitDataUrl: string | undefined;
-  onPersonalStoryChange: (story: string) => void;
+  height?: string;
+  weight?: string;
+  eyes?: string;
+  hair?: string;
+  skin?: string;
+  onFieldChange: (field: keyof Character, value: string) => void;
   onPortraitChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function CharacterFormStoryPortraitSection({
   personalStory,
   portraitDataUrl,
-  onPersonalStoryChange,
+  height,
+  weight,
+  eyes,
+  hair,
+  skin,
+  onFieldChange,
   onPortraitChange,
 }: CharacterFormStoryPortraitSectionProps) {
   return (
@@ -29,10 +41,10 @@ export function CharacterFormStoryPortraitSection({
           <UserSquare2 className="h-8 w-8 text-primary" />
           <div>
             <CardTitle className="text-2xl font-serif">
-              Personal Story & Portrait
+              Personal Story &amp; Appearance
             </CardTitle>
             <CardDescription>
-              Flesh out your character's background and appearance.
+              Flesh out your character's background and physical details.
             </CardDescription>
           </div>
         </div>
@@ -71,11 +83,37 @@ export function CharacterFormStoryPortraitSection({
               id="personalStory"
               name="personalStory"
               value={personalStory || ''}
-              onChange={(e) => onPersonalStoryChange(e.target.value)}
+              onChange={(e) => onFieldChange('personalStory', e.target.value)}
               placeholder="Describe your character's history, motivations, personality, and defining moments..."
               className="min-h-[260px] md:flex-grow md:min-h-0"
             />
           </div>
+        </div>
+
+        <div className="mt-6 pt-6 border-t border-border/40">
+            <h3 className="text-lg font-serif font-medium text-foreground mb-4">Physical Appearance</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="space-y-1.5">
+                    <Label htmlFor="height">Height</Label>
+                    <Input id="height" name="height" value={height || ''} onChange={(e) => onFieldChange('height', e.target.value)} placeholder="e.g., 5'10&quot;"/>
+                </div>
+                <div className="space-y-1.5">
+                    <Label htmlFor="weight">Weight</Label>
+                    <Input id="weight" name="weight" value={weight || ''} onChange={(e) => onFieldChange('weight', e.target.value)} placeholder="e.g., 160 lbs"/>
+                </div>
+                 <div className="space-y-1.5">
+                    <Label htmlFor="eyes">Eyes</Label>
+                    <Input id="eyes" name="eyes" value={eyes || ''} onChange={(e) => onFieldChange('eyes', e.target.value)} placeholder="e.g., Hazel"/>
+                </div>
+                <div className="space-y-1.5">
+                    <Label htmlFor="hair">Hair</Label>
+                    <Input id="hair" name="hair" value={hair || ''} onChange={(e) => onFieldChange('hair', e.target.value)} placeholder="e.g., Raven Black, Tousled"/>
+                </div>
+                <div className="space-y-1.5">
+                    <Label htmlFor="skin">Skin</Label>
+                    <Input id="skin" name="skin" value={skin || ''} onChange={(e) => onFieldChange('skin', e.target.value)} placeholder="e.g., Fair, Tanned"/>
+                </div>
+            </div>
         </div>
       </CardContent>
     </Card>

@@ -1,4 +1,5 @@
 
+
 import baseDataJson from '@/data/dnd-base.json';
 import customBaseDataJson from '@/data/custom-base.json';
 import racesDataJson from '@/data/dnd-races.json';
@@ -171,6 +172,11 @@ export interface Character {
   size: CharacterSize;
   age: number;
   gender: GenderId | string | '';
+  height?: string;
+  weight?: string;
+  eyes?: string;
+  hair?: string;
+  skin?: string;
   abilityScores: AbilityScores; // Base scores
   abilityScoreTempCustomModifiers: AbilityScores; // Temporary custom modifiers
   hp: number;
