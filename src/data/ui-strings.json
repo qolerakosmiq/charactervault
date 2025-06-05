@@ -64,6 +64,7 @@
     "infoDialogRacialBonusLabel": "Racial Bonus",
     "infoDialogMiscModifierLabel": "Misc Modifier",
     "infoDialogTotalBonusLabel": "Total Bonus",
+    "infoDialogTotalLabel": "Total",
     "infoDialogBaseValueLabel": "Base Value:",
     "infoDialogCustomModifierLabel": "Custom Modifier:",
     "infoDialogTotalResistanceLabel": "Total Resistance:",
@@ -219,5 +220,3 @@
     "loadPenaltyDescriptionFormat": "Penalty to land speed from encumbrance ({unit})."
   }
 }
-
-    

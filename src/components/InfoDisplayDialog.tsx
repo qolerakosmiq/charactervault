@@ -377,10 +377,14 @@ export function InfoDisplayDialog({
         const dexMod = calculateAbilityModifier(detailedCharScores.dexterity.finalScore);
         const sizeModACVal = getSizeModifierAC(character.size, SIZES);
         const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
-        const details: Array<{ label: string; value: string | number; isBold?: boolean }> = [{ label: 'Base', value: 10 }];
-        let totalCalculated = 10;
+        const details: Array<{ label: string; value: string | number; isBold?: boolean }> = [];
+        let totalCalculated = 10; 
+        
+        details.push({ label: 'Base', value: 10 });
 
-        if (contentType.acType === 'Normal' || contentType.acType === 'Touch') details.push({ label: (UI_STRINGS.infoDialogInitiativeAbilityModLabel || "{abilityAbbr} ({abilityFull}) Modifier:").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX').replace("{abilityFull}", ABILITY_LABELS.find(al => al.value === 'dexterity')?.label || 'Dexterity'), value: dexMod });
+        if (contentType.acType === 'Normal' || contentType.acType === 'Touch') {
+          details.push({ label: (UI_STRINGS.infoDialogInitiativeAbilityModLabel || "{abilityAbbr} ({abilityFull}) Modifier:").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX').replace("{abilityFull}", ABILITY_LABELS.find(al => al.value === 'dexterity')?.label || 'Dexterity'), value: dexMod });
+        }
         details.push({ label: `${(UI_STRINGS.infoDialogSizeModifierLabel || "Size Modifier")} (${sizeLabel})`, value: sizeModACVal });
 
         if (contentType.acType === 'Normal' || contentType.acType === 'Flat-Footed') {
@@ -395,12 +399,11 @@ export function InfoDisplayDialog({
         
         if (character.acMiscModifier) details.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || 'Custom Modifier', value: character.acMiscModifier });
 
-
         if (contentType.acType === 'Normal') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + dexMod + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (character.acMiscModifier || 0);
         else if (contentType.acType === 'Touch') totalCalculated = 10 + dexMod + sizeModACVal + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (character.acMiscModifier || 0);
         else if (contentType.acType === 'Flat-Footed') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (character.acMiscModifier || 0);
         
-        details.push({ label: UI_STRINGS.infoDialogTotalBonusLabel || 'Total', value: totalCalculated, isBold: true });
+        details.push({ label: UI_STRINGS.infoDialogTotalLabel || 'Total', value: totalCalculated, isBold: true });
         data = { title: (UI_STRINGS.infoDialogTitleAcBreakdown || "{acType} AC Breakdown").replace("{acType}", contentType.acType), detailsList: details };
         break;
       }
@@ -850,266 +853,14 @@ export function InfoDisplayDialog({
             )}
 
 
-            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && !speedBreakdown && contentType?.type === 'race' && (
-              <>
-              {detailsList && detailsList.length > 0 && (
-                  <>
-                    {renderSeparatorIfNeeded()}
-                    <div>
-                      <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogListHeadingDetails || "Details"}</h3>
-                      {detailsList!.map((detail, index) => (
-                        <div key={index} className="flex justify-between text-sm mb-0.5">
-                        <span className="text-foreground">{detail.label}</span>
-                        <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value as React.ReactNode}</span>
-                        </div>
-                      ))}
-                    </div>
-                    {markContentRendered()}
-                  </>
-                )}
-                
-                {abilityModifiers && abilityModifiers.length > 0 && (
-                  <>
-                  {renderSeparatorIfNeeded()}
-                  <div className="mb-3">
-                    <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogAbilityScoreAdjustments || "Ability Score Adjustments"}</h3>
-                    <ul className="space-y-1 text-sm">
-                      {abilityModifiers!.map(({ ability, change }) => {
-                        const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.value === ability);
-                        const abbr = abilityLabelInfo?.abbr || ability.substring(0,3).toUpperCase();
-                        const full = abilityLabelInfo?.label || ability;
-                        return (
-                          <li key={ability} className="flex justify-between text-foreground">
-                            <span>
-                              {abbr}
-                              {" "}
-                              <span className="text-xs text-muted-foreground">({full})</span>
-                            </span>
-                            {renderModifierValue(change)}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                  {markContentRendered()}
-                  </>
-                )}
-                
-                {skillBonuses && skillBonuses.length > 0 && (
-                  <>
-                  {renderSeparatorIfNeeded()}
-                  <div className="mb-3">
-                    <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogRacialSkillBonuses || "Racial Skill Bonuses"}</h3>
-                    <ul className="space-y-1 text-sm">
-                      {skillBonuses!.map(({ skillId, skillName, bonus }, index) => {
-                        const skillDef = allCombinedSkillDefinitionsForDisplay.find(s => s.id === skillId);
-                        const uniqueKey = `skill-${skillId}-${index}`;
-                        const isExpanded = expandedItems.has(uniqueKey);
-                        return (
-                          <li key={uniqueKey} className="text-foreground">
-                            <div className="flex justify-between items-center">
-                              <Button
-                                variant="link"
-                                size="sm"
-                                onClick={() => toggleExpanded(uniqueKey)}
-                                className="p-0 h-auto text-sm font-normal text-foreground inline-flex items-center text-left justify-start no-underline hover:no-underline items-baseline"
-                                aria-expanded={isExpanded}
-                              >
-                                {skillName}
-                              </Button>
-                              {renderModifierValue(bonus)}
-                            </div>
-                            {isExpanded && skillDef?.description && (
-                                <ExpandableDetailWrapper>
-                                  <div
-                                    className="text-muted-foreground prose prose-sm dark:prose-invert max-w-none"
-                                    dangerouslySetInnerHTML={{ __html: skillDef.description }}
-                                  />
-                                </ExpandableDetailWrapper>
-                            )}
-                            {isExpanded && !skillDef?.description && (
-                              <ExpandableDetailWrapper>
-                                <div className="mt-1 pl-4 text-xs text-muted-foreground italic">
-                                    {UI_STRINGS.infoDialogNoSkillDescription || "No description available for this skill."}
-                                </div>
-                              </ExpandableDetailWrapper>
-                            )}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                  {markContentRendered()}
-                  </>
-                )}
-                {speeds && Object.keys(speeds).length > 0 && (
-                  <>
-                  {renderSeparatorIfNeeded()}
-                  <div className="mb-3">
-                    <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</h3>
-                    <ul className="space-y-1 text-sm">
-                      {Object.entries(speeds).map(([speedType, speedValue]) => {
-                        if (speedValue === 0 && speedType !== 'land') return null; 
-                        const label = speedType.charAt(0).toUpperCase() + speedType.slice(1);
-                        return (
-                          <li key={speedType} className="flex justify-between text-foreground">
-                            <span>{label}</span>
-                            <span className="font-bold">{speedValue} ft.</span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                  {markContentRendered()}
-                  </>
-                )}
-
-                {(grantedFeats && grantedFeats.length > 0) || (bonusFeatSlots !== undefined) ? (
-                  <>
-                  {renderSeparatorIfNeeded()}
-                  <div>
-                    <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogRacialFeatAdjustments || "Racial Feat Adjustments"}</h3>
-                    <div className="text-sm space-y-1">
-                      {bonusFeatSlots !== undefined && bonusFeatSlots > 0 && ( 
-                        <div className="flex justify-between">
-                          <span className="text-foreground">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</span>
-                          {renderModifierValue(bonusFeatSlots)}
-                        </div>
-                      )}
-                      {grantedFeats && grantedFeats.length > 0 ? (
-                        <ul className="space-y-2">
-                          {grantedFeats.map((feat, index) => {
-                            const uniqueKey = `racefeat-${feat.featId}-${index}`;
-                            const isExpanded = expandedItems.has(uniqueKey);
-                            return (
-                            <li key={uniqueKey}>
-                              <Button
-                                  variant="link"
-                                  size="sm"
-                                  onClick={() => toggleExpanded(uniqueKey)}
-                                  className="p-0 h-auto text-foreground text-sm font-normal inline-flex items-center text-left justify-start no-underline hover:no-underline items-baseline"
-                                  aria-expanded={isExpanded}
-                                >
-                                  {feat.name}
-                                  {feat.note && (<span className="text-xs text-muted-foreground ml-1">({feat.note})</span>)}
-                                </Button>
-                              {isExpanded && translations && (
-                                <ExpandableDetailWrapper>
-                                  <FeatDetailContent
-                                    featId={feat.featId}
-                                    character={character}
-                                    allFeats={allCombinedFeatDefinitions}
-                                    allPredefinedSkills={translations.SKILL_DEFINITIONS}
-                                    allCustomSkills={customSkillDefinitions}
-                                    allClasses={translations.DND_CLASSES}
-                                    allRaces={translations.DND_RACES}
-                                    abilityLabels={translations.ABILITY_LABELS}
-                                    alignmentPrereqOptions={translations.ALIGNMENT_PREREQUISITE_OPTIONS}
-                                    uiStrings={UI_STRINGS}
-                                  />
-                                </ExpandableDetailWrapper>
-                              )}
-                            </li>
-                          )})}
-                        </ul>
-                      ) : (
-                        (bonusFeatSlots === undefined || bonusFeatSlots <= 0) && <p className="text-foreground">{UI_STRINGS.infoDialogNone || "None"}</p>
-                      )}
-                    </div>
-                  </div>
-                  {markContentRendered()}
-                  </>
-                ) : null}
-              </>
-            )}
-
-            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && !speedBreakdown && contentType?.type === 'class' && (
-              <>
-                {detailsList && detailsList.length > 0 && (
-                  <>
-                  {renderSeparatorIfNeeded()}
-                  <div className="mb-3">
-                    <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogListHeadingDetails || "Details"}</h3>
-                    {detailsList!.map((detail, index) => (
-                        <div key={index} className="flex justify-between text-sm mb-0.5">
-                        <span className="text-foreground">{detail.label}</span>
-                        <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value as React.ReactNode}</span>
-                        </div>
-                    ))}
-                  </div>
-                  {markContentRendered()}
-                  </>
-                )}
-                {grantedFeats && grantedFeats.length > 0 && (
-                  <>
-                  {renderSeparatorIfNeeded()}
-                  <div>
-                    <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogClassFeaturesAndFeats || "Class Features & Granted Feats"}</h3>
-                    <ul className="space-y-1.5 text-sm">
-                      {grantedFeats.map(({ featId, name, note, levelAcquired }, index) => {
-                        const uniqueKey = `classfeat-${featId}-${index}`;
-                        const isExpanded = expandedItems.has(uniqueKey);
-                        return (
-                        <li key={uniqueKey}>
-                           <div className="flex items-start gap-x-2 text-foreground">
-                            {levelAcquired !== undefined && (
-                              <Badge variant="outline" className="text-xs font-normal h-5 whitespace-nowrap shrink-0 mt-[1px]">
-                                {UI_STRINGS.levelLabel || "Level"} {levelAcquired}
-                              </Badge>
-                            )}
-                            <div className="flex-grow min-w-0">
-                              <Button
-                                  variant="link"
-                                  size="sm"
-                                  onClick={() => toggleExpanded(uniqueKey)}
-                                  className={cn(
-                                    "p-0 h-auto text-sm font-normal text-left justify-start text-foreground no-underline hover:no-underline items-baseline break-words w-full"
-                                  )}
-                                  aria-expanded={isExpanded}
-                                >
-                                  {name}
-                                </Button>
-                                {note && (
-                                  <p className="text-xs text-muted-foreground mt-0.5">
-                                    {note}
-                                  </p>
-                                )}
-                            </div>
-                          </div>
-                          {isExpanded && translations && (
-                            <ExpandableDetailWrapper>
-                              <FeatDetailContent
-                                featId={featId}
-                                character={character}
-                                allFeats={allCombinedFeatDefinitions}
-                                allPredefinedSkills={translations.SKILL_DEFINITIONS}
-                                allCustomSkills={customSkillDefinitions}
-                                allClasses={translations.DND_CLASSES}
-                                allRaces={translations.DND_RACES}
-                                abilityLabels={translations.ABILITY_LABELS}
-                                alignmentPrereqOptions={translations.ALIGNMENT_PREREQUISITE_OPTIONS}
-                                uiStrings={UI_STRINGS}
-                              />
-                            </ExpandableDetailWrapper>
-                          )}
-                        </li>
-                      )})}
-                    </ul>
-                  </div>
-                  {markContentRendered()}
-                  </>
-                )}
-              </>
-            )}
-            
             {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && !speedBreakdown && detailsList && detailsList.length > 0 && (contentType?.type !== 'class' && contentType?.type !== 'race') && (
               <>
                 {renderSeparatorIfNeeded()}
                 <div>
                   <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
-                  {detailsList!.filter(detail => detail.label.toLowerCase() !== 'total').map((detail, index) => {
+                  {detailsList!.filter(detail => detail.isBold !== true).map((detail, index) => {
                       const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string))))
-                          ? renderModifierValue(detail.value as number | string, undefined, undefined, undefined, (detail.label.toLowerCase() === "total" ? "text-accent" : undefined), detail.label.toLowerCase() === "total")
+                          ? renderModifierValue(detail.value as number | string, undefined, undefined, undefined, undefined, false)
                           : detail.value;
                       
                       let labelContent: React.ReactNode;
@@ -1139,15 +890,21 @@ export function InfoDisplayDialog({
                       );
                   })}
                   
-                  {detailsList!.find(detail => detail.label.toLowerCase() === 'total') && (
-                    <>
-                      <Separator className="my-2" />
-                      <div className="flex justify-between text-base">
-                        <span className="font-semibold">{UI_STRINGS.infoDialogTotalBonusLabel || "Total"}</span>
-                        {renderModifierValue(detailsList!.find(detail => detail.label.toLowerCase() === 'total')!.value as number | string, undefined, undefined, undefined, "text-accent", true)}
-                      </div>
-                    </>
-                  )}
+                  {(() => {
+                    const totalDetailItem = detailsList!.find(detail => detail.isBold === true);
+                    if (totalDetailItem) {
+                      return (
+                        <>
+                          <Separator className="my-2" />
+                          <div className="flex justify-between text-base">
+                            <span className="font-semibold">{totalDetailItem.label as string}</span>
+                            {renderModifierValue(totalDetailItem.value as number | string, undefined, undefined, undefined, "text-accent", true)}
+                          </div>
+                        </>
+                      );
+                    }
+                    return null;
+                  })()}
                 </div>
                 {markContentRendered()}
               </>
@@ -1193,3 +950,4 @@ interface SkillModifierBreakdownDetails {
   miscModifier: number;
   totalBonus: number;
 }
+

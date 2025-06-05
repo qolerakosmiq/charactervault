@@ -64,6 +64,7 @@
     "infoDialogRacialBonusLabel": "Bonus Racial",
     "infoDialogMiscModifierLabel": "Modificateur Divers",
     "infoDialogTotalBonusLabel": "Bonus Total",
+    "infoDialogTotalLabel": "Total",
     "infoDialogBaseValueLabel": "Valeur de Base :",
     "infoDialogCustomModifierLabel": "Modificateur Perso. :",
     "infoDialogTotalResistanceLabel": "Résistance Totale :",
@@ -219,5 +220,3 @@
     "loadPenaltyDescriptionFormat": "Malus à la vitesse au sol dû à l'encombrement ({unit})."
   }
 }
-
-    
