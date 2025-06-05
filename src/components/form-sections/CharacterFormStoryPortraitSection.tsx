@@ -1,14 +1,16 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
-import { UserSquare2, Palette } from 'lucide-react';
+import { UserSquare2, Palette, Loader2 } from 'lucide-react';
 import type { Character } from '@/types/character';
+import { useI18n } from '@/context/I18nProvider';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 interface CharacterFormStoryPortraitSectionProps {
@@ -22,6 +24,53 @@ export function CharacterFormStoryPortraitSection({
   onFieldChange,
   onPortraitChange,
 }: CharacterFormStoryPortraitSectionProps) {
+  const { translations, isLoading: translationsLoading } = useI18n();
+
+  if (translationsLoading || !translations) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-3">
+            <UserSquare2 className="h-8 w-8 text-primary" />
+            <div>
+              <Skeleton className="h-7 w-64 mb-1" />
+              <Skeleton className="h-4 w-80" />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4 pt-2">
+          <div className="space-y-1.5 mb-4">
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:items-stretch">
+            <div className="md:col-span-1 space-y-2 flex flex-col">
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="aspect-square w-full rounded-md" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+            <div className="md:col-span-2 space-y-2 flex flex-col">
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="min-h-[260px] md:flex-grow md:min-h-0 rounded-md" />
+            </div>
+          </div>
+          <div className="mt-4 pt-4 border-t border-border/40">
+            <Skeleton className="h-6 w-40 mb-3" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="space-y-1.5">
+                  <Skeleton className="h-5 w-20" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+  const { UI_STRINGS } = translations;
+
   return (
     <Card>
       <CardHeader>
@@ -29,35 +78,35 @@ export function CharacterFormStoryPortraitSection({
           <UserSquare2 className="h-8 w-8 text-primary" />
           <div>
             <CardTitle className="text-2xl font-serif">
-              Personal Story &amp; Appearance
+              {UI_STRINGS.storyPortraitPanelTitle || "Personal Story & Appearance"}
             </CardTitle>
             <CardDescription>
-              Flesh out your character's background and physical details.
+              {UI_STRINGS.storyPortraitPanelDescription || "Flesh out your character's background and physical details."}
             </CardDescription>
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4 pt-2">
         <div className="space-y-1.5 mb-4">
-            <Label htmlFor="campaign">Campaign</Label>
-            <Input 
-              id="campaign" 
-              name="campaign" 
-              value={character.campaign || ''} 
-              onChange={(e) => onFieldChange('campaign', e.target.value)} 
-              placeholder="e.g., The Sunless Citadel, A Homebrewed Adventure"
+            <Label htmlFor="campaign">{UI_STRINGS.campaignLabel || "Campaign"}</Label>
+            <Input
+              id="campaign"
+              name="campaign"
+              value={character.campaign || ''}
+              onChange={(e) => onFieldChange('campaign', e.target.value)}
+              placeholder={UI_STRINGS.campaignPlaceholder || "e.g., The Sunless Citadel, A Homebrewed Adventure"}
             />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:items-stretch">
           <div className="md:col-span-1 space-y-2 flex flex-col">
-            <Label htmlFor="portraitUpload">Character Portrait</Label>
+            <Label htmlFor="portraitUpload">{UI_STRINGS.characterPortraitLabel || "Character Portrait"}</Label>
             <div className="aspect-square w-full bg-muted rounded-md flex items-center justify-center relative overflow-hidden border border-border shadow-sm">
               {character.portraitDataUrl ? (
                 <Image src={character.portraitDataUrl} alt="Character Portrait" fill style={{ objectFit: 'cover' }} />
               ) : (
                 <div className="flex flex-col items-center justify-center text-muted-foreground">
                   <Palette size={48} className="mb-2" />
-                  <span className="text-sm">No portrait uploaded</span>
+                  <span className="text-sm">{UI_STRINGS.noPortraitUploadedText || "No portrait uploaded"}</span>
                 </div>
               )}
             </div>
@@ -76,40 +125,40 @@ export function CharacterFormStoryPortraitSection({
           </div>
 
           <div className="md:col-span-2 space-y-2 flex flex-col">
-            <Label htmlFor="personalStory">Personal Story</Label>
+            <Label htmlFor="personalStory">{UI_STRINGS.personalStoryLabel || "Personal Story"}</Label>
             <Textarea
               id="personalStory"
               name="personalStory"
               value={character.personalStory || ''}
               onChange={(e) => onFieldChange('personalStory', e.target.value)}
-              placeholder="Describe your character's history, motivations, personality, and defining moments..."
+              placeholder={UI_STRINGS.personalStoryPlaceholder || "Describe your character's history, motivations, personality, and defining moments..."}
               className="min-h-[260px] md:flex-grow md:min-h-0"
             />
           </div>
         </div>
 
         <div className="mt-4 pt-4 border-t border-border/40">
-            <h3 className="text-lg font-semibold mb-3 text-foreground/90">Physical Appearance</h3>
+            <h3 className="text-lg font-semibold mb-3 text-foreground/90">{UI_STRINGS.physicalAppearanceHeading || "Physical Appearance"}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                    <Label htmlFor="height">Height</Label>
-                    <Input id="height" name="height" value={character.height || ''} onChange={(e) => onFieldChange('height', e.target.value)} placeholder="e.g., 5'10&quot;"/>
+                    <Label htmlFor="height">{UI_STRINGS.heightLabel || "Height"}</Label>
+                    <Input id="height" name="height" value={character.height || ''} onChange={(e) => onFieldChange('height', e.target.value)} placeholder={UI_STRINGS.heightPlaceholder || "e.g., 5'10\""}/>
                 </div>
                 <div className="space-y-1.5">
-                    <Label htmlFor="weight">Weight</Label>
-                    <Input id="weight" name="weight" value={character.weight || ''} onChange={(e) => onFieldChange('weight', e.target.value)} placeholder="e.g., 160 lbs"/>
+                    <Label htmlFor="weight">{UI_STRINGS.weightLabel || "Weight"}</Label>
+                    <Input id="weight" name="weight" value={character.weight || ''} onChange={(e) => onFieldChange('weight', e.target.value)} placeholder={UI_STRINGS.weightPlaceholder || "e.g., 160 lbs"}/>
                 </div>
                  <div className="space-y-1.5">
-                    <Label htmlFor="eyes">Eyes</Label>
-                    <Input id="eyes" name="eyes" value={character.eyes || ''} onChange={(e) => onFieldChange('eyes', e.target.value)} placeholder="e.g., Hazel"/>
+                    <Label htmlFor="eyes">{UI_STRINGS.eyesLabel || "Eyes"}</Label>
+                    <Input id="eyes" name="eyes" value={character.eyes || ''} onChange={(e) => onFieldChange('eyes', e.target.value)} placeholder={UI_STRINGS.eyesPlaceholder || "e.g., Hazel"}/>
                 </div>
                 <div className="space-y-1.5">
-                    <Label htmlFor="hair">Hair</Label>
-                    <Input id="hair" name="hair" value={character.hair || ''} onChange={(e) => onFieldChange('hair', e.target.value)} placeholder="e.g., Raven Black, Tousled"/>
+                    <Label htmlFor="hair">{UI_STRINGS.hairLabel || "Hair"}</Label>
+                    <Input id="hair" name="hair" value={character.hair || ''} onChange={(e) => onFieldChange('hair', e.target.value)} placeholder={UI_STRINGS.hairPlaceholder || "e.g., Raven Black, Tousled"}/>
                 </div>
                 <div className="space-y-1.5">
-                    <Label htmlFor="skin">Skin</Label>
-                    <Input id="skin" name="skin" value={character.skin || ''} onChange={(e) => onFieldChange('skin', e.target.value)} placeholder="e.g., Fair, Tanned"/>
+                    <Label htmlFor="skin">{UI_STRINGS.skinLabel || "Skin"}</Label>
+                    <Input id="skin" name="skin" value={character.skin || ''} onChange={(e) => onFieldChange('skin', e.target.value)} placeholder={UI_STRINGS.skinPlaceholder || "e.g., Fair, Tanned"}/>
                 </div>
             </div>
         </div>
@@ -117,3 +166,5 @@ export function CharacterFormStoryPortraitSection({
     </Card>
   );
 }
+
+    

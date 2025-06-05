@@ -124,7 +124,26 @@
     "pointBuyDialogCancelButton": "Cancel",
     "pointBuyDialogApplyButton": "Apply Scores",
     "pointBuyDialogErrorInvalidApplicationTitle": "Invalid Scores",
-    "pointBuyDialogErrorInvalidApplicationDesc": "Cannot apply scores. Points spent must exactly match the total points budget, or the budget is invalid."
+    "pointBuyDialogErrorInvalidApplicationDesc": "Cannot apply scores. Points spent must exactly match the total points budget, or the budget is invalid.",
+    "storyPortraitPanelTitle": "Personal Story & Appearance",
+    "storyPortraitPanelDescription": "Flesh out your character's background and physical details.",
+    "campaignLabel": "Campaign",
+    "campaignPlaceholder": "e.g., The Sunless Citadel, A Homebrewed Adventure",
+    "characterPortraitLabel": "Character Portrait",
+    "noPortraitUploadedText": "No portrait uploaded",
+    "personalStoryLabel": "Personal Story",
+    "personalStoryPlaceholder": "Describe your character's history, motivations, personality, and defining moments...",
+    "physicalAppearanceHeading": "Physical Appearance",
+    "heightLabel": "Height",
+    "heightPlaceholder": "e.g., 5'10\"",
+    "weightLabel": "Weight",
+    "weightPlaceholder": "e.g., 160 lbs",
+    "eyesLabel": "Eyes",
+    "eyesPlaceholder": "e.g., Hazel",
+    "hairLabel": "Hair",
+    "hairPlaceholder": "e.g., Raven Black, Tousled",
+    "skinLabel": "Skin",
+    "skinPlaceholder": "e.g., Fair, Tanned"
   }
 }
 

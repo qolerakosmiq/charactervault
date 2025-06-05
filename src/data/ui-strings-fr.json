@@ -124,7 +124,26 @@
     "pointBuyDialogCancelButton": "Annuler",
     "pointBuyDialogApplyButton": "Appliquer les Scores",
     "pointBuyDialogErrorInvalidApplicationTitle": "Scores Invalides",
-    "pointBuyDialogErrorInvalidApplicationDesc": "Impossible d'appliquer les scores. Les points dépensés doivent correspondre exactement au budget total de points, ou le budget est invalide."
+    "pointBuyDialogErrorInvalidApplicationDesc": "Impossible d'appliquer les scores. Les points dépensés doivent correspondre exactement au budget total de points, ou le budget est invalide.",
+    "storyPortraitPanelTitle": "Histoire Personnelle & Apparence",
+    "storyPortraitPanelDescription": "Étoffez l'histoire et les détails physiques de votre personnage.",
+    "campaignLabel": "Campagne",
+    "campaignPlaceholder": "Ex : Le Donjon sans Soleil, Une Aventure Maison",
+    "characterPortraitLabel": "Portrait du Personnage",
+    "noPortraitUploadedText": "Aucun portrait téléversé",
+    "personalStoryLabel": "Histoire Personnelle",
+    "personalStoryPlaceholder": "Décrivez l'histoire, les motivations, la personnalité et les moments marquants de votre personnage...",
+    "physicalAppearanceHeading": "Apparence Physique",
+    "heightLabel": "Taille",
+    "heightPlaceholder": "Ex : 1m78",
+    "weightLabel": "Poids",
+    "weightPlaceholder": "Ex : 72 kg",
+    "eyesLabel": "Yeux",
+    "eyesPlaceholder": "Ex : Noisette",
+    "hairLabel": "Cheveux",
+    "hairPlaceholder": "Ex : Noir Corbeau, Ébouriffés",
+    "skinLabel": "Peau",
+    "skinPlaceholder": "Ex : Claire, Hâlée"
   }
 }
 
