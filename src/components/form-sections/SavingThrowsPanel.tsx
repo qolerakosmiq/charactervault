@@ -106,7 +106,7 @@ export function SavingThrowsPanel({
           <table className="w-full min-w-[300px]">
             <thead>
               <tr className="border-b">
-                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground"></th> {/* Empty top-left cell */}
+                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground" />
                 {SAVE_TYPES.map((saveType) => (
                   <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-muted-foreground capitalize">
                     {SAVE_DISPLAY_NAMES[saveType]}
