@@ -67,7 +67,7 @@ export function SavingThrowsPanel({
         const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
         const fullAbilityName = ABILITY_FULL_NAMES[abilityKey];
         return (
-          <div className="flex flex-col items-center -my-1"> {/* Added negative margin to possibly tighten vertical space if needed */}
+          <div className="flex flex-col items-center -my-1">
             <span className="text-xs leading-tight">{fullAbilityName}</span>
             <span className="leading-tight">{abilityModifier >= 0 ? '+' : ''}{abilityModifier}</span>
           </div>
@@ -81,7 +81,7 @@ export function SavingThrowsPanel({
           <NumberSpinnerInput
             value={savingThrows[saveType].miscMod}
             onChange={(newValue) => onSavingThrowMiscModChange(saveType, newValue)}
-            min={-20} 
+            min={-20}
             max={20}
             inputClassName="w-10 h-7 text-sm"
             buttonSize="sm"
@@ -104,21 +104,31 @@ export function SavingThrowsPanel({
       <CardContent>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[300px]">
-            <thead><tr className="border-b">
-                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground"></th>
-                {SAVE_TYPES.map((saveType) => (<th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-muted-foreground capitalize">
+            <thead>
+              <tr className="border-b">
+                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground"></th> {/* Empty top-left cell */}
+                {SAVE_TYPES.map((saveType) => (
+                  <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-muted-foreground capitalize">
                     {SAVE_DISPLAY_NAMES[saveType]}
-                  </th>))}
-              </tr></thead>
-            <tbody>{
-              dataRows.map((row) => {
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {dataRows.map((row) => {
                 const labelKey = typeof row.label === 'string' ? row.label.replace(/\s+/g, '-') : Math.random().toString();
-                return (<tr key={labelKey} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
-                  <td className="py-2 px-1 text-sm font-medium text-foreground align-top whitespace-normal">
-                    <span className="inline-block w-full">{row.label}</span>
-                  </td>
-                  {SAVE_TYPES.map((saveType) => (<td key={`${labelKey}-${saveType}`} className="py-2 px-0.5 text-center text-sm text-muted-foreground">{row.getValue(saveType)}</td>))}
-                </tr>);
+                return (
+                  <tr key={labelKey} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
+                    <td className="py-2 px-1 text-sm font-medium text-foreground align-middle whitespace-nowrap">
+                      {row.label}
+                    </td>
+                    {SAVE_TYPES.map((saveType) => (
+                      <td key={`${labelKey}-${saveType}`} className="py-2 px-0.5 text-center text-sm text-muted-foreground align-middle">
+                        {row.getValue(saveType)}
+                      </td>
+                    ))}
+                  </tr>
+                );
               })}
             </tbody>
           </table>
@@ -127,4 +137,3 @@ export function SavingThrowsPanel({
     </Card>
   );
 }
-
