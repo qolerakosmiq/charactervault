@@ -171,6 +171,7 @@ export interface Character {
   id: string;
   name: string;
   playerName?: string;
+  campaign?: string;
   race: DndRaceId | '';
   alignment: CharacterAlignment;
   deity?: DndDeityId | string;

@@ -12,7 +12,7 @@ import type { Character } from '@/types/character';
 
 
 interface CharacterFormStoryPortraitSectionProps {
-  character: Pick<Character, 'personalStory' | 'portraitDataUrl' | 'height' | 'weight' | 'eyes' | 'hair' | 'skin'>;
+  character: Pick<Character, 'campaign' | 'personalStory' | 'portraitDataUrl' | 'height' | 'weight' | 'eyes' | 'hair' | 'skin'>;
   onFieldChange: (field: keyof Character, value: string) => void;
   onPortraitChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -38,6 +38,16 @@ export function CharacterFormStoryPortraitSection({
         </div>
       </CardHeader>
       <CardContent className="space-y-6 pt-6">
+        <div className="space-y-1.5 mb-6">
+            <Label htmlFor="campaign">Campaign</Label>
+            <Input 
+              id="campaign" 
+              name="campaign" 
+              value={character.campaign || ''} 
+              onChange={(e) => onFieldChange('campaign', e.target.value)} 
+              placeholder="e.g., The Sunless Citadel, A Homebrewed Adventure"
+            />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:items-stretch">
           <div className="md:col-span-1 space-y-2 flex flex-col">
             <Label htmlFor="portraitUpload">Character Portrait</Label>

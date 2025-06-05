@@ -132,6 +132,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       id: crypto.randomUUID(),
       name: '',
       playerName: '', 
+      campaign: '',
       race: '', alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
       height: '', weight: '', eyes: '', hair: '', skin: '',
       abilityScores: defaultBaseAbilityScores,
@@ -175,6 +176,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         ...baseCharData,
         ...initialCharacter,
         playerName: initialCharacter.playerName || '', 
+        campaign: initialCharacter.campaign || '',
         alignment: initialCharacter.alignment || 'true-neutral',
         abilityScores: initialCharacter.abilityScores || defaultBaseAbilityScores,
         abilityScoreTempCustomModifiers: initialCharacter.abilityScoreTempCustomModifiers || defaultTempCustomMods,
@@ -747,6 +749,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
         <CharacterFormStoryPortraitSection
           character={{
+            campaign: character.campaign,
             personalStory: character.personalStory,
             portraitDataUrl: character.portraitDataUrl,
             height: character.height,
