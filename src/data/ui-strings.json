@@ -18,6 +18,7 @@
     "selectAlignmentPlaceholder": "Select alignment",
     "selectDeityPlaceholder": "Select deity",
     "selectGenderPlaceholder": "Select or type gender...",
-    "selectSizePlaceholder": "Select size"
+    "selectSizePlaceholder": "Select size",
+    "hitDiceLabel": "Hit Dice"
   }
 }

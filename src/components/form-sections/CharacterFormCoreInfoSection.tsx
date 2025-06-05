@@ -223,7 +223,7 @@ export function CharacterFormCoreInfoSection({
               </Button>
             </div>
             {selectedClassInfo?.hitDice && (
-              <div className="flex items-baseline gap-1 pt-[6px] ml-1"> <Badge variant="secondary" className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground"> Hit Dice:{'\u00A0'} <strong className="font-bold">{selectedClassInfo.hitDice}</strong> </Badge> </div>
+              <div className="flex items-baseline gap-1 pt-[6px] ml-1"> <Badge variant="secondary" className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground"> {UI_STRINGS.hitDiceLabel || "Hit Dice"}:{'\u00A0'} <strong className="font-bold">{selectedClassInfo.hitDice}</strong> </Badge> </div>
             )}
           </div>
         </div>
@@ -321,4 +321,3 @@ export function CharacterFormCoreInfoSection({
     </Card>
   );
 }
-

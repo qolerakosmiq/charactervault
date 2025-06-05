@@ -18,6 +18,7 @@
     "selectAlignmentPlaceholder": "Choisir un alignement",
     "selectDeityPlaceholder": "Choisir une divinité",
     "selectGenderPlaceholder": "Choisir ou écrire un genre...",
-    "selectSizePlaceholder": "Choisir une taille"
+    "selectSizePlaceholder": "Choisir une taille",
+    "hitDiceLabel": "Dés de Vie"
   }
 }
