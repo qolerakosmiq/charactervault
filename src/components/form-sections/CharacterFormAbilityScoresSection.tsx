@@ -2,7 +2,7 @@
 'use client';
 
 import *as React from 'react';
-import type { AbilityName, AbilityScores, DetailedAbilityScores } from '@/types/character';
+import type { AbilityName, AbilityScores, DetailedAbilityScores, Character } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,9 +26,8 @@ const ABILITY_DISPLAY_NAMES_FULL: Record<Exclude<AbilityName, 'none'>, string> =
 };
 
 interface CharacterFormAbilityScoresSectionProps {
-  baseAbilityScores: AbilityScores;
+  character: Pick<Character, 'abilityScores' | 'abilityScoreTempCustomModifiers'>;
   detailedAbilityScores: DetailedAbilityScores | null;
-  abilityScoreTempCustomModifiers: AbilityScores;
   onBaseAbilityScoreChange: (ability: Exclude<AbilityName, 'none'>, value: number) => void;
   onAbilityScoreTempCustomModifierChange: (ability: Exclude<AbilityName, 'none'>, value: number) => void;
   onMultipleBaseAbilityScoresChange: (newScores: AbilityScores) => void;
@@ -37,9 +36,8 @@ interface CharacterFormAbilityScoresSectionProps {
 }
 
 export function CharacterFormAbilityScoresSection({
-  baseAbilityScores,
+  character,
   detailedAbilityScores,
-  abilityScoreTempCustomModifiers,
   onBaseAbilityScoreChange,
   onAbilityScoreTempCustomModifierChange,
   onMultipleBaseAbilityScoresChange,
@@ -75,6 +73,9 @@ export function CharacterFormAbilityScoresSection({
     onMultipleBaseAbilityScoresChange(newScores);
     setIsPointBuyDialogOpen(false);
   };
+
+  const baseAbilityScores = character.abilityScores;
+  const abilityScoreTempCustomModifiers = character.abilityScoreTempCustomModifiers;
 
   return (
     <>
@@ -184,4 +185,3 @@ export function CharacterFormAbilityScoresSection({
     </>
   );
 }
-

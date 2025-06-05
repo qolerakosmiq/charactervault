@@ -667,7 +667,16 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     <>
       <form onSubmit={handleSubmit} className="space-y-8">
         <CharacterFormCoreInfoSection
-          characterData={character}
+          character={{
+            name: character.name,
+            race: character.race,
+            alignment: character.alignment,
+            deity: character.deity,
+            size: character.size,
+            age: character.age,
+            gender: character.gender,
+            classes: character.classes,
+          }}
           onFieldChange={handleCoreInfoFieldChange}
           onClassChange={handleClassChange}
           ageEffectsDetails={ageEffectsDetails}
@@ -683,9 +692,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         />
 
         <CharacterFormAbilityScoresSection
-          baseAbilityScores={character.abilityScores}
+          character={{
+            abilityScores: character.abilityScores,
+            abilityScoreTempCustomModifiers: character.abilityScoreTempCustomModifiers,
+          }}
           detailedAbilityScores={detailedAbilityScores}
-          abilityScoreTempCustomModifiers={character.abilityScoreTempCustomModifiers}
           onBaseAbilityScoreChange={handleBaseAbilityScoreChange}
           onMultipleBaseAbilityScoresChange={handleMultipleBaseAbilityScoresChange}
           onAbilityScoreTempCustomModifierChange={handleAbilityScoreTempCustomModifierChange}
@@ -694,25 +705,29 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         />
 
         <CharacterFormStoryPortraitSection
-          personalStory={character.personalStory}
-          portraitDataUrl={character.portraitDataUrl}
-          height={character.height}
-          weight={character.weight}
-          eyes={character.eyes}
-          hair={character.hair}
-          skin={character.skin}
+          character={{
+            personalStory: character.personalStory,
+            portraitDataUrl: character.portraitDataUrl,
+            height: character.height,
+            weight: character.weight,
+            eyes: character.eyes,
+            hair: character.hair,
+            skin: character.skin,
+          }}
           onFieldChange={handleCoreInfoFieldChange}
           onPortraitChange={handlePortraitChange}
         />
 
         <SkillsFormSection
-          skills={character.skills}
-          abilityScores={character.abilityScores}
-          actualAbilityScores={actualAbilityScoresForSavesAndSkills}
-          characterClasses={character.classes}
-          characterRace={character.race as DndRaceId}
-          characterSize={character.size as CharacterSize}
-          selectedFeats={character.feats}
+          character={{
+            skills: character.skills,
+            abilityScores: character.abilityScores, // Pass base scores via character object
+            classes: character.classes,
+            race: character.race,
+            size: character.size,
+            feats: character.feats,
+          }}
+          actualAbilityScores={actualAbilityScoresForSavesAndSkills} // Pass calculated scores separately
           allFeatDefinitions={allAvailableFeatDefinitions}
           allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
@@ -727,7 +742,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           chosenFeatInstances={character.feats}
           onFeatInstancesChange={handleFeatInstancesChange}
           onEditCustomFeatDefinition={handleOpenEditCustomFeatDefinitionDialog}
-          abilityScores={actualAbilityScoresForSavesAndSkills}
+          abilityScores={actualAbilityScoresForSavesAndSkills} // This is the final calculated score
           skills={character.skills}
           allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
@@ -735,9 +750,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
            <SavingThrowsPanel
-              savingThrows={character.savingThrows}
-              abilityScores={actualAbilityScoresForSavesAndSkills}
-              characterClasses={character.classes}
+              character={{
+                savingThrows: character.savingThrows,
+                classes: character.classes,
+                // abilityScores: character.abilityScores, // Base scores if needed, but actual is preferred
+              }}
+              abilityScores={actualAbilityScoresForSavesAndSkills} // Pass calculated scores
               onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
           />
           <ArmorClassPanel 
@@ -755,7 +773,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         />
 
         <ResistancesPanel
-          characterData={{
+          characterData={{ // This component was already using a Pick-like structure
             fireResistance: character.fireResistance,
             coldResistance: character.coldResistance,
             acidResistance: character.acidResistance,

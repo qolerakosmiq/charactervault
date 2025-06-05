@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, CharacterFeatInstance, DndRaceOption, SkillDefinitionJsonData, FeatDefinitionJsonData, CharacterSize, InfoDialogContentType } from '@/types/character';
+import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, CharacterFeatInstance, DndRaceOption, SkillDefinitionJsonData, FeatDefinitionJsonData, CharacterSize, InfoDialogContentType, Character } from '@/types/character';
 import { CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES, DND_CLASSES, SIZES, calculateSizeSpecificSkillBonus } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,6 @@ import { calculateMaxRanks } from '@/lib/constants';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
-// InfoDisplayDialog import removed as it's managed by parent
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Badge } from '@/components/ui/badge';
 
@@ -40,37 +39,34 @@ export interface SkillModifierBreakdownDetails {
 }
 
 interface SkillsFormSectionProps {
-  skills: SkillType[];
-  abilityScores: AbilityScores;
-  actualAbilityScores: AbilityScores;
-  characterClasses: CharacterClass[];
-  characterRace: DndRaceId | string;
-  characterSize: CharacterSize | '';
-  selectedFeats: CharacterFeatInstance[];
+  character: Pick<Character, 'skills' | 'abilityScores' | 'classes' | 'race' | 'size' | 'feats'>;
+  actualAbilityScores: AbilityScores; // For calculations based on final/detailed scores
   allFeatDefinitions: (FeatDefinitionJsonData & {isCustom?: boolean})[];
   allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
   allCustomSkillDefinitions: readonly CustomSkillDefinition[];
   onSkillChange: (skillId: string, ranks: number, isClassSkill?: boolean) => void;
   onEditCustomSkillDefinition: (skillDefId: string) => void;
-  onOpenSkillInfoDialog: (skillId: string) => void; // New prop
+  onOpenSkillInfoDialog: (skillId: string) => void;
 }
 
 export function SkillsFormSection({
-  skills: characterSkillInstances,
-  abilityScores,
-  actualAbilityScores,
-  characterClasses,
-  characterRace,
-  characterSize,
-  selectedFeats,
+  character,
+  actualAbilityScores, // This prop already represents the *final* ability scores for calculations
   allFeatDefinitions,
   allPredefinedSkillDefinitions,
   allCustomSkillDefinitions,
   onSkillChange,
   onEditCustomSkillDefinition,
-  onOpenSkillInfoDialog, // Destructure new prop
+  onOpenSkillInfoDialog,
 }: SkillsFormSectionProps) {
-  // Local state for InfoDisplayDialog removed
+
+  const characterSkillInstances = character.skills;
+  const characterClasses = character.classes;
+  const characterRace = character.race as DndRaceId;
+  const characterSize = character.size as CharacterSize;
+  const selectedFeats = character.feats;
+  // Base ability scores from character object, if needed for display or other non-calculation logic
+  // const baseAbilityScores = character.abilityScores; 
 
   const firstClass = characterClasses[0];
   const characterLevel = firstClass?.level || 1;
@@ -141,7 +137,7 @@ export function SkillsFormSection({
   };
 
   const handleTriggerSkillInfoDialog = (skillId: string) => {
-    onOpenSkillInfoDialog(skillId); // Call the prop function
+    onOpenSkillInfoDialog(skillId);
   };
 
   const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs";
@@ -321,8 +317,6 @@ export function SkillsFormSection({
         </div>
       </CardContent>
     </Card>
-    {/* InfoDisplayDialog rendering removed, handled by parent */}
     </>
   );
 }
-

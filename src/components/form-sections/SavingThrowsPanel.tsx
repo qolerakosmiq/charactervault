@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import type { AbilityScores, CharacterClass, SavingThrows, SavingThrowType, DndClassOption, SingleSavingThrow } from '@/types/character';
+import type { AbilityScores, CharacterClass, SavingThrows, SavingThrowType, DndClassOption, SingleSavingThrow, Character } from '@/types/character';
 import { DND_CLASSES }
 from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,9 +12,8 @@ import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 
 interface SavingThrowsPanelProps {
-  savingThrows: SavingThrows;
-  abilityScores: AbilityScores; 
-  characterClasses: CharacterClass[];
+  character: Pick<Character, 'savingThrows' | 'classes'>;
+  abilityScores: AbilityScores; // This should be actualAbilityScores from parent
   onSavingThrowMiscModChange: (saveType: SavingThrowType, value: number) => void;
 }
 
@@ -26,11 +25,13 @@ const SAVE_DISPLAY_NAMES: Record<SavingThrowType, string> = {
 };
 
 export function SavingThrowsPanel({
-  savingThrows,
-  abilityScores,
-  characterClasses,
+  character,
+  abilityScores, // This is actualAbilityScores (final scores with all mods)
   onSavingThrowMiscModChange,
 }: SavingThrowsPanelProps) {
+  const savingThrows = character.savingThrows;
+  const characterClasses = character.classes;
+
   const calculatedBaseSaves = getBaseSaves(characterClasses, DND_CLASSES);
 
   const dataRows = [

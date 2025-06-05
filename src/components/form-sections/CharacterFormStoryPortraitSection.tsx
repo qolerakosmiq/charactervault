@@ -12,25 +12,13 @@ import type { Character } from '@/types/character';
 
 
 interface CharacterFormStoryPortraitSectionProps {
-  personalStory: string | undefined;
-  portraitDataUrl: string | undefined;
-  height?: string;
-  weight?: string;
-  eyes?: string;
-  hair?: string;
-  skin?: string;
+  character: Pick<Character, 'personalStory' | 'portraitDataUrl' | 'height' | 'weight' | 'eyes' | 'hair' | 'skin'>;
   onFieldChange: (field: keyof Character, value: string) => void;
   onPortraitChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function CharacterFormStoryPortraitSection({
-  personalStory,
-  portraitDataUrl,
-  height,
-  weight,
-  eyes,
-  hair,
-  skin,
+  character,
   onFieldChange,
   onPortraitChange,
 }: CharacterFormStoryPortraitSectionProps) {
@@ -54,8 +42,8 @@ export function CharacterFormStoryPortraitSection({
           <div className="md:col-span-1 space-y-2 flex flex-col">
             <Label htmlFor="portraitUpload">Character Portrait</Label>
             <div className="aspect-square w-full bg-muted rounded-md flex items-center justify-center relative overflow-hidden border border-border shadow-sm">
-              {portraitDataUrl ? (
-                <Image src={portraitDataUrl} alt="Character Portrait" fill style={{ objectFit: 'cover' }} />
+              {character.portraitDataUrl ? (
+                <Image src={character.portraitDataUrl} alt="Character Portrait" fill style={{ objectFit: 'cover' }} />
               ) : (
                 <div className="flex flex-col items-center justify-center text-muted-foreground">
                   <Palette size={48} className="mb-2" />
@@ -70,7 +58,7 @@ export function CharacterFormStoryPortraitSection({
               onChange={onPortraitChange}
               className="text-sm file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
             />
-            {!portraitDataUrl && (
+            {!character.portraitDataUrl && (
               <div className="hidden">
                 <Image src="https://placehold.co/300x300.png" alt="Portrait Placeholder" width={300} height={300} data-ai-hint="fantasy portrait" />
               </div>
@@ -82,7 +70,7 @@ export function CharacterFormStoryPortraitSection({
             <Textarea
               id="personalStory"
               name="personalStory"
-              value={personalStory || ''}
+              value={character.personalStory || ''}
               onChange={(e) => onFieldChange('personalStory', e.target.value)}
               placeholder="Describe your character's history, motivations, personality, and defining moments..."
               className="min-h-[260px] md:flex-grow md:min-h-0"
@@ -95,23 +83,23 @@ export function CharacterFormStoryPortraitSection({
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
                     <Label htmlFor="height">Height</Label>
-                    <Input id="height" name="height" value={height || ''} onChange={(e) => onFieldChange('height', e.target.value)} placeholder="e.g., 5'10&quot;"/>
+                    <Input id="height" name="height" value={character.height || ''} onChange={(e) => onFieldChange('height', e.target.value)} placeholder="e.g., 5'10&quot;"/>
                 </div>
                 <div className="space-y-1.5">
                     <Label htmlFor="weight">Weight</Label>
-                    <Input id="weight" name="weight" value={weight || ''} onChange={(e) => onFieldChange('weight', e.target.value)} placeholder="e.g., 160 lbs"/>
+                    <Input id="weight" name="weight" value={character.weight || ''} onChange={(e) => onFieldChange('weight', e.target.value)} placeholder="e.g., 160 lbs"/>
                 </div>
                  <div className="space-y-1.5">
                     <Label htmlFor="eyes">Eyes</Label>
-                    <Input id="eyes" name="eyes" value={eyes || ''} onChange={(e) => onFieldChange('eyes', e.target.value)} placeholder="e.g., Hazel"/>
+                    <Input id="eyes" name="eyes" value={character.eyes || ''} onChange={(e) => onFieldChange('eyes', e.target.value)} placeholder="e.g., Hazel"/>
                 </div>
                 <div className="space-y-1.5">
                     <Label htmlFor="hair">Hair</Label>
-                    <Input id="hair" name="hair" value={hair || ''} onChange={(e) => onFieldChange('hair', e.target.value)} placeholder="e.g., Raven Black, Tousled"/>
+                    <Input id="hair" name="hair" value={character.hair || ''} onChange={(e) => onFieldChange('hair', e.target.value)} placeholder="e.g., Raven Black, Tousled"/>
                 </div>
                 <div className="space-y-1.5">
                     <Label htmlFor="skin">Skin</Label>
-                    <Input id="skin" name="skin" value={skin || ''} onChange={(e) => onFieldChange('skin', e.target.value)} placeholder="e.g., Fair, Tanned"/>
+                    <Input id="skin" name="skin" value={character.skin || ''} onChange={(e) => onFieldChange('skin', e.target.value)} placeholder="e.g., Fair, Tanned"/>
                 </div>
             </div>
         </div>
