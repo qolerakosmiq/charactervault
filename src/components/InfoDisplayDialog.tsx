@@ -25,7 +25,7 @@ import type {
   SpeedType,
   SpeedBreakdownDetails as SpeedBreakdownDetailsType,
   SpeedComponent,
-  CharacterSizeObject, 
+  CharacterSizeObject,
   DndRaceOption, DndClassOption, AbilityScores
 } from '@/types/character';
 
@@ -215,7 +215,7 @@ export function InfoDisplayDialog({
         colorClass = positiveColor;
     } else if (numValue < 0) {
         colorClass = negativeColor;
-    } else { 
+    } else {
         colorClass = zeroColor;
     }
     const prefix = numValue > 0 ? '+' : (numValue === 0 && isTotal ? '' : (numValue === 0 ? '+' : ''));
@@ -229,7 +229,7 @@ export function InfoDisplayDialog({
 
     const {
       DND_RACES, DND_CLASSES, DND_DEITIES, ALIGNMENTS, SKILL_DEFINITIONS, SIZES,
-      DND_FEATS_DEFINITIONS: PREDEFINED_FEATS, ABILITY_LABELS,
+      DND_FEATS_DEFINITIONS: PREDEFINED_FEATS, ABILITY_LABELS, SAVING_THROW_LABELS,
       DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA,
       SKILL_SYNERGIES: SKILL_SYNERGIES_DATA, CLASS_SKILLS: CLASS_SKILLS_DATA,
       ALIGNMENT_PREREQUISITE_OPTIONS, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, UI_STRINGS
@@ -1185,3 +1185,4 @@ interface SkillModifierBreakdownDetails {
   miscModifier: number;
   totalBonus: number;
 }
+
