@@ -132,7 +132,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       abilityScoreTempCustomModifiers: defaultTempCustomMods,
       hp: 10, maxHp: 10,
       armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0,
-      deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, 
+      deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0,
       
       babMiscModifier: 0,
       initiativeMiscModifier: 0,
@@ -152,15 +152,15 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       electricityResistance: { ...DEFAULT_RESISTANCE_VALUE },
       sonicResistance: { ...DEFAULT_RESISTANCE_VALUE },
       spellResistance: { ...DEFAULT_RESISTANCE_VALUE },
-      powerResistance: { ...DEFAULT_RESISTANCE_VALUE }, 
+      powerResistance: { ...DEFAULT_RESISTANCE_VALUE },
       damageReduction: [],
       fortification: { ...DEFAULT_RESISTANCE_VALUE },
     };
 
     if (initialCharacter) {
       return {
-        ...baseCharData, 
-        ...initialCharacter, 
+        ...baseCharData,
+        ...initialCharacter,
         alignment: initialCharacter.alignment || 'true-neutral',
         abilityScores: initialCharacter.abilityScores || defaultBaseAbilityScores,
         abilityScoreTempCustomModifiers: initialCharacter.abilityScoreTempCustomModifiers || defaultTempCustomMods,
@@ -398,7 +398,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       const unarmedDamageDice = getUnarmedGrappleDamage(character.size);
       newBaseNotes = `${unarmedDamageDice} (${sizeLabel} Unarmed)`;
     } else {
-      newBaseNotes = character.grappleDamage_baseNotes; 
+      newBaseNotes = character.grappleDamage_baseNotes;
     }
 
     if (character.grappleDamage_baseNotes !== newBaseNotes) {
@@ -639,7 +639,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       classes: character.classes.length > 0 ? character.classes : [{id: crypto.randomUUID(), className: '', level: 1}],
     };
     if (finalCharacterData.classes[0]) {
-        finalCharacterData.classes[0].level = 1; 
+        finalCharacterData.classes[0].level = 1;
     }
 
     onSave(finalCharacterData);
@@ -754,12 +754,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                 savingThrows: character.savingThrows,
                 classes: character.classes,
               }}
-              abilityScores={actualAbilityScoresForSavesAndSkills} 
+              abilityScores={actualAbilityScoresForSavesAndSkills}
               onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
           />
-          <ArmorClassPanel 
-            character={character} 
-            onCharacterUpdate={handleCharacterFieldUpdate} 
+          <ArmorClassPanel
+            character={character}
+            onCharacterUpdate={handleCharacterFieldUpdate}
             onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
           />
         </div>
@@ -768,11 +768,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             character={character}
             onCharacterUpdate={handleCharacterFieldUpdate}
             onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog}
-            onOpenAcBreakdownDialog={onOpenAcBreakdownDialog}
+            onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
         />
 
         <ResistancesPanel
-          characterData={{ 
+          characterData={{
             fireResistance: character.fireResistance,
             coldResistance: character.coldResistance,
             acidResistance: character.acidResistance,
