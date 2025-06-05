@@ -6,44 +6,44 @@
       "label": "Humain",
       "description": "<p>Les humains sont le peuple le plus adaptable et le plus ambitieux parmi les races communes.<br />Quels que soient leurs objectifs, les humains sont les innovateurs, les réalisateurs et les pionniers des mondes.</p>",
       "bonusFeatSlots": 1,
-      "speeds": { "land": 30 }
+      "speeds": { "land": 9 }
     },
     {
       "value": "elf",
       "label": "Elfe",
       "description": "<p>Les elfes sont un peuple magique d'une grâce d'un autre monde, vivant dans le monde mais n'en faisant pas entièrement partie.<br />Ils vivent dans des lieux d'une beauté éthérée, au milieu d'anciennes forêts ou dans des flèches scintillantes de lumière féerique, où une musique douce flotte dans l'air et de délicats parfums flottent sur la brise.<br />Les elfes aiment la nature et la magie, l'art et l'artisanat, la musique et la poésie, et les bonnes choses du monde.</p>",
       "racialSkillBonuses": { "listen": 2, "search": 2, "spot": 2 },
-      "speeds": { "land": 30 }
+      "speeds": { "land": 9 }
     },
     {
       "value": "dwarf",
       "label": "Nain",
       "description": "<p>Les nains sont connus pour leur habileté à la guerre, leur capacité à résister aux châtiments physiques et magiques, leur connaissance des secrets de la terre, leur travail acharné et leur capacité à boire de la bière.<br />Leurs royaumes sont disséminés dans les montagnes du monde, où ils extraient des gemmes et des métaux précieux et forgent des objets merveilleux.</p>",
-      "speeds": { "land": 20 }
+      "speeds": { "land": 6 }
     },
     {
       "value": "halfling",
       "label": "Halfelin",
       "description": "<p>Les halfelins sont un peuple affable et joyeux.<br />Ils chérissent les liens de la famille et de l'amitié ainsi que le confort du foyer, nourrissant peu de rêves d'or ou de gloire.<br />Même les aventuriers parmi eux s'aventurent généralement dans le monde pour des raisons de communauté, d'amitié, de désir de voyager ou de curiosité.</p>",
-      "speeds": { "land": 20 }
+      "speeds": { "land": 6 }
     },
     {
       "value": "gnome",
       "label": "Gnome",
       "description": "<p>Les gnomes sont bien accueillis partout en tant que techniciens, alchimistes et inventeurs.<br />Malgré la demande pour leurs compétences, la plupart des gnomes préfèrent rester parmi les leurs, vivant dans des terriers confortables sous des collines boisées et vallonnées.</p>",
-      "speeds": { "land": 20 }
+      "speeds": { "land": 6 }
     },
     {
       "value": "half-elf",
       "label": "Demi-Elfe",
       "description": "<p>Marchant dans deux mondes mais n'appartenant véritablement à aucun, les demi-elfes combinent ce que certains disent être les meilleures qualités de leurs parents elfe et humain : la curiosité, l'inventivité et l'ambition humaines tempérées par les sens raffinés, l'amour de la nature et les goûts artistiques des elfes.</p>",
-      "speeds": { "land": 30 }
+      "speeds": { "land": 9 }
     },
     {
       "value": "half-orc",
       "label": "Demi-Orque",
       "description": "<p>La pigmentation grisâtre des demi-orques, leurs fronts fuyants, leurs mâchoires saillantes, leurs dents proéminentes et leur stature imposante rendent leur héritage orque évident pour tous.<br />Qu'ils soient unis sous la direction d'un puissant sorcier ou qu'ils aient combattu pour leur liberté, les demi-orques sont animés par une détermination féroce à prouver leur valeur.</p>",
-      "speeds": { "land": 30 }
+      "speeds": { "land": 9 }
     }
   ]
 }
