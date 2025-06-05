@@ -321,7 +321,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
 
                 <div className="space-y-3 border md:border-l md:border-t-0 p-4 rounded-md md:pl-6">
                   <Label className="text-md font-medium">{UI_STRINGS.resistancesPanelAddCustomDrLabel}</Label>
-                  <div className="space-y-1">
+                  <div className="space-y-1 w-fit">
                       <Label htmlFor="form-dr-value" className="text-xs text-center block">{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
                       <NumberSpinnerInput
                       id="form-dr-value"
@@ -331,7 +331,6 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                       inputClassName="h-9 text-sm w-20"
                       buttonClassName="h-9 w-9"
                       buttonSize="sm"
-                      // Removed className="justify-center" to left-align the spinner component
                       />
                   </div>
                    <div className="space-y-1">
@@ -381,3 +380,4 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     </>
   );
 }
+
