@@ -1,22 +1,27 @@
 
 {
   "SIZES_DATA": [
-    { "value": "fine", "label": "FR: Fine", "acModifier": 8, "skillModifiers": { "hide": 16 }, "grappleDamage": "0" },
-    { "value": "diminutive", "label": "FR: Diminutive", "acModifier": 4, "skillModifiers": { "hide": 12 }, "grappleDamage": "0" },
-    { "value": "tiny", "label": "FR: Tiny", "acModifier": 2, "skillModifiers": { "hide": 8 }, "grappleDamage": "1" },
-    { "value": "small", "label": "FR: Small", "acModifier": 1, "skillModifiers": { "hide": 4 }, "grappleDamage": "1d2" },
-    { "value": "medium", "label": "FR: Medium", "acModifier": 0, "skillModifiers": { "hide": 0 }, "grappleDamage": "1d3" },
-    { "value": "large", "label": "FR: Large", "acModifier": -1, "skillModifiers": { "hide": -4 }, "grappleDamage": "1d4" },
-    { "value": "huge", "label": "FR: Huge", "acModifier": -2, "skillModifiers": { "hide": -8 }, "grappleDamage": "1d6" },
-    { "value": "gargantuan", "label": "FR: Gargantuan", "acModifier": -4, "skillModifiers": { "hide": -12 }, "grappleDamage": "1d8" },
-    { "value": "colossal", "label": "FR: Colossal", "acModifier": -8, "skillModifiers": { "hide": -16 }, "grappleDamage": "2d6" }
+    { "value": "fine", "label": "Très Petite", "acModifier": 8, "skillModifiers": { "hide": 16 }, "grappleDamage": "0" },
+    { "value": "diminutive", "label": "Minuscule", "acModifier": 4, "skillModifiers": { "hide": 12 }, "grappleDamage": "0" },
+    { "value": "tiny", "label": "Infime", "acModifier": 2, "skillModifiers": { "hide": 8 }, "grappleDamage": "1" },
+    { "value": "small", "label": "Petite", "acModifier": 1, "skillModifiers": { "hide": 4 }, "grappleDamage": "1d2" },
+    { "value": "medium", "label": "Moyenne", "acModifier": 0, "skillModifiers": { "hide": 0 }, "grappleDamage": "1d3" },
+    { "value": "large", "label": "Grande", "acModifier": -1, "skillModifiers": { "hide": -4 }, "grappleDamage": "1d4" },
+    { "value": "huge", "label": "Très Grande", "acModifier": -2, "skillModifiers": { "hide": -8 }, "grappleDamage": "1d6" },
+    { "value": "gargantuan", "label": "Gigantesque", "acModifier": -4, "skillModifiers": { "hide": -12 }, "grappleDamage": "1d8" },
+    { "value": "colossal", "label": "Colossale", "acModifier": -8, "skillModifiers": { "hide": -16 }, "grappleDamage": "2d6" }
   ],
   "GENDERS_DATA": [
-    { "value": "male", "label": "FR: Male" },
-    { "value": "female", "label": "FR: Female" }
+    { "value": "male", "label": "Masculin" },
+    { "value": "female", "label": "Féminin" }
   ],
   "DEFAULT_ABILITIES_DATA": {
-    "strength": 10, "dexterity": 10, "constitution": 10, "intelligence": 10, "wisdom": 10, "charisma": 10
+    "strength": 10,
+    "dexterity": 10,
+    "constitution": 10,
+    "intelligence": 10,
+    "wisdom": 10,
+    "charisma": 10
   },
   "DEFAULT_SAVING_THROWS_DATA": {
     "fortitude": { "base": 0, "magicMod": 0, "miscMod": 0 },
@@ -27,50 +32,126 @@
   "DEFAULT_SPEED_DETAILS_DATA": { "base": 0, "miscModifier": 0 },
   "DEFAULT_SPEED_PENALTIES_DATA": { "armorSpeedPenalty": 0, "loadSpeedPenalty": 0 },
   "DND_RACE_MIN_ADULT_AGE_DATA": {
-    "human": 15, "elf": 110, "dwarf": 40, "halfling": 20, "gnome": 40, "half-elf": 20, "half-orc": 14
+    "human": 15,
+    "elf": 110,
+    "dwarf": 40,
+    "halfling": 20,
+    "gnome": 40,
+    "half-elf": 20,
+    "half-orc": 14
   },
   "DND_RACE_BASE_MAX_AGE_DATA": {
-    "human": 70, "elf": 350, "dwarf": 250, "halfling": 100, "gnome": 200, "half-elf": 125, "half-orc": 60
+    "human": 70,
+    "elf": 350,
+    "dwarf": 250,
+    "halfling": 100,
+    "gnome": 200,
+    "half-elf": 125,
+    "half-orc": 60
   },
   "RACE_TO_AGING_CATEGORY_MAP_DATA": {
-    "human": "human-aging", "elf": "elf-aging", "dwarf": "dwarf-aging", "gnome": "gnome-aging", "halfling": "halfling-aging", "half-elf": "elf-aging", "half-orc": "orc-aging"
+    "human": "human-aging",
+    "elf": "elf-aging",
+    "dwarf": "dwarf-aging",
+    "gnome": "gnome-aging",
+    "halfling": "halfling-aging",
+    "half-elf": "elf-aging",
+    "half-orc": "orc-aging"
   },
   "DND_RACE_AGING_EFFECTS_DATA": {
-    "human-aging": { "categories": [ {"categoryName": "FR: middle-age", "ageFactor": 0.5, "effects": {"strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1}}, {"categoryName": "FR: old", "ageFactor": 0.66, "effects": {"strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2}}, {"categoryName": "FR: venerable", "ageFactor": 1, "effects": {"strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3}} ]},
-    "elf-aging": { "categories": [ {"categoryName": "FR: middle-age", "ageFactor": 0.5, "effects": {"strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1}}, {"categoryName": "FR: old", "ageFactor": 0.66, "effects": {"strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2}}, {"categoryName": "FR: venerable", "ageFactor": 1, "effects": {"strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3}} ]},
-    "dwarf-aging": { "categories": [ {"categoryName": "FR: middle-age", "ageFactor": 0.5, "effects": {"strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1}}, {"categoryName": "FR: old", "ageFactor": 0.66, "effects": {"strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2}}, {"categoryName": "FR: venerable", "ageFactor": 1, "effects": {"strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3}} ]},
-    "gnome-aging": { "categories": [ {"categoryName": "FR: middle-age", "ageFactor": 0.5, "effects": {"strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1}}, {"categoryName": "FR: old", "ageFactor": 0.66, "effects": {"strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2}}, {"categoryName": "FR: venerable", "ageFactor": 1, "effects": {"strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3}} ]},
-    "halfling-aging": { "categories": [ {"categoryName": "FR: middle-age", "ageFactor": 0.5, "effects": {"strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1}}, {"categoryName": "FR: old", "ageFactor": 0.66, "effects": {"strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2}}, {"categoryName": "FR: venerable", "ageFactor": 1, "effects": {"strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3}} ]},
-    "orc-aging": { "categories": [ {"categoryName": "FR: middle-age", "ageFactor": 0.5, "effects": {"strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1}}, {"categoryName": "FR: old", "ageFactor": 0.66, "effects": {"strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2}}, {"categoryName": "FR: venerable", "ageFactor": 1, "effects": {"strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3}} ]}
+    "human-aging": {
+      "categories": [
+        { "categoryName": "Âge Mûr", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "Âge Avancé", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "Vénérable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    },
+    "elf-aging": {
+      "categories": [
+        { "categoryName": "Âge Mûr", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "Âge Avancé", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "Vénérable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    },
+    "dwarf-aging": {
+      "categories": [
+        { "categoryName": "Âge Mûr", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "Âge Avancé", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "Vénérable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    },
+    "gnome-aging": {
+      "categories": [
+        { "categoryName": "Âge Mûr", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "Âge Avancé", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "Vénérable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    },
+    "halfling-aging": {
+      "categories": [
+        { "categoryName": "Âge Mûr", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "Âge Avancé", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "Vénérable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    },
+    "orc-aging": {
+      "categories": [
+        { "categoryName": "Âge Mûr", "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": "Âge Avancé", "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": "Vénérable", "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    }
   },
   "DND_RACE_ABILITY_MODIFIERS_DATA": {
-    "human": {}, "elf": { "dexterity": 2, "constitution": -2 }, "dwarf": { "constitution": 2, "charisma": -2 }, "halfling": { "dexterity": 2, "strength": -2 }, "gnome": { "constitution": 2, "strength": -2 }, "half-elf": {}, "half-orc": { "strength": 2, "intelligence": -2, "charisma": -2 }
+    "human": {},
+    "elf": { "dexterity": 2, "constitution": -2 },
+    "dwarf": { "constitution": 2, "charisma": -2 },
+    "halfling": { "dexterity": 2, "strength": -2 },
+    "gnome": { "constitution": 2, "strength": -2 },
+    "half-elf": {},
+    "half-orc": { "strength": 2, "intelligence": -2, "charisma": -2 }
   },
   "DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA": {
     "human": 1
   },
   "ABILITY_LABELS_DATA": [
-    { "value": "strength", "label": "FR: Strength", "abbr": "FOR" },
-    { "value": "dexterity", "label": "FR: Dexterity", "abbr": "DEX" },
-    { "value": "constitution", "label": "FR: Constitution", "abbr": "CON" },
-    { "value": "intelligence", "label": "FR: Intelligence", "abbr": "INT" },
-    { "value": "wisdom", "label": "FR: Wisdom", "abbr": "SAG" },
-    { "value": "charisma", "label": "FR: Charisma", "abbr": "CHA" }
+    { "value": "strength", "label": "Force", "abbr": "FOR" },
+    { "value": "dexterity", "label": "Dextérité", "abbr": "DEX" },
+    { "value": "constitution", "label": "Constitution", "abbr": "CON" },
+    { "value": "intelligence", "label": "Intelligence", "abbr": "INT" },
+    { "value": "wisdom", "label": "Sagesse", "abbr": "SAG" },
+    { "value": "charisma", "label": "Charisme", "abbr": "CHA" }
   ],
   "SAVING_THROW_LABELS_DATA": [
-    { "value": "fortitude", "label": "FR: Fortitude" },
-    { "value": "reflex", "label": "FR: Reflex" },
-    { "value": "will", "label": "FR: Will" }
+    { "value": "fortitude", "label": "Vigueur" },
+    { "value": "reflex", "label": "Réflexes" },
+    { "value": "will", "label": "Volonté" }
   ],
   "DAMAGE_REDUCTION_TYPES_DATA": [
-    { "value": "none", "label": "FR: None" }, { "value": "magic", "label": "FR: Magic" }, { "value": "adamantine", "label": "FR: Adamantine" }, { "value": "silver", "label": "FR: Silver" }, { "value": "cold-iron", "label": "FR: Cold Iron" }, { "value": "slashing", "label": "FR: Slashing" }, { "value": "piercing", "label": "FR: Piercing" }, { "value": "bludgeoning", "label": "FR: Bludgeoning" }, { "value": "good", "label": "FR: Good" }, { "value": "evil", "label": "FR: Evil" }, { "value": "lawful", "label": "FR: Lawful" }, { "value": "chaotic", "label": "FR: Chaotic" }
+    { "value": "none", "label": "Aucune" },
+    { "value": "magic", "label": "Magie" },
+    { "value": "adamantine", "label": "Adamantium" },
+    { "value": "silver", "label": "Argent" },
+    { "value": "cold-iron", "label": "Fer Froid" },
+    { "value": "slashing", "label": "Tranchant" },
+    { "value": "piercing", "label": "Perforant" },
+    { "value": "bludgeoning", "label": "Contondant" },
+    { "value": "good", "label": "Bien" },
+    { "value": "evil", "label": "Mal" },
+    { "value": "lawful", "label": "Loyal" },
+    { "value": "chaotic", "label": "Chaotique" }
   ],
   "DAMAGE_REDUCTION_RULES_OPTIONS_DATA": [
-    { "value": "bypassed-by-type", "label": "FR: Bypassed by Type" },
-    { "value": "versus-specific-type", "label": "FR: Versus Specific Type" },
-    { "value": "excepted-by-type", "label": "FR: Excepted by Type" }
+    { "value": "bypassed-by-type", "label": "Dépassée par Type" },
+    { "value": "versus-specific-type", "label": "Contre Type Spécifique" },
+    { "value": "excepted-by-type", "label": "Excepté par Type" }
   ],
   "ALIGNMENT_PREREQUISITE_GENERIC_LABELS_DATA": [
-    { "value": "lawful", "label": "FR: Any Lawful" }, { "value": "neutral-lc", "label": "FR: Any Neutral (Law/Chaos Axis)" }, { "value": "chaotic", "label": "FR: Any Chaotic" }, { "value": "good", "label": "FR: Any Good" }, { "value": "neutral-ge", "label": "FR: Any Neutral (Good/Evil Axis)" }, { "value": "evil", "label": "FR: Any Evil" }
+    { "value": "lawful", "label": "Tout Loyal" },
+    { "value": "neutral-lc", "label": "Tout Neutre (Axe Loi/Chaos)" },
+    { "value": "chaotic", "label": "Tout Chaotique" },
+    { "value": "good", "label": "Tout Bon" },
+    { "value": "neutral-ge", "label": "Tout Neutre (Axe Bien/Mal)" },
+    { "value": "evil", "label": "Tout Mauvais" }
   ]
 }
