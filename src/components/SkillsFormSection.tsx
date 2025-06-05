@@ -308,7 +308,13 @@ export function SkillsFormSection({
             {skillsForDisplay.map(skill => {
               const keyAbility = skill.keyAbility;
               const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === keyAbility);
-              const keyAbilityDisplay = (keyAbility && keyAbility !== 'none' && abilityLabelInfo) ? abilityLabelInfo.abbr : 'N/A';
+              
+              let keyAbilityDisplay = 'N/A';
+              if (keyAbility && keyAbility !== 'none' && abilityLabelInfo) {
+                keyAbilityDisplay = abilityLabelInfo.abbr;
+              } else if (keyAbility === 'none') {
+                keyAbilityDisplay = ''; 
+              }
 
 
               const baseAbilityMod = (keyAbility && keyAbility !== 'none')
