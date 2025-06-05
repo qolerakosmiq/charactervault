@@ -181,6 +181,12 @@
     "featsPanelGrantedFeatsTitle": "Granted Feats",
     "featsPanelNoFeatsYet": "No feats selected or granted yet.",
     "featInstanceEditAriaLabel": "Edit custom feat definition {featLabel}",
-    "featInstanceRemoveAriaLabel": "Remove feat instance"
+    "featInstanceRemoveAriaLabel": "Remove feat instance",
+    "featSelectionDialogTitle": "Select a Feat",
+    "featSelectionDialogDescription": "Search and choose a feat from the list. Descriptions and prerequisites are shown below each feat.",
+    "featSelectionDialogSearchPlaceholder": "Search feats by name or description...",
+    "featSelectionDialogEmpty": "No feats found.",
+    "featSelectionDialogLoadingDescription": "Loading feat information...",
+    "featSelectionDialogCancelButton": "Cancel"
   }
 }

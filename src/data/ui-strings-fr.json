@@ -181,6 +181,12 @@
     "featsPanelGrantedFeatsTitle": "Dons Accordés",
     "featsPanelNoFeatsYet": "Aucun don sélectionné ou accordé pour l'instant.",
     "featInstanceEditAriaLabel": "Modifier la définition du don personnalisé {featLabel}",
-    "featInstanceRemoveAriaLabel": "Supprimer l'instance du don"
+    "featInstanceRemoveAriaLabel": "Supprimer l'instance du don",
+    "featSelectionDialogTitle": "Choisir un Don",
+    "featSelectionDialogDescription": "Recherchez et choisissez un don dans la liste. Les descriptions et prérequis sont affichés sous chaque don.",
+    "featSelectionDialogSearchPlaceholder": "Rechercher des dons par nom ou description...",
+    "featSelectionDialogEmpty": "Aucun don trouvé.",
+    "featSelectionDialogLoadingDescription": "Chargement des informations sur les dons...",
+    "featSelectionDialogCancelButton": "Annuler"
   }
 }
