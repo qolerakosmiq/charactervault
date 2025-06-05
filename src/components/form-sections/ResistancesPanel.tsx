@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet } from '@/types/character';
 // DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS are now from context
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -331,7 +331,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                       inputClassName="h-9 text-sm w-20"
                       buttonClassName="h-9 w-9"
                       buttonSize="sm"
-                      className="justify-center"
+                      // Removed className="justify-center" to left-align the spinner component
                       />
                   </div>
                    <div className="space-y-1">
@@ -381,5 +381,3 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     </>
   );
 }
-
-    
