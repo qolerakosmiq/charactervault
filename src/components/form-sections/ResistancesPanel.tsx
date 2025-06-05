@@ -205,7 +205,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                       </span>
                     </div>
                     <div className="flex items-center justify-center">
-                      <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
+                      <p className="text-2xl font-bold text-accent"> {/* Removed min-w and text-center */}
                         {totalValue}
                       </p>
                       <Button
@@ -254,7 +254,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         </span>
                       </div>
                     <div className="flex items-center justify-center">
-                      <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
+                      <p className="text-2xl font-bold text-accent"> {/* Removed min-w and text-center */}
                         {totalValue}
                       </p>
                        <Button
