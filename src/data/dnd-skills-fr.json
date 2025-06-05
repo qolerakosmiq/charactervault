@@ -3,7 +3,6 @@
   "SKILL_DEFINITIONS_DATA": [
     { "value": "appraise", "label": "FR: Appraise", "keyAbility": "intelligence", "description": "<p>FR: You can estimate the monetary value of an item.</p>" },
     { "value": "balance", "label": "FR: Balance", "keyAbility": "dexterity", "description": "<p>FR: You can keep your balance when walking on a narrow or treacherous surface.</p>" }
-    // ... Add FR placeholders for all other skills
   ],
   "CLASS_SKILLS_DATA": {
     "barbarian": ["climb", "craft-alchemy", "handle-animal", "intimidate", "jump", "listen", "ride", "survival", "swim"],
