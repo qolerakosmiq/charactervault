@@ -97,7 +97,7 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card>
             <CardHeader className="p-4">
-              <CardTitle className="text-base font-medium">Armor Penalty</CardTitle>
+              <CardTitle className="text-base font-medium text-center">Armor Penalty</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 space-y-1">
               <div className="flex justify-center">
@@ -117,7 +117,7 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
 
           <Card>
             <CardHeader className="p-4">
-              <CardTitle className="text-base font-medium">Load Penalty</CardTitle>
+              <CardTitle className="text-base font-medium text-center">Load Penalty</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 space-y-1">
               <div className="flex justify-center">
