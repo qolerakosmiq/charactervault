@@ -207,7 +207,7 @@ export function SkillsFormSection({
           <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
             <span className="text-center w-10">Class?</span>
             <span className="pl-1">Skill</span>
-            <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: "Skill<br/>Modifier" }} />
+            <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: "Skill<br/>Mod" }} />
             <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: "Key<br/>Ability" }} />
             <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: "Ability<br/>Mod" }} />
             <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: "Misc<br/>Mod" }} />
