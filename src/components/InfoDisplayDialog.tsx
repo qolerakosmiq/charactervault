@@ -190,7 +190,7 @@ export function InfoDisplayDialog({
     } else { 
         colorClass = zeroColor;
     }
-    const prefix = numValue > 0 ? '+' : (numValue === 0 ? '' : ''); // Only add '+' for positive numbers
+    const prefix = numValue > 0 ? '+' : (numValue === 0 ? '+' : ''); // Add '+' for positive and zero numbers
     return <span className={cn("font-bold", colorClass)}>{prefix}{numValue}</span>;
   };
 
@@ -273,7 +273,7 @@ export function InfoDisplayDialog({
         const abilityKeyForTitle = contentType.abilityName as Exclude<AbilityName, 'none'>;
         const displayNameForTitle = ABILITY_DISPLAY_NAMES[abilityKeyForTitle];
         data = {
-          title: `${displayNameForTitle.abbr} (${displayNameForTitle.full}) Score Calculation`,
+          title: `${displayNameForTitle.full} Score Calculation`,
           abilityScoreBreakdown: detailedScores[contentType.abilityName],
         };
         break;
@@ -418,7 +418,7 @@ export function InfoDisplayDialog({
         break;
     }
     return data;
-  }, [isOpen, contentType, character, customFeatDefinitions, customSkillDefinitions, allCombinedFeatDefinitions, allCombinedSkillDefinitionsForDisplay, renderModifierValue]); // Added renderModifierValue to dependencies
+  }, [isOpen, contentType, character, customFeatDefinitions, customSkillDefinitions, allCombinedFeatDefinitions, allCombinedSkillDefinitionsForDisplay]);
 
 
   if (!isOpen || !derivedData) return null;
@@ -1045,5 +1045,3 @@ interface SkillModifierBreakdownDetails {
   miscModifier: number;
   totalBonus: number;
 }
-
-
