@@ -5,31 +5,32 @@ import * as React from 'react';
 import type {
   FeatDefinitionJsonData, CharacterFeatInstance, Character, AbilityScores, Skill,
   SkillDefinitionJsonData, FeatTypeString
-} from '@/types/character';
+} from '@/types/character-core'; // Use character-core
 import {
-  DND_FEATS_DEFINITIONS, DND_RACES, SKILL_DEFINITIONS, DND_CLASSES,
-  checkFeatPrerequisites, calculateAvailableFeats, FEAT_TYPES
+  checkFeatPrerequisites, calculateAvailableFeats
 } from '@/types/character';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, PlusCircle, Trash2, Pencil } from 'lucide-react';
+import { Award, PlusCircle, Trash2, Pencil, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { useI18n } from '@/context/I18nProvider';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface FeatsFormSectionProps {
   character: Character;
-  allAvailableFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
+  allAvailableFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]; // This is already merged from CharacterFormCore
   chosenFeatInstances: CharacterFeatInstance[];
   onFeatInstancesChange: (updatedInstances: CharacterFeatInstance[]) => void;
   onEditCustomFeatDefinition: (featDefId: string) => void;
   abilityScores: AbilityScores;
   skills: Skill[];
-  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
-  allCustomSkillDefinitions: readonly CustomSkillDefinition[];
+  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[]; // This comes from translations via CharacterFormCore
+  allCustomSkillDefinitions: readonly CustomSkillDefinition[]; // This comes from definitions-store via CharacterFormCore
 }
 
 export function FeatsFormSection({
@@ -43,14 +44,17 @@ export function FeatsFormSection({
   allPredefinedSkillDefinitions,
   allCustomSkillDefinitions,
 }: FeatsFormSectionProps) {
+  const { translations, isLoading: translationsLoading } = useI18n();
   const characterLevel = character.classes.reduce((sum, cls) => sum + cls.level, 0) || 1;
   const { toast } = useToast();
 
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
 
   const featSlotsBreakdown = React.useMemo(() => {
-    return calculateAvailableFeats(character.race, characterLevel, character.classes);
-  }, [character.race, characterLevel, character.classes]);
+    if (translationsLoading || !translations) return { total: 0, base: 0, racial: 0, levelProgression: 0, classBonus: 0 };
+    // DND_RACES is now from translations
+    return calculateAvailableFeats(character.race, characterLevel, character.classes, translations.DND_RACES);
+  }, [character.race, characterLevel, character.classes, translations, translationsLoading]);
 
   const { total: availableFeatSlots, base: baseFeat, racial: racialBonus, levelProgression: levelProgressionFeats, classBonus: classBonusFeats } = featSlotsBreakdown;
 
@@ -140,27 +144,40 @@ export function FeatsFormSection({
     }
   };
 
-  const getFeatSource = (definitionValue: string): string | null => {
+  const getFeatSource = React.useCallback((definitionValue: string): string | null => {
+    if (translationsLoading || !translations) return null;
     if (definitionValue.startsWith('class-')) {
       const parts = definitionValue.split('-');
       if (parts.length > 1) {
-        const className = parts[1];
-        const classDef = DND_CLASSES.find(c => c.value === className);
-        return classDef ? classDef.label : className.charAt(0).toUpperCase() + className.slice(1);
+        const classNameKey = parts[1];
+        const classDef = translations.DND_CLASSES.find(c => c.value === classNameKey);
+        return classDef ? classDef.label : classNameKey.charAt(0).toUpperCase() + classNameKey.slice(1);
       }
     }
     return null;
-  };
+  }, [translations, translationsLoading]);
 
-  const renderFeatInstance = (instance: CharacterFeatInstance) => {
+  const renderFeatInstance = React.useCallback((instance: CharacterFeatInstance) => {
+    if (translationsLoading || !translations) return <Skeleton className="h-16 w-full mb-2" />;
+
     const definition = allAvailableFeatDefinitions.find(def => def.value === instance.definitionId);
     if (!definition) return null;
 
-    const prereqMessages = checkFeatPrerequisites(definition, characterForPrereqCheck, allAvailableFeatDefinitions, allPredefinedSkillDefinitions, allCustomSkillDefinitions);
+    const prereqMessages = checkFeatPrerequisites(
+      definition, 
+      characterForPrereqCheck, 
+      allAvailableFeatDefinitions, 
+      allPredefinedSkillDefinitions, 
+      allCustomSkillDefinitions,    
+      translations.DND_CLASSES,      
+      translations.DND_RACES,        
+      translations.ABILITY_LABELS,   
+      translations.ALIGNMENT_PREREQUISITE_OPTIONS 
+    );
     const isCustomDefinition = definition.isCustom;
     
     const featTypeLabel = definition.type && definition.type !== "special" 
-      ? FEAT_TYPES.find(ft => ft.value === definition.type)?.label
+      ? translations.FEAT_TYPES.find(ft => ft.value === definition.type)?.label
       : null;
 
     const featSource = (instance.isGranted && definition.isClassFeature) ? getFeatSource(definition.value) : null;
@@ -215,7 +232,27 @@ export function FeatsFormSection({
         </div>
       </div>
     );
-  };
+  }, [translationsLoading, translations, allAvailableFeatDefinitions, characterForPrereqCheck, allPredefinedSkillDefinitions, allCustomSkillDefinitions, getFeatSource, handleOpenEditDialog, handleRemoveChosenFeatInstance]);
+
+
+  if (translationsLoading || !translations) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-3">
+            <Award className="h-8 w-8 text-primary" />
+            <div><Skeleton className="h-7 w-16 mb-1" /><Skeleton className="h-4 w-40" /></div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-12 w-full mb-4" />
+          <Skeleton className="h-10 w-1/3 mb-4" />
+          <Skeleton className="h-16 w-full mb-2" />
+          <Skeleton className="h-16 w-full mb-2" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <>
@@ -292,7 +329,7 @@ export function FeatsFormSection({
         isOpen={isFeatDialogOpen}
         onOpenChange={setIsFeatDialogOpen}
         onFeatSelected={handleAddOrUpdateChosenFeatInstance}
-        allFeats={allAvailableFeatDefinitions}
+        allFeats={allAvailableFeatDefinitions} 
         character={characterForPrereqCheck}
         allPredefinedSkillDefinitions={allPredefinedSkillDefinitions}
         allCustomSkillDefinitions={allCustomSkillDefinitions}
@@ -300,4 +337,6 @@ export function FeatsFormSection({
     </>
   );
 }
+    
+
     

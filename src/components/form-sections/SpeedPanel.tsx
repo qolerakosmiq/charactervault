@@ -1,15 +1,17 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { Character, SpeedType, SpeedDetails, InfoDialogContentType, DndRaceOption, DndClassOption } from '@/types/character';
-import { DND_RACES, DND_CLASSES, calculateSpeedBreakdown } from '@/types/character';
+import { calculateSpeedBreakdown } from '@/types/character'; // Keep this import for the utility function
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Wind, Waves, MoveVertical, Shell, Feather, Info } from 'lucide-react';
+import { Wind, Waves, MoveVertical, Shell, Feather, Info, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { useI18n } from '@/context/I18nProvider'; // Import useI18n
+import { Skeleton } from '@/components/ui/skeleton'; // For loading state
 
 interface SpeedPanelProps {
   character: Character;
@@ -31,11 +33,54 @@ const speedTypesConfig: Array<{
 ];
 
 export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog }: SpeedPanelProps) {
+  const { translations, isLoading: translationsLoading } = useI18n();
 
   const handleMiscModifierChange = (speedType: SpeedType, newValue: number) => {
     const fieldKey = `${speedType}Speed.miscModifier` as const;
     onCharacterUpdate(fieldKey, newValue);
   };
+
+  if (translationsLoading || !translations) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-3">
+            <Wind className="h-8 w-8 text-primary" />
+            <CardTitle className="text-2xl font-serif">Movement Speeds</CardTitle>
+          </div>
+          <CardDescription>Manage your character's various movement capabilities and penalties.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {translationsLoading ? (
+            <div className="flex justify-center items-center py-10">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="ml-3 text-muted-foreground">Loading speed details...</p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
+                    <Skeleton className="h-5 w-20 mb-1" /> {/* Icon + Label */}
+                    <Skeleton className="h-9 w-16 mb-1" /> {/* Speed value */}
+                    <Skeleton className="h-4 w-24 mb-1" /> {/* Misc Mod Label */}
+                    <Skeleton className="h-8 w-32" />    {/* NumberSpinnerInput */}
+                  </div>
+                ))}
+              </div>
+              <Separator className="my-6" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Skeleton className="h-28 rounded-md" /> {/* Armor Penalty Card */}
+                <Skeleton className="h-28 rounded-md" /> {/* Load Penalty Card */}
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+  
+  const { DND_RACES, DND_CLASSES, SIZES } = translations;
 
   return (
     <Card>
@@ -49,7 +94,8 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {speedTypesConfig.map(({ type, label, Icon, fieldKey }) => {
-            const speedData = calculateSpeedBreakdown(type, character, DND_RACES, DND_CLASSES);
+            // Pass DND_RACES and DND_CLASSES from translations to calculateSpeedBreakdown
+            const speedData = calculateSpeedBreakdown(type, character, DND_RACES, DND_CLASSES, SIZES);
             const currentMiscMod = character[fieldKey]?.miscModifier || 0;
 
             return (
@@ -80,7 +126,7 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
                     onChange={(newValue) => handleMiscModifierChange(type, newValue)}
                     min={-100} 
                     max={100}  
-                    step={1.5} 
+                    step={5} // Corrected from 1.5 if intended step is 5ft
                     inputClassName="w-20 h-8 text-sm text-center"
                     buttonClassName="h-8 w-8"
                     buttonSize="sm"
@@ -106,7 +152,7 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
                   value={character.armorSpeedPenalty || 0}
                   onChange={(val) => onCharacterUpdate('armorSpeedPenalty', val)}
                   min={0}
-                  step={1.5}
+                  step={5} // Corrected from 1.5 if intended step is 5ft
                   inputClassName="w-24 h-9 text-base"
                   buttonClassName="h-9 w-9"
                 />
@@ -126,7 +172,7 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
                   value={character.loadSpeedPenalty || 0}
                   onChange={(val) => onCharacterUpdate('loadSpeedPenalty', val)}
                   min={0}
-                  step={1.5}
+                  step={5} // Corrected from 1.5 if intended step is 5ft
                   inputClassName="w-24 h-9 text-base"
                   buttonClassName="h-9 w-9"
                 />
@@ -139,3 +185,5 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
     </Card>
   );
 }
+
+    
