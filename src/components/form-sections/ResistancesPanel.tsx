@@ -55,38 +55,65 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     }
   }, [newDrRule, newDrType, translations, translationsLoading]);
   
-  const energyResistances: Array<{ field: ResistanceFieldKeySheet; label: string; Icon: React.ElementType; fieldPrefix?: string }> = [
-    { field: 'fireResistance', label: 'Fire', Icon: Flame, fieldPrefix: 'form-res' },
-    { field: 'coldResistance', label: 'Cold', Icon: Snowflake, fieldPrefix: 'form-res' },
-    { field: 'acidResistance', label: 'Acid', Icon: Atom, fieldPrefix: 'form-res' },
-    { field: 'electricityResistance', label: 'Electricity', Icon: ElectricityIcon, fieldPrefix: 'form-res' },
-    { field: 'sonicResistance', label: 'Sonic', Icon: Waves, fieldPrefix: 'form-res' },
+  if (translationsLoading || !translations) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-3"> <ShieldAlert className="h-8 w-8 text-primary" /> <Skeleton className="h-7 w-1/2" /> </div>
+          <Skeleton className="h-4 w-3/4" />
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex justify-center items-center py-10">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.resistancesPanelLoading || "Loading resistance details..."}</p>
+          </div>
+          <div> <Skeleton className="h-6 w-1/3 mb-3" /> <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"> {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-28 rounded-md" />)} </div> </div>
+          <Separator />
+          <div> <Skeleton className="h-6 w-1/3 mb-3" /> <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"> {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-28 rounded-md" />)} </div> </div>
+          <Separator className="my-6" />
+          <div> <Skeleton className="h-6 w-1/3 mb-3" /> <div className="grid md:grid-cols-2 gap-x-6 gap-y-4"> <Skeleton className="h-20 rounded-md" /> <Skeleton className="h-48 rounded-md" /> </div> </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS, UI_STRINGS } = translations;
+  
+  const energyResistancesFields: Array<{ field: ResistanceFieldKeySheet; labelKey: keyof typeof UI_STRINGS; Icon: React.ElementType; fieldPrefix?: string }> = [
+    { field: 'fireResistance', labelKey: 'resistanceLabelFire', Icon: Flame, fieldPrefix: 'form-res' },
+    { field: 'coldResistance', labelKey: 'resistanceLabelCold', Icon: Snowflake, fieldPrefix: 'form-res' },
+    { field: 'acidResistance', labelKey: 'resistanceLabelAcid', Icon: Atom, fieldPrefix: 'form-res' },
+    { field: 'electricityResistance', labelKey: 'resistanceLabelElectricity', Icon: ElectricityIcon, fieldPrefix: 'form-res' },
+    { field: 'sonicResistance', labelKey: 'resistanceLabelSonic', Icon: Waves, fieldPrefix: 'form-res' },
   ];
 
-  const otherNumericResistances: Array<{ field: ResistanceFieldKeySheet; label: string; Icon: React.ElementType; unit?: string; fieldPrefix?: string }> = [
-    { field: 'spellResistance', label: 'Spell Resistance', Icon: Sigma, fieldPrefix: 'form-res' },
-    { field: 'powerResistance', label: 'Power Resistance', Icon: Brain, fieldPrefix: 'form-res' },
-    { field: 'fortification', label: 'Fortification', Icon: ShieldCheck, unit: '%', fieldPrefix: 'form-res' },
+  const otherNumericResistancesFields: Array<{ field: ResistanceFieldKeySheet; labelKey: keyof typeof UI_STRINGS; Icon: React.ElementType; unit?: string; fieldPrefix?: string }> = [
+    { field: 'spellResistance', labelKey: 'resistanceLabelSpellResistance', Icon: Sigma, fieldPrefix: 'form-res' },
+    { field: 'powerResistance', labelKey: 'resistanceLabelPowerResistance', Icon: Brain, fieldPrefix: 'form-res' },
+    { field: 'fortification', labelKey: 'resistanceLabelFortification', Icon: ShieldCheck, unit: '%', fieldPrefix: 'form-res' },
   ];
+
 
   const handleTriggerResistanceInfoDialog = (field: ResistanceFieldKeySheet) => {
     onOpenResistanceInfoDialog(field);
   };
 
   const handleAddDamageReduction = () => {
-    if (translationsLoading || !translations) return;
-    const { DAMAGE_REDUCTION_RULES_OPTIONS } = translations;
-
     if (newDrValue <= 0) {
-      toast({ title: "Invalid DR Value", description: "Damage Reduction value must be greater than 0.", variant: "destructive"});
+      toast({ title: UI_STRINGS.toastInvalidDrValueTitle || "Invalid DR Value", description: UI_STRINGS.toastInvalidDrValueDesc || "Damage Reduction value must be greater than 0.", variant: "destructive"});
       return;
     }
     if (!newDrType) {
-        toast({ title: "DR Type Missing", description: "Please select a DR type.", variant: "destructive"});
+        toast({ title: UI_STRINGS.toastDrTypeMissingTitle || "DR Type Missing", description: UI_STRINGS.toastDrTypeMissingDesc || "Please select a DR type.", variant: "destructive"});
         return;
     }
+    const ruleLabelForToast = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === newDrRule)?.label || newDrRule;
     if ((newDrRule === 'excepted-by-type' || newDrRule === 'versus-specific-type') && newDrType === 'none') {
-      toast({ title: "Invalid Combination", description: `The '${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === newDrRule)?.label}' rule requires a specific damage type (not 'None').`, variant: "destructive"});
+      toast({ 
+        title: UI_STRINGS.toastDrInvalidCombinationTitle || "Invalid Combination", 
+        description: (UI_STRINGS.toastDrInvalidCombinationDesc || "The '{ruleLabel}' rule requires a specific damage type (not 'None').").replace("{ruleLabel}", ruleLabelForToast), 
+        variant: "destructive"
+      });
       return;
     }
 
@@ -94,7 +121,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
       dr => !dr.isGranted && dr.type === newDrType && dr.rule === newDrRule
     );
     if (existingUserDrOfTypeAndRule) {
-      toast({ title: "Duplicate DR Entry", description: `You already have a custom DR with this type and rule.`, variant: "destructive"});
+      toast({ title: UI_STRINGS.toastDrDuplicateEntryTitle || "Duplicate DR Entry", description: UI_STRINGS.toastDrDuplicateEntryDesc || `You already have a custom DR with this type and rule.`, variant: "destructive"});
       return;
     }
 
@@ -107,33 +134,13 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     };
     onDamageReductionChange([...characterData.damageReduction, newInstance]);
     setNewDrValue(1);
-    setNewDrType(translations.DAMAGE_REDUCTION_TYPES[0]?.value || "none");
+    setNewDrType(DAMAGE_REDUCTION_TYPES[0]?.value || "none");
     setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.value || 'bypassed-by-type');
   };
 
   const handleRemoveDamageReduction = (idToRemove: string) => {
     onDamageReductionChange(characterData.damageReduction.filter(dr => dr.id !== idToRemove));
   };
-
-  if (translationsLoading || !translations) {
-    return (
-      <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-3"> <ShieldAlert className="h-8 w-8 text-primary" /> <Skeleton className="h-7 w-1/2" /> </div>
-          <Skeleton className="h-4 w-3/4" />
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div> <Skeleton className="h-6 w-1/3 mb-3" /> <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"> {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-28 rounded-md" />)} </div> </div>
-          <Separator />
-          <div> <Skeleton className="h-6 w-1/3 mb-3" /> <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"> {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-28 rounded-md" />)} </div> </div>
-          <Separator className="my-6" />
-          <div> <Skeleton className="h-6 w-1/3 mb-3" /> <div className="grid md:grid-cols-2 gap-x-6 gap-y-4"> <Skeleton className="h-20 rounded-md" /> <Skeleton className="h-48 rounded-md" /> </div> </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS } = translations;
   
   const getDrTypeUiLabel = (typeValue: DamageReductionTypeValue | string): string => {
     return DAMAGE_REDUCTION_TYPES.find(t => t.value === typeValue)?.label || String(typeValue);
@@ -148,10 +155,9 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
       return `${dr.value} vs ${typeLabel}`;
     }
     if (dr.rule === 'excepted-by-type') {
-       const displayType = typeLabel === "None" ? "—" : typeLabel; // Assuming 'None' is the label for "none" value
+       const displayType = typeLabel === (DAMAGE_REDUCTION_TYPES.find(t => t.value === 'none')?.label || "None") ? "—" : typeLabel;
        return `${dr.value}/${displayType} (Immunity)`;
     }
-    // Fallback or default formatting if rule is not one of the specific cases
     return `${dr.value}/${typeLabel} (${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule})`;
   };
   
@@ -178,17 +184,18 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
         <CardHeader>
           <div className="flex items-center space-x-3">
             <ShieldAlert className="h-8 w-8 text-primary" />
-            <CardTitle className="text-2xl font-serif">Resistances & Defenses</CardTitle>
+            <CardTitle className="text-2xl font-serif">{UI_STRINGS.resistancesPanelTitle}</CardTitle>
           </div>
-          <CardDescription>Manage custom modifiers for resistances, damage reductions, and fortification. Base values are often 0 unless granted by race, class and items.</CardDescription>
+          <CardDescription>{UI_STRINGS.resistancesPanelDescription}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div>
-            <h4 className="text-lg font-semibold mb-3 text-foreground/90">Energy Resistances</h4>
+            <h4 className="text-lg font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelEnergyResistancesLabel}</h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {energyResistances.map(({ field, label, Icon, fieldPrefix }) => {
+              {energyResistancesFields.map(({ field, labelKey, Icon, fieldPrefix }) => {
                 const resistance = characterData[field];
                 const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0);
+                const label = UI_STRINGS[labelKey] || field.replace('Resistance', '');
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
                     <div className="flex items-center justify-center">
@@ -231,12 +238,13 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
           <Separator />
 
           <div>
-            <h4 className="text-lg font-semibold mb-3 text-foreground/90">Other Defenses</h4>
+            <h4 className="text-lg font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelOtherDefensesLabel}</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {otherNumericResistances.map(({ field, label, Icon, unit, fieldPrefix }) => {
+              {otherNumericResistancesFields.map(({ field, labelKey, Icon, unit, fieldPrefix }) => {
                 const resistance = characterData[field];
                 const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0);
                 const isFortification = field === 'fortification';
+                const label = UI_STRINGS[labelKey] || field.replace('Resistance', '').replace('Fortification', 'Fortification');
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
                      <div className="flex items-center justify-center">
@@ -277,7 +285,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
             </div>
             <Separator className="my-6" />
              <div>
-              <h4 className="text-lg font-semibold mb-3 text-foreground/90">Damage Reduction</h4>
+              <h4 className="text-lg font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
                 <div className="grid md:grid-cols-2 gap-x-6 gap-y-4">
                   <div className="space-y-3"> 
                     {characterData.damageReduction.length > 0 ? (
@@ -307,14 +315,14 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         );
                       })
                     ) : (
-                      <p className="text-sm text-muted-foreground">No Damage Reduction entries.</p>
+                      <p className="text-sm text-muted-foreground">{UI_STRINGS.resistancesPanelNoDrEntries}</p>
                     )}
                   </div>
 
                 <div className="space-y-3 border md:border-l md:border-t-0 p-4 rounded-md md:pl-6">
-                  <Label className="text-md font-medium">Custom Damage Reduction</Label>
+                  <Label className="text-md font-medium">{UI_STRINGS.resistancesPanelAddCustomDrLabel}</Label>
                   <div className="space-y-1">
-                      <Label htmlFor="form-dr-value" className="text-xs">Value</Label>
+                      <Label htmlFor="form-dr-value" className="text-xs">{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
                       <NumberSpinnerInput
                       id="form-dr-value"
                       value={newDrValue}
@@ -326,7 +334,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                       />
                   </div>
                    <div className="space-y-1">
-                        <Label htmlFor="form-dr-rule" className="text-xs">Rule</Label>
+                        <Label htmlFor="form-dr-rule" className="text-xs">{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
                          <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
                             <SelectTrigger id="form-dr-rule" className="h-9 text-sm">
                                <SelectValue />
@@ -341,7 +349,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         </Select>
                     </div>
                   <div className="space-y-1">
-                      <Label htmlFor="form-dr-type" className="text-xs">Type</Label>
+                      <Label htmlFor="form-dr-type" className="text-xs">{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
                        <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
                           <SelectTrigger id="form-dr-type" className="h-9 text-sm">
                              <SelectValue placeholder="Select type..." />
@@ -360,7 +368,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                       </Select>
                   </div>
                   <Button type="button" onClick={handleAddDamageReduction} size="sm" className="mt-3">
-                      <PlusCircle className="mr-2 h-4 w-4" /> Add Damage Reduction
+                      <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.resistancesPanelAddDrButton}
                   </Button>
                 </div>
               </div>
