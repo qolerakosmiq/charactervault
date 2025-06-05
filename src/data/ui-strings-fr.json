@@ -101,6 +101,18 @@
     "abilityScoresNote_badge0_text": "Modificateur Temporaire",
     "abilityScoresNote_text_after_badge0": " ajuste directement le ",
     "abilityScoresNote_badge1_text": "Score de Base",
-    "abilityScoresNote_suffix": ", et non le modificateur de caractéristique dérivé du score de base. Les autres bonus de race, d'âge ou de dons sont appliqués automatiquement au score total."
+    "abilityScoresNote_suffix": ", et non le modificateur de caractéristique dérivé du score de base. Les autres bonus de race, d'âge ou de dons sont appliqués automatiquement au score total.",
+    "rollerDialogTitle": "Lancer les Caractéristiques Initiales",
+    "rollerDialogDescPart1": "Lancez 4d6 (gardez les 3 meilleurs",
+    "rollerDialogDescRerollOnes": ", relancez les 1",
+    "rollerDialogDescPart2": "). Assignez ces valeurs à vos caractéristiques.",
+    "rollerDialogYourScoresLabel": "Vos Scores Lancés :",
+    "rollerDialogRerollButton": "Relancer les Scores",
+    "rollerDialogCancelButton": "Annuler",
+    "rollerDialogApplyButton": "Appliquer les Scores",
+    "rollerDialogAssignPlaceholder": "Assigner...",
+    "rollerDialogUnassignOption": "Désassigner",
+    "rollerDialogErrorNotAllAssignedToastTitle": "Assignation Incomplète",
+    "rollerDialogErrorNotAllAssignedToastDesc": "Veuillez assigner tous les scores lancés aux caractéristiques avant d'appliquer."
   }
 }
