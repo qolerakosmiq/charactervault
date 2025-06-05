@@ -193,12 +193,31 @@
     "featSelectionDialogEmpty": "No feats found.",
     "featSelectionDialogLoadingDescription": "Loading feat information...",
     "featSelectionDialogCancelButton": "Cancel",
+    "featPrerequisitesLabel": "Prerequisites:",
+    "featPrerequisitesNoneLabel": "None",
+    "featEffectsLabel": "Effects:",
     "armorClassPanelTitle": "Armor Class",
     "armorClassPanelDescription": "Details about your character's defenses.",
     "armorClassPanelLoading": "Loading AC details...",
     "armorClassNormalLabel": "Normal",
     "armorClassTouchLabel": "Touch",
     "armorClassFlatFootedLabel": "Flat-Footed",
-    "armorClassCustomModifierLabel": "Custom Modifier"
+    "armorClassCustomModifierLabel": "Custom Modifier",
+    "speedPanelTitle": "Movement Speeds",
+    "speedPanelDescription": "Manage your character's various movement capabilities and penalties.",
+    "speedPanelLoadingSpeeds": "Loading speed details...",
+    "speedLabelLand": "Land",
+    "speedLabelBurrow": "Burrow",
+    "speedLabelClimb": "Climb",
+    "speedLabelFly": "Fly",
+    "speedLabelSwim": "Swim",
+    "speedUnit": "ft.",
+    "speedMiscModifierLabel": "Misc Modifier",
+    "armorPenaltyCardTitle": "Armor Penalty",
+    "armorPenaltyDescriptionFormat": "Penalty to land speed from armor worn ({unit}).",
+    "loadPenaltyCardTitle": "Load Penalty",
+    "loadPenaltyDescriptionFormat": "Penalty to land speed from encumbrance ({unit})."
   }
 }
+
+    
