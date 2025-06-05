@@ -110,7 +110,7 @@ const FeatDetailContent: React.FC<{
   const featDef = allFeats.find(f => f.value === featId);
   if (!featDef) return <p className="text-sm text-muted-foreground">{uiStrings.infoDialogFeatNotFound || "Feat details not found."}</p>;
 
-  const prereqMessages = checkFeatPrerequisites(featDef, character, allFeats, allPredefinedSkills, allCustomSkills, allClasses, allRaces, abilityLabels, alignmentPrereqOptions);
+  const prereqMessages = checkFeatPrerequisites(featDef, character, allFeats, allPredefinedSkills, allCustomSkills, allClasses, allRaces, abilityLabels, alignmentPrereqOptions, uiStrings);
 
   return (
     <div className="space-y-2 text-sm">
@@ -462,7 +462,7 @@ export function InfoDisplayDialog({
       }
       case 'speedBreakdown': {
         const speedBreakdownDetails = calculateSpeedBreakdown(contentType.speedType, character, DND_RACES, DND_CLASSES, SIZES);
-        const speedNameString = speedBreakdownDetails.name.replace(" Speed", "").replace(" Vitesse", "");
+        const speedNameString = speedBreakdownDetails.name.replace(" Speed", "").replace(" Vitesse","");
         data = {
           title: (UI_STRINGS.infoDialogTitleSpeedBreakdown || "{speedName} Breakdown").replace("{speedName}", speedNameString),
           speedBreakdown: speedBreakdownDetails,

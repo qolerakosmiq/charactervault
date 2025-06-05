@@ -151,7 +151,8 @@ export function FeatSelectionDialog({
                     allClasses,
                     allRaces,
                     abilityLabels,
-                    alignmentPrereqOptions
+                    alignmentPrereqOptions,
+                    UI_STRINGS 
                   );
                   return (
                     <CommandItem

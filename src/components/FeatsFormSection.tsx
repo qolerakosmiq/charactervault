@@ -171,7 +171,8 @@ export function FeatsFormSection({
       translations.DND_CLASSES,      
       translations.DND_RACES,        
       translations.ABILITY_LABELS,   
-      translations.ALIGNMENT_PREREQUISITE_OPTIONS 
+      translations.ALIGNMENT_PREREQUISITE_OPTIONS,
+      translations.UI_STRINGS
     );
     const isCustomDefinition = definition.isCustom;
     
@@ -299,7 +300,7 @@ export function FeatsFormSection({
 
           <div className="mt-2 mb-4 flex gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setIsFeatDialogOpen(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.featsPanelAddButton || "Add Chosen Feat"}
+              <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.featsPanelAddButton || "Choose Feat"}
             </Button>
           </div>
 

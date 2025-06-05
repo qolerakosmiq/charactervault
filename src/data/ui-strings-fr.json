@@ -187,6 +187,7 @@
     "featSelectionDialogSearchPlaceholder": "Rechercher des dons par nom ou description...",
     "featSelectionDialogEmpty": "Aucun don trouvé.",
     "featSelectionDialogLoadingDescription": "Chargement des informations sur les dons...",
-    "featSelectionDialogCancelButton": "Annuler"
+    "featSelectionDialogCancelButton": "Annuler",
+    "prereqBabLabel": "BBA"
   }
 }

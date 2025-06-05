@@ -187,6 +187,7 @@
     "featSelectionDialogSearchPlaceholder": "Search feats by name or description...",
     "featSelectionDialogEmpty": "No feats found.",
     "featSelectionDialogLoadingDescription": "Loading feat information...",
-    "featSelectionDialogCancelButton": "Cancel"
+    "featSelectionDialogCancelButton": "Cancel",
+    "prereqBabLabel": "BAB"
   }
 }

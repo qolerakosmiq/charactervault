@@ -365,7 +365,8 @@ export function checkFeatPrerequisites(
   DND_CLASSES: readonly DndClassOption[],
   DND_RACES: readonly DndRaceOption[],
   ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[],
-  ALIGNMENT_PREREQUISITE_OPTIONS: readonly { value: string; label: string }[]
+  ALIGNMENT_PREREQUISITE_OPTIONS: readonly { value: string; label: string }[],
+  uiStrings: Record<string, string> // Added uiStrings parameter
 ): PrerequisiteMessage[] {
   const { prerequisites } = featDefinitionToCheck;
   const messages: PrerequisiteMessage[] = [];
@@ -431,7 +432,8 @@ export function checkFeatPrerequisites(
   if (prerequisites.bab !== undefined) {
     const characterBab = getBab(character.classes, DND_CLASSES)[0];
     const isMet = characterBab >= prerequisites.bab;
-    messages.push({ text: `BAB +${prerequisites.bab}`, isMet, orderKey: 'bab', originalText: `BAB` });
+    const babLabel = uiStrings.prereqBabLabel || 'BAB';
+    messages.push({ text: `${babLabel} +${prerequisites.bab}`, isMet, orderKey: 'bab', originalText: babLabel });
   }
 
   if (prerequisites.casterLevel !== undefined) {
