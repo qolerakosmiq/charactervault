@@ -147,13 +147,12 @@ export function CharacterFormAbilityScoresSection({
                   </div>
                   
                   <div className="w-full space-y-0.5 pt-1">
-                    <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">Custom Temp Mod</Label>
+                    <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">Temporary Modifier</Label>
                     <NumberSpinnerInput
                       id={`temp-mod-${ability}`}
                       value={tempCustomMod}
                       onChange={(newValue) => onAbilityScoreTempCustomModifierChange(ability, newValue)}
-                      min={-20}
-                      max={20}
+                      min={-Infinity} // Allow large negative modifiers
                       inputClassName="h-8 text-base text-center"
                       buttonSize="icon"
                       buttonClassName="h-8 w-8"
