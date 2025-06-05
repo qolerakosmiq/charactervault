@@ -3,12 +3,13 @@
 
 import * as React from 'react';
 import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, CharacterFeatInstance, DndRaceOption, SkillDefinitionJsonData, FeatDefinitionJsonData, CharacterSize, InfoDialogContentType, Character } from '@/types/character';
-import { CLASS_SKILL_POINTS_BASE, getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES, DND_CLASSES, SIZES, calculateSizeSpecificSkillBonus } from '@/types/character';
+// Constants like CLASS_SKILL_POINTS_BASE etc. will now come from useI18n
+import { getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, calculateSizeSpecificSkillBonus } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollText, Pencil, Info } from 'lucide-react';
+import { ScrollText, Pencil, Info, Loader2 } from 'lucide-react'; // Added Loader2
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -16,6 +17,8 @@ import { cn } from '@/lib/utils';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Badge } from '@/components/ui/badge';
+import { useI18n } from '@/context/I18nProvider'; // Import useI18n
+import { Skeleton } from '@/components/ui/skeleton'; // For loading state
 
 interface SkillDisplayInfo extends SkillType {
   name: string;
@@ -40,9 +43,9 @@ export interface SkillModifierBreakdownDetails {
 
 interface SkillsFormSectionProps {
   character: Pick<Character, 'skills' | 'abilityScores' | 'classes' | 'race' | 'size' | 'feats'>;
-  actualAbilityScores: AbilityScores; 
+  actualAbilityScores: AbilityScores;
   allFeatDefinitions: (FeatDefinitionJsonData & {isCustom?: boolean})[];
-  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
+  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[]; // This comes from translations via CharacterFormCore
   allCustomSkillDefinitions: readonly CustomSkillDefinition[];
   onSkillChange: (skillId: string, ranks: number, isClassSkill?: boolean) => void;
   onEditCustomSkillDefinition: (skillDefId: string) => void;
@@ -51,7 +54,7 @@ interface SkillsFormSectionProps {
 
 export function SkillsFormSection({
   character,
-  actualAbilityScores, 
+  actualAbilityScores,
   allFeatDefinitions,
   allPredefinedSkillDefinitions,
   allCustomSkillDefinitions,
@@ -59,6 +62,7 @@ export function SkillsFormSection({
   onEditCustomSkillDefinition,
   onOpenSkillInfoDialog,
 }: SkillsFormSectionProps) {
+  const { translations, isLoading: translationsLoading } = useI18n();
 
   const characterSkillInstances = character.skills;
   const characterClasses = character.classes;
@@ -68,25 +72,99 @@ export function SkillsFormSection({
 
   const firstClass = characterClasses[0];
   const characterLevel = firstClass?.level || 1;
-  const classLabel = firstClass?.className ? DND_CLASSES.find(c => c.value === firstClass.className)?.label || firstClass.className : "";
 
 
-  const intelligenceModifier = (actualAbilityScores && actualAbilityScores.intelligence !== undefined)
-    ? getAbilityModifierByName(actualAbilityScores, 'intelligence')
-    : 0;
+  const {
+    totalSkillPointsAvailable,
+    skillPointsLeft,
+    classLabel,
+    baseSkillPointsForClass,
+    racialBonusSkillPoints,
+    intelligenceModifier,
+    pointsForFirstLevel,
+    pointsFromLevelProgression,
+    totalSkillPointsSpent
+  } = React.useMemo(() => {
+    if (translationsLoading || !translations) {
+      return { totalSkillPointsAvailable: 0, skillPointsLeft: 0, classLabel: "", baseSkillPointsForClass: 0, racialBonusSkillPoints: 0, intelligenceModifier: 0, pointsForFirstLevel: 0, pointsFromLevelProgression: 0, totalSkillPointsSpent: 0 };
+    }
 
-  const baseSkillPointsForClass = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0) : 0;
-  const racialBonus = characterRace ? getRaceSkillPointsBonusPerLevel(characterRace as DndRaceId) : 0;
+    const { CLASS_SKILL_POINTS_BASE, DND_CLASSES, DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA } = translations;
 
-  const pointsPerLevelBeforeMin = baseSkillPointsForClass + intelligenceModifier + (racialBonus || 0);
-  const pointsPerRegularLevel = Math.max(1, pointsPerLevelBeforeMin);
+    const currentClassLabel = firstClass?.className ? DND_CLASSES.find(c => c.value === firstClass.className)?.label || firstClass.className : "";
+    const currentIntMod = (actualAbilityScores && actualAbilityScores.intelligence !== undefined)
+      ? getAbilityModifierByName(actualAbilityScores, 'intelligence')
+      : 0;
+    const currentBaseSkillPoints = firstClass?.className ? (CLASS_SKILL_POINTS_BASE[firstClass.className as keyof typeof CLASS_SKILL_POINTS_BASE] || 0) : 0;
+    const currentRacialBonus = characterRace ? getRaceSkillPointsBonusPerLevel(characterRace, DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA) : 0;
+
+    const pointsPerLevelBeforeMin = currentBaseSkillPoints + currentIntMod + currentRacialBonus;
+    const pointsPerRegularLevel = Math.max(1, pointsPerLevelBeforeMin);
+
+    const currentPointsForFirstLevel = pointsPerRegularLevel * 4;
+    const currentPointsFromLevelProgression = characterLevel > 1 ? pointsPerRegularLevel * (characterLevel - 1) : 0;
+    const currentTotalSkillPointsAvailable = currentPointsForFirstLevel + currentPointsFromLevelProgression;
+
+    // Calculate totalSkillPointsSpent using skillsForDisplay which depends on allCombinedSkillDefinitions
+    // This part needs to be calculated after skillsForDisplay is available, or we pass necessary data to it
+    const currentSkillsForDisplay = characterSkillInstances.map(instance => {
+      const definition = [
+        ...allPredefinedSkillDefinitions.map(sd => ({
+          id: sd.value, name: sd.label, keyAbility: sd.keyAbility as AbilityName, description: sd.description, isCustom: false,
+          providesSynergies: translations.SKILL_SYNERGIES[sd.value as keyof typeof translations.SKILL_SYNERGIES] || [],
+        })),
+        ...allCustomSkillDefinitions.map(csd => ({ ...csd, isCustom: true }))
+      ].find(def => def.id === instance.id);
+      return {
+        ...instance,
+        name: definition?.name || 'Unknown Skill',
+        keyAbility: definition?.keyAbility || 'none',
+        description: definition?.description,
+        isCustom: definition?.isCustom || false,
+        definitionProvidesSynergies: definition?.providesSynergies,
+      };
+    }).sort((a,b) => a.name.localeCompare(b.name));
 
 
-  const pointsForFirstLevel = pointsPerRegularLevel * 4;
-  const pointsFromLevelProgression = characterLevel > 1 ? pointsPerRegularLevel * (characterLevel - 1) : 0;
-  const totalSkillPointsAvailable = pointsForFirstLevel + pointsFromLevelProgression;
+    const currentTotalSkillPointsSpent = currentSkillsForDisplay.reduce((acc, currentSkill) => {
+      let costMultiplier = 1;
+      if (currentSkill.keyAbility === 'none') {
+        costMultiplier = 1;
+      } else if (!currentSkill.isClassSkill) {
+        costMultiplier = 2;
+      }
+      return acc + ((currentSkill.ranks || 0) * costMultiplier);
+    }, 0);
+    const currentSkillPointsLeft = currentTotalSkillPointsAvailable - currentTotalSkillPointsSpent;
+
+    return {
+      totalSkillPointsAvailable: currentTotalSkillPointsAvailable,
+      skillPointsLeft: currentSkillPointsLeft,
+      classLabel: currentClassLabel,
+      baseSkillPointsForClass: currentBaseSkillPoints,
+      racialBonusSkillPoints: currentRacialBonus,
+      intelligenceModifier: currentIntMod,
+      pointsForFirstLevel: currentPointsForFirstLevel,
+      pointsFromLevelProgression: currentPointsFromLevelProgression,
+      totalSkillPointsSpent: currentTotalSkillPointsSpent, // Added for debugging or detailed display if needed
+    };
+  }, [
+    translationsLoading,
+    translations,
+    firstClass?.className,
+    firstClass?.level,
+    characterRace,
+    actualAbilityScores,
+    characterLevel,
+    characterSkillInstances,
+    allPredefinedSkillDefinitions,
+    allCustomSkillDefinitions
+  ]);
+
 
   const allCombinedSkillDefinitions = React.useMemo(() => {
+    if (translationsLoading || !translations) return [];
+    const { SKILL_SYNERGIES } = translations;
     const predefined = allPredefinedSkillDefinitions.map(sd => ({
       id: sd.value,
       name: sd.label,
@@ -100,7 +178,7 @@ export function SkillsFormSection({
       isCustom: true,
     }));
     return [...predefined, ...custom].sort((a,b) => a.name.localeCompare(b.name));
-  }, [allPredefinedSkillDefinitions, allCustomSkillDefinitions]);
+  }, [translationsLoading, translations, allPredefinedSkillDefinitions, allCustomSkillDefinitions]);
 
   const skillsForDisplay: SkillDisplayInfo[] = React.useMemo(() => {
     return characterSkillInstances.map(instance => {
@@ -117,17 +195,6 @@ export function SkillsFormSection({
   }, [characterSkillInstances, allCombinedSkillDefinitions]);
 
 
-  const totalSkillPointsSpent = skillsForDisplay.reduce((acc, currentSkill) => {
-    let costMultiplier = 1;
-    if (currentSkill.keyAbility === 'none') {
-      costMultiplier = 1;
-    } else if (!currentSkill.isClassSkill) {
-      costMultiplier = 2;
-    }
-    return acc + ((currentSkill.ranks || 0) * costMultiplier);
-  }, 0);
-  const skillPointsLeft = totalSkillPointsAvailable - totalSkillPointsSpent;
-
   const handleOpenEditDialog = (skillDisplayInfo: SkillDisplayInfo) => {
     if (skillDisplayInfo.isCustom) {
       onEditCustomSkillDefinition(skillDisplayInfo.id);
@@ -139,6 +206,27 @@ export function SkillsFormSection({
   };
 
   const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs";
+
+  if (translationsLoading || !translations) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-3">
+            <ScrollText className="h-8 w-8 text-primary" />
+            <div><Skeleton className="h-7 w-20 mb-1" /><Skeleton className="h-4 w-48" /></div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-16 w-full mb-4" />
+          <Skeleton className="h-10 w-full mb-2" />
+          <Skeleton className="h-8 w-full mb-1" />
+          <Skeleton className="h-8 w-full mb-1" />
+          <Skeleton className="h-8 w-full mb-1" />
+        </CardContent>
+      </Card>
+    );
+  }
+  const { DND_CLASSES, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES, SIZES } = translations;
 
   return (
     <>
@@ -175,9 +263,9 @@ export function SkillsFormSection({
                   <p>
                     ({classLabel} Base <Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
                     {' + '}Intelligence Modifier <Badge variant="outline" className={badgeClassName}>{intelligenceModifier}</Badge>
-                    {(racialBonus || 0) !== 0 && (
+                    {(racialBonusSkillPoints || 0) !== 0 && (
                         <>
-                        {' + '}Racial Modifier <Badge variant="outline" className={badgeClassName}>{racialBonus || 0}</Badge>
+                        {' + '}Racial Modifier <Badge variant="outline" className={badgeClassName}>{racialBonusSkillPoints || 0}</Badge>
                         </>
                     )}
                     , Minimum 1) × <Badge variant="outline" className={badgeClassName}>4</Badge> First Level
@@ -186,9 +274,9 @@ export function SkillsFormSection({
                   <p>
                     + ({classLabel} Base <Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
                     {' + '}Intelligence Modifier <Badge variant="outline" className={badgeClassName}>{intelligenceModifier}</Badge>
-                    {(racialBonus || 0) !== 0 && (
+                    {(racialBonusSkillPoints || 0) !== 0 && (
                         <>
-                        {' + '}Racial Modifier <Badge variant="outline" className={badgeClassName}>{racialBonus || 0}</Badge>
+                        {' + '}Racial Modifier <Badge variant="outline" className={badgeClassName}>{racialBonusSkillPoints || 0}</Badge>
                         </>
                     )}
                     , Minimum 1) × <Badge variant="outline" className={badgeClassName}>{characterLevel > 1 ? (characterLevel -1) : 0}</Badge> Level Progression
@@ -203,7 +291,7 @@ export function SkillsFormSection({
            </div>
         </div>
         <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
-          <div className="space-y-1 min-w-[680px]">
+          <div className="space-y-1 min-w-[680px]"> {/* Adjusted min-width */}
             {/* Header Row */}
             <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
               <span className="text-center w-10">Class?</span>
@@ -225,14 +313,14 @@ export function SkillsFormSection({
                 ? getAbilityModifierByName(actualAbilityScores, keyAbility)
                 : 0;
 
-              const synergyBonus = calculateTotalSynergyBonus(skill.id, characterSkillInstances, allPredefinedSkillDefinitions, allCustomSkillDefinitions);
+              const synergyBonus = calculateTotalSynergyBonus(skill.id, characterSkillInstances, SKILL_DEFINITIONS, SKILL_SYNERGIES, allCustomSkillDefinitions);
               const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats, allFeatDefinitions);
-              const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, allPredefinedSkillDefinitions);
-              const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skill.id, characterSize);
-              
+              const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, SKILL_DEFINITIONS);
+              const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skill.id, characterSize, SIZES);
+
               const calculatedMiscModifier = synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus;
               const totalBonus = (skill.ranks || 0) + baseAbilityMod + calculatedMiscModifier + (skill.miscModifier || 0);
-              
+
               const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
               const skillCostDisplay = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 2;
               const currentStepForInput = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 0.5;
@@ -301,7 +389,7 @@ export function SkillsFormSection({
                       onChange={(newValue) => onSkillChange(skill.id, newValue, skill.isClassSkill)}
                       min={0}
                       step={currentStepForInput}
-                      inputClassName="w-14 h-7 text-sm" 
+                      inputClassName="w-14 h-7 text-sm"
                       buttonSize="sm"
                       buttonClassName="h-7 w-7"
                     />

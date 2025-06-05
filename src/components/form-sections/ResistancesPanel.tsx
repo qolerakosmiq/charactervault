@@ -3,17 +3,18 @@
 
 import * as React from 'react';
 import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet } from '@/types/character';
-import { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS } from '@/types/character';
+// DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS are now from context
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2 } from 'lucide-react';
+import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Loader2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-// InfoDisplayDialog import removed
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { useI18n } from '@/context/I18nProvider'; // Import useI18n
+import { Skeleton } from '@/components/ui/skeleton'; // For loading state
 
 
 interface ResistancesPanelProps {
@@ -30,24 +31,29 @@ interface ResistancesPanelProps {
   };
   onResistanceChange: (field: ResistanceFieldKeySheet, subField: 'customMod', value: number) => void;
   onDamageReductionChange: (newDrArray: DamageReductionInstance[]) => void;
-  onOpenResistanceInfoDialog: (resistanceField: ResistanceFieldKeySheet) => void; // New prop
+  onOpenResistanceInfoDialog: (resistanceField: ResistanceFieldKeySheet) => void;
 }
 
 export function ResistancesPanel({ characterData, onResistanceChange, onDamageReductionChange, onOpenResistanceInfoDialog }: ResistancesPanelProps) {
-  // Local state for InfoDisplayDialog removed
+  const { translations, isLoading: translationsLoading } = useI18n();
   const { toast } = useToast();
 
   const [newDrValue, setNewDrValue] = React.useState(1);
-  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>(DAMAGE_REDUCTION_TYPES[0]?.value || "none");
-  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.value);
+  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>("none");
+  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>('bypassed-by-type');
 
  React.useEffect(() => {
+    if (translationsLoading || !translations) return;
+    const { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS } = translations;
+
     if (newDrRule !== 'bypassed-by-type' && newDrType === 'none') {
-      // Find the first non-'none' type, default to 'magic' if none others exist
       const firstNonNoneType = DAMAGE_REDUCTION_TYPES.find(t => t.value !== 'none')?.value || 'magic';
       setNewDrType(firstNonNoneType);
     }
-  }, [newDrRule, newDrType]);
+    if (newDrType === "none" && !newDrRule) {
+        setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.value || 'bypassed-by-type');
+    }
+  }, [newDrRule, newDrType, translations, translationsLoading]);
   
   const energyResistances: Array<{ field: ResistanceFieldKeySheet; label: string; Icon: React.ElementType; fieldPrefix?: string }> = [
     { field: 'fireResistance', label: 'Fire', Icon: Flame, fieldPrefix: 'form-res' },
@@ -68,6 +74,9 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
   };
 
   const handleAddDamageReduction = () => {
+    if (translationsLoading || !translations) return;
+    const { DAMAGE_REDUCTION_RULES_OPTIONS } = translations;
+
     if (newDrValue <= 0) {
       toast({ title: "Invalid DR Value", description: "Damage Reduction value must be greater than 0.", variant: "destructive"});
       return;
@@ -98,19 +107,39 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     };
     onDamageReductionChange([...characterData.damageReduction, newInstance]);
     setNewDrValue(1);
-    setNewDrType(DAMAGE_REDUCTION_TYPES[0]?.value || "none");
-    setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.value);
+    setNewDrType(translations.DAMAGE_REDUCTION_TYPES[0]?.value || "none");
+    setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.value || 'bypassed-by-type');
   };
 
   const handleRemoveDamageReduction = (idToRemove: string) => {
     onDamageReductionChange(characterData.damageReduction.filter(dr => dr.id !== idToRemove));
   };
 
+  if (translationsLoading || !translations) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-3"> <ShieldAlert className="h-8 w-8 text-primary" /> <Skeleton className="h-7 w-1/2" /> </div>
+          <Skeleton className="h-4 w-3/4" />
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div> <Skeleton className="h-6 w-1/3 mb-3" /> <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"> {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-28 rounded-md" />)} </div> </div>
+          <Separator />
+          <div> <Skeleton className="h-6 w-1/3 mb-3" /> <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"> {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-28 rounded-md" />)} </div> </div>
+          <Separator className="my-6" />
+          <div> <Skeleton className="h-6 w-1/3 mb-3" /> <div className="grid md:grid-cols-2 gap-x-6 gap-y-4"> <Skeleton className="h-20 rounded-md" /> <Skeleton className="h-48 rounded-md" /> </div> </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS } = translations;
+  
   const getDrTypeUiLabel = (typeValue: DamageReductionTypeValue | string): string => {
     return DAMAGE_REDUCTION_TYPES.find(t => t.value === typeValue)?.label || String(typeValue);
   };
   
-  const getDrPrimaryNotation = (dr: DamageReductionInstance): string => {
+ const getDrPrimaryNotation = (dr: DamageReductionInstance): string => {
     const typeLabel = getDrTypeUiLabel(dr.type);
     if (dr.rule === 'bypassed-by-type') {
       return dr.type === "none" ? `${dr.value}/—` : `${dr.value}/${typeLabel}`;
@@ -119,9 +148,10 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
       return `${dr.value} vs ${typeLabel}`;
     }
     if (dr.rule === 'excepted-by-type') {
-       const displayType = typeLabel === "None" ? "—" : typeLabel;
+       const displayType = typeLabel === "None" ? "—" : typeLabel; // Assuming 'None' is the label for "none" value
        return `${dr.value}/${displayType} (Immunity)`;
     }
+    // Fallback or default formatting if rule is not one of the specific cases
     return `${dr.value}/${typeLabel} (${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule})`;
   };
   
@@ -138,7 +168,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     if (dr.rule === 'excepted-by-type') {
         return `Immune to damage unless from ${typeLabel} sources. ${typeLabel} sources deal damage reduced by ${dr.value}.`;
     }
-    return `Rule: ${ruleDef ? ruleDef.label : dr.rule}`;
+    return `Rule: ${ruleDef ? ruleDef.label : dr.rule}`; 
   };
 
 
@@ -339,7 +369,8 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
           </div>
         </CardContent>
       </Card>
-      {/* InfoDisplayDialog rendering removed, handled by parent */}
     </>
   );
 }
+
+    
