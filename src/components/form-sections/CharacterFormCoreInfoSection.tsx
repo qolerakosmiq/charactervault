@@ -82,7 +82,7 @@ export function CharacterFormCoreInfoSection({
     if (characterData.deity === undefined || characterData.deity === null) {
       onFieldChange('deity', DEITY_NONE_OPTION_VALUE);
     }
-  }, []); // This effect sets initial defaults and should run once on mount
+  }, []); 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -101,7 +101,7 @@ export function CharacterFormCoreInfoSection({
     return DND_DEITIES.filter(deity =>
       isAlignmentCompatible(characterData.alignment, deity.alignment)
     );
-  }, [characterData]); // Changed dependency to characterData
+  }, [characterData]); 
 
   const deitySelectOptions = React.useMemo(() => {
     return [{ value: DEITY_NONE_OPTION_VALUE, label: "None" }, ...filteredDeities];
@@ -109,7 +109,7 @@ export function CharacterFormCoreInfoSection({
 
 
   React.useEffect(() => {
-    if (!characterData) return; // Guard against undefined characterData
+    if (!characterData) return; 
 
     if (characterData.alignment && characterData.deity && characterData.deity !== DEITY_NONE_OPTION_VALUE) {
       const currentDeity = DND_DEITIES.find(d => d.value === characterData.deity);
@@ -117,7 +117,7 @@ export function CharacterFormCoreInfoSection({
         onFieldChange('deity', DEITY_NONE_OPTION_VALUE);
       }
     }
-  }, [characterData, onFieldChange]); // Changed dependencies
+  }, [characterData, onFieldChange]); 
 
 
   return (
@@ -136,8 +136,8 @@ export function CharacterFormCoreInfoSection({
         </div>
       </CardHeader>
       <CardContent className="space-y-6 pt-6">
-        {/* Name, Player Name, Race */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        {/* Line 1: Character Name, Player Name */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           <div className="space-y-1.5">
             <Label htmlFor="name">Character Name</Label>
             <Input id="name" name="name" value={characterData?.name || ''} onChange={handleInputChange} />
@@ -146,6 +146,10 @@ export function CharacterFormCoreInfoSection({
             <Label htmlFor="playerName">Player Name</Label>
             <Input id="playerName" name="playerName" value={characterData?.playerName || ''} onChange={handleInputChange} />
           </div>
+        </div>
+
+        {/* Line 2: Race, Class */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           <div className="space-y-1.5">
             <Label htmlFor="race">Race</Label>
             <div className="flex items-center gap-2">
@@ -212,10 +216,6 @@ export function CharacterFormCoreInfoSection({
               </div>
             )}
           </div>
-        </div>
-
-        {/* Class and Alignment */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
            <div className="space-y-1.5">
             <Label htmlFor="className">Class</Label>
             <div className="flex items-center gap-2">
@@ -257,6 +257,10 @@ export function CharacterFormCoreInfoSection({
               </div>
             )}
           </div>
+        </div>
+
+        {/* Line 3: Alignment, Deity */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           <div className="space-y-1.5">
             <Label htmlFor="alignment">Alignment</Label>
             <div className="flex items-center gap-2">
@@ -274,11 +278,7 @@ export function CharacterFormCoreInfoSection({
                 </Button>
             </div>
           </div>
-        </div>
-
-        {/* Deity */}
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            <div className="space-y-1.5">
+          <div className="space-y-1.5">
               <Label htmlFor="deity">Deity</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
@@ -312,11 +312,10 @@ export function CharacterFormCoreInfoSection({
             </div>
         </div>
 
-
-        {/* Age, Gender, Size */}
+        {/* Line 4: Age, Gender, Size */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
           <div className="space-y-1.5">
-            <Label htmlFor="age" className="inline-block w-full text-center">Age</Label>
+            <Label htmlFor="age" className="inline-block w-full text-center md:text-left">Age</Label>
             <NumberSpinnerInput
               id="age"
               value={characterData?.age || currentMinAgeForInput}
@@ -328,7 +327,7 @@ export function CharacterFormCoreInfoSection({
               buttonSize="icon"
             />
             {ageEffectsDetails && (ageEffectsDetails.categoryName !== 'Adult' || ageEffectsDetails.effects.length > 0) && (
-              <div className="flex flex-wrap items-baseline justify-center gap-1 pt-[6px] ml-1">
+              <div className="flex flex-wrap items-baseline justify-center md:justify-start gap-1 pt-[6px] ml-1">
                 <Badge
                   variant="secondary"
                   className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground"
