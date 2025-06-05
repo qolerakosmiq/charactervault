@@ -78,7 +78,7 @@
     "infoDialogSpeedLoadPenaltyLabel": "Malus de Charge",
     "infoDialogSpeedTotalPrefixLabel": "Vitesse Totale de",
     "infoDialogSpeedTotalSuffixLabel": "",
-    "infoDialogBabClassLabel": "BBA de {classLabel} :",
+    "infoDialogBabClassLabel": "Bonus de base à l'attaque de {classLabel} :",
     "infoDialogBabTotalLabel": "Bonus de Base à l'Attaque Total :",
     "infoDialogInitiativeAbilityModLabel": "Mod. de {abilityAbbr} ({abilityFull}) :",
     "infoDialogInitiativeTotalLabel": "Initiative Totale :",
@@ -230,5 +230,3 @@
     "combatPanelGrappleWeaponLabel": "Arme"
   }
 }
-
-    
