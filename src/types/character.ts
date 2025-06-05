@@ -429,7 +429,7 @@ export function checkFeatPrerequisites(
   }
 
   if (prerequisites.bab !== undefined) {
-    const characterBab = getBab(character.classes)[0];
+    const characterBab = getBab(character.classes, DND_CLASSES)[0];
     const isMet = characterBab >= prerequisites.bab;
     messages.push({ text: `BAB +${prerequisites.bab}`, isMet, orderKey: 'bab', originalText: `BAB` });
   }
@@ -704,3 +704,8 @@ export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 // It's recommended to also export core types from character-core.ts if they are needed elsewhere
 export * from './character-core';
+
+// Re-export selected constants only if they are defined solely in character-core.ts and NOT i18n-dependent
+// For example, if SIZES or ALIGNMENTS were truly static and not i18n, they could be re-exported.
+// However, given the current setup, they are i18n-dependent and sourced via useI18n.
+// export { SIZES, ALIGNMENTS } from './character-core'; // Example, but likely not applicable now
