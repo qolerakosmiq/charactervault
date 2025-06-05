@@ -13,6 +13,7 @@ import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
 import { AbilityScorePointBuyDialog } from '@/components/AbilityScorePointBuyDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
+import { Badge } from '@/components/ui/badge';
 
 const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -162,8 +163,8 @@ export function CharacterFormAbilityScoresSection({
               );
             })}
           </div>
-          <p className="text-xs text-muted-foreground mt-4 pt-2 border-t border-border/30">
-            Note: The 'Temporary Modifier' field adjusts the 'Base Score' directly, not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score.
+           <p className="text-xs text-muted-foreground mt-4 pt-2 border-t border-border/30">
+            <strong>Note:</strong> The <Badge variant="outline" className="text-xs font-normal border-muted-foreground/60 text-muted-foreground px-1.5 py-0.5 align-baseline">Temporary Modifier</Badge> field adjusts the <Badge variant="outline" className="text-xs font-normal border-muted-foreground/60 text-muted-foreground px-1.5 py-0.5 align-baseline">Base Score</Badge> directly, not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score.
           </p>
         </CardContent>
       </Card>
