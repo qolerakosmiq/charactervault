@@ -899,10 +899,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-12 pt-8 border-t">
           <Button type="button" variant="outline" size="lg" onClick={handleCancel} className="w-full md:w-auto">
-            Cancel
+            {UI_STRINGS.formButtonCancel || "Cancel"}
           </Button>
           <Button type="submit" size="lg" className="w-full md:w-auto shadow-md hover:shadow-lg transition-shadow">
-            {isCreating ? 'Create Character' : 'Save Changes'}
+            {isCreating ? (UI_STRINGS.formButtonCreateCharacter || "Create Character") : (UI_STRINGS.formButtonSaveChanges || "Save Changes")}
           </Button>
         </div>
       </form>

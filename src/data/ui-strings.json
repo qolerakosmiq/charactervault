@@ -291,7 +291,10 @@
     "loadingOptionsTitle": "Loading options...",
     "loadingAbilityNamesTitle": "Loading ability names...",
     "pointBuyDialogTitleLoading": "Point Buy Ability Scores",
-    "rollerDialogTitleLoading": "Roll Initial Ability Scores"
+    "rollerDialogTitleLoading": "Roll Initial Ability Scores",
+    "formButtonCancel": "Cancel",
+    "formButtonCreateCharacter": "Create Character",
+    "formButtonSaveChanges": "Save Changes"
   }
 }
 

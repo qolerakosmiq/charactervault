@@ -291,7 +291,10 @@
     "loadingOptionsTitle": "Chargement des options...",
     "loadingAbilityNamesTitle": "Chargement des noms de caractéristiques...",
     "pointBuyDialogTitleLoading": "Achat par Points des Caractéristiques",
-    "rollerDialogTitleLoading": "Lancer les Caractéristiques Initiales"
+    "rollerDialogTitleLoading": "Lancer les Caractéristiques Initiales",
+    "formButtonCancel": "Annuler",
+    "formButtonCreateCharacter": "Créer le Personnage",
+    "formButtonSaveChanges": "Sauvegarder les Modifications"
   }
 }
 
