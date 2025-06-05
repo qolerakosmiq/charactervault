@@ -204,7 +204,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         {label}
                       </span>
                     </div>
-                    <div className="flex items-center justify-center space-x-0.5">
+                    <div className="flex items-center justify-center">
                       <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
                         {totalValue}
                       </p>
@@ -212,7 +212,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                        className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
                         onClick={() => handleTriggerResistanceInfoDialog(field)}
                       >
                         <Info className="h-4 w-4" />
@@ -253,7 +253,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                           {label} {unit && `(${unit})`}
                         </span>
                       </div>
-                    <div className="flex items-center justify-center space-x-0.5">
+                    <div className="flex items-center justify-center">
                       <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
                         {totalValue}
                       </p>
@@ -261,7 +261,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                        className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
                         onClick={() => handleTriggerResistanceInfoDialog(field)}
                       >
                         <Info className="h-4 w-4" />
