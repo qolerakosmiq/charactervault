@@ -19,7 +19,8 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { useI18n } from '@/context/I18nProvider'; // Import useI18n
+import { useI18n } from '@/context/I18nProvider';
+import { useToast } from "@/hooks/use-toast";
 
 interface AbilityScorePointBuyDialogProps {
   isOpen: boolean;
@@ -54,6 +55,7 @@ export function AbilityScorePointBuyDialog({
   totalPointsBudget,
 }: AbilityScorePointBuyDialogProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
+  const { toast } = useToast();
 
   const [currentScores, setCurrentScores] = React.useState<AbilityScores>(() => {
     const scores: Partial<AbilityScores> = {};
@@ -106,7 +108,11 @@ export function AbilityScorePointBuyDialog({
       onScoresApplied(currentScores);
       onOpenChange(false);
     } else {
-      console.error("Error: Cannot apply scores, points spent do not match total points or budget is invalid.");
+      toast({
+        title: translations?.UI_STRINGS.pointBuyDialogErrorInvalidApplicationTitle || "Invalid Scores",
+        description: translations?.UI_STRINGS.pointBuyDialogErrorInvalidApplicationDesc || "Cannot apply scores. Points spent must exactly match the total points budget, or the budget is invalid.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -119,12 +125,12 @@ export function AbilityScorePointBuyDialog({
           <DialogHeader>
             <DialogTitle className="flex items-center font-serif">
               <Calculator className="mr-2 h-6 w-6 text-primary" />
-              Point Buy Ability Scores
+              Point Buy Ability Scores {/* This will be briefly visible before translations load */}
             </DialogTitle>
           </DialogHeader>
           <div className="flex justify-center items-center py-10">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">Loading ability names...</p>
+            <p className="ml-3 text-muted-foreground">Loading ability names...</p> {/* This will be briefly visible */}
           </div>
            <DialogFooter className="mt-6 pt-4 border-t">
             <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
@@ -138,7 +144,7 @@ export function AbilityScorePointBuyDialog({
       </Dialog>
     );
   }
-  const { ABILITY_LABELS } = translations;
+  const { ABILITY_LABELS, UI_STRINGS } = translations;
 
 
   return (
@@ -147,10 +153,10 @@ export function AbilityScorePointBuyDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif">
             <Calculator className="mr-2 h-6 w-6 text-primary" />
-            Point Buy Ability Scores
+            {UI_STRINGS.pointBuyDialogTitle || "Point Buy Ability Scores"}
           </DialogTitle>
           <DialogDescription>
-            Distribute points to set your character's initial ability scores. Scores start at 8, and the maximum score is 18.
+            {UI_STRINGS.pointBuyDialogDescription || "Distribute points to set your character's initial ability scores. Scores start at 8, and the maximum score is 18."}
           </DialogDescription>
         </DialogHeader>
 
@@ -158,15 +164,15 @@ export function AbilityScorePointBuyDialog({
             <div className="p-1 space-y-4">
                 <div className="flex items-center justify-between gap-4 p-3 border rounded-md bg-muted/30">
                     <div className="text-left">
-                        <p className="text-sm font-medium">Total Points Budget:</p>
+                        <p className="text-sm font-medium">{UI_STRINGS.pointBuyDialogTotalPointsBudgetLabel || "Total Points Budget:"}</p>
                         <p className="text-xl font-bold text-primary">{String(displayBudget)}</p>
                     </div>
                     <div className="flex-grow text-right">
                         <p className="text-sm">
-                        Points Spent: <Badge variant="secondary">{String(pointsSpent)}</Badge>
+                        {UI_STRINGS.pointBuyDialogPointsSpentLabel || "Points Spent:"} <Badge variant="secondary">{String(pointsSpent)}</Badge>
                         </p>
                         <p className={cn("text-sm font-semibold mt-1", pointsRemaining !== 0 ? "text-destructive" : "text-emerald-500")}>
-                        Points Remaining: <Badge variant={pointsRemaining !== 0 || !isValidBudgetProp ? "destructive" : "default"} className={pointsRemaining === 0 && isValidBudgetProp ? "bg-emerald-600 hover:bg-emerald-600/80" : ""}>{String(pointsRemaining)}</Badge>
+                        {UI_STRINGS.pointBuyDialogPointsRemainingLabel || "Points Remaining:"} <Badge variant={pointsRemaining !== 0 || !isValidBudgetProp ? "destructive" : "default"} className={pointsRemaining === 0 && isValidBudgetProp ? "bg-emerald-600 hover:bg-emerald-600/80" : ""}>{String(pointsRemaining)}</Badge>
                         </p>
                     </div>
                 </div>
@@ -191,7 +197,7 @@ export function AbilityScorePointBuyDialog({
                             <span className="font-semibold">{abbreviationPart}</span>
                             {fullNamePart && <span className="text-muted-foreground ml-1 font-normal">({fullNamePart})</span>}
                           </span>
-                          <Badge variant="outline">Cost: {cost}</Badge>
+                          <Badge variant="outline">{UI_STRINGS.pointBuyDialogCostLabel || "Cost:"} {cost}</Badge>
                         </Label>
                         <div className="flex items-center justify-center">
                            <NumberSpinnerInput
@@ -217,13 +223,15 @@ export function AbilityScorePointBuyDialog({
 
         <DialogFooter className="mt-6 pt-4 border-t">
           <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
-            Cancel
+            {UI_STRINGS.pointBuyDialogCancelButton || "Cancel"}
           </Button>
           <Button onClick={handleApply} disabled={isApplyDisabled} type="button">
-            Apply Scores
+            {UI_STRINGS.pointBuyDialogApplyButton || "Apply Scores"}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
+
+    

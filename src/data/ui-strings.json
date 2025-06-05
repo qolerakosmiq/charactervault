@@ -113,6 +113,19 @@
     "rollerDialogAssignPlaceholder": "Assign...",
     "rollerDialogUnassignOption": "Unassign",
     "rollerDialogErrorNotAllAssignedToastTitle": "Assignment Incomplete",
-    "rollerDialogErrorNotAllAssignedToastDesc": "Please assign all rolled scores to abilities before applying."
+    "rollerDialogErrorNotAllAssignedToastDesc": "Please assign all rolled scores to abilities before applying.",
+    "pointBuyDialogTitle": "Point Buy Ability Scores",
+    "pointBuyDialogDescription": "Distribute points to set your character's initial ability scores. Scores start at 8, and the maximum score is 18.",
+    "pointBuyDialogLoadingAbilities": "Loading ability names...",
+    "pointBuyDialogTotalPointsBudgetLabel": "Total Points Budget:",
+    "pointBuyDialogPointsSpentLabel": "Points Spent:",
+    "pointBuyDialogPointsRemainingLabel": "Points Remaining:",
+    "pointBuyDialogCostLabel": "Cost:",
+    "pointBuyDialogCancelButton": "Cancel",
+    "pointBuyDialogApplyButton": "Apply Scores",
+    "pointBuyDialogErrorInvalidApplicationTitle": "Invalid Scores",
+    "pointBuyDialogErrorInvalidApplicationDesc": "Cannot apply scores. Points spent must exactly match the total points budget, or the budget is invalid."
   }
 }
+
+    

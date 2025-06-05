@@ -113,6 +113,19 @@
     "rollerDialogAssignPlaceholder": "Assigner...",
     "rollerDialogUnassignOption": "Désassigner",
     "rollerDialogErrorNotAllAssignedToastTitle": "Assignation Incomplète",
-    "rollerDialogErrorNotAllAssignedToastDesc": "Veuillez assigner tous les scores lancés aux caractéristiques avant d'appliquer."
+    "rollerDialogErrorNotAllAssignedToastDesc": "Veuillez assigner tous les scores lancés aux caractéristiques avant d'appliquer.",
+    "pointBuyDialogTitle": "Achat par Points des Caractéristiques",
+    "pointBuyDialogDescription": "Répartissez les points pour définir les caractéristiques initiales de votre personnage. Les scores commencent à 8, et le score maximum est de 18.",
+    "pointBuyDialogLoadingAbilities": "Chargement des noms de caractéristiques...",
+    "pointBuyDialogTotalPointsBudgetLabel": "Budget Total de Points :",
+    "pointBuyDialogPointsSpentLabel": "Points Dépensés :",
+    "pointBuyDialogPointsRemainingLabel": "Points Restants :",
+    "pointBuyDialogCostLabel": "Coût :",
+    "pointBuyDialogCancelButton": "Annuler",
+    "pointBuyDialogApplyButton": "Appliquer les Scores",
+    "pointBuyDialogErrorInvalidApplicationTitle": "Scores Invalides",
+    "pointBuyDialogErrorInvalidApplicationDesc": "Impossible d'appliquer les scores. Les points dépensés doivent correspondre exactement au budget total de points, ou le budget est invalide."
   }
 }
+
+    
