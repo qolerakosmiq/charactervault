@@ -46,7 +46,7 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
         </div>
         <CardDescription>Manage your character's various movement capabilities and penalties.</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {speedTypesConfig.map(({ type, label, Icon, fieldKey }) => {
             const speedData = calculateSpeedBreakdown(type, character, DND_RACES, DND_CLASSES);
@@ -91,37 +91,49 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
             );
           })}
         </div>
+        
         <Separator className="my-6" />
-        <div>
-            <h4 className="text-md font-semibold mb-3 text-foreground/90">Speed Penalties</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
-                <div className="space-y-1">
-                    <Label htmlFor="armor-speed-penalty">Armor Penalty (ft.)</Label>
-                    <NumberSpinnerInput
-                        id="armor-speed-penalty"
-                        value={character.armorSpeedPenalty || 0}
-                        onChange={(val) => onCharacterUpdate('armorSpeedPenalty', val)}
-                        min={0}
-                        step={1.5}
-                        inputClassName="w-24 h-9 text-base"
-                        buttonClassName="h-9 w-9"
-                    />
-                     <p className="text-xs text-muted-foreground">Penalty to land speed from armor worn.</p>
-                </div>
-                <div className="space-y-1">
-                    <Label htmlFor="load-speed-penalty">Load Penalty (ft.)</Label>
-                     <NumberSpinnerInput
-                        id="load-speed-penalty"
-                        value={character.loadSpeedPenalty || 0}
-                        onChange={(val) => onCharacterUpdate('loadSpeedPenalty', val)}
-                        min={0}
-                        step={1.5}
-                        inputClassName="w-24 h-9 text-base"
-                        buttonClassName="h-9 w-9"
-                    />
-                     <p className="text-xs text-muted-foreground">Penalty to land speed from encumbrance.</p>
-                </div>
-            </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Card>
+            <CardHeader className="p-4">
+              <CardTitle className="text-base font-medium">Armor Penalty</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0 space-y-1">
+              <div className="flex justify-center">
+                <NumberSpinnerInput
+                  id="armor-speed-penalty"
+                  value={character.armorSpeedPenalty || 0}
+                  onChange={(val) => onCharacterUpdate('armorSpeedPenalty', val)}
+                  min={0}
+                  step={1.5}
+                  inputClassName="w-24 h-9 text-base"
+                  buttonClassName="h-9 w-9"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground text-center pt-1">Penalty to land speed from armor worn (ft.).</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="p-4">
+              <CardTitle className="text-base font-medium">Load Penalty</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0 space-y-1">
+              <div className="flex justify-center">
+                <NumberSpinnerInput
+                  id="load-speed-penalty"
+                  value={character.loadSpeedPenalty || 0}
+                  onChange={(val) => onCharacterUpdate('loadSpeedPenalty', val)}
+                  min={0}
+                  step={1.5}
+                  inputClassName="w-24 h-9 text-base"
+                  buttonClassName="h-9 w-9"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground text-center pt-1">Penalty to land speed from encumbrance (ft.).</p>
+            </CardContent>
+          </Card>
         </div>
       </CardContent>
     </Card>
