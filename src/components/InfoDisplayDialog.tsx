@@ -462,7 +462,7 @@ export function InfoDisplayDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md md:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center font-serif">
+          <DialogTitle className="flex items-center font-serif text-left">
             <Info className="mr-2 h-6 w-6 text-primary" />
             {finalTitle}
           </DialogTitle>
@@ -1049,3 +1049,4 @@ interface SkillModifierBreakdownDetails {
   miscModifier: number;
   totalBonus: number;
 }
+
