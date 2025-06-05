@@ -10,37 +10,21 @@ import type {
   DndRaceOption, DetailedAbilityScores, AbilityScoreBreakdown,
   FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData, CharacterSize,
   ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType, ResistanceFieldKeySheet,
-  SpeedDetails, SpeedType
+  SpeedDetails, SpeedType, CharacterAlignment // Added CharacterAlignment
 } from '@/types/character';
 import {
-  SIZES,
-  ALIGNMENTS,
-  DND_RACES,
-  DND_CLASSES,
   getNetAgingEffects,
-  GENDERS,
-  DND_DEITIES,
   getRaceSpecialQualities,
   getInitialCharacterSkills,
-  SKILL_DEFINITIONS,
-  DND_FEATS_DEFINITIONS,
   getGrantedFeatsForCharacter,
   calculateDetailedAbilityScores,
-  DEFAULT_ABILITIES,
-  DEFAULT_SAVING_THROWS,
-  DEFAULT_RESISTANCE_VALUE,
-  DND_RACE_MIN_ADULT_AGE_DATA,
-  CLASS_SKILLS,
-  SKILL_SYNERGIES,
   getRaceSkillPointsBonusPerLevel,
-  DAMAGE_REDUCTION_TYPES,
-  DEFAULT_SPEED_DETAILS,
-  DEFAULT_SPEED_PENALTIES
+  ABILITY_ORDER_INTERNAL
 } from '@/types/character';
 import { getUnarmedGrappleDamage } from '@/lib/dnd-utils';
 
-
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
+import { useI18n } from '@/context/I18nProvider'; // Import useI18n
 
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
@@ -59,10 +43,12 @@ import { ResistancesPanel } from '@/components/form-sections/ResistancesPanel';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 import { Separator } from '@/components/ui/separator';
-import { BookOpenCheck, ShieldPlus, Zap, ShieldCheck, Settings, Calculator } from 'lucide-react';
+import { BookOpenCheck, ShieldPlus, Zap, ShieldCheck, Settings, Calculator, Loader2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
+import { Skeleton } from '@/components/ui/skeleton';
+
 
 interface CharacterFormCoreProps {
   initialCharacter?: Character;
@@ -70,10 +56,10 @@ interface CharacterFormCoreProps {
   isCreating: boolean;
 }
 
-
 const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
 export function CharacterFormCore({ initialCharacter, onSave, isCreating }: CharacterFormCoreProps) {
+  const { translations, isLoading: translationsLoading } = useI18n();
   const {
     customFeatDefinitions: globalCustomFeatDefinitionsFromStore,
     customSkillDefinitions: globalCustomSkillDefinitionsFromStore,
@@ -81,7 +67,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     pointBuyBudget: rawPointBuyBudgetFromStore,
     actions: definitionsActions
   } = useDefinitionsStore();
-
 
   const [isClient, setIsClient] = React.useState(false);
   React.useEffect(() => {
@@ -98,166 +83,190 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   } else if (typeof rawPointBuyBudgetFromStore === 'string') {
     const parsed = parseFloat(rawPointBuyBudgetFromStore);
     numericPointBuyBudgetFromStore = !isNaN(parsed) ? parsed : 25;
-  }
-  else {
+  } else {
     numericPointBuyBudgetFromStore = 25;
   }
   const pointBuyBudget = isClient ? numericPointBuyBudgetFromStore : 25;
 
+  const [character, setCharacter] = React.useState<Character | null>(null);
 
-  const [character, setCharacter] = React.useState<Character>(() => {
-    const defaultBaseAbilityScores = { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES)) as AbilityScores) };
+  React.useEffect(() => {
+    if (translationsLoading || !translations || !isClient) return;
+
+    const {
+      DEFAULT_ABILITIES: DEFAULT_ABILITIES_DATA,
+      DEFAULT_SAVING_THROWS: DEFAULT_SAVING_THROWS_DATA,
+      DEFAULT_RESISTANCE_VALUE: DEFAULT_RESISTANCE_VALUE_DATA,
+      DEFAULT_SPEED_DETAILS: DEFAULT_SPEED_DETAILS_DATA,
+      DEFAULT_SPEED_PENALTIES: DEFAULT_SPEED_PENALTIES_DATA,
+      DND_FEATS_DEFINITIONS, DND_RACES, DND_CLASSES, SKILL_DEFINITIONS, CLASS_SKILLS, SIZES
+    } = translations;
+
+    const defaultBaseAbilityScores = { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES_DATA)) as AbilityScores) };
     const defaultTempCustomMods: AbilityScores = { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 };
-    const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: '', level: 1 }];
+    const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: DND_CLASSES[0]?.value || '', level: 1 }];
     const defaultSize: CharacterSize = 'medium';
-    const defaultUnarmedGrappleDice = getUnarmedGrappleDamage(defaultSize);
     const sizeLabel = SIZES.find(s => s.value === defaultSize)?.label || defaultSize;
+    const defaultUnarmedGrappleDice = getUnarmedGrappleDamage(defaultSize, SIZES);
 
 
     const allInitialFeatDefsForGranting = [
         ...DND_FEATS_DEFINITIONS.map(def => ({ ...def, isCustom: false as const })),
-        ...(isCreating && isClient ? globalCustomFeatDefinitionsFromStore : (initialCharacter?.feats.filter(f => f.isGranted && allInitialFeatDefsForGranting.find(fd => fd.value === f.definitionId && fd.isCustom)).map(f => globalCustomFeatDefinitionsFromStore.find(cfd => cfd.value === f.definitionId)).filter(Boolean) as (FeatDefinitionJsonData & { isCustom: true })[] || []))
+        ...(isCreating ? globalCustomFeatDefinitionsFromStore : (initialCharacter?.feats.filter(f => f.isGranted && allInitialFeatDefsForGranting.find(fd => fd.value === f.definitionId && fd.isCustom)).map(f => globalCustomFeatDefinitionsFromStore.find(cfd => cfd.value === f.definitionId)).filter(Boolean) as (FeatDefinitionJsonData & { isCustom: true })[] || []))
     ];
 
     const initialFeats = getGrantedFeatsForCharacter(
-      initialCharacter?.race || '',
+      initialCharacter?.race || DND_RACES[0]?.value || '',
       initialCharacter?.classes || defaultClasses,
       initialCharacter?.classes?.reduce((sum, c) => sum + c.level, 0) || 1,
-      allInitialFeatDefsForGranting
+      allInitialFeatDefsForGranting, DND_RACES, DND_CLASSES
     );
 
-    let initialSkills = initialCharacter?.skills || getInitialCharacterSkills(defaultClasses);
+    let initialSkills = initialCharacter?.skills || getInitialCharacterSkills(defaultClasses, SKILL_DEFINITIONS, CLASS_SKILLS);
 
-    const baseCharData = {
+    const baseCharData: Character = {
       id: crypto.randomUUID(),
       name: '',
-      playerName: '', 
+      playerName: '',
       campaign: '',
-      race: '', alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
+      race: DND_RACES[0]?.value || '', alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
       height: '', weight: '', eyes: '', hair: '', skin: '',
       abilityScores: defaultBaseAbilityScores,
       abilityScoreTempCustomModifiers: defaultTempCustomMods,
       hp: 10, maxHp: 10,
       armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0,
       deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0,
-      
       babMiscModifier: 0,
       initiativeMiscModifier: 0,
       grappleMiscModifier: 0,
       grappleWeaponChoice: 'unarmed',
       grappleDamage_baseNotes: `${defaultUnarmedGrappleDice} (${sizeLabel} Unarmed)`,
       grappleDamage_bonus: 0,
-      
-      savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)),
+      savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS_DATA)),
       classes: defaultClasses,
       skills: initialSkills,
       feats: initialFeats,
       inventory: [], personalStory: '', portraitDataUrl: undefined,
-      fireResistance: { ...DEFAULT_RESISTANCE_VALUE },
-      coldResistance: { ...DEFAULT_RESISTANCE_VALUE },
-      acidResistance: { ...DEFAULT_RESISTANCE_VALUE },
-      electricityResistance: { ...DEFAULT_RESISTANCE_VALUE },
-      sonicResistance: { ...DEFAULT_RESISTANCE_VALUE },
-      spellResistance: { ...DEFAULT_RESISTANCE_VALUE },
-      powerResistance: { ...DEFAULT_RESISTANCE_VALUE },
+      fireResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA },
+      coldResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA },
+      acidResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA },
+      electricityResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA },
+      sonicResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA },
+      spellResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA },
+      powerResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA },
       damageReduction: [],
-      fortification: { ...DEFAULT_RESISTANCE_VALUE },
-      landSpeed: { ...DEFAULT_SPEED_DETAILS },
-      burrowSpeed: { ...DEFAULT_SPEED_DETAILS },
-      climbSpeed: { ...DEFAULT_SPEED_DETAILS },
-      flySpeed: { ...DEFAULT_SPEED_DETAILS },
-      swimSpeed: { ...DEFAULT_SPEED_DETAILS },
-      armorSpeedPenalty: DEFAULT_SPEED_PENALTIES.armorSpeedPenalty,
-      loadSpeedPenalty: DEFAULT_SPEED_PENALTIES.loadSpeedPenalty,
+      fortification: { ...DEFAULT_RESISTANCE_VALUE_DATA },
+      landSpeed: { ...DEFAULT_SPEED_DETAILS_DATA },
+      burrowSpeed: { ...DEFAULT_SPEED_DETAILS_DATA },
+      climbSpeed: { ...DEFAULT_SPEED_DETAILS_DATA },
+      flySpeed: { ...DEFAULT_SPEED_DETAILS_DATA },
+      swimSpeed: { ...DEFAULT_SPEED_DETAILS_DATA },
+      armorSpeedPenalty: DEFAULT_SPEED_PENALTIES_DATA.armorSpeedPenalty,
+      loadSpeedPenalty: DEFAULT_SPEED_PENALTIES_DATA.loadSpeedPenalty,
     };
 
     if (initialCharacter) {
-      return {
+      setCharacter({
         ...baseCharData,
         ...initialCharacter,
-        playerName: initialCharacter.playerName || '', 
+        playerName: initialCharacter.playerName || '',
         campaign: initialCharacter.campaign || '',
+        race: initialCharacter.race || DND_RACES[0]?.value || '',
         alignment: initialCharacter.alignment || 'true-neutral',
         abilityScores: initialCharacter.abilityScores || defaultBaseAbilityScores,
         abilityScoreTempCustomModifiers: initialCharacter.abilityScoreTempCustomModifiers || defaultTempCustomMods,
-        savingThrows: initialCharacter.savingThrows || JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)),
+        savingThrows: initialCharacter.savingThrows || JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS_DATA)),
         classes: initialCharacter.classes && initialCharacter.classes.length > 0 ? initialCharacter.classes : defaultClasses,
         skills: initialCharacter.skills || initialSkills,
         feats: initialCharacter.feats || initialFeats,
-        fireResistance: initialCharacter.fireResistance || { ...DEFAULT_RESISTANCE_VALUE },
-        coldResistance: initialCharacter.coldResistance || { ...DEFAULT_RESISTANCE_VALUE },
-        acidResistance: initialCharacter.acidResistance || { ...DEFAULT_RESISTANCE_VALUE },
-        electricityResistance: initialCharacter.electricityResistance || { ...DEFAULT_RESISTANCE_VALUE },
-        sonicResistance: initialCharacter.sonicResistance || { ...DEFAULT_RESISTANCE_VALUE },
-        spellResistance: initialCharacter.spellResistance || { ...DEFAULT_RESISTANCE_VALUE },
-        powerResistance: initialCharacter.powerResistance || { ...DEFAULT_RESISTANCE_VALUE },
+        fireResistance: initialCharacter.fireResistance || { ...DEFAULT_RESISTANCE_VALUE_DATA },
+        coldResistance: initialCharacter.coldResistance || { ...DEFAULT_RESISTANCE_VALUE_DATA },
+        acidResistance: initialCharacter.acidResistance || { ...DEFAULT_RESISTANCE_VALUE_DATA },
+        electricityResistance: initialCharacter.electricityResistance || { ...DEFAULT_RESISTANCE_VALUE_DATA },
+        sonicResistance: initialCharacter.sonicResistance || { ...DEFAULT_RESISTANCE_VALUE_DATA },
+        spellResistance: initialCharacter.spellResistance || { ...DEFAULT_RESISTANCE_VALUE_DATA },
+        powerResistance: initialCharacter.powerResistance || { ...DEFAULT_RESISTANCE_VALUE_DATA },
         damageReduction: initialCharacter.damageReduction || [],
-        fortification: initialCharacter.fortification || { ...DEFAULT_RESISTANCE_VALUE },
+        fortification: initialCharacter.fortification || { ...DEFAULT_RESISTANCE_VALUE_DATA },
         grappleWeaponChoice: initialCharacter.grappleWeaponChoice || 'unarmed',
         height: initialCharacter.height || '',
         weight: initialCharacter.weight || '',
         eyes: initialCharacter.eyes || '',
         hair: initialCharacter.hair || '',
         skin: initialCharacter.skin || '',
-        landSpeed: initialCharacter.landSpeed || { ...DEFAULT_SPEED_DETAILS },
-        burrowSpeed: initialCharacter.burrowSpeed || { ...DEFAULT_SPEED_DETAILS },
-        climbSpeed: initialCharacter.climbSpeed || { ...DEFAULT_SPEED_DETAILS },
-        flySpeed: initialCharacter.flySpeed || { ...DEFAULT_SPEED_DETAILS },
-        swimSpeed: initialCharacter.swimSpeed || { ...DEFAULT_SPEED_DETAILS },
-        armorSpeedPenalty: initialCharacter.armorSpeedPenalty ?? DEFAULT_SPEED_PENALTIES.armorSpeedPenalty,
-        loadSpeedPenalty: initialCharacter.loadSpeedPenalty ?? DEFAULT_SPEED_PENALTIES.loadSpeedPenalty,
-      };
+        landSpeed: initialCharacter.landSpeed || { ...DEFAULT_SPEED_DETAILS_DATA },
+        burrowSpeed: initialCharacter.burrowSpeed || { ...DEFAULT_SPEED_DETAILS_DATA },
+        climbSpeed: initialCharacter.climbSpeed || { ...DEFAULT_SPEED_DETAILS_DATA },
+        flySpeed: initialCharacter.flySpeed || { ...DEFAULT_SPEED_DETAILS_DATA },
+        swimSpeed: initialCharacter.swimSpeed || { ...DEFAULT_SPEED_DETAILS_DATA },
+        armorSpeedPenalty: initialCharacter.armorSpeedPenalty ?? DEFAULT_SPEED_PENALTIES_DATA.armorSpeedPenalty,
+        loadSpeedPenalty: initialCharacter.loadSpeedPenalty ?? DEFAULT_SPEED_PENALTIES_DATA.loadSpeedPenalty,
+      });
+    } else {
+      setCharacter(baseCharData);
     }
-    return baseCharData;
-  });
+  // Dependencies need to be carefully managed. `initialCharacter`, `isCreating`, `isClient`, `translationsLoading`, `translations`, `globalCustomFeatDefinitionsFromStore` are key.
+  }, [isClient, translationsLoading, translations, initialCharacter, isCreating, globalCustomFeatDefinitionsFromStore]);
+
 
   const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<CharacterFormCoreInfoSectionProps['ageEffectsDetails']>(null);
   const [raceSpecialQualities, setRaceSpecialQualities] = React.useState<CharacterFormCoreInfoSectionProps['raceSpecialQualities']>(null);
-  
   const [activeInfoDialogType, setActiveInfoDialogType] = React.useState<InfoDialogContentType | null>(null);
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
-  
   const [detailedAbilityScores, setDetailedAbilityScores] = React.useState<DetailedAbilityScores | null>(null);
-
   const [isAddOrEditSkillDialogOpen, setIsAddOrEditSkillDialogOpen] = React.useState(false);
   const [skillToEdit, setSkillToEdit] = React.useState<CustomSkillDefinition | undefined>(undefined);
   const [isCustomFeatDialogOpen, setIsCustomFeatDialogOpen] = React.useState(false);
   const [editingCustomFeatDefinition, setEditingCustomFeatDefinition] = React.useState<(FeatDefinitionJsonData & { isCustom: true }) | undefined>(undefined);
 
-
   const router = useRouter();
   const { toast } = useToast();
 
   const allAvailableFeatDefinitions = React.useMemo(() => {
-    const predefined = DND_FEATS_DEFINITIONS.map(def => ({ ...def, isCustom: false as const }));
+    if (translationsLoading || !translations) return [];
+    const predefined = translations.DND_FEATS_DEFINITIONS.map(def => ({ ...def, isCustom: false as const }));
     return [...predefined, ...globalCustomFeatDefinitions];
-  }, [globalCustomFeatDefinitions]);
+  }, [translationsLoading, translations, globalCustomFeatDefinitions]);
 
   const allAvailableSkillDefinitionsForDisplay = React.useMemo(() => {
-    const predefined = SKILL_DEFINITIONS.map(sd => ({
+    if (translationsLoading || !translations) return [];
+    const predefined = translations.SKILL_DEFINITIONS.map(sd => ({
         id: sd.value,
         name: sd.label,
         keyAbility: sd.keyAbility as AbilityName,
         description: sd.description,
         isCustom: false,
-        providesSynergies: SKILL_SYNERGIES[sd.value as keyof typeof SKILL_SYNERGIES] || [],
+        providesSynergies: (translations.SKILL_SYNERGIES as Record<string, any>)[sd.value] || [],
     }));
     const custom = globalCustomSkillDefinitions.map(csd => ({
         ...csd,
         isCustom: true,
     }));
     return [...predefined, ...custom].sort((a,b) => a.name.localeCompare(b.name));
-  }, [globalCustomSkillDefinitions]);
-
+  }, [translationsLoading, translations, globalCustomSkillDefinitions]);
 
   React.useEffect(() => {
-    setDetailedAbilityScores(calculateDetailedAbilityScores(character, globalCustomFeatDefinitions));
-  }, [character, globalCustomFeatDefinitions]);
+    if (character && translations) {
+      setDetailedAbilityScores(calculateDetailedAbilityScores(
+        character,
+        globalCustomFeatDefinitions,
+        translations.DND_RACES,
+        translations.DND_RACE_ABILITY_MODIFIERS_DATA,
+        translations.DND_RACE_BASE_MAX_AGE_DATA,
+        translations.RACE_TO_AGING_CATEGORY_MAP_DATA,
+        translations.DND_RACE_AGING_EFFECTS_DATA,
+        translations.DND_FEATS_DEFINITIONS, // Pass predefined feats here
+        translations.ABILITY_LABELS
+      ));
+    }
+  }, [character, translations, globalCustomFeatDefinitions]);
 
   const actualAbilityScoresForSavesAndSkills = React.useMemo(() => {
-    if (!detailedAbilityScores) {
+    if (!character || !detailedAbilityScores) {
+      if (!character) return ABILITY_ORDER_INTERNAL.reduce((acc, key) => { acc[key] = 0; return acc; }, {} as AbilityScores);
       const scoresWithTemp: Partial<AbilityScores> = {};
       for (const ability of abilityNames) {
+        if (ability === 'none') continue;
         scoresWithTemp[ability] = (character.abilityScores[ability] || 0) + (character.abilityScoreTempCustomModifiers?.[ability] || 0);
       }
       return scoresWithTemp as AbilityScores;
@@ -268,48 +277,63 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       finalScores[ability] = detailedAbilityScores[ability].finalScore;
     }
     return finalScores as AbilityScores;
-  }, [detailedAbilityScores, character.abilityScores, character.abilityScoreTempCustomModifiers]);
-
+  }, [detailedAbilityScores, character]);
 
   React.useEffect(() => {
-    if (character.race && character.age > 0) {
-      const details = getNetAgingEffects(character.race as DndRaceId, character.age);
+    if (character && character.race && character.age > 0 && translations) {
+      const details = getNetAgingEffects(
+        character.race as DndRaceId,
+        character.age,
+        translations.DND_RACE_BASE_MAX_AGE_DATA,
+        translations.RACE_TO_AGING_CATEGORY_MAP_DATA,
+        translations.DND_RACE_AGING_EFFECTS_DATA,
+        translations.ABILITY_LABELS
+      );
       setAgeEffectsDetails(details);
     } else {
       setAgeEffectsDetails(null);
     }
-  }, [character.age, character.race]);
-
+  }, [character, translations]);
 
   React.useEffect(() => {
-    if (character.race) {
-      const details = getRaceSpecialQualities(character.race as DndRaceId);
+    if (character && character.race && translations) {
+      const details = getRaceSpecialQualities(
+        character.race as DndRaceId,
+        translations.DND_RACES,
+        translations.DND_RACE_ABILITY_MODIFIERS_DATA,
+        translations.SKILL_DEFINITIONS,
+        translations.DND_FEATS_DEFINITIONS,
+        translations.ABILITY_LABELS
+      );
       setRaceSpecialQualities(details);
     } else {
       setRaceSpecialQualities(null);
     }
-  }, [character.race]);
+  }, [character, translations]);
 
   React.useEffect(() => {
-    if (character.race) {
-      const selectedRaceInfo = DND_RACES.find(r => r.value === character.race);
+    if (character && character.race && translations) {
+      const selectedRaceInfo = translations.DND_RACES.find(r => r.value === character.race);
       if (selectedRaceInfo) {
         const raceKey = selectedRaceInfo.value as DndRaceId;
-        const minAdultAge = (DND_RACE_MIN_ADULT_AGE_DATA as Record<DndRaceId, number>)[raceKey];
+        const minAdultAge = translations.DND_RACE_MIN_ADULT_AGE_DATA[raceKey];
         if (minAdultAge !== undefined && character.age < minAdultAge) {
-          setCharacter(prev => ({ ...prev, age: minAdultAge }));
+          setCharacter(prev => prev ? ({ ...prev, age: minAdultAge }) : null);
         }
       }
     }
-  }, [character.race, character.age, setCharacter]);
+  }, [character, translations, setCharacter]);
 
  React.useEffect(() => {
+    if (!character || !translations) return;
     const characterLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1;
     const newGrantedFeatInstances = getGrantedFeatsForCharacter(
       character.race,
       character.classes,
       characterLevel,
-      allAvailableFeatDefinitions
+      allAvailableFeatDefinitions,
+      translations.DND_RACES,
+      translations.DND_CLASSES
     );
 
     const userChosenFeatInstances = character.feats.filter(fi => !fi.isGranted);
@@ -326,17 +350,18 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
          }
     });
 
-    setCharacter(prev => ({
+    setCharacter(prev => prev ? ({
         ...prev,
         feats: Array.from(combinedFeatInstancesMap.values()).sort((a, b) => {
             const defA = allAvailableFeatDefinitions.find(d => d.value === a.definitionId);
             const defB = allAvailableFeatDefinitions.find(d => d.value === b.definitionId);
             return (defA?.label || '').localeCompare(defB?.label || '');
         }),
-    }));
-  }, [character.race, character.classes, allAvailableFeatDefinitions]);
+    }) : null);
+  }, [character?.race, character?.classes, allAvailableFeatDefinitions, translations]); // character itself should not be a direct dep, specific fields should
 
   React.useEffect(() => {
+    if (!character) return;
     const barbarianClass = character.classes.find(c => c.className === 'barbarian');
     const barbarianLevel = barbarianClass?.level || 0;
     let grantedDrValue = 0;
@@ -348,6 +373,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     else if (barbarianLevel >= 7) grantedDrValue = 1;
 
     setCharacter(prev => {
+      if (!prev) return null;
       const existingGrantedBarbDr = prev.damageReduction.find(dr => dr.isGranted && dr.source === 'Barbarian Class');
       let newDrArray = prev.damageReduction.filter(dr => !(dr.isGranted && dr.source === 'Barbarian Class'));
 
@@ -364,21 +390,19 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       }
       return { ...prev, damageReduction: newDrArray };
     });
-  }, [character.classes]);
+  }, [character?.classes]);
 
   const prevGlobalCustomSkillDefinitionsRef = React.useRef<CustomSkillDefinition[]>([]);
-
   React.useEffect(() => {
-    if (!isClient) return;
+    if (!isClient || !character || !translations) return;
 
     const currentGlobalDefs = globalCustomSkillDefinitionsFromStore;
-
     const instancesToAddToCharacter: SkillType[] = [];
 
     currentGlobalDefs.forEach(globalDef => {
         if (!character.skills.find(s => s.id === globalDef.id)) {
             const isClassSkill = character.classes[0]?.className ?
-                (CLASS_SKILLS[character.classes[0]?.className as keyof typeof CLASS_SKILLS] || []).includes(globalDef.id) : false;
+                (translations.CLASS_SKILLS[character.classes[0]?.className as keyof typeof translations.CLASS_SKILLS] || []).includes(globalDef.id) : false;
             instancesToAddToCharacter.push({
                 id: globalDef.id,
                 ranks: 0,
@@ -388,9 +412,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         }
     });
 
-
     if (instancesToAddToCharacter.length > 0) {
       setCharacter(prevCharacter => {
+        if (!prevCharacter) return null;
         const existingSkillIds = new Set(prevCharacter.skills.map(s => s.id));
         const uniqueNewInstances = instancesToAddToCharacter.filter(inst => !existingSkillIds.has(inst.id));
 
@@ -405,36 +429,27 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       });
     }
     prevGlobalCustomSkillDefinitionsRef.current = currentGlobalDefs;
-  }, [
-    globalCustomSkillDefinitionsFromStore,
-    isClient,
-    character.skills,
-    character.classes,
-    allAvailableSkillDefinitionsForDisplay
-  ]);
+  }, [ globalCustomSkillDefinitionsFromStore, isClient, character?.skills, character?.classes, allAvailableSkillDefinitionsForDisplay, translations ]);
 
   React.useEffect(() => {
+    if (!character || !translations) return;
     let newBaseNotes = '';
-    const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size || 'Unknown Size';
+    const sizeLabel = translations.SIZES.find(s => s.value === character.size)?.label || character.size || 'Unknown Size';
 
     if (character.grappleWeaponChoice === 'unarmed') {
-      const unarmedDamageDice = getUnarmedGrappleDamage(character.size);
+      const unarmedDamageDice = getUnarmedGrappleDamage(character.size, translations.SIZES);
       newBaseNotes = `${unarmedDamageDice} (${sizeLabel} Unarmed)`;
     } else {
       newBaseNotes = character.grappleDamage_baseNotes;
     }
 
     if (character.grappleDamage_baseNotes !== newBaseNotes) {
-      setCharacter(prev => ({
-        ...prev,
-        grappleDamage_baseNotes: newBaseNotes,
-      }));
+      setCharacter(prev => prev ? ({ ...prev, grappleDamage_baseNotes: newBaseNotes }) : null);
     }
-  }, [character.size, character.grappleWeaponChoice, character.grappleDamage_baseNotes]);
-
+  }, [character?.size, character?.grappleWeaponChoice, character?.grappleDamage_baseNotes, translations]);
 
   const handleCoreInfoFieldChange = (field: keyof Character, value: any) => {
-     setCharacter(prev => ({ ...prev, [field]: value }));
+     setCharacter(prev => prev ? ({ ...prev, [field]: value }) : null);
   };
   
   const handleCharacterFieldUpdate = (
@@ -442,6 +457,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     value: any
   ) => {
      setCharacter(prev => {
+        if (!prev) return null;
         if (typeof field === 'string' && field.endsWith('Speed.miscModifier')) {
             const speedType = field.split('Speed.miscModifier')[0] as SpeedType;
             const speedFieldKey = `${speedType}Speed` as keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>;
@@ -457,57 +473,56 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
      });
   };
 
-
   const handleResistanceChange = (
     field: ResistanceFieldKeySheet,
     subField: 'customMod',
     value: number
   ) => {
-    setCharacter(prev => ({
+    setCharacter(prev => prev ? ({
       ...prev,
       [field]: {
         ...(prev[field] as ResistanceValue),
         [subField]: value,
       },
-    }));
+    }) : null);
   };
 
   const handleDamageReductionChange = (newDrArray: DamageReductionInstance[]) => {
-    setCharacter(prev => ({ ...prev, damageReduction: newDrArray }));
+    setCharacter(prev => prev ? ({ ...prev, damageReduction: newDrArray }) : null);
   };
 
   const handleBaseAbilityScoreChange = (ability: Exclude<AbilityName, 'none'>, value: number) => {
-    setCharacter(prev => ({
+    setCharacter(prev => prev ? ({
       ...prev,
       abilityScores: {
         ...prev.abilityScores,
         [ability]: value,
       },
-    }));
+    }) : null);
   };
 
   const handleAbilityScoreTempCustomModifierChange = (ability: Exclude<AbilityName, 'none'>, value: number) => {
-    setCharacter(prev => ({
+    setCharacter(prev => prev ? ({
       ...prev,
       abilityScoreTempCustomModifiers: {
         ...prev.abilityScoreTempCustomModifiers,
         [ability]: value,
       },
-    }));
+    }) : null);
   };
-
 
   const handleMultipleBaseAbilityScoresChange = (newScores: AbilityScores) => {
-    setCharacter(prev => ({ ...prev, abilityScores: newScores }));
+    setCharacter(prev => prev ? ({ ...prev, abilityScores: newScores }) : null);
   };
 
-
   const handleClassChange = (value: DndClassId | string) => {
+    if (!translations) return;
     setCharacter(prev => {
+      if (!prev) return null;
       const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: value, level: 1 }];
       const newSkills = prev.skills.map(skillInstance => {
           const isNowClassSkill = value ?
-            (CLASS_SKILLS[value as keyof typeof CLASS_SKILLS] || []).includes(skillInstance.id)
+            (translations.CLASS_SKILLS[value as keyof typeof translations.CLASS_SKILLS] || []).includes(skillInstance.id)
             : false;
           return {...skillInstance, isClassSkill: isNowClassSkill };
       }).sort((a, b) => {
@@ -520,12 +535,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   };
 
   const handleSkillChange = (skillId: string, ranks: number, isClassSkill?: boolean) => {
-    setCharacter(prev => ({
+    setCharacter(prev => prev ? ({
       ...prev,
       skills: prev.skills.map(s =>
         s.id === skillId ? { ...s, ranks, isClassSkill: isClassSkill !== undefined ? isClassSkill : s.isClassSkill } : s
       ),
-    }));
+    }) : null);
   };
 
   const handleCustomSkillDefinitionSaveToStore = (skillData: CustomSkillDefinition) => {
@@ -549,12 +564,12 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
   };
 
-
   const handleFeatInstancesChange = (updatedFeatInstances: CharacterFeatInstance[]) => {
-    setCharacter(prev => ({ ...prev, feats: updatedFeatInstances }));
+    setCharacter(prev => prev ? ({ ...prev, feats: updatedFeatInstances }) : null);
   };
 
   const handleCustomFeatDefinitionSaveToStore = (featDefData: (FeatDefinitionJsonData & { isCustom: true })) => {
+    if (!character) return;
     const existing = definitionsActions.getCustomFeatDefinitionById(featDefData.value);
     if (existing) {
         definitionsActions.updateCustomFeatDefinition(featDefData);
@@ -593,22 +608,21 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       .sort((a,b) => a.label.localeCompare(b.label));
   }, [allAvailableSkillDefinitionsForDisplay, skillToEdit]);
 
-
   const handlePortraitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const reader = new FileReader();
       reader.onloadend = () => {
-        setCharacter(prev => ({ ...prev, portraitDataUrl: reader.result as string }));
+        setCharacter(prev => prev ? ({ ...prev, portraitDataUrl: reader.result as string }) : null);
       };
       reader.readAsDataURL(file);
     } else {
-      setCharacter(prev => ({ ...prev, portraitDataUrl: undefined }));
+      setCharacter(prev => prev ? ({ ...prev, portraitDataUrl: undefined }) : null);
     }
   };
 
   const handleSavingThrowMiscModChange = (saveType: SavingThrowType, value: number) => {
-    setCharacter(prev => ({
+    setCharacter(prev => prev ? ({
       ...prev,
       savingThrows: {
         ...prev.savingThrows,
@@ -617,59 +631,37 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           miscMod: value,
         },
       },
-    }));
+    }) : null);
   };
 
   const handleCancel = () => { router.push('/'); };
 
-  // Info Dialog Open Handlers
-  const openInfoDialog = (contentType: InfoDialogContentType) => {
-    setActiveInfoDialogType(contentType);
-    setIsInfoDialogOpen(true);
-  };
-  
-  const handleOpenRaceInfoDialog = () => {
-    if (character.race) {
-        openInfoDialog({ type: 'race' });
-    }
-  };
-  const handleOpenClassInfoDialog = () => {
-    if (character.classes[0]?.className) {
-        openInfoDialog({ type: 'class' });
-    }
-  };
+  const openInfoDialog = (contentType: InfoDialogContentType) => { setActiveInfoDialogType(contentType); setIsInfoDialogOpen(true); };
+  const handleOpenRaceInfoDialog = () => { if (character?.race) { openInfoDialog({ type: 'race' }); } };
+  const handleOpenClassInfoDialog = () => { if (character?.classes[0]?.className) { openInfoDialog({ type: 'class' }); } };
   const handleOpenAlignmentInfoDialog = () => openInfoDialog({ type: 'alignmentSummary' });
   const handleOpenDeityInfoDialog = () => openInfoDialog({ type: 'deity' });
-  const handleOpenAbilityScoreBreakdownDialog = (ability: Exclude<AbilityName, 'none'>) => {
-    openInfoDialog({ type: 'abilityScoreBreakdown', abilityName: ability });
-  };
-  const handleOpenCombatStatInfoDialog = (contentType: InfoDialogContentType) => {
-    openInfoDialog(contentType);
-  };
-  const handleOpenSkillInfoDialog = (skillId: string) => {
-    openInfoDialog({ type: 'skillModifierBreakdown', skillId });
-  };
-  const handleOpenAcBreakdownDialog = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
-    openInfoDialog({ type: 'acBreakdown', acType });
-  };
-  const handleOpenResistanceInfoDialog = (resistanceField: ResistanceFieldKeySheet) => {
-    openInfoDialog({ type: 'resistanceBreakdown', resistanceField });
-  };
-  const handleOpenSpeedInfoDialog = (speedType: SpeedType) => {
-    openInfoDialog({ type: 'speedBreakdown', speedType });
-  };
-
+  const handleOpenAbilityScoreBreakdownDialog = (ability: Exclude<AbilityName, 'none'>) => { openInfoDialog({ type: 'abilityScoreBreakdown', abilityName: ability }); };
+  const handleOpenCombatStatInfoDialog = (contentType: InfoDialogContentType) => { openInfoDialog(contentType); };
+  const handleOpenSkillInfoDialog = (skillId: string) => { openInfoDialog({ type: 'skillModifierBreakdown', skillId }); };
+  const handleOpenAcBreakdownDialog = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => { openInfoDialog({ type: 'acBreakdown', acType }); };
+  const handleOpenResistanceInfoDialog = (resistanceField: ResistanceFieldKeySheet) => { openInfoDialog({ type: 'resistanceBreakdown', resistanceField }); };
+  const handleOpenSpeedInfoDialog = (speedType: SpeedType) => { openInfoDialog({ type: 'speedBreakdown', speedType }); };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    if (!character) { toast({ title: "Error", description: "Character data not loaded.", variant: "destructive" }); return; }
     if (!character.name || character.name.trim() === '') { toast({ title: "Missing Information", description: "Please enter a character name.", variant: "destructive" }); return; }
     if (!character.race || character.race.trim() === '') { toast({ title: "Missing Information", description: "Please select or enter a character race.", variant: "destructive" }); return; }
     if (!character.classes[0]?.className || character.classes[0]?.className.trim() === '') { toast({ title: "Missing Information", description: "Please select or enter a character class.", variant: "destructive" }); return; }
     if (!character.alignment) { toast({ title: "Missing Information", description: "Please select an alignment.", variant: "destructive" }); return; }
 
-    const selectedRaceInfoForValidation = DND_RACES.find(r => r.value === character.race);
-    const minAgeForValidation = (selectedRaceInfoForValidation ? (DND_RACE_MIN_ADULT_AGE_DATA as Record<DndRaceId, number>)[selectedRaceInfoForValidation.value as DndRaceId] : undefined) || 1;
-    if (character.age < minAgeForValidation) { toast({ title: "Invalid Age", description: `Age must be at least ${minAgeForValidation}${selectedRaceInfoForValidation ? ` for a ${selectedRaceInfoForValidation.label}` : ''}.`, variant: "destructive" }); return; }
+    if (translations) {
+        const selectedRaceInfoForValidation = translations.DND_RACES.find(r => r.value === character.race);
+        const minAgeForValidation = (selectedRaceInfoForValidation ? translations.DND_RACE_MIN_ADULT_AGE_DATA[selectedRaceInfoForValidation.value as DndRaceId] : undefined) || 1;
+        if (character.age < minAgeForValidation) { toast({ title: "Invalid Age", description: `Age must be at least ${minAgeForValidation}${selectedRaceInfoForValidation ? ` for a ${selectedRaceInfoForValidation.label}` : ''}.`, variant: "destructive" }); return; }
+    }
+
 
     for (const ability of abilityNames) {
       if (ability === 'none') continue;
@@ -681,29 +673,28 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       classes: character.classes.length > 0 ? character.classes : [{id: crypto.randomUUID(), className: '', level: 1}],
     };
     if (finalCharacterData.classes[0]) {
-        finalCharacterData.classes[0].level = 1;
+        finalCharacterData.classes[0].level = 1; // This is likely wrong, level should be maintained
     }
 
     onSave(finalCharacterData);
   };
 
-  const selectedClassInfo = React.useMemo(() => DND_CLASSES.find(c => c.value === character.classes[0]?.className), [character.classes[0]?.className]);
-  const isPredefinedClass = !!selectedClassInfo;
+  if (translationsLoading || !translations || !character) {
+    return (
+      <div className="container mx-auto px-4 py-8 space-y-8">
+        <div className="flex items-center space-x-3"> <Skeleton className="h-8 w-8 rounded-full" /> <Skeleton className="h-7 w-1/3" /> </div>
+        <Skeleton className="h-40 w-full" />
+        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-48 w-full" />
+        <div className="flex justify-between mt-12 pt-8 border-t"> <Skeleton className="h-12 w-24" /> <Skeleton className="h-12 w-36" /> </div>
+      </div>
+    );
+  }
 
-  const selectedRaceInfo = React.useMemo(() =>
-    DND_RACES.find(r => r.value === character.race),
-  [character.race]);
-  const isPredefinedRace = !!selectedRaceInfo;
-
-
-  const currentMinAgeForInput = React.useMemo(() => {
-    if (character.race) {
-      const raceInfoForMinAge = DND_RACES.find(r => r.value === character.race);
-      if (raceInfoForMinAge) { return (DND_RACE_MIN_ADULT_AGE_DATA as Record<DndRaceId, number>)[raceInfoForMinAge.value as DndRaceId] || 1; }
-    }
-    return 1;
-  }, [character.race]);
-
+  const selectedClassInfo = translations.DND_CLASSES.find(c => c.value === character.classes[0]?.className);
+  const isPredefinedRace = !!translations.DND_RACES.find(r => r.value === character.race);
+  const currentMinAgeForInput = character.race ? (translations.DND_RACE_MIN_ADULT_AGE_DATA[character.race as DndRaceId] || 1) : 1;
 
   return (
     <>
@@ -724,9 +715,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           onClassChange={handleClassChange}
           ageEffectsDetails={ageEffectsDetails}
           raceSpecialQualities={raceSpecialQualities}
-          selectedClassInfo={selectedClassInfo}
-          isPredefinedRace={isPredefinedRace}
-          isPredefinedClass={isPredefinedClass}
           currentMinAgeForInput={currentMinAgeForInput}
           onOpenRaceInfoDialog={handleOpenRaceInfoDialog}
           onOpenClassInfoDialog={handleOpenClassInfoDialog}
@@ -765,15 +753,15 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         <SkillsFormSection
           character={{
             skills: character.skills,
-            abilityScores: character.abilityScores, 
+            abilityScores: character.abilityScores,
             classes: character.classes,
             race: character.race,
             size: character.size,
             feats: character.feats,
           }}
-          actualAbilityScores={actualAbilityScoresForSavesAndSkills} 
+          actualAbilityScores={actualAbilityScoresForSavesAndSkills}
           allFeatDefinitions={allAvailableFeatDefinitions}
-          allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
+          allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
           onSkillChange={handleSkillChange}
           onEditCustomSkillDefinition={handleOpenEditCustomSkillDialog}
@@ -786,9 +774,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           chosenFeatInstances={character.feats}
           onFeatInstancesChange={handleFeatInstancesChange}
           onEditCustomFeatDefinition={handleOpenEditCustomFeatDefinitionDialog}
-          abilityScores={actualAbilityScoresForSavesAndSkills} 
+          abilityScores={actualAbilityScoresForSavesAndSkills}
           skills={character.skills}
-          allPredefinedSkillDefinitions={SKILL_DEFINITIONS}
+          allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
         />
         
@@ -838,7 +826,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           onDamageReductionChange={handleDamageReductionChange}
           onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
         />
-
 
         <Separator className="my-10" />
 
@@ -902,7 +889,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             </div>
         </div>
 
-
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-12 pt-8 border-t">
           <Button type="button" variant="outline" size="lg" onClick={handleCancel} className="w-full md:w-auto">
             Cancel
@@ -913,7 +899,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         </div>
       </form>
 
-      {isInfoDialogOpen && activeInfoDialogType && (
+      {isInfoDialogOpen && activeInfoDialogType && character && (
         <InfoDisplayDialog
           isOpen={isInfoDialogOpen}
           onOpenChange={setIsInfoDialogOpen}
@@ -933,10 +919,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         onOpenChange={setIsCustomFeatDialogOpen}
         onSave={handleCustomFeatDefinitionSaveToStore}
         initialFeatData={editingCustomFeatDefinition}
-        allFeats={DND_FEATS_DEFINITIONS}
+        allFeats={translations.DND_FEATS_DEFINITIONS}
         allSkills={allSkillOptionsForDialog}
-        allClasses={DND_CLASSES}
-        allRaces={DND_RACES}
+        allClasses={translations.DND_CLASSES}
+        allRaces={translations.DND_RACES}
       />
     </>
   );

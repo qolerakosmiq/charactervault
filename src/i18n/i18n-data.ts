@@ -22,7 +22,12 @@ import type {
   CharacterAlignmentObject, // Assuming this will be used for processed alignments
   DndRaceOption,
   DndClassOption,
-  DndDeityOption
+  DndDeityOption,
+  AbilityScores, // Added for DEFAULT_ABILITIES_DATA
+  SavingThrows,   // Added for DEFAULT_SAVING_THROWS_DATA
+  ResistanceValue, // Added for DEFAULT_RESISTANCE_VALUE_DATA
+  SpeedDetails,    // Added for DEFAULT_SPEED_DETAILS_DATA
+  CharacterClass  // For classes array in Character
 } from '@/types/character-core'; // We'll move core types here
 
 // Define types for the structure of each JSON file's data
@@ -74,10 +79,11 @@ export interface AlignmentPrerequisiteGenericLabelEntry {
 export interface BaseJson {
   SIZES_DATA: SizeDataEntry[];
   GENDERS_DATA: GenderDataEntry[];
-  DEFAULT_ABILITIES: Record<Exclude<AbilityName, 'none'>, number>;
-  DEFAULT_SAVING_THROWS: Record<SavingThrowType, { base: number; magicMod: number; miscMod: number }>;
-  DEFAULT_SPEED_DETAILS: { base: number; miscModifier: number };
-  DEFAULT_SPEED_PENALTIES: { armorSpeedPenalty: number; loadSpeedPenalty: number };
+  DEFAULT_ABILITIES_DATA: AbilityScores; // Changed key
+  DEFAULT_SAVING_THROWS_DATA: SavingThrows; // Changed key
+  DEFAULT_RESISTANCE_VALUE_DATA: ResistanceValue; // Added
+  DEFAULT_SPEED_DETAILS_DATA: SpeedDetails; // Changed key
+  DEFAULT_SPEED_PENALTIES_DATA: { armorSpeedPenalty: number; loadSpeedPenalty: number }; // Changed key
   DND_RACE_MIN_ADULT_AGE_DATA: Record<string, number>;
   DND_RACE_BASE_MAX_AGE_DATA: Record<string, number>;
   RACE_TO_AGING_CATEGORY_MAP_DATA: Record<string, string>;
@@ -177,6 +183,14 @@ export interface ProcessedSiteData {
   DAMAGE_REDUCTION_TYPES: readonly DamageReductionTypeEntry[];
   DAMAGE_REDUCTION_RULES_OPTIONS: readonly DamageReductionRuleEntry[];
   ALIGNMENT_PREREQUISITE_OPTIONS: readonly { value: string; label: string }[];
+  
+  // Default values from base.json
+  DEFAULT_ABILITIES: AbilityScores;
+  DEFAULT_SAVING_THROWS: SavingThrows;
+  DEFAULT_RESISTANCE_VALUE: ResistanceValue;
+  DEFAULT_SPEED_DETAILS: SpeedDetails;
+  DEFAULT_SPEED_PENALTIES: { armorSpeedPenalty: number; loadSpeedPenalty: number };
+
   // Also include raw data parts needed for lookups, e.g.:
   DND_RACE_MIN_ADULT_AGE_DATA: BaseJson['DND_RACE_MIN_ADULT_AGE_DATA'];
   DND_RACE_BASE_MAX_AGE_DATA: BaseJson['DND_RACE_BASE_MAX_AGE_DATA'];
@@ -190,13 +204,14 @@ export interface ProcessedSiteData {
 }
 
 // Helper to merge base and custom data
-function mergeArrayData<T extends { value: string }>(base: T[] = [], custom?: T[]): T[] {
+function mergeArrayData<T extends { value: string; label?: string }>(base: T[] = [], custom?: T[]): T[] {
   if (!custom) return base;
   const combinedMap = new Map<string, T>();
   base.forEach(item => combinedMap.set(item.value, item));
-  custom.forEach(item => combinedMap.set(item.value, item));
-  return Array.from(combinedMap.values()).sort((a, b) => a.label.localeCompare(b.label || ''));
+  custom.forEach(item => combinedMap.set(item.value, item)); // Custom overrides base if values match
+  return Array.from(combinedMap.values()).sort((a, b) => (a.label || a.value).localeCompare(b.label || b.value));
 }
+
 
 function mergeObjectData<T extends Record<string, any>>(base: T, custom?: Partial<T>): T {
   return { ...base, ...custom };
@@ -261,6 +276,12 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
     DAMAGE_REDUCTION_TYPES,
     DAMAGE_REDUCTION_RULES_OPTIONS,
     ALIGNMENT_PREREQUISITE_OPTIONS,
+    // Default values
+    DEFAULT_ABILITIES: mergeObjectData(bundle.base.DEFAULT_ABILITIES_DATA, bundle.customBase?.DEFAULT_ABILITIES_DATA),
+    DEFAULT_SAVING_THROWS: mergeObjectData(bundle.base.DEFAULT_SAVING_THROWS_DATA, bundle.customBase?.DEFAULT_SAVING_THROWS_DATA),
+    DEFAULT_RESISTANCE_VALUE: mergeObjectData(bundle.base.DEFAULT_RESISTANCE_VALUE_DATA, bundle.customBase?.DEFAULT_RESISTANCE_VALUE_DATA),
+    DEFAULT_SPEED_DETAILS: mergeObjectData(bundle.base.DEFAULT_SPEED_DETAILS_DATA, bundle.customBase?.DEFAULT_SPEED_DETAILS_DATA),
+    DEFAULT_SPEED_PENALTIES: mergeObjectData(bundle.base.DEFAULT_SPEED_PENALTIES_DATA, bundle.customBase?.DEFAULT_SPEED_PENALTIES_DATA),
     // Raw data passthrough
     DND_RACE_MIN_ADULT_AGE_DATA: mergeObjectData(bundle.base.DND_RACE_MIN_ADULT_AGE_DATA, bundle.customBase?.DND_RACE_MIN_ADULT_AGE_DATA),
     DND_RACE_BASE_MAX_AGE_DATA: mergeObjectData(bundle.base.DND_RACE_BASE_MAX_AGE_DATA, bundle.customBase?.DND_RACE_BASE_MAX_AGE_DATA),

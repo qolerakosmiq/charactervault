@@ -2,15 +2,16 @@
 'use client';
 
 import * as React from 'react';
-import type { AbilityScores, CharacterClass, SavingThrows, SavingThrowType, DndClassOption, SingleSavingThrow, Character, AbilityName } from '@/types/character';
-import { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS }
-from '@/types/character';
+import type { AbilityScores, CharacterClass, SavingThrows, SavingThrowType, SingleSavingThrow, Character, AbilityName } from '@/types/character';
+// DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS will come from useI18n
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
-import { Zap } from 'lucide-react';
+import { Zap, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
+import { useI18n } from '@/context/I18nProvider'; // Import useI18n
+import { Skeleton } from '@/components/ui/skeleton'; // For loading state
 
 interface SavingThrowsPanelProps {
   character: Pick<Character, 'savingThrows' | 'classes'>;
@@ -20,82 +21,105 @@ interface SavingThrowsPanelProps {
 
 const SAVE_TYPES: SavingThrowType[] = ['fortitude', 'reflex', 'will'];
 
-const dataRows: Array<{
-  label: React.ReactNode; // Allow JSX for multi-line headers
-  getValue: (saveData: SingleSavingThrow, baseSave: number, abilityMod: number, total: number, saveType?: SavingThrowType, onMiscChange?: (type: SavingThrowType, val: number) => void) => React.ReactNode;
-  rowKey: string;
-}> = [
-  {
-    label: "Total",
-    getValue: (saveData, baseSave, abilityMod, total) => (
-      <span className={cn("text-lg font-bold", total >= 0 ? "text-accent" : "text-destructive")}>
-        {total >= 0 ? '+' : ''}{total}
-      </span>
-    ),
-    rowKey: 'total',
-  },
-  {
-    label: "Base",
-    getValue: (saveData, baseSave) => baseSave,
-    rowKey: 'base',
-  },
-  {
-    label: (
-      <>
-        Ability
-        <br />
-        Modifier
-      </>
-    ),
-    getValue: (saveData, baseSave, abilityMod, total, saveType?: SavingThrowType) => {
-      if (!saveType) return abilityMod >= 0 ? `+${abilityMod}` : abilityMod;
-      const abilityKey = SAVING_THROW_ABILITIES[saveType];
-      const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === abilityKey);
-      const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
-      return (
-        <div className="flex flex-col items-center -my-1">
-          <span className="text-xs leading-tight">{abilityAbbr}</span>
-          <span className="leading-tight">{abilityMod >= 0 ? '+' : ''}{abilityMod}</span>
-        </div>
-      );
-    },
-    rowKey: 'abilityMod',
-  },
-  {
-    label: (
-      <>
-        Custom
-        <br />
-        Modifier
-      </>
-    ),
-    getValue: (saveData, baseSave, abilityMod, total, saveType?: SavingThrowType, onMiscChange?: (type: SavingThrowType, val: number) => void) => (
-      <div className="flex justify-center">
-        <NumberSpinnerInput
-          value={saveData.miscMod}
-          onChange={(newValue) => onMiscChange && saveType && onMiscChange(saveType, newValue)}
-          min={-20}
-          max={20}
-          inputClassName="w-16 h-8 text-sm"
-          buttonSize="icon"
-          buttonClassName="h-8 w-8"
-        />
-      </div>
-    ),
-    rowKey: 'customMod',
-  },
-];
-
-
 export function SavingThrowsPanel({
   character,
   abilityScores,
   onSavingThrowMiscModChange,
 }: SavingThrowsPanelProps) {
+  const { translations, isLoading: translationsLoading } = useI18n();
+
   const savingThrows = character.savingThrows;
   const characterClasses = character.classes;
 
+  if (translationsLoading || !translations) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-3">
+            <Zap className="h-8 w-8 text-primary" />
+            <CardTitle className="text-2xl font-serif">Saving Throws</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-4">
+          <div className="flex justify-center items-center py-10">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="ml-3 text-muted-foreground">Loading saving throw details...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS } = translations;
+  
   const calculatedBaseSaves = getBaseSaves(characterClasses, DND_CLASSES);
+  
+  const dataRows: Array<{
+    label: React.ReactNode;
+    getValue: (saveData: SingleSavingThrow, baseSave: number, abilityMod: number, total: number, saveType?: SavingThrowType, onMiscChange?: (type: SavingThrowType, val: number) => void) => React.ReactNode;
+    rowKey: string;
+  }> = [
+    {
+      label: "Total",
+      getValue: (saveData, baseSave, abilityMod, total) => (
+        <span className={cn("text-lg font-bold", total >= 0 ? "text-accent" : "text-destructive")}>
+          {total >= 0 ? '+' : ''}{total}
+        </span>
+      ),
+      rowKey: 'total',
+    },
+    {
+      label: "Base",
+      getValue: (saveData, baseSave) => baseSave,
+      rowKey: 'base',
+    },
+    {
+      label: (
+        <>
+          Ability
+          <br />
+          Modifier
+        </>
+      ),
+      getValue: (saveData, baseSave, abilityMod, total, saveType?: SavingThrowType) => {
+        if (!saveType) return abilityMod >= 0 ? `+${abilityMod}` : abilityMod;
+        const abilityKey = SAVING_THROW_ABILITIES[saveType];
+        const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === abilityKey);
+        const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
+        return (
+          <div className="flex flex-col items-center -my-1">
+            <span className="text-xs leading-tight">{abilityAbbr}</span>
+            <span className="leading-tight">{abilityMod >= 0 ? '+' : ''}{abilityMod}</span>
+          </div>
+        );
+      },
+      rowKey: 'abilityMod',
+    },
+    {
+      label: (
+        <>
+          Custom
+          <br />
+          Modifier
+        </>
+      ),
+      getValue: (saveData, baseSave, abilityMod, total, saveType?: SavingThrowType, onMiscChange?: (type: SavingThrowType, val: number) => void) => (
+        <div className="flex justify-center">
+          <NumberSpinnerInput
+            value={saveData.miscMod}
+            onChange={(newValue) => onMiscChange && saveType && onMiscChange(saveType, newValue)}
+            min={-20}
+            max={20}
+            inputClassName="w-16 h-8 text-sm"
+            buttonSize="icon"
+            buttonClassName="h-8 w-8"
+          />
+        </div>
+      ),
+      rowKey: 'customMod',
+    },
+  ];
+
 
   return (
     <Card>
@@ -147,4 +171,3 @@ export function SavingThrowsPanel({
     </Card>
   );
 }
-

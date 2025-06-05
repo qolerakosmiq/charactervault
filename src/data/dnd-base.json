@@ -15,7 +15,7 @@
     { "value": "male", "label": "Male" },
     { "value": "female", "label": "Female" }
   ],
-  "DEFAULT_ABILITIES": {
+  "DEFAULT_ABILITIES_DATA": {
     "strength": 10,
     "dexterity": 10,
     "constitution": 10,
@@ -23,13 +23,14 @@
     "wisdom": 10,
     "charisma": 10
   },
-  "DEFAULT_SAVING_THROWS": {
+  "DEFAULT_SAVING_THROWS_DATA": {
     "fortitude": { "base": 0, "magicMod": 0, "miscMod": 0 },
     "reflex": { "base": 0, "magicMod": 0, "miscMod": 0 },
     "will": { "base": 0, "magicMod": 0, "miscMod": 0 }
   },
-  "DEFAULT_SPEED_DETAILS": { "base": 0, "miscModifier": 0 },
-  "DEFAULT_SPEED_PENALTIES": { "armorSpeedPenalty": 0, "loadSpeedPenalty": 0 },
+  "DEFAULT_RESISTANCE_VALUE_DATA": { "base": 0, "customMod": 0 },
+  "DEFAULT_SPEED_DETAILS_DATA": { "base": 0, "miscModifier": 0 },
+  "DEFAULT_SPEED_PENALTIES_DATA": { "armorSpeedPenalty": 0, "loadSpeedPenalty": 0 },
   "DND_RACE_MIN_ADULT_AGE_DATA": {
     "human": 15,
     "elf": 110,

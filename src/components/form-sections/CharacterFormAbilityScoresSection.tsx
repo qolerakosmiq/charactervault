@@ -6,7 +6,7 @@ import type { AbilityName, AbilityScores, DetailedAbilityScores, Character } fro
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dices, Info, Calculator } from 'lucide-react';
+import { Dices, Info, Calculator, Loader2 } from 'lucide-react';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -14,7 +14,8 @@ import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog'
 import { AbilityScorePointBuyDialog } from '@/components/AbilityScorePointBuyDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { Badge } from '@/components/ui/badge';
-import { ABILITY_LABELS } from '@/types/character';
+import { useI18n } from '@/context/I18nProvider'; // Import useI18n
+import { Skeleton } from '@/components/ui/skeleton'; // For loading state
 
 const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -39,6 +40,7 @@ export function CharacterFormAbilityScoresSection({
 }: CharacterFormAbilityScoresSectionProps) {
   const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
   const [isPointBuyDialogOpen, setIsPointBuyDialogOpen] = React.useState(false);
+  const { translations, isLoading: translationsLoading } = useI18n(); // Use I18n
 
   const { rerollOnesForAbilityScores, pointBuyBudget: rawPointBuyBudgetFromStore } = useDefinitionsStore(state => ({
     rerollOnesForAbilityScores: state.rerollOnesForAbilityScores,
@@ -69,6 +71,43 @@ export function CharacterFormAbilityScoresSection({
 
   const baseAbilityScores = character.abilityScores;
   const abilityScoreTempCustomModifiers = character.abilityScoreTempCustomModifiers;
+
+  if (translationsLoading || !translations) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+            <div className="flex items-center space-x-3">
+              <Dices className="h-8 w-8 text-primary" />
+              <CardTitle className="text-2xl font-serif">Ability Scores</CardTitle>
+            </div>
+            {isCreating && (
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-3 sm:mt-0">
+                <Skeleton className="h-9 w-full sm:w-28" />
+                <Skeleton className="h-9 w-full sm:w-28" />
+              </div>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="pt-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+            {abilityKeys.map(ability => (
+              <div key={ability} className="flex flex-col items-center space-y-1.5 p-3 border rounded-md bg-card shadow-sm">
+                <Skeleton className="h-6 w-12 mb-1" /> {/* Ability Abbr + Name */}
+                <Skeleton className="h-8 w-16 mb-1" /> {/* Score + Modifier */}
+                <Skeleton className="h-4 w-16 mb-1" /> {/* Base Score Label */}
+                <Skeleton className="h-8 w-full" />   {/* NumberSpinnerInput */}
+                <Skeleton className="h-4 w-20 mt-1" /> {/* Temp Mod Label */}
+                <Skeleton className="h-8 w-full" />   {/* NumberSpinnerInput */}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+  const { ABILITY_LABELS } = translations;
+
 
   return (
     <>

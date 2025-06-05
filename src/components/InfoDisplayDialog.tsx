@@ -10,11 +10,11 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Info, Wind, Waves, MoveVertical, Shell, Feather } from 'lucide-react';
+import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
-  InfoDialogContentType, ResistanceFieldKeySheet, DndRaceOption, DndClassOption, CharacterAlignmentObject, DndDeityOption,
+  InfoDialogContentType, ResistanceFieldKeySheet,
   FeatDefinitionJsonData, SkillDefinitionForDisplay, SkillDefinitionJsonData,
   BabBreakdownDetails as BabBreakdownDetailsType,
   InitiativeBreakdownDetails as InitiativeBreakdownDetailsType,
@@ -24,10 +24,24 @@ import type {
   PrerequisiteMessage,
   SpeedType,
   SpeedBreakdownDetails as SpeedBreakdownDetailsType,
-  SpeedComponent
+  SpeedComponent,
+  CharacterSizeObject, // Import for SIZES type from context
+  DndRaceOption, DndClassOption // Import for context types
 } from '@/types/character';
-import { DND_RACES, DND_CLASSES, DND_DEITIES, ALIGNMENTS, SKILL_DEFINITIONS, SIZES, DND_FEATS_DEFINITIONS, getRaceSpecialQualities, getRaceSkillPointsBonusPerLevel, calculateDetailedAbilityScores, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, SKILL_SYNERGIES, CLASS_SKILLS, calculateSizeSpecificSkillBonus, checkFeatPrerequisites, calculateSpeedBreakdown, ABILITY_LABELS } from '@/types/character';
+// Removed direct imports of DND_RACES, DND_CLASSES, etc.
+import {
+  getRaceSpecialQualities,
+  calculateDetailedAbilityScores,
+  calculateTotalSynergyBonus,
+  calculateFeatBonusesForSkill,
+  calculateRacialSkillBonus,
+  calculateSizeSpecificSkillBonus,
+  checkFeatPrerequisites,
+  calculateSpeedBreakdown,
+  ABILITY_ORDER_INTERNAL // Can still be used if needed for ordering logic
+} from '@/types/character';
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
+import { useI18n } from '@/context/I18nProvider'; // Import useI18n
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -84,13 +98,17 @@ const FeatDetailContent: React.FC<{
   featId: string;
   character: Character;
   allFeats: readonly (FeatDefinitionJsonData & {isCustom?: boolean})[];
-  allSkills: readonly SkillDefinitionJsonData[];
-  customSkills: readonly CustomSkillDefinition[];
-}> = ({ featId, character, allFeats, allSkills, customSkills }) => {
+  allPredefinedSkills: readonly SkillDefinitionJsonData[];
+  allCustomSkills: readonly CustomSkillDefinition[];
+  allClasses: readonly DndClassOption[];
+  allRaces: readonly DndRaceOption[];
+  abilityLabels: readonly {value: Exclude<AbilityName, 'none'>, label:string, abbr:string}[];
+  alignmentPrereqOptions: readonly {value: string, label:string}[];
+}> = ({ featId, character, allFeats, allPredefinedSkills, allCustomSkills, allClasses, allRaces, abilityLabels, alignmentPrereqOptions }) => {
   const featDef = allFeats.find(f => f.value === featId);
   if (!featDef) return <p className="text-sm text-muted-foreground">Feat details not found.</p>;
 
-  const prereqMessages = checkFeatPrerequisites(featDef, character, allFeats, allSkills, customSkills);
+  const prereqMessages = checkFeatPrerequisites(featDef, character, allFeats, allPredefinedSkills, allCustomSkills, allClasses, allRaces, abilityLabels, alignmentPrereqOptions);
 
   return (
     <div className="space-y-2 text-sm">
@@ -124,6 +142,7 @@ export function InfoDisplayDialog({
   character,
   contentType,
 }: InfoDisplayDialogProps) {
+  const { translations, isLoading: translationsLoading } = useI18n();
   const { customFeatDefinitions, customSkillDefinitions } = useDefinitionsStore(state => ({
     customFeatDefinitions: state.customFeatDefinitions,
     customSkillDefinitions: state.customSkillDefinitions,
@@ -150,26 +169,30 @@ export function InfoDisplayDialog({
   }, [isOpen]);
 
 
-  const allCombinedFeatDefinitions = React.useMemo(() => [
-    ...DND_FEATS_DEFINITIONS.map(def => ({ ...def, isCustom: false as const })),
-    ...customFeatDefinitions,
-  ], [customFeatDefinitions]);
+  const allCombinedFeatDefinitions = React.useMemo(() => {
+    if (translationsLoading || !translations) return [];
+    return [
+      ...translations.DND_FEATS_DEFINITIONS.map(def => ({ ...def, isCustom: false as const })),
+      ...customFeatDefinitions,
+    ];
+  }, [translations, translationsLoading, customFeatDefinitions]);
 
   const allCombinedSkillDefinitionsForDisplay = React.useMemo((): SkillDefinitionForDisplay[] => {
-    const predefined = SKILL_DEFINITIONS.map(sd => ({
+    if (translationsLoading || !translations) return [];
+    const predefined = translations.SKILL_DEFINITIONS.map(sd => ({
       id: sd.value,
       name: sd.label,
       keyAbility: sd.keyAbility as AbilityName,
       description: sd.description,
       isCustom: false,
-      providesSynergies: (SKILL_SYNERGIES as Record<string, any>)[sd.value] || [],
+      providesSynergies: (translations.SKILL_SYNERGIES as Record<string, any>)[sd.value] || [],
     }));
     const custom = customSkillDefinitions.map(csd => ({
       ...csd,
       isCustom: true,
     }));
     return [...predefined, ...custom].sort((a, b) => a.name.localeCompare(b.name));
-  }, [customSkillDefinitions]);
+  }, [translations, translationsLoading, customSkillDefinitions]);
 
 
   const renderModifierValue = (value: number | string,
@@ -198,9 +221,17 @@ export function InfoDisplayDialog({
   };
 
   const derivedData = React.useMemo((): DerivedDialogData | null => {
-    if (!isOpen || !contentType || !character) {
+    if (!isOpen || !contentType || !character || translationsLoading || !translations) {
       return null;
     }
+
+    // Destructure all needed data from translations
+    const {
+      DND_RACES, DND_CLASSES, DND_DEITIES, ALIGNMENTS, SKILL_DEFINITIONS, SIZES, DND_FEATS_DEFINITIONS: PREDEFINED_FEATS, ABILITY_LABELS,
+      DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA,
+      SKILL_SYNERGIES: SKILL_SYNERGIES_DATA, CLASS_SKILLS: CLASS_SKILLS_DATA,
+      ALIGNMENT_PREREQUISITE_OPTIONS, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA
+    } = translations;
 
     let data: DerivedDialogData = { title: 'Information' };
 
@@ -208,8 +239,8 @@ export function InfoDisplayDialog({
       case 'race': {
         const raceId = character.race;
         const raceData = DND_RACES.find(r => r.value === raceId);
-        const qualities = getRaceSpecialQualities(raceId);
-        const racialSkillPointBonus = getRaceSkillPointsBonusPerLevel(raceId);
+        const qualities = getRaceSpecialQualities(raceId, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, SKILL_DEFINITIONS, PREDEFINED_FEATS, ABILITY_LABELS);
+        const racialSkillPointBonus = getRaceSkillPointsBonusPerLevel(raceId, DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA);
         const details: Array<{ label: string; value: string | number | React.ReactNode; isBold?: boolean }> = [];
         if (racialSkillPointBonus > 0) {
           details.push({ label: "Bonus Skill Points Per Level", value: renderModifierValue(racialSkillPointBonus), isBold: true });
@@ -273,7 +304,7 @@ export function InfoDisplayDialog({
         }
         break;
       case 'abilityScoreBreakdown':
-        const detailedScores = calculateDetailedAbilityScores(character, customFeatDefinitions);
+        const detailedScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
         const abilityKeyForTitle = contentType.abilityName as Exclude<AbilityName, 'none'>;
         const abilityLabelForTitle = ABILITY_LABELS.find(al => al.value === abilityKeyForTitle);
         data = {
@@ -285,17 +316,17 @@ export function InfoDisplayDialog({
         const skillInstance = character.skills.find(s => s.id === contentType.skillId);
         const skillDef = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === contentType.skillId);
         if (skillInstance && skillDef) {
-          const actualAbilityScores = calculateDetailedAbilityScores(character, customFeatDefinitions);
-          const finalAbilityScores: AbilityScores = (['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'] as Exclude<AbilityName, 'none'>[]).reduce((acc, ability) => {
+          const actualAbilityScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
+          const finalAbilityScores: AbilityScores = (ABILITY_ORDER_INTERNAL).reduce((acc, ability) => {
               acc[ability] = actualAbilityScores[ability].finalScore;
               return acc;
           }, {} as AbilityScores);
 
           const keyAbilityMod = skillDef.keyAbility && skillDef.keyAbility !== 'none' ? getAbilityModifierByName(finalAbilityScores, skillDef.keyAbility) : 0;
-          const synergyBonus = calculateTotalSynergyBonus(skillDef.id, character.skills, SKILL_DEFINITIONS, customSkillDefinitions);
+          const synergyBonus = calculateTotalSynergyBonus(skillDef.id, character.skills, SKILL_DEFINITIONS, SKILL_SYNERGIES_DATA, customSkillDefinitions);
           const featBonus = calculateFeatBonusesForSkill(skillDef.id, character.feats, allCombinedFeatDefinitions);
-          const racialBonus = calculateRacialSkillBonus(skillDef.id, character.race, DND_RACES, SKILL_DEFINITIONS);
-          const sizeBonus = calculateSizeSpecificSkillBonus(skillDef.id, character.size);
+          const racialBonus = calculateRacialSkillBonus(skillDef.id, character.race, DND_RACES);
+          const sizeBonus = calculateSizeSpecificSkillBonus(skillDef.id, character.size, SIZES);
           const totalMod = keyAbilityMod + synergyBonus + featBonus + racialBonus + sizeBonus;
           const totalSkillBonus = (skillInstance.ranks || 0) + totalMod + (skillInstance.miscModifier || 0);
           const keyAbilityLabel = skillDef.keyAbility && skillDef.keyAbility !== 'none' ? ABILITY_LABELS.find(al => al.value === skillDef.keyAbility)?.abbr : undefined;
@@ -331,9 +362,9 @@ export function InfoDisplayDialog({
         };
         break;
       case 'acBreakdown': {
-        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions);
+        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
         const dexMod = calculateAbilityModifier(detailedCharScores.dexterity.finalScore);
-        const sizeModAC = getSizeModifierAC(character.size);
+        const sizeModAC = getSizeModifierAC(character.size, SIZES);
         const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
         const details: Array<{ label: string; value: string | number; isBold?: boolean }> = [{ label: 'Base', value: 10 }];
         let totalCalculated = 10;
@@ -363,7 +394,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'babBreakdown': {
-        const baseBabArray = getBab(character.classes);
+        const baseBabArray = getBab(character.classes, DND_CLASSES);
         data = {
           title: 'Base Attack Bonus Breakdown',
           babBreakdown: {
@@ -376,7 +407,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'initiativeBreakdown': {
-        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions);
+        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
         const dexMod = calculateAbilityModifier(detailedCharScores.dexterity.finalScore);
         data = {
           title: 'Initiative Breakdown',
@@ -389,10 +420,10 @@ export function InfoDisplayDialog({
         break;
       }
       case 'grappleModifierBreakdown': {
-        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions);
+        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
         const strMod = calculateAbilityModifier(detailedCharScores.strength.finalScore);
-        const baseBabArray = getBab(character.classes);
-        const sizeModGrapple = getSizeModifierGrapple(character.size);
+        const baseBabArray = getBab(character.classes, DND_CLASSES);
+        const sizeModGrapple = getSizeModifierGrapple(character.size, SIZES);
         data = {
           title: 'Grapple Modifier Breakdown',
           grappleModifierBreakdown: {
@@ -400,18 +431,18 @@ export function InfoDisplayDialog({
             strengthModifier: strMod,
             sizeModifierGrapple: sizeModGrapple,
             miscModifier: character.grappleMiscModifier || 0,
-            totalGrappleModifier: calculateGrapple(baseBabArray, strMod, sizeModGrapple) + (character.grappleMiscModifier || 0),
+            totalGrappleModifier: calculateGrapple(baseBabArray, strMod, sizeModGrapple, DND_CLASSES) + (character.grappleMiscModifier || 0),
           },
         };
         break;
       }
        case 'grappleDamageBreakdown': {
-        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions);
+        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
         const strMod = calculateAbilityModifier(detailedCharScores.strength.finalScore);
         data = {
           title: 'Grapple Damage Breakdown',
           grappleDamageBreakdown: {
-            baseDamage: character.grappleDamage_baseNotes || getUnarmedGrappleDamage(character.size),
+            baseDamage: character.grappleDamage_baseNotes || getUnarmedGrappleDamage(character.size, SIZES),
             bonus: character.grappleDamage_bonus || 0,
             strengthModifier: strMod,
           },
@@ -419,7 +450,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'speedBreakdown': {
-        const speedBreakdownDetails = calculateSpeedBreakdown(contentType.speedType, character, DND_RACES, DND_CLASSES);
+        const speedBreakdownDetails = calculateSpeedBreakdown(contentType.speedType, character, DND_RACES, DND_CLASSES, SIZES);
         data = {
           title: speedBreakdownDetails.name + " Breakdown",
           speedBreakdown: speedBreakdownDetails,
@@ -431,10 +462,30 @@ export function InfoDisplayDialog({
         break;
     }
     return data;
-  }, [isOpen, contentType, character, customFeatDefinitions, customSkillDefinitions, allCombinedFeatDefinitions, allCombinedSkillDefinitionsForDisplay]);
+  }, [isOpen, contentType, character, translationsLoading, translations, customFeatDefinitions, customSkillDefinitions, allCombinedFeatDefinitions, allCombinedSkillDefinitionsForDisplay]);
 
 
-  if (!isOpen || !derivedData) return null;
+  if (translationsLoading || !translations || !isOpen || !derivedData) {
+    // Show a loading state or a minimal dialog if critical data isn't ready
+    return (
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-md md:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center font-serif">
+              <Loader2 className="mr-2 h-6 w-6 animate-spin text-primary" />
+              Loading Information...
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-6 text-center">
+            <p className="text-muted-foreground">Fetching details...</p>
+          </div>
+          <DialogFooter className="mt-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)} type="button">Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   const {
     title: finalTitle,
@@ -531,8 +582,8 @@ export function InfoDisplayDialog({
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span>
-                        {(ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX')}{'\u00A0'}
-                        <span className="text-xs text-muted-foreground">({(ABILITY_LABELS.find(al => al.value === 'dexterity')?.label || 'Dexterity')})</span> Modifier:
+                        {(translations.ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX')}{'\u00A0'}
+                        <span className="text-xs text-muted-foreground">({(translations.ABILITY_LABELS.find(al => al.value === 'dexterity')?.label || 'Dexterity')})</span> Modifier:
                       </span>
                       {renderModifierValue(initiativeBreakdown.dexModifier)}
                     </div>
@@ -565,8 +616,8 @@ export function InfoDisplayDialog({
                     </div>
                     <div className="flex justify-between">
                       <span>
-                         {(ABILITY_LABELS.find(al => al.value === 'strength')?.abbr || 'STR')}{'\u00A0'}
-                        <span className="text-xs text-muted-foreground">({(ABILITY_LABELS.find(al => al.value === 'strength')?.label || 'Strength')})</span> Modifier:
+                         {(translations.ABILITY_LABELS.find(al => al.value === 'strength')?.abbr || 'STR')}{'\u00A0'}
+                        <span className="text-xs text-muted-foreground">({(translations.ABILITY_LABELS.find(al => al.value === 'strength')?.label || 'Strength')})</span> Modifier:
                       </span>
                       {renderModifierValue(grappleModifierBreakdown.strengthModifier)}
                     </div>
@@ -613,8 +664,8 @@ export function InfoDisplayDialog({
                     </div>
                     <div className="flex justify-between">
                       <span>
-                        {(ABILITY_LABELS.find(al => al.value === 'strength')?.abbr || 'STR')}{'\u00A0'}
-                        <span className="text-xs text-muted-foreground">({(ABILITY_LABELS.find(al => al.value === 'strength')?.label || 'Strength')})</span> Modifier:
+                        {(translations.ABILITY_LABELS.find(al => al.value === 'strength')?.abbr || 'STR')}{'\u00A0'}
+                        <span className="text-xs text-muted-foreground">({(translations.ABILITY_LABELS.find(al => al.value === 'strength')?.label || 'Strength')})</span> Modifier:
                       </span>
                       {renderModifierValue(grappleDamageBreakdown.strengthModifier)}
                     </div>
@@ -806,7 +857,7 @@ export function InfoDisplayDialog({
                     <h3 className={sectionHeadingClass}>Ability Score Adjustments</h3>
                     <ul className="space-y-1 text-sm">
                       {abilityModifiers!.map(({ ability, change }) => {
-                        const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === ability);
+                        const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.value === ability);
                         const abbr = abilityLabelInfo?.abbr || ability.substring(0,3).toUpperCase();
                         const full = abilityLabelInfo?.label || ability;
                         return (
@@ -930,8 +981,12 @@ export function InfoDisplayDialog({
                                     featId={feat.featId}
                                     character={character}
                                     allFeats={allCombinedFeatDefinitions}
-                                    allSkills={SKILL_DEFINITIONS}
-                                    customSkills={customSkillDefinitions}
+                                    allPredefinedSkills={translations.SKILL_DEFINITIONS}
+                                    allCustomSkills={customSkillDefinitions}
+                                    allClasses={translations.DND_CLASSES}
+                                    allRaces={translations.DND_RACES}
+                                    abilityLabels={translations.ABILITY_LABELS}
+                                    alignmentPrereqOptions={translations.ALIGNMENT_PREREQUISITE_OPTIONS}
                                   />
                                 </ExpandableDetailWrapper>
                               )}
@@ -1004,8 +1059,12 @@ export function InfoDisplayDialog({
                                 featId={featId}
                                 character={character}
                                 allFeats={allCombinedFeatDefinitions}
-                                allSkills={SKILL_DEFINITIONS}
-                                customSkills={customSkillDefinitions}
+                                allPredefinedSkills={translations.SKILL_DEFINITIONS}
+                                allCustomSkills={customSkillDefinitions}
+                                allClasses={translations.DND_CLASSES}
+                                allRaces={translations.DND_RACES}
+                                abilityLabels={translations.ABILITY_LABELS}
+                                alignmentPrereqOptions={translations.ALIGNMENT_PREREQUISITE_OPTIONS}
                               />
                             </ExpandableDetailWrapper>
                           )}
@@ -1035,7 +1094,7 @@ export function InfoDisplayDialog({
 
                       if (detail.label.toLowerCase().includes("modifier") && (detail.label.toLowerCase().includes("dexterity") || detail.label.toLowerCase().includes("strength"))) {
                           const abilityKey = detail.label.toLowerCase().includes("dexterity") ? 'dexterity' : 'strength';
-                          const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === abilityKey);
+                          const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.value === abilityKey);
                           const abbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
                           const full = abilityLabelInfo?.label || abilityKey.charAt(0).toUpperCase() + abilityKey.slice(1);
 
@@ -1112,4 +1171,3 @@ interface SkillModifierBreakdownDetails {
   miscModifier: number;
   totalBonus: number;
 }
-
