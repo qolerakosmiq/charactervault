@@ -10,7 +10,7 @@ import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '
 import { Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Label } from '@/components/ui/label'; // Added Label for consistency
+import { Label } from '@/components/ui/label';
 
 interface SavingThrowsPanelProps {
   character: Pick<Character, 'savingThrows' | 'classes'>;
@@ -34,6 +34,81 @@ const ABILITY_FULL_NAMES: Record<Exclude<AbilityName, 'none'>, string> = {
   charisma: 'Charisma',
 };
 
+const ABILITY_ABBREVIATIONS: Record<Exclude<AbilityName, 'none'>, string> = {
+  strength: 'STR',
+  dexterity: 'DEX',
+  constitution: 'CON',
+  intelligence: 'INT',
+  wisdom: 'WIS',
+  charisma: 'CHA',
+};
+
+
+const dataRows: Array<{
+  label: React.ReactNode; // Allow JSX for multi-line headers
+  getValue: (saveData: SingleSavingThrow, baseSave: number, abilityMod: number, total: number) => React.ReactNode;
+  rowKey: string;
+}> = [
+  {
+    label: "Total",
+    getValue: (saveData, baseSave, abilityMod, total) => (
+      <span className={cn("text-lg font-bold", total >= 0 ? "text-accent" : "text-destructive")}>
+        {total >= 0 ? '+' : ''}{total}
+      </span>
+    ),
+    rowKey: 'total',
+  },
+  {
+    label: "Base",
+    getValue: (saveData, baseSave) => baseSave,
+    rowKey: 'base',
+  },
+  {
+    label: (
+      <>
+        Ability
+        <br />
+        Modifier
+      </>
+    ),
+    getValue: (saveData, baseSave, abilityMod, total, saveType?: SavingThrowType) => {
+      if (!saveType) return abilityMod >= 0 ? `+${abilityMod}` : abilityMod;
+      const abilityKey = SAVING_THROW_ABILITIES[saveType];
+      const abilityAbbr = ABILITY_ABBREVIATIONS[abilityKey as Exclude<AbilityName, 'none'>];
+      return (
+        <div className="flex flex-col items-center -my-1">
+          <span className="text-xs leading-tight">{abilityAbbr}</span>
+          <span className="leading-tight">{abilityMod >= 0 ? '+' : ''}{abilityMod}</span>
+        </div>
+      );
+    },
+    rowKey: 'abilityMod',
+  },
+  {
+    label: (
+      <>
+        Custom
+        <br />
+        Modifier
+      </>
+    ),
+    getValue: (saveData, baseSave, abilityMod, total, saveType?: SavingThrowType, onMiscChange?: (type: SavingThrowType, val: number) => void) => (
+      <div className="flex justify-center">
+        <NumberSpinnerInput
+          value={saveData.miscMod}
+          onChange={(newValue) => onMiscChange && saveType && onMiscChange(saveType, newValue)}
+          min={-20}
+          max={20}
+          inputClassName="w-16 h-8 text-sm"
+          buttonSize="icon"
+          buttonClassName="h-8 w-8"
+        />
+      </div>
+    ),
+    rowKey: 'customMod',
+  },
+];
+
 
 export function SavingThrowsPanel({
   character,
@@ -55,73 +130,36 @@ export function SavingThrowsPanel({
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[400px]"> {/* Adjusted min-width for new layout */}
+          <table className="w-full min-w-[400px]">
             <thead>
               <tr className="border-b">
-                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground w-[100px]">
-                  {/* Empty, was "Save" */}
-                </th>
-                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground w-[60px]">
-                  Total
-                </th>
-                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground w-[60px]">
-                  Base
-                </th>
-                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground w-[120px]">
-                  <div className="flex flex-col items-center">
-                    <span>Ability</span>
-                    <span>Modifier</span>
-                  </div>
-                </th>
-                <th className="py-2 px-1 text-center text-sm font-medium text-muted-foreground w-[120px]">
-                  <div className="flex flex-col items-center">
-                    <span>Custom</span>
-                    <span>Modifier</span>
-                  </div>
-                </th>
+                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground w-[100px]"></th>
+                {SAVE_TYPES.map((saveType) => (
+                  <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-muted-foreground capitalize">
+                    {SAVE_DISPLAY_NAMES[saveType]}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {SAVE_TYPES.map((saveType) => {
-                const currentSaveData = savingThrows[saveType];
-                const baseSaveValue = calculatedBaseSaves[saveType];
-                const abilityKey = SAVING_THROW_ABILITIES[saveType];
-                const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
-                const totalSave = baseSaveValue + abilityModifier + currentSaveData.miscMod + (currentSaveData.magicMod || 0);
-                const abilityFullName = ABILITY_FULL_NAMES[abilityKey as Exclude<AbilityName, 'none'>];
-
+              {dataRows.map((dataRow) => {
                 return (
-                  <tr key={saveType} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
-                    <td className="py-3 px-1 text-sm font-medium text-foreground align-middle whitespace-nowrap capitalize">
-                      {SAVE_DISPLAY_NAMES[saveType]}
+                  <tr key={dataRow.rowKey} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
+                    <td className="py-3 px-1 text-left text-sm font-medium text-foreground align-middle whitespace-nowrap">
+                      {dataRow.label}
                     </td>
-                    <td className="py-3 px-1 text-center text-sm text-muted-foreground align-middle">
-                      <span className={cn("text-lg font-bold", totalSave >= 0 ? "text-accent" : "text-destructive")}>
-                        {totalSave >= 0 ? '+' : ''}{totalSave}
-                      </span>
-                    </td>
-                    <td className="py-3 px-1 text-center text-sm text-muted-foreground align-middle">
-                      {baseSaveValue}
-                    </td>
-                    <td className="py-3 px-1 text-center text-sm text-muted-foreground align-middle">
-                      <div className="flex flex-col items-center -my-1">
-                        <span className="text-xs leading-tight">{abilityFullName}</span>
-                        <span className="leading-tight">{abilityModifier >= 0 ? '+' : ''}{abilityModifier}</span>
-                      </div>
-                    </td>
-                    <td className="py-3 px-1 text-center text-sm text-muted-foreground align-middle">
-                      <div className="flex justify-center">
-                        <NumberSpinnerInput
-                          value={currentSaveData.miscMod}
-                          onChange={(newValue) => onSavingThrowMiscModChange(saveType, newValue)}
-                          min={-20}
-                          max={20}
-                          inputClassName="w-16 h-8 text-sm" // Adjusted width
-                          buttonSize="icon" // Using icon size for buttons
-                          buttonClassName="h-8 w-8" // Matched button height to input
-                        />
-                      </div>
-                    </td>
+                    {SAVE_TYPES.map((saveType) => {
+                      const currentSaveData = savingThrows[saveType];
+                      const baseSaveValue = calculatedBaseSaves[saveType];
+                      const abilityKey = SAVING_THROW_ABILITIES[saveType];
+                      const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
+                      const totalSave = baseSaveValue + abilityModifier + currentSaveData.miscMod + (currentSaveData.magicMod || 0);
+                      return (
+                        <td key={`${saveType}-${dataRow.rowKey}`} className="py-3 px-1 text-center text-sm text-muted-foreground align-middle">
+                          {dataRow.getValue(currentSaveData, baseSaveValue, abilityModifier, totalSave, saveType, onSavingThrowMiscModChange)}
+                        </td>
+                      );
+                    })}
                   </tr>
                 );
               })}
