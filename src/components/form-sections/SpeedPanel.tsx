@@ -47,7 +47,7 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
         <CardDescription>Manage your character's various movement capabilities and penalties.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {speedTypesConfig.map(({ type, label, Icon, fieldKey }) => {
             const speedData = calculateSpeedBreakdown(type, character, DND_RACES, DND_CLASSES);
             const currentMiscMod = character[fieldKey]?.miscModifier || 0;
@@ -78,9 +78,9 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
                     id={`speed-misc-${type}`}
                     value={currentMiscMod}
                     onChange={(newValue) => handleMiscModifierChange(type, newValue)}
-                    min={-100} // Arbitrary reasonable min
-                    max={100}  // Arbitrary reasonable max
-                    step={1.5} // As requested
+                    min={-100} 
+                    max={100}  
+                    step={1.5} 
                     inputClassName="w-20 h-8 text-sm text-center"
                     buttonClassName="h-8 w-8"
                     buttonSize="sm"
@@ -93,7 +93,7 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
         </div>
         <Separator className="my-6" />
         <div>
-            <h4 className="text-md font-semibold mb-3 text-foreground/90">Global Speed Penalties</h4>
+            <h4 className="text-md font-semibold mb-3 text-foreground/90">Speed Penalties</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
                 <div className="space-y-1">
                     <Label htmlFor="armor-speed-penalty">Armor Penalty (ft.)</Label>
@@ -102,7 +102,7 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
                         value={character.armorSpeedPenalty || 0}
                         onChange={(val) => onCharacterUpdate('armorSpeedPenalty', val)}
                         min={0}
-                        step={5}
+                        step={1.5}
                         inputClassName="w-24 h-9 text-base"
                         buttonClassName="h-9 w-9"
                     />
@@ -115,7 +115,7 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
                         value={character.loadSpeedPenalty || 0}
                         onChange={(val) => onCharacterUpdate('loadSpeedPenalty', val)}
                         min={0}
-                        step={5}
+                        step={1.5}
                         inputClassName="w-24 h-9 text-base"
                         buttonClassName="h-9 w-9"
                     />
