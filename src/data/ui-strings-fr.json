@@ -91,6 +91,13 @@
     "featPrerequisitesLabel": "Prérequis :",
     "featEffectsLabel": "Effets :",
     "saveProgressionGood": "Bon",
-    "saveProgressionPoor": "Mauvais"
+    "saveProgressionPoor": "Mauvais",
+
+    "abilityScoresSectionTitle": "Caractéristiques",
+    "abilityScoresRollButton": "Lancer les Scores",
+    "abilityScoresPointBuyButton": "Achat par Points",
+    "abilityScoresBaseScoreLabel": "Score de Base",
+    "abilityScoresTempModLabel": "Modificateur Temporaire",
+    "abilityScoresNote": "<strong>Note :</strong> Le champ <0>Modificateur Temporaire</0> ajuste directement le <1>Score de Base</1>, et non le modificateur de caractéristique dérivé du score de base. Les autres bonus de race, d'âge ou de dons sont appliqués automatiquement au score total."
   }
 }

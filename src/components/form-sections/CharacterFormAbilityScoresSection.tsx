@@ -106,7 +106,7 @@ export function CharacterFormAbilityScoresSection({
       </Card>
     );
   }
-  const { ABILITY_LABELS } = translations;
+  const { ABILITY_LABELS, UI_STRINGS } = translations;
 
 
   return (
@@ -116,15 +116,15 @@ export function CharacterFormAbilityScoresSection({
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
             <div className="flex items-center space-x-3">
               <Dices className="h-8 w-8 text-primary" />
-              <CardTitle className="text-2xl font-serif">Ability Scores</CardTitle>
+              <CardTitle className="text-2xl font-serif">{UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}</CardTitle>
             </div>
             {isCreating && (
               <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-3 sm:mt-0">
                 <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto">
-                  <Dices className="mr-2 h-4 w-4" /> Roll Scores
+                  <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton || "Roll Scores"}
                 </Button>
                 <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} className="w-full sm:w-auto">
-                  <Calculator className="mr-2 h-4 w-4" /> Point Buy
+                  <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton || "Point Buy"}
                 </Button>
               </div>
             )}
@@ -169,7 +169,7 @@ export function CharacterFormAbilityScoresSection({
                   </div>
                   
                   <div className="w-full space-y-0.5">
-                    <Label htmlFor={`base-score-${ability}`} className="text-xs text-muted-foreground text-center block">Base Score</Label>
+                    <Label htmlFor={`base-score-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresBaseScoreLabel || "Base Score"}</Label>
                     <NumberSpinnerInput
                       id={`base-score-${ability}`}
                       value={baseScore}
@@ -183,7 +183,7 @@ export function CharacterFormAbilityScoresSection({
                   </div>
                   
                   <div className="w-full space-y-0.5 pt-1">
-                    <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">Temporary Modifier</Label>
+                    <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresTempModLabel || "Temporary Modifier"}</Label>
                     <NumberSpinnerInput
                       id={`temp-mod-${ability}`}
                       value={tempCustomMod}
@@ -198,9 +198,18 @@ export function CharacterFormAbilityScoresSection({
               );
             })}
           </div>
-           <p className="text-xs text-muted-foreground mt-4 pt-2 border-t border-border/30">
-            <strong>Note:</strong> The <Badge variant="outline" className="text-xs font-normal border-muted-foreground/60 text-muted-foreground px-1.5 py-0.5 align-baseline">Temporary Modifier</Badge> field adjusts the <Badge variant="outline" className="text-xs font-normal border-muted-foreground/60 text-muted-foreground px-1.5 py-0.5 align-baseline">Base Score</Badge> directly, not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score.
-          </p>
+           <p className="text-xs text-muted-foreground mt-4 pt-2 border-t border-border/30"
+             dangerouslySetInnerHTML={{ 
+                 __html: UI_STRINGS.abilityScoresNote?.replace(
+                     /<0>(.*?)<\/0>/g, 
+                     '<Badge variant="outline" class="text-xs font-normal border-muted-foreground/60 text-muted-foreground px-1.5 py-0.5 align-baseline">$1</Badge>'
+                 ).replace(
+                     /<1>(.*?)<\/1>/g,
+                     '<Badge variant="outline" class="text-xs font-normal border-muted-foreground/60 text-muted-foreground px-1.5 py-0.5 align-baseline">$1</Badge>'
+                 ) || 
+                 "<strong>Note:</strong> The <Badge variant=\"outline\" class=\"text-xs font-normal border-muted-foreground/60 text-muted-foreground px-1.5 py-0.5 align-baseline\">Temporary Modifier</Badge> field adjusts the <Badge variant=\"outline\" class=\"text-xs font-normal border-muted-foreground/60 text-muted-foreground px-1.5 py-0.5 align-baseline\">Base Score</Badge> directly, not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score."
+             }}
+           />
         </CardContent>
       </Card>
       {isCreating && (
