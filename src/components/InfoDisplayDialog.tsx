@@ -345,17 +345,17 @@ export function InfoDisplayDialog({
                       synergyItems.push({
                           id: `provided-${currentSkillId}-${sRule.targetSkill}`,
                           text: (
-                              <>
-                                  {(UI_STRINGS.synergyTextPart1ThisSkill || "This skill")}
-                                  {(UI_STRINGS.synergyTextPart1Provided || ", with ")}
-                                  <Badge variant="outline" className={badgeClass}>{sRule.ranksRequired}</Badge>
-                                  {(UI_STRINGS.synergyTextPart2Ranks || " ranks")}
-                                  {(UI_STRINGS.synergyTextPart3GrantsA || ", grants a ")}
-                                  <Badge variant="outline" className={badgeClass}>{sRule.bonus > 0 ? '+' : ''}{sRule.bonus}</Badge>
-                                  {(UI_STRINGS.synergyTextPart4BonusToTargetSkillStart || " bonus to ")}
-                                  <strong>{targetSkillName}</strong>
-                                  {(UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "'s checks.")}
-                              </>
+                            <>
+                                {(UI_STRINGS.synergyTextPart1ThisSkill || "This skill")}
+                                {(UI_STRINGS.synergyTextPart1Provided || ", with ")}
+                                <Badge variant="outline" className={badgeClass}>{sRule.ranksRequired}</Badge>
+                                {(UI_STRINGS.synergyTextPart2Ranks || " ranks")}
+                                {(UI_STRINGS.synergyTextPart3GrantsA || ", grants a ")}
+                                <Badge variant="outline" className={badgeClass}>{sRule.bonus > 0 ? '+' : ''}{sRule.bonus}</Badge>
+                                {(UI_STRINGS.synergyTextPart4BonusToTargetSkillStart || " bonus to ")}
+                                <strong>{targetSkillName}</strong>
+                                {(UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "'s checks.")}
+                            </>
                           ),
                           isActive: providingSkillRanks >= sRule.ranksRequired
                       });
@@ -365,7 +365,7 @@ export function InfoDisplayDialog({
                           const targetSkillName = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === customRule.targetSkillName)?.name || customRule.targetSkillName;
                           synergyItems.push({
                               id: `provided-custom-${currentSkillId}-${customRule.id}`,
-                              text: (
+                               text: (
                                  <>
                                       {(UI_STRINGS.synergyTextPart1ThisSkill || "This skill")}
                                       {(UI_STRINGS.synergyTextPart1Provided || ", with ")}
@@ -377,7 +377,7 @@ export function InfoDisplayDialog({
                                       <strong>{targetSkillName}</strong>
                                       {(UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "'s checks.")}
                                   </>
-                              ),
+                                ),
                               isActive: providingSkillRanks >= customRule.ranksInThisSkillRequired
                           });
                       });
@@ -388,15 +388,15 @@ export function InfoDisplayDialog({
                           synergyItems.push({
                               id: `received-${providingSkillDef.id}-${sRule.targetSkill}`,
                               text: (
-                                  <>
-                                      <strong>{providingSkillName}</strong>
-                                      {(UI_STRINGS.synergyTextPart1Received || ", with ")}
-                                      <Badge variant="outline" className={badgeClass}>{sRule.ranksRequired}</Badge>
-                                      {(UI_STRINGS.synergyTextPart2Ranks || " ranks")}
-                                      {(UI_STRINGS.synergyTextPart3GrantsA || ", grants a ")}
-                                      <Badge variant="outline" className={badgeClass}>{sRule.bonus > 0 ? '+' : ''}{sRule.bonus}</Badge>
-                                      {(UI_STRINGS.synergyTextPart4BonusToThisSkill || " bonus to this skill's checks.")}
-                                  </>
+                                <>
+                                    <strong>{providingSkillName}</strong>
+                                    {(UI_STRINGS.synergyTextPart1Received || ", with ")}
+                                    <Badge variant="outline" className={badgeClass}>{sRule.ranksRequired}</Badge>
+                                    {(UI_STRINGS.synergyTextPart2Ranks || " ranks")}
+                                    {(UI_STRINGS.synergyTextPart3GrantsA || ", grants a ")}
+                                    <Badge variant="outline" className={badgeClass}>{sRule.bonus > 0 ? '+' : ''}{sRule.bonus}</Badge>
+                                    {(UI_STRINGS.synergyTextPart4BonusToThisSkill || " bonus to this skill's checks.")}
+                                </>
                               ),
                               isActive: providingSkillRanks >= sRule.ranksRequired
                           });
@@ -627,7 +627,7 @@ export function InfoDisplayDialog({
   
   let hasRenderedContentBlock = false;
   const renderSeparatorIfNeeded = () => {
-    if (hasRenderedContentBlock) {
+    if (hasRenderedContentBlock && ( contentType?.type === 'skillModifierBreakdown' || contentType?.type === 'abilityScoreBreakdown' || contentType?.type === 'resistanceBreakdown' ||contentType?.type === 'babBreakdown' || contentType?.type === 'initiativeBreakdown' || contentType?.type === 'grappleModifierBreakdown' || contentType?.type === 'grappleDamageBreakdown' || contentType?.type === 'speedBreakdown' || (contentType?.type === 'acBreakdown' && totalACValue !== undefined) || contentType?.type === 'race' || contentType?.type === 'class')) {
       return <Separator className="my-3" />;
     }
     return null;
@@ -750,7 +750,7 @@ export function InfoDisplayDialog({
                     return (
                        <li key={uniqueKey} className="group">
                           <div
-                            className="flex items-baseline gap-2 p-1 -mx-1 rounded hover:bg-muted/30 transition-colors cursor-pointer"
+                            className="flex items-baseline gap-2 p-1 -mx-1 rounded transition-colors cursor-pointer"
                             onClick={() => toggleExpanded(uniqueKey)}
                             role="button"
                             aria-expanded={expandedItems.has(uniqueKey)}
@@ -765,7 +765,7 @@ export function InfoDisplayDialog({
                               </Badge>
                             )}
                              <div className="flex-grow">
-                                <span className="font-semibold text-foreground leading-tight group-hover:text-primary transition-colors">{feat.name}</span>
+                                <strong className="text-foreground leading-tight transition-colors">{feat.name}</strong>
                                 {feat.note && (
                                   <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
                                     {feat.note}
@@ -774,7 +774,7 @@ export function InfoDisplayDialog({
                              </div>
                           </div>
                           {expandedItems.has(uniqueKey) && (
-                           <div id={`feat-details-${uniqueKey}`} className="my-1 ml-4 mb-1">
+                           <div id={`feat-details-${uniqueKey}`} className="my-1 mb-1">
                               <ExpandableDetailWrapper>
                                 <FeatDetailContent
                                     featId={feat.featId}
@@ -1197,6 +1197,7 @@ interface SkillModifierBreakdownDetails {
 }
 
     
+
 
 
 
