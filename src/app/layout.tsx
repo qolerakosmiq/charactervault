@@ -9,7 +9,7 @@ import { I18nProvider } from '@/context/I18nProvider'; // Import I18nProvider
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'; // Import LanguageSwitcher
 
 export const metadata: Metadata = {
-  title: "Adventurer's Armory",
+  title: "Character Vault",
   description: 'Create, manage, and edit Dungeons & Dragons 3.5 edition character sheets.',
 };
 
@@ -27,7 +27,7 @@ export default function RootLayout({
               <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
                 <Link href="/" className="flex items-center space-x-2">
                   <ScrollText className="h-8 w-8 text-primary" />
-                  <span className="font-serif text-xl font-bold tracking-tight text-primary">Adventurer's Armory</span>
+                  <span className="font-serif text-xl font-bold tracking-tight text-primary">Character Vault</span>
                 </Link>
                 {/* Add navigation items here if needed */}
               </div>
@@ -49,3 +49,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+    
