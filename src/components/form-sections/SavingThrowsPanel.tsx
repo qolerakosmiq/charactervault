@@ -12,6 +12,8 @@ import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
 import { useI18n } from '@/context/I18nProvider'; // Import useI18n
 import { Skeleton } from '@/components/ui/skeleton'; // For loading state
+import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
+
 
 interface SavingThrowsPanelProps {
   character: Pick<Character, 'savingThrows' | 'classes'>;
@@ -87,11 +89,16 @@ export function SavingThrowsPanel({
         return (
           <div className="flex flex-col items-center -my-1">
             <span className="text-xs leading-tight">{abilityAbbr}</span>
-            <span className="leading-tight">{abilityMod >= 0 ? '+' : ''}{abilityMod}</span>
+            <span className="leading-tight">{renderModifierValue(abilityMod)}</span>
           </div>
         );
       },
       rowKey: 'abilityMod',
+    },
+    {
+      label: <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsRowLabelMagicModifier || "Magic<br />Modifier" }} />,
+      getValue: (saveData) => renderModifierValue(saveData.magicMod),
+      rowKey: 'magicMod',
     },
     {
       label: <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsRowLabelCustomModifier || "Custom<br />Modifier" }} />,

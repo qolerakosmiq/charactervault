@@ -106,6 +106,7 @@
     "savingThrowsRowLabelTotal": "Total",
     "savingThrowsRowLabelBase": "Base",
     "savingThrowsRowLabelAbilityModifier": "Ability<br />Modifier",
+    "savingThrowsRowLabelMagicModifier": "Magic<br />Modifier",
     "savingThrowsRowLabelCustomModifier": "Custom<br />Modifier",
     "abilityScoresSectionTitle": "Ability Scores",
     "abilityScoresRollButton": "Roll Scores",
