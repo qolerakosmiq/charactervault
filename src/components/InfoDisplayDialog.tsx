@@ -199,24 +199,19 @@ export function InfoDisplayDialog({
 
   const renderModifierValue = (value: number | string) => {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
+
     if (isNaN(numValue)) {
       return <span className="font-bold">{value}</span>;
     }
-
-    let colorClass = "text-muted-foreground";
-    let prefix = "+"; 
-
-    if (numValue > 0) {
-      colorClass = "text-emerald-500"; // Positive is green
-      prefix = "+";
-    } else if (numValue < 0) {
-      colorClass = "text-destructive"; // Negative is red
-      prefix = ""; 
+    if (numValue === 0) {
+      return <span className="font-bold text-muted-foreground">+0</span>;
     }
-    // For numValue === 0, colorClass is "text-muted-foreground", prefix is "+"
-
-    return <span className={cn("font-bold", colorClass)}>{prefix}{numValue}</span>;
+    if (numValue > 0) {
+      return <span className="font-bold text-emerald-500">+{numValue}</span>;
+    }
+    return <span className="font-bold text-destructive">{numValue}</span>; // Negative numbers already include "-"
   };
+
 
   const derivedData = React.useMemo((): DerivedDialogData | null => {
     if (!isOpen || !contentType || !character || translationsLoading || !translations) {
@@ -243,7 +238,7 @@ export function InfoDisplayDialog({
         const details: Array<{ label: string; value: string | number | React.ReactNode; isBold?: boolean }> = [];
         
         if (racialSkillPointBonus > 0) {
-          details.push({ label: UI_STRINGS.infoDialogRacialSkillPointBonusLabel || "Bonus Skill Points/Level", value: renderModifierValue(racialSkillPointBonus), isBold: true });
+          details.push({ label: UI_STRINGS.infoDialogRacialSkillPointBonusLabel || "Bonus Skill Points/Level", value: renderModifierValue(racialSkillPointBonus) });
         }
         
         let raceBonusFeatSlotsValue = qualities.bonusFeatSlots;
@@ -607,8 +602,8 @@ export function InfoDisplayDialog({
               </div>
             )}
             {speeds && Object.keys(speeds).length > 0 && (
-              <div className="mt-2">
-                <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</h4>
+               <div className="mt-2">
+                <p className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</p>
                  <div className="ml-4 space-y-0.5 text-sm mb-2">
                   {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
                     .map(([type, speedVal]) => {
@@ -626,7 +621,7 @@ export function InfoDisplayDialog({
             )}
             {bonusFeatSlots !== undefined && bonusFeatSlots > 0 && (
                <div className="flex justify-between text-sm mt-2">
-                <span className="text-sm font-medium text-muted-foreground">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</span>
+                <span className="text-sm text-foreground">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</span>
                 {renderModifierValue(bonusFeatSlots)}
               </div>
             )}
