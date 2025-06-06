@@ -204,14 +204,14 @@ export function InfoDisplayDialog({
     }
 
     let colorClass = "text-muted-foreground";
-    let prefix = "+"; // For "+0"
+    let prefix = "+"; 
 
     if (numValue > 0) {
-      colorClass = "text-emerald-500";
+      colorClass = "text-emerald-500"; // Positive is green
       prefix = "+";
     } else if (numValue < 0) {
-      colorClass = "text-destructive";
-      prefix = ""; // Minus sign is part of the number
+      colorClass = "text-destructive"; // Negative is red
+      prefix = ""; 
     }
     // For numValue === 0, colorClass is "text-muted-foreground", prefix is "+"
 
@@ -608,7 +608,7 @@ export function InfoDisplayDialog({
             )}
             {speeds && Object.keys(speeds).length > 0 && (
               <div className="mt-2">
-                <p className="text-sm text-foreground mb-1">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</p>
+                <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</h4>
                  <div className="ml-4 space-y-0.5 text-sm mb-2">
                   {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
                     .map(([type, speedVal]) => {
@@ -626,7 +626,7 @@ export function InfoDisplayDialog({
             )}
             {bonusFeatSlots !== undefined && bonusFeatSlots > 0 && (
                <div className="flex justify-between text-sm mt-2">
-                <span className="text-foreground">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</span>
+                <span className="text-sm font-medium text-muted-foreground">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</span>
                 {renderModifierValue(bonusFeatSlots)}
               </div>
             )}
