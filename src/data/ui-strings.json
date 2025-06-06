@@ -210,6 +210,7 @@
     "featSelectionDialogLoadingDescription": "Loading feat information...",
     "featSelectionDialogCancelButton": "Cancel",
     "featPrerequisitesNoneLabel": "None",
+    "pointBuyDialogCancelButton": "Cancel",
     "armorClassPanelTitle": "Armor Class",
     "armorClassPanelDescription": "Details about your character's defenses.",
     "armorClassPanelLoading": "Loading AC details...",
@@ -302,9 +303,15 @@
     "formButtonSaveChanges": "Save Changes",
     "footerAppDescription": "Built with ❤️ for D&D 3.5 Players",
     "infoDialogSynergiesSectionTitle": "Synergies",
-    "infoDialogSynergyProvidedItemFormat": "With {ranksRequired} ranks, this skill grants a +{bonusGranted} bonus to {targetSkillName} checks.",
-    "infoDialogSynergyReceivedItemFormat": "{providingSkillName} (with {ranksRequired} ranks) grants a +{bonusGranted} bonus to this skill's checks.",
-    "infoDialogNoSynergies": "This skill has no defined synergy relationships."
+    "infoDialogNoSynergies": "This skill has no defined synergy relationships.",
+    "synergyTextPart1Received": ", with ",
+    "synergyTextPart1Provided": ", with ",
+    "synergyTextPart1ThisSkill": "This skill",
+    "synergyTextPart2Ranks": " ranks",
+    "synergyTextPart3GrantsA": ", grants a ",
+    "synergyTextPart4BonusToThisSkill": " bonus to this skill's checks.",
+    "synergyTextPart4BonusToTargetSkillStart": " bonus to ",
+    "synergyTextPart4BonusToTargetSkillEnd": "'s checks."
   }
 }
     

@@ -19,7 +19,7 @@
     "selectDeityPlaceholder": "Choisir une divinité",
     "selectGenderPlaceholder": "Choisir ou écrire un genre...",
     "selectSizePlaceholder": "Choisir une catégorie de taille",
-    "hitDiceLabel": "Dés de vie\u00A0",
+    "hitDiceLabel": "Dés de vie ",
     "levelLabel": "Niveau",
     "infoDialogLoadingTitle": "Chargement des informations...",
     "infoDialogLoadingDescription": "Récupération des détails...",
@@ -179,7 +179,7 @@
     "skillsTableHeaderSkillModLabel": "Mod.<br/>comp.",
     "skillsTableHeaderKeyAbilityLabel": "Carac.<br/>clé",
     "skillsTableHeaderAbilityModLabel": "Mod.<br/>carac.",
-    "skillsTableHeaderAutoModLabel": "Mod.<br/>auto.",
+    "skillsTableHeaderAutoModLabel": "Mod.<br/>auto",
     "skillsTableHeaderManualModLabel": "Mod.<br/>manuel",
     "skillsTableHeaderRanksLabel": "Rangs",
     "skillsTableHeaderCostLabel": "Coût",
@@ -302,9 +302,15 @@
     "formButtonSaveChanges": "Sauvegarder les modifications",
     "footerAppDescription": "Fait avec ❤️ pour les joueurs de D&D 3.5",
     "infoDialogSynergiesSectionTitle": "Synergies",
-    "infoDialogSynergyProvidedItemFormat": "Avec {ranksRequired} rangs, cette compétence accorde un bonus de +{bonusGranted} aux tests de {targetSkillName}.",
-    "infoDialogSynergyReceivedItemFormat": "{providingSkillName} (avec {ranksRequired} rangs) accorde un bonus de +{bonusGranted} aux tests de cette compétence.",
-    "infoDialogNoSynergies": "Cette compétence n'a pas de relations de synergie définies."
+    "infoDialogNoSynergies": "Cette compétence n'a pas de relations de synergie définies.",
+    "synergyTextPart1Received": ", avec ",
+    "synergyTextPart1Provided": ", avec ",
+    "synergyTextPart1ThisSkill": "Cette compétence",
+    "synergyTextPart2Ranks": " rangs",
+    "synergyTextPart3GrantsA": ", accorde un ",
+    "synergyTextPart4BonusToThisSkill": " bonus aux tests de cette compétence.",
+    "synergyTextPart4BonusToTargetSkillStart": " bonus aux tests de ",
+    "synergyTextPart4BonusToTargetSkillEnd": "."
   }
 }
     
