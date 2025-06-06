@@ -11,7 +11,7 @@
     "deityLabel": "Deity",
     "ageLabel": "Age",
     "genderLabel": "Gender",
-    "sizeLabel": "Size Category",
+    "sizeLabel": "Size",
     "deityNoneOption": "None",
     "selectRacePlaceholder": "Select race",
     "selectClassPlaceholder": "Select class",
@@ -297,5 +297,3 @@
     "footerAppDescription": "Built with ❤️ for D&D 3.5 Players"
   }
 }
-
-    
