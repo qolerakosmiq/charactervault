@@ -3,47 +3,47 @@
   "ALIGNMENTS_DATA": [
     {
       "value": "lawful-good",
-      "label": "Loyal Bon",
+      "label": "Loyal bon",
       "description": "<p>Les personnages de cet alignement estiment qu'une société forte et ordonnée, dotée d'un gouvernement bien organisé, peut œuvrer à l'amélioration de la vie de la majorité de ses membres. Pour garantir la qualité de la vie, des lois doivent être créées et respectées. Lorsque les gens respectent les lois et essaient de s'entraider, la société dans son ensemble prospère. Par conséquent, les personnages loyaux bons recherchent ce qui apportera le plus grand bénéfice au plus grand nombre et causera le moins de tort. Ils se préoccupent également des questions de justice et d'équité, et ils accordent de l'importance à l'honnêteté et à l'intégrité.</p>"
     },
     {
       "value": "neutral-good",
-      "label": "Neutre Bon",
+      "label": "Neutre bon",
       "description": "<p>Les personnages neutres bons croient qu'un équilibre des forces est important, mais que les préoccupations de la loi et du chaos ne modèrent pas le besoin de bien. L'univers est vaste, et s'il est important de veiller à ce que le bien soit promu, il est tout aussi important que ce bien ne soit pas imposé aux autres. Un personnage neutre bon fait ce qui est bon et juste, sans parti pris pour ou contre l'ordre.</p>"
     },
     {
       "value": "chaotic-good",
-      "label": "Chaotique Bon",
+      "label": "Chaotique bon",
       "description": "<p>Les personnages chaotiques bons sont de forts individualistes marqués par une tendance à la gentillesse et à la bienveillance. Ils croient en toutes les vertus de la bonté et du droit, mais ils ont peu d'utilité pour les lois et les règlements. Ils n'ont que faire des gens qui « essaient de bousculer les autres et de leur dire quoi faire ». Leurs actions sont guidées par leur propre boussole morale qui, bien que bonne, peut ne pas toujours être en parfait accord avec le reste de la société.</p>"
     },
     {
       "value": "lawful-neutral",
-      "label": "Loyal Neutre",
+      "label": "Loyal neutre",
       "description": "<p>L'ordre et l'organisation sont d'une importance capitale pour les personnages de cet alignement. Ils croient en un gouvernement fort et bien ordonné, que ce gouvernement soit une tyrannie ou une démocratie bienveillante. Les avantages de l'organisation et de la régimentation l'emportent sur toutes les questions morales soulevées par leurs actions. Un serment est un serment, et une promesse est une promesse. L'honnêteté et la fiabilité sont des traits essentiels.</p>"
     },
     {
       "value": "true-neutral",
-      "label": "Neutre Strict",
+      "label": "Neutre strict",
       "description": "<p>Les personnages neutres stricts croient en l'équilibre ultime des forces et refusent de voir les actions comme bonnes ou mauvaises. Étant donné que la majorité des gens dans le monde portent des jugements, les personnages neutres stricts sont extrêmement rares. Les personnages neutres stricts font de leur mieux pour éviter de se ranger du côté des forces du bien ou du mal, de la loi ou du chaos. Il est de leur devoir de veiller à ce que toutes ces forces restent en équilibre.</p>"
     },
     {
       "value": "chaotic-neutral",
-      "label": "Chaotique Neutre",
+      "label": "Chaotique neutre",
       "description": "<p>Les personnages chaotiques neutres croient qu'il n'y a d'ordre à rien, y compris à leurs propres actions. Avec ce principe directeur, ils ont tendance à suivre le caprice qui les frappe sur le moment. Le bien, le mal, la loi et le chaos sont tous sans pertinence. La décence et l'honneur n'ont aucun sens. En fin de compte, les personnages chaotiques neutres ne pensent qu'à eux-mêmes. Ils apprécient leur propre liberté par-dessus tout, mais ils ne lutteront pas pour la liberté des autres. Ils évitent l'autorité, ressentent les restrictions et contestent les traditions.</p>"
     },
     {
       "value": "lawful-evil",
-      "label": "Loyal Mauvais",
+      "label": "Loyal mauvais",
       "description": "<p>Les personnages loyaux mauvais croient en l'utilisation de la société et de ses lois à leur propre avantage. La structure et l'organisation élèvent ceux qui méritent de gouverner et fournissent une hiérarchie clairement définie entre maître et serviteur. À cette fin, les personnages loyaux mauvais soutiennent les lois et les sociétés qui protègent leurs propres préoccupations. Si quelqu'un est blessé ou souffre à cause d'une loi qui profite au personnage loyal mauvais, tant pis. Les personnages loyaux mauvais obéissent aux lois par peur des punitions ou parce qu'ils peuvent utiliser la loi à leur avantage.</p>"
     },
     {
       "value": "neutral-evil",
-      "label": "Neutre Mauvais",
+      "label": "Neutre mauvais",
       "description": "<p>Les personnages neutres mauvais se préoccupent principalement d'eux-mêmes et de leur propre avancement. Ils n'ont aucune objection particulière à travailler avec les autres ou, d'ailleurs, à agir seuls. Leur seul intérêt est de progresser. Ils peuvent être ou non motivés par la cupidité, mais ils sont toujours égoïstes. S'il y a un choix entre faire le bien et faire le mal, ils choisiront l'action qui leur profite le plus. Les personnages neutres mauvais n'ont aucun amour particulier pour l'ordre et n'ont aucune affection particulière pour le chaos, à moins qu'il ne puisse être utilisé pour faire avancer leurs propres fins.</p>"
     },
     {
       "value": "chaotic-evil",
-      "label": "Chaotique Mauvais",
+      "label": "Chaotique mauvais",
       "description": "<p>Les personnages chaotiques mauvais sont motivés par le désir de gain personnel et de plaisir. Ils ne voient absolument rien de mal à prendre tout ce qu'ils veulent par tous les moyens possibles. Les lois et les gouvernements sont les outils des faibles, conçus pour voler ceux qui ont droit à tout ce qu'ils désirent. Les gens forts et puissants prennent ce qu'ils veulent, et les faibles sont là pour être exploités. Lorsqu'un personnage chaotique mauvais se déchaîne, il est un moteur de destruction et de chaos. Ils n'ont aucun respect pour les règles, l'ordre ou les droits des autres.</p>"
     }
   ]
