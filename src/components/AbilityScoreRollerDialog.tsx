@@ -206,14 +206,18 @@ export function AbilityScoreRollerDialog({
                   {fullNamePart && <span className="text-muted-foreground ml-1 font-normal">({fullNamePart})</span>}
                 </Label>
                 <Select
-                  value={currentAssignedRollId}
+                  value={currentAssignedRollId || UNASSIGN_VALUE} // Ensure UNASSIGN_VALUE is used if undefined
                   onValueChange={(value) => handleAssignScore(ability, value)}
                 >
                   <SelectTrigger id={`assign-${ability}`} className="w-full">
-                    <SelectValue placeholder={UI_STRINGS.rollerDialogAssignPlaceholder || "Pick a Score..."} />
+                    <SelectValue>
+                      {currentAssignedRollId && currentAssignedRollId !== UNASSIGN_VALUE
+                        ? rolledScores.find(r => r.id === currentAssignedRollId)?.value
+                        : (UI_STRINGS.rollerDialogNotSelectedOption || "Not selected")}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={UNASSIGN_VALUE}>{UI_STRINGS.rollerDialogUnassignOption || "Unassign"}</SelectItem>
+                    <SelectItem value={UNASSIGN_VALUE}>{UI_STRINGS.rollerDialogNotSelectedOption || "Not selected"}</SelectItem>
                     {rolledScores.map((roll) => (
                        <SelectItem
                         key={roll.id}
@@ -245,3 +249,5 @@ export function AbilityScoreRollerDialog({
     </Dialog>
   );
 }
+
+    

@@ -123,8 +123,7 @@
     "rollerDialogRerollButton": "Reroll Scores",
     "rollerDialogCancelButton": "Cancel",
     "rollerDialogApplyButton": "Apply Scores",
-    "rollerDialogAssignPlaceholder": "Pick a Score...",
-    "rollerDialogUnassignOption": "Unassign",
+    "rollerDialogNotSelectedOption": "Not selected",
     "rollerDialogErrorNotAllAssignedToastTitle": "Assignment Incomplete",
     "rollerDialogErrorNotAllAssignedToastDesc": "Please assign all rolled scores to abilities before applying.",
     "pointBuyDialogTitle": "Point Buy Ability Scores",
@@ -298,3 +297,5 @@
     "footerAppDescription": "Built with ❤️ for D&D 3.5 Players"
   }
 }
+
+    

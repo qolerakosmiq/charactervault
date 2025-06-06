@@ -123,8 +123,7 @@
     "rollerDialogRerollButton": "Relancer les scores",
     "rollerDialogCancelButton": "Annuler",
     "rollerDialogApplyButton": "Appliquer les scores",
-    "rollerDialogAssignPlaceholder": "Choisir un score...",
-    "rollerDialogUnassignOption": "Désassigner",
+    "rollerDialogNotSelectedOption": "Non sélectionné",
     "rollerDialogErrorNotAllAssignedToastTitle": "Assignation incomplète",
     "rollerDialogErrorNotAllAssignedToastDesc": "Veuillez assigner tous les scores lancés aux caractéristiques avant d'appliquer.",
     "pointBuyDialogTitle": "Achat par points des caractéristiques",
@@ -298,3 +297,5 @@
     "footerAppDescription": "Fait avec ❤️ pour les joueurs de D&D 3.5"
   }
 }
+
+    
