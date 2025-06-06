@@ -457,7 +457,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const handleCoreInfoFieldChange = React.useCallback((field: keyof Character, value: any) => {
      setCharacter(prev => prev ? ({ ...prev, [field]: value }) : null);
-  }, []);
+  }, [setCharacter]);
   
   const handleCharacterFieldUpdate = React.useCallback((
     field: keyof Character | `${SpeedType}Speed.miscModifier`,
@@ -478,7 +478,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         }
         return { ...prev, [field as keyof Character]: value };
      });
-  }, []);
+  }, [setCharacter]);
 
   const handleResistanceChange = React.useCallback((
     field: ResistanceFieldKeySheet,
@@ -492,11 +492,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         [subField]: value,
       },
     }) : null);
-  }, []);
+  }, [setCharacter]);
 
   const handleDamageReductionChange = React.useCallback((newDrArray: DamageReductionInstance[]) => {
     setCharacter(prev => prev ? ({ ...prev, damageReduction: newDrArray }) : null);
-  }, []);
+  }, [setCharacter]);
 
   const handleBaseAbilityScoreChange = React.useCallback((ability: Exclude<AbilityName, 'none'>, value: number) => {
     setCharacter(prev => prev ? ({
@@ -506,7 +506,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         [ability]: value,
       },
     }) : null);
-  }, []);
+  }, [setCharacter]);
 
   const handleAbilityScoreTempCustomModifierChange = React.useCallback((ability: Exclude<AbilityName, 'none'>, value: number) => {
     setCharacter(prev => prev ? ({
@@ -516,11 +516,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         [ability]: value,
       },
     }) : null);
-  }, []);
+  }, [setCharacter]);
 
   const handleMultipleBaseAbilityScoresChange = React.useCallback((newScores: AbilityScores) => {
     setCharacter(prev => prev ? ({ ...prev, abilityScores: newScores }) : null);
-  }, []);
+  }, [setCharacter]);
 
   const handleClassChange = React.useCallback((value: DndClassId | string) => {
     if (!translations) return;
@@ -539,7 +539,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       });
       return { ...prev, classes: updatedClasses, skills: newSkills };
     });
-  }, [translations, allAvailableSkillDefinitionsForDisplay]);
+  }, [translations, allAvailableSkillDefinitionsForDisplay, setCharacter]);
 
   const handleSkillChange = React.useCallback((skillId: string, ranks: number, isClassSkill?: boolean) => {
     setCharacter(prev => prev ? ({
@@ -548,7 +548,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         s.id === skillId ? { ...s, ranks, isClassSkill: isClassSkill !== undefined ? isClassSkill : s.isClassSkill } : s
       ),
     }) : null);
-  }, []);
+  }, [setCharacter]);
 
   const handleCustomSkillDefinitionSaveToStore = React.useCallback((skillData: CustomSkillDefinition) => {
     const existing = definitionsActions.getCustomSkillDefinitionById(skillData.id);
@@ -573,7 +573,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const handleFeatInstancesChange = React.useCallback((updatedFeatInstances: CharacterFeatInstance[]) => {
     setCharacter(prev => prev ? ({ ...prev, feats: updatedFeatInstances }) : null);
-  }, []);
+  }, [setCharacter]);
 
   const handleCustomFeatDefinitionSaveToStore = React.useCallback((featDefData: (FeatDefinitionJsonData & { isCustom: true })) => {
     if (!character) return;
@@ -626,7 +626,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     } else {
       setCharacter(prev => prev ? ({ ...prev, portraitDataUrl: undefined }) : null);
     }
-  }, []);
+  }, [setCharacter]);
 
   const handleSavingThrowMiscModChange = React.useCallback((saveType: SavingThrowType, value: number) => {
     setCharacter(prev => prev ? ({
@@ -639,7 +639,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         },
       },
     }) : null);
-  }, []);
+  }, [setCharacter]);
 
   const handleCancel = React.useCallback(() => { router.push('/'); }, [router]);
 
@@ -653,6 +653,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const handleOpenSkillInfoDialog = React.useCallback((skillId: string) => { openInfoDialog({ type: 'skillModifierBreakdown', skillId }); }, [openInfoDialog]);
   const handleOpenAcBreakdownDialog = React.useCallback((acType: 'Normal' | 'Touch' | 'Flat-Footed') => { openInfoDialog({ type: 'acBreakdown', acType }); }, [openInfoDialog]);
   const handleOpenSpeedInfoDialog = React.useCallback((speedType: SpeedType) => { openInfoDialog({ type: 'speedBreakdown', speedType }); }, [openInfoDialog]);
+  const handleOpenResistanceInfoDialog = React.useCallback((resistanceField: ResistanceFieldKeySheet) => { openInfoDialog({ type: 'resistanceBreakdown', resistanceField }); }, [openInfoDialog]);
+
 
   const handleSubmit = React.useCallback((e: FormEvent) => {
     e.preventDefault();
@@ -935,3 +937,5 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   );
 }
 
+
+      
