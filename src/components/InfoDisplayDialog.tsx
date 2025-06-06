@@ -339,7 +339,6 @@ export function InfoDisplayDialog({
               const providingSkillInstance = character.skills.find(s => s.id === providingSkillDef.id);
               const providingSkillRanks = providingSkillInstance?.ranks || 0;
 
-              // Synergies *provided by* the current skill
               if (providingSkillDef.id === currentSkillId) {
                   if (SKILL_SYNERGIES_DATA[currentSkillId]) {
                       SKILL_SYNERGIES_DATA[currentSkillId].forEach(sRule => {
@@ -355,7 +354,7 @@ export function InfoDisplayDialog({
                                       {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
                                       <Badge variant="outline" className={badgeClass}>{sRule.bonus > 0 ? '+' : ''}{sRule.bonus}</Badge>
                                       {UI_STRINGS.synergyTextPart4BonusToTargetSkillStart || " bonus to "}
-                                      <span className="font-medium">{targetSkillName}</span>
+                                      <strong>{targetSkillName}</strong>
                                       {UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "."}
                                   </>
                               ),
@@ -377,7 +376,7 @@ export function InfoDisplayDialog({
                                       {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
                                       <Badge variant="outline" className={badgeClass}>{customRule.bonusGranted > 0 ? '+' : ''}{customRule.bonusGranted}</Badge>
                                       {UI_STRINGS.synergyTextPart4BonusToTargetSkillStart || " bonus to "}
-                                      <span className="font-medium">{targetSkillName}</span>
+                                      <strong>{targetSkillName}</strong>
                                       {UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "."}
                                   </>
                               ),
@@ -385,7 +384,7 @@ export function InfoDisplayDialog({
                           });
                       });
                   }
-              } else { // Synergies *received by* the current skill from OTHERS
+              } else { 
                   if (SKILL_SYNERGIES_DATA[providingSkillDef.id]) {
                       SKILL_SYNERGIES_DATA[providingSkillDef.id].forEach(sRule => {
                           if (sRule.targetSkill === currentSkillId) {
@@ -393,7 +392,7 @@ export function InfoDisplayDialog({
                                   id: `received-${providingSkillDef.id}-${sRule.targetSkill}`,
                                   text: (
                                       <>
-                                          <span className="font-medium">{providingSkillName}</span>
+                                          <strong>{providingSkillName}</strong>
                                           {UI_STRINGS.synergyTextPart1Received || ", with "}
                                           <Badge variant="outline" className={badgeClass}>{sRule.ranksRequired}</Badge>
                                           {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
@@ -414,7 +413,7 @@ export function InfoDisplayDialog({
                                   id: `received-custom-${providingSkillDef.id}-${customRule.id}`,
                                   text: (
                                      <>
-                                          <span className="font-medium">{providingSkillName}</span>
+                                          <strong>{providingSkillName}</strong>
                                           {UI_STRINGS.synergyTextPart1Received || ", with "}
                                           <Badge variant="outline" className={badgeClass}>{customRule.ranksInThisSkillRequired}</Badge>
                                           {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
@@ -1209,6 +1208,7 @@ interface SkillModifierBreakdownDetails {
 }
 
     
+
 
 
 
