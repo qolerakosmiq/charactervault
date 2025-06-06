@@ -199,17 +199,10 @@ export function InfoDisplayDialog({
 
   const renderModifierValue = (value: number | string) => {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
-
-    if (isNaN(numValue)) {
-      return <span className="font-bold">{value}</span>;
-    }
-    if (numValue === 0) {
-      return <span className="font-bold text-muted-foreground">+0</span>;
-    }
-    if (numValue > 0) {
-      return <span className="font-bold text-emerald-500">+{numValue}</span>;
-    }
-    return <span className="font-bold text-destructive">{numValue}</span>; // Negative numbers already include "-"
+    if (isNaN(numValue)) return <span className="font-bold">{value}</span>;
+    if (numValue === 0) return <span className="font-bold text-muted-foreground">+0</span>;
+    if (numValue > 0) return <span className="font-bold text-emerald-500">+{numValue}</span>;
+    return <span className="font-bold text-destructive">{numValue}</span>;
   };
 
 
@@ -611,8 +604,8 @@ export function InfoDisplayDialog({
                     const speedName = UI_STRINGS[speedTypeKey] || type;
                     return (
                       <div key={type} className="flex justify-between">
-                        <span>{speedName}</span>
-                        <span className="font-semibold">{speedVal} {speedUnit}</span>
+                        <span className="text-foreground">{speedName}</span>
+                        <span className="font-semibold text-foreground">{speedVal} {speedUnit}</span>
                       </div>
                     );
                   })}
@@ -628,23 +621,32 @@ export function InfoDisplayDialog({
             {grantedFeats && grantedFeats.length > 0 && (
               <div className="mt-2">
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h4>
-                <ul className="list-none space-y-2 text-sm">
+                <ul className="list-none space-y-1 text-sm">
                   {grantedFeats.map(feat => (
-                    <li key={feat.featId + (feat.note || '')} className="border-b border-border/30 pb-1 last:border-b-0">
-                      <div className="flex justify-between items-center">
-                          <span className="font-semibold">{feat.name}</span>
-                          <Button
-                            type="button"
-                            variant="link"
-                            size="sm"
-                            className="h-auto p-0 text-xs text-primary/80 hover:text-primary"
-                            onClick={() => toggleExpanded(feat.featId + (feat.note || ''))}
-                          >
-                            {expandedItems.has(feat.featId + (feat.note || '')) ? (UI_STRINGS.infoDialogCollapseLink || "Collapse") : (UI_STRINGS.infoDialogExpandLink || "Expand")}
-                          </Button>
+                    <li key={feat.featId + (feat.note || '') + (feat.levelAcquired || '')} className="border-b border-border/30 pb-2 pt-1 last:border-b-0">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-grow">
+                           <div className="flex items-baseline gap-x-1.5">
+                             {feat.levelAcquired !== undefined && (
+                                <Badge variant="outline" className="text-xs font-normal h-5 mb-0.5">
+                                  {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
+                                </Badge>
+                              )}
+                            <span className="font-semibold text-foreground">{feat.name}</span>
+                           </div>
+                          {feat.note && <p className="text-xs text-muted-foreground italic ml-1 mt-0.5">{feat.note}</p>}
+                        </div>
+                        <Button
+                          type="button"
+                          variant="link"
+                          size="sm"
+                          className="h-auto p-0 text-xs text-primary/80 hover:text-primary shrink-0 ml-2"
+                          onClick={() => toggleExpanded(feat.featId + (feat.note || '') + (feat.levelAcquired || ''))}
+                        >
+                          {expandedItems.has(feat.featId + (feat.note || '') + (feat.levelAcquired || '')) ? (UI_STRINGS.infoDialogCollapseLink || "Collapse") : (UI_STRINGS.infoDialogExpandLink || "Expand")}
+                        </Button>
                       </div>
-                      {feat.note && <p className="text-xs text-muted-foreground italic">({feat.note})</p>}
-                      {expandedItems.has(feat.featId + (feat.note || '')) && (
+                      {expandedItems.has(feat.featId + (feat.note || '') + (feat.levelAcquired || '')) && (
                         <ExpandableDetailWrapper>
                             <FeatDetailContent
                                 featId={feat.featId}
@@ -963,12 +965,7 @@ export function InfoDisplayDialog({
                 {renderSeparatorIfNeeded()}
                 <div>
                   <h3 className={sectionHeadingClass}>
-                    {contentType?.type === 'race' 
-                      ? (UI_STRINGS.infoDialogRaceSpecificsListHeading || "Racial Specifics")
-                      : contentType?.type === 'class' 
-                        ? (UI_STRINGS.infoDialogClassSpecificsListHeading || "Class Specifics")
-                        : (UI_STRINGS.infoDialogSectionHeadingDetails || "Details")
-                    }
+                    {detailsListHeading}
                   </h3>
                   {detailsList!.map((detail, index) => {
                       const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string))))
