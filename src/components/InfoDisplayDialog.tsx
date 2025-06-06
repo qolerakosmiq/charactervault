@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2 } from 'lucide-react';
+import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
@@ -327,9 +327,66 @@ export function InfoDisplayDialog({
           const totalMod = keyAbilityMod + synergyBonus + featBonus + racialBonus + sizeBonus;
           const totalSkillBonus = (skillInstance.ranks || 0) + totalMod + (skillInstance.miscModifier || 0);
           const keyAbilityLabel = skillDef.keyAbility && skillDef.keyAbility !== 'none' ? ABILITY_LABELS.find(al => al.value === skillDef.keyAbility)?.abbr : undefined;
+
+          const currentSkillId = contentType.skillId;
+          const currentSkillName = skillDef.name;
+          const synergyInfoList: string[] = [];
+
+          // Synergies provided by this skill
+          if (SKILL_SYNERGIES_DATA[currentSkillId]) {
+            SKILL_SYNERGIES_DATA[currentSkillId].forEach(s => {
+              const targetSkillName = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === s.targetSkill)?.name || s.targetSkill;
+              synergyInfoList.push(UI_STRINGS.infoDialogSynergyProvidedItemFormat
+                .replace("{ranksRequired}", String(s.ranksRequired))
+                .replace("{bonusGranted}", String(s.bonus))
+                .replace("{targetSkillName}", targetSkillName)
+              );
+            });
+          }
+          if (skillDef.isCustom && skillDef.providesSynergies) {
+            skillDef.providesSynergies.forEach(customRule => {
+              const targetSkillName = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === customRule.targetSkillName)?.name || customRule.targetSkillName;
+              synergyInfoList.push(UI_STRINGS.infoDialogSynergyProvidedItemFormat
+                .replace("{ranksRequired}", String(customRule.ranksInThisSkillRequired))
+                .replace("{bonusGranted}", String(customRule.bonusGranted))
+                .replace("{targetSkillName}", targetSkillName)
+              );
+            });
+          }
+
+          // Synergies received by this skill
+          allCombinedSkillDefinitionsForDisplay.forEach(providingSkillDef => {
+            if (providingSkillDef.id === currentSkillId) return;
+            const providingSkillName = providingSkillDef.name;
+
+            if (SKILL_SYNERGIES_DATA[providingSkillDef.id]) {
+              SKILL_SYNERGIES_DATA[providingSkillDef.id].forEach(s => {
+                if (s.targetSkill === currentSkillId) {
+                  synergyInfoList.push(UI_STRINGS.infoDialogSynergyReceivedItemFormat
+                    .replace("{ranksRequired}", String(s.ranksRequired))
+                    .replace("{providingSkillName}", providingSkillName)
+                    .replace("{bonusGranted}", String(s.bonus))
+                  );
+                }
+              });
+            }
+            if (providingSkillDef.isCustom && providingSkillDef.providesSynergies) {
+              providingSkillDef.providesSynergies.forEach(customRule => {
+                if (customRule.targetSkillName === currentSkillId) {
+                  synergyInfoList.push(UI_STRINGS.infoDialogSynergyReceivedItemFormat
+                    .replace("{ranksRequired}", String(customRule.ranksInThisSkillRequired))
+                    .replace("{providingSkillName}", providingSkillName)
+                    .replace("{bonusGranted}", String(customRule.bonusGranted))
+                  );
+                }
+              });
+            }
+          });
+          
           data = {
             title: (UI_STRINGS.infoDialogTitleModifierBreakdown || "{skillName} Modifier Breakdown").replace("{skillName}", skillDef.name),
             htmlContent: skillDef.description,
+            synergyInfoList: synergyInfoList.length > 0 ? synergyInfoList : undefined,
             skillModifierBreakdown: {
               skillName: skillDef.name,
               keyAbilityName: keyAbilityLabel,
@@ -391,8 +448,8 @@ export function InfoDisplayDialog({
         else if (contentType.acType === 'Touch') totalCalculated = 10 + dexMod + sizeModACVal + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (character.acMiscModifier || 0);
         else if (contentType.acType === 'Flat-Footed') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (character.acMiscModifier || 0);
         
-        details.push({ label: UI_STRINGS.infoDialogTotalLabel || 'Total', value: totalCalculated, isBold: true });
-        data = { title: (UI_STRINGS.infoDialogTitleAcBreakdown || "{acType} AC Breakdown").replace("{acType}", contentType.acType), detailsList: details };
+        // Removed the total from details to be added later in JSX
+        data = { title: (UI_STRINGS.infoDialogTitleAcBreakdown || "{acType} AC Breakdown").replace("{acType}", contentType.acType), detailsList: details, totalACValue: totalCalculated };
         break;
       }
       case 'babBreakdown': {
@@ -508,6 +565,8 @@ export function InfoDisplayDialog({
     grappleDamageBreakdown,
     speeds,
     speedBreakdown,
+    synergyInfoList,
+    totalACValue,
   } = derivedData;
   
   const sectionHeadingClass = "text-md font-semibold mb-2 text-primary";
@@ -542,7 +601,8 @@ export function InfoDisplayDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif text-left">
             { contentType?.type === 'speedBreakdown' && SPEED_ICONS[contentType.speedType] && React.createElement(SPEED_ICONS[contentType.speedType], { className: "mr-2 h-6 w-6 text-primary" }) }
-            { contentType?.type !== 'speedBreakdown' && <Info className="mr-2 h-6 w-6 text-primary" /> }
+            { contentType?.type === 'skillModifierBreakdown' && <SparklesIcon className="mr-2 h-6 w-6 text-primary" /> }
+            { contentType?.type !== 'speedBreakdown' && contentType?.type !== 'skillModifierBreakdown' && <Info className="mr-2 h-6 w-6 text-primary" /> }
             {finalTitle}
           </DialogTitle>
         </DialogHeader>
@@ -559,6 +619,27 @@ export function InfoDisplayDialog({
               </>
             )}
             
+            {synergyInfoList && synergyInfoList.length > 0 && (
+              <>
+                {renderSeparatorIfNeeded()}
+                <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
+                <ul className="list-disc list-inside text-sm space-y-0.5">
+                  {synergyInfoList.map((synergy, index) => (
+                    <li key={`synergy-${index}`}>{synergy}</li>
+                  ))}
+                </ul>
+                {markContentRendered()}
+              </>
+            )}
+            {synergyInfoList && synergyInfoList.length === 0 && contentType?.type === 'skillModifierBreakdown' && (
+                 <>
+                    {renderSeparatorIfNeeded()}
+                    <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
+                    <p className="text-sm text-muted-foreground">{UI_STRINGS.infoDialogNoSynergies || "This skill has no defined synergy relationships."}</p>
+                    {markContentRendered()}
+                 </>
+            )}
+
             {hasAnyBonusSection && (contentType?.type === 'race' || contentType?.type === 'class') && (
                  <>
                     {renderSeparatorIfNeeded()}
@@ -595,7 +676,7 @@ export function InfoDisplayDialog({
             )}
             {speeds && Object.keys(speeds).filter(k => (speeds as any)[k] !== undefined && (speeds as any)[k] > 0).length > 0 && (
                <div className="mt-2">
-                <p className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogBaseSpeeds}</p>
+                <p className="text-sm text-muted-foreground font-medium mb-1">{UI_STRINGS.infoDialogBaseSpeeds}</p>
                  <div className="ml-4 space-y-0.5 text-sm mb-2">
                   {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
                     .map(([type, speedVal]) => {
@@ -624,32 +705,32 @@ export function InfoDisplayDialog({
                   {grantedFeats.map(feat => {
                     const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
                     return (
-                       <li key={uniqueKey}>
-                        <div
-                          className="flex items-baseline gap-2 py-0.5 cursor-pointer"
-                          onClick={() => toggleExpanded(uniqueKey)}
-                          role="button"
-                          aria-expanded={expandedItems.has(uniqueKey)}
-                          aria-controls={`feat-details-${uniqueKey}`}
-                        >
-                          {feat.levelAcquired !== undefined && (
-                            <Badge
-                              variant="outline"
-                              className="text-xs font-normal h-5 whitespace-nowrap"
-                            >
-                              {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
-                            </Badge>
-                          )}
-                          <div className="flex-grow">
-                            <span className="font-semibold text-foreground leading-tight">{feat.name}</span>
-                             {feat.note && (
-                              <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
-                                {feat.note}
-                              </p>
+                       <li key={uniqueKey} className="py-0.5">
+                          <div
+                            className="flex items-baseline gap-2 cursor-pointer group"
+                            onClick={() => toggleExpanded(uniqueKey)}
+                            role="button"
+                            aria-expanded={expandedItems.has(uniqueKey)}
+                            aria-controls={`feat-details-${uniqueKey}`}
+                          >
+                            {feat.levelAcquired !== undefined && (
+                              <Badge
+                                variant="outline"
+                                className="text-xs font-normal h-5 whitespace-nowrap self-center"
+                              >
+                                {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
+                              </Badge>
                             )}
+                             <div className="flex-grow">
+                                <span className="font-semibold text-foreground leading-tight group-hover:text-primary transition-colors">{feat.name}</span>
+                                {feat.note && (
+                                  <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
+                                    {feat.note}
+                                  </p>
+                                )}
+                             </div>
                           </div>
-                        </div>
-                        {expandedItems.has(uniqueKey) && (
+                          {expandedItems.has(uniqueKey) && (
                            <div id={`feat-details-${uniqueKey}`} className="my-1 ml-4">
                               <ExpandableDetailWrapper>
                                 <FeatDetailContent
@@ -666,8 +747,8 @@ export function InfoDisplayDialog({
                                 />
                               </ExpandableDetailWrapper>
                            </div>
-                        )}
-                      </li>
+                          )}
+                        </li>
                     );
                   })}
                 </ul>
@@ -823,16 +904,12 @@ export function InfoDisplayDialog({
                       <span className="font-bold">{abilityScoreBreakdown.base}</span>
                     </div>
                     {abilityScoreBreakdown.components.map((comp, index) => {
-                      let displaySource = comp.source;
-                      if (comp.source === "tempMod") {
-                        displaySource = UI_STRINGS.abilityScoreSourceTempMod || "Temporary Modifier";
-                      } else if (comp.source === "feats") {
-                        displaySource = UI_STRINGS.abilityScoreSourceFeats || "Feats";
-                      } else if (comp.source.startsWith("Race (")) { // Example for already dynamic source
-                        displaySource = (UI_STRINGS.abilityScoreSourceRace || comp.source).replace("{raceLabel}", comp.source.match(/Race \((.*?)\)/)?.[1] || '');
-                      } else if (comp.source.startsWith("Aging (")) {
-                         displaySource = (UI_STRINGS.abilityScoreSourceAging || comp.source).replace("{categoryName}", comp.source.match(/Aging \((.*?)\)/)?.[1] || '');
-                      }
+                       let displaySource = comp.source;
+                       if (comp.source === "tempMod") { displaySource = UI_STRINGS.abilityScoreSourceTempMod || "Temporary Modifier"; }
+                       else if (comp.source === "feats") { displaySource = UI_STRINGS.abilityScoreSourceFeats || "Feats"; }
+                       else if (comp.source.startsWith("Race (")) { displaySource = (UI_STRINGS.abilityScoreSourceRace || "Race ({raceLabel})").replace("{raceLabel}", comp.source.match(/Race \((.*?)\)/)?.[1] || ''); }
+                       else if (comp.source.startsWith("Aging (")) { displaySource = (UI_STRINGS.abilityScoreSourceAging || "Aging ({categoryName})").replace("{categoryName}", comp.source.match(/Aging \((.*?)\)/)?.[1] || '');}
+
 
                       return comp.value !== 0 && (
                         <div key={index} className="flex justify-between">
@@ -984,7 +1061,7 @@ export function InfoDisplayDialog({
                     {detailsListHeading}
                   </h3>
                   {detailsList!.map((detail, index) => {
-                      const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string))))
+                      const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string)))) && !detail.label.toLowerCase().includes('base attack bonus') // BAB is special (e.g., +6/+1)
                           ? renderModifierValue(detail.value as number | string)
                           : detail.value;
                       
@@ -1012,21 +1089,15 @@ export function InfoDisplayDialog({
                       );
                   })}
                   
-                  {contentType?.type === 'acBreakdown' && (() => { 
-                    const totalDetailItem = detailsList!.find(detail => detail.isBold === true);
-                    if (totalDetailItem) {
-                      return (
+                  {contentType?.type === 'acBreakdown' && totalACValue !== undefined && ( 
                         <>
                           <Separator className="my-2" />
                           <div className="flex justify-between text-base">
-                            <span className="font-semibold">{totalDetailItem.label as string}</span>
-                            <span className="font-bold text-accent">{renderModifierValue(totalDetailItem.value as number | string)}</span>
+                            <span className="font-semibold">{UI_STRINGS.infoDialogTotalLabel || 'Total'}</span>
+                            <span className="font-bold text-accent">{renderModifierValue(totalACValue)}</span>
                           </div>
                         </>
-                      );
-                    }
-                    return null;
-                  })()}
+                  )}
                 </div>
                 {markContentRendered()}
               </>
@@ -1051,8 +1122,10 @@ interface DerivedDialogData {
   bonusFeatSlots?: number;
   abilityScoreBreakdown?: AbilityScoreBreakdown;
   skillModifierBreakdown?: SkillModifierBreakdownDetails;
+  synergyInfoList?: string[];
   resistanceBreakdown?: ResistanceBreakdownDetails;
   detailsList?: Array<{ label: string; value: string | number | React.ReactNode; isBold?: boolean }>;
+  totalACValue?: number; // Added for AC Breakdown total
   babBreakdown?: BabBreakdownDetails;
   initiativeBreakdown?: InitiativeBreakdownDetails;
   grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
