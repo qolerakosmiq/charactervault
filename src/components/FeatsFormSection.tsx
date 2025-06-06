@@ -184,7 +184,7 @@ export function FeatsFormSection({
     const { UI_STRINGS } = translations;
 
     return (
-      <div key={instance.instanceId} className="group flex items-start justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors">
+      <div key={instance.instanceId} className="group flex items-start justify-between py-2 border-b border-border/50 hover:bg-muted/10 transition-colors">
         <div className="flex-grow mr-2">
           <div className="flex items-baseline flex-wrap gap-x-1.5 mb-1">
             {featSource && <Badge variant="secondary" className="text-xs font-normal h-5 whitespace-nowrap">{featSource}</Badge>}
@@ -298,7 +298,7 @@ export function FeatsFormSection({
             </p>
           </div>
 
-          <div className="mt-3 mb-1 flex gap-2"> {/* Button container */}
+          <div className="mt-3 mb-1 flex gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setIsFeatDialogOpen(true)}>
               <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.featsPanelAddButton || "Choose Feat"}
             </Button>
@@ -306,7 +306,7 @@ export function FeatsFormSection({
 
           {userChosenFeatInstances.length > 0 && (
             <>
-              <h3 className={cn("text-lg font-semibold mb-2 text-primary", "mt-2")}> {/* CHOSEN FEATS TITLE */}
+              <h3 className={cn("text-lg font-semibold mb-2 text-primary", "mt-2")}>
                 {UI_STRINGS.featsPanelChosenFeatsTitle || "Chosen Feats"}
               </h3>
               <div className="space-y-1 mb-3">
@@ -321,7 +321,7 @@ export function FeatsFormSection({
               <h3
                 className={cn(
                   "text-lg font-semibold mb-2 text-primary",
-                  userChosenFeatInstances.length === 0 && "mt-2" // GRANTED FEATS TITLE
+                  userChosenFeatInstances.length === 0 && "mt-2"
                 )}
               >
                 {UI_STRINGS.featsPanelGrantedFeatsTitle || "Granted Feats"}
