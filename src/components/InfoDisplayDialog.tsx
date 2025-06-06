@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import *as React from 'react';
@@ -348,7 +349,7 @@ export function InfoDisplayDialog({
                   <Badge variant="outline" className={badgeClass}>{sRule.bonus > 0 ? '+' : ''}{sRule.bonus}</Badge>
                   {UI_STRINGS.synergyTextPart4BonusToTargetSkillStart || " bonus to "}
                   <span className="font-medium">{targetSkillName}</span>
-                  {UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "'s checks."}
+                  {UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "."}
                 </>
               );
               synergyItems.push({ id: `provided-${currentSkillId}-${sRule.targetSkill}`, text: textNode, isActive });
@@ -368,7 +369,7 @@ export function InfoDisplayDialog({
                   <Badge variant="outline" className={badgeClass}>{customRule.bonusGranted > 0 ? '+' : ''}{customRule.bonusGranted}</Badge>
                   {UI_STRINGS.synergyTextPart4BonusToTargetSkillStart || " bonus to "}
                   <span className="font-medium">{targetSkillName}</span>
-                  {UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "'s checks."}
+                  {UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "."}
                 </>
               );
               synergyItems.push({ id: `provided-custom-${customRule.id}`, text: textNode, isActive });
@@ -664,7 +665,7 @@ export function InfoDisplayDialog({
                   {synergyInfoList.map((synergyItem) => {
                     const IconComponent = synergyItem.isActive ? CheckSquare : Square;
                     return (
-                      <div key={synergyItem.id} className="flex items-baseline text-sm">
+                      <div key={synergyItem.id} className="flex items-center text-sm">
                         <IconComponent className={cn("h-4 w-4 mr-2 shrink-0", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")} />
                         <span className={cn(synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")}>
                           {synergyItem.text}
@@ -750,9 +751,9 @@ export function InfoDisplayDialog({
                   {grantedFeats.map(feat => {
                     const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
                     return (
-                       <li key={uniqueKey}>
+                       <li key={uniqueKey} className="group">
                           <div
-                            className="flex items-baseline gap-2 p-1 -mx-1 rounded hover:bg-muted/30 transition-colors cursor-pointer group"
+                            className="flex items-baseline gap-2 p-1 -mx-1 rounded hover:bg-muted/30 transition-colors cursor-pointer"
                             onClick={() => toggleExpanded(uniqueKey)}
                             role="button"
                             aria-expanded={expandedItems.has(uniqueKey)}
@@ -1199,3 +1200,4 @@ interface SkillModifierBreakdownDetails {
 }
 
     
+
