@@ -91,3 +91,9 @@
     font-family: var(--font-serif);
   }
 }
+
+@layer components {
+  .separator-before-total {
+    margin-top: 0.5rem; /* Equivalent to mt-2 */
+  }
+}
