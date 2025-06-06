@@ -613,12 +613,12 @@ export function InfoDisplayDialog({
   
   const sectionHeadingClass = "text-md font-semibold mb-2 text-primary";
 
-  let detailsListHeading = UI_STRINGS.infoDialogSectionHeadingDetails || "Details"; 
+  let detailsListHeading = UI_STRINGS.infoDialogSectionHeadingDetails || "Details";
   if (contentType?.type === 'race') {
     detailsListHeading = UI_STRINGS.infoDialogRaceSpecificsListHeading || "Racial Specifics";
   } else if (contentType?.type === 'class') {
     detailsListHeading = UI_STRINGS.infoDialogClassSpecificsListHeading || "Class Specifics";
-  } else if (abilityScoreBreakdown || skillModifierBreakdown || resistanceBreakdown || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || speedBreakdown || (detailsList && (contentType?.type === 'acBreakdown'))) {
+  } else if (abilityScoreBreakdown || skillModifierBreakdown || resistanceBreakdown || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || speedBreakdown || (contentType?.type === 'acBreakdown')) {
     detailsListHeading = UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation";
   }
   
@@ -627,7 +627,7 @@ export function InfoDisplayDialog({
   let hasRenderedContentBlock = false;
   const renderSeparatorIfNeeded = () => {
     if (hasRenderedContentBlock && ( contentType?.type === 'skillModifierBreakdown' || contentType?.type === 'abilityScoreBreakdown' || contentType?.type === 'resistanceBreakdown' ||contentType?.type === 'babBreakdown' || contentType?.type === 'initiativeBreakdown' || contentType?.type === 'grappleModifierBreakdown' || contentType?.type === 'grappleDamageBreakdown' || contentType?.type === 'speedBreakdown' || (contentType?.type === 'acBreakdown' && totalACValue !== undefined) || contentType?.type === 'race' || contentType?.type === 'class')) {
-      return <div className="mt-3 mb-3"><Separator /></div>;
+      return <div className="my-3"><Separator /></div>;
     }
     return null;
   };
@@ -649,7 +649,7 @@ export function InfoDisplayDialog({
           </DialogTitle>
         </DialogHeader>
         <ScrollArea className="max-h-[70vh] pr-4 my-2">
-          <div className="pb-4"> 
+          <div className="pb-4 space-y-1"> 
             {htmlContent && (
               <>
                 {renderSeparatorIfNeeded()}
