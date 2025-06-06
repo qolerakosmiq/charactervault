@@ -43,15 +43,28 @@ import {
 } from '@/types/character';
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
 import { useI18n } from '@/context/I18nProvider';
-import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-
 
 import {
   calculateAbilityModifier, getAbilityModifierByName, getBab, getSizeModifierAC, getSizeModifierGrapple,
   calculateInitiative, calculateGrapple, getUnarmedGrappleDamage
 } from '@/lib/dnd-utils';
+
+// Import new content components
+import { RaceContentDisplay } from './info-dialog-content/RaceContentDisplay';
+import { ClassContentDisplay } from './info-dialog-content/ClassContentDisplay';
+import { AlignmentSummaryContentDisplay } from './info-dialog-content/AlignmentSummaryContentDisplay';
+import { DeityContentDisplay } from './info-dialog-content/DeityContentDisplay';
+import { AbilityScoreBreakdownContentDisplay } from './info-dialog-content/AbilityScoreBreakdownContentDisplay';
+import { SkillModifierBreakdownContentDisplay } from './info-dialog-content/SkillModifierBreakdownContentDisplay';
+import { ResistanceBreakdownContentDisplay } from './info-dialog-content/ResistanceBreakdownContentDisplay';
+import { AcBreakdownContentDisplay } from './info-dialog-content/AcBreakdownContentDisplay';
+import { BabBreakdownContentDisplay } from './info-dialog-content/BabBreakdownContentDisplay';
+import { InitiativeBreakdownContentDisplay } from './info-dialog-content/InitiativeBreakdownContentDisplay';
+import { GrappleModifierBreakdownContentDisplay } from './info-dialog-content/GrappleModifierBreakdownContentDisplay';
+import { GrappleDamageBreakdownContentDisplay } from './info-dialog-content/GrappleDamageBreakdownContentDisplay';
+import { SpeedBreakdownContentDisplay } from './info-dialog-content/SpeedBreakdownContentDisplay';
+import { GenericHtmlContentDisplay } from './info-dialog-content/GenericHtmlContentDisplay';
 
 
 export interface ResistanceBreakdownDetails {
@@ -68,6 +81,23 @@ export interface InitiativeBreakdownDetails extends InitiativeBreakdownDetailsTy
 export interface GrappleModifierBreakdownDetails extends GrappleModifierBreakdownDetailsType {}
 export interface GrappleDamageBreakdownDetails extends GrappleDamageBreakdownDetailsType {}
 export interface SpeedBreakdownDetails extends SpeedBreakdownDetailsType {}
+export interface SkillModifierBreakdownDetails { // Re-defined here for clarity, ensure it matches usage
+  skillName: string;
+  keyAbilityName?: string; 
+  keyAbilityModifier: number;
+  ranks: number;
+  synergyBonus: number;
+  featBonus: number;
+  racialBonus: number;
+  sizeSpecificBonus: number;
+  miscModifier: number;
+  totalBonus: number;
+}
+export interface SynergyInfoItem {
+  id: string;
+  text: React.ReactNode;
+  isActive: boolean;
+}
 
 
 interface InfoDisplayDialogProps {
@@ -84,59 +114,6 @@ const SPEED_ICONS: Record<SpeedType, React.ElementType> = {
   fly: Feather,
   swim: Waves,
 };
-
-
-const ExpandableDetailWrapper = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <div className="px-3 py-1 rounded-md bg-muted/20 border border-border/30">
-      {children}
-    </div>
-  );
-};
-
-// Internal component for displaying feat details
-const FeatDetailContent: React.FC<{
-  featId: string;
-  character: Character;
-  allFeats: readonly (FeatDefinitionJsonData & {isCustom?: boolean})[];
-  allPredefinedSkills: readonly SkillDefinitionJsonData[];
-  allCustomSkills: readonly CustomSkillDefinition[];
-  allClasses: readonly DndClassOption[]; // From translations
-  allRaces: readonly DndRaceOption[];   // From translations
-  abilityLabels: readonly {value: Exclude<AbilityName, 'none'>, label:string, abbr:string}[]; // From translations
-  alignmentPrereqOptions: readonly {value: string, label:string}[]; // From translations
-  uiStrings: Record<string, string>; // For prerequisite and effect labels
-}> = ({ featId, character, allFeats, allPredefinedSkills, allCustomSkills, allClasses, allRaces, abilityLabels, alignmentPrereqOptions, uiStrings }) => {
-  const featDef = allFeats.find(f => f.value === featId);
-  if (!featDef) return <p className="text-sm text-muted-foreground">{uiStrings.infoDialogFeatNotFound || "Feat details not found."}</p>;
-
-  const prereqMessages = checkFeatPrerequisites(featDef, character, allFeats, allPredefinedSkills, allCustomSkills, allClasses, allRaces, abilityLabels, alignmentPrereqOptions, uiStrings);
-
-  return (
-    <>
-      {featDef.description && <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: featDef.description }} />}
-      {prereqMessages.length > 0 && (
-        <div className="mt-3">
-          <p className="text-sm font-medium text-muted-foreground">{uiStrings.featPrerequisitesLabel || "Prerequisites:"}</p>
-          <ul className="list-disc list-inside text-sm">
-            {prereqMessages.map((msg, index) => (
-              <li key={index} className={cn(!msg.isMet && "text-destructive")}>
-                <span dangerouslySetInnerHTML={{ __html: msg.text }}></span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {featDef.effectsText && (
-        <div className="mt-3">
-          <p className="text-sm font-medium text-muted-foreground">{uiStrings.featEffectsLabel || "Effects:"}</p>
-          <p className="text-sm">{featDef.effectsText}</p>
-        </div>
-      )}
-    </>
-  );
-};
-
 
 export function InfoDisplayDialog({
   isOpen,
@@ -197,15 +174,6 @@ export function InfoDisplayDialog({
   }, [translations, translationsLoading, customSkillDefinitions]);
 
 
-  const renderModifierValue = (value: number | string) => {
-    const numValue = typeof value === 'string' ? parseFloat(value) : value;
-    if (isNaN(numValue)) return <span className="font-bold">{value}</span>;
-    if (numValue === 0) return <span className="font-bold text-muted-foreground">+0</span>;
-    if (numValue > 0) return <span className="font-bold text-emerald-500">+{numValue}</span>;
-    return <span className="font-bold text-destructive">{numValue}</span>;
-  };
-
-
   const derivedData = React.useMemo((): DerivedDialogData | null => {
     if (!isOpen || !contentType || !character || translationsLoading || !translations) {
       return null;
@@ -220,8 +188,7 @@ export function InfoDisplayDialog({
     } = translations;
 
     let data: DerivedDialogData = { title: UI_STRINGS.infoDialogDefaultTitle || 'Information' };
-    const speedUnit = UI_STRINGS.speedUnit || "ft.";
-
+    
     switch (contentType.type) {
       case 'race': {
         const raceId = character.race;
@@ -231,7 +198,7 @@ export function InfoDisplayDialog({
         const details: Array<{ label: string; value: string | number | React.ReactNode; isBold?: boolean }> = [];
         
         if (racialSkillPointBonus > 0) {
-          details.push({ label: UI_STRINGS.infoDialogRacialSkillPointBonusLabel || "Bonus Skill Points/Level", value: renderModifierValue(racialSkillPointBonus) });
+          details.push({ label: UI_STRINGS.infoDialogRacialSkillPointBonusLabel || "Bonus Skill Points/Level", value: racialSkillPointBonus });
         }
         
         let raceBonusFeatSlotsValue = qualities.bonusFeatSlots;
@@ -588,31 +555,15 @@ export function InfoDisplayDialog({
     );
   }
   const { UI_STRINGS } = translations;
-  const speedUnit = UI_STRINGS.speedUnit || "ft.";
 
   const {
     title: finalTitle,
-    htmlContent,
-    abilityModifiers,
-    skillBonuses,
-    grantedFeats,
-    bonusFeatSlots,
-    abilityScoreBreakdown,
-    skillModifierBreakdown,
-    resistanceBreakdown,
-    detailsList,
-    babBreakdown,
-    initiativeBreakdown,
-    grappleModifierBreakdown,
-    grappleDamageBreakdown,
-    speeds,
-    speedBreakdown,
-    synergyInfoList,
-    totalACValue,
+    htmlContent, abilityModifiers, skillBonuses, grantedFeats, bonusFeatSlots,
+    abilityScoreBreakdown, skillModifierBreakdown, synergyInfoList, resistanceBreakdown,
+    detailsList, totalACValue, babBreakdown, initiativeBreakdown,
+    grappleModifierBreakdown, grappleDamageBreakdown, speeds, speedBreakdown,
   } = derivedData;
   
-  const sectionHeadingClass = "text-md font-semibold mb-2 text-primary";
-
   let detailsListHeading = UI_STRINGS.infoDialogSectionHeadingDetails || "Details";
   if (contentType?.type === 'race') {
     detailsListHeading = UI_STRINGS.infoDialogRaceSpecificsListHeading || "Racial Specifics";
@@ -621,19 +572,76 @@ export function InfoDisplayDialog({
   } else if (abilityScoreBreakdown || skillModifierBreakdown || resistanceBreakdown || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || speedBreakdown || (contentType?.type === 'acBreakdown')) {
     detailsListHeading = UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation";
   }
-  
-  const hasAnyBonusSection = abilityModifiers?.length || skillBonuses?.length || grantedFeats?.length || bonusFeatSlots !== undefined || speeds;
-  
-  let hasRenderedContentBlock = false;
-  const renderSeparatorIfNeeded = () => {
-    if (hasRenderedContentBlock && ( contentType?.type === 'skillModifierBreakdown' || contentType?.type === 'abilityScoreBreakdown' || contentType?.type === 'resistanceBreakdown' ||contentType?.type === 'babBreakdown' || contentType?.type === 'initiativeBreakdown' || contentType?.type === 'grappleModifierBreakdown' || contentType?.type === 'grappleDamageBreakdown' || contentType?.type === 'speedBreakdown' || (contentType?.type === 'acBreakdown' && totalACValue !== undefined) || contentType?.type === 'race' || contentType?.type === 'class')) {
-      return <div className="mt-2 mb-2"><Separator /></div>;
+
+  const renderContent = () => {
+    if (!contentType) return null;
+
+    switch (contentType.type) {
+      case 'race':
+        return <RaceContentDisplay
+                  htmlContent={htmlContent}
+                  abilityModifiers={abilityModifiers}
+                  skillBonuses={skillBonuses}
+                  grantedFeats={grantedFeats}
+                  bonusFeatSlots={bonusFeatSlots}
+                  speeds={speeds}
+                  translations={translations}
+                  allCombinedFeatDefinitions={allCombinedFeatDefinitions}
+                  customSkillDefinitions={customSkillDefinitions}
+                  character={character}
+                  expandedItems={expandedItems}
+                  toggleExpanded={toggleExpanded}
+                />;
+      case 'class':
+        return <ClassContentDisplay
+                  htmlContent={htmlContent}
+                  grantedFeats={grantedFeats}
+                  detailsList={detailsList}
+                  translations={translations}
+                  allCombinedFeatDefinitions={allCombinedFeatDefinitions}
+                  customSkillDefinitions={customSkillDefinitions}
+                  character={character}
+                  expandedItems={expandedItems}
+                  toggleExpanded={toggleExpanded}
+                />;
+      case 'alignmentSummary':
+        return <AlignmentSummaryContentDisplay htmlContent={htmlContent} />;
+      case 'deity':
+        return <DeityContentDisplay htmlContent={htmlContent} />;
+      case 'abilityScoreBreakdown':
+        return <AbilityScoreBreakdownContentDisplay abilityScoreBreakdown={abilityScoreBreakdown} uiStrings={UI_STRINGS} />;
+      case 'skillModifierBreakdown':
+        return <SkillModifierBreakdownContentDisplay
+                  htmlContent={htmlContent}
+                  synergyInfoList={synergyInfoList}
+                  skillModifierBreakdown={skillModifierBreakdown}
+                  uiStrings={UI_STRINGS}
+                />;
+      case 'resistanceBreakdown':
+        return <ResistanceBreakdownContentDisplay resistanceBreakdown={resistanceBreakdown} uiStrings={UI_STRINGS} />;
+      case 'acBreakdown':
+        return <AcBreakdownContentDisplay
+                  detailsList={detailsList}
+                  totalACValue={totalACValue}
+                  detailsListHeading={detailsListHeading}
+                  uiStrings={UI_STRINGS}
+                  abilityLabels={translations.ABILITY_LABELS}
+               />;
+      case 'babBreakdown':
+        return <BabBreakdownContentDisplay babBreakdown={babBreakdown} uiStrings={UI_STRINGS} />;
+      case 'initiativeBreakdown':
+        return <InitiativeBreakdownContentDisplay initiativeBreakdown={initiativeBreakdown} uiStrings={UI_STRINGS} abilityLabels={translations.ABILITY_LABELS} />;
+      case 'grappleModifierBreakdown':
+        return <GrappleModifierBreakdownContentDisplay grappleModifierBreakdown={grappleModifierBreakdown} uiStrings={UI_STRINGS} abilityLabels={translations.ABILITY_LABELS} />;
+      case 'grappleDamageBreakdown':
+        return <GrappleDamageBreakdownContentDisplay grappleDamageBreakdown={grappleDamageBreakdown} uiStrings={UI_STRINGS} abilityLabels={translations.ABILITY_LABELS} />;
+      case 'speedBreakdown':
+        return <SpeedBreakdownContentDisplay speedBreakdown={speedBreakdown} uiStrings={UI_STRINGS} />;
+      case 'genericHtml':
+        return <GenericHtmlContentDisplay htmlContent={htmlContent} />;
+      default:
+        return null;
     }
-    return null;
-  };
-  
-  const markContentRendered = () => {
-    hasRenderedContentBlock = true;
   };
 
 
@@ -650,501 +658,7 @@ export function InfoDisplayDialog({
         </DialogHeader>
         <ScrollArea className="max-h-[70vh] pr-4 my-2">
           <div className="pb-4 space-y-1"> 
-            {htmlContent && (
-              <>
-                {renderSeparatorIfNeeded()}
-                <div
-                  className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
-                  dangerouslySetInnerHTML={{ __html: htmlContent }}
-                />
-                {markContentRendered()}
-              </>
-            )}
-            
-            {contentType?.type === 'skillModifierBreakdown' && synergyInfoList && synergyInfoList.length > 0 && (
-              <>
-                {renderSeparatorIfNeeded()}
-                <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
-                <ul className="space-y-0.5">
-                  {synergyInfoList.map((synergyItem) => {
-                    const IconComponent = synergyItem.isActive ? CheckSquare : Square;
-                    return (
-                      <li key={synergyItem.id} className="flex items-start text-sm">
-                        <IconComponent className={cn("h-4 w-4 mr-2 shrink-0 mt-1", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")} />
-                        <span className={cn(synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")}>
-                          {synergyItem.text}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
-                {markContentRendered()}
-              </>
-            )}
-
-            {hasAnyBonusSection && (contentType?.type === 'race' || contentType?.type === 'class') && (
-                 <>
-                    {renderSeparatorIfNeeded()}
-                    <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading || "General Traits"}</h3>
-                    {markContentRendered()}
-                 </>
-            )}
-
-            {abilityModifiers && abilityModifiers.length > 0 && (
-              <div className="mt-2">
-                <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments}</h4>
-                <div className="space-y-0.5 text-sm mb-2">
-                  {abilityModifiers.map(mod => (
-                    <div key={mod.ability} className="flex justify-between">
-                      <span className="text-foreground">{translations.ABILITY_LABELS.find(al => al.value === mod.ability)?.label || mod.ability}</span>
-                      {renderModifierValue(mod.change)}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {skillBonuses && skillBonuses.length > 0 && (
-              <div className="mt-2">
-                <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses}</h4>
-                <div className="space-y-0.5 text-sm mb-2">
-                  {skillBonuses.map(bonus => (
-                    <div key={bonus.skillId} className="flex justify-between">
-                      <span className="text-foreground">{bonus.skillName}</span>
-                      {renderModifierValue(bonus.bonus)}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {speeds && Object.keys(speeds).filter(k => (speeds as any)[k] !== undefined && (speeds as any)[k] > 0).length > 0 && (
-               <div className="mt-2">
-                <p className="text-sm text-muted-foreground font-medium mb-1">{UI_STRINGS.infoDialogBaseSpeeds}</p>
-                 <div className="ml-4 space-y-0.5 text-sm mb-2">
-                  {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
-                    .map(([type, speedVal]) => {
-                    const speedTypeKey = `speedLabel${type.charAt(0).toUpperCase() + type.slice(1)}` as keyof typeof UI_STRINGS;
-                    const speedName = UI_STRINGS[speedTypeKey] || type;
-                    return (
-                      <div key={type} className="flex justify-between">
-                        <span className="text-foreground">{speedName}</span>
-                        <span className="font-semibold text-foreground">{speedVal} {speedUnit}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-            {bonusFeatSlots !== undefined && bonusFeatSlots > 0 && (
-               <div className="flex justify-between text-sm mt-2">
-                <span className="text-sm text-foreground font-medium">{UI_STRINGS.infoDialogBonusFeatSlots}</span>
-                {renderModifierValue(bonusFeatSlots)}
-              </div>
-            )}
-            {grantedFeats && grantedFeats.length > 0 && (
-               <div className="mt-2">
-                <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h4>
-                <ul className="list-none space-y-0.5 text-sm">
-                  {grantedFeats.map(feat => {
-                    const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
-                    return (
-                       <li key={uniqueKey} className="group">
-                          <div
-                            className="flex items-baseline gap-2 p-1 -mx-1 rounded transition-colors cursor-pointer"
-                            onClick={() => toggleExpanded(uniqueKey)}
-                            role="button"
-                            aria-expanded={expandedItems.has(uniqueKey)}
-                            aria-controls={`feat-details-${uniqueKey}`}
-                          >
-                            {feat.levelAcquired !== undefined && (
-                              <Badge
-                                variant="outline"
-                                className="text-xs font-normal h-5 whitespace-nowrap"
-                              >
-                                {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
-                              </Badge>
-                            )}
-                             <div className="flex-grow">
-                                <strong className="text-foreground leading-tight transition-colors">{feat.name}</strong>
-                                {feat.note && (
-                                  <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
-                                    {feat.note}
-                                  </p>
-                                )}
-                             </div>
-                          </div>
-                          {expandedItems.has(uniqueKey) && (
-                           <div id={`feat-details-${uniqueKey}`} className="my-1 mb-1">
-                              <ExpandableDetailWrapper>
-                                <FeatDetailContent
-                                    featId={feat.featId}
-                                    character={character}
-                                    allFeats={allCombinedFeatDefinitions}
-                                    allPredefinedSkills={translations.SKILL_DEFINITIONS}
-                                    allCustomSkills={customSkillDefinitions}
-                                    allClasses={translations.DND_CLASSES}
-                                    allRaces={translations.DND_RACES}
-                                    abilityLabels={translations.ABILITY_LABELS}
-                                    alignmentPrereqOptions={translations.ALIGNMENT_PREREQUISITE_OPTIONS}
-                                    uiStrings={UI_STRINGS}
-                                />
-                              </ExpandableDetailWrapper>
-                           </div>
-                          )}
-                        </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            )}
-
-            {babBreakdown && (
-              <>
-              {renderSeparatorIfNeeded()}
-              <div>
-                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation}</h3>
-                  <div className="space-y-1 text-sm">
-                    <div className="flex justify-between">
-                      <span>{(UI_STRINGS.infoDialogBabClassLabel || "{classLabel} Base Attack Bonus:").replace("{classLabel}", babBreakdown.characterClassLabel || 'Class')}</span>
-                      <span className="font-bold">{babBreakdown.baseBabFromClasses.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
-                    </div>
-                    {babBreakdown.miscModifier !== 0 && (
-                      <div className="flex justify-between">
-                          <span>{UI_STRINGS.infoDialogCustomModifierLabel}</span>
-                          {renderModifierValue(babBreakdown.miscModifier)}
-                      </div>
-                    )}
-                    <div className="mt-2 mb-2"><Separator style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}/></div>
-                    <div className="flex justify-between text-base">
-                      <span className="font-semibold">{UI_STRINGS.infoDialogBabTotalLabel || "Total Base Attack Bonus:"}</span>
-                      <span className="font-bold text-accent">{babBreakdown.totalBab.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
-                    </div>
-                  </div>
-                </div>
-                {markContentRendered()}
-              </>
-            )}
-
-            {initiativeBreakdown && (
-              <>
-              {renderSeparatorIfNeeded()}
-              <div>
-                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation}</h3>
-                  <div className="space-y-1 text-sm">
-                    <div className="flex justify-between">
-                      <span>
-                         {(UI_STRINGS.infoDialogInitiativeAbilityModLabel).replace("{abilityAbbr}", translations.ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX').replace("{abilityFull}", translations.ABILITY_LABELS.find(al => al.value === 'dexterity')?.label || 'Dexterity')}
-                      </span>
-                      {renderModifierValue(initiativeBreakdown.dexModifier)}
-                    </div>
-                    {initiativeBreakdown.miscModifier !== 0 && (
-                      <div className="flex justify-between">
-                          <span>{UI_STRINGS.infoDialogCustomModifierLabel}</span>
-                          {renderModifierValue(initiativeBreakdown.miscModifier)}
-                      </div>
-                    )}
-                    <div className="mt-2 mb-2"><Separator style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}/></div>
-                    <div className="flex justify-between text-base">
-                      <span className="font-semibold">{UI_STRINGS.infoDialogInitiativeTotalLabel}</span>
-                      <span className="font-bold text-accent">{renderModifierValue(initiativeBreakdown.totalInitiative)}</span>
-                    </div>
-                  </div>
-                </div>
-                {markContentRendered()}
-              </>
-            )}
-
-            {grappleModifierBreakdown && (
-              <>
-              {renderSeparatorIfNeeded()}
-              <div>
-                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation}</h3>
-                  <div className="space-y-1 text-sm">
-                    <div className="flex justify-between">
-                      <span>{UI_STRINGS.infoDialogGrappleModBabLabel}</span>
-                      {renderModifierValue(grappleModifierBreakdown.baseAttackBonus)}
-                    </div>
-                    <div className="flex justify-between">
-                      <span>
-                         {(UI_STRINGS.infoDialogGrappleModAbilityLabel).replace("{abilityAbbr}", translations.ABILITY_LABELS.find(al => al.value === 'strength')?.abbr || 'STR').replace("{abilityFull}", translations.ABILITY_LABELS.find(al => al.value === 'strength')?.label || 'Strength')}
-                      </span>
-                      {renderModifierValue(grappleModifierBreakdown.strengthModifier)}
-                    </div>
-                    <div className="flex justify-between">
-                      <span>{UI_STRINGS.infoDialogGrappleModSizeLabel}</span>
-                      {renderModifierValue(grappleModifierBreakdown.sizeModifierGrapple)}
-                    </div>
-                    {grappleModifierBreakdown.miscModifier !== 0 && (
-                      <div className="flex justify-between">
-                          <span>{UI_STRINGS.infoDialogCustomModifierLabel}</span>
-                          {renderModifierValue(grappleModifierBreakdown.miscModifier)}
-                      </div>
-                    )}
-                    <div className="mt-2 mb-2"><Separator style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}/></div>
-                    <div className="flex justify-between text-base">
-                      <span className="font-semibold">{UI_STRINGS.infoDialogGrappleModTotalLabel}</span>
-                      <span className="font-bold text-accent">{renderModifierValue(grappleModifierBreakdown.totalGrappleModifier)}</span>
-                    </div>
-                  </div>
-                </div>
-                {markContentRendered()}
-              </>
-            )}
-            
-            {grappleDamageBreakdown && (
-              <>
-              {renderSeparatorIfNeeded()}
-              <div>
-                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation}</h3>
-                  <div className="space-y-1 text-sm">
-                    <div className="flex justify-between">
-                      <span>{UI_STRINGS.infoDialogGrappleDmgBaseLabel}</span>
-                      <span className="font-bold">
-                        {grappleDamageBreakdown.baseDamage.split(' ')[0] || 'N/A'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>{UI_STRINGS.infoDialogGrappleDmgWeaponLabel}</span>
-                      {grappleDamageBreakdown.baseDamage.toLowerCase().includes('unarmed') ? (
-                          <span className="font-semibold text-muted-foreground">{UI_STRINGS.infoDialogGrappleDmgUnarmedLabel || "Unarmed"}</span>
-                      ) : (
-                          renderModifierValue(0) 
-                      )}
-                    </div>
-                    <div className="flex justify-between">
-                      <span>
-                        {(UI_STRINGS.infoDialogGrappleDmgAbilityLabel).replace("{abilityAbbr}", translations.ABILITY_LABELS.find(al => al.value === 'strength')?.abbr || 'STR').replace("{abilityFull}", translations.ABILITY_LABELS.find(al => al.value === 'strength')?.label || 'Strength')}
-                      </span>
-                      {renderModifierValue(grappleDamageBreakdown.strengthModifier)}
-                    </div>
-                    {grappleDamageBreakdown.bonus !== 0 && (
-                      <div className="flex justify-between">
-                          <span>{UI_STRINGS.infoDialogCustomModifierLabel}</span>
-                          {renderModifierValue(grappleDamageBreakdown.bonus)}
-                      </div>
-                    )}
-                    <div className="mt-2 mb-2"><Separator style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}/></div>
-                    <div className="flex justify-between text-base">
-                      <span className="font-semibold">{UI_STRINGS.infoDialogGrappleDmgTotalLabel}</span>
-                      <span className="font-bold text-accent">
-                        {`${grappleDamageBreakdown.baseDamage.split(' ')[0] || '0'}${(grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus) !== 0 ? `${(grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus) >= 0 ? '+' : ''}${grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus}`: ''}`}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                {markContentRendered()}
-              </>
-            )}
-
-            {abilityScoreBreakdown && (
-              <>
-              {renderSeparatorIfNeeded()}
-              <div>
-                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation}</h3>
-                  <div className="space-y-1 text-sm">
-                    <div className="flex justify-between">
-                      <span>{UI_STRINGS.infoDialogBaseScoreLabel}</span>
-                      <span className="font-bold">{abilityScoreBreakdown.base}</span>
-                    </div>
-                    {abilityScoreBreakdown.components.map((comp, index) => {
-                       let displaySource = comp.source;
-                       if (comp.source === "tempMod" && UI_STRINGS.abilityScoreSourceTempMod) { displaySource = UI_STRINGS.abilityScoreSourceTempMod; }
-                       else if (comp.source === "feats" && UI_STRINGS.abilityScoreSourceFeats) { displaySource = UI_STRINGS.abilityScoreSourceFeats; }
-                       else if (comp.source.startsWith("Race (") && UI_STRINGS.abilityScoreSourceRace) { displaySource = (UI_STRINGS.abilityScoreSourceRace).replace("{raceLabel}", comp.source.match(/Race \((.*?)\)/)?.[1] || ''); }
-                       else if (comp.source.startsWith("Aging (") && UI_STRINGS.abilityScoreSourceAging) { displaySource = (UI_STRINGS.abilityScoreSourceAging).replace("{categoryName}", comp.source.match(/Aging \((.*?)\)/)?.[1] || '');}
-
-
-                      return comp.value !== 0 && (
-                        <div key={index} className="flex justify-between">
-                          <span>{displaySource}</span>
-                          {renderModifierValue(comp.value)}
-                        </div>
-                      );
-                    })}
-                    <div className="mt-2 mb-2"><Separator style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}/></div>
-                    <div className="flex justify-between text-base">
-                      <span className="font-semibold">{UI_STRINGS.infoDialogFinalScoreLabel}</span>
-                      <span className="font-bold text-accent">{abilityScoreBreakdown.finalScore}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-semibold">{UI_STRINGS.infoDialogFinalModifierLabel}</span>
-                      {renderModifierValue(calculateAbilityModifier(abilityScoreBreakdown.finalScore))}
-                    </div>
-                  </div>
-                </div>
-                {markContentRendered()}
-              </>
-            )}
-
-            {skillModifierBreakdown && (
-              <>
-              {renderSeparatorIfNeeded()}
-              <div>
-                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation}</h3>
-                  <div className="space-y-1 text-sm">
-                    {skillModifierBreakdown.keyAbilityName && (
-                        <div className="flex justify-between">
-                          <span>
-                            {UI_STRINGS.infoDialogKeyAbilityLabel}
-                            {" "}
-                            <span className="text-muted-foreground">({skillModifierBreakdown.keyAbilityName})</span>
-                          </span>
-                          {renderModifierValue(skillModifierBreakdown.keyAbilityModifier)}
-                        </div>
-                    )}
-                    <div className="flex justify-between">
-                      <span>{UI_STRINGS.infoDialogRanksLabel}</span>
-                      {renderModifierValue(skillModifierBreakdown.ranks)}
-                    </div>
-                    {skillModifierBreakdown.sizeSpecificBonus !== 0 && (
-                      <div className="flex justify-between">
-                        <span>{UI_STRINGS.infoDialogSizeModifierLabel}</span>
-                        {renderModifierValue(skillModifierBreakdown.sizeSpecificBonus)}
-                      </div>
-                    )}
-                    {skillModifierBreakdown.synergyBonus !== 0 && (
-                      <div className="flex justify-between">
-                        <span>{UI_STRINGS.infoDialogSynergyBonusLabel}</span>
-                        {renderModifierValue(skillModifierBreakdown.synergyBonus)}
-                      </div>
-                    )}
-                    {skillModifierBreakdown.featBonus !== 0 && (
-                      <div className="flex justify-between">
-                        <span>{UI_STRINGS.infoDialogFeatBonusLabel}</span>
-                        {renderModifierValue(skillModifierBreakdown.featBonus)}
-                      </div>
-                    )}
-                    {skillModifierBreakdown.racialBonus !== 0 && (
-                      <div className="flex justify-between">
-                        <span>{UI_STRINGS.infoDialogRacialBonusLabel}</span>
-                        {renderModifierValue(skillModifierBreakdown.racialBonus)}
-                      </div>
-                    )}
-                    {skillModifierBreakdown.miscModifier !== 0 && (
-                      <div className="flex justify-between">
-                        <span>{UI_STRINGS.infoDialogMiscModifierLabel}</span>
-                        {renderModifierValue(skillModifierBreakdown.miscModifier)}
-                      </div>
-                    )}
-                    <div className="mt-2 mb-2"><Separator style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}/></div>
-                    <div className="flex justify-between text-base">
-                      <span className="font-semibold">{UI_STRINGS.infoDialogTotalBonusLabel}</span>
-                      <span className="font-bold text-accent">{renderModifierValue(skillModifierBreakdown.totalBonus)}</span>
-                    </div>
-                  </div>
-              </div>
-              {markContentRendered()}
-              </>
-            )}
-            
-            {resistanceBreakdown && (
-              <>
-                {renderSeparatorIfNeeded()}
-                <div>
-                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation}</h3>
-                  <div className="space-y-1 text-sm">
-                    <div className="flex justify-between">
-                      <span>{UI_STRINGS.infoDialogBaseValueLabel}</span>
-                      <span className="font-bold">{resistanceBreakdown.base}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>{UI_STRINGS.infoDialogCustomModifierLabel}</span>
-                      {renderModifierValue(resistanceBreakdown.customMod)}
-                    </div>
-                    <div className="mt-2 mb-2"><Separator style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}/></div>
-                    <div className="flex justify-between text-base">
-                      <span className="font-semibold">{UI_STRINGS.infoDialogTotalResistanceLabel}</span>
-                      <span className="font-bold text-accent">{resistanceBreakdown.total}</span>
-                    </div>
-                  </div>
-                </div>
-                {markContentRendered()}
-              </>
-            )}
-
-             {speedBreakdown && (
-              <>
-                {renderSeparatorIfNeeded()}
-                <div>
-                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation}</h3>
-                  <div className="space-y-1 text-sm">
-                    {speedBreakdown.components.map((comp, index) => {
-                      let label = comp.source;
-                      if (comp.source === "Base (Race)") label = UI_STRINGS.infoDialogSpeedBaseRaceLabel || "Base (Race)";
-                      else if (comp.source === "Misc Modifier") label = UI_STRINGS.infoDialogSpeedMiscModifierLabel || "Misc Modifier";
-                      else if (comp.source === "Monk Unarmored Speed") label = UI_STRINGS.infoDialogSpeedMonkLabel || "Monk Unarmored Speed";
-                      else if (comp.source === "Barbarian Fast Movement") label = UI_STRINGS.infoDialogSpeedBarbarianLabel || "Barbarian Fast Movement";
-                      else if (comp.source === "Armor Penalty") label = UI_STRINGS.infoDialogSpeedArmorPenaltyLabel || "Armor Penalty";
-                      else if (comp.source === "Load Penalty") label = UI_STRINGS.infoDialogSpeedLoadPenaltyLabel || "Load Penalty";
-                      
-                      return (
-                        <div key={index} className="flex justify-between">
-                          <span>{label}</span>
-                          {renderModifierValue(comp.value)}
-                        </div>
-                      );
-                    })}
-                    <div className="mt-2 mb-2"><Separator style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}/></div>
-                    <div className="flex justify-between text-base">
-                      <span className="font-semibold">{(UI_STRINGS.infoDialogSpeedTotalPrefixLabel || "Total")} {speedBreakdown.name}</span>
-                      <span className="font-bold text-accent">{speedBreakdown.total} {speedUnit}</span>
-                    </div>
-                  </div>
-                </div>
-                {markContentRendered()}
-              </>
-            )}
-
-
-            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && !speedBreakdown && detailsList && detailsList.length > 0 && (
-              <>
-                {renderSeparatorIfNeeded()}
-                <div>
-                  <h3 className={sectionHeadingClass}>
-                    {detailsListHeading}
-                  </h3>
-                  {detailsList!.map((detail, index) => {
-                      const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string)))) && !detail.label.toLowerCase().includes('base attack bonus') 
-                          ? renderModifierValue(detail.value as number | string)
-                          : detail.value;
-                      
-                      let labelContent: React.ReactNode = <span className="text-foreground">{detail.label}</span>;
-                      if (typeof detail.label === 'string') {
-                        const abilityMatch = (detail.label as string).match(/{abilityAbbr}\s\({abilityFull}\)\sModifier:/);
-                        if (abilityMatch) {
-                            const abilityKey = (detail.label as string).toLowerCase().includes("dexterity") ? 'dexterity' : 'strength'; 
-                            const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.value === abilityKey);
-                            const abbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
-                            const full = abilityLabelInfo?.label || abilityKey.charAt(0).toUpperCase() + abilityKey.slice(1);
-                            labelContent = (
-                                <span className="text-foreground">
-                                    {(UI_STRINGS.infoDialogInitiativeAbilityModLabel).replace("{abilityAbbr}", abbr).replace("{abilityFull}", full)}
-                                </span>
-                            );
-                        }
-                      }
-
-                      return (
-                          <div key={index} className="flex justify-between text-sm mb-0.5">
-                          {labelContent}
-                          <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{valueToRender as React.ReactNode}</span>
-                          </div>
-                      );
-                  })}
-                  
-                  {contentType?.type === 'acBreakdown' && totalACValue !== undefined && ( 
-                        <>
-                          <div className="mt-2 mb-2"><Separator style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}/></div>
-                          <div className="flex justify-between text-base">
-                            <span className="font-semibold">{UI_STRINGS.infoDialogTotalLabel || 'Total'}</span>
-                            <span className="font-bold text-accent">{renderModifierValue(totalACValue)}</span>
-                          </div>
-                        </>
-                  )}
-                </div>
-                {markContentRendered()}
-              </>
-            )}
-
+            {renderContent()}
           </div>
         </ScrollArea>
         <DialogFooter className="mt-2">
@@ -1153,12 +667,6 @@ export function InfoDisplayDialog({
       </DialogContent>
     </Dialog>
   );
-}
-
-interface SynergyInfoItem {
-  id: string;
-  text: React.ReactNode;
-  isActive: boolean;
 }
 
 interface DerivedDialogData {
@@ -1181,18 +689,3 @@ interface DerivedDialogData {
   speeds?: Partial<Record<SpeedType, number>>;
   speedBreakdown?: SpeedBreakdownDetails;
 }
-
-interface SkillModifierBreakdownDetails {
-  skillName: string;
-  keyAbilityName?: string; 
-  keyAbilityModifier: number;
-  ranks: number;
-  synergyBonus: number;
-  featBonus: number;
-  racialBonus: number;
-  sizeSpecificBonus: number;
-  miscModifier: number;
-  totalBonus: number;
-}
-
-    
