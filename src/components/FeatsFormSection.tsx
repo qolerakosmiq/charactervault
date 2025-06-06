@@ -298,7 +298,7 @@ export function FeatsFormSection({
             </p>
           </div>
 
-          <div className="mt-2 mb-2 flex gap-2"> {/* Changed mb-4 to mb-2 */}
+          <div className="mt-4 mb-1 flex gap-2"> {/* Button container, mt-4 for space from info box, mb-1 for space to first section */}
             <Button type="button" variant="outline" size="sm" onClick={() => setIsFeatDialogOpen(true)}>
               <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.featsPanelAddButton || "Choose Feat"}
             </Button>
@@ -306,7 +306,7 @@ export function FeatsFormSection({
 
           {userChosenFeatInstances.length > 0 && (
             <>
-              <h3 className="text-lg font-semibold mt-2 mb-2 text-primary">{UI_STRINGS.featsPanelChosenFeatsTitle || "Chosen Feats"}</h3> {/* Changed mt-4 to mt-2 */}
+              <h3 className="text-lg font-semibold mt-1 mb-2 text-primary">{UI_STRINGS.featsPanelChosenFeatsTitle || "Chosen Feats"}</h3>
               <div className="space-y-1 mb-3">
                 {userChosenFeatInstances.map(renderFeatInstance)}
               </div>
@@ -316,7 +316,14 @@ export function FeatsFormSection({
           {grantedFeatInstances.length > 0 && (
             <>
               {userChosenFeatInstances.length > 0 && <Separator className="my-4" />}
-              <h3 className="text-lg font-semibold mb-2 text-primary">{UI_STRINGS.featsPanelGrantedFeatsTitle || "Granted Feats"}</h3>
+              <h3 
+                className={cn(
+                  "text-lg font-semibold mb-2 text-primary",
+                  userChosenFeatInstances.length === 0 && "mt-1" // Add mt-1 ONLY if Chosen Feats are not present
+                )}
+              >
+                {UI_STRINGS.featsPanelGrantedFeatsTitle || "Granted Feats"}
+              </h3>
               <div className="space-y-1 mb-3">
                 {grantedFeatInstances.map(renderFeatInstance)}
               </div>
@@ -346,6 +353,4 @@ export function FeatsFormSection({
     </>
   );
 }
-    
-
     
