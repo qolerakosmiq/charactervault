@@ -88,7 +88,7 @@ const SPEED_ICONS: Record<SpeedType, React.ElementType> = {
 
 const ExpandableDetailWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="mt-1.5 px-3 pt-3 pb-4 rounded-md bg-muted/20 border border-border/30">
+    <div className="mt-1.5 px-3 py-1 rounded-md bg-muted/20 border border-border/30">
       {children}
     </div>
   );
@@ -562,14 +562,14 @@ export function InfoDisplayDialog({
             {hasAnyBonusSection && (contentType?.type === 'race' || contentType?.type === 'class') && (
                  <>
                     {renderSeparatorIfNeeded()}
-                    <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading || "General Traits"}</h3>
+                    <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading}</h3>
                     {markContentRendered()}
                  </>
             )}
 
             {abilityModifiers && abilityModifiers.length > 0 && (
               <div className="mt-2">
-                <p className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments || "Ability Score Adjustments"}</p>
+                <p className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments}</p>
                 <div className="space-y-0.5 text-sm mb-2">
                   {abilityModifiers.map(mod => (
                     <div key={mod.ability} className="flex justify-between">
@@ -582,7 +582,7 @@ export function InfoDisplayDialog({
             )}
             {skillBonuses && skillBonuses.length > 0 && (
               <div className="mt-2">
-                <p className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses || "Racial Skill Bonuses"}</p>
+                <p className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses}</p>
                 <div className="space-y-0.5 text-sm mb-2">
                   {skillBonuses.map(bonus => (
                     <div key={bonus.skillId} className="flex justify-between">
@@ -593,9 +593,9 @@ export function InfoDisplayDialog({
                 </div>
               </div>
             )}
-            {speeds && Object.keys(speeds).length > 0 && (
+            {speeds && Object.keys(speeds).filter(k => (speeds as any)[k] !== undefined && (speeds as any)[k] > 0).length > 0 && (
                <div className="mt-2">
-                <p className="text-sm text-foreground font-medium mb-1">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</p>
+                <p className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogBaseSpeeds}</p>
                  <div className="ml-4 space-y-0.5 text-sm mb-2">
                   {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
                     .map(([type, speedVal]) => {
@@ -613,13 +613,13 @@ export function InfoDisplayDialog({
             )}
             {bonusFeatSlots !== undefined && bonusFeatSlots > 0 && (
                <div className="flex justify-between text-sm mt-2">
-                <span className="text-sm text-foreground font-medium">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</span>
+                <span className="text-sm text-foreground font-medium">{UI_STRINGS.infoDialogBonusFeatSlots}</span>
                 {renderModifierValue(bonusFeatSlots)}
               </div>
             )}
             {grantedFeats && grantedFeats.length > 0 && (
               <div className="mt-2">
-                <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h4>
+                <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h4>
                 <ul className="list-none space-y-0.5 text-sm">
                   {grantedFeats.map(feat => {
                     const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
@@ -678,7 +678,7 @@ export function InfoDisplayDialog({
               <>
               {renderSeparatorIfNeeded()}
               <div>
-                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation}</h3>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span>{(UI_STRINGS.infoDialogBabClassLabel || "{classLabel} Base Attack Bonus:").replace("{classLabel}", babBreakdown.characterClassLabel || 'Class')}</span>
@@ -686,7 +686,7 @@ export function InfoDisplayDialog({
                     </div>
                     {babBreakdown.miscModifier !== 0 && (
                       <div className="flex justify-between">
-                          <span>{UI_STRINGS.infoDialogCustomModifierLabel || "Custom Modifier:"}</span>
+                          <span>{UI_STRINGS.infoDialogCustomModifierLabel}</span>
                           {renderModifierValue(babBreakdown.miscModifier)}
                       </div>
                     )}
@@ -705,23 +705,23 @@ export function InfoDisplayDialog({
               <>
               {renderSeparatorIfNeeded()}
               <div>
-                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation}</h3>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span>
-                        {(UI_STRINGS.infoDialogInitiativeAbilityModLabel || "{abilityAbbr} ({abilityFull}) Modifier:").replace("{abilityAbbr}", translations.ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX').replace("{abilityFull}", translations.ABILITY_LABELS.find(al => al.value === 'dexterity')?.label || 'Dexterity')}
+                        {(UI_STRINGS.infoDialogInitiativeAbilityModLabel).replace("{abilityAbbr}", translations.ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX').replace("{abilityFull}", translations.ABILITY_LABELS.find(al => al.value === 'dexterity')?.label || 'Dexterity')}
                       </span>
                       {renderModifierValue(initiativeBreakdown.dexModifier)}
                     </div>
                     {initiativeBreakdown.miscModifier !== 0 && (
                       <div className="flex justify-between">
-                          <span>{UI_STRINGS.infoDialogCustomModifierLabel || "Custom Modifier:"}</span>
+                          <span>{UI_STRINGS.infoDialogCustomModifierLabel}</span>
                           {renderModifierValue(initiativeBreakdown.miscModifier)}
                       </div>
                     )}
                     <Separator className="my-3" />
                     <div className="flex justify-between text-base">
-                      <span className="font-semibold">{UI_STRINGS.infoDialogInitiativeTotalLabel || "Total Initiative:"}</span>
+                      <span className="font-semibold">{UI_STRINGS.infoDialogInitiativeTotalLabel}</span>
                       <span className="font-bold text-accent">{renderModifierValue(initiativeBreakdown.totalInitiative)}</span>
                     </div>
                   </div>
@@ -734,31 +734,31 @@ export function InfoDisplayDialog({
               <>
               {renderSeparatorIfNeeded()}
               <div>
-                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation}</h3>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
-                      <span>{UI_STRINGS.infoDialogGrappleModBabLabel || "Base Attack Bonus:"}</span>
+                      <span>{UI_STRINGS.infoDialogGrappleModBabLabel}</span>
                       {renderModifierValue(grappleModifierBreakdown.baseAttackBonus)}
                     </div>
                     <div className="flex justify-between">
                       <span>
-                         {(UI_STRINGS.infoDialogGrappleModAbilityLabel || "{abilityAbbr} ({abilityFull}) Modifier:").replace("{abilityAbbr}", translations.ABILITY_LABELS.find(al => al.value === 'strength')?.abbr || 'STR').replace("{abilityFull}", translations.ABILITY_LABELS.find(al => al.value === 'strength')?.label || 'Strength')}
+                         {(UI_STRINGS.infoDialogGrappleModAbilityLabel).replace("{abilityAbbr}", translations.ABILITY_LABELS.find(al => al.value === 'strength')?.abbr || 'STR').replace("{abilityFull}", translations.ABILITY_LABELS.find(al => al.value === 'strength')?.label || 'Strength')}
                       </span>
                       {renderModifierValue(grappleModifierBreakdown.strengthModifier)}
                     </div>
                     <div className="flex justify-between">
-                      <span>{UI_STRINGS.infoDialogGrappleModSizeLabel || "Size Modifier:"}</span>
+                      <span>{UI_STRINGS.infoDialogGrappleModSizeLabel}</span>
                       {renderModifierValue(grappleModifierBreakdown.sizeModifierGrapple)}
                     </div>
                     {grappleModifierBreakdown.miscModifier !== 0 && (
                       <div className="flex justify-between">
-                          <span>{UI_STRINGS.infoDialogCustomModifierLabel || "Custom Modifier:"}</span>
+                          <span>{UI_STRINGS.infoDialogCustomModifierLabel}</span>
                           {renderModifierValue(grappleModifierBreakdown.miscModifier)}
                       </div>
                     )}
                     <Separator className="my-3" />
                     <div className="flex justify-between text-base">
-                      <span className="font-semibold">{UI_STRINGS.infoDialogGrappleModTotalLabel || "Total Grapple Modifier:"}</span>
+                      <span className="font-semibold">{UI_STRINGS.infoDialogGrappleModTotalLabel}</span>
                       <span className="font-bold text-accent">{renderModifierValue(grappleModifierBreakdown.totalGrappleModifier)}</span>
                     </div>
                   </div>
@@ -771,37 +771,37 @@ export function InfoDisplayDialog({
               <>
               {renderSeparatorIfNeeded()}
               <div>
-                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation}</h3>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
-                      <span>{UI_STRINGS.infoDialogGrappleDmgBaseLabel || "Base Damage:"}</span>
+                      <span>{UI_STRINGS.infoDialogGrappleDmgBaseLabel}</span>
                       <span className="font-bold">
                         {grappleDamageBreakdown.baseDamage.split(' ')[0] || 'N/A'}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span>{UI_STRINGS.infoDialogGrappleDmgWeaponLabel || "Weapon Damage:"}</span>
+                      <span>{UI_STRINGS.infoDialogGrappleDmgWeaponLabel}</span>
                       {grappleDamageBreakdown.baseDamage.toLowerCase().includes('unarmed') ? (
-                          <span className="font-semibold text-muted-foreground">{UI_STRINGS.infoDialogGrappleDmgUnarmedLabel || "Unarmed"}</span>
+                          <span className="font-semibold text-muted-foreground">{UI_STRINGS.infoDialogGrappleDmgUnarmedLabel}</span>
                       ) : (
                           renderModifierValue(0) 
                       )}
                     </div>
                     <div className="flex justify-between">
                       <span>
-                        {(UI_STRINGS.infoDialogGrappleDmgAbilityLabel || "{abilityAbbr} ({abilityFull}) Modifier:").replace("{abilityAbbr}", translations.ABILITY_LABELS.find(al => al.value === 'strength')?.abbr || 'STR').replace("{abilityFull}", translations.ABILITY_LABELS.find(al => al.value === 'strength')?.label || 'Strength')}
+                        {(UI_STRINGS.infoDialogGrappleDmgAbilityLabel).replace("{abilityAbbr}", translations.ABILITY_LABELS.find(al => al.value === 'strength')?.abbr || 'STR').replace("{abilityFull}", translations.ABILITY_LABELS.find(al => al.value === 'strength')?.label || 'Strength')}
                       </span>
                       {renderModifierValue(grappleDamageBreakdown.strengthModifier)}
                     </div>
                     {grappleDamageBreakdown.bonus !== 0 && (
                       <div className="flex justify-between">
-                          <span>{UI_STRINGS.infoDialogCustomModifierLabel || "Custom Modifier:"}</span>
+                          <span>{UI_STRINGS.infoDialogCustomModifierLabel}</span>
                           {renderModifierValue(grappleDamageBreakdown.bonus)}
                       </div>
                     )}
                     <Separator className="my-3" />
                     <div className="flex justify-between text-base">
-                      <span className="font-semibold">{UI_STRINGS.infoDialogGrappleDmgTotalLabel || "Total:"}</span>
+                      <span className="font-semibold">{UI_STRINGS.infoDialogGrappleDmgTotalLabel}</span>
                       <span className="font-bold text-accent">
                         {`${grappleDamageBreakdown.baseDamage.split(' ')[0] || '0'}${(grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus) !== 0 ? `${(grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus) >= 0 ? '+' : ''}${grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus}`: ''}`}
                       </span>
@@ -816,10 +816,10 @@ export function InfoDisplayDialog({
               <>
               {renderSeparatorIfNeeded()}
               <div>
-                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation}</h3>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
-                      <span>{UI_STRINGS.infoDialogBaseScoreLabel || "Base Score"}</span>
+                      <span>{UI_STRINGS.infoDialogBaseScoreLabel}</span>
                       <span className="font-bold">{abilityScoreBreakdown.base}</span>
                     </div>
                     {abilityScoreBreakdown.components.map((comp, index) => (
@@ -832,11 +832,11 @@ export function InfoDisplayDialog({
                     ))}
                     <Separator className="my-3" />
                     <div className="flex justify-between text-base">
-                      <span className="font-semibold">{UI_STRINGS.infoDialogFinalScoreLabel || "Final Score"}</span>
+                      <span className="font-semibold">{UI_STRINGS.infoDialogFinalScoreLabel}</span>
                       <span className="font-bold text-accent">{abilityScoreBreakdown.finalScore}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="font-semibold">{UI_STRINGS.infoDialogFinalModifierLabel || "Final Modifier"}</span>
+                      <span className="font-semibold">{UI_STRINGS.infoDialogFinalModifierLabel}</span>
                       {renderModifierValue(calculateAbilityModifier(abilityScoreBreakdown.finalScore))}
                     </div>
                   </div>
@@ -849,12 +849,12 @@ export function InfoDisplayDialog({
               <>
               {renderSeparatorIfNeeded()}
               <div>
-                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation}</h3>
                   <div className="space-y-1 text-sm">
                     {skillModifierBreakdown.keyAbilityName && (
                         <div className="flex justify-between">
                           <span>
-                            {UI_STRINGS.infoDialogKeyAbilityLabel || "Key Ability"}
+                            {UI_STRINGS.infoDialogKeyAbilityLabel}
                             {" "}
                             <span className="text-muted-foreground">({skillModifierBreakdown.keyAbilityName})</span>
                           </span>
@@ -862,42 +862,42 @@ export function InfoDisplayDialog({
                         </div>
                     )}
                     <div className="flex justify-between">
-                      <span>{UI_STRINGS.infoDialogRanksLabel || "Ranks"}</span>
+                      <span>{UI_STRINGS.infoDialogRanksLabel}</span>
                       {renderModifierValue(skillModifierBreakdown.ranks)}
                     </div>
                     {skillModifierBreakdown.sizeSpecificBonus !== 0 && (
                       <div className="flex justify-between">
-                        <span>{UI_STRINGS.infoDialogSizeModifierLabel || "Size Modifier"}</span>
+                        <span>{UI_STRINGS.infoDialogSizeModifierLabel}</span>
                         {renderModifierValue(skillModifierBreakdown.sizeSpecificBonus)}
                       </div>
                     )}
                     {skillModifierBreakdown.synergyBonus !== 0 && (
                       <div className="flex justify-between">
-                        <span>{UI_STRINGS.infoDialogSynergyBonusLabel || "Synergy Bonus"}</span>
+                        <span>{UI_STRINGS.infoDialogSynergyBonusLabel}</span>
                         {renderModifierValue(skillModifierBreakdown.synergyBonus)}
                       </div>
                     )}
                     {skillModifierBreakdown.featBonus !== 0 && (
                       <div className="flex justify-between">
-                        <span>{UI_STRINGS.infoDialogFeatBonusLabel || "Feat Bonus"}</span>
+                        <span>{UI_STRINGS.infoDialogFeatBonusLabel}</span>
                         {renderModifierValue(skillModifierBreakdown.featBonus)}
                       </div>
                     )}
                     {skillModifierBreakdown.racialBonus !== 0 && (
                       <div className="flex justify-between">
-                        <span>{UI_STRINGS.infoDialogRacialBonusLabel || "Racial Bonus"}</span>
+                        <span>{UI_STRINGS.infoDialogRacialBonusLabel}</span>
                         {renderModifierValue(skillModifierBreakdown.racialBonus)}
                       </div>
                     )}
                     {skillModifierBreakdown.miscModifier !== 0 && (
                       <div className="flex justify-between">
-                        <span>{UI_STRINGS.infoDialogMiscModifierLabel || "Misc Modifier"}</span>
+                        <span>{UI_STRINGS.infoDialogMiscModifierLabel}</span>
                         {renderModifierValue(skillModifierBreakdown.miscModifier)}
                       </div>
                     )}
                     <Separator className="my-2" />
                     <div className="flex justify-between text-base">
-                      <span className="font-semibold">{UI_STRINGS.infoDialogTotalBonusLabel || "Total Bonus"}</span>
+                      <span className="font-semibold">{UI_STRINGS.infoDialogTotalBonusLabel}</span>
                       <span className="font-bold text-accent">{renderModifierValue(skillModifierBreakdown.totalBonus)}</span>
                     </div>
                   </div>
@@ -910,19 +910,19 @@ export function InfoDisplayDialog({
               <>
                 {renderSeparatorIfNeeded()}
                 <div>
-                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation}</h3>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
-                      <span>{UI_STRINGS.infoDialogBaseValueLabel || "Base Value:"}</span>
+                      <span>{UI_STRINGS.infoDialogBaseValueLabel}</span>
                       <span className="font-bold">{resistanceBreakdown.base}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>{UI_STRINGS.infoDialogCustomModifierLabel || "Custom Modifier:"}</span>
+                      <span>{UI_STRINGS.infoDialogCustomModifierLabel}</span>
                       {renderModifierValue(resistanceBreakdown.customMod)}
                     </div>
                     <Separator className="my-2" />
                     <div className="flex justify-between text-base">
-                      <span className="font-semibold">{UI_STRINGS.infoDialogTotalResistanceLabel || "Total Resistance:"}</span>
+                      <span className="font-semibold">{UI_STRINGS.infoDialogTotalResistanceLabel}</span>
                       <span className="font-bold text-accent">{resistanceBreakdown.total}</span>
                     </div>
                   </div>
@@ -935,7 +935,7 @@ export function InfoDisplayDialog({
               <>
                 {renderSeparatorIfNeeded()}
                 <div>
-                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation}</h3>
                   <div className="space-y-1 text-sm">
                     {speedBreakdown.components.map((comp, index) => {
                       let label = comp.source;
@@ -987,9 +987,7 @@ export function InfoDisplayDialog({
                             const full = abilityLabelInfo?.label || abilityKey.charAt(0).toUpperCase() + abilityKey.slice(1);
                             labelContent = (
                                 <span className="text-foreground">
-                                    {(UI_STRINGS.infoDialogInitiativeAbilityModLabel || "{abilityAbbr} ({abilityFull}) Modifier:")
-                                        .replace("{abilityAbbr}", abbr)
-                                        .replace("{abilityFull}", full)}
+                                    {(UI_STRINGS.infoDialogInitiativeAbilityModLabel).replace("{abilityAbbr}", abbr).replace("{abilityFull}", full)}
                                 </span>
                             );
                         }
@@ -1026,7 +1024,7 @@ export function InfoDisplayDialog({
           </div>
         </ScrollArea>
         <DialogFooter className="mt-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)} type="button">{UI_STRINGS.infoDialogCloseButton || "Close"}</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)} type="button">{UI_STRINGS.infoDialogCloseButton}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
