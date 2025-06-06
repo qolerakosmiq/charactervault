@@ -80,33 +80,33 @@ export function SavingThrowsPanel({
       rowKey: 'base',
     },
     {
-      label: <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability<br />Modifier" }} />,
+      label: UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability Modifier",
       getValue: (saveData, baseSave, abilityMod, total, saveType?: SavingThrowType) => {
-        if (!saveType) return abilityMod >= 0 ? `+${abilityMod}` : abilityMod;
+        if (!saveType) return renderModifierValue(abilityMod);
         const abilityKey = SAVING_THROW_ABILITIES[saveType];
         const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === abilityKey);
         const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
         return (
-          <div className="flex flex-col items-center -my-1">
-            <span className="text-xs leading-tight">{abilityAbbr}</span>
-            <span className="leading-tight">{renderModifierValue(abilityMod)}</span>
-          </div>
+          <span>
+            {renderModifierValue(abilityMod)}{' '}
+            <span className="text-xs text-muted-foreground">({abilityAbbr})</span>
+          </span>
         );
       },
       rowKey: 'abilityMod',
     },
     {
-      label: <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsRowLabelMagicModifier || "Magic<br />Modifier" }} />,
+      label: UI_STRINGS.savingThrowsRowLabelMagicModifier || "Magic Modifier",
       getValue: (saveData) => renderModifierValue(saveData.magicMod),
       rowKey: 'magicMod',
     },
     {
-      label: <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc<br />Modifier" }} />,
+      label: UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier",
       getValue: (saveData) => renderModifierValue(saveData.miscMod),
       rowKey: 'miscModDisplay',
     },
     {
-      label: <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsRowLabelTemporaryModifier || "Temp.<br />Modifier" }} />,
+      label: UI_STRINGS.savingThrowsRowLabelTemporaryModifier || "Temp. Modifier",
       getValue: (saveData, baseSave, abilityMod, total, saveType?: SavingThrowType, onMiscChange?: (type: SavingThrowType, val: number) => void) => (
         <div className="flex justify-center">
           <NumberSpinnerInput
@@ -151,7 +151,11 @@ export function SavingThrowsPanel({
                 return (
                   <tr key={dataRow.rowKey} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
                     <td className="py-3 px-1 text-left text-sm font-medium text-muted-foreground align-middle whitespace-nowrap">
-                      {dataRow.label}
+                      {typeof dataRow.label === 'string' && dataRow.label.includes('<br') ? (
+                        <span dangerouslySetInnerHTML={{ __html: dataRow.label }} />
+                      ) : (
+                        dataRow.label
+                      )}
                     </td>
                     {SAVE_TYPES.map((saveType) => {
                       const currentSaveData = savingThrows[saveType];
