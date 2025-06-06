@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge'; // Added import
+import { Badge } from '@/components/ui/badge';
 import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
@@ -602,11 +602,12 @@ export function InfoDisplayDialog({
 
   const renderContent = () => {
     if (!content) return null;
+
     if (Array.isArray(content)) {
-      return content.map((block, index) => (
+      return content.map((block, index, arr) => (
         <React.Fragment key={index}>
           {block}
-          {index < content.length - 1 && <Separator className="my-3" />}
+          {index < arr.length - 1 && <Separator className="my-3" />}
         </React.Fragment>
       ));
     }
@@ -626,7 +627,7 @@ export function InfoDisplayDialog({
           </DialogTitle>
         </DialogHeader>
         <ScrollArea className="max-h-[70vh] pr-4 my-2">
-          <div className="pb-4 space-y-1">
+          <div className="pb-4">
             {renderContent()}
           </div>
         </ScrollArea>
@@ -640,5 +641,5 @@ export function InfoDisplayDialog({
 
 interface DerivedDialogData {
   title: string;
-  content?: React.ReactNode;
+  content?: React.ReactNode | React.ReactNode[];
 }
