@@ -82,7 +82,7 @@ export function FeatsFormSection({
     skills,
   }), [character, abilityScores, skills]);
 
-  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs";
+  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs whitespace-nowrap";
 
   const handleAddOrUpdateChosenFeatInstance = (definitionId: string, specializationDetail?: string) => {
     const definition = allAvailableFeatDefinitions.find(def => def.value === definitionId);
@@ -187,12 +187,12 @@ export function FeatsFormSection({
       <div key={instance.instanceId} className="group flex items-start justify-between py-2 px-3 border-b border-border/50 hover:bg-muted/10 transition-colors">
         <div className="flex-grow mr-2">
           <div className="flex items-baseline flex-wrap gap-x-1.5 mb-1">
-            {featSource && <Badge variant="secondary" className="text-xs font-normal h-5">{featSource}</Badge>}
+            {featSource && <Badge variant="secondary" className="text-xs font-normal h-5 whitespace-nowrap">{featSource}</Badge>}
             <h4 className="font-medium text-foreground inline-flex items-center">
               {definition.label}
             </h4>
-            {featTypeLabel && <Badge variant="outline" className="text-xs font-normal h-5">{featTypeLabel}</Badge>}
-            {isCustomDefinition && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
+            {featTypeLabel && <Badge variant="outline" className="text-xs font-normal h-5 whitespace-nowrap">{featTypeLabel}</Badge>}
+            {isCustomDefinition && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
             {instance.grantedNote && !featSource && <span className="text-xs text-muted-foreground italic">{instance.grantedNote}</span>}
             {instance.grantedNote && featSource && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
           </div>

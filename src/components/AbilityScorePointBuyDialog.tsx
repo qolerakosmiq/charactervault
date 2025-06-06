@@ -169,10 +169,10 @@ export function AbilityScorePointBuyDialog({
                     </div>
                     <div className="flex-grow text-right">
                         <p className="text-sm">
-                        {UI_STRINGS.pointBuyDialogPointsSpentLabel || "Points Spent:"} <Badge variant="secondary">{String(pointsSpent)}</Badge>
+                        {UI_STRINGS.pointBuyDialogPointsSpentLabel || "Points Spent:"} <Badge variant="secondary" className="whitespace-nowrap">{String(pointsSpent)}</Badge>
                         </p>
                         <p className={cn("text-sm font-semibold mt-1", pointsRemaining !== 0 ? "text-destructive" : "text-emerald-500")}>
-                        {UI_STRINGS.pointBuyDialogPointsRemainingLabel || "Points Remaining:"} <Badge variant={pointsRemaining !== 0 || !isValidBudgetProp ? "destructive" : "default"} className={pointsRemaining === 0 && isValidBudgetProp ? "bg-emerald-600 hover:bg-emerald-600/80" : ""}>{String(pointsRemaining)}</Badge>
+                        {UI_STRINGS.pointBuyDialogPointsRemainingLabel || "Points Remaining:"} <Badge variant={pointsRemaining !== 0 || !isValidBudgetProp ? "destructive" : "default"} className={cn(pointsRemaining === 0 && isValidBudgetProp ? "bg-emerald-600 hover:bg-emerald-600/80" : "", "whitespace-nowrap")}>{String(pointsRemaining)}</Badge>
                         </p>
                     </div>
                 </div>
@@ -197,7 +197,7 @@ export function AbilityScorePointBuyDialog({
                             <span className="font-semibold">{abbreviationPart}</span>
                             {fullNamePart && <span className="text-muted-foreground ml-1 font-normal">({fullNamePart})</span>}
                           </span>
-                          <Badge variant="outline">{UI_STRINGS.pointBuyDialogCostLabel || "Cost:"} {cost}</Badge>
+                          <Badge variant="outline" className="whitespace-nowrap">{UI_STRINGS.pointBuyDialogCostLabel || "Cost:"} {cost}</Badge>
                         </Label>
                         <div className="flex items-center justify-center">
                            <NumberSpinnerInput
@@ -233,5 +233,3 @@ export function AbilityScorePointBuyDialog({
     </Dialog>
   );
 }
-
-    

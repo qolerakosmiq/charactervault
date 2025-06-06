@@ -197,7 +197,7 @@ export function CharacterFormCoreInfoSection({
                <div className="flex flex-wrap items-baseline gap-1 pt-[6px] ml-1">
                 {raceSpecialQualities.abilityEffects.map((effect) => {
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
-                  let badgeClassName = "text-xs font-normal";
+                  let badgeClassName = "text-xs font-normal whitespace-nowrap";
                   if (effect.change > 0) badgeClassName = cn(badgeClassName, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                   else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassName = cn(badgeClassName, "hover:bg-destructive"); }
                   else badgeClassName = cn(badgeClassName, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
@@ -223,7 +223,7 @@ export function CharacterFormCoreInfoSection({
               </Button>
             </div>
             {selectedClassInfo?.hitDice && (
-              <div className="flex items-baseline gap-1 pt-[6px] ml-1"> <Badge variant="secondary" className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground"> {UI_STRINGS.hitDiceLabel || "Hit Dice"}:{'\u00A0'} <strong className="font-bold">{selectedClassInfo.hitDice}</strong> </Badge> </div>
+              <div className="flex items-baseline gap-1 pt-[6px] ml-1"> <Badge variant="secondary" className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground whitespace-nowrap"> {UI_STRINGS.hitDiceLabel || "Hit Dice"}:{'\u00A0'} <strong className="font-bold">{selectedClassInfo.hitDice}</strong> </Badge> </div>
             )}
           </div>
         </div>
@@ -273,10 +273,10 @@ export function CharacterFormCoreInfoSection({
             />
             {ageEffectsDetails && (ageEffectsDetails.categoryName !== 'Adult' || ageEffectsDetails.effects.length > 0) && (
               <div className="flex flex-wrap items-baseline justify-center md:justify-start gap-1 pt-[6px] ml-1">
-                <Badge variant="secondary" className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground"> {ageEffectsDetails.categoryName} </Badge>
+                <Badge variant="secondary" className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground whitespace-nowrap"> {ageEffectsDetails.categoryName} </Badge>
                 {ageEffectsDetails.effects.map((effect) => {
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
-                  let badgeClassName = "text-xs font-normal";
+                  let badgeClassName = "text-xs font-normal whitespace-nowrap";
                   if (effect.change > 0) badgeClassName = cn(badgeClassName, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                   else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassName = cn(badgeClassName, "hover:bg-destructive"); }
                   return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassName}> {effect.ability.substring(0, 3).toUpperCase()}{'\u00A0'} {effect.change > 0 ? '+' : ''} {effect.change} </Badge> );
@@ -308,7 +308,7 @@ export function CharacterFormCoreInfoSection({
                 if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
                   const acMod = selectedSizeObject.acModifier;
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
-                  let badgeClassNameForAc = "text-xs font-normal";
+                  let badgeClassNameForAc = "text-xs font-normal whitespace-nowrap";
                   if (acMod > 0) badgeClassNameForAc = cn(badgeClassNameForAc, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                   else if (acMod < 0) { badgeVariantProp = "destructive"; badgeClassNameForAc = cn(badgeClassNameForAc, "hover:bg-destructive"); }
                   return ( <Badge variant={badgeVariantProp} className={badgeClassNameForAc}> AC{'\u00A0'}{acMod >= 0 ? '+' : ''}{acMod} </Badge> );
@@ -321,5 +321,3 @@ export function CharacterFormCoreInfoSection({
     </Card>
   );
 }
-
-    

@@ -506,7 +506,7 @@ export function AddCustomFeatDialog({
                 {prerequisitesList.map(p => (
                   <div key={p.tempId} className="flex items-center justify-between p-2 border rounded-md text-xs bg-background">
                     <div>
-                      <Badge variant="secondary" className="mr-2 capitalize">{p.type}</Badge>
+                      <Badge variant="secondary" className="mr-2 capitalize whitespace-nowrap">{p.type}</Badge>
                       <span className="font-medium">{p.itemLabel}</span>
                       {p.value !== undefined && <span className="text-muted-foreground"> (Min: {p.value}{p.type === 'skill' ? ' Ranks' : ''})</span>}
                     </div>
@@ -552,5 +552,3 @@ interface PrerequisiteListItem {
   itemLabel: string;
   value?: number;
 }
-
-    

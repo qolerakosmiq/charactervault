@@ -205,7 +205,7 @@ export function SkillsFormSection({
     onOpenSkillInfoDialog(skillId);
   };
 
-  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs";
+  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs whitespace-nowrap";
 
   if (translationsLoading || !translations) {
     return (
@@ -359,7 +359,7 @@ export function SkillsFormSection({
                       <Label htmlFor={`skill_ranks_${skill.id}`} className="text-sm pr-1 leading-tight flex-grow flex items-center">
                           {skill.name}
                           {skill.isCustom && (
-                              <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 ml-1.5 font-normal">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>
+                              <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 ml-1.5 font-normal whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>
                           )}
                       </Label>
                     {skill.isCustom && (

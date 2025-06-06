@@ -181,7 +181,7 @@ export function AbilityScoreRollerDialog({
             </Label>
             <div className="flex justify-center gap-2 mt-2 flex-wrap">
               {rolledScores.map((score) => (
-                <Badge key={score.id} variant="secondary" className="text-lg px-3 py-1">
+                <Badge key={score.id} variant="secondary" className="text-lg px-3 py-1 whitespace-nowrap">
                   {score.value}
                 </Badge>
               ))}
@@ -249,5 +249,3 @@ export function AbilityScoreRollerDialog({
     </Dialog>
   );
 }
-
-    

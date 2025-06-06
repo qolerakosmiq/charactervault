@@ -166,7 +166,7 @@ export function FeatSelectionDialog({
                     >
                       <div className="font-medium text-sm text-foreground">
                         {featDef.label} 
-                        {featDef.isCustom && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 ml-1.5 font-normal">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
+                        {featDef.isCustom && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 ml-1.5 font-normal whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
                       </div>
                       {featDef.description && (
                         <div

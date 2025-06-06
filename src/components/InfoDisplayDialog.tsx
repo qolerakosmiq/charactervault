@@ -314,7 +314,7 @@ export function InfoDisplayDialog({
 
           const currentSkillId = contentType.skillId;
           const synergyItems: SynergyInfoItem[] = [];
-          const badgeClass = "text-xs font-normal h-5 mx-0.5 px-1.5 py-0.5 align-baseline";
+          const badgeClass = "text-xs font-normal h-5 mx-0.5 px-1.5 py-0.5 align-baseline whitespace-nowrap";
 
           allCombinedSkillDefinitionsForDisplay.forEach(providingSkillDef => {
               const providingSkillName = <strong>{providingSkillDef.name}</strong>;
