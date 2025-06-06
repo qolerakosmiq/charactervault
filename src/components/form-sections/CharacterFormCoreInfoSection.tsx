@@ -65,11 +65,13 @@ export function CharacterFormCoreInfoSection({
   const [localName, setLocalName] = React.useState(characterData.name);
   const [localPlayerName, setLocalPlayerName] = React.useState(characterData.playerName);
   const [localAge, setLocalAge] = React.useState(characterData.age);
+  const [localGender, setLocalGender] = React.useState(characterData.gender);
 
   // Sync local states with props
   React.useEffect(() => { setLocalName(characterData.name); }, [characterData.name]);
   React.useEffect(() => { setLocalPlayerName(characterData.playerName); }, [characterData.playerName]);
   React.useEffect(() => { setLocalAge(characterData.age); }, [characterData.age]);
+  React.useEffect(() => { setLocalGender(characterData.gender); }, [characterData.gender]);
 
 
   // Debounce effects
@@ -93,18 +95,25 @@ export function CharacterFormCoreInfoSection({
 
   React.useEffect(() => {
     const handler = setTimeout(() => {
-      // Ensure age is not less than currentMinAgeForInput before committing
       const ageToCommit = Math.max(localAge, currentMinAgeForInput);
       if (ageToCommit !== characterData.age) {
         onFieldChange('age', ageToCommit);
       }
-      // If localAge was adjusted, update localAge to reflect the committed value
       if (localAge < currentMinAgeForInput) {
         setLocalAge(ageToCommit);
       }
     }, DEBOUNCE_DELAY);
     return () => clearTimeout(handler);
   }, [localAge, characterData.age, onFieldChange, currentMinAgeForInput]);
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+        if (localGender !== characterData.gender) {
+            onFieldChange('gender', localGender || '');
+        }
+    }, DEBOUNCE_DELAY);
+    return () => clearTimeout(handler);
+  }, [localGender, characterData.gender, onFieldChange]);
 
 
   React.useEffect(() => {
@@ -122,17 +131,11 @@ export function CharacterFormCoreInfoSection({
   }, [translationsLoading, translations, characterData, onFieldChange, onClassChange]);
 
 
-  const handleSelectChange = (field: keyof Pick<Character, 'race' | 'alignment' | 'deity' | 'size' | 'gender'>, value: string) => {
+  const handleSelectChange = (field: keyof Pick<Character, 'race' | 'alignment' | 'deity' | 'size' >, value: string) => {
+    // Direct update for Select components
     onFieldChange(field, value);
   };
   
-  // For direct input fields that don't need complex debouncing logic (like single typed character inputs)
-  const handleSimpleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    const field = name as keyof Character;
-    onFieldChange(field, value);
-  };
-
 
   const selectedClassInfo = React.useMemo(() => {
     if (!translations || !characterData.classes[0]?.className) return undefined;
@@ -263,7 +266,7 @@ export function CharacterFormCoreInfoSection({
               <div className="flex-grow">
                 <Select
                   value={characterData?.classes[0]?.className || DND_CLASSES[0]?.value || ''}
-                  onValueChange={(value) => onClassChange(value as DndClassId)} // Direct update, no debounce for select
+                  onValueChange={(value) => onClassChange(value as DndClassId)} 
                 >
                   <SelectTrigger id="className"> <SelectValue placeholder={UI_STRINGS.selectClassPlaceholder || "Select class"} /> </SelectTrigger>
                   <SelectContent> {DND_CLASSES.map(c => ( <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem> ))} </SelectContent>
@@ -339,8 +342,8 @@ export function CharacterFormCoreInfoSection({
             <Label htmlFor="gender">{UI_STRINGS.genderLabel || "Gender"}</Label>
              <ComboboxPrimitive 
                 options={GENDERS} 
-                value={characterData?.gender || ""} 
-                onChange={(value) => handleSelectChange('gender', value)} 
+                value={localGender || ""} 
+                onChange={setLocalGender} 
                 placeholder={UI_STRINGS.selectGenderPlaceholder || "Select or type gender..."} 
                 searchPlaceholder="Search genders..." 
                 emptyPlaceholder="No gender found." 
