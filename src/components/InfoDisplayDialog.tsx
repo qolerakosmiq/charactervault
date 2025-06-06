@@ -10,6 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge'; // Added import
 import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
@@ -187,6 +188,7 @@ export function InfoDisplayDialog({
     } = translations;
 
     let data: DerivedDialogData = { title: UI_STRINGS.infoDialogDefaultTitle || 'Information' };
+    let detailsListHeading: string = UI_STRINGS.infoDialogSectionHeadingDetails || "Details";
 
     switch (contentType.type) {
       case 'race': {
@@ -207,13 +209,20 @@ export function InfoDisplayDialog({
 
         data = {
           title: raceData?.label || UI_STRINGS.infoDialogRaceDefaultTitle || 'Race Information',
-          htmlContent: raceData?.description || `<p>${UI_STRINGS.infoDialogNoSkillDescription || 'No description available.'}</p>`,
-          abilityModifiers: qualities.abilityEffects,
-          skillBonuses: qualities.skillBonuses,
-          bonusFeatSlots: raceBonusFeatSlotsValue,
-          grantedFeats: qualities.grantedFeats,
-          detailsList: details.length > 0 ? details : undefined,
-          speeds: qualities.speeds,
+          content: RaceContentDisplay({
+            htmlContent: raceData?.description || `<p>${UI_STRINGS.infoDialogNoSkillDescription || 'No description available.'}</p>`,
+            abilityModifiers: qualities.abilityEffects,
+            skillBonuses: qualities.skillBonuses,
+            grantedFeats: qualities.grantedFeats,
+            bonusFeatSlots: raceBonusFeatSlotsValue,
+            speeds: qualities.speeds,
+            translations,
+            allCombinedFeatDefinitions,
+            customSkillDefinitions,
+            character,
+            expandedItems,
+            toggleExpanded,
+          }),
         };
         break;
       }
@@ -242,27 +251,35 @@ export function InfoDisplayDialog({
 
         data = {
           title: classData?.label || UI_STRINGS.infoDialogClassDefaultTitle || 'Class Information',
-          htmlContent: classData?.description || `<p>${UI_STRINGS.infoDialogNoSkillDescription || 'No description available.'}</p>`,
-          grantedFeats: grantedFeatsFormatted,
-          detailsList: classSpecificDetails,
+          content: ClassContentDisplay({
+            htmlContent: classData?.description || `<p>${UI_STRINGS.infoDialogNoSkillDescription || 'No description available.'}</p>`,
+            grantedFeats: grantedFeatsFormatted,
+            detailsList: classSpecificDetails,
+            translations,
+            allCombinedFeatDefinitions,
+            customSkillDefinitions,
+            character,
+            expandedItems,
+            toggleExpanded,
+          }),
         };
         break;
       }
       case 'alignmentSummary':
         data = {
           title: UI_STRINGS.infoDialogAlignmentsTitle || 'Alignments',
-          htmlContent: ALIGNMENTS.map(a => `<p><b>${a.label}:</b><br />${a.description}</p>`).join(''),
+          content: AlignmentSummaryContentDisplay({htmlContent: ALIGNMENTS.map(a => `<p><b>${a.label}:</b><br />${a.description}</p>`).join('')}),
         };
         break;
       case 'deity':
         const deityId = character.deity;
         const deityData = DND_DEITIES.find(d => d.value === deityId);
         if (deityData) {
-            data = { title: deityData.label, htmlContent: deityData.description || `<p>${(UI_STRINGS.infoDialogNoSkillDescription || 'No detailed description available for').replace('{itemName}', deityData.label)}</p>` };
+            data = { title: deityData.label, content: DeityContentDisplay({htmlContent: deityData.description || `<p>${(UI_STRINGS.infoDialogNoSkillDescription || 'No detailed description available for').replace('{itemName}', deityData.label)}</p>`}) };
         } else if (deityId && deityId.trim() !== '') {
-            data = { title: deityId, htmlContent: `<p>${UI_STRINGS.infoDialogDeityPlaceholder || 'Custom deity. No predefined information available.'}</p>` };
+            data = { title: deityId, content: DeityContentDisplay({htmlContent: `<p>${UI_STRINGS.infoDialogDeityPlaceholder || 'Custom deity. No predefined information available.'}</p>`}) };
         } else {
-            data = { title: UI_STRINGS.infoDialogDeityDefaultTitle || "Deity Information", htmlContent: `<p>${UI_STRINGS.infoDialogDeityPlaceholder || "Select or type a deity to see more information."}</p>`};
+            data = { title: UI_STRINGS.infoDialogDeityDefaultTitle || "Deity Information", content: DeityContentDisplay({htmlContent: `<p>${UI_STRINGS.infoDialogDeityPlaceholder || "Select or type a deity to see more information."}</p>`})};
         }
         break;
       case 'abilityScoreBreakdown': {
@@ -272,7 +289,7 @@ export function InfoDisplayDialog({
         const abilityNameString = abilityLabelForTitle?.label || abilityKeyForTitle;
         data = {
           title: (UI_STRINGS.infoDialogTitleScoreCalculation || "{abilityName} Score Calculation").replace("{abilityName}", abilityNameString),
-          abilityScoreBreakdown: detailedScores[contentType.abilityName],
+          content: AbilityScoreBreakdownContentDisplay({abilityScoreBreakdown: detailedScores[contentType.abilityName], uiStrings: UI_STRINGS}),
         };
         break;
       }
@@ -391,12 +408,8 @@ export function InfoDisplayDialog({
                   }
               }
           });
-
-          data = {
-            title: (UI_STRINGS.infoDialogTitleModifierBreakdown || "{skillName} Modifier Breakdown").replace("{skillName}", skillDef.name),
-            htmlContent: skillDef.description,
-            synergyInfoList: synergyItems.length > 0 ? synergyItems : undefined,
-            skillModifierBreakdown: {
+          
+          const skillModifierBreakdownData = {
               skillName: skillDef.name,
               keyAbilityName: keyAbilityLabel,
               keyAbilityModifier: keyAbilityMod,
@@ -404,10 +417,19 @@ export function InfoDisplayDialog({
               synergyBonus, featBonus, racialBonus, sizeSpecificBonus: sizeBonus,
               miscModifier: skillInstance.miscModifier || 0,
               totalBonus: totalSkillBonus,
-            },
+          };
+
+          data = {
+            title: (UI_STRINGS.infoDialogTitleModifierBreakdown || "{skillName} Modifier Breakdown").replace("{skillName}", skillDef.name),
+            content: SkillModifierBreakdownContentDisplay({
+                htmlContent: skillDef.description,
+                synergyInfoList: synergyItems.length > 0 ? synergyItems : undefined,
+                skillModifierBreakdown: skillModifierBreakdownData,
+                uiStrings: UI_STRINGS,
+            }),
           };
         } else {
-            data = { title: UI_STRINGS.infoDialogSkillDefaultTitle || "Skill Information", htmlContent: `<p>${UI_STRINGS.infoDialogSkillNotFound || "Skill details not found."}</p>`};
+            data = { title: UI_STRINGS.infoDialogSkillDefaultTitle || "Skill Information", content: GenericHtmlContentDisplay({htmlContent: `<p>${UI_STRINGS.infoDialogSkillNotFound || "Skill details not found."}</p>`})};
         }
         break;
       }
@@ -418,12 +440,15 @@ export function InfoDisplayDialog({
 
         data = {
           title: (UI_STRINGS.infoDialogTitleResistanceBreakdown || "{resistanceName} Resistance Breakdown").replace("{resistanceName}", resistanceLabel),
-          resistanceBreakdown: {
-            name: resistanceLabel,
-            base: resistanceValue.base || 0,
-            customMod: resistanceValue.customMod || 0,
-            total: (resistanceValue.base || 0) + (resistanceValue.customMod || 0),
-          },
+          content: ResistanceBreakdownContentDisplay({
+            resistanceBreakdown: {
+                name: resistanceLabel,
+                base: resistanceValue.base || 0,
+                customMod: resistanceValue.customMod || 0,
+                total: (resistanceValue.base || 0) + (resistanceValue.customMod || 0),
+            },
+            uiStrings: UI_STRINGS,
+          }),
         };
         break;
       case 'acBreakdown': {
@@ -457,19 +482,22 @@ export function InfoDisplayDialog({
         else if (contentType.acType === 'Touch') totalCalculated = 10 + dexMod + sizeModACVal + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (character.acMiscModifier || 0);
         else if (contentType.acType === 'Flat-Footed') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (character.acMiscModifier || 0);
 
-        data = { title: (UI_STRINGS.infoDialogTitleAcBreakdown || "{acType} AC Breakdown").replace("{acType}", contentType.acType), detailsList: details, totalACValue: totalCalculated };
+        data = { title: (UI_STRINGS.infoDialogTitleAcBreakdown || "{acType} AC Breakdown").replace("{acType}", contentType.acType), content: AcBreakdownContentDisplay({detailsList: details, totalACValue: totalCalculated, detailsListHeading, uiStrings: UI_STRINGS, abilityLabels: ABILITY_LABELS }) };
         break;
       }
       case 'babBreakdown': {
         const baseBabArrayVal = getBab(character.classes, DND_CLASSES);
         data = {
           title: UI_STRINGS.infoDialogTitleBabBreakdown || 'Base Attack Bonus Breakdown',
-          babBreakdown: {
-            baseBabFromClasses: baseBabArrayVal,
-            miscModifier: character.babMiscModifier || 0,
-            totalBab: baseBabArrayVal.map(b => b + (character.babMiscModifier || 0)),
-            characterClassLabel: DND_CLASSES.find(c => c.value === character.classes[0]?.className)?.label || character.classes[0]?.className
-          },
+          content: BabBreakdownContentDisplay({
+            babBreakdown: {
+              baseBabFromClasses: baseBabArrayVal,
+              miscModifier: character.babMiscModifier || 0,
+              totalBab: baseBabArrayVal.map(b => b + (character.babMiscModifier || 0)),
+              characterClassLabel: DND_CLASSES.find(c => c.value === character.classes[0]?.className)?.label || character.classes[0]?.className
+            },
+            uiStrings: UI_STRINGS
+          }),
         };
         break;
       }
@@ -478,11 +506,15 @@ export function InfoDisplayDialog({
         const dexMod = calculateAbilityModifier(detailedCharScores.dexterity.finalScore);
         data = {
           title: UI_STRINGS.infoDialogTitleInitiativeBreakdown || 'Initiative Breakdown',
-          initiativeBreakdown: {
-            dexModifier: dexMod,
-            miscModifier: character.initiativeMiscModifier || 0,
-            totalInitiative: calculateInitiative(dexMod, character.initiativeMiscModifier || 0),
-          },
+          content: InitiativeBreakdownContentDisplay({
+            initiativeBreakdown: {
+              dexModifier: dexMod,
+              miscModifier: character.initiativeMiscModifier || 0,
+              totalInitiative: calculateInitiative(dexMod, character.initiativeMiscModifier || 0),
+            },
+            uiStrings: UI_STRINGS,
+            abilityLabels: ABILITY_LABELS,
+          }),
         };
         break;
       }
@@ -493,13 +525,17 @@ export function InfoDisplayDialog({
         const sizeModGrappleVal = getSizeModifierGrapple(character.size, SIZES);
         data = {
           title: UI_STRINGS.infoDialogTitleGrappleModifierBreakdown || 'Grapple Modifier Breakdown',
-          grappleModifierBreakdown: {
-            baseAttackBonus: baseBabArrayVal[0] || 0,
-            strengthModifier: strMod,
-            sizeModifierGrapple: sizeModGrappleVal,
-            miscModifier: character.grappleMiscModifier || 0,
-            totalGrappleModifier: calculateGrapple(character.classes, strMod, sizeModGrappleVal, DND_CLASSES) + (character.grappleMiscModifier || 0),
-          },
+          content: GrappleModifierBreakdownContentDisplay({
+            grappleModifierBreakdown: {
+                baseAttackBonus: baseBabArrayVal[0] || 0,
+                strengthModifier: strMod,
+                sizeModifierGrapple: sizeModGrappleVal,
+                miscModifier: character.grappleMiscModifier || 0,
+                totalGrappleModifier: calculateGrapple(character.classes, strMod, sizeModGrappleVal, DND_CLASSES) + (character.grappleMiscModifier || 0),
+            },
+            uiStrings: UI_STRINGS,
+            abilityLabels: ABILITY_LABELS,
+          }),
         };
         break;
       }
@@ -508,11 +544,15 @@ export function InfoDisplayDialog({
         const strMod = calculateAbilityModifier(detailedCharScores.strength.finalScore);
         data = {
           title: UI_STRINGS.infoDialogTitleGrappleDamageBreakdown || 'Grapple Damage Breakdown',
-          grappleDamageBreakdown: {
-            baseDamage: character.grappleDamage_baseNotes || getUnarmedGrappleDamage(character.size, SIZES),
-            bonus: character.grappleDamage_bonus || 0,
-            strengthModifier: strMod,
-          },
+          content: GrappleDamageBreakdownContentDisplay({
+            grappleDamageBreakdown: {
+              baseDamage: character.grappleDamage_baseNotes || getUnarmedGrappleDamage(character.size, SIZES),
+              bonus: character.grappleDamage_bonus || 0,
+              strengthModifier: strMod,
+            },
+            uiStrings: UI_STRINGS,
+            abilityLabels: ABILITY_LABELS,
+          }),
         };
         break;
       }
@@ -521,16 +561,16 @@ export function InfoDisplayDialog({
         const speedNameString = speedBreakdownDetails.name;
         data = {
           title: (UI_STRINGS.infoDialogTitleSpeedBreakdown || "{speedName} Breakdown").replace("{speedName}", speedNameString),
-          speedBreakdown: speedBreakdownDetails,
+          content: SpeedBreakdownContentDisplay({speedBreakdown: speedBreakdownDetails, uiStrings: UI_STRINGS}),
         };
         break;
       }
       case 'genericHtml':
-        data = { title: contentType.title, htmlContent: contentType.content };
+        data = { title: contentType.title, content: GenericHtmlContentDisplay({htmlContent: contentType.content}) };
         break;
     }
     return data;
-  }, [isOpen, contentType, character, translationsLoading, translations, customFeatDefinitions, customSkillDefinitions, allCombinedFeatDefinitions, allCombinedSkillDefinitionsForDisplay]);
+  }, [isOpen, contentType, character, translationsLoading, translations, customFeatDefinitions, customSkillDefinitions, allCombinedFeatDefinitions, allCombinedSkillDefinitionsForDisplay, expandedItems, toggleExpanded]);
 
 
   if (translationsLoading || !translations || !isOpen || !derivedData) {
@@ -557,98 +597,20 @@ export function InfoDisplayDialog({
 
   const {
     title: finalTitle,
-    htmlContent, abilityModifiers, skillBonuses, grantedFeats, bonusFeatSlots,
-    abilityScoreBreakdown, skillModifierBreakdown, synergyInfoList, resistanceBreakdown,
-    detailsList, totalACValue, babBreakdown, initiativeBreakdown,
-    grappleModifierBreakdown, grappleDamageBreakdown, speeds, speedBreakdown,
+    content,
   } = derivedData;
 
   const renderContent = () => {
-    if (!contentType || !translations) return null;
-
-    let contentNode: React.ReactNode | null = null;
-
-    switch (contentType.type) {
-      case 'race':
-        contentNode = <RaceContentDisplay
-                  htmlContent={htmlContent}
-                  abilityModifiers={abilityModifiers}
-                  skillBonuses={skillBonuses}
-                  grantedFeats={grantedFeats}
-                  bonusFeatSlots={bonusFeatSlots}
-                  speeds={speeds}
-                  translations={translations}
-                  allCombinedFeatDefinitions={allCombinedFeatDefinitions}
-                  customSkillDefinitions={customSkillDefinitions}
-                  character={character}
-                  expandedItems={expandedItems}
-                  toggleExpanded={toggleExpanded}
-                />;
-        break;
-      case 'class':
-        contentNode = <ClassContentDisplay
-                  htmlContent={htmlContent}
-                  grantedFeats={grantedFeats}
-                  detailsList={detailsList}
-                  translations={translations}
-                  allCombinedFeatDefinitions={allCombinedFeatDefinitions}
-                  customSkillDefinitions={customSkillDefinitions}
-                  character={character}
-                  expandedItems={expandedItems}
-                  toggleExpanded={toggleExpanded}
-                />;
-        break;
-      case 'alignmentSummary':
-        contentNode = <AlignmentSummaryContentDisplay htmlContent={htmlContent} />;
-        break;
-      case 'deity':
-        contentNode = <DeityContentDisplay htmlContent={htmlContent} />;
-        break;
-      case 'abilityScoreBreakdown':
-        contentNode = <AbilityScoreBreakdownContentDisplay abilityScoreBreakdown={abilityScoreBreakdown} uiStrings={UI_STRINGS} />;
-        break;
-      case 'skillModifierBreakdown':
-        contentNode = <SkillModifierBreakdownContentDisplay
-                  htmlContent={htmlContent}
-                  synergyInfoList={synergyInfoList}
-                  skillModifierBreakdown={skillModifierBreakdown}
-                  uiStrings={UI_STRINGS}
-                />;
-        break;
-      case 'resistanceBreakdown':
-        contentNode = <ResistanceBreakdownContentDisplay resistanceBreakdown={resistanceBreakdown} uiStrings={UI_STRINGS} />;
-        break;
-      case 'acBreakdown':
-        contentNode = <AcBreakdownContentDisplay
-                  detailsList={detailsList}
-                  totalACValue={totalACValue}
-                  detailsListHeading={UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}
-                  uiStrings={UI_STRINGS}
-                  abilityLabels={translations.ABILITY_LABELS}
-               />;
-        break;
-      case 'babBreakdown':
-        contentNode = <BabBreakdownContentDisplay babBreakdown={babBreakdown} uiStrings={UI_STRINGS} />;
-        break;
-      case 'initiativeBreakdown':
-        contentNode = <InitiativeBreakdownContentDisplay initiativeBreakdown={initiativeBreakdown} uiStrings={UI_STRINGS} abilityLabels={translations.ABILITY_LABELS} />;
-        break;
-      case 'grappleModifierBreakdown':
-        contentNode = <GrappleModifierBreakdownContentDisplay grappleModifierBreakdown={grappleModifierBreakdown} uiStrings={UI_STRINGS} abilityLabels={translations.ABILITY_LABELS} />;
-        break;
-      case 'grappleDamageBreakdown':
-        contentNode = <GrappleDamageBreakdownContentDisplay grappleDamageBreakdown={grappleDamageBreakdown} uiStrings={UI_STRINGS} abilityLabels={translations.ABILITY_LABELS} />;
-        break;
-      case 'speedBreakdown':
-        contentNode = <SpeedBreakdownContentDisplay speedBreakdown={speedBreakdown} uiStrings={UI_STRINGS} />;
-        break;
-      case 'genericHtml':
-        contentNode = <GenericHtmlContentDisplay htmlContent={htmlContent} />;
-        break;
-      default:
-        return null;
+    if (!content) return null;
+    if (Array.isArray(content)) {
+      return content.map((block, index) => (
+        <React.Fragment key={index}>
+          {block}
+          {index < content.length - 1 && <Separator className="my-3" />}
+        </React.Fragment>
+      ));
     }
-    return contentNode;
+    return content;
   };
 
 
@@ -678,21 +640,5 @@ export function InfoDisplayDialog({
 
 interface DerivedDialogData {
   title: string;
-  htmlContent?: string;
-  abilityModifiers?: Array<{ ability: Exclude<AbilityName, 'none'>; change: number }>;
-  skillBonuses?: Array<{ skillId: string; skillName: string; bonus: number }>;
-  grantedFeats?: Array<{ featId: string; name: string; note?: string; levelAcquired?: number }>;
-  bonusFeatSlots?: number;
-  abilityScoreBreakdown?: AbilityScoreBreakdown;
-  skillModifierBreakdown?: SkillModifierBreakdownDetails;
-  synergyInfoList?: SynergyInfoItem[];
-  resistanceBreakdown?: ResistanceBreakdownDetails;
-  detailsList?: Array<{ label: string; value: string | number | React.ReactNode; isBold?: boolean }>;
-  totalACValue?: number;
-  babBreakdown?: BabBreakdownDetails;
-  initiativeBreakdown?: InitiativeBreakdownDetails;
-  grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
-  grappleDamageBreakdown?: GrappleDamageBreakdownDetails;
-  speeds?: Partial<Record<SpeedType, number>>;
-  speedBreakdown?: SpeedBreakdownDetails;
+  content?: React.ReactNode;
 }
