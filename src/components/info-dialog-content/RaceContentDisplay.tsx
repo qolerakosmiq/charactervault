@@ -71,9 +71,9 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
   const traitsElements: React.ReactNode[] = [];
   if (abilityModifiers && abilityModifiers.length > 0) {
     traitsElements.push(
-      <div className="mt-2" key="ability-modifiers">
+      <div className="mt-2" key="ability-modifiers-section">
         <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments}</h4>
-        <div className="space-y-0.5 text-sm mb-2">
+        <div className="space-y-0.5 text-sm mb-2 ml-4">
           {abilityModifiers.map(mod => (
             <div key={mod.ability} className="flex justify-between">
               <span className="text-foreground">{ABILITY_LABELS.find(al => al.value === mod.ability)?.label || mod.ability}</span>
@@ -86,9 +86,9 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
   }
   if (skillBonuses && skillBonuses.length > 0) {
     traitsElements.push(
-      <div className="mt-2" key="skill-bonuses">
+      <div className="mt-2" key="skill-bonuses-section">
         <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses}</h4>
-        <div className="space-y-0.5 text-sm mb-2">
+        <div className="space-y-0.5 text-sm mb-2 ml-4">
           {skillBonuses.map(bonus => (
             <div key={bonus.skillId} className="flex justify-between">
               <span className="text-foreground">{bonus.skillName}</span>
@@ -101,9 +101,9 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
   }
   if (speeds && Object.keys(speeds).filter(k => (speeds as any)[k] !== undefined && (speeds as any)[k] > 0).length > 0) {
     traitsElements.push(
-       <div className="mt-2" key="base-speeds">
-        <p className="text-sm text-muted-foreground font-medium mb-1">{UI_STRINGS.infoDialogBaseSpeeds}</p>
-         <div className="ml-4 space-y-0.5 text-sm mb-2">
+       <div className="mt-2" key="base-speeds-section">
+        <h4 className="text-sm text-muted-foreground font-medium mb-1">{UI_STRINGS.infoDialogBaseSpeeds}</h4>
+         <div className="space-y-0.5 text-sm mb-2 ml-4">
           {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
             .map(([type, speedVal]) => {
             const speedTypeKey = `speedLabel${type.charAt(0).toUpperCase() + type.slice(1)}` as keyof typeof UI_STRINGS;
@@ -121,16 +121,34 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
   }
   if (bonusFeatSlots !== undefined && bonusFeatSlots > 0) {
     traitsElements.push(
-       <div className="flex justify-between text-sm mt-2" key="bonus-feat-slots">
+       <div className="flex justify-between text-sm mt-2" key="bonus-feat-slots-item">
         <span className="text-sm text-foreground font-medium">{UI_STRINGS.infoDialogBonusFeatSlots}</span>
         {renderModifierValue(bonusFeatSlots)}
       </div>
     );
   }
+  // Granted feats are not changed as per request
+
+  if (traitsElements.length > 0) {
+     outputBlocks.push(
+      <div key="general-traits-section">
+        <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading || "General Traits"}</h3>
+        {traitsElements}
+      </div>
+    );
+  }
+  
+  // This section is for granted feats, separate from "General Traits"
+  // We are explicitly not changing this section's indentation for now.
   if (grantedFeats && grantedFeats.length > 0) {
-    traitsElements.push(
-       <div className="mt-2" key="granted-feats">
-        <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h4>
+    if (outputBlocks.length > 0 && traitsElements.length === 0) { // Add separator if traits were empty but HTML content was there
+        outputBlocks.push(<Separator key="sep-before-feats-only" className="my-3" />);
+    } else if (traitsElements.length > 0) { // Add separator if traits section was rendered
+        outputBlocks.push(<Separator key="sep-after-traits-before-feats" className="my-3" />);
+    }
+    outputBlocks.push(
+      <div key="granted-feats-list-section">
+        <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h3>
         <ul className="list-none space-y-0.5 text-sm">
           {grantedFeats.map(feat => {
             const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
@@ -183,17 +201,7 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
     );
   }
 
-  if (traitsElements.length > 0) {
-     outputBlocks.push(
-      <div key="general-traits-section">
-        <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading || "General Traits"}</h3>
-        {traitsElements}
-      </div>
-    );
-  }
 
   return outputBlocks.length > 0 ? outputBlocks : null;
 };
 
-
-    

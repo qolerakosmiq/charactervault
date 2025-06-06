@@ -41,7 +41,7 @@ export const SkillModifierBreakdownContentDisplay: React.FC<SkillModifierBreakdo
     contentParts.push(
       <div key="synergies-block">
         <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
-        <ul className="space-y-0.5">
+        <ul className="space-y-0.5 ml-4"> {/* Indented list */}
           {synergyInfoList.map((synergyItem) => {
             const IconComponent = synergyItem.isActive ? CheckSquare : Square;
             return (
@@ -65,7 +65,7 @@ export const SkillModifierBreakdownContentDisplay: React.FC<SkillModifierBreakdo
     contentParts.push(
       <div key="calculation-block">
         <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-        <div className="space-y-1 text-sm">
+        <div className="space-y-1 text-sm ml-4"> {/* Indented content */}
           {skillModifierBreakdown.keyAbilityName && (
             <div className="flex justify-between">
               <span>

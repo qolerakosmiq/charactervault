@@ -62,7 +62,7 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
   const specificsElements: React.ReactNode[] = [];
   if (detailsList && detailsList.length > 0) {
     specificsElements.push(
-      <div className="mt-2" key="details-list">
+      <div className="mt-2 ml-4" key="details-list-content"> {/* Indented content */}
         <div className="space-y-0.5 text-sm mb-2">
           {detailsList.map((detail, index) => (
             <div key={index} className="flex justify-between">
@@ -74,11 +74,12 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
       </div>
     );
   }
+   // Granted feats are not changed as per request (no indentation added here for the list itself)
    if (grantedFeats && grantedFeats.length > 0) {
     specificsElements.push(
-       <div className="mt-2" key="granted-feats">
+       <div className="mt-2" key="granted-feats-subsection"> {/* Subsection container */}
         <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h4>
-        <ul className="list-none space-y-0.5 text-sm">
+        <ul className="list-none space-y-0.5 text-sm ml-4"> {/* Indent the list items */}
           {grantedFeats.map(feat => {
             const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
             return (
