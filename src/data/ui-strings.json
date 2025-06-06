@@ -123,7 +123,7 @@
     "rollerDialogRerollButton": "Reroll Scores",
     "rollerDialogCancelButton": "Cancel",
     "rollerDialogApplyButton": "Apply Scores",
-    "rollerDialogAssignPlaceholder": "Assign...",
+    "rollerDialogAssignPlaceholder": "Pick a Score...",
     "rollerDialogUnassignOption": "Unassign",
     "rollerDialogErrorNotAllAssignedToastTitle": "Assignment Incomplete",
     "rollerDialogErrorNotAllAssignedToastDesc": "Please assign all rolled scores to abilities before applying.",
@@ -298,4 +298,3 @@
     "footerAppDescription": "Built with ❤️ for D&D 3.5 Players"
   }
 }
-    

@@ -196,21 +196,21 @@ export function AbilityScoreRollerDialog({
           {ABILITY_ORDER.map((ability) => {
             const currentAssignedRollId = assignments[ability];
             const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === ability);
-            const mainNamePart = abilityLabelInfo?.label || ability;
-            const abbreviationPart = abilityLabelInfo?.abbr ? `(${abilityLabelInfo.abbr})` : '';
+            const abbrPart = abilityLabelInfo?.abbr || ability.substring(0,3).toUpperCase();
+            const fullNamePart = abilityLabelInfo?.label || ability;
             
             return (
               <React.Fragment key={ability}>
                 <Label htmlFor={`assign-${ability}`} className="font-medium text-right">
-                  {mainNamePart}
-                  {abbreviationPart && <span className="text-muted-foreground ml-1 font-normal">{abbreviationPart}</span>}
+                  {abbrPart}
+                  {fullNamePart && <span className="text-muted-foreground ml-1 font-normal">({fullNamePart})</span>}
                 </Label>
                 <Select
                   value={currentAssignedRollId}
                   onValueChange={(value) => handleAssignScore(ability, value)}
                 >
                   <SelectTrigger id={`assign-${ability}`} className="w-full">
-                    <SelectValue placeholder={UI_STRINGS.rollerDialogAssignPlaceholder || "Assign..."} />
+                    <SelectValue placeholder={UI_STRINGS.rollerDialogAssignPlaceholder || "Pick a Score..."} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={UNASSIGN_VALUE}>{UI_STRINGS.rollerDialogUnassignOption || "Unassign"}</SelectItem>
@@ -245,5 +245,3 @@ export function AbilityScoreRollerDialog({
     </Dialog>
   );
 }
-
-    
