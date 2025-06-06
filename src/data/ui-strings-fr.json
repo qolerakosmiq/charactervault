@@ -37,6 +37,7 @@
     "infoDialogListHeadingDetails": "Détails",
     "infoDialogAbilityScoreAdjustments": "Ajustements des caractéristiques",
     "infoDialogRacialSkillBonuses": "Bonus raciaux de compétence",
+    "infoDialogRacialSkillPointBonusLabel": "Points de compétence bonus/niveau",
     "infoDialogNoSkillDescription": "Aucune description disponible pour cette compétence.",
     "infoDialogBaseSpeeds": "Vitesses de base",
     "infoDialogBonusFeatSlots": "Emplacements de dons bonus",

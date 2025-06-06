@@ -245,8 +245,9 @@ export function InfoDisplayDialog({
         const qualities = getRaceSpecialQualities(raceId, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, SKILL_DEFINITIONS, PREDEFINED_FEATS, ABILITY_LABELS);
         const racialSkillPointBonus = getRaceSkillPointsBonusPerLevel(raceId, DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA);
         const details: Array<{ label: string; value: string | number | React.ReactNode; isBold?: boolean }> = [];
+        
         if (racialSkillPointBonus > 0) {
-          details.push({ label: UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Skill Points Per Level", value: renderModifierValue(racialSkillPointBonus), isBold: true });
+          details.push({ label: UI_STRINGS.infoDialogRacialSkillPointBonusLabel || "Bonus Skill Points/Level", value: renderModifierValue(racialSkillPointBonus), isBold: true });
         }
         
         let raceBonusFeatSlotsValue = qualities.bonusFeatSlots;
@@ -603,14 +604,14 @@ export function InfoDisplayDialog({
             {speeds && Object.keys(speeds).length > 0 && (
               <>
                 <h4 className="text-sm font-medium text-muted-foreground mb-1 mt-2">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</h4>
-                 <div className="space-y-0.5 text-sm mb-2"> {/* Changed from grid to simple div with space-y */}
+                 <div className="space-y-0.5 text-sm mb-2">
                   {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
                     .map(([type, speedVal]) => {
                     const speedTypeKey = `speedLabel${type.charAt(0).toUpperCase() + type.slice(1)}` as keyof typeof UI_STRINGS;
                     const speedName = UI_STRINGS[speedTypeKey] || type;
                     return (
-                      <div key={type} className="flex justify-between"> {/* Each item spans full width */}
-                        <span>{speedName}:</span>
+                      <div key={type} className="flex justify-between">
+                        <span>{speedName}</span>
                         <span className="font-semibold">{speedVal} {speedUnit}</span>
                       </div>
                     );
