@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import *as React from 'react';
@@ -335,26 +334,26 @@ export function InfoDisplayDialog({
           const badgeClass = "text-xs font-normal h-5 mx-0.5 px-1.5 py-0.5 align-baseline";
 
           allCombinedSkillDefinitionsForDisplay.forEach(providingSkillDef => {
-              const providingSkillName = providingSkillDef.name;
+              const providingSkillName = <strong>{providingSkillDef.name}</strong>;
               const providingSkillInstance = character.skills.find(s => s.id === providingSkillDef.id);
               const providingSkillRanks = providingSkillInstance?.ranks || 0;
 
               if (providingSkillDef.id === currentSkillId) { // Synergies *provided by* this skill
                   (SKILL_SYNERGIES_DATA[currentSkillId as keyof typeof SKILL_SYNERGIES_DATA] || []).forEach(sRule => {
-                      const targetSkillName = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === sRule.targetSkill)?.name || sRule.targetSkill;
+                      const targetSkillName = <strong>{allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === sRule.targetSkill)?.name || sRule.targetSkill}</strong>;
                       synergyItems.push({
                           id: `provided-${currentSkillId}-${sRule.targetSkill}`,
                           text: (
                             <>
-                                {(UI_STRINGS.synergyTextPart1ThisSkill || "This skill")}
-                                {(UI_STRINGS.synergyTextPart1Provided || ", with ")}
+                                {UI_STRINGS.synergyTextPart1ThisSkill || "This skill"}
+                                {UI_STRINGS.synergyTextPart1Provided || ", with "}
                                 <Badge variant="outline" className={badgeClass}>{sRule.ranksRequired}</Badge>
-                                {(UI_STRINGS.synergyTextPart2Ranks || " ranks")}
-                                {(UI_STRINGS.synergyTextPart3GrantsA || ", grants a ")}
+                                {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
+                                {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
                                 <Badge variant="outline" className={badgeClass}>{sRule.bonus > 0 ? '+' : ''}{sRule.bonus}</Badge>
-                                {(UI_STRINGS.synergyTextPart4BonusToTargetSkillStart || " bonus to ")}
-                                <strong>{targetSkillName}</strong>
-                                {(UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "'s checks.")}
+                                {UI_STRINGS.synergyTextPart4BonusToTargetSkillStart || " bonus to "}
+                                {targetSkillName}
+                                {UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "'s checks."}
                             </>
                           ),
                           isActive: providingSkillRanks >= sRule.ranksRequired
@@ -362,20 +361,20 @@ export function InfoDisplayDialog({
                   });
                   if (skillDef.isCustom && skillDef.providesSynergies) {
                       skillDef.providesSynergies.forEach(customRule => {
-                          const targetSkillName = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === customRule.targetSkillName)?.name || customRule.targetSkillName;
+                          const targetSkillNameNode = <strong>{allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === customRule.targetSkillName)?.name || customRule.targetSkillName}</strong>;
                           synergyItems.push({
                               id: `provided-custom-${currentSkillId}-${customRule.id}`,
                                text: (
                                  <>
-                                      {(UI_STRINGS.synergyTextPart1ThisSkill || "This skill")}
-                                      {(UI_STRINGS.synergyTextPart1Provided || ", with ")}
+                                      {UI_STRINGS.synergyTextPart1ThisSkill || "This skill"}
+                                      {UI_STRINGS.synergyTextPart1Provided || ", with "}
                                       <Badge variant="outline" className={badgeClass}>{customRule.ranksInThisSkillRequired}</Badge>
-                                      {(UI_STRINGS.synergyTextPart2Ranks || " ranks")}
-                                      {(UI_STRINGS.synergyTextPart3GrantsA || ", grants a ")}
+                                      {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
+                                      {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
                                       <Badge variant="outline" className={badgeClass}>{customRule.bonusGranted > 0 ? '+' : ''}{customRule.bonusGranted}</Badge>
-                                      {(UI_STRINGS.synergyTextPart4BonusToTargetSkillStart || " bonus to ")}
-                                      <strong>{targetSkillName}</strong>
-                                      {(UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "'s checks.")}
+                                      {UI_STRINGS.synergyTextPart4BonusToTargetSkillStart || " bonus to "}
+                                      {targetSkillNameNode}
+                                      {UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "'s checks."}
                                   </>
                                 ),
                               isActive: providingSkillRanks >= customRule.ranksInThisSkillRequired
@@ -389,13 +388,13 @@ export function InfoDisplayDialog({
                               id: `received-${providingSkillDef.id}-${sRule.targetSkill}`,
                               text: (
                                 <>
-                                    <strong>{providingSkillName}</strong>
-                                    {(UI_STRINGS.synergyTextPart1Received || ", with ")}
+                                    {providingSkillName}
+                                    {UI_STRINGS.synergyTextPart1Received || ", with "}
                                     <Badge variant="outline" className={badgeClass}>{sRule.ranksRequired}</Badge>
-                                    {(UI_STRINGS.synergyTextPart2Ranks || " ranks")}
-                                    {(UI_STRINGS.synergyTextPart3GrantsA || ", grants a ")}
+                                    {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
+                                    {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
                                     <Badge variant="outline" className={badgeClass}>{sRule.bonus > 0 ? '+' : ''}{sRule.bonus}</Badge>
-                                    {(UI_STRINGS.synergyTextPart4BonusToThisSkill || " bonus to this skill's checks.")}
+                                    {UI_STRINGS.synergyTextPart4BonusToThisSkill || " bonus to this skill's checks."}
                                 </>
                               ),
                               isActive: providingSkillRanks >= sRule.ranksRequired
@@ -410,13 +409,13 @@ export function InfoDisplayDialog({
                                   id: `received-custom-${providingSkillDef.id}-${customRule.id}`,
                                   text: (
                                      <>
-                                          <strong>{providingSkillName}</strong>
-                                          {(UI_STRINGS.synergyTextPart1Received || ", with ")}
+                                          {providingSkillName}
+                                          {UI_STRINGS.synergyTextPart1Received || ", with "}
                                           <Badge variant="outline" className={badgeClass}>{customRule.ranksInThisSkillRequired}</Badge>
-                                          {(UI_STRINGS.synergyTextPart2Ranks || " ranks")}
-                                          {(UI_STRINGS.synergyTextPart3GrantsA || ", grants a ")}
+                                          {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
+                                          {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
                                           <Badge variant="outline" className={badgeClass}>{customRule.bonusGranted > 0 ? '+' : ''}{customRule.bonusGranted}</Badge>
-                                          {(UI_STRINGS.synergyTextPart4BonusToThisSkill || " bonus to this skill's checks.")}
+                                          {UI_STRINGS.synergyTextPart4BonusToThisSkill || " bonus to this skill's checks."}
                                       </>
                                   ),
                                   isActive: providingSkillRanks >= customRule.ranksInThisSkillRequired
@@ -814,7 +813,7 @@ export function InfoDisplayDialog({
                           {renderModifierValue(babBreakdown.miscModifier)}
                       </div>
                     )}
-                    <Separator className="my-3" />
+                    <Separator className="mt-1 mb-2" />
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogBabTotalLabel || "Total Base Attack Bonus:"}</span>
                       <span className="font-bold text-accent">{babBreakdown.totalBab.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
@@ -843,7 +842,7 @@ export function InfoDisplayDialog({
                           {renderModifierValue(initiativeBreakdown.miscModifier)}
                       </div>
                     )}
-                    <Separator className="my-3" />
+                    <Separator className="mt-1 mb-2" />
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogInitiativeTotalLabel}</span>
                       <span className="font-bold text-accent">{renderModifierValue(initiativeBreakdown.totalInitiative)}</span>
@@ -880,7 +879,7 @@ export function InfoDisplayDialog({
                           {renderModifierValue(grappleModifierBreakdown.miscModifier)}
                       </div>
                     )}
-                    <Separator className="my-3" />
+                    <Separator className="mt-1 mb-2" />
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogGrappleModTotalLabel}</span>
                       <span className="font-bold text-accent">{renderModifierValue(grappleModifierBreakdown.totalGrappleModifier)}</span>
@@ -923,7 +922,7 @@ export function InfoDisplayDialog({
                           {renderModifierValue(grappleDamageBreakdown.bonus)}
                       </div>
                     )}
-                    <Separator className="my-3" />
+                    <Separator className="mt-1 mb-2" />
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogGrappleDmgTotalLabel}</span>
                       <span className="font-bold text-accent">
@@ -961,7 +960,7 @@ export function InfoDisplayDialog({
                         </div>
                       );
                     })}
-                    <Separator className="my-3" />
+                    <Separator className="mt-1 mb-2" />
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogFinalScoreLabel}</span>
                       <span className="font-bold text-accent">{abilityScoreBreakdown.finalScore}</span>
@@ -1026,7 +1025,7 @@ export function InfoDisplayDialog({
                         {renderModifierValue(skillModifierBreakdown.miscModifier)}
                       </div>
                     )}
-                    <Separator className="my-2" />
+                    <Separator className="mt-1 mb-2" />
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogTotalBonusLabel}</span>
                       <span className="font-bold text-accent">{renderModifierValue(skillModifierBreakdown.totalBonus)}</span>
@@ -1051,7 +1050,7 @@ export function InfoDisplayDialog({
                       <span>{UI_STRINGS.infoDialogCustomModifierLabel}</span>
                       {renderModifierValue(resistanceBreakdown.customMod)}
                     </div>
-                    <Separator className="my-2" />
+                    <Separator className="mt-1 mb-2" />
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogTotalResistanceLabel}</span>
                       <span className="font-bold text-accent">{resistanceBreakdown.total}</span>
@@ -1084,7 +1083,7 @@ export function InfoDisplayDialog({
                         </div>
                       );
                     })}
-                    <Separator className="my-2" />
+                    <Separator className="mt-1 mb-2" />
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{(UI_STRINGS.infoDialogSpeedTotalPrefixLabel || "Total")} {speedBreakdown.name}</span>
                       <span className="font-bold text-accent">{speedBreakdown.total} {speedUnit}</span>
@@ -1134,7 +1133,7 @@ export function InfoDisplayDialog({
                   
                   {contentType?.type === 'acBreakdown' && totalACValue !== undefined && ( 
                         <>
-                          <Separator className="my-2" />
+                          <Separator className="mt-1 mb-2" />
                           <div className="flex justify-between text-base">
                             <span className="font-semibold">{UI_STRINGS.infoDialogTotalLabel || 'Total'}</span>
                             <span className="font-bold text-accent">{renderModifierValue(totalACValue)}</span>
@@ -1197,6 +1196,7 @@ interface SkillModifierBreakdownDetails {
 }
 
     
+
 
 
 
