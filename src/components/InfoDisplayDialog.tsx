@@ -335,107 +335,102 @@ export function InfoDisplayDialog({
           const badgeClass = "text-xs font-normal h-5 mx-0.5 px-1.5 py-0.5 align-baseline";
 
           allCombinedSkillDefinitionsForDisplay.forEach(providingSkillDef => {
-            const providingSkillName = providingSkillDef.name;
-            const providingSkillInstance = character.skills.find(s => s.id === providingSkillDef.id);
-            const requiredRanksForThisSynergySource = SKILL_SYNERGIES_DATA[providingSkillDef.id]?.find(sRule => sRule.targetSkill === currentSkillId)?.ranksRequired ??
-                                                      providingSkillDef.providesSynergies?.find(customRule => customRule.targetSkillName === currentSkillId)?.ranksInThisSkillRequired;
+              const providingSkillName = providingSkillDef.name;
+              const providingSkillInstance = character.skills.find(s => s.id === providingSkillDef.id);
+              const providingSkillRanks = providingSkillInstance?.ranks || 0;
 
-
-            if (providingSkillDef.id === currentSkillId) { // Synergies provided by THIS skill
-              if (SKILL_SYNERGIES_DATA[currentSkillId]) {
-                SKILL_SYNERGIES_DATA[currentSkillId].forEach(sRule => {
-                  const targetSkillName = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === sRule.targetSkill)?.name || sRule.targetSkill;
-                  const isActive = (skillInstance.ranks || 0) >= sRule.ranksRequired;
-                  synergyItems.push({
-                    id: `provided-${currentSkillId}-${sRule.targetSkill}`,
-                    text: (
-                      <>
-                        {UI_STRINGS.synergyTextPart1ThisSkill || "This skill"}
-                        {UI_STRINGS.synergyTextPart1Provided || ", with "}
-                        <Badge variant="outline" className={badgeClass}>{sRule.ranksRequired}</Badge>
-                        {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
-                        {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
-                        <Badge variant="outline" className={badgeClass}>{sRule.bonus > 0 ? '+' : ''}{sRule.bonus}</Badge>
-                        {UI_STRINGS.synergyTextPart4BonusToTargetSkillStart || " bonus to "}
-                        <span className="font-medium">{targetSkillName}</span>
-                        {UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "."}
-                      </>
-                    ),
-                    isActive
-                  });
-                });
-              }
-              if (skillDef.isCustom && skillDef.providesSynergies) {
-                skillDef.providesSynergies.forEach(customRule => {
-                  const targetSkillName = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === customRule.targetSkillName)?.name || customRule.targetSkillName;
-                  const isActive = (skillInstance.ranks || 0) >= customRule.ranksInThisSkillRequired;
-                  synergyItems.push({
-                    id: `provided-custom-${currentSkillId}-${customRule.id}`,
-                    text: (
-                      <>
-                        {UI_STRINGS.synergyTextPart1ThisSkill || "This skill"}
-                        {UI_STRINGS.synergyTextPart1Provided || ", with "}
-                        <Badge variant="outline" className={badgeClass}>{customRule.ranksInThisSkillRequired}</Badge>
-                        {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
-                        {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
-                        <Badge variant="outline" className={badgeClass}>{customRule.bonusGranted > 0 ? '+' : ''}{customRule.bonusGranted}</Badge>
-                        {UI_STRINGS.synergyTextPart4BonusToTargetSkillStart || " bonus to "}
-                        <span className="font-medium">{targetSkillName}</span>
-                        {UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "."}
-                      </>
-                    ),
-                    isActive
-                  });
-                });
-              }
-            } else { // Synergies received BY this skill from OTHERS
-              if (SKILL_SYNERGIES_DATA[providingSkillDef.id]) {
-                SKILL_SYNERGIES_DATA[providingSkillDef.id].forEach(sRule => {
-                  if (sRule.targetSkill === currentSkillId) {
-                    const isActive = (providingSkillInstance?.ranks || 0) >= sRule.ranksRequired;
-                    synergyItems.push({
-                      id: `received-${providingSkillDef.id}-${sRule.targetSkill}`,
-                      text: (
-                         <>
-                          <span className="font-medium">{providingSkillName}</span>
-                          {UI_STRINGS.synergyTextPart1Received || ", with "}
-                          <Badge variant="outline" className={badgeClass}>{sRule.ranksRequired}</Badge>
-                          {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
-                          {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
-                          <Badge variant="outline" className={badgeClass}>{sRule.bonus > 0 ? '+' : ''}{sRule.bonus}</Badge>
-                          {UI_STRINGS.synergyTextPart4BonusToThisSkill || " bonus to this skill's checks."}
-                        </>
-                      ),
-                      isActive
-                    });
+              // Synergies *provided by* the current skill
+              if (providingSkillDef.id === currentSkillId) {
+                  if (SKILL_SYNERGIES_DATA[currentSkillId]) {
+                      SKILL_SYNERGIES_DATA[currentSkillId].forEach(sRule => {
+                          const targetSkillName = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === sRule.targetSkill)?.name || sRule.targetSkill;
+                          synergyItems.push({
+                              id: `provided-${currentSkillId}-${sRule.targetSkill}`,
+                              text: (
+                                  <>
+                                      {UI_STRINGS.synergyTextPart1ThisSkill || "This skill"}
+                                      {UI_STRINGS.synergyTextPart1Provided || ", with "}
+                                      <Badge variant="outline" className={badgeClass}>{sRule.ranksRequired}</Badge>
+                                      {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
+                                      {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
+                                      <Badge variant="outline" className={badgeClass}>{sRule.bonus > 0 ? '+' : ''}{sRule.bonus}</Badge>
+                                      {UI_STRINGS.synergyTextPart4BonusToTargetSkillStart || " bonus to "}
+                                      <span className="font-medium">{targetSkillName}</span>
+                                      {UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "."}
+                                  </>
+                              ),
+                              isActive: providingSkillRanks >= sRule.ranksRequired
+                          });
+                      });
                   }
-                });
-              }
-              if (providingSkillDef.isCustom && providingSkillDef.providesSynergies) {
-                providingSkillDef.providesSynergies.forEach(customRule => {
-                  if (customRule.targetSkillName === currentSkillId) {
-                    const isActive = (providingSkillInstance?.ranks || 0) >= customRule.ranksInThisSkillRequired;
-                    synergyItems.push({
-                      id: `received-custom-${providingSkillDef.id}-${customRule.id}`,
-                      text: (
-                        <>
-                          <span className="font-medium">{providingSkillName}</span>
-                          {UI_STRINGS.synergyTextPart1Received || ", with "}
-                          <Badge variant="outline" className={badgeClass}>{customRule.ranksInThisSkillRequired}</Badge>
-                          {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
-                          {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
-                          <Badge variant="outline" className={badgeClass}>{customRule.bonusGranted > 0 ? '+' : ''}{customRule.bonusGranted}</Badge>
-                          {UI_STRINGS.synergyTextPart4BonusToThisSkill || " bonus to this skill's checks."}
-                        </>
-                      ),
-                      isActive
-                    });
+                  if (skillDef.isCustom && skillDef.providesSynergies) {
+                      skillDef.providesSynergies.forEach(customRule => {
+                          const targetSkillName = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === customRule.targetSkillName)?.name || customRule.targetSkillName;
+                          synergyItems.push({
+                              id: `provided-custom-${currentSkillId}-${customRule.id}`,
+                              text: (
+                                 <>
+                                      {UI_STRINGS.synergyTextPart1ThisSkill || "This skill"}
+                                      {UI_STRINGS.synergyTextPart1Provided || ", with "}
+                                      <Badge variant="outline" className={badgeClass}>{customRule.ranksInThisSkillRequired}</Badge>
+                                      {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
+                                      {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
+                                      <Badge variant="outline" className={badgeClass}>{customRule.bonusGranted > 0 ? '+' : ''}{customRule.bonusGranted}</Badge>
+                                      {UI_STRINGS.synergyTextPart4BonusToTargetSkillStart || " bonus to "}
+                                      <span className="font-medium">{targetSkillName}</span>
+                                      {UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "."}
+                                  </>
+                              ),
+                              isActive: providingSkillRanks >= customRule.ranksInThisSkillRequired
+                          });
+                      });
                   }
-                });
+              } else { // Synergies *received by* the current skill from OTHERS
+                  if (SKILL_SYNERGIES_DATA[providingSkillDef.id]) {
+                      SKILL_SYNERGIES_DATA[providingSkillDef.id].forEach(sRule => {
+                          if (sRule.targetSkill === currentSkillId) {
+                              synergyItems.push({
+                                  id: `received-${providingSkillDef.id}-${sRule.targetSkill}`,
+                                  text: (
+                                      <>
+                                          <span className="font-medium">{providingSkillName}</span>
+                                          {UI_STRINGS.synergyTextPart1Received || ", with "}
+                                          <Badge variant="outline" className={badgeClass}>{sRule.ranksRequired}</Badge>
+                                          {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
+                                          {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
+                                          <Badge variant="outline" className={badgeClass}>{sRule.bonus > 0 ? '+' : ''}{sRule.bonus}</Badge>
+                                          {UI_STRINGS.synergyTextPart4BonusToThisSkill || " bonus to this skill's checks."}
+                                      </>
+                                  ),
+                                  isActive: providingSkillRanks >= sRule.ranksRequired
+                              });
+                          }
+                      });
+                  }
+                  if (providingSkillDef.isCustom && providingSkillDef.providesSynergies) {
+                      providingSkillDef.providesSynergies.forEach(customRule => {
+                          if (customRule.targetSkillName === currentSkillId) {
+                              synergyItems.push({
+                                  id: `received-custom-${providingSkillDef.id}-${customRule.id}`,
+                                  text: (
+                                     <>
+                                          <span className="font-medium">{providingSkillName}</span>
+                                          {UI_STRINGS.synergyTextPart1Received || ", with "}
+                                          <Badge variant="outline" className={badgeClass}>{customRule.ranksInThisSkillRequired}</Badge>
+                                          {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
+                                          {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
+                                          <Badge variant="outline" className={badgeClass}>{customRule.bonusGranted > 0 ? '+' : ''}{customRule.bonusGranted}</Badge>
+                                          {UI_STRINGS.synergyTextPart4BonusToThisSkill || " bonus to this skill's checks."}
+                                      </>
+                                  ),
+                                  isActive: providingSkillRanks >= customRule.ranksInThisSkillRequired
+                              });
+                          }
+                      });
+                  }
               }
-            }
           });
-          
+
           data = {
             title: (UI_STRINGS.infoDialogTitleModifierBreakdown || "{skillName} Modifier Breakdown").replace("{skillName}", skillDef.name),
             htmlContent: skillDef.description,
@@ -675,19 +670,19 @@ export function InfoDisplayDialog({
               <>
                 {renderSeparatorIfNeeded()}
                 <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
-                <div className="space-y-0.5">
+                <ul className="space-y-0.5">
                   {synergyInfoList.map((synergyItem) => {
                     const IconComponent = synergyItem.isActive ? CheckSquare : Square;
                     return (
-                      <div key={synergyItem.id} className="flex items-start text-sm">
-                        <IconComponent className={cn("h-4 w-4 mr-2 shrink-0 mt-0.5", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")} />
+                      <li key={synergyItem.id} className="flex items-start text-sm">
+                        <IconComponent className={cn("h-4 w-4 mr-2 shrink-0 mt-1", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")} />
                         <span className={cn(synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")}>
                           {synergyItem.text}
                         </span>
-                      </div>
+                      </li>
                     );
                   })}
-                </div>
+                </ul>
                 {markContentRendered()}
               </>
             )}
@@ -1214,6 +1209,7 @@ interface SkillModifierBreakdownDetails {
 }
 
     
+
 
 
 
