@@ -134,7 +134,6 @@
     "pointBuyDialogPointsSpentLabel": "Points dépensés :",
     "pointBuyDialogPointsRemainingLabel": "Points restants :",
     "pointBuyDialogCostLabel": "Coût :",
-    "pointBuyDialogCancelButton": "Annuler",
     "pointBuyDialogApplyButton": "Appliquer les scores",
     "pointBuyDialogErrorInvalidApplicationTitle": "Scores invalides",
     "pointBuyDialogErrorInvalidApplicationDesc": "Impossible d'appliquer les scores. Les points dépensés doivent correspondre exactement au budget total de points, ou le budget est invalide.",
@@ -180,7 +179,7 @@
     "skillsTableTooltipMaxRanks": "Rangs max : {maxRanksValue}",
     "skillsTableTooltipEditCustom": "Modifier la définition de compétence personnalisée",
     "skillsTableTooltipInfoForSkill": "Infos pour {skillName}",
-    "badgeCustomLabel": "Personnalisé",
+    "badgeCustomLabel": "Personnalisée",
     "featsPanelTitle": "Dons",
     "featsPanelFeatsAvailableLabel": "Dons disponibles :",
     "featsPanelFeatsLeftLabel": "Dons restants à choisir :",
@@ -200,6 +199,7 @@
     "featSelectionDialogEmpty": "Aucun don trouvé.",
     "featSelectionDialogLoadingDescription": "Chargement des informations sur les dons...",
     "featSelectionDialogCancelButton": "Annuler",
+    "pointBuyDialogCancelButton": "Annuler",
     "armorClassPanelTitle": "Classe d'armure",
     "armorClassPanelDescription": "Détails sur les défenses de votre personnage.",
     "armorClassPanelLoading": "Chargement des détails de la CA...",
@@ -297,5 +297,3 @@
     "footerAppDescription": "Fait avec ❤️ pour les joueurs de D&D 3.5"
   }
 }
-
-    
