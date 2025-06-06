@@ -14,7 +14,6 @@ import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { ExpandableDetailWrapper, sectionHeadingClass } from './dialog-utils';
 import { FeatDetailsDisplay } from './FeatDetailsDisplay';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 
 interface ClassContentDisplayProps {
   htmlContent?: string;
@@ -45,42 +44,27 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
   character,
   expandedItems,
   toggleExpanded,
-}) => {
+}): React.ReactNode[] | null => {
   const { UI_STRINGS, ABILITY_LABELS, DND_CLASSES, DND_RACES, ALIGNMENT_PREREQUISITE_OPTIONS, SKILL_DEFINITIONS } = translations;
   const hasAnyBonusSection = grantedFeats?.length || detailsList?.length;
 
-  let hasRenderedContentBlock = false;
-  const renderSeparatorIfNeeded = () => {
-    if (hasRenderedContentBlock) {
-      return <div className="mt-2 mb-2"><Separator /></div>;
-    }
-    return null;
-  };
-  const markContentRendered = () => { hasRenderedContentBlock = true; };
+  const contentBlocks: React.ReactNode[] = [];
 
-  return (
-    <>
-      {htmlContent && (
-        <>
-          {renderSeparatorIfNeeded()}
-          <div
-            className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
-            dangerouslySetInnerHTML={{ __html: htmlContent }}
-          />
-          {markContentRendered()}
-        </>
-      )}
+  if (htmlContent) {
+    contentBlocks.push(
+      <div
+        key="html-content-block"
+        className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+        dangerouslySetInnerHTML={{ __html: htmlContent }}
+      />
+    );
+  }
 
-      {hasAnyBonusSection && (
-        <>
-          {renderSeparatorIfNeeded()}
-          <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogClassSpecificsListHeading || "Class Specifics"}</h3>
-          {markContentRendered()}
-        </>
-      )}
-
-      {detailsList && detailsList.length > 0 && (
-        <div className="mt-2">
+  if (hasAnyBonusSection) {
+    const specificsElements: React.ReactNode[] = [];
+    if (detailsList && detailsList.length > 0) {
+      specificsElements.push(
+        <div className="mt-2" key="details-list">
           <div className="space-y-0.5 text-sm mb-2">
             {detailsList.map((detail, index) => (
               <div key={index} className="flex justify-between">
@@ -90,10 +74,11 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
             ))}
           </div>
         </div>
-      )}
-
-      {grantedFeats && grantedFeats.length > 0 && (
-         <div className="mt-2">
+      );
+    }
+     if (grantedFeats && grantedFeats.length > 0) {
+      specificsElements.push(
+         <div className="mt-2" key="granted-feats">
           <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h4>
           <ul className="list-none space-y-0.5 text-sm">
             {grantedFeats.map(feat => {
@@ -144,7 +129,18 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
             })}
           </ul>
         </div>
-      )}
-    </>
-  );
+      );
+    }
+
+    if (specificsElements.length > 0) {
+        contentBlocks.push(
+          <div key="class-specifics-wrapper">
+            <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogClassSpecificsListHeading || "Class Specifics"}</h3>
+            {specificsElements}
+          </div>
+        );
+    }
+  }
+
+  return contentBlocks.length > 0 ? contentBlocks : null;
 };

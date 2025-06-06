@@ -50,7 +50,6 @@ import {
   calculateInitiative, calculateGrapple, getUnarmedGrappleDamage
 } from '@/lib/dnd-utils';
 
-// Import new content components
 import { RaceContentDisplay } from './info-dialog-content/RaceContentDisplay';
 import { ClassContentDisplay } from './info-dialog-content/ClassContentDisplay';
 import { AlignmentSummaryContentDisplay } from './info-dialog-content/AlignmentSummaryContentDisplay';
@@ -81,7 +80,7 @@ export interface InitiativeBreakdownDetails extends InitiativeBreakdownDetailsTy
 export interface GrappleModifierBreakdownDetails extends GrappleModifierBreakdownDetailsType {}
 export interface GrappleDamageBreakdownDetails extends GrappleDamageBreakdownDetailsType {}
 export interface SpeedBreakdownDetails extends SpeedBreakdownDetailsType {}
-export interface SkillModifierBreakdownDetails { // Re-defined here for clarity, ensure it matches usage
+export interface SkillModifierBreakdownDetails { 
   skillName: string;
   keyAbilityName?: string; 
   keyAbilityModifier: number;
@@ -305,7 +304,7 @@ export function InfoDisplayDialog({
               const providingSkillInstance = character.skills.find(s => s.id === providingSkillDef.id);
               const providingSkillRanks = providingSkillInstance?.ranks || 0;
 
-              if (providingSkillDef.id === currentSkillId) { // Synergies *provided by* this skill
+              if (providingSkillDef.id === currentSkillId) { 
                   (SKILL_SYNERGIES_DATA[currentSkillId as keyof typeof SKILL_SYNERGIES_DATA] || []).forEach(sRule => {
                       const targetSkillName = <strong>{allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === sRule.targetSkill)?.name || sRule.targetSkill}</strong>;
                       synergyItems.push({
@@ -348,7 +347,7 @@ export function InfoDisplayDialog({
                           });
                       });
                   }
-              } else { // Synergies *received by* this skill from other skills
+              } else { 
                   (SKILL_SYNERGIES_DATA[providingSkillDef.id as keyof typeof SKILL_SYNERGIES_DATA] || []).forEach(sRule => {
                       if (sRule.targetSkill === currentSkillId) {
                           synergyItems.push({
@@ -564,21 +563,14 @@ export function InfoDisplayDialog({
     grappleModifierBreakdown, grappleDamageBreakdown, speeds, speedBreakdown,
   } = derivedData;
   
-  let detailsListHeading = UI_STRINGS.infoDialogSectionHeadingDetails || "Details";
-  if (contentType?.type === 'race') {
-    detailsListHeading = UI_STRINGS.infoDialogRaceSpecificsListHeading || "Racial Specifics";
-  } else if (contentType?.type === 'class') {
-    detailsListHeading = UI_STRINGS.infoDialogClassSpecificsListHeading || "Class Specifics";
-  } else if (abilityScoreBreakdown || skillModifierBreakdown || resistanceBreakdown || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || speedBreakdown || (contentType?.type === 'acBreakdown')) {
-    detailsListHeading = UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation";
-  }
-
   const renderContent = () => {
-    if (!contentType) return null;
+    if (!contentType || !translations) return null; // Guard against translations not being ready
+
+    let contentNode: React.ReactNode | React.ReactNode[] | null = null;
 
     switch (contentType.type) {
       case 'race':
-        return <RaceContentDisplay
+        contentNode = <RaceContentDisplay
                   htmlContent={htmlContent}
                   abilityModifiers={abilityModifiers}
                   skillBonuses={skillBonuses}
@@ -592,8 +584,9 @@ export function InfoDisplayDialog({
                   expandedItems={expandedItems}
                   toggleExpanded={toggleExpanded}
                 />;
+        break;
       case 'class':
-        return <ClassContentDisplay
+        contentNode = <ClassContentDisplay
                   htmlContent={htmlContent}
                   grantedFeats={grantedFeats}
                   detailsList={detailsList}
@@ -604,44 +597,67 @@ export function InfoDisplayDialog({
                   expandedItems={expandedItems}
                   toggleExpanded={toggleExpanded}
                 />;
+        break;
       case 'alignmentSummary':
-        return <AlignmentSummaryContentDisplay htmlContent={htmlContent} />;
+        contentNode = <AlignmentSummaryContentDisplay htmlContent={htmlContent} />;
+        break;
       case 'deity':
-        return <DeityContentDisplay htmlContent={htmlContent} />;
+        contentNode = <DeityContentDisplay htmlContent={htmlContent} />;
+        break;
       case 'abilityScoreBreakdown':
-        return <AbilityScoreBreakdownContentDisplay abilityScoreBreakdown={abilityScoreBreakdown} uiStrings={UI_STRINGS} />;
+        contentNode = <AbilityScoreBreakdownContentDisplay abilityScoreBreakdown={abilityScoreBreakdown} uiStrings={UI_STRINGS} />;
+        break;
       case 'skillModifierBreakdown':
-        return <SkillModifierBreakdownContentDisplay
+        contentNode = <SkillModifierBreakdownContentDisplay
                   htmlContent={htmlContent}
                   synergyInfoList={synergyInfoList}
                   skillModifierBreakdown={skillModifierBreakdown}
                   uiStrings={UI_STRINGS}
                 />;
+        break;
       case 'resistanceBreakdown':
-        return <ResistanceBreakdownContentDisplay resistanceBreakdown={resistanceBreakdown} uiStrings={UI_STRINGS} />;
+        contentNode = <ResistanceBreakdownContentDisplay resistanceBreakdown={resistanceBreakdown} uiStrings={UI_STRINGS} />;
+        break;
       case 'acBreakdown':
-        return <AcBreakdownContentDisplay
+        contentNode = <AcBreakdownContentDisplay
                   detailsList={detailsList}
                   totalACValue={totalACValue}
-                  detailsListHeading={detailsListHeading}
+                  detailsListHeading={UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}
                   uiStrings={UI_STRINGS}
                   abilityLabels={translations.ABILITY_LABELS}
                />;
+        break;
       case 'babBreakdown':
-        return <BabBreakdownContentDisplay babBreakdown={babBreakdown} uiStrings={UI_STRINGS} />;
+        contentNode = <BabBreakdownContentDisplay babBreakdown={babBreakdown} uiStrings={UI_STRINGS} />;
+        break;
       case 'initiativeBreakdown':
-        return <InitiativeBreakdownContentDisplay initiativeBreakdown={initiativeBreakdown} uiStrings={UI_STRINGS} abilityLabels={translations.ABILITY_LABELS} />;
+        contentNode = <InitiativeBreakdownContentDisplay initiativeBreakdown={initiativeBreakdown} uiStrings={UI_STRINGS} abilityLabels={translations.ABILITY_LABELS} />;
+        break;
       case 'grappleModifierBreakdown':
-        return <GrappleModifierBreakdownContentDisplay grappleModifierBreakdown={grappleModifierBreakdown} uiStrings={UI_STRINGS} abilityLabels={translations.ABILITY_LABELS} />;
+        contentNode = <GrappleModifierBreakdownContentDisplay grappleModifierBreakdown={grappleModifierBreakdown} uiStrings={UI_STRINGS} abilityLabels={translations.ABILITY_LABELS} />;
+        break;
       case 'grappleDamageBreakdown':
-        return <GrappleDamageBreakdownContentDisplay grappleDamageBreakdown={grappleDamageBreakdown} uiStrings={UI_STRINGS} abilityLabels={translations.ABILITY_LABELS} />;
+        contentNode = <GrappleDamageBreakdownContentDisplay grappleDamageBreakdown={grappleDamageBreakdown} uiStrings={UI_STRINGS} abilityLabels={translations.ABILITY_LABELS} />;
+        break;
       case 'speedBreakdown':
-        return <SpeedBreakdownContentDisplay speedBreakdown={speedBreakdown} uiStrings={UI_STRINGS} />;
+        contentNode = <SpeedBreakdownContentDisplay speedBreakdown={speedBreakdown} uiStrings={UI_STRINGS} />;
+        break;
       case 'genericHtml':
-        return <GenericHtmlContentDisplay htmlContent={htmlContent} />;
+        contentNode = <GenericHtmlContentDisplay htmlContent={htmlContent} />;
+        break;
       default:
         return null;
     }
+
+    if (Array.isArray(contentNode)) {
+      return contentNode.map((block, index) => (
+        <React.Fragment key={`block-${index}`}>
+          {block}
+          {index < contentNode.length - 1 && <Separator className="my-3" />}
+        </React.Fragment>
+      ));
+    }
+    return contentNode;
   };
 
 

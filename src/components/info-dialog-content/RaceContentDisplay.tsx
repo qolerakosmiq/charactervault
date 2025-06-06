@@ -15,7 +15,6 @@ import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { renderModifierValue, ExpandableDetailWrapper, sectionHeadingClass } from './dialog-utils';
 import { FeatDetailsDisplay } from './FeatDetailsDisplay';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 
 interface RaceContentDisplayProps {
   htmlContent?: string;
@@ -24,18 +23,17 @@ interface RaceContentDisplayProps {
   grantedFeats?: Array<{ featId: string; name: string; note?: string; levelAcquired?: number }>;
   bonusFeatSlots?: number;
   speeds?: Partial<Record<SpeedType, number>>;
-  translations: { // Specifically UI_STRINGS and ABILITY_LABELS from the main translations object
+  translations: { 
     UI_STRINGS: Record<string, string>;
     ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
-    // Include other parts of translations if FeatDetailsDisplay needs them directly
     DND_CLASSES: readonly DndClassOption[];
     DND_RACES: readonly DndRaceOption[];
     ALIGNMENT_PREREQUISITE_OPTIONS: readonly { value: string; label: string }[];
     SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[];
   };
   allCombinedFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
-  customSkillDefinitions: readonly CustomSkillDefinition[]; // For FeatDetailsDisplay
-  character: Character; // For FeatDetailsDisplay
+  customSkillDefinitions: readonly CustomSkillDefinition[]; 
+  character: Character; 
   expandedItems: Set<string>;
   toggleExpanded: (itemId: string) => void;
 }
@@ -53,43 +51,29 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
   character,
   expandedItems,
   toggleExpanded,
-}) => {
+}): React.ReactNode[] | null => {
   const { UI_STRINGS, ABILITY_LABELS, DND_CLASSES, DND_RACES, ALIGNMENT_PREREQUISITE_OPTIONS, SKILL_DEFINITIONS } = translations;
   const speedUnit = UI_STRINGS.speedUnit || "ft.";
   const hasAnyBonusSection = abilityModifiers?.length || skillBonuses?.length || grantedFeats?.length || bonusFeatSlots !== undefined || speeds;
 
-  let hasRenderedContentBlock = false;
-  const renderSeparatorIfNeeded = () => {
-    if (hasRenderedContentBlock) {
-      return <div className="mt-2 mb-2"><Separator /></div>;
-    }
-    return null;
-  };
-  const markContentRendered = () => { hasRenderedContentBlock = true; };
+  const contentBlocks: React.ReactNode[] = [];
 
-  return (
-    <>
-      {htmlContent && (
-        <>
-          {renderSeparatorIfNeeded()}
-          <div
-            className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
-            dangerouslySetInnerHTML={{ __html: htmlContent }}
-          />
-          {markContentRendered()}
-        </>
-      )}
+  if (htmlContent) {
+    contentBlocks.push(
+      <div
+        key="html-content-block"
+        className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+        dangerouslySetInnerHTML={{ __html: htmlContent }}
+      />
+    );
+  }
 
-      {hasAnyBonusSection && (
-        <>
-          {renderSeparatorIfNeeded()}
-          <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading || "General Traits"}</h3>
-          {markContentRendered()}
-        </>
-      )}
+  if (hasAnyBonusSection) {
+    const traitsElements: React.ReactNode[] = [];
 
-      {abilityModifiers && abilityModifiers.length > 0 && (
-        <div className="mt-2">
+    if (abilityModifiers && abilityModifiers.length > 0) {
+      traitsElements.push(
+        <div className="mt-2" key="ability-modifiers">
           <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments}</h4>
           <div className="space-y-0.5 text-sm mb-2">
             {abilityModifiers.map(mod => (
@@ -100,9 +84,11 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
             ))}
           </div>
         </div>
-      )}
-      {skillBonuses && skillBonuses.length > 0 && (
-        <div className="mt-2">
+      );
+    }
+    if (skillBonuses && skillBonuses.length > 0) {
+      traitsElements.push(
+        <div className="mt-2" key="skill-bonuses">
           <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses}</h4>
           <div className="space-y-0.5 text-sm mb-2">
             {skillBonuses.map(bonus => (
@@ -113,9 +99,11 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
             ))}
           </div>
         </div>
-      )}
-      {speeds && Object.keys(speeds).filter(k => (speeds as any)[k] !== undefined && (speeds as any)[k] > 0).length > 0 && (
-         <div className="mt-2">
+      );
+    }
+    if (speeds && Object.keys(speeds).filter(k => (speeds as any)[k] !== undefined && (speeds as any)[k] > 0).length > 0) {
+      traitsElements.push(
+         <div className="mt-2" key="base-speeds">
           <p className="text-sm text-muted-foreground font-medium mb-1">{UI_STRINGS.infoDialogBaseSpeeds}</p>
            <div className="ml-4 space-y-0.5 text-sm mb-2">
             {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
@@ -131,15 +119,19 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
             })}
           </div>
         </div>
-      )}
-      {bonusFeatSlots !== undefined && bonusFeatSlots > 0 && (
-         <div className="flex justify-between text-sm mt-2">
+      );
+    }
+    if (bonusFeatSlots !== undefined && bonusFeatSlots > 0) {
+      traitsElements.push(
+         <div className="flex justify-between text-sm mt-2" key="bonus-feat-slots">
           <span className="text-sm text-foreground font-medium">{UI_STRINGS.infoDialogBonusFeatSlots}</span>
           {renderModifierValue(bonusFeatSlots)}
         </div>
-      )}
-      {grantedFeats && grantedFeats.length > 0 && (
-         <div className="mt-2">
+      );
+    }
+    if (grantedFeats && grantedFeats.length > 0) {
+      traitsElements.push(
+         <div className="mt-2" key="granted-feats">
           <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h4>
           <ul className="list-none space-y-0.5 text-sm">
             {grantedFeats.map(feat => {
@@ -190,7 +182,17 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
             })}
           </ul>
         </div>
-      )}
-    </>
-  );
+      );
+    }
+    if (traitsElements.length > 0) {
+      contentBlocks.push(
+        <div key="general-traits-wrapper">
+          <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading || "General Traits"}</h3>
+          {traitsElements}
+        </div>
+      );
+    }
+  }
+  
+  return contentBlocks.length > 0 ? contentBlocks : null;
 };
