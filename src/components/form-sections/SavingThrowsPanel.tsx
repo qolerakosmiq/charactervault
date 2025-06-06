@@ -101,6 +101,11 @@ export function SavingThrowsPanel({
       rowKey: 'magicMod',
     },
     {
+      label: <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc<br />Modifier" }} />,
+      getValue: (saveData) => renderModifierValue(saveData.miscMod),
+      rowKey: 'miscModDisplay',
+    },
+    {
       label: <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsRowLabelCustomModifier || "Custom<br />Modifier" }} />,
       getValue: (saveData, baseSave, abilityMod, total, saveType?: SavingThrowType, onMiscChange?: (type: SavingThrowType, val: number) => void) => (
         <div className="flex justify-center">

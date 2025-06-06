@@ -107,6 +107,7 @@
     "savingThrowsRowLabelBase": "Base",
     "savingThrowsRowLabelAbilityModifier": "Mod.<br />carac.",
     "savingThrowsRowLabelMagicModifier": "Mod.<br />Magie",
+    "savingThrowsRowLabelMiscModifier": "Mod.<br />Divers",
     "savingThrowsRowLabelCustomModifier": "Mod.<br />perso.",
     "abilityScoresSectionTitle": "Caractéristiques",
     "abilityScoresRollButton": "Lancer les scores",
