@@ -661,7 +661,7 @@ export function InfoDisplayDialog({
               </>
             )}
             
-            {contentType?.type === 'skillModifierBreakdown' && synergyInfoList && synergyInfoList.length > 0 && (
+            {contentType?.type === 'skillModifierBreakdown' && (synergyInfoList && synergyInfoList.length > 0 ? (
               <>
                 {renderSeparatorIfNeeded()}
                 <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
@@ -680,7 +680,17 @@ export function InfoDisplayDialog({
                 </ul>
                 {markContentRendered()}
               </>
-            )}
+            ) : (
+              skillModifierBreakdown && (
+                <>
+                  {renderSeparatorIfNeeded()}
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
+                  <p className="text-sm text-muted-foreground">{UI_STRINGS.infoDialogNoSynergies || "This skill has no defined synergy relationships."}</p>
+                  {markContentRendered()}
+                </>
+              )
+            ))}
+
 
             {hasAnyBonusSection && (contentType?.type === 'race' || contentType?.type === 'class') && (
                  <>
@@ -813,7 +823,7 @@ export function InfoDisplayDialog({
                           {renderModifierValue(babBreakdown.miscModifier)}
                       </div>
                     )}
-                    <Separator className="separator-before-total mb-2" />
+                    <div style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}><Separator /></div>
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogBabTotalLabel || "Total Base Attack Bonus:"}</span>
                       <span className="font-bold text-accent">{babBreakdown.totalBab.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
@@ -842,7 +852,7 @@ export function InfoDisplayDialog({
                           {renderModifierValue(initiativeBreakdown.miscModifier)}
                       </div>
                     )}
-                    <Separator className="separator-before-total mb-2" />
+                    <div style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}><Separator /></div>
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogInitiativeTotalLabel}</span>
                       <span className="font-bold text-accent">{renderModifierValue(initiativeBreakdown.totalInitiative)}</span>
@@ -879,7 +889,7 @@ export function InfoDisplayDialog({
                           {renderModifierValue(grappleModifierBreakdown.miscModifier)}
                       </div>
                     )}
-                    <Separator className="separator-before-total mb-2" />
+                    <div style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}><Separator /></div>
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogGrappleModTotalLabel}</span>
                       <span className="font-bold text-accent">{renderModifierValue(grappleModifierBreakdown.totalGrappleModifier)}</span>
@@ -922,7 +932,7 @@ export function InfoDisplayDialog({
                           {renderModifierValue(grappleDamageBreakdown.bonus)}
                       </div>
                     )}
-                    <Separator className="separator-before-total mb-2" />
+                    <div style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}><Separator /></div>
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogGrappleDmgTotalLabel}</span>
                       <span className="font-bold text-accent">
@@ -960,7 +970,7 @@ export function InfoDisplayDialog({
                         </div>
                       );
                     })}
-                    <Separator className="separator-before-total mb-2" />
+                    <div style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}><Separator /></div>
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogFinalScoreLabel}</span>
                       <span className="font-bold text-accent">{abilityScoreBreakdown.finalScore}</span>
@@ -1025,7 +1035,7 @@ export function InfoDisplayDialog({
                         {renderModifierValue(skillModifierBreakdown.miscModifier)}
                       </div>
                     )}
-                    <Separator className="separator-before-total mb-2" />
+                    <div style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}><Separator /></div>
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogTotalBonusLabel}</span>
                       <span className="font-bold text-accent">{renderModifierValue(skillModifierBreakdown.totalBonus)}</span>
@@ -1050,7 +1060,7 @@ export function InfoDisplayDialog({
                       <span>{UI_STRINGS.infoDialogCustomModifierLabel}</span>
                       {renderModifierValue(resistanceBreakdown.customMod)}
                     </div>
-                    <Separator className="separator-before-total mb-2" />
+                    <div style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}><Separator /></div>
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogTotalResistanceLabel}</span>
                       <span className="font-bold text-accent">{resistanceBreakdown.total}</span>
@@ -1083,7 +1093,7 @@ export function InfoDisplayDialog({
                         </div>
                       );
                     })}
-                    <Separator className="separator-before-total mb-2" />
+                    <div style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}><Separator /></div>
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{(UI_STRINGS.infoDialogSpeedTotalPrefixLabel || "Total")} {speedBreakdown.name}</span>
                       <span className="font-bold text-accent">{speedBreakdown.total} {speedUnit}</span>
@@ -1133,7 +1143,7 @@ export function InfoDisplayDialog({
                   
                   {contentType?.type === 'acBreakdown' && totalACValue !== undefined && ( 
                         <>
-                          <Separator className="separator-before-total mb-2" />
+                          <div style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}><Separator /></div>
                           <div className="flex justify-between text-base">
                             <span className="font-semibold">{UI_STRINGS.infoDialogTotalLabel || 'Total'}</span>
                             <span className="font-bold text-accent">{renderModifierValue(totalACValue)}</span>
