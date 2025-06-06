@@ -664,8 +664,8 @@ export function InfoDisplayDialog({
                   {synergyInfoList.map((synergyItem) => {
                     const IconComponent = synergyItem.isActive ? CheckSquare : Square;
                     return (
-                      <div key={synergyItem.id} className="flex items-start text-sm">
-                        <IconComponent className={cn("h-4 w-4 mr-2 mt-0.5 shrink-0", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")} />
+                      <div key={synergyItem.id} className="flex items-baseline text-sm">
+                        <IconComponent className={cn("h-4 w-4 mr-2 shrink-0", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")} />
                         <span className={cn(synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")}>
                           {synergyItem.text}
                         </span>
@@ -950,10 +950,10 @@ export function InfoDisplayDialog({
                     </div>
                     {abilityScoreBreakdown.components.map((comp, index) => {
                        let displaySource = comp.source;
-                       if (comp.source === "tempMod") { displaySource = UI_STRINGS.abilityScoreSourceTempMod || "Temporary Modifier"; }
-                       else if (comp.source === "feats") { displaySource = UI_STRINGS.abilityScoreSourceFeats || "Feats"; }
-                       else if (comp.source.startsWith("Race (")) { displaySource = (UI_STRINGS.abilityScoreSourceRace || "Race ({raceLabel})").replace("{raceLabel}", comp.source.match(/Race \((.*?)\)/)?.[1] || ''); }
-                       else if (comp.source.startsWith("Aging (")) { displaySource = (UI_STRINGS.abilityScoreSourceAging || "Aging ({categoryName})").replace("{categoryName}", comp.source.match(/Aging \((.*?)\)/)?.[1] || '');}
+                       if (comp.source === "tempMod" && UI_STRINGS.abilityScoreSourceTempMod) { displaySource = UI_STRINGS.abilityScoreSourceTempMod; }
+                       else if (comp.source === "feats" && UI_STRINGS.abilityScoreSourceFeats) { displaySource = UI_STRINGS.abilityScoreSourceFeats; }
+                       else if (comp.source.startsWith("Race (") && UI_STRINGS.abilityScoreSourceRace) { displaySource = (UI_STRINGS.abilityScoreSourceRace).replace("{raceLabel}", comp.source.match(/Race \((.*?)\)/)?.[1] || ''); }
+                       else if (comp.source.startsWith("Aging (") && UI_STRINGS.abilityScoreSourceAging) { displaySource = (UI_STRINGS.abilityScoreSourceAging).replace("{categoryName}", comp.source.match(/Aging \((.*?)\)/)?.[1] || '');}
 
 
                       return comp.value !== 0 && (
