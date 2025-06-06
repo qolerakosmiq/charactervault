@@ -113,10 +113,10 @@ const FeatDetailContent: React.FC<{
   const prereqMessages = checkFeatPrerequisites(featDef, character, allFeats, allPredefinedSkills, allCustomSkills, allClasses, allRaces, abilityLabels, alignmentPrereqOptions, uiStrings);
 
   return (
-    <div className="space-y-2 text-sm">
+    <div className="text-sm"> {/* Removed space-y-2 */}
       {featDef.description && <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: featDef.description }} />}
       {prereqMessages.length > 0 && (
-        <div className="mt-2">
+        <div className="mt-3"> {/* Changed mt-2 to mt-3 */}
           <p className="text-sm font-medium text-muted-foreground">{uiStrings.featPrerequisitesLabel || "Prerequisites:"}</p>
           <ul className="list-disc list-inside text-sm">
             {prereqMessages.map((msg, index) => (
@@ -128,7 +128,7 @@ const FeatDetailContent: React.FC<{
         </div>
       )}
       {featDef.effectsText && (
-        <div className="mt-2">
+        <div className="mt-3"> {/* Changed mt-2 to mt-3 */}
           <p className="text-sm font-medium text-muted-foreground">{uiStrings.featEffectsLabel || "Effects:"}</p>
           <p className="text-sm">{featDef.effectsText}</p>
         </div>
@@ -595,7 +595,7 @@ export function InfoDisplayDialog({
             )}
             {speeds && Object.keys(speeds).length > 0 && (
                <div className="mt-2">
-                <p className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</p>
+                <p className="text-sm text-foreground font-medium mb-1">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</p>
                  <div className="ml-4 space-y-0.5 text-sm mb-2">
                   {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
                     .map(([type, speedVal]) => {
@@ -613,20 +613,20 @@ export function InfoDisplayDialog({
             )}
             {bonusFeatSlots !== undefined && bonusFeatSlots > 0 && (
                <div className="flex justify-between text-sm mt-2">
-                <span className="text-sm text-foreground">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</span>
+                <span className="text-sm text-foreground font-medium">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</span>
                 {renderModifierValue(bonusFeatSlots)}
               </div>
             )}
             {grantedFeats && grantedFeats.length > 0 && (
               <div className="mt-2">
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h4>
-                <ul className="list-none space-y-0.5 text-sm"> {/* Reduced space-y-1 to space-y-0.5 */}
+                <ul className="list-none space-y-0.5 text-sm">
                   {grantedFeats.map(feat => {
                     const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
                     return (
-                      <li key={uniqueKey}> {/* Removed py-1 */}
+                       <li key={uniqueKey}>
                         <div
-                          className="flex items-baseline gap-2 cursor-pointer py-0.5" // Added py-0.5 here for slight spacing within clickable area
+                          className="flex items-baseline gap-2 cursor-pointer py-0.5"
                           onClick={() => toggleExpanded(uniqueKey)}
                           role="button"
                           aria-expanded={expandedItems.has(uniqueKey)}
@@ -635,12 +635,12 @@ export function InfoDisplayDialog({
                           {feat.levelAcquired !== undefined && (
                             <Badge
                               variant="outline"
-                              className="text-xs font-normal h-5 whitespace-nowrap" 
+                              className="text-xs font-normal h-5 whitespace-nowrap"
                             >
                               {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
                             </Badge>
                           )}
-                          <div className="flex flex-col">
+                          <div className="flex-grow">
                             <span className="font-semibold text-foreground leading-tight">{feat.name}</span>
                             {feat.note && (
                               <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
