@@ -35,13 +35,13 @@
     },
     {
       "value": "half-elf",
-      "label": "Demi-Elfe",
+      "label": "Demi-elfe",
       "description": "<p>Marchant dans deux mondes mais n'appartenant véritablement à aucun, les demi-elfes combinent ce que certains disent être les meilleures qualités de leurs parents elfe et humain : la curiosité, l'inventivité et l'ambition humaines tempérées par les sens raffinés, l'amour de la nature et les goûts artistiques des elfes.</p>",
       "speeds": { "land": 9 }
     },
     {
       "value": "half-orc",
-      "label": "Demi-Orque",
+      "label": "Demi-orque",
       "description": "<p>La pigmentation grisâtre des demi-orques, leurs fronts fuyants, leurs mâchoires saillantes, leurs dents proéminentes et leur stature imposante rendent leur héritage orque évident pour tous.<br />Qu'ils soient unis sous la direction d'un puissant sorcier ou qu'ils aient combattu pour leur liberté, les demi-orques sont animés par une détermination féroce à prouver leur valeur.</p>",
       "speeds": { "land": 9 }
     }
