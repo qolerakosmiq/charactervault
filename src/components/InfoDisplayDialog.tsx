@@ -625,16 +625,16 @@ export function InfoDisplayDialog({
                   {grantedFeats.map(feat => {
                     const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
                     return (
-                      <li key={uniqueKey} className="border-b border-border/30 pb-1 pt-1 last:border-b-0">
+                      <li key={uniqueKey} className="pb-1 pt-1">
                         <div
-                          className="flex items-start cursor-pointer py-1"
+                          className="flex items-baseline gap-2 cursor-pointer py-1"
                           onClick={() => toggleExpanded(uniqueKey)}
                           role="button"
                           aria-expanded={expandedItems.has(uniqueKey)}
                           aria-controls={`feat-details-${uniqueKey}`}
                         >
                           {feat.levelAcquired !== undefined && (
-                            <div className="mr-2 shrink-0 pt-[1px]">
+                            <div className="shrink-0">
                               <Badge
                                 variant="outline"
                                 className="text-xs font-normal h-5 whitespace-nowrap"
@@ -646,7 +646,9 @@ export function InfoDisplayDialog({
                           <div className="flex flex-col flex-grow">
                             <span className="font-semibold text-foreground leading-tight">{feat.name}</span>
                             {feat.note && (
-                              <p className="text-xs text-muted-foreground italic mt-0.5 leading-tight">{feat.note}</p>
+                              <p className="text-xs text-muted-foreground italic mt-0.5 leading-tight">
+                                {feat.note}
+                              </p>
                             )}
                           </div>
                         </div>
