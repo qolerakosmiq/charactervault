@@ -95,7 +95,7 @@ export function SavingThrowsPanel({
       },
       rowKey: 'abilityMod',
     },
-    {
+     {
       label: UI_STRINGS.savingThrowsRowLabelMagicModifier || "Magic Modifier",
       getValue: (saveData) => renderModifierValue(saveData.magicMod),
       rowKey: 'magicMod',
@@ -149,13 +149,9 @@ export function SavingThrowsPanel({
             <tbody>
               {dataRows.map((dataRow) => {
                 return (
-                  <tr key={dataRow.rowKey} className="border-b last:border-b-0 hover:bg-muted/10 transition-colors">
-                    <td className="py-3 px-1 text-left text-sm font-medium text-muted-foreground align-middle whitespace-nowrap">
-                      {typeof dataRow.label === 'string' && dataRow.label.includes('<br') ? (
-                        <span dangerouslySetInnerHTML={{ __html: dataRow.label }} />
-                      ) : (
-                        dataRow.label
-                      )}
+                  <tr key={dataRow.rowKey} className="border-b last:border-b-0 transition-colors">
+                    <td className="py-3 px-1 text-left text-sm font-medium text-muted-foreground align-middle whitespace-normal">
+                      {dataRow.label}
                     </td>
                     {SAVE_TYPES.map((saveType) => {
                       const currentSaveData = savingThrows[saveType];
@@ -179,4 +175,3 @@ export function SavingThrowsPanel({
     </Card>
   );
 }
-
