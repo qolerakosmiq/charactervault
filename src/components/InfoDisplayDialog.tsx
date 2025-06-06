@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon } from 'lucide-react';
+import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare } from 'lucide-react'; // Added Square, CheckSquare
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
@@ -299,7 +299,7 @@ export function InfoDisplayDialog({
             data = { title: UI_STRINGS.infoDialogDeityDefaultTitle || "Deity Information", htmlContent: `<p>${UI_STRINGS.infoDialogDeityPlaceholder || "Select or type a deity to see more information."}</p>`};
         }
         break;
-      case 'abilityScoreBreakdown':
+      case 'abilityScoreBreakdown': {
         const detailedScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
         const abilityKeyForTitle = contentType.abilityName as Exclude<AbilityName, 'none'>;
         const abilityLabelForTitle = ABILITY_LABELS.find(al => al.value === abilityKeyForTitle);
@@ -309,6 +309,7 @@ export function InfoDisplayDialog({
           abilityScoreBreakdown: detailedScores[contentType.abilityName],
         };
         break;
+      }
       case 'skillModifierBreakdown': {
         const skillInstance = character.skills.find(s => s.id === contentType.skillId);
         const skillDef = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === contentType.skillId);
@@ -329,28 +330,29 @@ export function InfoDisplayDialog({
           const keyAbilityLabel = skillDef.keyAbility && skillDef.keyAbility !== 'none' ? ABILITY_LABELS.find(al => al.value === skillDef.keyAbility)?.abbr : undefined;
 
           const currentSkillId = contentType.skillId;
-          const currentSkillName = skillDef.name;
-          const synergyInfoList: string[] = [];
+          const synergyItems: SynergyInfoItem[] = [];
 
           // Synergies provided by this skill
           if (SKILL_SYNERGIES_DATA[currentSkillId]) {
             SKILL_SYNERGIES_DATA[currentSkillId].forEach(s => {
               const targetSkillName = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === s.targetSkill)?.name || s.targetSkill;
-              synergyInfoList.push(UI_STRINGS.infoDialogSynergyProvidedItemFormat
+              const text = UI_STRINGS.infoDialogSynergyProvidedItemFormat
                 .replace("{ranksRequired}", String(s.ranksRequired))
                 .replace("{bonusGranted}", String(s.bonus))
-                .replace("{targetSkillName}", targetSkillName)
-              );
+                .replace("{targetSkillName}", targetSkillName);
+              const isActive = (skillInstance.ranks || 0) >= s.ranksRequired;
+              synergyItems.push({ id: `provided-${s.targetSkill}`, text, isActive });
             });
           }
           if (skillDef.isCustom && skillDef.providesSynergies) {
             skillDef.providesSynergies.forEach(customRule => {
               const targetSkillName = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === customRule.targetSkillName)?.name || customRule.targetSkillName;
-              synergyInfoList.push(UI_STRINGS.infoDialogSynergyProvidedItemFormat
+              const text = UI_STRINGS.infoDialogSynergyProvidedItemFormat
                 .replace("{ranksRequired}", String(customRule.ranksInThisSkillRequired))
                 .replace("{bonusGranted}", String(customRule.bonusGranted))
-                .replace("{targetSkillName}", targetSkillName)
-              );
+                .replace("{targetSkillName}", targetSkillName);
+              const isActive = (skillInstance.ranks || 0) >= customRule.ranksInThisSkillRequired;
+              synergyItems.push({ id: `provided-custom-${customRule.id}`, text, isActive });
             });
           }
 
@@ -358,26 +360,29 @@ export function InfoDisplayDialog({
           allCombinedSkillDefinitionsForDisplay.forEach(providingSkillDef => {
             if (providingSkillDef.id === currentSkillId) return;
             const providingSkillName = providingSkillDef.name;
+            const providingSkillInstance = character.skills.find(s => s.id === providingSkillDef.id);
 
             if (SKILL_SYNERGIES_DATA[providingSkillDef.id]) {
               SKILL_SYNERGIES_DATA[providingSkillDef.id].forEach(s => {
                 if (s.targetSkill === currentSkillId) {
-                  synergyInfoList.push(UI_STRINGS.infoDialogSynergyReceivedItemFormat
+                  const text = UI_STRINGS.infoDialogSynergyReceivedItemFormat
                     .replace("{ranksRequired}", String(s.ranksRequired))
                     .replace("{providingSkillName}", providingSkillName)
-                    .replace("{bonusGranted}", String(s.bonus))
-                  );
+                    .replace("{bonusGranted}", String(s.bonus));
+                  const isActive = (providingSkillInstance?.ranks || 0) >= s.ranksRequired;
+                  synergyItems.push({ id: `received-${providingSkillDef.id}-${s.targetSkill}`, text, isActive });
                 }
               });
             }
             if (providingSkillDef.isCustom && providingSkillDef.providesSynergies) {
               providingSkillDef.providesSynergies.forEach(customRule => {
                 if (customRule.targetSkillName === currentSkillId) {
-                  synergyInfoList.push(UI_STRINGS.infoDialogSynergyReceivedItemFormat
+                  const text = UI_STRINGS.infoDialogSynergyReceivedItemFormat
                     .replace("{ranksRequired}", String(customRule.ranksInThisSkillRequired))
                     .replace("{providingSkillName}", providingSkillName)
-                    .replace("{bonusGranted}", String(customRule.bonusGranted))
-                  );
+                    .replace("{bonusGranted}", String(customRule.bonusGranted));
+                   const isActive = (providingSkillInstance?.ranks || 0) >= customRule.ranksInThisSkillRequired;
+                  synergyItems.push({ id: `received-custom-${providingSkillDef.id}-${customRule.id}`, text, isActive });
                 }
               });
             }
@@ -386,7 +391,7 @@ export function InfoDisplayDialog({
           data = {
             title: (UI_STRINGS.infoDialogTitleModifierBreakdown || "{skillName} Modifier Breakdown").replace("{skillName}", skillDef.name),
             htmlContent: skillDef.description,
-            synergyInfoList: synergyInfoList.length > 0 ? synergyInfoList : undefined,
+            synergyInfoList: synergyItems.length > 0 ? synergyItems : undefined,
             skillModifierBreakdown: {
               skillName: skillDef.name,
               keyAbilityName: keyAbilityLabel,
@@ -448,7 +453,6 @@ export function InfoDisplayDialog({
         else if (contentType.acType === 'Touch') totalCalculated = 10 + dexMod + sizeModACVal + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (character.acMiscModifier || 0);
         else if (contentType.acType === 'Flat-Footed') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (character.acMiscModifier || 0);
         
-        // Removed the total from details to be added later in JSX
         data = { title: (UI_STRINGS.infoDialogTitleAcBreakdown || "{acType} AC Breakdown").replace("{acType}", contentType.acType), detailsList: details, totalACValue: totalCalculated };
         break;
       }
@@ -623,15 +627,23 @@ export function InfoDisplayDialog({
               <>
                 {renderSeparatorIfNeeded()}
                 <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
-                <ul className="list-disc list-inside text-sm space-y-0.5">
-                  {synergyInfoList.map((synergy, index) => (
-                    <li key={`synergy-${index}`}>{synergy}</li>
-                  ))}
-                </ul>
+                <div className="space-y-0.5">
+                  {synergyInfoList.map((synergyItem) => {
+                    const IconComponent = synergyItem.isActive ? CheckSquare : Square;
+                    return (
+                      <div key={synergyItem.id} className="flex items-start text-sm">
+                        <IconComponent className={cn("h-4 w-4 mr-2 mt-0.5 shrink-0", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")} />
+                        <span className={cn(synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")}>
+                          {synergyItem.text}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
                 {markContentRendered()}
               </>
             )}
-            {synergyInfoList && synergyInfoList.length === 0 && contentType?.type === 'skillModifierBreakdown' && (
+            {synergyInfoList === undefined && contentType?.type === 'skillModifierBreakdown' && (
                  <>
                     {renderSeparatorIfNeeded()}
                     <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
@@ -705,9 +717,9 @@ export function InfoDisplayDialog({
                   {grantedFeats.map(feat => {
                     const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
                     return (
-                       <li key={uniqueKey} className="py-0.5">
+                       <li key={uniqueKey}>
                           <div
-                            className="flex items-baseline gap-2 cursor-pointer group"
+                            className="flex items-baseline gap-2 cursor-pointer group p-1 -mx-1 rounded hover:bg-muted/30 transition-colors"
                             onClick={() => toggleExpanded(uniqueKey)}
                             role="button"
                             aria-expanded={expandedItems.has(uniqueKey)}
@@ -716,7 +728,7 @@ export function InfoDisplayDialog({
                             {feat.levelAcquired !== undefined && (
                               <Badge
                                 variant="outline"
-                                className="text-xs font-normal h-5 whitespace-nowrap self-center"
+                                className="text-xs font-normal h-5 whitespace-nowrap"
                               >
                                 {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
                               </Badge>
@@ -731,7 +743,7 @@ export function InfoDisplayDialog({
                              </div>
                           </div>
                           {expandedItems.has(uniqueKey) && (
-                           <div id={`feat-details-${uniqueKey}`} className="my-1 ml-4">
+                           <div id={`feat-details-${uniqueKey}`} className="my-1 ml-4 mb-1">
                               <ExpandableDetailWrapper>
                                 <FeatDetailContent
                                     featId={feat.featId}
@@ -1061,7 +1073,7 @@ export function InfoDisplayDialog({
                     {detailsListHeading}
                   </h3>
                   {detailsList!.map((detail, index) => {
-                      const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string)))) && !detail.label.toLowerCase().includes('base attack bonus') // BAB is special (e.g., +6/+1)
+                      const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string)))) && !detail.label.toLowerCase().includes('base attack bonus') 
                           ? renderModifierValue(detail.value as number | string)
                           : detail.value;
                       
@@ -1113,6 +1125,12 @@ export function InfoDisplayDialog({
   );
 }
 
+interface SynergyInfoItem {
+  id: string;
+  text: string;
+  isActive: boolean;
+}
+
 interface DerivedDialogData {
   title: string;
   htmlContent?: string;
@@ -1122,10 +1140,10 @@ interface DerivedDialogData {
   bonusFeatSlots?: number;
   abilityScoreBreakdown?: AbilityScoreBreakdown;
   skillModifierBreakdown?: SkillModifierBreakdownDetails;
-  synergyInfoList?: string[];
+  synergyInfoList?: SynergyInfoItem[];
   resistanceBreakdown?: ResistanceBreakdownDetails;
   detailsList?: Array<{ label: string; value: string | number | React.ReactNode; isBold?: boolean }>;
-  totalACValue?: number; // Added for AC Breakdown total
+  totalACValue?: number; 
   babBreakdown?: BabBreakdownDetails;
   initiativeBreakdown?: InitiativeBreakdownDetails;
   grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
