@@ -88,7 +88,7 @@ const SPEED_ICONS: Record<SpeedType, React.ElementType> = {
 
 const ExpandableDetailWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="mt-1.5 p-3 rounded-md bg-muted/20 border border-border/30">
+    <div className="mt-1.5 px-3 pt-3 pb-4 rounded-md bg-muted/20 border border-border/30">
       {children}
     </div>
   );
@@ -113,10 +113,10 @@ const FeatDetailContent: React.FC<{
   const prereqMessages = checkFeatPrerequisites(featDef, character, allFeats, allPredefinedSkills, allCustomSkills, allClasses, allRaces, abilityLabels, alignmentPrereqOptions, uiStrings);
 
   return (
-    <div className="text-sm"> {/* Removed space-y-2 */}
+    <div className="text-sm">
       {featDef.description && <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: featDef.description }} />}
       {prereqMessages.length > 0 && (
-        <div className="mt-3"> {/* Changed mt-2 to mt-3 */}
+        <div className="mt-3">
           <p className="text-sm font-medium text-muted-foreground">{uiStrings.featPrerequisitesLabel || "Prerequisites:"}</p>
           <ul className="list-disc list-inside text-sm">
             {prereqMessages.map((msg, index) => (
@@ -128,7 +128,7 @@ const FeatDetailContent: React.FC<{
         </div>
       )}
       {featDef.effectsText && (
-        <div className="mt-3"> {/* Changed mt-2 to mt-3 */}
+        <div className="mt-3">
           <p className="text-sm font-medium text-muted-foreground">{uiStrings.featEffectsLabel || "Effects:"}</p>
           <p className="text-sm">{featDef.effectsText}</p>
         </div>
@@ -569,7 +569,7 @@ export function InfoDisplayDialog({
 
             {abilityModifiers && abilityModifiers.length > 0 && (
               <div className="mt-2">
-                <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments || "Ability Score Adjustments"}</h4>
+                <p className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments || "Ability Score Adjustments"}</p>
                 <div className="space-y-0.5 text-sm mb-2">
                   {abilityModifiers.map(mod => (
                     <div key={mod.ability} className="flex justify-between">
@@ -582,7 +582,7 @@ export function InfoDisplayDialog({
             )}
             {skillBonuses && skillBonuses.length > 0 && (
               <div className="mt-2">
-                <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses || "Racial Skill Bonuses"}</h4>
+                <p className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses || "Racial Skill Bonuses"}</p>
                 <div className="space-y-0.5 text-sm mb-2">
                   {skillBonuses.map(bonus => (
                     <div key={bonus.skillId} className="flex justify-between">
@@ -642,7 +642,7 @@ export function InfoDisplayDialog({
                           )}
                           <div className="flex-grow">
                             <span className="font-semibold text-foreground leading-tight">{feat.name}</span>
-                            {feat.note && (
+                             {feat.note && (
                               <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
                                 {feat.note}
                               </p>
@@ -650,7 +650,7 @@ export function InfoDisplayDialog({
                           </div>
                         </div>
                         {expandedItems.has(uniqueKey) && (
-                           <div id={`feat-details-${uniqueKey}`} className="mt-1">
+                           <div id={`feat-details-${uniqueKey}`} className="mt-1 mb-1">
                               <ExpandableDetailWrapper>
                                 <FeatDetailContent
                                     featId={feat.featId}
