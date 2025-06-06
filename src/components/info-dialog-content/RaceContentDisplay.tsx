@@ -57,6 +57,7 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
   const speedUnit = UI_STRINGS.speedUnit || "ft.";
   const outputBlocks: React.ReactNode[] = [];
 
+  // Block 1: HTML Content
   if (htmlContent) {
     outputBlocks.push(
       <div
@@ -67,13 +68,13 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
     );
   }
 
-  // Block for General Traits (Ability Modifiers, Skill Bonuses, Base Speeds, Bonus Feat Slots)
-  const generalTraitsContent: React.ReactNode[] = [];
+  // Block 2: General Traits (Ability Modifiers, Skill Bonuses, Base Speeds, Bonus Feat Slots)
+  const generalTraitsSubSections: React.ReactNode[] = [];
   if (abilityModifiers && abilityModifiers.length > 0) {
-    generalTraitsContent.push(
-      <div className="mt-2 ml-4" key="ability-modifiers-section">
-        <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments}</h4>
-        <div className="space-y-0.5 text-sm mb-2">
+    generalTraitsSubSections.push(
+      <div className="mt-2" key="ability-modifiers-section">
+        <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments || "Ability Score Adjustments"}</h4>
+        <div className="space-y-0.5 text-sm mb-2 ml-4"> {/* Indent content of sub-section */}
           {abilityModifiers.map(mod => (
             <div key={mod.ability} className="flex justify-between">
               <span className="text-foreground">{ABILITY_LABELS.find(al => al.value === mod.ability)?.label || mod.ability}</span>
@@ -85,10 +86,10 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
     );
   }
   if (skillBonuses && skillBonuses.length > 0) {
-    generalTraitsContent.push(
-      <div className="mt-2 ml-4" key="skill-bonuses-section">
-        <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses}</h4>
-        <div className="space-y-0.5 text-sm mb-2">
+    generalTraitsSubSections.push(
+      <div className="mt-2" key="skill-bonuses-section">
+        <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses || "Racial Skill Bonuses"}</h4>
+        <div className="space-y-0.5 text-sm mb-2 ml-4"> {/* Indent content of sub-section */}
           {skillBonuses.map(bonus => (
             <div key={bonus.skillId} className="flex justify-between">
               <span className="text-foreground">{bonus.skillName}</span>
@@ -100,10 +101,10 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
     );
   }
   if (speeds && Object.keys(speeds).filter(k => (speeds as any)[k] !== undefined && (speeds as any)[k] > 0).length > 0) {
-    generalTraitsContent.push(
-       <div className="mt-2 ml-4" key="base-speeds-section">
-        <h4 className="text-sm text-muted-foreground font-medium mb-1">{UI_STRINGS.infoDialogBaseSpeeds}</h4>
-         <div className="space-y-0.5 text-sm mb-2">
+    generalTraitsSubSections.push(
+       <div className="mt-2" key="base-speeds-section">
+        <h4 className="text-sm text-muted-foreground font-medium mb-1">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</h4>
+         <div className="space-y-0.5 text-sm mb-2 ml-4"> {/* Indent content of sub-section */}
           {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
             .map(([type, speedVal]) => {
             const speedTypeKey = `speedLabel${type.charAt(0).toUpperCase() + type.slice(1)}` as keyof typeof UI_STRINGS;
@@ -120,29 +121,29 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
     );
   }
   if (bonusFeatSlots !== undefined && bonusFeatSlots > 0) {
-    generalTraitsContent.push(
-       <div className="flex justify-between text-sm mt-2 ml-4" key="bonus-feat-slots-item">
-        <span className="text-sm text-foreground font-medium">{UI_STRINGS.infoDialogBonusFeatSlots}</span>
+    generalTraitsSubSections.push(
+       <div className="flex justify-between text-sm mt-2" key="bonus-feat-slots-item"> {/* No ml-4 for this single line item directly under H3 */}
+        <span className="text-sm text-foreground font-medium">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</span>
         {renderModifierValue(bonusFeatSlots)}
       </div>
     );
   }
 
-  if (generalTraitsContent.length > 0) {
+  if (generalTraitsSubSections.length > 0) {
     outputBlocks.push(
       <div key="race-general-traits-section">
         <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading || "General Traits"}</h3>
-        {generalTraitsContent}
+        {generalTraitsSubSections}
       </div>
     );
   }
   
-  // Block for Granted Feats
+  // Block 3: Granted Features & Feats
   if (grantedFeats && grantedFeats.length > 0) {
     outputBlocks.push(
       <div key="race-granted-feats-section">
-        <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h3>
-        <ul className="list-none space-y-0.5 text-sm mt-2">
+        <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h3>
+        <ul className="list-none space-y-0.5 text-sm mt-2" key="race-granted-feats-list"> {/* No ml-4 here */}
           {grantedFeats.map(feat => {
             const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
             return (
@@ -169,7 +170,7 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
                      </div>
                   </div>
                   {expandedItems.has(uniqueKey) && (
-                   <div id={`feat-details-${uniqueKey}`} className="my-1 mb-1">
+                   <div id={`feat-details-${uniqueKey}`} className="my-1 mb-1"> {/* Indentation for details wrapper is fine */}
                       <ExpandableDetailWrapper>
                         <FeatDetailsDisplay
                             featId={feat.featId}

@@ -49,6 +49,7 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
   const { UI_STRINGS, ABILITY_LABELS, DND_CLASSES, DND_RACES, ALIGNMENT_PREREQUISITE_OPTIONS, SKILL_DEFINITIONS } = translations;
   const outputBlocks: React.ReactNode[] = [];
 
+  // Block 1: HTML Content
   if (htmlContent) {
     outputBlocks.push(
       <div
@@ -59,11 +60,12 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
     );
   }
 
+  // Block 2: Class Specifics (Hit Dice, Saves, etc.)
   if (detailsList && detailsList.length > 0) {
     outputBlocks.push(
       <div key="class-details-list-section">
         <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogClassSpecificsListHeading || "Class Specifics"}</h3>
-        <div className="mt-2 ml-4" key="details-list-content">
+        <div className="mt-2" key="details-list-content"> {/* No ml-4 here */}
           <div className="space-y-0.5 text-sm mb-2">
             {detailsList.map((detail, index) => (
               <div key={index} className="flex justify-between">
@@ -77,12 +79,12 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
     );
   }
 
+  // Block 3: Granted Features & Feats
   if (grantedFeats && grantedFeats.length > 0) {
     outputBlocks.push(
       <div key="class-granted-feats-section">
-         {/* This heading is now part of this distinct block */}
-        <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h3>
-        <ul className="list-none space-y-0.5 text-sm mt-2"> {/* No ml-4 for the feat list itself */}
+        <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h3>
+        <ul className="list-none space-y-0.5 text-sm mt-2" key="granted-feats-list"> {/* No ml-4 here */}
           {grantedFeats.map(feat => {
             const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
             return (
@@ -109,7 +111,7 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
                      </div>
                   </div>
                   {expandedItems.has(uniqueKey) && (
-                   <div id={`feat-details-${uniqueKey}`} className="my-1 mb-1">
+                   <div id={`feat-details-${uniqueKey}`} className="my-1 mb-1"> {/* Indentation for details wrapper is fine */}
                       <ExpandableDetailWrapper>
                         <FeatDetailsDisplay
                             featId={feat.featId}
@@ -134,6 +136,5 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
     );
   }
   
-  // Parent InfoDisplayDialog will insert Separator between elements of outputBlocks
   return outputBlocks.length > 0 ? outputBlocks : null; 
 };
