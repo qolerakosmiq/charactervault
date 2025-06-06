@@ -574,7 +574,7 @@ export function InfoDisplayDialog({
                 <div className="space-y-0.5 text-sm mb-2">
                   {abilityModifiers.map(mod => (
                     <div key={mod.ability} className="flex justify-between">
-                      <span>{translations.ABILITY_LABELS.find(al => al.value === mod.ability)?.label || mod.ability}</span>
+                      <span className="text-foreground">{translations.ABILITY_LABELS.find(al => al.value === mod.ability)?.label || mod.ability}</span>
                       {renderModifierValue(mod.change)}
                     </div>
                   ))}
@@ -587,7 +587,7 @@ export function InfoDisplayDialog({
                 <div className="space-y-0.5 text-sm mb-2">
                   {skillBonuses.map(bonus => (
                     <div key={bonus.skillId} className="flex justify-between">
-                      <span>{bonus.skillName}</span>
+                      <span className="text-foreground">{bonus.skillName}</span>
                       {renderModifierValue(bonus.bonus)}
                     </div>
                   ))}
@@ -596,7 +596,7 @@ export function InfoDisplayDialog({
             )}
             {speeds && Object.keys(speeds).length > 0 && (
                <div className="mt-2">
-                <p className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</p>
+                <p className="text-sm text-foreground mb-1">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</p>
                  <div className="ml-4 space-y-0.5 text-sm mb-2">
                   {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
                     .map(([type, speedVal]) => {
@@ -622,48 +622,55 @@ export function InfoDisplayDialog({
               <div className="mt-2">
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h4>
                 <ul className="list-none space-y-1 text-sm">
-                  {grantedFeats.map(feat => (
-                    <li key={feat.featId + (feat.note || '') + (feat.levelAcquired || '')} className="border-b border-border/30 pb-2 pt-1 last:border-b-0">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-grow">
-                           <div className="flex items-baseline gap-x-1.5">
-                             {feat.levelAcquired !== undefined && (
-                                <Badge variant="outline" className="text-xs font-normal h-5 mb-0.5">
-                                  {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
-                                </Badge>
-                              )}
-                            <span className="font-semibold text-foreground">{feat.name}</span>
-                           </div>
-                          {feat.note && <p className="text-xs text-muted-foreground italic ml-1 mt-0.5">{feat.note}</p>}
-                        </div>
-                        <Button
-                          type="button"
-                          variant="link"
-                          size="sm"
-                          className="h-auto p-0 text-xs text-primary/80 hover:text-primary shrink-0 ml-2"
-                          onClick={() => toggleExpanded(feat.featId + (feat.note || '') + (feat.levelAcquired || ''))}
+                  {grantedFeats.map(feat => {
+                    const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
+                    return (
+                      <li key={uniqueKey} className="border-b border-border/30 pb-1 pt-1 last:border-b-0">
+                        <div
+                          className="flex items-start cursor-pointer py-1"
+                          onClick={() => toggleExpanded(uniqueKey)}
+                          role="button"
+                          aria-expanded={expandedItems.has(uniqueKey)}
+                          aria-controls={`feat-details-${uniqueKey}`}
                         >
-                          {expandedItems.has(feat.featId + (feat.note || '') + (feat.levelAcquired || '')) ? (UI_STRINGS.infoDialogCollapseLink || "Collapse") : (UI_STRINGS.infoDialogExpandLink || "Expand")}
-                        </Button>
-                      </div>
-                      {expandedItems.has(feat.featId + (feat.note || '') + (feat.levelAcquired || '')) && (
-                        <ExpandableDetailWrapper>
-                            <FeatDetailContent
-                                featId={feat.featId}
-                                character={character}
-                                allFeats={allCombinedFeatDefinitions}
-                                allPredefinedSkills={translations.SKILL_DEFINITIONS}
-                                allCustomSkills={customSkillDefinitions}
-                                allClasses={translations.DND_CLASSES}
-                                allRaces={translations.DND_RACES}
-                                abilityLabels={translations.ABILITY_LABELS}
-                                alignmentPrereqOptions={translations.ALIGNMENT_PREREQUISITE_OPTIONS}
-                                uiStrings={UI_STRINGS}
-                            />
-                        </ExpandableDetailWrapper>
-                      )}
-                    </li>
-                  ))}
+                          {feat.levelAcquired !== undefined && (
+                            <div className="mr-2 shrink-0 pt-[1px]">
+                              <Badge
+                                variant="outline"
+                                className="text-xs font-normal h-5 whitespace-nowrap"
+                              >
+                                {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
+                              </Badge>
+                            </div>
+                          )}
+                          <div className="flex flex-col flex-grow">
+                            <span className="font-semibold text-foreground leading-tight">{feat.name}</span>
+                            {feat.note && (
+                              <p className="text-xs text-muted-foreground italic mt-0.5 leading-tight">{feat.note}</p>
+                            )}
+                          </div>
+                        </div>
+                        {expandedItems.has(uniqueKey) && (
+                           <div id={`feat-details-${uniqueKey}`} className="mt-1">
+                              <ExpandableDetailWrapper>
+                                <FeatDetailContent
+                                    featId={feat.featId}
+                                    character={character}
+                                    allFeats={allCombinedFeatDefinitions}
+                                    allPredefinedSkills={translations.SKILL_DEFINITIONS}
+                                    allCustomSkills={customSkillDefinitions}
+                                    allClasses={translations.DND_CLASSES}
+                                    allRaces={translations.DND_RACES}
+                                    abilityLabels={translations.ABILITY_LABELS}
+                                    alignmentPrereqOptions={translations.ALIGNMENT_PREREQUISITE_OPTIONS}
+                                    uiStrings={UI_STRINGS}
+                                />
+                              </ExpandableDetailWrapper>
+                           </div>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             )}
