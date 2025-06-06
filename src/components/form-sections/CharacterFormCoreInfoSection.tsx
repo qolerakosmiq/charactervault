@@ -61,100 +61,116 @@ export function CharacterFormCoreInfoSection({
 }: CharacterFormCoreInfoSectionProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
 
-  // Debounced states
+  // Local states for debounced inputs
   const [localName, setLocalName] = React.useState(characterData.name);
   const [localPlayerName, setLocalPlayerName] = React.useState(characterData.playerName);
+  const [localRace, setLocalRace] = React.useState(characterData.race);
+  const [localClassName, setLocalClassName] = React.useState(characterData.classes[0]?.className || '');
+  const [localAlignment, setLocalAlignment] = React.useState(characterData.alignment);
+  const [localDeity, setLocalDeity] = React.useState(characterData.deity);
   const [localAge, setLocalAge] = React.useState(characterData.age);
   const [localGender, setLocalGender] = React.useState(characterData.gender);
+  const [localSize, setLocalSize] = React.useState(characterData.size);
 
   // Sync local states with props
   React.useEffect(() => { setLocalName(characterData.name); }, [characterData.name]);
   React.useEffect(() => { setLocalPlayerName(characterData.playerName); }, [characterData.playerName]);
+  React.useEffect(() => { setLocalRace(characterData.race); }, [characterData.race]);
+  React.useEffect(() => { setLocalClassName(characterData.classes[0]?.className || ''); }, [characterData.classes]);
+  React.useEffect(() => { setLocalAlignment(characterData.alignment); }, [characterData.alignment]);
+  React.useEffect(() => { setLocalDeity(characterData.deity); }, [characterData.deity]);
   React.useEffect(() => { setLocalAge(characterData.age); }, [characterData.age]);
   React.useEffect(() => { setLocalGender(characterData.gender); }, [characterData.gender]);
+  React.useEffect(() => { setLocalSize(characterData.size); }, [characterData.size]);
 
+  // Generic debounce effect hook
+  const useDebounceEffectForField = (localValue: any, propValue: any, fieldName: keyof Character | 'class', updateFunction: (field: any, value: any) => void) => {
+    React.useEffect(() => {
+      const handler = setTimeout(() => {
+        if (localValue !== propValue) {
+          if (fieldName === 'class') {
+            updateFunction(localValue as DndClassId | string, ''); // Second arg not used by onClassChange
+          } else {
+            updateFunction(fieldName, localValue);
+          }
+        }
+      }, DEBOUNCE_DELAY);
+      return () => clearTimeout(handler);
+    }, [localValue, propValue, fieldName, updateFunction]);
+  };
 
-  // Debounce effects
-  React.useEffect(() => {
-    const handler = setTimeout(() => {
-      if (localName !== characterData.name) {
-        onFieldChange('name', localName);
-      }
-    }, DEBOUNCE_DELAY);
-    return () => clearTimeout(handler);
-  }, [localName, characterData.name, onFieldChange]);
-
-  React.useEffect(() => {
-    const handler = setTimeout(() => {
-      if (localPlayerName !== characterData.playerName) {
-        onFieldChange('playerName', localPlayerName);
-      }
-    }, DEBOUNCE_DELAY);
-    return () => clearTimeout(handler);
-  }, [localPlayerName, characterData.playerName, onFieldChange]);
-
-  React.useEffect(() => {
+  // Debounce effects for text inputs and number spinner
+  useDebounceEffectForField(localName, characterData.name, 'name', onFieldChange);
+  useDebounceEffectForField(localPlayerName, characterData.playerName, 'playerName', onFieldChange);
+  React.useEffect(() => { // Special handling for age with min value
     const handler = setTimeout(() => {
       const ageToCommit = Math.max(localAge, currentMinAgeForInput);
       if (ageToCommit !== characterData.age) {
         onFieldChange('age', ageToCommit);
       }
-      if (localAge < currentMinAgeForInput) {
+      if (localAge < currentMinAgeForInput && localAge !== ageToCommit) { // only setLocalAge if it would change
         setLocalAge(ageToCommit);
       }
     }, DEBOUNCE_DELAY);
     return () => clearTimeout(handler);
   }, [localAge, characterData.age, onFieldChange, currentMinAgeForInput]);
+  useDebounceEffectForField(localGender, characterData.gender, 'gender', onFieldChange);
 
+  // Debounce effects for Select components
+  useDebounceEffectForField(localRace, characterData.race, 'race', onFieldChange);
+  useDebounceEffectForField(localAlignment, characterData.alignment, 'alignment', onFieldChange);
+  useDebounceEffectForField(localDeity, characterData.deity, 'deity', (field, value) => onFieldChange(field as keyof Character, value === DEITY_NONE_OPTION_VALUE ? '' : value));
+  useDebounceEffectForField(localSize, characterData.size, 'size', onFieldChange);
+  
+  // Debounce effect for class
   React.useEffect(() => {
     const handler = setTimeout(() => {
-        if (localGender !== characterData.gender) {
-            onFieldChange('gender', localGender || '');
-        }
+      if (localClassName !== (characterData.classes[0]?.className || '')) {
+        onClassChange(localClassName);
+      }
     }, DEBOUNCE_DELAY);
     return () => clearTimeout(handler);
-  }, [localGender, characterData.gender, onFieldChange]);
+  }, [localClassName, characterData.classes, onClassChange]);
 
 
   React.useEffect(() => {
     if (translationsLoading || !translations) return;
 
-    if (!characterData.race) {
-      onFieldChange('race', translations.DND_RACES.find(r => r.value === 'human')?.value || translations.DND_RACES[0]?.value || '');
+    if (!characterData.race && translations.DND_RACES.length > 0) {
+        const defaultRace = translations.DND_RACES.find(r => r.value === 'human')?.value || translations.DND_RACES[0]?.value || '';
+        setLocalRace(defaultRace); // Update local directly
+        // onFieldChange will be triggered by debounce effect
     }
-    if (!characterData.classes[0]?.className) {
-      onClassChange(translations.DND_CLASSES.find(c => c.value === 'fighter')?.value || translations.DND_CLASSES[0]?.value || '');
+    if ((!characterData.classes[0]?.className || characterData.classes[0]?.className === '') && translations.DND_CLASSES.length > 0) {
+        const defaultClass = translations.DND_CLASSES.find(c => c.value === 'fighter')?.value || translations.DND_CLASSES[0]?.value || '';
+        setLocalClassName(defaultClass); // Update local directly
+        // onClassChange will be triggered by debounce effect
     }
     if (characterData.deity === undefined || characterData.deity === null) {
-      onFieldChange('deity', DEITY_NONE_OPTION_VALUE);
+        setLocalDeity(DEITY_NONE_OPTION_VALUE); // Update local directly
+        // onFieldChange will be triggered by debounce effect
     }
-  }, [translationsLoading, translations, characterData, onFieldChange, onClassChange]);
+  }, [translationsLoading, translations, characterData.race, characterData.classes, characterData.deity]);
 
-
-  const handleSelectChange = (field: keyof Pick<Character, 'race' | 'alignment' | 'deity' | 'size' >, value: string) => {
-    // Direct update for Select components
-    onFieldChange(field, value);
-  };
-  
 
   const selectedClassInfo = React.useMemo(() => {
-    if (!translations || !characterData.classes[0]?.className) return undefined;
-    return translations.DND_CLASSES.find(c => c.value === characterData.classes[0].className);
-  }, [translations, characterData.classes]);
+    if (!translations || !localClassName) return undefined;
+    return translations.DND_CLASSES.find(c => c.value === localClassName);
+  }, [translations, localClassName]);
 
   const isPredefinedRace = React.useMemo(() => {
-    if (!translations || !characterData.race) return false;
-    return !!translations.DND_RACES.find(r => r.value === characterData.race);
-  }, [translations, characterData.race]);
+    if (!translations || !localRace) return false;
+    return !!translations.DND_RACES.find(r => r.value === localRace);
+  }, [translations, localRace]);
 
   const filteredDeities = React.useMemo(() => {
-    if (!translations || !characterData.alignment) {
+    if (!translations || !localAlignment) {
       return translations?.DND_DEITIES || [];
     }
     return translations.DND_DEITIES.filter(deity =>
-      isAlignmentCompatible(characterData.alignment, deity.alignment)
+      isAlignmentCompatible(localAlignment, deity.alignment)
     );
-  }, [translations, characterData.alignment]);
+  }, [translations, localAlignment]);
 
   const deitySelectOptions = React.useMemo(() => {
     if (!translations) return [{ value: DEITY_NONE_OPTION_VALUE, label: "Loading..." }];
@@ -163,15 +179,15 @@ export function CharacterFormCoreInfoSection({
   }, [translations, filteredDeities]);
 
   React.useEffect(() => {
-    if (!translations || !characterData) return;
-
-    if (characterData.alignment && characterData.deity && characterData.deity !== DEITY_NONE_OPTION_VALUE) {
-      const currentDeity = translations.DND_DEITIES.find(d => d.value === characterData.deity);
-      if (currentDeity && !isAlignmentCompatible(characterData.alignment, currentDeity.alignment)) {
-        onFieldChange('deity', DEITY_NONE_OPTION_VALUE);
+    if (!translations || !characterData) return; // characterData still needed for original check
+    if (localAlignment && localDeity && localDeity !== DEITY_NONE_OPTION_VALUE) {
+      const currentDeityInfo = translations.DND_DEITIES.find(d => d.value === localDeity);
+      if (currentDeityInfo && !isAlignmentCompatible(localAlignment, currentDeityInfo.alignment)) {
+        // If incompatible, set localDeity to None, which will then trigger the debounce for onFieldChange
+        setLocalDeity(DEITY_NONE_OPTION_VALUE);
       }
     }
-  }, [translations, characterData, onFieldChange]);
+  }, [translations, localAlignment, localDeity, characterData, onFieldChange]); // onFieldChange in deps to satisfy linter for debounce
   
   if (translationsLoading || !translations) {
     return (
@@ -230,8 +246,8 @@ export function CharacterFormCoreInfoSection({
             <div className="flex items-center gap-2">
               <div className="flex-grow">
                 <Select
-                  value={characterData?.race || DND_RACES[0]?.value || ''}
-                  onValueChange={(value) => handleSelectChange('race', value as DndRaceId)}
+                  value={localRace || DND_RACES[0]?.value || ''}
+                  onValueChange={(value) => setLocalRace(value as DndRaceId)}
                 >
                   <SelectTrigger id="race">
                     <SelectValue placeholder={UI_STRINGS.selectRacePlaceholder || "Select race"} />
@@ -243,7 +259,7 @@ export function CharacterFormCoreInfoSection({
                   </SelectContent>
                 </Select>
               </div>
-              <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenRaceInfoDialog} disabled={!characterData?.race}>
+              <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenRaceInfoDialog} disabled={!localRace}>
                 <Info className="h-5 w-5" />
               </Button>
             </div>
@@ -265,14 +281,14 @@ export function CharacterFormCoreInfoSection({
             <div className="flex items-center gap-2">
               <div className="flex-grow">
                 <Select
-                  value={characterData?.classes[0]?.className || DND_CLASSES[0]?.value || ''}
-                  onValueChange={(value) => onClassChange(value as DndClassId)} 
+                  value={localClassName || DND_CLASSES[0]?.value || ''}
+                  onValueChange={(value) => setLocalClassName(value as DndClassId)} 
                 >
                   <SelectTrigger id="className"> <SelectValue placeholder={UI_STRINGS.selectClassPlaceholder || "Select class"} /> </SelectTrigger>
                   <SelectContent> {DND_CLASSES.map(c => ( <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem> ))} </SelectContent>
                 </Select>
               </div>
-              <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenClassInfoDialog} disabled={!characterData?.classes[0]?.className} >
+              <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenClassInfoDialog} disabled={!localClassName} >
                 <Info className="h-5 w-5" />
               </Button>
             </div>
@@ -287,7 +303,7 @@ export function CharacterFormCoreInfoSection({
             <Label htmlFor="alignment">{UI_STRINGS.alignmentLabel || "Alignment"}</Label>
             <div className="flex items-center gap-2">
               <div className="flex-grow">
-                <Select name="alignment" value={characterData?.alignment} onValueChange={(value) => handleSelectChange('alignment', value as CharacterAlignment)}>
+                <Select name="alignment" value={localAlignment} onValueChange={(value) => setLocalAlignment(value as CharacterAlignment)}>
                   <SelectTrigger><SelectValue placeholder={UI_STRINGS.selectAlignmentPlaceholder || "Select alignment"} /></SelectTrigger>
                   <SelectContent> {ALIGNMENTS.map(align => <SelectItem key={align.value} value={align.value}>{align.label}</SelectItem>)} </SelectContent>
                 </Select>
@@ -299,12 +315,12 @@ export function CharacterFormCoreInfoSection({
               <Label htmlFor="deity">{UI_STRINGS.deityLabel || "Deity"}</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
-                  <Select value={(characterData?.deity && characterData.deity.trim() !== '') ? characterData.deity : DEITY_NONE_OPTION_VALUE} onValueChange={(value) => { handleSelectChange('deity', value === DEITY_NONE_OPTION_VALUE ? '' : value); }} >
+                  <Select value={(localDeity && localDeity.trim() !== '') ? localDeity : DEITY_NONE_OPTION_VALUE} onValueChange={(value) => setLocalDeity(value)} >
                     <SelectTrigger id="deity"> <SelectValue placeholder={UI_STRINGS.selectDeityPlaceholder || "Select deity"} /> </SelectTrigger>
                     <SelectContent> {deitySelectOptions.map(opt => ( <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem> ))} </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenDeityInfoDialog} disabled={!characterData?.deity || characterData.deity.trim() === '' || characterData.deity === DEITY_NONE_OPTION_VALUE} >
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenDeityInfoDialog} disabled={!localDeity || localDeity.trim() === '' || localDeity === DEITY_NONE_OPTION_VALUE} >
                   <Info className="h-5 w-5" />
                 </Button>
               </div>
@@ -352,13 +368,13 @@ export function CharacterFormCoreInfoSection({
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="sizeCategory">{UI_STRINGS.sizeLabel || "Size Category"}</Label>
-            <Select name="sizeCategory" value={characterData?.size} onValueChange={(value) => handleSelectChange('size', value as CharacterSize)}>
+            <Select name="sizeCategory" value={localSize} onValueChange={(value) => setLocalSize(value as CharacterSize)}>
               <SelectTrigger id="sizeCategory"><SelectValue placeholder={UI_STRINGS.selectSizePlaceholder || "Select size category"} /></SelectTrigger>
               <SelectContent> {SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)} </SelectContent>
             </Select>
             <div className="flex items-baseline gap-1 pt-[6px] ml-1">
-              {characterData?.size && (() => {
-                const selectedSizeObject = SIZES.find(s => s.value === characterData.size);
+              {localSize && (() => {
+                const selectedSizeObject = SIZES.find(s => s.value === localSize);
                 if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
                   const acMod = selectedSizeObject.acModifier;
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
@@ -376,4 +392,3 @@ export function CharacterFormCoreInfoSection({
   );
 }
 
-    
