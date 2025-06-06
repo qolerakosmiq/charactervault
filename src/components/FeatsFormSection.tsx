@@ -184,7 +184,7 @@ export function FeatsFormSection({
     const { UI_STRINGS } = translations;
 
     return (
-      <div key={instance.instanceId} className="group flex items-start justify-between py-2 border-b border-border/50 hover:bg-muted/10 transition-colors">
+      <div key={instance.instanceId} className="group flex items-start justify-between py-2 transition-colors">
         <div className="flex-grow mr-2">
           <div className="flex items-baseline flex-wrap gap-x-1.5 mb-1">
             {featSource && <Badge variant="secondary" className="text-xs font-normal h-5 whitespace-nowrap">{featSource}</Badge>}
@@ -277,7 +277,7 @@ export function FeatsFormSection({
               </p>
               <p className="text-sm font-medium">
                 {UI_STRINGS.featsPanelFeatsLeftLabel || "Feats Left to Choose:"} <span className={cn(
-                  "text-lg font-bold",
+                  "text-lg font-bold whitespace-nowrap",
                   featSlotsLeft >= 0 ? "text-emerald-500" : "text-destructive"
                 )}>{featSlotsLeft}</span>
               </p>
@@ -317,11 +317,11 @@ export function FeatsFormSection({
 
           {grantedFeatInstances.length > 0 && (
             <>
-              {userChosenFeatInstances.length > 0 && <Separator className="my-4" />}
+              {userChosenFeatInstances.length > 0 && <Separator className="my-2" />}
               <h3
                 className={cn(
                   "text-lg font-semibold mb-2 text-primary",
-                  userChosenFeatInstances.length === 0 && "mt-2"
+                   userChosenFeatInstances.length === 0 && "mt-2" 
                 )}
               >
                 {UI_STRINGS.featsPanelGrantedFeatsTitle || "Granted Feats"}
