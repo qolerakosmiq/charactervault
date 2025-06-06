@@ -337,6 +337,9 @@ export function InfoDisplayDialog({
           allCombinedSkillDefinitionsForDisplay.forEach(providingSkillDef => {
             const providingSkillName = providingSkillDef.name;
             const providingSkillInstance = character.skills.find(s => s.id === providingSkillDef.id);
+            const requiredRanksForThisSynergySource = SKILL_SYNERGIES_DATA[providingSkillDef.id]?.find(sRule => sRule.targetSkill === currentSkillId)?.ranksRequired ??
+                                                      providingSkillDef.providesSynergies?.find(customRule => customRule.targetSkillName === currentSkillId)?.ranksInThisSkillRequired;
+
 
             if (providingSkillDef.id === currentSkillId) { // Synergies provided by THIS skill
               if (SKILL_SYNERGIES_DATA[currentSkillId]) {
@@ -677,7 +680,7 @@ export function InfoDisplayDialog({
                     const IconComponent = synergyItem.isActive ? CheckSquare : Square;
                     return (
                       <div key={synergyItem.id} className="flex items-start text-sm">
-                        <IconComponent className={cn("h-4 w-4 mr-2 shrink-0", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")} />
+                        <IconComponent className={cn("h-4 w-4 mr-2 shrink-0 mt-0.5", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")} />
                         <span className={cn(synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")}>
                           {synergyItem.text}
                         </span>
@@ -1211,5 +1214,6 @@ interface SkillModifierBreakdownDetails {
 }
 
     
+
 
 
