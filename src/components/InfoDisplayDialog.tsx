@@ -512,8 +512,7 @@ export function InfoDisplayDialog({
   
   const sectionHeadingClass = "text-md font-semibold mb-2 text-primary";
 
-  // Determine the heading for the `detailsList` section based on content type
-  let detailsListHeading = UI_STRINGS.infoDialogSectionHeadingDetails || "Details"; // Fallback
+  let detailsListHeading = UI_STRINGS.infoDialogSectionHeadingDetails || "Details"; 
   if (contentType?.type === 'race') {
     detailsListHeading = UI_STRINGS.infoDialogRaceSpecificsListHeading || "Racial Specifics";
   } else if (contentType?.type === 'class') {
@@ -625,28 +624,26 @@ export function InfoDisplayDialog({
                   {grantedFeats.map(feat => {
                     const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
                     return (
-                      <li key={uniqueKey} className="pb-1 pt-1">
+                      <li key={uniqueKey} className="py-1">
                         <div
-                          className="flex items-baseline gap-2 cursor-pointer py-1"
+                          className="flex items-baseline gap-2 cursor-pointer"
                           onClick={() => toggleExpanded(uniqueKey)}
                           role="button"
                           aria-expanded={expandedItems.has(uniqueKey)}
                           aria-controls={`feat-details-${uniqueKey}`}
                         >
                           {feat.levelAcquired !== undefined && (
-                            <div className="shrink-0">
-                              <Badge
-                                variant="outline"
-                                className="text-xs font-normal h-5 whitespace-nowrap"
-                              >
-                                {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
-                              </Badge>
-                            </div>
+                            <Badge
+                              variant="outline"
+                              className="text-xs font-normal h-5 whitespace-nowrap self-center"
+                            >
+                              {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
+                            </Badge>
                           )}
-                          <div className="flex flex-col flex-grow">
+                          <div className="flex flex-col">
                             <span className="font-semibold text-foreground leading-tight">{feat.name}</span>
                             {feat.note && (
-                              <p className="text-xs text-muted-foreground italic mt-0.5 leading-tight">
+                              <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
                                 {feat.note}
                               </p>
                             )}
@@ -968,7 +965,6 @@ export function InfoDisplayDialog({
             )}
 
 
-            {/* Generic detailsList rendering */}
             {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && !speedBreakdown && detailsList && detailsList.length > 0 && (
               <>
                 {renderSeparatorIfNeeded()}
@@ -985,7 +981,7 @@ export function InfoDisplayDialog({
                       if (typeof detail.label === 'string') {
                         const abilityMatch = (detail.label as string).match(/{abilityAbbr}\s\({abilityFull}\)\sModifier:/);
                         if (abilityMatch) {
-                            const abilityKey = (detail.label as string).toLowerCase().includes("dexterity") ? 'dexterity' : 'strength'; // Assuming these are the only two for AC context
+                            const abilityKey = (detail.label as string).toLowerCase().includes("dexterity") ? 'dexterity' : 'strength'; 
                             const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.value === abilityKey);
                             const abbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
                             const full = abilityLabelInfo?.label || abilityKey.charAt(0).toUpperCase() + abilityKey.slice(1);
@@ -1007,7 +1003,7 @@ export function InfoDisplayDialog({
                       );
                   })}
                   
-                  {contentType?.type === 'acBreakdown' && (() => { // Specific total rendering for AC breakdown
+                  {contentType?.type === 'acBreakdown' && (() => { 
                     const totalDetailItem = detailsList!.find(detail => detail.isBold === true);
                     if (totalDetailItem) {
                       return (
