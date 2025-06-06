@@ -88,7 +88,7 @@ const SPEED_ICONS: Record<SpeedType, React.ElementType> = {
 
 const ExpandableDetailWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="mt-1.5 px-3 py-1 rounded-md bg-muted/20 border border-border/30">
+    <div className="px-3 py-1 rounded-md bg-muted/20 border border-border/30">
       {children}
     </div>
   );
@@ -113,7 +113,7 @@ const FeatDetailContent: React.FC<{
   const prereqMessages = checkFeatPrerequisites(featDef, character, allFeats, allPredefinedSkills, allCustomSkills, allClasses, allRaces, abilityLabels, alignmentPrereqOptions, uiStrings);
 
   return (
-    <div className="text-sm">
+    <>
       {featDef.description && <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: featDef.description }} />}
       {prereqMessages.length > 0 && (
         <div className="mt-3">
@@ -133,7 +133,7 @@ const FeatDetailContent: React.FC<{
           <p className="text-sm">{featDef.effectsText}</p>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
@@ -569,7 +569,7 @@ export function InfoDisplayDialog({
 
             {abilityModifiers && abilityModifiers.length > 0 && (
               <div className="mt-2">
-                <p className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments}</p>
+                <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments}</h4>
                 <div className="space-y-0.5 text-sm mb-2">
                   {abilityModifiers.map(mod => (
                     <div key={mod.ability} className="flex justify-between">
@@ -582,7 +582,7 @@ export function InfoDisplayDialog({
             )}
             {skillBonuses && skillBonuses.length > 0 && (
               <div className="mt-2">
-                <p className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses}</p>
+                <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses}</h4>
                 <div className="space-y-0.5 text-sm mb-2">
                   {skillBonuses.map(bonus => (
                     <div key={bonus.skillId} className="flex justify-between">
@@ -618,7 +618,7 @@ export function InfoDisplayDialog({
               </div>
             )}
             {grantedFeats && grantedFeats.length > 0 && (
-              <div className="mt-2">
+               <div className="mt-2">
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h4>
                 <ul className="list-none space-y-0.5 text-sm">
                   {grantedFeats.map(feat => {
@@ -626,7 +626,7 @@ export function InfoDisplayDialog({
                     return (
                        <li key={uniqueKey}>
                         <div
-                          className="flex items-baseline gap-2 cursor-pointer py-0.5"
+                          className="flex items-baseline gap-2 py-0.5 cursor-pointer"
                           onClick={() => toggleExpanded(uniqueKey)}
                           role="button"
                           aria-expanded={expandedItems.has(uniqueKey)}
@@ -650,7 +650,7 @@ export function InfoDisplayDialog({
                           </div>
                         </div>
                         {expandedItems.has(uniqueKey) && (
-                           <div id={`feat-details-${uniqueKey}`} className="mt-1 mb-1">
+                           <div id={`feat-details-${uniqueKey}`} className="my-1 ml-4">
                               <ExpandableDetailWrapper>
                                 <FeatDetailContent
                                     featId={feat.featId}
@@ -782,7 +782,7 @@ export function InfoDisplayDialog({
                     <div className="flex justify-between">
                       <span>{UI_STRINGS.infoDialogGrappleDmgWeaponLabel}</span>
                       {grappleDamageBreakdown.baseDamage.toLowerCase().includes('unarmed') ? (
-                          <span className="font-semibold text-muted-foreground">{UI_STRINGS.infoDialogGrappleDmgUnarmedLabel}</span>
+                          <span className="font-semibold text-muted-foreground">{UI_STRINGS.infoDialogGrappleDmgUnarmedLabel || "Unarmed"}</span>
                       ) : (
                           renderModifierValue(0) 
                       )}
@@ -822,14 +822,25 @@ export function InfoDisplayDialog({
                       <span>{UI_STRINGS.infoDialogBaseScoreLabel}</span>
                       <span className="font-bold">{abilityScoreBreakdown.base}</span>
                     </div>
-                    {abilityScoreBreakdown.components.map((comp, index) => (
-                      comp.value !== 0 && (
+                    {abilityScoreBreakdown.components.map((comp, index) => {
+                      let displaySource = comp.source;
+                      if (comp.source === "tempMod") {
+                        displaySource = UI_STRINGS.abilityScoreSourceTempMod || "Temporary Modifier";
+                      } else if (comp.source === "feats") {
+                        displaySource = UI_STRINGS.abilityScoreSourceFeats || "Feats";
+                      } else if (comp.source.startsWith("Race (")) { // Example for already dynamic source
+                        displaySource = (UI_STRINGS.abilityScoreSourceRace || comp.source).replace("{raceLabel}", comp.source.match(/Race \((.*?)\)/)?.[1] || '');
+                      } else if (comp.source.startsWith("Aging (")) {
+                         displaySource = (UI_STRINGS.abilityScoreSourceAging || comp.source).replace("{categoryName}", comp.source.match(/Aging \((.*?)\)/)?.[1] || '');
+                      }
+
+                      return comp.value !== 0 && (
                         <div key={index} className="flex justify-between">
-                          <span>{comp.source}</span>
+                          <span>{displaySource}</span>
                           {renderModifierValue(comp.value)}
                         </div>
-                      )
-                    ))}
+                      );
+                    })}
                     <Separator className="my-3" />
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogFinalScoreLabel}</span>

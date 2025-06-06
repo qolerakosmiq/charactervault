@@ -25,7 +25,8 @@ import type {
   CharacterSize,
   SpeedType,
   SpeedBreakdownDetails,
-  CharacterAlignment
+  CharacterAlignment,
+  AbilityScoreComponentValue
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { getBab } from '@/lib/dnd-utils';
@@ -539,26 +540,26 @@ export function calculateDetailedAbilityScores(
 
   for (const ability of ABILITY_ORDER_INTERNAL) {
     const baseScore = character.abilityScores[ability] || 0;
-    const components: { source: string; value: number }[] = [];
+    const components: AbilityScoreComponentValue[] = [];
     let currentScore = baseScore;
 
     const racialModObj = racialQualities.abilityEffects.find(eff => eff.ability === ability);
     if (racialModObj && racialModObj.change !== 0) {
       currentScore += racialModObj.change;
       const raceLabel = DND_RACES.find(r => r.value === character.race)?.label || character.race || 'Unknown Race';
-      components.push({ source: `Race (${raceLabel})`, value: racialModObj.change });
+      components.push({ source: `Race (${raceLabel})`, value: racialModObj.change }); // source is already dynamic and potentially translated
     }
 
     const agingModObj = agingDetails.effects.find(eff => eff.ability === ability);
     if (agingModObj && agingModObj.change !== 0) {
       currentScore += agingModObj.change;
-      components.push({ source: `Aging (${agingDetails.categoryName})`, value: agingModObj.change });
+      components.push({ source: `Aging (${agingDetails.categoryName})`, value: agingModObj.change }); // source is already dynamic
     }
 
     const tempCustomModValue = tempCustomModifiers[ability];
     if (tempCustomModValue !== 0 && tempCustomModValue !== undefined) {
       currentScore += tempCustomModValue;
-      components.push({ source: "Temporary Modifier", value: tempCustomModValue });
+      components.push({ source: "tempMod", value: tempCustomModValue }); // Use key for translation
     }
 
     let featTotalMod = 0;
@@ -573,7 +574,7 @@ export function calculateDetailedAbilityScores(
     }
     if (featTotalMod !== 0) {
       currentScore += featTotalMod;
-      components.push({ source: `Feats`, value: featTotalMod });
+      components.push({ source: "feats", value: featTotalMod }); // Use key for translation
     }
 
     result[ability] = {
@@ -646,12 +647,12 @@ export function calculateSpeedBreakdown(
     const sizeData = SIZES.find(s => s.value === character.size);
     baseSpeedFromRace = (sizeData?.value === 'small' || sizeData?.value === 'tiny' || sizeData?.value === 'diminutive' || sizeData?.value === 'fine') ? 20 : 30;
   }
-  components.push({ source: "Base (Race)", value: baseSpeedFromRace });
+  components.push({ source: uiStrings.infoDialogSpeedBaseRaceLabel || "Base (Race)", value: baseSpeedFromRace });
   currentTotal += baseSpeedFromRace;
 
   const charSpeedDetails = character[`${speedType}Speed` as keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>];
   if (charSpeedDetails?.miscModifier && charSpeedDetails.miscModifier !== 0) {
-    components.push({ source: "Misc Modifier", value: charSpeedDetails.miscModifier });
+    components.push({ source: uiStrings.infoDialogSpeedMiscModifierLabel || "Misc Modifier", value: charSpeedDetails.miscModifier });
     currentTotal += charSpeedDetails.miscModifier;
   }
 
@@ -668,7 +669,7 @@ export function calculateSpeedBreakdown(
       else if (monkLevel >= 6) monkSpeedBonus = 20;
       else if (monkLevel >= 3) monkSpeedBonus = 10;
       if (monkSpeedBonus > 0) {
-        components.push({ source: "Monk Unarmored Speed", value: monkSpeedBonus });
+        components.push({ source: uiStrings.infoDialogSpeedMonkLabel || "Monk Unarmored Speed", value: monkSpeedBonus });
         currentTotal += monkSpeedBonus;
       }
     }
@@ -677,16 +678,16 @@ export function calculateSpeedBreakdown(
     if (barbarianClass && barbarianClass.level >= 1) {
         // Note: This does not check armor/load for Barbarian Fast Movement for simplicity in this function
         // This should ideally be checked based on character's current equipment state if available
-        components.push({ source: "Barbarian Fast Movement", value: 10 });
+        components.push({ source: uiStrings.infoDialogSpeedBarbarianLabel || "Barbarian Fast Movement", value: 10 });
         currentTotal += 10;
     }
 
     if (character.armorSpeedPenalty !== 0) {
-      components.push({ source: "Armor Penalty", value: -character.armorSpeedPenalty });
+      components.push({ source: uiStrings.infoDialogSpeedArmorPenaltyLabel || "Armor Penalty", value: -character.armorSpeedPenalty });
       currentTotal -= character.armorSpeedPenalty;
     }
     if (character.loadSpeedPenalty !== 0) {
-      components.push({ source: "Load Penalty", value: -character.loadSpeedPenalty });
+      components.push({ source: uiStrings.infoDialogSpeedLoadPenaltyLabel || "Load Penalty", value: -character.loadSpeedPenalty });
       currentTotal -= character.loadSpeedPenalty;
     }
   }
@@ -729,6 +730,7 @@ export * from './character-core';
 // For example, if SIZES or ALIGNMENTS were truly static and not i18n, they could be re-exported.
 // However, given the current setup, they are i18n-dependent and sourced via useI18n.
 // export { SIZES, ALIGNMENTS } from './character-core'; // Example, but likely not applicable now
+
 
 
 
