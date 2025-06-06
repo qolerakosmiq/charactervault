@@ -47,21 +47,22 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
   toggleExpanded,
 }) => {
   const { UI_STRINGS, ABILITY_LABELS, DND_CLASSES, DND_RACES, ALIGNMENT_PREREQUISITE_OPTIONS, SKILL_DEFINITIONS } = translations;
-  const contentParts: React.ReactNode[] = [];
+  const outputBlocks: React.ReactNode[] = [];
 
   if (htmlContent) {
-    contentParts.push(
+    outputBlocks.push(
       <div
-        key="html-content-block"
+        key="class-html-content-block"
         className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
     );
   }
 
-  const specificsElements: React.ReactNode[] = [];
+  const specificsSectionParts: React.ReactNode[] = [];
+
   if (detailsList && detailsList.length > 0) {
-    specificsElements.push(
+    specificsSectionParts.push(
       <div className="mt-2 ml-4" key="details-list-content"> {/* Indented content */}
         <div className="space-y-0.5 text-sm mb-2">
           {detailsList.map((detail, index) => (
@@ -74,12 +75,13 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
       </div>
     );
   }
-   // Granted feats are not changed as per request (no indentation added here for the list itself)
-   if (grantedFeats && grantedFeats.length > 0) {
-    specificsElements.push(
+
+  if (grantedFeats && grantedFeats.length > 0) {
+    specificsSectionParts.push(
        <div className="mt-2" key="granted-feats-subsection"> {/* Subsection container */}
         <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h4>
-        <ul className="list-none space-y-0.5 text-sm ml-4"> {/* Indent the list items */}
+        {/* Removed ml-4 from the ul below */}
+        <ul className="list-none space-y-0.5 text-sm">
           {grantedFeats.map(feat => {
             const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
             return (
@@ -131,17 +133,17 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
     );
   }
 
-  if (specificsElements.length > 0) {
-    if (contentParts.length > 0) {
-      contentParts.push(<Separator key="separator-after-html" className="my-3" />);
+  if (specificsSectionParts.length > 0) {
+    if (outputBlocks.length > 0) {
+      outputBlocks.push(<Separator key="separator-before-class-specifics" className="my-3" />);
     }
-    contentParts.push(
+    outputBlocks.push(
       <div key="class-specifics-section">
         <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogClassSpecificsListHeading || "Class Specifics"}</h3>
-        {specificsElements}
+        {specificsSectionParts}
       </div>
     );
   }
-
-  return contentParts.length > 0 ? <>{contentParts}</> : null;
+  
+  return outputBlocks.length > 0 ? outputBlocks : null;
 };
