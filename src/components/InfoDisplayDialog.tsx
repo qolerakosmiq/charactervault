@@ -315,7 +315,7 @@ export function InfoDisplayDialog({
         }
         break;
       case 'abilityScoreBreakdown':
-        const detailedScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS, UI_STRINGS);
+        const detailedScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
         const abilityKeyForTitle = contentType.abilityName as Exclude<AbilityName, 'none'>;
         const abilityLabelForTitle = ABILITY_LABELS.find(al => al.value === abilityKeyForTitle);
         const abilityNameString = abilityLabelForTitle?.label || abilityKeyForTitle;
@@ -328,7 +328,7 @@ export function InfoDisplayDialog({
         const skillInstance = character.skills.find(s => s.id === contentType.skillId);
         const skillDef = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === contentType.skillId);
         if (skillInstance && skillDef) {
-          const actualAbilityScoresResult = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS, UI_STRINGS);
+          const actualAbilityScoresResult = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
           const finalAbilityScores: AbilityScores = (ABILITY_ORDER_INTERNAL).reduce((acc, ability) => {
               acc[ability] = actualAbilityScoresResult[ability].finalScore;
               return acc;
@@ -376,7 +376,7 @@ export function InfoDisplayDialog({
         };
         break;
       case 'acBreakdown': {
-        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS, UI_STRINGS);
+        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
         const dexMod = calculateAbilityModifier(detailedCharScores.dexterity.finalScore);
         const sizeModACVal = getSizeModifierAC(character.size, SIZES);
         const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
@@ -424,7 +424,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'initiativeBreakdown': {
-        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS, UI_STRINGS);
+        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
         const dexMod = calculateAbilityModifier(detailedCharScores.dexterity.finalScore);
         data = {
           title: UI_STRINGS.infoDialogTitleInitiativeBreakdown || 'Initiative Breakdown',
@@ -437,7 +437,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'grappleModifierBreakdown': {
-        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS, UI_STRINGS);
+        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
         const strMod = calculateAbilityModifier(detailedCharScores.strength.finalScore);
         const baseBabArrayVal = getBab(character.classes, DND_CLASSES);
         const sizeModGrappleVal = getSizeModifierGrapple(character.size, SIZES);
@@ -454,7 +454,7 @@ export function InfoDisplayDialog({
         break;
       }
        case 'grappleDamageBreakdown': {
-        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS, UI_STRINGS);
+        const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
         const strMod = calculateAbilityModifier(detailedCharScores.strength.finalScore);
         data = {
           title: UI_STRINGS.infoDialogTitleGrappleDamageBreakdown || 'Grapple Damage Breakdown',
@@ -576,7 +576,7 @@ export function InfoDisplayDialog({
 
             {abilityModifiers && abilityModifiers.length > 0 && (
               <>
-                <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments || "Ability Score Adjustments"}</h4>
+                <h4 className="text-sm font-medium text-muted-foreground mb-1 mt-2">{UI_STRINGS.infoDialogAbilityScoreAdjustments || "Ability Score Adjustments"}</h4>
                 <div className="space-y-0.5 text-sm mb-2">
                   {abilityModifiers.map(mod => (
                     <div key={mod.ability} className="flex justify-between">
@@ -603,13 +603,13 @@ export function InfoDisplayDialog({
             {speeds && Object.keys(speeds).length > 0 && (
               <>
                 <h4 className="text-sm font-medium text-muted-foreground mb-1 mt-2">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</h4>
-                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm mb-2">
+                 <div className="space-y-0.5 text-sm mb-2"> {/* Changed from grid to simple div with space-y */}
                   {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
                     .map(([type, speedVal]) => {
                     const speedTypeKey = `speedLabel${type.charAt(0).toUpperCase() + type.slice(1)}` as keyof typeof UI_STRINGS;
                     const speedName = UI_STRINGS[speedTypeKey] || type;
                     return (
-                      <div key={type} className="flex justify-between">
+                      <div key={type} className="flex justify-between"> {/* Each item spans full width */}
                         <span>{speedName}:</span>
                         <span className="font-semibold">{speedVal} {speedUnit}</span>
                       </div>
@@ -1070,3 +1070,4 @@ interface SkillModifierBreakdownDetails {
   miscModifier: number;
   totalBonus: number;
 }
+
