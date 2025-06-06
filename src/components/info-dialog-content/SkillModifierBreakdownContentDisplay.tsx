@@ -22,12 +22,12 @@ export const SkillModifierBreakdownContentDisplay: React.FC<SkillModifierBreakdo
   skillModifierBreakdown,
   uiStrings,
 }) => {
-  const contentParts: React.ReactNode[] = [];
+  const outputBlocks: React.ReactNode[] = [];
 
   if (htmlContent && htmlContent.trim() !== '' && htmlContent.trim() !== '<p></p>') {
-    contentParts.push(
+    outputBlocks.push(
       <div
-        key="html-content-block"
+        key="skill-html-content-block"
         className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
@@ -35,13 +35,10 @@ export const SkillModifierBreakdownContentDisplay: React.FC<SkillModifierBreakdo
   }
 
   if (synergyInfoList && synergyInfoList.length > 0) {
-    if (contentParts.length > 0) {
-      contentParts.push(<Separator key="separator-before-synergies" className="my-3" />);
-    }
-    contentParts.push(
-      <div key="synergies-block">
+    outputBlocks.push(
+      <div key="skill-synergies-block">
         <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
-        <ul className="space-y-0.5 ml-4"> {/* Indented list */}
+        <ul className="space-y-0.5 ml-4 mt-2"> {/* Indented list */}
           {synergyInfoList.map((synergyItem) => {
             const IconComponent = synergyItem.isActive ? CheckSquare : Square;
             return (
@@ -59,13 +56,10 @@ export const SkillModifierBreakdownContentDisplay: React.FC<SkillModifierBreakdo
   }
 
   if (skillModifierBreakdown) {
-    if (contentParts.length > 0) {
-      contentParts.push(<Separator key="separator-before-calculation" className="my-3" />);
-    }
-    contentParts.push(
-      <div key="calculation-block">
+    outputBlocks.push(
+      <div key="skill-calculation-block">
         <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-        <div className="space-y-1 text-sm ml-4"> {/* Indented content */}
+        <div className="space-y-1 text-sm ml-4 mt-2"> {/* Indented content */}
           {skillModifierBreakdown.keyAbilityName && (
             <div className="flex justify-between">
               <span>
@@ -119,5 +113,5 @@ export const SkillModifierBreakdownContentDisplay: React.FC<SkillModifierBreakdo
       </div>
     );
   }
-  return contentParts.length > 0 ? <>{contentParts}</> : null;
+  return outputBlocks.length > 0 ? outputBlocks : null;
 };

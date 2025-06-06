@@ -59,29 +59,30 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
     );
   }
 
-  const specificsSectionParts: React.ReactNode[] = [];
-
   if (detailsList && detailsList.length > 0) {
-    specificsSectionParts.push(
-      <div className="mt-2 ml-4" key="details-list-content"> {/* Indented content */}
-        <div className="space-y-0.5 text-sm mb-2">
-          {detailsList.map((detail, index) => (
-            <div key={index} className="flex justify-between">
-              <span className="text-foreground">{detail.label}</span>
-              <span className={detail.isBold ? "font-bold text-foreground" : "text-foreground"}>{detail.value}</span>
-            </div>
-          ))}
+    outputBlocks.push(
+      <div key="class-details-list-section">
+        <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogClassSpecificsListHeading || "Class Specifics"}</h3>
+        <div className="mt-2 ml-4" key="details-list-content">
+          <div className="space-y-0.5 text-sm mb-2">
+            {detailsList.map((detail, index) => (
+              <div key={index} className="flex justify-between">
+                <span className="text-foreground">{detail.label}</span>
+                <span className={detail.isBold ? "font-bold text-foreground" : "text-foreground"}>{detail.value}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
   }
 
   if (grantedFeats && grantedFeats.length > 0) {
-    specificsSectionParts.push(
-       <div className="mt-2" key="granted-feats-subsection"> {/* Subsection container */}
-        <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h4>
-        {/* Removed ml-4 from the ul below */}
-        <ul className="list-none space-y-0.5 text-sm">
+    outputBlocks.push(
+      <div key="class-granted-feats-section">
+         {/* This heading is now part of this distinct block */}
+        <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h3>
+        <ul className="list-none space-y-0.5 text-sm mt-2"> {/* No ml-4 for the feat list itself */}
           {grantedFeats.map(feat => {
             const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
             return (
@@ -132,18 +133,7 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
       </div>
     );
   }
-
-  if (specificsSectionParts.length > 0) {
-    if (outputBlocks.length > 0) {
-      outputBlocks.push(<Separator key="separator-before-class-specifics" className="my-3" />);
-    }
-    outputBlocks.push(
-      <div key="class-specifics-section">
-        <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogClassSpecificsListHeading || "Class Specifics"}</h3>
-        {specificsSectionParts}
-      </div>
-    );
-  }
   
-  return outputBlocks.length > 0 ? outputBlocks : null;
+  // Parent InfoDisplayDialog will insert Separator between elements of outputBlocks
+  return outputBlocks.length > 0 ? outputBlocks : null; 
 };
