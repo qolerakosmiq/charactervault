@@ -106,7 +106,7 @@ export function SavingThrowsPanel({
       rowKey: 'miscModDisplay',
     },
     {
-      label: <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsRowLabelCustomModifier || "Custom<br />Modifier" }} />,
+      label: <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsRowLabelTemporaryModifier || "Temp.<br />Modifier" }} />,
       getValue: (saveData, baseSave, abilityMod, total, saveType?: SavingThrowType, onMiscChange?: (type: SavingThrowType, val: number) => void) => (
         <div className="flex justify-center">
           <NumberSpinnerInput
@@ -120,7 +120,7 @@ export function SavingThrowsPanel({
           />
         </div>
       ),
-      rowKey: 'customMod',
+      rowKey: 'temporaryModInput',
     },
   ];
 
@@ -176,4 +176,3 @@ export function SavingThrowsPanel({
   );
 }
 
-    
