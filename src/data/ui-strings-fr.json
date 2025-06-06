@@ -33,8 +33,10 @@
     "infoDialogSkillNotFound": "Détails de la compétence non trouvés.",
     "infoDialogFeatNotFound": "Détails du don non trouvés.",
     "infoDialogSectionHeadingCalculation": "Calcul",
-    "infoDialogSectionHeadingDetails": "Détails :",
-    "infoDialogListHeadingDetails": "Détails",
+    "infoDialogSectionHeadingDetails": "Détails",
+    "infoDialogGeneralTraitsHeading": "Traits généraux",
+    "infoDialogRaceSpecificsListHeading": "Spécificités raciales",
+    "infoDialogClassSpecificsListHeading": "Spécificités de classe",
     "infoDialogAbilityScoreAdjustments": "Ajustements des caractéristiques",
     "infoDialogRacialSkillBonuses": "Bonus raciaux de compétence",
     "infoDialogRacialSkillPointBonusLabel": "Points de compétence bonus/niveau",
@@ -298,3 +300,4 @@
     "footerAppDescription": "Fait avec ❤️ pour les joueurs de D&D 3.5"
   }
 }
+    

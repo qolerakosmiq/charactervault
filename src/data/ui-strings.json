@@ -33,8 +33,10 @@
     "infoDialogSkillNotFound": "Skill details not found.",
     "infoDialogFeatNotFound": "Feat details not found.",
     "infoDialogSectionHeadingCalculation": "Calculation",
-    "infoDialogSectionHeadingDetails": "Details:",
-    "infoDialogListHeadingDetails": "Details",
+    "infoDialogSectionHeadingDetails": "Details",
+    "infoDialogGeneralTraitsHeading": "General Traits",
+    "infoDialogRaceSpecificsListHeading": "Racial Specifics",
+    "infoDialogClassSpecificsListHeading": "Class Specifics",
     "infoDialogAbilityScoreAdjustments": "Ability Score Adjustments",
     "infoDialogRacialSkillBonuses": "Racial Skill Bonuses",
     "infoDialogRacialSkillPointBonusLabel": "Bonus Skill Points/Level",
@@ -298,3 +300,5 @@
     "footerAppDescription": "Built with ❤️ for D&D 3.5 Players"
   }
 }
+
+    

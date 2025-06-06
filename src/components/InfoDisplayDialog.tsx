@@ -528,7 +528,16 @@ export function InfoDisplayDialog({
   
   const sectionHeadingClass = "text-md font-semibold mb-2 text-primary";
 
-  const sectionHeading = abilityScoreBreakdown || skillModifierBreakdown || resistanceBreakdown || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || speedBreakdown || (detailsList && (contentType?.type === 'acBreakdown' || contentType?.type === 'class')) ? (UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation") : (UI_STRINGS.infoDialogSectionHeadingDetails || "Details:");
+  // Determine the heading for the `detailsList` section based on content type
+  let detailsListHeading = UI_STRINGS.infoDialogSectionHeadingDetails || "Details"; // Fallback
+  if (contentType?.type === 'race') {
+    detailsListHeading = UI_STRINGS.infoDialogRaceSpecificsListHeading || "Racial Specifics";
+  } else if (contentType?.type === 'class') {
+    detailsListHeading = UI_STRINGS.infoDialogClassSpecificsListHeading || "Class Specifics";
+  } else if (abilityScoreBreakdown || skillModifierBreakdown || resistanceBreakdown || babBreakdown || initiativeBreakdown || grappleModifierBreakdown || grappleDamageBreakdown || speedBreakdown || (detailsList && (contentType?.type === 'acBreakdown'))) {
+    detailsListHeading = UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation";
+  }
+  
   const hasAnyBonusSection = abilityModifiers?.length || skillBonuses?.length || grantedFeats?.length || bonusFeatSlots !== undefined || speeds;
   
   let hasRenderedContentBlock = false;
@@ -570,7 +579,7 @@ export function InfoDisplayDialog({
             {hasAnyBonusSection && (contentType?.type === 'race' || contentType?.type === 'class') && (
                  <>
                     {renderSeparatorIfNeeded()}
-                    <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogListHeadingDetails || "Details"}</h3>
+                    <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading || "General Traits"}</h3>
                     {markContentRendered()}
                  </>
             )}
@@ -581,7 +590,7 @@ export function InfoDisplayDialog({
                 <div className="space-y-0.5 text-sm mb-2">
                   {abilityModifiers.map(mod => (
                     <div key={mod.ability} className="flex justify-between">
-                      <span>{translations.ABILITY_LABELS.find(al => al.value === mod.ability)?.label || mod.ability}:</span>
+                      <span>{translations.ABILITY_LABELS.find(al => al.value === mod.ability)?.label || mod.ability}</span>
                       {renderModifierValue(mod.change)}
                     </div>
                   ))}
@@ -594,7 +603,7 @@ export function InfoDisplayDialog({
                 <div className="space-y-0.5 text-sm mb-2">
                   {skillBonuses.map(bonus => (
                     <div key={bonus.skillId} className="flex justify-between">
-                      <span>{bonus.skillName}:</span>
+                      <span>{bonus.skillName}</span>
                       {renderModifierValue(bonus.bonus)}
                     </div>
                   ))}
@@ -670,7 +679,7 @@ export function InfoDisplayDialog({
               <>
               {renderSeparatorIfNeeded()}
               <div>
-                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span>{(UI_STRINGS.infoDialogBabClassLabel || "{classLabel} Base Attack Bonus:").replace("{classLabel}", babBreakdown.characterClassLabel || 'Class')}</span>
@@ -697,7 +706,7 @@ export function InfoDisplayDialog({
               <>
               {renderSeparatorIfNeeded()}
               <div>
-                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span>
@@ -726,7 +735,7 @@ export function InfoDisplayDialog({
               <>
               {renderSeparatorIfNeeded()}
               <div>
-                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span>{UI_STRINGS.infoDialogGrappleModBabLabel || "Base Attack Bonus:"}</span>
@@ -763,7 +772,7 @@ export function InfoDisplayDialog({
               <>
               {renderSeparatorIfNeeded()}
               <div>
-                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span>{UI_STRINGS.infoDialogGrappleDmgBaseLabel || "Base Damage:"}</span>
@@ -808,7 +817,7 @@ export function InfoDisplayDialog({
               <>
               {renderSeparatorIfNeeded()}
               <div>
-                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span>{UI_STRINGS.infoDialogBaseScoreLabel || "Base Score"}</span>
@@ -841,7 +850,7 @@ export function InfoDisplayDialog({
               <>
               {renderSeparatorIfNeeded()}
               <div>
-                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
                   <div className="space-y-1 text-sm">
                     {skillModifierBreakdown.keyAbilityName && (
                         <div className="flex justify-between">
@@ -902,7 +911,7 @@ export function InfoDisplayDialog({
               <>
                 {renderSeparatorIfNeeded()}
                 <div>
-                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span>{UI_STRINGS.infoDialogBaseValueLabel || "Base Value:"}</span>
@@ -927,7 +936,7 @@ export function InfoDisplayDialog({
               <>
                 {renderSeparatorIfNeeded()}
                 <div>
-                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
+                  <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
                   <div className="space-y-1 text-sm">
                     {speedBreakdown.components.map((comp, index) => {
                       let label = comp.source;
@@ -940,14 +949,14 @@ export function InfoDisplayDialog({
                       
                       return (
                         <div key={index} className="flex justify-between">
-                          <span>{label}:</span>
+                          <span>{label}</span>
                           {renderModifierValue(comp.value)}
                         </div>
                       );
                     })}
                     <Separator className="my-2" />
                     <div className="flex justify-between text-base">
-                      <span className="font-semibold">{(UI_STRINGS.infoDialogSpeedTotalPrefixLabel || "Total")} {speedBreakdown.name}:</span>
+                      <span className="font-semibold">{(UI_STRINGS.infoDialogSpeedTotalPrefixLabel || "Total")} {speedBreakdown.name}</span>
                       <span className="font-bold text-accent">{speedBreakdown.total} {speedUnit}</span>
                     </div>
                   </div>
@@ -957,15 +966,22 @@ export function InfoDisplayDialog({
             )}
 
 
-            {/* Generic detailsList rendering for AC */}
-            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && !speedBreakdown && detailsList && detailsList.length > 0 && (contentType?.type === 'acBreakdown') && (
+            {/* Generic detailsList rendering */}
+            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && !speedBreakdown && detailsList && detailsList.length > 0 && (
               <>
                 {renderSeparatorIfNeeded()}
                 <div>
-                  <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
-                  {detailsList!.filter(detail => detail.isBold !== true).map((detail, index) => {
+                  <h3 className={sectionHeadingClass}>
+                    {contentType?.type === 'race' 
+                      ? (UI_STRINGS.infoDialogRaceSpecificsListHeading || "Racial Specifics")
+                      : contentType?.type === 'class' 
+                        ? (UI_STRINGS.infoDialogClassSpecificsListHeading || "Class Specifics")
+                        : (UI_STRINGS.infoDialogSectionHeadingDetails || "Details")
+                    }
+                  </h3>
+                  {detailsList!.map((detail, index) => {
                       const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string))))
-                          ? renderModifierValue(detail.value as number | string, undefined, undefined, undefined, undefined, false)
+                          ? renderModifierValue(detail.value as number | string, undefined, undefined, undefined, undefined, detail.isBold)
                           : detail.value;
                       
                       let labelContent: React.ReactNode = <span className="text-foreground">{detail.label}</span>;
@@ -994,7 +1010,7 @@ export function InfoDisplayDialog({
                       );
                   })}
                   
-                  {(() => {
+                  {contentType?.type === 'acBreakdown' && (() => { // Specific total rendering for AC breakdown
                     const totalDetailItem = detailsList!.find(detail => detail.isBold === true);
                     if (totalDetailItem) {
                       return (
@@ -1012,22 +1028,6 @@ export function InfoDisplayDialog({
                 </div>
                 {markContentRendered()}
               </>
-            )}
-             {/* Generic detailsList rendering for Class/Race (without the special total handling above) */}
-            {!abilityScoreBreakdown && !skillModifierBreakdown && !resistanceBreakdown && !babBreakdown && !initiativeBreakdown && !grappleModifierBreakdown && !grappleDamageBreakdown && !speedBreakdown && detailsList && detailsList.length > 0 && (contentType?.type === 'class' || contentType?.type === 'race') && (
-                <>
-                  {renderSeparatorIfNeeded()}
-                  <div>
-                    <h3 className={sectionHeadingClass}>{sectionHeading}</h3>
-                    {detailsList!.map((detail, index) => (
-                        <div key={index} className="flex justify-between text-sm mb-0.5">
-                        <span className="text-foreground">{detail.label}</span>
-                        <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{detail.value as React.ReactNode}</span>
-                        </div>
-                    ))}
-                  </div>
-                  {markContentRendered()}
-                </>
             )}
 
           </div>
@@ -1072,3 +1072,5 @@ interface SkillModifierBreakdownDetails {
   totalBonus: number;
 }
 
+
+    
