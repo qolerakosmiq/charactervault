@@ -297,9 +297,9 @@ export function CharacterFormCoreInfoSection({
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="size">{UI_STRINGS.sizeLabel || "Size"}</Label>
-            <Select name="size" value={characterData?.size} onValueChange={(value) => handleSelectChange('size', value as CharacterSize)}>
-              <SelectTrigger><SelectValue placeholder={UI_STRINGS.selectSizePlaceholder || "Select size"} /></SelectTrigger>
+            <Label htmlFor="sizeCategory">{UI_STRINGS.sizeLabel || "Size Category"}</Label>
+            <Select name="sizeCategory" value={characterData?.size} onValueChange={(value) => handleSelectChange('size', value as CharacterSize)}>
+              <SelectTrigger id="sizeCategory"><SelectValue placeholder={UI_STRINGS.selectSizePlaceholder || "Select size category"} /></SelectTrigger>
               <SelectContent> {SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)} </SelectContent>
             </Select>
             <div className="flex items-baseline gap-1 pt-[6px] ml-1">
@@ -321,3 +321,5 @@ export function CharacterFormCoreInfoSection({
     </Card>
   );
 }
+
+    

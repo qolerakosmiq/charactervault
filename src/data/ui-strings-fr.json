@@ -11,14 +11,14 @@
     "deityLabel": "Divinité",
     "ageLabel": "Âge",
     "genderLabel": "Genre",
-    "sizeLabel": "Taille",
+    "sizeLabel": "Catégorie de taille",
     "deityNoneOption": "Aucune",
     "selectRacePlaceholder": "Choisir une race",
     "selectClassPlaceholder": "Choisir une classe",
     "selectAlignmentPlaceholder": "Choisir un alignement",
     "selectDeityPlaceholder": "Choisir une divinité",
     "selectGenderPlaceholder": "Choisir ou écrire un genre...",
-    "selectSizePlaceholder": "Choisir une taille",
+    "selectSizePlaceholder": "Choisir une catégorie de taille",
     "hitDiceLabel": "Dés de vie",
     "levelLabel": "Niveau",
     "infoDialogLoadingTitle": "Chargement des informations...",
@@ -297,3 +297,5 @@
     "footerAppDescription": "Fait avec ❤️ pour les joueurs de D&D 3.5"
   }
 }
+
+    
