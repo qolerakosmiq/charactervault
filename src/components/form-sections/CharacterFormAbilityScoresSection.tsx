@@ -182,19 +182,18 @@ export function CharacterFormAbilityScoresSection({
               const tempCustomModValue = localTempMods[ability] ?? 0; // Use local state
 
               const actualScoreData = detailedAbilityScores ? detailedAbilityScores[ability] : null;
-              // For display, use detailedAbilityScores if available (reflects all bonuses), otherwise calculate from local values for responsiveness
+              
+              const racialEffectValue = detailedAbilityScores?.[ability]?.components.find(c => c.source.startsWith("Race"))?.value || 0;
+              const agingEffectValue = detailedAbilityScores?.[ability]?.components.find(c => c.source.startsWith("Aging"))?.value || 0;
+              const featEffectValue = detailedAbilityScores?.[ability]?.components.find(c => c.source === "feats")?.value || 0;
+
               const displayTotalScore = actualScoreData 
                 ? actualScoreData.finalScore 
                 : (baseScoreValue || 0) + (tempCustomModValue || 0) + 
-                  (racialEffects?.[ability] || 0) + 
-                  (agingEffects?.[ability] || 0) + 
-                  (featEffects?.[ability] || 0);
+                  racialEffectValue + 
+                  agingEffectValue + 
+                  featEffectValue;
               
-              const racialEffects = detailedAbilityScores?.[ability]?.components.find(c => c.source.startsWith("Race"))?.value || 0;
-              const agingEffects = detailedAbilityScores?.[ability]?.components.find(c => c.source.startsWith("Aging"))?.value || 0;
-              const featEffects = detailedAbilityScores?.[ability]?.components.find(c => c.source === "feats")?.value || 0;
-
-
               const displayModifier = calculateAbilityModifier(displayTotalScore);
 
               const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === ability);
@@ -264,7 +263,7 @@ export function CharacterFormAbilityScoresSection({
             <Badge variant="outline" className="text-xs font-normal px-1 py-0.5 align-baseline mx-0.5">
               {UI_STRINGS.abilityScoresNote_badge1_text || "Base Score"}
             </Badge>
-            {UI_STRINGS.abilityScoresNote_suffix || " directly, not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score."}
+            {UI_STRINGS.abilityScoresNote_suffix || ", not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score."}
            </p>
         </CardContent>
       </Card>
@@ -287,5 +286,3 @@ export function CharacterFormAbilityScoresSection({
     </>
   );
 }
-
-    
