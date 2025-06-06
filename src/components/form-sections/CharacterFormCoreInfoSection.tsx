@@ -84,15 +84,11 @@ export function CharacterFormCoreInfoSection({
   React.useEffect(() => { setLocalSize(characterData.size); }, [characterData.size]);
 
   // Generic debounce effect hook
-  const useDebounceEffectForField = (localValue: any, propValue: any, fieldName: keyof Character | 'class', updateFunction: (field: any, value: any) => void) => {
+  const useDebounceEffectForField = (localValue: any, propValue: any, fieldName: keyof Character, updateFunction: (field: keyof Character, value: any) => void) => {
     React.useEffect(() => {
       const handler = setTimeout(() => {
         if (localValue !== propValue) {
-          if (fieldName === 'class') {
-            updateFunction(localValue as DndClassId | string, ''); // Second arg not used by onClassChange
-          } else {
             updateFunction(fieldName, localValue);
-          }
         }
       }, DEBOUNCE_DELAY);
       return () => clearTimeout(handler);
@@ -102,18 +98,20 @@ export function CharacterFormCoreInfoSection({
   // Debounce effects for text inputs and number spinner
   useDebounceEffectForField(localName, characterData.name, 'name', onFieldChange);
   useDebounceEffectForField(localPlayerName, characterData.playerName, 'playerName', onFieldChange);
+
   React.useEffect(() => { // Special handling for age with min value
     const handler = setTimeout(() => {
       const ageToCommit = Math.max(localAge, currentMinAgeForInput);
       if (ageToCommit !== characterData.age) {
         onFieldChange('age', ageToCommit);
       }
-      if (localAge < currentMinAgeForInput && localAge !== ageToCommit) { // only setLocalAge if it would change
+      if (localAge < currentMinAgeForInput && localAge !== ageToCommit) { 
         setLocalAge(ageToCommit);
       }
     }, DEBOUNCE_DELAY);
     return () => clearTimeout(handler);
   }, [localAge, characterData.age, onFieldChange, currentMinAgeForInput]);
+
   useDebounceEffectForField(localGender, characterData.gender, 'gender', onFieldChange);
 
   // Debounce effects for Select components
@@ -138,17 +136,14 @@ export function CharacterFormCoreInfoSection({
 
     if (!characterData.race && translations.DND_RACES.length > 0) {
         const defaultRace = translations.DND_RACES.find(r => r.value === 'human')?.value || translations.DND_RACES[0]?.value || '';
-        setLocalRace(defaultRace); // Update local directly
-        // onFieldChange will be triggered by debounce effect
+        setLocalRace(defaultRace); 
     }
     if ((!characterData.classes[0]?.className || characterData.classes[0]?.className === '') && translations.DND_CLASSES.length > 0) {
         const defaultClass = translations.DND_CLASSES.find(c => c.value === 'fighter')?.value || translations.DND_CLASSES[0]?.value || '';
-        setLocalClassName(defaultClass); // Update local directly
-        // onClassChange will be triggered by debounce effect
+        setLocalClassName(defaultClass); 
     }
     if (characterData.deity === undefined || characterData.deity === null) {
-        setLocalDeity(DEITY_NONE_OPTION_VALUE); // Update local directly
-        // onFieldChange will be triggered by debounce effect
+        setLocalDeity(DEITY_NONE_OPTION_VALUE); 
     }
   }, [translationsLoading, translations, characterData.race, characterData.classes, characterData.deity]);
 
@@ -179,15 +174,15 @@ export function CharacterFormCoreInfoSection({
   }, [translations, filteredDeities]);
 
   React.useEffect(() => {
-    if (!translations || !characterData) return; // characterData still needed for original check
-    if (localAlignment && localDeity && localDeity !== DEITY_NONE_OPTION_VALUE) {
+    if (!translations || !localAlignment || !localDeity) return; 
+    
+    if (localDeity !== DEITY_NONE_OPTION_VALUE) {
       const currentDeityInfo = translations.DND_DEITIES.find(d => d.value === localDeity);
       if (currentDeityInfo && !isAlignmentCompatible(localAlignment, currentDeityInfo.alignment)) {
-        // If incompatible, set localDeity to None, which will then trigger the debounce for onFieldChange
         setLocalDeity(DEITY_NONE_OPTION_VALUE);
       }
     }
-  }, [translations, localAlignment, localDeity, characterData, onFieldChange]); // onFieldChange in deps to satisfy linter for debounce
+  }, [translations, localAlignment, localDeity, setLocalDeity]); 
   
   if (translationsLoading || !translations) {
     return (
