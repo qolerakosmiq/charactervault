@@ -19,7 +19,7 @@
     "selectDeityPlaceholder": "Choisir une divinité",
     "selectGenderPlaceholder": "Choisir ou écrire un genre...",
     "selectSizePlaceholder": "Choisir une catégorie de taille",
-    "hitDiceLabel": "Dés de vie",
+    "hitDiceLabel": "Dés de vie\u00A0",
     "levelLabel": "Niveau",
     "infoDialogLoadingTitle": "Chargement des informations...",
     "infoDialogLoadingDescription": "Récupération des détails...",
@@ -297,5 +297,3 @@
     "footerAppDescription": "Fait avec ❤️ pour les joueurs de D&D 3.5"
   }
 }
-
-    
