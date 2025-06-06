@@ -21,11 +21,11 @@ export const SkillModifierBreakdownContentDisplay: React.FC<SkillModifierBreakdo
   synergyInfoList,
   skillModifierBreakdown,
   uiStrings,
-}): React.ReactNode[] | null => {
-  const contentBlocks: React.ReactNode[] = [];
+}) => {
+  const contentParts: React.ReactNode[] = [];
 
-  if (htmlContent) {
-    contentBlocks.push(
+  if (htmlContent && htmlContent.trim() !== '' && htmlContent.trim() !== '<p></p>') {
+    contentParts.push(
       <div
         key="html-content-block"
         className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
@@ -35,7 +35,10 @@ export const SkillModifierBreakdownContentDisplay: React.FC<SkillModifierBreakdo
   }
 
   if (synergyInfoList && synergyInfoList.length > 0) {
-    contentBlocks.push(
+    if (contentParts.length > 0) {
+      contentParts.push(<Separator key="separator-before-synergies" className="my-3" />);
+    }
+    contentParts.push(
       <div key="synergies-block">
         <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
         <ul className="space-y-0.5">
@@ -56,7 +59,10 @@ export const SkillModifierBreakdownContentDisplay: React.FC<SkillModifierBreakdo
   }
 
   if (skillModifierBreakdown) {
-    contentBlocks.push(
+    if (contentParts.length > 0) {
+      contentParts.push(<Separator key="separator-before-calculation" className="my-3" />);
+    }
+    contentParts.push(
       <div key="calculation-block">
         <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
         <div className="space-y-1 text-sm">
@@ -113,5 +119,5 @@ export const SkillModifierBreakdownContentDisplay: React.FC<SkillModifierBreakdo
       </div>
     );
   }
-  return contentBlocks.length > 0 ? contentBlocks : null;
+  return contentParts.length > 0 ? <>{contentParts}</> : null;
 };

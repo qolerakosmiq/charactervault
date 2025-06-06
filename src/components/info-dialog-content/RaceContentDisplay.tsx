@@ -15,6 +15,7 @@ import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { renderModifierValue, ExpandableDetailWrapper, sectionHeadingClass } from './dialog-utils';
 import { FeatDetailsDisplay } from './FeatDetailsDisplay';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 interface RaceContentDisplayProps {
   htmlContent?: string;
@@ -23,7 +24,7 @@ interface RaceContentDisplayProps {
   grantedFeats?: Array<{ featId: string; name: string; note?: string; levelAcquired?: number }>;
   bonusFeatSlots?: number;
   speeds?: Partial<Record<SpeedType, number>>;
-  translations: { 
+  translations: {
     UI_STRINGS: Record<string, string>;
     ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
     DND_CLASSES: readonly DndClassOption[];
@@ -32,8 +33,8 @@ interface RaceContentDisplayProps {
     SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[];
   };
   allCombinedFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
-  customSkillDefinitions: readonly CustomSkillDefinition[]; 
-  character: Character; 
+  customSkillDefinitions: readonly CustomSkillDefinition[];
+  character: Character;
   expandedItems: Set<string>;
   toggleExpanded: (itemId: string) => void;
 }
@@ -51,15 +52,14 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
   character,
   expandedItems,
   toggleExpanded,
-}): React.ReactNode[] | null => {
+}) => {
   const { UI_STRINGS, ABILITY_LABELS, DND_CLASSES, DND_RACES, ALIGNMENT_PREREQUISITE_OPTIONS, SKILL_DEFINITIONS } = translations;
   const speedUnit = UI_STRINGS.speedUnit || "ft.";
-  const hasAnyBonusSection = abilityModifiers?.length || skillBonuses?.length || grantedFeats?.length || bonusFeatSlots !== undefined || speeds;
 
-  const contentBlocks: React.ReactNode[] = [];
+  const contentParts: React.ReactNode[] = [];
 
   if (htmlContent) {
-    contentBlocks.push(
+    contentParts.push(
       <div
         key="html-content-block"
         className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
@@ -68,131 +68,132 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
     );
   }
 
-  if (hasAnyBonusSection) {
-    const traitsElements: React.ReactNode[] = [];
-
-    if (abilityModifiers && abilityModifiers.length > 0) {
-      traitsElements.push(
-        <div className="mt-2" key="ability-modifiers">
-          <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments}</h4>
-          <div className="space-y-0.5 text-sm mb-2">
-            {abilityModifiers.map(mod => (
-              <div key={mod.ability} className="flex justify-between">
-                <span className="text-foreground">{ABILITY_LABELS.find(al => al.value === mod.ability)?.label || mod.ability}</span>
-                {renderModifierValue(mod.change)}
-              </div>
-            ))}
-          </div>
+  const traitsElements: React.ReactNode[] = [];
+  if (abilityModifiers && abilityModifiers.length > 0) {
+    traitsElements.push(
+      <div className="mt-2" key="ability-modifiers">
+        <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments}</h4>
+        <div className="space-y-0.5 text-sm mb-2">
+          {abilityModifiers.map(mod => (
+            <div key={mod.ability} className="flex justify-between">
+              <span className="text-foreground">{ABILITY_LABELS.find(al => al.value === mod.ability)?.label || mod.ability}</span>
+              {renderModifierValue(mod.change)}
+            </div>
+          ))}
         </div>
-      );
-    }
-    if (skillBonuses && skillBonuses.length > 0) {
-      traitsElements.push(
-        <div className="mt-2" key="skill-bonuses">
-          <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses}</h4>
-          <div className="space-y-0.5 text-sm mb-2">
-            {skillBonuses.map(bonus => (
-              <div key={bonus.skillId} className="flex justify-between">
-                <span className="text-foreground">{bonus.skillName}</span>
-                {renderModifierValue(bonus.bonus)}
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-    if (speeds && Object.keys(speeds).filter(k => (speeds as any)[k] !== undefined && (speeds as any)[k] > 0).length > 0) {
-      traitsElements.push(
-         <div className="mt-2" key="base-speeds">
-          <p className="text-sm text-muted-foreground font-medium mb-1">{UI_STRINGS.infoDialogBaseSpeeds}</p>
-           <div className="ml-4 space-y-0.5 text-sm mb-2">
-            {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
-              .map(([type, speedVal]) => {
-              const speedTypeKey = `speedLabel${type.charAt(0).toUpperCase() + type.slice(1)}` as keyof typeof UI_STRINGS;
-              const speedName = UI_STRINGS[speedTypeKey] || type;
-              return (
-                <div key={type} className="flex justify-between">
-                  <span className="text-foreground">{speedName}</span>
-                  <span className="font-semibold text-foreground">{speedVal} {speedUnit}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      );
-    }
-    if (bonusFeatSlots !== undefined && bonusFeatSlots > 0) {
-      traitsElements.push(
-         <div className="flex justify-between text-sm mt-2" key="bonus-feat-slots">
-          <span className="text-sm text-foreground font-medium">{UI_STRINGS.infoDialogBonusFeatSlots}</span>
-          {renderModifierValue(bonusFeatSlots)}
-        </div>
-      );
-    }
-    if (grantedFeats && grantedFeats.length > 0) {
-      traitsElements.push(
-         <div className="mt-2" key="granted-feats">
-          <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h4>
-          <ul className="list-none space-y-0.5 text-sm">
-            {grantedFeats.map(feat => {
-              const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
-              return (
-                 <li key={uniqueKey} className="group">
-                    <div
-                      className="flex items-baseline gap-2 p-1 -mx-1 rounded transition-colors cursor-pointer"
-                      onClick={() => toggleExpanded(uniqueKey)}
-                      role="button"
-                      aria-expanded={expandedItems.has(uniqueKey)}
-                      aria-controls={`feat-details-${uniqueKey}`}
-                    >
-                      {feat.levelAcquired !== undefined && (
-                        <Badge variant="outline" className="text-xs font-normal h-5 whitespace-nowrap">
-                          {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
-                        </Badge>
-                      )}
-                       <div className="flex-grow">
-                          <strong className="text-foreground leading-tight transition-colors">{feat.name}</strong>
-                          {feat.note && (
-                            <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
-                              {feat.note}
-                            </p>
-                          )}
-                       </div>
-                    </div>
-                    {expandedItems.has(uniqueKey) && (
-                     <div id={`feat-details-${uniqueKey}`} className="my-1 mb-1">
-                        <ExpandableDetailWrapper>
-                          <FeatDetailsDisplay
-                              featId={feat.featId}
-                              character={character}
-                              allFeats={allCombinedFeatDefinitions}
-                              allPredefinedSkills={SKILL_DEFINITIONS}
-                              allCustomSkills={customSkillDefinitions}
-                              allClasses={DND_CLASSES}
-                              allRaces={DND_RACES}
-                              abilityLabels={ABILITY_LABELS}
-                              alignmentPrereqOptions={ALIGNMENT_PREREQUISITE_OPTIONS}
-                              uiStrings={UI_STRINGS}
-                          />
-                        </ExpandableDetailWrapper>
-                     </div>
-                    )}
-                  </li>
-              );
-            })}
-          </ul>
-        </div>
-      );
-    }
-    if (traitsElements.length > 0) {
-      contentBlocks.push(
-        <div key="general-traits-wrapper">
-          <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading || "General Traits"}</h3>
-          {traitsElements}
-        </div>
-      );
-    }
+      </div>
+    );
   }
-  
-  return contentBlocks.length > 0 ? contentBlocks : null;
+  if (skillBonuses && skillBonuses.length > 0) {
+    traitsElements.push(
+      <div className="mt-2" key="skill-bonuses">
+        <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses}</h4>
+        <div className="space-y-0.5 text-sm mb-2">
+          {skillBonuses.map(bonus => (
+            <div key={bonus.skillId} className="flex justify-between">
+              <span className="text-foreground">{bonus.skillName}</span>
+              {renderModifierValue(bonus.bonus)}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  if (speeds && Object.keys(speeds).filter(k => (speeds as any)[k] !== undefined && (speeds as any)[k] > 0).length > 0) {
+    traitsElements.push(
+       <div className="mt-2" key="base-speeds">
+        <p className="text-sm text-muted-foreground font-medium mb-1">{UI_STRINGS.infoDialogBaseSpeeds}</p>
+         <div className="ml-4 space-y-0.5 text-sm mb-2">
+          {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
+            .map(([type, speedVal]) => {
+            const speedTypeKey = `speedLabel${type.charAt(0).toUpperCase() + type.slice(1)}` as keyof typeof UI_STRINGS;
+            const speedName = UI_STRINGS[speedTypeKey] || type;
+            return (
+              <div key={type} className="flex justify-between">
+                <span className="text-foreground">{speedName}</span>
+                <span className="font-semibold text-foreground">{speedVal} {speedUnit}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+  if (bonusFeatSlots !== undefined && bonusFeatSlots > 0) {
+    traitsElements.push(
+       <div className="flex justify-between text-sm mt-2" key="bonus-feat-slots">
+        <span className="text-sm text-foreground font-medium">{UI_STRINGS.infoDialogBonusFeatSlots}</span>
+        {renderModifierValue(bonusFeatSlots)}
+      </div>
+    );
+  }
+  if (grantedFeats && grantedFeats.length > 0) {
+    traitsElements.push(
+       <div className="mt-2" key="granted-feats">
+        <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h4>
+        <ul className="list-none space-y-0.5 text-sm">
+          {grantedFeats.map(feat => {
+            const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
+            return (
+               <li key={uniqueKey} className="group">
+                  <div
+                    className="flex items-baseline gap-2 p-1 -mx-1 rounded transition-colors cursor-pointer"
+                    onClick={() => toggleExpanded(uniqueKey)}
+                    role="button"
+                    aria-expanded={expandedItems.has(uniqueKey)}
+                    aria-controls={`feat-details-${uniqueKey}`}
+                  >
+                    {feat.levelAcquired !== undefined && (
+                      <Badge variant="outline" className="text-xs font-normal h-5 whitespace-nowrap">
+                        {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
+                      </Badge>
+                    )}
+                     <div className="flex-grow">
+                        <strong className="text-foreground leading-tight transition-colors">{feat.name}</strong>
+                        {feat.note && (
+                          <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
+                            {feat.note}
+                          </p>
+                        )}
+                     </div>
+                  </div>
+                  {expandedItems.has(uniqueKey) && (
+                   <div id={`feat-details-${uniqueKey}`} className="my-1 mb-1">
+                      <ExpandableDetailWrapper>
+                        <FeatDetailsDisplay
+                            featId={feat.featId}
+                            character={character}
+                            allFeats={allCombinedFeatDefinitions}
+                            allPredefinedSkills={SKILL_DEFINITIONS}
+                            allCustomSkills={customSkillDefinitions}
+                            allClasses={DND_CLASSES}
+                            allRaces={DND_RACES}
+                            abilityLabels={ABILITY_LABELS}
+                            alignmentPrereqOptions={ALIGNMENT_PREREQUISITE_OPTIONS}
+                            uiStrings={UI_STRINGS}
+                        />
+                      </ExpandableDetailWrapper>
+                   </div>
+                  )}
+                </li>
+            );
+          })}
+        </ul>
+      </div>
+    );
+  }
+
+  if (traitsElements.length > 0) {
+    if (contentParts.length > 0) {
+      contentParts.push(<Separator key="separator-after-html" className="my-3" />);
+    }
+    contentParts.push(
+      <div key="general-traits-section">
+        <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading || "General Traits"}</h3>
+        {traitsElements}
+      </div>
+    );
+  }
+
+  return contentParts.length > 0 ? <>{contentParts}</> : null;
 };

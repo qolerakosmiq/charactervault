@@ -14,6 +14,7 @@ import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { ExpandableDetailWrapper, sectionHeadingClass } from './dialog-utils';
 import { FeatDetailsDisplay } from './FeatDetailsDisplay';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 interface ClassContentDisplayProps {
   htmlContent?: string;
@@ -44,14 +45,12 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
   character,
   expandedItems,
   toggleExpanded,
-}): React.ReactNode[] | null => {
+}) => {
   const { UI_STRINGS, ABILITY_LABELS, DND_CLASSES, DND_RACES, ALIGNMENT_PREREQUISITE_OPTIONS, SKILL_DEFINITIONS } = translations;
-  const hasAnyBonusSection = grantedFeats?.length || detailsList?.length;
-
-  const contentBlocks: React.ReactNode[] = [];
+  const contentParts: React.ReactNode[] = [];
 
   if (htmlContent) {
-    contentBlocks.push(
+    contentParts.push(
       <div
         key="html-content-block"
         className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
@@ -60,87 +59,88 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
     );
   }
 
-  if (hasAnyBonusSection) {
-    const specificsElements: React.ReactNode[] = [];
-    if (detailsList && detailsList.length > 0) {
-      specificsElements.push(
-        <div className="mt-2" key="details-list">
-          <div className="space-y-0.5 text-sm mb-2">
-            {detailsList.map((detail, index) => (
-              <div key={index} className="flex justify-between">
-                <span className="text-foreground">{detail.label}</span>
-                <span className={detail.isBold ? "font-bold text-foreground" : "text-foreground"}>{detail.value}</span>
-              </div>
-            ))}
-          </div>
+  const specificsElements: React.ReactNode[] = [];
+  if (detailsList && detailsList.length > 0) {
+    specificsElements.push(
+      <div className="mt-2" key="details-list">
+        <div className="space-y-0.5 text-sm mb-2">
+          {detailsList.map((detail, index) => (
+            <div key={index} className="flex justify-between">
+              <span className="text-foreground">{detail.label}</span>
+              <span className={detail.isBold ? "font-bold text-foreground" : "text-foreground"}>{detail.value}</span>
+            </div>
+          ))}
         </div>
-      );
-    }
-     if (grantedFeats && grantedFeats.length > 0) {
-      specificsElements.push(
-         <div className="mt-2" key="granted-feats">
-          <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h4>
-          <ul className="list-none space-y-0.5 text-sm">
-            {grantedFeats.map(feat => {
-              const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
-              return (
-                 <li key={uniqueKey} className="group">
-                    <div
-                      className="flex items-baseline gap-2 p-1 -mx-1 rounded transition-colors cursor-pointer"
-                      onClick={() => toggleExpanded(uniqueKey)}
-                      role="button"
-                      aria-expanded={expandedItems.has(uniqueKey)}
-                      aria-controls={`feat-details-${uniqueKey}`}
-                    >
-                      {feat.levelAcquired !== undefined && (
-                        <Badge variant="outline" className="text-xs font-normal h-5 whitespace-nowrap">
-                          {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
-                        </Badge>
-                      )}
-                       <div className="flex-grow">
-                          <strong className="text-foreground leading-tight transition-colors">{feat.name}</strong>
-                          {feat.note && (
-                            <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
-                              {feat.note}
-                            </p>
-                          )}
-                       </div>
-                    </div>
-                    {expandedItems.has(uniqueKey) && (
-                     <div id={`feat-details-${uniqueKey}`} className="my-1 mb-1">
-                        <ExpandableDetailWrapper>
-                          <FeatDetailsDisplay
-                              featId={feat.featId}
-                              character={character}
-                              allFeats={allCombinedFeatDefinitions}
-                              allPredefinedSkills={SKILL_DEFINITIONS}
-                              allCustomSkills={customSkillDefinitions}
-                              allClasses={DND_CLASSES}
-                              allRaces={DND_RACES}
-                              abilityLabels={ABILITY_LABELS}
-                              alignmentPrereqOptions={ALIGNMENT_PREREQUISITE_OPTIONS}
-                              uiStrings={UI_STRINGS}
-                          />
-                        </ExpandableDetailWrapper>
-                     </div>
+      </div>
+    );
+  }
+   if (grantedFeats && grantedFeats.length > 0) {
+    specificsElements.push(
+       <div className="mt-2" key="granted-feats">
+        <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats}</h4>
+        <ul className="list-none space-y-0.5 text-sm">
+          {grantedFeats.map(feat => {
+            const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
+            return (
+               <li key={uniqueKey} className="group">
+                  <div
+                    className="flex items-baseline gap-2 p-1 -mx-1 rounded transition-colors cursor-pointer"
+                    onClick={() => toggleExpanded(uniqueKey)}
+                    role="button"
+                    aria-expanded={expandedItems.has(uniqueKey)}
+                    aria-controls={`feat-details-${uniqueKey}`}
+                  >
+                    {feat.levelAcquired !== undefined && (
+                      <Badge variant="outline" className="text-xs font-normal h-5 whitespace-nowrap">
+                        {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
+                      </Badge>
                     )}
-                  </li>
-              );
-            })}
-          </ul>
-        </div>
-      );
-    }
-
-    if (specificsElements.length > 0) {
-        contentBlocks.push(
-          <div key="class-specifics-wrapper">
-            <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogClassSpecificsListHeading || "Class Specifics"}</h3>
-            {specificsElements}
-          </div>
-        );
-    }
+                     <div className="flex-grow">
+                        <strong className="text-foreground leading-tight transition-colors">{feat.name}</strong>
+                        {feat.note && (
+                          <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
+                            {feat.note}
+                          </p>
+                        )}
+                     </div>
+                  </div>
+                  {expandedItems.has(uniqueKey) && (
+                   <div id={`feat-details-${uniqueKey}`} className="my-1 mb-1">
+                      <ExpandableDetailWrapper>
+                        <FeatDetailsDisplay
+                            featId={feat.featId}
+                            character={character}
+                            allFeats={allCombinedFeatDefinitions}
+                            allPredefinedSkills={SKILL_DEFINITIONS}
+                            allCustomSkills={customSkillDefinitions}
+                            allClasses={DND_CLASSES}
+                            allRaces={DND_RACES}
+                            abilityLabels={ABILITY_LABELS}
+                            alignmentPrereqOptions={ALIGNMENT_PREREQUISITE_OPTIONS}
+                            uiStrings={UI_STRINGS}
+                        />
+                      </ExpandableDetailWrapper>
+                   </div>
+                  )}
+                </li>
+            );
+          })}
+        </ul>
+      </div>
+    );
   }
 
-  return contentBlocks.length > 0 ? contentBlocks : null;
+  if (specificsElements.length > 0) {
+    if (contentParts.length > 0) {
+      contentParts.push(<Separator key="separator-after-html" className="my-3" />);
+    }
+    contentParts.push(
+      <div key="class-specifics-section">
+        <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogClassSpecificsListHeading || "Class Specifics"}</h3>
+        {specificsElements}
+      </div>
+    );
+  }
+
+  return contentParts.length > 0 ? <>{contentParts}</> : null;
 };

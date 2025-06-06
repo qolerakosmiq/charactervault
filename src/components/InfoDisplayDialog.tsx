@@ -80,9 +80,9 @@ export interface InitiativeBreakdownDetails extends InitiativeBreakdownDetailsTy
 export interface GrappleModifierBreakdownDetails extends GrappleModifierBreakdownDetailsType {}
 export interface GrappleDamageBreakdownDetails extends GrappleDamageBreakdownDetailsType {}
 export interface SpeedBreakdownDetails extends SpeedBreakdownDetailsType {}
-export interface SkillModifierBreakdownDetails { 
+export interface SkillModifierBreakdownDetails {
   skillName: string;
-  keyAbilityName?: string; 
+  keyAbilityName?: string;
   keyAbilityModifier: number;
   ranks: number;
   synergyBonus: number;
@@ -187,7 +187,7 @@ export function InfoDisplayDialog({
     } = translations;
 
     let data: DerivedDialogData = { title: UI_STRINGS.infoDialogDefaultTitle || 'Information' };
-    
+
     switch (contentType.type) {
       case 'race': {
         const raceId = character.race;
@@ -195,11 +195,11 @@ export function InfoDisplayDialog({
         const qualities = getRaceSpecialQualities(raceId, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, SKILL_DEFINITIONS, PREDEFINED_FEATS, ABILITY_LABELS);
         const racialSkillPointBonus = getRaceSkillPointsBonusPerLevel(raceId, DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA);
         const details: Array<{ label: string; value: string | number | React.ReactNode; isBold?: boolean }> = [];
-        
+
         if (racialSkillPointBonus > 0) {
           details.push({ label: UI_STRINGS.infoDialogRacialSkillPointBonusLabel || "Bonus Skill Points/Level", value: racialSkillPointBonus });
         }
-        
+
         let raceBonusFeatSlotsValue = qualities.bonusFeatSlots;
         if (raceBonusFeatSlotsValue !== undefined && raceBonusFeatSlotsValue <= 0) {
             raceBonusFeatSlotsValue = undefined;
@@ -235,7 +235,7 @@ export function InfoDisplayDialog({
           classSpecificDetails.push({ label: reflexSaveLabel, value: reflexProgression });
           classSpecificDetails.push({ label: willSaveLabel, value: willProgression });
         }
-        
+
         const grantedFeatsFormatted = classData?.grantedFeats?.map(gf => ({
             ...gf, name: allCombinedFeatDefinitions.find(f => f.value === gf.featId)?.label || gf.featId
         }));
@@ -304,7 +304,7 @@ export function InfoDisplayDialog({
               const providingSkillInstance = character.skills.find(s => s.id === providingSkillDef.id);
               const providingSkillRanks = providingSkillInstance?.ranks || 0;
 
-              if (providingSkillDef.id === currentSkillId) { 
+              if (providingSkillDef.id === currentSkillId) {
                   (SKILL_SYNERGIES_DATA[currentSkillId as keyof typeof SKILL_SYNERGIES_DATA] || []).forEach(sRule => {
                       const targetSkillName = <strong>{allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === sRule.targetSkill)?.name || sRule.targetSkill}</strong>;
                       synergyItems.push({
@@ -347,7 +347,7 @@ export function InfoDisplayDialog({
                           });
                       });
                   }
-              } else { 
+              } else {
                   (SKILL_SYNERGIES_DATA[providingSkillDef.id as keyof typeof SKILL_SYNERGIES_DATA] || []).forEach(sRule => {
                       if (sRule.targetSkill === currentSkillId) {
                           synergyItems.push({
@@ -432,8 +432,8 @@ export function InfoDisplayDialog({
         const sizeModACVal = getSizeModifierAC(character.size, SIZES);
         const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
         const details: Array<{ label: string; value: string | number | React.ReactNode; isBold?: boolean }> = [];
-        let totalCalculated = 10; 
-        
+        let totalCalculated = 10;
+
         details.push({ label: UI_STRINGS.acBreakdownBaseLabel || 'Base', value: 10 });
 
         if (contentType.acType === 'Normal' || contentType.acType === 'Touch') {
@@ -450,13 +450,13 @@ export function InfoDisplayDialog({
         if ((contentType.acType === 'Normal' || contentType.acType === 'Touch') && character.dodgeBonus) {
           details.push({ label: UI_STRINGS.acBreakdownDodgeBonusLabel || 'Dodge Bonus', value: character.dodgeBonus });
         }
-        
+
         if (character.acMiscModifier) details.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || 'Custom Modifier', value: character.acMiscModifier });
 
         if (contentType.acType === 'Normal') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + dexMod + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (character.acMiscModifier || 0);
         else if (contentType.acType === 'Touch') totalCalculated = 10 + dexMod + sizeModACVal + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (character.acMiscModifier || 0);
         else if (contentType.acType === 'Flat-Footed') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (character.acMiscModifier || 0);
-        
+
         data = { title: (UI_STRINGS.infoDialogTitleAcBreakdown || "{acType} AC Breakdown").replace("{acType}", contentType.acType), detailsList: details, totalACValue: totalCalculated };
         break;
       }
@@ -562,11 +562,11 @@ export function InfoDisplayDialog({
     detailsList, totalACValue, babBreakdown, initiativeBreakdown,
     grappleModifierBreakdown, grappleDamageBreakdown, speeds, speedBreakdown,
   } = derivedData;
-  
-  const renderContent = () => {
-    if (!contentType || !translations) return null; // Guard against translations not being ready
 
-    let contentNode: React.ReactNode | React.ReactNode[] | null = null;
+  const renderContent = () => {
+    if (!contentType || !translations) return null;
+
+    let contentNode: React.ReactNode | null = null;
 
     switch (contentType.type) {
       case 'race':
@@ -648,15 +648,6 @@ export function InfoDisplayDialog({
       default:
         return null;
     }
-
-    if (Array.isArray(contentNode)) {
-      return contentNode.map((block, index) => (
-        <React.Fragment key={`block-${index}`}>
-          {block}
-          {index < contentNode.length - 1 && <Separator className="my-3" />}
-        </React.Fragment>
-      ));
-    }
     return contentNode;
   };
 
@@ -673,7 +664,7 @@ export function InfoDisplayDialog({
           </DialogTitle>
         </DialogHeader>
         <ScrollArea className="max-h-[70vh] pr-4 my-2">
-          <div className="pb-4 space-y-1"> 
+          <div className="pb-4 space-y-1">
             {renderContent()}
           </div>
         </ScrollArea>
@@ -697,7 +688,7 @@ interface DerivedDialogData {
   synergyInfoList?: SynergyInfoItem[];
   resistanceBreakdown?: ResistanceBreakdownDetails;
   detailsList?: Array<{ label: string; value: string | number | React.ReactNode; isBold?: boolean }>;
-  totalACValue?: number; 
+  totalACValue?: number;
   babBreakdown?: BabBreakdownDetails;
   initiativeBreakdown?: InitiativeBreakdownDetails;
   grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
