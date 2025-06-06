@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { AbilityScores, CharacterClass, SavingThrows, SavingThrowType, SingleSavingThrow, Character, AbilityName } from '@/types/character';
 // DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS will come from useI18n
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -61,7 +61,7 @@ export function SavingThrowsPanel({
   const calculatedBaseSaves = getBaseSaves(characterClasses, DND_CLASSES);
   
   const dataRows: Array<{
-    label: React.ReactNode;
+    label: string; // Now always string as HTML is removed
     getValue: (saveData: SingleSavingThrow, baseSave: number, abilityMod: number, total: number, saveType?: SavingThrowType, onMiscChange?: (type: SavingThrowType, val: number) => void) => React.ReactNode;
     rowKey: string;
   }> = [
@@ -87,9 +87,9 @@ export function SavingThrowsPanel({
         const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === abilityKey);
         const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
         return (
-          <span>
-            {renderModifierValue(abilityMod)}{' '}
-            <span className="text-xs text-muted-foreground">({abilityAbbr})</span>
+          <span className="inline-flex items-baseline">
+            {renderModifierValue(abilityMod)}
+            <span className="ml-1 text-xs text-muted-foreground">({abilityAbbr})</span>
           </span>
         );
       },
@@ -150,7 +150,7 @@ export function SavingThrowsPanel({
               {dataRows.map((dataRow) => {
                 return (
                   <tr key={dataRow.rowKey} className="border-b last:border-b-0 transition-colors">
-                    <td className="py-3 px-1 text-left text-sm font-medium text-muted-foreground align-middle whitespace-normal">
+                    <td className="py-3 px-1 text-left text-sm font-medium text-muted-foreground align-middle whitespace-normal md:whitespace-nowrap">
                       {dataRow.label}
                     </td>
                     {SAVE_TYPES.map((saveType) => {
