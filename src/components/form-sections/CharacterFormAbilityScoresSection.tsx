@@ -17,6 +17,8 @@ import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 
+const DEBOUNCE_DELAY = 400; // ms
+
 const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
 interface CharacterFormAbilityScoresSectionProps {
@@ -69,8 +71,51 @@ export function CharacterFormAbilityScoresSection({
     setIsPointBuyDialogOpen(false);
   };
 
-  const baseAbilityScores = character.abilityScores;
-  const abilityScoreTempCustomModifiers = character.abilityScoreTempCustomModifiers;
+  const baseAbilityScoresFromProp = character.abilityScores;
+  const tempModsFromProp = character.abilityScoreTempCustomModifiers || { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 };
+
+  // Local states for debounced inputs
+  const [localBaseScores, setLocalBaseScores] = React.useState<AbilityScores>(baseAbilityScoresFromProp);
+  const [localTempMods, setLocalTempMods] = React.useState<AbilityScores>(tempModsFromProp);
+
+  // Sync local states with props if props change from outside (e.g. initial load, dialog apply)
+  React.useEffect(() => { 
+    setLocalBaseScores(baseAbilityScoresFromProp); 
+  }, [baseAbilityScoresFromProp]);
+
+  React.useEffect(() => { 
+    setLocalTempMods(tempModsFromProp); 
+  }, [tempModsFromProp]);
+
+  // Debounce effects for base scores
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      let changed = false;
+      for (const ability of abilityKeys) {
+        if (localBaseScores[ability] !== baseAbilityScoresFromProp[ability]) {
+          onBaseAbilityScoreChange(ability, localBaseScores[ability]);
+          changed = true; 
+        }
+      }
+    }, DEBOUNCE_DELAY);
+    return () => clearTimeout(handler);
+  }, [localBaseScores, baseAbilityScoresFromProp, onBaseAbilityScoreChange]);
+
+  // Debounce effects for temp mods
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      let changed = false;
+      for (const ability of abilityKeys) {
+        const propMod = tempModsFromProp[ability] ?? 0;
+        if (localTempMods[ability] !== propMod) {
+          onAbilityScoreTempCustomModifierChange(ability, localTempMods[ability]);
+          changed = true;
+        }
+      }
+    }, DEBOUNCE_DELAY);
+    return () => clearTimeout(handler);
+  }, [localTempMods, tempModsFromProp, onAbilityScoreTempCustomModifierChange]);
+
 
   if (translationsLoading || !translations) {
     return (
@@ -133,12 +178,24 @@ export function CharacterFormAbilityScoresSection({
         <CardContent className="pt-2">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
             {abilityKeys.map(ability => {
-              const baseScore = baseAbilityScores[ability];
-              const tempCustomMod = abilityScoreTempCustomModifiers?.[ability] ?? 0;
+              const baseScoreValue = localBaseScores[ability]; // Use local state for input value
+              const tempCustomModValue = localTempMods[ability] ?? 0; // Use local state
 
               const actualScoreData = detailedAbilityScores ? detailedAbilityScores[ability] : null;
-              const totalScore = actualScoreData ? actualScoreData.finalScore : baseScore + tempCustomMod;
-              const actualModifier = calculateAbilityModifier(totalScore);
+              // For display, use detailedAbilityScores if available (reflects all bonuses), otherwise calculate from local values for responsiveness
+              const displayTotalScore = actualScoreData 
+                ? actualScoreData.finalScore 
+                : (baseScoreValue || 0) + (tempCustomModValue || 0) + 
+                  (racialEffects?.[ability] || 0) + 
+                  (agingEffects?.[ability] || 0) + 
+                  (featEffects?.[ability] || 0);
+              
+              const racialEffects = detailedAbilityScores?.[ability]?.components.find(c => c.source.startsWith("Race"))?.value || 0;
+              const agingEffects = detailedAbilityScores?.[ability]?.components.find(c => c.source.startsWith("Aging"))?.value || 0;
+              const featEffects = detailedAbilityScores?.[ability]?.components.find(c => c.source === "feats")?.value || 0;
+
+
+              const displayModifier = calculateAbilityModifier(displayTotalScore);
 
               const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === ability);
               const abilityDisplayName = abilityLabelInfo?.label || ability;
@@ -153,8 +210,8 @@ export function CharacterFormAbilityScoresSection({
                   </Label>
 
                   <div className="flex items-center justify-center space-x-1 mb-1">
-                    <span className="text-3xl font-bold text-accent">{totalScore}</span>
-                    <span className="text-xl text-accent">({actualModifier >= 0 ? '+' : ''}{actualModifier})</span>
+                    <span className="text-3xl font-bold text-accent">{displayTotalScore}</span>
+                    <span className="text-xl text-accent">({displayModifier >= 0 ? '+' : ''}{displayModifier})</span>
                     {actualScoreData && (
                        <Button
                         type="button"
@@ -172,8 +229,8 @@ export function CharacterFormAbilityScoresSection({
                     <Label htmlFor={`base-score-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresBaseScoreLabel || "Base Score"}</Label>
                     <NumberSpinnerInput
                       id={`base-score-${ability}`}
-                      value={baseScore}
-                      onChange={(newValue) => onBaseAbilityScoreChange(ability, newValue)}
+                      value={baseScoreValue} // Controlled by local state
+                      onChange={(newValue) => setLocalBaseScores(prev => ({...prev, [ability]: newValue}))}
                       min={1}
                       inputClassName="h-8 text-base text-center"
                       buttonSize="icon"
@@ -186,8 +243,8 @@ export function CharacterFormAbilityScoresSection({
                     <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresTempModLabel || "Temporary Modifier"}</Label>
                     <NumberSpinnerInput
                       id={`temp-mod-${ability}`}
-                      value={tempCustomMod}
-                      onChange={(newValue) => onAbilityScoreTempCustomModifierChange(ability, newValue)}
+                      value={tempCustomModValue} // Controlled by local state
+                      onChange={(newValue) => setLocalTempMods(prev => ({...prev, [ability]: newValue}))}
                       inputClassName="h-8 text-base text-center"
                       buttonSize="icon"
                       buttonClassName="h-8 w-8"
@@ -230,3 +287,5 @@ export function CharacterFormAbilityScoresSection({
     </>
   );
 }
+
+    

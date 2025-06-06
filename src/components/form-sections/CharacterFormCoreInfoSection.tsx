@@ -30,6 +30,8 @@ import { ComboboxPrimitive } from '@/components/ui/combobox';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 
+const DEBOUNCE_DELAY = 400; // ms
+
 interface CharacterFormCoreInfoSectionProps {
   characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
   onFieldChange: (field: keyof Character, value: any) => void;
@@ -59,6 +61,52 @@ export function CharacterFormCoreInfoSection({
 }: CharacterFormCoreInfoSectionProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
 
+  // Debounced states
+  const [localName, setLocalName] = React.useState(characterData.name);
+  const [localPlayerName, setLocalPlayerName] = React.useState(characterData.playerName);
+  const [localAge, setLocalAge] = React.useState(characterData.age);
+
+  // Sync local states with props
+  React.useEffect(() => { setLocalName(characterData.name); }, [characterData.name]);
+  React.useEffect(() => { setLocalPlayerName(characterData.playerName); }, [characterData.playerName]);
+  React.useEffect(() => { setLocalAge(characterData.age); }, [characterData.age]);
+
+
+  // Debounce effects
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      if (localName !== characterData.name) {
+        onFieldChange('name', localName);
+      }
+    }, DEBOUNCE_DELAY);
+    return () => clearTimeout(handler);
+  }, [localName, characterData.name, onFieldChange]);
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      if (localPlayerName !== characterData.playerName) {
+        onFieldChange('playerName', localPlayerName);
+      }
+    }, DEBOUNCE_DELAY);
+    return () => clearTimeout(handler);
+  }, [localPlayerName, characterData.playerName, onFieldChange]);
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      // Ensure age is not less than currentMinAgeForInput before committing
+      const ageToCommit = Math.max(localAge, currentMinAgeForInput);
+      if (ageToCommit !== characterData.age) {
+        onFieldChange('age', ageToCommit);
+      }
+      // If localAge was adjusted, update localAge to reflect the committed value
+      if (localAge < currentMinAgeForInput) {
+        setLocalAge(ageToCommit);
+      }
+    }, DEBOUNCE_DELAY);
+    return () => clearTimeout(handler);
+  }, [localAge, characterData.age, onFieldChange, currentMinAgeForInput]);
+
+
   React.useEffect(() => {
     if (translationsLoading || !translations) return;
 
@@ -73,15 +121,18 @@ export function CharacterFormCoreInfoSection({
     }
   }, [translationsLoading, translations, characterData, onFieldChange, onClassChange]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleSelectChange = (field: keyof Pick<Character, 'race' | 'alignment' | 'deity' | 'size' | 'gender'>, value: string) => {
+    onFieldChange(field, value);
+  };
+  
+  // For direct input fields that don't need complex debouncing logic (like single typed character inputs)
+  const handleSimpleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const field = name as keyof Character;
     onFieldChange(field, value);
   };
 
-  const handleSelectChange = (field: keyof Character, value: string) => {
-    onFieldChange(field, value);
-  };
 
   const selectedClassInfo = React.useMemo(() => {
     if (!translations || !characterData.classes[0]?.className) return undefined;
@@ -162,11 +213,11 @@ export function CharacterFormCoreInfoSection({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           <div className="space-y-1.5">
             <Label htmlFor="name">{UI_STRINGS.characterNameLabel || "Character Name"}</Label>
-            <Input id="name" name="name" value={characterData?.name || ''} onChange={handleInputChange} />
+            <Input id="name" name="name" value={localName || ''} onChange={(e) => setLocalName(e.target.value)} />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="playerName">{UI_STRINGS.playerNameLabel || "Player Name"}</Label>
-            <Input id="playerName" name="playerName" value={characterData?.playerName || ''} onChange={handleInputChange} />
+            <Input id="playerName" name="playerName" value={localPlayerName || ''} onChange={(e) => setLocalPlayerName(e.target.value)} />
           </div>
         </div>
 
@@ -212,7 +263,7 @@ export function CharacterFormCoreInfoSection({
               <div className="flex-grow">
                 <Select
                   value={characterData?.classes[0]?.className || DND_CLASSES[0]?.value || ''}
-                  onValueChange={(value) => onClassChange(value as DndClassId)}
+                  onValueChange={(value) => onClassChange(value as DndClassId)} // Direct update, no debounce for select
                 >
                   <SelectTrigger id="className"> <SelectValue placeholder={UI_STRINGS.selectClassPlaceholder || "Select class"} /> </SelectTrigger>
                   <SelectContent> {DND_CLASSES.map(c => ( <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem> ))} </SelectContent>
@@ -262,8 +313,8 @@ export function CharacterFormCoreInfoSection({
             <Label htmlFor="age" className="inline-block w-full text-center md:text-center">{UI_STRINGS.ageLabel || "Age"}</Label>
             <NumberSpinnerInput 
               id="age" 
-              value={characterData?.age || currentMinAgeForInput} 
-              onChange={(newValue) => onFieldChange('age', newValue)} 
+              value={localAge || currentMinAgeForInput} 
+              onChange={setLocalAge}
               min={currentMinAgeForInput} 
               max={1000} 
               inputClassName="w-full h-10 text-base text-center" 

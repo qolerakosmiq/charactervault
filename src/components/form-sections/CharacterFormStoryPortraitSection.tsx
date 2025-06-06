@@ -12,6 +12,7 @@ import type { Character } from '@/types/character';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 
+const DEBOUNCE_DELAY = 400; // ms
 
 interface CharacterFormStoryPortraitSectionProps {
   character: Pick<Character, 'campaign' | 'personalStory' | 'portraitDataUrl' | 'height' | 'weight' | 'eyes' | 'hair' | 'skin'>;
@@ -25,6 +26,45 @@ export function CharacterFormStoryPortraitSection({
   onPortraitChange,
 }: CharacterFormStoryPortraitSectionProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
+
+  // Local states for debounced text inputs
+  const [localCampaign, setLocalCampaign] = React.useState(character.campaign);
+  const [localPersonalStory, setLocalPersonalStory] = React.useState(character.personalStory);
+  const [localHeight, setLocalHeight] = React.useState(character.height);
+  const [localWeight, setLocalWeight] = React.useState(character.weight);
+  const [localEyes, setLocalEyes] = React.useState(character.eyes);
+  const [localHair, setLocalHair] = React.useState(character.hair);
+  const [localSkin, setLocalSkin] = React.useState(character.skin);
+
+  // Sync local states with props
+  React.useEffect(() => { setLocalCampaign(character.campaign); }, [character.campaign]);
+  React.useEffect(() => { setLocalPersonalStory(character.personalStory); }, [character.personalStory]);
+  React.useEffect(() => { setLocalHeight(character.height); }, [character.height]);
+  React.useEffect(() => { setLocalWeight(character.weight); }, [character.weight]);
+  React.useEffect(() => { setLocalEyes(character.eyes); }, [character.eyes]);
+  React.useEffect(() => { setLocalHair(character.hair); }, [character.hair]);
+  React.useEffect(() => { setLocalSkin(character.skin); }, [character.skin]);
+
+  // Debounce effects
+  const useDebounceEffect = (localValue: string | undefined, propValue: string | undefined, fieldName: keyof Character) => {
+    React.useEffect(() => {
+      const handler = setTimeout(() => {
+        if (localValue !== propValue) {
+          onFieldChange(fieldName, localValue || '');
+        }
+      }, DEBOUNCE_DELAY);
+      return () => clearTimeout(handler);
+    }, [localValue, propValue, fieldName, onFieldChange]);
+  };
+
+  useDebounceEffect(localCampaign, character.campaign, 'campaign');
+  useDebounceEffect(localPersonalStory, character.personalStory, 'personalStory');
+  useDebounceEffect(localHeight, character.height, 'height');
+  useDebounceEffect(localWeight, character.weight, 'weight');
+  useDebounceEffect(localEyes, character.eyes, 'eyes');
+  useDebounceEffect(localHair, character.hair, 'hair');
+  useDebounceEffect(localSkin, character.skin, 'skin');
+
 
   if (translationsLoading || !translations) {
     return (
@@ -92,8 +132,8 @@ export function CharacterFormStoryPortraitSection({
             <Input
               id="campaign"
               name="campaign"
-              value={character.campaign || ''}
-              onChange={(e) => onFieldChange('campaign', e.target.value)}
+              value={localCampaign || ''}
+              onChange={(e) => setLocalCampaign(e.target.value)}
               placeholder={UI_STRINGS.campaignPlaceholder || "e.g., The Sunless Citadel, A Homebrewed Adventure"}
             />
         </div>
@@ -114,7 +154,7 @@ export function CharacterFormStoryPortraitSection({
               id="portraitUpload"
               type="file"
               accept="image/*"
-              onChange={onPortraitChange}
+              onChange={onPortraitChange} // Direct update for file input
               className="text-sm file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
             />
             {!character.portraitDataUrl && (
@@ -129,8 +169,8 @@ export function CharacterFormStoryPortraitSection({
             <Textarea
               id="personalStory"
               name="personalStory"
-              value={character.personalStory || ''}
-              onChange={(e) => onFieldChange('personalStory', e.target.value)}
+              value={localPersonalStory || ''}
+              onChange={(e) => setLocalPersonalStory(e.target.value)}
               placeholder={UI_STRINGS.personalStoryPlaceholder || "Describe your character's history, motivations, personality, and defining moments..."}
               className="min-h-[260px] md:flex-grow md:min-h-0"
             />
@@ -142,23 +182,23 @@ export function CharacterFormStoryPortraitSection({
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
                     <Label htmlFor="height">{UI_STRINGS.heightLabel || "Height"}</Label>
-                    <Input id="height" name="height" value={character.height || ''} onChange={(e) => onFieldChange('height', e.target.value)} placeholder={UI_STRINGS.heightPlaceholder || "e.g., 5'10\""}/>
+                    <Input id="height" name="height" value={localHeight || ''} onChange={(e) => setLocalHeight(e.target.value)} placeholder={UI_STRINGS.heightPlaceholder || "e.g., 5'10\""}/>
                 </div>
                 <div className="space-y-1.5">
                     <Label htmlFor="weight">{UI_STRINGS.weightLabel || "Weight"}</Label>
-                    <Input id="weight" name="weight" value={character.weight || ''} onChange={(e) => onFieldChange('weight', e.target.value)} placeholder={UI_STRINGS.weightPlaceholder || "e.g., 160 lbs"}/>
+                    <Input id="weight" name="weight" value={localWeight || ''} onChange={(e) => setLocalWeight(e.target.value)} placeholder={UI_STRINGS.weightPlaceholder || "e.g., 160 lbs"}/>
                 </div>
                  <div className="space-y-1.5">
                     <Label htmlFor="eyes">{UI_STRINGS.eyesLabel || "Eyes"}</Label>
-                    <Input id="eyes" name="eyes" value={character.eyes || ''} onChange={(e) => onFieldChange('eyes', e.target.value)} placeholder={UI_STRINGS.eyesPlaceholder || "e.g., Hazel"}/>
+                    <Input id="eyes" name="eyes" value={localEyes || ''} onChange={(e) => setLocalEyes(e.target.value)} placeholder={UI_STRINGS.eyesPlaceholder || "e.g., Hazel"}/>
                 </div>
                 <div className="space-y-1.5">
                     <Label htmlFor="hair">{UI_STRINGS.hairLabel || "Hair"}</Label>
-                    <Input id="hair" name="hair" value={character.hair || ''} onChange={(e) => onFieldChange('hair', e.target.value)} placeholder={UI_STRINGS.hairPlaceholder || "e.g., Raven Black, Tousled"}/>
+                    <Input id="hair" name="hair" value={localHair || ''} onChange={(e) => setLocalHair(e.target.value)} placeholder={UI_STRINGS.hairPlaceholder || "e.g., Raven Black, Tousled"}/>
                 </div>
                 <div className="space-y-1.5">
                     <Label htmlFor="skin">{UI_STRINGS.skinLabel || "Skin"}</Label>
-                    <Input id="skin" name="skin" value={character.skin || ''} onChange={(e) => onFieldChange('skin', e.target.value)} placeholder={UI_STRINGS.skinPlaceholder || "e.g., Fair, Tanned"}/>
+                    <Input id="skin" name="skin" value={localSkin || ''} onChange={(e) => setLocalSkin(e.target.value)} placeholder={UI_STRINGS.skinPlaceholder || "e.g., Fair, Tanned"}/>
                 </div>
             </div>
         </div>
