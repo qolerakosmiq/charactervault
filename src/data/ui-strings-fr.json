@@ -100,7 +100,7 @@
     "prereqSkillRanksLabel": "Rangs",
     "prereqCasterLevelLabel": "Niv. de lanceur de sorts",
     "featPrerequisitesLabel": "Prérequis :",
-    "featEffectsLabel": "Effets :",
+    "featEffectsLabel": "<b>Effets :</b>",
     "savingThrowsPanelTitle": "Jets de sauvegarde",
     "savingThrowsPanelLoading": "Chargement des détails des jets de sauvegarde...",
     "savingThrowsRowLabelTotal": "Total",
@@ -313,5 +313,4 @@
     "synergyTextPart4BonusToTargetSkillEnd": "."
   }
 }
-
     

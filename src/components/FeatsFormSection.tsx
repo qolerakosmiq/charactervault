@@ -198,7 +198,12 @@ export function FeatsFormSection({
           </div>
           {definition.requiresSpecialization && instance.specializationDetail && <p className="text-sm text-muted-foreground mt-0.5 ml-1">({instance.specializationDetail})</p>}
           {definition.description && <div className="text-sm text-muted-foreground mt-0.5 whitespace-normal" dangerouslySetInnerHTML={{ __html: definition.description }} />}
-          {definition.effectsText && <p className="text-sm text-muted-foreground mt-0.5 whitespace-normal">Effects: {definition.effectsText}</p>}
+          {definition.effectsText && (
+            <p className="text-sm text-muted-foreground mt-0.5 whitespace-normal">
+              <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.featEffectsLabel || "<b>Effects:</b>" }} />
+              {' '}{definition.effectsText}
+            </p>
+          )}
           {prereqMessages.length > 0 ? (
             <div className="text-sm mt-0.5 whitespace-normal text-muted-foreground">
               <strong>{UI_STRINGS.featPrerequisitesLabel || "Prerequisites:"}</strong>{' '}
@@ -321,7 +326,7 @@ export function FeatsFormSection({
               <h3
                 className={cn(
                   "text-lg font-semibold mb-2 text-primary",
-                   userChosenFeatInstances.length === 0 && "mt-2" 
+                   userChosenFeatInstances.length === 0 ? "mt-2" : "" 
                 )}
               >
                 {UI_STRINGS.featsPanelGrantedFeatsTitle || "Granted Feats"}

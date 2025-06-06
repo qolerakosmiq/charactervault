@@ -100,7 +100,7 @@
     "prereqSkillRanksLabel": "Ranks",
     "prereqCasterLevelLabel": "Caster Level",
     "featPrerequisitesLabel": "Prerequisites:",
-    "featEffectsLabel": "Effects:",
+    "featEffectsLabel": "<b>Effects:</b>",
     "savingThrowsPanelTitle": "Saving Throws",
     "savingThrowsPanelLoading": "Loading saving throw details...",
     "savingThrowsRowLabelTotal": "Total",

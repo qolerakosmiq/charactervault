@@ -79,10 +79,14 @@ export const FeatDetailsDisplay: React.FC<FeatDetailsDisplayProps> = ({
       )}
       {featDef.effectsText && (
         <div className="mt-3">
-          <p className="text-sm font-medium text-muted-foreground">{uiStrings.featEffectsLabel || "Effects:"}</p>
+          <p
+            className="text-sm font-medium text-muted-foreground"
+            dangerouslySetInnerHTML={{ __html: uiStrings.featEffectsLabel || "<b>Effects:</b>" }}
+          />
           <p className="text-sm">{featDef.effectsText}</p>
         </div>
       )}
     </>
   );
 };
+
