@@ -19,7 +19,7 @@
     "selectDeityPlaceholder": "Choisir une divinité",
     "selectGenderPlaceholder": "Choisir ou écrire un genre...",
     "selectSizePlaceholder": "Choisir une catégorie de taille",
-    "hitDiceLabel": "Dés de vie ",
+    "hitDiceLabel": "Dés de vie ",
     "levelLabel": "Niveau",
     "infoDialogLoadingTitle": "Chargement des informations...",
     "infoDialogLoadingDescription": "Récupération des détails...",
@@ -174,7 +174,7 @@
     "skillPointFormulaFirstLevelFactor": "Premier niveau",
     "skillPointFormulaLevelProgressionFactor": "Progression de niveau",
     "skillPointFormulaSelectClassPrompt": "Choisissez une classe pour voir les points de compétence disponibles.",
-    "skillsTableHeaderClassLabel": "De&nbsp;classe&nbsp;?",
+    "skillsTableHeaderClassLabel": "De classe ?",
     "skillsTableHeaderSkillLabel": "Compétence",
     "skillsTableHeaderSkillModLabel": "Mod.<br/>comp.",
     "skillsTableHeaderKeyAbilityLabel": "Carac.<br/>clé",
@@ -313,4 +313,5 @@
     "synergyTextPart4BonusToTargetSkillEnd": "."
   }
 }
+
     

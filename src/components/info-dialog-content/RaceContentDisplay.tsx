@@ -56,10 +56,10 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
   const { UI_STRINGS, ABILITY_LABELS, DND_CLASSES, DND_RACES, ALIGNMENT_PREREQUISITE_OPTIONS, SKILL_DEFINITIONS } = translations;
   const speedUnit = UI_STRINGS.speedUnit || "ft.";
 
-  const contentParts: React.ReactNode[] = [];
+  const outputBlocks: React.ReactNode[] = [];
 
   if (htmlContent) {
-    contentParts.push(
+    outputBlocks.push(
       <div
         key="html-content-block"
         className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
@@ -184,10 +184,7 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
   }
 
   if (traitsElements.length > 0) {
-    if (contentParts.length > 0) {
-      contentParts.push(<Separator key="separator-after-html" className="my-3" />);
-    }
-    contentParts.push(
+     outputBlocks.push(
       <div key="general-traits-section">
         <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading || "General Traits"}</h3>
         {traitsElements}
@@ -195,5 +192,8 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
     );
   }
 
-  return contentParts.length > 0 ? <>{contentParts}</> : null;
+  return outputBlocks.length > 0 ? outputBlocks : null;
 };
+
+
+    
