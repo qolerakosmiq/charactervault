@@ -115,6 +115,7 @@
     "abilityScoresNote_badge1_text": "Base Score",
     "abilityScoresNote_suffix": ", not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score.",
     "rollerDialogTitle": "Roll Initial Ability Scores",
+    "rollerDialogTitleLoading": "Roll Initial Ability Scores",
     "rollerDialogDescPart1": "Roll 4d6 (drop lowest",
     "rollerDialogDescRerollOnes": ", rerolling 1s",
     "rollerDialogDescPart2": "). Assign these values to your abilities.",
@@ -127,6 +128,7 @@
     "rollerDialogErrorNotAllAssignedToastTitle": "Assignment Incomplete",
     "rollerDialogErrorNotAllAssignedToastDesc": "Please assign all rolled scores to abilities before applying.",
     "pointBuyDialogTitle": "Point Buy Ability Scores",
+    "pointBuyDialogTitleLoading": "Point Buy Ability Scores",
     "pointBuyDialogDescription": "Distribute points to set your character's initial ability scores. Scores start at 8, and the maximum score is 18.",
     "pointBuyDialogLoadingAbilities": "Loading ability names...",
     "pointBuyDialogTotalPointsBudgetLabel": "Total Points Budget:",
@@ -290,12 +292,10 @@
     "loadingFeatDefinitionTitle": "Loading Feat Definition...",
     "loadingOptionsTitle": "Loading options...",
     "loadingAbilityNamesTitle": "Loading ability names...",
-    "pointBuyDialogTitleLoading": "Point Buy Ability Scores",
-    "rollerDialogTitleLoading": "Roll Initial Ability Scores",
     "formButtonCancel": "Cancel",
     "formButtonCreateCharacter": "Create Character",
-    "formButtonSaveChanges": "Save Changes"
+    "formButtonSaveChanges": "Save Changes",
+    "footerAppDescription": "Built with ❤️ for D&D 3.5 Players"
   }
 }
-
     

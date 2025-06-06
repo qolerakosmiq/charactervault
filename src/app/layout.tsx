@@ -5,8 +5,9 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import Link from 'next/link';
 import { ScrollText } from 'lucide-react';
-import { I18nProvider } from '@/context/I18nProvider'; // Import I18nProvider
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'; // Import LanguageSwitcher
+import { I18nProvider } from '@/context/I18nProvider'; 
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'; 
+import { FooterText } from '@/components/FooterText'; // Import FooterText
 
 export const metadata: Metadata = {
   title: "Character Vault",
@@ -35,10 +36,7 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
             <footer className="py-6 md:px-8 md:py-0 bg-background border-t border-border/40">
               <div className="container flex flex-col items-center justify-center gap-4 md:h-20 md:flex-row md:justify-between">
-                <p className="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
-                  {/* This text can be internationalized later if needed */}
-                  D&D 3.5 Character Management Tool
-                </p>
+                <FooterText /> {/* Use FooterText component */}
                 <LanguageSwitcher /> {/* Add LanguageSwitcher */}
               </div>
             </footer>
@@ -49,5 +47,4 @@ export default function RootLayout({
     </html>
   );
 }
-
     

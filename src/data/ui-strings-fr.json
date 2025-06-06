@@ -115,6 +115,7 @@
     "abilityScoresNote_badge1_text": "Score de Base",
     "abilityScoresNote_suffix": ", et non le modificateur de caractéristique dérivé du score de base. Les autres bonus de race, d'âge ou de dons sont appliqués automatiquement au score total.",
     "rollerDialogTitle": "Lancer les Caractéristiques Initiales",
+    "rollerDialogTitleLoading": "Lancer les Caractéristiques Initiales",
     "rollerDialogDescPart1": "Lancez 4d6 (gardez les 3 meilleurs",
     "rollerDialogDescRerollOnes": ", relancez les 1",
     "rollerDialogDescPart2": "). Assignez ces valeurs à vos caractéristiques.",
@@ -127,6 +128,7 @@
     "rollerDialogErrorNotAllAssignedToastTitle": "Assignation Incomplète",
     "rollerDialogErrorNotAllAssignedToastDesc": "Veuillez assigner tous les scores lancés aux caractéristiques avant d'appliquer.",
     "pointBuyDialogTitle": "Achat par Points des Caractéristiques",
+    "pointBuyDialogTitleLoading": "Achat par Points des Caractéristiques",
     "pointBuyDialogDescription": "Répartissez les points pour définir les caractéristiques initiales de votre personnage. Les scores commencent à 8, et le score maximum est de 18.",
     "pointBuyDialogLoadingAbilities": "Chargement des noms de caractéristiques...",
     "pointBuyDialogTotalPointsBudgetLabel": "Budget Total de Points :",
@@ -294,8 +296,8 @@
     "rollerDialogTitleLoading": "Lancer les Caractéristiques Initiales",
     "formButtonCancel": "Annuler",
     "formButtonCreateCharacter": "Créer le Personnage",
-    "formButtonSaveChanges": "Sauvegarder les Modifications"
+    "formButtonSaveChanges": "Sauvegarder les Modifications",
+    "footerAppDescription": "Fait avec ❤️ pour les joueurs de D&D 3.5"
   }
 }
-
     
