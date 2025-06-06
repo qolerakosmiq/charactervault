@@ -198,7 +198,7 @@ export function InfoDisplayDialog({
 
 
   const renderModifierValue = (value: number | string,
-    positiveColor = "text-emerald-500",
+    positiveColor = "text-accent", // Changed default to text-accent
     negativeColor = "text-destructive",
     zeroColor = "text-muted-foreground",
     accentColor = "text-accent",
@@ -585,8 +585,8 @@ export function InfoDisplayDialog({
             )}
 
             {abilityModifiers && abilityModifiers.length > 0 && (
-              <>
-                <h4 className="text-sm font-medium text-muted-foreground mb-1 mt-2">{UI_STRINGS.infoDialogAbilityScoreAdjustments || "Ability Score Adjustments"}</h4>
+              <div className="mt-2">
+                <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments || "Ability Score Adjustments"}</h4>
                 <div className="space-y-0.5 text-sm mb-2">
                   {abilityModifiers.map(mod => (
                     <div key={mod.ability} className="flex justify-between">
@@ -595,11 +595,11 @@ export function InfoDisplayDialog({
                     </div>
                   ))}
                 </div>
-              </>
+              </div>
             )}
             {skillBonuses && skillBonuses.length > 0 && (
-              <>
-                <h4 className="text-sm font-medium text-muted-foreground mb-1 mt-2">{UI_STRINGS.infoDialogRacialSkillBonuses || "Racial Skill Bonuses"}</h4>
+              <div className="mt-2">
+                <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses || "Racial Skill Bonuses"}</h4>
                 <div className="space-y-0.5 text-sm mb-2">
                   {skillBonuses.map(bonus => (
                     <div key={bonus.skillId} className="flex justify-between">
@@ -608,12 +608,12 @@ export function InfoDisplayDialog({
                     </div>
                   ))}
                 </div>
-              </>
+              </div>
             )}
             {speeds && Object.keys(speeds).length > 0 && (
-              <>
-                <h4 className="text-sm font-medium text-muted-foreground mb-1 mt-2">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</h4>
-                 <div className="space-y-0.5 text-sm mb-2">
+              <div className="mt-2">
+                <p className="text-sm text-foreground mb-1">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</p>
+                 <div className="ml-4 space-y-0.5 text-sm mb-2">
                   {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
                     .map(([type, speedVal]) => {
                     const speedTypeKey = `speedLabel${type.charAt(0).toUpperCase() + type.slice(1)}` as keyof typeof UI_STRINGS;
@@ -626,17 +626,17 @@ export function InfoDisplayDialog({
                     );
                   })}
                 </div>
-              </>
+              </div>
             )}
             {bonusFeatSlots !== undefined && bonusFeatSlots > 0 && (
-              <>
-                <h4 className="text-sm font-medium text-muted-foreground mb-1 mt-2">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</h4>
-                <p className="text-sm">{renderModifierValue(bonusFeatSlots)}</p>
-              </>
+               <div className="flex justify-between text-sm mt-2">
+                <span className="text-foreground">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</span>
+                {renderModifierValue(bonusFeatSlots)}
+              </div>
             )}
             {grantedFeats && grantedFeats.length > 0 && (
-              <>
-                <h4 className="text-sm font-medium text-muted-foreground mb-1 mt-2">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h4>
+              <div className="mt-2">
+                <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h4>
                 <ul className="list-none space-y-2 text-sm">
                   {grantedFeats.map(feat => (
                     <li key={feat.featId + (feat.note || '')} className="border-b border-border/30 pb-1 last:border-b-0">
@@ -672,7 +672,7 @@ export function InfoDisplayDialog({
                     </li>
                   ))}
                 </ul>
-              </>
+              </div>
             )}
 
             {babBreakdown && (
@@ -1071,6 +1071,5 @@ interface SkillModifierBreakdownDetails {
   miscModifier: number;
   totalBonus: number;
 }
-
 
     
