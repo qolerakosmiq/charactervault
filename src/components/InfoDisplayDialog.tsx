@@ -197,28 +197,24 @@ export function InfoDisplayDialog({
   }, [translations, translationsLoading, customSkillDefinitions]);
 
 
-  const renderModifierValue = (value: number | string,
-    positiveColor = "text-accent", // Changed default to text-accent
-    negativeColor = "text-destructive",
-    zeroColor = "text-muted-foreground",
-    accentColor = "text-accent",
-    isTotal = false
-  ) => {
+  const renderModifierValue = (value: number | string) => {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
     if (isNaN(numValue)) {
       return <span className="font-bold">{value}</span>;
     }
-    let colorClass = zeroColor;
-     if (isTotal) {
-        colorClass = accentColor;
-    } else if (numValue > 0) {
-        colorClass = positiveColor;
+
+    let colorClass = "text-muted-foreground";
+    let prefix = "+"; // For "+0"
+
+    if (numValue > 0) {
+      colorClass = "text-emerald-500";
+      prefix = "+";
     } else if (numValue < 0) {
-        colorClass = negativeColor;
-    } else {
-        colorClass = zeroColor;
+      colorClass = "text-destructive";
+      prefix = ""; // Minus sign is part of the number
     }
-    const prefix = numValue > 0 ? '+' : (numValue === 0 && isTotal ? '' : (numValue === 0 ? '+' : ''));
+    // For numValue === 0, colorClass is "text-muted-foreground", prefix is "+"
+
     return <span className={cn("font-bold", colorClass)}>{prefix}{numValue}</span>;
   };
 
@@ -381,7 +377,7 @@ export function InfoDisplayDialog({
         const dexMod = calculateAbilityModifier(detailedCharScores.dexterity.finalScore);
         const sizeModACVal = getSizeModifierAC(character.size, SIZES);
         const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
-        const details: Array<{ label: string; value: string | number; isBold?: boolean }> = [];
+        const details: Array<{ label: string; value: string | number | React.ReactNode; isBold?: boolean }> = [];
         let totalCalculated = 10; 
         
         details.push({ label: UI_STRINGS.acBreakdownBaseLabel || 'Base', value: 10 });
@@ -723,7 +719,7 @@ export function InfoDisplayDialog({
                     <Separator className="my-3" />
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogInitiativeTotalLabel || "Total Initiative:"}</span>
-                      {renderModifierValue(initiativeBreakdown.totalInitiative, undefined, undefined, undefined, "text-accent", true)}
+                      <span className="font-bold text-accent">{renderModifierValue(initiativeBreakdown.totalInitiative)}</span>
                     </div>
                   </div>
                 </div>
@@ -760,7 +756,7 @@ export function InfoDisplayDialog({
                     <Separator className="my-3" />
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogGrappleModTotalLabel || "Total Grapple Modifier:"}</span>
-                      {renderModifierValue(grappleModifierBreakdown.totalGrappleModifier, undefined, undefined, undefined, "text-accent", true)}
+                      <span className="font-bold text-accent">{renderModifierValue(grappleModifierBreakdown.totalGrappleModifier)}</span>
                     </div>
                   </div>
                 </div>
@@ -899,7 +895,7 @@ export function InfoDisplayDialog({
                     <Separator className="my-2" />
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">{UI_STRINGS.infoDialogTotalBonusLabel || "Total Bonus"}</span>
-                      {renderModifierValue(skillModifierBreakdown.totalBonus, undefined, undefined, undefined, "text-accent", true)}
+                      <span className="font-bold text-accent">{renderModifierValue(skillModifierBreakdown.totalBonus)}</span>
                     </div>
                   </div>
               </div>
@@ -981,7 +977,7 @@ export function InfoDisplayDialog({
                   </h3>
                   {detailsList!.map((detail, index) => {
                       const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string))))
-                          ? renderModifierValue(detail.value as number | string, undefined, undefined, undefined, undefined, detail.isBold)
+                          ? renderModifierValue(detail.value as number | string)
                           : detail.value;
                       
                       let labelContent: React.ReactNode = <span className="text-foreground">{detail.label}</span>;
@@ -1018,7 +1014,7 @@ export function InfoDisplayDialog({
                           <Separator className="my-2" />
                           <div className="flex justify-between text-base">
                             <span className="font-semibold">{totalDetailItem.label as string}</span>
-                            {renderModifierValue(totalDetailItem.value as number | string, undefined, undefined, undefined, "text-accent", true)}
+                            <span className="font-bold text-accent">{renderModifierValue(totalDetailItem.value as number | string)}</span>
                           </div>
                         </>
                       );
