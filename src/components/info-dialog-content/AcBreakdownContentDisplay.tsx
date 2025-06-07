@@ -2,10 +2,10 @@
 'use client';
 
 import React from 'react';
-import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
-import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
 import type { AbilityName } from '@/types/character';
+import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
+import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
 
 export interface AcBreakdownDetailItem {
   label: string;
@@ -54,7 +54,7 @@ export const AcBreakdownContentDisplay: React.FC<AcBreakdownContentDisplayProps>
           labelContent = (
             <span className="text-foreground">
               {detail.label}
-              <small className="text-muted-foreground"> ({detail.sizeName})</small>
+              <span className="text-muted-foreground"> ({detail.sizeName})</span>
             </span>
           );
         }
