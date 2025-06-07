@@ -452,13 +452,15 @@ export function InfoDisplayDialog({
         const sizeModACVal = getSizeModifierAC(character.size, SIZES);
         const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
         const details: AcBreakdownDetailItem[] = [];
-        let totalCalculated = 10;
+        
+        const acCalculatedMiscModifier = 0; // For now, this is 0. Will be sourced from game effects later.
+        const temporaryAcModifier = character.acMiscModifier || 0;
 
         details.push({ label: UI_STRINGS.acBreakdownBaseLabel || 'Base', value: 10 });
 
         if (contentType.acType === 'Normal' || contentType.acType === 'Touch') {
           details.push({
-            label: UI_STRINGS.infoDialogAcAbilityLabel || "Ability Modifier", // Updated string key
+            label: UI_STRINGS.infoDialogAcAbilityLabel || "Ability Modifier",
             value: dexMod,
             type: 'acAbilityMod',
             abilityAbbr: ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX'
@@ -477,16 +479,24 @@ export function InfoDisplayDialog({
           if (character.naturalArmor) details.push({ label: UI_STRINGS.acBreakdownNaturalArmorLabel || 'Natural Armor', value: character.naturalArmor });
         }
         if (character.deflectionBonus) details.push({ label: UI_STRINGS.acBreakdownDeflectionBonusLabel || 'Deflection Bonus', value: character.deflectionBonus });
+        
+        if (acCalculatedMiscModifier !== 0) {
+          details.push({ label: UI_STRINGS.acBreakdownCalculatedMiscLabel || 'Misc Modifier', value: acCalculatedMiscModifier });
+        }
+
         if ((contentType.acType === 'Normal' || contentType.acType === 'Touch') && character.dodgeBonus) {
           details.push({ label: UI_STRINGS.acBreakdownDodgeBonusLabel || 'Dodge Bonus', value: character.dodgeBonus });
         }
+        
+        if (temporaryAcModifier !== 0) {
+          details.push({ label: UI_STRINGS.armorClassMiscModifierLabel || 'Temporary Modifier', value: temporaryAcModifier });
+        }
+        
+        let totalCalculated = 10;
+        if (contentType.acType === 'Normal') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + dexMod + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (acCalculatedMiscModifier || 0) + (temporaryAcModifier || 0);
+        else if (contentType.acType === 'Touch') totalCalculated = 10 + dexMod + sizeModACVal + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (acCalculatedMiscModifier || 0) + (temporaryAcModifier || 0);
+        else if (contentType.acType === 'Flat-Footed') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (acCalculatedMiscModifier || 0) + (temporaryAcModifier || 0);
 
-        if (character.acMiscModifier) details.push({ label: UI_STRINGS.armorClassMiscModifierLabel || 'Misc Modifier', value: character.acMiscModifier });
-
-
-        if (contentType.acType === 'Normal') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + dexMod + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (character.acMiscModifier || 0);
-        else if (contentType.acType === 'Touch') totalCalculated = 10 + dexMod + sizeModACVal + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (character.acMiscModifier || 0);
-        else if (contentType.acType === 'Flat-Footed') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (character.acMiscModifier || 0);
 
         data = { title: (UI_STRINGS.infoDialogTitleAcBreakdown || "{acType} AC Breakdown").replace("{acType}", contentType.acType), content: [AcBreakdownContentDisplay({detailsList: details, totalACValue: totalCalculated, detailsListHeading, uiStrings: UI_STRINGS, abilityLabels: ABILITY_LABELS })] };
         break;

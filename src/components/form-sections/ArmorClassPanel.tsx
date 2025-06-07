@@ -25,7 +25,8 @@ interface ArmorClassPanelProps {
 export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
 
-  const [localAcMiscModifier, setLocalAcMiscModifier] = useDebouncedFormField(
+  // This localAcMiscModifier now corresponds to the "Temporary Modifier"
+  const [localTemporaryAcModifier, setLocalTemporaryAcModifier] = useDebouncedFormField(
     character?.acMiscModifier || 0,
     (value) => { if (onCharacterUpdate) onCharacterUpdate('acMiscModifier', value); },
     DEBOUNCE_DELAY
@@ -78,7 +79,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
               </div>
               <Separator className="my-3" />
               <div className="flex items-center justify-between">
-                <Label htmlFor="custom-ac-mod-display" className="text-sm font-medium">{translations?.UI_STRINGS.armorClassMiscModifierLabel || "Misc Modifier"}</Label>
+                <Label htmlFor="custom-ac-mod-display" className="text-sm font-medium">{translations?.UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}</Label>
                 <NumberSpinnerInput
                   id="custom-ac-mod-display"
                   value={0}
@@ -102,6 +103,9 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
   const dexModifier = getAbilityModifierByName(currentAbilityScores, 'dexterity');
   const sizeModAC = getSizeModifierAC(currentSize, SIZES);
 
+  // For now, acCalculatedMiscModifier is 0. It will be sourced from game effects later.
+  const acCalculatedMiscModifier = 0; 
+
   const normalAC = 10 +
     (character.armorBonus || 0) +
     (character.shieldBonus || 0) +
@@ -110,14 +114,16 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
     (character.naturalArmor || 0) +
     (character.deflectionBonus || 0) +
     (character.dodgeBonus || 0) +
-    (character.acMiscModifier || 0); 
+    (acCalculatedMiscModifier || 0) + // New conceptual modifier
+    (character.acMiscModifier || 0);  // This is now "Temporary Modifier"
 
   const touchAC = 10 +
     dexModifier +
     sizeModAC +
     (character.deflectionBonus || 0) +
     (character.dodgeBonus || 0) +
-    (character.acMiscModifier || 0); 
+    (acCalculatedMiscModifier || 0) + // New conceptual modifier
+    (character.acMiscModifier || 0);  // This is now "Temporary Modifier"
 
   const flatFootedAC = 10 +
     (character.armorBonus || 0) +
@@ -125,7 +131,8 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
     sizeModAC +
     (character.naturalArmor || 0) +
     (character.deflectionBonus || 0) +
-    (character.acMiscModifier || 0); 
+    (acCalculatedMiscModifier || 0) + // New conceptual modifier
+    (character.acMiscModifier || 0);  // This is now "Temporary Modifier"
 
 
   const handleShowAcBreakdown = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
@@ -177,11 +184,12 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
 
           <Separator className="my-3" />
           <div className="flex items-center justify-between">
-            <Label htmlFor="ac-misc-modifier-input" className="text-sm font-medium">{UI_STRINGS.armorClassMiscModifierLabel || "Misc Modifier"}</Label>
+            {/* This label now uses the updated UI_STRINGS.armorClassMiscModifierLabel which means "Temporary Modifier" */}
+            <Label htmlFor="temporary-ac-modifier-input" className="text-sm font-medium">{UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}</Label>
             <NumberSpinnerInput
-              id="ac-misc-modifier-input"
-              value={localAcMiscModifier}
-              onChange={setLocalAcMiscModifier}
+              id="temporary-ac-modifier-input" // Changed ID to reflect its new meaning
+              value={localTemporaryAcModifier}
+              onChange={setLocalTemporaryAcModifier}
               disabled={!isEditable}
               min={-20}
               max={20}
