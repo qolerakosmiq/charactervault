@@ -72,6 +72,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const globalCustomSkillDefinitions = isClient ? globalCustomSkillDefinitionsFromStore : [];
 
   const [character, setCharacter] = React.useState<Character | null>(null);
+  const formSessionKeyRef = React.useRef<string | undefined>(undefined);
+
 
   React.useEffect(() => {
     if (translationsLoading || !translations || !isClient) return;
@@ -92,123 +94,181 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       loadSpeedPenalty_miscModifier: DEFAULT_SPEED_PENALTIES_DATA_FROM_JSON.loadSpeedPenalty_miscModifier ?? (DEFAULT_SPEED_PENALTIES_DATA_FROM_JSON as any).loadSpeedPenalty ?? 0,
     };
 
-
     const defaultBaseAbilityScores = { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES_DATA)) as AbilityScores) };
     const defaultTempCustomMods: AbilityScores = { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 };
-    
     const defaultHumanRace = DND_RACES.find(r => r.value === 'human');
     const defaultRaceValue = defaultHumanRace?.value || DND_RACES[0]?.value || '';
-
     const defaultFighterClass = DND_CLASSES.find(c => c.value === 'fighter');
     const defaultClassNameValue = defaultFighterClass?.value || DND_CLASSES[0]?.value || '';
     const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: defaultClassNameValue, level: 1 }];
-
     const defaultSize: CharacterSize = 'medium';
-    const sizeLabel = SIZES.find(s => s.value === defaultSize)?.label || defaultSize;
+    const sizeLabelForGrapple = SIZES.find(s => s.value === defaultSize)?.label || defaultSize;
     const defaultUnarmedGrappleDice = getUnarmedGrappleDamage(defaultSize, SIZES);
-
 
     const allInitialFeatDefsForGranting = [
         ...DND_FEATS_DEFINITIONS.map(def => ({ ...def, isCustom: false as const })),
         ...(isCreating ? globalCustomFeatDefinitionsFromStore : (initialCharacter?.feats.filter(f => f.isGranted && allInitialFeatDefsForGranting.find(fd => fd.value === f.definitionId && fd.isCustom)).map(f => globalCustomFeatDefinitionsFromStore.find(cfd => cfd.value === f.definitionId)).filter(Boolean) as (FeatDefinitionJsonData & { isCustom: true })[] || []))
     ];
-
-    const initialFeats = getGrantedFeatsForCharacter(
-      initialCharacter?.race || defaultRaceValue,
-      initialCharacter?.classes || defaultClasses,
-      initialCharacter?.classes?.reduce((sum, c) => sum + c.level, 0) || 1,
-      allInitialFeatDefsForGranting, DND_RACES, DND_CLASSES
-    );
-
-    let initialSkills = initialCharacter?.skills || getInitialCharacterSkills(defaultClasses, SKILL_DEFINITIONS, CLASS_SKILLS);
-
+    
     const baseCharData: Character = {
-      id: crypto.randomUUID(),
-      name: '',
-      playerName: '',
-      campaign: '',
-      race: defaultRaceValue, 
-      alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
-      height: '', weight: '', eyes: '', hair: '', skin: '',
-      abilityScores: defaultBaseAbilityScores,
-      abilityScoreTempCustomModifiers: defaultTempCustomMods,
-      hp: 10, maxHp: 10,
-      armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0,
-      deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0,
-      babMiscModifier: 0,
-      initiativeMiscModifier: 0,
-      grappleMiscModifier: 0,
-      grappleWeaponChoice: 'unarmed',
-      grappleDamage_baseNotes: `${defaultUnarmedGrappleDice} (${sizeLabel} Unarmed)`,
-      grappleDamage_bonus: 0,
-      savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS_DATA)),
-      classes: defaultClasses,
-      skills: initialSkills,
-      feats: initialFeats,
+      id: crypto.randomUUID(), name: '', playerName: '', campaign: '', race: defaultRaceValue, alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
+      height: '', weight: '', eyes: '', hair: '', skin: '', abilityScores: defaultBaseAbilityScores, abilityScoreTempCustomModifiers: defaultTempCustomMods, hp: 10, maxHp: 10,
+      armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0, deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, babMiscModifier: 0, initiativeMiscModifier: 0,
+      grappleMiscModifier: 0, grappleWeaponChoice: 'unarmed', grappleDamage_baseNotes: `${defaultUnarmedGrappleDice} (${sizeLabelForGrapple} Unarmed)`, grappleDamage_bonus: 0,
+      savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS_DATA)), classes: defaultClasses,
+      skills: getInitialCharacterSkills(defaultClasses, SKILL_DEFINITIONS, CLASS_SKILLS),
+      feats: getGrantedFeatsForCharacter(defaultRaceValue, defaultClasses, 1, allInitialFeatDefsForGranting, DND_RACES, DND_CLASSES),
       inventory: [], personalStory: '', portraitDataUrl: undefined,
-      fireResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA },
-      coldResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA },
-      acidResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA },
-      electricityResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA },
-      sonicResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA },
-      spellResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA },
-      powerResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA },
-      damageReduction: [],
-      fortification: { ...DEFAULT_RESISTANCE_VALUE_DATA },
-      landSpeed: { ...DEFAULT_SPEED_DETAILS_DATA },
-      burrowSpeed: { ...DEFAULT_SPEED_DETAILS_DATA },
-      climbSpeed: { ...DEFAULT_SPEED_DETAILS_DATA },
-      flySpeed: { ...DEFAULT_SPEED_DETAILS_DATA },
-      swimSpeed: { ...DEFAULT_SPEED_DETAILS_DATA },
-      armorSpeedPenalty_base: DEFAULT_SPEED_PENALTIES_DATA.armorSpeedPenalty_base,
-      armorSpeedPenalty_miscModifier: DEFAULT_SPEED_PENALTIES_DATA.armorSpeedPenalty_miscModifier,
-      loadSpeedPenalty_base: DEFAULT_SPEED_PENALTIES_DATA.loadSpeedPenalty_base,
-      loadSpeedPenalty_miscModifier: DEFAULT_SPEED_PENALTIES_DATA.loadSpeedPenalty_miscModifier,
+      fireResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA }, coldResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA }, acidResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA }, electricityResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA }, sonicResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA },
+      spellResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA }, powerResistance: { ...DEFAULT_RESISTANCE_VALUE_DATA }, damageReduction: [], fortification: { ...DEFAULT_RESISTANCE_VALUE_DATA },
+      landSpeed: { ...DEFAULT_SPEED_DETAILS_DATA }, burrowSpeed: { ...DEFAULT_SPEED_DETAILS_DATA }, climbSpeed: { ...DEFAULT_SPEED_DETAILS_DATA }, flySpeed: { ...DEFAULT_SPEED_DETAILS_DATA }, swimSpeed: { ...DEFAULT_SPEED_DETAILS_DATA },
+      armorSpeedPenalty_base: DEFAULT_SPEED_PENALTIES_DATA.armorSpeedPenalty_base, armorSpeedPenalty_miscModifier: DEFAULT_SPEED_PENALTIES_DATA.armorSpeedPenalty_miscModifier,
+      loadSpeedPenalty_base: DEFAULT_SPEED_PENALTIES_DATA.loadSpeedPenalty_base, loadSpeedPenalty_miscModifier: DEFAULT_SPEED_PENALTIES_DATA.loadSpeedPenalty_miscModifier,
     };
 
-    if (initialCharacter) {
-      setCharacter({
-        ...baseCharData,
-        ...initialCharacter,
-        playerName: initialCharacter.playerName || '',
-        campaign: initialCharacter.campaign || '',
-        race: initialCharacter.race || defaultRaceValue,
-        alignment: initialCharacter.alignment || 'true-neutral',
-        abilityScores: initialCharacter.abilityScores || defaultBaseAbilityScores,
-        abilityScoreTempCustomModifiers: initialCharacter.abilityScoreTempCustomModifiers || defaultTempCustomMods,
-        savingThrows: initialCharacter.savingThrows || JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS_DATA)),
-        classes: initialCharacter.classes && initialCharacter.classes.length > 0 ? initialCharacter.classes : defaultClasses,
-        skills: initialCharacter.skills || initialSkills,
-        feats: initialCharacter.feats || initialFeats,
-        fireResistance: initialCharacter.fireResistance || { ...DEFAULT_RESISTANCE_VALUE_DATA },
-        coldResistance: initialCharacter.coldResistance || { ...DEFAULT_RESISTANCE_VALUE_DATA },
-        acidResistance: initialCharacter.acidResistance || { ...DEFAULT_RESISTANCE_VALUE_DATA },
-        electricityResistance: initialCharacter.electricityResistance || { ...DEFAULT_RESISTANCE_VALUE_DATA },
-        sonicResistance: initialCharacter.sonicResistance || { ...DEFAULT_RESISTANCE_VALUE_DATA },
-        spellResistance: initialCharacter.spellResistance || { ...DEFAULT_RESISTANCE_VALUE_DATA },
-        powerResistance: initialCharacter.powerResistance || { ...DEFAULT_RESISTANCE_VALUE_DATA },
-        damageReduction: initialCharacter.damageReduction || [],
-        fortification: initialCharacter.fortification || { ...DEFAULT_RESISTANCE_VALUE_DATA },
-        grappleWeaponChoice: initialCharacter.grappleWeaponChoice || 'unarmed',
-        height: initialCharacter.height || '',
-        weight: initialCharacter.weight || '',
-        eyes: initialCharacter.eyes || '',
-        hair: initialCharacter.hair || '',
-        skin: initialCharacter.skin || '',
-        landSpeed: initialCharacter.landSpeed || { ...DEFAULT_SPEED_DETAILS_DATA },
-        burrowSpeed: initialCharacter.burrowSpeed || { ...DEFAULT_SPEED_DETAILS_DATA },
-        climbSpeed: initialCharacter.climbSpeed || { ...DEFAULT_SPEED_DETAILS_DATA },
-        flySpeed: initialCharacter.flySpeed || { ...DEFAULT_SPEED_DETAILS_DATA },
-        swimSpeed: initialCharacter.swimSpeed || { ...DEFAULT_SPEED_DETAILS_DATA },
-        armorSpeedPenalty_base: initialCharacter.armorSpeedPenalty_base ?? 0,
-        armorSpeedPenalty_miscModifier: initialCharacter.armorSpeedPenalty_miscModifier ?? ((initialCharacter as any).armorSpeedPenalty !== undefined ? (initialCharacter as any).armorSpeedPenalty : DEFAULT_SPEED_PENALTIES_DATA.armorSpeedPenalty_miscModifier),
-        loadSpeedPenalty_base: initialCharacter.loadSpeedPenalty_base ?? 0,
-        loadSpeedPenalty_miscModifier: initialCharacter.loadSpeedPenalty_miscModifier ?? ((initialCharacter as any).loadSpeedPenalty !== undefined ? (initialCharacter as any).loadSpeedPenalty : DEFAULT_SPEED_PENALTIES_DATA.loadSpeedPenalty_miscModifier),
+    const currentFormSessionKey = isCreating ? 'new' : initialCharacter?.id || 'new-no-id';
+    const firstClassValue = (initialCharacter?.classes[0]?.className || baseCharData.classes[0]?.className) as DndClassId | '';
+
+
+    if (formSessionKeyRef.current !== currentFormSessionKey || !character) {
+      formSessionKeyRef.current = currentFormSessionKey;
+      let newCharacterData: Character = { ...baseCharData };
+
+      if (initialCharacter && !isCreating) {
+        newCharacterData = {
+          ...baseCharData, ...initialCharacter,
+          abilityScores: initialCharacter.abilityScores || baseCharData.abilityScores,
+          abilityScoreTempCustomModifiers: initialCharacter.abilityScoreTempCustomModifiers || baseCharData.abilityScoreTempCustomModifiers,
+          savingThrows: initialCharacter.savingThrows || baseCharData.savingThrows,
+          classes: initialCharacter.classes && initialCharacter.classes.length > 0 ? initialCharacter.classes : baseCharData.classes,
+          skills: initialCharacter.skills && initialCharacter.skills.length > 0 ? initialCharacter.skills : getInitialCharacterSkills(initialCharacter.classes || baseCharData.classes, SKILL_DEFINITIONS, CLASS_SKILLS),
+          feats: initialCharacter.feats && initialCharacter.feats.length > 0 ? initialCharacter.feats : getGrantedFeatsForCharacter(initialCharacter.race || baseCharData.race, initialCharacter.classes || baseCharData.classes, (initialCharacter.classes || baseCharData.classes).reduce((sum,c)=>sum+c.level,0) || 1, allInitialFeatDefsForGranting, DND_RACES, DND_CLASSES),
+          fireResistance: initialCharacter.fireResistance || baseCharData.fireResistance, coldResistance: initialCharacter.coldResistance || baseCharData.coldResistance, acidResistance: initialCharacter.acidResistance || baseCharData.acidResistance,
+          electricityResistance: initialCharacter.electricityResistance || baseCharData.electricityResistance, sonicResistance: initialCharacter.sonicResistance || baseCharData.sonicResistance,
+          spellResistance: initialCharacter.spellResistance || baseCharData.spellResistance, powerResistance: initialCharacter.powerResistance || baseCharData.powerResistance,
+          damageReduction: initialCharacter.damageReduction || baseCharData.damageReduction, fortification: initialCharacter.fortification || baseCharData.fortification,
+          landSpeed: initialCharacter.landSpeed || baseCharData.landSpeed, burrowSpeed: initialCharacter.burrowSpeed || baseCharData.burrowSpeed, climbSpeed: initialCharacter.climbSpeed || baseCharData.climbSpeed,
+          flySpeed: initialCharacter.flySpeed || baseCharData.flySpeed, swimSpeed: initialCharacter.swimSpeed || baseCharData.swimSpeed,
+          armorSpeedPenalty_base: initialCharacter.armorSpeedPenalty_base ?? baseCharData.armorSpeedPenalty_base, armorSpeedPenalty_miscModifier: initialCharacter.armorSpeedPenalty_miscModifier ?? baseCharData.armorSpeedPenalty_miscModifier,
+          loadSpeedPenalty_base: initialCharacter.loadSpeedPenalty_base ?? baseCharData.loadSpeedPenalty_base, loadSpeedPenalty_miscModifier: initialCharacter.loadSpeedPenalty_miscModifier ?? baseCharData.loadSpeedPenalty_miscModifier,
+        };
+      } else { // Creating new, or if initialCharacter is somehow null when not creating (fallback)
+        newCharacterData.skills = getInitialCharacterSkills(newCharacterData.classes, SKILL_DEFINITIONS, CLASS_SKILLS);
+        newCharacterData.feats = getGrantedFeatsForCharacter(newCharacterData.race, newCharacterData.classes, 1, allInitialFeatDefsForGranting, DND_RACES, DND_CLASSES);
+      }
+
+      // Apply derived data based on the current translations to this newCharacterData
+      const characterLevelForInit = newCharacterData.classes.reduce((sum, c) => sum + c.level, 0) || 1;
+      const firstClassForInit = newCharacterData.classes[0]?.className as DndClassId | '';
+
+      newCharacterData.skills = newCharacterData.skills.map(skillInstance => ({
+          ...skillInstance,
+          isClassSkill: firstClassForInit ? (CLASS_SKILLS[firstClassForInit as keyof typeof CLASS_SKILLS] || []).includes(skillInstance.id) : false,
+      })).sort((a, b) => (allAvailableSkillDefinitionsForDisplay.find(d => d.id === a.id)?.name || '').localeCompare(allAvailableSkillDefinitionsForDisplay.find(d => d.id === b.id)?.name || ''));
+      
+      if (newCharacterData.grappleWeaponChoice === 'unarmed') {
+          const unarmedDamageDice = getUnarmedGrappleDamage(newCharacterData.size, SIZES);
+          const currentSizeLabelGrapple = SIZES.find(s => s.value === newCharacterData.size)?.label || newCharacterData.size;
+          newCharacterData.grappleDamage_baseNotes = `${unarmedDamageDice} (${currentSizeLabelGrapple} Unarmed)`;
+      }
+
+      const newGrantedFeats = getGrantedFeatsForCharacter(newCharacterData.race, newCharacterData.classes, characterLevelForInit, allInitialFeatDefsForGranting, DND_RACES, DND_CLASSES);
+      const userChosenFeats = newCharacterData.feats.filter(fi => !fi.isGranted);
+      const combinedFeatsMap = new Map<string, CharacterFeatInstance>();
+      newGrantedFeats.forEach(inst => combinedFeatsMap.set(inst.instanceId, inst));
+      userChosenFeats.forEach(inst => {
+          const def = allInitialFeatDefsForGranting.find(d => d.value === inst.definitionId);
+          if (!newGrantedFeats.some(gf => gf.definitionId === inst.definitionId && !def?.canTakeMultipleTimes)) {
+            combinedFeatsMap.set(inst.instanceId, inst);
+          }
       });
-    } else {
-      setCharacter(baseCharData);
+      newCharacterData.feats = Array.from(combinedFeatsMap.values()).sort((a,b) => (allAvailableFeatDefinitions.find(d=>d.value===a.definitionId)?.label||'').localeCompare(allAvailableFeatDefinitions.find(d=>d.value===b.definitionId)?.label||''));
+      
+      // Barbarian DR for init
+      const barbarianClassInit = newCharacterData.classes.find(c => c.className === 'barbarian');
+      const barbarianLevelInit = barbarianClassInit?.level || 0;
+      let grantedDrValueInit = 0;
+      if (barbarianLevelInit >= 19) grantedDrValueInit = 5; else if (barbarianLevelInit >= 16) grantedDrValueInit = 4; else if (barbarianLevelInit >= 13) grantedDrValueInit = 3; else if (barbarianLevelInit >= 10) grantedDrValueInit = 2; else if (barbarianLevelInit >= 7) grantedDrValueInit = 1;
+      const existingGrantedBarbDrInit = newCharacterData.damageReduction.find(dr => dr.isGranted && dr.source === 'Barbarian Class');
+      let newDrArrayInit = newCharacterData.damageReduction.filter(dr => !(dr.isGranted && dr.source === 'Barbarian Class'));
+      if (grantedDrValueInit > 0) {
+        newDrArrayInit = [{ id: existingGrantedBarbDrInit?.id || `granted-barb-dr-${crypto.randomUUID()}`, value: grantedDrValueInit, type: 'none', rule: 'bypassed-by-type', isGranted: true, source: 'Barbarian Class' }, ...newDrArrayInit];
+      }
+      newCharacterData.damageReduction = newDrArrayInit;
+
+      // Add new custom skills for init
+      const instancesToAddToCharInit: SkillType[] = [];
+      globalCustomSkillDefinitionsFromStore.forEach(globalDef => {
+        if (!newCharacterData.skills.find(s => s.id === globalDef.id)) {
+            instancesToAddToCharInit.push({ id: globalDef.id, ranks: 0, miscModifier: 0, isClassSkill: firstClassForInit ? (CLASS_SKILLS[firstClassForInit as keyof typeof CLASS_SKILLS] || []).includes(globalDef.id) : false });
+        }
+      });
+      if(instancesToAddToCharInit.length > 0) {
+        newCharacterData.skills = [...newCharacterData.skills, ...instancesToAddToCharInit].sort((a, b) => (allAvailableSkillDefinitionsForDisplay.find(d => d.id === a.id)?.name || '').localeCompare(allAvailableSkillDefinitionsForDisplay.find(d => d.id === b.id)?.name || ''));
+      }
+      
+      setCharacter(newCharacterData);
+
+    } else if (character) { // Same session, update due to translations or other non-key dependencies
+      setCharacter(prevCharacter => {
+        if (!prevCharacter) return null; 
+        let tempChar = { ...prevCharacter };
+
+        const currentCharacterLevel = tempChar.classes.reduce((sum, c) => sum + c.level, 0) || 1;
+        const currentFirstClass = tempChar.classes[0]?.className as DndClassId | '';
+
+        tempChar.skills = tempChar.skills.map(skillInstance => ({
+          ...skillInstance,
+          isClassSkill: currentFirstClass ? (CLASS_SKILLS[currentFirstClass as keyof typeof CLASS_SKILLS] || []).includes(skillInstance.id) : false,
+        })).sort((a, b) => (allAvailableSkillDefinitionsForDisplay.find(d => d.id === a.id)?.name || '').localeCompare(allAvailableSkillDefinitionsForDisplay.find(d => d.id === b.id)?.name || ''));
+        
+        if (tempChar.grappleWeaponChoice === 'unarmed') {
+            const unarmedDamageDice = getUnarmedGrappleDamage(tempChar.size, SIZES);
+            const currentSizeLabelGrapple = SIZES.find(s => s.value === tempChar.size)?.label || tempChar.size;
+            tempChar.grappleDamage_baseNotes = `${unarmedDamageDice} (${currentSizeLabelGrapple} Unarmed)`;
+        }
+
+        const newGrantedFeatInstances = getGrantedFeatsForCharacter(tempChar.race, tempChar.classes, currentCharacterLevel, allInitialFeatDefsForGranting, DND_RACES, DND_CLASSES);
+        const userChosenFeatInstances = tempChar.feats.filter(fi => !fi.isGranted);
+        const combinedFeatInstancesMap = new Map<string, CharacterFeatInstance>();
+        newGrantedFeatInstances.forEach(instance => combinedFeatInstancesMap.set(instance.instanceId, instance));
+        userChosenFeatInstances.forEach(instance => {
+            const definition = allInitialFeatDefsForGranting.find(d => d.value === instance.definitionId);
+            if (!newGrantedFeatInstances.some(gf => gf.definitionId === instance.definitionId && !definition?.canTakeMultipleTimes)) {
+                 combinedFeatInstancesMap.set(instance.instanceId, instance);
+            }
+        });
+        tempChar.feats = Array.from(combinedFeatInstancesMap.values()).sort((a,b) => (allAvailableSkillDefinitionsForDisplay.find(d => d.id === a.definitionId)?.name||'').localeCompare(allAvailableSkillDefinitionsForDisplay.find(d => d.id === b.definitionId)?.name||''));
+        
+        const barbarianClass = tempChar.classes.find(c => c.className === 'barbarian');
+        const barbarianLevel = barbarianClass?.level || 0;
+        let grantedDrValue = 0;
+        if (barbarianLevel >= 19) grantedDrValue = 5; else if (barbarianLevel >= 16) grantedDrValue = 4; else if (barbarianLevel >= 13) grantedDrValue = 3; else if (barbarianLevel >= 10) grantedDrValue = 2; else if (barbarianLevel >= 7) grantedDrValue = 1;
+        const existingGrantedBarbDr = tempChar.damageReduction.find(dr => dr.isGranted && dr.source === 'Barbarian Class');
+        let newDrArray = tempChar.damageReduction.filter(dr => !(dr.isGranted && dr.source === 'Barbarian Class'));
+        if (grantedDrValue > 0) {
+          newDrArray = [{ id: existingGrantedBarbDr?.id || `granted-barb-dr-${crypto.randomUUID()}`, value: grantedDrValue, type: 'none', rule: 'bypassed-by-type', isGranted: true, source: 'Barbarian Class' }, ...newDrArray];
+        }
+        tempChar.damageReduction = newDrArray;
+
+        const instancesToAddToChar: SkillType[] = [];
+        globalCustomSkillDefinitionsFromStore.forEach(globalDef => {
+            if (!tempChar.skills.find(s => s.id === globalDef.id)) {
+                instancesToAddToChar.push({ id: globalDef.id, ranks: 0, miscModifier: 0, isClassSkill: currentFirstClass ? (CLASS_SKILLS[currentFirstClass as keyof typeof CLASS_SKILLS] || []).includes(globalDef.id) : false });
+            }
+        });
+        if(instancesToAddToChar.length > 0) {
+            const existingSkillIds = new Set(tempChar.skills.map(s => s.id));
+            const uniqueNewInstances = instancesToAddToChar.filter(inst => !existingSkillIds.has(inst.id));
+            if(uniqueNewInstances.length > 0) {
+              tempChar.skills = [...tempChar.skills, ...uniqueNewInstances].sort((a, b) => (allAvailableSkillDefinitionsForDisplay.find(d => d.id === a.id)?.name || '').localeCompare(allAvailableSkillDefinitionsForDisplay.find(d => d.id === b.id)?.name || ''));
+            }
+        }
+        return tempChar;
+      });
     }
-  }, [isClient, translationsLoading, translations, initialCharacter, isCreating, globalCustomFeatDefinitionsFromStore]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isClient, translationsLoading, translations, initialCharacter, isCreating, globalCustomFeatDefinitionsFromStore, globalCustomSkillDefinitionsFromStore]);
 
 
   const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<CharacterFormCoreInfoSectionProps['ageEffectsDetails']>(null);
@@ -230,7 +290,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     return [...predefined, ...globalCustomFeatDefinitions];
   }, [translationsLoading, translations, globalCustomFeatDefinitions]);
 
-  const allAvailableSkillDefinitionsForDisplay = React.useMemo(() => {
+  const allAvailableSkillDefinitionsForDisplay = React.useMemo((): SkillDefinitionForDisplay[] => {
     if (translationsLoading || !translations) return [];
     const predefined = translations.SKILL_DEFINITIONS.map(sd => ({
         id: sd.value,
@@ -295,7 +355,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     } else {
       setAgeEffectsDetails(null);
     }
-  }, [character, translations]);
+  }, [character?.race, character?.age, translations]);
 
   React.useEffect(() => {
     if (character && character.race && translations) {
@@ -311,7 +371,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     } else {
       setRaceSpecialQualities(null);
     }
-  }, [character, translations]);
+  }, [character?.race, translations]);
 
   React.useEffect(() => {
     if (character && character.race && translations) {
@@ -326,133 +386,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     }
   }, [character?.race, character?.age, translations]); 
 
- React.useEffect(() => {
-    if (!character || !translations) return;
-    const characterLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1;
-    const newGrantedFeatInstances = getGrantedFeatsForCharacter(
-      character.race,
-      character.classes,
-      characterLevel,
-      allAvailableFeatDefinitions,
-      translations.DND_RACES,
-      translations.DND_CLASSES
-    );
-
-    const userChosenFeatInstances = character.feats.filter(fi => !fi.isGranted);
-    const combinedFeatInstancesMap = new Map<string, CharacterFeatInstance>();
-
-    newGrantedFeatInstances.forEach(instance => {
-        combinedFeatInstancesMap.set(instance.instanceId, instance);
-    });
-
-    userChosenFeatInstances.forEach(instance => {
-        const definition = allAvailableFeatDefinitions.find(d => d.value === instance.definitionId);
-        if (!newGrantedFeatInstances.some(gf => gf.definitionId === instance.definitionId && !definition?.canTakeMultipleTimes)) {
-             combinedFeatInstancesMap.set(instance.instanceId, instance);
-         }
-    });
-
-    setCharacter(prev => prev ? ({
-        ...prev,
-        feats: Array.from(combinedFeatInstancesMap.values()).sort((a, b) => {
-            const defA = allAvailableFeatDefinitions.find(d => d.value === a.definitionId);
-            const defB = allAvailableFeatDefinitions.find(d => d.value === b.definitionId);
-            return (defA?.label || '').localeCompare(defB?.label || '');
-        }),
-    }) : null);
-  }, [character?.race, character?.classes, allAvailableFeatDefinitions, translations]); 
-
-  React.useEffect(() => {
-    if (!character) return;
-    const barbarianClass = character.classes.find(c => c.className === 'barbarian');
-    const barbarianLevel = barbarianClass?.level || 0;
-    let grantedDrValue = 0;
-
-    if (barbarianLevel >= 19) grantedDrValue = 5;
-    else if (barbarianLevel >= 16) grantedDrValue = 4;
-    else if (barbarianLevel >= 13) grantedDrValue = 3;
-    else if (barbarianLevel >= 10) grantedDrValue = 2;
-    else if (barbarianLevel >= 7) grantedDrValue = 1;
-
-    setCharacter(prev => {
-      if (!prev) return null;
-      const existingGrantedBarbDr = prev.damageReduction.find(dr => dr.isGranted && dr.source === 'Barbarian Class');
-      let newDrArray = prev.damageReduction.filter(dr => !(dr.isGranted && dr.source === 'Barbarian Class'));
-
-      if (grantedDrValue > 0) {
-        const newBarbDrInstance: DamageReductionInstance = {
-          id: existingGrantedBarbDr?.id || `granted-barb-dr-${crypto.randomUUID()}`,
-          value: grantedDrValue,
-          type: 'none',
-          rule: 'bypassed-by-type',
-          isGranted: true,
-          source: 'Barbarian Class'
-        };
-        newDrArray = [newBarbDrInstance, ...newDrArray];
-      }
-      return { ...prev, damageReduction: newDrArray };
-    });
-  }, [character?.classes]);
-
-  const prevGlobalCustomSkillDefinitionsRef = React.useRef<CustomSkillDefinition[]>([]);
-  React.useEffect(() => {
-    if (!isClient || !character || !translations) return;
-
-    const currentGlobalDefs = globalCustomSkillDefinitionsFromStore;
-    const instancesToAddToCharacter: SkillType[] = [];
-
-    currentGlobalDefs.forEach(globalDef => {
-        if (!character.skills.find(s => s.id === globalDef.id)) {
-            const isClassSkill = character.classes[0]?.className ?
-                (translations.CLASS_SKILLS[character.classes[0]?.className as keyof typeof translations.CLASS_SKILLS] || []).includes(globalDef.id) : false;
-            instancesToAddToCharacter.push({
-                id: globalDef.id,
-                ranks: 0,
-                miscModifier: 0,
-                isClassSkill: isClassSkill,
-            });
-        }
-    });
-
-    if (instancesToAddToCharacter.length > 0) {
-      setCharacter(prevCharacter => {
-        if (!prevCharacter) return null;
-        const existingSkillIds = new Set(prevCharacter.skills.map(s => s.id));
-        const uniqueNewInstances = instancesToAddToCharacter.filter(inst => !existingSkillIds.has(inst.id));
-
-        if (uniqueNewInstances.length === 0) return prevCharacter;
-
-        const updatedSkills = [...prevCharacter.skills, ...uniqueNewInstances].sort((a, b) => {
-          const nameA = allAvailableSkillDefinitionsForDisplay.find(d => d.id === a.id)?.name || '';
-          const nameB = allAvailableSkillDefinitionsForDisplay.find(d => d.id === b.id)?.name || '';
-          return nameA.localeCompare(nameB);
-        });
-        return { ...prevCharacter, skills: updatedSkills };
-      });
-    }
-    prevGlobalCustomSkillDefinitionsRef.current = currentGlobalDefs;
-  }, [ globalCustomSkillDefinitionsFromStore, isClient, character?.skills, character?.classes, allAvailableSkillDefinitionsForDisplay, translations ]);
-
-  React.useEffect(() => {
-    if (!character || !translations) return;
-    let newBaseNotes = '';
-    const sizeLabel = translations.SIZES.find(s => s.value === character.size)?.label || character.size || 'Unknown Size';
-
-    if (character.grappleWeaponChoice === 'unarmed') {
-      const unarmedDamageDice = getUnarmedGrappleDamage(character.size, translations.SIZES);
-      newBaseNotes = `${unarmedDamageDice} (${sizeLabel} Unarmed)`;
-    } else {
-      newBaseNotes = character.grappleDamage_baseNotes;
-    }
-
-    if (character.grappleDamage_baseNotes !== newBaseNotes) {
-      setCharacter(prev => prev ? ({ ...prev, grappleDamage_baseNotes: newBaseNotes }) : null);
-    }
-  }, [character?.size, character?.grappleWeaponChoice, character?.grappleDamage_baseNotes, translations]);
-
   const handleCoreInfoFieldChange = React.useCallback((field: keyof Character, value: any) => {
      setCharacter(prev => prev ? ({ ...prev, [field]: value }) : null);
-  }, [setCharacter]);
+  }, []);
   
   const handleCharacterFieldUpdate = React.useCallback((
     field: keyof Character | `${SpeedType}Speed.miscModifier` | `armorSpeedPenalty_miscModifier` | `loadSpeedPenalty_miscModifier`,
@@ -475,7 +411,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         }
         return { ...prev, [field as keyof Character]: value };
      });
-  }, [setCharacter]);
+  }, []);
 
   const handleResistanceChange = React.useCallback((
     field: ResistanceFieldKeySheet,
@@ -489,11 +425,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         [subField]: value,
       },
     }) : null);
-  }, [setCharacter]);
+  }, []);
 
   const handleDamageReductionChange = React.useCallback((newDrArray: DamageReductionInstance[]) => {
     setCharacter(prev => prev ? ({ ...prev, damageReduction: newDrArray }) : null);
-  }, [setCharacter]);
+  }, []);
 
   const handleBaseAbilityScoreChange = React.useCallback((ability: Exclude<AbilityName, 'none'>, value: number) => {
     setCharacter(prev => prev ? ({
@@ -503,7 +439,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         [ability]: value,
       },
     }) : null);
-  }, [setCharacter]);
+  }, []);
 
   const handleAbilityScoreTempCustomModifierChange = React.useCallback((ability: Exclude<AbilityName, 'none'>, value: number) => {
     setCharacter(prev => prev ? ({
@@ -513,11 +449,11 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         [ability]: value,
       },
     }) : null);
-  }, [setCharacter]);
+  }, []);
 
   const handleMultipleBaseAbilityScoresChange = React.useCallback((newScores: AbilityScores) => {
     setCharacter(prev => prev ? ({ ...prev, abilityScores: newScores }) : null);
-  }, [setCharacter]);
+  }, []);
 
   const handleClassChange = React.useCallback((value: DndClassId | string) => {
     if (!translations) return;
@@ -536,7 +472,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       });
       return { ...prev, classes: updatedClasses, skills: newSkills };
     });
-  }, [translations, allAvailableSkillDefinitionsForDisplay, setCharacter]);
+  }, [translations, allAvailableSkillDefinitionsForDisplay]);
 
   const handleSkillChange = React.useCallback((skillId: string, ranks: number, isClassSkill?: boolean) => {
     setCharacter(prev => prev ? ({
@@ -545,7 +481,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         s.id === skillId ? { ...s, ranks, isClassSkill: isClassSkill !== undefined ? isClassSkill : s.isClassSkill } : s
       ),
     }) : null);
-  }, [setCharacter]);
+  }, []);
 
   const handleCustomSkillDefinitionSaveToStore = React.useCallback((skillData: CustomSkillDefinition) => {
     const existing = definitionsActions.getCustomSkillDefinitionById(skillData.id);
@@ -570,7 +506,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
   const handleFeatInstancesChange = React.useCallback((updatedFeatInstances: CharacterFeatInstance[]) => {
     setCharacter(prev => prev ? ({ ...prev, feats: updatedFeatInstances }) : null);
-  }, [setCharacter]);
+  }, []);
 
   const handleCustomFeatDefinitionSaveToStore = React.useCallback((featDefData: (FeatDefinitionJsonData & { isCustom: true })) => {
     if (!character) return;
@@ -623,7 +559,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     } else {
       setCharacter(prev => prev ? ({ ...prev, portraitDataUrl: undefined }) : null);
     }
-  }, [setCharacter]);
+  }, []);
 
   const handleSavingThrowMiscModChange = React.useCallback((saveType: SavingThrowType, value: number) => {
     setCharacter(prev => prev ? ({
@@ -636,7 +572,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         },
       },
     }) : null);
-  }, [setCharacter]);
+  }, []);
 
   const handleCancel = React.useCallback(() => { router.push('/'); }, [router]);
 
@@ -701,7 +637,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const { UI_STRINGS } = translations;
 
   const selectedClassInfo = translations.DND_CLASSES.find(c => c.value === character.classes[0]?.className);
-  const isPredefinedRace = !!translations.DND_RACES.find(r => r.value === character.race);
   const currentMinAgeForInput = character.race ? (translations.DND_RACE_MIN_ADULT_AGE_DATA[character.race as DndRaceId] || 1) : 1;
 
   return (
