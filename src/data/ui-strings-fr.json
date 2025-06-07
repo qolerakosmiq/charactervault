@@ -238,8 +238,8 @@
     "speedLabelFly": "Vol",
     "speedLabelSwim": "Nage",
     "speedMiscModifierLabel": "Modificateur divers",
-    "armorPenaltyCardTitle": "Effet de malus d'armure",
-    "loadPenaltyCardTitle": "Effet de malus de charge",
+    "armorPenaltyCardTitle": "Effet du malus d'armure",
+    "loadPenaltyCardTitle": "Effet du malus de charge",
     "speedPenaltyBaseArmorLabel": "Base (Armure)",
     "speedPenaltyBaseLoadLabel": "Base (Charge)",
     "infoDialogTitleArmorPenaltyBreakdown": "Détail du malus d'armure",
@@ -320,6 +320,11 @@
     "synergyTextPart3GrantsA": ", accorde un ",
     "synergyTextPart4BonusToThisSkill": " bonus aux tests de cette compétence.",
     "synergyTextPart4BonusToTargetSkillStart": " bonus aux tests de ",
-    "synergyTextPart4BonusToTargetSkillEnd": "."
+    "synergyTextPart4BonusToTargetSkillEnd": ".",
+    "drVsLabel": "contre",
+    "drBypassedByNoneDesc": "Réduit les dégâts de la plupart des attaques de {value}.",
+    "drBypassedByTypeDesc": "Réduit les dégâts de {value} sauf si l'attaque est {typeLabel}.",
+    "drVersusSpecificTypeDesc": "Réduit spécifiquement les dégâts des sources {typeLabel} de {value}.",
+    "drExceptedByTypeDesc": "Immunisé aux dégâts sauf s'ils proviennent de sources {typeLabel}. Les sources {typeLabel} infligent des dégâts réduits de {value}."
   }
 }

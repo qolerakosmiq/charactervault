@@ -147,9 +147,9 @@
     { "value": "chaotic", "label": "Chaotique" }
   ],
   "DAMAGE_REDUCTION_RULES_OPTIONS_DATA": [
-    { "value": "bypassed-by-type", "label": "Dépassée par Type" },
-    { "value": "versus-specific-type", "label": "Contre Type Spécifique" },
-    { "value": "excepted-by-type", "label": "Excepté par Type" }
+    { "value": "bypassed-by-type", "label": "Réduite par type" },
+    { "value": "versus-specific-type", "label": "Contre un type spécifique" },
+    { "value": "excepted-by-type", "label": "Exceptée contre un type" }
   ],
   "ALIGNMENT_PREREQUISITE_GENERIC_LABELS_DATA": [
     { "value": "lawful", "label": "Tout Loyal" },

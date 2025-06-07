@@ -160,11 +160,12 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
   
  const getDrPrimaryNotation = (dr: DamageReductionInstance): string => {
     const typeLabel = getDrTypeUiLabel(dr.type);
+    const vsLabel = UI_STRINGS.drVsLabel || "vs";
     if (dr.rule === 'bypassed-by-type') {
       return dr.type === "none" ? `${dr.value}/—` : `${dr.value}/${typeLabel}`;
     }
     if (dr.rule === 'versus-specific-type') {
-      return `${dr.value} vs ${typeLabel}`;
+      return `${dr.value} ${vsLabel} ${typeLabel}`;
     }
     if (dr.rule === 'excepted-by-type') {
        const displayType = typeLabel === (DAMAGE_REDUCTION_TYPES.find(t => t.value === 'none')?.label || "None") ? "—" : typeLabel;
@@ -178,15 +179,17 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
 
     if (dr.rule === 'bypassed-by-type') {
-      return dr.type === "none" ? `Reduces damage from most attacks by ${dr.value}.` : `Reduces damage by ${dr.value} unless attack is ${typeLabel}.`;
+      return dr.type === "none" 
+        ? (UI_STRINGS.drBypassedByNoneDesc || "Reduces damage from most attacks by {value}.").replace("{value}", String(dr.value))
+        : (UI_STRINGS.drBypassedByTypeDesc || "Reduces damage by {value} unless attack is {typeLabel}.").replace("{value}", String(dr.value)).replace("{typeLabel}", typeLabel);
     }
     if (dr.rule === 'versus-specific-type') {
-      return `Specifically reduces damage from ${typeLabel} sources by ${dr.value}.`;
+      return (UI_STRINGS.drVersusSpecificTypeDesc || "Specifically reduces damage from {typeLabel} sources by {value}.").replace("{typeLabel}", typeLabel).replace("{value}", String(dr.value));
     }
     if (dr.rule === 'excepted-by-type') {
-        return `Immune to damage unless from ${typeLabel} sources. ${typeLabel} sources deal damage reduced by ${dr.value}.`;
+        return (UI_STRINGS.drExceptedByTypeDesc || "Immune to damage unless from {typeLabel} sources. {typeLabel} sources deal damage reduced by {value}.").replace("{typeLabel}", typeLabel).replace("{value}", String(dr.value));
     }
-    return `Rule: ${ruleDef ? ruleDef.label : dr.rule}`; 
+    return `${UI_STRINGS.resistancesPanelDrRuleLabel || "Rule"}: ${ruleDef ? ruleDef.label : dr.rule}`; 
   };
 
 
@@ -397,4 +400,3 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     </>
   );
 }
-
