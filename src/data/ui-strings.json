@@ -223,6 +223,7 @@
     "armorClassTouchLabel": "Touch",
     "armorClassFlatFootedLabel": "Flat-Footed",
     "armorClassTempModifierLabel": "Temporary Modifier",
+    "armorClassMiscModifierLabel": "Misc Modifier",
     "acBreakdownCalculatedMiscLabel": "Misc Modifier",
     "acBreakdownBaseLabel": "Base",
     "acBreakdownArmorBonusLabel": "Armor Bonus",
@@ -321,6 +322,14 @@
     "synergyTextPart3GrantsA": ", grants a ",
     "synergyTextPart4BonusToThisSkill": " bonus to this skill's checks.",
     "synergyTextPart4BonusToTargetSkillStart": " bonus to ",
-    "synergyTextPart4BonusToTargetSkillEnd": "'s checks."
+    "synergyTextPart4BonusToTargetSkillEnd": "'s checks.",
+    "drVsLabel": "vs",
+    "drBypassedByNoneDesc": "Reduces damage from most attacks by {value}.",
+    "drBypassedByTypeDesc": "Reduces damage by {value} unless attack is {typeLabel}.",
+    "drVersusSpecificTypeDesc": "Specifically reduces damage from {typeLabel} sources by {value}.",
+    "drExceptedByTypeDesc": "Immune to damage unless from {typeLabel} sources. {typeLabel} sources deal damage reduced by {value}.",
+    "drImmunitySuffixLabel": "(Immunity)"
   }
 }
+
+    

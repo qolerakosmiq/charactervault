@@ -161,6 +161,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
  const getDrPrimaryNotation = (dr: DamageReductionInstance): string => {
     const typeLabel = getDrTypeUiLabel(dr.type);
     const vsLabel = UI_STRINGS.drVsLabel || "vs";
+    const immunitySuffix = UI_STRINGS.drImmunitySuffixLabel || "(Immunity)";
     if (dr.rule === 'bypassed-by-type') {
       return dr.type === "none" ? `${dr.value}/—` : `${dr.value}/${typeLabel}`;
     }
@@ -169,7 +170,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     }
     if (dr.rule === 'excepted-by-type') {
        const displayType = typeLabel === (DAMAGE_REDUCTION_TYPES.find(t => t.value === 'none')?.label || "None") ? "—" : typeLabel;
-       return `${dr.value}/${displayType} (Immunity)`;
+       return `${dr.value}/${displayType} ${immunitySuffix}`;
     }
     return `${dr.value}/${typeLabel} (${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule})`;
   };
@@ -187,7 +188,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
       return (UI_STRINGS.drVersusSpecificTypeDesc || "Specifically reduces damage from {typeLabel} sources by {value}.").replace("{typeLabel}", typeLabel).replace("{value}", String(dr.value));
     }
     if (dr.rule === 'excepted-by-type') {
-        return (UI_STRINGS.drExceptedByTypeDesc || "Immune to damage unless from {typeLabel} sources. {typeLabel} sources deal damage reduced by {value}.").replace("{typeLabel}", typeLabel).replace("{value}", String(dr.value));
+        return (UI_STRINGS.drExceptedByTypeDesc || "Immune to damage unless from {typeLabel} sources. {typeLabel} sources deal damage reduced by {value}.").replace(/{typeLabel}/g, typeLabel).replace("{value}", String(dr.value));
     }
     return `${UI_STRINGS.resistancesPanelDrRuleLabel || "Rule"}: ${ruleDef ? ruleDef.label : dr.rule}`; 
   };
@@ -400,3 +401,5 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     </>
   );
 }
+
+    

@@ -222,6 +222,7 @@
     "armorClassTouchLabel": "Contact",
     "armorClassFlatFootedLabel": "Pris au dépourvu",
     "armorClassTempModifierLabel": "Modificateur temporaire",
+    "armorClassMiscModifierLabel": "Modificateur divers",
     "acBreakdownCalculatedMiscLabel": "Modificateur divers",
     "acBreakdownBaseLabel": "Base",
     "acBreakdownArmorBonusLabel": "Bonus d'armure",
@@ -325,6 +326,9 @@
     "drBypassedByNoneDesc": "Réduit les dégâts de la plupart des attaques de {value}.",
     "drBypassedByTypeDesc": "Réduit les dégâts de {value} sauf si l'attaque est {typeLabel}.",
     "drVersusSpecificTypeDesc": "Réduit spécifiquement les dégâts des sources {typeLabel} de {value}.",
-    "drExceptedByTypeDesc": "Immunisé aux dégâts sauf s'ils proviennent de sources {typeLabel}. Les sources {typeLabel} infligent des dégâts réduits de {value}."
+    "drExceptedByTypeDesc": "Immunisé aux dégâts sauf s'ils proviennent de sources {typeLabel}. Les sources {typeLabel} infligent des dégâts réduits de {value}.",
+    "drImmunitySuffixLabel": "(immunité)"
   }
 }
+
+    
