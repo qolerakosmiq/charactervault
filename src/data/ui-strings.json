@@ -406,6 +406,11 @@
     "languagesPanelComboboxPlaceholder": "Select language...",
     "languagesPanelComboboxSearch": "Search languages...",
     "languagesPanelComboboxEmpty": "No language found.",
-    "languagesPanelRemoveAriaLabel": "Remove {languageName}"
+    "languagesPanelRemoveAriaLabel": "Remove {languageName}",
+    "languagesPanelSlotsAvailableLabel": "Bonus Language Slots Available:",
+    "languagesPanelSlotsLeftLabel": "Bonus Language Slots Left:",
+    "languagesPanelFormulaIntModLabel": "Intelligence Modifier",
+    "languagesPanelFormulaSkillRanksLabel": "Speak Language Ranks"
   }
 }
+

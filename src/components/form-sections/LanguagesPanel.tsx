@@ -1,7 +1,7 @@
 
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import type { Character, DndRaceId, AbilityScores, LanguageId, LanguageOption, Skill } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -43,8 +43,8 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
           <Skeleton className="h-4 w-3/4 mt-1" />
         </CardHeader>
         <CardContent className="space-y-4">
+          <Skeleton className="h-12 w-full mb-2" /> {/* For the summary box */}
           <Skeleton className="h-8 w-1/2 mb-2" />
-          <Skeleton className="h-10 w-full mb-2" />
           <Skeleton className="h-10 w-full mb-2" />
           <Skeleton className="h-10 w-full" />
         </CardContent>
@@ -53,6 +53,7 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
   }
 
   const { LANGUAGES, DND_RACES, UI_STRINGS } = translations;
+  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs whitespace-nowrap";
 
   const raceData = DND_RACES.find(r => r.value === characterRaceId);
   const automaticLanguages: LanguageId[] = ['common', ...(raceData?.automaticLanguages || [])];
@@ -61,9 +62,10 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
 
   const intBonusLanguages = Math.max(0, calculateAbilityModifier(characterIntelligenceScore));
   const skillBonusLanguages = speakLanguageSkillRanks;
-  const raceBonusLanguages = raceData?.bonusLanguageChoices && raceData.bonusLanguageChoices.length > 0 ? 1 : 0; // Simplified: if choices exist, 1 slot
   
-  const totalBonusLanguageSlots = intBonusLanguages + skillBonusLanguages + raceBonusLanguages;
+  // Core D&D 3.5 rules: bonus language slots are from Intelligence modifier and Speak Language skill ranks.
+  // Racial 'bonus language choices' means what they *can* pick using these slots, not extra slots.
+  const totalBonusLanguageSlots = intBonusLanguages + skillBonusLanguages;
 
   const chosenPlayerLanguages = characterLanguages.filter(lang => !automaticLanguages.includes(lang));
   const slotsUsed = chosenPlayerLanguages.length;
@@ -86,7 +88,7 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
   };
 
   const handleRemoveLanguage = (languageIdToRemove: LanguageId) => {
-    if (automaticLanguages.includes(languageIdToRemove)) return; // Cannot remove automatic languages
+    if (automaticLanguages.includes(languageIdToRemove)) return; 
     onLanguagesChange(characterLanguages.filter(langId => langId !== languageIdToRemove));
   };
 
@@ -100,6 +102,27 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
         <CardDescription>{UI_STRINGS.languagesPanelDescription || "Manage your character's known languages."}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="mb-4 p-3 border rounded-md bg-muted/30">
+          <div className="flex justify-between items-center">
+            <p className="text-sm font-medium">
+              {UI_STRINGS.languagesPanelSlotsAvailableLabel || "Bonus Language Slots Available:"} <span className="text-lg font-bold text-primary">{totalBonusLanguageSlots}</span>
+            </p>
+            <p className="text-sm font-medium">
+              {UI_STRINGS.languagesPanelSlotsLeftLabel || "Bonus Language Slots Left:"} <span className={cn(
+                "text-lg font-bold",
+                slotsRemaining > 0 && "text-emerald-500",
+                slotsRemaining < 0 && "text-destructive",
+                slotsRemaining === 0 && "text-accent"
+              )}>{slotsRemaining}</span>
+            </p>
+          </div>
+           <p className="text-xs text-muted-foreground mt-1">
+              ({UI_STRINGS.languagesPanelFormulaIntModLabel || "Intelligence Modifier"} <Badge variant="outline" className={badgeClassName}>{intBonusLanguages}</Badge>
+              {' + '} {UI_STRINGS.languagesPanelFormulaSkillRanksLabel || "Speak Language Ranks"} <Badge variant="outline" className={badgeClassName}>{skillBonusLanguages}</Badge>)
+              {' = '} <span className="font-bold text-primary">{totalBonusLanguageSlots}</span>
+            </p>
+        </div>
+
         <div>
           <Label className="text-sm font-medium text-muted-foreground">{UI_STRINGS.languagesPanelKnownAutomatic || "Automatic:"}</Label>
           {knownAutomaticLanguagesToDisplay.length > 0 ? (
@@ -111,18 +134,6 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
           ) : (
             <p className="text-xs text-muted-foreground italic">{UI_STRINGS.infoDialogNone || "None"}</p>
           )}
-        </div>
-
-        <div>
-          <Label className="text-sm font-medium text-muted-foreground">{UI_STRINGS.languagesPanelSlotsAvailable || "Bonus Language Slots:"}</Label>
-          <div className="text-xs text-muted-foreground space-y-0.5 mt-1">
-            {raceBonusLanguages > 0 && <p>{raceBonusLanguages} {UI_STRINGS.languagesPanelSlotsFromRace || "from Race"}</p>}
-            <p>{intBonusLanguages} {UI_STRINGS.languagesPanelSlotsFromInt || "from Intelligence"}</p>
-            <p>{skillBonusLanguages} {UI_STRINGS.languagesPanelSlotsFromSkill || "from Speak Language skill"}</p>
-            <p className="font-semibold">{UI_STRINGS.languagesPanelSlotsTotal || "Total Slots:"} <span className="text-primary">{totalBonusLanguageSlots}</span></p>
-            <p>{UI_STRINGS.languagesPanelSlotsUsed || "Slots Used:"} <span className="text-primary">{slotsUsed}</span></p>
-             <p className="font-semibold">{UI_STRINGS.languagesPanelSlotsRemaining || "Slots Remaining:"} <span className={cn(slotsRemaining < 0 ? "text-destructive" : "text-emerald-600")}>{slotsRemaining}</span></p>
-          </div>
         </div>
         
         <div>
@@ -165,7 +176,7 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
               emptyPlaceholder={UI_STRINGS.languagesPanelComboboxEmpty || "No language found."}
               triggerClassName="h-9 text-sm"
             />
-            <Button type="button" onClick={handleAddLanguage} size="sm" disabled={!selectedLanguageToAdd}>
+            <Button type="button" onClick={handleAddLanguage} size="sm" disabled={!selectedLanguageToAdd || slotsRemaining <= 0}>
               <PlusCircle className="mr-2 h-4 w-4" /> Add
             </Button>
           </div>
@@ -174,3 +185,4 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
     </Card>
   );
 };
+
