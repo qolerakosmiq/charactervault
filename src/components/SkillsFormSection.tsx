@@ -57,23 +57,25 @@ interface SkillsFormSectionProps {
 
 // Helper component for a single skill row to encapsulate its debounced field
 const DebouncedSkillRankInput: React.FC<{
-  skill: SkillDisplayInfo; // Contains the prop ranks
-  currentStepForInput: number;
+  skillProp: SkillType; // Renamed to avoid conflict
   onDebouncedRankChange: (newRank: number) => void; // Callback for debounced change
-}> = ({ skill, currentStepForInput, onDebouncedRankChange }) => {
+  currentStepForInput: number;
+  maxRanksValue: number;
+}> = ({ skillProp, onDebouncedRankChange, currentStepForInput, maxRanksValue }) => {
   
   const [localRank, setLocalRank] = useDebouncedFormField(
-    skill.ranks || 0, // Initialize with ranks from prop
-    onDebouncedRankChange, // This will be called with the new rank after debounce
+    skillProp.ranks || 0, 
+    onDebouncedRankChange, 
     DEBOUNCE_DELAY_SKILLS
   );
 
   return (
     <NumberSpinnerInput
-      id={`skill_ranks_${skill.id}`}
-      value={localRank} // Input displays the immediately updated localRank
-      onChange={setLocalRank} // Input directly updates localRank
+      id={`skill_ranks_${skillProp.id}`}
+      value={localRank} 
+      onChange={setLocalRank} 
       min={0}
+      max={maxRanksValue}
       step={currentStepForInput}
       inputClassName="w-14 h-7 text-sm"
       buttonSize="sm"
@@ -299,7 +301,7 @@ export function SkillsFormSection({
             <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
               <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderClassLabel || "Class?" }} />
               <span className="pl-1">{UI_STRINGS.skillsTableHeaderSkillLabel || "Skill"}</span>
-              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderSkillModLabel || "Skill<br/>Mod" }} />
+              <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderSkillModLabel || "Skill<br/>Mod" }} />
               <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderKeyAbilityLabel || "Key<br/>Ability" }} />
               <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderAbilityModLabel || "Ability<br/>Mod" }} />
               <span className="text-center w-12">{UI_STRINGS.skillsTableHeaderMiscModLabel || "Misc<br/>Mod"}</span>
@@ -308,8 +310,11 @@ export function SkillsFormSection({
               <span className="text-center w-10">{UI_STRINGS.skillsTableHeaderMaxLabel || "Max"}</span>
             </div>
 
-            {skillsForDisplay.map(skill => { // skill here uses prop values for ranks
-              const keyAbility = skill.keyAbility;
+            {skillsForDisplay.map(skillInstanceProp => { 
+              const skillDef = allCombinedSkillDefinitions.find(def => def.id === skillInstanceProp.id);
+              if (!skillDef) return null; // Should not happen if data is consistent
+
+              const keyAbility = skillDef.keyAbility;
               const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === keyAbility);
               
               let keyAbilityDisplay = 'N/A';
@@ -323,28 +328,28 @@ export function SkillsFormSection({
                 ? getAbilityModifierByName(actualAbilityScores, keyAbility)
                 : 0;
 
-              const synergyBonus = calculateTotalSynergyBonus(skill.id, characterSkillInstances, SKILL_DEFINITIONS, SKILL_SYNERGIES, allCustomSkillDefinitions);
-              const featSkillBonus = calculateFeatBonusesForSkill(skill.id, selectedFeats, allFeatDefinitions);
-              const currentRacialBonus = calculateRacialSkillBonus(skill.id, characterRace, DND_RACES, SKILL_DEFINITIONS);
-              const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skill.id, characterSize, SIZES);
+              const synergyBonus = calculateTotalSynergyBonus(skillDef.id, characterSkillInstances, SKILL_DEFINITIONS, SKILL_SYNERGIES, allCustomSkillDefinitions);
+              const featSkillBonus = calculateFeatBonusesForSkill(skillDef.id, selectedFeats, allFeatDefinitions);
+              const currentRacialBonus = calculateRacialSkillBonus(skillDef.id, characterRace, DND_RACES, SKILL_DEFINITIONS);
+              const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skillDef.id, characterSize, SIZES);
 
               const calculatedMiscModifier = synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus;
               
-              const committedRankValue = skill.ranks || 0; 
-              const totalBonus = committedRankValue + baseAbilityMod + calculatedMiscModifier + (skill.miscModifier || 0);
+              const committedRankValue = skillInstanceProp.ranks || 0; 
+              const totalBonus = committedRankValue + baseAbilityMod + calculatedMiscModifier + (skillInstanceProp.miscModifier || 0);
               
-              const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
-              const skillCostDisplay = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 2;
-              const currentStepForInput = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 0.5;
+              const maxRanksValue = calculateMaxRanks(characterLevel, skillInstanceProp.isClassSkill || false, intelligenceModifier);
+              const skillCostDisplay = (skillDef.keyAbility === 'none' || skillInstanceProp.isClassSkill) ? 1 : 2;
+              const currentStepForInput = (skillDef.keyAbility === 'none' || skillInstanceProp.isClassSkill) ? 1 : 0.5;
 
               return (
-                <div key={skill.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 transition-colors text-sm">
+                <div key={skillInstanceProp.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 transition-colors text-sm">
                   <div className="flex justify-center w-10">
                     <Checkbox
-                      id={`skill_class_${skill.id}`}
-                      checked={skill.isClassSkill}
+                      id={`skill_class_${skillInstanceProp.id}`}
+                      checked={skillInstanceProp.isClassSkill}
                       onCheckedChange={(checked) => {
-                          onSkillChange(skill.id, skill.ranks || 0, !!checked);
+                          onSkillChange(skillInstanceProp.id, skillInstanceProp.ranks || 0, !!checked);
                       }}
                       className="h-3.5 w-3.5"
                     />
@@ -355,18 +360,18 @@ export function SkillsFormSection({
                           variant="ghost"
                           size="icon"
                           className="h-5 w-5 mr-1 text-muted-foreground hover:text-foreground"
-                          onClick={() => handleTriggerSkillInfoDialog(skill.id)}
-                          aria-label={(UI_STRINGS.skillsTableTooltipInfoForSkill || "Info for {skillName}").replace("{skillName}", skill.name)}
+                          onClick={() => handleTriggerSkillInfoDialog(skillInstanceProp.id)}
+                          aria-label={(UI_STRINGS.skillsTableTooltipInfoForSkill || "Info for {skillName}").replace("{skillName}", skillDef.name)}
                         >
                           <Info className="h-3 w-3" />
                         </Button>
-                      <Label htmlFor={`skill_ranks_${skill.id}`} className="text-sm pr-1 leading-tight flex-grow flex items-center">
-                          {skill.name}
-                          {skill.isCustom && (
+                      <Label htmlFor={`skill_ranks_${skillInstanceProp.id}`} className="text-sm pr-1 leading-tight flex-grow flex items-center">
+                          {skillDef.name}
+                          {skillDef.isCustom && (
                               <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 ml-1.5 font-normal whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>
                           )}
                       </Label>
-                    {skill.isCustom && (
+                    {skillDef.isCustom && (
                       <div className="flex items-center ml-auto">
                         <TooltipProvider delayDuration={100}>
                           <Tooltip>
@@ -376,8 +381,8 @@ export function SkillsFormSection({
                                 variant="ghost"
                                 size="icon"
                                 className="h-5 w-5 text-muted-foreground hover:text-foreground"
-                                onClick={() => handleOpenEditDialog(skill)}
-                                aria-label={(UI_STRINGS.skillsTableTooltipEditCustom || "Edit Custom Skill Definition").replace("{skillName}", skill.name)}
+                                onClick={() => handleOpenEditDialog(skillInstanceProp as SkillDisplayInfo)}
+                                aria-label={(UI_STRINGS.skillsTableTooltipEditCustom || "Edit Custom Skill Definition").replace("{skillName}", skillDef.name)}
                               >
                                 <Pencil className="h-3 w-3" />
                               </Button>
@@ -390,21 +395,22 @@ export function SkillsFormSection({
                        </div>
                     )}
                   </div>
-                  <span className="font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
+                  <span className="font-bold text-accent text-lg text-center w-12">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
                   <span className="text-sm text-muted-foreground text-center w-10">{keyAbilityDisplay}</span>
                   <span className="text-sm text-center w-12">{baseAbilityMod >= 0 ? '+' : ''}{baseAbilityMod}</span>
                   <span className="text-sm text-center w-12">{calculatedMiscModifier >= 0 ? '+' : ''}{calculatedMiscModifier}</span>
                   <div className="w-32 flex justify-center">
                     <DebouncedSkillRankInput
-                      skill={skill} // Pass the skill object which contains the prop rank
+                      skillProp={skillInstanceProp}
                       currentStepForInput={currentStepForInput}
-                      onDebouncedRankChange={(newRank) => onSkillChange(skill.id, newRank, skill.isClassSkill)}
+                      maxRanksValue={maxRanksValue}
+                      onDebouncedRankChange={(newRank) => onSkillChange(skillInstanceProp.id, newRank, skillInstanceProp.isClassSkill)}
                     />
                   </div>
                   <span className="text-sm text-muted-foreground text-center w-12">{skillCostDisplay}</span>
                   <span className={cn(
                       "text-sm text-center w-10",
-                      (skill.ranks || 0) > maxRanksValue ? "text-destructive font-bold" : "text-muted-foreground"
+                      (skillInstanceProp.ranks || 0) > maxRanksValue ? "text-destructive font-bold" : "text-muted-foreground"
                     )}>
                       {maxRanksValue}
                   </span>
@@ -418,3 +424,4 @@ export function SkillsFormSection({
     </>
   );
 }
+
