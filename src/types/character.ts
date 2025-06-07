@@ -629,7 +629,7 @@ export function isAlignmentCompatible(
 
 export function calculateSpeedBreakdown(
   speedType: SpeedType,
-  character: Pick<Character, 'race' | 'size' | 'classes' | 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed' | 'armorSpeedPenalty' | 'loadSpeedPenalty'>,
+  character: Pick<Character, 'race' | 'size' | 'classes' | 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed' | 'armorSpeedPenalty_base' | 'armorSpeedPenalty_miscModifier' | 'loadSpeedPenalty_base' | 'loadSpeedPenalty_miscModifier'>,
   DND_RACES: readonly DndRaceOption[],
   DND_CLASSES: readonly DndClassOption[],
   SIZES: readonly CharacterSizeObject[],
@@ -649,7 +649,7 @@ export function calculateSpeedBreakdown(
     baseSpeedFromRace = (sizeData?.value === 'small' || sizeData?.value === 'tiny' || sizeData?.value === 'diminutive' || sizeData?.value === 'fine') ? 20 : 30;
   }
   
-  const baseLabelText = uiStrings.savingThrowsRowLabelBase || "Base";
+  const baseLabelText = uiStrings.savingThrowsRowLabelBase || "Base"; // Re-using a generic "Base" string
   components.push({ source: `${baseLabelText} (${raceLabel})`, value: baseSpeedFromRace });
   currentTotal += baseSpeedFromRace;
 
@@ -685,13 +685,15 @@ export function calculateSpeedBreakdown(
         currentTotal += 10;
     }
 
-    if (character.armorSpeedPenalty !== 0) {
-      components.push({ source: uiStrings.infoDialogSpeedArmorPenaltyLabel || "Armor Penalty", value: -character.armorSpeedPenalty });
-      currentTotal -= character.armorSpeedPenalty;
+    const armorPenaltyTotal = (character.armorSpeedPenalty_base || 0) + (character.armorSpeedPenalty_miscModifier || 0);
+    if (armorPenaltyTotal !== 0) {
+      components.push({ source: uiStrings.infoDialogSpeedArmorPenaltyLabel || "Armor Penalty", value: -armorPenaltyTotal });
+      currentTotal -= armorPenaltyTotal;
     }
-    if (character.loadSpeedPenalty !== 0) {
-      components.push({ source: uiStrings.infoDialogSpeedLoadPenaltyLabel || "Load Penalty", value: -character.loadSpeedPenalty });
-      currentTotal -= character.loadSpeedPenalty;
+    const loadPenaltyTotal = (character.loadSpeedPenalty_base || 0) + (character.loadSpeedPenalty_miscModifier || 0);
+    if (loadPenaltyTotal !== 0) {
+      components.push({ source: uiStrings.infoDialogSpeedLoadPenaltyLabel || "Load Penalty", value: -loadPenaltyTotal });
+      currentTotal -= loadPenaltyTotal;
     }
   }
   
@@ -723,7 +725,10 @@ export const DEFAULT_SAVING_THROWS_DATA = {
 };
 
 export const DEFAULT_SPEED_DETAILS_DATA = { base: 0, miscModifier: 0 };
-export const DEFAULT_SPEED_PENALTIES_DATA = { armorSpeedPenalty: 0, loadSpeedPenalty: 0 };
+export const DEFAULT_SPEED_PENALTIES_DATA = { 
+  armorSpeedPenalty_base: 0, armorSpeedPenalty_miscModifier: 0, 
+  loadSpeedPenalty_base: 0, loadSpeedPenalty_miscModifier: 0 
+};
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 // It's recommended to also export core types from character-core.ts if they are needed elsewhere
@@ -733,6 +738,7 @@ export * from './character-core';
 // For example, if SIZES or ALIGNMENTS were truly static and not i18n, they could be re-exported.
 // However, given the current setup, they are i18n-dependent and sourced via useI18n.
 // export { SIZES, ALIGNMENTS } from './character-core'; 
+
 
 
 

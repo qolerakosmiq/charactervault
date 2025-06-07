@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare } from 'lucide-react';
+import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare, ShieldSlash, Weight } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
@@ -107,13 +107,14 @@ interface InfoDisplayDialogProps {
   contentType: InfoDialogContentType | null;
 }
 
-const SPEED_ICONS: Record<SpeedType, React.ElementType> = {
-  land: Wind,
-  burrow: Shell,
-  climb: MoveVertical,
-  fly: Feather,
-  swim: Waves,
+const DIALOG_ICONS: Record<string, React.ElementType> = {
+  land: Wind, burrow: Shell, climb: MoveVertical, fly: Feather, swim: Waves,
+  skillModifierBreakdown: SparklesIcon,
+  armorSpeedPenaltyBreakdown: ShieldSlash,
+  loadSpeedPenaltyBreakdown: Weight,
+  default: Info,
 };
+
 
 export function InfoDisplayDialog({
   isOpen,
@@ -189,9 +190,11 @@ export function InfoDisplayDialog({
 
     let data: DerivedDialogData = { title: UI_STRINGS.infoDialogDefaultTitle || 'Information', content: [] };
     let detailsListHeading: string = UI_STRINGS.infoDialogSectionHeadingDetails || "Details";
+    let iconKey = "default";
 
     switch (contentType.type) {
       case 'race': {
+        iconKey = 'race'; // Placeholder, specific icons can be added
         const raceId = character.race;
         const raceData = DND_RACES.find(r => r.value === raceId);
         const qualities = getRaceSpecialQualities(raceId, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, SKILL_DEFINITIONS, PREDEFINED_FEATS, ABILITY_LABELS);
@@ -222,6 +225,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'class': {
+        iconKey = 'class';
         const classId = character.classes[0]?.className;
         const classData = DND_CLASSES.find(c => c.value === classId);
         const classSpecificDetails: Array<{ label: string; value: string | number; isBold?: boolean }> = [];
@@ -261,12 +265,14 @@ export function InfoDisplayDialog({
         break;
       }
       case 'alignmentSummary':
+        iconKey = 'alignmentSummary';
         data = {
           title: UI_STRINGS.infoDialogAlignmentsTitle || 'Alignments',
           content: [AlignmentSummaryContentDisplay({htmlContent: ALIGNMENTS.map(a => `<p><b>${a.label}:</b><br />${a.description}</p>`).join('')})],
         };
         break;
       case 'deity':
+        iconKey = 'deity';
         const deityId = character.deity;
         const deityData = DND_DEITIES.find(d => d.value === deityId);
         if (deityData) {
@@ -278,6 +284,7 @@ export function InfoDisplayDialog({
         }
         break;
       case 'abilityScoreBreakdown': {
+        iconKey = 'abilityScoreBreakdown';
         const detailedScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
         const abilityKeyForTitle = contentType.abilityName as Exclude<AbilityName, 'none'>;
         const abilityLabelForTitle = ABILITY_LABELS.find(al => al.value === abilityKeyForTitle);
@@ -289,6 +296,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'skillModifierBreakdown': {
+        iconKey = 'skillModifierBreakdown';
         const skillInstance = character.skills.find(s => s.id === contentType.skillId);
         const skillDef = allCombinedSkillDefinitionsForDisplay.find(sd => sd.id === contentType.skillId);
         if (skillInstance && skillDef) {
@@ -303,8 +311,8 @@ export function InfoDisplayDialog({
           const featBonus = calculateFeatBonusesForSkill(skillDef.id, character.feats, allCombinedFeatDefinitions);
           const racialBonus = calculateRacialSkillBonus(skillDef.id, character.race, DND_RACES, SKILL_DEFINITIONS);
           const sizeBonus = calculateSizeSpecificSkillBonus(skillDef.id, character.size, SIZES);
-          const totalMod = keyAbilityMod + synergyBonus + featBonus + racialBonus + sizeBonus;
-          const totalSkillBonus = (skillInstance.ranks || 0) + totalMod + (skillInstance.miscModifier || 0);
+          const calculatedMiscModifier = synergyBonus + featBonus + racialBonus + sizeBonus;
+          const totalSkillBonus = (skillInstance.ranks || 0) + keyAbilityMod + calculatedMiscModifier + (skillInstance.miscModifier || 0);
           const keyAbilityLabel = skillDef.keyAbility && skillDef.keyAbility !== 'none' ? ABILITY_LABELS.find(al => al.value === skillDef.keyAbility)?.abbr : undefined;
 
           const currentSkillId = contentType.skillId;
@@ -429,6 +437,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'resistanceBreakdown':
+        iconKey = 'resistanceBreakdown';
         const resistanceValue = character[contentType.resistanceField] as ResistanceValue;
         const resistanceFieldLabelKey = `resistanceLabel${contentType.resistanceField.charAt(0).toUpperCase() + contentType.resistanceField.slice(1).replace('Resistance', '')}` as keyof typeof UI_STRINGS;
         const resistanceLabel = UI_STRINGS[resistanceFieldLabelKey] || contentType.resistanceField.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).replace(' Resistance', '');
@@ -447,49 +456,50 @@ export function InfoDisplayDialog({
         };
         break;
       case 'acBreakdown': {
+        iconKey = 'acBreakdown';
         const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
         const dexMod = calculateAbilityModifier(detailedCharScores.dexterity.finalScore);
         const sizeModACVal = getSizeModifierAC(character.size, SIZES);
         const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
         const details: AcBreakdownDetailItem[] = [];
         
-        const acCalculatedMiscModifier = 0; // For now, this is 0. Will be sourced from game effects later.
+        const acCalculatedMiscModifier = 0; 
         const temporaryAcModifier = character.acMiscModifier || 0;
 
-        details.push({ label: UI_STRINGS.acBreakdownBaseLabel || 'Base', value: 10 });
+        details.push({ label: UI_STRINGS.acBreakdownBaseLabel, value: 10 });
 
         if (contentType.acType === 'Normal' || contentType.acType === 'Touch') {
           details.push({
-            label: UI_STRINGS.infoDialogAcAbilityLabel || "Ability Modifier",
+            label: UI_STRINGS.infoDialogAcAbilityLabel,
             value: dexMod,
             type: 'acAbilityMod',
             abilityAbbr: ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX'
           });
         }
         details.push({
-          label: UI_STRINGS.infoDialogSizeModifierLabel || "Size Modifier",
+          label: UI_STRINGS.infoDialogSizeModifierLabel,
           value: sizeModACVal,
           type: 'acSizeMod',
           sizeName: sizeLabel
         });
 
         if (contentType.acType === 'Normal' || contentType.acType === 'Flat-Footed') {
-          if (character.armorBonus) details.push({ label: UI_STRINGS.acBreakdownArmorBonusLabel || 'Armor Bonus', value: character.armorBonus });
-          if (character.shieldBonus) details.push({ label: UI_STRINGS.acBreakdownShieldBonusLabel || 'Shield Bonus', value: character.shieldBonus });
-          if (character.naturalArmor) details.push({ label: UI_STRINGS.acBreakdownNaturalArmorLabel || 'Natural Armor', value: character.naturalArmor });
+          if (character.armorBonus) details.push({ label: UI_STRINGS.acBreakdownArmorBonusLabel, value: character.armorBonus });
+          if (character.shieldBonus) details.push({ label: UI_STRINGS.acBreakdownShieldBonusLabel, value: character.shieldBonus });
+          if (character.naturalArmor) details.push({ label: UI_STRINGS.acBreakdownNaturalArmorLabel, value: character.naturalArmor });
         }
-        if (character.deflectionBonus) details.push({ label: UI_STRINGS.acBreakdownDeflectionBonusLabel || 'Deflection Bonus', value: character.deflectionBonus });
+        if (character.deflectionBonus) details.push({ label: UI_STRINGS.acBreakdownDeflectionBonusLabel, value: character.deflectionBonus });
         
-        if (acCalculatedMiscModifier !== 0) {
-          details.push({ label: UI_STRINGS.acBreakdownCalculatedMiscLabel || 'Misc Modifier', value: acCalculatedMiscModifier });
+        if (acCalculatedMiscModifier !== 0) { // Will only show if not 0
+          details.push({ label: UI_STRINGS.acBreakdownCalculatedMiscLabel, value: acCalculatedMiscModifier });
         }
 
         if ((contentType.acType === 'Normal' || contentType.acType === 'Touch') && character.dodgeBonus) {
-          details.push({ label: UI_STRINGS.acBreakdownDodgeBonusLabel || 'Dodge Bonus', value: character.dodgeBonus });
+          details.push({ label: UI_STRINGS.acBreakdownDodgeBonusLabel, value: character.dodgeBonus });
         }
         
-        if (temporaryAcModifier !== 0) {
-          details.push({ label: UI_STRINGS.armorClassMiscModifierLabel || 'Temporary Modifier', value: temporaryAcModifier });
+        if (temporaryAcModifier !== 0) { // Will only show if not 0
+          details.push({ label: UI_STRINGS.armorClassTempModifierLabel, value: temporaryAcModifier });
         }
         
         let totalCalculated = 10;
@@ -502,6 +512,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'babBreakdown': {
+        iconKey = 'babBreakdown';
         const baseBabArrayVal = getBab(character.classes, DND_CLASSES);
         data = {
           title: UI_STRINGS.infoDialogTitleBabBreakdown || 'Base Attack Bonus Breakdown',
@@ -518,6 +529,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'initiativeBreakdown': {
+        iconKey = 'initiativeBreakdown';
         const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
         const dexMod = calculateAbilityModifier(detailedCharScores.dexterity.finalScore);
         data = {
@@ -535,6 +547,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'grappleModifierBreakdown': {
+        iconKey = 'grappleModifierBreakdown';
         const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
         const strMod = calculateAbilityModifier(detailedCharScores.strength.finalScore);
         const baseBabArrayVal = getBab(character.classes, DND_CLASSES);
@@ -556,6 +569,7 @@ export function InfoDisplayDialog({
         break;
       }
        case 'grappleDamageBreakdown': {
+        iconKey = 'grappleDamageBreakdown';
         const detailedCharScores = calculateDetailedAbilityScores(character, customFeatDefinitions, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, PREDEFINED_FEATS, ABILITY_LABELS);
         const strMod = calculateAbilityModifier(detailedCharScores.strength.finalScore);
         data = {
@@ -573,6 +587,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'speedBreakdown': {
+        iconKey = contentType.speedType;
         const speedBreakdownDetails = calculateSpeedBreakdown(contentType.speedType, character, DND_RACES, DND_CLASSES, SIZES, UI_STRINGS);
         const speedNameString = speedBreakdownDetails.name;
         data = {
@@ -581,10 +596,46 @@ export function InfoDisplayDialog({
         };
         break;
       }
+      case 'armorSpeedPenaltyBreakdown': {
+        iconKey = 'armorSpeedPenaltyBreakdown';
+        const totalPenalty = (character.armorSpeedPenalty_base || 0) + (character.armorSpeedPenalty_miscModifier || 0);
+        const penaltyBreakdown: SpeedBreakdownDetails = {
+            name: UI_STRINGS.totalArmorPenaltyLabel || "Total Armor Penalty",
+            components: [
+                { source: UI_STRINGS.speedPenaltyBaseArmorLabel || "Base from Armor", value: character.armorSpeedPenalty_base || 0 },
+                { source: UI_STRINGS.speedMiscModifierLabel || "Misc Modifier", value: character.armorSpeedPenalty_miscModifier || 0 }
+            ],
+            total: totalPenalty
+        };
+        data = {
+            title: UI_STRINGS.infoDialogTitleArmorPenaltyBreakdown || "Armor Penalty Breakdown",
+            content: [SpeedBreakdownContentDisplay({ speedBreakdown: penaltyBreakdown, uiStrings: UI_STRINGS })]
+        };
+        break;
+      }
+      case 'loadSpeedPenaltyBreakdown': {
+        iconKey = 'loadSpeedPenaltyBreakdown';
+        const totalPenalty = (character.loadSpeedPenalty_base || 0) + (character.loadSpeedPenalty_miscModifier || 0);
+        const penaltyBreakdown: SpeedBreakdownDetails = {
+            name: UI_STRINGS.totalLoadPenaltyLabel || "Total Load Penalty",
+            components: [
+                { source: UI_STRINGS.speedPenaltyBaseLoadLabel || "Base from Load", value: character.loadSpeedPenalty_base || 0 },
+                { source: UI_STRINGS.speedMiscModifierLabel || "Misc Modifier", value: character.loadSpeedPenalty_miscModifier || 0 }
+            ],
+            total: totalPenalty
+        };
+        data = {
+            title: UI_STRINGS.infoDialogTitleLoadPenaltyBreakdown || "Load Penalty Breakdown",
+            content: [SpeedBreakdownContentDisplay({ speedBreakdown: penaltyBreakdown, uiStrings: UI_STRINGS })]
+        };
+        break;
+      }
       case 'genericHtml':
+        iconKey = 'genericHtml';
         data = { title: contentType.title, content: [GenericHtmlContentDisplay({htmlContent: contentType.content})] };
         break;
     }
+    data.iconKey = iconKey;
     return data;
   }, [isOpen, contentType, character, translationsLoading, translations, customFeatDefinitions, customSkillDefinitions, allCombinedFeatDefinitions, allCombinedSkillDefinitionsForDisplay, expandedItems, toggleExpanded]);
 
@@ -614,7 +665,10 @@ export function InfoDisplayDialog({
   const {
     title: finalTitle,
     content: contentBlocks,
+    iconKey: finalIconKey
   } = derivedData;
+  
+  const IconComponent = DIALOG_ICONS[finalIconKey || 'default'] || Info;
 
   const renderContent = () => {
     if (!contentBlocks) return null;
@@ -636,9 +690,7 @@ export function InfoDisplayDialog({
       <DialogContent className="sm:max-w-md md:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif text-left">
-            { contentType?.type === 'speedBreakdown' && SPEED_ICONS[contentType.speedType] && React.createElement(SPEED_ICONS[contentType.speedType], { className: "mr-2 h-6 w-6 text-primary" }) }
-            { contentType?.type === 'skillModifierBreakdown' && <SparklesIcon className="mr-2 h-6 w-6 text-primary" /> }
-            { contentType?.type !== 'speedBreakdown' && contentType?.type !== 'skillModifierBreakdown' && <Info className="mr-2 h-6 w-6 text-primary" /> }
+            <IconComponent className="mr-2 h-6 w-6 text-primary" />
             {finalTitle}
           </DialogTitle>
         </DialogHeader>
@@ -658,5 +710,5 @@ export function InfoDisplayDialog({
 interface DerivedDialogData {
   title: string;
   content?: React.ReactNode | React.ReactNode[];
+  iconKey?: string;
 }
-

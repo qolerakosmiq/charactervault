@@ -30,7 +30,12 @@
   },
   "DEFAULT_RESISTANCE_VALUE_DATA": { "base": 0, "customMod": 0 },
   "DEFAULT_SPEED_DETAILS_DATA": { "base": 0, "miscModifier": 0 },
-  "DEFAULT_SPEED_PENALTIES_DATA": { "armorSpeedPenalty": 0, "loadSpeedPenalty": 0 },
+  "DEFAULT_SPEED_PENALTIES_DATA": { 
+    "armorSpeedPenalty_base": 0, 
+    "armorSpeedPenalty_miscModifier": 0, 
+    "loadSpeedPenalty_base": 0, 
+    "loadSpeedPenalty_miscModifier": 0 
+  },
   "DND_RACE_MIN_ADULT_AGE_DATA": {
     "human": 15,
     "elf": 110,

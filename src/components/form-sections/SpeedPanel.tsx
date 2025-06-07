@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Wind, Waves, MoveVertical, Shell, Feather, Info, Loader2 } from 'lucide-react';
+import { Wind, Waves, MoveVertical, Shell, Feather, Info, Loader2, ShieldSlash, Weight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -18,11 +18,29 @@ const DEBOUNCE_DELAY = 400;
 
 interface SpeedPanelProps {
   character: Character;
-  onCharacterUpdate: (field: keyof Character | `landSpeed.miscModifier` | `burrowSpeed.miscModifier` | `climbSpeed.miscModifier` | `flySpeed.miscModifier` | `swimSpeed.miscModifier`, value: any) => void;
+  onCharacterUpdate: (
+    field: keyof Character | 
+           `landSpeed.miscModifier` | 
+           `burrowSpeed.miscModifier` | 
+           `climbSpeed.miscModifier` | 
+           `flySpeed.miscModifier` | 
+           `swimSpeed.miscModifier` |
+           `armorSpeedPenalty_miscModifier` | 
+           `loadSpeedPenalty_miscModifier`, 
+    value: any
+  ) => void;
   onOpenSpeedInfoDialog: (speedType: SpeedType) => void;
+  onOpenArmorSpeedPenaltyInfoDialog: () => void;
+  onOpenLoadSpeedPenaltyInfoDialog: () => void;
 }
 
-export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog }: SpeedPanelProps) {
+export function SpeedPanel({ 
+  character, 
+  onCharacterUpdate, 
+  onOpenSpeedInfoDialog, 
+  onOpenArmorSpeedPenaltyInfoDialog,
+  onOpenLoadSpeedPenaltyInfoDialog 
+}: SpeedPanelProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const speedTypesConfig: Array<{
@@ -49,14 +67,14 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
     );
   });
 
-  const [localArmorPenalty, setLocalArmorPenalty] = useDebouncedFormField(
-    character.armorSpeedPenalty || 0,
-    (value) => onCharacterUpdate('armorSpeedPenalty', value),
+  const [localArmorPenaltyMiscMod, setLocalArmorPenaltyMiscMod] = useDebouncedFormField(
+    character.armorSpeedPenalty_miscModifier || 0,
+    (value) => onCharacterUpdate('armorSpeedPenalty_miscModifier', value),
     DEBOUNCE_DELAY
   );
-  const [localLoadPenalty, setLocalLoadPenalty] = useDebouncedFormField(
-    character.loadSpeedPenalty || 0,
-    (value) => onCharacterUpdate('loadSpeedPenalty', value),
+  const [localLoadPenaltyMiscMod, setLocalLoadPenaltyMiscMod] = useDebouncedFormField(
+    character.loadSpeedPenalty_miscModifier || 0,
+    (value) => onCharacterUpdate('loadSpeedPenalty_miscModifier', value),
     DEBOUNCE_DELAY
   );
 
@@ -91,14 +109,14 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
               </div>
               <Separator />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Card>
-                    <CardHeader className="p-4"><Skeleton className="h-5 w-3/4 mx-auto" /></CardHeader>
-                    <CardContent className="p-4 pt-0 space-y-1"><Skeleton className="h-8 w-24 mx-auto" /><Skeleton className="h-3 w-full mx-auto mt-1" /></CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="p-4"><Skeleton className="h-5 w-3/4 mx-auto" /></CardHeader>
-                    <CardContent className="p-4 pt-0 space-y-1"><Skeleton className="h-8 w-24 mx-auto" /><Skeleton className="h-3 w-full mx-auto mt-1" /></CardContent>
-                </Card>
+                 {[...Array(2)].map((_, i) => (
+                  <div key={`penalty-skel-${i}`} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
+                    <Skeleton className="h-5 w-24 mb-1" /> {/* Icon + Label */}
+                    <Skeleton className="h-9 w-12 mb-1" /> {/* Penalty value */}
+                    <Skeleton className="h-4 w-24 mb-1" /> {/* Misc Mod Label */}
+                    <Skeleton className="h-8 w-32" />    {/* NumberSpinnerInput */}
+                  </div>
+                 ))}
               </div>
             </>
           )}
@@ -109,7 +127,10 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
   
   const { DND_RACES, DND_CLASSES, SIZES, UI_STRINGS } = translations;
   const speedUnit = UI_STRINGS.speedUnit || "ft.";
-  const speedStep = parseFloat(UI_STRINGS.speedStepIncrement || "1.5");
+  const speedStep = parseFloat(UI_STRINGS.speedStepIncrement || "5");
+
+  const totalArmorPenalty = (character.armorSpeedPenalty_base || 0) + (character.armorSpeedPenalty_miscModifier || 0);
+  const totalLoadPenalty = (character.loadSpeedPenalty_base || 0) + (character.loadSpeedPenalty_miscModifier || 0);
 
   return (
     <Card>
@@ -173,49 +194,85 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
         <Separator />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Card>
-            <CardHeader className="p-4">
-              <CardTitle className="text-base font-medium text-center">{UI_STRINGS.armorPenaltyCardTitle}</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 pt-0 space-y-1">
-              <div className="flex justify-center">
-                <NumberSpinnerInput
-                  id="armor-speed-penalty"
-                  value={localArmorPenalty}
-                  onChange={setLocalArmorPenalty}
-                  min={0}
-                  step={speedStep}
-                  inputClassName="w-24 h-9 text-base"
-                  buttonClassName="h-9 w-9"
-                />
-              </div>
-              <p className="text-xs text-muted-foreground text-center pt-1">
-                {UI_STRINGS.armorPenaltyDescriptionFormat.replace("{unit}", speedUnit)}
-              </p>
-            </CardContent>
-          </Card>
+          {/* Armor Penalty Card */}
+          <div className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
+            <div className="flex items-center justify-center">
+              <ShieldSlash className="h-5 w-5 mr-1.5 text-muted-foreground" />
+              <span className="text-sm font-medium">{UI_STRINGS.armorPenaltyCardTitle}</span>
+            </div>
+            <div className="flex items-center justify-center space-x-1 h-9">
+              <span className="text-lg font-bold text-destructive">
+                {totalArmorPenalty > 0 ? `-${totalArmorPenalty}` : totalArmorPenalty}
+              </span>
+              <span className="text-base font-normal text-muted-foreground">
+                {speedUnit}
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                onClick={onOpenArmorSpeedPenaltyInfoDialog}
+              >
+                <Info className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="w-full max-w-[140px]">
+              <Label htmlFor="armor-penalty-misc-mod" className="text-xs text-muted-foreground">{UI_STRINGS.speedMiscModifierLabel}</Label>
+              <NumberSpinnerInput
+                id="armor-penalty-misc-mod"
+                value={localArmorPenaltyMiscMod}
+                onChange={setLocalArmorPenaltyMiscMod}
+                min={0} // Penalties are usually positive numbers that subtract
+                max={100}
+                step={speedStep}
+                inputClassName="w-20 h-8 text-sm text-center"
+                buttonClassName="h-8 w-8"
+                buttonSize="sm"
+                className="justify-center mt-0.5"
+              />
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="p-4">
-              <CardTitle className="text-base font-medium text-center">{UI_STRINGS.loadPenaltyCardTitle}</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 pt-0 space-y-1">
-              <div className="flex justify-center">
-                <NumberSpinnerInput
-                  id="load-speed-penalty"
-                  value={localLoadPenalty}
-                  onChange={setLocalLoadPenalty}
-                  min={0}
-                  step={speedStep}
-                  inputClassName="w-24 h-9 text-base"
-                  buttonClassName="h-9 w-9"
-                />
-              </div>
-              <p className="text-xs text-muted-foreground text-center pt-1">
-                {UI_STRINGS.loadPenaltyDescriptionFormat.replace("{unit}", speedUnit)}
-              </p>
-            </CardContent>
-          </Card>
+          {/* Load Penalty Card */}
+          <div className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
+            <div className="flex items-center justify-center">
+              <Weight className="h-5 w-5 mr-1.5 text-muted-foreground" />
+              <span className="text-sm font-medium">{UI_STRINGS.loadPenaltyCardTitle}</span>
+            </div>
+            <div className="flex items-center justify-center space-x-1 h-9">
+              <span className="text-lg font-bold text-destructive">
+                {totalLoadPenalty > 0 ? `-${totalLoadPenalty}` : totalLoadPenalty}
+              </span>
+              <span className="text-base font-normal text-muted-foreground">
+                {speedUnit}
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                onClick={onOpenLoadSpeedPenaltyInfoDialog}
+              >
+                <Info className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="w-full max-w-[140px]">
+              <Label htmlFor="load-penalty-misc-mod" className="text-xs text-muted-foreground">{UI_STRINGS.speedMiscModifierLabel}</Label>
+              <NumberSpinnerInput
+                id="load-penalty-misc-mod"
+                value={localLoadPenaltyMiscMod}
+                onChange={setLocalLoadPenaltyMiscMod}
+                min={0} // Penalties are usually positive
+                max={100}
+                step={speedStep}
+                inputClassName="w-20 h-8 text-sm text-center"
+                buttonClassName="h-8 w-8"
+                buttonSize="sm"
+                className="justify-center mt-0.5"
+              />
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

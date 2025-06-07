@@ -98,9 +98,18 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       DEFAULT_SAVING_THROWS: DEFAULT_SAVING_THROWS_DATA,
       DEFAULT_RESISTANCE_VALUE: DEFAULT_RESISTANCE_VALUE_DATA,
       DEFAULT_SPEED_DETAILS: DEFAULT_SPEED_DETAILS_DATA,
-      DEFAULT_SPEED_PENALTIES: DEFAULT_SPEED_PENALTIES_DATA,
+      DEFAULT_SPEED_PENALTIES: DEFAULT_SPEED_PENALTIES_DATA_FROM_JSON, // Renamed to avoid direct use
       DND_FEATS_DEFINITIONS, DND_RACES, DND_CLASSES, SKILL_DEFINITIONS, CLASS_SKILLS, SIZES
     } = translations;
+
+    // Ensure DEFAULT_SPEED_PENALTIES_DATA has the new structure
+    const DEFAULT_SPEED_PENALTIES_DATA = {
+      armorSpeedPenalty_base: DEFAULT_SPEED_PENALTIES_DATA_FROM_JSON.armorSpeedPenalty_base ?? 0,
+      armorSpeedPenalty_miscModifier: DEFAULT_SPEED_PENALTIES_DATA_FROM_JSON.armorSpeedPenalty_miscModifier ?? (DEFAULT_SPEED_PENALTIES_DATA_FROM_JSON as any).armorSpeedPenalty ?? 0,
+      loadSpeedPenalty_base: DEFAULT_SPEED_PENALTIES_DATA_FROM_JSON.loadSpeedPenalty_base ?? 0,
+      loadSpeedPenalty_miscModifier: DEFAULT_SPEED_PENALTIES_DATA_FROM_JSON.loadSpeedPenalty_miscModifier ?? (DEFAULT_SPEED_PENALTIES_DATA_FROM_JSON as any).loadSpeedPenalty ?? 0,
+    };
+
 
     const defaultBaseAbilityScores = { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES_DATA)) as AbilityScores) };
     const defaultTempCustomMods: AbilityScores = { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 };
@@ -169,8 +178,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
       climbSpeed: { ...DEFAULT_SPEED_DETAILS_DATA },
       flySpeed: { ...DEFAULT_SPEED_DETAILS_DATA },
       swimSpeed: { ...DEFAULT_SPEED_DETAILS_DATA },
-      armorSpeedPenalty: DEFAULT_SPEED_PENALTIES_DATA.armorSpeedPenalty,
-      loadSpeedPenalty: DEFAULT_SPEED_PENALTIES_DATA.loadSpeedPenalty,
+      armorSpeedPenalty_base: DEFAULT_SPEED_PENALTIES_DATA.armorSpeedPenalty_base,
+      armorSpeedPenalty_miscModifier: DEFAULT_SPEED_PENALTIES_DATA.armorSpeedPenalty_miscModifier,
+      loadSpeedPenalty_base: DEFAULT_SPEED_PENALTIES_DATA.loadSpeedPenalty_base,
+      loadSpeedPenalty_miscModifier: DEFAULT_SPEED_PENALTIES_DATA.loadSpeedPenalty_miscModifier,
     };
 
     if (initialCharacter) {
@@ -207,8 +218,10 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         climbSpeed: initialCharacter.climbSpeed || { ...DEFAULT_SPEED_DETAILS_DATA },
         flySpeed: initialCharacter.flySpeed || { ...DEFAULT_SPEED_DETAILS_DATA },
         swimSpeed: initialCharacter.swimSpeed || { ...DEFAULT_SPEED_DETAILS_DATA },
-        armorSpeedPenalty: initialCharacter.armorSpeedPenalty ?? DEFAULT_SPEED_PENALTIES_DATA.armorSpeedPenalty,
-        loadSpeedPenalty: initialCharacter.loadSpeedPenalty ?? DEFAULT_SPEED_PENALTIES_DATA.loadSpeedPenalty,
+        armorSpeedPenalty_base: initialCharacter.armorSpeedPenalty_base ?? 0,
+        armorSpeedPenalty_miscModifier: initialCharacter.armorSpeedPenalty_miscModifier ?? ((initialCharacter as any).armorSpeedPenalty !== undefined ? (initialCharacter as any).armorSpeedPenalty : DEFAULT_SPEED_PENALTIES_DATA.armorSpeedPenalty_miscModifier),
+        loadSpeedPenalty_base: initialCharacter.loadSpeedPenalty_base ?? 0,
+        loadSpeedPenalty_miscModifier: initialCharacter.loadSpeedPenalty_miscModifier ?? ((initialCharacter as any).loadSpeedPenalty !== undefined ? (initialCharacter as any).loadSpeedPenalty : DEFAULT_SPEED_PENALTIES_DATA.loadSpeedPenalty_miscModifier),
       });
     } else {
       setCharacter(baseCharData);
@@ -460,7 +473,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   }, [setCharacter]);
   
   const handleCharacterFieldUpdate = React.useCallback((
-    field: keyof Character | `${SpeedType}Speed.miscModifier`,
+    field: keyof Character | `${SpeedType}Speed.miscModifier` | `armorSpeedPenalty_miscModifier` | `loadSpeedPenalty_miscModifier`,
     value: any
   ) => {
      setCharacter(prev => {
@@ -475,6 +488,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     miscModifier: value,
                 }
             };
+        } else if (field === 'armorSpeedPenalty_miscModifier' || field === 'loadSpeedPenalty_miscModifier') {
+          return { ...prev, [field]: value };
         }
         return { ...prev, [field as keyof Character]: value };
      });
@@ -654,6 +669,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const handleOpenAcBreakdownDialog = React.useCallback((acType: 'Normal' | 'Touch' | 'Flat-Footed') => { openInfoDialog({ type: 'acBreakdown', acType }); }, [openInfoDialog]);
   const handleOpenSpeedInfoDialog = React.useCallback((speedType: SpeedType) => { openInfoDialog({ type: 'speedBreakdown', speedType }); }, [openInfoDialog]);
   const handleOpenResistanceInfoDialog = React.useCallback((resistanceField: ResistanceFieldKeySheet) => { openInfoDialog({ type: 'resistanceBreakdown', resistanceField }); }, [openInfoDialog]);
+  const handleOpenArmorSpeedPenaltyInfoDialog = React.useCallback(() => openInfoDialog({ type: 'armorSpeedPenaltyBreakdown' }), [openInfoDialog]);
+  const handleOpenLoadSpeedPenaltyInfoDialog = React.useCallback(() => openInfoDialog({ type: 'loadSpeedPenaltyBreakdown' }), [openInfoDialog]);
 
 
   const handleSubmit = React.useCallback((e: FormEvent) => {
@@ -809,6 +826,8 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             character={character}
             onCharacterUpdate={handleCharacterFieldUpdate}
             onOpenSpeedInfoDialog={handleOpenSpeedInfoDialog}
+            onOpenArmorSpeedPenaltyInfoDialog={handleOpenArmorSpeedPenaltyInfoDialog}
+            onOpenLoadSpeedPenaltyInfoDialog={handleOpenLoadSpeedPenaltyInfoDialog}
           />
         </div>
         
@@ -885,7 +904,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     onClick={() => { setSkillToEdit(undefined); setIsAddOrEditSkillDialogOpen(true); }}
                     className="w-full sm:w-auto"
                 >
-                    <BookOpenCheck className="mr-2 h-5 w-5" /> {UI_STRINGS.dmSettingsAddCustomSkillButton || "Add New Custom Skill Definition"}
+                    <BookOpenCheck className="mr-2 h-5 w-5" /> {UI_STRINGS.dmSettingsAddCustomSkillButton || "Add New Custom Skill"}
                 </Button>
                 <Button
                     type="button"
@@ -893,7 +912,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
                     onClick={() => { setEditingCustomFeatDefinition(undefined); setIsCustomFeatDialogOpen(true); }}
                     className="w-full sm:w-auto"
                 >
-                    <ShieldPlus className="mr-2 h-5 w-5" /> {UI_STRINGS.dmSettingsAddCustomFeatButton || "Add New Custom Feat Definition"}
+                    <ShieldPlus className="mr-2 h-5 w-5" /> {UI_STRINGS.dmSettingsAddCustomFeatButton || "Add New Custom Feat"}
                 </Button>
             </div>
         </div>
@@ -936,6 +955,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-
-
-      
