@@ -20,7 +20,6 @@ import {
   calculateDetailedAbilityScores,
   getRaceSkillPointsBonusPerLevel,
   ABILITY_ORDER_INTERNAL
-  // REMOVED: getUnarmedGrappleDamage (was incorrectly imported from here)
 } from '@/types/character';
 
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
@@ -32,7 +31,7 @@ import {
   getSizeModifierGrapple,
   calculateInitiative,
   calculateGrapple,
-  getUnarmedGrappleDamage // ADDED/ENSURED HERE
+  getUnarmedGrappleDamage
 } from '@/lib/dnd-utils';
 
 import { Button } from '@/components/ui/button';
@@ -581,6 +580,9 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const handleOpenSpeedInfoDialog = React.useCallback((speedType: SpeedType) => { openInfoDialog({ type: 'speedBreakdown', speedType }); }, [openInfoDialog]);
   const handleOpenArmorSpeedPenaltyInfoDialog = React.useCallback(() => openInfoDialog({ type: 'armorSpeedPenaltyBreakdown' }), [openInfoDialog]);
   const handleOpenLoadSpeedPenaltyInfoDialog = React.useCallback(() => openInfoDialog({ type: 'loadSpeedPenaltyBreakdown' }), [openInfoDialog]);
+  const handleOpenResistanceInfoDialog = React.useCallback((resistanceField: ResistanceFieldKeySheet) => {
+    openInfoDialog({ type: 'resistanceBreakdown', resistanceField });
+  }, [openInfoDialog]);
 
 
   const handleSubmit = React.useCallback((e: FormEvent) => {
