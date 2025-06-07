@@ -286,6 +286,8 @@
     "saveProgressionGood": "Good",
     "saveProgressionPoor": "Poor",
     "dmSettingsPanelTitle": "Dungeon Master Settings",
+    "dmSettingsLanguageLabel": "Game Language",
+    "dmSettingsLanguageDescription": "Affects game data such as units (e.g., ft vs m for speed), numerical increments, and default names.",
     "dmSettingsRerollOnesLabel": "Reroll 1s for Ability Score Rolls",
     "dmSettingsRerollOnesDescription": "When using 4d6 drop lowest, reroll any die that shows a 1 until it is not a 1.",
     "dmSettingsPointBuyBudgetLabel": "Point Buy Budget for Ability Scores",

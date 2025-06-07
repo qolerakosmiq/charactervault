@@ -286,7 +286,7 @@
     "saveProgressionPoor": "Médiocre",
     "dmSettingsPanelTitle": "Paramètres du maître du donjon",
     "dmSettingsLanguageLabel": "Langue du jeu",
-    "dmSettingsLanguageDescription": "Affecte les données du jeu comme les conversions d'unités et les noms par défaut.",
+    "dmSettingsLanguageDescription": "Affecte les données du jeu telles que les unités (par ex., pieds vs mètres pour la vitesse), les incréments numériques et les noms par défaut.",
     "dmSettingsRerollOnesLabel": "Relancer les 1 pour les lancers de caractéristiques",
     "dmSettingsRerollOnesDescription": "Lors de l'utilisation de 4d6 (garder les 3 meilleurs), relancez tout dé affichant un 1 jusqu'à ce qu'il ne soit plus un 1.",
     "dmSettingsPointBuyBudgetLabel": "Budget d'achat par points pour les caractéristiques",
