@@ -3,7 +3,6 @@
 
 import *as React from 'react';
 import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet } from '@/types/character';
-// DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS are now from context
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Loader2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
@@ -13,9 +12,11 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { useI18n } from '@/context/I18nProvider'; // Import useI18n
-import { Skeleton } from '@/components/ui/skeleton'; // For loading state
+import { useI18n } from '@/context/I18nProvider'; 
+import { Skeleton } from '@/components/ui/skeleton'; 
+import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 
+const DEBOUNCE_DELAY = 400;
 
 interface ResistancesPanelProps {
   characterData: {
@@ -41,6 +42,32 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
   const [newDrValue, setNewDrValue] = React.useState(1);
   const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>("none");
   const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>('bypassed-by-type');
+
+  const energyResistancesFields: Array<{ field: ResistanceFieldKeySheet; labelKey: keyof NonNullable<NonNullable<typeof translations>['UI_STRINGS']>; Icon: React.ElementType; fieldPrefix?: string }> = [
+    { field: 'fireResistance', labelKey: 'resistanceLabelFire', Icon: Flame, fieldPrefix: 'form-res' },
+    { field: 'coldResistance', labelKey: 'resistanceLabelCold', Icon: Snowflake, fieldPrefix: 'form-res' },
+    { field: 'acidResistance', labelKey: 'resistanceLabelAcid', Icon: Atom, fieldPrefix: 'form-res' },
+    { field: 'electricityResistance', labelKey: 'resistanceLabelElectricity', Icon: ElectricityIcon, fieldPrefix: 'form-res' },
+    { field: 'sonicResistance', labelKey: 'resistanceLabelSonic', Icon: Waves, fieldPrefix: 'form-res' },
+  ];
+
+  const otherNumericResistancesFields: Array<{ field: ResistanceFieldKeySheet; labelKey: keyof NonNullable<NonNullable<typeof translations>['UI_STRINGS']>; Icon: React.ElementType; unit?: string; fieldPrefix?: string }> = [
+    { field: 'spellResistance', labelKey: 'resistanceLabelSpellResistance', Icon: Sigma, fieldPrefix: 'form-res' },
+    { field: 'powerResistance', labelKey: 'resistanceLabelPowerResistance', Icon: Brain, fieldPrefix: 'form-res' },
+    { field: 'fortification', labelKey: 'resistanceLabelFortification', Icon: ShieldCheck, unit: '%', fieldPrefix: 'form-res' },
+  ];
+
+  const debouncedResistanceMods = {} as Record<ResistanceFieldKeySheet, [number, (val: number) => void]>;
+
+  [...energyResistancesFields, ...otherNumericResistancesFields].forEach(({ field }) => {
+     // eslint-disable-next-line react-hooks/rules-of-hooks
+    debouncedResistanceMods[field] = useDebouncedFormField(
+      characterData[field]?.customMod || 0,
+      (value) => onResistanceChange(field, 'customMod', value),
+      DEBOUNCE_DELAY
+    );
+  });
+
 
  React.useEffect(() => {
     if (translationsLoading || !translations) return;
@@ -79,21 +106,6 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
 
   const { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS, UI_STRINGS } = translations;
   
-  const energyResistancesFields: Array<{ field: ResistanceFieldKeySheet; labelKey: keyof typeof UI_STRINGS; Icon: React.ElementType; fieldPrefix?: string }> = [
-    { field: 'fireResistance', labelKey: 'resistanceLabelFire', Icon: Flame, fieldPrefix: 'form-res' },
-    { field: 'coldResistance', labelKey: 'resistanceLabelCold', Icon: Snowflake, fieldPrefix: 'form-res' },
-    { field: 'acidResistance', labelKey: 'resistanceLabelAcid', Icon: Atom, fieldPrefix: 'form-res' },
-    { field: 'electricityResistance', labelKey: 'resistanceLabelElectricity', Icon: ElectricityIcon, fieldPrefix: 'form-res' },
-    { field: 'sonicResistance', labelKey: 'resistanceLabelSonic', Icon: Waves, fieldPrefix: 'form-res' },
-  ];
-
-  const otherNumericResistancesFields: Array<{ field: ResistanceFieldKeySheet; labelKey: keyof typeof UI_STRINGS; Icon: React.ElementType; unit?: string; fieldPrefix?: string }> = [
-    { field: 'spellResistance', labelKey: 'resistanceLabelSpellResistance', Icon: Sigma, fieldPrefix: 'form-res' },
-    { field: 'powerResistance', labelKey: 'resistanceLabelPowerResistance', Icon: Brain, fieldPrefix: 'form-res' },
-    { field: 'fortification', labelKey: 'resistanceLabelFortification', Icon: ShieldCheck, unit: '%', fieldPrefix: 'form-res' },
-  ];
-
-
   const handleTriggerResistanceInfoDialog = (field: ResistanceFieldKeySheet) => {
     onOpenResistanceInfoDialog(field);
   };
@@ -193,9 +205,11 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
             <h4 className="text-lg font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelEnergyResistancesLabel}</h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {energyResistancesFields.map(({ field, labelKey, Icon, fieldPrefix }) => {
-                const resistance = characterData[field];
-                const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0);
+                const resistanceFromProp = characterData[field];
+                // Total value display uses the prop value for consistency after debounce
+                const totalValue = (resistanceFromProp?.base || 0) + (resistanceFromProp?.customMod || 0);
                 const label = UI_STRINGS[labelKey] || field.replace('Resistance', '');
+                const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
                     <div className="flex items-center justify-center">
@@ -205,7 +219,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                       </span>
                     </div>
                     <div className="flex items-center justify-center">
-                      <p className="text-2xl font-bold text-accent"> {/* Removed min-w and text-center */}
+                      <p className="text-2xl font-bold text-accent">
                         {totalValue}
                       </p>
                       <Button
@@ -221,8 +235,8 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                     <div className="w-full max-w-[120px] flex justify-center">
                        <NumberSpinnerInput
                         id={`${fieldPrefix}-${field}-customMod`}
-                        value={resistance?.customMod || 0}
-                        onChange={(newValue) => onResistanceChange(field, 'customMod', newValue)}
+                        value={localCustomMod} // Input uses local value
+                        onChange={setLocalCustomMod} // Updates local value
                         min={-50} 
                         inputClassName="w-16 h-7 text-sm text-center" 
                         buttonClassName="h-7 w-7"
@@ -241,10 +255,11 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
             <h4 className="text-lg font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelOtherDefensesLabel}</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {otherNumericResistancesFields.map(({ field, labelKey, Icon, unit, fieldPrefix }) => {
-                const resistance = characterData[field];
-                const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0);
+                const resistanceFromProp = characterData[field];
+                const totalValue = (resistanceFromProp?.base || 0) + (resistanceFromProp?.customMod || 0);
                 const isFortification = field === 'fortification';
                 const label = UI_STRINGS[labelKey] || field.replace('Resistance', '').replace('Fortification', 'Fortification');
+                const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
                      <div className="flex items-center justify-center">
@@ -254,7 +269,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         </span>
                       </div>
                     <div className="flex items-center justify-center">
-                      <p className="text-2xl font-bold text-accent"> {/* Removed min-w and text-center */}
+                      <p className="text-2xl font-bold text-accent">
                         {totalValue}
                       </p>
                        <Button
@@ -270,8 +285,8 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                      <div className="w-full max-w-[120px] flex justify-center">
                        <NumberSpinnerInput
                         id={`${fieldPrefix}-${field}-customMod`}
-                        value={resistance?.customMod || 0}
-                        onChange={(newValue) => onResistanceChange(field, 'customMod', newValue)}
+                        value={localCustomMod}
+                        onChange={setLocalCustomMod}
                         min={isFortification ? 0 : -50} 
                         max={isFortification ? 100 : undefined} 
                         inputClassName="w-16 h-7 text-sm text-center"
@@ -381,4 +396,3 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     </>
   );
 }
-

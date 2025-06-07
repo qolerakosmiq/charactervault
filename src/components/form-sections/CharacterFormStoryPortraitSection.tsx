@@ -11,6 +11,7 @@ import { UserSquare2, Palette, Loader2 } from 'lucide-react';
 import type { Character } from '@/types/character';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 
 const DEBOUNCE_DELAY = 400; // ms
 
@@ -27,44 +28,27 @@ export function CharacterFormStoryPortraitSection({
 }: CharacterFormStoryPortraitSectionProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
 
-  // Local states for debounced text inputs
-  const [localCampaign, setLocalCampaign] = React.useState(character.campaign);
-  const [localPersonalStory, setLocalPersonalStory] = React.useState(character.personalStory);
-  const [localHeight, setLocalHeight] = React.useState(character.height);
-  const [localWeight, setLocalWeight] = React.useState(character.weight);
-  const [localEyes, setLocalEyes] = React.useState(character.eyes);
-  const [localHair, setLocalHair] = React.useState(character.hair);
-  const [localSkin, setLocalSkin] = React.useState(character.skin);
-
-  // Sync local states with props
-  React.useEffect(() => { setLocalCampaign(character.campaign); }, [character.campaign]);
-  React.useEffect(() => { setLocalPersonalStory(character.personalStory); }, [character.personalStory]);
-  React.useEffect(() => { setLocalHeight(character.height); }, [character.height]);
-  React.useEffect(() => { setLocalWeight(character.weight); }, [character.weight]);
-  React.useEffect(() => { setLocalEyes(character.eyes); }, [character.eyes]);
-  React.useEffect(() => { setLocalHair(character.hair); }, [character.hair]);
-  React.useEffect(() => { setLocalSkin(character.skin); }, [character.skin]);
-
-  // Debounce effects
-  const useDebounceEffect = (localValue: string | undefined, propValue: string | undefined, fieldName: keyof Character) => {
-    React.useEffect(() => {
-      const handler = setTimeout(() => {
-        if (localValue !== propValue) {
-          onFieldChange(fieldName, localValue || '');
-        }
-      }, DEBOUNCE_DELAY);
-      return () => clearTimeout(handler);
-    }, [localValue, propValue, fieldName, onFieldChange]);
-  };
-
-  useDebounceEffect(localCampaign, character.campaign, 'campaign');
-  useDebounceEffect(localPersonalStory, character.personalStory, 'personalStory');
-  useDebounceEffect(localHeight, character.height, 'height');
-  useDebounceEffect(localWeight, character.weight, 'weight');
-  useDebounceEffect(localEyes, character.eyes, 'eyes');
-  useDebounceEffect(localHair, character.hair, 'hair');
-  useDebounceEffect(localSkin, character.skin, 'skin');
-
+  const [localCampaign, setLocalCampaign] = useDebouncedFormField(
+    character.campaign || '', (value) => onFieldChange('campaign', value), DEBOUNCE_DELAY
+  );
+  const [localPersonalStory, setLocalPersonalStory] = useDebouncedFormField(
+    character.personalStory || '', (value) => onFieldChange('personalStory', value), DEBOUNCE_DELAY
+  );
+  const [localHeight, setLocalHeight] = useDebouncedFormField(
+    character.height || '', (value) => onFieldChange('height', value), DEBOUNCE_DELAY
+  );
+  const [localWeight, setLocalWeight] = useDebouncedFormField(
+    character.weight || '', (value) => onFieldChange('weight', value), DEBOUNCE_DELAY
+  );
+  const [localEyes, setLocalEyes] = useDebouncedFormField(
+    character.eyes || '', (value) => onFieldChange('eyes', value), DEBOUNCE_DELAY
+  );
+  const [localHair, setLocalHair] = useDebouncedFormField(
+    character.hair || '', (value) => onFieldChange('hair', value), DEBOUNCE_DELAY
+  );
+  const [localSkin, setLocalSkin] = useDebouncedFormField(
+    character.skin || '', (value) => onFieldChange('skin', value), DEBOUNCE_DELAY
+  );
 
   if (translationsLoading || !translations) {
     return (
@@ -132,7 +116,7 @@ export function CharacterFormStoryPortraitSection({
             <Input
               id="campaign"
               name="campaign"
-              value={localCampaign || ''}
+              value={localCampaign}
               onChange={(e) => setLocalCampaign(e.target.value)}
               placeholder={UI_STRINGS.campaignPlaceholder || "e.g., The Sunless Citadel, A Homebrewed Adventure"}
             />
@@ -154,7 +138,7 @@ export function CharacterFormStoryPortraitSection({
               id="portraitUpload"
               type="file"
               accept="image/*"
-              onChange={onPortraitChange} // Direct update for file input
+              onChange={onPortraitChange} 
               className="text-sm file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
             />
             {!character.portraitDataUrl && (
@@ -169,7 +153,7 @@ export function CharacterFormStoryPortraitSection({
             <Textarea
               id="personalStory"
               name="personalStory"
-              value={localPersonalStory || ''}
+              value={localPersonalStory}
               onChange={(e) => setLocalPersonalStory(e.target.value)}
               placeholder={UI_STRINGS.personalStoryPlaceholder || "Describe your character's history, motivations, personality, and defining moments..."}
               className="min-h-[260px] md:flex-grow md:min-h-0"
@@ -182,23 +166,23 @@ export function CharacterFormStoryPortraitSection({
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
                     <Label htmlFor="height">{UI_STRINGS.heightLabel || "Height"}</Label>
-                    <Input id="height" name="height" value={localHeight || ''} onChange={(e) => setLocalHeight(e.target.value)} placeholder={UI_STRINGS.heightPlaceholder || "e.g., 5'10\""}/>
+                    <Input id="height" name="height" value={localHeight} onChange={(e) => setLocalHeight(e.target.value)} placeholder={UI_STRINGS.heightPlaceholder || "e.g., 5'10\""}/>
                 </div>
                 <div className="space-y-1.5">
                     <Label htmlFor="weight">{UI_STRINGS.weightLabel || "Weight"}</Label>
-                    <Input id="weight" name="weight" value={localWeight || ''} onChange={(e) => setLocalWeight(e.target.value)} placeholder={UI_STRINGS.weightPlaceholder || "e.g., 160 lbs"}/>
+                    <Input id="weight" name="weight" value={localWeight} onChange={(e) => setLocalWeight(e.target.value)} placeholder={UI_STRINGS.weightPlaceholder || "e.g., 160 lbs"}/>
                 </div>
                  <div className="space-y-1.5">
                     <Label htmlFor="eyes">{UI_STRINGS.eyesLabel || "Eyes"}</Label>
-                    <Input id="eyes" name="eyes" value={localEyes || ''} onChange={(e) => setLocalEyes(e.target.value)} placeholder={UI_STRINGS.eyesPlaceholder || "e.g., Hazel"}/>
+                    <Input id="eyes" name="eyes" value={localEyes} onChange={(e) => setLocalEyes(e.target.value)} placeholder={UI_STRINGS.eyesPlaceholder || "e.g., Hazel"}/>
                 </div>
                 <div className="space-y-1.5">
                     <Label htmlFor="hair">{UI_STRINGS.hairLabel || "Hair"}</Label>
-                    <Input id="hair" name="hair" value={localHair || ''} onChange={(e) => setLocalHair(e.target.value)} placeholder={UI_STRINGS.hairPlaceholder || "e.g., Raven Black, Tousled"}/>
+                    <Input id="hair" name="hair" value={localHair} onChange={(e) => setLocalHair(e.target.value)} placeholder={UI_STRINGS.hairPlaceholder || "e.g., Raven Black, Tousled"}/>
                 </div>
                 <div className="space-y-1.5">
                     <Label htmlFor="skin">{UI_STRINGS.skinLabel || "Skin"}</Label>
-                    <Input id="skin" name="skin" value={localSkin || ''} onChange={(e) => setLocalSkin(e.target.value)} placeholder={UI_STRINGS.skinPlaceholder || "e.g., Fair, Tanned"}/>
+                    <Input id="skin" name="skin" value={localSkin} onChange={(e) => setLocalSkin(e.target.value)} placeholder={UI_STRINGS.skinPlaceholder || "e.g., Fair, Tanned"}/>
                 </div>
             </div>
         </div>
@@ -206,5 +190,3 @@ export function CharacterFormStoryPortraitSection({
     </Card>
   );
 }
-
-    

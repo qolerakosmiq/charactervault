@@ -12,6 +12,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/context/I18nProvider';
+import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
+
+const DEBOUNCE_DELAY = 400;
 
 interface ArmorClassPanelProps {
   character?: Character;
@@ -21,6 +24,12 @@ interface ArmorClassPanelProps {
 
 export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
+
+  const [localAcMiscModifier, setLocalAcMiscModifier] = useDebouncedFormField(
+    character?.acMiscModifier || 0,
+    (value) => { if (onCharacterUpdate) onCharacterUpdate('acMiscModifier', value); },
+    DEBOUNCE_DELAY
+  );
 
   if (translationsLoading || !translations || !character) {
     return (
@@ -101,14 +110,14 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
     (character.naturalArmor || 0) +
     (character.deflectionBonus || 0) +
     (character.dodgeBonus || 0) +
-    (character.acMiscModifier || 0);
+    (character.acMiscModifier || 0); // Use prop value for display
 
   const touchAC = 10 +
     dexModifier +
     sizeModAC +
     (character.deflectionBonus || 0) +
     (character.dodgeBonus || 0) +
-    (character.acMiscModifier || 0);
+    (character.acMiscModifier || 0); // Use prop value for display
 
   const flatFootedAC = 10 +
     (character.armorBonus || 0) +
@@ -116,7 +125,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
     sizeModAC +
     (character.naturalArmor || 0) +
     (character.deflectionBonus || 0) +
-    (character.acMiscModifier || 0);
+    (character.acMiscModifier || 0); // Use prop value for display
 
 
   const handleShowAcBreakdown = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
@@ -171,12 +180,8 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
             <Label htmlFor="ac-misc-modifier-input" className="text-sm font-medium">{UI_STRINGS.armorClassCustomModifierLabel || "Custom Modifier"}</Label>
             <NumberSpinnerInput
               id="ac-misc-modifier-input"
-              value={character.acMiscModifier || 0}
-              onChange={(newValue) => {
-                if (onCharacterUpdate) {
-                  onCharacterUpdate('acMiscModifier', newValue);
-                }
-              }}
+              value={localAcMiscModifier}
+              onChange={setLocalAcMiscModifier}
               disabled={!isEditable}
               min={-20}
               max={20}

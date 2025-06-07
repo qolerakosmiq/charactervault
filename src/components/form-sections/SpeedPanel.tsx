@@ -12,6 +12,9 @@ import { Wind, Waves, MoveVertical, Shell, Feather, Info, Loader2 } from 'lucide
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
+
+const DEBOUNCE_DELAY = 400;
 
 interface SpeedPanelProps {
   character: Character;
@@ -22,10 +25,41 @@ interface SpeedPanelProps {
 export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog }: SpeedPanelProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
 
-  const handleMiscModifierChange = (speedType: SpeedType, newValue: number) => {
-    const fieldKey = `${speedType}Speed.miscModifier` as const;
-    onCharacterUpdate(fieldKey, newValue);
-  };
+  const speedTypesConfig: Array<{
+    type: SpeedType;
+    labelKey: keyof NonNullable<NonNullable<typeof translations>['UI_STRINGS']>; 
+    Icon: React.ElementType;
+    fieldKey: keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>;
+  }> = [
+    { type: 'land', labelKey: 'speedLabelLand', Icon: Wind, fieldKey: 'landSpeed' },
+    { type: 'burrow', labelKey: 'speedLabelBurrow', Icon: Shell, fieldKey: 'burrowSpeed' },
+    { type: 'climb', labelKey: 'speedLabelClimb', Icon: MoveVertical, fieldKey: 'climbSpeed' },
+    { type: 'fly', labelKey: 'speedLabelFly', Icon: Feather, fieldKey: 'flySpeed' },
+    { type: 'swim', labelKey: 'speedLabelSwim', Icon: Waves, fieldKey: 'swimSpeed' },
+  ];
+
+  const debouncedSpeedMods = {} as Record<SpeedType, [number, (val: number) => void]>;
+  speedTypesConfig.forEach(config => {
+    const fieldKey = `${config.type}Speed.miscModifier` as const;
+     // eslint-disable-next-line react-hooks/rules-of-hooks
+    debouncedSpeedMods[config.type] = useDebouncedFormField(
+      character[config.fieldKey]?.miscModifier || 0,
+      (value) => onCharacterUpdate(fieldKey, value),
+      DEBOUNCE_DELAY
+    );
+  });
+
+  const [localArmorPenalty, setLocalArmorPenalty] = useDebouncedFormField(
+    character.armorSpeedPenalty || 0,
+    (value) => onCharacterUpdate('armorSpeedPenalty', value),
+    DEBOUNCE_DELAY
+  );
+  const [localLoadPenalty, setLocalLoadPenalty] = useDebouncedFormField(
+    character.loadSpeedPenalty || 0,
+    (value) => onCharacterUpdate('loadSpeedPenalty', value),
+    DEBOUNCE_DELAY
+  );
+
 
   if (translationsLoading || !translations) {
     return (
@@ -77,20 +111,6 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
   const speedUnit = UI_STRINGS.speedUnit || "ft.";
   const speedStep = parseFloat(UI_STRINGS.speedStepIncrement || "1.5");
 
-
-  const speedTypesConfig: Array<{
-    type: SpeedType;
-    labelKey: keyof typeof UI_STRINGS; 
-    Icon: React.ElementType;
-    fieldKey: keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>;
-  }> = [
-    { type: 'land', labelKey: 'speedLabelLand', Icon: Wind, fieldKey: 'landSpeed' },
-    { type: 'burrow', labelKey: 'speedLabelBurrow', Icon: Shell, fieldKey: 'burrowSpeed' },
-    { type: 'climb', labelKey: 'speedLabelClimb', Icon: MoveVertical, fieldKey: 'climbSpeed' },
-    { type: 'fly', labelKey: 'speedLabelFly', Icon: Feather, fieldKey: 'flySpeed' },
-    { type: 'swim', labelKey: 'speedLabelSwim', Icon: Waves, fieldKey: 'swimSpeed' },
-  ];
-
   return (
     <Card>
       <CardHeader>
@@ -104,7 +124,7 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {speedTypesConfig.map(({ type, labelKey, Icon, fieldKey }) => {
             const speedData = calculateSpeedBreakdown(type, character, DND_RACES, DND_CLASSES, SIZES, UI_STRINGS);
-            const currentMiscMod = character[fieldKey]?.miscModifier || 0;
+            const [localMiscMod, setLocalMiscMod] = debouncedSpeedMods[type];
             const label = UI_STRINGS[labelKey] || type;
 
             return (
@@ -113,7 +133,7 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
                   <Icon className="h-5 w-5 mr-1.5 text-muted-foreground" />
                   <span className="text-sm font-medium">{label}</span>
                 </div>
-                <div className="flex items-center justify-center space-x-1 h-9"> {/* Ensure this container has a defined height if needed for alignment consistency */}
+                <div className="flex items-center justify-center space-x-1 h-9"> 
                   <span className="text-3xl font-bold text-accent">
                     {speedData.total}
                   </span>
@@ -134,8 +154,8 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
                   <Label htmlFor={`speed-misc-${type}`} className="text-xs text-muted-foreground">{UI_STRINGS.speedMiscModifierLabel}</Label>
                   <NumberSpinnerInput
                     id={`speed-misc-${type}`}
-                    value={currentMiscMod}
-                    onChange={(newValue) => handleMiscModifierChange(type, newValue)}
+                    value={localMiscMod}
+                    onChange={setLocalMiscMod}
                     min={-100} 
                     max={100}  
                     step={speedStep}
@@ -161,8 +181,8 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
               <div className="flex justify-center">
                 <NumberSpinnerInput
                   id="armor-speed-penalty"
-                  value={character.armorSpeedPenalty || 0}
-                  onChange={(val) => onCharacterUpdate('armorSpeedPenalty', val)}
+                  value={localArmorPenalty}
+                  onChange={setLocalArmorPenalty}
                   min={0}
                   step={speedStep}
                   inputClassName="w-24 h-9 text-base"
@@ -183,8 +203,8 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
               <div className="flex justify-center">
                 <NumberSpinnerInput
                   id="load-speed-penalty"
-                  value={character.loadSpeedPenalty || 0}
-                  onChange={(val) => onCharacterUpdate('loadSpeedPenalty', val)}
+                  value={localLoadPenalty}
+                  onChange={setLocalLoadPenalty}
                   min={0}
                   step={speedStep}
                   inputClassName="w-24 h-9 text-base"

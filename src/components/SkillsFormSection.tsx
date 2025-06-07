@@ -18,6 +18,9 @@ import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
+
+const DEBOUNCE_DELAY_SKILLS = 500; // ms
 
 interface SkillDisplayInfo extends SkillType {
   name: string;
@@ -51,7 +54,34 @@ interface SkillsFormSectionProps {
   onOpenSkillInfoDialog: (skillId: string) => void;
 }
 
-const DEBOUNCE_DELAY_SKILLS = 500; // ms
+
+// Helper component for a single skill row to encapsulate its debounced field
+const DebouncedSkillRankInput: React.FC<{
+  skill: SkillDisplayInfo; // Contains the prop ranks
+  currentStepForInput: number;
+  onDebouncedRankChange: (newRank: number) => void; // Callback for debounced change
+}> = ({ skill, currentStepForInput, onDebouncedRankChange }) => {
+  
+  const [localRank, setLocalRank] = useDebouncedFormField(
+    skill.ranks || 0, // Initialize with ranks from prop
+    onDebouncedRankChange, // This will be called with the new rank after debounce
+    DEBOUNCE_DELAY_SKILLS
+  );
+
+  return (
+    <NumberSpinnerInput
+      id={`skill_ranks_${skill.id}`}
+      value={localRank} // Input displays the immediately updated localRank
+      onChange={setLocalRank} // Input directly updates localRank
+      min={0}
+      step={currentStepForInput}
+      inputClassName="w-14 h-7 text-sm"
+      buttonSize="sm"
+      buttonClassName="h-7 w-7"
+    />
+  );
+};
+
 
 export function SkillsFormSection({
   character,
@@ -65,8 +95,6 @@ export function SkillsFormSection({
 }: SkillsFormSectionProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
 
-  const [localRanks, setLocalRanks] = React.useState<Record<string, number>>({});
-
   const characterSkillInstances = character.skills;
   const characterClasses = character.classes;
   const characterRace = character.race as DndRaceId;
@@ -75,40 +103,6 @@ export function SkillsFormSection({
 
   const firstClass = characterClasses[0];
   const characterLevel = firstClass?.level || 1;
-
-  React.useEffect(() => {
-    const initialRanks: Record<string, number> = {};
-    character.skills.forEach(skill => {
-      initialRanks[skill.id] = skill.ranks || 0;
-    });
-    setLocalRanks(initialRanks);
-  }, [character.skills]);
-
-  const handleLocalRankChange = (skillId: string, newRank: number) => {
-    setLocalRanks(prevRanks => ({
-      ...prevRanks,
-      [skillId]: newRank,
-    }));
-  };
-
-  React.useEffect(() => {
-    const handler = setTimeout(() => {
-      let changed = false;
-      character.skills.forEach(skillInProp => {
-        const propRank = skillInProp.ranks || 0;
-        const currentLocalRank = localRanks[skillInProp.id];
-
-        if (currentLocalRank !== undefined && currentLocalRank !== propRank) {
-          onSkillChange(skillInProp.id, currentLocalRank, skillInProp.isClassSkill);
-          changed = true;
-        }
-      });
-      // if (changed) console.log("Debounced skill rank update sent to parent");
-    }, DEBOUNCE_DELAY_SKILLS);
-
-    return () => clearTimeout(handler);
-  }, [localRanks, character.skills, onSkillChange]);
-
 
   const {
     totalSkillPointsAvailable,
@@ -119,7 +113,6 @@ export function SkillsFormSection({
     intelligenceModifier,
     pointsForFirstLevel,
     pointsFromLevelProgression,
-    totalSkillPointsSpent
   } = React.useMemo(() => {
     if (translationsLoading || !translations) {
       return { totalSkillPointsAvailable: 0, skillPointsLeft: 0, classLabel: "", baseSkillPointsForClass: 0, racialBonusSkillPoints: 0, intelligenceModifier: 0, pointsForFirstLevel: 0, pointsFromLevelProgression: 0, totalSkillPointsSpent: 0 };
@@ -146,7 +139,7 @@ export function SkillsFormSection({
       if (!currentSkill.isClassSkill) {
         costMultiplier = 2;
       }
-      const rankForCalc = currentSkill.ranks || 0; // Use committed rank from props
+      const rankForCalc = currentSkill.ranks || 0;
       return acc + (rankForCalc * costMultiplier);
     }, 0);
     const currentSkillPointsLeft = currentTotalSkillPointsAvailable - currentTotalSkillPointsSpent;
@@ -195,7 +188,7 @@ export function SkillsFormSection({
     return characterSkillInstances.map(instance => {
       const definition = allCombinedSkillDefinitions.find(def => def.id === instance.id);
       return {
-        ...instance, // This includes the committed skill.ranks and skill.isClassSkill from props
+        ...instance, 
         name: definition?.name || 'Unknown Skill',
         keyAbility: definition?.keyAbility || 'none',
         description: definition?.description,
@@ -302,21 +295,20 @@ export function SkillsFormSection({
            </div>
         </div>
         <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
-          <div className="space-y-1 min-w-[680px]"> {/* Adjusted min-width */}
-            {/* Header Row */}
+          <div className="space-y-1 min-w-[680px]">
             <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
               <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderClassLabel || "Class?" }} />
               <span className="pl-1">{UI_STRINGS.skillsTableHeaderSkillLabel || "Skill"}</span>
               <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderSkillModLabel || "Skill<br/>Mod" }} />
               <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderKeyAbilityLabel || "Key<br/>Ability" }} />
               <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderAbilityModLabel || "Ability<br/>Mod" }} />
-              <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderMiscModLabel || "Misc<br/>Mod" }} />
+              <span className="text-center w-12">{UI_STRINGS.skillsTableHeaderMiscModLabel || "Misc<br/>Mod"}</span>
               <span className="text-center w-32">{UI_STRINGS.skillsTableHeaderRanksLabel || "Ranks"}</span>
               <span className="text-center w-12">{UI_STRINGS.skillsTableHeaderCostLabel || "Cost"}</span>
               <span className="text-center w-10">{UI_STRINGS.skillsTableHeaderMaxLabel || "Max"}</span>
             </div>
 
-            {skillsForDisplay.map(skill => { // skill here is from skillsForDisplay, which uses characterSkillInstances (props)
+            {skillsForDisplay.map(skill => { // skill here uses prop values for ranks
               const keyAbility = skill.keyAbility;
               const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === keyAbility);
               
@@ -338,11 +330,9 @@ export function SkillsFormSection({
 
               const calculatedMiscModifier = synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus;
               
-              const committedRankValue = skill.ranks || 0; // Use rank from prop for total calculation
+              const committedRankValue = skill.ranks || 0; 
               const totalBonus = committedRankValue + baseAbilityMod + calculatedMiscModifier + (skill.miscModifier || 0);
               
-              const spinnerRankValue = localRanks[skill.id] !== undefined ? localRanks[skill.id] : committedRankValue;
-
               const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
               const skillCostDisplay = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 2;
               const currentStepForInput = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 0.5;
@@ -354,7 +344,7 @@ export function SkillsFormSection({
                       id={`skill_class_${skill.id}`}
                       checked={skill.isClassSkill}
                       onCheckedChange={(checked) => {
-                          onSkillChange(skill.id, spinnerRankValue, !!checked);
+                          onSkillChange(skill.id, skill.ranks || 0, !!checked);
                       }}
                       className="h-3.5 w-3.5"
                     />
@@ -405,21 +395,16 @@ export function SkillsFormSection({
                   <span className="text-sm text-center w-12">{baseAbilityMod >= 0 ? '+' : ''}{baseAbilityMod}</span>
                   <span className="text-sm text-center w-12">{calculatedMiscModifier >= 0 ? '+' : ''}{calculatedMiscModifier}</span>
                   <div className="w-32 flex justify-center">
-                    <NumberSpinnerInput
-                      id={`skill_ranks_${skill.id}`}
-                      value={spinnerRankValue}
-                      onChange={(newValue) => handleLocalRankChange(skill.id, newValue)}
-                      min={0}
-                      step={currentStepForInput}
-                      inputClassName="w-14 h-7 text-sm"
-                      buttonSize="sm"
-                      buttonClassName="h-7 w-7"
+                    <DebouncedSkillRankInput
+                      skill={skill} // Pass the skill object which contains the prop rank
+                      currentStepForInput={currentStepForInput}
+                      onDebouncedRankChange={(newRank) => onSkillChange(skill.id, newRank, skill.isClassSkill)}
                     />
                   </div>
                   <span className="text-sm text-muted-foreground text-center w-12">{skillCostDisplay}</span>
                   <span className={cn(
                       "text-sm text-center w-10",
-                      (spinnerRankValue) > maxRanksValue ? "text-destructive font-bold" : "text-muted-foreground"
+                      (skill.ranks || 0) > maxRanksValue ? "text-destructive font-bold" : "text-muted-foreground"
                     )}>
                       {maxRanksValue}
                   </span>
@@ -433,4 +418,3 @@ export function SkillsFormSection({
     </>
   );
 }
-    

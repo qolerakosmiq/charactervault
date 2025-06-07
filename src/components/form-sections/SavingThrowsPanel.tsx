@@ -3,21 +3,22 @@
 
 import *as React from 'react';
 import type { AbilityScores, CharacterClass, SavingThrows, SavingThrowType, SingleSavingThrow, Character, AbilityName } from '@/types/character';
-// DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS will come from useI18n
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 import { Zap, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
-import { useI18n } from '@/context/I18nProvider'; // Import useI18n
-import { Skeleton } from '@/components/ui/skeleton'; // For loading state
+import { useI18n } from '@/context/I18nProvider'; 
+import { Skeleton } from '@/components/ui/skeleton'; 
 import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
+import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 
+const DEBOUNCE_DELAY = 400;
 
 interface SavingThrowsPanelProps {
   character: Pick<Character, 'savingThrows' | 'classes'>;
-  abilityScores: AbilityScores; // This should be actualAbilityScores from parent
+  abilityScores: AbilityScores; 
   onSavingThrowMiscModChange: (saveType: SavingThrowType, value: number) => void;
 }
 
@@ -30,8 +31,17 @@ export function SavingThrowsPanel({
 }: SavingThrowsPanelProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
 
-  const savingThrows = character.savingThrows;
-  const characterClasses = character.classes;
+  const debouncedMiscMods = {} as Record<SavingThrowType, [number, (val: number) => void]>;
+
+  SAVE_TYPES.forEach(saveType => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    debouncedMiscMods[saveType] = useDebouncedFormField(
+      character.savingThrows[saveType].miscMod || 0,
+      (value) => onSavingThrowMiscModChange(saveType, value),
+      DEBOUNCE_DELAY
+    );
+  });
+
 
   if (translationsLoading || !translations) {
     return (
@@ -58,30 +68,38 @@ export function SavingThrowsPanel({
 
   const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations;
   
-  const calculatedBaseSaves = getBaseSaves(characterClasses, DND_CLASSES);
+  const calculatedBaseSaves = getBaseSaves(character.classes, DND_CLASSES);
   
   const dataRows: Array<{
-    label: string; // Now always string as HTML is removed
-    getValue: (saveData: SingleSavingThrow, baseSave: number, abilityMod: number, total: number, saveType?: SavingThrowType, onMiscChange?: (type: SavingThrowType, val: number) => void) => React.ReactNode;
+    label: string; 
+    getValue: (
+        saveDataFromProp: SingleSavingThrow, // Use prop for display of non-editable parts
+        localMiscModValue: number,       // Use local state for spinner value
+        baseSave: number, 
+        abilityMod: number, 
+        totalCalculatedFromProp: number,  // Total calculated using prop's miscMod
+        saveType?: SavingThrowType, 
+        setLocalMiscMod?: (val: number) => void
+    ) => React.ReactNode;
     rowKey: string;
   }> = [
     {
       label: UI_STRINGS.savingThrowsRowLabelTotal || "Total",
-      getValue: (saveData, baseSave, abilityMod, total) => (
-        <span className={cn("text-lg font-bold", total >= 0 ? "text-accent" : "text-destructive")}>
-          {total >= 0 ? '+' : ''}{total}
+      getValue: (saveDataProp, localMiscMod, baseSave, abilityMod, totalFromProp) => (
+        <span className={cn("text-lg font-bold", totalFromProp >= 0 ? "text-accent" : "text-destructive")}>
+          {totalFromProp >= 0 ? '+' : ''}{totalFromProp}
         </span>
       ),
       rowKey: 'total',
     },
     {
       label: UI_STRINGS.savingThrowsRowLabelBase || "Base",
-      getValue: (saveData, baseSave) => baseSave,
+      getValue: (saveDataProp, localMiscMod, baseSave) => baseSave,
       rowKey: 'base',
     },
     {
       label: UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability Modifier",
-      getValue: (saveData, baseSave, abilityMod, total, saveType?: SavingThrowType) => {
+      getValue: (saveDataProp, localMiscMod, baseSave, abilityMod, totalFromProp, saveType?: SavingThrowType) => {
         if (!saveType) return renderModifierValue(abilityMod);
         const abilityKey = SAVING_THROW_ABILITIES[saveType];
         const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === abilityKey);
@@ -97,21 +115,21 @@ export function SavingThrowsPanel({
     },
      {
       label: UI_STRINGS.savingThrowsRowLabelMagicModifier || "Magic Modifier",
-      getValue: (saveData) => renderModifierValue(saveData.magicMod),
+      getValue: (saveDataProp) => renderModifierValue(saveDataProp.magicMod), // Display from prop
       rowKey: 'magicMod',
     },
     {
       label: UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier",
-      getValue: (saveData) => renderModifierValue(saveData.miscMod),
+      getValue: (saveDataProp) => renderModifierValue(saveDataProp.miscMod), // Display from prop
       rowKey: 'miscModDisplay',
     },
     {
       label: UI_STRINGS.savingThrowsRowLabelTemporaryModifier || "Temp. Modifier",
-      getValue: (saveData, baseSave, abilityMod, total, saveType?: SavingThrowType, onMiscChange?: (type: SavingThrowType, val: number) => void) => (
+      getValue: (saveDataProp, localMiscMod, baseSave, abilityMod, totalFromProp, saveType?: SavingThrowType, setLocalMiscMod?: (val: number) => void) => (
         <div className="flex justify-center">
           <NumberSpinnerInput
-            value={saveData.miscMod}
-            onChange={(newValue) => onMiscChange && saveType && onMiscChange(saveType, newValue)}
+            value={localMiscMod} // Input uses local (immediately updated) value
+            onChange={(newValue) => setLocalMiscMod && setLocalMiscMod(newValue)}
             min={-20}
             max={20}
             inputClassName="w-16 h-8 text-sm"
@@ -154,14 +172,18 @@ export function SavingThrowsPanel({
                       {dataRow.label}
                     </td>
                     {SAVE_TYPES.map((saveType) => {
-                      const currentSaveData = savingThrows[saveType];
+                      const [localMiscMod, setLocalMiscMod] = debouncedMiscMods[saveType];
+                      const currentSaveDataFromProp = character.savingThrows[saveType];
                       const baseSaveValue = calculatedBaseSaves[saveType];
                       const abilityKey = SAVING_THROW_ABILITIES[saveType];
                       const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
-                      const totalSave = baseSaveValue + abilityModifier + currentSaveData.miscMod + (currentSaveData.magicMod || 0);
+                      
+                      // Total calculated using the prop's miscMod for display consistency after debounce
+                      const totalSaveCalculatedFromProp = baseSaveValue + abilityModifier + currentSaveDataFromProp.miscMod + (currentSaveDataFromProp.magicMod || 0);
+                      
                       return (
                         <td key={`${saveType}-${dataRow.rowKey}`} className="py-3 px-1 text-center text-sm text-foreground align-middle">
-                          {dataRow.getValue(currentSaveData, baseSaveValue, abilityModifier, totalSave, saveType, onSavingThrowMiscModChange)}
+                          {dataRow.getValue(currentSaveDataFromProp, localMiscMod, baseSaveValue, abilityModifier, totalSaveCalculatedFromProp, saveType, setLocalMiscMod)}
                         </td>
                       );
                     })}

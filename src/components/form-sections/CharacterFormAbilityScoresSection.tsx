@@ -16,6 +16,7 @@ import { useDefinitionsStore } from '@/lib/definitions-store';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 
 const DEBOUNCE_DELAY = 400; // ms
 
@@ -48,6 +49,25 @@ export function CharacterFormAbilityScoresSection({
     rerollOnesForAbilityScores: state.rerollOnesForAbilityScores,
     pointBuyBudget: state.pointBuyBudget,
   }));
+  
+  const debouncedStates = {} as Record<Exclude<AbilityName, 'none'>, [number, (val: number) => void]> & 
+                                Record<`${Exclude<AbilityName, 'none'>}TempMod`, [number, (val: number) => void]>;
+
+  abilityKeys.forEach(key => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    debouncedStates[key] = useDebouncedFormField(
+      character.abilityScores[key] || 0,
+      (value) => onBaseAbilityScoreChange(key, value),
+      DEBOUNCE_DELAY
+    );
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    debouncedStates[`${key}TempMod`] = useDebouncedFormField(
+      character.abilityScoreTempCustomModifiers?.[key] || 0,
+      (value) => onAbilityScoreTempCustomModifierChange(key, value),
+      DEBOUNCE_DELAY
+    );
+  });
+
 
   let numericPointBuyBudget: number;
   if (typeof rawPointBuyBudgetFromStore === 'number' && !isNaN(rawPointBuyBudgetFromStore)) {
@@ -63,60 +83,21 @@ export function CharacterFormAbilityScoresSection({
 
   const handleApplyRolledScores = (newScores: AbilityScores) => {
     onMultipleBaseAbilityScoresChange(newScores);
+    // Update local debounced states as well, so they don't lag behind
+    abilityKeys.forEach(key => {
+      debouncedStates[key][1](newScores[key]); 
+    });
     setIsRollerDialogOpen(false);
   };
 
   const handleApplyPointBuyScores = (newScores: AbilityScores) => {
     onMultipleBaseAbilityScoresChange(newScores);
+    abilityKeys.forEach(key => {
+      debouncedStates[key][1](newScores[key]);
+    });
     setIsPointBuyDialogOpen(false);
   };
-
-  const baseAbilityScoresFromProp = character.abilityScores;
-  const tempModsFromProp = character.abilityScoreTempCustomModifiers || { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 };
-
-  // Local states for debounced inputs
-  const [localBaseScores, setLocalBaseScores] = React.useState<AbilityScores>(baseAbilityScoresFromProp);
-  const [localTempMods, setLocalTempMods] = React.useState<AbilityScores>(tempModsFromProp);
-
-  // Sync local states with props if props change from outside (e.g. initial load, dialog apply)
-  React.useEffect(() => { 
-    setLocalBaseScores(baseAbilityScoresFromProp); 
-  }, [baseAbilityScoresFromProp]);
-
-  React.useEffect(() => { 
-    setLocalTempMods(tempModsFromProp); 
-  }, [tempModsFromProp]);
-
-  // Debounce effects for base scores
-  React.useEffect(() => {
-    const handler = setTimeout(() => {
-      let changed = false;
-      for (const ability of abilityKeys) {
-        if (localBaseScores[ability] !== baseAbilityScoresFromProp[ability]) {
-          onBaseAbilityScoreChange(ability, localBaseScores[ability]);
-          changed = true; 
-        }
-      }
-    }, DEBOUNCE_DELAY);
-    return () => clearTimeout(handler);
-  }, [localBaseScores, baseAbilityScoresFromProp, onBaseAbilityScoreChange]);
-
-  // Debounce effects for temp mods
-  React.useEffect(() => {
-    const handler = setTimeout(() => {
-      let changed = false;
-      for (const ability of abilityKeys) {
-        const propMod = tempModsFromProp[ability] ?? 0;
-        if (localTempMods[ability] !== propMod) {
-          onAbilityScoreTempCustomModifierChange(ability, localTempMods[ability]);
-          changed = true;
-        }
-      }
-    }, DEBOUNCE_DELAY);
-    return () => clearTimeout(handler);
-  }, [localTempMods, tempModsFromProp, onAbilityScoreTempCustomModifierChange]);
-
-
+  
   if (translationsLoading || !translations) {
     return (
       <Card>
@@ -178,21 +159,18 @@ export function CharacterFormAbilityScoresSection({
         <CardContent className="pt-2">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
             {abilityKeys.map(ability => {
-              const baseScoreValue = localBaseScores[ability]; // Use local state for input value
-              const tempCustomModValue = localTempMods[ability] ?? 0; // Use local state
+              const [baseScoreValue, setBaseScoreValue] = debouncedStates[ability];
+              const [tempCustomModValue, setTempCustomModValue] = debouncedStates[`${ability}TempMod`];
 
+              // Display total score using prop values (reflects committed state after debounce)
               const actualScoreData = detailedAbilityScores ? detailedAbilityScores[ability] : null;
-              
-              const racialEffectValue = detailedAbilityScores?.[ability]?.components.find(c => c.source.startsWith("Race"))?.value || 0;
-              const agingEffectValue = detailedAbilityScores?.[ability]?.components.find(c => c.source.startsWith("Aging"))?.value || 0;
-              const featEffectValue = detailedAbilityScores?.[ability]?.components.find(c => c.source === "feats")?.value || 0;
-
               const displayTotalScore = actualScoreData 
                 ? actualScoreData.finalScore 
-                : (baseScoreValue || 0) + (tempCustomModValue || 0) + 
-                  racialEffectValue + 
-                  agingEffectValue + 
-                  featEffectValue;
+                : (character.abilityScores[ability] || 0) + 
+                  (character.abilityScoreTempCustomModifiers?.[ability] || 0) +
+                  (actualScoreData?.components.find(c => c.source.startsWith("Race"))?.value || 0) +
+                  (actualScoreData?.components.find(c => c.source.startsWith("Aging"))?.value || 0) +
+                  (actualScoreData?.components.find(c => c.source === "feats")?.value || 0);
               
               const displayModifier = calculateAbilityModifier(displayTotalScore);
 
@@ -228,8 +206,8 @@ export function CharacterFormAbilityScoresSection({
                     <Label htmlFor={`base-score-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresBaseScoreLabel || "Base Score"}</Label>
                     <NumberSpinnerInput
                       id={`base-score-${ability}`}
-                      value={baseScoreValue} // Controlled by local state
-                      onChange={(newValue) => setLocalBaseScores(prev => ({...prev, [ability]: newValue}))}
+                      value={baseScoreValue} 
+                      onChange={setBaseScoreValue}
                       min={1}
                       inputClassName="h-8 text-base text-center"
                       buttonSize="icon"
@@ -242,8 +220,8 @@ export function CharacterFormAbilityScoresSection({
                     <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresTempModLabel || "Temporary Modifier"}</Label>
                     <NumberSpinnerInput
                       id={`temp-mod-${ability}`}
-                      value={tempCustomModValue} // Controlled by local state
-                      onChange={(newValue) => setLocalTempMods(prev => ({...prev, [ability]: newValue}))}
+                      value={tempCustomModValue} 
+                      onChange={setTempCustomModValue}
                       inputClassName="h-8 text-base text-center"
                       buttonSize="icon"
                       buttonClassName="h-8 w-8"
