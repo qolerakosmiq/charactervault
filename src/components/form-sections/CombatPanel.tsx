@@ -16,14 +16,14 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 
 const DEBOUNCE_DELAY = 400;
 
-type CombatPanelCharacterData = Pick<Character, 
-  'abilityScores' | 'classes' | 'size' | 
-  'babMiscModifier' | 'initiativeMiscModifier' | 'grappleMiscModifier' | 
+type CombatPanelCharacterData = Pick<Character,
+  'abilityScores' | 'classes' | 'size' |
+  'babMiscModifier' | 'initiativeMiscModifier' | 'grappleMiscModifier' |
   'grappleDamage_baseNotes' | 'grappleDamage_bonus' | 'grappleWeaponChoice'
 >;
 
-type CombatFieldKey = keyof Pick<Character, 
-  'babMiscModifier' | 'initiativeMiscModifier' | 'grappleMiscModifier' | 
+type CombatFieldKey = keyof Pick<Character,
+  'babMiscModifier' | 'initiativeMiscModifier' | 'grappleMiscModifier' |
   'grappleDamage_bonus' | 'grappleWeaponChoice'
 >;
 
@@ -37,6 +37,21 @@ interface CombatPanelProps {
 
 export const CombatPanel = ({ combatData, onCharacterUpdate, onOpenCombatStatInfoDialog }: CombatPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
+
+  // Guard against undefined combatData or loading translations
+  if (!combatData || translationsLoading || !translations) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-3"> <Swords className="h-8 w-8 text-primary" /> <Skeleton className="h-7 w-1/2" /> </div>
+          <Skeleton className="h-4 w-3/4" />
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          {[...Array(4)].map((_, i) => <Skeleton key={`combat-panel-skel-${i}`} className="h-32 rounded-md" />)}
+        </CardContent>
+      </Card>
+    );
+  }
 
   const [localBabMiscModifier, setLocalBabMiscModifier] = useDebouncedFormField(
     combatData.babMiscModifier || 0,
@@ -64,19 +79,6 @@ export const CombatPanel = ({ combatData, onCharacterUpdate, onOpenCombatStatInf
     DEBOUNCE_DELAY
   );
 
-  if (translationsLoading || !translations || !combatData) {
-    return (
-      <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-3"> <Swords className="h-8 w-8 text-primary" /> <Skeleton className="h-7 w-1/2" /> </div>
-          <Skeleton className="h-4 w-3/4" />
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-          {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-32 rounded-md" />)}
-        </CardContent>
-      </Card>
-    );
-  }
 
   const { DND_CLASSES, SIZES, UI_STRINGS } = translations;
 
@@ -87,16 +89,16 @@ export const CombatPanel = ({ combatData, onCharacterUpdate, onOpenCombatStatInf
   const sizeModGrapple = getSizeModifierGrapple(combatData.size, SIZES);
 
   const baseBabArray = getBab(classes, DND_CLASSES);
-  const totalBabWithModifier = baseBabArray.map(bab => bab + (combatData.babMiscModifier || 0)); 
+  const totalBabWithModifier = baseBabArray.map(bab => bab + (combatData.babMiscModifier || 0));
 
-  const baseInitiative = calculateInitiative(dexModifier, combatData.initiativeMiscModifier || 0); 
+  const baseInitiative = calculateInitiative(dexModifier, combatData.initiativeMiscModifier || 0);
 
   const baseGrappleModifier = calculateGrapple(classes, strModifier, sizeModGrapple, DND_CLASSES);
-  const totalGrappleModifier = baseGrappleModifier + (combatData.grappleMiscModifier || 0); 
+  const totalGrappleModifier = baseGrappleModifier + (combatData.grappleMiscModifier || 0);
 
   const grappleDamageBaseNotes = combatData.grappleDamage_baseNotes || getUnarmedGrappleDamage(combatData.size, SIZES);
   const grappleDamageBaseDice = grappleDamageBaseNotes.split(' ')[0] || '0';
-  const totalNumericGrappleBonus = strModifier + (combatData.grappleDamage_bonus || 0); 
+  const totalNumericGrappleBonus = strModifier + (combatData.grappleDamage_bonus || 0);
   const displayedGrappleDamageTotal = `${grappleDamageBaseDice}${totalNumericGrappleBonus !== 0 ? `${totalNumericGrappleBonus >= 0 ? '+' : ''}${totalNumericGrappleBonus}` : ''}`;
 
 
@@ -248,3 +250,5 @@ export const CombatPanel = ({ combatData, onCharacterUpdate, onOpenCombatStatInf
   );
 };
 // CombatPanel.displayName = 'CombatPanelComponent';
+
+    
