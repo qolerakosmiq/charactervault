@@ -328,15 +328,14 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
   }, [character?.race, translations]);
 
   const currentMinAgeForInput = React.useMemo(() => {
-    if (character?.race && translations) {
-      const selectedRaceInfo = translations.DND_RACES.find(r => r.value === character.race);
-      if (selectedRaceInfo) {
-        const raceKey = selectedRaceInfo.value as DndRaceId;
-        return translations.DND_RACE_MIN_ADULT_AGE_DATA[raceKey] || 1;
-      }
+    if (!character || !character.race || !translations || translationsLoading) return 1;
+    const selectedRaceInfo = translations.DND_RACES.find(r => r.value === character.race);
+    if (selectedRaceInfo) {
+      const raceKey = selectedRaceInfo.value as DndRaceId;
+      return translations.DND_RACE_MIN_ADULT_AGE_DATA[raceKey] || 1;
     }
     return 1;
-  }, [character?.race, translations]);
+  }, [character, translations, translationsLoading]);
 
   React.useEffect(() => {
     if (character && character.race && translations) {
@@ -799,15 +798,14 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
             onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:items-start">
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-6 md:items-start">
           <ResistancesPanel
             characterData={resistancesData}
             onResistanceChange={handleResistanceChange}
             onDamageReductionChange={handleDamageReductionChange}
             onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
           />
-          {/* This column is now empty, ResistancesPanel will take up half width on md screens. */}
-          {/* Add another panel here or adjust grid-cols if ResistancesPanel should be full width */}
+          {/* ResistancesPanel will now be full width on md screens */}
         </div>
 
 
@@ -849,4 +847,5 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     </>
   );
 };
+
 
