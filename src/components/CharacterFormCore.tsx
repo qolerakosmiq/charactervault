@@ -837,8 +837,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
         />
 
-        <Separator className="my-10" />
-
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-12 pt-8 border-t">
           <Button type="button" variant="outline" size="lg" onClick={handleCancel} className="w-full md:w-auto">
             {UI_STRINGS.formButtonCancel || "Cancel"}
