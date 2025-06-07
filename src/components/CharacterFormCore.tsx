@@ -42,7 +42,7 @@ import { CombatPanel } from '@/components/form-sections/CombatPanel';
 import { ResistancesPanel } from '@/components/form-sections/ResistancesPanel';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
-import { Separator } from '@/components/ui/separator';
+
 import { Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -798,7 +798,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
               onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
           />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:items-start">
           <ArmorClassPanel
             character={character}
             onCharacterUpdate={handleCharacterFieldUpdate}
