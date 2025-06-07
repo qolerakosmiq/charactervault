@@ -196,6 +196,7 @@
     "skillsListingCalculatedBonusesLabel": "Misc<br/>Mod",
     "badgeCustomLabel": "Custom",
     "featsPanelTitle": "Feats",
+    "featsPanelSheetDescription": "Manage your character's special abilities and advantages.",
     "featsPanelFeatsAvailableLabel": "Feats Available:",
     "featsPanelFeatsLeftLabel": "Feats Left to Choose:",
     "featsPanelBreakdownBaseLabel": "Base",
@@ -207,7 +208,13 @@
     "featsPanelGrantedFeatsTitle": "Granted Feats",
     "featsPanelNoFeatsYet": "No feats selected or granted yet.",
     "featInstanceEditAriaLabel": "Edit custom feat definition {featLabel}",
-    "featInstanceRemoveAriaLabel": "Remove feat instance",
+    "featInstanceRemoveAriaLabel": "Remove Feat",
+    "featEditSpecializationAriaLabel": "Edit Specialization",
+    "featSpecializationLabel": "Specialization",
+    "featSpecializationPlaceholder": "Enter specialization detail",
+    "featNoSpecializationNeeded": "This feat does not require specialization.",
+    "aiSuggestionsButton": "AI Suggestions",
+    "aiSuggestedFeatLabel": "AI Suggested",
     "featSelectionDialogTitle": "Select a Feat",
     "featSelectionDialogDescription": "Search and choose a feat from the list. Descriptions and prerequisites are shown below each feat.",
     "featSelectionDialogSearchPlaceholder": "Search feats by name or description...",
@@ -293,9 +300,19 @@
     "dmSettingsPointBuyBudgetLabel": "Point Buy Budget for Ability Scores",
     "dmSettingsPointBuyBudgetDescription": "Default is 25 points for standard D&D 3.5 point buy.",
     "dmSettingsAddCustomSkillButton": "Add New Custom Skill",
+    "dmSettingsEditCustomSkillButton": "Edit Custom Skill Definition",
     "dmSettingsAddCustomFeatButton": "Add New Custom Feat",
+    "dmSettingsEditCustomFeatButton": "Edit Custom Feat Definition",
     "toastCharacterForgedTitle": "Character Forged!",
     "toastCharacterForgedDescription": "{characterName} has been successfully created.",
+    "toastCustomFeatAddedTitle": "Custom Feat Added",
+    "toastCustomFeatAddedDesc": "{featLabel} has been added to global definitions.",
+    "toastCustomFeatUpdatedTitle": "Custom Feat Updated",
+    "toastCustomFeatUpdatedDesc": "{featLabel} has been updated.",
+    "toastCustomSkillAddedTitle": "Custom Skill Added",
+    "toastCustomSkillAddedDesc": "{skillName} has been added to global definitions.",
+    "toastCustomSkillUpdatedTitle": "Custom Skill Updated",
+    "toastCustomSkillUpdatedDesc": "{skillName} has been updated.",
     "dashboardLoadingCharacters": "Loading characters...",
     "dashboardTitle": "Your Adventurers",
     "dashboardButtonCreateNew": "Create New Character",
@@ -375,5 +392,3 @@
     "toastInvalidAbilityScoreDesc": "{abilityName} score must be greater than 0."
   }
 }
-
-    
