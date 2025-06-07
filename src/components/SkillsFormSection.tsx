@@ -304,7 +304,7 @@ export function SkillsFormSection({
               <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderSkillModLabel || "Skill<br/>Mod" }} />
               <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderKeyAbilityLabel || "Key<br/>Ability" }} />
               <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderAbilityModLabel || "Ability<br/>Mod" }} />
-              <span className="text-center w-12">{UI_STRINGS.skillsTableHeaderMiscModLabel || "Misc<br/>Mod"}</span>
+              <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderMiscModLabel || "Misc<br/>Mod" }} />
               <span className="text-center w-32">{UI_STRINGS.skillsTableHeaderRanksLabel || "Ranks"}</span>
               <span className="text-center w-12">{UI_STRINGS.skillsTableHeaderCostLabel || "Cost"}</span>
               <span className="text-center w-10">{UI_STRINGS.skillsTableHeaderMaxLabel || "Max"}</span>
