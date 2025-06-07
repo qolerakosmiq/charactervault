@@ -140,10 +140,5 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
     );
   }
   
-  return outputBlocks.length > 0 ? outputBlocks.map((block, index) => (
-        <React.Fragment key={`block-${index}`}>
-          {block}
-          {index < outputBlocks.length - 1 && <Separator className="my-3" />}
-        </React.Fragment>
-      )) : null; 
+  return outputBlocks.length > 0 ? outputBlocks : null;
 };

@@ -187,7 +187,7 @@ export function InfoDisplayDialog({
       ALIGNMENT_PREREQUISITE_OPTIONS, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, UI_STRINGS
     } = translations;
 
-    let data: DerivedDialogData = { title: UI_STRINGS.infoDialogDefaultTitle || 'Information' };
+    let data: DerivedDialogData = { title: UI_STRINGS.infoDialogDefaultTitle || 'Information', content: [] };
     let detailsListHeading: string = UI_STRINGS.infoDialogSectionHeadingDetails || "Details";
 
     switch (contentType.type) {
@@ -268,18 +268,18 @@ export function InfoDisplayDialog({
       case 'alignmentSummary':
         data = {
           title: UI_STRINGS.infoDialogAlignmentsTitle || 'Alignments',
-          content: AlignmentSummaryContentDisplay({htmlContent: ALIGNMENTS.map(a => `<p><b>${a.label}:</b><br />${a.description}</p>`).join('')}),
+          content: [AlignmentSummaryContentDisplay({htmlContent: ALIGNMENTS.map(a => `<p><b>${a.label}:</b><br />${a.description}</p>`).join('')})],
         };
         break;
       case 'deity':
         const deityId = character.deity;
         const deityData = DND_DEITIES.find(d => d.value === deityId);
         if (deityData) {
-            data = { title: deityData.label, content: DeityContentDisplay({htmlContent: deityData.description || `<p>${(UI_STRINGS.infoDialogNoSkillDescription || 'No detailed description available for').replace('{itemName}', deityData.label)}</p>`}) };
+            data = { title: deityData.label, content: [DeityContentDisplay({htmlContent: deityData.description || `<p>${(UI_STRINGS.infoDialogNoSkillDescription || 'No detailed description available for').replace('{itemName}', deityData.label)}</p>`})] };
         } else if (deityId && deityId.trim() !== '') {
-            data = { title: deityId, content: DeityContentDisplay({htmlContent: `<p>${UI_STRINGS.infoDialogDeityPlaceholder || 'Custom deity. No predefined information available.'}</p>`}) };
+            data = { title: deityId, content: [DeityContentDisplay({htmlContent: `<p>${UI_STRINGS.infoDialogDeityPlaceholder || 'Custom deity. No predefined information available.'}</p>`})] };
         } else {
-            data = { title: UI_STRINGS.infoDialogDeityDefaultTitle || "Deity Information", content: DeityContentDisplay({htmlContent: `<p>${UI_STRINGS.infoDialogDeityPlaceholder || "Select or type a deity to see more information."}</p>`})};
+            data = { title: UI_STRINGS.infoDialogDeityDefaultTitle || "Deity Information", content: [DeityContentDisplay({htmlContent: `<p>${UI_STRINGS.infoDialogDeityPlaceholder || "Select or type a deity to see more information."}</p>`})]};
         }
         break;
       case 'abilityScoreBreakdown': {
@@ -289,7 +289,7 @@ export function InfoDisplayDialog({
         const abilityNameString = abilityLabelForTitle?.label || abilityKeyForTitle;
         data = {
           title: (UI_STRINGS.infoDialogTitleScoreCalculation || "{abilityName} Score Calculation").replace("{abilityName}", abilityNameString),
-          content: AbilityScoreBreakdownContentDisplay({abilityScoreBreakdown: detailedScores[contentType.abilityName], uiStrings: UI_STRINGS}),
+          content: [AbilityScoreBreakdownContentDisplay({abilityScoreBreakdown: detailedScores[contentType.abilityName], uiStrings: UI_STRINGS})],
         };
         break;
       }
@@ -429,7 +429,7 @@ export function InfoDisplayDialog({
             }),
           };
         } else {
-            data = { title: UI_STRINGS.infoDialogSkillDefaultTitle || "Skill Information", content: GenericHtmlContentDisplay({htmlContent: `<p>${UI_STRINGS.infoDialogSkillNotFound || "Skill details not found."}</p>`})};
+            data = { title: UI_STRINGS.infoDialogSkillDefaultTitle || "Skill Information", content: [GenericHtmlContentDisplay({htmlContent: `<p>${UI_STRINGS.infoDialogSkillNotFound || "Skill details not found."}</p>`})]};
         }
         break;
       }
@@ -440,7 +440,7 @@ export function InfoDisplayDialog({
 
         data = {
           title: (UI_STRINGS.infoDialogTitleResistanceBreakdown || "{resistanceName} Resistance Breakdown").replace("{resistanceName}", resistanceLabel),
-          content: ResistanceBreakdownContentDisplay({
+          content: [ResistanceBreakdownContentDisplay({
             resistanceBreakdown: {
                 name: resistanceLabel,
                 base: resistanceValue.base || 0,
@@ -448,7 +448,7 @@ export function InfoDisplayDialog({
                 total: (resistanceValue.base || 0) + (resistanceValue.customMod || 0),
             },
             uiStrings: UI_STRINGS,
-          }),
+          })],
         };
         break;
       case 'acBreakdown': {
@@ -482,14 +482,14 @@ export function InfoDisplayDialog({
         else if (contentType.acType === 'Touch') totalCalculated = 10 + dexMod + sizeModACVal + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (character.acMiscModifier || 0);
         else if (contentType.acType === 'Flat-Footed') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (character.acMiscModifier || 0);
 
-        data = { title: (UI_STRINGS.infoDialogTitleAcBreakdown || "{acType} AC Breakdown").replace("{acType}", contentType.acType), content: AcBreakdownContentDisplay({detailsList: details, totalACValue: totalCalculated, detailsListHeading, uiStrings: UI_STRINGS, abilityLabels: ABILITY_LABELS }) };
+        data = { title: (UI_STRINGS.infoDialogTitleAcBreakdown || "{acType} AC Breakdown").replace("{acType}", contentType.acType), content: [AcBreakdownContentDisplay({detailsList: details, totalACValue: totalCalculated, detailsListHeading, uiStrings: UI_STRINGS, abilityLabels: ABILITY_LABELS })] };
         break;
       }
       case 'babBreakdown': {
         const baseBabArrayVal = getBab(character.classes, DND_CLASSES);
         data = {
           title: UI_STRINGS.infoDialogTitleBabBreakdown || 'Base Attack Bonus Breakdown',
-          content: BabBreakdownContentDisplay({
+          content: [BabBreakdownContentDisplay({
             babBreakdown: {
               baseBabFromClasses: baseBabArrayVal,
               miscModifier: character.babMiscModifier || 0,
@@ -497,7 +497,7 @@ export function InfoDisplayDialog({
               characterClassLabel: DND_CLASSES.find(c => c.value === character.classes[0]?.className)?.label || character.classes[0]?.className
             },
             uiStrings: UI_STRINGS
-          }),
+          })],
         };
         break;
       }
@@ -506,7 +506,7 @@ export function InfoDisplayDialog({
         const dexMod = calculateAbilityModifier(detailedCharScores.dexterity.finalScore);
         data = {
           title: UI_STRINGS.infoDialogTitleInitiativeBreakdown || 'Initiative Breakdown',
-          content: InitiativeBreakdownContentDisplay({
+          content: [InitiativeBreakdownContentDisplay({
             initiativeBreakdown: {
               dexModifier: dexMod,
               miscModifier: character.initiativeMiscModifier || 0,
@@ -514,7 +514,7 @@ export function InfoDisplayDialog({
             },
             uiStrings: UI_STRINGS,
             abilityLabels: ABILITY_LABELS,
-          }),
+          })],
         };
         break;
       }
@@ -525,7 +525,7 @@ export function InfoDisplayDialog({
         const sizeModGrappleVal = getSizeModifierGrapple(character.size, SIZES);
         data = {
           title: UI_STRINGS.infoDialogTitleGrappleModifierBreakdown || 'Grapple Modifier Breakdown',
-          content: GrappleModifierBreakdownContentDisplay({
+          content: [GrappleModifierBreakdownContentDisplay({
             grappleModifierBreakdown: {
                 baseAttackBonus: baseBabArrayVal[0] || 0,
                 strengthModifier: strMod,
@@ -535,7 +535,7 @@ export function InfoDisplayDialog({
             },
             uiStrings: UI_STRINGS,
             abilityLabels: ABILITY_LABELS,
-          }),
+          })],
         };
         break;
       }
@@ -544,7 +544,7 @@ export function InfoDisplayDialog({
         const strMod = calculateAbilityModifier(detailedCharScores.strength.finalScore);
         data = {
           title: UI_STRINGS.infoDialogTitleGrappleDamageBreakdown || 'Grapple Damage Breakdown',
-          content: GrappleDamageBreakdownContentDisplay({
+          content: [GrappleDamageBreakdownContentDisplay({
             grappleDamageBreakdown: {
               baseDamage: character.grappleDamage_baseNotes || getUnarmedGrappleDamage(character.size, SIZES),
               bonus: character.grappleDamage_bonus || 0,
@@ -552,7 +552,7 @@ export function InfoDisplayDialog({
             },
             uiStrings: UI_STRINGS,
             abilityLabels: ABILITY_LABELS,
-          }),
+          })],
         };
         break;
       }
@@ -561,12 +561,12 @@ export function InfoDisplayDialog({
         const speedNameString = speedBreakdownDetails.name;
         data = {
           title: (UI_STRINGS.infoDialogTitleSpeedBreakdown || "{speedName} Breakdown").replace("{speedName}", speedNameString),
-          content: SpeedBreakdownContentDisplay({speedBreakdown: speedBreakdownDetails, uiStrings: UI_STRINGS}),
+          content: [SpeedBreakdownContentDisplay({speedBreakdown: speedBreakdownDetails, uiStrings: UI_STRINGS})],
         };
         break;
       }
       case 'genericHtml':
-        data = { title: contentType.title, content: GenericHtmlContentDisplay({htmlContent: contentType.content}) };
+        data = { title: contentType.title, content: [GenericHtmlContentDisplay({htmlContent: contentType.content})] };
         break;
     }
     return data;
@@ -597,21 +597,22 @@ export function InfoDisplayDialog({
 
   const {
     title: finalTitle,
-    content,
+    content: contentBlocks,
   } = derivedData;
 
   const renderContent = () => {
-    if (!content) return null;
+    if (!contentBlocks) return null;
 
-    if (Array.isArray(content)) {
-      return content.map((block, index, arr) => (
+    if (Array.isArray(contentBlocks)) {
+      return contentBlocks.map((block, index, arr) => (
         <React.Fragment key={index}>
           {block}
           {index < arr.length - 1 && <Separator className="my-3" />}
         </React.Fragment>
       ));
     }
-    return content;
+    // If content is not an array (e.g., directly a single ReactNode from RaceContentDisplay/ClassContentDisplay if they don't return arrays)
+    return contentBlocks;
   };
 
 
