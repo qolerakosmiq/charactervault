@@ -48,7 +48,7 @@ import { ArmorClassPanel } from '@/components/form-sections/ArmorClassPanel';
 import { SpeedPanel } from '@/components/form-sections/SpeedPanel';
 import { CombatPanel } from '@/components/form-sections/CombatPanel';
 import { ResistancesPanel } from '@/components/form-sections/ResistancesPanel';
-import { LanguagesPanel } from '@/components/form-sections/LanguagesPanel'; // Added
+import { LanguagesPanel } from '@/components/form-sections/LanguagesPanel';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 
@@ -462,13 +462,14 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
   }, []);
 
   const handleCustomSkillDefinitionSaveToStore = React.useCallback((skillData: CustomSkillDefinition) => {
+    if(!translations) return;
     const existing = definitionsActions.getCustomSkillDefinitionById(skillData.id);
     if(existing) {
         definitionsActions.updateCustomSkillDefinition(skillData);
-        toast({ title: translations?.UI_STRINGS.toastCustomSkillUpdatedTitle || "Custom Skill Updated", description: (translations?.UI_STRINGS.toastCustomSkillUpdatedDesc || "{skillName} has been updated.").replace("{skillName}", skillData.name) });
+        toast({ title: translations.UI_STRINGS.toastCustomSkillUpdatedTitle, description: translations.UI_STRINGS.toastCustomSkillUpdatedDesc.replace("{skillName}", skillData.name) });
     } else {
         definitionsActions.addCustomSkillDefinition(skillData);
-        toast({ title: translations?.UI_STRINGS.toastCustomSkillAddedTitle || "Custom Skill Added", description: (translations?.UI_STRINGS.toastCustomSkillAddedDesc || "{skillName} has been added to global definitions.").replace("{skillName}", skillData.name) });
+        toast({ title: translations.UI_STRINGS.toastCustomSkillAddedTitle, description: translations.UI_STRINGS.toastCustomSkillAddedDesc.replace("{skillName}", skillData.name) });
     }
     setIsAddOrEditSkillDialogOpen(false);
     setSkillToEdit(undefined);
@@ -494,11 +495,11 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     const existing = definitionsActions.getCustomFeatDefinitionById(featDefData.value);
     if (existing) {
         definitionsActions.updateCustomFeatDefinition(featDefData);
-        toast({ title: translations.UI_STRINGS.toastCustomFeatUpdatedTitle || "Custom Feat Updated", description: (translations.UI_STRINGS.toastCustomFeatUpdatedDesc || "{featLabel} has been updated.").replace("{featLabel}", featDefData.label) });
+        toast({ title: translations.UI_STRINGS.toastCustomFeatUpdatedTitle, description: translations.UI_STRINGS.toastCustomFeatUpdatedDesc.replace("{featLabel}", featDefData.label) });
 
     } else {
         definitionsActions.addCustomFeatDefinition(featDefData);
-        toast({ title: translations.UI_STRINGS.toastCustomFeatAddedTitle || "Custom Feat Added", description: (translations.UI_STRINGS.toastCustomFeatAddedDesc || "{featLabel} has been added to global definitions.").replace("{featLabel}", featDefData.label) });
+        toast({ title: translations.UI_STRINGS.toastCustomFeatAddedTitle, description: translations.UI_STRINGS.toastCustomFeatAddedDesc.replace("{featLabel}", featDefData.label) });
     }
     const oldDefinition = allAvailableFeatDefinitions.find(d => d.value === featDefData.value && d.isCustom);
     if (oldDefinition?.canTakeMultipleTimes && !featDefData.canTakeMultipleTimes) {
@@ -599,7 +600,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     if (character.age < minAgeForValidation) { 
       toast({ 
         title: UI_STRINGS.toastInvalidAgeTitle, 
-        description: (UI_STRINGS.toastInvalidAgeDesc || 'Age must be at least {minAge}{raceContext}.')
+        description: UI_STRINGS.toastInvalidAgeDesc
           .replace('{minAge}', String(minAgeForValidation))
           .replace('{raceContext}', selectedRaceInfoForValidation ? ` for a ${selectedRaceInfoForValidation.label}` : ''),
         variant: "destructive" 
@@ -611,8 +612,8 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
       if (ability === 'none') continue;
       if (character.abilityScores[ability] <= 0) { 
         toast({ 
-          title: (UI_STRINGS.toastInvalidAbilityScoreTitle || "Invalid {abilityName} Score").replace('{abilityName}', translations.ABILITY_LABELS.find(al => al.value === ability)?.label || ability),
-          description: (UI_STRINGS.toastInvalidAbilityScoreDesc || "{abilityName} score must be greater than 0.").replace('{abilityName}', translations.ABILITY_LABELS.find(al => al.value === ability)?.label || ability), 
+          title: UI_STRINGS.toastInvalidAbilityScoreTitle.replace('{abilityName}', translations.ABILITY_LABELS.find(al => al.value === ability)?.label || ability),
+          description: UI_STRINGS.toastInvalidAbilityScoreDesc.replace('{abilityName}', translations.ABILITY_LABELS.find(al => al.value === ability)?.label || ability), 
           variant: "destructive" 
         }); 
         return; 
@@ -759,26 +760,36 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
         />
         
-        <div className="grid grid-cols-1 gap-6">
-           <SavingThrowsPanel
-              savingThrowsData={savingThrowsData}
-              abilityScores={actualAbilityScoresForSavesAndSkills}
-              onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
-          />
-        </div>
+        <SavingThrowsPanel
+            savingThrowsData={savingThrowsData}
+            abilityScores={actualAbilityScoresForSavesAndSkills}
+            onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
+        />
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:items-start">
-          <ArmorClassPanel
-            acData={acData}
-            onCharacterUpdate={handleCharacterFieldUpdate as any} 
-            onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
-          />
-          <SpeedPanel
-            speedData={speedData}
-            onCharacterUpdate={handleCharacterFieldUpdate as any} 
-            onOpenSpeedInfoDialog={handleOpenSpeedInfoDialog}
-            onOpenArmorSpeedPenaltyInfoDialog={handleOpenArmorSpeedPenaltyInfoDialog}
-            onOpenLoadSpeedPenaltyInfoDialog={handleOpenLoadSpeedPenaltyInfoDialog}
-          />
+          <div className="space-y-6"> {/* Column 1: AC and Languages */}
+            <ArmorClassPanel
+              acData={acData}
+              onCharacterUpdate={handleCharacterFieldUpdate as any} 
+              onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
+            />
+            <LanguagesPanel
+              characterLanguages={languagesData.characterLanguages}
+              onLanguagesChange={handleLanguagesChange}
+              characterRaceId={languagesData.characterRaceId}
+              characterIntelligenceScore={languagesData.characterIntelligenceScore}
+              speakLanguageSkillRanks={languagesData.speakLanguageSkillRanks}
+            />
+          </div>
+          <div> {/* Column 2: Speed Panel */}
+            <SpeedPanel
+              speedData={speedData}
+              onCharacterUpdate={handleCharacterFieldUpdate as any} 
+              onOpenSpeedInfoDialog={handleOpenSpeedInfoDialog}
+              onOpenArmorSpeedPenaltyInfoDialog={handleOpenArmorSpeedPenaltyInfoDialog}
+              onOpenLoadSpeedPenaltyInfoDialog={handleOpenLoadSpeedPenaltyInfoDialog}
+            />
+          </div>
         </div>
         
         <CombatPanel
@@ -795,13 +806,8 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
             onDamageReductionChange={handleDamageReductionChange}
             onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
           />
-           <LanguagesPanel
-            characterLanguages={languagesData.characterLanguages}
-            onLanguagesChange={handleLanguagesChange}
-            characterRaceId={languagesData.characterRaceId}
-            characterIntelligenceScore={languagesData.characterIntelligenceScore}
-            speakLanguageSkillRanks={languagesData.speakLanguageSkillRanks}
-          />
+          {/* This column is now empty, ResistancesPanel will take up half width on md screens. */}
+          {/* Add another panel here or adjust grid-cols if ResistancesPanel should be full width */}
         </div>
 
 
@@ -843,3 +849,4 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     </>
   );
 };
+
