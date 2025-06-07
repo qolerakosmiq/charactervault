@@ -281,7 +281,7 @@
     "dmSettingsRerollOnesDescription": "Lors de l'utilisation de 4d6 (garder les 3 meilleurs), relancez tout dé affichant un 1 jusqu'à ce qu'il ne soit plus un 1.",
     "dmSettingsPointBuyBudgetLabel": "Budget d'achat par points pour les caractéristiques",
     "dmSettingsPointBuyBudgetDescription": "Par défaut, 25 points pour l'achat par points standard de D&D 3.5.",
-    "dmSettingsAddCustomSkillButton": "Ajouter une nouvelle définition de compétence personnalisée",
+    "dmSettingsAddCustomSkillButton": "Ajouter une nouvelle compétence personnalisée",
     "dmSettingsAddCustomFeatButton": "Ajouter une nouvelle définition de don personnalisé",
     "toastCharacterForgedTitle": "Personnage forgé !",
     "toastCharacterForgedDescription": "{characterName} a été créé avec succès.",

@@ -282,7 +282,7 @@
     "dmSettingsRerollOnesDescription": "When using 4d6 drop lowest, reroll any die that shows a 1 until it is not a 1.",
     "dmSettingsPointBuyBudgetLabel": "Point Buy Budget for Ability Scores",
     "dmSettingsPointBuyBudgetDescription": "Default is 25 points for standard D&D 3.5 point buy.",
-    "dmSettingsAddCustomSkillButton": "Add New Custom Skill Definition",
+    "dmSettingsAddCustomSkillButton": "Add New Custom Skill",
     "dmSettingsAddCustomFeatButton": "Add New Custom Feat Definition",
     "toastCharacterForgedTitle": "Character Forged!",
     "toastCharacterForgedDescription": "{characterName} has been successfully created.",
