@@ -8,6 +8,11 @@
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
       "description": "<p>Les barbares sont des guerriers sauvages des frontières sauvages, comptant sur leur fureur primale et leur force immense.<br />Ils sont souvent tribaux, dédaigneux de la civilisation et farouchement indépendants.<br/><b>Note :</b> Les barbares sont illettrés à moins qu'ils ne dépensent des points de compétence dans la compétence Lire/Écrire une langue ou ne prennent un niveau dans une autre classe.</p><p><b>Alignement :</b><br />Tout sauf loyal.</p><p><b>Religion :</b><br />Les barbares peuvent vénérer des esprits animaux, des divinités de la nature ou des ancêtres.</p><p><b>Antécédents :</b><br />Souvent des parias ou des membres de tribus nomades.</p><p><b>Races :</b><br />Les humains et les demi-orques sont des barbares courants.</p>",
       "grantedFeats": [
+        { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "martial-weapon-proficiency-all", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "armor-proficiency-medium", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
         { "featId": "class-barbarian-fast-movement", "levelAcquired": 1, "note": "Vitesse +3 m" },
         { "featId": "class-barbarian-rage", "levelAcquired": 1, "note": "1/jour" },
         { "featId": "class-barbarian-uncanny-dodge", "levelAcquired": 2 },
@@ -42,6 +47,10 @@
       "saves": { "fortitude": "poor", "reflex": "good", "will": "good" },
       "description": "<p>Les bardes sont des artistes polyvalents, tissant la magie par la musique et les mots.<br />Ce sont des conteurs, des diplomates et des aventuriers, souvent charismatiques et vifs d'esprit.</p><p><b>Alignement :</b><br />Tout sauf loyal.</p><p><b>Religion :</b><br />Les bardes peuvent suivre des divinités de l'art, du voyage ou de la tromperie.</p><p><b>Antécédents :</b><br />Souvent issus de troupes d'artistes, d'institutions savantes ou simplement des errants.</p><p><b>Races :</b><br />Les humains, les elfes et les demi-elfes deviennent fréquemment des bardes.</p>",
       "grantedFeats": [
+        { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "bard-weapon-proficiencies", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
         { "featId": "class-bard-bardic-music", "levelAcquired": 1 },
         { "featId": "class-bard-bardic-knowledge", "levelAcquired": 1 },
         { "featId": "class-bard-countersong", "levelAcquired": 1 },
@@ -66,6 +75,11 @@
       "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
       "description": "<p>Les prêtres sont des agents divins, canalisant le pouvoir de leur divinité choisie pour guérir les malades, châtier les méchants ou protéger les fidèles.<br />Ils sont maîtres de la magie divine et servent souvent de guides spirituels.</p><p><b>Alignement :</b><br />Doit être à un pas de l'alignement de sa divinité.</p><p><b>Religion :</b><br />Au cœur de leur identité, les prêtres servent une divinité spécifique du panthéon.</p><p><b>Antécédents :</b><br />Généralement formés dans des temples ou des ordres religieux.</p><p><b>Races :</b><br />Toutes les races produisent des prêtres, car la foi est universelle.</p>",
       "grantedFeats": [
+        { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "armor-proficiency-medium", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "armor-proficiency-heavy", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
         { "featId": "class-cleric-turn-rebuke-undead", "levelAcquired": 1 }
       ]
     },
@@ -77,6 +91,8 @@
       "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
       "description": "<p>Les druides sont les gardiens du monde naturel, puisant leur pouvoir dans la nature sauvage indomptée.<br />Ils peuvent se métamorphoser en animaux, commander aux plantes et invoquer la fureur de la nature.</p><p><b>Alignement :</b><br />Tout neutre (Neutre Bon, Loyal Neutre, Neutre Strict, Chaotique Neutre ou Neutre Mauvais).</p><p><b>Religion :</b><br />Les druides vénèrent la nature elle-même ou des divinités spécifiques de la nature.</p><p><b>Antécédents :</b><br />Souvent des ermites solitaires, membres d'anciens cercles ou protecteurs de bosquets sacrés.</p><p><b>Races :</b><br />Les humains, les elfes et les gnomes ressentent souvent l'appel de la nature.</p>",
        "grantedFeats": [
+        { "featId": "druid-weapon-proficiencies", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "druid-armor-shield-proficiencies", "levelAcquired": 1, "note": "Formation de classe" },
         { "featId": "class-druid-animal-companion", "levelAcquired": 1 },
         { "featId": "class-druid-nature-sense", "levelAcquired": 1 },
         { "featId": "class-druid-wild-empathy", "levelAcquired": 1 },
@@ -108,6 +124,13 @@
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
       "description": "<p>Les guerriers sont maîtres du combat martial, excellant avec toutes les formes d'armes et d'armures.<br />Ils sont l'épine dorsale des armées, les mercenaires dans les tavernes et les protecteurs dévoués des royaumes.<br/><b>Dons supplémentaires :</b> Un guerrier gagne un don supplémentaire orienté combat au niveau 1, au niveau 2, et tous les deux niveaux de guerrier par la suite (4e, 6e, 8e, 10e, 12e, 14e, 16e, 18e et 20e). Ces dons supplémentaires doivent être sélectionnés parmi ceux listés comme dons supplémentaires de guerrier dans le Manuel des Joueurs. Ils s'ajoutent au don que tout personnage reçoit au niveau 1 et tous les trois niveaux par la suite, ainsi qu'au don supplémentaire pour un personnage humain.</p><p><b>Alignement :</b><br />Tout.</p><p><b>Religion :</b><br />Les guerriers peuvent vénérer des divinités de la guerre, de la force ou de la protection, ou aucune du tout.</p><p><b>Antécédents :</b><br />Variés, des nobles chevaliers aux mercenaires aguerris ou simples gardes de village.</p><p><b>Races :</b><br />Toutes les races produisent des guerriers compétents, en particulier les humains, les nains et les demi-orques.</p>",
       "grantedFeats": [
+        { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "martial-weapon-proficiency-all", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "armor-proficiency-medium", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "armor-proficiency-heavy", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "tower-shield-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
         { "featId": "class-fighter-bonus-feat-slot", "note": "Niveau 1", "levelAcquired": 1 },
         { "featId": "class-fighter-bonus-feat-slot", "note": "Niveau 2", "levelAcquired": 2 },
         { "featId": "class-fighter-bonus-feat-slot", "note": "Niveau 4", "levelAcquired": 4 },
@@ -128,6 +151,7 @@
       "saves": { "fortitude": "good", "reflex": "good", "will": "good" },
       "description": "<p>Les moines sont des guerriers disciplinés qui perfectionnent leur corps et leur esprit pour atteindre des prouesses martiales extraordinaires.<br />Ils évitent les armures et les armes traditionnelles, comptant sur leurs frappes à mains nues alimentées par le ki et leurs capacités mystiques.<br /><b>Dons supplémentaires :</b> Un moine peut choisir un don supplémentaire au niveau 1, 2 et 6 parmi une liste spécifique (par exemple, Lutte améliorée, Réflexes de combat, Esquive de projectiles, Poing étourdissant). Ceux-ci s'ajoutent aux autres dons.</p><p><b>Alignement :</b><br />Doit être loyal.</p><p><b>Religion :</b><br />Les moines suivent souvent des philosophies de discipline et de perfection de soi, parfois liées à des divinités spécifiques de la loi ou de l'illumination.</p><p><b>Antécédents :</b><br />Typiquement formés dans des monastères éloignés.</p><p><b>Races :</b><br />Les humains sont les moines les plus courants, mais toute race disciplinée peut suivre cette voie.</p>",
       "grantedFeats": [
+        { "featId": "monk-weapon-proficiencies", "levelAcquired": 1, "note": "Formation de classe" },
         { "featId": "improved-unarmed-strike", "levelAcquired": 1, "note": "Accordé par Moine"},
         { "featId": "class-monk-bonus-feat-slot", "note": "Niveau 1", "levelAcquired": 1 },
         { "featId": "class-monk-flurry-of-blows", "note": "Bonus d'attaque -2/-2", "levelAcquired": 1 },
@@ -204,6 +228,12 @@
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
       "description": "<p>Les paladins sont de saints champions de la droiture, jurant de faire respecter la justice et de châtier le mal.<br />Ils reçoivent des pouvoirs divins pour aider leur cause, y compris la guérison, la protection et la capacité de repousser les morts-vivants.</p><p><b>Alignement :</b><br />Doit être Loyal Bon.</p><p><b>Religion :</b><br />Les paladins sont des serviteurs dévoués des divinités d'alignement bon.</p><p><b>Antécédents :</b><br />Souvent issus de familles nobles ou pieuses, formés dans des ordres sacrés.</p><p><b>Races :</b><br />Les humains sont les paladins les plus courants, mais toute créature au cœur pur peut être appelée.</p>",
       "grantedFeats": [
+        { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "martial-weapon-proficiency-all", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "armor-proficiency-medium", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "armor-proficiency-heavy", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
         { "featId": "class-paladin-aura-of-good", "levelAcquired": 1 },
         { "featId": "class-paladin-detect-evil", "levelAcquired": 1 },
         { "featId": "class-paladin-smite-evil", "note": "1/jour", "levelAcquired": 1 },
@@ -232,6 +262,10 @@
       "saves": { "fortitude": "good", "reflex": "good", "will": "poor" },
       "description": "<p>Les rôdeurs sont des chasseurs et des pisteurs habiles, à l'aise dans la nature et experts dans le combat contre des types spécifiques de créatures.<br />Ils possèdent souvent une certaine magie divine liée à la nature et un compagnon animal.</p><p><b>Alignement :</b><br />Tout.</p><p><b>Religion :</b><br />Les rôdeurs vénèrent souvent des divinités de la nature ou des dieux de la chasse.</p><p><b>Antécédents :</b><br />Généralement élevés dans les zones frontalières, les forêts profondes ou parmi des communautés recluses.</p><p><b>Races :</b><br />Les elfes, les demi-elfes et les humains font d'excellents rôdeurs.</p>",
       "grantedFeats": [
+        { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "martial-weapon-proficiency-all", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
         { "featId": "class-ranger-favored-enemy", "note": "1er Ennemi juré", "levelAcquired": 1 },
         { "featId": "track", "note": "Don supplémentaire de Rôdeur", "levelAcquired": 1 },
         { "featId": "class-ranger-wild-empathy", "levelAcquired": 1 },
@@ -258,6 +292,8 @@
       "saves": { "fortitude": "poor", "reflex": "good", "will": "poor" },
       "description": "<p>Les roublards sont maîtres de la furtivité, de la tromperie et de l'habileté.<br />Ils excellent à désarmer les pièges, crocheter les serrures et frapper depuis les ombres.<br />Ils peuvent être de charmants scélérats, des assassins mortels ou des enquêteurs rusés.</p><p><b>Alignement :</b><br />Tout.</p><p><b>Religion :</b><br />Les roublards favorisent souvent les divinités de la chance, des ombres ou du vol, ou restent non affiliés.</p><p><b>Antécédents :</b><br />Des gamins des rues aux voleurs de guilde ou espions.</p><p><b>Races :</b><br />Les halfelins, les elfes et les humains sont souvent attirés par la voie du roublard.</p>",
       "grantedFeats": [
+        { "featId": "rogue-weapon-proficiencies", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Formation de classe" },
         { "featId": "class-rogue-sneak-attack", "note": "Dégâts +1d6", "levelAcquired": 1 },
         { "featId": "class-rogue-trapfinding", "levelAcquired": 1 },
         { "featId": "class-rogue-evasion", "levelAcquired": 2 },
@@ -292,6 +328,7 @@
       "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
       "description": "<p>Les ensorceleurs manient la magie profane grâce à un talent inné, découlant souvent d'une ascendance draconique ou féerique.<br />Leur magie est intuitive et flexible, non apprise par une étude rigoureuse.</p><p><b>Alignement :</b><br />Tout.</p><p><b>Religion :</b><br />Les ensorceleurs ont des croyances religieuses variées, voire aucune.</p><p><b>Antécédents :</b><br />Leurs pouvoirs se manifestent souvent de manière inattendue, menant à des parcours de vie divers.</p><p><b>Races :</b><br />Les humains et ceux avec des lignées magiques (comme les demi-elfes avec un héritage féerique) sont des ensorceleurs courants.</p>",
       "grantedFeats": [
+        { "featId": "wizard-sorcerer-weapon-proficiencies", "levelAcquired": 1, "note": "Formation de classe" },
         { "featId": "class-sorcerer-summon-familiar", "levelAcquired": 1 }
       ]
     },
@@ -303,6 +340,7 @@
       "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
       "description": "<p>Les magiciens sont des érudits de l'arcane, maîtrisant la magie par une étude intense, la recherche et la pratique.<br />Ils commandent un vaste répertoire de sorts, préparés quotidiennement à partir de leurs grimoires.</p><p><b>Alignement :</b><br />Tout.</p><p><b>Religion :</b><br />Les magiciens vénèrent souvent des divinités du savoir, de la magie ou des secrets, ou se concentrent purement sur les poursuites profanes.</p><p><b>Antécédents :</b><br />Typiquement éduqués dans des académies, encadrés par des maîtres magiciens, ou autodidactes à travers d'anciens tomes.</p><p><b>Races :</b><br />Les humains, les elfes et les gnomes sont le plus souvent attirés par la magie.</p>",
        "grantedFeats": [
+        { "featId": "wizard-sorcerer-weapon-proficiencies", "levelAcquired": 1, "note": "Formation de classe" },
         { "featId": "class-sorcerer-summon-familiar", "levelAcquired": 1, "note": "Aptitude de Magicien" },
         { "featId": "scribe-scroll", "levelAcquired": 1, "note": "Don supplémentaire de Magicien" },
         { "featId": "class-wizard-bonus-feat-slot", "levelAcquired": 5, "note": "Niveau 5 - Métamagie, Création d'objet ou Maîtrise des sorts" },
@@ -318,6 +356,9 @@
       "saves": { "fortitude": "poor", "reflex": "good", "will": "good" },
       "description": "<p>L'âme acérée considère son esprit comme la plus belle chose de la création, mais également comme la plus meurtrière. Guidée par ce principe et bénéficiant d'un entraînement prolongé, l'âme acérée parvient à forger sa force mentale en une lame chatoyante d'énergie psychique quasi solide, souvent appelée « lame spirituelle ».</p><p>L'arme de chaque âme acérée diffère en couleur et en forme, selon sa personnalité, sa force mentale et même son humeur. Bien qu'aucune lame spirituelle ne soit semblable à une autre, elles partagent toutes les mêmes propriétés meurtrières. Les âmes acérées sont renommées pour leur violence car elles transforment la puissance de leur esprit en une arme effrayante.</p><p>Si la prudence et la préparation font bien partie de l'approche de l'aventure des âmes acérées, la plupart ont du mal à taire leur témérité naturelle et leur sens du spectacle. Après tout, les aventuriers capables de se débarrasser de leurs adversaires au fil d'une lame engendrée par leur seul esprit sont-ils nombreux ? C'est ainsi que l'aventure se présente aux yeux de bien des âmes acérées comme une occasion de faire ce qu'elles aiment par-dessus tout : manier la lame parfaite qu'ont forgée leurs désirs les plus profonds.</p><p>Plus encore que toute autre classe psionique, l'âme acérée combat grâce à l'énergie psionique, aussi bien au corps à corps qu'à distance. Force brute, prouesses martiales et talent psionique permettent à l'âme acérée d'évoluer sur un pied d'égalité, au bas mot, avec toute classe spécialisée dans le combat quand elle se retrouve sur le champ de bataille.</p><p>Malgré leur sens inné du spectacle, les âmes acérées sont souvent loyales, comptant sur une grande discipline intérieure pour idéaliser et matérialiser leurs lames spirituelles. Les âmes acérées d'alignement chaotique misent davantage sur leur force d'âme pour cristalliser leur lame, par opposition à une discipline rigide. Les personnages neutres au regard de la Loi et du Chaos donnent rarement des âmes acérées.</p><p>Bien souvent, ceux qui ont la possibilité et le désir d'associer la manifestation de facultés psioniques et la puissance martiale se tournent vers la carrière de guerrier psychique, mais la voie de l'âme acérée reste plus séduisante aux yeux de ceux qui présentent le mélange idéal de talent et de technique. Pour la plupart, les âmes acérées sont entraînées par d'autres âmes acérées, plus anciennes et expérimentées. Races. Le psionique est un art parfaitement imprévisible capable de s'exprimer au sein de toutes les races classiques.</p><p>Les âmes acérées s'entendent particulièrement bien avec ceux qui partagent leur côté va-t-en-guerre, comme les moines, les guerriers et les paladins. Elles sont moins à l'aise en compagnie de guerriers psychiques (probablement parce quelles les perçoivent comme des concurrents), de lanceurs de sorts, de psions et de prodiges, même si elles font généralement montre de la discipline nécessaire pour s'adapter à tout type de contact.</p><p><b>Alignement :</b> Tout.</p><p><b>Maîtrise des armes et armures :</b> L'âme acérée est formée au maniement de toutes les armes courantes, de sa lame spirituelle et des boucliers (à l'exception des pavois). Elles est également formée au port des armures légères.</p>",
       "grantedFeats": [
+        { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Formation de classe" },
+        { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
         { "featId": "class-soulknife-mind-blade", "levelAcquired": 1, "note": "Dégâts 1d6, Bonus d'altération +0"},
         { "featId": "weapon-focus-mind-blade", "levelAcquired": 1, "note": "Arme de prédilection (lame spirituelle)"},
         { "featId": "wild-talent", "levelAcquired": 1, "note": "Capacité psionique innée"},

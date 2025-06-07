@@ -8,6 +8,11 @@
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
       "description": "<p>Barbarians are savage warriors from the wild frontiers, relying on their primal fury and immense strength.<br />They are often tribal, disdainful of civilization, and fiercely independent.<br/><b>Note:</b> Barbarians are illiterate unless they spend skill points on the Read/Write Language skill or take a level in another class.</p><p><b>Alignment:</b><br />Any nonlawful.</p><p><b>Religion:</b><br />Barbarians may revere animal spirits, nature deities, or ancestors.</p><p><b>Background:</b><br />Often outcasts or members of nomadic tribes.</p><p><b>Races:</b><br />Humans and half-orcs are common barbarians.</p>",
       "grantedFeats": [
+        { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "martial-weapon-proficiency-all", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "armor-proficiency-medium", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "class-barbarian-fast-movement", "levelAcquired": 1, "note": "+10 ft. Speed" },
         { "featId": "class-barbarian-rage", "levelAcquired": 1, "note": "1/Day" },
         { "featId": "class-barbarian-uncanny-dodge", "levelAcquired": 2 },
@@ -42,6 +47,10 @@
       "saves": { "fortitude": "poor", "reflex": "good", "will": "good" },
       "description": "<p>Bards are versatile performers, weaving magic through music and words.<br />They are storytellers, diplomats, and adventurers, often charismatic and quick-witted.</p><p><b>Alignment:</b><br />Any nonlawful.</p><p><b>Religion:</b><br />Bards may follow deities of art, travel, or trickery.</p><p><b>Background:</b><br />Often from performing troupes, scholarly institutions, or simply wanderers.</p><p><b>Races:</b><br />Humans, elves, and half-elves frequently become bards.</p>",
       "grantedFeats": [
+        { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "bard-weapon-proficiencies", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "class-bard-bardic-music", "levelAcquired": 1 },
         { "featId": "class-bard-bardic-knowledge", "levelAcquired": 1 },
         { "featId": "class-bard-countersong", "levelAcquired": 1 },
@@ -66,6 +75,11 @@
       "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
       "description": "<p>Clerics are divine agents, channeling the power of their chosen deity to heal the sick, smite the wicked, or protect the faithful.<br />They are masters of divine magic and often serve as spiritual leaders.</p><p><b>Alignment:</b><br />Must be within one step of their deity's alignment.</p><p><b>Religion:</b><br />Central to their identity, clerics serve a specific deity from the pantheon.</p><p><b>Background:</b><br />Usually trained in temples or religious orders.</p><p><b>Races:</b><br />All races produce clerics, as faith is universal.</p>",
       "grantedFeats": [
+        { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "armor-proficiency-medium", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "armor-proficiency-heavy", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "class-cleric-turn-rebuke-undead", "levelAcquired": 1 }
       ]
     },
@@ -77,6 +91,8 @@
       "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
       "description": "<p>Druids are guardians of the natural world, drawing power from the untamed wilderness.<br />They can shapeshift into animals, command plants, and call upon nature's fury.</p><p><b>Alignment:</b><br />Any neutral (Neutral Good, Lawful Neutral, True Neutral, Chaotic Neutral, or Neutral Evil).</p><p><b>Religion:</b><br />Druids revere nature itself or specific nature deities.</p><p><b>Background:</b><br />Often solitary hermits, members of ancient circles, or protectors of sacred groves.</p><p><b>Races:</b><br />Humans, elves, and gnomes often feel the call of the wild.</p>",
        "grantedFeats": [
+        { "featId": "druid-weapon-proficiencies", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "druid-armor-shield-proficiencies", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "class-druid-animal-companion", "levelAcquired": 1 },
         { "featId": "class-druid-nature-sense", "levelAcquired": 1 },
         { "featId": "class-druid-wild-empathy", "levelAcquired": 1 },
@@ -108,6 +124,13 @@
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
       "description": "<p>Fighters are masters of martial combat, excelling with all forms of weapons and armor.<br />They are the backbone of armies, the sellswords in taverns, and the dedicated protectors of kingdoms.<br/><b>Bonus Feats:</b> A fighter gains a bonus combat-oriented feat at 1st level, at 2nd level, and at every two fighter levels thereafter (4th, 6th, 8th, 10th, 12th, 14th, 16th, 18th, and 20th). These bonus feats must be selected from those listed as fighter bonus feats in the Player's Handbook. These are in addition to the feat that any character gets at 1st level and every three levels thereafter, and the bonus feat for a human character.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Fighters may worship deities of war, strength, or protection, or none at all.</p><p><b>Background:</b><br />Varied, from noble knights to grizzled mercenaries or simple village guards.</p><p><b>Races:</b><br />All races produce skilled fighters, especially humans, dwarves, and half-orcs.</p>",
       "grantedFeats": [
+        { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "martial-weapon-proficiency-all", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "armor-proficiency-medium", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "armor-proficiency-heavy", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "tower-shield-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "class-fighter-bonus-feat-slot", "note": "1st Level", "levelAcquired": 1 },
         { "featId": "class-fighter-bonus-feat-slot", "note": "2nd Level", "levelAcquired": 2 },
         { "featId": "class-fighter-bonus-feat-slot", "note": "4th Level", "levelAcquired": 4 },
@@ -128,6 +151,7 @@
       "saves": { "fortitude": "good", "reflex": "good", "will": "good" },
       "description": "<p>Monks are disciplined warriors who perfect their bodies and minds to achieve extraordinary martial prowess.<br />They eschew armor and traditional weapons, relying on their ki-powered unarmed strikes and mystical abilities.<br /><b>Bonus Feats:</b> A monk may select a bonus feat at 1st level, 2nd level, and 6th level from a specific list (e.g., Improved Grapple, Combat Reflexes, Deflect Arrows, Stunning Fist). These are in addition to other feats.</p><p><b>Alignment:</b><br />Must be lawful.</p><p><b>Religion:</b><br />Monks often follow philosophies of discipline and self-perfection, sometimes tied to specific deities of law or enlightenment.</p><p><b>Background:</b><br />Typically trained in remote monasteries.</p><p><b>Races:</b><br />Humans are the most common monks, but any race with discipline can walk the path.</p>",
       "grantedFeats": [
+        { "featId": "monk-weapon-proficiencies", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "improved-unarmed-strike", "levelAcquired": 1, "note": "Granted by Monk"},
         { "featId": "class-monk-bonus-feat-slot", "note": "1st Level", "levelAcquired": 1 },
         { "featId": "class-monk-flurry-of-blows", "note": "-2/-2 Attack Bonus", "levelAcquired": 1 },
@@ -204,6 +228,12 @@
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
       "description": "<p>Paladins are holy champions of righteousness, sworn to uphold justice and smite evil.<br />They are granted divine powers to aid their cause, including healing, protection, and the ability to turn undead.</p><p><b>Alignment:</b><br />Must be Lawful Good.</p><p><b>Religion:</b><br />Paladins are devoted servants of good-aligned deities.</p><p><b>Background:</b><br />Often from noble or devout families, trained in holy orders.</p><p><b>Races:</b><br />Humans are the most common paladins, but any creature with a pure heart can be called.</p>",
       "grantedFeats": [
+        { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "martial-weapon-proficiency-all", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "armor-proficiency-medium", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "armor-proficiency-heavy", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "class-paladin-aura-of-good", "levelAcquired": 1 },
         { "featId": "class-paladin-detect-evil", "levelAcquired": 1 },
         { "featId": "class-paladin-smite-evil", "note": "1/Day", "levelAcquired": 1 },
@@ -232,6 +262,10 @@
       "saves": { "fortitude": "good", "reflex": "good", "will": "poor" },
       "description": "<p>Rangers are skilled hunters and trackers, at home in the wilderness and adept at fighting specific types of creatures.<br />They often possess some divine magic related to nature and an animal companion.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Rangers often revere nature deities or gods of the hunt.</p><p><b>Background:</b><br />Typically raised in borderlands, deep forests, or among reclusive communities.</p><p><b>Races:</b><br />Elves, half-elves, and humans make excellent rangers.</p>",
       "grantedFeats": [
+        { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "martial-weapon-proficiency-all", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "class-ranger-favored-enemy", "note": "1st Favored Enemy", "levelAcquired": 1 },
         { "featId": "track", "note": "Ranger Bonus Feat", "levelAcquired": 1 },
         { "featId": "class-ranger-wild-empathy", "levelAcquired": 1 },
@@ -258,6 +292,8 @@
       "saves": { "fortitude": "poor", "reflex": "good", "will": "poor" },
       "description": "<p>Rogues are masters of stealth, trickery, and skill.<br />They excel at disarming traps, picking locks, and striking from the shadows.<br />They can be charming scoundrels, deadly assassins, or cunning investigators.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Rogues often favor deities of luck, shadows, or thievery, or remain unaffiliated.</p><p><b>Background:</b><br />From street urchins to guild thieves or spies.</p><p><b>Races:</b><br />Halflings, elves, and humans are often drawn to the rogue's path.</p>",
       "grantedFeats": [
+        { "featId": "rogue-weapon-proficiencies", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "class-rogue-sneak-attack", "note": "+1d6 Damage", "levelAcquired": 1 },
         { "featId": "class-rogue-trapfinding", "levelAcquired": 1 },
         { "featId": "class-rogue-evasion", "levelAcquired": 2 },
@@ -292,6 +328,7 @@
       "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
       "description": "<p>Sorcerers wield arcane magic through innate talent, often stemming from draconic or fey ancestry.<br />Their magic is intuitive and flexible, not learned through rigorous study.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Sorcerers have varied religious beliefs, if any.</p><p><b>Background:</b><br />Their powers often manifest unexpectedly, leading to diverse life paths.</p><p><b>Races:</b><br />Humans and those with magical bloodlines (like half-elves with fey heritage) are common sorcerers.</p>",
       "grantedFeats": [
+        { "featId": "wizard-sorcerer-weapon-proficiencies", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "class-sorcerer-summon-familiar", "levelAcquired": 1 }
       ]
     },
@@ -303,6 +340,7 @@
       "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
       "description": "<p>Wizards are scholars of the arcane, mastering magic through intense study, research, and practice.<br />They command a vast repertoire of spells, prepared daily from their spellbooks.</p><p><b>Alignment:</b><br />Any.</p><p><b>Religion:</b><br />Wizards often worship deities of knowledge, magic, or secrets, or focus purely on arcane pursuits.</p><p><b>Background:</b><br />Typically educated in academies, mentored by master wizards, or self-taught through ancient tomes.</p><p><b>Races:</b><br />Humans, elves, and gnomes are most commonly drawn to wizardry.</p>",
        "grantedFeats": [
+        { "featId": "wizard-sorcerer-weapon-proficiencies", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "class-sorcerer-summon-familiar", "levelAcquired": 1, "note": "Wizard Feature" },
         { "featId": "scribe-scroll", "levelAcquired": 1, "note": "Wizard Bonus Feat" },
         { "featId": "class-wizard-bonus-feat-slot", "levelAcquired": 5, "note": "5th Level - Metamagic, Item Creation, or Spell Mastery" },
@@ -318,6 +356,9 @@
       "saves": { "fortitude": "poor", "reflex": "good", "will": "good" },
       "description": "<p>A soulknife is the warrior ideal, a master of combat who dispatches his foes with a blade made of his own psychic energy.</p><p><b>Alignment:</b> Any.</p><p><b>Weapon and Armor Proficiency:</b> Soulknives are proficient with all simple weapons, with their own mind blades, and with light armor and shields (except tower shields).</p>",
       "grantedFeats": [
+        { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Class Proficiency" },
+        { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "class-soulknife-mind-blade", "levelAcquired": 1, "note": "1d6 Damage, +0 Enhancement Bonus"},
         { "featId": "weapon-focus-mind-blade", "levelAcquired": 1},
         { "featId": "wild-talent", "levelAcquired": 1},
