@@ -11,6 +11,7 @@ const FULL_CHARACTER_DEFAULTS: Omit<Character, 'id'> = {
   name: 'New Character',
   playerName: '',
   campaign: '',
+  homeland: '', // Added homeland default
   race: '',
   alignment: 'true-neutral',
   deity: '',

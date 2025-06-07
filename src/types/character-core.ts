@@ -197,6 +197,7 @@ export interface Character {
   name: string;
   playerName?: string;
   campaign?: string;
+  homeland?: string; // Added homeland
   race: DndRaceId | '';
   alignment: CharacterAlignment;
   deity?: DndDeityId | string;

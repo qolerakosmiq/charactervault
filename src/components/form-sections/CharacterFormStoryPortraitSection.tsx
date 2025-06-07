@@ -16,8 +16,8 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 const DEBOUNCE_DELAY = 400; // ms
 
 interface CharacterFormStoryPortraitSectionProps {
-  storyAndAppearanceData: Pick<Character, 'campaign' | 'personalStory' | 'portraitDataUrl' | 'height' | 'weight' | 'eyes' | 'hair' | 'skin'>;
-  onFieldChange: (field: keyof Pick<Character, 'campaign' | 'personalStory' | 'height' | 'weight' | 'eyes' | 'hair' | 'skin'>, value: string) => void;
+  storyAndAppearanceData: Pick<Character, 'campaign' | 'personalStory' | 'portraitDataUrl' | 'height' | 'weight' | 'eyes' | 'hair' | 'skin' | 'homeland'>;
+  onFieldChange: (field: keyof Pick<Character, 'campaign' | 'personalStory' | 'height' | 'weight' | 'eyes' | 'hair' | 'skin' | 'homeland'>, value: string) => void;
   onPortraitChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -33,6 +33,9 @@ export const CharacterFormStoryPortraitSection = ({
   );
   const [localPersonalStory, setLocalPersonalStory] = useDebouncedFormField(
     storyAndAppearanceData.personalStory || '', (value) => onFieldChange('personalStory', value), DEBOUNCE_DELAY
+  );
+  const [localHomeland, setLocalHomeland] = useDebouncedFormField(
+    storyAndAppearanceData.homeland || '', (value) => onFieldChange('homeland', value), DEBOUNCE_DELAY
   );
   const [localHeight, setLocalHeight] = useDebouncedFormField(
     storyAndAppearanceData.height || '', (value) => onFieldChange('height', value), DEBOUNCE_DELAY
@@ -75,7 +78,9 @@ export const CharacterFormStoryPortraitSection = ({
             </div>
             <div className="md:col-span-2 space-y-2 flex flex-col">
               <Skeleton className="h-5 w-32" />
-              <Skeleton className="min-h-[260px] md:flex-grow md:min-h-0 rounded-md" />
+              <Skeleton className="min-h-[160px] md:flex-grow md:min-h-0 rounded-md" /> {/* Adjusted height */}
+              <Skeleton className="h-5 w-24 mt-4" />
+              <Skeleton className="h-10 w-full" />
             </div>
           </div>
           <div className="mt-4 pt-4 border-t border-border/40">
@@ -148,16 +153,28 @@ export const CharacterFormStoryPortraitSection = ({
             )}
           </div>
 
-          <div className="md:col-span-2 space-y-2 flex flex-col">
-            <Label htmlFor="personalStory">{UI_STRINGS.personalStoryLabel || "Personal Story"}</Label>
-            <Textarea
-              id="personalStory"
-              name="personalStory"
-              value={localPersonalStory}
-              onChange={(e) => setLocalPersonalStory(e.target.value)}
-              placeholder={UI_STRINGS.personalStoryPlaceholder || "Describe your character's history, motivations, personality, and defining moments..."}
-              className="min-h-[260px] md:flex-grow md:min-h-0"
-            />
+          <div className="md:col-span-2 space-y-4 flex flex-col"> {/* Added space-y-4 here */}
+            <div className="space-y-1.5 flex-grow flex flex-col">
+              <Label htmlFor="personalStory">{UI_STRINGS.personalStoryLabel || "Personal Story"}</Label>
+              <Textarea
+                id="personalStory"
+                name="personalStory"
+                value={localPersonalStory}
+                onChange={(e) => setLocalPersonalStory(e.target.value)}
+                placeholder={UI_STRINGS.personalStoryPlaceholder || "Describe your character's history, motivations, personality, and defining moments..."}
+                className="min-h-[160px] md:flex-grow md:min-h-0" // Reduced height
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="homeland">{UI_STRINGS.homelandLabel || "Homeland"}</Label>
+              <Input
+                id="homeland"
+                name="homeland"
+                value={localHomeland}
+                onChange={(e) => setLocalHomeland(e.target.value)}
+                placeholder={UI_STRINGS.homelandPlaceholder || "e.g., The Northern Wastes, Aerie Peak"}
+              />
+            </div>
           </div>
         </div>
 
@@ -190,4 +207,3 @@ export const CharacterFormStoryPortraitSection = ({
     </Card>
   );
 };
-// CharacterFormStoryPortraitSection.displayName = 'CharacterFormStoryPortraitSectionComponent';

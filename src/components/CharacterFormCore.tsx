@@ -103,7 +103,7 @@ function createBaseCharacterData(
 
 
     return {
-      id: crypto.randomUUID(), name: '', playerName: '', campaign: '', race: defaultRaceValue, alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
+      id: crypto.randomUUID(), name: '', playerName: '', campaign: '', homeland: '', race: defaultRaceValue, alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
       height: '', weight: '', eyes: '', hair: '', skin: '',
       abilityScores: { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES))) },
       abilityScoreTempCustomModifiers: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
@@ -651,6 +651,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
   const storyAndAppearanceData: CharacterFormStoryPortraitSectionProps['storyAndAppearanceData'] = {
     campaign: character.campaign, personalStory: character.personalStory, portraitDataUrl: character.portraitDataUrl,
     height: character.height, weight: character.weight, eyes: character.eyes, hair: character.hair, skin: character.skin,
+    homeland: character.homeland, // Pass homeland
   };
   
   const skillsData: SkillsFormSectionProps['skillsData'] = {
@@ -719,7 +720,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
 
         <CharacterFormStoryPortraitSection
           storyAndAppearanceData={storyAndAppearanceData}
-          onFieldChange={handleCoreInfoFieldChange as any} 
+          onFieldChange={handleCharacterFieldUpdate as any} 
           onPortraitChange={handlePortraitChange}
         />
 
@@ -730,7 +731,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
           onSkillChange={handleSkillChange}
-          onEditCustomSkillDefinition={handleOpenEditCustomSkillDialog}
+          onEditCustomSkillDefinition={handleOpenEditCustomSkillDialog} // This is still passed but UI removed
           onOpenSkillInfoDialog={handleOpenSkillInfoDialog}
         />
 
@@ -820,4 +821,3 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     </>
   );
 };
-CharacterFormCore.displayName = "CharacterFormCoreComponent";
