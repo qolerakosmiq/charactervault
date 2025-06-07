@@ -15,17 +15,17 @@ export function LanguageSwitcher() {
   const { language, setLanguage, isLoading } = useI18n();
 
   if (isLoading) {
-    return <div className="h-10 w-28 animate-pulse rounded-md bg-muted"></div>; // Adjusted skeleton height
+    return <div className="h-10 w-28 animate-pulse rounded-md bg-muted"></div>; 
   }
 
   return (
     <Select value={language} onValueChange={(value) => setLanguage(value as LanguageCode)}>
-      <SelectTrigger className="w-[120px]" id="dm-language-switcher"> {/* Removed h-9 and text-xs to use default h-10, text-sm */}
+      <SelectTrigger className="w-[120px]" id="dm-language-switcher"> 
         <SelectValue placeholder="Language" />
       </SelectTrigger>
       <SelectContent>
         {SUPPORTED_LANGUAGES.map((lang) => (
-          <SelectItem key={lang.code} value={lang.code} className="text-xs">
+          <SelectItem key={lang.code} value={lang.code}>
             {lang.name}
           </SelectItem>
         ))}
