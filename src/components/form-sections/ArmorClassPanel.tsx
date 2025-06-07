@@ -77,8 +77,8 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
                 <Skeleton className="h-8 w-12" />
               </div>
               <Separator className="my-3" />
-              <div className="flex items-center justify-between pt-2">
-                <Label htmlFor="custom-ac-mod-display" className="text-sm font-medium">{translations?.UI_STRINGS.armorClassCustomModifierLabel || "Custom Modifier"}</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="custom-ac-mod-display" className="text-sm font-medium">{translations?.UI_STRINGS.armorClassMiscModifierLabel || "Misc Modifier"}</Label>
                 <NumberSpinnerInput
                   id="custom-ac-mod-display"
                   value={0}
@@ -110,14 +110,14 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
     (character.naturalArmor || 0) +
     (character.deflectionBonus || 0) +
     (character.dodgeBonus || 0) +
-    (character.acMiscModifier || 0); // Use prop value for display
+    (character.acMiscModifier || 0); 
 
   const touchAC = 10 +
     dexModifier +
     sizeModAC +
     (character.deflectionBonus || 0) +
     (character.dodgeBonus || 0) +
-    (character.acMiscModifier || 0); // Use prop value for display
+    (character.acMiscModifier || 0); 
 
   const flatFootedAC = 10 +
     (character.armorBonus || 0) +
@@ -125,7 +125,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
     sizeModAC +
     (character.naturalArmor || 0) +
     (character.deflectionBonus || 0) +
-    (character.acMiscModifier || 0); // Use prop value for display
+    (character.acMiscModifier || 0); 
 
 
   const handleShowAcBreakdown = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
@@ -176,8 +176,8 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
           </div>
 
           <Separator className="my-3" />
-          <div className="flex items-center justify-between pt-2">
-            <Label htmlFor="ac-misc-modifier-input" className="text-sm font-medium">{UI_STRINGS.armorClassCustomModifierLabel || "Custom Modifier"}</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="ac-misc-modifier-input" className="text-sm font-medium">{UI_STRINGS.armorClassMiscModifierLabel || "Misc Modifier"}</Label>
             <NumberSpinnerInput
               id="ac-misc-modifier-input"
               value={localAcMiscModifier}
