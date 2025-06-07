@@ -402,7 +402,8 @@
     "languagesPanelComboboxPlaceholder": "Choisir une langue...",
     "languagesPanelComboboxSearch": "Rechercher une langue...",
     "languagesPanelComboboxEmpty": "Aucune langue trouvée.",
-    "languagesPanelRemoveAriaLabel": "Supprimer {languageName}"
+    "languagesPanelRemoveAriaLabel": "Supprimer {languageName}",
+    "languagesPanelAutomaticBadgeLabel": "Automatique"
   }
 }
     

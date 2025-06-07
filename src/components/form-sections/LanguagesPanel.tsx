@@ -68,8 +68,17 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
   const slotsRemaining = totalBonusLanguageSlots - slotsUsed;
 
   const allKnownLanguageIds = Array.from(new Set([...automaticLanguages, ...characterLanguages]));
-  const allKnownLanguagesToDisplay = LANGUAGES.filter(lang => allKnownLanguageIds.includes(lang.value))
-    .sort((a,b) => a.label.localeCompare(b.label));
+  
+  const allKnownLanguagesToDisplay = LANGUAGES
+    .filter(lang => allKnownLanguageIds.includes(lang.value))
+    .sort((a, b) => {
+      const isAAutomatic = automaticLanguages.includes(a.value);
+      const isBAutomatic = automaticLanguages.includes(b.value);
+      if (isAAutomatic && !isBAutomatic) return -1;
+      if (!isAAutomatic && isBAutomatic) return 1;
+      return a.label.localeCompare(b.label);
+    });
+
 
   const availableLanguagesForAdding = LANGUAGES.filter(
     lang => !allKnownLanguageIds.includes(lang.value) && lang.value !== 'druidic' // Exclude Druidic from general selection
@@ -112,8 +121,8 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
             </p>
           </div>
            <p className="text-xs text-muted-foreground mt-1">
-              ({UI_STRINGS.languagesPanelFormulaIntModLabel || "Intelligence Modifier"} <Badge variant="outline" className={badgeClassName}>{intBonusLanguages}</Badge>
-              {' + '} {UI_STRINGS.languagesPanelFormulaSkillRanksLabel || "Speak Language Ranks"} <Badge variant="outline" className={badgeClassName}>{skillBonusLanguages}</Badge>)
+              {UI_STRINGS.languagesPanelFormulaIntModLabel || "Intelligence Modifier"} <Badge variant="outline" className={badgeClassName}>{intBonusLanguages}</Badge>
+              {' + '} {UI_STRINGS.languagesPanelFormulaSkillRanksLabel || "Speak Language Ranks"} <Badge variant="outline" className={badgeClassName}>{skillBonusLanguages}</Badge>
               {' = '} <span className="font-bold text-primary">{totalBonusLanguageSlots}</span>
             </p>
         </div>
@@ -125,10 +134,10 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
               {allKnownLanguagesToDisplay.map(langObj => {
                 const isAutomatic = automaticLanguages.includes(langObj.value);
                 return (
-                  <div key={`known-${langObj.value}`} className="flex items-center justify-between p-1.5 border rounded-md bg-background text-sm">
+                  <div key={`known-${langObj.value}`} className="flex items-center justify-between p-1.5 border rounded-md text-sm">
                     <span>
                       {langObj.label}
-                      {isAutomatic && <Badge variant="outline" className="ml-2 text-xs text-muted-foreground border-muted-foreground/50">Auto</Badge>}
+                      {isAutomatic && <Badge variant="outline" className="ml-2 text-xs text-muted-foreground border-muted-foreground/50">{UI_STRINGS.languagesPanelAutomaticBadgeLabel || "Automatic"}</Badge>}
                     </span>
                     {!isAutomatic && (
                       <Button
@@ -172,5 +181,4 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
     </Card>
   );
 };
-
     
