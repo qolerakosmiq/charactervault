@@ -392,25 +392,18 @@
     "toastInvalidAbilityScoreDesc": "{abilityName} score must be greater than 0.",
     "languagesPanelTitle": "Languages",
     "languagesPanelDescription": "Manage your character's known languages.",
-    "languagesPanelKnownAutomatic": "Automatic:",
-    "languagesPanelChosenByPlayer": "Chosen by Player:",
+    "languagesPanelKnownLanguagesLabel": "Known Languages:",
     "languagesPanelAddButton": "Add Language",
-    "languagesPanelNoLanguagesKnown": "No languages currently known beyond automatic.",
-    "languagesPanelSlotsAvailable": "Bonus Language Slots:",
-    "languagesPanelSlotsFromInt": "from Intelligence",
-    "languagesPanelSlotsFromSkill": "from Speak Language skill",
-    "languagesPanelSlotsFromRace": "from Race",
-    "languagesPanelSlotsTotal": "Total Slots:",
-    "languagesPanelSlotsUsed": "Slots Used:",
-    "languagesPanelSlotsRemaining": "Slots Remaining:",
+    "languagesPanelNoLanguagesKnown": "No languages currently known.",
+    "languagesPanelSlotsAvailableLabel": "Languages Available:",
+    "languagesPanelSlotsLeftLabel": "Languages Left:",
+    "languagesPanelFormulaIntModLabel": "Intelligence Modifier",
+    "languagesPanelFormulaSkillRanksLabel": "Speak Language Ranks",
     "languagesPanelComboboxPlaceholder": "Select language...",
     "languagesPanelComboboxSearch": "Search languages...",
     "languagesPanelComboboxEmpty": "No language found.",
-    "languagesPanelRemoveAriaLabel": "Remove {languageName}",
-    "languagesPanelSlotsAvailableLabel": "Bonus Language Slots Available:",
-    "languagesPanelSlotsLeftLabel": "Bonus Language Slots Left:",
-    "languagesPanelFormulaIntModLabel": "Intelligence Modifier",
-    "languagesPanelFormulaSkillRanksLabel": "Speak Language Ranks"
+    "languagesPanelRemoveAriaLabel": "Remove {languageName}"
   }
 }
 
+    

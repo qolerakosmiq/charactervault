@@ -392,25 +392,17 @@
     "toastInvalidAbilityScoreDesc": "Le score de {abilityName} doit être supérieur à 0.",
     "languagesPanelTitle": "Langues",
     "languagesPanelDescription": "Gérez les langues connues de votre personnage.",
-    "languagesPanelKnownAutomatic": "Automatiques :",
-    "languagesPanelChosenByPlayer": "Choisies par le joueur :",
+    "languagesPanelKnownLanguagesLabel": "Langues connues :",
     "languagesPanelAddButton": "Ajouter une langue",
-    "languagesPanelNoLanguagesKnown": "Aucune langue connue au-delà des automatiques.",
-    "languagesPanelSlotsAvailable": "Emplacements de langue bonus :",
-    "languagesPanelSlotsFromInt": "depuis l'Intelligence",
-    "languagesPanelSlotsFromSkill": "depuis la compétence Langue",
-    "languagesPanelSlotsFromRace": "depuis la Race",
-    "languagesPanelSlotsTotal": "Total emplacements :",
-    "languagesPanelSlotsUsed": "Emplacements utilisés :",
-    "languagesPanelSlotsRemaining": "Emplacements restants :",
+    "languagesPanelNoLanguagesKnown": "Aucune langue connue pour l'instant.",
+    "languagesPanelSlotsAvailableLabel": "Langues disponibles :",
+    "languagesPanelSlotsLeftLabel": "Langues restantes :",
+    "languagesPanelFormulaIntModLabel": "Modificateur d'intelligence",
+    "languagesPanelFormulaSkillRanksLabel": "Rangs de Langue",
     "languagesPanelComboboxPlaceholder": "Choisir une langue...",
     "languagesPanelComboboxSearch": "Rechercher une langue...",
     "languagesPanelComboboxEmpty": "Aucune langue trouvée.",
-    "languagesPanelRemoveAriaLabel": "Supprimer {languageName}",
-    "languagesPanelSlotsAvailableLabel": "Emplacements de langue bonus disponibles :",
-    "languagesPanelSlotsLeftLabel": "Emplacements de langue bonus restants :",
-    "languagesPanelFormulaIntModLabel": "Modificateur d'intelligence",
-    "languagesPanelFormulaSkillRanksLabel": "Rangs de Langue"
+    "languagesPanelRemoveAriaLabel": "Supprimer {languageName}"
   }
 }
-
+    
