@@ -2,11 +2,11 @@
 'use client';
 
 import type { Character, Skill as SkillType, AbilityScores } from '@/types/character';
-import type { AbilityName } from '@/types/character-core'; // Explicitly from core
+import type { AbilityName } from '@/types/character-core';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Scroll, Loader2 } from 'lucide-react';
-import { getAbilityModifierByName, getCharacterOverallLevel } from '@/lib/dnd-utils';
+import { getAbilityModifierByName, calculateCharacterTotalLevel } from '@/lib/dnd-utils'; // Updated import
 import { calculateMaxRanks } from '@/lib/constants';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -24,7 +24,7 @@ interface SkillsListingProps {
 export const SkillsListing: React.FC<SkillsListingProps> = ({ skills, abilityScores, characterClasses, onSkillChange }) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
-  const overallLevel = getCharacterOverallLevel(characterClasses);
+  const overallLevel = calculateCharacterTotalLevel(characterClasses); // Updated usage
   const intelligenceModifier = getAbilityModifierByName(abilityScores, 'intelligence');
 
   if (translationsLoading || !translations) {
@@ -80,14 +80,14 @@ export const SkillsListing: React.FC<SkillsListingProps> = ({ skills, abilitySco
             const maxRanks = calculateMaxRanks(overallLevel, skill.isClassSkill || false, intelligenceModifier);
             
             return (
-              <div key={skill.id} className="grid grid-cols-[1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-2 py-2 items-center border-b border-border/50 hover:bg-muted/20 transition-colors">
-                <Label htmlFor={`form_skill_ranks_${skill.id}`} className="text-sm truncate pr-1">{skillDef?.label || skill.id}</Label>
+              <div key={`skill-listing-${skill.id}`} className="grid grid-cols-[1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-2 py-2 items-center border-b border-border/50 hover:bg-muted/20 transition-colors">
+                <Label htmlFor={`form_skill_ranks_${skill.id}_listing`} className="text-sm truncate pr-1">{skillDef?.label || skill.id}</Label>
                 <span className="text-lg font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
                 <span className="text-xs text-muted-foreground text-center w-10">{keyAbilityShort}</span>
                 <span className="text-sm text-center w-10">{abilityMod >= 0 ? '+' : ''}{abilityMod}</span>
                 <div className="flex justify-center w-32">
                   <NumberSpinnerInput
-                    id={`form_skill_ranks_${skill.id}`} 
+                    id={`form_skill_ranks_${skill.id}_listing`} 
                     value={skill.ranks || 0}
                     onChange={(newValue) => onSkillChange(skill.id, newValue, skill.miscModifier || 0, skill.isClassSkill)}
                     step={(skill.isClassSkill || skillDef?.keyAbility === 'none') ? 1 : 0.5}
@@ -99,7 +99,7 @@ export const SkillsListing: React.FC<SkillsListingProps> = ({ skills, abilitySco
                 </div>
                 <div className="flex justify-center w-16">
                   <NumberSpinnerInput
-                    id={`form_skill_misc_${skill.id}`} 
+                    id={`form_skill_misc_${skill.id}_listing`} 
                     value={skill.miscModifier || 0}
                     onChange={(newValue) => onSkillChange(skill.id, skill.ranks || 0, newValue, skill.isClassSkill)}
                     min={-20} max={20}
@@ -113,7 +113,7 @@ export const SkillsListing: React.FC<SkillsListingProps> = ({ skills, abilitySco
                     <Tooltip>
                       <TooltipTrigger asChild>
                          <Checkbox
-                            id={`form_skill_class_${skill.id}`} 
+                            id={`form_skill_class_${skill.id}_listing`} 
                             checked={skill.isClassSkill}
                             onCheckedChange={(checked) => onSkillChange(skill.id, skill.ranks || 0, skill.miscModifier || 0, !!checked)}
                           />

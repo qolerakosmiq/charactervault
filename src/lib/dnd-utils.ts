@@ -22,6 +22,11 @@ export function getAbilityModifierByName(scores: AbilityScores, abilityName: Abi
   return calculateAbilityModifier(score);
 }
 
+// Renamed function
+export function calculateCharacterTotalLevel(classes: CharacterClass[]): number {
+  return classes.reduce((sum, currentClass) => sum + currentClass.level, 0) || 1;
+}
+
 export function getBab(
   classes: CharacterClass[],
   allClassDefinitions: readonly DndClassOption[]
