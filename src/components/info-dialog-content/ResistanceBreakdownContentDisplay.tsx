@@ -11,10 +11,10 @@ interface ResistanceBreakdownContentDisplayProps {
   uiStrings: Record<string, string>;
 }
 
-export const ResistanceBreakdownContentDisplay: React.FC<ResistanceBreakdownContentDisplayProps> = ({
+export const ResistanceBreakdownContentDisplay: React.FC<ResistanceBreakdownContentDisplayProps> = React.memo(function ResistanceBreakdownContentDisplay({
   resistanceBreakdown,
   uiStrings,
-}) => {
+}) {
   if (!resistanceBreakdown) return null;
 
   return (
@@ -37,4 +37,7 @@ export const ResistanceBreakdownContentDisplay: React.FC<ResistanceBreakdownCont
       </div>
     </div>
   );
-};
+});
+ResistanceBreakdownContentDisplay.displayName = 'ResistanceBreakdownContentDisplay';
+
+    

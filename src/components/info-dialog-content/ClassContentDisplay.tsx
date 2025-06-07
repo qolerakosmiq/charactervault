@@ -36,7 +36,7 @@ interface ClassContentDisplayProps {
   toggleExpanded: (itemId: string) => void;
 }
 
-export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
+export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = React.memo(function ClassContentDisplay({
   htmlContent,
   grantedFeats,
   detailsList,
@@ -46,7 +46,7 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
   character,
   expandedItems,
   toggleExpanded,
-}) => {
+}) {
   const { UI_STRINGS, ABILITY_LABELS, DND_CLASSES, DND_RACES, ALIGNMENT_PREREQUISITE_OPTIONS, SKILL_DEFINITIONS } = translations;
   const outputBlocks: React.ReactNode[] = [];
 
@@ -141,4 +141,7 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
   }
   
   return outputBlocks.length > 0 ? outputBlocks : null;
-};
+});
+ClassContentDisplay.displayName = 'ClassContentDisplay';
+
+    

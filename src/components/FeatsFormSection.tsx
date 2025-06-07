@@ -33,7 +33,7 @@ interface FeatsFormSectionProps {
   allCustomSkillDefinitions: readonly CustomSkillDefinition[]; 
 }
 
-export function FeatsFormSection({
+export const FeatsFormSection = React.memo(function FeatsFormSection({
   featSectionData,
   allAvailableFeatDefinitions,
   chosenFeatInstances,
@@ -360,4 +360,7 @@ export function FeatsFormSection({
       />
     </>
   );
-}
+});
+FeatsFormSection.displayName = 'FeatsFormSection';
+
+    

@@ -12,11 +12,11 @@ interface GrappleModifierBreakdownContentDisplayProps {
   abilityLabels: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
 }
 
-export const GrappleModifierBreakdownContentDisplay: React.FC<GrappleModifierBreakdownContentDisplayProps> = ({
+export const GrappleModifierBreakdownContentDisplay: React.FC<GrappleModifierBreakdownContentDisplayProps> = React.memo(function GrappleModifierBreakdownContentDisplay({
   grappleModifierBreakdown,
   uiStrings,
   abilityLabels,
-}) => {
+}) {
   if (!grappleModifierBreakdown) return null;
 
   const strengthAbilityInfo = abilityLabels.find(al => al.value === 'strength');
@@ -56,6 +56,8 @@ export const GrappleModifierBreakdownContentDisplay: React.FC<GrappleModifierBre
       </div>
     </div>
   );
-};
+});
+GrappleModifierBreakdownContentDisplay.displayName = 'GrappleModifierBreakdownContentDisplay';
 
+    
     

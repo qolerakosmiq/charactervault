@@ -12,11 +12,11 @@ interface GrappleDamageBreakdownContentDisplayProps {
   abilityLabels: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
 }
 
-export const GrappleDamageBreakdownContentDisplay: React.FC<GrappleDamageBreakdownContentDisplayProps> = ({
+export const GrappleDamageBreakdownContentDisplay: React.FC<GrappleDamageBreakdownContentDisplayProps> = React.memo(function GrappleDamageBreakdownContentDisplay({
   grappleDamageBreakdown,
   uiStrings,
   abilityLabels,
-}) => {
+}) {
   if (!grappleDamageBreakdown) return null;
 
   const totalNumericBonus = grappleDamageBreakdown.strengthModifier + grappleDamageBreakdown.bonus;
@@ -66,6 +66,8 @@ export const GrappleDamageBreakdownContentDisplay: React.FC<GrappleDamageBreakdo
       </div>
     </div>
   );
-};
+});
+GrappleDamageBreakdownContentDisplay.displayName = 'GrappleDamageBreakdownContentDisplay';
 
+    
     

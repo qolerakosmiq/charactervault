@@ -85,7 +85,7 @@ const DebouncedSkillRankInput: React.FC<{
 };
 
 
-export function SkillsFormSection({
+export const SkillsFormSection = React.memo(function SkillsFormSection({
   skillsData,
   actualAbilityScores,
   allFeatDefinitions,
@@ -423,4 +423,7 @@ export function SkillsFormSection({
     </Card>
     </>
   );
-}
+});
+SkillsFormSection.displayName = 'SkillsFormSection';
+
+    

@@ -44,7 +44,7 @@ interface SpeedPanelProps {
   onOpenLoadSpeedPenaltyInfoDialog: () => void;
 }
 
-export function SpeedPanel({ 
+export const SpeedPanel = React.memo(function SpeedPanel({ 
   speedData, 
   onCharacterUpdate, 
   onOpenSpeedInfoDialog, 
@@ -298,4 +298,7 @@ export function SpeedPanel({
       </CardContent>
     </Card>
   );
-}
+});
+SpeedPanel.displayName = 'SpeedPanel';
+
+    

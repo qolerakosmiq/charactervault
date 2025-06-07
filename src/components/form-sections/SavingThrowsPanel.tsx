@@ -24,7 +24,7 @@ interface SavingThrowsPanelProps {
 
 const SAVE_TYPES: SavingThrowType[] = ['fortitude', 'reflex', 'will'];
 
-export function SavingThrowsPanel({
+export const SavingThrowsPanel = React.memo(function SavingThrowsPanel({
   savingThrowsData,
   abilityScores,
   onSavingThrowMiscModChange,
@@ -195,4 +195,7 @@ export function SavingThrowsPanel({
       </CardContent>
     </Card>
   );
-}
+});
+SavingThrowsPanel.displayName = 'SavingThrowsPanel';
+
+    
