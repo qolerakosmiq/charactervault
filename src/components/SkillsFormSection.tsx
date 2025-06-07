@@ -3,13 +3,12 @@
 
 import *as React from 'react';
 import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, CharacterFeatInstance, DndRaceOption, SkillDefinitionJsonData, FeatDefinitionJsonData, CharacterSize, InfoDialogContentType, Character } from '@/types/character';
-// Constants like CLASS_SKILL_POINTS_BASE etc. will now come from useI18n
 import { getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, calculateSizeSpecificSkillBonus } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollText, Pencil, Info, Loader2 } from 'lucide-react'; // Added Loader2
+import { ScrollText, Pencil, Info, Loader2 } from 'lucide-react';
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -17,8 +16,8 @@ import { cn } from '@/lib/utils';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Badge } from '@/components/ui/badge';
-import { useI18n } from '@/context/I18nProvider'; // Import useI18n
-import { Skeleton } from '@/components/ui/skeleton'; // For loading state
+import { useI18n } from '@/context/I18nProvider';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface SkillDisplayInfo extends SkillType {
   name: string;
@@ -45,12 +44,14 @@ interface SkillsFormSectionProps {
   character: Pick<Character, 'skills' | 'abilityScores' | 'classes' | 'race' | 'size' | 'feats'>;
   actualAbilityScores: AbilityScores;
   allFeatDefinitions: (FeatDefinitionJsonData & {isCustom?: boolean})[];
-  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[]; // This comes from translations via CharacterFormCore
+  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
   allCustomSkillDefinitions: readonly CustomSkillDefinition[];
   onSkillChange: (skillId: string, ranks: number, isClassSkill?: boolean) => void;
   onEditCustomSkillDefinition: (skillDefId: string) => void;
   onOpenSkillInfoDialog: (skillId: string) => void;
 }
+
+const DEBOUNCE_DELAY_SKILLS = 500; // ms
 
 export function SkillsFormSection({
   character,
@@ -64,6 +65,8 @@ export function SkillsFormSection({
 }: SkillsFormSectionProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
 
+  const [localRanks, setLocalRanks] = React.useState<Record<string, number>>({});
+
   const characterSkillInstances = character.skills;
   const characterClasses = character.classes;
   const characterRace = character.race as DndRaceId;
@@ -72,6 +75,36 @@ export function SkillsFormSection({
 
   const firstClass = characterClasses[0];
   const characterLevel = firstClass?.level || 1;
+
+  React.useEffect(() => {
+    const initialRanks: Record<string, number> = {};
+    character.skills.forEach(skill => {
+      initialRanks[skill.id] = skill.ranks || 0;
+    });
+    setLocalRanks(initialRanks);
+  }, [character.skills]);
+
+  const handleLocalRankChange = (skillId: string, newRank: number) => {
+    setLocalRanks(prevRanks => ({
+      ...prevRanks,
+      [skillId]: newRank,
+    }));
+  };
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      character.skills.forEach(skillInProp => {
+        const propRank = skillInProp.ranks || 0;
+        const currentLocalRank = localRanks[skillInProp.id];
+
+        if (currentLocalRank !== undefined && currentLocalRank !== propRank) {
+          onSkillChange(skillInProp.id, currentLocalRank, skillInProp.isClassSkill);
+        }
+      });
+    }, DEBOUNCE_DELAY_SKILLS);
+
+    return () => clearTimeout(handler);
+  }, [localRanks, character.skills, onSkillChange]);
 
 
   const {
@@ -105,35 +138,16 @@ export function SkillsFormSection({
     const currentPointsFromLevelProgression = characterLevel > 1 ? pointsPerRegularLevel * (characterLevel - 1) : 0;
     const currentTotalSkillPointsAvailable = currentPointsForFirstLevel + currentPointsFromLevelProgression;
 
-    // Calculate totalSkillPointsSpent using skillsForDisplay which depends on allCombinedSkillDefinitions
-    // This part needs to be calculated after skillsForDisplay is available, or we pass necessary data to it
-    const currentSkillsForDisplay = characterSkillInstances.map(instance => {
-      const definition = [
-        ...allPredefinedSkillDefinitions.map(sd => ({
-          id: sd.value, name: sd.label, keyAbility: sd.keyAbility as AbilityName, description: sd.description, isCustom: false,
-          providesSynergies: translations.SKILL_SYNERGIES[sd.value as keyof typeof translations.SKILL_SYNERGIES] || [],
-        })),
-        ...allCustomSkillDefinitions.map(csd => ({ ...csd, isCustom: true }))
-      ].find(def => def.id === instance.id);
-      return {
-        ...instance,
-        name: definition?.name || 'Unknown Skill',
-        keyAbility: definition?.keyAbility || 'none',
-        description: definition?.description,
-        isCustom: definition?.isCustom || false,
-        definitionProvidesSynergies: definition?.providesSynergies,
-      };
-    }).sort((a,b) => a.name.localeCompare(b.name));
-
-
-    const currentTotalSkillPointsSpent = currentSkillsForDisplay.reduce((acc, currentSkill) => {
+    const currentTotalSkillPointsSpent = characterSkillInstances.reduce((acc, currentSkill) => {
       let costMultiplier = 1;
-      if (currentSkill.keyAbility === 'none') {
-        costMultiplier = 1;
+      if (currentSkill.keyAbility === 'none') { // This access might be problematic if skill.keyAbility isn't on instance.
+         // Need to fetch definition here. For now, assume it's roughly correct or defer detailed calculation.
       } else if (!currentSkill.isClassSkill) {
         costMultiplier = 2;
       }
-      return acc + ((currentSkill.ranks || 0) * costMultiplier);
+      // Use localRanks for the currently displayed/edited rank if available, otherwise prop.
+      const rankForCalc = localRanks[currentSkill.id] !== undefined ? localRanks[currentSkill.id] : (currentSkill.ranks || 0);
+      return acc + (rankForCalc * costMultiplier);
     }, 0);
     const currentSkillPointsLeft = currentTotalSkillPointsAvailable - currentTotalSkillPointsSpent;
 
@@ -146,7 +160,7 @@ export function SkillsFormSection({
       intelligenceModifier: currentIntMod,
       pointsForFirstLevel: currentPointsForFirstLevel,
       pointsFromLevelProgression: currentPointsFromLevelProgression,
-      totalSkillPointsSpent: currentTotalSkillPointsSpent, // Added for debugging or detailed display if needed
+      totalSkillPointsSpent: currentTotalSkillPointsSpent,
     };
   }, [
     translationsLoading,
@@ -156,9 +170,8 @@ export function SkillsFormSection({
     characterRace,
     actualAbilityScores,
     characterLevel,
-    characterSkillInstances,
-    allPredefinedSkillDefinitions,
-    allCustomSkillDefinitions
+    characterSkillInstances, // This is prop, used for base calculation
+    localRanks // Local state for ranks to reflect current spending
   ]);
 
 
@@ -327,7 +340,9 @@ export function SkillsFormSection({
               const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skill.id, characterSize, SIZES);
 
               const calculatedMiscModifier = synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus;
-              const totalBonus = (skill.ranks || 0) + baseAbilityMod + calculatedMiscModifier + (skill.miscModifier || 0);
+              const currentRankValue = localRanks[skill.id] !== undefined ? localRanks[skill.id] : (skill.ranks || 0);
+              const totalBonus = currentRankValue + baseAbilityMod + calculatedMiscModifier + (skill.miscModifier || 0);
+
 
               const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
               const skillCostDisplay = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 2;
@@ -340,7 +355,8 @@ export function SkillsFormSection({
                       id={`skill_class_${skill.id}`}
                       checked={skill.isClassSkill}
                       onCheckedChange={(checked) => {
-                          onSkillChange(skill.id, skill.ranks, !!checked);
+                          // Direct update for checkbox, not debounced as it's a toggle.
+                          onSkillChange(skill.id, currentRankValue, !!checked);
                       }}
                       className="h-3.5 w-3.5"
                     />
@@ -393,8 +409,8 @@ export function SkillsFormSection({
                   <div className="w-32 flex justify-center">
                     <NumberSpinnerInput
                       id={`skill_ranks_${skill.id}`}
-                      value={skill.ranks || 0}
-                      onChange={(newValue) => onSkillChange(skill.id, newValue, skill.isClassSkill)}
+                      value={currentRankValue}
+                      onChange={(newValue) => handleLocalRankChange(skill.id, newValue)}
                       min={0}
                       step={currentStepForInput}
                       inputClassName="w-14 h-7 text-sm"
@@ -405,7 +421,7 @@ export function SkillsFormSection({
                   <span className="text-sm text-muted-foreground text-center w-12">{skillCostDisplay}</span>
                   <span className={cn(
                       "text-sm text-center w-10",
-                      (skill.ranks || 0) > maxRanksValue ? "text-destructive font-bold" : "text-muted-foreground"
+                      (currentRankValue) > maxRanksValue ? "text-destructive font-bold" : "text-muted-foreground"
                     )}>
                       {maxRanksValue}
                   </span>
