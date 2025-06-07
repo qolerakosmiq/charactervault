@@ -1,5 +1,6 @@
 
 
+
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -644,12 +645,12 @@ export function calculateSpeedBreakdown(
 
   if (raceData?.speeds && raceData.speeds[speedType] !== undefined) {
     baseSpeedFromRace = raceData.speeds[speedType] as number;
-  } else if (speedType === 'land') { // Default land speed if not specified by race
+  } else if (speedType === 'land') { 
     const sizeData = SIZES.find(s => s.value === character.size);
     baseSpeedFromRace = (sizeData?.value === 'small' || sizeData?.value === 'tiny' || sizeData?.value === 'diminutive' || sizeData?.value === 'fine') ? 20 : 30;
   }
   
-  const baseLabelText = uiStrings.savingThrowsRowLabelBase || "Base"; // Re-using a generic "Base" string
+  const baseLabelText = uiStrings.savingThrowsRowLabelBase || "Base"; 
   components.push({ source: `${baseLabelText} (${raceLabel})`, value: baseSpeedFromRace });
   currentTotal += baseSpeedFromRace;
 
@@ -659,7 +660,6 @@ export function calculateSpeedBreakdown(
     currentTotal += charSpeedDetails.miscModifier;
   }
 
-  // Class Features (mainly for Land Speed)
   if (speedType === 'land') {
     const monkClass = character.classes.find(c => c.className === 'monk');
     if (monkClass) {
@@ -679,21 +679,20 @@ export function calculateSpeedBreakdown(
 
     const barbarianClass = character.classes.find(c => c.className === 'barbarian');
     if (barbarianClass && barbarianClass.level >= 1) {
-        // Note: This does not check armor/load for Barbarian Fast Movement for simplicity in this function
-        // This should ideally be checked based on character's current equipment state if available
         components.push({ source: uiStrings.infoDialogSpeedBarbarianLabel || "Barbarian Fast Movement", value: 10 });
         currentTotal += 10;
     }
 
-    const armorPenaltyTotal = (character.armorSpeedPenalty_base || 0) + (character.armorSpeedPenalty_miscModifier || 0);
-    if (armorPenaltyTotal !== 0) {
-      components.push({ source: uiStrings.infoDialogSpeedArmorPenaltyLabel || "Armor Penalty", value: -armorPenaltyTotal });
-      currentTotal -= armorPenaltyTotal;
+    const effectiveArmorPenalty = (character.armorSpeedPenalty_base || 0) - (character.armorSpeedPenalty_miscModifier || 0);
+    if (effectiveArmorPenalty > 0) { 
+        components.push({ source: uiStrings.infoDialogSpeedArmorPenaltyLabel || "Armor Penalty", value: -effectiveArmorPenalty });
+        currentTotal -= effectiveArmorPenalty;
     }
-    const loadPenaltyTotal = (character.loadSpeedPenalty_base || 0) + (character.loadSpeedPenalty_miscModifier || 0);
-    if (loadPenaltyTotal !== 0) {
-      components.push({ source: uiStrings.infoDialogSpeedLoadPenaltyLabel || "Load Penalty", value: -loadPenaltyTotal });
-      currentTotal -= loadPenaltyTotal;
+    
+    const effectiveLoadPenalty = (character.loadSpeedPenalty_base || 0) - (character.loadSpeedPenalty_miscModifier || 0);
+    if (effectiveLoadPenalty > 0) {
+        components.push({ source: uiStrings.infoDialogSpeedLoadPenaltyLabel || "Load Penalty", value: -effectiveLoadPenalty });
+        currentTotal -= effectiveLoadPenalty;
     }
   }
   
@@ -709,7 +708,7 @@ export function calculateSpeedBreakdown(
   return {
     name: speedName,
     components,
-    total: Math.max(0, currentTotal), // Speed cannot be negative
+    total: Math.max(0, currentTotal), 
   };
 }
 
@@ -745,3 +744,5 @@ export * from './character-core';
 
 
 
+
+    

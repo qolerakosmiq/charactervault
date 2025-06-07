@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Wind, Waves, MoveVertical, Shell, Feather, Info, Loader2, ShieldOff, Weight } from 'lucide-react'; // Changed ShieldSlash to ShieldOff
+import { Wind, Waves, MoveVertical, Shell, Feather, Info, Loader2, ShieldOff, Weight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -129,8 +129,10 @@ export function SpeedPanel({
   const speedUnit = UI_STRINGS.speedUnit || "ft.";
   const speedStep = parseFloat(UI_STRINGS.speedStepIncrement || "5");
 
-  const totalArmorPenalty = (character.armorSpeedPenalty_base || 0) + (character.armorSpeedPenalty_miscModifier || 0);
-  const totalLoadPenalty = (character.loadSpeedPenalty_base || 0) + (character.loadSpeedPenalty_miscModifier || 0);
+  // Effective penalty = base penalty - misc modifier (positive misc mod reduces penalty)
+  const totalEffectiveArmorPenalty = (character.armorSpeedPenalty_base || 0) - (localArmorPenaltyMiscMod || 0);
+  const totalEffectiveLoadPenalty = (character.loadSpeedPenalty_base || 0) - (localLoadPenaltyMiscMod || 0);
+
 
   return (
     <Card>
@@ -197,12 +199,12 @@ export function SpeedPanel({
           {/* Armor Penalty Card */}
           <div className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
             <div className="flex items-center justify-center">
-              <ShieldOff className="h-5 w-5 mr-1.5 text-muted-foreground" /> {/* Corrected Icon */}
+              <ShieldOff className="h-5 w-5 mr-1.5 text-muted-foreground" />
               <span className="text-sm font-medium">{UI_STRINGS.armorPenaltyCardTitle}</span>
             </div>
             <div className="flex items-center justify-center space-x-1 h-9">
               <span className="text-lg font-bold text-destructive">
-                {totalArmorPenalty > 0 ? `-${totalArmorPenalty}` : totalArmorPenalty}
+                {totalEffectiveArmorPenalty} 
               </span>
               <span className="text-base font-normal text-muted-foreground">
                 {speedUnit}
@@ -223,7 +225,7 @@ export function SpeedPanel({
                 id="armor-penalty-misc-mod"
                 value={localArmorPenaltyMiscMod}
                 onChange={setLocalArmorPenaltyMiscMod}
-                min={0} // Penalties are usually positive numbers that subtract
+                min={-100} 
                 max={100}
                 step={speedStep}
                 inputClassName="w-20 h-8 text-sm text-center"
@@ -242,7 +244,7 @@ export function SpeedPanel({
             </div>
             <div className="flex items-center justify-center space-x-1 h-9">
               <span className="text-lg font-bold text-destructive">
-                {totalLoadPenalty > 0 ? `-${totalLoadPenalty}` : totalLoadPenalty}
+                {totalEffectiveLoadPenalty}
               </span>
               <span className="text-base font-normal text-muted-foreground">
                 {speedUnit}
@@ -263,7 +265,7 @@ export function SpeedPanel({
                 id="load-penalty-misc-mod"
                 value={localLoadPenaltyMiscMod}
                 onChange={setLocalLoadPenaltyMiscMod}
-                min={0} // Penalties are usually positive
+                min={-100} 
                 max={100}
                 step={speedStep}
                 inputClassName="w-20 h-8 text-sm text-center"
@@ -278,3 +280,5 @@ export function SpeedPanel({
     </Card>
   );
 }
+
+    

@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare, ShieldOff, Weight } from 'lucide-react'; // Changed ShieldSlash to ShieldOff
+import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare, ShieldOff, Weight } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
@@ -110,7 +110,7 @@ interface InfoDisplayDialogProps {
 const DIALOG_ICONS: Record<string, React.ElementType> = {
   land: Wind, burrow: Shell, climb: MoveVertical, fly: Feather, swim: Waves,
   skillModifierBreakdown: SparklesIcon,
-  armorSpeedPenaltyBreakdown: ShieldOff, // Changed ShieldSlash to ShieldOff
+  armorSpeedPenaltyBreakdown: ShieldOff,
   loadSpeedPenaltyBreakdown: Weight,
   default: Info,
 };
@@ -463,14 +463,14 @@ export function InfoDisplayDialog({
         const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
         const details: AcBreakdownDetailItem[] = [];
         
-        const acCalculatedMiscModifier = 0; // This will be the "Misc Modifier" from feats, spells, etc.
-        const temporaryAcModifier = character.acMiscModifier || 0; // This is from the spinner input
+        const acCalculatedMiscModifier = 0; 
+        const temporaryAcModifier = character.acMiscModifier || 0; 
 
         details.push({ label: UI_STRINGS.acBreakdownBaseLabel || "Base", value: 10 });
 
         if (contentType.acType === 'Normal' || contentType.acType === 'Touch') {
           details.push({
-            label: UI_STRINGS.infoDialogAcAbilityLabel || "Ability Modifier", // Should now pick up "Mod. de caract."
+            label: UI_STRINGS.infoDialogAcAbilityLabel || "Ability Modifier", 
             value: dexMod,
             type: 'acAbilityMod',
             abilityAbbr: ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX'
@@ -490,16 +490,14 @@ export function InfoDisplayDialog({
         }
         if (character.deflectionBonus) details.push({ label: UI_STRINGS.acBreakdownDeflectionBonusLabel || "Deflection Bonus", value: character.deflectionBonus });
         
-        // New "Misc Modifier" (calculated from effects, currently 0)
         if (acCalculatedMiscModifier !== 0) {
-          details.push({ label: UI_STRINGS.acBreakdownCalculatedMiscLabel || "Misc Modifier", value: acCalculatedMiscModifier });
+          details.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier", value: acCalculatedMiscModifier });
         }
 
         if ((contentType.acType === 'Normal' || contentType.acType === 'Touch') && character.dodgeBonus) {
           details.push({ label: UI_STRINGS.acBreakdownDodgeBonusLabel || "Dodge Bonus", value: character.dodgeBonus });
         }
         
-        // Existing "Temporary Modifier" (from input)
         if (temporaryAcModifier !== 0) { 
           details.push({ label: UI_STRINGS.armorClassTempModifierLabel || "Temporary Modifier", value: temporaryAcModifier });
         }
@@ -604,14 +602,16 @@ export function InfoDisplayDialog({
       }
       case 'armorSpeedPenaltyBreakdown': {
         iconKey = 'armorSpeedPenaltyBreakdown';
-        const totalPenalty = (character.armorSpeedPenalty_base || 0) + (character.armorSpeedPenalty_miscModifier || 0);
+        const armorBase = character.armorSpeedPenalty_base || 0;
+        const armorMisc = character.armorSpeedPenalty_miscModifier || 0;
+        const totalEffectivePenalty = armorBase - armorMisc; // Positive misc reduces penalty
         const penaltyBreakdown: SpeedBreakdownDetails = {
             name: UI_STRINGS.totalArmorPenaltyLabel || "Total Armor Penalty",
             components: [
-                { source: UI_STRINGS.speedPenaltyBaseArmorLabel || "Base from Armor", value: character.armorSpeedPenalty_base || 0 },
-                { source: UI_STRINGS.speedMiscModifierLabel || "Misc Modifier", value: character.armorSpeedPenalty_miscModifier || 0 }
+                { source: UI_STRINGS.speedPenaltyBaseArmorLabel || "Base from Armor", value: armorBase },
+                { source: UI_STRINGS.speedMiscModifierLabel || "Misc Modifier", value: armorMisc }
             ],
-            total: totalPenalty
+            total: totalEffectivePenalty 
         };
         data = {
             title: UI_STRINGS.infoDialogTitleArmorPenaltyBreakdown || "Armor Penalty Breakdown",
@@ -621,14 +621,16 @@ export function InfoDisplayDialog({
       }
       case 'loadSpeedPenaltyBreakdown': {
         iconKey = 'loadSpeedPenaltyBreakdown';
-        const totalPenalty = (character.loadSpeedPenalty_base || 0) + (character.loadSpeedPenalty_miscModifier || 0);
+        const loadBase = character.loadSpeedPenalty_base || 0;
+        const loadMisc = character.loadSpeedPenalty_miscModifier || 0;
+        const totalEffectivePenalty = loadBase - loadMisc; // Positive misc reduces penalty
         const penaltyBreakdown: SpeedBreakdownDetails = {
             name: UI_STRINGS.totalLoadPenaltyLabel || "Total Load Penalty",
             components: [
-                { source: UI_STRINGS.speedPenaltyBaseLoadLabel || "Base from Load", value: character.loadSpeedPenalty_base || 0 },
-                { source: UI_STRINGS.speedMiscModifierLabel || "Misc Modifier", value: character.loadSpeedPenalty_miscModifier || 0 }
+                { source: UI_STRINGS.speedPenaltyBaseLoadLabel || "Base from Load", value: loadBase },
+                { source: UI_STRINGS.speedMiscModifierLabel || "Misc Modifier", value: loadMisc }
             ],
-            total: totalPenalty
+            total: totalEffectivePenalty
         };
         data = {
             title: UI_STRINGS.infoDialogTitleLoadPenaltyBreakdown || "Load Penalty Breakdown",
@@ -719,3 +721,5 @@ interface DerivedDialogData {
   iconKey?: string;
 }
 
+
+    
