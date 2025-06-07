@@ -70,7 +70,7 @@
     "infoDialogTotalBonusLabel": "Total Bonus",
     "infoDialogTotalLabel": "Total",
     "infoDialogBaseValueLabel": "Base Value",
-    "infoDialogCustomModifierLabel": "Custom Modifier",
+    "infoDialogCustomModifierLabel": "Misc Modifier",
     "infoDialogTotalResistanceLabel": "Total Resistance",
     "infoDialogSpeedBaseRaceLabel": "Base ({raceName})",
     "infoDialogSpeedMiscModifierLabel": "Misc Modifier",
@@ -317,5 +317,3 @@
     "synergyTextPart4BonusToTargetSkillEnd": "'s checks."
   }
 }
-
-    
