@@ -159,7 +159,7 @@ export const RaceContentDisplay = ({
                     {feat.levelAcquired !== undefined && (
                       <Badge variant="outline" className={cn(
                         "text-xs font-normal h-5 whitespace-nowrap shrink-0 justify-center",
-                        "min-w-[4.25rem]" // Ensures enough width for "Level XX"
+                        "min-w-[5rem]" // Adjusted min-width
                       )}>
                         {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
                       </Badge>
@@ -199,6 +199,10 @@ export const RaceContentDisplay = ({
     );
   }
 
-  return outputBlocks.length > 0 ? outputBlocks : null;
+  return outputBlocks.length > 0 ? <div className="space-y-3">{outputBlocks.map((block, index, arr) => (
+        <React.Fragment key={index}>
+          {block}
+          {index < arr.length - 1 && <Separator className="my-3" />}
+        </React.Fragment>
+      ))}</div> : null;
 };
-// RaceContentDisplay.displayName = 'RaceContentDisplayComponent'; // Removed for debugging memo issues
