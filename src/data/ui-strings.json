@@ -287,7 +287,7 @@
     "saveProgressionPoor": "Poor",
     "dmSettingsPanelTitle": "Dungeon Master Settings",
     "dmSettingsLanguageLabel": "Game Language",
-    "dmSettingsLanguageDescription": "Affects game data such as units (e.g., ft vs m for speed), numerical increments, and default names.",
+    "dmSettingsLanguageDescription": "Affects game data such as units, numerical increments, and default names.",
     "dmSettingsRerollOnesLabel": "Reroll 1s for Ability Score Rolls",
     "dmSettingsRerollOnesDescription": "When using 4d6 drop lowest, reroll any die that shows a 1 until it is not a 1.",
     "dmSettingsPointBuyBudgetLabel": "Point Buy Budget for Ability Scores",
@@ -326,11 +326,11 @@
     "synergyTextPart4BonusToTargetSkillStart": " bonus to ",
     "synergyTextPart4BonusToTargetSkillEnd": "'s checks.",
     "drVsLabel": "vs",
+    "drImmunitySuffixLabel": "(Immunity)",
     "drBypassedByNoneDesc": "Reduces damage from most attacks by {value}.",
     "drBypassedByTypeDesc": "Reduces damage by {value} unless attack is {typeLabel}.",
     "drVersusSpecificTypeDesc": "Specifically reduces damage from {typeLabel} sources by {value}.",
-    "drExceptedByTypeDesc": "Immune to damage unless from {typeLabel} sources. {typeLabel} sources deal damage reduced by {value}.",
-    "drImmunitySuffixLabel": "(Immunity)"
+    "drExceptedByTypeDesc": "Immune to damage unless from {typeLabel} sources. {typeLabel} sources deal damage reduced by {value}."
   }
 }
 

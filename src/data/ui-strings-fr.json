@@ -286,7 +286,7 @@
     "saveProgressionPoor": "Médiocre",
     "dmSettingsPanelTitle": "Paramètres du maître du donjon",
     "dmSettingsLanguageLabel": "Langue du jeu",
-    "dmSettingsLanguageDescription": "Affecte les données du jeu telles que les unités (par ex., pieds vs mètres pour la vitesse), les incréments numériques et les noms par défaut.",
+    "dmSettingsLanguageDescription": "Affecte les données du jeu telles que les unités, les incréments numériques et les noms par défaut.",
     "dmSettingsRerollOnesLabel": "Relancer les 1 pour les lancers de caractéristiques",
     "dmSettingsRerollOnesDescription": "Lors de l'utilisation de 4d6 (garder les 3 meilleurs), relancez tout dé affichant un 1 jusqu'à ce qu'il ne soit plus un 1.",
     "dmSettingsPointBuyBudgetLabel": "Budget d'achat par points pour les caractéristiques",
@@ -325,11 +325,11 @@
     "synergyTextPart4BonusToTargetSkillStart": " bonus aux tests de ",
     "synergyTextPart4BonusToTargetSkillEnd": ".",
     "drVsLabel": "contre",
+    "drImmunitySuffixLabel": "(immunité)",
     "drBypassedByNoneDesc": "Réduit les dégâts de la plupart des attaques de {value}.",
     "drBypassedByTypeDesc": "Réduit les dégâts de {value} sauf si l'attaque est {typeLabel}.",
     "drVersusSpecificTypeDesc": "Réduit spécifiquement les dégâts des sources {typeLabel} de {value}.",
-    "drExceptedByTypeDesc": "Immunisé aux dégâts sauf s'ils proviennent de sources {typeLabel}. Les sources {typeLabel} infligent des dégâts réduits de {value}.",
-    "drImmunitySuffixLabel": "(immunité)"
+    "drExceptedByTypeDesc": "Immunisé aux dégâts sauf s'ils proviennent de sources {typeLabel}. Les sources {typeLabel} infligent des dégâts réduits de {value}."
   }
 }
 

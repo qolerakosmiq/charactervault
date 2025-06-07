@@ -192,7 +192,7 @@ export default function CharacterDashboardPage() {
               </Label>
               <LanguageSwitcher />
               <p className="text-xs text-muted-foreground pl-6">
-                {UI_STRINGS.dmSettingsLanguageDescription || "Affects game data like unit conversions and default names."}
+                {UI_STRINGS.dmSettingsLanguageDescription || "Affects game data such as units, numerical increments, and default names."}
               </p>
             </div>
             <Separator className="my-4" />
