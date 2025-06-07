@@ -639,6 +639,7 @@ export function calculateSpeedBreakdown(
   let currentTotal = 0;
 
   const raceData = DND_RACES.find(r => r.value === character.race);
+  const raceLabel = raceData?.label || character.race || 'Unknown Race';
   let baseSpeedFromRace = 0;
 
   if (raceData?.speeds && raceData.speeds[speedType] !== undefined) {
@@ -647,7 +648,9 @@ export function calculateSpeedBreakdown(
     const sizeData = SIZES.find(s => s.value === character.size);
     baseSpeedFromRace = (sizeData?.value === 'small' || sizeData?.value === 'tiny' || sizeData?.value === 'diminutive' || sizeData?.value === 'fine') ? 20 : 30;
   }
-  components.push({ source: uiStrings.infoDialogSpeedBaseRaceLabel || "Base (Race)", value: baseSpeedFromRace });
+  
+  const baseLabelText = uiStrings.savingThrowsRowLabelBase || "Base";
+  components.push({ source: `${baseLabelText} (${raceLabel})`, value: baseSpeedFromRace });
   currentTotal += baseSpeedFromRace;
 
   const charSpeedDetails = character[`${speedType}Speed` as keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>];
@@ -729,7 +732,8 @@ export * from './character-core';
 // Re-export selected constants only if they are defined solely in character-core.ts and NOT i18n-dependent
 // For example, if SIZES or ALIGNMENTS were truly static and not i18n, they could be re-exported.
 // However, given the current setup, they are i18n-dependent and sourced via useI18n.
-// export { SIZES, ALIGNMENTS } from './character-core'; // Example, but likely not applicable now
+// export { SIZES, ALIGNMENTS } from './character-core'; 
+
 
 
 

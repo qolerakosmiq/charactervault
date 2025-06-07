@@ -18,6 +18,21 @@ export const SpeedBreakdownContentDisplay: React.FC<SpeedBreakdownContentDisplay
   if (!speedBreakdown) return null;
   const speedUnit = uiStrings.speedUnit || "ft.";
 
+  const renderSource = (source: string) => {
+    const match = source.match(/^(.*?)\s*\((.*)\)$/); // Matches "Text (Details)"
+    if (match) {
+      const mainText = match[1].trim(); // e.g., "Base"
+      const detailText = match[2].trim(); // e.g., "Human"
+      return (
+        <>
+          {mainText}{' '}
+          <span className="text-muted-foreground">({detailText})</span>
+        </>
+      );
+    }
+    return source;
+  };
+
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
@@ -25,7 +40,7 @@ export const SpeedBreakdownContentDisplay: React.FC<SpeedBreakdownContentDisplay
         {speedBreakdown.components.map((comp, index) => {
           return (
             <div key={index} className="flex justify-between">
-              <span>{comp.source}</span>
+              <span>{renderSource(comp.source)}</span>
               {renderModifierValue(comp.value)}
             </div>
           );
