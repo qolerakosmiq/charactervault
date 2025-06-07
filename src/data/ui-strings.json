@@ -283,7 +283,7 @@
     "dmSettingsPointBuyBudgetLabel": "Point Buy Budget for Ability Scores",
     "dmSettingsPointBuyBudgetDescription": "Default is 25 points for standard D&D 3.5 point buy.",
     "dmSettingsAddCustomSkillButton": "Add New Custom Skill",
-    "dmSettingsAddCustomFeatButton": "Add New Custom Feat Definition",
+    "dmSettingsAddCustomFeatButton": "Add New Custom Feat",
     "toastCharacterForgedTitle": "Character Forged!",
     "toastCharacterForgedDescription": "{characterName} has been successfully created.",
     "dashboardLoadingCharacters": "Loading characters...",

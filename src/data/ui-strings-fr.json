@@ -282,7 +282,7 @@
     "dmSettingsPointBuyBudgetLabel": "Budget d'achat par points pour les caractéristiques",
     "dmSettingsPointBuyBudgetDescription": "Par défaut, 25 points pour l'achat par points standard de D&D 3.5.",
     "dmSettingsAddCustomSkillButton": "Ajouter une nouvelle compétence personnalisée",
-    "dmSettingsAddCustomFeatButton": "Ajouter une nouvelle définition de don personnalisé",
+    "dmSettingsAddCustomFeatButton": "Ajouter un nouveau don personnalisé",
     "toastCharacterForgedTitle": "Personnage forgé !",
     "toastCharacterForgedDescription": "{characterName} a été créé avec succès.",
     "dashboardLoadingCharacters": "Chargement des personnages...",
