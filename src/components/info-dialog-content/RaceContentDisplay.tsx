@@ -16,6 +16,7 @@ import { renderModifierValue, ExpandableDetailWrapper, sectionHeadingClass } fro
 import { FeatDetailsDisplay } from './FeatDetailsDisplay';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
 interface RaceContentDisplayProps {
   htmlContent?: string;
@@ -156,7 +157,10 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
                     aria-controls={`feat-details-${uniqueKey}`}
                   >
                     {feat.levelAcquired !== undefined && (
-                      <Badge variant="outline" className="text-xs font-normal h-5 whitespace-nowrap">
+                      <Badge variant="outline" className={cn(
+                        "text-xs font-normal h-5 whitespace-nowrap shrink-0 justify-center",
+                        "min-w-[4.25rem]" // Ensures enough width for "Level XX"
+                      )}>
                         {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
                       </Badge>
                     )}
@@ -195,5 +199,10 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = ({
     );
   }
 
-  return outputBlocks.length > 0 ? outputBlocks : null;
+  return outputBlocks.length > 0 ? outputBlocks.map((block, index) => (
+        <React.Fragment key={`block-${index}`}>
+          {block}
+          {index < outputBlocks.length - 1 && <Separator className="my-3" />}
+        </React.Fragment>
+      )) : null;
 };

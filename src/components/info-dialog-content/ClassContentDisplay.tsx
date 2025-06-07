@@ -15,6 +15,7 @@ import { ExpandableDetailWrapper, sectionHeadingClass } from './dialog-utils';
 import { FeatDetailsDisplay } from './FeatDetailsDisplay';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
 interface ClassContentDisplayProps {
   htmlContent?: string;
@@ -97,7 +98,10 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
                     aria-controls={`feat-details-${uniqueKey}`}
                   >
                     {feat.levelAcquired !== undefined && (
-                      <Badge variant="outline" className="text-xs font-normal h-5 whitespace-nowrap">
+                      <Badge variant="outline" className={cn(
+                        "text-xs font-normal h-5 whitespace-nowrap shrink-0 justify-center",
+                        "min-w-[4.25rem]" // Ensures enough width for "Level XX"
+                      )}>
                         {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
                       </Badge>
                     )}
@@ -136,5 +140,10 @@ export const ClassContentDisplay: React.FC<ClassContentDisplayProps> = ({
     );
   }
   
-  return outputBlocks.length > 0 ? outputBlocks : null; 
+  return outputBlocks.length > 0 ? outputBlocks.map((block, index) => (
+        <React.Fragment key={`block-${index}`}>
+          {block}
+          {index < outputBlocks.length - 1 && <Separator className="my-3" />}
+        </React.Fragment>
+      )) : null; 
 };
