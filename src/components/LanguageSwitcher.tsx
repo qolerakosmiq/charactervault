@@ -10,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Globe } from 'lucide-react';
 
 export function LanguageSwitcher() {
   const { language, setLanguage, isLoading } = useI18n();
@@ -20,20 +19,17 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div className="flex items-center space-x-2">
-      <Globe className="h-5 w-5 text-muted-foreground" />
-      <Select value={language} onValueChange={(value) => setLanguage(value as LanguageCode)}>
-        <SelectTrigger className="w-[120px] h-9 text-xs">
-          <SelectValue placeholder="Language" />
-        </SelectTrigger>
-        <SelectContent>
-          {SUPPORTED_LANGUAGES.map((lang) => (
-            <SelectItem key={lang.code} value={lang.code} className="text-xs">
-              {lang.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <Select value={language} onValueChange={(value) => setLanguage(value as LanguageCode)}>
+      <SelectTrigger className="w-[120px] h-9 text-xs" id="dm-language-switcher">
+        <SelectValue placeholder="Language" />
+      </SelectTrigger>
+      <SelectContent>
+        {SUPPORTED_LANGUAGES.map((lang) => (
+          <SelectItem key={lang.code} value={lang.code} className="text-xs">
+            {lang.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
