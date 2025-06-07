@@ -57,7 +57,6 @@
     "infoDialogTitleInitiativeBreakdown": "Initiative Breakdown",
     "infoDialogTitleGrappleModifierBreakdown": "Grapple Modifier Breakdown",
     "infoDialogTitleGrappleDamageBreakdown": "Grapple Damage Breakdown",
-    "infoDialogTitleSpeedBreakdown": "{speedName} Breakdown",
     "infoDialogBaseScoreLabel": "Base Score",
     "infoDialogFinalScoreLabel": "Final Score",
     "infoDialogFinalModifierLabel": "Final Modifier",
@@ -91,11 +90,11 @@
     "infoDialogGrappleModAbilityLabel": "{abilityAbbr} ({abilityFull}) Modifier:",
     "infoDialogGrappleModSizeLabel": "Size Modifier:",
     "infoDialogGrappleModTotalLabel": "Total Grapple Modifier:",
-    "infoDialogGrappleDmgBaseLabel": "Base Damage:",
-    "infoDialogGrappleDmgWeaponLabel": "Weapon Damage:",
+    "infoDialogGrappleDmgBaseLabel": "Base Damage",
+    "infoDialogGrappleDmgWeaponLabel": "Weapon Damage",
     "infoDialogGrappleDmgUnarmedLabel": "Unarmed",
-    "infoDialogGrappleDmgAbilityLabel": "{abilityAbbr} ({abilityFull}) Modifier:",
-    "infoDialogGrappleDmgTotalLabel": "Total:",
+    "infoDialogGrappleDmgAbilityLabel": "Ability Modifier",
+    "infoDialogGrappleDmgTotalLabel": "Total",
     "prereqBabLabel": "Base Attack Bonus",
     "skillRankPrereqFormat": "{skillName} {ranksValue} {ranksLabel}",
     "prereqSkillRanksLabel": "Ranks",
@@ -317,3 +316,5 @@
     "synergyTextPart4BonusToTargetSkillEnd": "'s checks."
   }
 }
+
+    

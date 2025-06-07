@@ -73,7 +73,7 @@
     "infoDialogBaseValueLabel": "Valeur de base :",
     "infoDialogCustomModifierLabel": "Modificateur perso. :",
     "infoDialogTotalResistanceLabel": "Résistance totale :",
-    "infoDialogSpeedBaseRaceLabel": "Base (race)",
+    "infoDialogSpeedBaseRaceLabel": "Base (Race)",
     "infoDialogSpeedMiscModifierLabel": "Modificateur divers",
     "infoDialogSpeedMonkLabel": "Vitesse sans armure (moine)",
     "infoDialogSpeedBarbarianLabel": "Déplacement rapide (barbare)",
@@ -91,11 +91,11 @@
     "infoDialogGrappleModAbilityLabel": "Mod. de {abilityAbbr} ({abilityFull}) :",
     "infoDialogGrappleModSizeLabel": "Modificateur de taille :",
     "infoDialogGrappleModTotalLabel": "Modificateur de lutte total :",
-    "infoDialogGrappleDmgBaseLabel": "Dégâts de base :",
-    "infoDialogGrappleDmgWeaponLabel": "Dégâts d'arme :",
+    "infoDialogGrappleDmgBaseLabel": "Dégâts de base",
+    "infoDialogGrappleDmgWeaponLabel": "Dégâts d'arme",
     "infoDialogGrappleDmgUnarmedLabel": "À mains nues",
-    "infoDialogGrappleDmgAbilityLabel": "Mod. de {abilityAbbr} ({abilityFull}) :",
-    "infoDialogGrappleDmgTotalLabel": "Total :",
+    "infoDialogGrappleDmgAbilityLabel": "Modificateur de Caractéristique",
+    "infoDialogGrappleDmgTotalLabel": "Total",
     "prereqBabLabel": "Bonus de base à l'attaque",
     "skillRankPrereqFormat": "{skillName} rang {ranksValue}",
     "prereqSkillRanksLabel": "Rangs",
@@ -190,7 +190,7 @@
     "skillsTableTooltipMaxRanks": "Rangs max : {maxRanksValue}",
     "skillsTableTooltipEditCustom": "Modifier la définition de compétence personnalisée",
     "skillsTableTooltipInfoForSkill": "Infos pour {skillName}",
-    "skillsListingCalculatedBonusesLabel": "Bonus<br/>Calc.",
+    "skillsListingCalculatedBonusesLabel": "Calc.<br/>Bonuses",
     "badgeCustomLabel": "Personnalisée",
     "featsPanelTitle": "Dons",
     "featsPanelFeatsAvailableLabel": "Dons disponibles :",
@@ -316,3 +316,5 @@
     "synergyTextPart4BonusToTargetSkillEnd": "."
   }
 }
+
+    
