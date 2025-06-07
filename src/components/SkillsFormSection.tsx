@@ -93,14 +93,17 @@ export function SkillsFormSection({
 
   React.useEffect(() => {
     const handler = setTimeout(() => {
+      let changed = false;
       character.skills.forEach(skillInProp => {
         const propRank = skillInProp.ranks || 0;
         const currentLocalRank = localRanks[skillInProp.id];
 
         if (currentLocalRank !== undefined && currentLocalRank !== propRank) {
           onSkillChange(skillInProp.id, currentLocalRank, skillInProp.isClassSkill);
+          changed = true;
         }
       });
+      // if (changed) console.log("Debounced skill rank update sent to parent");
     }, DEBOUNCE_DELAY_SKILLS);
 
     return () => clearTimeout(handler);
@@ -140,13 +143,10 @@ export function SkillsFormSection({
 
     const currentTotalSkillPointsSpent = characterSkillInstances.reduce((acc, currentSkill) => {
       let costMultiplier = 1;
-      if (currentSkill.keyAbility === 'none') { // This access might be problematic if skill.keyAbility isn't on instance.
-         // Need to fetch definition here. For now, assume it's roughly correct or defer detailed calculation.
-      } else if (!currentSkill.isClassSkill) {
+      if (!currentSkill.isClassSkill) {
         costMultiplier = 2;
       }
-      // Use localRanks for the currently displayed/edited rank if available, otherwise prop.
-      const rankForCalc = localRanks[currentSkill.id] !== undefined ? localRanks[currentSkill.id] : (currentSkill.ranks || 0);
+      const rankForCalc = currentSkill.ranks || 0; // Use committed rank from props
       return acc + (rankForCalc * costMultiplier);
     }, 0);
     const currentSkillPointsLeft = currentTotalSkillPointsAvailable - currentTotalSkillPointsSpent;
@@ -166,12 +166,10 @@ export function SkillsFormSection({
     translationsLoading,
     translations,
     firstClass?.className,
-    firstClass?.level,
     characterRace,
     actualAbilityScores,
     characterLevel,
-    characterSkillInstances, // This is prop, used for base calculation
-    localRanks // Local state for ranks to reflect current spending
+    characterSkillInstances,
   ]);
 
 
@@ -197,7 +195,7 @@ export function SkillsFormSection({
     return characterSkillInstances.map(instance => {
       const definition = allCombinedSkillDefinitions.find(def => def.id === instance.id);
       return {
-        ...instance,
+        ...instance, // This includes the committed skill.ranks and skill.isClassSkill from props
         name: definition?.name || 'Unknown Skill',
         keyAbility: definition?.keyAbility || 'none',
         description: definition?.description,
@@ -318,7 +316,7 @@ export function SkillsFormSection({
               <span className="text-center w-10">{UI_STRINGS.skillsTableHeaderMaxLabel || "Max"}</span>
             </div>
 
-            {skillsForDisplay.map(skill => {
+            {skillsForDisplay.map(skill => { // skill here is from skillsForDisplay, which uses characterSkillInstances (props)
               const keyAbility = skill.keyAbility;
               const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === keyAbility);
               
@@ -328,7 +326,6 @@ export function SkillsFormSection({
               } else if (keyAbility === 'none') {
                 keyAbilityDisplay = ''; 
               }
-
 
               const baseAbilityMod = (keyAbility && keyAbility !== 'none')
                 ? getAbilityModifierByName(actualAbilityScores, keyAbility)
@@ -340,9 +337,11 @@ export function SkillsFormSection({
               const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skill.id, characterSize, SIZES);
 
               const calculatedMiscModifier = synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus;
-              const currentRankValue = localRanks[skill.id] !== undefined ? localRanks[skill.id] : (skill.ranks || 0);
-              const totalBonus = currentRankValue + baseAbilityMod + calculatedMiscModifier + (skill.miscModifier || 0);
-
+              
+              const committedRankValue = skill.ranks || 0; // Use rank from prop for total calculation
+              const totalBonus = committedRankValue + baseAbilityMod + calculatedMiscModifier + (skill.miscModifier || 0);
+              
+              const spinnerRankValue = localRanks[skill.id] !== undefined ? localRanks[skill.id] : committedRankValue;
 
               const maxRanksValue = calculateMaxRanks(characterLevel, skill.isClassSkill || false, intelligenceModifier);
               const skillCostDisplay = (skill.keyAbility === 'none' || skill.isClassSkill) ? 1 : 2;
@@ -355,8 +354,7 @@ export function SkillsFormSection({
                       id={`skill_class_${skill.id}`}
                       checked={skill.isClassSkill}
                       onCheckedChange={(checked) => {
-                          // Direct update for checkbox, not debounced as it's a toggle.
-                          onSkillChange(skill.id, currentRankValue, !!checked);
+                          onSkillChange(skill.id, spinnerRankValue, !!checked);
                       }}
                       className="h-3.5 w-3.5"
                     />
@@ -409,7 +407,7 @@ export function SkillsFormSection({
                   <div className="w-32 flex justify-center">
                     <NumberSpinnerInput
                       id={`skill_ranks_${skill.id}`}
-                      value={currentRankValue}
+                      value={spinnerRankValue}
                       onChange={(newValue) => handleLocalRankChange(skill.id, newValue)}
                       min={0}
                       step={currentStepForInput}
@@ -421,7 +419,7 @@ export function SkillsFormSection({
                   <span className="text-sm text-muted-foreground text-center w-12">{skillCostDisplay}</span>
                   <span className={cn(
                       "text-sm text-center w-10",
-                      (currentRankValue) > maxRanksValue ? "text-destructive font-bold" : "text-muted-foreground"
+                      (spinnerRankValue) > maxRanksValue ? "text-destructive font-bold" : "text-muted-foreground"
                     )}>
                       {maxRanksValue}
                   </span>
@@ -435,4 +433,4 @@ export function SkillsFormSection({
     </>
   );
 }
-
+    
