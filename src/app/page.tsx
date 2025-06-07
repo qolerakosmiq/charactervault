@@ -186,12 +186,14 @@ export default function CharacterDashboardPage() {
                 {UI_STRINGS.dmSettingsPanelTitle || "Dungeon Master Settings"}
             </h3>
             <div className="space-y-2 pt-2">
-              <Label htmlFor="dm-language-switcher" className="flex items-center text-sm font-medium">
-                <Languages className="mr-2 h-4 w-4 text-muted-foreground" />
-                {UI_STRINGS.dmSettingsLanguageLabel || "Game Language"}
-              </Label>
-              <LanguageSwitcher />
-              <p className="text-xs text-muted-foreground pl-6">
+              <div className="flex items-baseline space-x-3">
+                <Label htmlFor="dm-language-switcher" className="flex items-center text-sm font-medium">
+                  <Languages className="mr-2 h-4 w-4 text-muted-foreground" />
+                  {UI_STRINGS.dmSettingsLanguageLabel || "Game Language"}
+                </Label>
+                <LanguageSwitcher />
+              </div>
+              <p className="text-xs text-muted-foreground">
                 {UI_STRINGS.dmSettingsLanguageDescription || "Affects game data such as units, numerical increments, and default names."}
               </p>
             </div>
@@ -273,4 +275,3 @@ export default function CharacterDashboardPage() {
   );
 }
 
-    
