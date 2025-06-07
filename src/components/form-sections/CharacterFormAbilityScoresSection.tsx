@@ -29,7 +29,6 @@ interface CharacterFormAbilityScoresSectionProps {
   onAbilityScoreTempCustomModifierChange: (ability: Exclude<AbilityName, 'none'>, value: number) => void;
   onMultipleBaseAbilityScoresChange: (newScores: AbilityScores) => void;
   onOpenAbilityScoreBreakdownDialog: (ability: Exclude<AbilityName, 'none'>) => void;
-  isCreating: boolean;
 }
 
 export function CharacterFormAbilityScoresSection({
@@ -39,7 +38,6 @@ export function CharacterFormAbilityScoresSection({
   onAbilityScoreTempCustomModifierChange,
   onMultipleBaseAbilityScoresChange,
   onOpenAbilityScoreBreakdownDialog,
-  isCreating,
 }: CharacterFormAbilityScoresSectionProps) {
   const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
   const [isPointBuyDialogOpen, setIsPointBuyDialogOpen] = React.useState(false);
@@ -107,12 +105,10 @@ export function CharacterFormAbilityScoresSection({
               <Dices className="h-8 w-8 text-primary" />
               <CardTitle className="text-2xl font-serif">Ability Scores</CardTitle>
             </div>
-            {isCreating && (
-              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-3 sm:mt-0">
-                <Skeleton className="h-9 w-full sm:w-28" />
-                <Skeleton className="h-9 w-full sm:w-28" />
-              </div>
-            )}
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-3 sm:mt-0">
+              <Skeleton className="h-9 w-full sm:w-28" />
+              <Skeleton className="h-9 w-full sm:w-28" />
+            </div>
           </div>
         </CardHeader>
         <CardContent className="pt-2">
@@ -144,16 +140,14 @@ export function CharacterFormAbilityScoresSection({
               <Dices className="h-8 w-8 text-primary" />
               <CardTitle className="text-2xl font-serif">{UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}</CardTitle>
             </div>
-            {isCreating && (
-              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-3 sm:mt-0">
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto">
-                  <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton || "Roll Scores"}
-                </Button>
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} className="w-full sm:w-auto">
-                  <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton || "Point Buy"}
-                </Button>
-              </div>
-            )}
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-3 sm:mt-0">
+              <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto">
+                <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton || "Roll Scores"}
+              </Button>
+              <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} className="w-full sm:w-auto">
+                <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton || "Point Buy"}
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="pt-2">
@@ -162,7 +156,6 @@ export function CharacterFormAbilityScoresSection({
               const [baseScoreValue, setBaseScoreValue] = debouncedStates[ability];
               const [tempCustomModValue, setTempCustomModValue] = debouncedStates[`${ability}TempMod`];
 
-              // Display total score using prop values (reflects committed state after debounce)
               const actualScoreData = detailedAbilityScores ? detailedAbilityScores[ability] : null;
               const displayTotalScore = actualScoreData 
                 ? actualScoreData.finalScore 
@@ -245,22 +238,18 @@ export function CharacterFormAbilityScoresSection({
            </p>
         </CardContent>
       </Card>
-      {isCreating && (
-        <AbilityScoreRollerDialog
-          isOpen={isRollerDialogOpen}
-          onOpenChange={setIsRollerDialogOpen}
-          onScoresApplied={handleApplyRolledScores}
-          rerollOnes={rerollOnesForAbilityScores}
-        />
-      )}
-      {isCreating && (
-        <AbilityScorePointBuyDialog
-            isOpen={isPointBuyDialogOpen}
-            onOpenChange={setIsPointBuyDialogOpen}
-            onScoresApplied={handleApplyPointBuyScores}
-            totalPointsBudget={pointBuyBudget}
-        />
-      )}
+      <AbilityScoreRollerDialog
+        isOpen={isRollerDialogOpen}
+        onOpenChange={setIsRollerDialogOpen}
+        onScoresApplied={handleApplyRolledScores}
+        rerollOnes={rerollOnesForAbilityScores}
+      />
+      <AbilityScorePointBuyDialog
+          isOpen={isPointBuyDialogOpen}
+          onOpenChange={setIsPointBuyDialogOpen}
+          onScoresApplied={handleApplyPointBuyScores}
+          totalPointsBudget={pointBuyBudget}
+      />
     </>
   );
 }

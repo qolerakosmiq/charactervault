@@ -21,10 +21,6 @@ import {
   getRaceSkillPointsBonusPerLevel,
   ABILITY_ORDER_INTERNAL
 } from '@/types/character';
-
-import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
-import { useI18n } from '@/context/I18nProvider';
-
 import {
   getBab,
   getSizeModifierAC,
@@ -33,6 +29,10 @@ import {
   calculateGrapple,
   getUnarmedGrappleDamage
 } from '@/lib/dnd-utils';
+
+
+import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
+import { useI18n } from '@/context/I18nProvider';
 
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
@@ -56,9 +56,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 
 interface CharacterFormCoreProps {
-  initialCharacter?: Character;
   onSave: (character: Character) => void;
-  isCreating: boolean;
 }
 
 const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
@@ -130,7 +128,7 @@ function createBaseCharacterData(
 }
 
 
-export function CharacterFormCore({ initialCharacter, onSave, isCreating }: CharacterFormCoreProps) {
+export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
   const {
     customFeatDefinitions: globalCustomFeatDefinitionsFromStore,
@@ -176,28 +174,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     if (!isClient || translationsLoading || !translations) return;
 
     let characterDataToProcess: Character;
-
-    if (isCreating) {
-        characterDataToProcess = createBaseCharacterData(translations, globalCustomSkillDefinitions);
-    } else if (initialCharacter) {
-        const baseForMerge = createBaseCharacterData(translations, globalCustomSkillDefinitions);
-        characterDataToProcess = {
-            ...baseForMerge, 
-            ...initialCharacter, 
-            id: initialCharacter.id || baseForMerge.id, // Prioritize existing ID
-            abilityScores: initialCharacter.abilityScores || baseForMerge.abilityScores,
-            abilityScoreTempCustomModifiers: initialCharacter.abilityScoreTempCustomModifiers || baseForMerge.abilityScoreTempCustomModifiers,
-            savingThrows: initialCharacter.savingThrows || baseForMerge.savingThrows,
-            classes: initialCharacter.classes && initialCharacter.classes.length > 0 ? initialCharacter.classes : baseForMerge.classes,
-            skills: initialCharacter.skills && initialCharacter.skills.length > 0 ? initialCharacter.skills : baseForMerge.skills,
-            feats: initialCharacter.feats && initialCharacter.feats.length > 0 ? initialCharacter.feats : baseForMerge.feats,
-            damageReduction: initialCharacter.damageReduction || baseForMerge.damageReduction,
-        };
-    } else {
-      // This case should ideally not be reached if !isCreating.
-      // If it does, initialize as if creating to prevent errors with null character.
-      characterDataToProcess = createBaseCharacterData(translations, globalCustomSkillDefinitions);
-    }
+    characterDataToProcess = createBaseCharacterData(translations, globalCustomSkillDefinitions);
 
     // Post-initialization processing (apply derived data based on current context)
     const finalCharacter = { ...characterDataToProcess };
@@ -266,7 +243,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     setCharacter(finalCharacter);
 
   }, [
-    isClient, translationsLoading, translations, initialCharacter, isCreating,
+    isClient, translationsLoading, translations,
     globalCustomFeatDefinitionsFromStore, globalCustomSkillDefinitionsFromStore, 
     allAvailableFeatDefinitions, allAvailableSkillDefinitionsForDisplay, globalCustomSkillDefinitions
   ]);
@@ -669,7 +646,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
           onMultipleBaseAbilityScoresChange={handleMultipleBaseAbilityScoresChange}
           onAbilityScoreTempCustomModifierChange={handleAbilityScoreTempCustomModifierChange}
           onOpenAbilityScoreBreakdownDialog={handleOpenAbilityScoreBreakdownDialog}
-          isCreating={isCreating}
         />
 
         <CharacterFormStoryPortraitSection
@@ -771,7 +747,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             {UI_STRINGS.formButtonCancel || "Cancel"}
           </Button>
           <Button type="submit" size="lg" className="w-full md:w-auto shadow-md hover:shadow-lg transition-shadow">
-            {isCreating ? (UI_STRINGS.formButtonCreateCharacter || "Create Character") : (UI_STRINGS.formButtonSaveChanges || "Save Changes")}
+            {UI_STRINGS.formButtonCreateCharacter || "Create Character"}
           </Button>
         </div>
       </form>
@@ -804,3 +780,4 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
+
