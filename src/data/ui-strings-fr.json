@@ -191,7 +191,7 @@
     "skillsTableTooltipMaxRanks": "Rangs max : {maxRanksValue}",
     "skillsTableTooltipEditCustom": "Modifier la définition de compétence personnalisée",
     "skillsTableTooltipInfoForSkill": "Infos pour {skillName}",
-    "skillsListingCalculatedBonusesLabel": "Mod.<br/>Divers",
+    "skillsListingCalculatedBonusesLabel": "Mod.<br/>divers",
     "badgeCustomLabel": "Personnalisée",
     "featsPanelTitle": "Dons",
     "featsPanelFeatsAvailableLabel": "Dons disponibles :",
@@ -220,7 +220,7 @@
     "armorClassNormalLabel": "Normale",
     "armorClassTouchLabel": "Contact",
     "armorClassFlatFootedLabel": "Pris au dépourvu",
-    "armorClassMiscModifierLabel": "Modificateur Divers",
+    "armorClassMiscModifierLabel": "Modificateur divers",
     "speedPanelTitle": "Vitesses de déplacement",
     "speedPanelDescription": "Gérez les diverses capacités de mouvement et les pénalités de votre personnage.",
     "speedPanelLoadingSpeeds": "Chargement des détails des vitesses...",
@@ -317,5 +317,3 @@
     "synergyTextPart4BonusToTargetSkillEnd": "."
   }
 }
-
-    
