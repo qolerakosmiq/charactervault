@@ -1,11 +1,11 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type {
   FeatDefinitionJsonData, CharacterFeatInstance, Character, AbilityScores, Skill,
   SkillDefinitionJsonData, FeatTypeString
-} from '@/types/character-core'; // Use character-core
+} from '@/types/character-core'; 
 import {
   checkFeatPrerequisites, calculateAvailableFeats
 } from '@/types/character';
@@ -22,19 +22,19 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface FeatsFormSectionProps {
-  character: Character;
-  allAvailableFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]; // This is already merged from CharacterFormCore
-  chosenFeatInstances: CharacterFeatInstance[];
+  featSectionData: Pick<Character, 'race' | 'classes' | 'feats' | 'age' | 'alignment'>;
+  allAvailableFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]; 
+  chosenFeatInstances: CharacterFeatInstance[]; 
   onFeatInstancesChange: (updatedInstances: CharacterFeatInstance[]) => void;
   onEditCustomFeatDefinition: (featDefId: string) => void;
-  abilityScores: AbilityScores;
+  abilityScores: AbilityScores; 
   skills: Skill[];
-  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[]; // This comes from translations via CharacterFormCore
-  allCustomSkillDefinitions: readonly CustomSkillDefinition[]; // This comes from definitions-store via CharacterFormCore
+  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[]; 
+  allCustomSkillDefinitions: readonly CustomSkillDefinition[]; 
 }
 
 export function FeatsFormSection({
-  character,
+  featSectionData,
   allAvailableFeatDefinitions,
   chosenFeatInstances,
   onFeatInstancesChange,
@@ -45,15 +45,15 @@ export function FeatsFormSection({
   allCustomSkillDefinitions,
 }: FeatsFormSectionProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
-  const characterLevel = character.classes.reduce((sum, cls) => sum + cls.level, 0) || 1;
+  const characterLevel = featSectionData.classes.reduce((sum, cls) => sum + cls.level, 0) || 1;
   const { toast } = useToast();
 
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
 
   const featSlotsBreakdown = React.useMemo(() => {
     if (translationsLoading || !translations) return { total: 0, base: 0, racial: 0, levelProgression: 0, classBonus: 0 };
-    return calculateAvailableFeats(character.race, characterLevel, character.classes, translations.DND_RACES);
-  }, [character.race, characterLevel, character.classes, translations, translationsLoading]);
+    return calculateAvailableFeats(featSectionData.race, characterLevel, featSectionData.classes, translations.DND_RACES);
+  }, [featSectionData.race, characterLevel, featSectionData.classes, translations, translationsLoading]);
 
   const { total: availableFeatSlots, base: baseFeat, racial: racialBonus, levelProgression: levelProgressionFeats, classBonus: classBonusFeats } = featSlotsBreakdown;
 
@@ -76,11 +76,12 @@ export function FeatsFormSection({
   const userChosenFeatInstancesCount = userChosenFeatInstances.length;
   const featSlotsLeft = availableFeatSlots - userChosenFeatInstancesCount;
 
+  // Construct a partial character object for prerequisite checking
   const characterForPrereqCheck = React.useMemo(() => ({
-    ...character,
+    ...featSectionData, // Includes race, classes, feats, age, alignment
     abilityScores,
     skills,
-  }), [character, abilityScores, skills]);
+  }), [featSectionData, abilityScores, skills]);
 
   const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs whitespace-nowrap";
 
@@ -348,7 +349,7 @@ export function FeatsFormSection({
         onOpenChange={setIsFeatDialogOpen}
         onFeatSelected={handleAddOrUpdateChosenFeatInstance}
         allFeats={allAvailableFeatDefinitions} 
-        character={characterForPrereqCheck}
+        character={characterForPrereqCheck as Character} // Cast to full Character as component expects it
         allPredefinedSkillDefinitions={allPredefinedSkillDefinitions}
         allCustomSkillDefinitions={allCustomSkillDefinitions}
         allClasses={DND_CLASSES}
@@ -360,4 +361,3 @@ export function FeatsFormSection({
     </>
   );
 }
-    

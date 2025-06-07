@@ -44,7 +44,7 @@ export interface SkillModifierBreakdownDetails {
 }
 
 interface SkillsFormSectionProps {
-  character: Pick<Character, 'skills' | 'abilityScores' | 'classes' | 'race' | 'size' | 'feats'>;
+  skillsData: Pick<Character, 'skills' | 'classes' | 'race' | 'size' | 'feats'>;
   actualAbilityScores: AbilityScores;
   allFeatDefinitions: (FeatDefinitionJsonData & {isCustom?: boolean})[];
   allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
@@ -86,7 +86,7 @@ const DebouncedSkillRankInput: React.FC<{
 
 
 export function SkillsFormSection({
-  character,
+  skillsData,
   actualAbilityScores,
   allFeatDefinitions,
   allPredefinedSkillDefinitions,
@@ -97,11 +97,11 @@ export function SkillsFormSection({
 }: SkillsFormSectionProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
 
-  const characterSkillInstances = character.skills;
-  const characterClasses = character.classes;
-  const characterRace = character.race as DndRaceId;
-  const characterSize = character.size as CharacterSize;
-  const selectedFeats = character.feats;
+  const characterSkillInstances = skillsData.skills;
+  const characterClasses = skillsData.classes;
+  const characterRace = skillsData.race as DndRaceId;
+  const characterSize = skillsData.size as CharacterSize;
+  const selectedFeats = skillsData.feats;
 
   const firstClass = characterClasses[0];
   const characterLevel = firstClass?.level || 1;
@@ -312,7 +312,7 @@ export function SkillsFormSection({
 
             {skillsForDisplay.map(skillInstanceProp => { 
               const skillDef = allCombinedSkillDefinitions.find(def => def.id === skillInstanceProp.id);
-              if (!skillDef) return null; // Should not happen if data is consistent
+              if (!skillDef) return null; 
 
               const keyAbility = skillDef.keyAbility;
               const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === keyAbility);
@@ -424,4 +424,3 @@ export function SkillsFormSection({
     </>
   );
 }
-

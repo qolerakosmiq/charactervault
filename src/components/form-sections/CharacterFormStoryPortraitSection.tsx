@@ -16,38 +16,38 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 const DEBOUNCE_DELAY = 400; // ms
 
 interface CharacterFormStoryPortraitSectionProps {
-  character: Pick<Character, 'campaign' | 'personalStory' | 'portraitDataUrl' | 'height' | 'weight' | 'eyes' | 'hair' | 'skin'>;
-  onFieldChange: (field: keyof Character, value: string) => void;
+  storyAndAppearanceData: Pick<Character, 'campaign' | 'personalStory' | 'portraitDataUrl' | 'height' | 'weight' | 'eyes' | 'hair' | 'skin'>;
+  onFieldChange: (field: keyof Pick<Character, 'campaign' | 'personalStory' | 'height' | 'weight' | 'eyes' | 'hair' | 'skin'>, value: string) => void;
   onPortraitChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function CharacterFormStoryPortraitSection({
-  character,
+  storyAndAppearanceData,
   onFieldChange,
   onPortraitChange,
 }: CharacterFormStoryPortraitSectionProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const [localCampaign, setLocalCampaign] = useDebouncedFormField(
-    character.campaign || '', (value) => onFieldChange('campaign', value), DEBOUNCE_DELAY
+    storyAndAppearanceData.campaign || '', (value) => onFieldChange('campaign', value), DEBOUNCE_DELAY
   );
   const [localPersonalStory, setLocalPersonalStory] = useDebouncedFormField(
-    character.personalStory || '', (value) => onFieldChange('personalStory', value), DEBOUNCE_DELAY
+    storyAndAppearanceData.personalStory || '', (value) => onFieldChange('personalStory', value), DEBOUNCE_DELAY
   );
   const [localHeight, setLocalHeight] = useDebouncedFormField(
-    character.height || '', (value) => onFieldChange('height', value), DEBOUNCE_DELAY
+    storyAndAppearanceData.height || '', (value) => onFieldChange('height', value), DEBOUNCE_DELAY
   );
   const [localWeight, setLocalWeight] = useDebouncedFormField(
-    character.weight || '', (value) => onFieldChange('weight', value), DEBOUNCE_DELAY
+    storyAndAppearanceData.weight || '', (value) => onFieldChange('weight', value), DEBOUNCE_DELAY
   );
   const [localEyes, setLocalEyes] = useDebouncedFormField(
-    character.eyes || '', (value) => onFieldChange('eyes', value), DEBOUNCE_DELAY
+    storyAndAppearanceData.eyes || '', (value) => onFieldChange('eyes', value), DEBOUNCE_DELAY
   );
   const [localHair, setLocalHair] = useDebouncedFormField(
-    character.hair || '', (value) => onFieldChange('hair', value), DEBOUNCE_DELAY
+    storyAndAppearanceData.hair || '', (value) => onFieldChange('hair', value), DEBOUNCE_DELAY
   );
   const [localSkin, setLocalSkin] = useDebouncedFormField(
-    character.skin || '', (value) => onFieldChange('skin', value), DEBOUNCE_DELAY
+    storyAndAppearanceData.skin || '', (value) => onFieldChange('skin', value), DEBOUNCE_DELAY
   );
 
   if (translationsLoading || !translations) {
@@ -125,8 +125,8 @@ export function CharacterFormStoryPortraitSection({
           <div className="md:col-span-1 space-y-2 flex flex-col">
             <Label htmlFor="portraitUpload">{UI_STRINGS.characterPortraitLabel || "Character Portrait"}</Label>
             <div className="aspect-square w-full bg-muted rounded-md flex items-center justify-center relative overflow-hidden border border-border shadow-sm">
-              {character.portraitDataUrl ? (
-                <Image src={character.portraitDataUrl} alt="Character Portrait" fill style={{ objectFit: 'cover' }} />
+              {storyAndAppearanceData.portraitDataUrl ? (
+                <Image src={storyAndAppearanceData.portraitDataUrl} alt="Character Portrait" fill style={{ objectFit: 'cover' }} />
               ) : (
                 <div className="flex flex-col items-center justify-center text-muted-foreground">
                   <Palette size={48} className="mb-2" />
@@ -141,7 +141,7 @@ export function CharacterFormStoryPortraitSection({
               onChange={onPortraitChange} 
               className="text-sm file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
             />
-            {!character.portraitDataUrl && (
+            {!storyAndAppearanceData.portraitDataUrl && (
               <div className="hidden">
                 <Image src="https://placehold.co/300x300.png" alt="Portrait Placeholder" width={300} height={300} data-ai-hint="fantasy portrait" />
               </div>

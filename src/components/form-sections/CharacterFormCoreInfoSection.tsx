@@ -36,7 +36,7 @@ const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__";
 
 interface CharacterFormCoreInfoSectionProps {
   characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
-  onFieldChange: (field: keyof Character, value: any) => void;
+  onFieldChange: (field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender'>, value: any) => void;
   onClassChange: (className: DndClassId | string) => void;
   ageEffectsDetails: AgingEffectsDetails | null;
   raceSpecialQualities: RaceSpecialQualities | null;
@@ -374,4 +374,3 @@ export function CharacterFormCoreInfoSection({
     </Card>
   );
 }
-

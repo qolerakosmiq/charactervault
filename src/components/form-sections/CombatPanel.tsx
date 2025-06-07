@@ -16,43 +16,55 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 
 const DEBOUNCE_DELAY = 400;
 
+type CombatPanelCharacterData = Pick<Character, 
+  'abilityScores' | 'classes' | 'size' | 
+  'babMiscModifier' | 'initiativeMiscModifier' | 'grappleMiscModifier' | 
+  'grappleDamage_baseNotes' | 'grappleDamage_bonus' | 'grappleWeaponChoice'
+>;
+
+type CombatFieldKey = keyof Pick<Character, 
+  'babMiscModifier' | 'initiativeMiscModifier' | 'grappleMiscModifier' | 
+  'grappleDamage_bonus' | 'grappleWeaponChoice'
+>;
+
+
 interface CombatPanelProps {
-  character: Character;
-  onCharacterUpdate: (field: keyof Character, value: any) => void;
+  combatData: CombatPanelCharacterData;
+  onCharacterUpdate: (field: CombatFieldKey, value: any) => void;
   onOpenCombatStatInfoDialog: (contentType: InfoDialogContentType) => void;
   onOpenAcBreakdownDialog?: (acType: 'Normal' | 'Touch' | 'Flat-Footed') => void;
 }
 
-export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfoDialog }: CombatPanelProps) {
+export function CombatPanel({ combatData, onCharacterUpdate, onOpenCombatStatInfoDialog }: CombatPanelProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const [localBabMiscModifier, setLocalBabMiscModifier] = useDebouncedFormField(
-    character.babMiscModifier || 0,
+    combatData.babMiscModifier || 0,
     (value) => onCharacterUpdate('babMiscModifier', value),
     DEBOUNCE_DELAY
   );
   const [localInitiativeMiscModifier, setLocalInitiativeMiscModifier] = useDebouncedFormField(
-    character.initiativeMiscModifier || 0,
+    combatData.initiativeMiscModifier || 0,
     (value) => onCharacterUpdate('initiativeMiscModifier', value),
     DEBOUNCE_DELAY
   );
   const [localGrappleMiscModifier, setLocalGrappleMiscModifier] = useDebouncedFormField(
-    character.grappleMiscModifier || 0,
+    combatData.grappleMiscModifier || 0,
     (value) => onCharacterUpdate('grappleMiscModifier', value),
     DEBOUNCE_DELAY
   );
   const [localGrappleDamageBonus, setLocalGrappleDamageBonus] = useDebouncedFormField(
-    character.grappleDamage_bonus || 0,
+    combatData.grappleDamage_bonus || 0,
     (value) => onCharacterUpdate('grappleDamage_bonus', value),
     DEBOUNCE_DELAY
   );
   const [localGrappleWeaponChoice, setLocalGrappleWeaponChoice] = useDebouncedFormField(
-    character.grappleWeaponChoice || 'unarmed',
+    combatData.grappleWeaponChoice || 'unarmed',
     (value) => onCharacterUpdate('grappleWeaponChoice', value),
     DEBOUNCE_DELAY
   );
 
-  if (translationsLoading || !translations || !character) {
+  if (translationsLoading || !translations || !combatData) {
     return (
       <Card>
         <CardHeader>
@@ -68,23 +80,23 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
 
   const { DND_CLASSES, SIZES, UI_STRINGS } = translations;
 
-  const abilityScores = character.abilityScores || {};
-  const classes = character.classes || [];
+  const abilityScores = combatData.abilityScores || {};
+  const classes = combatData.classes || [];
   const strModifier = getAbilityModifierByName(abilityScores, 'strength');
   const dexModifier = getAbilityModifierByName(abilityScores, 'dexterity');
-  const sizeModGrapple = getSizeModifierGrapple(character.size, SIZES);
+  const sizeModGrapple = getSizeModifierGrapple(combatData.size, SIZES);
 
   const baseBabArray = getBab(classes, DND_CLASSES);
-  const totalBabWithModifier = baseBabArray.map(bab => bab + (character.babMiscModifier || 0)); // Display prop value
+  const totalBabWithModifier = baseBabArray.map(bab => bab + (combatData.babMiscModifier || 0)); 
 
-  const baseInitiative = calculateInitiative(dexModifier, character.initiativeMiscModifier || 0); // Display prop value
+  const baseInitiative = calculateInitiative(dexModifier, combatData.initiativeMiscModifier || 0); 
 
   const baseGrappleModifier = calculateGrapple(classes, strModifier, sizeModGrapple, DND_CLASSES);
-  const totalGrappleModifier = baseGrappleModifier + (character.grappleMiscModifier || 0); // Display prop value
+  const totalGrappleModifier = baseGrappleModifier + (combatData.grappleMiscModifier || 0); 
 
-  const grappleDamageBaseNotes = character.grappleDamage_baseNotes || getUnarmedGrappleDamage(character.size, SIZES);
+  const grappleDamageBaseNotes = combatData.grappleDamage_baseNotes || getUnarmedGrappleDamage(combatData.size, SIZES);
   const grappleDamageBaseDice = grappleDamageBaseNotes.split(' ')[0] || '0';
-  const totalNumericGrappleBonus = strModifier + (character.grappleDamage_bonus || 0); // Display prop value
+  const totalNumericGrappleBonus = strModifier + (combatData.grappleDamage_bonus || 0); 
   const displayedGrappleDamageTotal = `${grappleDamageBaseDice}${totalNumericGrappleBonus !== 0 ? `${totalNumericGrappleBonus >= 0 ? '+' : ''}${totalNumericGrappleBonus}` : ''}`;
 
 

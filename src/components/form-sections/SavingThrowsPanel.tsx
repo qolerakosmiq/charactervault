@@ -17,7 +17,7 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 const DEBOUNCE_DELAY = 400;
 
 interface SavingThrowsPanelProps {
-  character: Pick<Character, 'savingThrows' | 'classes'>;
+  savingThrowsData: Pick<Character, 'savingThrows' | 'classes'>;
   abilityScores: AbilityScores; 
   onSavingThrowMiscModChange: (saveType: SavingThrowType, value: number) => void;
 }
@@ -25,7 +25,7 @@ interface SavingThrowsPanelProps {
 const SAVE_TYPES: SavingThrowType[] = ['fortitude', 'reflex', 'will'];
 
 export function SavingThrowsPanel({
-  character,
+  savingThrowsData,
   abilityScores,
   onSavingThrowMiscModChange,
 }: SavingThrowsPanelProps) {
@@ -36,7 +36,7 @@ export function SavingThrowsPanel({
   SAVE_TYPES.forEach(saveType => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     debouncedMiscMods[saveType] = useDebouncedFormField(
-      character.savingThrows[saveType].miscMod || 0,
+      savingThrowsData.savingThrows[saveType].miscMod || 0,
       (value) => onSavingThrowMiscModChange(saveType, value),
       DEBOUNCE_DELAY
     );
@@ -68,16 +68,16 @@ export function SavingThrowsPanel({
 
   const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations;
   
-  const calculatedBaseSaves = getBaseSaves(character.classes, DND_CLASSES);
+  const calculatedBaseSaves = getBaseSaves(savingThrowsData.classes, DND_CLASSES);
   
   const dataRows: Array<{
     label: string; 
     getValue: (
-        saveDataFromProp: SingleSavingThrow, // Use prop for display of non-editable parts
-        localMiscModValue: number,       // Use local state for spinner value
+        saveDataFromProp: SingleSavingThrow, 
+        localMiscModValue: number,       
         baseSave: number, 
         abilityMod: number, 
-        totalCalculatedFromProp: number,  // Total calculated using prop's miscMod
+        totalCalculatedFromProp: number,  
         saveType?: SavingThrowType, 
         setLocalMiscMod?: (val: number) => void
     ) => React.ReactNode;
@@ -115,12 +115,12 @@ export function SavingThrowsPanel({
     },
      {
       label: UI_STRINGS.savingThrowsRowLabelMagicModifier || "Magic Modifier",
-      getValue: (saveDataProp) => renderModifierValue(saveDataProp.magicMod), // Display from prop
+      getValue: (saveDataProp) => renderModifierValue(saveDataProp.magicMod), 
       rowKey: 'magicMod',
     },
     {
       label: UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier",
-      getValue: (saveDataProp) => renderModifierValue(saveDataProp.miscMod), // Display from prop
+      getValue: (saveDataProp) => renderModifierValue(saveDataProp.miscMod), 
       rowKey: 'miscModDisplay',
     },
     {
@@ -128,7 +128,7 @@ export function SavingThrowsPanel({
       getValue: (saveDataProp, localMiscMod, baseSave, abilityMod, totalFromProp, saveType?: SavingThrowType, setLocalMiscMod?: (val: number) => void) => (
         <div className="flex justify-center">
           <NumberSpinnerInput
-            value={localMiscMod} // Input uses local (immediately updated) value
+            value={localMiscMod} 
             onChange={(newValue) => setLocalMiscMod && setLocalMiscMod(newValue)}
             min={-20}
             max={20}
@@ -173,12 +173,11 @@ export function SavingThrowsPanel({
                     </td>
                     {SAVE_TYPES.map((saveType) => {
                       const [localMiscMod, setLocalMiscMod] = debouncedMiscMods[saveType];
-                      const currentSaveDataFromProp = character.savingThrows[saveType];
+                      const currentSaveDataFromProp = savingThrowsData.savingThrows[saveType];
                       const baseSaveValue = calculatedBaseSaves[saveType];
                       const abilityKey = SAVING_THROW_ABILITIES[saveType];
                       const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
                       
-                      // Total calculated using the prop's miscMod for display consistency after debounce
                       const totalSaveCalculatedFromProp = baseSaveValue + abilityModifier + currentSaveDataFromProp.miscMod + (currentSaveDataFromProp.magicMod || 0);
                       
                       return (

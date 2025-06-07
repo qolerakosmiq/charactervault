@@ -17,17 +17,26 @@ import { cn } from '@/lib/utils';
 
 const DEBOUNCE_DELAY = 400;
 
+type SpeedPanelCharacterData = Pick<Character, 
+  'race' | 'size' | 'classes' | 
+  'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed' |
+  'armorSpeedPenalty_base' | 'armorSpeedPenalty_miscModifier' | 
+  'loadSpeedPenalty_base' | 'loadSpeedPenalty_miscModifier'
+>;
+
+type SpeedFieldKey = 
+  | 'landSpeed.miscModifier' 
+  | 'burrowSpeed.miscModifier' 
+  | 'climbSpeed.miscModifier' 
+  | 'flySpeed.miscModifier' 
+  | 'swimSpeed.miscModifier' 
+  | 'armorSpeedPenalty_miscModifier' 
+  | 'loadSpeedPenalty_miscModifier';
+
 interface SpeedPanelProps {
-  character: Character;
+  speedData: SpeedPanelCharacterData;
   onCharacterUpdate: (
-    field: keyof Character | 
-           `landSpeed.miscModifier` | 
-           `burrowSpeed.miscModifier` | 
-           `climbSpeed.miscModifier` | 
-           `flySpeed.miscModifier` | 
-           `swimSpeed.miscModifier` |
-           `armorSpeedPenalty_miscModifier` | 
-           `loadSpeedPenalty_miscModifier`, 
+    field: SpeedFieldKey, 
     value: any
   ) => void;
   onOpenSpeedInfoDialog: (speedType: SpeedType) => void;
@@ -36,7 +45,7 @@ interface SpeedPanelProps {
 }
 
 export function SpeedPanel({ 
-  character, 
+  speedData, 
   onCharacterUpdate, 
   onOpenSpeedInfoDialog, 
   onOpenArmorSpeedPenaltyInfoDialog,
@@ -59,21 +68,22 @@ export function SpeedPanel({
 
   const debouncedSpeedMods = {} as Record<SpeedType, [number, (val: number) => void]>;
   speedTypesConfig.forEach(config => {
-    const fieldKey = `${config.type}Speed.miscModifier` as const;
+    const fieldKeyToUpdate = `${config.type}Speed.miscModifier` as SpeedFieldKey;
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     debouncedSpeedMods[config.type] = useDebouncedFormField(
-      character[config.fieldKey]?.miscModifier || 0,
-      (value) => onCharacterUpdate(fieldKey, value),
+      speedData[config.fieldKey]?.miscModifier || 0,
+      (value) => onCharacterUpdate(fieldKeyToUpdate, value),
       DEBOUNCE_DELAY
     );
   });
 
   const [localArmorPenaltyMiscMod, setLocalArmorPenaltyMiscMod] = useDebouncedFormField(
-    character.armorSpeedPenalty_miscModifier || 0,
+    speedData.armorSpeedPenalty_miscModifier || 0,
     (value) => onCharacterUpdate('armorSpeedPenalty_miscModifier', value),
     DEBOUNCE_DELAY
   );
   const [localLoadPenaltyMiscMod, setLocalLoadPenaltyMiscMod] = useDebouncedFormField(
-    character.loadSpeedPenalty_miscModifier || 0,
+    speedData.loadSpeedPenalty_miscModifier || 0,
     (value) => onCharacterUpdate('loadSpeedPenalty_miscModifier', value),
     DEBOUNCE_DELAY
   );
@@ -129,8 +139,8 @@ export function SpeedPanel({
   const speedUnit = UI_STRINGS.speedUnit || "ft.";
   const speedStep = parseFloat(UI_STRINGS.speedStepIncrement || "5");
 
-  const netArmorEffectOnSpeed = (localArmorPenaltyMiscMod || 0) - (character.armorSpeedPenalty_base || 0);
-  const netLoadEffectOnSpeed = (localLoadPenaltyMiscMod || 0) - (character.loadSpeedPenalty_base || 0);
+  const netArmorEffectOnSpeed = (localArmorPenaltyMiscMod || 0) - (speedData.armorSpeedPenalty_base || 0);
+  const netLoadEffectOnSpeed = (localLoadPenaltyMiscMod || 0) - (speedData.loadSpeedPenalty_base || 0);
 
 
   return (
@@ -145,7 +155,7 @@ export function SpeedPanel({
       <CardContent className="space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {speedTypesConfig.map(({ type, labelKey, Icon, fieldKey }) => {
-            const speedData = calculateSpeedBreakdown(type, character, DND_RACES, DND_CLASSES, SIZES, UI_STRINGS);
+            const speedDataForBreakdown = calculateSpeedBreakdown(type, speedData, DND_RACES, DND_CLASSES, SIZES, UI_STRINGS);
             const [localMiscMod, setLocalMiscMod] = debouncedSpeedMods[type];
             const label = UI_STRINGS[labelKey] || type;
 
@@ -157,7 +167,7 @@ export function SpeedPanel({
                 </div>
                 <div className="flex items-center justify-center space-x-1 h-9"> 
                   <span className="text-lg font-bold text-accent">
-                    {speedData.total}
+                    {speedDataForBreakdown.total}
                   </span>
                   <span className="text-base font-normal text-muted-foreground">
                     {speedUnit}

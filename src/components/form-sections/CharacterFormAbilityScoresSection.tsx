@@ -23,7 +23,7 @@ const DEBOUNCE_DELAY = 400; // ms
 const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
 interface CharacterFormAbilityScoresSectionProps {
-  character: Pick<Character, 'abilityScores' | 'abilityScoreTempCustomModifiers'>;
+  abilityScoresData: Pick<Character, 'abilityScores' | 'abilityScoreTempCustomModifiers'>;
   detailedAbilityScores: DetailedAbilityScores | null;
   onBaseAbilityScoreChange: (ability: Exclude<AbilityName, 'none'>, value: number) => void;
   onAbilityScoreTempCustomModifierChange: (ability: Exclude<AbilityName, 'none'>, value: number) => void;
@@ -32,7 +32,7 @@ interface CharacterFormAbilityScoresSectionProps {
 }
 
 export function CharacterFormAbilityScoresSection({
-  character,
+  abilityScoresData,
   detailedAbilityScores,
   onBaseAbilityScoreChange,
   onAbilityScoreTempCustomModifierChange,
@@ -54,13 +54,13 @@ export function CharacterFormAbilityScoresSection({
   abilityKeys.forEach(key => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     debouncedStates[key] = useDebouncedFormField(
-      character.abilityScores[key] || 0,
+      abilityScoresData.abilityScores[key] || 0,
       (value) => onBaseAbilityScoreChange(key, value),
       DEBOUNCE_DELAY
     );
     // eslint-disable-next-line react-hooks/rules-of-hooks
     debouncedStates[`${key}TempMod`] = useDebouncedFormField(
-      character.abilityScoreTempCustomModifiers?.[key] || 0,
+      abilityScoresData.abilityScoreTempCustomModifiers?.[key] || 0,
       (value) => onAbilityScoreTempCustomModifierChange(key, value),
       DEBOUNCE_DELAY
     );
@@ -81,7 +81,6 @@ export function CharacterFormAbilityScoresSection({
 
   const handleApplyRolledScores = (newScores: AbilityScores) => {
     onMultipleBaseAbilityScoresChange(newScores);
-    // Update local debounced states as well, so they don't lag behind
     abilityKeys.forEach(key => {
       debouncedStates[key][1](newScores[key]); 
     });
@@ -159,8 +158,8 @@ export function CharacterFormAbilityScoresSection({
               const actualScoreData = detailedAbilityScores ? detailedAbilityScores[ability] : null;
               const displayTotalScore = actualScoreData 
                 ? actualScoreData.finalScore 
-                : (character.abilityScores[ability] || 0) + 
-                  (character.abilityScoreTempCustomModifiers?.[ability] || 0) +
+                : (abilityScoresData.abilityScores[ability] || 0) + 
+                  (abilityScoresData.abilityScoreTempCustomModifiers?.[ability] || 0) +
                   (actualScoreData?.components.find(c => c.source.startsWith("Race"))?.value || 0) +
                   (actualScoreData?.components.find(c => c.source.startsWith("Aging"))?.value || 0) +
                   (actualScoreData?.components.find(c => c.source === "feats")?.value || 0);

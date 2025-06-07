@@ -16,23 +16,24 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 
 const DEBOUNCE_DELAY = 400;
 
+type ArmorClassPanelData = Pick<Character, 'abilityScores' | 'size' | 'armorBonus' | 'shieldBonus' | 'naturalArmor' | 'deflectionBonus' | 'dodgeBonus' | 'acMiscModifier'>;
+
 interface ArmorClassPanelProps {
-  character?: Character;
-  onCharacterUpdate?: (field: keyof Character, value: any) => void;
+  acData?: ArmorClassPanelData;
+  onCharacterUpdate?: (field: keyof ArmorClassPanelData, value: any) => void;
   onOpenAcBreakdownDialog?: (acType: 'Normal' | 'Touch' | 'Flat-Footed') => void;
 }
 
-export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) {
+export function ArmorClassPanel({ acData, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
 
-  // This localAcMiscModifier now corresponds to the "Temporary Modifier"
   const [localTemporaryAcModifier, setLocalTemporaryAcModifier] = useDebouncedFormField(
-    character?.acMiscModifier || 0,
+    acData?.acMiscModifier || 0,
     (value) => { if (onCharacterUpdate) onCharacterUpdate('acMiscModifier', value); },
     DEBOUNCE_DELAY
   );
 
-  if (translationsLoading || !translations || !character) {
+  if (translationsLoading || !translations || !acData) {
     return (
       <Card>
         <CardHeader>
@@ -43,7 +44,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
           <CardDescription>{translations?.UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {translationsLoading || !translations ? (
+          {translationsLoading || !translations ? ( 
             <div className="flex justify-center items-center py-10">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.armorClassPanelLoading || "Loading AC details..."}</p>
@@ -97,42 +98,41 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
   }
 
   const { DEFAULT_ABILITIES, SIZES, UI_STRINGS } = translations;
-  const currentAbilityScores = character.abilityScores || DEFAULT_ABILITIES;
-  const currentSize = character.size || 'medium';
+  const currentAbilityScores = acData.abilityScores || DEFAULT_ABILITIES;
+  const currentSize = acData.size || 'medium';
 
   const dexModifier = getAbilityModifierByName(currentAbilityScores, 'dexterity');
   const sizeModAC = getSizeModifierAC(currentSize, SIZES);
 
-  // For now, acCalculatedMiscModifier is 0. It will be sourced from game effects later.
   const acCalculatedMiscModifier = 0; 
 
   const normalAC = 10 +
-    (character.armorBonus || 0) +
-    (character.shieldBonus || 0) +
+    (acData.armorBonus || 0) +
+    (acData.shieldBonus || 0) +
     dexModifier +
     sizeModAC +
-    (character.naturalArmor || 0) +
-    (character.deflectionBonus || 0) +
-    (character.dodgeBonus || 0) +
-    (acCalculatedMiscModifier || 0) + // New conceptual modifier
-    (character.acMiscModifier || 0);  // This is now "Temporary Modifier"
+    (acData.naturalArmor || 0) +
+    (acData.deflectionBonus || 0) +
+    (acData.dodgeBonus || 0) +
+    (acCalculatedMiscModifier || 0) + 
+    (acData.acMiscModifier || 0);  
 
   const touchAC = 10 +
     dexModifier +
     sizeModAC +
-    (character.deflectionBonus || 0) +
-    (character.dodgeBonus || 0) +
-    (acCalculatedMiscModifier || 0) + // New conceptual modifier
-    (character.acMiscModifier || 0);  // This is now "Temporary Modifier"
+    (acData.deflectionBonus || 0) +
+    (acData.dodgeBonus || 0) +
+    (acCalculatedMiscModifier || 0) + 
+    (acData.acMiscModifier || 0);  
 
   const flatFootedAC = 10 +
-    (character.armorBonus || 0) +
-    (character.shieldBonus || 0) +
+    (acData.armorBonus || 0) +
+    (acData.shieldBonus || 0) +
     sizeModAC +
-    (character.naturalArmor || 0) +
-    (character.deflectionBonus || 0) +
-    (acCalculatedMiscModifier || 0) + // New conceptual modifier
-    (character.acMiscModifier || 0);  // This is now "Temporary Modifier"
+    (acData.naturalArmor || 0) +
+    (acData.deflectionBonus || 0) +
+    (acCalculatedMiscModifier || 0) + 
+    (acData.acMiscModifier || 0);  
 
 
   const handleShowAcBreakdown = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
@@ -184,10 +184,9 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
 
           <Separator className="my-3" />
           <div className="flex items-center justify-between">
-            {/* This label now uses the updated UI_STRINGS.armorClassMiscModifierLabel which means "Temporary Modifier" */}
             <Label htmlFor="temporary-ac-modifier-input" className="text-sm font-medium">{UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}</Label>
             <NumberSpinnerInput
-              id="temporary-ac-modifier-input" // Changed ID to reflect its new meaning
+              id="temporary-ac-modifier-input" 
               value={localTemporaryAcModifier}
               onChange={setLocalTemporaryAcModifier}
               disabled={!isEditable}

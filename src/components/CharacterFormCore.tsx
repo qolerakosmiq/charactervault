@@ -27,7 +27,7 @@ import {
   getSizeModifierGrapple,
   calculateInitiative,
   calculateGrapple,
-  getUnarmedGrappleDamage
+  getUnarmedGrappleDamage 
 } from '@/lib/dnd-utils';
 
 
@@ -61,7 +61,6 @@ interface CharacterFormCoreProps {
 
 const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
-// Helper function to create base character data
 function createBaseCharacterData(
     translations: ProcessedSiteData,
     globalCustomSkillDefinitions: CustomSkillDefinition[]
@@ -176,11 +175,9 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
     let characterDataToProcess: Character;
     characterDataToProcess = createBaseCharacterData(translations, globalCustomSkillDefinitions);
 
-    // Post-initialization processing (apply derived data based on current context)
     const finalCharacter = { ...characterDataToProcess };
     const { CLASS_SKILLS, SIZES, DND_RACES, DND_CLASSES } = translations;
 
-    // Update skills: Ensure class skills are correct and add any new global custom skills
     let currentSkills = [...finalCharacter.skills];
     currentSkills = currentSkills.map(skillInstance => ({
         ...skillInstance,
@@ -201,7 +198,6 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
     }
     finalCharacter.skills = currentSkills.sort((a, b) => (allAvailableSkillDefinitionsForDisplay.find(d => d.id === a.id)?.name || '').localeCompare(allAvailableSkillDefinitionsForDisplay.find(d => d.id === b.id)?.name || ''));
 
-    // Update feats: Re-evaluate granted feats and combine with user-chosen feats
     const characterLevel = finalCharacter.classes.reduce((sum, c) => sum + c.level, 0) || 1;
     const newGrantedFeats = getGrantedFeatsForCharacter(finalCharacter.race, finalCharacter.classes, characterLevel, allAvailableFeatDefinitions, DND_RACES, DND_CLASSES);
     const userChosenFeats = finalCharacter.feats?.filter(fi => !fi.isGranted) || [];
@@ -216,14 +212,12 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
     });
     finalCharacter.feats = Array.from(combinedFeatsMap.values()).sort((a,b) => (allAvailableFeatDefinitions.find(d=>d.value===a.definitionId)?.label||'').localeCompare(allAvailableFeatDefinitions.find(d=>d.value===b.definitionId)?.label||''));
 
-    // Update Grapple Damage Notes if unarmed
     if (finalCharacter.grappleWeaponChoice === 'unarmed') {
         const unarmedDamageDice = getUnarmedGrappleDamage(finalCharacter.size, SIZES);
         const currentSizeLabelGrapple = SIZES.find(s => s.value === finalCharacter.size)?.label || finalCharacter.size;
         finalCharacter.grappleDamage_baseNotes = `${unarmedDamageDice} (${currentSizeLabelGrapple} Unarmed)`;
     }
 
-    // Update Barbarian Damage Reduction
     const barbarianClass = finalCharacter.classes.find(c => c.className === 'barbarian');
     const barbarianLevel = barbarianClass?.level || 0;
     let grantedDrValue = 0;
@@ -342,8 +336,8 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
     }
   }, [character?.race, character?.age, translations]); 
 
-  const handleCoreInfoFieldChange = React.useCallback((field: keyof Character, value: any) => {
-     setCharacter(prev => prev ? ({ ...prev, [field]: value }) : null);
+  const handleCoreInfoFieldChange = React.useCallback((field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender'>, value: any) => {
+     setCharacter(prev => prev ? ({ ...prev, [field as keyof Character]: value }) : null);
   }, []);
   
   const handleCharacterFieldUpdate = React.useCallback((
@@ -610,21 +604,64 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
   const selectedClassInfo = translations.DND_CLASSES.find(c => c.value === character.classes[0]?.className);
   const currentMinAgeForInput = character.race ? (translations.DND_RACE_MIN_ADULT_AGE_DATA[character.race as DndRaceId] || 1) : 1;
 
+  const coreInfoData = {
+    name: character.name, playerName: character.playerName, race: character.race, alignment: character.alignment,
+    deity: character.deity, size: character.size, age: character.age, gender: character.gender, classes: character.classes,
+  };
+
+  const abilityScoresData = {
+    abilityScores: character.abilityScores, abilityScoreTempCustomModifiers: character.abilityScoreTempCustomModifiers,
+  };
+
+  const storyAndAppearanceData = {
+    campaign: character.campaign, personalStory: character.personalStory, portraitDataUrl: character.portraitDataUrl,
+    height: character.height, weight: character.weight, eyes: character.eyes, hair: character.hair, skin: character.skin,
+  };
+  
+  const skillsData = {
+    skills: character.skills, classes: character.classes, race: character.race, size: character.size, feats: character.feats,
+  };
+
+  const featSectionData = {
+    race: character.race, classes: character.classes, feats: character.feats, age: character.age, alignment: character.alignment,
+  };
+
+  const savingThrowsData = {
+    savingThrows: character.savingThrows, classes: character.classes,
+  };
+
+  const acData = {
+    abilityScores: character.abilityScores, size: character.size, armorBonus: character.armorBonus, shieldBonus: character.shieldBonus,
+    naturalArmor: character.naturalArmor, deflectionBonus: character.deflectionBonus, dodgeBonus: character.dodgeBonus, acMiscModifier: character.acMiscModifier,
+  };
+
+  const speedData = {
+    race: character.race, size: character.size, classes: character.classes, landSpeed: character.landSpeed, burrowSpeed: character.burrowSpeed,
+    climbSpeed: character.climbSpeed, flySpeed: character.flySpeed, swimSpeed: character.swimSpeed,
+    armorSpeedPenalty_base: character.armorSpeedPenalty_base, armorSpeedPenalty_miscModifier: character.armorSpeedPenalty_miscModifier,
+    loadSpeedPenalty_base: character.loadSpeedPenalty_base, loadSpeedPenalty_miscModifier: character.loadSpeedPenalty_miscModifier,
+  };
+
+  const combatData = {
+    abilityScores: character.abilityScores, classes: character.classes, size: character.size, babMiscModifier: character.babMiscModifier,
+    initiativeMiscModifier: character.initiativeMiscModifier, grappleMiscModifier: character.grappleMiscModifier,
+    grappleDamage_baseNotes: character.grappleDamage_baseNotes, grappleDamage_bonus: character.grappleDamage_bonus,
+    grappleWeaponChoice: character.grappleWeaponChoice,
+  };
+
+  const resistancesData = {
+    fireResistance: character.fireResistance, coldResistance: character.coldResistance, acidResistance: character.acidResistance,
+    electricityResistance: character.electricityResistance, sonicResistance: character.sonicResistance,
+    spellResistance: character.spellResistance, powerResistance: character.powerResistance,
+    damageReduction: character.damageReduction, fortification: character.fortification,
+  };
+
+
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-8">
         <CharacterFormCoreInfoSection
-          characterData={{
-            name: character.name,
-            playerName: character.playerName,
-            race: character.race,
-            alignment: character.alignment,
-            deity: character.deity,
-            size: character.size,
-            age: character.age,
-            gender: character.gender,
-            classes: character.classes,
-          }}
+          characterData={coreInfoData}
           onFieldChange={handleCoreInfoFieldChange}
           onClassChange={handleClassChange}
           ageEffectsDetails={ageEffectsDetails}
@@ -637,10 +674,7 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
         />
 
         <CharacterFormAbilityScoresSection
-          character={{
-            abilityScores: character.abilityScores,
-            abilityScoreTempCustomModifiers: character.abilityScoreTempCustomModifiers,
-          }}
+          abilityScoresData={abilityScoresData}
           detailedAbilityScores={detailedAbilityScores}
           onBaseAbilityScoreChange={handleBaseAbilityScoreChange}
           onMultipleBaseAbilityScoresChange={handleMultipleBaseAbilityScoresChange}
@@ -649,29 +683,13 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
         />
 
         <CharacterFormStoryPortraitSection
-          character={{
-            campaign: character.campaign,
-            personalStory: character.personalStory,
-            portraitDataUrl: character.portraitDataUrl,
-            height: character.height,
-            weight: character.weight,
-            eyes: character.eyes,
-            hair: character.hair,
-            skin: character.skin,
-          }}
-          onFieldChange={handleCoreInfoFieldChange}
+          storyAndAppearanceData={storyAndAppearanceData}
+          onFieldChange={handleCoreInfoFieldChange as any} // Cast for now, needs specific Pick type for onFieldChange
           onPortraitChange={handlePortraitChange}
         />
 
         <SkillsFormSection
-          character={{
-            skills: character.skills,
-            abilityScores: character.abilityScores,
-            classes: character.classes,
-            race: character.race,
-            size: character.size,
-            feats: character.feats,
-          }}
+          skillsData={skillsData}
           actualAbilityScores={actualAbilityScoresForSavesAndSkills}
           allFeatDefinitions={allAvailableFeatDefinitions}
           allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
@@ -682,7 +700,7 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
         />
 
         <FeatsFormSection
-          character={character}
+          featSectionData={featSectionData}
           allAvailableFeatDefinitions={allAvailableFeatDefinitions}
           chosenFeatInstances={character.feats}
           onFeatInstancesChange={handleFeatInstancesChange}
@@ -695,23 +713,20 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
         
         <div className="grid grid-cols-1 gap-6">
            <SavingThrowsPanel
-              character={{
-                savingThrows: character.savingThrows,
-                classes: character.classes,
-              }}
+              savingThrowsData={savingThrowsData}
               abilityScores={actualAbilityScoresForSavesAndSkills}
               onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:items-start">
           <ArmorClassPanel
-            character={character}
-            onCharacterUpdate={handleCharacterFieldUpdate}
+            acData={acData}
+            onCharacterUpdate={handleCharacterFieldUpdate as any} // Cast for now
             onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
           />
           <SpeedPanel
-            character={character}
-            onCharacterUpdate={handleCharacterFieldUpdate}
+            speedData={speedData}
+            onCharacterUpdate={handleCharacterFieldUpdate as any} // Cast for now
             onOpenSpeedInfoDialog={handleOpenSpeedInfoDialog}
             onOpenArmorSpeedPenaltyInfoDialog={handleOpenArmorSpeedPenaltyInfoDialog}
             onOpenLoadSpeedPenaltyInfoDialog={handleOpenLoadSpeedPenaltyInfoDialog}
@@ -719,24 +734,14 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
         </div>
         
         <CombatPanel
-            character={character}
-            onCharacterUpdate={handleCharacterFieldUpdate}
+            combatData={combatData}
+            onCharacterUpdate={handleCharacterFieldUpdate as any} // Cast for now
             onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog}
             onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
         />
 
         <ResistancesPanel
-          characterData={{
-            fireResistance: character.fireResistance,
-            coldResistance: character.coldResistance,
-            acidResistance: character.acidResistance,
-            electricityResistance: character.electricityResistance,
-            sonicResistance: character.sonicResistance,
-            spellResistance: character.spellResistance,
-            powerResistance: character.powerResistance,
-            damageReduction: character.damageReduction,
-            fortification: character.fortification,
-          }}
+          characterData={resistancesData}
           onResistanceChange={handleResistanceChange}
           onDamageReductionChange={handleDamageReductionChange}
           onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
@@ -780,4 +785,3 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
     </>
   );
 }
-
