@@ -24,7 +24,7 @@ interface ArmorClassPanelProps {
   onOpenAcBreakdownDialog?: (acType: 'Normal' | 'Touch' | 'Flat-Footed') => void;
 }
 
-export const ArmorClassPanel = React.memo(function ArmorClassPanelComponent({ acData, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) {
+export const ArmorClassPanel = ({ acData, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const [localTemporaryAcModifier, setLocalTemporaryAcModifier] = useDebouncedFormField(
@@ -200,5 +200,5 @@ export const ArmorClassPanel = React.memo(function ArmorClassPanelComponent({ ac
       </Card>
     </>
   );
-});
-ArmorClassPanel.displayName = 'ArmorClassPanelComponent';
+};
+// ArmorClassPanel.displayName = 'ArmorClassPanelComponent';

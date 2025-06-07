@@ -11,10 +11,10 @@ interface BabBreakdownContentDisplayProps {
   uiStrings: Record<string, string>;
 }
 
-export const BabBreakdownContentDisplay = React.memo(function BabBreakdownContentDisplayComponent({
+export const BabBreakdownContentDisplay = ({
   babBreakdown,
   uiStrings,
-}: BabBreakdownContentDisplayProps) {
+}: BabBreakdownContentDisplayProps) => {
   if (!babBreakdown) return null;
 
   return (
@@ -39,5 +39,5 @@ export const BabBreakdownContentDisplay = React.memo(function BabBreakdownConten
       </div>
     </div>
   );
-});
-BabBreakdownContentDisplay.displayName = 'BabBreakdownContentDisplay';
+};
+// BabBreakdownContentDisplay.displayName = 'BabBreakdownContentDisplayComponent';

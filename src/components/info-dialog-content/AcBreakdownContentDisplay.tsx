@@ -24,13 +24,13 @@ interface AcBreakdownContentDisplayProps {
   abilityLabels: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
 }
 
-export const AcBreakdownContentDisplay = React.memo(function AcBreakdownContentDisplayComponent({
+export const AcBreakdownContentDisplay = ({
   detailsList,
   totalACValue,
   detailsListHeading,
   uiStrings,
   abilityLabels,
-}: AcBreakdownContentDisplayProps) {
+}: AcBreakdownContentDisplayProps) => {
   if (!detailsList || detailsList.length === 0) return null;
 
   return (
@@ -79,5 +79,5 @@ export const AcBreakdownContentDisplay = React.memo(function AcBreakdownContentD
       )}
     </div>
   );
-});
-AcBreakdownContentDisplay.displayName = 'AcBreakdownContentDisplay';
+};
+// AcBreakdownContentDisplay.displayName = 'AcBreakdownContentDisplayComponent';

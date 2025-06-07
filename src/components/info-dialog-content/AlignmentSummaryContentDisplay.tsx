@@ -7,9 +7,9 @@ interface AlignmentSummaryContentDisplayProps {
   htmlContent?: string;
 }
 
-export const AlignmentSummaryContentDisplay = React.memo(function AlignmentSummaryContentDisplayComponent({
+export const AlignmentSummaryContentDisplay = ({
   htmlContent,
-}: AlignmentSummaryContentDisplayProps) {
+}: AlignmentSummaryContentDisplayProps) => {
   return (
     <>
       {htmlContent && (
@@ -20,5 +20,5 @@ export const AlignmentSummaryContentDisplay = React.memo(function AlignmentSumma
       )}
     </>
   );
-});
-AlignmentSummaryContentDisplay.displayName = 'AlignmentSummaryContentDisplay';
+};
+// AlignmentSummaryContentDisplay.displayName = 'AlignmentSummaryContentDisplayComponent';

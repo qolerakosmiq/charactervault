@@ -35,7 +35,7 @@ interface ResistancesPanelProps {
   onOpenResistanceInfoDialog: (resistanceField: ResistanceFieldKeySheet) => void;
 }
 
-export const ResistancesPanel = React.memo(function ResistancesPanelComponent({ characterData, onResistanceChange, onDamageReductionChange, onOpenResistanceInfoDialog }: ResistancesPanelProps) {
+export const ResistancesPanel = ({ characterData, onResistanceChange, onDamageReductionChange, onOpenResistanceInfoDialog }: ResistancesPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
   const { toast } = useToast();
 
@@ -420,5 +420,5 @@ export const ResistancesPanel = React.memo(function ResistancesPanelComponent({ 
       </Card>
     </>
   );
-});
-ResistancesPanel.displayName = 'ResistancesPanelComponent';
+};
+// ResistancesPanel.displayName = 'ResistancesPanelComponent';

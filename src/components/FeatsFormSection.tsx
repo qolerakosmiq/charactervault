@@ -33,7 +33,7 @@ interface FeatsFormSectionProps {
   allCustomSkillDefinitions: readonly CustomSkillDefinition[]; 
 }
 
-export const FeatsFormSection = React.memo(function FeatsFormSectionComponent({
+export const FeatsFormSection = ({
   featSectionData,
   allAvailableFeatDefinitions,
   chosenFeatInstances,
@@ -43,7 +43,7 @@ export const FeatsFormSection = React.memo(function FeatsFormSectionComponent({
   skills,
   allPredefinedSkillDefinitions,
   allCustomSkillDefinitions,
-}: FeatsFormSectionProps) {
+}: FeatsFormSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
   const characterLevel = featSectionData.classes.reduce((sum, cls) => sum + cls.level, 0) || 1;
   const { toast } = useToast();
@@ -360,5 +360,5 @@ export const FeatsFormSection = React.memo(function FeatsFormSectionComponent({
       />
     </>
   );
-});
-FeatsFormSection.displayName = 'FeatsFormSectionComponent';
+};
+// FeatsFormSection.displayName = 'FeatsFormSectionComponent';

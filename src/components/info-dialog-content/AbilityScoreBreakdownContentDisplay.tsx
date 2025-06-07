@@ -12,10 +12,10 @@ interface AbilityScoreBreakdownContentDisplayProps {
   uiStrings: Record<string, string>;
 }
 
-export const AbilityScoreBreakdownContentDisplay = React.memo(function AbilityScoreBreakdownContentDisplayComponent({
+export const AbilityScoreBreakdownContentDisplay = ({
   abilityScoreBreakdown,
   uiStrings,
-}: AbilityScoreBreakdownContentDisplayProps) {
+}: AbilityScoreBreakdownContentDisplayProps) => {
   if (!abilityScoreBreakdown) return null;
 
   return (
@@ -52,5 +52,5 @@ export const AbilityScoreBreakdownContentDisplay = React.memo(function AbilitySc
       </div>
     </div>
   );
-});
-AbilityScoreBreakdownContentDisplay.displayName = 'AbilityScoreBreakdownContentDisplay';
+};
+// AbilityScoreBreakdownContentDisplay.displayName = 'AbilityScoreBreakdownContentDisplayComponent';

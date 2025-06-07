@@ -44,13 +44,13 @@ interface SpeedPanelProps {
   onOpenLoadSpeedPenaltyInfoDialog: () => void;
 }
 
-export const SpeedPanel = React.memo(function SpeedPanelComponent({ 
+export const SpeedPanel = ({ 
   speedData, 
   onCharacterUpdate, 
   onOpenSpeedInfoDialog, 
   onOpenArmorSpeedPenaltyInfoDialog,
   onOpenLoadSpeedPenaltyInfoDialog 
-}: SpeedPanelProps) {
+}: SpeedPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const speedTypesConfig: Array<{
@@ -298,5 +298,5 @@ export const SpeedPanel = React.memo(function SpeedPanelComponent({
       </CardContent>
     </Card>
   );
-});
-SpeedPanel.displayName = 'SpeedPanelComponent';
+};
+// SpeedPanel.displayName = 'SpeedPanelComponent';

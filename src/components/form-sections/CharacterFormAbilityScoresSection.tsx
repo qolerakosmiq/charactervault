@@ -31,14 +31,14 @@ interface CharacterFormAbilityScoresSectionProps {
   onOpenAbilityScoreBreakdownDialog: (ability: Exclude<AbilityName, 'none'>) => void;
 }
 
-export const CharacterFormAbilityScoresSection = React.memo(function CharacterFormAbilityScoresSectionComponent({
+export const CharacterFormAbilityScoresSection = ({
   abilityScoresData,
   detailedAbilityScores,
   onBaseAbilityScoreChange,
   onAbilityScoreTempCustomModifierChange,
   onMultipleBaseAbilityScoresChange,
   onOpenAbilityScoreBreakdownDialog,
-}: CharacterFormAbilityScoresSectionProps) {
+}: CharacterFormAbilityScoresSectionProps) => {
   const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
   const [isPointBuyDialogOpen, setIsPointBuyDialogOpen] = React.useState(false);
   const { translations, isLoading: translationsLoading } = useI18n();
@@ -251,5 +251,5 @@ export const CharacterFormAbilityScoresSection = React.memo(function CharacterFo
       />
     </>
   );
-});
-CharacterFormAbilityScoresSection.displayName = 'CharacterFormAbilityScoresSectionComponent';
+};
+// CharacterFormAbilityScoresSection.displayName = 'CharacterFormAbilityScoresSectionComponent';

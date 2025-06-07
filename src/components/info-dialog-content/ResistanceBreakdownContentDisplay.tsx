@@ -11,10 +11,10 @@ interface ResistanceBreakdownContentDisplayProps {
   uiStrings: Record<string, string>;
 }
 
-export const ResistanceBreakdownContentDisplay = React.memo(function ResistanceBreakdownContentDisplayComponent({
+export const ResistanceBreakdownContentDisplay = ({
   resistanceBreakdown,
   uiStrings,
-}: ResistanceBreakdownContentDisplayProps) {
+}: ResistanceBreakdownContentDisplayProps) => {
   if (!resistanceBreakdown) return null;
 
   return (
@@ -37,5 +37,5 @@ export const ResistanceBreakdownContentDisplay = React.memo(function ResistanceB
       </div>
     </div>
   );
-});
-ResistanceBreakdownContentDisplay.displayName = 'ResistanceBreakdownContentDisplay';
+};
+// ResistanceBreakdownContentDisplay.displayName = 'ResistanceBreakdownContentDisplayComponent';

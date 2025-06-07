@@ -40,7 +40,7 @@ interface RaceContentDisplayProps {
   toggleExpanded: (itemId: string) => void;
 }
 
-export const RaceContentDisplay = React.memo(function RaceContentDisplayComponent({
+export const RaceContentDisplay = ({
   htmlContent,
   abilityModifiers,
   skillBonuses,
@@ -53,7 +53,7 @@ export const RaceContentDisplay = React.memo(function RaceContentDisplayComponen
   character,
   expandedItems,
   toggleExpanded,
-}: RaceContentDisplayProps) {
+}: RaceContentDisplayProps) => {
   const { UI_STRINGS, ABILITY_LABELS, DND_CLASSES, DND_RACES, ALIGNMENT_PREREQUISITE_OPTIONS, SKILL_DEFINITIONS } = translations;
   const speedUnit = UI_STRINGS.speedUnit || "ft.";
   const outputBlocks: React.ReactNode[] = [];
@@ -200,5 +200,5 @@ export const RaceContentDisplay = React.memo(function RaceContentDisplayComponen
   }
 
   return outputBlocks.length > 0 ? outputBlocks : null;
-});
-RaceContentDisplay.displayName = 'RaceContentDisplay';
+};
+// RaceContentDisplay.displayName = 'RaceContentDisplayComponent'; // Removed for debugging memo issues

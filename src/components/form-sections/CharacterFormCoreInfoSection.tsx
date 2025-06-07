@@ -47,7 +47,7 @@ interface CharacterFormCoreInfoSectionProps {
   onOpenDeityInfoDialog: () => void;
 }
 
-export const CharacterFormCoreInfoSection = React.memo(function CharacterFormCoreInfoSectionComponent({
+export const CharacterFormCoreInfoSection = ({
   characterData,
   onFieldChange,
   onClassChange,
@@ -58,7 +58,7 @@ export const CharacterFormCoreInfoSection = React.memo(function CharacterFormCor
   onOpenClassInfoDialog,
   onOpenAlignmentInfoDialog,
   onOpenDeityInfoDialog,
-}: CharacterFormCoreInfoSectionProps) {
+}: CharacterFormCoreInfoSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const [localName, setLocalName] = useDebouncedFormField(
@@ -373,5 +373,5 @@ export const CharacterFormCoreInfoSection = React.memo(function CharacterFormCor
       </CardContent>
     </Card>
   );
-});
-CharacterFormCoreInfoSection.displayName = 'CharacterFormCoreInfoSectionComponent';
+};
+// CharacterFormCoreInfoSection.displayName = 'CharacterFormCoreInfoSectionComponent';

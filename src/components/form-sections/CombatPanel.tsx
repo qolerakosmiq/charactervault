@@ -35,7 +35,7 @@ interface CombatPanelProps {
   onOpenAcBreakdownDialog?: (acType: 'Normal' | 'Touch' | 'Flat-Footed') => void;
 }
 
-export const CombatPanel = React.memo(function CombatPanelComponent({ combatData, onCharacterUpdate, onOpenCombatStatInfoDialog }: CombatPanelProps) {
+export const CombatPanel = ({ combatData, onCharacterUpdate, onOpenCombatStatInfoDialog }: CombatPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const [localBabMiscModifier, setLocalBabMiscModifier] = useDebouncedFormField(
@@ -246,5 +246,5 @@ export const CombatPanel = React.memo(function CombatPanelComponent({ combatData
     </Card>
     </>
   );
-});
-CombatPanel.displayName = 'CombatPanelComponent';
+};
+// CombatPanel.displayName = 'CombatPanelComponent';

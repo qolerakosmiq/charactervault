@@ -21,11 +21,11 @@ interface CharacterFormStoryPortraitSectionProps {
   onPortraitChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const CharacterFormStoryPortraitSection = React.memo(function CharacterFormStoryPortraitSectionComponent({
+export const CharacterFormStoryPortraitSection = ({
   storyAndAppearanceData,
   onFieldChange,
   onPortraitChange,
-}: CharacterFormStoryPortraitSectionProps) {
+}: CharacterFormStoryPortraitSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const [localCampaign, setLocalCampaign] = useDebouncedFormField(
@@ -189,5 +189,5 @@ export const CharacterFormStoryPortraitSection = React.memo(function CharacterFo
       </CardContent>
     </Card>
   );
-});
-CharacterFormStoryPortraitSection.displayName = 'CharacterFormStoryPortraitSectionComponent';
+};
+// CharacterFormStoryPortraitSection.displayName = 'CharacterFormStoryPortraitSectionComponent';

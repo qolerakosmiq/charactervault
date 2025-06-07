@@ -85,7 +85,7 @@ const DebouncedSkillRankInput: React.FC<{
 };
 
 
-export const SkillsFormSection = React.memo(function SkillsFormSectionComponent({
+export const SkillsFormSection = ({
   skillsData,
   actualAbilityScores,
   allFeatDefinitions,
@@ -94,7 +94,7 @@ export const SkillsFormSection = React.memo(function SkillsFormSectionComponent(
   onSkillChange,
   onEditCustomSkillDefinition,
   onOpenSkillInfoDialog,
-}: SkillsFormSectionProps) {
+}: SkillsFormSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const characterSkillInstances = skillsData.skills;
@@ -423,5 +423,5 @@ export const SkillsFormSection = React.memo(function SkillsFormSectionComponent(
     </Card>
     </>
   );
-});
-SkillsFormSection.displayName = 'SkillsFormSectionComponent';
+};
+// SkillsFormSection.displayName = 'SkillsFormSectionComponent';
