@@ -1,0 +1,25 @@
+
+{
+  "LANGUAGES_DATA": [
+    { "value": "common", "label": "Commun" },
+    { "value": "dwarven", "label": "Nain" },
+    { "value": "elven", "label": "Elfe" },
+    { "value": "giant", "label": "Géant" },
+    { "value": "gnome", "label": "Gnome" },
+    { "value": "goblin", "label": "Gobelin" },
+    { "value": "orc", "label": "Orque" },
+    { "value": "halfling", "label": "Halfelin" },
+    { "value": "abyssal", "label": "Abyssal" },
+    { "value": "celestial", "label": "Céleste" },
+    { "value": "draconic", "label": "Draconique" },
+    { "value": "infernal", "label": "Infernal" },
+    { "value": "sylvan", "label": "Sylvestre" },
+    { "value": "undercommon", "label": "Commun des profondeurs" },
+    { "value": "auran", "label": "Aérien" },
+    { "value": "aquan", "label": "Aquatique" },
+    { "value": "ignan", "label": "Igné" },
+    { "value": "terran", "label": "Terran" },
+    { "value": "druidic", "label": "Druidique (Secret)" },
+    { "value": "gnoll", "label": "Gnoll" }
+  ]
+}

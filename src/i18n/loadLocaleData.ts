@@ -4,8 +4,8 @@ import type { LanguageCode } from './config';
 
 export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBundle> {
   const [
-    alignments, base, classes, deities, feats, races, skills,
-    customAlignments, customBase, customClasses, customDeities, customFeats, customRaces, customSkills,
+    alignments, base, classes, deities, feats, races, skills, languages, // Added languages
+    customAlignments, customBase, customClasses, customDeities, customFeats, customRaces, customSkills, customLanguages, // Added customLanguages
     uiStrings, customUiStrings
   ] = await Promise.all([
     import(`../data/dnd-alignments${lang === 'en' ? '' : '-fr'}.json`),
@@ -15,6 +15,7 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
     import(`../data/dnd-feats${lang === 'en' ? '' : '-fr'}.json`),
     import(`../data/dnd-races${lang === 'en' ? '' : '-fr'}.json`),
     import(`../data/dnd-skills${lang === 'en' ? '' : '-fr'}.json`),
+    import(`../data/dnd-languages${lang === 'en' ? '' : '-fr'}.json`), // Added
     import(`../data/custom-alignments${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ ALIGNMENTS_DATA: [] })),
     import(`../data/custom-base${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({})),
     import(`../data/custom-classes${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ DND_CLASSES_DATA: [] })),
@@ -22,6 +23,7 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
     import(`../data/custom-feats${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ DND_FEATS_DATA: [], FEAT_TYPES_DATA: [] })),
     import(`../data/custom-races${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ DND_RACES_DATA: [] })),
     import(`../data/custom-skills${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ SKILL_DEFINITIONS_DATA: [], CLASS_SKILLS_DATA: {}, CLASS_SKILL_POINTS_BASE_DATA: {}, SKILL_SYNERGIES_DATA: {} })),
+    import(`../data/custom-languages${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ LANGUAGES_DATA: [] })), // Added
     import(`../data/ui-strings${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ UI_STRINGS_DATA: {} })),
     import(`../data/custom-ui-strings${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ UI_STRINGS_DATA: {} })),
   ]);
@@ -34,6 +36,7 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
     feats: feats.default || feats,
     races: races.default || races,
     skills: skills.default || skills,
+    languages: languages.default || languages, // Added
     uiStrings: uiStrings.default || uiStrings,
     customAlignments: customAlignments.default || customAlignments,
     customBase: customBase.default || customBase,
@@ -42,6 +45,7 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
     customFeats: customFeats.default || customFeats,
     customRaces: customRaces.default || customRaces,
     customSkills: customSkills.default || customSkills,
+    customLanguages: customLanguages.default || customLanguages, // Added
     customUiStrings: customUiStrings.default || customUiStrings,
   };
 }

@@ -130,6 +130,12 @@ export type DndRaceId = string;
 export type DndClassId = string;
 export type DndDeityId = string;
 export type GenderId = string;
+export type LanguageId = string; // Added for language identification
+
+export interface LanguageOption { // Added for language data structure
+  value: LanguageId;
+  label: string;
+}
 
 export interface CharacterSizeObject { // Processed size object
   value: CharacterSize;
@@ -158,6 +164,8 @@ export interface DndRaceOption { // Processed race option
   racialSkillBonuses?: Record<string, number>;
   grantedFeats?: Array<{ featId: string; note?: string; name?: string; levelAcquired?: number }>;
   speeds?: Partial<Record<SpeedType, number>>;
+  automaticLanguages?: LanguageId[]; // Added
+  bonusLanguageChoices?: LanguageId[]; // Added
 }
 export interface DndClassOption { // Processed class option
   value: DndClassId | string;
@@ -209,6 +217,7 @@ export interface Character {
   eyes?: string;
   hair?: string;
   skin?: string;
+  languages?: LanguageId[]; // Added
   abilityScores: AbilityScores;
   abilityScoreTempCustomModifiers: AbilityScores;
   hp: number;

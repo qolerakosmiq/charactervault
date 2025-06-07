@@ -82,7 +82,7 @@
     "infoDialogSpeedTotalPrefixLabel": "Total",
     "infoDialogSpeedTotalSuffixLabel": "Speed",
     "speedUnit": "ft.",
-    "speedStepIncrement": "1.5",
+    "speedStepIncrement": "5",
     "infoDialogBabClassLabel": "{classLabel} Base Attack Bonus",
     "infoDialogBabTotalLabel": "Total Base Attack Bonus",
     "infoDialogAcAbilityLabel": "Ability Modifier",
@@ -389,6 +389,23 @@
     "toastInvalidAgeTitle": "Invalid Age",
     "toastInvalidAgeDesc": "Age must be at least {minAge}{raceContext}.",
     "toastInvalidAbilityScoreTitle": "Invalid {abilityName} Score",
-    "toastInvalidAbilityScoreDesc": "{abilityName} score must be greater than 0."
+    "toastInvalidAbilityScoreDesc": "{abilityName} score must be greater than 0.",
+    "languagesPanelTitle": "Languages",
+    "languagesPanelDescription": "Manage your character's known languages.",
+    "languagesPanelKnownAutomatic": "Automatic:",
+    "languagesPanelChosenByPlayer": "Chosen by Player:",
+    "languagesPanelAddButton": "Add Language",
+    "languagesPanelNoLanguagesKnown": "No languages currently known beyond automatic.",
+    "languagesPanelSlotsAvailable": "Bonus Language Slots:",
+    "languagesPanelSlotsFromInt": "from Intelligence",
+    "languagesPanelSlotsFromSkill": "from Speak Language skill",
+    "languagesPanelSlotsFromRace": "from Race",
+    "languagesPanelSlotsTotal": "Total Slots:",
+    "languagesPanelSlotsUsed": "Slots Used:",
+    "languagesPanelSlotsRemaining": "Slots Remaining:",
+    "languagesPanelComboboxPlaceholder": "Select language...",
+    "languagesPanelComboboxSearch": "Search languages...",
+    "languagesPanelComboboxEmpty": "No language found.",
+    "languagesPanelRemoveAriaLabel": "Remove {languageName}"
   }
 }

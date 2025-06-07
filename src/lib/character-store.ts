@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Character, AbilityScores, SavingThrows, ResistanceValue, SpeedDetails, CharacterClass, Skill, CharacterFeatInstance, Item, DamageReductionInstance } from '@/types/character';
+import type { Character, AbilityScores, SavingThrows, ResistanceValue, SpeedDetails, CharacterClass, Skill, CharacterFeatInstance, Item, DamageReductionInstance, LanguageId } from '@/types/character';
 import { useState, useEffect, useCallback } from 'react';
 
 const CHARACTERS_STORAGE_KEY = 'dnd35_characters_adventurers_armory';
@@ -11,7 +11,7 @@ const FULL_CHARACTER_DEFAULTS: Omit<Character, 'id'> = {
   name: 'New Character',
   playerName: '',
   campaign: '',
-  homeland: '', // Added homeland default
+  homeland: '',
   race: '',
   alignment: 'true-neutral',
   deity: '',
@@ -23,6 +23,7 @@ const FULL_CHARACTER_DEFAULTS: Omit<Character, 'id'> = {
   eyes: '',
   hair: '',
   skin: '',
+  languages: [], // Added languages default
   abilityScores: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
   abilityScoreTempCustomModifiers: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
   hp: 10,
@@ -100,7 +101,8 @@ function ensureCharacterDefaults(character: Partial<Character>): Character {
   hydratedCharacter.feats = character.feats || [];
   hydratedCharacter.inventory = character.inventory || [];
   hydratedCharacter.damageReduction = character.damageReduction || [];
-  
+  hydratedCharacter.languages = character.languages || []; // Ensure languages is an array
+
   // Ensure all top-level keys from defaults are present
   for (const key of Object.keys(FULL_CHARACTER_DEFAULTS) as Array<keyof typeof FULL_CHARACTER_DEFAULTS>) {
     if (hydratedCharacter[key] === undefined) {
@@ -205,4 +207,3 @@ export function removeCharacter(id: string): void {
   characters = characters.filter(c => c.id !== id);
   saveCharactersToStorage(characters);
 }
-    

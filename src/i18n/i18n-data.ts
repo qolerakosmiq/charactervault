@@ -27,7 +27,9 @@ import type {
   SavingThrows,
   ResistanceValue,
   SpeedDetails,
-  CharacterClass
+  CharacterClass,
+  LanguageId, // Added
+  LanguageOption // Added
 } from '@/types/character-core';
 
 // Define types for the structure of each JSON file's data
@@ -39,6 +41,14 @@ export interface AlignmentDataEntry {
 }
 export interface AlignmentsJson {
   ALIGNMENTS_DATA: AlignmentDataEntry[];
+}
+
+export interface LanguageDataEntry { // Added
+  value: LanguageId;
+  label: string;
+}
+export interface LanguagesJson { // Added
+  LANGUAGES_DATA: LanguageDataEntry[];
 }
 
 export interface SizeDataEntry {
@@ -152,6 +162,7 @@ export interface LocaleDataBundle {
   feats: FeatsJson;
   races: RacesJson;
   skills: SkillsJson;
+  languages: LanguagesJson; // Added
   uiStrings?: UiStringsJson;
   customAlignments?: AlignmentsJson;
   customBase?: Partial<BaseJson>;
@@ -160,11 +171,13 @@ export interface LocaleDataBundle {
   customFeats?: FeatsJson;
   customRaces?: RacesJson;
   customSkills?: SkillsJson;
+  customLanguages?: LanguagesJson; // Added
   customUiStrings?: UiStringsJson;
 }
 
 export interface ProcessedSiteData {
   ALIGNMENTS: readonly CharacterAlignmentObject[];
+  LANGUAGES: readonly LanguageOption[]; // Added
   SIZES: readonly CharacterSizeObject[];
   GENDERS: readonly { value: GenderId | string; label: string }[];
   DND_RACES: readonly DndRaceOption[];
@@ -199,9 +212,10 @@ function mergeArrayData<T extends { value: string; label?: string }>(base: T[] =
   if (!custom) return base;
   const combinedMap = new Map<string, T>();
   base.forEach(item => combinedMap.set(item.value, item));
-  custom.forEach(item => combinedMap.set(item.value, item));
+  custom.forEach(item => combinedMap.set(item.value, item)); // Custom overrides base if keys are the same
   return Array.from(combinedMap.values()).sort((a, b) => (a.label || a.value).localeCompare(b.label || b.value));
 }
+
 
 function mergeObjectData<T extends Record<string, any>>(base: T, custom?: Partial<T>): T {
   return { ...base, ...custom };
@@ -215,6 +229,10 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
   const baseAlignments = bundle.alignments.ALIGNMENTS_DATA;
   const customAlignments = bundle.customAlignments?.ALIGNMENTS_DATA;
   const ALIGNMENTS = mergeArrayData(baseAlignments, customAlignments);
+
+  const baseLanguages = bundle.languages.LANGUAGES_DATA; // Added
+  const customLanguages = bundle.customLanguages?.LANGUAGES_DATA; // Added
+  const LANGUAGES = mergeArrayData(baseLanguages, customLanguages); // Added
 
   const baseSizes = bundle.base.SIZES_DATA;
   const customSizes = bundle.customBase?.SIZES_DATA;
@@ -260,6 +278,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
 
   return {
     ALIGNMENTS,
+    LANGUAGES, // Added
     SIZES,
     GENDERS,
     DND_RACES,

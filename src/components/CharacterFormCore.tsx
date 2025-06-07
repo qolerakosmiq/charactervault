@@ -10,7 +10,7 @@ import type {
   DndRaceOption, DetailedAbilityScores, AbilityScoreBreakdown,
   FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData, CharacterSize,
   ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType, ResistanceFieldKeySheet,
-  SpeedDetails, SpeedType, CharacterAlignment, ProcessedSiteData, SpeedPanelCharacterData, CombatPanelCharacterData
+  SpeedDetails, SpeedType, CharacterAlignment, ProcessedSiteData, SpeedPanelCharacterData, CombatPanelCharacterData, LanguageId
 } from '@/types/character';
 import {
   getNetAgingEffects,
@@ -48,6 +48,7 @@ import { ArmorClassPanel } from '@/components/form-sections/ArmorClassPanel';
 import { SpeedPanel } from '@/components/form-sections/SpeedPanel';
 import { CombatPanel } from '@/components/form-sections/CombatPanel';
 import { ResistancesPanel } from '@/components/form-sections/ResistancesPanel';
+import { LanguagesPanel } from '@/components/form-sections/LanguagesPanel'; // Added
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 
@@ -104,7 +105,7 @@ function createBaseCharacterData(
 
     return {
       id: crypto.randomUUID(), name: '', playerName: '', campaign: '', homeland: '', race: defaultRaceValue, alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
-      height: '', weight: '', eyes: '', hair: '', skin: '',
+      height: '', weight: '', eyes: '', hair: '', skin: '', languages: [],
       abilityScores: { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES))) },
       abilityScoreTempCustomModifiers: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
       hp: 10, maxHp: 10,
@@ -558,6 +559,10 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     }) : null);
   }, []);
 
+  const handleLanguagesChange = React.useCallback((updatedLanguages: LanguageId[]) => {
+    setCharacter(prev => prev ? ({ ...prev, languages: updatedLanguages }) : null);
+  }, []);
+
   const handleCancel = React.useCallback(() => { router.push('/'); }, [router]);
 
   const openInfoDialog = React.useCallback((contentType: InfoDialogContentType) => { setActiveInfoDialogType(contentType); setIsInfoDialogOpen(true); }, []);
@@ -625,7 +630,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     onSave(finalCharacterData);
   }, [character, onSave, toast, translations]);
 
-  if (translationsLoading || !character || !translations) { 
+  if (translationsLoading || !character || !translations || !detailedAbilityScores) { 
     return (
       <div className="container mx-auto px-4 py-8 space-y-8">
         <div className="flex justify-center items-center py-10 min-h-[50vh]">
@@ -651,7 +656,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
   const storyAndAppearanceData: CharacterFormStoryPortraitSectionProps['storyAndAppearanceData'] = {
     campaign: character.campaign, personalStory: character.personalStory, portraitDataUrl: character.portraitDataUrl,
     height: character.height, weight: character.weight, eyes: character.eyes, hair: character.hair, skin: character.skin,
-    homeland: character.homeland, // Pass homeland
+    homeland: character.homeland,
   };
   
   const skillsData: SkillsFormSectionProps['skillsData'] = {
@@ -690,6 +695,13 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     electricityResistance: character.electricityResistance, sonicResistance: character.sonicResistance,
     spellResistance: character.spellResistance, powerResistance: character.powerResistance,
     damageReduction: character.damageReduction, fortification: character.fortification,
+  };
+
+  const languagesData = {
+    characterLanguages: character.languages || [],
+    characterRaceId: character.race,
+    characterIntelligenceScore: detailedAbilityScores.intelligence.finalScore,
+    speakLanguageSkillRanks: character.skills.find(s => s.id === 'speak-language')?.ranks || 0,
   };
 
 
@@ -731,7 +743,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
           onSkillChange={handleSkillChange}
-          onEditCustomSkillDefinition={handleOpenEditCustomSkillDialog} // This is still passed but UI removed
+          onEditCustomSkillDefinition={handleOpenEditCustomSkillDialog} 
           onOpenSkillInfoDialog={handleOpenSkillInfoDialog}
         />
 
@@ -776,12 +788,22 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
             onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
         />
 
-        <ResistancesPanel
-          characterData={resistancesData}
-          onResistanceChange={handleResistanceChange}
-          onDamageReductionChange={handleDamageReductionChange}
-          onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:items-start">
+          <ResistancesPanel
+            characterData={resistancesData}
+            onResistanceChange={handleResistanceChange}
+            onDamageReductionChange={handleDamageReductionChange}
+            onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
+          />
+           <LanguagesPanel
+            characterLanguages={languagesData.characterLanguages}
+            onLanguagesChange={handleLanguagesChange}
+            characterRaceId={languagesData.characterRaceId}
+            characterIntelligenceScore={languagesData.characterIntelligenceScore}
+            speakLanguageSkillRanks={languagesData.speakLanguageSkillRanks}
+          />
+        </div>
+
 
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-12 pt-8 border-t">
           <Button type="button" variant="outline" size="lg" onClick={handleCancel} className="w-full md:w-auto">
