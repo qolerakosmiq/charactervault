@@ -11,10 +11,10 @@ interface SpeedBreakdownContentDisplayProps {
   uiStrings: Record<string, string>;
 }
 
-export const SpeedBreakdownContentDisplay: React.FC<SpeedBreakdownContentDisplayProps> = React.memo(function SpeedBreakdownContentDisplay({
+export const SpeedBreakdownContentDisplay = React.memo(function SpeedBreakdownContentDisplayComponent({
   speedBreakdown,
   uiStrings,
-}) {
+}: SpeedBreakdownContentDisplayProps) {
   if (!speedBreakdown) return null;
   const speedUnit = uiStrings.speedUnit || "ft.";
 
@@ -55,5 +55,3 @@ export const SpeedBreakdownContentDisplay: React.FC<SpeedBreakdownContentDisplay
   );
 });
 SpeedBreakdownContentDisplay.displayName = 'SpeedBreakdownContentDisplay';
-
-    

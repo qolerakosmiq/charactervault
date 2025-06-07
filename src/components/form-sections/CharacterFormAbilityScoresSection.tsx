@@ -31,7 +31,7 @@ interface CharacterFormAbilityScoresSectionProps {
   onOpenAbilityScoreBreakdownDialog: (ability: Exclude<AbilityName, 'none'>) => void;
 }
 
-export const CharacterFormAbilityScoresSection = React.memo(function CharacterFormAbilityScoresSection({
+export const CharacterFormAbilityScoresSection = React.memo(function CharacterFormAbilityScoresSectionComponent({
   abilityScoresData,
   detailedAbilityScores,
   onBaseAbilityScoreChange,
@@ -252,6 +252,4 @@ export const CharacterFormAbilityScoresSection = React.memo(function CharacterFo
     </>
   );
 });
-CharacterFormAbilityScoresSection.displayName = 'CharacterFormAbilityScoresSection';
-
-    
+CharacterFormAbilityScoresSection.displayName = 'CharacterFormAbilityScoresSectionComponent';

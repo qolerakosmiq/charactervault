@@ -16,12 +16,12 @@ interface SkillModifierBreakdownContentDisplayProps {
   uiStrings: Record<string, string>;
 }
 
-export const SkillModifierBreakdownContentDisplay: React.FC<SkillModifierBreakdownContentDisplayProps> = React.memo(function SkillModifierBreakdownContentDisplay({
+export const SkillModifierBreakdownContentDisplay = React.memo(function SkillModifierBreakdownContentDisplayComponent({
   htmlContent,
   synergyInfoList,
   skillModifierBreakdown,
   uiStrings,
-}) {
+}: SkillModifierBreakdownContentDisplayProps) {
   const outputBlocks: React.ReactNode[] = [];
 
   if (htmlContent && htmlContent.trim() !== '' && htmlContent.trim() !== '<p></p>') {
@@ -119,5 +119,3 @@ export const SkillModifierBreakdownContentDisplay: React.FC<SkillModifierBreakdo
   return outputBlocks;
 });
 SkillModifierBreakdownContentDisplay.displayName = 'SkillModifierBreakdownContentDisplay';
-
-    

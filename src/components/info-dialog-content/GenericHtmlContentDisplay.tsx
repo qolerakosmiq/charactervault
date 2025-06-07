@@ -7,9 +7,9 @@ interface GenericHtmlContentDisplayProps {
   htmlContent?: string;
 }
 
-export const GenericHtmlContentDisplay: React.FC<GenericHtmlContentDisplayProps> = React.memo(function GenericHtmlContentDisplay({
+export const GenericHtmlContentDisplay = React.memo(function GenericHtmlContentDisplayComponent({
   htmlContent,
-}) {
+}: GenericHtmlContentDisplayProps) {
   if (!htmlContent) return null;
 
   return (
@@ -20,5 +20,3 @@ export const GenericHtmlContentDisplay: React.FC<GenericHtmlContentDisplayProps>
   );
 });
 GenericHtmlContentDisplay.displayName = 'GenericHtmlContentDisplay';
-
-    

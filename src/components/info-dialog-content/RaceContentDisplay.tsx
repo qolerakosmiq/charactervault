@@ -40,7 +40,7 @@ interface RaceContentDisplayProps {
   toggleExpanded: (itemId: string) => void;
 }
 
-export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = React.memo(function RaceContentDisplay({
+export const RaceContentDisplay = React.memo(function RaceContentDisplayComponent({
   htmlContent,
   abilityModifiers,
   skillBonuses,
@@ -53,7 +53,7 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = React.memo(
   character,
   expandedItems,
   toggleExpanded,
-}) {
+}: RaceContentDisplayProps) {
   const { UI_STRINGS, ABILITY_LABELS, DND_CLASSES, DND_RACES, ALIGNMENT_PREREQUISITE_OPTIONS, SKILL_DEFINITIONS } = translations;
   const speedUnit = UI_STRINGS.speedUnit || "ft.";
   const outputBlocks: React.ReactNode[] = [];
@@ -202,5 +202,3 @@ export const RaceContentDisplay: React.FC<RaceContentDisplayProps> = React.memo(
   return outputBlocks.length > 0 ? outputBlocks : null;
 });
 RaceContentDisplay.displayName = 'RaceContentDisplay';
-
-    

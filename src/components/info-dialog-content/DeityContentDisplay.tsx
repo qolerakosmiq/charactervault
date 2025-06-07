@@ -7,9 +7,9 @@ interface DeityContentDisplayProps {
   htmlContent?: string;
 }
 
-export const DeityContentDisplay: React.FC<DeityContentDisplayProps> = React.memo(function DeityContentDisplay({
+export const DeityContentDisplay = React.memo(function DeityContentDisplayComponent({
   htmlContent,
-}) {
+}: DeityContentDisplayProps) {
   return (
     <>
       {htmlContent && (
@@ -22,5 +22,3 @@ export const DeityContentDisplay: React.FC<DeityContentDisplayProps> = React.mem
   );
 });
 DeityContentDisplay.displayName = 'DeityContentDisplay';
-
-    

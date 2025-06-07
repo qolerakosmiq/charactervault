@@ -47,7 +47,7 @@ interface CharacterFormCoreInfoSectionProps {
   onOpenDeityInfoDialog: () => void;
 }
 
-export const CharacterFormCoreInfoSection = React.memo(function CharacterFormCoreInfoSection({
+export const CharacterFormCoreInfoSection = React.memo(function CharacterFormCoreInfoSectionComponent({
   characterData,
   onFieldChange,
   onClassChange,
@@ -374,6 +374,4 @@ export const CharacterFormCoreInfoSection = React.memo(function CharacterFormCor
     </Card>
   );
 });
-CharacterFormCoreInfoSection.displayName = 'CharacterFormCoreInfoSection';
-
-    
+CharacterFormCoreInfoSection.displayName = 'CharacterFormCoreInfoSectionComponent';

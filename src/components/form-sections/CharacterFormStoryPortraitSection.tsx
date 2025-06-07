@@ -21,7 +21,7 @@ interface CharacterFormStoryPortraitSectionProps {
   onPortraitChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const CharacterFormStoryPortraitSection = React.memo(function CharacterFormStoryPortraitSection({
+export const CharacterFormStoryPortraitSection = React.memo(function CharacterFormStoryPortraitSectionComponent({
   storyAndAppearanceData,
   onFieldChange,
   onPortraitChange,
@@ -190,6 +190,4 @@ export const CharacterFormStoryPortraitSection = React.memo(function CharacterFo
     </Card>
   );
 });
-CharacterFormStoryPortraitSection.displayName = 'CharacterFormStoryPortraitSection';
-
-    
+CharacterFormStoryPortraitSection.displayName = 'CharacterFormStoryPortraitSectionComponent';

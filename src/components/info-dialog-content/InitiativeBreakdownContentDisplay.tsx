@@ -12,11 +12,11 @@ interface InitiativeBreakdownContentDisplayProps {
   abilityLabels: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
 }
 
-export const InitiativeBreakdownContentDisplay: React.FC<InitiativeBreakdownContentDisplayProps> = React.memo(function InitiativeBreakdownContentDisplay({
+export const InitiativeBreakdownContentDisplay = React.memo(function InitiativeBreakdownContentDisplayComponent({
   initiativeBreakdown,
   uiStrings,
   abilityLabels,
-}) {
+}: InitiativeBreakdownContentDisplayProps) {
   if (!initiativeBreakdown) return null;
 
   const dexterityAbilityInfo = abilityLabels.find(al => al.value === 'dexterity');
@@ -50,6 +50,3 @@ export const InitiativeBreakdownContentDisplay: React.FC<InitiativeBreakdownCont
   );
 });
 InitiativeBreakdownContentDisplay.displayName = 'InitiativeBreakdownContentDisplay';
-
-    
-    
