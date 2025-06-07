@@ -219,7 +219,7 @@
     "armorClassNormalLabel": "Normal",
     "armorClassTouchLabel": "Touch",
     "armorClassFlatFootedLabel": "Flat-Footed",
-    "armorClassCustomModifierLabel": "Custom Modifier",
+    "armorClassCustomModifierLabel": "Misc Modifier",
     "speedPanelTitle": "Movement Speeds",
     "speedPanelDescription": "Manage your character's various movement capabilities and penalties.",
     "speedPanelLoadingSpeeds": "Loading speed details...",
