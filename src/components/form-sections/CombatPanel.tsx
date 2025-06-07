@@ -13,16 +13,78 @@ import { getAbilityModifierByName, getBab, calculateInitiative, calculateGrapple
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 
+const DEBOUNCE_DELAY = 400;
 
 interface CombatPanelProps {
   character: Character;
   onCharacterUpdate: (field: keyof Character, value: any) => void;
   onOpenCombatStatInfoDialog: (contentType: InfoDialogContentType) => void;
-  onOpenAcBreakdownDialog?: (acType: 'Normal' | 'Touch' | 'Flat-Footed') => void; 
+  onOpenAcBreakdownDialog?: (acType: 'Normal' | 'Touch' | 'Flat-Footed') => void;
 }
 
 export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfoDialog }: CombatPanelProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
+
+  // Local states for debouncing
+  const [localBabMiscModifier, setLocalBabMiscModifier] = React.useState(character.babMiscModifier || 0);
+  const [localInitiativeMiscModifier, setLocalInitiativeMiscModifier] = React.useState(character.initiativeMiscModifier || 0);
+  const [localGrappleMiscModifier, setLocalGrappleMiscModifier] = React.useState(character.grappleMiscModifier || 0);
+  const [localGrappleDamageBonus, setLocalGrappleDamageBonus] = React.useState(character.grappleDamage_bonus || 0);
+  const [localGrappleWeaponChoice, setLocalGrappleWeaponChoice] = React.useState(character.grappleWeaponChoice || 'unarmed');
+
+  // Sync local states with props
+  React.useEffect(() => { setLocalBabMiscModifier(character.babMiscModifier || 0); }, [character.babMiscModifier]);
+  React.useEffect(() => { setLocalInitiativeMiscModifier(character.initiativeMiscModifier || 0); }, [character.initiativeMiscModifier]);
+  React.useEffect(() => { setLocalGrappleMiscModifier(character.grappleMiscModifier || 0); }, [character.grappleMiscModifier]);
+  React.useEffect(() => { setLocalGrappleDamageBonus(character.grappleDamage_bonus || 0); }, [character.grappleDamage_bonus]);
+  React.useEffect(() => { setLocalGrappleWeaponChoice(character.grappleWeaponChoice || 'unarmed'); }, [character.grappleWeaponChoice]);
+
+  // Debounce effects
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      if (localBabMiscModifier !== (character.babMiscModifier || 0)) {
+        onCharacterUpdate('babMiscModifier', localBabMiscModifier);
+      }
+    }, DEBOUNCE_DELAY);
+    return () => clearTimeout(handler);
+  }, [localBabMiscModifier, character.babMiscModifier, onCharacterUpdate]);
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      if (localInitiativeMiscModifier !== (character.initiativeMiscModifier || 0)) {
+        onCharacterUpdate('initiativeMiscModifier', localInitiativeMiscModifier);
+      }
+    }, DEBOUNCE_DELAY);
+    return () => clearTimeout(handler);
+  }, [localInitiativeMiscModifier, character.initiativeMiscModifier, onCharacterUpdate]);
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      if (localGrappleMiscModifier !== (character.grappleMiscModifier || 0)) {
+        onCharacterUpdate('grappleMiscModifier', localGrappleMiscModifier);
+      }
+    }, DEBOUNCE_DELAY);
+    return () => clearTimeout(handler);
+  }, [localGrappleMiscModifier, character.grappleMiscModifier, onCharacterUpdate]);
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      if (localGrappleDamageBonus !== (character.grappleDamage_bonus || 0)) {
+        onCharacterUpdate('grappleDamage_bonus', localGrappleDamageBonus);
+      }
+    }, DEBOUNCE_DELAY);
+    return () => clearTimeout(handler);
+  }, [localGrappleDamageBonus, character.grappleDamage_bonus, onCharacterUpdate]);
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      if (localGrappleWeaponChoice !== (character.grappleWeaponChoice || 'unarmed')) {
+        onCharacterUpdate('grappleWeaponChoice', localGrappleWeaponChoice);
+      }
+    }, DEBOUNCE_DELAY);
+    return () => clearTimeout(handler);
+  }, [localGrappleWeaponChoice, character.grappleWeaponChoice, onCharacterUpdate]);
+
 
   if (translationsLoading || !translations || !character) {
     return (
@@ -47,16 +109,16 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
   const sizeModGrapple = getSizeModifierGrapple(character.size, SIZES);
 
   const baseBabArray = getBab(classes, DND_CLASSES);
-  const totalBabWithModifier = baseBabArray.map(bab => bab + (character.babMiscModifier || 0));
+  const totalBabWithModifier = baseBabArray.map(bab => bab + (localBabMiscModifier || 0));
 
-  const baseInitiative = calculateInitiative(dexModifier, character.initiativeMiscModifier || 0);
+  const baseInitiative = calculateInitiative(dexModifier, localInitiativeMiscModifier || 0);
 
   const baseGrappleModifier = calculateGrapple(classes, strModifier, sizeModGrapple, DND_CLASSES);
-  const totalGrappleModifier = baseGrappleModifier + (character.grappleMiscModifier || 0);
+  const totalGrappleModifier = baseGrappleModifier + (localGrappleMiscModifier || 0);
 
   const grappleDamageBaseNotes = character.grappleDamage_baseNotes || getUnarmedGrappleDamage(character.size, SIZES);
   const grappleDamageBaseDice = grappleDamageBaseNotes.split(' ')[0] || '0';
-  const totalNumericGrappleBonus = strModifier + (character.grappleDamage_bonus || 0);
+  const totalNumericGrappleBonus = strModifier + (localGrappleDamageBonus || 0);
   const displayedGrappleDamageTotal = `${grappleDamageBaseDice}${totalNumericGrappleBonus !== 0 ? `${totalNumericGrappleBonus >= 0 ? '+' : ''}${totalNumericGrappleBonus}` : ''}`;
 
 
@@ -71,7 +133,7 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
   const handleGrappleModifierInfo = () => {
     onOpenCombatStatInfoDialog({ type: 'grappleModifierBreakdown' });
   };
-  
+
   const handleGrappleDamageInfo = () => {
     onOpenCombatStatInfoDialog({ type: 'grappleDamageBreakdown' });
   };
@@ -102,10 +164,10 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
             <div className="flex justify-center">
               <NumberSpinnerInput
                 id="bab-custom-mod"
-                value={character.babMiscModifier || 0}
-                onChange={(val) => onCharacterUpdate('babMiscModifier', val)}
-                min={-20} 
-                inputClassName="h-8 text-sm w-20" 
+                value={localBabMiscModifier}
+                onChange={setLocalBabMiscModifier}
+                min={-20}
+                inputClassName="h-8 text-sm w-20"
                 buttonClassName="h-8 w-8"
               />
             </div>
@@ -127,16 +189,16 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
             <div className="flex justify-center">
               <NumberSpinnerInput
                 id="initiative-custom-mod"
-                value={character.initiativeMiscModifier || 0}
-                onChange={(val) => onCharacterUpdate('initiativeMiscModifier', val)}
-                min={-20} 
-                inputClassName="h-8 text-sm w-20" 
+                value={localInitiativeMiscModifier}
+                onChange={setLocalInitiativeMiscModifier}
+                min={-20}
+                inputClassName="h-8 text-sm w-20"
                 buttonClassName="h-8 w-8"
               />
             </div>
           </div>
         </div>
-        
+
         <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
           <Label htmlFor="grapple-mod-display" className="text-md font-medium block">{UI_STRINGS.combatPanelGrappleModifierLabel || "Grapple Modifier"}</Label>
           <div className="flex items-center justify-center">
@@ -152,10 +214,10 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
             <div className="flex justify-center">
               <NumberSpinnerInput
                 id="grapple-custom-mod"
-                value={character.grappleMiscModifier || 0}
-                onChange={(val) => onCharacterUpdate('grappleMiscModifier', val)}
-                min={-20} 
-                inputClassName="h-8 text-sm w-20" 
+                value={localGrappleMiscModifier}
+                onChange={setLocalGrappleMiscModifier}
+                min={-20}
+                inputClassName="h-8 text-sm w-20"
                 buttonClassName="h-8 w-8"
               />
             </div>
@@ -175,9 +237,9 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
             <div className="mt-auto space-y-2">
                 <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground block">{UI_STRINGS.combatPanelGrappleWeaponLabel || "Weapon"}</Label>
-                    <Select 
-                        value={character.grappleWeaponChoice}
-                        onValueChange={(val) => onCharacterUpdate('grappleWeaponChoice', val)}
+                    <Select
+                        value={localGrappleWeaponChoice}
+                        onValueChange={setLocalGrappleWeaponChoice}
                     >
                         <SelectTrigger className="h-8 text-sm w-full max-w-[200px] mx-auto">
                             <SelectValue />
@@ -192,10 +254,10 @@ export function CombatPanel({ character, onCharacterUpdate, onOpenCombatStatInfo
                     <div className="flex justify-center">
                       <NumberSpinnerInput
                           id="grapple-damage-custom-mod"
-                          value={character.grappleDamage_bonus || 0}
-                          onChange={(val) => onCharacterUpdate('grappleDamage_bonus', val)}
-                          min={-20} 
-                          inputClassName="h-8 text-sm w-20" 
+                          value={localGrappleDamageBonus}
+                          onChange={setLocalGrappleDamageBonus}
+                          min={-20}
+                          inputClassName="h-8 text-sm w-20"
                           buttonClassName="h-8 w-8"
                       />
                     </div>
