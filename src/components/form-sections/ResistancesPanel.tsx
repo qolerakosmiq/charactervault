@@ -158,39 +158,57 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     return DAMAGE_REDUCTION_TYPES.find(t => t.value === typeValue)?.label || String(typeValue);
   };
   
- const getDrPrimaryNotation = (dr: DamageReductionInstance): string => {
+  const getDrPrimaryNotation = (dr: DamageReductionInstance): React.ReactNode => {
     const typeLabel = getDrTypeUiLabel(dr.type);
     const vsLabel = UI_STRINGS.drVsLabel || "vs";
     const immunitySuffix = UI_STRINGS.drImmunitySuffixLabel || "(Immunity)";
+    const valueBadge = <Badge variant="outline" className="text-xs font-medium px-1 py-0.5 mx-0.5">{dr.value}</Badge>;
+
     if (dr.rule === 'bypassed-by-type') {
-      return dr.type === "none" ? `${dr.value}/—` : `${dr.value}/${typeLabel}`;
+      return dr.type === "none" ? <>{valueBadge}/—</> : <>{valueBadge}/{typeLabel}</>;
     }
     if (dr.rule === 'versus-specific-type') {
-      return `${dr.value} ${vsLabel} ${typeLabel}`;
+      return <>{valueBadge} {vsLabel} {typeLabel}</>;
     }
     if (dr.rule === 'excepted-by-type') {
        const displayType = typeLabel === (DAMAGE_REDUCTION_TYPES.find(t => t.value === 'none')?.label || "None") ? "—" : typeLabel;
-       return `${dr.value}/${displayType} ${immunitySuffix}`;
+       return <>{valueBadge}/{displayType} {immunitySuffix}</>;
     }
-    return `${dr.value}/${typeLabel} (${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule})`;
+    return <>{valueBadge}/{typeLabel} ({DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule})</>;
   };
   
-  const getDrRuleDescription = (dr: DamageReductionInstance): string => {
+  const getDrRuleDescription = (dr: DamageReductionInstance): React.ReactNode => {
     const typeLabel = getDrTypeUiLabel(dr.type);
     const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
+    
+    const valueBadge = <Badge variant="outline" className="text-xs font-medium px-1 py-0.5 mx-0.5">{dr.value}</Badge>;
+    const typeBadge = (typeLabel !== (DAMAGE_REDUCTION_TYPES.find(t => t.value === 'none')?.label || "None") && dr.type !== "none")
+        ? <Badge variant="outline" className="text-xs font-medium px-1 py-0.5 mx-0.5">{typeLabel}</Badge>
+        : <span className="italic mx-0.5">{typeLabel}</span>;
+
+
+    let descriptionKey: keyof typeof UI_STRINGS | undefined;
 
     if (dr.rule === 'bypassed-by-type') {
-      return dr.type === "none" 
-        ? (UI_STRINGS.drBypassedByNoneDesc || "Reduces damage from most attacks by {value}.").replace("{value}", String(dr.value))
-        : (UI_STRINGS.drBypassedByTypeDesc || "Reduces damage by {value} unless attack is {typeLabel}.").replace("{value}", String(dr.value)).replace("{typeLabel}", typeLabel);
+      descriptionKey = dr.type === "none" ? 'drBypassedByNoneDesc' : 'drBypassedByTypeDesc';
+    } else if (dr.rule === 'versus-specific-type') {
+      descriptionKey = 'drVersusSpecificTypeDesc';
+    } else if (dr.rule === 'excepted-by-type') {
+      descriptionKey = 'drExceptedByTypeDesc';
     }
-    if (dr.rule === 'versus-specific-type') {
-      return (UI_STRINGS.drVersusSpecificTypeDesc || "Specifically reduces damage from {typeLabel} sources by {value}.").replace("{typeLabel}", typeLabel).replace("{value}", String(dr.value));
+
+    if (descriptionKey && UI_STRINGS[descriptionKey]) {
+        const template = UI_STRINGS[descriptionKey];
+        // Split the template by placeholders, keeping the placeholders
+        const parts = template.split(/({value}|{typeLabel})/g);
+        return parts.map((part, index) => {
+            if (part === "{value}") return <React.Fragment key={`${dr.id}-val-${index}`}>{valueBadge}</React.Fragment>;
+            if (part === "{typeLabel}") return <React.Fragment key={`${dr.id}-type-${index}`}>{typeBadge}</React.Fragment>;
+            return part;
+        });
     }
-    if (dr.rule === 'excepted-by-type') {
-        return (UI_STRINGS.drExceptedByTypeDesc || "Immune to damage unless from {typeLabel} sources. {typeLabel} sources deal damage reduced by {value}.").replace(/{typeLabel}/g, typeLabel).replace("{value}", String(dr.value));
-    }
-    return `${UI_STRINGS.resistancesPanelDrRuleLabel || "Rule"}: ${ruleDef ? ruleDef.label : dr.rule}`; 
+
+    return `${UI_STRINGS.resistancesPanelDrRuleLabel || "Rule"}: ${ruleDef ? ruleDef.label : dr.rule}`;
   };
 
 
@@ -313,23 +331,25 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
                         const ruleLabel = ruleDef?.label || dr.rule;
                         return (
-                          <div key={dr.id} className="flex items-start justify-between p-2 border rounded-md bg-muted/5 text-sm">
-                            <div>
-                              <p className="font-semibold">{getDrPrimaryNotation(dr)}</p>
-                              <div className="mt-0.5 flex items-center">
-                                <Badge variant="outline" className="text-xs font-normal h-5 mr-1 whitespace-nowrap">
-                                  {ruleLabel}
-                                </Badge>
-                                <span className="text-xs text-muted-foreground">{getDrRuleDescription(dr)}</span>
-                              </div>
-                            </div>
-                            <div className="flex items-center shrink-0">
-                              {dr.isGranted && dr.source && <Badge variant="secondary" className="text-xs mr-1 whitespace-nowrap">{dr.source}</Badge>}
-                              {!dr.isGranted && (
-                                <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80" onClick={() => handleRemoveDamageReduction(dr.id)}>
-                                  <Trash2 className="h-4 w-4" />
+                          <div key={dr.id} className="flex flex-col items-start justify-between p-2 border rounded-md bg-muted/5 text-sm">
+                            <div className="flex items-baseline justify-between w-full">
+                                <div className="flex items-baseline gap-x-1.5 flex-wrap">
+                                  <span className="font-semibold">{getDrPrimaryNotation(dr)}</span>
+                                  <Badge variant="outline" className="text-xs font-normal px-1.5 py-0.5 whitespace-nowrap">
+                                    {ruleLabel}
+                                  </Badge>
+                                  {dr.isGranted && dr.source && (
+                                    <Badge variant="secondary" className="text-xs whitespace-nowrap">{dr.source}</Badge>
+                                  )}
+                                </div>
+                                {!dr.isGranted && (
+                                <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80 shrink-0" onClick={() => handleRemoveDamageReduction(dr.id)}>
+                                    <Trash2 className="h-4 w-4" />
                                 </Button>
-                              )}
+                                )}
+                            </div>
+                            <div className="mt-1 text-xs text-muted-foreground w-full">
+                                {getDrRuleDescription(dr)}
                             </div>
                           </div>
                         );
@@ -402,4 +422,3 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
   );
 }
 
-    
