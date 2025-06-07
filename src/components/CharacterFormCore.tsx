@@ -19,12 +19,21 @@ import {
   getGrantedFeatsForCharacter,
   calculateDetailedAbilityScores,
   getRaceSkillPointsBonusPerLevel,
-  ABILITY_ORDER_INTERNAL,
-  getUnarmedGrappleDamage
+  ABILITY_ORDER_INTERNAL
+  // REMOVED: getUnarmedGrappleDamage (was incorrectly imported from here)
 } from '@/types/character';
 
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
 import { useI18n } from '@/context/I18nProvider';
+
+import {
+  getBab,
+  getSizeModifierAC,
+  getSizeModifierGrapple,
+  calculateInitiative,
+  calculateGrapple,
+  getUnarmedGrappleDamage // ADDED/ENSURED HERE
+} from '@/lib/dnd-utils';
 
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
@@ -58,6 +67,7 @@ const abilityNames: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', '
 // Helper function to create base character data
 function createBaseCharacterData(
     translations: ProcessedSiteData,
+    globalCustomSkillDefinitions: CustomSkillDefinition[]
 ): Character {
     const {
       DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, DEFAULT_RESISTANCE_VALUE,
@@ -75,6 +85,27 @@ function createBaseCharacterData(
     const defaultUnarmedGrappleDice = getUnarmedGrappleDamage(defaultSize, SIZES);
 
     const initialSkills = getInitialCharacterSkills(defaultClasses, SKILL_DEFINITIONS, CLASS_SKILLS);
+    
+    const allSkillDefinitionsForBase = [...SKILL_DEFINITIONS.map(sd => ({...sd, isCustom: false})), ...globalCustomSkillDefinitions.map(csd => ({value: csd.id, label: csd.name, keyAbility: csd.keyAbility, isCustom: true}))];
+    
+    const skillsWithAllGlobals = allSkillDefinitionsForBase.map(skillDef => {
+        const existingInstance = initialSkills.find(is => is.id === skillDef.value);
+        if (existingInstance) {
+            return {
+                ...existingInstance,
+                isClassSkill: defaultClasses[0]?.className ? (CLASS_SKILLS[defaultClasses[0].className as keyof typeof CLASS_SKILLS] || []).includes(existingInstance.id) : false,
+            };
+        }
+        return {
+            id: skillDef.value, ranks: 0, miscModifier: 0,
+            isClassSkill: defaultClasses[0]?.className ? (CLASS_SKILLS[defaultClasses[0].className as keyof typeof CLASS_SKILLS] || []).includes(skillDef.value) : false,
+        };
+    }).sort((a, b) => {
+        const nameA = allSkillDefinitionsForBase.find(d => d.value === a.id)?.label || '';
+        const nameB = allSkillDefinitionsForBase.find(d => d.value === b.id)?.label || '';
+        return nameA.localeCompare(nameB);
+    });
+
 
     return {
       id: crypto.randomUUID(), name: '', playerName: '', campaign: '', race: defaultRaceValue, alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
@@ -86,8 +117,8 @@ function createBaseCharacterData(
       grappleMiscModifier: 0, grappleWeaponChoice: 'unarmed', grappleDamage_baseNotes: `${defaultUnarmedGrappleDice} (${sizeLabelForGrapple} Unarmed)`, grappleDamage_bonus: 0,
       savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)),
       classes: defaultClasses,
-      skills: initialSkills,
-      feats: [], // Will be populated by getGrantedFeatsForCharacter based on actual race/class/level & custom defs
+      skills: skillsWithAllGlobals,
+      feats: [], 
       inventory: [], personalStory: '', portraitDataUrl: undefined,
       fireResistance: { ...DEFAULT_RESISTANCE_VALUE }, coldResistance: { ...DEFAULT_RESISTANCE_VALUE }, acidResistance: { ...DEFAULT_RESISTANCE_VALUE }, electricityResistance: { ...DEFAULT_RESISTANCE_VALUE }, sonicResistance: { ...DEFAULT_RESISTANCE_VALUE },
       spellResistance: { ...DEFAULT_RESISTANCE_VALUE }, powerResistance: { ...DEFAULT_RESISTANCE_VALUE }, damageReduction: [], fortification: { ...DEFAULT_RESISTANCE_VALUE },
@@ -143,40 +174,41 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
 
 
   React.useEffect(() => {
-    if (translationsLoading || !translations || !isClient) return;
+    if (!isClient || translationsLoading || !translations) return;
 
-    let characterToSet: Character;
+    let characterDataToProcess: Character;
 
     if (isCreating) {
-        characterToSet = createBaseCharacterData(translations);
+        characterDataToProcess = createBaseCharacterData(translations, globalCustomSkillDefinitions);
     } else if (initialCharacter) {
-        const baseCharDataForDefaults = createBaseCharacterData(translations);
-        characterToSet = {
-            ...baseCharDataForDefaults,
-            ...initialCharacter,
-            abilityScores: initialCharacter.abilityScores || baseCharDataForDefaults.abilityScores,
-            abilityScoreTempCustomModifiers: initialCharacter.abilityScoreTempCustomModifiers || baseCharDataForDefaults.abilityScoreTempCustomModifiers,
-            savingThrows: initialCharacter.savingThrows || baseCharDataForDefaults.savingThrows,
-            classes: initialCharacter.classes && initialCharacter.classes.length > 0 ? initialCharacter.classes : baseCharDataForDefaults.classes,
-            // Skills and Feats will be re-derived below.
-            // Ensure damageReduction from initialCharacter is preserved if it exists, otherwise use default empty array.
-            damageReduction: initialCharacter.damageReduction || baseCharDataForDefaults.damageReduction,
+        const baseForMerge = createBaseCharacterData(translations, globalCustomSkillDefinitions);
+        characterDataToProcess = {
+            ...baseForMerge, 
+            ...initialCharacter, 
+            id: initialCharacter.id || baseForMerge.id, // Prioritize existing ID
+            abilityScores: initialCharacter.abilityScores || baseForMerge.abilityScores,
+            abilityScoreTempCustomModifiers: initialCharacter.abilityScoreTempCustomModifiers || baseForMerge.abilityScoreTempCustomModifiers,
+            savingThrows: initialCharacter.savingThrows || baseForMerge.savingThrows,
+            classes: initialCharacter.classes && initialCharacter.classes.length > 0 ? initialCharacter.classes : baseForMerge.classes,
+            skills: initialCharacter.skills && initialCharacter.skills.length > 0 ? initialCharacter.skills : baseForMerge.skills,
+            feats: initialCharacter.feats && initialCharacter.feats.length > 0 ? initialCharacter.feats : baseForMerge.feats,
+            damageReduction: initialCharacter.damageReduction || baseForMerge.damageReduction,
         };
     } else {
-        return; // Not creating and no initial character, do nothing.
+      // This case should ideally not be reached if !isCreating.
+      // If it does, initialize as if creating to prevent errors with null character.
+      characterDataToProcess = createBaseCharacterData(translations, globalCustomSkillDefinitions);
     }
 
-    // Apply/Re-apply translation-dependent and globally defined custom data
-    const { SKILL_DEFINITIONS, CLASS_SKILLS, SIZES, DND_FEATS_DEFINITIONS, DND_RACES, DND_CLASSES } = translations;
+    // Post-initialization processing (apply derived data based on current context)
+    const finalCharacter = { ...characterDataToProcess };
+    const { CLASS_SKILLS, SIZES, DND_RACES, DND_CLASSES } = translations;
 
     // Update skills: Ensure class skills are correct and add any new global custom skills
-    let currentSkills = isCreating ? 
-        getInitialCharacterSkills(characterToSet.classes, SKILL_DEFINITIONS, CLASS_SKILLS) 
-        : (characterToSet.skills || getInitialCharacterSkills(characterToSet.classes, SKILL_DEFINITIONS, CLASS_SKILLS));
-
+    let currentSkills = [...finalCharacter.skills];
     currentSkills = currentSkills.map(skillInstance => ({
         ...skillInstance,
-        isClassSkill: characterToSet.classes[0]?.className ? (CLASS_SKILLS[characterToSet.classes[0].className as keyof typeof CLASS_SKILLS] || []).includes(skillInstance.id) : false,
+        isClassSkill: finalCharacter.classes[0]?.className ? (CLASS_SKILLS[finalCharacter.classes[0].className as keyof typeof CLASS_SKILLS] || []).includes(skillInstance.id) : false,
     }));
     
     const skillInstancesToAdd: SkillType[] = [];
@@ -184,20 +216,19 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         if (!currentSkills.find(s => s.id === globalDef.id)) {
             skillInstancesToAdd.push({
                 id: globalDef.id, ranks: 0, miscModifier: 0,
-                isClassSkill: characterToSet.classes[0]?.className ? (CLASS_SKILLS[characterToSet.classes[0].className as keyof typeof CLASS_SKILLS] || []).includes(globalDef.id) : false
+                isClassSkill: finalCharacter.classes[0]?.className ? (CLASS_SKILLS[finalCharacter.classes[0].className as keyof typeof CLASS_SKILLS] || []).includes(globalDef.id) : false
             });
         }
     });
     if (skillInstancesToAdd.length > 0) {
         currentSkills = [...currentSkills, ...skillInstancesToAdd];
     }
-    characterToSet.skills = currentSkills.sort((a, b) => (allAvailableSkillDefinitionsForDisplay.find(d => d.id === a.id)?.name || '').localeCompare(allAvailableSkillDefinitionsForDisplay.find(d => d.id === b.id)?.name || ''));
-
+    finalCharacter.skills = currentSkills.sort((a, b) => (allAvailableSkillDefinitionsForDisplay.find(d => d.id === a.id)?.name || '').localeCompare(allAvailableSkillDefinitionsForDisplay.find(d => d.id === b.id)?.name || ''));
 
     // Update feats: Re-evaluate granted feats and combine with user-chosen feats
-    const characterLevel = characterToSet.classes.reduce((sum, c) => sum + c.level, 0) || 1;
-    const newGrantedFeats = getGrantedFeatsForCharacter(characterToSet.race, characterToSet.classes, characterLevel, allAvailableFeatDefinitions, DND_RACES, DND_CLASSES);
-    const userChosenFeats = isCreating ? [] : (characterToSet.feats?.filter(fi => !fi.isGranted) || []);
+    const characterLevel = finalCharacter.classes.reduce((sum, c) => sum + c.level, 0) || 1;
+    const newGrantedFeats = getGrantedFeatsForCharacter(finalCharacter.race, finalCharacter.classes, characterLevel, allAvailableFeatDefinitions, DND_RACES, DND_CLASSES);
+    const userChosenFeats = finalCharacter.feats?.filter(fi => !fi.isGranted) || [];
     
     const combinedFeatsMap = new Map<string, CharacterFeatInstance>();
     newGrantedFeats.forEach(inst => combinedFeatsMap.set(inst.instanceId, inst));
@@ -207,39 +238,38 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
             combinedFeatsMap.set(inst.instanceId, inst);
         }
     });
-    characterToSet.feats = Array.from(combinedFeatsMap.values()).sort((a,b) => (allAvailableFeatDefinitions.find(d=>d.value===a.definitionId)?.label||'').localeCompare(allAvailableFeatDefinitions.find(d=>d.value===b.definitionId)?.label||''));
-
+    finalCharacter.feats = Array.from(combinedFeatsMap.values()).sort((a,b) => (allAvailableFeatDefinitions.find(d=>d.value===a.definitionId)?.label||'').localeCompare(allAvailableFeatDefinitions.find(d=>d.value===b.definitionId)?.label||''));
 
     // Update Grapple Damage Notes if unarmed
-    if (characterToSet.grappleWeaponChoice === 'unarmed') {
-        const unarmedDamageDice = getUnarmedGrappleDamage(characterToSet.size, SIZES);
-        const currentSizeLabelGrapple = SIZES.find(s => s.value === characterToSet.size)?.label || characterToSet.size;
-        characterToSet.grappleDamage_baseNotes = `${unarmedDamageDice} (${currentSizeLabelGrapple} Unarmed)`;
+    if (finalCharacter.grappleWeaponChoice === 'unarmed') {
+        const unarmedDamageDice = getUnarmedGrappleDamage(finalCharacter.size, SIZES);
+        const currentSizeLabelGrapple = SIZES.find(s => s.value === finalCharacter.size)?.label || finalCharacter.size;
+        finalCharacter.grappleDamage_baseNotes = `${unarmedDamageDice} (${currentSizeLabelGrapple} Unarmed)`;
     }
 
     // Update Barbarian Damage Reduction
-    const barbarianClass = characterToSet.classes.find(c => c.className === 'barbarian');
+    const barbarianClass = finalCharacter.classes.find(c => c.className === 'barbarian');
     const barbarianLevel = barbarianClass?.level || 0;
     let grantedDrValue = 0;
     if (barbarianLevel >= 19) grantedDrValue = 5; else if (barbarianLevel >= 16) grantedDrValue = 4; else if (barbarianLevel >= 13) grantedDrValue = 3; else if (barbarianLevel >= 10) grantedDrValue = 2; else if (barbarianLevel >= 7) grantedDrValue = 1;
     
-    const existingUserDrInstances = characterToSet.damageReduction?.filter(dr => !dr.isGranted) || [];
+    const existingUserDrInstances = finalCharacter.damageReduction?.filter(dr => !dr.isGranted) || [];
     let finalDrArray = [...existingUserDrInstances];
     if (grantedDrValue > 0) {
-        const existingGrantedBarbDrDefinition = initialCharacter?.damageReduction?.find(dr => dr.isGranted && dr.source === 'Barbarian Class');
-        finalDrArray.unshift({ // Add or update granted DR at the beginning
+        const existingGrantedBarbDrDefinition = finalCharacter.damageReduction?.find(dr => dr.isGranted && dr.source === 'Barbarian Class');
+        finalDrArray.unshift({ 
             id: existingGrantedBarbDrDefinition?.id || `granted-barb-dr-${crypto.randomUUID()}`,
             value: grantedDrValue, type: 'none', rule: 'bypassed-by-type', isGranted: true, source: 'Barbarian Class'
         });
     }
-    characterToSet.damageReduction = finalDrArray;
+    finalCharacter.damageReduction = finalDrArray;
 
-    setCharacter(characterToSet);
+    setCharacter(finalCharacter);
 
   }, [
     isClient, translationsLoading, translations, initialCharacter, isCreating,
-    globalCustomFeatDefinitions, globalCustomSkillDefinitions, // Switched from ...FromStore
-    allAvailableFeatDefinitions, allAvailableSkillDefinitionsForDisplay // Ensure these are stable or correctly memoized
+    globalCustomFeatDefinitionsFromStore, globalCustomSkillDefinitionsFromStore, 
+    allAvailableFeatDefinitions, allAvailableSkillDefinitionsForDisplay, globalCustomSkillDefinitions
   ]);
 
 
@@ -314,7 +344,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         translations.DND_RACES,
         translations.DND_RACE_ABILITY_MODIFIERS_DATA,
         translations.SKILL_DEFINITIONS,
-        translations.DND_FEATS_DEFINITIONS, // Pass predefined feats here
+        translations.DND_FEATS_DEFINITIONS, 
         translations.ABILITY_LABELS
       );
       setRaceSpecialQualities(details);
@@ -420,7 +450,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         const nameB = allAvailableSkillDefinitionsForDisplay.find(d => d.id === b.id)?.name || '';
         return nameA.localeCompare(nameB);
       });
-      // Re-evaluate granted feats when class changes
       const characterLevel = updatedClasses.reduce((sum, c) => sum + c.level, 0) || 1;
       const newGrantedFeats = getGrantedFeatsForCharacter(prev.race, updatedClasses, characterLevel, allAvailableFeatDefinitions, translations.DND_RACES, translations.DND_CLASSES);
       const userChosenFeats = prev.feats.filter(fi => !fi.isGranted);
@@ -550,7 +579,6 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
   const handleOpenSkillInfoDialog = React.useCallback((skillId: string) => { openInfoDialog({ type: 'skillModifierBreakdown', skillId }); }, [openInfoDialog]);
   const handleOpenAcBreakdownDialog = React.useCallback((acType: 'Normal' | 'Touch' | 'Flat-Footed') => { openInfoDialog({ type: 'acBreakdown', acType }); }, [openInfoDialog]);
   const handleOpenSpeedInfoDialog = React.useCallback((speedType: SpeedType) => { openInfoDialog({ type: 'speedBreakdown', speedType }); }, [openInfoDialog]);
-  const handleOpenResistanceInfoDialog = React.useCallback((resistanceField: ResistanceFieldKeySheet) => { openInfoDialog({ type: 'resistanceBreakdown', resistanceField }); }, [openInfoDialog]);
   const handleOpenArmorSpeedPenaltyInfoDialog = React.useCallback(() => openInfoDialog({ type: 'armorSpeedPenaltyBreakdown' }), [openInfoDialog]);
   const handleOpenLoadSpeedPenaltyInfoDialog = React.useCallback(() => openInfoDialog({ type: 'loadSpeedPenaltyBreakdown' }), [openInfoDialog]);
 
@@ -766,7 +794,7 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
         onOpenChange={setIsCustomFeatDialogOpen}
         onSave={handleCustomFeatDefinitionSaveToStore}
         initialFeatData={editingCustomFeatDefinition}
-        allFeats={translations.DND_FEATS_DEFINITIONS} // Pass predefined only for selection base
+        allFeats={translations.DND_FEATS_DEFINITIONS} 
         allSkills={allSkillOptionsForDialog}
         allClasses={translations.DND_CLASSES}
         allRaces={translations.DND_RACES}
@@ -774,4 +802,3 @@ export function CharacterFormCore({ initialCharacter, onSave, isCreating }: Char
     </>
   );
 }
-
