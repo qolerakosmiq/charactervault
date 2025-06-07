@@ -164,8 +164,7 @@ export interface DndRaceOption { // Processed race option
   racialSkillBonuses?: Record<string, number>;
   grantedFeats?: Array<{ featId: string; note?: string; name?: string; levelAcquired?: number }>;
   speeds?: Partial<Record<SpeedType, number>>;
-  automaticLanguages?: LanguageId[]; // Added
-  bonusLanguageChoices?: LanguageId[]; // Added
+  automaticLanguages?: LanguageId[];
 }
 export interface DndClassOption { // Processed class option
   value: DndClassId | string;
@@ -348,3 +347,4 @@ export interface PrerequisiteMessage {
   orderKey: string;
   originalText?: string;
 }
+
