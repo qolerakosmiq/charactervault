@@ -205,8 +205,7 @@ const FeatsFormSectionComponent = ({
             </h4>
             {featTypeLabel && <Badge variant="outline" className="text-xs font-normal h-5 whitespace-nowrap">{featTypeLabel}</Badge>}
             {isCustomDefinition && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
-            {instance.grantedNote && !featSource && <span className="text-xs text-muted-foreground italic">{instance.grantedNote}</span>}
-            {instance.grantedNote && featSource && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
+            {instance.grantedNote && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
           </div>
           {definition.requiresSpecialization && instance.specializationDetail && <p className="text-sm text-muted-foreground mt-0.5 ml-1">({instance.specializationDetail})</p>}
           {definition.description && <div className="text-sm text-muted-foreground mt-0.5 whitespace-normal" dangerouslySetInnerHTML={{ __html: definition.description }} />}
@@ -375,4 +374,3 @@ const FeatsFormSectionComponent = ({
 
 export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
 
-    
