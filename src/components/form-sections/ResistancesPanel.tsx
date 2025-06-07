@@ -162,19 +162,19 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     const typeLabel = getDrTypeUiLabel(dr.type);
     const vsLabel = UI_STRINGS.drVsLabel || "vs";
     const immunitySuffix = UI_STRINGS.drImmunitySuffixLabel || "(Immunity)";
-    const valueBadge = <Badge variant="outline" className="text-xs font-medium px-1 py-0.5 mx-0.5">{dr.value}</Badge>;
+    const valueText = dr.value;
 
     if (dr.rule === 'bypassed-by-type') {
-      return dr.type === "none" ? <>{valueBadge}/—</> : <>{valueBadge}/{typeLabel}</>;
+      return dr.type === "none" ? <>{valueText}/—</> : <>{valueText}/{typeLabel}</>;
     }
     if (dr.rule === 'versus-specific-type') {
-      return <>{valueBadge} {vsLabel} {typeLabel}</>;
+      return <>{valueText} {vsLabel} {typeLabel}</>;
     }
     if (dr.rule === 'excepted-by-type') {
        const displayType = typeLabel === (DAMAGE_REDUCTION_TYPES.find(t => t.value === 'none')?.label || "None") ? "—" : typeLabel;
-       return <>{valueBadge}/{displayType} {immunitySuffix}</>;
+       return <>{valueText}/{displayType} {immunitySuffix}</>;
     }
-    return <>{valueBadge}/{typeLabel} ({DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule})</>;
+    return <>{valueText}/{typeLabel} ({DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule})</>;
   };
   
   const getDrRuleDescription = (dr: DamageReductionInstance): React.ReactNode => {
@@ -182,7 +182,8 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
     
     const valueBadge = <Badge variant="outline" className="text-xs font-medium px-1 py-0.5 mx-0.5">{dr.value}</Badge>;
-    const typeBadge = (typeLabel !== (DAMAGE_REDUCTION_TYPES.find(t => t.value === 'none')?.label || "None") && dr.type !== "none")
+    const typeIsNone = dr.type === "none" || typeLabel === (DAMAGE_REDUCTION_TYPES.find(t => t.value === 'none')?.label || "None");
+    const typeBadge = !typeIsNone
         ? <Badge variant="outline" className="text-xs font-medium px-1 py-0.5 mx-0.5">{typeLabel}</Badge>
         : <span className="italic mx-0.5">{typeLabel}</span>;
 
@@ -199,7 +200,6 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
 
     if (descriptionKey && UI_STRINGS[descriptionKey]) {
         const template = UI_STRINGS[descriptionKey];
-        // Split the template by placeholders, keeping the placeholders
         const parts = template.split(/({value}|{typeLabel})/g);
         return parts.map((part, index) => {
             if (part === "{value}") return <React.Fragment key={`${dr.id}-val-${index}`}>{valueBadge}</React.Fragment>;
