@@ -21,7 +21,7 @@ interface SkillsListingProps {
   onSkillChange: (skillId: string, ranks: number, miscModifier: number, isClassSkill?: boolean) => void;
 }
 
-export function SkillsListing({ skills, abilityScores, characterClasses, onSkillChange }: SkillsListingProps) {
+export const SkillsListing = ({ skills, abilityScores, characterClasses, onSkillChange }: SkillsListingProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const overallLevel = getCharacterOverallLevel(characterClasses);
@@ -80,7 +80,7 @@ export function SkillsListing({ skills, abilityScores, characterClasses, onSkill
             
             return (
               <div key={skill.id} className="grid grid-cols-[1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-2 py-2 items-center border-b border-border/50 hover:bg-muted/20 transition-colors">
-                <Label htmlFor={`skill_ranks_${skill.id}`} className="text-sm truncate pr-1">{skillDef?.label || skill.id}</Label>
+                <Label htmlFor={`skill_ranks_${skill.id}_listing`} className="text-sm truncate pr-1">{skillDef?.label || skill.id}</Label>
                 <span className="text-lg font-bold text-accent text-center w-10">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
                 <span className="text-xs text-muted-foreground text-center w-10">{keyAbilityShort}</span>
                 <span className="text-sm text-center w-10">{abilityMod >= 0 ? '+' : ''}{abilityMod}</span>
@@ -91,7 +91,7 @@ export function SkillsListing({ skills, abilityScores, characterClasses, onSkill
                     onChange={(newValue) => onSkillChange(skill.id, newValue, skill.miscModifier || 0, skill.isClassSkill)}
                     step={(skill.isClassSkill || skillDef?.keyAbility === 'none') ? 1 : 0.5}
                     min={0}
-                    max={maxRanks}
+                    // max={maxRanks} // MAX PROP REMOVED
                     inputClassName="w-14 h-7 text-sm"
                     buttonClassName="h-7 w-7"
                     buttonSize="sm"
@@ -131,4 +131,8 @@ export function SkillsListing({ skills, abilityScores, characterClasses, onSkill
       </CardContent>
     </Card>
   );
-}
+};
+
+SkillsListing.displayName = "SkillsListingComponent";
+
+    

@@ -60,7 +60,7 @@ const DebouncedSkillRankInput: React.FC<{
   skillProp: SkillType; // Renamed to avoid conflict
   onDebouncedRankChange: (newRank: number) => void; // Callback for debounced change
   currentStepForInput: number;
-  maxRanksValue: number;
+  maxRanksValue: number; // Still passed for display if needed, but not for max constraint
 }> = ({ skillProp, onDebouncedRankChange, currentStepForInput, maxRanksValue }) => {
   
   const [localRank, setLocalRank] = useDebouncedFormField(
@@ -75,7 +75,7 @@ const DebouncedSkillRankInput: React.FC<{
       value={localRank} 
       onChange={setLocalRank} 
       min={0}
-      max={maxRanksValue}
+      // max={maxRanksValue} // MAX PROP REMOVED
       step={currentStepForInput}
       inputClassName="w-14 h-7 text-sm"
       buttonSize="sm"
@@ -424,4 +424,7 @@ export const SkillsFormSection = ({
     </>
   );
 };
-// SkillsFormSection.displayName = 'SkillsFormSectionComponent';
+
+SkillsFormSection.displayName = 'SkillsFormSectionComponent';
+
+    
