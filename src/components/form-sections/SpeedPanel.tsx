@@ -89,7 +89,7 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
                   </div>
                 ))}
               </div>
-              <Separator className="my-6" />
+              <Separator className="my-3" />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Card>
                     <CardHeader className="p-4"><Skeleton className="h-5 w-3/4 mx-auto" /></CardHeader>
@@ -170,7 +170,7 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
           })}
         </div>
         
-        <Separator className="my-6" />
+        <Separator className="my-3" />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card>
