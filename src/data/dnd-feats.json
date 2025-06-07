@@ -38,6 +38,8 @@
     { "value": "lightning-reflexes", "label": "Lightning Reflexes", "description": "<b>Benefit:</b> You get a +2 bonus on all Reflex saving throws.", "isClassFeature": false, "type": "special" },
     { "value": "magical-aptitude", "label": "Magical Aptitude", "description": "<b>Benefit:</b> You get a +2 bonus on all Spellcraft and Use Magic Device checks.", "effects": { "skills": { "spellcraft": 2, "use-magic-device": 2 } }, "isClassFeature": false, "type": "special" },
     { "value": "manyshot", "label": "Manyshot", "description": "<b>Benefit:</b> As a standard action, you may fire two arrows at a single opponent within 30 feet.<br />Both arrows use the same attack roll (with a –4 penalty) to determine success and deal damage normally (but see Special).<br /><b>Special:</b> For every five points of base attack bonus you have above +6, you may add one additional arrow to this attack, to a maximum of four arrows at a base attack bonus of +16.<br />Each arrow incurs an additional –2 penalty on the attack roll (for example, three arrows would be at a –6 penalty and four arrows at a –8 penalty).<br />Damage reduction and other resistances apply separately against each arrow fired.<br />Regardless of the number of arrows you fire, you apply precision-based damage (such as sneak attack damage) only once.<br />If you score a critical hit, only the first arrow fired deals critical damage; all others deal regular damage.", "prerequisites": { "abilities": { "dexterity": 17 }, "feats": ["point-blank-shot", "rapid-shot"], "bab": 6 }, "isClassFeature": false, "type": "special" },
+    { "value": "improved-precise-shot", "label": "Improved Precise Shot", "description": "<b>Benefit:</b> Your ranged attacks ignore the AC bonus granted to targets by anything less than total cover, and the miss chance granted to targets by anything less than total concealment. Total cover and total concealment provide their normal benefits against your ranged attacks. <br /><b>Normal:</b> See the normal rules for cover and concealment in the Player’s Handbook.", "prerequisites": { "abilities": { "dexterity": 19 }, "feats": ["point-blank-shot", "precise-shot"], "bab": 11 }, "isClassFeature": false, "type": "special" },
+    { "value": "greater-two-weapon-fighting", "label": "Greater Two-Weapon Fighting", "description": "<b>Benefit:</b> You get a third attack with your off-hand weapon, albeit at a –10 penalty. <br /><b>Normal:</b> Without this feat, you can only get a single extra attack with an off-hand weapon (or two with Improved Two-Weapon Fighting).", "prerequisites": { "abilities": { "dexterity": 19 }, "feats": ["two-weapon-fighting", "improved-two-weapon-fighting"], "bab": 11 }, "isClassFeature": false, "type": "special" },
     { "value": "mobility", "label": "Mobility", "description": "<b>Benefit:</b> You get a +4 dodge bonus to Armor Class against attacks of opportunity caused when you move out of or within a threatened area.<br />A condition that makes you lose your Dexterity bonus to Armor Class (if any) also makes you lose dodge bonuses.<br />Dodge bonuses stack with each other, unlike most other types of bonuses.", "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge"] }, "isClassFeature": false, "type": "special" },
     { "value": "mounted-archery", "label": "Mounted Archery", "description": "<b>Benefit:</b> The penalty you take when using a ranged weapon while your mount is taking a double move is halved: –2 instead of –4.<br />The penalty you take when using a ranged weapon while your mount is running is also halved: –4 instead of –8.<br /><b>Normal:</b> If your mount is taking a double move, you take a –4 penalty on attack rolls with a ranged weapon.<br />If your mount is running, you take a –8 penalty.", "prerequisites": { "skills": [{ "id": "ride", "ranks": 1 }], "feats": ["mounted-combat"] }, "isClassFeature": false, "type": "special" },
     { "value": "mounted-combat", "label": "Mounted Combat", "description": "<b>Benefit:</b> Once per round when your mount is hit in combat, you may attempt a Ride check (as a reaction) to negate the hit.<br />The hit is negated if your Ride check result is greater than the opponent’s attack roll.<br />(Essentially, the Ride check result becomes the mount’s Armor Class if it’s higher than the mount’s regular AC.)", "prerequisites": { "skills": [{ "id": "ride", "ranks": 1 }] }, "isClassFeature": false, "type": "special" },
@@ -157,13 +159,9 @@
     { "value": "class-paladin-remove-disease", "label": "Remove Disease", "description": "<b>Benefit:</b> At 6th level, a paladin can produce a remove disease effect, as the spell, once per week. She can use this ability one additional time per week for every three levels after 6th (twice per week at 9th, three times at 12th, and so forth). Remove disease is a spell-like ability.", "type": "special-sp", "isClassFeature": true },
     { "value": "class-ranger-favored-enemy", "label": "Favored Enemy", "description": "<b>Benefit:</b> A ranger may select a type of creature from the Ranger Favored Enemies table. The ranger gains a bonus on Bluff, Listen, Sense Motive, Spot, and Survival checks when using these skills against creatures of this type. Likewise, he gets a bonus on weapon damage rolls against such creatures. The bonus and number of favored enemies increase with ranger level.", "type": "special-ex", "isClassFeature": true },
     { "value": "class-ranger-wild-empathy", "label": "Wild Empathy", "description": "<b>Benefit:</b> A ranger can improve the attitude of an animal. This ability functions just like a Diplomacy check made to improve the attitude of a person. The ranger rolls 1d20 and adds his ranger level and his Charisma modifier to determine the wild empathy check result.", "type": "special-ex", "isClassFeature": true },
-    { "value": "class-ranger-combat-style", "label": "Combat Style", "description": "<b>Benefit:</b> At 2nd level, a ranger must select one of two combat styles to pursue: archery or two-weapon combat. This choice affects the character’s class features but does not restrict his selection of feats or special abilities in any way. The ranger gains specific bonus feats based on this choice. The benefits of the ranger’s chosen style apply only when he wears light or no armor.", "type": "special-ex", "isClassFeature": true },
-    { "value": "class-ranger-animal-companion", "label": "Animal Companion", "description": "<b>Benefit:</b> At 4th level, a ranger gains an animal companion selected from the list of animal companions available to druids. This animal is a loyal companion that accompanies the ranger on his adventures as appropriate for its kind. This ability functions like the druid ability of the same name, except that the ranger’s effective druid level is one-half his ranger level.", "type": "special-ex", "isClassFeature": true },
-    { "value": "class-ranger-improved-combat-style", "label": "Improved Combat Style", "description": "<b>Benefit:</b> At 6th level, a ranger’s aptitude in his chosen combat style (archery or two-weapon combat) improves, granting additional bonus feats related to that style. As before, the benefits of the ranger’s chosen style apply only when he wears light or no armor.", "type": "special-ex", "isClassFeature": true },
     { "value": "class-ranger-woodland-stride", "label": "Woodland Stride", "description": "<b>Benefit:</b> Starting at 7th level, a ranger may move through any sort of undergrowth (such as natural thorns, briars, overgrown areas, and similar terrain) at his normal speed and without taking damage or suffering any other impairment. However, thorns, briars, and overgrown areas that are enchanted or magically manipulated to impede motion still affect him.", "type": "special-ex", "isClassFeature": true },
     { "value": "class-ranger-swift-tracker", "label": "Swift Tracker", "description": "<b>Benefit:</b> Beginning at 8th level, a ranger can move at his normal speed while following tracks without taking the normal –5 penalty. He takes only a –10 penalty (instead of the normal –20) when moving at up to twice normal speed while tracking.", "type": "special-ex", "isClassFeature": true },
     { "value": "class-ranger-evasion", "label": "Evasion", "description": "<b>Benefit:</b> At 9th level, a ranger can avoid even magical and unusual attacks with great agility. If he makes a successful Reflex saving throw against an attack that normally deals half damage on a successful save, he instead takes no damage. Evasion can be used only if a ranger is wearing light or no armor. A helpless ranger does not gain the benefit of evasion.", "type": "special-ex", "isClassFeature": true },
-    { "value": "class-ranger-combat-style-mastery", "label": "Combat Style Mastery", "description": "<b>Benefit:</b> At 11th level, a ranger’s aptitude in his chosen combat style (archery or two-weapon combat) improves again, granting further bonus feats. As before, the benefits of the ranger’s chosen style apply only when he wears light or no armor.", "type": "special-ex", "isClassFeature": true },
     { "value": "class-ranger-camouflage", "label": "Camouflage", "description": "<b>Benefit:</b> A ranger of 13th level or higher can use the Hide skill in any sort of natural terrain, even if the terrain doesn’t grant cover or concealment. Camouflage is an extraordinary ability.", "type": "special-ex", "isClassFeature": true },
     { "value": "class-ranger-hide-in-plain-sight", "label": "Hide in Plain Sight", "description": "<b>Benefit:</b> While in any sort of natural terrain, a ranger of 17th level or higher can use the Hide skill even while being observed. Hide in plain sight is an extraordinary ability.", "type": "special-ex", "isClassFeature": true },
     { "value": "class-rogue-sneak-attack", "label": "Sneak Attack", "description": "<b>Benefit:</b> If a rogue can catch an opponent when they are unable to defend themselves effectively from her attack, she can strike a vital spot for extra damage. The rogue’s attack deals extra damage any time her target would be denied a Dexterity bonus to AC (whether the target actually has a Dexterity bonus or not), or when the rogue flanks her target. This extra damage increases with rogue level. Should the rogue score a critical hit with a sneak attack, this extra damage is not multiplied. Ranged attacks can count as sneak attacks only if the target is within 30 feet. With a sap (blackjack) or an unarmed strike, a rogue can make a sneak attack that deals nonlethal damage instead of lethal damage. She cannot use a weapon that deals lethal damage to deal nonlethal damage in a sneak attack, not even with the usual –4 penalty.", "type": "special-ex", "isClassFeature": true },
@@ -175,6 +173,49 @@
     { "value": "class-rogue-special-ability-slot", "label": "Rogue Special Ability Slot", "description": "<b>Benefit:</b> On attaining 10th level, and at every three rogue levels thereafter (13th, 16th, and 19th), a rogue may choose one special ability from a list (e.g., Crippling Strike, Defensive Roll, Improved Evasion, Opportunist, Skill Mastery, Slippery Mind, Feat). This represents the slot for choosing that ability.", "type": "special-ex", "isClassFeature": true },
     { "value": "class-sorcerer-summon-familiar", "label": "Summon Familiar", "description": "<b>Benefit:</b> A sorcerer can obtain a familiar in exactly the same way as a wizard can. Familiars are magically bonded creatures that serve their masters. The sorcerer chooses one creature from the standard list of familiars (see SRD). The familiar grants special abilities to its master, as given in the table in the SRD. The familiar uses the basic statistics for a creature of its kind, except that it has an Intelligence of at least 6, two Hit Dice, and an AC and saving throws as the master. Its hit points are equal to half the master’s total.", "type": "special-sp", "isClassFeature": true },
     { "value": "class-wizard-bonus-feat-slot", "label": "Wizard Bonus Feat Slot", "description": "<b>Benefit:</b> You gain a bonus feat. This feat must be a metamagic feat, an item creation feat, or Spell Mastery.", "type": "special", "isClassFeature": true },
+    { "value": "class-ranger-animal-companion", "label": "Animal Companion", "description": "<b>Benefit:</b> At 4th level, a ranger gains an animal companion selected from the list of animal companions available to druids. This animal is a loyal companion that accompanies the ranger on his adventures as appropriate for its kind. This ability functions like the druid ability of the same name, except that the ranger’s effective druid level is one-half his ranger level.", "type": "special-ex", "isClassFeature": true },
+    {
+      "value": "class-ranger-archery-style-1",
+      "label": "Combat Style (Archery - Rapid Shot)",
+      "description": "<b>Benefit:</b> Grants the benefits of the Rapid Shot feat when wearing light or no armor. Does not require meeting Rapid Shot's prerequisites.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-ranger-twf-style-1",
+      "label": "Combat Style (Two-Weapon Fighting)",
+      "description": "<b>Benefit:</b> Grants the benefits of the Two-Weapon Fighting feat when wearing light or no armor. Does not require meeting Two-Weapon Fighting's prerequisites.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-ranger-archery-style-2",
+      "label": "Improved Combat Style (Archery - Manyshot)",
+      "description": "<b>Benefit:</b> Grants the benefits of the Manyshot feat when wearing light or no armor. Does not require meeting Manyshot's prerequisites.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-ranger-twf-style-2",
+      "label": "Improved Combat Style (Two-Weapon Fighting)",
+      "description": "<b>Benefit:</b> Grants the benefits of the Improved Two-Weapon Fighting feat when wearing light or no armor. Does not require meeting Improved Two-Weapon Fighting's prerequisites.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-ranger-archery-style-3",
+      "label": "Combat Style Mastery (Archery - Imp. Precise Shot)",
+      "description": "<b>Benefit:</b> Grants the benefits of the Improved Precise Shot feat when wearing light or no armor. Does not require meeting Improved Precise Shot's prerequisites.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-ranger-twf-style-3",
+      "label": "Combat Style Mastery (Two-Weapon Fighting)",
+      "description": "<b>Benefit:</b> Grants the benefits of the Greater Two-Weapon Fighting feat when wearing light or no armor. Does not require meeting Greater Two-Weapon Fighting's prerequisites.",
+      "type": "special-ex",
+      "isClassFeature": true
+    },
     {
       "value": "class-soulknife-mind-blade",
       "label": "Mind Blade",
@@ -204,3 +245,5 @@
     { "value": "special-ex-su", "label": "Extraordinary/Supernatural Ability" }
   ]
 }
+
+    
