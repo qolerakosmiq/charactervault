@@ -52,7 +52,7 @@
     "infoDialogTitleScoreCalculation": "Calcul de {abilityName}",
     "infoDialogTitleModifierBreakdown": "Détail du modificateur de {skillName}",
     "infoDialogTitleResistanceBreakdown": "Détail de la résistance à {resistanceName}",
-    "infoDialogTitleAcBreakdown": "Détail de la CA ({acType})",
+    "infoDialogTitleAcBreakdown": "Détail de la classe d'armure ({acType})",
     "infoDialogTitleBabBreakdown": "Détail du bonus de base à l'attaque",
     "infoDialogTitleInitiativeBreakdown": "Détail de l'initiative",
     "infoDialogTitleGrappleModifierBreakdown": "Détail du modificateur de lutte",
@@ -70,6 +70,7 @@
     "infoDialogTotalBonusLabel": "Bonus total",
     "infoDialogTotalLabel": "Total",
     "infoDialogBaseValueLabel": "Valeur de base",
+    "infoDialogCustomModifierLabel": "Modificateur divers",
     "infoDialogTotalResistanceLabel": "Résistance totale",
     "infoDialogSpeedBaseRaceLabel": "Base ({raceName})",
     "infoDialogSpeedMiscModifierLabel": "Modificateur divers",
@@ -316,3 +317,5 @@
     "synergyTextPart4BonusToTargetSkillEnd": "."
   }
 }
+
+    
