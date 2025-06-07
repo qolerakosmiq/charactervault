@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { FeatDefinitionJsonData, FeatPrerequisiteDetails, AbilityName, DndClassOption, DndClassId, DndRaceOption, CharacterAlignmentObject, DndRaceId, FeatTypeString } from '@/types/character';
 // ALIGNMENT_PREREQUISITE_OPTIONS, FEAT_TYPES, ABILITY_LABELS are now from context
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { useI18n } from '@/context/I18nProvider'; // Import useI18n
+import { useToast } from "@/hooks/use-toast";
 
 interface AddCustomFeatDialogProps {
   isOpen: boolean;
@@ -39,17 +40,18 @@ interface AddCustomFeatDialogProps {
 
 const NONE_VALUE = "__NONE__";
 
-export function AddCustomFeatDialog({
+const AddCustomFeatDialogComponent = ({
   isOpen,
   onOpenChange,
   onSave,
   initialFeatData,
   allFeats,
   allSkills,
-  allClasses: propAllClasses, // Renamed to avoid conflict with i18n
-  allRaces: propAllRaces,     // Renamed to avoid conflict with i18n
-}: AddCustomFeatDialogProps) {
+  allClasses: propAllClasses, 
+  allRaces: propAllRaces,     
+}: AddCustomFeatDialogProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
+  const { toast } = useToast();
 
   const [featName, setFeatName] = React.useState('');
   const [featType, setFeatType] = React.useState<FeatTypeString>('special');
@@ -78,23 +80,23 @@ export function AddCustomFeatDialog({
   const classComboboxOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [{ value: NONE_VALUE, label: "Loading..." }];
     return [
-      { value: NONE_VALUE, label: "None" },
-      ...propAllClasses.map(c => ({ value: c.value, label: c.label })) // Use propAllClasses
+      { value: NONE_VALUE, label: translations.UI_STRINGS.deityNoneOption || "None" },
+      ...propAllClasses.map(c => ({ value: c.value, label: c.label })) 
     ];
   }, [translations, translationsLoading, propAllClasses]);
 
   const raceComboboxOptions = React.useMemo(() => {
      if (translationsLoading || !translations) return [{ value: NONE_VALUE, label: "Loading..." }];
     return [
-      { value: NONE_VALUE, label: "None" },
-      ...propAllRaces.map(r => ({ value: r.value, label: r.label })) // Use propAllRaces
+      { value: NONE_VALUE, label: translations.UI_STRINGS.deityNoneOption || "None" },
+      ...propAllRaces.map(r => ({ value: r.value, label: r.label })) 
     ];
   }, [translations, translationsLoading, propAllRaces]);
 
   const alignmentComboboxOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [{ value: NONE_VALUE, label: "Loading..." }];
     return [
-      { value: NONE_VALUE, label: "None" },
+      { value: NONE_VALUE, label: translations.UI_STRINGS.deityNoneOption || "None" },
       ...translations.ALIGNMENT_PREREQUISITE_OPTIONS
     ];
   }, [translations, translationsLoading]);
@@ -165,8 +167,9 @@ export function AddCustomFeatDialog({
   }, [isOpen, initialFeatData, allFeats, allSkills, translationsLoading, translations, abilityOptions]);
 
   const handleAddPrerequisite = () => {
+    if (!translations) return;
     if (!newPrereqType || !newPrereqItemId) {
-      alert('Please select a prerequisite type and item.');
+      toast({ title: translations.UI_STRINGS.toastPrereqTypeItemMissingTitle, description: translations.UI_STRINGS.toastPrereqTypeItemMissingDesc, variant: "destructive" });
       return;
     }
     let itemLabel = '';
@@ -177,7 +180,7 @@ export function AddCustomFeatDialog({
       itemLabel = abilityOpt ? abilityOpt.label : newPrereqItemId;
       value = newPrereqValue;
       if (value <= 0) {
-        alert('Please enter a valid positive ability score.');
+        toast({ title: translations.UI_STRINGS.toastAbilityScoreInvalidTitle, description: translations.UI_STRINGS.toastAbilityScoreInvalidDesc, variant: "destructive" });
         return;
       }
     } else if (newPrereqType === 'skill') {
@@ -185,7 +188,7 @@ export function AddCustomFeatDialog({
       itemLabel = skillOpt ? skillOpt.label : newPrereqItemId;
       value = newPrereqValue;
       if (value <= 0) {
-        alert('Please enter valid positive skill ranks.');
+        toast({ title: translations.UI_STRINGS.toastSkillRanksInvalidTitle, description: translations.UI_STRINGS.toastSkillRanksInvalidDesc, variant: "destructive" });
         return;
       }
     } else if (newPrereqType === 'feat') {
@@ -203,13 +206,14 @@ export function AddCustomFeatDialog({
   };
 
   const handleSaveFeat = () => {
+    if (!translations) return;
     if (featName.trim() === '') {
-      alert('Feat name cannot be empty.');
+      toast({ title: translations.UI_STRINGS.toastFeatNameEmptyTitle, description: translations.UI_STRINGS.toastFeatNameEmptyDesc, variant: "destructive" });
       return;
     }
     if (!featType) {
-        alert('Feat type is required.');
-        return;
+      toast({ title: translations.UI_STRINGS.toastFeatTypeEmptyTitle, description: translations.UI_STRINGS.toastFeatTypeEmptyDesc, variant: "destructive" });
+      return;
     }
 
     const finalStructuredPrerequisites: FeatPrerequisiteDetails = {};
@@ -292,7 +296,7 @@ export function AddCustomFeatDialog({
         </Dialog>
     );
   }
-
+  const UI_STRINGS = translations.UI_STRINGS;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -300,7 +304,7 @@ export function AddCustomFeatDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif">
             {isEditing ? <Pencil className="mr-2 h-6 w-6 text-primary" /> : <PlusCircle className="mr-2 h-6 w-6 text-primary" />}
-            {isEditing ? 'Edit Custom Feat Definition' : 'Add Custom Feat Definition'}
+            {isEditing ? (UI_STRINGS.dmSettingsEditCustomFeatButton || 'Edit Custom Feat Definition') : (UI_STRINGS.dmSettingsAddCustomFeatButton || 'Add Custom Feat Definition')}
           </DialogTitle>
           <DialogDescription>
             {isEditing ? `Modify the definition of ${initialFeatData?.label}.` : 'Define a new custom feat template.'}
@@ -391,7 +395,6 @@ export function AddCustomFeatDialog({
                   value={prereqClassId}
                   onChange={setPrereqClassId}
                   placeholder="Select Class..."
-                  // disabled={isFormDisabled} // Combobox does not have a direct disabled prop, parent control might be needed
                 />
               </div>
               <div className="space-y-1">
@@ -414,7 +417,6 @@ export function AddCustomFeatDialog({
                   value={prereqRaceId}
                   onChange={setPrereqRaceId}
                   placeholder="Select Race..."
-                   // disabled={isFormDisabled}
                 />
               </div>
               <div className="space-y-1">
@@ -424,7 +426,6 @@ export function AddCustomFeatDialog({
                   value={prereqAlignment}
                   onChange={setPrereqAlignment}
                   placeholder="Select Alignment..."
-                   // disabled={isFormDisabled}
                 />
               </div>
             </div>
@@ -471,7 +472,6 @@ export function AddCustomFeatDialog({
                         value={newPrereqItemId}
                         onChange={setNewPrereqItemId}
                         placeholder="Select Skill..."
-                        // disabled={isFormDisabled}
                       />
                     </div>
                     <div className="space-y-1">
@@ -488,7 +488,6 @@ export function AddCustomFeatDialog({
                       value={newPrereqItemId}
                       onChange={setNewPrereqItemId}
                       placeholder="Select Prerequisite Feat..."
-                      // disabled={isFormDisabled}
                     />
                   </div>
                 )}
@@ -536,14 +535,18 @@ export function AddCustomFeatDialog({
 
         <DialogFooter className="mt-2 pt-4 border-t">
           <Button variant="outline" onClick={() => onOpenChange(false)} type="button" disabled={isFormDisabled}>
-            Cancel
+            {UI_STRINGS.formButtonCancel || "Cancel"}
           </Button>
-          <Button onClick={handleSaveFeat} type="button" disabled={isFormDisabled}>{isEditing ? 'Save Changes to Definition' : 'Save Custom Feat Definition'}</Button>
+          <Button onClick={handleSaveFeat} type="button" disabled={isFormDisabled}>
+            {isEditing ? (UI_STRINGS.formButtonSaveChanges || 'Save Changes') : (UI_STRINGS.dmSettingsAddCustomFeatButton || 'Add Custom Feat Definition')}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
-}
+};
+
+export const AddCustomFeatDialog = React.memo(AddCustomFeatDialogComponent);
 
 interface PrerequisiteListItem {
   tempId: string;
@@ -552,3 +555,5 @@ interface PrerequisiteListItem {
   itemLabel: string;
   value?: number;
 }
+
+    

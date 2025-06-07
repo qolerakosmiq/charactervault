@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { AbilityName, CustomSynergyRule } from '@/types/character';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { Button } from '@/components/ui/button';
@@ -17,11 +17,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ComboboxPrimitive } from '@/components/ui/combobox';
-import { PlusCircle, Pencil, Trash2, Sparkles } from 'lucide-react';
+import { PlusCircle, Pencil, Trash2, Sparkles, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
-import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput'; // Added import
+import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput'; 
+import { useI18n } from '@/context/I18nProvider';
+import { useToast } from "@/hooks/use-toast";
+
 
 interface AddCustomSkillDialogProps {
   isOpen: boolean;
@@ -31,23 +34,16 @@ interface AddCustomSkillDialogProps {
   allSkills: Array<{value: string; label: string}>; 
 }
 
-const keyAbilityOptions: Array<{ value: AbilityName; label: string }> = [
-  { value: 'strength', label: 'Strength (STR)' },
-  { value: 'dexterity', label: 'Dexterity (DEX)' },
-  { value: 'constitution', label: 'Constitution (CON)' },
-  { value: 'intelligence', label: 'Intelligence (INT)' },
-  { value: 'wisdom', label: 'Wisdom (WIS)' },
-  { value: 'charisma', label: 'Charisma (CHA)' },
-  { value: 'none', label: 'None' },
-];
-
-export function AddCustomSkillDialog({
+const AddCustomSkillDialogComponent = ({
   isOpen,
   onOpenChange,
   onSave,
   initialSkillData,
   allSkills, 
-}: AddCustomSkillDialogProps) {
+}: AddCustomSkillDialogProps) => {
+  const { translations, isLoading: translationsLoading } = useI18n();
+  const { toast } = useToast();
+
   const [skillName, setSkillName] = React.useState('');
   const [selectedKeyAbility, setSelectedKeyAbility] = React.useState<AbilityName>('intelligence');
   const [synergyRules, setSynergyRules] = React.useState<CustomSynergyRule[]>([]);
@@ -89,8 +85,9 @@ export function AddCustomSkillDialog({
   };
 
   const handleAddSynergyRule = () => {
+    if (!translations) return;
     if (!newSynergyTargetSkillId.trim() || newSynergyRanksRequired <= 0 || newSynergyBonus === 0) {
-      alert('Please select a Target Skill and ensure Ranks Required (>0) and Bonus (not 0) are set for the synergy rule.');
+      toast({ title: translations.UI_STRINGS.toastSynergyInvalidTitle, description: translations.UI_STRINGS.toastSynergyInvalidDesc, variant: "destructive" });
       return;
     }
     setSynergyRules(prev => [
@@ -112,8 +109,9 @@ export function AddCustomSkillDialog({
   };
 
   const handleSaveSkill = () => {
+    if(!translations) return;
     if (skillName.trim() === '') {
-      alert('Skill name cannot be empty.');
+      toast({ title: translations.UI_STRINGS.toastSkillNameEmptyTitle, description: translations.UI_STRINGS.toastSkillNameEmptyDesc, variant: "destructive" });
       return;
     }
     const skillDefinitionToSave: CustomSkillDefinition = {
@@ -131,6 +129,40 @@ export function AddCustomSkillDialog({
     const skill = allSkills.find(s => s.value === id); 
     return skill ? skill.label : 'Unknown Skill';
   }
+  
+  const keyAbilityOptionsFromContext = React.useMemo(() => {
+    if (translationsLoading || !translations) return [];
+    return translations.ABILITY_LABELS.map(al => ({ value: al.value, label: `${al.label} (${al.abbr})` }));
+  }, [translations, translationsLoading]);
+
+
+  if (translationsLoading || !translations) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center font-serif">
+              {isEditing ? <Pencil className="mr-2 h-6 w-6 text-primary" /> : <PlusCircle className="mr-2 h-6 w-6 text-primary" />}
+               {translations?.UI_STRINGS.loadingOptionsTitle || "Loading Skill Definition..."}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex justify-center items-center py-10">
+             <Loader2 className="h-8 w-8 animate-spin text-primary" />
+             <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingOptionsTitle || "Loading options..."}</p>
+          </div>
+          <DialogFooter className="mt-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)} type="button" disabled>
+              Cancel
+            </Button>
+            <Button type="button" disabled>
+              {isEditing ? 'Save Definition Changes' : 'Save Skill Definition'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+  const UI_STRINGS = translations.UI_STRINGS;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -138,7 +170,7 @@ export function AddCustomSkillDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif">
             {isEditing ? <Pencil className="mr-2 h-6 w-6 text-primary" /> : <PlusCircle className="mr-2 h-6 w-6 text-primary" />}
-            {isEditing ? 'Edit Custom Skill Definition' : 'Add Custom Skill Definition'}
+            {isEditing ? (UI_STRINGS.dmSettingsEditCustomSkillButton || 'Edit Custom Skill Definition') : (UI_STRINGS.dmSettingsAddCustomSkillButton || 'Add Custom Skill Definition')}
           </DialogTitle>
           <DialogDescription>
             {isEditing ? `Modify the definition of ${initialSkillData?.name}.` : 'Define a new skill template, its synergies, and description.'}
@@ -166,11 +198,12 @@ export function AddCustomSkillDialog({
                   <SelectValue placeholder="Select key ability" />
                 </SelectTrigger>
                 <SelectContent>
-                  {keyAbilityOptions.map(option => (
+                  {keyAbilityOptionsFromContext.map(option => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>
                   ))}
+                   <SelectItem value="none">{UI_STRINGS.deityNoneOption || "None"}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -224,7 +257,7 @@ export function AddCustomSkillDialog({
                       id="synergy-bonus-granted"
                       value={newSynergyBonus}
                       onChange={setNewSynergyBonus}
-                      min={-10} max={10} // Allow negative bonuses if desired
+                      min={-10} max={10} 
                       inputClassName="h-9 text-sm"
                       buttonClassName="h-9 w-9"
                       buttonSize="sm"
@@ -258,11 +291,17 @@ export function AddCustomSkillDialog({
 
         <DialogFooter className="mt-2">
           <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
-            Cancel
+            {UI_STRINGS.formButtonCancel || "Cancel"}
           </Button>
-          <Button onClick={handleSaveSkill} type="button">{isEditing ? 'Save Definition Changes' : 'Save Skill Definition'}</Button>
+          <Button onClick={handleSaveSkill} type="button">
+            {isEditing ? (UI_STRINGS.formButtonSaveChanges || "Save Changes") : (UI_STRINGS.dmSettingsAddCustomSkillButton || 'Add Custom Skill Definition')}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
-}
+};
+
+export const AddCustomSkillDialog = React.memo(AddCustomSkillDialogComponent);
+
+    

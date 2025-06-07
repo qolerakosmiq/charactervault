@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -15,13 +16,14 @@ import { toast } from '@/hooks/use-toast';
 import { suggestFeatsSkills, type SuggestFeatsSkillsOutput, type SuggestFeatsSkillsInput } from '@/ai/flows/suggest-feats-skills';
 import { Loader2, Sparkles, PlusCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useI18n } from '@/context/I18nProvider';
 
 interface FeatSkillSuggesterDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   characterClass: string;
   level: number;
-  suggestionType: 'feats' | 'skills'; // To control what is primarily displayed or focused on
+  suggestionType: 'feats' | 'skills'; 
   onAddSuggested: (name: string, description: string) => void;
 }
 
@@ -33,15 +35,17 @@ export function FeatSkillSuggesterDialog({
   suggestionType,
   onAddSuggested,
 }: FeatSkillSuggesterDialogProps) {
+  const { translations, isLoading: translationsLoading } = useI18n();
   const [isLoading, setIsLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<SuggestFeatsSkillsOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const fetchSuggestions = async () => {
+    if (!translations) return;
     if (!characterClass || level <= 0) {
       toast({
-        title: 'Missing Information',
-        description: 'Please ensure character class and level are set.',
+        title: translations.UI_STRINGS.toastAISuggestionMissingInfoTitle,
+        description: translations.UI_STRINGS.toastAISuggestionMissingInfoDesc,
         variant: 'destructive',
       });
       return;
@@ -57,10 +61,11 @@ export function FeatSkillSuggesterDialog({
       setSuggestions(result);
     } catch (e) {
       console.error('Error fetching suggestions:', e);
-      setError('Failed to get suggestions from AI. Please try again.');
+      const errorMessage = translations.UI_STRINGS.toastAISuggestionErrorDesc || 'Could not fetch suggestions. Check console for details.';
+      setError(errorMessage);
       toast({
-        title: 'AI Suggestion Error',
-        description: 'Could not fetch suggestions. Check console for details.',
+        title: translations.UI_STRINGS.toastAISuggestionErrorTitle,
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
@@ -70,15 +75,32 @@ export function FeatSkillSuggesterDialog({
 
   const handleAdd = (name: string, description: string) => {
     onAddSuggested(name, description);
+    // This toast can remain generic as it's a success message
     toast({
       title: `${suggestionType === 'feats' ? 'Feat' : 'Skill'} Added`,
       description: `${name} has been added to your character.`,
     });
   };
   
-  // Trigger fetch when dialog opens, if not already loaded
-  // This happens in an effect that watches isOpen in the parent, or manually via a button
-  // For now, let's add a button inside the dialog to trigger it.
+  if (translationsLoading || !translations) {
+      return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-[625px]">
+                 <DialogHeader>
+                    <DialogTitle className="flex items-center font-serif">
+                        <Sparkles className="h-6 w-6 mr-2 text-primary" />
+                        AI {suggestionType === 'feats' ? 'Feat' : 'Skill'} Suggestions
+                    </DialogTitle>
+                 </DialogHeader>
+                 <div className="flex justify-center items-center py-10">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                 </div>
+            </DialogContent>
+        </Dialog>
+      );
+  }
+  const UI_STRINGS = translations.UI_STRINGS;
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -86,7 +108,7 @@ export function FeatSkillSuggesterDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif">
             <Sparkles className="h-6 w-6 mr-2 text-primary" />
-            AI {suggestionType === 'feats' ? 'Feat' : 'Skill'} Suggestions
+            AI {suggestionType === 'feats' ? UI_STRINGS.featsPanelTitle : UI_STRINGS.skillsPanelTitle} Suggestions
           </DialogTitle>
           <DialogDescription>
             Get AI-powered suggestions for {suggestionType} based on {characterClass} (Level {level}).
@@ -155,8 +177,6 @@ export function FeatSkillSuggesterDialog({
                                 <h4 className="font-medium">{skill.name}</h4>
                                 <p className="text-sm text-muted-foreground mt-1">{skill.description}</p>
                             </div>
-                            {/* Adding skills from AI might be different from feats, as skills already exist.
-                                This might just be advice. For now, no "Add" button for skills. */}
                          </div>
                       </li>
                     ))}
@@ -181,3 +201,5 @@ export function FeatSkillSuggesterDialog({
     </Dialog>
   );
 }
+
+    

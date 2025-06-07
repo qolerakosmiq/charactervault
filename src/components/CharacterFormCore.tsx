@@ -52,7 +52,6 @@ import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 
 import { Loader2 } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 
 
 interface CharacterFormCoreProps {
@@ -458,21 +457,22 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
   }, [definitionsActions]);
 
   const handleOpenEditCustomSkillDialog = React.useCallback((skillDefId: string) => {
+    if(!translations) return;
     const customDef = definitionsActions.getCustomSkillDefinitionById(skillDefId);
     if (customDef) {
       setSkillToEdit(customDef);
       setIsAddOrEditSkillDialogOpen(true);
     } else {
-      toast({ title: "Error", description: "Could not find custom skill definition to edit.", variant: "destructive" });
+      toast({ title: translations.UI_STRINGS.toastCustomSkillNotFoundEditTitle, description: translations.UI_STRINGS.toastCustomSkillNotFoundEditDesc, variant: "destructive" });
     }
-  }, [definitionsActions, toast]);
+  }, [definitionsActions, toast, translations]);
 
   const handleFeatInstancesChange = React.useCallback((updatedFeatInstances: CharacterFeatInstance[]) => {
     setCharacter(prev => prev ? ({ ...prev, feats: updatedFeatInstances }) : null);
   }, []);
 
   const handleCustomFeatDefinitionSaveToStore = React.useCallback((featDefData: (FeatDefinitionJsonData & { isCustom: true })) => {
-    if (!character) return;
+    if (!character || !translations) return;
     const existing = definitionsActions.getCustomFeatDefinitionById(featDefData.value);
     if (existing) {
         definitionsActions.updateCustomFeatDefinition(featDefData);
@@ -492,17 +492,18 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
     }
     setEditingCustomFeatDefinition(undefined);
     setIsCustomFeatDialogOpen(false);
-  }, [character, definitionsActions, allAvailableFeatDefinitions, handleFeatInstancesChange]);
+  }, [character, definitionsActions, allAvailableFeatDefinitions, handleFeatInstancesChange, translations]);
 
   const handleOpenEditCustomFeatDefinitionDialog = React.useCallback((definitionId: string) => {
+    if(!translations) return;
     const defToEdit = definitionsActions.getCustomFeatDefinitionById(definitionId);
     if (defToEdit) {
       setEditingCustomFeatDefinition(defToEdit);
       setIsCustomFeatDialogOpen(true);
     } else {
-      toast({ title: "Error", description: "Could not find custom feat definition to edit.", variant: "destructive" });
+      toast({ title: translations.UI_STRINGS.toastCustomFeatNotFoundEditTitle, description: translations.UI_STRINGS.toastCustomFeatNotFoundEditDesc, variant: "destructive" });
     }
-  }, [definitionsActions, toast]);
+  }, [definitionsActions, toast, translations]);
 
   const allSkillOptionsForDialog = React.useMemo(() => {
     return allAvailableSkillDefinitionsForDisplay
@@ -558,22 +559,39 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
 
   const handleSubmit = React.useCallback((e: FormEvent) => {
     e.preventDefault();
-    if (!character) { toast({ title: "Error", description: "Character data not loaded.", variant: "destructive" }); return; }
-    if (!character.name || character.name.trim() === '') { toast({ title: "Missing Information", description: "Please enter a character name.", variant: "destructive" }); return; }
-    if (!character.race || character.race.trim() === '') { toast({ title: "Missing Information", description: "Please select or enter a character race.", variant: "destructive" }); return; }
-    if (!character.classes[0]?.className || character.classes[0]?.className.trim() === '') { toast({ title: "Missing Information", description: "Please select or enter a character class.", variant: "destructive" }); return; }
-    if (!character.alignment) { toast({ title: "Missing Information", description: "Please select an alignment.", variant: "destructive" }); return; }
-
-    if (translations) {
-        const selectedRaceInfoForValidation = translations.DND_RACES.find(r => r.value === character.race);
-        const minAgeForValidation = (selectedRaceInfoForValidation ? translations.DND_RACE_MIN_ADULT_AGE_DATA[selectedRaceInfoForValidation.value as DndRaceId] : undefined) || 1;
-        if (character.age < minAgeForValidation) { toast({ title: "Invalid Age", description: `Age must be at least ${minAgeForValidation}${selectedRaceInfoForValidation ? ` for a ${selectedRaceInfoForValidation.label}` : ''}.`, variant: "destructive" }); return; }
+    if (!character || !translations) { 
+      toast({ title: translations?.UI_STRINGS.toastCharacterDataNotLoadedTitle || "Save Error", description: translations?.UI_STRINGS.toastCharacterDataNotLoadedDesc || "Character data not loaded.", variant: "destructive" }); 
+      return; 
     }
+    const UI_STRINGS = translations.UI_STRINGS;
+    if (!character.name || character.name.trim() === '') { toast({ title: UI_STRINGS.toastMissingCharacterNameTitle, description: UI_STRINGS.toastMissingCharacterNameDesc, variant: "destructive" }); return; }
+    if (!character.race || character.race.trim() === '') { toast({ title: UI_STRINGS.toastMissingCharacterRaceTitle, description: UI_STRINGS.toastMissingCharacterRaceDesc, variant: "destructive" }); return; }
+    if (!character.classes[0]?.className || character.classes[0]?.className.trim() === '') { toast({ title: UI_STRINGS.toastMissingCharacterClassTitle, description: UI_STRINGS.toastMissingCharacterClassDesc, variant: "destructive" }); return; }
+    if (!character.alignment) { toast({ title: UI_STRINGS.toastMissingAlignmentTitle, description: UI_STRINGS.toastMissingAlignmentDesc, variant: "destructive" }); return; }
 
+    const selectedRaceInfoForValidation = translations.DND_RACES.find(r => r.value === character.race);
+    const minAgeForValidation = (selectedRaceInfoForValidation ? translations.DND_RACE_MIN_ADULT_AGE_DATA[selectedRaceInfoForValidation.value as DndRaceId] : undefined) || 1;
+    if (character.age < minAgeForValidation) { 
+      toast({ 
+        title: UI_STRINGS.toastInvalidAgeTitle, 
+        description: (UI_STRINGS.toastInvalidAgeDesc || 'Age must be at least {minAge}{raceContext}.')
+          .replace('{minAge}', String(minAgeForValidation))
+          .replace('{raceContext}', selectedRaceInfoForValidation ? ` for a ${selectedRaceInfoForValidation.label}` : ''),
+        variant: "destructive" 
+      }); 
+      return; 
+    }
 
     for (const ability of abilityNames) {
       if (ability === 'none') continue;
-      if (character.abilityScores[ability] <= 0) { toast({ title: `Invalid ${ability.charAt(0).toUpperCase() + ability.slice(1)} Score`, description: `${ability.charAt(0).toUpperCase() + ability.slice(1)} score must be greater than 0.`, variant: "destructive" }); return; }
+      if (character.abilityScores[ability] <= 0) { 
+        toast({ 
+          title: (UI_STRINGS.toastInvalidAbilityScoreTitle || "Invalid {abilityName} Score").replace('{abilityName}', ability.charAt(0).toUpperCase() + ability.slice(1)),
+          description: (UI_STRINGS.toastInvalidAbilityScoreDesc || "{abilityName} score must be greater than 0.").replace('{abilityName}', ability.charAt(0).toUpperCase() + ability.slice(1)), 
+          variant: "destructive" 
+        }); 
+        return; 
+      }
     }
 
     const finalCharacterData = {
@@ -601,9 +619,6 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
   }
   const { UI_STRINGS } = translations;
 
-  const selectedClassInfo = translations.DND_CLASSES.find(c => c.value === character.classes[0]?.className);
-  const currentMinAgeForInput = character.race ? (translations.DND_RACE_MIN_ADULT_AGE_DATA[character.race as DndRaceId] || 1) : 1;
-
   const coreInfoData = {
     name: character.name, playerName: character.playerName, race: character.race, alignment: character.alignment,
     deity: character.deity, size: character.size, age: character.age, gender: character.gender, classes: character.classes,
@@ -630,26 +645,26 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
     savingThrows: character.savingThrows, classes: character.classes,
   };
 
-  const acData = {
+  const acData: Pick<Character, 'abilityScores' | 'size' | 'armorBonus' | 'shieldBonus' | 'naturalArmor' | 'deflectionBonus' | 'dodgeBonus' | 'acMiscModifier'> = {
     abilityScores: character.abilityScores, size: character.size, armorBonus: character.armorBonus, shieldBonus: character.shieldBonus,
     naturalArmor: character.naturalArmor, deflectionBonus: character.deflectionBonus, dodgeBonus: character.dodgeBonus, acMiscModifier: character.acMiscModifier,
   };
 
-  const speedData = {
+  const speedData: Pick<Character, 'race' | 'size' | 'classes' | 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed' | 'armorSpeedPenalty_base' | 'armorSpeedPenalty_miscModifier' | 'loadSpeedPenalty_base' | 'loadSpeedPenalty_miscModifier'> = {
     race: character.race, size: character.size, classes: character.classes, landSpeed: character.landSpeed, burrowSpeed: character.burrowSpeed,
     climbSpeed: character.climbSpeed, flySpeed: character.flySpeed, swimSpeed: character.swimSpeed,
     armorSpeedPenalty_base: character.armorSpeedPenalty_base, armorSpeedPenalty_miscModifier: character.armorSpeedPenalty_miscModifier,
     loadSpeedPenalty_base: character.loadSpeedPenalty_base, loadSpeedPenalty_miscModifier: character.loadSpeedPenalty_miscModifier,
   };
 
-  const combatData = {
+  const combatData: Pick<Character, 'abilityScores' | 'classes' | 'size' | 'babMiscModifier' | 'initiativeMiscModifier' | 'grappleMiscModifier' | 'grappleDamage_baseNotes' | 'grappleDamage_bonus' | 'grappleWeaponChoice'> = {
     abilityScores: character.abilityScores, classes: character.classes, size: character.size, babMiscModifier: character.babMiscModifier,
     initiativeMiscModifier: character.initiativeMiscModifier, grappleMiscModifier: character.grappleMiscModifier,
     grappleDamage_baseNotes: character.grappleDamage_baseNotes, grappleDamage_bonus: character.grappleDamage_bonus,
     grappleWeaponChoice: character.grappleWeaponChoice,
   };
 
-  const resistancesData = {
+  const resistancesData: Pick<Character, 'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' | 'spellResistance' | 'powerResistance' | 'damageReduction' | 'fortification'> = {
     fireResistance: character.fireResistance, coldResistance: character.coldResistance, acidResistance: character.acidResistance,
     electricityResistance: character.electricityResistance, sonicResistance: character.sonicResistance,
     spellResistance: character.spellResistance, powerResistance: character.powerResistance,
@@ -684,7 +699,7 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
 
         <CharacterFormStoryPortraitSection
           storyAndAppearanceData={storyAndAppearanceData}
-          onFieldChange={handleCoreInfoFieldChange as any} // Cast for now, needs specific Pick type for onFieldChange
+          onFieldChange={handleCoreInfoFieldChange as any} 
           onPortraitChange={handlePortraitChange}
         />
 
@@ -721,12 +736,12 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:items-start">
           <ArmorClassPanel
             acData={acData}
-            onCharacterUpdate={handleCharacterFieldUpdate as any} // Cast for now
+            onCharacterUpdate={handleCharacterFieldUpdate as any} 
             onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
           />
           <SpeedPanel
             speedData={speedData}
-            onCharacterUpdate={handleCharacterFieldUpdate as any} // Cast for now
+            onCharacterUpdate={handleCharacterFieldUpdate as any} 
             onOpenSpeedInfoDialog={handleOpenSpeedInfoDialog}
             onOpenArmorSpeedPenaltyInfoDialog={handleOpenArmorSpeedPenaltyInfoDialog}
             onOpenLoadSpeedPenaltyInfoDialog={handleOpenLoadSpeedPenaltyInfoDialog}
@@ -735,7 +750,7 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
         
         <CombatPanel
             combatData={combatData}
-            onCharacterUpdate={handleCharacterFieldUpdate as any} // Cast for now
+            onCharacterUpdate={handleCharacterFieldUpdate as any} 
             onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog}
             onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
         />
@@ -785,3 +800,5 @@ export function CharacterFormCore({ onSave }: CharacterFormCoreProps) {
     </>
   );
 }
+
+    

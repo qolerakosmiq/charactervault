@@ -33,7 +33,7 @@ interface FeatsFormSectionProps {
   allCustomSkillDefinitions: readonly CustomSkillDefinition[]; 
 }
 
-export const FeatsFormSection = ({
+const FeatsFormSectionComponent = ({
   featSectionData,
   allAvailableFeatDefinitions,
   chosenFeatInstances,
@@ -76,9 +76,8 @@ export const FeatsFormSection = ({
   const userChosenFeatInstancesCount = userChosenFeatInstances.length;
   const featSlotsLeft = availableFeatSlots - userChosenFeatInstancesCount;
 
-  // Construct a partial character object for prerequisite checking
   const characterForPrereqCheck = React.useMemo(() => ({
-    ...featSectionData, // Includes race, classes, feats, age, alignment
+    ...featSectionData, 
     abilityScores,
     skills,
   }), [featSectionData, abilityScores, skills]);
@@ -86,9 +85,11 @@ export const FeatsFormSection = ({
   const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs whitespace-nowrap";
 
   const handleAddOrUpdateChosenFeatInstance = (definitionId: string, specializationDetail?: string) => {
+    if (!translations) return;
+    const UI_STRINGS = translations.UI_STRINGS;
     const definition = allAvailableFeatDefinitions.find(def => def.value === definitionId);
     if (!definition) {
-      toast({ title: "Error", description: "Selected feat definition not found.", variant: "destructive" });
+      toast({ title: UI_STRINGS.toastFeatDefNotFoundTitle, description: UI_STRINGS.toastFeatDefNotFoundDesc, variant: "destructive" });
       return;
     }
 
@@ -101,11 +102,19 @@ export const FeatsFormSection = ({
 
     if (!definition.canTakeMultipleTimes) {
       if (isAlreadyGranted) {
-        toast({ title: "Feat Already Granted", description: `"${definition.label}" is already granted by your class/race and cannot be chosen again.`, variant: "destructive" });
+        toast({ 
+            title: UI_STRINGS.toastFeatAlreadyGrantedTitle, 
+            description: (UI_STRINGS.toastFeatAlreadyGrantedDesc || '"{featLabel}" is already granted and cannot be chosen again.').replace('{featLabel}', definition.label), 
+            variant: "destructive" 
+        });
         return;
       }
       if (existingChosenInstances.length > 0) {
-        toast({ title: "Duplicate Feat", description: `You have already chosen "${definition.label}", and it cannot be taken multiple times.`, variant: "destructive" });
+        toast({ 
+            title: UI_STRINGS.toastDuplicateFeatTitle, 
+            description: (UI_STRINGS.toastDuplicateFeatDesc || 'You have already chosen "{featLabel}", and it cannot be taken multiple times.').replace('{featLabel}', definition.label), 
+            variant: "destructive" 
+        });
         return;
       }
     }
@@ -136,11 +145,13 @@ export const FeatsFormSection = ({
   };
 
   const handleOpenEditDialog = (definitionId: string) => {
+    if (!translations) return;
+    const UI_STRINGS = translations.UI_STRINGS;
     const defToEdit = allAvailableFeatDefinitions.find(def => def.value === definitionId && def.isCustom);
     if (defToEdit) {
       onEditCustomFeatDefinition(definitionId);
     } else {
-      toast({ title: "Error", description: "Could not find custom feat definition to edit.", variant: "destructive" });
+      toast({ title: UI_STRINGS.toastCustomFeatNotFoundEditTitle, description: UI_STRINGS.toastCustomFeatNotFoundEditDesc, variant: "destructive" });
     }
   };
 
@@ -165,7 +176,7 @@ export const FeatsFormSection = ({
 
     const prereqMessages = checkFeatPrerequisites(
       definition, 
-      characterForPrereqCheck, 
+      characterForPrereqCheck as Character, // Cast as it expects full Character
       allAvailableFeatDefinitions, 
       allPredefinedSkillDefinitions, 
       allCustomSkillDefinitions,    
@@ -349,7 +360,7 @@ export const FeatsFormSection = ({
         onOpenChange={setIsFeatDialogOpen}
         onFeatSelected={handleAddOrUpdateChosenFeatInstance}
         allFeats={allAvailableFeatDefinitions} 
-        character={characterForPrereqCheck as Character} // Cast to full Character as component expects it
+        character={characterForPrereqCheck as Character} 
         allPredefinedSkillDefinitions={allPredefinedSkillDefinitions}
         allCustomSkillDefinitions={allCustomSkillDefinitions}
         allClasses={DND_CLASSES}
@@ -361,4 +372,7 @@ export const FeatsFormSection = ({
     </>
   );
 };
-// FeatsFormSection.displayName = 'FeatsFormSectionComponent';
+
+export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
+
+    
