@@ -206,12 +206,11 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {energyResistancesFields.map(({ field, labelKey, Icon, fieldPrefix }) => {
                 const resistanceFromProp = characterData[field];
-                // Total value display uses the prop value for consistency after debounce
                 const totalValue = (resistanceFromProp?.base || 0) + (resistanceFromProp?.customMod || 0);
                 const label = UI_STRINGS[labelKey] || field.replace('Resistance', '');
                 const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
                 return (
-                  <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
+                  <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
                     <div className="flex items-center justify-center">
                       <Icon className="h-5 w-5 mr-1.5 text-muted-foreground" />
                       <span className="text-sm font-medium">
@@ -232,11 +231,12 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         <Info className="h-4 w-4" />
                       </Button>
                     </div>
-                    <div className="w-full max-w-[120px] flex justify-center">
+                    <div className="w-full max-w-[120px] flex flex-col items-center">
+                       <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-xs text-muted-foreground mb-0.5">{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
                        <NumberSpinnerInput
                         id={`${fieldPrefix}-${field}-customMod`}
-                        value={localCustomMod} // Input uses local value
-                        onChange={setLocalCustomMod} // Updates local value
+                        value={localCustomMod} 
+                        onChange={setLocalCustomMod} 
                         min={-50} 
                         inputClassName="w-16 h-7 text-sm text-center" 
                         buttonClassName="h-7 w-7"
@@ -261,7 +261,7 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                 const label = UI_STRINGS[labelKey] || field.replace('Resistance', '').replace('Fortification', 'Fortification');
                 const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
                 return (
-                  <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
+                  <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
                      <div className="flex items-center justify-center">
                         <Icon className="h-5 w-5 mr-1.5 text-muted-foreground" />
                         <span className="text-sm font-medium">
@@ -282,7 +282,8 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
                         <Info className="h-4 w-4" />
                       </Button>
                     </div>
-                     <div className="w-full max-w-[120px] flex justify-center">
+                     <div className="w-full max-w-[120px] flex flex-col items-center">
+                       <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-xs text-muted-foreground mb-0.5">{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
                        <NumberSpinnerInput
                         id={`${fieldPrefix}-${field}-customMod`}
                         value={localCustomMod}
@@ -396,3 +397,4 @@ export function ResistancesPanel({ characterData, onResistanceChange, onDamageRe
     </>
   );
 }
+
