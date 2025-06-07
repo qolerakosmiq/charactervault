@@ -130,29 +130,49 @@ export function CharacterFormCoreInfoSection({
   }, [translations, localRace]);
 
   const filteredDeities = React.useMemo(() => {
-    if (!translations || !localAlignment) {
+    if (translationsLoading || !translations || !localAlignment) {
       return translations?.DND_DEITIES || [];
     }
     return translations.DND_DEITIES.filter(deity =>
       isAlignmentCompatible(localAlignment, deity.alignment)
     );
-  }, [translations, localAlignment]);
+  }, [translationsLoading, translations, localAlignment]);
 
   const deitySelectOptions = React.useMemo(() => {
-    if (!translations) return [{ value: DEITY_NONE_OPTION_VALUE, label: "Loading..." }];
+    if (translationsLoading || !translations) return [{ value: DEITY_NONE_OPTION_VALUE, label: "Loading..." }];
     const noneOptionLabel = translations.UI_STRINGS?.deityNoneOption || "None";
-    return [{ value: DEITY_NONE_OPTION_VALUE, label: noneOptionLabel }, ...filteredDeities];
-  }, [translations, filteredDeities]);
+    return [{ value: DEITY_NONE_OPTION_VALUE, label: noneOptionLabel }, ...filteredDeities.map(deity => ({value: deity.value, label: deity.label}))];
+  }, [translationsLoading, translations, filteredDeities]);
   
   React.useEffect(() => {
-    if (!translations || !localAlignment || !localDeity) return;
+    if (translationsLoading || !translations || !localAlignment || !localDeity) return;
     if (localDeity !== DEITY_NONE_OPTION_VALUE) {
       const currentDeityInfo = translations.DND_DEITIES.find(d => d.value === localDeity);
       if (currentDeityInfo && !isAlignmentCompatible(localAlignment, currentDeityInfo.alignment)) {
         setLocalDeity(DEITY_NONE_OPTION_VALUE);
       }
     }
-  }, [translations, localAlignment, localDeity, setLocalDeity]);
+  }, [translationsLoading, translations, localAlignment, localDeity, setLocalDeity]);
+
+  const raceSelectOptions = React.useMemo(() => {
+    if (translationsLoading || !translations) return null;
+    return translations.DND_RACES.map(race => <SelectItem key={race.value} value={race.value}>{race.label}</SelectItem>);
+  }, [translationsLoading, translations]);
+
+  const classSelectOptions = React.useMemo(() => {
+    if (translationsLoading || !translations) return null;
+    return translations.DND_CLASSES.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>);
+  }, [translationsLoading, translations]);
+
+  const alignmentSelectOptions = React.useMemo(() => {
+    if (translationsLoading || !translations) return null;
+    return translations.ALIGNMENTS.map(align => <SelectItem key={align.value} value={align.value}>{align.label}</SelectItem>);
+  }, [translationsLoading, translations]);
+
+  const sizeSelectOptions = React.useMemo(() => {
+    if (translationsLoading || !translations) return null;
+    return translations.SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>);
+  }, [translationsLoading, translations]);
   
   if (translationsLoading || !translations) {
     return (
@@ -176,7 +196,7 @@ export function CharacterFormCoreInfoSection({
     );
   }
 
-  const { ALIGNMENTS, DND_RACES, DND_CLASSES, GENDERS, SIZES, UI_STRINGS } = translations;
+  const { GENDERS, UI_STRINGS } = translations;
 
   return (
     <Card>
@@ -218,9 +238,7 @@ export function CharacterFormCoreInfoSection({
                     <SelectValue placeholder={UI_STRINGS.selectRacePlaceholder || "Select race"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {DND_RACES.map(race => (
-                      <SelectItem key={race.value} value={race.value}>{race.label}</SelectItem>
-                    ))}
+                    {raceSelectOptions}
                   </SelectContent>
                 </Select>
               </div>
@@ -250,7 +268,7 @@ export function CharacterFormCoreInfoSection({
                   onValueChange={(value) => setLocalClassName(value as DndClassId)} 
                 >
                   <SelectTrigger id="className"> <SelectValue placeholder={UI_STRINGS.selectClassPlaceholder || "Select class"} /> </SelectTrigger>
-                  <SelectContent> {DND_CLASSES.map(c => ( <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem> ))} </SelectContent>
+                  <SelectContent> {classSelectOptions} </SelectContent>
                 </Select>
               </div>
               <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenClassInfoDialog} disabled={!localClassName} >
@@ -270,7 +288,7 @@ export function CharacterFormCoreInfoSection({
               <div className="flex-grow">
                 <Select name="alignment" value={localAlignment} onValueChange={(value) => setLocalAlignment(value as CharacterAlignment)}>
                   <SelectTrigger><SelectValue placeholder={UI_STRINGS.selectAlignmentPlaceholder || "Select alignment"} /></SelectTrigger>
-                  <SelectContent> {ALIGNMENTS.map(align => <SelectItem key={align.value} value={align.value}>{align.label}</SelectItem>)} </SelectContent>
+                  <SelectContent> {alignmentSelectOptions} </SelectContent>
                 </Select>
               </div>
                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenAlignmentInfoDialog}> <Info className="h-5 w-5" /> </Button>
@@ -335,11 +353,11 @@ export function CharacterFormCoreInfoSection({
             <Label htmlFor="sizeCategory">{UI_STRINGS.sizeLabel || "Size Category"}</Label>
             <Select name="sizeCategory" value={localSize} onValueChange={(value) => setLocalSize(value as CharacterSize)}>
               <SelectTrigger id="sizeCategory"><SelectValue placeholder={UI_STRINGS.selectSizePlaceholder || "Select size category"} /></SelectTrigger>
-              <SelectContent> {SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)} </SelectContent>
+              <SelectContent> {sizeSelectOptions} </SelectContent>
             </Select>
             <div className="flex items-baseline gap-1 pt-[6px] ml-1">
               {localSize && (() => {
-                const selectedSizeObject = SIZES.find(s => s.value === localSize);
+                const selectedSizeObject = translations.SIZES.find(s => s.value === localSize);
                 if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
                   const acMod = selectedSizeObject.acModifier;
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
@@ -356,3 +374,4 @@ export function CharacterFormCoreInfoSection({
     </Card>
   );
 }
+
