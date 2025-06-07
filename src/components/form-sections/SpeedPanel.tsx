@@ -134,7 +134,7 @@ export function SpeedPanel({ character, onCharacterUpdate, onOpenSpeedInfoDialog
                   <span className="text-sm font-medium">{label}</span>
                 </div>
                 <div className="flex items-center justify-center space-x-1 h-9"> 
-                  <span className="text-3xl font-bold text-accent">
+                  <span className="text-lg font-bold text-accent">
                     {speedData.total}
                   </span>
                   <span className="text-base font-normal text-muted-foreground">

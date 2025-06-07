@@ -154,7 +154,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
                 <Info className="h-4 w-4" />
               </Button>
             </div>
-            <p id="normal-ac-display" className="text-3xl font-bold text-accent">{normalAC}</p>
+            <p id="normal-ac-display" className="text-lg font-bold text-accent">{normalAC}</p>
           </div>
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
              <div className="flex items-center">
@@ -163,7 +163,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
                 <Info className="h-4 w-4" />
               </Button>
             </div>
-            <p id="touch-ac-display" className="text-3xl font-bold text-accent">{touchAC}</p>
+            <p id="touch-ac-display" className="text-lg font-bold text-accent">{touchAC}</p>
           </div>
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
             <div className="flex items-center">
@@ -172,7 +172,7 @@ export function ArmorClassPanel({ character, onCharacterUpdate, onOpenAcBreakdow
                 <Info className="h-4 w-4" />
               </Button>
             </div>
-            <p id="flat-footed-ac-display" className="text-3xl font-bold text-accent">{flatFootedAC}</p>
+            <p id="flat-footed-ac-display" className="text-lg font-bold text-accent">{flatFootedAC}</p>
           </div>
 
           <Separator className="my-3" />
