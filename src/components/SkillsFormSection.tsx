@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollText, Pencil, Info, Loader2 } from 'lucide-react';
+import { ScrollText, Info, Loader2 } from 'lucide-react'; // Removed Pencil
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -75,7 +75,6 @@ const DebouncedSkillRankInput: React.FC<{
       value={localRank} 
       onChange={setLocalRank} 
       min={0}
-      // max={maxRanksValue} // MAX PROP REMOVED
       step={currentStepForInput}
       inputClassName="w-14 h-7 text-sm"
       buttonSize="sm"
@@ -85,7 +84,7 @@ const DebouncedSkillRankInput: React.FC<{
 };
 
 
-export const SkillsFormSection = ({
+const SkillsFormSectionComponent = ({
   skillsData,
   actualAbilityScores,
   allFeatDefinitions,
@@ -200,12 +199,6 @@ export const SkillsFormSection = ({
     }).sort((a,b) => a.name.localeCompare(b.name));
   }, [characterSkillInstances, allCombinedSkillDefinitions]);
 
-
-  const handleOpenEditDialog = (skillDisplayInfo: SkillDisplayInfo) => {
-    if (skillDisplayInfo.isCustom) {
-      onEditCustomSkillDefinition(skillDisplayInfo.id);
-    }
-  };
 
   const handleTriggerSkillInfoDialog = (skillId: string) => {
     onOpenSkillInfoDialog(skillId);
@@ -371,29 +364,6 @@ export const SkillsFormSection = ({
                               <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 ml-1.5 font-normal whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>
                           )}
                       </Label>
-                    {skillDef.isCustom && (
-                      <div className="flex items-center ml-auto">
-                        <TooltipProvider delayDuration={100}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                               <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="h-5 w-5 text-muted-foreground hover:text-foreground"
-                                onClick={() => handleOpenEditDialog(skillInstanceProp as SkillDisplayInfo)}
-                                aria-label={(UI_STRINGS.skillsTableTooltipEditCustom || "Edit Custom Skill Definition").replace("{skillName}", skillDef.name)}
-                              >
-                                <Pencil className="h-3 w-3" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="p-1 text-xs">
-                              <p>{UI_STRINGS.skillsTableTooltipEditCustom || "Edit Custom Skill Definition"}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                       </div>
-                    )}
                   </div>
                   <span className="font-bold text-accent text-lg text-center w-12">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
                   <span className="text-sm text-muted-foreground text-center w-10">{keyAbilityDisplay}</span>
@@ -424,7 +394,7 @@ export const SkillsFormSection = ({
     </>
   );
 };
+SkillsFormSectionComponent.displayName = 'SkillsFormSectionComponent';
 
-SkillsFormSection.displayName = 'SkillsFormSectionComponent';
-
+export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
     
