@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare, ShieldSlash, Weight } from 'lucide-react';
+import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare, ShieldOff, Weight } from 'lucide-react'; // Changed ShieldSlash to ShieldOff
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
@@ -110,7 +110,7 @@ interface InfoDisplayDialogProps {
 const DIALOG_ICONS: Record<string, React.ElementType> = {
   land: Wind, burrow: Shell, climb: MoveVertical, fly: Feather, swim: Waves,
   skillModifierBreakdown: SparklesIcon,
-  armorSpeedPenaltyBreakdown: ShieldSlash,
+  armorSpeedPenaltyBreakdown: ShieldOff, // Changed ShieldSlash to ShieldOff
   loadSpeedPenaltyBreakdown: Weight,
   default: Info,
 };
@@ -463,43 +463,45 @@ export function InfoDisplayDialog({
         const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
         const details: AcBreakdownDetailItem[] = [];
         
-        const acCalculatedMiscModifier = 0; 
-        const temporaryAcModifier = character.acMiscModifier || 0;
+        const acCalculatedMiscModifier = 0; // This will be the "Misc Modifier" from feats, spells, etc.
+        const temporaryAcModifier = character.acMiscModifier || 0; // This is from the spinner input
 
-        details.push({ label: UI_STRINGS.acBreakdownBaseLabel, value: 10 });
+        details.push({ label: UI_STRINGS.acBreakdownBaseLabel || "Base", value: 10 });
 
         if (contentType.acType === 'Normal' || contentType.acType === 'Touch') {
           details.push({
-            label: UI_STRINGS.infoDialogAcAbilityLabel,
+            label: UI_STRINGS.infoDialogAcAbilityLabel || "Ability Modifier", // Should now pick up "Mod. de caract."
             value: dexMod,
             type: 'acAbilityMod',
             abilityAbbr: ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX'
           });
         }
         details.push({
-          label: UI_STRINGS.infoDialogSizeModifierLabel,
+          label: UI_STRINGS.infoDialogSizeModifierLabel || "Size Modifier",
           value: sizeModACVal,
           type: 'acSizeMod',
           sizeName: sizeLabel
         });
 
         if (contentType.acType === 'Normal' || contentType.acType === 'Flat-Footed') {
-          if (character.armorBonus) details.push({ label: UI_STRINGS.acBreakdownArmorBonusLabel, value: character.armorBonus });
-          if (character.shieldBonus) details.push({ label: UI_STRINGS.acBreakdownShieldBonusLabel, value: character.shieldBonus });
-          if (character.naturalArmor) details.push({ label: UI_STRINGS.acBreakdownNaturalArmorLabel, value: character.naturalArmor });
+          if (character.armorBonus) details.push({ label: UI_STRINGS.acBreakdownArmorBonusLabel || "Armor Bonus", value: character.armorBonus });
+          if (character.shieldBonus) details.push({ label: UI_STRINGS.acBreakdownShieldBonusLabel || "Shield Bonus", value: character.shieldBonus });
+          if (character.naturalArmor) details.push({ label: UI_STRINGS.acBreakdownNaturalArmorLabel || "Natural Armor", value: character.naturalArmor });
         }
-        if (character.deflectionBonus) details.push({ label: UI_STRINGS.acBreakdownDeflectionBonusLabel, value: character.deflectionBonus });
+        if (character.deflectionBonus) details.push({ label: UI_STRINGS.acBreakdownDeflectionBonusLabel || "Deflection Bonus", value: character.deflectionBonus });
         
-        if (acCalculatedMiscModifier !== 0) { // Will only show if not 0
-          details.push({ label: UI_STRINGS.acBreakdownCalculatedMiscLabel, value: acCalculatedMiscModifier });
+        // New "Misc Modifier" (calculated from effects, currently 0)
+        if (acCalculatedMiscModifier !== 0) {
+          details.push({ label: UI_STRINGS.acBreakdownCalculatedMiscLabel || "Misc Modifier", value: acCalculatedMiscModifier });
         }
 
         if ((contentType.acType === 'Normal' || contentType.acType === 'Touch') && character.dodgeBonus) {
-          details.push({ label: UI_STRINGS.acBreakdownDodgeBonusLabel, value: character.dodgeBonus });
+          details.push({ label: UI_STRINGS.acBreakdownDodgeBonusLabel || "Dodge Bonus", value: character.dodgeBonus });
         }
         
-        if (temporaryAcModifier !== 0) { // Will only show if not 0
-          details.push({ label: UI_STRINGS.armorClassTempModifierLabel, value: temporaryAcModifier });
+        // Existing "Temporary Modifier" (from input)
+        if (temporaryAcModifier !== 0) { 
+          details.push({ label: UI_STRINGS.armorClassTempModifierLabel || "Temporary Modifier", value: temporaryAcModifier });
         }
         
         let totalCalculated = 10;
@@ -507,8 +509,12 @@ export function InfoDisplayDialog({
         else if (contentType.acType === 'Touch') totalCalculated = 10 + dexMod + sizeModACVal + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (acCalculatedMiscModifier || 0) + (temporaryAcModifier || 0);
         else if (contentType.acType === 'Flat-Footed') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (acCalculatedMiscModifier || 0) + (temporaryAcModifier || 0);
 
+        const titleTemplate = UI_STRINGS.infoDialogTitleAcBreakdown || "AC Breakdown ({acType})";
+        const acTypeLabel = contentType.acType === 'Normal' ? (UI_STRINGS.armorClassNormalLabel || 'Normal') 
+                          : contentType.acType === 'Touch' ? (UI_STRINGS.armorClassTouchLabel || 'Touch')
+                          : (UI_STRINGS.armorClassFlatFootedLabel || 'Flat-Footed');
 
-        data = { title: (UI_STRINGS.infoDialogTitleAcBreakdown || "{acType} AC Breakdown").replace("{acType}", contentType.acType), content: [AcBreakdownContentDisplay({detailsList: details, totalACValue: totalCalculated, detailsListHeading, uiStrings: UI_STRINGS, abilityLabels: ABILITY_LABELS })] };
+        data = { title: titleTemplate.replace("{acType}", acTypeLabel), content: [AcBreakdownContentDisplay({detailsList: details, totalACValue: totalCalculated, detailsListHeading, uiStrings: UI_STRINGS, abilityLabels: ABILITY_LABELS })] };
         break;
       }
       case 'babBreakdown': {
@@ -712,3 +718,4 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
+

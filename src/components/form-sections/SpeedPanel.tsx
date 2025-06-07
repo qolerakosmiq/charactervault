@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Wind, Waves, MoveVertical, Shell, Feather, Info, Loader2, ShieldSlash, Weight } from 'lucide-react';
+import { Wind, Waves, MoveVertical, Shell, Feather, Info, Loader2, ShieldOff, Weight } from 'lucide-react'; // Changed ShieldSlash to ShieldOff
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -197,7 +197,7 @@ export function SpeedPanel({
           {/* Armor Penalty Card */}
           <div className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
             <div className="flex items-center justify-center">
-              <ShieldSlash className="h-5 w-5 mr-1.5 text-muted-foreground" />
+              <ShieldOff className="h-5 w-5 mr-1.5 text-muted-foreground" /> {/* Corrected Icon */}
               <span className="text-sm font-medium">{UI_STRINGS.armorPenaltyCardTitle}</span>
             </div>
             <div className="flex items-center justify-center space-x-1 h-9">
