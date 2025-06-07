@@ -45,17 +45,17 @@ export const AcBreakdownContentDisplay: React.FC<AcBreakdownContentDisplayProps>
 
         if (detail.type === 'acAbilityMod' && detail.abilityAbbr) {
           labelContent = (
-            <>
-              <span className="text-foreground">{detail.label}</span>
-              <span className="text-xs text-muted-foreground ml-1">({detail.abilityAbbr})</span>
-            </>
+            <span className="text-foreground">
+              {detail.label}
+              <span className="text-muted-foreground"> ({detail.abilityAbbr})</span>
+            </span>
           );
         } else if (detail.type === 'acSizeMod' && detail.sizeName) {
           labelContent = (
-            <>
-              <span className="text-foreground">{detail.label}</span>
-              <small className="text-muted-foreground ml-1">({detail.sizeName})</small>
-            </>
+            <span className="text-foreground">
+              {detail.label}
+              <small className="text-muted-foreground"> ({detail.sizeName})</small>
+            </span>
           );
         }
 
