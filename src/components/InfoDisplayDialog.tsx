@@ -58,7 +58,7 @@ import { DeityContentDisplay } from './info-dialog-content/DeityContentDisplay';
 import { AbilityScoreBreakdownContentDisplay } from './info-dialog-content/AbilityScoreBreakdownContentDisplay';
 import { SkillModifierBreakdownContentDisplay } from './info-dialog-content/SkillModifierBreakdownContentDisplay';
 import { ResistanceBreakdownContentDisplay } from './info-dialog-content/ResistanceBreakdownContentDisplay';
-import { AcBreakdownContentDisplay } from './info-dialog-content/AcBreakdownContentDisplay';
+import { AcBreakdownContentDisplay, type AcBreakdownDetailItem } from './info-dialog-content/AcBreakdownContentDisplay';
 import { BabBreakdownContentDisplay } from './info-dialog-content/BabBreakdownContentDisplay';
 import { InitiativeBreakdownContentDisplay } from './info-dialog-content/InitiativeBreakdownContentDisplay';
 import { GrappleModifierBreakdownContentDisplay } from './info-dialog-content/GrappleModifierBreakdownContentDisplay';
@@ -196,12 +196,7 @@ export function InfoDisplayDialog({
         const raceData = DND_RACES.find(r => r.value === raceId);
         const qualities = getRaceSpecialQualities(raceId, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, SKILL_DEFINITIONS, PREDEFINED_FEATS, ABILITY_LABELS);
         const racialSkillPointBonus = getRaceSkillPointsBonusPerLevel(raceId, DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA);
-        const details: Array<{ label: string; value: string | number | React.ReactNode; isBold?: boolean }> = [];
-
-        if (racialSkillPointBonus > 0) {
-          details.push({ label: UI_STRINGS.infoDialogRacialSkillPointBonusLabel || "Bonus Skill Points/Level", value: racialSkillPointBonus });
-        }
-
+        
         let raceBonusFeatSlotsValue = qualities.bonusFeatSlots;
         if (raceBonusFeatSlotsValue !== undefined && raceBonusFeatSlotsValue <= 0) {
             raceBonusFeatSlotsValue = undefined;
@@ -456,15 +451,25 @@ export function InfoDisplayDialog({
         const dexMod = calculateAbilityModifier(detailedCharScores.dexterity.finalScore);
         const sizeModACVal = getSizeModifierAC(character.size, SIZES);
         const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
-        const details: Array<{ label: string; value: string | number | React.ReactNode; isBold?: boolean }> = [];
+        const details: AcBreakdownDetailItem[] = [];
         let totalCalculated = 10;
 
         details.push({ label: UI_STRINGS.acBreakdownBaseLabel || 'Base', value: 10 });
 
         if (contentType.acType === 'Normal' || contentType.acType === 'Touch') {
-          details.push({ label: (UI_STRINGS.infoDialogInitiativeAbilityModLabel || "{abilityAbbr} ({abilityFull}) Modifier:").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX').replace("{abilityFull}", ABILITY_LABELS.find(al => al.value === 'dexterity')?.label || 'Dexterity'), value: dexMod });
+          details.push({
+            label: UI_STRINGS.infoDialogAcAbilityLabel || "Ability Modifier", // Updated string key
+            value: dexMod,
+            type: 'acAbilityMod',
+            abilityAbbr: ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX'
+          });
         }
-        details.push({ label: `${(UI_STRINGS.infoDialogSizeModifierLabel || "Size Modifier")} (${sizeLabel})`, value: sizeModACVal });
+        details.push({
+          label: UI_STRINGS.infoDialogSizeModifierLabel || "Size Modifier",
+          value: sizeModACVal,
+          type: 'acSizeMod',
+          sizeName: sizeLabel
+        });
 
         if (contentType.acType === 'Normal' || contentType.acType === 'Flat-Footed') {
           if (character.armorBonus) details.push({ label: UI_STRINGS.acBreakdownArmorBonusLabel || 'Armor Bonus', value: character.armorBonus });
@@ -476,7 +481,8 @@ export function InfoDisplayDialog({
           details.push({ label: UI_STRINGS.acBreakdownDodgeBonusLabel || 'Dodge Bonus', value: character.dodgeBonus });
         }
 
-        if (character.acMiscModifier) details.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || 'Custom Modifier', value: character.acMiscModifier });
+        if (character.acMiscModifier) details.push({ label: UI_STRINGS.armorClassMiscModifierLabel || 'Misc Modifier', value: character.acMiscModifier });
+
 
         if (contentType.acType === 'Normal') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + dexMod + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (character.acMiscModifier || 0);
         else if (contentType.acType === 'Touch') totalCalculated = 10 + dexMod + sizeModACVal + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (character.acMiscModifier || 0);
@@ -611,7 +617,6 @@ export function InfoDisplayDialog({
         </React.Fragment>
       ));
     }
-    // If content is not an array (e.g., directly a single ReactNode from RaceContentDisplay/ClassContentDisplay if they don't return arrays)
     return contentBlocks;
   };
 
@@ -644,3 +649,4 @@ interface DerivedDialogData {
   title: string;
   content?: React.ReactNode | React.ReactNode[];
 }
+

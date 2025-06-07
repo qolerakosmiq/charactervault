@@ -5,13 +5,23 @@ import React from 'react';
 import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import type { AbilityName } from '@/types/character';
+
+export interface AcBreakdownDetailItem {
+  label: string;
+  value: string | number | React.ReactNode;
+  isBold?: boolean;
+  type?: 'acAbilityMod' | 'acSizeMod';
+  abilityAbbr?: string; // e.g., "DEX"
+  sizeName?: string;    // e.g., "Medium"
+}
 
 interface AcBreakdownContentDisplayProps {
-  detailsList?: Array<{ label: string; value: string | number | React.ReactNode; isBold?: boolean }>;
+  detailsList?: AcBreakdownDetailItem[];
   totalACValue?: number;
   detailsListHeading: string;
   uiStrings: Record<string, string>;
-  abilityLabels: readonly { value: string; label: string; abbr: string }[]; // For parsing ability names
+  abilityLabels: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
 }
 
 export const AcBreakdownContentDisplay: React.FC<AcBreakdownContentDisplayProps> = ({
@@ -27,25 +37,28 @@ export const AcBreakdownContentDisplay: React.FC<AcBreakdownContentDisplayProps>
     <div>
       <h3 className={sectionHeadingClass}>{detailsListHeading}</h3>
       {detailsList.map((detail, index) => {
-        const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string)))) && !detail.label.toLowerCase().includes('base attack bonus')
+        const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string)))) && !String(detail.label).toLowerCase().includes('base attack bonus')
             ? renderModifierValue(detail.value as number | string)
             : detail.value;
         
         let labelContent: React.ReactNode = <span className="text-foreground">{detail.label}</span>;
-        if (typeof detail.label === 'string') {
-          const abilityMatch = (detail.label as string).match(/{(abilityAbbr|abilityFull)}\s\({(abilityAbbr|abilityFull)}\)\sModifier:/);
-          if (abilityMatch) {
-              const abilityKey = (detail.label as string).toLowerCase().includes("dexterity") ? 'dexterity' : 'strength'; 
-              const abilityLabelInfo = abilityLabels.find(al => al.value === abilityKey);
-              const abbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
-              const full = abilityLabelInfo?.label || abilityKey.charAt(0).toUpperCase() + abilityKey.slice(1);
-              labelContent = (
-                  <span className="text-foreground">
-                      {(uiStrings.infoDialogInitiativeAbilityModLabel || "{abilityAbbr} ({abilityFull}) Modifier:").replace("{abilityAbbr}", abbr).replace("{abilityFull}", full)}
-                  </span>
-              );
-          }
+
+        if (detail.type === 'acAbilityMod' && detail.abilityAbbr) {
+          labelContent = (
+            <>
+              <span className="text-foreground">{detail.label}</span>
+              <span className="text-xs text-muted-foreground ml-1">({detail.abilityAbbr})</span>
+            </>
+          );
+        } else if (detail.type === 'acSizeMod' && detail.sizeName) {
+          labelContent = (
+            <>
+              <span className="text-foreground">{detail.label}</span>
+              <small className="text-muted-foreground ml-1">({detail.sizeName})</small>
+            </>
+          );
         }
+
 
         return (
           <div key={index} className="flex justify-between text-sm mb-0.5">
