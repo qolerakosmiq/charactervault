@@ -1,6 +1,4 @@
 
-
-
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -286,9 +284,6 @@ export function calculateAvailableFeats(
         classBonusFeats += 1;
       }
     }
-    // Note: Monk bonus feats are typically specific choices, not generic slots.
-    // Handling specific monk bonus feats would require knowing which feat they picked.
-    // For now, this calculator focuses on general feat slots.
   });
 
   const totalFeats = baseFeat + racialBonus + levelProgressionFeats + classBonusFeats;
@@ -412,20 +407,20 @@ export function checkFeatPrerequisites(
     let isMet = false;
     const requiredAlignmentLabel = ALIGNMENT_PREREQUISITE_OPTIONS.find(opt => opt.value === reqAlign)?.label || reqAlign;
 
-    if (charAlign === '') { // If character has no alignment, they don't meet any alignment prereq
+    if (charAlign === '') { 
         isMet = false;
-    } else if (reqAlign.includes('-')) { // Specific alignment like "lawful-good"
+    } else if (reqAlign.includes('-')) { 
         isMet = charAlign === reqAlign;
-    } else { // Generic alignment like "lawful", "good", "neutral-lc", "neutral-ge"
-        const charParts = charAlign.split('-'); // e.g., ['lawful', 'good']
+    } else { 
+        const charParts = charAlign.split('-'); 
         if (charParts.length === 2) {
             if (reqAlign === 'lawful' && charParts[0] === 'lawful') isMet = true;
             else if (reqAlign === 'chaotic' && charParts[0] === 'chaotic') isMet = true;
             else if (reqAlign === 'good' && charParts[1] === 'good') isMet = true;
             else if (reqAlign === 'evil' && charParts[1] === 'evil') isMet = true;
-            else if (reqAlign === 'neutral-lc' && charParts[0] === 'neutral') isMet = true; // Neutral on Law/Chaos axis
-            else if (reqAlign === 'neutral-ge' && charParts[1] === 'neutral') isMet = true; // Neutral on Good/Evil axis
-        } else if (charAlign === 'true-neutral') { // Special case for "true-neutral"
+            else if (reqAlign === 'neutral-lc' && charParts[0] === 'neutral') isMet = true; 
+            else if (reqAlign === 'neutral-ge' && charParts[1] === 'neutral') isMet = true; 
+        } else if (charAlign === 'true-neutral') { 
             if (reqAlign === 'neutral-lc' || reqAlign === 'neutral-ge' || reqAlign === 'true-neutral') isMet = true;
         }
     }
@@ -548,19 +543,19 @@ export function calculateDetailedAbilityScores(
     if (racialModObj && racialModObj.change !== 0) {
       currentScore += racialModObj.change;
       const raceLabel = DND_RACES.find(r => r.value === character.race)?.label || character.race || 'Unknown Race';
-      components.push({ source: `Race (${raceLabel})`, value: racialModObj.change }); // source is already dynamic and potentially translated
+      components.push({ source: `Race (${raceLabel})`, value: racialModObj.change }); 
     }
 
     const agingModObj = agingDetails.effects.find(eff => eff.ability === ability);
     if (agingModObj && agingModObj.change !== 0) {
       currentScore += agingModObj.change;
-      components.push({ source: `Aging (${agingDetails.categoryName})`, value: agingModObj.change }); // source is already dynamic
+      components.push({ source: `Aging (${agingDetails.categoryName})`, value: agingModObj.change }); 
     }
 
     const tempCustomModValue = tempCustomModifiers[ability];
     if (tempCustomModValue !== 0 && tempCustomModValue !== undefined) {
       currentScore += tempCustomModValue;
-      components.push({ source: "tempMod", value: tempCustomModValue }); // Use key for translation
+      components.push({ source: "tempMod", value: tempCustomModValue }); 
     }
 
     let featTotalMod = 0;
@@ -575,7 +570,7 @@ export function calculateDetailedAbilityScores(
     }
     if (featTotalMod !== 0) {
       currentScore += featTotalMod;
-      components.push({ source: "feats", value: featTotalMod }); // Use key for translation
+      components.push({ source: "feats", value: featTotalMod }); 
     }
 
     result[ability] = {
@@ -590,13 +585,13 @@ const alignmentAxisMap: Record<string, number> = {
   lawful: 0, chaotic: 2,
   good: 0, evil: 2,
   neutral: 1,
-  'true-neutral': 1, // Will be handled by parseAlignment
+  'true-neutral': 1, 
 };
 
 function getAlignmentAxisValue(part: string): number {
-  if (part === 'neutral' && alignmentAxisMap[part] === undefined) return 1; // default for neutral part
-  if (part === 'true' && alignmentAxisMap[part] === undefined) return 1; // part of 'true-neutral'
-  return alignmentAxisMap[part] ?? 1; // default to neutral if not found
+  if (part === 'neutral' && alignmentAxisMap[part] === undefined) return 1; 
+  if (part === 'true' && alignmentAxisMap[part] === undefined) return 1; 
+  return alignmentAxisMap[part] ?? 1; 
 }
 
 export function isAlignmentCompatible(
@@ -604,14 +599,14 @@ export function isAlignmentCompatible(
   deityAlignmentString: CharacterAlignment
 ): boolean {
   if (!characterAlignment || !deityAlignmentString) {
-    return true; // No alignment or no deity alignment means compatible by default
+    return true; 
   }
 
   const parseAlignment = (alignStr: CharacterAlignment) => {
     if (alignStr === 'true-neutral') {
-      return { lc: 1, ge: 1 }; // Law/Chaos axis, Good/Evil axis
+      return { lc: 1, ge: 1 }; 
     }
-    const parts = alignStr.split('-'); // e.g., "lawful-good" -> ["lawful", "good"]
+    const parts = alignStr.split('-'); 
     return {
       lc: getAlignmentAxisValue(parts[0]),
       ge: getAlignmentAxisValue(parts[1]),
@@ -624,7 +619,6 @@ export function isAlignmentCompatible(
   const lcDiff = Math.abs(charAlignNumeric.lc - deityAlignNumeric.lc);
   const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
 
-  // Within one step on each axis
   return lcDiff <= 1 && geDiff <= 1;
 }
 
@@ -650,8 +644,8 @@ export function calculateSpeedBreakdown(
     baseSpeedFromRace = (sizeData?.value === 'small' || sizeData?.value === 'tiny' || sizeData?.value === 'diminutive' || sizeData?.value === 'fine') ? 20 : 30;
   }
   
-  const baseLabelText = uiStrings.savingThrowsRowLabelBase || "Base"; 
-  components.push({ source: `${baseLabelText} (${raceLabel})`, value: baseSpeedFromRace });
+  const baseLabelText = uiStrings.infoDialogSpeedBaseRaceLabel || "Base ({raceName})"; 
+  components.push({ source: baseLabelText.replace("{raceName}", raceLabel), value: baseSpeedFromRace });
   currentTotal += baseSpeedFromRace;
 
   const charSpeedDetails = character[`${speedType}Speed` as keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>];
@@ -682,17 +676,17 @@ export function calculateSpeedBreakdown(
         components.push({ source: uiStrings.infoDialogSpeedBarbarianLabel || "Barbarian Fast Movement", value: 10 });
         currentTotal += 10;
     }
-
-    const effectiveArmorPenalty = (character.armorSpeedPenalty_base || 0) - (character.armorSpeedPenalty_miscModifier || 0);
-    if (effectiveArmorPenalty > 0) { 
-        components.push({ source: uiStrings.infoDialogSpeedArmorPenaltyLabel || "Armor Penalty", value: -effectiveArmorPenalty });
-        currentTotal -= effectiveArmorPenalty;
+    
+    const netArmorEffectOnSpeed = (character.armorSpeedPenalty_miscModifier || 0) - (character.armorSpeedPenalty_base || 0);
+    if (netArmorEffectOnSpeed !== 0) {
+        components.push({ source: uiStrings.armorPenaltyCardTitle || "Armor Penalty Effect", value: netArmorEffectOnSpeed });
+        currentTotal += netArmorEffectOnSpeed;
     }
     
-    const effectiveLoadPenalty = (character.loadSpeedPenalty_base || 0) - (character.loadSpeedPenalty_miscModifier || 0);
-    if (effectiveLoadPenalty > 0) {
-        components.push({ source: uiStrings.infoDialogSpeedLoadPenaltyLabel || "Load Penalty", value: -effectiveLoadPenalty });
-        currentTotal -= effectiveLoadPenalty;
+    const netLoadEffectOnSpeed = (character.loadSpeedPenalty_miscModifier || 0) - (character.loadSpeedPenalty_base || 0);
+    if (netLoadEffectOnSpeed !== 0) {
+        components.push({ source: uiStrings.loadPenaltyCardTitle || "Load Penalty Effect", value: netLoadEffectOnSpeed });
+        currentTotal += netLoadEffectOnSpeed;
     }
   }
   
@@ -712,7 +706,6 @@ export function calculateSpeedBreakdown(
   };
 }
 
-// Helper structure for default character values
 export const DEFAULT_ABILITIES_DATA: AbilityScores = {
   strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10,
 };
@@ -730,19 +723,5 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 };
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
-// It's recommended to also export core types from character-core.ts if they are needed elsewhere
 export * from './character-core';
-
-// Re-export selected constants only if they are defined solely in character-core.ts and NOT i18n-dependent
-// For example, if SIZES or ALIGNMENTS were truly static and not i18n, they could be re-exported.
-// However, given the current setup, they are i18n-dependent and sourced via useI18n.
-// export { SIZES, ALIGNMENTS } from './character-core'; 
-
-
-
-
-
-
-
-
     

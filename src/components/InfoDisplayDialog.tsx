@@ -194,7 +194,7 @@ export function InfoDisplayDialog({
 
     switch (contentType.type) {
       case 'race': {
-        iconKey = 'race'; // Placeholder, specific icons can be added
+        iconKey = 'race'; 
         const raceId = character.race;
         const raceData = DND_RACES.find(r => r.value === raceId);
         const qualities = getRaceSpecialQualities(raceId, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, SKILL_DEFINITIONS, PREDEFINED_FEATS, ABILITY_LABELS);
@@ -463,7 +463,7 @@ export function InfoDisplayDialog({
         const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
         const details: AcBreakdownDetailItem[] = [];
         
-        const acCalculatedMiscModifier = 0; 
+        const acCalculatedMiscModifier = 0; // This will be sourced from other effects later
         const temporaryAcModifier = character.acMiscModifier || 0; 
 
         details.push({ label: UI_STRINGS.acBreakdownBaseLabel || "Base", value: 10 });
@@ -491,7 +491,7 @@ export function InfoDisplayDialog({
         if (character.deflectionBonus) details.push({ label: UI_STRINGS.acBreakdownDeflectionBonusLabel || "Deflection Bonus", value: character.deflectionBonus });
         
         if (acCalculatedMiscModifier !== 0) {
-          details.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier", value: acCalculatedMiscModifier });
+          details.push({ label: UI_STRINGS.acBreakdownCalculatedMiscLabel || "Misc Modifier", value: acCalculatedMiscModifier });
         }
 
         if ((contentType.acType === 'Normal' || contentType.acType === 'Touch') && character.dodgeBonus) {
@@ -602,16 +602,16 @@ export function InfoDisplayDialog({
       }
       case 'armorSpeedPenaltyBreakdown': {
         iconKey = 'armorSpeedPenaltyBreakdown';
-        const armorBase = character.armorSpeedPenalty_base || 0;
-        const armorMisc = character.armorSpeedPenalty_miscModifier || 0;
-        const totalEffectivePenalty = armorBase - armorMisc; // Positive misc reduces penalty
-        const penaltyBreakdown: SpeedBreakdownDetails = {
-            name: UI_STRINGS.totalArmorPenaltyLabel || "Total Armor Penalty",
+        const basePenalty = character.armorSpeedPenalty_base || 0;
+        const miscModifier = character.armorSpeedPenalty_miscModifier || 0;
+        const netEffectOnSpeed = miscModifier - basePenalty;
+        const penaltyBreakdown: SpeedBreakdownDetailsType = {
+            name: UI_STRINGS.totalArmorPenaltyLabel || "Total Armor Penalty Effect",
             components: [
-                { source: UI_STRINGS.speedPenaltyBaseArmorLabel || "Base from Armor", value: armorBase },
-                { source: UI_STRINGS.speedMiscModifierLabel || "Misc Modifier", value: armorMisc }
+                { source: UI_STRINGS.speedPenaltyBaseArmorLabel || "Base from Armor", value: -basePenalty }, // Shown as its effect on speed
+                { source: UI_STRINGS.speedMiscModifierLabel || "Misc Modifier", value: miscModifier } // Shown as its effect on speed
             ],
-            total: totalEffectivePenalty 
+            total: netEffectOnSpeed
         };
         data = {
             title: UI_STRINGS.infoDialogTitleArmorPenaltyBreakdown || "Armor Penalty Breakdown",
@@ -621,16 +621,16 @@ export function InfoDisplayDialog({
       }
       case 'loadSpeedPenaltyBreakdown': {
         iconKey = 'loadSpeedPenaltyBreakdown';
-        const loadBase = character.loadSpeedPenalty_base || 0;
-        const loadMisc = character.loadSpeedPenalty_miscModifier || 0;
-        const totalEffectivePenalty = loadBase - loadMisc; // Positive misc reduces penalty
-        const penaltyBreakdown: SpeedBreakdownDetails = {
-            name: UI_STRINGS.totalLoadPenaltyLabel || "Total Load Penalty",
+        const basePenalty = character.loadSpeedPenalty_base || 0;
+        const miscModifier = character.loadSpeedPenalty_miscModifier || 0;
+        const netEffectOnSpeed = miscModifier - basePenalty;
+        const penaltyBreakdown: SpeedBreakdownDetailsType = {
+            name: UI_STRINGS.totalLoadPenaltyLabel || "Total Load Penalty Effect",
             components: [
-                { source: UI_STRINGS.speedPenaltyBaseLoadLabel || "Base from Load", value: loadBase },
-                { source: UI_STRINGS.speedMiscModifierLabel || "Misc Modifier", value: loadMisc }
+                { source: UI_STRINGS.speedPenaltyBaseLoadLabel || "Base from Load", value: -basePenalty }, // Shown as its effect on speed
+                { source: UI_STRINGS.speedMiscModifierLabel || "Misc Modifier", value: miscModifier }    // Shown as its effect on speed
             ],
-            total: totalEffectivePenalty
+            total: netEffectOnSpeed
         };
         data = {
             title: UI_STRINGS.infoDialogTitleLoadPenaltyBreakdown || "Load Penalty Breakdown",

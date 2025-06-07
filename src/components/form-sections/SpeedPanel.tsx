@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
+import { cn } from '@/lib/utils';
 
 const DEBOUNCE_DELAY = 400;
 
@@ -59,7 +60,6 @@ export function SpeedPanel({
   const debouncedSpeedMods = {} as Record<SpeedType, [number, (val: number) => void]>;
   speedTypesConfig.forEach(config => {
     const fieldKey = `${config.type}Speed.miscModifier` as const;
-     // eslint-disable-next-line react-hooks/rules-of-hooks
     debouncedSpeedMods[config.type] = useDebouncedFormField(
       character[config.fieldKey]?.miscModifier || 0,
       (value) => onCharacterUpdate(fieldKey, value),
@@ -129,9 +129,8 @@ export function SpeedPanel({
   const speedUnit = UI_STRINGS.speedUnit || "ft.";
   const speedStep = parseFloat(UI_STRINGS.speedStepIncrement || "5");
 
-  // Effective penalty = base penalty - misc modifier (positive misc mod reduces penalty)
-  const totalEffectiveArmorPenalty = (character.armorSpeedPenalty_base || 0) - (localArmorPenaltyMiscMod || 0);
-  const totalEffectiveLoadPenalty = (character.loadSpeedPenalty_base || 0) - (localLoadPenaltyMiscMod || 0);
+  const netArmorEffectOnSpeed = (localArmorPenaltyMiscMod || 0) - (character.armorSpeedPenalty_base || 0);
+  const netLoadEffectOnSpeed = (localLoadPenaltyMiscMod || 0) - (character.loadSpeedPenalty_base || 0);
 
 
   return (
@@ -203,8 +202,13 @@ export function SpeedPanel({
               <span className="text-sm font-medium">{UI_STRINGS.armorPenaltyCardTitle}</span>
             </div>
             <div className="flex items-center justify-center space-x-1 h-9">
-              <span className="text-lg font-bold text-destructive">
-                {totalEffectiveArmorPenalty} 
+              <span className={cn(
+                "text-lg font-bold",
+                netArmorEffectOnSpeed > 0 && "text-emerald-500",
+                netArmorEffectOnSpeed < 0 && "text-destructive",
+                netArmorEffectOnSpeed === 0 && "text-accent"
+              )}>
+                {netArmorEffectOnSpeed >= 0 ? '+' : ''}{netArmorEffectOnSpeed} 
               </span>
               <span className="text-base font-normal text-muted-foreground">
                 {speedUnit}
@@ -243,8 +247,13 @@ export function SpeedPanel({
               <span className="text-sm font-medium">{UI_STRINGS.loadPenaltyCardTitle}</span>
             </div>
             <div className="flex items-center justify-center space-x-1 h-9">
-              <span className="text-lg font-bold text-destructive">
-                {totalEffectiveLoadPenalty}
+               <span className={cn(
+                "text-lg font-bold",
+                netLoadEffectOnSpeed > 0 && "text-emerald-500",
+                netLoadEffectOnSpeed < 0 && "text-destructive",
+                netLoadEffectOnSpeed === 0 && "text-accent"
+              )}>
+                {netLoadEffectOnSpeed >= 0 ? '+' : ''}{netLoadEffectOnSpeed}
               </span>
               <span className="text-base font-normal text-muted-foreground">
                 {speedUnit}
@@ -280,5 +289,3 @@ export function SpeedPanel({
     </Card>
   );
 }
-
-    
