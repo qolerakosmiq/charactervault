@@ -128,13 +128,12 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
         </div>
 
         <div>
-          <Label className="text-sm font-medium text-muted-foreground">{UI_STRINGS.languagesPanelKnownLanguagesLabel || "Known Languages:"}</Label>
           {allKnownLanguagesToDisplay.length > 0 ? (
-            <div className="space-y-1 mt-1">
+            <div className="mt-1"> {/* Removed space-y-0.5 */}
               {allKnownLanguagesToDisplay.map(langObj => {
                 const isAutomatic = automaticLanguages.includes(langObj.value);
                 return (
-                  <div key={`known-${langObj.value}`} className="flex items-center justify-between p-1.5 rounded-md text-sm">
+                  <div key={`known-${langObj.value}`} className="flex items-center justify-between py-1 px-1.5 rounded-md text-sm"> {/* Changed p-1.5 to py-1 px-1.5 */}
                     <span>
                       {langObj.label}
                       {isAutomatic && <Badge variant="outline" className="ml-2 text-xs text-muted-foreground border-muted-foreground/50">{UI_STRINGS.languagesPanelAutomaticBadgeLabel || "Automatic"}</Badge>}

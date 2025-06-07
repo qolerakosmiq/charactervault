@@ -392,7 +392,6 @@
     "toastInvalidAbilityScoreDesc": "{abilityName} score must be greater than 0.",
     "languagesPanelTitle": "Languages",
     "languagesPanelDescription": "Manage your character's known languages.",
-    "languagesPanelKnownLanguagesLabel": "Known Languages:",
     "languagesPanelAddButton": "Add Language",
     "languagesPanelNoLanguagesKnown": "No languages currently known.",
     "languagesPanelSlotsAvailableLabel": "Languages Available:",
