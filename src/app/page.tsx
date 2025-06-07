@@ -6,7 +6,7 @@ import type { FeatDefinitionJsonData, Character } from '@/types/character';
 import { CharacterCard } from '@/components/CharacterCard';
 import { Button } from '@/components/ui/button';
 import { useCharacterStore } from '@/lib/character-store';
-import { PlusCircle, Users, Loader2, Settings, Calculator, BookOpenCheck, ShieldPlus } from 'lucide-react';
+import { PlusCircle, Users, Loader2, Settings, Calculator, BookOpenCheck, ShieldPlus, Languages } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useI18n } from '@/context/I18nProvider';
@@ -19,6 +19,7 @@ import { Separator } from '@/components/ui/separator';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 import { useToast } from "@/hooks/use-toast";
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 
 export default function CharacterDashboardPage() {
@@ -184,6 +185,17 @@ export default function CharacterDashboardPage() {
                 <Settings className="mr-3 h-6 w-6 text-primary/70" />
                 {UI_STRINGS.dmSettingsPanelTitle || "Dungeon Master Settings"}
             </h3>
+            <div className="space-y-2 pt-2">
+              <Label htmlFor="dm-language-switcher" className="flex items-center text-sm font-medium">
+                <Languages className="mr-2 h-4 w-4 text-muted-foreground" />
+                {UI_STRINGS.dmSettingsLanguageLabel || "Game Language"}
+              </Label>
+              <LanguageSwitcher />
+              <p className="text-xs text-muted-foreground pl-6">
+                {UI_STRINGS.dmSettingsLanguageDescription || "Affects game data like unit conversions and default names."}
+              </p>
+            </div>
+            <Separator className="my-4" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                 <div className="space-y-2">
                     <Label htmlFor="dm-reroll-ones" className="flex items-center">
@@ -260,3 +272,5 @@ export default function CharacterDashboardPage() {
     </>
   );
 }
+
+    
