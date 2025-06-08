@@ -609,6 +609,9 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
   const handleOpenSpeedInfoDialog = React.useCallback((speedType: SpeedType) => { openInfoDialog({ type: 'speedBreakdown', speedType }); }, [openInfoDialog]);
   const handleOpenArmorSpeedPenaltyInfoDialog = React.useCallback(() => openInfoDialog({ type: 'armorSpeedPenaltyBreakdown' }), [openInfoDialog]);
   const handleOpenLoadSpeedPenaltyInfoDialog = React.useCallback(() => openInfoDialog({ type: 'loadSpeedPenaltyBreakdown' }), [openInfoDialog]);
+  const handleOpenResistanceInfoDialog = React.useCallback((resistanceField: ResistanceFieldKeySheet) => {
+    openInfoDialog({ type: 'resistanceBreakdown', resistanceField });
+  }, [openInfoDialog]);
 
   const handleOpenSavingThrowInfoDialog = React.useCallback((contentType: InfoDialogContentType) => {
     openInfoDialog(contentType);
@@ -891,4 +894,3 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
   );
 };
     
-

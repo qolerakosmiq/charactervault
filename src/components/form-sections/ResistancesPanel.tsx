@@ -12,8 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { useI18n } from '@/context/I18nProvider'; 
-import { Skeleton } from '@/components/ui/skeleton'; 
+import { useI18n } from '@/context/I18nProvider';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 
 const DEBOUNCE_DELAY = 400;
@@ -107,7 +107,9 @@ export const ResistancesPanel = ({ characterData, onResistanceChange, onDamageRe
   const { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS, UI_STRINGS } = translations;
   
   const handleTriggerResistanceInfoDialog = (field: ResistanceFieldKeySheet) => {
-    onOpenResistanceInfoDialog(field);
+    if (onOpenResistanceInfoDialog) {
+      onOpenResistanceInfoDialog(field);
+    }
   };
 
   const handleAddDamageReduction = () => {
@@ -422,3 +424,4 @@ export const ResistancesPanel = ({ characterData, onResistanceChange, onDamageRe
   );
 };
 // ResistancesPanel.displayName = 'ResistancesPanelComponent';
+
