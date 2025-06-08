@@ -553,14 +553,14 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     }
   }, []);
 
-  const handleSavingThrowMiscModChange = React.useCallback((saveType: SavingThrowType, value: number) => {
+  const handleSavingThrowTemporaryModChange = React.useCallback((saveType: SavingThrowType, value: number) => {
     setCharacter(prev => prev ? ({
       ...prev,
       savingThrows: {
         ...prev.savingThrows,
         [saveType]: {
           ...prev.savingThrows[saveType],
-          miscMod: value,
+          miscMod: value, // This is the temporary modifier
         },
       },
     }) : null);
@@ -609,12 +609,13 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
   const handleOpenSpeedInfoDialog = React.useCallback((speedType: SpeedType) => { openInfoDialog({ type: 'speedBreakdown', speedType }); }, [openInfoDialog]);
   const handleOpenArmorSpeedPenaltyInfoDialog = React.useCallback(() => openInfoDialog({ type: 'armorSpeedPenaltyBreakdown' }), [openInfoDialog]);
   const handleOpenLoadSpeedPenaltyInfoDialog = React.useCallback(() => openInfoDialog({ type: 'loadSpeedPenaltyBreakdown' }), [openInfoDialog]);
-  const handleOpenResistanceInfoDialog = React.useCallback((resistanceField: ResistanceFieldKeySheet) => {
-    openInfoDialog({ type: 'resistanceBreakdown', resistanceField });
-  }, [openInfoDialog]);
-
+  
   const handleOpenSavingThrowInfoDialog = React.useCallback((contentType: InfoDialogContentType) => {
     openInfoDialog(contentType);
+  }, [openInfoDialog]);
+  
+  const handleOpenResistanceInfoDialog = React.useCallback((resistanceField: ResistanceFieldKeySheet) => {
+    openInfoDialog({ type: 'resistanceBreakdown', resistanceField });
   }, [openInfoDialog]);
 
 
@@ -799,7 +800,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
             savingThrowsData={savingThrowsData}
             abilityScores={actualAbilityScoresForSavesAndSkills}
             aggregatedFeatEffects={aggregatedFeatEffects}
-            onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
+            onSavingThrowTemporaryModChange={handleSavingThrowTemporaryModChange}
             onOpenInfoDialog={handleOpenSavingThrowInfoDialog}
         />
 

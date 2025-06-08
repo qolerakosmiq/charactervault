@@ -20,9 +20,9 @@ export interface SavingThrowBreakdownDetails {
   abilityKey: Exclude<AbilityName, 'none'> | undefined; 
   abilityMod: number;
   magicMod: number;
-  userMiscModifier: number; // This is the "Temporary Modifier" from the panel
-  featBonusTotal: number; // Sum of all feat contributions for this save
-  featComponents: SavingThrowFeatComponent[]; // Individual feat contributions
+  userTemporaryModifier: number; // Renamed from userMiscModifier
+  featBonusTotal: number; 
+  featComponents: SavingThrowFeatComponent[]; 
   totalSave: number;
 }
 
@@ -65,16 +65,11 @@ export const SavingThrowBreakdownContentDisplay = ({
             {renderModifierValue(breakdown.magicMod)}
           </div>
         )}
-        {breakdown.userMiscModifier !== 0 && (
-            <div className="flex justify-between">
-                <span>{uiStrings.savingThrowsRowLabelTemporaryModifier || "Temporary Modifier"}</span>
-                {renderModifierValue(breakdown.userMiscModifier)}
-            </div>
-        )}
+        
         {breakdown.featComponents.length > 0 && (
             <>
                 <div className="pt-1">
-                    <span className="font-medium text-muted-foreground">{uiStrings.savingThrowsFeatContributionsLabel || "Feat Contributions"}:</span>
+                    <span className="font-medium text-muted-foreground">{uiStrings.infoDialogMiscContributionsLabel || "Misc. Modifier Details"}:</span>
                 </div>
                 {breakdown.featComponents.map((featComp, index) => (
                     <div key={`feat-${index}-${featComp.sourceFeat}`} className="flex justify-between pl-2">
@@ -85,13 +80,20 @@ export const SavingThrowBreakdownContentDisplay = ({
                         <span className="text-xs">{renderModifierValue(featComp.value)}</span>
                     </div>
                 ))}
-                 {breakdown.featComponents.length > 0 && breakdown.featBonusTotal !== 0 && ( 
+                 {breakdown.featBonusTotal !== 0 && ( 
                     <div className="flex justify-between pl-2">
-                        <span className="italic font-medium text-xs">{uiStrings.infoDialogTotalLabelFeats || "Total (from feats)"}</span>
+                        <span className="italic font-medium text-xs">{uiStrings.infoDialogTotalLabelMisc || "Total (from misc. sources)"}</span>
                         <span className="font-medium text-xs">{renderModifierValue(breakdown.featBonusTotal)}</span>
                     </div>
                  )}
             </>
+        )}
+
+        {breakdown.userTemporaryModifier !== 0 && (
+            <div className="flex justify-between">
+                <span>{uiStrings.savingThrowsRowLabelTemporaryModifier || "Temporary Modifier"}</span>
+                {renderModifierValue(breakdown.userTemporaryModifier)}
+            </div>
         )}
 
         <div style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}><Separator /></div>

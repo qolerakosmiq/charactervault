@@ -114,7 +114,7 @@ const DIALOG_ICONS: Record<string, React.ElementType> = {
   skillModifierBreakdown: SparklesIcon,
   armorSpeedPenaltyBreakdown: ShieldOff,
   loadSpeedPenaltyBreakdown: Weight,
-  fortitude: Zap, reflex: Zap, will: Zap, // Individual save types can map to Zap
+  fortitude: Zap, reflex: Zap, will: Zap,
   error: AlertTriangle,
   default: Info,
 };
@@ -206,12 +206,11 @@ export function InfoDisplayDialog({
 
     switch (contentType.type) {
       case 'race': {
-        iconKey = 'race';
+        iconKey = 'race'; // This key needs to exist in DIALOG_ICONS or be handled by default
         const raceId = character.race;
         const raceData = DND_RACES.find(r => r.value === raceId);
         const qualities = getRaceSpecialQualities(raceId, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, SKILL_DEFINITIONS, PREDEFINED_FEATS, ABILITY_LABELS);
-        const racialSkillPointBonus = getRaceSkillPointsBonusPerLevel(raceId, DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA);
-
+        
         let raceBonusFeatSlotsValue = qualities.bonusFeatSlots;
         if (raceBonusFeatSlotsValue !== undefined && raceBonusFeatSlotsValue <= 0) {
             raceBonusFeatSlotsValue = undefined;
@@ -237,7 +236,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'class': {
-        iconKey = 'class';
+        iconKey = 'class'; // This key needs to exist in DIALOG_ICONS or be handled by default
         const classId = character.classes[0]?.className;
         const classData = DND_CLASSES.find(c => c.value === classId);
         const classSpecificDetails: Array<{ label: string; value: string | number; isBold?: boolean }> = [];
@@ -277,14 +276,14 @@ export function InfoDisplayDialog({
         break;
       }
       case 'alignmentSummary':
-        iconKey = 'alignmentSummary';
+        iconKey = 'alignmentSummary'; // This key needs to exist in DIALOG_ICONS or be handled by default
         data = {
           title: UI_STRINGS.infoDialogAlignmentsTitle || 'Alignments',
           content: [AlignmentSummaryContentDisplay({htmlContent: ALIGNMENTS.map(a => `<p><b>${a.label}:</b><br />${a.description}</p>`).join('')})],
         };
         break;
       case 'deity':
-        iconKey = 'deity';
+        iconKey = 'deity'; // This key needs to exist in DIALOG_ICONS or be handled by default
         const deityId = character.deity;
         const deityData = DND_DEITIES.find(d => d.value === deityId);
         if (deityData) {
@@ -296,7 +295,7 @@ export function InfoDisplayDialog({
         }
         break;
       case 'abilityScoreBreakdown': {
-        iconKey = 'abilityScoreBreakdown';
+        iconKey = 'abilityScoreBreakdown'; // This key needs to exist in DIALOG_ICONS or be handled by default
         const abilityKeyForTitle = contentType.abilityName as Exclude<AbilityName, 'none'>;
         const abilityLabelForTitle = ABILITY_LABELS.find(al => al.value === abilityKeyForTitle);
         const abilityNameString = abilityLabelForTitle?.label || abilityKeyForTitle;
@@ -443,7 +442,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'resistanceBreakdown':
-        iconKey = 'resistanceBreakdown';
+        iconKey = 'resistanceBreakdown'; // This key needs to exist in DIALOG_ICONS or be handled by default
         const resistanceValue = character[contentType.resistanceField] as ResistanceValue;
         const resistanceFieldLabelKey = `resistanceLabel${contentType.resistanceField.charAt(0).toUpperCase() + contentType.resistanceField.slice(1).replace('Resistance', '')}` as keyof typeof UI_STRINGS;
         const resistanceLabel = UI_STRINGS[resistanceFieldLabelKey] || contentType.resistanceField.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).replace(' Resistance', '');
@@ -462,7 +461,7 @@ export function InfoDisplayDialog({
         };
         break;
       case 'acBreakdown': {
-        iconKey = 'acBreakdown';
+        iconKey = 'acBreakdown'; // This key needs to exist in DIALOG_ICONS or be handled by default
         const dexMod = calculateAbilityModifier(finalAbilityScores.dexterity);
         const sizeModACVal = getSizeModifierAC(character.size, SIZES);
         const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
@@ -521,7 +520,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'babBreakdown': {
-        iconKey = 'babBreakdown';
+        iconKey = 'babBreakdown'; // This key needs to exist in DIALOG_ICONS or be handled by default
         const baseBabArrayVal = getBab(character.classes, DND_CLASSES);
         data = {
           title: UI_STRINGS.infoDialogTitleBabBreakdown || 'Base Attack Bonus Breakdown',
@@ -531,7 +530,7 @@ export function InfoDisplayDialog({
               miscModifier: character.babMiscModifier || 0,
               totalBab: baseBabArrayVal.map(b => b + (character.babMiscModifier || 0)),
               characterClassLabel: DND_CLASSES.find(c => c.value === character.classes[0]?.className)?.label || character.classes[0]?.className,
-              featAttackBonus: 0,
+              featAttackBonus: 0, // Assuming no direct feat bonus to BAB itself
             },
             uiStrings: UI_STRINGS
           })],
@@ -539,7 +538,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'initiativeBreakdown': {
-        iconKey = 'initiativeBreakdown';
+        iconKey = 'initiativeBreakdown'; // This key needs to exist in DIALOG_ICONS or be handled by default
         const dexMod = calculateAbilityModifier(finalAbilityScores.dexterity);
         data = {
           title: UI_STRINGS.infoDialogTitleInitiativeBreakdown || 'Initiative Breakdown',
@@ -548,7 +547,7 @@ export function InfoDisplayDialog({
               dexModifier: dexMod,
               miscModifier: character.initiativeMiscModifier || 0,
               totalInitiative: calculateInitiative(dexMod, character.initiativeMiscModifier || 0),
-              featBonus: 0,
+              featBonus: 0, // Assuming no direct feat bonus to initiative base
             },
             uiStrings: UI_STRINGS,
             abilityLabels: ABILITY_LABELS,
@@ -557,7 +556,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'grappleModifierBreakdown': {
-        iconKey = 'grappleModifierBreakdown';
+        iconKey = 'grappleModifierBreakdown'; // This key needs to exist in DIALOG_ICONS or be handled by default
         const strMod = calculateAbilityModifier(finalAbilityScores.strength);
         const baseBabArrayVal = getBab(character.classes, DND_CLASSES);
         const sizeModGrappleVal = getSizeModifierGrapple(character.size, SIZES);
@@ -570,7 +569,7 @@ export function InfoDisplayDialog({
                 sizeModifierGrapple: sizeModGrappleVal,
                 miscModifier: character.grappleMiscModifier || 0,
                 totalGrappleModifier: calculateGrapple(character.classes, strMod, sizeModGrappleVal, DND_CLASSES) + (character.grappleMiscModifier || 0),
-                featBonus: 0,
+                featBonus: 0, // Assuming no direct feat bonus to grapple modifier base
             },
             uiStrings: UI_STRINGS,
             abilityLabels: ABILITY_LABELS,
@@ -579,7 +578,7 @@ export function InfoDisplayDialog({
         break;
       }
        case 'grappleDamageBreakdown': {
-        iconKey = 'grappleDamageBreakdown';
+        iconKey = 'grappleDamageBreakdown'; // This key needs to exist in DIALOG_ICONS or be handled by default
         const strMod = calculateAbilityModifier(finalAbilityScores.strength);
         data = {
           title: UI_STRINGS.infoDialogTitleGrappleDamageBreakdown || 'Grapple Damage Breakdown',
@@ -588,7 +587,7 @@ export function InfoDisplayDialog({
               baseDamage: character.grappleDamage_baseNotes || getUnarmedGrappleDamage(character.size, SIZES),
               bonus: character.grappleDamage_bonus || 0,
               strengthModifier: strMod,
-              featBonus: 0,
+              featBonus: 0, // Assuming no direct feat bonus to grapple damage base
             },
             uiStrings: UI_STRINGS,
             abilityLabels: ABILITY_LABELS,
@@ -657,20 +656,19 @@ export function InfoDisplayDialog({
 
         const abilityMod = getAbilityModifierByName(finalAbilityScores, abilityKeyForSave);
         const magicMod = character.savingThrows?.[currentSaveType]?.magicMod || 0;
-        const userTemporaryMod = character.savingThrows?.[currentSaveType]?.miscMod || 0;
+        const userTemporaryModifier = character.savingThrows?.[currentSaveType]?.miscMod || 0; // This is the manually entered temporary mod
 
         const featComponents: SavingThrowFeatComponent[] = [];
-        let featBonusTotal = 0;
+        let featBonusTotal = 0; // This will be the sum of calculated misc bonuses (currently only feats)
 
         if (aggregatedFeatEffectsProp?.savingThrowBonuses) {
           aggregatedFeatEffectsProp.savingThrowBonuses.forEach(effect => {
+            // Consider active conditions if they were pre-filtered in aggregatedFeatEffectsProp
             if (effect.save === currentSaveType || effect.save === "all") {
               let numericValueFromEffect = 0;
               if (typeof effect.value === 'number') {
                 numericValueFromEffect = effect.value;
               }
-              // Note: Conditional effect activation logic would ideally be handled before or within aggregatedFeatEffectsProp
-              // For now, we list all potential contributions and their conditions.
               featComponents.push({
                 sourceFeat: effect.sourceFeat || UI_STRINGS.infoDialogUnknownFeatSource || 'Unknown Feat',
                 value: numericValueFromEffect,
@@ -680,8 +678,8 @@ export function InfoDisplayDialog({
             }
           });
         }
-
-        const totalCalculatedSave = baseSave + abilityMod + magicMod + userTemporaryMod + featBonusTotal;
+        
+        const totalCalculatedSave = baseSave + abilityMod + magicMod + featBonusTotal + userTemporaryModifier;
 
         const breakdownDetails: SavingThrowBreakdownDetails = {
           saveType: currentSaveType,
@@ -690,9 +688,9 @@ export function InfoDisplayDialog({
           abilityKey: abilityKeyForSave,
           abilityMod,
           magicMod,
-          userMiscModifier: userTemporaryMod,
-          featBonusTotal,
-          featComponents,
+          userTemporaryModifier: userTemporaryModifier, // User-entered temporary modifier
+          featBonusTotal: featBonusTotal, // Sum of calculated misc modifiers (e.g., feats)
+          featComponents, // Detailed list of misc modifier sources (e.g., feats)
           totalSave: totalCalculatedSave,
         };
 
@@ -704,7 +702,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'genericHtml':
-        iconKey = 'genericHtml';
+        iconKey = 'genericHtml'; // This key needs to exist in DIALOG_ICONS or be handled by default
         data = { title: contentType.title, content: [GenericHtmlContentDisplay({htmlContent: contentType.content})] };
         break;
     }
