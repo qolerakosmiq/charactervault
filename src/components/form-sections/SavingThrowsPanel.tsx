@@ -21,7 +21,7 @@ interface SavingThrowsPanelProps {
   savingThrowsData: Pick<Character, 'savingThrows' | 'classes'>;
   abilityScores: AbilityScores;
   onSavingThrowMiscModChange: (saveType: SavingThrowType, value: number) => void;
-  onOpenInfoDialog: (contentType: InfoDialogContentType) => void; // New prop
+  onOpenInfoDialog: (contentType: InfoDialogContentType) => void;
 }
 
 const SAVE_TYPES: SavingThrowType[] = ['fortitude', 'reflex', 'will'];
@@ -30,7 +30,7 @@ export const SavingThrowsPanel = ({
   savingThrowsData,
   abilityScores,
   onSavingThrowMiscModChange,
-  onOpenInfoDialog, // New prop
+  onOpenInfoDialog,
 }: SavingThrowsPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
@@ -74,7 +74,7 @@ export const SavingThrowsPanel = ({
   const calculatedBaseSaves = getBaseSaves(savingThrowsData.classes, DND_CLASSES);
 
   const dataRows: Array<{
-    labelKey: keyof typeof UI_STRINGS; // Use key for dynamic translation
+    labelKey: keyof typeof UI_STRINGS;
     getValue: (
         saveDataFromProp: SingleSavingThrow,
         localMiscModValue: number,
@@ -99,7 +99,7 @@ export const SavingThrowsPanel = ({
                 variant="ghost"
                 size="icon"
                 className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
-                onClick={() => onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType })}
+                onClick={() => onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType: saveType })}
               >
                 <Info className="h-4 w-4" />
               </Button>
@@ -213,4 +213,3 @@ export const SavingThrowsPanel = ({
     </Card>
   );
 };
-    
