@@ -20,7 +20,7 @@ export interface SavingThrowBreakdownDetails {
   abilityKey: Exclude<AbilityName, 'none'> | undefined; 
   abilityMod: number;
   magicMod: number;
-  userTemporaryModifier: number; // Renamed from userMiscModifier
+  userTemporaryModifier: number;
   featBonusTotal: number; 
   featComponents: SavingThrowFeatComponent[]; 
   totalSave: number;
@@ -59,34 +59,35 @@ export const SavingThrowBreakdownContentDisplay = ({
           </span>
           {renderModifierValue(breakdown.abilityMod)}
         </div>
+        
+        {breakdown.featBonusTotal !== 0 && (
+          <>
+            <div className="flex justify-between">
+              <span>{uiStrings.savingThrowsFeatsModifierLabel || "Feats Modifier"}</span>
+              {renderModifierValue(breakdown.featBonusTotal)}
+            </div>
+            {breakdown.featComponents.filter(fc => fc.value !== 0).length > 0 && (
+              <div className="pl-4 text-xs text-muted-foreground">
+                <span className="italic">{uiStrings.savingThrowsActiveFeatSourcesLabel || "Active Sources:"}</span>
+                <ul className="list-disc list-inside ml-2">
+                  {breakdown.featComponents.filter(fc => fc.value !== 0).map((featComp, index) => (
+                    <li key={`feat-source-${index}-${featComp.sourceFeat}`}>
+                      {featComp.sourceFeat}
+                      {featComp.condition && <span className="text-muted-foreground/80"> ({featComp.condition})</span>}
+                      : {renderModifierValue(featComp.value)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </>
+        )}
+
         {breakdown.magicMod !== 0 && (
           <div className="flex justify-between">
             <span>{uiStrings.savingThrowsRowLabelMagicModifier || "Magic Modifier"}</span>
             {renderModifierValue(breakdown.magicMod)}
           </div>
-        )}
-        
-        {breakdown.featComponents.length > 0 && (
-            <>
-                <div className="pt-1">
-                    <span className="font-medium text-muted-foreground">{uiStrings.infoDialogMiscContributionsLabel || "Misc. Modifier Details"}:</span>
-                </div>
-                {breakdown.featComponents.map((featComp, index) => (
-                    <div key={`feat-${index}-${featComp.sourceFeat}`} className="flex justify-between pl-2">
-                        <span className="italic text-xs">
-                        {featComp.sourceFeat}
-                        {featComp.condition && <span className="text-muted-foreground/80"> ({featComp.condition})</span>}
-                        </span>
-                        <span className="text-xs">{renderModifierValue(featComp.value)}</span>
-                    </div>
-                ))}
-                 {breakdown.featBonusTotal !== 0 && ( 
-                    <div className="flex justify-between pl-2">
-                        <span className="italic font-medium text-xs">{uiStrings.infoDialogTotalLabelMisc || "Total (from misc. sources)"}</span>
-                        <span className="font-medium text-xs">{renderModifierValue(breakdown.featBonusTotal)}</span>
-                    </div>
-                 )}
-            </>
         )}
 
         {breakdown.userTemporaryModifier !== 0 && (
