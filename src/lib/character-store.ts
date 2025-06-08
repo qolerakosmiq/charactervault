@@ -23,11 +23,15 @@ const FULL_CHARACTER_DEFAULTS: Omit<Character, 'id'> = {
   eyes: '',
   hair: '',
   skin: '',
-  languages: [], // Added languages default
+  languages: [],
   abilityScores: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
   abilityScoreTempCustomModifiers: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
   hp: 10,
   maxHp: 10,
+  baseMaxHp: 10, // New field
+  miscMaxHpModifier: 0, // New field
+  nonlethalDamage: 0, // New field
+  temporaryHp: 0, // New field
   armorBonus: 0,
   shieldBonus: 0,
   sizeModifierAC: 0,
@@ -39,14 +43,14 @@ const FULL_CHARACTER_DEFAULTS: Omit<Character, 'id'> = {
   initiativeMiscModifier: 0,
   grappleMiscModifier: 0,
   grappleWeaponChoice: 'unarmed',
-  grappleDamage_baseNotes: '1d3', // Generic default, UI should update based on actual size
+  grappleDamage_baseNotes: '1d3', 
   grappleDamage_bonus: 0,
   savingThrows: {
     fortitude: { base: 0, magicMod: 0, miscMod: 0 },
     reflex: { base: 0, magicMod: 0, miscMod: 0 },
     will: { base: 0, magicMod: 0, miscMod: 0 },
   },
-  classes: [], // Will be populated with at least one class entry
+  classes: [], 
   skills: [],
   feats: [],
   inventory: [],
@@ -75,7 +79,6 @@ const FULL_CHARACTER_DEFAULTS: Omit<Character, 'id'> = {
 function ensureCharacterDefaults(character: Partial<Character>): Character {
   const hydratedCharacter = { ...FULL_CHARACTER_DEFAULTS, ...character } as Character;
 
-  // Ensure nested objects are also correctly defaulted or merged
   hydratedCharacter.abilityScores = { ...FULL_CHARACTER_DEFAULTS.abilityScores, ...(character.abilityScores || {}) };
   hydratedCharacter.abilityScoreTempCustomModifiers = { ...FULL_CHARACTER_DEFAULTS.abilityScoreTempCustomModifiers, ...(character.abilityScoreTempCustomModifiers || {}) };
   hydratedCharacter.savingThrows = {
@@ -84,7 +87,6 @@ function ensureCharacterDefaults(character: Partial<Character>): Character {
     will: { ...FULL_CHARACTER_DEFAULTS.savingThrows.will, ...(character.savingThrows?.will || {}) },
   };
 
-  // Ensure nested objects for resistances and speeds
   const resistanceKeys: Array<keyof Pick<Character, 'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' | 'spellResistance' | 'powerResistance' | 'fortification'>> = ['fireResistance', 'coldResistance', 'acidResistance', 'electricityResistance', 'sonicResistance', 'spellResistance', 'powerResistance', 'fortification'];
   resistanceKeys.forEach(key => {
     hydratedCharacter[key] = { ...FULL_CHARACTER_DEFAULTS[key], ...(character[key] || {}) };
@@ -95,21 +97,26 @@ function ensureCharacterDefaults(character: Partial<Character>): Character {
     hydratedCharacter[key] = { ...FULL_CHARACTER_DEFAULTS[key], ...(character[key] || {}) };
   });
 
-  // Ensure arrays are at least empty arrays
   hydratedCharacter.classes = character.classes && character.classes.length > 0 ? character.classes : [{ id: crypto.randomUUID(), className: '', level: 1 }];
   hydratedCharacter.skills = character.skills || [];
   hydratedCharacter.feats = character.feats || [];
   hydratedCharacter.inventory = character.inventory || [];
   hydratedCharacter.damageReduction = character.damageReduction || [];
-  hydratedCharacter.languages = character.languages || []; // Ensure languages is an array
+  hydratedCharacter.languages = character.languages || [];
 
+  // Ensure new health fields have defaults if not present
+  hydratedCharacter.baseMaxHp = character.baseMaxHp ?? FULL_CHARACTER_DEFAULTS.baseMaxHp;
+  hydratedCharacter.miscMaxHpModifier = character.miscMaxHpModifier ?? FULL_CHARACTER_DEFAULTS.miscMaxHpModifier;
+  hydratedCharacter.nonlethalDamage = character.nonlethalDamage ?? FULL_CHARACTER_DEFAULTS.nonlethalDamage;
+  hydratedCharacter.temporaryHp = character.temporaryHp ?? FULL_CHARACTER_DEFAULTS.temporaryHp;
+  
   // Ensure all top-level keys from defaults are present
   for (const key of Object.keys(FULL_CHARACTER_DEFAULTS) as Array<keyof typeof FULL_CHARACTER_DEFAULTS>) {
     if (hydratedCharacter[key] === undefined) {
       (hydratedCharacter as any)[key] = FULL_CHARACTER_DEFAULTS[key];
     }
   }
-  if (!hydratedCharacter.id) { // if a new partial object was passed without an id
+  if (!hydratedCharacter.id) { 
     hydratedCharacter.id = crypto.randomUUID();
   }
 

@@ -29,7 +29,8 @@ import {
   getSizeModifierGrapple,
   calculateInitiative,
   calculateGrapple,
-  getUnarmedGrappleDamage
+  getUnarmedGrappleDamage,
+  calculateAbilityModifier
 } from '@/lib/dnd-utils';
 
 
@@ -47,6 +48,7 @@ import { SkillsFormSection } from '@/components/SkillsFormSection';
 import { FeatsFormSection } from '@/components/FeatsFormSection';
 import { SavingThrowsPanel } from '@/components/form-sections/SavingThrowsPanel';
 import { ArmorClassPanel } from '@/components/form-sections/ArmorClassPanel';
+import { HealthPanel } from '@/components/form-sections/HealthPanel'; // Added
 import { SpeedPanel } from '@/components/form-sections/SpeedPanel';
 import { CombatPanel } from '@/components/form-sections/CombatPanel';
 import { ResistancesPanel } from '@/components/form-sections/ResistancesPanel';
@@ -71,7 +73,7 @@ function createBaseCharacterData(
     const {
       DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, DEFAULT_RESISTANCE_VALUE,
       DEFAULT_SPEED_DETAILS, DEFAULT_SPEED_PENALTIES, DND_RACES, DND_CLASSES,
-      SIZES, SKILL_DEFINITIONS, CLASS_SKILLS
+      SIZES, SKILL_DEFINITIONS, CLASS_SKILLS, DND_RACE_ABILITY_MODIFIERS_DATA
     } = translations;
 
     const defaultHumanRace = DND_RACES.find(r => r.value === 'human');
@@ -104,6 +106,18 @@ function createBaseCharacterData(
         const nameB = allSkillDefinitionsForBase.find(d => d.value === b.id)?.label || '';
         return nameA.localeCompare(nameB);
     });
+    
+    // Base Max HP Calculation for default
+    const defaultClassDef = DND_CLASSES.find(c => c.value === defaultClassNameValue);
+    let initialBaseMaxHp = 10; // Fallback
+    if (defaultClassDef?.hitDice) {
+        const hitDiceValue = parseInt(defaultClassDef.hitDice.substring(1)); // e.g., "d10" -> 10
+        if (!isNaN(hitDiceValue)) {
+            initialBaseMaxHp = hitDiceValue; // Start with max of first HD
+        }
+    }
+    const initialConMod = calculateAbilityModifier(DEFAULT_ABILITIES.constitution);
+    const initialMaxHp = initialBaseMaxHp + initialConMod;
 
 
     return {
@@ -111,7 +125,12 @@ function createBaseCharacterData(
       height: '', weight: '', eyes: '', hair: '', skin: '', languages: [],
       abilityScores: { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES))) },
       abilityScoreTempCustomModifiers: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
-      hp: 10, maxHp: 10,
+      hp: initialMaxHp, 
+      maxHp: initialMaxHp,
+      baseMaxHp: initialBaseMaxHp,
+      miscMaxHpModifier: 0,
+      nonlethalDamage: 0,
+      temporaryHp: 0,
       armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0, deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, babMiscModifier: 0, initiativeMiscModifier: 0,
       grappleMiscModifier: 0, grappleWeaponChoice: 'unarmed', grappleDamage_baseNotes: `${defaultUnarmedGrappleDice} (${sizeLabelForGrapple} Unarmed)`, grappleDamage_bonus: 0,
       savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)),
@@ -270,16 +289,26 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     if (character && translations) {
       const aggFeats = calculateFeatEffects(character.feats, allAvailableFeatDefinitions);
       setAggregatedFeatEffects(aggFeats);
-      setDetailedAbilityScores(calculateDetailedAbilityScores(
+      const detailedScores = calculateDetailedAbilityScores(
         character,
-        aggFeats, // Pass the calculated aggregatedFeatEffects
+        aggFeats, 
         translations.DND_RACES,
         translations.DND_RACE_ABILITY_MODIFIERS_DATA,
         translations.DND_RACE_BASE_MAX_AGE_DATA,
         translations.RACE_TO_AGING_CATEGORY_MAP_DATA,
         translations.DND_RACE_AGING_EFFECTS_DATA,
         translations.ABILITY_LABELS
-      ));
+      );
+      setDetailedAbilityScores(detailedScores);
+
+      // Recalculate maxHp based on detailed scores and other factors
+      const conMod = calculateAbilityModifier(detailedScores.constitution.finalScore);
+      const featHpBonus = aggFeats.hpBonus || 0;
+      const newMaxHp = (character.baseMaxHp || 0) + conMod + (character.miscMaxHpModifier || 0) + featHpBonus;
+      
+      if(character.maxHp !== newMaxHp) {
+        setCharacter(prev => prev ? ({...prev, maxHp: newMaxHp, hp: Math.min(prev.hp, newMaxHp) }) : null);
+      }
     }
   }, [character, translations, allAvailableFeatDefinitions]);
 
@@ -360,6 +389,11 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
   const handleCoreInfoFieldChange = React.useCallback((field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender'>, value: any) => {
      setCharacter(prev => prev ? ({ ...prev, [field as keyof Character]: value }) : null);
   }, []);
+
+  const handleHealthFieldChange = React.useCallback((field: keyof Pick<Character, 'hp' | 'baseMaxHp' | 'miscMaxHpModifier' | 'nonlethalDamage' | 'temporaryHp'>, value: number) => {
+    setCharacter(prev => prev ? ({ ...prev, [field]: value }) : null);
+  }, []);
+
 
   const handleCharacterFieldUpdate = React.useCallback((
     field: keyof Character | `${SpeedType}Speed.miscModifier` | `armorSpeedPenalty_miscModifier` | `loadSpeedPenalty_miscModifier`,
@@ -667,6 +701,14 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     onSave(finalCharacterData);
   }, [character, onSave, toast, translations]);
 
+  const calculatedMaxHpForPanel = React.useMemo(() => {
+    if (!character || !detailedAbilityScores || !aggregatedFeatEffects) return 0;
+    const conMod = calculateAbilityModifier(detailedAbilityScores.constitution.finalScore);
+    const featHpBonus = aggregatedFeatEffects.hpBonus || 0;
+    return (character.baseMaxHp || 0) + conMod + (character.miscMaxHpModifier || 0) + featHpBonus;
+  }, [character, detailedAbilityScores, aggregatedFeatEffects]);
+
+
   if (translationsLoading || !character || !translations || !detailedAbilityScores || !aggregatedFeatEffects) {
     return (
       <div className="container mx-auto px-4 py-8 space-y-8">
@@ -688,6 +730,15 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
 
   const abilityScoresData: CharacterFormAbilityScoresSectionProps['abilityScoresData'] = {
     abilityScores: character.abilityScores, abilityScoreTempCustomModifiers: character.abilityScoreTempCustomModifiers,
+  };
+
+  const healthPanelData: HealthPanelProps['healthData'] = {
+    hp: character.hp,
+    baseMaxHp: character.baseMaxHp,
+    miscMaxHpModifier: character.miscMaxHpModifier,
+    nonlethalDamage: character.nonlethalDamage,
+    temporaryHp: character.temporaryHp,
+    abilityScores: character.abilityScores, // Pass full scores for CON mod calculation
   };
 
   const storyAndAppearanceData: CharacterFormStoryPortraitSectionProps['storyAndAppearanceData'] = {
@@ -775,12 +826,19 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
             onOpenInfoDialog={handleOpenSavingThrowInfoDialog}
         />
         
-        <ArmorClassPanel
-          acData={acData}
-          onCharacterUpdate={handleCharacterFieldUpdate as any}
-          onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
-        />
-
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <ArmorClassPanel
+            acData={acData}
+            onCharacterUpdate={handleCharacterFieldUpdate as any}
+            onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
+          />
+          <HealthPanel
+            healthData={healthPanelData}
+            calculatedMaxHp={calculatedMaxHpForPanel}
+            onCharacterUpdate={handleHealthFieldChange}
+          />
+        </div>
+        
         <ResistancesPanel
           characterData={resistancesData}
           onResistanceChange={handleResistanceChange}

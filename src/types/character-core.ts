@@ -424,6 +424,10 @@ export interface Character {
   abilityScoreTempCustomModifiers: AbilityScores;
   hp: number;
   maxHp: number;
+  baseMaxHp: number; // New field
+  miscMaxHpModifier: number; // New field
+  nonlethalDamage: number; // New field
+  temporaryHp: number; // New field
   armorBonus: number;
   shieldBonus: number;
   sizeModifierAC: number;
@@ -488,6 +492,7 @@ export type InfoDialogContentType =
   | { type: 'speedBreakdown'; speedType: SpeedType }
   | { type: 'armorSpeedPenaltyBreakdown' }
   | { type: 'loadSpeedPenaltyBreakdown' }
+  | { type: 'savingThrowBreakdown'; saveType: SavingThrowType }
   | { type: 'genericHtml'; title: string; content: string };
 
 export interface SkillDefinitionForDisplay {
