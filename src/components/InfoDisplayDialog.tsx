@@ -27,14 +27,13 @@ import type {
   SpeedBreakdownDetails as SpeedBreakdownDetailsType,
   SpeedComponent,
   CharacterSizeObject,
-  DndRaceOption, DndClassOption, AbilityScores, AggregatedFeatEffects // Added AggregatedFeatEffects
+  DndRaceOption, DndClassOption, AbilityScores, AggregatedFeatEffects
 } from '@/types/character';
 
 import {
   getRaceSpecialQualities,
   calculateDetailedAbilityScores,
   calculateTotalSynergyBonus,
-  calculateFeatBonusesForSkill,
   calculateRacialSkillBonus,
   calculateSizeSpecificSkillBonus,
   checkFeatPrerequisites,
@@ -105,7 +104,7 @@ interface InfoDisplayDialogProps {
   onOpenChange: (open: boolean) => void;
   character: Character;
   contentType: InfoDialogContentType | null;
-  aggregatedFeatEffects: AggregatedFeatEffects; // Added
+  aggregatedFeatEffects: AggregatedFeatEffects;
 }
 
 const DIALOG_ICONS: Record<string, React.ElementType> = {
@@ -122,7 +121,7 @@ export function InfoDisplayDialog({
   onOpenChange,
   character,
   contentType,
-  aggregatedFeatEffects, // Added
+  aggregatedFeatEffects,
 }: InfoDisplayDialogProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
   const { customFeatDefinitions, customSkillDefinitions } = useDefinitionsStore(state => ({
@@ -310,8 +309,9 @@ export function InfoDisplayDialog({
 
           const keyAbilityMod = skillDef.keyAbility && skillDef.keyAbility !== 'none' ? getAbilityModifierByName(finalAbilityScores, skillDef.keyAbility) : 0;
           const synergyBonus = calculateTotalSynergyBonus(skillDef.id, character.skills, SKILL_DEFINITIONS, SKILL_SYNERGIES_DATA, customSkillDefinitions);
-          const featBonus = calculateFeatBonusesForSkill(skillDef.id, character.feats, allCombinedFeatDefinitions);
-          const racialBonus = calculateRacialSkillBonus(skillDef.id, character.race, DND_RACES, SKILL_DEFINITIONS);
+          
+          const featBonus = aggregatedFeatEffects.skillBonuses[skillDef.id] || 0;
+          const racialBonus = calculateRacialSkillBonus(skillDef.id, character.race, DND_RACES);
           const sizeBonus = calculateSizeSpecificSkillBonus(skillDef.id, character.size, SIZES);
           const calculatedMiscModifier = synergyBonus + featBonus + racialBonus + sizeBonus;
           const totalSkillBonus = (skillInstance.ranks || 0) + keyAbilityMod + calculatedMiscModifier + (skillInstance.miscModifier || 0);
@@ -465,7 +465,7 @@ export function InfoDisplayDialog({
         const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
         const details: AcBreakdownDetailItem[] = [];
         
-        const acCalculatedMiscModifier = 0; // This will be sourced from other effects later
+        const acCalculatedMiscModifier = 0; 
         const temporaryAcModifier = character.acMiscModifier || 0; 
 
         details.push({ label: UI_STRINGS.acBreakdownBaseLabel || "Base", value: 10 });
@@ -528,7 +528,7 @@ export function InfoDisplayDialog({
               miscModifier: character.babMiscModifier || 0,
               totalBab: baseBabArrayVal.map(b => b + (character.babMiscModifier || 0)),
               characterClassLabel: DND_CLASSES.find(c => c.value === character.classes[0]?.className)?.label || character.classes[0]?.className,
-              featAttackBonus: 0, // TODO: Populate from aggregatedFeatEffects
+              featAttackBonus: 0, 
             },
             uiStrings: UI_STRINGS
           })],
@@ -546,7 +546,7 @@ export function InfoDisplayDialog({
               dexModifier: dexMod,
               miscModifier: character.initiativeMiscModifier || 0,
               totalInitiative: calculateInitiative(dexMod, character.initiativeMiscModifier || 0),
-              featBonus: 0, // TODO: Populate from aggregatedFeatEffects
+              featBonus: 0, 
             },
             uiStrings: UI_STRINGS,
             abilityLabels: ABILITY_LABELS,
@@ -569,7 +569,7 @@ export function InfoDisplayDialog({
                 sizeModifierGrapple: sizeModGrappleVal,
                 miscModifier: character.grappleMiscModifier || 0,
                 totalGrappleModifier: calculateGrapple(character.classes, strMod, sizeModGrappleVal, DND_CLASSES) + (character.grappleMiscModifier || 0),
-                featBonus: 0, // TODO: Populate from aggregatedFeatEffects
+                featBonus: 0, 
             },
             uiStrings: UI_STRINGS,
             abilityLabels: ABILITY_LABELS,
@@ -588,7 +588,7 @@ export function InfoDisplayDialog({
               baseDamage: character.grappleDamage_baseNotes || getUnarmedGrappleDamage(character.size, SIZES),
               bonus: character.grappleDamage_bonus || 0,
               strengthModifier: strMod,
-              featBonus: 0, // TODO: Populate from aggregatedFeatEffects
+              featBonus: 0, 
             },
             uiStrings: UI_STRINGS,
             abilityLabels: ABILITY_LABELS,
@@ -614,8 +614,8 @@ export function InfoDisplayDialog({
         const penaltyBreakdown: SpeedBreakdownDetailsType = {
             name: UI_STRINGS.totalArmorPenaltyLabel || "Total Armor Penalty Effect",
             components: [
-                { source: UI_STRINGS.speedPenaltyBaseArmorLabel || "Base from Armor", value: -basePenalty }, // Shown as its effect on speed
-                { source: UI_STRINGS.speedMiscModifierLabel || "Misc Modifier", value: miscModifier } // Shown as its effect on speed
+                { source: UI_STRINGS.speedPenaltyBaseArmorLabel || "Base from Armor", value: -basePenalty }, 
+                { source: UI_STRINGS.speedMiscModifierLabel || "Misc Modifier", value: miscModifier } 
             ],
             total: netEffectOnSpeed
         };
@@ -633,8 +633,8 @@ export function InfoDisplayDialog({
         const penaltyBreakdown: SpeedBreakdownDetailsType = {
             name: UI_STRINGS.totalLoadPenaltyLabel || "Total Load Penalty Effect",
             components: [
-                { source: UI_STRINGS.speedPenaltyBaseLoadLabel || "Base from Load", value: -basePenalty }, // Shown as its effect on speed
-                { source: UI_STRINGS.speedMiscModifierLabel || "Misc Modifier", value: miscModifier }    // Shown as its effect on speed
+                { source: UI_STRINGS.speedPenaltyBaseLoadLabel || "Base from Load", value: -basePenalty }, 
+                { source: UI_STRINGS.speedMiscModifierLabel || "Misc Modifier", value: miscModifier }    
             ],
             total: netEffectOnSpeed
         };
@@ -728,4 +728,5 @@ interface DerivedDialogData {
 }
 
 
+    
     
