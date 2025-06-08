@@ -6,6 +6,7 @@ import type { SavingThrowType, AbilityName, SingleSavingThrow } from '@/types/ch
 import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 export interface SavingThrowFeatComponent {
   sourceFeat: string;
@@ -43,6 +44,10 @@ export const SavingThrowBreakdownContentDisplay = ({
     ? (abilityLabels.find(al => al.value === breakdown.abilityKey)?.abbr || String(breakdown.abilityKey).substring(0,3).toUpperCase())
     : 'N/A';
 
+  const activeFeatSourcesText = breakdown.featComponents
+    .filter(fc => fc.value !== 0)
+    .map(fc => `${fc.sourceFeat}${fc.condition ? ` (${fc.condition})` : ''}`)
+    .join(', ');
 
   return (
     <div>
@@ -61,26 +66,15 @@ export const SavingThrowBreakdownContentDisplay = ({
         </div>
         
         {breakdown.featBonusTotal !== 0 && (
-          <>
-            <div className="flex justify-between">
-              <span>{uiStrings.savingThrowsFeatsModifierLabel || "Feats Modifier"}</span>
-              {renderModifierValue(breakdown.featBonusTotal)}
-            </div>
-            {breakdown.featComponents.filter(fc => fc.value !== 0).length > 0 && (
-              <div className="pl-4 text-xs text-muted-foreground">
-                <span className="italic">{uiStrings.savingThrowsActiveFeatSourcesLabel || "Active Sources:"}</span>
-                <ul className="list-disc list-inside ml-2">
-                  {breakdown.featComponents.filter(fc => fc.value !== 0).map((featComp, index) => (
-                    <li key={`feat-source-${index}-${featComp.sourceFeat}`}>
-                      {featComp.sourceFeat}
-                      {featComp.condition && <span className="text-muted-foreground/80"> ({featComp.condition})</span>}
-                      : {renderModifierValue(featComp.value)}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </>
+          <div className="flex justify-between">
+            <span>
+              {uiStrings.savingThrowsFeatsModifierLabel || "Feats Modifier"}
+              {activeFeatSourcesText && (
+                <span className="ml-1 text-xs text-muted-foreground">({activeFeatSourcesText})</span>
+              )}
+            </span>
+            {renderModifierValue(breakdown.featBonusTotal)}
+          </div>
         )}
 
         {breakdown.magicMod !== 0 && (
