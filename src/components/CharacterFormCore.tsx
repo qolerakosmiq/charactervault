@@ -788,14 +788,6 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
         />
         
-        <SpeedPanel
-          speedData={speedData}
-          onCharacterUpdate={handleCharacterFieldUpdate as any}
-          onOpenSpeedInfoDialog={handleOpenSpeedInfoDialog}
-          onOpenArmorSpeedPenaltyInfoDialog={handleOpenArmorSpeedPenaltyInfoDialog}
-          onOpenLoadSpeedPenaltyInfoDialog={handleOpenLoadSpeedPenaltyInfoDialog}
-        />
-
         <CombatPanel
             combatData={combatData}
             onCharacterUpdate={handleCharacterFieldUpdate as any}
@@ -847,6 +839,14 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
         />
+        
+        <SpeedPanel
+          speedData={speedData}
+          onCharacterUpdate={handleCharacterFieldUpdate as any}
+          onOpenSpeedInfoDialog={handleOpenSpeedInfoDialog}
+          onOpenArmorSpeedPenaltyInfoDialog={handleOpenArmorSpeedPenaltyInfoDialog}
+          onOpenLoadSpeedPenaltyInfoDialog={handleOpenLoadSpeedPenaltyInfoDialog}
+        />
 
 
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-12 pt-8 border-t">
@@ -888,6 +888,4 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     </>
   );
 };
-    
-
     
