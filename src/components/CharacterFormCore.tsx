@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import type {
   AbilityName, Character, CharacterClass,
@@ -560,7 +560,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
         ...prev.savingThrows,
         [saveType]: {
           ...prev.savingThrows[saveType],
-          miscMod: value,
+          miscMod: value, // miscMod is used for temporary user-input adjustments
         },
       },
     }) : null);
@@ -758,12 +758,6 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           onOpenDeityInfoDialog={handleOpenDeityInfoDialog}
         />
 
-        <CharacterFormStoryPortraitSection
-          storyAndAppearanceData={storyAndAppearanceData}
-          onFieldChange={handleCharacterFieldUpdate as any}
-          onPortraitChange={handlePortraitChange}
-        />
-
         <CharacterFormAbilityScoresSection
           abilityScoresData={abilityScoresData}
           detailedAbilityScores={detailedAbilityScores}
@@ -771,6 +765,56 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           onMultipleBaseAbilityScoresChange={handleMultipleBaseAbilityScoresChange}
           onAbilityScoreTempCustomModifierChange={handleAbilityScoreTempCustomModifierChange}
           onOpenAbilityScoreBreakdownDialog={handleOpenAbilityScoreBreakdownDialog}
+        />
+
+        <SavingThrowsPanel
+            savingThrowsData={savingThrowsData}
+            abilityScores={actualAbilityScoresForSavesAndSkills}
+            aggregatedFeatEffects={aggregatedFeatEffects}
+            onSavingThrowTemporaryModChange={handleSavingThrowTemporaryModChange}
+            onOpenInfoDialog={handleOpenSavingThrowInfoDialog}
+        />
+        
+        <ArmorClassPanel
+          acData={acData}
+          onCharacterUpdate={handleCharacterFieldUpdate as any}
+          onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
+        />
+
+        <ResistancesPanel
+          characterData={resistancesData}
+          onResistanceChange={handleResistanceChange}
+          onDamageReductionChange={handleDamageReductionChange}
+          onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
+        />
+        
+        <SpeedPanel
+          speedData={speedData}
+          onCharacterUpdate={handleCharacterFieldUpdate as any}
+          onOpenSpeedInfoDialog={handleOpenSpeedInfoDialog}
+          onOpenArmorSpeedPenaltyInfoDialog={handleOpenArmorSpeedPenaltyInfoDialog}
+          onOpenLoadSpeedPenaltyInfoDialog={handleOpenLoadSpeedPenaltyInfoDialog}
+        />
+
+        <CombatPanel
+            combatData={combatData}
+            onCharacterUpdate={handleCharacterFieldUpdate as any}
+            onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog}
+            onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
+        />
+
+        {(character?.feats?.length ?? 0) > 0 && (
+          <ConditionsPanel
+            characterFeats={character.feats}
+            allFeatDefinitions={allAvailableFeatDefinitions}
+            onConditionToggle={handleConditionToggle}
+          />
+        )}
+
+        <CharacterFormStoryPortraitSection
+          storyAndAppearanceData={storyAndAppearanceData}
+          onFieldChange={handleCharacterFieldUpdate as any}
+          onPortraitChange={handlePortraitChange}
         />
 
         <SkillsFormSection
@@ -795,27 +839,6 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
         />
-
-        <SavingThrowsPanel
-            savingThrowsData={savingThrowsData}
-            abilityScores={actualAbilityScoresForSavesAndSkills}
-            aggregatedFeatEffects={aggregatedFeatEffects}
-            onSavingThrowTemporaryModChange={handleSavingThrowTemporaryModChange}
-            onOpenInfoDialog={handleOpenSavingThrowInfoDialog}
-        />
-        
-        <ArmorClassPanel
-          acData={acData}
-          onCharacterUpdate={handleCharacterFieldUpdate as any}
-          onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
-        />
-
-        <ResistancesPanel
-          characterData={resistancesData}
-          onResistanceChange={handleResistanceChange}
-          onDamageReductionChange={handleDamageReductionChange}
-          onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
-        />
         
         <LanguagesPanel
           characterLanguages={languagesData.characterLanguages}
@@ -824,29 +847,6 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           characterIntelligenceScore={languagesData.characterIntelligenceScore}
           speakLanguageSkillRanks={languagesData.speakLanguageSkillRanks}
         />
-
-        <SpeedPanel
-          speedData={speedData}
-          onCharacterUpdate={handleCharacterFieldUpdate as any}
-          onOpenSpeedInfoDialog={handleOpenSpeedInfoDialog}
-          onOpenArmorSpeedPenaltyInfoDialog={handleOpenArmorSpeedPenaltyInfoDialog}
-          onOpenLoadSpeedPenaltyInfoDialog={handleOpenLoadSpeedPenaltyInfoDialog}
-        />
-
-        <CombatPanel
-            combatData={combatData}
-            onCharacterUpdate={handleCharacterFieldUpdate as any}
-            onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog}
-            onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
-        />
-
-        {(character?.feats?.length ?? 0) > 0 && (
-          <ConditionsPanel
-            characterFeats={character.feats}
-            allFeatDefinitions={allAvailableFeatDefinitions}
-            onConditionToggle={handleConditionToggle}
-          />
-        )}
 
 
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-12 pt-8 border-t">
