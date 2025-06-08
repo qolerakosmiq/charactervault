@@ -1013,6 +1013,16 @@
       "effects": [
         { "type": "abilityScore", "ability": "strength", "value": 1, "bonusType": "inherent" }
       ]
+    },
+    {
+      "value": "very-powerful-feat",
+      "label": "Don Très Puissant",
+      "description": "Un don vraiment puissant pour ceux qui sont bien nourris.",
+      "prerequisites": { "abilities": { "strength": 10 }, "skills": [{ "id": "listen", "ranks": 5 }] },
+      "effectsText": "+5 à tous les jets de sauvegarde lorsque 'Bien Nourri'.",
+      "effects": [{ "type": "savingThrow", "save": "all", "value": 5, "bonusType": "untyped", "condition": "Well Fed" }],
+      "isClassFeature": false,
+      "type": "special"
     }
   ],
   "FEAT_TYPES_DATA": [
