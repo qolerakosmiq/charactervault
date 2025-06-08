@@ -159,7 +159,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
         </div>
 
         {/* Max HP Display and Components */}
-        <div className="pt-3 border-t border-border/30">
+        <div className="pt-3 border-t border-border/60">
             <div className="text-center mb-3">
                 <Label className="text-sm font-medium text-muted-foreground">
                     {UI_STRINGS.healthPanelMaxHpLabel || "Maximum Hit Points"}
