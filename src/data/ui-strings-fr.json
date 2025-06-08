@@ -123,6 +123,7 @@
     "abilityScoresNote_suffix": ", et non le modificateur de caractéristique dérivé du score de base. Les autres bonus de race, d'âge ou de dons sont appliqués automatiquement au score total.",
     "abilityScoreSourceTempMod": "Modificateur temporaire",
     "abilityScoreSourceFeats": "Dons",
+    "abilityScoreSourceFeatsGroupLabel": "Dons",
     "abilityScoreSourceRace": "Race ({raceLabel})",
     "abilityScoreSourceAging": "Vieillissement ({categoryName})",
     "rollerDialogTitle": "Lancer les caractéristiques initiales",

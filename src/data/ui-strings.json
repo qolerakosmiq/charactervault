@@ -123,6 +123,7 @@
     "abilityScoresNote_suffix": ", not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score.",
     "abilityScoreSourceTempMod": "Temporary Modifier",
     "abilityScoreSourceFeats": "Feats",
+    "abilityScoreSourceFeatsGroupLabel": "Feats",
     "abilityScoreSourceRace": "Race ({raceLabel})",
     "abilityScoreSourceAging": "Aging ({categoryName})",
     "rollerDialogTitle": "Roll Initial Ability Scores",
