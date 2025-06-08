@@ -17,7 +17,7 @@ export interface SavingThrowBreakdownDetails {
   saveType: SavingThrowType;
   saveTypeLabel: string;
   baseSave: number;
-  abilityKey: Exclude<AbilityName, 'none'> | undefined; // Can be undefined if saveType was invalid upstream
+  abilityKey: Exclude<AbilityName, 'none'> | undefined; 
   abilityMod: number;
   magicMod: number;
   userMiscModifier: number;
@@ -42,6 +42,7 @@ export const SavingThrowBreakdownContentDisplay = ({
   const abilityAbbr = breakdown.abilityKey
     ? (abilityLabels.find(al => al.value === breakdown.abilityKey)?.abbr || String(breakdown.abilityKey).substring(0,3).toUpperCase())
     : 'N/A';
+
 
   return (
     <div>
@@ -84,7 +85,7 @@ export const SavingThrowBreakdownContentDisplay = ({
                         <span className="text-xs">{renderModifierValue(featComp.value)}</span>
                     </div>
                 ))}
-                 {breakdown.featComponents.length > 0 && breakdown.featBonusTotal !== 0 && ( // Show total only if there are components and total isn't zero
+                 {breakdown.featComponents.length > 0 && breakdown.featBonusTotal !== 0 && ( 
                     <div className="flex justify-between pl-2">
                         <span className="italic font-medium text-xs">{uiStrings.infoDialogTotalLabelFeats || "Total (from feats)"}</span>
                         <span className="font-medium text-xs">{renderModifierValue(breakdown.featBonusTotal)}</span>
