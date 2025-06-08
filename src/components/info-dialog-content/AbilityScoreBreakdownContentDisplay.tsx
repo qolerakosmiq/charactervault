@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import type { AbilityScoreBreakdown } from '@/types/character';
+import type { AbilityScoreBreakdown, AbilityScoreComponentValue } from '@/types/character';
 import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { Separator } from '@/components/ui/separator';
@@ -17,6 +17,19 @@ export const AbilityScoreBreakdownContentDisplay = ({
   uiStrings,
 }: AbilityScoreBreakdownContentDisplayProps) => {
   if (!abilityScoreBreakdown) return null;
+
+  // Calculate a "Dialog Display Score" by summing the base and all active components.
+  // The components in abilityScoreBreakdown.components are already filtered by calculateFeatEffects
+  // to include only unconditional effects or conditional effects whose conditions are currently met.
+  const dialogDisplayScore = abilityScoreBreakdown.base +
+    abilityScoreBreakdown.components.reduce((sum, comp: AbilityScoreComponentValue) => {
+      // Only add to sum if the component's value is a number
+      // This handles cases where a component might be purely informational (though less common for ability scores)
+      const numericValue = typeof comp.value === 'number' ? comp.value : 0;
+      return sum + numericValue;
+    }, 0);
+
+  const dialogDisplayModifier = calculateAbilityModifier(dialogDisplayScore);
 
   return (
     <div>
@@ -35,7 +48,8 @@ export const AbilityScoreBreakdownContentDisplay = ({
            else if (comp.source.startsWith("Race (") && uiStrings.abilityScoreSourceRace) { displaySource = (uiStrings.abilityScoreSourceRace).replace("{raceLabel}", comp.source.match(/Race \((.*?)\)/)?.[1] || ''); }
            else if (comp.source.startsWith("Aging (") && uiStrings.abilityScoreSourceAging) { displaySource = (uiStrings.abilityScoreSourceAging).replace("{categoryName}", comp.source.match(/Aging \((.*?)\)/)?.[1] || '');}
 
-          return (comp.value !== 0 || comp.condition) && ( // Show if value is non-zero OR if there's a condition
+          // Show component if its value is non-zero or if it's a conditional effect being listed
+          return (comp.value !== 0 || comp.condition) && (
             <div key={index} className="flex justify-between items-baseline">
               <span className="flex-shrink-0 mr-2">{displaySource}</span>
               <div className="flex items-baseline">
@@ -48,11 +62,11 @@ export const AbilityScoreBreakdownContentDisplay = ({
         <div style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}><Separator /></div>
         <div className="flex justify-between text-base">
           <span className="font-semibold">{uiStrings.infoDialogFinalScoreLabel || "Final Score"}</span>
-          <span className="font-bold text-accent">{abilityScoreBreakdown.finalScore}</span>
+          <span className="font-bold text-accent">{dialogDisplayScore}</span>
         </div>
         <div className="flex justify-between">
           <span className="font-semibold">{uiStrings.infoDialogFinalModifierLabel || "Final Modifier"}</span>
-          {renderModifierValue(calculateAbilityModifier(abilityScoreBreakdown.finalScore))}
+          {renderModifierValue(dialogDisplayModifier)}
         </div>
       </div>
     </div>
