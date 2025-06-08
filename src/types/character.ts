@@ -29,7 +29,8 @@ import type {
   AggregatedFeatEffects,
   FeatEffectDetail,
   SkillEffectDetail,
-  NoteEffectDetail
+  NoteEffectDetail,
+  AbilityScoreEffect // Added
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { getBab } from '@/lib/dnd-utils';
@@ -222,12 +223,12 @@ export function calculateFeatBonusesForSkill( // This specific function might be
   let totalBonus = 0;
   for (const instance of characterFeatInstances) {
     const definition = allFeatDefinitions.find(def => def.value === instance.definitionId);
-    if (definition?.effects) { // Check if effects array exists
+    if (definition?.effects && Array.isArray(definition.effects)) {
       for (const effect of definition.effects) {
         if (effect.type === "skill") {
           const skillEffect = effect as SkillEffectDetail;
           let actualSkillId = skillEffect.skillId;
-          // If skillId is null, it means it's specialized via requiresSpecialization and instance.specializationDetail
+
           if (actualSkillId === null && definition.requiresSpecialization === 'skill' && instance.specializationDetail) {
             actualSkillId = instance.specializationDetail;
           }
@@ -533,7 +534,7 @@ export function checkFeatPrerequisites(
 
 export function calculateDetailedAbilityScores(
   character: Pick<Character, 'abilityScores' | 'race' | 'age' | 'feats' | 'abilityScoreTempCustomModifiers'>,
-  globalCustomFeatDefs: (FeatDefinitionJsonData & { isCustom: true })[],
+  aggregatedFeatEffects: AggregatedFeatEffects, // New parameter
   DND_RACES: readonly DndRaceOption[],
   DND_RACE_ABILITY_MODIFIERS_DATA: Record<string, Partial<Record<Exclude<AbilityName, 'none'>, number>>>,
   DND_RACE_BASE_MAX_AGE_DATA: Record<string, number>,
@@ -543,16 +544,10 @@ export function calculateDetailedAbilityScores(
   ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[]
 ): DetailedAbilityScores {
   const result: Partial<DetailedAbilityScores> = {};
-  const racialQualities = getRaceSpecialQualities(character.race, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, [], DND_FEATS_DEFINITIONS, ABILITY_LABELS); // Empty skills/feats for this specific call context
+  const racialQualities = getRaceSpecialQualities(character.race, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, [], DND_FEATS_DEFINITIONS, ABILITY_LABELS);
   const agingDetails = getNetAgingEffects(character.race, character.age, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, ABILITY_LABELS);
   const tempCustomModifiers = character.abilityScoreTempCustomModifiers ||
     ABILITY_ORDER_INTERNAL.reduce((acc, key) => { acc[key] = 0; return acc; }, {} as AbilityScores);
-
-
-  const allFeatDefs: (FeatDefinitionJsonData & { isCustom?: boolean })[] = [
-    ...DND_FEATS_DEFINITIONS,
-    ...globalCustomFeatDefs,
-  ];
 
   for (const ability of ABILITY_ORDER_INTERNAL) {
     const baseScore = character.abilityScores[ability] || 0;
@@ -572,29 +567,34 @@ export function calculateDetailedAbilityScores(
       components.push({ source: `Aging (${agingDetails.categoryName})`, value: agingModObj.change });
     }
 
+    let totalFeatBonusForThisAbility = 0;
+    if (aggregatedFeatEffects.abilityScoreBonuses) {
+      for (const featEffect of aggregatedFeatEffects.abilityScoreBonuses) {
+        if (featEffect.ability === ability) {
+          components.push({
+            source: `Feat: ${featEffect.sourceFeat || 'Unknown Feat'}`,
+            value: featEffect.value,
+            condition: featEffect.condition,
+          });
+          // Only add to final score if unconditional for Phase 1
+          if (!featEffect.condition) {
+            // Phase 2: Consider bonusType for stacking (e.g., only highest enhancement)
+            // For Phase 1, sum inherent, untyped, and specific morale/enhancement if non-conditional.
+            if (featEffect.bonusType === 'inherent' || featEffect.bonusType === 'untyped' || !featEffect.bonusType) {
+              currentScore += featEffect.value;
+              totalFeatBonusForThisAbility += featEffect.value;
+            }
+            // Conditional bonuses like 'morale' from Rage are listed but not auto-applied to base sheet score here.
+          }
+        }
+      }
+    }
+
     const tempCustomModValue = tempCustomModifiers[ability];
     if (tempCustomModValue !== 0 && tempCustomModValue !== undefined) {
       currentScore += tempCustomModValue;
       components.push({ source: "tempMod", value: tempCustomModValue });
     }
-
-    // This section will be replaced/enhanced when ability score effects are fully structured
-    // For now, it's a placeholder or would need to parse "note" effects if any related to abilities.
-    // let featTotalMod = 0;
-    // for (const featInstance of character.feats) {
-    //   const definition = allFeatDefs.find(def => def.value === featInstance.definitionId);
-    //   if (definition?.effects) { // Check if effects array exists
-    //     for (const effect of definition.effects) {
-    //       if (effect.type === "abilityScore" && effect.ability === ability) { // Placeholder for future structured type
-    //         // featTotalMod += effect.value;
-    //       }
-    //     }
-    //   }
-    // }
-    // if (featTotalMod !== 0) {
-    //   currentScore += featTotalMod;
-    //   components.push({ source: "feats", value: featTotalMod });
-    // }
 
     result[ability] = {
       ability, base: baseScore, components, finalScore: currentScore,
@@ -736,16 +736,25 @@ export function calculateFeatEffects(
 ): AggregatedFeatEffects {
   const newAggregatedEffects: AggregatedFeatEffects = {
     skillBonuses: {},
-    // Initialize other aggregated fields here if they were defined in AggregatedFeatEffects
-    // For now, it's just skillBonuses based on the current plan
-    // In future iterations:
-    // hpBonus: 0,
-    // initiativeBonus: 0,
-    // acBonuses: [],
-    // savingThrowBonuses: { fortitude: 0, reflex: 0, will: 0, all: 0 },
-    // attackRollBonuses: [],
-    // damageRollBonuses: [],
-    // etc.
+    abilityScoreBonuses: [],
+    // Initialize other fields as empty arrays or default values
+    savingThrowBonuses: [],
+    attackRollBonuses: [],
+    damageRollBonuses: [],
+    acBonuses: [],
+    hpBonus: 0,
+    initiativeBonus: 0,
+    speedBonuses: [],
+    resistanceBonuses: [],
+    casterLevelCheckBonuses: [],
+    spellSaveDcBonuses: [],
+    turnUndeadBonuses: [],
+    grantedAbilities: [],
+    modifiedMechanics: [],
+    proficienciesGranted: [],
+    bonusFeatSlots: [],
+    languagesGranted: { count: 0, specific: [], note: '' },
+    descriptiveNotes: [],
   };
 
   for (const featInstance of characterFeats) {
@@ -755,34 +764,35 @@ export function calculateFeatEffects(
     }
 
     for (const effect of definition.effects) {
-      if (effect.type === "skill") {
-        const skillEffect = effect as SkillEffectDetail; // Cast to the specific type
-        let actualSkillId = skillEffect.skillId;
-
-        if (actualSkillId === null) {
-          // Only use specializationDetail if requiresSpecialization indicates a skill.
-          // A more robust system might check `definition.requiresSpecialization === 'skill'`
-          // or have the specialization category directly on the effect.
-          // For now, we assume if skillId is null, specializationDetail IS the skillId.
-          if (definition.requiresSpecialization && featInstance.specializationDetail) {
+      switch (effect.type) {
+        case "skill":
+          const skillEffect = effect as SkillEffectDetail;
+          let actualSkillId = skillEffect.skillId;
+          if (actualSkillId === null && definition.requiresSpecialization === 'skill' && featInstance.specializationDetail) {
             actualSkillId = featInstance.specializationDetail;
-          } else {
-            console.warn(`Feat ${definition.value} effect has skillId: null but no specializationDetail or requiresSpecialization not met for skill.`);
-            continue; // Skip this effect if we can't resolve the skill
           }
-        }
-        
-        if (actualSkillId) { // Ensure actualSkillId is truthy after resolution
+          if (actualSkillId) {
             newAggregatedEffects.skillBonuses[actualSkillId] =
-            (newAggregatedEffects.skillBonuses[actualSkillId] || 0) + skillEffect.value;
-        }
-      } else if (effect.type === "note") {
-        // Notes are ignored for calculation in this phase.
-        // They might be collected for display purposes later.
+              (newAggregatedEffects.skillBonuses[actualSkillId] || 0) + skillEffect.value;
+          }
+          break;
+        case "abilityScore":
+          const abilityEffect = effect as AbilityScoreEffect;
+          newAggregatedEffects.abilityScoreBonuses.push({
+            ...abilityEffect,
+            sourceFeat: definition.label, // Add source feat for traceability
+          });
+          break;
+        case "note":
+          // Notes are currently ignored for calculation, but could be collected for display
+          // newAggregatedEffects.descriptiveNotes.push({ text: effect.text, sourceFeat: definition.label });
+          break;
+        // Future: Add cases for other effect types
+        // case "savingThrow":
+        //   newAggregatedEffects.savingThrowBonuses.push({...(effect as SavingThrowEffect), sourceFeat: definition.label});
+        //   break;
+        // ... and so on
       }
-      // Future: else if (effect.type === "abilityScore") { ... }
-      // Future: else if (effect.type === "armorClass") { ... }
-      // etc.
     }
   }
   return newAggregatedEffects;
@@ -807,4 +817,3 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
-

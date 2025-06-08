@@ -29,14 +29,19 @@ export const AbilityScoreBreakdownContentDisplay = ({
         {abilityScoreBreakdown.components.map((comp, index) => {
            let displaySource = comp.source;
            if (comp.source === "tempMod" && uiStrings.abilityScoreSourceTempMod) { displaySource = uiStrings.abilityScoreSourceTempMod; }
-           else if (comp.source === "feats" && uiStrings.abilityScoreSourceFeats) { displaySource = uiStrings.abilityScoreSourceFeats; }
+           else if (comp.source.startsWith("Feat: ") && uiStrings.abilityScoreSourceFeats) { 
+             displaySource = (uiStrings.abilityScoreSourceFeats).replace("{featName}", comp.source.replace("Feat: ", ""));
+           }
            else if (comp.source.startsWith("Race (") && uiStrings.abilityScoreSourceRace) { displaySource = (uiStrings.abilityScoreSourceRace).replace("{raceLabel}", comp.source.match(/Race \((.*?)\)/)?.[1] || ''); }
            else if (comp.source.startsWith("Aging (") && uiStrings.abilityScoreSourceAging) { displaySource = (uiStrings.abilityScoreSourceAging).replace("{categoryName}", comp.source.match(/Aging \((.*?)\)/)?.[1] || '');}
 
-          return comp.value !== 0 && (
-            <div key={index} className="flex justify-between">
-              <span>{displaySource}</span>
-              {renderModifierValue(comp.value)}
+          return (comp.value !== 0 || comp.condition) && ( // Show if value is non-zero OR if there's a condition
+            <div key={index} className="flex justify-between items-baseline">
+              <span className="flex-shrink-0 mr-2">{displaySource}</span>
+              <div className="flex items-baseline">
+                {renderModifierValue(comp.value)}
+                {comp.condition && <span className="ml-1 text-xs text-muted-foreground italic">({comp.condition})</span>}
+              </div>
             </div>
           );
         })}
@@ -54,3 +59,4 @@ export const AbilityScoreBreakdownContentDisplay = ({
   );
 };
 // AbilityScoreBreakdownContentDisplay.displayName = 'AbilityScoreBreakdownContentDisplayComponent';
+

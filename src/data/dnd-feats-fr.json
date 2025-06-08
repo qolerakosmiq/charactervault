@@ -5,6 +5,7 @@
       "value": "acrobatic",
       "label": "Acrobatique",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les tests d'Équilibre et de Saut.",
+      "effectsText": "+2 Équilibre, +2 Saut.",
       "effects": [
         { "type": "skill", "skillId": "balance", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "jump", "value": 2, "bonusType": "untyped" }
@@ -16,6 +17,7 @@
       "value": "agile",
       "label": "Agile",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les tests d'Équilibre et d'Art de l'évasion.",
+      "effectsText": "+2 Équilibre, +2 Art de l'évasion.",
       "effects": [
         { "type": "skill", "skillId": "balance", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "escape-artist", "value": 2, "bonusType": "untyped" }
@@ -27,6 +29,7 @@
       "value": "alertness",
       "label": "Vigilance",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les tests de Perception auditive et de Détection.",
+      "effectsText": "+2 Perception auditive, +2 Détection.",
       "effects": [
         { "type": "skill", "skillId": "listen", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "spot", "value": 2, "bonusType": "untyped" }
@@ -38,6 +41,7 @@
       "value": "animal-affinity",
       "label": "Affinité animale",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les tests de Dressage et d'Équitation.",
+      "effectsText": "+2 Dressage, +2 Équitation.",
       "effects": [
         { "type": "skill", "skillId": "handle-animal", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "ride", "value": 2, "bonusType": "untyped" }
@@ -49,6 +53,7 @@
       "value": "athletic",
       "label": "Athlétique",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les tests d'Escalade et de Natation.",
+      "effectsText": "+2 Escalade, +2 Natation.",
       "effects": [
         { "type": "skill", "skillId": "climb", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "swim", "value": 2, "bonusType": "untyped" }
@@ -61,6 +66,7 @@
       "label": "Enchaînement",
       "description": "<b>Avantage :</b> Si vous infligez suffisamment de dégâts à une créature pour la faire tomber (généralement en la réduisant à moins de 0 point de vie ou en la tuant), vous obtenez une attaque de corps à corps supplémentaire et immédiate contre une autre créature à portée.<br />Vous ne pouvez pas faire un pas de placement de 1,50 mètre avant de faire cette attaque supplémentaire.<br />L'attaque supplémentaire est effectuée avec la même arme et avec le même bonus que l'attaque qui a fait tomber la créature précédente.<br />Vous pouvez utiliser cette capacité une fois par round.",
       "prerequisites": { "abilities": { "strength": 13 }, "feats": ["power-attack"] },
+      "effectsText": "Accorde une attaque de corps à corps supplémentaire en abattant un ennemi, 1/round.",
       "effects": [{ "type": "note", "text": "Accorde une attaque de corps à corps supplémentaire en abattant un ennemi, 1/round." }],
       "isClassFeature": false,
       "type": "special"
@@ -69,6 +75,7 @@
       "value": "combat-casting",
       "label": "Incantation de combat",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +4 aux tests de Concentration effectués pour lancer un sort ou utiliser un pouvoir magique en situation défensive, en situation de lutte ou immobilisé.",
+      "effectsText": "+4 Concentration en situation défensive, en lutte ou immobilisé.",
       "effects": [
         { "type": "skill", "skillId": "concentration", "value": 4, "bonusType": "untyped", "condition": "En situation défensive, en lutte ou immobilisé" }
       ],
@@ -80,6 +87,7 @@
       "label": "Expertise du combat",
       "description": "<b>Avantage :</b> Lorsque vous utilisez l'action d'attaque ou l'action d'attaque à outrance au corps à corps, vous pouvez subir une pénalité allant jusqu'à –5 à votre jet d'attaque et ajouter le même nombre (jusqu'à +5) à votre Classe d'Armure.<br />Ce nombre ne peut pas dépasser votre bonus de base à l'attaque.<br />Les modifications aux jets d'attaque et à la Classe d'Armure durent jusqu'à votre prochaine action.<br />La pénalité aux jets d'attaque et le bonus à la Classe d'Armure sont choisis avant que vous ne fassiez votre jet d'attaque (vous devez donc décider d'utiliser ce don avant de savoir si votre attaque touche ou rate).",
       "prerequisites": { "abilities": { "intelligence": 13 } },
+      "effectsText": "Échange un bonus d'attaque contre un bonus de CA au corps à corps.",
       "effects": [{ "type": "note", "text": "Échange un bonus d'attaque contre un bonus de CA au corps à corps." }],
       "isClassFeature": false,
       "type": "special"
@@ -88,6 +96,7 @@
       "value": "combat-reflexes",
       "label": "Réflexes de combat",
       "description": "<b>Avantage :</b> Vous pouvez effectuer un nombre d'attaques d'opportunité supplémentaires égal à votre bonus de Dextérité.<br />Avec ce don, vous pouvez également effectuer des attaques d'opportunité en étant pris au dépourvu.<br /><b>Normal :</b> Un personnage sans ce don ne peut effectuer qu'une seule attaque d'opportunité par round et ne peut pas effectuer d'attaques d'opportunité en étant pris au dépourvu.",
+      "effectsText": "AoO supplémentaires basées sur la Dex ; peut faire des AoO en étant pris au dépourvu.",
       "effects": [{ "type": "note", "text": "AoO supplémentaires basées sur la Dex ; peut faire des AoO en étant pris au dépourvu." }],
       "isClassFeature": false,
       "type": "special"
@@ -96,6 +105,7 @@
       "value": "deceitful",
       "label": "Fourbe",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les tests de Déguisement et de Contrefaçon.",
+      "effectsText": "+2 Déguisement, +2 Contrefaçon.",
       "effects": [
         { "type": "skill", "skillId": "disguise", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "forgery", "value": 2, "bonusType": "untyped" }
@@ -107,6 +117,7 @@
       "value": "deft-hands",
       "label": "Mains agiles",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les tests d'Escamotage et d'Utilisation de cordes.",
+      "effectsText": "+2 Escamotage, +2 Utilisation de cordes.",
       "effects": [
         { "type": "skill", "skillId": "sleight-of-hand", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "use-rope", "value": 2, "bonusType": "untyped" }
@@ -118,6 +129,7 @@
       "value": "diligent",
       "label": "Diligent",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les tests d'Estimation et de Déchiffrage.",
+      "effectsText": "+2 Estimation, +2 Déchiffrage.",
       "effects": [
         { "type": "skill", "skillId": "appraise", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "decipher-script", "value": 2, "bonusType": "untyped" }
@@ -130,6 +142,7 @@
       "label": "Esquive",
       "description": "<b>Avantage :</b> Pendant votre action, vous désignez un adversaire et recevez un bonus d'esquive de +1 à la Classe d'Armure contre les attaques de cet adversaire.<br />Vous pouvez sélectionner un nouvel adversaire à chaque action.<br /><b>Spécial :</b> Une condition qui vous fait perdre votre bonus de Dextérité à la Classe d'Armure (le cas échéant) vous fait également perdre les bonus d'esquive.<br />De plus, les bonus d'esquive se cumulent entre eux, contrairement à la plupart des autres types de bonus.",
       "prerequisites": { "abilities": { "dexterity": 13 } },
+      "effectsText": "Bonus d'esquive de +1 à la CA contre une cible.",
       "effects": [{ "type": "note", "text": "Bonus d'esquive de +1 à la CA contre une cible." }],
       "isClassFeature": false,
       "type": "special"
@@ -138,6 +151,7 @@
       "value": "endurance",
       "label": "Endurance",
       "description": "<b>Avantage :</b> Vous gagnez un bonus de +4 aux tests et jets de sauvegarde suivants : tests de Natation pour résister aux dégâts non létaux, tests de Constitution pour continuer à courir, tests de Constitution pour éviter les dégâts non létaux d'une marche forcée, tests de Constitution pour retenir votre souffle, tests de Constitution pour éviter les dégâts non létaux de la faim ou de la soif, jets de Vigueur pour éviter les dégâts non létaux des environnements chauds ou froids, et jets de Vigueur pour résister aux dégâts de suffocation.<br />De plus, vous pouvez dormir en armure légère ou intermédiaire sans être fatigué.",
+      "effectsText": "Bonus de +4 à divers tests et jets de sauvegarde liés à l'endurance. Dormir en armure légère/intermédiaire sans fatigue.",
       "effects": [{ "type": "note", "text": "Bonus de +4 à divers tests et jets de sauvegarde liés à l'endurance. Dormir en armure légère/intermédiaire sans fatigue." }],
       "type": "special",
       "isClassFeature": true
@@ -146,6 +160,7 @@
       "value": "eschew-materials",
       "label": "Dispense de composantes matérielles",
       "description": "<b>Avantage :</b> Vous pouvez lancer n'importe quel sort ayant une composante matérielle coûtant 1 po ou moins sans avoir besoin de cette composante.<br />Le lancement du sort provoque toujours des attaques d'opportunité normalement.<br />Si le sort nécessite une composante matérielle coûtant plus de 1 po, vous devez avoir la composante matérielle sous la main pour lancer le sort, comme d'habitude.",
+      "effectsText": "Lancer des sorts avec des composantes matérielles <= 1po sans elles.",
       "effects": [{ "type": "note", "text": "Lancer des sorts avec des composantes matérielles <= 1po sans elles." }],
       "isClassFeature": false,
       "type": "special"
@@ -157,6 +172,7 @@
       "prerequisites": { "bab": 1, "special": "Maîtrise de toutes les armes de guerre si l'arme est une arme à distance" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "arme exotique",
+      "effectsText": "Maîtrise de l'arme exotique choisie.",
       "effects": [{ "type": "note", "text": "Maîtrise de l'arme exotique choisie." }],
       "isClassFeature": false,
       "type": "special"
@@ -166,6 +182,7 @@
       "label": "Tir lointain",
       "description": "<b>Avantage :</b> Lorsque vous utilisez une arme de projectile, telle qu'un arc, son facteur de portée est augmenté de 50 % (multipliez par 1,5).<br />Lorsque vous utilisez une arme de jet, son facteur de portée est doublé.",
       "prerequisites": { "feats": ["point-blank-shot"] },
+      "effectsText": "Augmente le facteur de portée des armes de projectile (x1,5) et de jet (x2).",
       "effects": [{ "type": "note", "text": "Augmente le facteur de portée des armes de projectile (x1,5) et de jet (x2)." }],
       "isClassFeature": false,
       "type": "special"
@@ -175,6 +192,7 @@
       "label": "Enchaînement amélioré",
       "description": "<b>Avantage :</b> Comme Enchaînement, sauf que vous n'avez pas de limite au nombre de fois où vous pouvez l'utiliser par round.",
       "prerequisites": { "abilities": { "strength": 13 }, "feats": ["cleave", "power-attack"], "bab": 4 },
+      "effectsText": "Pas de limite au nombre d'attaques supplémentaires d'Enchaînement par round.",
       "effects": [{ "type": "note", "text": "Pas de limite au nombre d'attaques supplémentaires d'Enchaînement par round." }],
       "isClassFeature": false,
       "type": "special"
@@ -183,6 +201,7 @@
       "value": "great-fortitude",
       "label": "Vigueur surhumaine",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de sauvegarde de Vigueur.",
+      "effectsText": "Bonus de +2 à tous les jets de sauvegarde de Vigueur.",
       "effects": [{ "type": "note", "text": "Bonus de +2 à tous les jets de sauvegarde de Vigueur." }],
       "isClassFeature": false,
       "type": "special"
@@ -192,6 +211,7 @@
       "label": "Bousculade améliorée",
       "description": "<b>Avantage :</b> Lorsque vous effectuez une bousculade, vous ne provoquez pas d'attaque d'opportunité de la part du défenseur.<br />Vous gagnez également un bonus de +4 au test de Force opposé que vous effectuez pour repousser le défenseur.<br /><b>Normal :</b> Les personnages sans ce don provoquent une attaque d'opportunité lorsqu'ils effectuent une bousculade.",
       "prerequisites": { "abilities": { "strength": 13 }, "feats": ["power-attack"] },
+      "effectsText": "Pas d'AoO en cas de bousculade ; +4 au test de Force pour repousser.",
       "effects": [{ "type": "note", "text": "Pas d'AoO en cas de bousculade ; +4 au test de Force pour repousser." }],
       "isClassFeature": false,
       "type": "special"
@@ -200,6 +220,7 @@
       "value": "improved-counterspell",
       "label": "Contresort amélioré",
       "description": "<b>Avantage :</b> Lorsque vous contrecarrez un sort, vous pouvez utiliser un sort de la même école qui est d'un ou plusieurs niveaux de sort supérieurs au sort cible.<br /><b>Normal :</b> Sans ce don, vous ne pouvez contrer un sort qu'avec le même sort, ou avec un sort spécifiquement désigné comme contresort pour le sort cible.",
+      "effectsText": "Peut contrer avec un sort de niveau supérieur de la même école.",
       "effects": [{ "type": "note", "text": "Peut contrer avec un sort de niveau supérieur de la même école." }],
       "isClassFeature": false,
       "type": "special"
@@ -211,6 +232,7 @@
       "prerequisites": { "bab": 8, "special": "Maîtrise de l'arme" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "arme",
+      "effectsText": "Double la plage de critique pour l'arme choisie.",
       "effects": [{ "type": "note", "text": "Double la plage de critique pour l'arme choisie." }],
       "isClassFeature": false,
       "type": "special"
@@ -220,6 +242,7 @@
       "label": "Désarmement amélioré",
       "description": "<b>Avantage :</b> Vous ne provoquez pas d'attaque d'opportunité lorsque vous tentez de désarmer un adversaire, et l'adversaire n'a pas non plus la possibilité de vous désarmer.<br />Vous gagnez également un bonus de +4 au jet d'attaque opposé que vous effectuez pour désarmer votre adversaire.<br /><b>Normal :</b> Sans ce don, vous provoquez une attaque d'opportunité lorsque vous tentez de désarmer un adversaire.<br />De plus, si vous échouez à la tentative de désarmement, votre adversaire obtient un jet d'attaque opposé pour vous désarmer.",
       "prerequisites": { "abilities": { "intelligence": 13 }, "feats": ["combat-expertise"] },
+      "effectsText": "Pas d'AoO en cas de désarmement ; +4 au jet d'attaque opposé pour désarmer.",
       "effects": [{ "type": "note", "text": "Pas d'AoO en cas de désarmement ; +4 au jet d'attaque opposé pour désarmer." }],
       "isClassFeature": false,
       "type": "special"
@@ -229,6 +252,7 @@
       "label": "Feinte améliorée",
       "description": "<b>Avantage :</b> Vous pouvez effectuer un test de Bluff pour feinter au combat en tant qu'action de mouvement.<br /><b>Normal :</b> Feinter au combat est une action simple.",
       "prerequisites": { "abilities": { "intelligence": 13 }, "feats": ["combat-expertise"] },
+      "effectsText": "Peut feinter au combat en tant qu'action de mouvement.",
       "effects": [
         { "type": "skill", "skillId": "bluff", "value": 0, "bonusType": "untyped", "condition": "Peut feinter au combat en tant qu'action de mouvement" }
       ],
@@ -240,6 +264,7 @@
       "label": "Lutte améliorée",
       "description": "<b>Avantage :</b> Vous ne provoquez pas d'attaque d'opportunité lorsque vous effectuez une attaque de contact pour initier une lutte.<br />Vous gagnez également un bonus de +4 à tous les tests de lutte.<br /><b>Normal :</b> Sans ce don, vous provoquez une attaque d'opportunité lorsque vous effectuez une attaque de contact pour initier une lutte.",
       "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["improved-unarmed-strike"] },
+      "effectsText": "Pas d'AoO pour initier une lutte ; +4 aux tests de lutte.",
       "effects": [{ "type": "note", "text": "Pas d'AoO pour initier une lutte ; +4 aux tests de lutte." }],
       "isClassFeature": false,
       "type": "special"
@@ -248,6 +273,7 @@
       "value": "improved-initiative",
       "label": "Initiative améliorée",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +4 aux tests d'initiative.",
+      "effectsText": "Bonus de +4 aux tests d'initiative.",
       "effects": [{ "type": "note", "text": "Bonus de +4 aux tests d'initiative." }],
       "isClassFeature": false,
       "type": "special"
@@ -257,6 +283,7 @@
       "label": "Charge destructive améliorée",
       "description": "<b>Avantage :</b> Lorsque vous tentez de charger un adversaire, la cible ne peut pas choisir de vous éviter.<br />Vous gagnez également un bonus de +4 à votre test de Force pour renverser votre adversaire.<br /><b>Normal :</b> Sans ce don, la cible d'une charge destructive peut choisir de vous éviter ou de vous bloquer.",
       "prerequisites": { "abilities": { "strength": 13 }, "feats": ["power-attack"] },
+      "effectsText": "La cible ne peut pas éviter la charge destructive ; +4 au test de Force pour renverser.",
       "effects": [{ "type": "note", "text": "La cible ne peut pas éviter la charge destructive ; +4 au test de Force pour renverser." }],
       "isClassFeature": false,
       "type": "special"
@@ -265,6 +292,7 @@
       "value": "improved-shield-bash",
       "label": "Coup de bouclier amélioré",
       "description": "<b>Avantage :</b> Lorsque vous effectuez un coup de bouclier, vous pouvez toujours appliquer le bonus de bouclier de celui-ci à votre CA.<br /><b>Normal :</b> Sans ce don, vous perdez le bonus de bouclier de celui-ci à la CA lorsque vous effectuez un coup de bouclier.",
+      "effectsText": "Conserve le bonus de bouclier à la CA lors d'un coup de bouclier.",
       "effects": [{ "type": "note", "text": "Conserve le bonus de bouclier à la CA lors d'un coup de bouclier." }],
       "isClassFeature": false,
       "type": "special"
@@ -274,6 +302,7 @@
       "label": "Destruction d'arme améliorée",
       "description": "<b>Avantage :</b> Lorsque vous frappez un objet tenu ou porté par un adversaire (comme une arme ou un bouclier), vous ne provoquez pas d'attaque d'opportunité.<br />Vous gagnez également un bonus de +4 à tout jet d'attaque effectué pour détruire l'arme ou le bouclier d'un adversaire.<br /><b>Normal :</b> Sans ce don, vous provoquez une attaque d'opportunité lorsque vous frappez un objet tenu ou porté par un adversaire.",
       "prerequisites": { "abilities": { "strength": 13 }, "feats": ["power-attack"] },
+      "effectsText": "Pas d'AoO en cas de destruction d'arme ; +4 au jet d'attaque pour détruire.",
       "effects": [{ "type": "note", "text": "Pas d'AoO en cas de destruction d'arme ; +4 au jet d'attaque pour détruire." }],
       "isClassFeature": false,
       "type": "special"
@@ -283,6 +312,7 @@
       "label": "Croc-en-jambe amélioré",
       "description": "<b>Avantage :</b> Vous ne provoquez pas d'attaque d'opportunité lorsque vous tentez de faire un croc-en-jambe à un adversaire alors que vous êtes désarmé.<br />Vous gagnez également un bonus de +4 à votre test de Force pour faire un croc-en-jambe à votre adversaire.<br />Si vous faites un croc-en-jambe à un adversaire au corps à corps, vous obtenez immédiatement une attaque de corps à corps contre cet adversaire comme si vous n'aviez pas utilisé votre attaque pour la tentative de croc-en-jambe.<br /><b>Normal :</b> Sans ce don, vous provoquez une attaque d'opportunité lorsque vous tentez de faire un croc-en-jambe à un adversaire alors que vous êtes désarmé.",
       "prerequisites": { "abilities": { "intelligence": 13 }, "feats": ["combat-expertise"] },
+      "effectsText": "Pas d'AoO en cas de croc-en-jambe ; +4 au test de Force ; attaque supplémentaire si le croc-en-jambe réussit.",
       "effects": [{ "type": "note", "text": "Pas d'AoO en cas de croc-en-jambe ; +4 au test de Force ; attaque supplémentaire si le croc-en-jambe réussit." }],
       "isClassFeature": false,
       "type": "special"
@@ -292,6 +322,7 @@
       "label": "Combat à deux armes amélioré",
       "description": "<b>Avantage :</b> Vous obtenez une deuxième attaque avec votre arme secondaire, bien qu'avec une pénalité de –5.<br /><b>Normal :</b> Sans ce don, vous ne pouvez obtenir qu'une seule attaque supplémentaire avec une arme secondaire.",
       "prerequisites": { "abilities": { "dexterity": 17 }, "feats": ["two-weapon-fighting"], "bab": 6 },
+      "effectsText": "Obtient une deuxième attaque avec l'arme secondaire avec une pénalité de -5.",
       "effects": [{ "type": "note", "text": "Obtient une deuxième attaque avec l'arme secondaire avec une pénalité de -5." }],
       "isClassFeature": false,
       "type": "special"
@@ -300,6 +331,7 @@
       "value": "improved-unarmed-strike",
       "label": "Combat à mains nues amélioré",
       "description": "<b>Avantage :</b> Vous êtes considéré comme armé même lorsque vous êtes désarmé — vous ne provoquez pas d'attaques d'opportunité de la part d'adversaires armés lorsque vous les attaquez alors que vous êtes désarmé.<br />Cependant, vous bénéficiez toujours d'une attaque d'opportunité contre tout adversaire qui vous attaque à mains nues.<br /><b>Normal :</b> Sans ce don, vous êtes considéré comme désarmé lorsque vous attaquez à mains nues, et vous ne pouvez infliger que des dégâts non létaux avec une telle attaque.",
+      "effectsText": "Considéré comme armé à mains nues ; peut infliger des dégâts létaux ou non létaux.",
       "effects": [{ "type": "note", "text": "Considéré comme armé à mains nues ; peut infliger des dégâts létaux ou non létaux." }],
       "type": "special",
       "isClassFeature": true
@@ -308,6 +340,7 @@
       "value": "investigator",
       "label": "Investigateur",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les tests de Renseignement et de Fouille.",
+      "effectsText": "+2 Renseignement, +2 Fouille.",
       "effects": [
         { "type": "skill", "skillId": "gather-information", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "search", "value": 2, "bonusType": "untyped" }
@@ -319,6 +352,7 @@
       "value": "iron-will",
       "label": "Volonté de fer",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de sauvegarde de Volonté.",
+      "effectsText": "Bonus de +2 à tous les jets de sauvegarde de Volonté.",
       "effects": [{ "type": "note", "text": "Bonus de +2 à tous les jets de sauvegarde de Volonté." }],
       "isClassFeature": false,
       "type": "special"
@@ -327,6 +361,7 @@
       "value": "lightning-reflexes",
       "label": "Réflexes surhumains",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de sauvegarde de Réflexes.",
+      "effectsText": "Bonus de +2 à tous les jets de sauvegarde de Réflexes.",
       "effects": [{ "type": "note", "text": "Bonus de +2 à tous les jets de sauvegarde de Réflexes." }],
       "isClassFeature": false,
       "type": "special"
@@ -335,6 +370,7 @@
       "value": "magical-aptitude",
       "label": "Aptitude magique",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les tests d'Art de la magie et d'Utilisation d'objets magiques.",
+      "effectsText": "+2 Art de la magie, +2 Utilisation d'objets magiques.",
       "effects": [
         { "type": "skill", "skillId": "spellcraft", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "use-magic-device", "value": 2, "bonusType": "untyped" }
@@ -347,6 +383,7 @@
       "label": "Tir rapide multiple",
       "description": "<b>Avantage :</b> En tant qu'action simple, vous pouvez tirer deux flèches sur un seul adversaire à moins de 9 mètres.<br />Les deux flèches utilisent le même jet d'attaque (avec une pénalité de –4) pour déterminer le succès et infligent des dégâts normalement (mais voir Spécial).<br /><b>Spécial :</b> Pour chaque tranche de cinq points de bonus de base à l'attaque que vous avez au-dessus de +6, vous pouvez ajouter une flèche supplémentaire à cette attaque, jusqu'à un maximum de quatre flèches avec un bonus de base à l'attaque de +16.<br />Chaque flèche subit une pénalité supplémentaire de –2 au jet d'attaque (par exemple, trois flèches auraient une pénalité de –6 et quatre flèches une pénalité de –8).<br />La réduction des dégâts et les autres résistances s'appliquent séparément à chaque flèche tirée.<br />Quel que soit le nombre de flèches que vous tirez, vous n'appliquez les dégâts de précision (tels que les dégâts d'attaque sournoise) qu'une seule fois.<br />Si vous réussissez un coup critique, seule la première flèche tirée inflige des dégâts critiques ; toutes les autres infligent des dégâts normaux.",
       "prerequisites": { "abilities": { "dexterity": 17 }, "feats": ["point-blank-shot", "rapid-shot"], "bab": 6 },
+      "effectsText": "Tire plusieurs flèches en action simple avec des pénalités.",
       "effects": [{ "type": "note", "text": "Tire plusieurs flèches en action simple avec des pénalités." }],
       "isClassFeature": false,
       "type": "special"
@@ -356,6 +393,7 @@
       "label": "Tir de précision supérieur",
       "description": "<b>Avantage :</b> Vos attaques à distance ignorent le bonus de CA accordé aux cibles par tout abri inférieur à un abri total, ainsi que le risque d'échec accordé aux cibles par tout camouflage inférieur à un camouflage total. L'abri total et le camouflage total confèrent leurs avantages normaux contre vos attaques à distance. <br /><b>Normal :</b> Voir les règles normales pour l'abri et le camouflage dans le Manuel des Joueurs.",
       "prerequisites": { "abilities": { "dexterity": 19 }, "feats": ["point-blank-shot", "precise-shot"], "bab": 11 },
+      "effectsText": "Les attaques à distance ignorent la CA de moins qu'un abri total et le risque d'échec de moins qu'un camouflage total.",
       "effects": [{ "type": "note", "text": "Les attaques à distance ignorent la CA de moins qu'un abri total et le risque d'échec de moins qu'un camouflage total." }],
       "isClassFeature": false,
       "type": "special"
@@ -365,6 +403,7 @@
       "label": "Combat à deux armes supérieur",
       "description": "<b>Avantage :</b> Vous obtenez une troisième attaque avec votre arme secondaire, bien qu'avec une pénalité de –10. <br /><b>Normal :</b> Sans ce don, vous ne pouvez obtenir qu'une seule attaque supplémentaire avec une arme secondaire (ou deux avec Combat à deux armes amélioré).",
       "prerequisites": { "abilities": { "dexterity": 19 }, "feats": ["two-weapon-fighting", "improved-two-weapon-fighting"], "bab": 11 },
+      "effectsText": "Obtient une troisième attaque avec l'arme secondaire avec une pénalité de -10.",
       "effects": [{ "type": "note", "text": "Obtient une troisième attaque avec l'arme secondaire avec une pénalité de -10." }],
       "isClassFeature": false,
       "type": "special"
@@ -374,6 +413,7 @@
       "label": "Souplesse du serpent",
       "description": "<b>Avantage :</b> Vous obtenez un bonus d'esquive de +4 à la Classe d'Armure contre les attaques d'opportunité provoquées lorsque vous vous déplacez hors ou à l'intérieur d'une zone menacée.<br />Une condition qui vous fait perdre votre bonus de Dextérité à la Classe d'Armure (le cas échéant) vous fait également perdre les bonus d'esquive.<br />Les bonus d'esquive se cumulent entre eux, contrairement à la plupart des autres types de bonus.",
       "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge"] },
+      "effectsText": "Bonus d'esquive de +4 à la CA contre les AoO dues au mouvement.",
       "effects": [{ "type": "note", "text": "Bonus d'esquive de +4 à la CA contre les AoO dues au mouvement." }],
       "isClassFeature": false,
       "type": "special"
@@ -383,6 +423,7 @@
       "label": "Tir monté",
       "description": "<b>Avantage :</b> La pénalité que vous subissez lorsque vous utilisez une arme à distance alors que votre monture effectue un double mouvement est réduite de moitié : –2 au lieu de –4.<br />La pénalité que vous subissez lorsque vous utilisez une arme à distance alors que votre monture court est également réduite de moitié : –4 au lieu de –8.<br /><b>Normal :</b> Si votre monture effectue un double mouvement, vous subissez une pénalité de –4 aux jets d'attaque avec une arme à distance.<br />Si votre monture court, vous subissez une pénalité de –8.",
       "prerequisites": { "skills": [{ "id": "ride", "ranks": 1 }], "feats": ["mounted-combat"] },
+      "effectsText": "Divise par deux les pénalités pour les attaques à distance lorsque la monture se déplace.",
       "effects": [{ "type": "note", "text": "Divise par deux les pénalités pour les attaques à distance lorsque la monture se déplace." }],
       "isClassFeature": false,
       "type": "special"
@@ -392,6 +433,7 @@
       "label": "Combat monté",
       "description": "<b>Avantage :</b> Une fois par round lorsque votre monture est touchée au combat, vous pouvez tenter un test d'Équitation (en réaction) pour annuler le coup.<br />Le coup est annulé si le résultat de votre test d'Équitation est supérieur au jet d'attaque de l'adversaire.<br />(Essentiellement, le résultat du test d'Équitation devient la Classe d'Armure de la monture s'il est supérieur à la CA normale de la monture.)",
       "prerequisites": { "skills": [{ "id": "ride", "ranks": 1 }] },
+      "effectsText": "Une fois par round, effectuer un test d'Équitation pour annuler un coup sur la monture.",
       "effects": [{ "type": "note", "text": "Une fois par round, effectuer un test d'Équitation pour annuler un coup sur la monture." }],
       "isClassFeature": false,
       "type": "special"
@@ -401,6 +443,7 @@
       "label": "Incantation animale",
       "description": "<b>Avantage :</b> Vous pouvez effectuer les composantes verbales et somatiques des sorts lorsque vous êtes sous forme animale.<br />Ce don ne permet pas d'utiliser des composantes matérielles ou des focalisateurs.<br />Vous pouvez utiliser toutes les composantes matérielles ou focalisateurs que vous pouvez tenir ou manipuler avec les membres de votre nouvelle forme.",
       "prerequisites": { "abilities": { "wisdom": 13 }, "special": "Capacité de Forme Sauvage" },
+      "effectsText": "Peut lancer des sorts avec composantes V/S en forme animale.",
       "effects": [{ "type": "note", "text": "Peut lancer des sorts avec composantes V/S en forme animale." }],
       "isClassFeature": false,
       "type": "special"
@@ -409,6 +452,7 @@
       "value": "negotiator",
       "label": "Négociateur",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les tests de Diplomatie et de Psychologie.",
+      "effectsText": "+2 Diplomatie, +2 Psychologie.",
       "effects": [
         { "type": "skill", "skillId": "diplomacy", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "sense-motive", "value": 2, "bonusType": "untyped" }
@@ -420,6 +464,7 @@
       "value": "nimble-fingers",
       "label": "Doigts de fée",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les tests de Désamorçage/Sabotage et de Crochetage.",
+      "effectsText": "+2 Désamorçage/Sabotage, +2 Crochetage.",
       "effects": [
         { "type": "skill", "skillId": "disable-device", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "open-lock", "value": 2, "bonusType": "untyped" }
@@ -431,6 +476,7 @@
       "value": "persuasive",
       "label": "Persuasion",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les tests de Bluff et d'Intimidation.",
+      "effectsText": "+2 Bluff, +2 Intimidation.",
       "effects": [
         { "type": "skill", "skillId": "bluff", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "intimidate", "value": 2, "bonusType": "untyped" }
@@ -442,7 +488,10 @@
       "value": "point-blank-shot",
       "label": "Tir à bout portant",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +1 aux jets d'attaque et de dégâts avec les armes à distance à des portées allant jusqu'à 9 mètres.",
-      "effects": [{ "type": "note", "text": "Bonus de +1 à l'attaque et aux dégâts avec les armes à distance à moins de 9m." }],
+      "effectsText": "Bonus de +1 à l'attaque et aux dégâts avec les armes à distance à moins de 9m.",
+      "effects": [
+        { "type": "note", "text": "Bonus de +1 à l'attaque et aux dégâts avec les armes à distance à moins de 9m." }
+      ],
       "isClassFeature": false,
       "type": "special"
     },
@@ -451,6 +500,7 @@
       "label": "Attaque en puissance",
       "description": "<b>Avantage :</b> Lors de votre action, avant d'effectuer les jets d'attaque pour un round, vous pouvez choisir de soustraire un nombre à tous les jets d'attaque au corps à corps et d'ajouter le même nombre à tous les jets de dégâts au corps à corps.<br />Ce nombre ne peut pas dépasser votre bonus de base à l'attaque.<br />La pénalité aux attaques et le bonus aux dégâts s'appliquent jusqu'à votre prochain tour.",
       "prerequisites": { "abilities": { "strength": 13 } },
+      "effectsText": "Échange un bonus d'attaque au corps à corps contre un bonus de dégâts.",
       "effects": [{ "type": "note", "text": "Échange un bonus d'attaque au corps à corps contre un bonus de dégâts." }],
       "isClassFeature": false,
       "type": "special"
@@ -460,6 +510,7 @@
       "label": "Tir de précision",
       "description": "<b>Avantage :</b> Vous pouvez tirer ou lancer des armes à distance sur un adversaire engagé au corps à corps sans subir la pénalité standard de –4 à votre jet d'attaque.",
       "prerequisites": { "feats": ["point-blank-shot"] },
+      "effectsText": "Pas de pénalité de -4 pour tirer au corps à corps.",
       "effects": [{ "type": "note", "text": "Pas de pénalité de -4 pour tirer au corps à corps." }],
       "isClassFeature": false,
       "type": "special"
@@ -469,6 +520,7 @@
       "label": "Dégainage rapide",
       "description": "<b>Avantage :</b> Vous pouvez dégainer une arme en tant qu'action libre au lieu d'une action de mouvement.<br />Vous pouvez dégainer une arme cachée (voir la compétence Escamotage) en tant qu'action de mouvement.<br />Un personnage ayant choisi ce don peut lancer des armes à sa cadence d'attaque normale complète (un peu comme un personnage avec un arc).<br /><b>Normal :</b> Sans ce don, vous pouvez dégainer une arme en tant qu'action de mouvement, ou (si votre bonus de base à l'attaque est de +1 ou plus) en tant qu'action libre dans le cadre d'un mouvement.<br />Sans ce don, vous pouvez dégainer une arme cachée en tant qu'action simple.",
       "prerequisites": { "bab": 1 },
+      "effectsText": "Dégainer une arme en action libre. Lancer des armes à la pleine cadence d'attaque.",
       "effects": [{ "type": "note", "text": "Dégainer une arme en action libre. Lancer des armes à la pleine cadence d'attaque." }],
       "isClassFeature": false,
       "type": "special"
@@ -480,6 +532,7 @@
       "prerequisites": { "special": "Maniement de l'arme (arbalète choisie)" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "type d'arbalète",
+      "effectsText": "Réduit le temps de rechargement pour le type d'arbalète choisi.",
       "effects": [{ "type": "note", "text": "Réduit le temps de rechargement pour le type d'arbalète choisi." }],
       "isClassFeature": false,
       "type": "special"
@@ -489,6 +542,7 @@
       "label": "Tir rapide",
       "description": "<b>Avantage :</b> Vous pouvez obtenir une attaque supplémentaire par round avec une arme à distance.<br />L'attaque est à votre bonus de base à l'attaque le plus élevé, mais chaque attaque que vous effectuez dans ce round (celle supplémentaire et les normales) subit une pénalité de –2.<br />Vous devez utiliser l'action d'attaque à outrance pour utiliser ce don.<br /><b>Normal :</b> Un personnage sans ce don ne peut obtenir qu'une seule attaque supplémentaire avec une arme secondaire.",
       "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["point-blank-shot"] },
+      "effectsText": "Une attaque à distance supplémentaire par round avec une pénalité de -2 à toutes les attaques.",
       "effects": [{ "type": "note", "text": "Une attaque à distance supplémentaire par round avec une pénalité de -2 à toutes les attaques." }],
       "isClassFeature": false,
       "type": "special"
@@ -498,6 +552,7 @@
       "label": "Attaque au passage",
       "description": "<b>Avantage :</b> Lorsque vous êtes monté et que vous utilisez l'action de charge, vous pouvez vous déplacer et attaquer comme si vous effectuiez une charge standard, puis vous déplacer à nouveau (en continuant la ligne droite de la charge).<br />Votre mouvement total pour le round ne peut pas dépasser le double de votre vitesse montée.<br />Vous et votre monture ne provoquez pas d'attaque d'opportunité de la part de l'adversaire que vous attaquez.",
       "prerequisites": { "skills": [{ "id": "ride", "ranks": 1 }], "feats": ["mounted-combat"] },
+      "effectsText": "Peut se déplacer, attaquer (charge) et se déplacer à nouveau en étant monté.",
       "effects": [{ "type": "note", "text": "Peut se déplacer, attaquer (charge) et se déplacer à nouveau en étant monté." }],
       "isClassFeature": false,
       "type": "special"
@@ -506,6 +561,7 @@
       "value": "run",
       "label": "Course",
       "description": "<b>Avantage :</b> Lorsque vous courez, vous vous déplacez à cinq fois votre vitesse normale (si vous portez une armure légère ou aucune armure et ne transportez pas plus qu'une charge légère) ou quatre fois votre vitesse (si vous portez une armure intermédiaire ou lourde ou transportez une charge intermédiaire ou lourde).<br />Si vous effectuez un saut après une course d'élan (voir la description de la compétence Saut), vous gagnez un bonus de +4 à votre test de Saut.<br />Pendant que vous courez, vous conservez votre bonus de Dextérité à la CA.<br /><b>Normal :</b> Vous vous déplacez à quatre fois votre vitesse (si vous portez une armure légère ou aucune armure et ne transportez pas plus qu'une charge légère) ou trois fois votre vitesse (si vous portez une armure intermédiaire ou lourde ou transportez une charge intermédiaire ou lourde), et vous perdez votre bonus de Dextérité à la CA.<br />Si vous effectuez un saut après une course d'élan, vous ne gagnez aucun bonus à votre test de Saut.",
+      "effectsText": "Court à 5x la vitesse (armure légère/aucune/charge légère) ou 4x (armure intermédiaire/lourde/charge intermédiaire/lourde). Conserve la Dex à la CA en courant. +4 Saut après une course d'élan.",
       "effects": [
         { "type": "skill", "skillId": "jump", "value": 4, "bonusType": "untyped", "condition": "En effectuant un saut après une course d'élan" },
         { "type": "note", "text": "Court à 5x la vitesse (armure légère/aucune/charge légère) ou 4x (armure intermédiaire/lourde/charge intermédiaire/lourde). Conserve la Dex à la CA en courant." }
@@ -518,6 +574,7 @@
       "label": "Écriture de parchemins",
       "description": "<b>Avantage :</b> Vous pouvez créer un parchemin de n'importe quel sort que vous connaissez.<br />L'écriture d'un parchemin prend un jour pour chaque tranche de 1 000 po de son prix de base.<br />Le prix de base d'un parchemin est son niveau de sort × son niveau de lanceur de sorts × 25 po.<br />Pour écrire un parchemin, vous devez dépenser 1/25 de ce prix de base en XP et utiliser des matières premières coûtant la moitié de ce prix de base.",
       "prerequisites": { "casterLevel": 1 },
+      "effectsText": "Peut créer des parchemins.",
       "effects": [{ "type": "note", "text": "Peut créer des parchemins." }],
       "type": "special",
       "isClassFeature": false
@@ -526,6 +583,7 @@
       "value": "self-sufficient",
       "label": "Autosuffisance",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les tests de Premiers secours et de Survie.",
+      "effectsText": "+2 Premiers secours, +2 Survie.",
       "effects": [
         { "type": "skill", "skillId": "heal", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "survival", "value": 2, "bonusType": "untyped" }
@@ -537,6 +595,7 @@
       "value": "shield-proficiency",
       "label": "Maniement des boucliers",
       "description": "<b>Avantage :</b> Vous pouvez utiliser un bouclier et ne subir que les pénalités standard.",
+      "effectsText": "Maîtrise des boucliers (sauf les pavois).",
       "effects": [{ "type": "note", "text": "Maîtrise des boucliers (sauf les pavois)." }],
       "isClassFeature": true,
       "type": "special"
@@ -546,6 +605,7 @@
       "label": "Tir en mouvement",
       "description": "<b>Avantage :</b> Lorsque vous utilisez l'action d'attaque avec une arme à distance, vous pouvez vous déplacer avant et après l'attaque, à condition que votre distance totale de déplacement ne soit pas supérieure à votre vitesse.",
       "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge", "mobility", "point-blank-shot"], "bab": 4 },
+      "effectsText": "Peut se déplacer, effectuer une attaque à distance et se déplacer à nouveau.",
       "effects": [{ "type": "note", "text": "Peut se déplacer, effectuer une attaque à distance et se déplacer à nouveau." }],
       "isClassFeature": false,
       "type": "special"
@@ -556,6 +616,7 @@
       "description": "<b>Avantage :</b> Choisissez une compétence.<br />Vous obtenez un bonus de +3 à tous les tests impliquant cette compétence.<br /><b>Spécial :</b> Vous pouvez acquérir ce don plusieurs fois.<br />Ses effets ne se cumulent pas.<br />Chaque fois que vous prenez ce don, il s'applique à une nouvelle compétence.",
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "skill",
+      "effectsText": "Bonus de +3 à tous les tests avec la compétence choisie.",
       "effects": [
         { "type": "skill", "skillId": null, "value": 3, "bonusType": "untyped" }
       ],
@@ -568,6 +629,7 @@
       "description": "<b>Avantage :</b> Choisissez une école de magie (telle que Illusion).<br />Ajoutez +1 au Degré de Difficulté pour tous les jets de sauvegarde contre les sorts de l'école de magie que vous choisissez.<br /><b>Spécial :</b> Vous pouvez acquérir ce don plusieurs fois.<br />Ses effets ne se cumulent pas.<br />Chaque fois que vous prenez ce don, il s'applique à une nouvelle école de magie.",
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "école de magie",
+      "effectsText": "Bonus de +1 au DD des sauvegardes pour les sorts de l'école choisie.",
       "effects": [{ "type": "note", "text": "Bonus de +1 au DD des sauvegardes pour les sorts de l'école choisie." }],
       "isClassFeature": false,
       "type": "special"
@@ -579,6 +641,7 @@
       "prerequisites": { "feats": ["spell-focus"] },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "école de magie",
+      "effectsText": "Bonus supplémentaire de +1 au DD des sauvegardes pour les sorts de l'école choisie (cumulable).",
       "effects": [{ "type": "note", "text": "Bonus supplémentaire de +1 au DD des sauvegardes pour les sorts de l'école choisie (cumulable)." }],
       "isClassFeature": false,
       "type": "special"
@@ -588,6 +651,7 @@
       "label": "Maîtrise des sorts",
       "description": "<b>Avantage :</b> Chaque fois que vous prenez ce don, choisissez un nombre de sorts que vous connaissez déjà égal à votre modificateur d'Intelligence.<br />À partir de ce moment, vous pouvez préparer ces sorts sans vous référer à un grimoire.<br /><b>Normal :</b> Sans ce don, vous devez utiliser un grimoire pour préparer tous vos sorts, à l'exception de Lecture de la magie.",
       "prerequisites": { "special": "Niveau 1 de Magicien" },
+      "effectsText": "Peut préparer des sorts connus choisis (nombre égal au mod. d'Int) sans grimoire.",
       "effects": [{ "type": "note", "text": "Peut préparer des sorts connus choisis (nombre égal au mod. d'Int) sans grimoire." }],
       "isClassFeature": false,
       "type": "special"
@@ -596,6 +660,7 @@
       "value": "spell-penetration",
       "label": "Perception magique",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de niveau de lanceur de sorts (1d20 + niveau de lanceur de sorts) effectués pour surmonter la résistance à la magie d'une créature.",
+      "effectsText": "Bonus de +2 aux tests de niveau de lanceur pour surmonter la RM.",
       "effects": [{ "type": "note", "text": "Bonus de +2 aux tests de niveau de lanceur pour surmonter la RM." }],
       "isClassFeature": false,
       "type": "special"
@@ -605,6 +670,7 @@
       "label": "Perception magique supérieure",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de niveau de lanceur de sorts (1d20 + niveau de lanceur de sorts) effectués pour surmonter la résistance à la magie d'une créature.<br />Ce bonus se cumule avec le bonus de Perception magique.",
       "prerequisites": {"feats": ["spell-penetration"]},
+      "effectsText": "Bonus supplémentaire de +2 aux tests de niveau de lanceur pour surmonter la RM (cumulable).",
       "effects": [{ "type": "note", "text": "Bonus supplémentaire de +2 aux tests de niveau de lanceur pour surmonter la RM (cumulable)." }],
       "isClassFeature": false,
       "type": "special"
@@ -614,6 +680,7 @@
       "label": "Charge dévastatrice",
       "description": "<b>Avantage :</b> Lorsque vous êtes monté et que vous utilisez l'action de charge, vous infligez des dégâts doublés avec une arme de corps à corps (ou des dégâts triplés avec une lance).",
       "prerequisites": { "skills": [{ "id": "ride", "ranks": 1 }], "feats": ["mounted-combat", "ride-by-attack"] },
+      "effectsText": "Dégâts doublés avec une arme de corps à corps (triplés avec une lance) en charge montée.",
       "effects": [{ "type": "note", "text": "Dégâts doublés avec une arme de corps à corps (triplés avec une lance) en charge montée." }],
       "isClassFeature": false,
       "type": "special"
@@ -623,6 +690,7 @@
       "label": "Attaque éclair",
       "description": "<b>Avantage :</b> Lorsque vous utilisez l'action d'attaque avec une arme de corps à corps, vous pouvez vous déplacer avant et après l'attaque, à condition que votre distance totale de déplacement ne soit pas supérieure à votre vitesse.<br />Se déplacer de cette manière ne provoque pas d'attaque d'opportunité de la part du défenseur que vous attaquez (bien que cela puisse provoquer des attaques d'opportunité d'autres créatures, le cas échéant).<br />Vous ne pouvez pas utiliser ce don si vous portez une charge lourde ou une armure lourde.<br />Vous devez vous déplacer d'au moins 1,50 mètre avant et après avoir effectué votre attaque pour bénéficier des avantages de l'Attaque éclair.",
       "prerequisites": { "abilities": { "dexterity": 13, "intelligence": 13 }, "feats": ["combat-expertise", "dodge", "mobility"], "bab": 4 },
+      "effectsText": "Se déplacer, attaquer et se déplacer à nouveau en une action sans provoquer d'AoO de la cible.",
       "effects": [{ "type": "note", "text": "Se déplacer, attaquer et se déplacer à nouveau en une action sans provoquer d'AoO de la cible." }],
       "isClassFeature": false,
       "type": "special"
@@ -631,6 +699,7 @@
       "value": "stealthy",
       "label": "Discret",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les tests de Discrétion et de Déplacement silencieux.",
+      "effectsText": "+2 Discrétion, +2 Déplacement silencieux.",
       "effects": [
         { "type": "skill", "skillId": "hide", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "move-silently", "value": 2, "bonusType": "untyped" }
@@ -643,6 +712,7 @@
       "label": "Poing étourdissant",
       "description": "<b>Avantage :</b> Vous devez déclarer que vous utilisez ce don avant d'effectuer votre jet d'attaque (ainsi, un jet d'attaque raté annule la tentative).<br />Poing étourdissant oblige un adversaire blessé par votre attaque à mains nues à effectuer un jet de sauvegarde de Vigueur (DD 10 + 1/2 de votre niveau de personnage + votre modificateur de Sag), en plus d'infliger des dégâts normalement.<br />Un défenseur qui rate ce jet de sauvegarde est étourdi pendant 1 round (jusqu'à juste avant votre prochaine action).<br />Un personnage étourdi ne peut pas agir, perd tout bonus de Dextérité à la CA et subit une pénalité de –2 à la CA.<br />Vous pouvez tenter une attaque étourdissante une fois par jour pour chaque tranche de quatre niveaux que vous avez atteints (mais voir Spécial), et pas plus d'une fois par round.<br /><b>Spécial :</b> Un moine peut choisir Poing étourdissant comme don supplémentaire au niveau 1, même s'il ne remplit pas les conditions préalables.<br />Un moine qui choisit ce don peut tenter une attaque étourdissante un nombre de fois par jour égal à son niveau de moine, plus une fois de plus par jour pour chaque tranche de quatre niveaux qu'il a dans des classes autres que moine.",
       "prerequisites": { "abilities": { "dexterity": 13, "wisdom": 13 }, "feats": ["improved-unarmed-strike"], "bab": 8 },
+      "effectsText": "Étourdit l'adversaire sur une attaque à mains nues réussie et un jet de Vigueur raté.",
       "effects": [{ "type": "note", "text": "Étourdit l'adversaire sur une attaque à mains nues réussie et un jet de Vigueur raté." }],
       "isClassFeature": false,
       "type": "special"
@@ -651,6 +721,7 @@
       "value": "toughness",
       "label": "Robustesse",
       "description": "<b>Avantage :</b> Vous gagnez +3 points de vie.<br /><b>Spécial :</b> Un personnage peut acquérir ce don plusieurs fois.<br />Ses effets se cumulent.",
+      "effectsText": "+3 points de vie.",
       "effects": [{ "type": "note", "text": "+3 points de vie." }],
       "canTakeMultipleTimes": true,
       "isClassFeature": false,
@@ -660,6 +731,7 @@
       "value": "track",
       "label": "Pistage",
       "description": "<b>Avantage :</b> Pour trouver des pistes ou les suivre sur 1,5 kilomètre, un test de Survie réussi est nécessaire.<br />Vous devez effectuer un autre test de Survie chaque fois que les pistes deviennent difficiles à suivre.",
+      "effectsText": "Permet d'utiliser la compétence Survie pour trouver et suivre des pistes.",
       "effects": [{ "type": "note", "text": "Permet d'utiliser la compétence Survie pour trouver et suivre des pistes." }],
       "type": "special-ex",
       "isClassFeature": true
@@ -669,6 +741,7 @@
       "label": "Piétinement",
       "description": "<b>Avantage :</b> Lorsque vous tentez de charger un adversaire en étant monté, votre cible ne peut pas choisir de vous éviter.<br />Votre monture peut effectuer une attaque de sabot contre toute cible que vous renversez, bénéficiant du bonus standard de +4 aux jets d'attaque contre les cibles à terre.",
       "prerequisites": { "skills": [{ "id": "ride", "ranks": 1 }], "feats": ["mounted-combat"] },
+      "effectsText": "La cible ne peut pas éviter la charge destructive ; la monture obtient une attaque contre la cible renversée.",
       "effects": [{ "type": "note", "text": "La cible ne peut pas éviter la charge destructive ; la monture obtient une attaque contre la cible renversée." }],
       "isClassFeature": false,
       "type": "special"
@@ -678,6 +751,7 @@
       "label": "Combat à deux armes (défense)",
       "description": "<b>Avantage :</b> Lorsque vous maniez une arme double ou deux armes (à l'exclusion des armes naturelles ou des frappes à mains nues), vous gagnez un bonus de bouclier de +1 à votre CA.<br />Lorsque vous combattez sur la défensive ou utilisez l'action de défense totale, ce bonus de bouclier passe à +2.",
       "prerequisites": { "abilities": { "dexterity": 15 }, "feats": ["two-weapon-fighting"] },
+      "effectsText": "Bonus de bouclier de +1 à la CA en combat à deux armes (+2 en combat défensif/défense totale).",
       "effects": [{ "type": "note", "text": "Bonus de bouclier de +1 à la CA en combat à deux armes (+2 en combat défensif/défense totale)." }],
       "isClassFeature": false,
       "type": "special"
@@ -687,6 +761,7 @@
       "label": "Combat à deux armes",
       "description": "<b>Avantage :</b> Vos pénalités aux jets d'attaque pour le combat à deux armes sont réduites.<br />La pénalité pour votre main principale diminue de 2 et celle pour votre main secondaire diminue de 6.<br /><b>Normal :</b> Si vous maniez une deuxième arme dans votre main secondaire, vous pouvez obtenir une attaque supplémentaire par round avec cette arme.<br />Lorsque vous combattez de cette manière, vous subissez une pénalité de –6 à votre attaque ou à vos attaques régulières avec votre main principale et une pénalité de –10 à l'attaque avec votre main secondaire.<br />Si votre arme secondaire est légère, les pénalités sont réduites de 2 chacune.<br />(Une frappe à mains nues est toujours considérée comme légère.)",
       "prerequisites": { "abilities": { "dexterity": 15 } },
+      "effectsText": "Réduit les pénalités pour le combat à deux armes.",
       "effects": [{ "type": "note", "text": "Réduit les pénalités pour le combat à deux armes." }],
       "isClassFeature": false,
       "type": "special"
@@ -696,6 +771,7 @@
       "label": "Attaque en finesse",
       "description": "<b>Avantage :</b> Avec une arme légère, une rapière, un fouet ou une chaîne cloutée conçue pour une créature de votre catégorie de taille, vous pouvez utiliser votre modificateur de Dextérité au lieu de votre modificateur de Force aux jets d'attaque.<br />Si vous portez un bouclier, sa pénalité d'armure aux tests s'applique à vos jets d'attaque.<br /><b>Normal :</b> Avec une arme légère, vous pouvez utiliser votre modificateur de Force ou de Dextérité aux jets d'attaque, le plus élevé des deux.<br />Avec une arme à une main, une arme à deux mains, une arme à distance autre qu'une fronde, ou lorsque vous utilisez un bouclier, vous devez utiliser votre modificateur de Force aux jets d'attaque.",
       "prerequisites": { "bab": 1 },
+      "effectsText": "Utilise le mod. de Dex au lieu du mod. de For pour les jets d'attaque avec des armes légères, rapière, fouet ou chaîne cloutée.",
       "effects": [{ "type": "note", "text": "Utilise le mod. de Dex au lieu du mod. de For pour les jets d'attaque avec des armes légères, rapière, fouet ou chaîne cloutée." }],
       "isClassFeature": false,
       "type": "special"
@@ -707,6 +783,7 @@
       "prerequisites": { "bab": 1, "special": "Maîtrise de l'arme" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "arme",
+      "effectsText": "Bonus de +1 aux jets d'attaque avec l'arme choisie.",
       "effects": [{ "type": "note", "text": "Bonus de +1 aux jets d'attaque avec l'arme choisie." }],
       "isClassFeature": false,
       "type": "special"
@@ -718,6 +795,7 @@
       "prerequisites": { "feats": ["weapon-focus"], "special": "Niveau 8 de Guerrier, Maîtrise de l'arme" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "arme",
+      "effectsText": "Bonus supplémentaire de +1 aux jets d'attaque avec l'arme choisie (cumulable avec Arme de Prédilection).",
       "effects": [{ "type": "note", "text": "Bonus supplémentaire de +1 aux jets d'attaque avec l'arme choisie (cumulable avec Arme de Prédilection)." }],
       "isClassFeature": false,
       "type": "special"
@@ -729,6 +807,7 @@
       "prerequisites": { "feats": ["weapon-focus"], "special": "Niveau 4 de Guerrier, Maîtrise de l'arme" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "arme",
+      "effectsText": "Bonus de +2 aux jets de dégâts avec l'arme choisie.",
       "effects": [{ "type": "note", "text": "Bonus de +2 aux jets de dégâts avec l'arme choisie." }],
       "isClassFeature": false,
       "type": "special"
@@ -740,6 +819,7 @@
       "prerequisites": { "feats": ["weapon-focus", "weapon-specialization", "greater-weapon-focus"], "special": "Niveau 12 de Guerrier, Maîtrise de l'arme" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "arme",
+      "effectsText": "Bonus supplémentaire de +2 aux jets de dégâts avec l'arme choisie (cumulable).",
       "effects": [{ "type": "note", "text": "Bonus supplémentaire de +2 aux jets de dégâts avec l'arme choisie (cumulable)." }],
       "isClassFeature": false,
       "type": "special"
@@ -749,26 +829,27 @@
       "label": "Attaque tournoyante",
       "description": "<b>Avantage :</b> Lorsque vous utilisez l'action d'attaque à outrance, vous pouvez renoncer à vos attaques régulières et effectuer à la place une attaque de corps à corps à votre bonus de base à l'attaque complet contre chaque adversaire à portée.<br />Vous devez effectuer un jet d'attaque distinct contre chaque adversaire.<br />Lorsque vous utilisez le don Attaque tournoyante, vous perdez également tout bonus ou attaque supplémentaire accordé par d'autres dons ou capacités (tels que Enchaînement ou le sort Rapidité).",
       "prerequisites": { "abilities": { "dexterity": 13, "intelligence": 13 }, "feats": ["combat-expertise", "dodge", "mobility", "spring-attack"], "bab": 4 },
+      "effectsText": "Effectue une attaque de corps à corps contre chaque adversaire à portée en tant qu'attaque à outrance.",
       "effects": [{ "type": "note", "text": "Effectue une attaque de corps à corps contre chaque adversaire à portée en tant qu'attaque à outrance." }],
       "isClassFeature": false,
       "type": "special"
     },
-    { "value": "armor-proficiency-light", "label": "Maniement des armures légères", "effects": [{"type": "note", "text": "Maîtrise des armures légères"}], "isClassFeature": true, "type": "special" },
-    { "value": "armor-proficiency-medium", "label": "Maniement des armures intermédiaires", "prerequisites": { "feats": ["armor-proficiency-light"] }, "effects": [{"type": "note", "text": "Maîtrise des armures intermédiaires"}], "isClassFeature": true, "type": "special" },
-    { "value": "armor-proficiency-heavy", "label": "Maniement des armures lourdes", "prerequisites": { "feats": ["armor-proficiency-medium"] }, "effects": [{"type": "note", "text": "Maîtrise des armures lourdes"}], "isClassFeature": true, "type": "special" },
-    { "value": "tower-shield-proficiency", "label": "Maniement des pavois", "prerequisites": { "feats": ["shield-proficiency"] }, "effects": [{"type": "note", "text": "Maîtrise des pavois"}], "isClassFeature": true, "type": "special" },
-    { "value": "simple-weapon-proficiency", "label": "Maniement des armes courantes", "effects": [{"type": "note", "text": "Maîtrise de toutes les armes courantes"}], "isClassFeature": true, "type": "special" },
-    { "value": "martial-weapon-proficiency-all", "label": "Maniement des armes de guerre (Toutes)", "prerequisites": { "feats": ["simple-weapon-proficiency"] }, "effects": [{"type": "note", "text": "Maîtrise de toutes les armes de guerre"}], "isClassFeature": true, "type": "special" },
-    { "value": "bard-weapon-proficiencies", "label": "Maniement des armes (Barde)", "effects": [{"type": "note", "text": "Maîtrise de l'épée longue, de la rapière, du matraque, de l'épée courte, de l'arc court, du fouet."}], "isClassFeature": true, "type": "special" },
-    { "value": "druid-armor-shield-proficiencies", "label": "Maniement des armures et boucliers (Druide)", "effects": [{"type": "note", "text": "Maîtrise des armures légères/intermédiaires non métalliques et des boucliers en bois."}], "isClassFeature": true, "type": "special" },
-    { "value": "druid-weapon-proficiencies", "label": "Maniement des armes (Druide)", "effects": [{"type": "note", "text": "Maîtrise du gourdin, dague, fléchette, bâton, cimeterre, faucille, épieu, fronde, lance, et attaques naturelles de Forme Sauvage."}], "isClassFeature": true, "type": "special" },
-    { "value": "monk-weapon-proficiencies", "label": "Maniement des armes (Moine)", "effects": [{"type": "note", "text": "Maîtrise du gourdin, arbalète (l/l), dague, hachette, javelot, kama, nunchaku, bâton, sai, shuriken, siangham, fronde."}], "isClassFeature": true, "type": "special" },
-    { "value": "rogue-weapon-proficiencies", "label": "Maniement des armes (Roublard)", "effects": [{"type": "note", "text": "Maîtrise du gourdin, arbalète (main), dague, fléchette, masse (l/l), morgenstern, bâton, rapière, matraque, arc court, épée courte."}], "isClassFeature": true, "type": "special" },
-    { "value": "wizard-sorcerer-weapon-proficiencies", "label": "Maniement des armes (Magicien/Ensorceleur)", "effects": [{"type": "note", "text": "Maîtrise du gourdin, dague, arbalète lourde, arbalète légère, bâton."}], "isClassFeature": true, "type": "special" },
-    { "value": "class-barbarian-rage", "label": "Rage", "effectsText": "Confère des bonus temporaires à la For, Con, aux jets de Volonté ; pénalité à la CA. Voir description complète.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text": "Temp Str +4, Con +4, Will +2; AC -2. Evolves."}] },
-    { "value": "class-barbarian-fast-movement", "label": "Déplacement rapide", "effectsText": "+3 m à la vitesse terrestre (sans armure, armure légère/intermédiaire, pas de charge lourde).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text": "+3m à la vitesse terrestre sous certaines conditions."}] },
-    { "value": "class-barbarian-trap-sense", "label": "Sens des pièges", "effectsText": "Bonus aux jets de Réflexes et à la CA contre les pièges (évolue avec le niveau).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text": "Bonus évolutif aux jets de Réflexes et à la CA contre les pièges."}] },
-    { "value": "class-barbarian-uncanny-dodge", "label": "Esquive instinctive", "effectsText": "Conserve le bonus de Dextérité à la CA en étant pris au dépourvu ou contre un attaquant invisible.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text": "Conserve le bonus de Dex à la CA en étant pris au dépourvu."}] },
+    { "value": "armor-proficiency-light", "label": "Maniement des armures légères", "effectsText": "Maîtrise des armures légères", "effects": [{"type": "note", "text": "Maîtrise des armures légères"}], "isClassFeature": true, "type": "special" },
+    { "value": "armor-proficiency-medium", "label": "Maniement des armures intermédiaires", "prerequisites": { "feats": ["armor-proficiency-light"] }, "effectsText": "Maîtrise des armures intermédiaires", "effects": [{"type": "note", "text": "Maîtrise des armures intermédiaires"}], "isClassFeature": true, "type": "special" },
+    { "value": "armor-proficiency-heavy", "label": "Maniement des armures lourdes", "prerequisites": { "feats": ["armor-proficiency-medium"] }, "effectsText": "Maîtrise des armures lourdes", "effects": [{"type": "note", "text": "Maîtrise des armures lourdes"}], "isClassFeature": true, "type": "special" },
+    { "value": "tower-shield-proficiency", "label": "Maniement des pavois", "prerequisites": { "feats": ["shield-proficiency"] }, "effectsText": "Maîtrise des pavois", "effects": [{"type": "note", "text": "Maîtrise des pavois"}], "isClassFeature": true, "type": "special" },
+    { "value": "simple-weapon-proficiency", "label": "Maniement des armes courantes", "effectsText": "Maîtrise de toutes les armes courantes", "effects": [{"type": "note", "text": "Maîtrise de toutes les armes courantes"}], "isClassFeature": true, "type": "special" },
+    { "value": "martial-weapon-proficiency-all", "label": "Maniement des armes de guerre (Toutes)", "prerequisites": { "feats": ["simple-weapon-proficiency"] }, "effectsText": "Maîtrise de toutes les armes de guerre", "effects": [{"type": "note", "text": "Maîtrise de toutes les armes de guerre"}], "isClassFeature": true, "type": "special" },
+    { "value": "bard-weapon-proficiencies", "label": "Maniement des armes (Barde)", "effectsText":"Maîtrise de l'épée longue, de la rapière, du matraque, de l'épée courte, de l'arc court, du fouet.", "isClassFeature": true, "type": "special", "effects": [{"type": "note", "text": "Maîtrise de l'épée longue, de la rapière, du matraque, de l'épée courte, de l'arc court, du fouet."}] },
+    { "value": "druid-armor-shield-proficiencies", "label": "Maniement des armures et boucliers (Druide)", "effectsText":"Maîtrise des armures légères/intermédiaires non métalliques et des boucliers en bois.", "isClassFeature": true, "type": "special", "effects": [{"type": "note", "text": "Maîtrise des armures légères/intermédiaires non métalliques et des boucliers en bois."}] },
+    { "value": "druid-weapon-proficiencies", "label": "Maniement des armes (Druide)", "effectsText":"Maîtrise du gourdin, dague, fléchette, bâton, cimeterre, faucille, épieu, fronde, lance, et attaques naturelles de Forme Sauvage.", "isClassFeature": true, "type": "special", "effects": [{"type": "note", "text": "Maîtrise du gourdin, dague, fléchette, bâton, cimeterre, faucille, épieu, fronde, lance, et attaques naturelles de Forme Sauvage."}] },
+    { "value": "monk-weapon-proficiencies", "label": "Maniement des armes (Moine)", "effectsText":"Maîtrise du gourdin, arbalète (l/l), dague, hachette, javelot, kama, nunchaku, bâton, sai, shuriken, siangham, fronde.", "isClassFeature": true, "type": "special", "effects": [{"type": "note", "text": "Maîtrise du gourdin, arbalète (l/l), dague, hachette, javelot, kama, nunchaku, bâton, sai, shuriken, siangham, fronde."}] },
+    { "value": "rogue-weapon-proficiencies", "label": "Maniement des armes (Roublard)", "effectsText":"Maîtrise du gourdin, arbalète (main), dague, fléchette, masse (l/l), morgenstern, bâton, rapière, matraque, arc court, épée courte.", "isClassFeature": true, "type": "special", "effects": [{"type": "note", "text": "Maîtrise du gourdin, arbalète (main), dague, fléchette, masse (l/l), morgenstern, bâton, rapière, matraque, arc court, épée courte."}] },
+    { "value": "wizard-sorcerer-weapon-proficiencies", "label": "Maniement des armes (Magicien/Ensorceleur)", "effectsText":"Maîtrise du gourdin, dague, arbalète lourde, arbalète légère, bâton.", "isClassFeature": true, "type": "special", "effects": [{"type": "note", "text": "Maîtrise du gourdin, dague, arbalète lourde, arbalète légère, bâton."}] },
+    { "value": "class-barbarian-rage", "label": "Rage", "effectsText": "Confère des bonus temporaires à la For, Con, aux jets de Volonté ; pénalité à la CA. Voir description complète.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text": "For +4, Con +4, Vol +2 ; CA -2 temporairement. Évolue."}] },
+    { "value": "class-barbarian-fast-movement", "label": "Déplacement rapide", "effectsText": "+3 m à la vitesse terrestre (sans armure, armure légère/intermédiaire, pas de charge lourde).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"+3m à la vitesse terrestre sous certaines conditions."}] },
+    { "value": "class-barbarian-trap-sense", "label": "Sens des pièges", "effectsText": "Bonus aux jets de Réflexes et à la CA contre les pièges (évolue avec le niveau).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Bonus évolutif aux jets de Réflexes et à la CA contre les pièges."}] },
+    { "value": "class-barbarian-uncanny-dodge", "label": "Esquive instinctive", "effectsText": "Conserve le bonus de Dextérité à la CA en étant pris au dépourvu ou contre un attaquant invisible.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Conserve le bonus de Dex à la CA en étant pris au dépourvu."}] },
     { "value": "class-barbarian-improved-uncanny-dodge", "label": "Esquive instinctive améliorée", "effectsText": "Ne peut pas être pris en tenaille.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Ne peut pas être pris en tenaille."}] },
     { "value": "class-barbarian-damage-reduction", "label": "Réduction des dégâts", "effectsText": "RD X/— (évolue avec le niveau).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Obtient une Réduction des Dégâts X/- qui évolue avec le niveau."}] },
     { "value": "class-barbarian-greater-rage", "label": "Rage supérieure", "effectsText": "Les bonus de Rage s'améliorent à For/Con +6, Volonté +3.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Les bonus de Rage s'améliorent à For/Con +6, Volonté +3."}] },
@@ -788,7 +869,7 @@
     { "value": "class-bard-mass-suggestion", "label": "Suggestion de masse", "effectsText":"Fait une suggestion à plusieurs créatures fascinées.", "isClassFeature": true, "type": "special-sp", "effects": [{"type": "note", "text":"Fait une suggestion à plusieurs créatures fascinées."}] },
     { "value": "class-cleric-turn-rebuke-undead", "label": "Renvoi ou intimidation des morts-vivants", "effectsText":"Affecte les créatures mortes-vivantes en canalisant la foi.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Affecte les créatures mortes-vivantes en canalisant la foi."}] },
     { "value": "class-druid-animal-companion", "label": "Compagnon animal", "effectsText":"Obtient un compagnon animal loyal.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Obtient un compagnon animal loyal."}] },
-    { "value": "class-druid-nature-sense", "label": "Sens de la nature", "effectsText": "Bonus de +2 aux tests de Connaissances (nature) et de Survie.", "isClassFeature": true, "type": "special-ex", "effects": [{"type":"skill", "skillId":"knowledge-nature", "value":2, "bonusType": "untyped"}, {"type":"skill", "skillId":"survival", "value":2, "bonusType": "untyped"}] },
+    { "value": "class-druid-nature-sense", "label": "Sens de la nature", "effectsText": "Bonus de +2 aux tests de Connaissances (nature) et de Survie.", "effects": [{"type":"skill", "skillId":"knowledge-nature", "value":2, "bonusType":"untyped"}, {"type":"skill", "skillId":"survival", "value":2, "bonusType":"untyped"}], "type": "special-ex", "isClassFeature": true },
     { "value": "class-druid-wild-empathy", "label": "Empathie sauvage", "effectsText":"Améliore l'attitude d'un animal.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Améliore l'attitude d'un animal."}] },
     { "value": "class-druid-woodland-stride", "label": "Déplacement en milieu naturel", "effectsText":"Se déplace dans les sous-bois naturels à vitesse normale.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Se déplace dans les sous-bois naturels à vitesse normale."}] },
     { "value": "class-druid-trackless-step", "label": "Pistage silencieux", "effectsText":"Ne laisse aucune trace dans les environnements naturels.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Ne laisse aucune trace dans les environnements naturels."}] },
@@ -865,7 +946,37 @@
     { "value": "class-soulknife-bladewind", "label": "Pluie de lames", "effectsText":"Attaque tous les ennemis adjacents avec des fragments de lame mentale.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Attaque tous les ennemis adjacents avec des fragments de lame mentale."}] },
     { "value": "greater-weapon-focus-mind-blade", "label": "Arme de Prédilection Supérieure (Lame Mentale)", "description": "<b>Avantage :</b> Vous gagnez un bonus supplémentaire de +1 à tous les jets d'attaque que vous effectuez avec votre lame mentale. Ceci se cumule avec Arme de Prédilection.", "effectsText": "Bonus supplémentaire de +1 aux jets d'attaque avec la Lame Mentale.", "isClassFeature": true, "type": "special", "effects": [{"type": "note", "text": "Bonus supplémentaire de +1 aux jets d'attaque avec la Lame Mentale."}] },
     { "value": "class-soulknife-knife-to-the-soul", "label": "Estocade mentale", "effectsText":"Substitue les dégâts de la frappe psychique par des dégâts de caractéristique.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Substitue les dégâts de la frappe psychique par des dégâts de caractéristique."}] },
-    { "value": "class-soulknife-multiple-throw", "label": "Lancer multiple", "effectsText":"Lance plusieurs lames mentales par round.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Lance plusieurs lames mentales par round."}] }
+    { "value": "class-soulknife-multiple-throw", "label": "Lancer multiple", "effectsText":"Lance plusieurs lames mentales par round.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Lance plusieurs lames mentales par round."}] },
+    {
+      "value": "class-barbarian-rage-strength",
+      "label": "Bonus de Force de Rage",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Bonus temporaire de +4 à la Force en rage.",
+      "effects": [
+        { "type": "abilityScore", "ability": "strength", "value": 4, "bonusType": "morale", "condition": "En Rage" }
+      ]
+    },
+    {
+      "value": "class-barbarian-rage-constitution",
+      "label": "Bonus de Constitution de Rage",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Bonus temporaire de +4 à la Constitution en rage.",
+      "effects": [
+        { "type": "abilityScore", "ability": "constitution", "value": 4, "bonusType": "morale", "condition": "En Rage" }
+      ]
+    },
+    {
+      "value": "feat-example-tome-strength",
+      "label": "Puissance des Anciens (Exemple)",
+      "description": "Accorde un bonus inhérent permanent de +1 à la Force.",
+      "isClassFeature": false,
+      "effectsText": "+1 Force inhérent",
+      "effects": [
+        { "type": "abilityScore", "ability": "strength", "value": 1, "bonusType": "inherent" }
+      ]
+    }
   ],
   "FEAT_TYPES_DATA": [
     { "value": "special", "label": "Spécial" },

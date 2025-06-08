@@ -58,15 +58,24 @@ export interface SkillEffectDetail {
 export interface NoteEffectDetail {
   type: "note";
   text: string;
-  // targetCategory?: "AC" | "SavingThrow" | "AttackRoll" | "DamageRoll" | "HitPoints" | "Initiative" | "Speed" | "Resistance" | "CasterLevelCheck" | "SpellSaveDC" | "TurnUndead" | "Proficiency" | "Ability" | "Mechanic";
+  // targetCategory?: "AC" | "SavingThrow" | "AttackRoll" | "DamageRoll" etc. for future categorization
+}
+
+export interface AbilityScoreEffect {
+  type: "abilityScore";
+  ability: Exclude<AbilityName, 'none'>;
+  value: number;
+  bonusType?: "enhancement" | "inherent" | "morale" | "competence" | "circumstance" | "size" | "untyped";
+  condition?: string;
+  sourceFeat?: string; // Added for tracing where the effect came from during aggregation
 }
 
 // Add other specific effect detail types here in the future:
-// export interface AbilityScoreEffect { type: "abilityScore"; ability: AbilityName; value: number; bonusType?: string; condition?: string; }
-// export interface AttackRollEffect { type: "attackRoll"; value: number; bonusType?: string; appliesTo: string; condition?: string; }
+// export interface AttackRollEffect { type: "attackRoll"; ... }
+// export interface DamageRollEffect { type: "damageRoll"; ... }
 // ... and so on
 
-export type FeatEffectDetail = SkillEffectDetail | NoteEffectDetail; // Will add more with | in future iterations
+export type FeatEffectDetail = SkillEffectDetail | NoteEffectDetail | AbilityScoreEffect; // Added AbilityScoreEffect
 
 export type FeatTypeString = string; // Will be defined by FEAT_TYPES_DATA from JSON
 
@@ -76,7 +85,7 @@ export interface FeatDefinitionJsonData { // Base structure for feat definitions
   description?: string;
   prerequisites?: FeatPrerequisiteDetails;
   effectsText?: string; // General textual summary of all effects
-  effects?: FeatEffectDetail[]; // NEW: Array of structured effects
+  effects?: FeatEffectDetail[]; // Array of structured effects
   canTakeMultipleTimes?: boolean;
   requiresSpecialization?: string; // e.g., "skill", "weapon", "school of magic"
   type?: FeatTypeString;
@@ -317,6 +326,7 @@ export interface SkillDefinitionForDisplay {
 export interface AbilityScoreComponentValue {
   source: string;
   value: number;
+  condition?: string; // Added to show conditional nature in breakdown
 }
 export interface AbilityScoreBreakdown {
   ability: Exclude<AbilityName, 'none'>;
@@ -329,86 +339,93 @@ export type DetailedAbilityScores = Record<Exclude<AbilityName, 'none'>, Ability
 
 export interface AggregatedFeatEffects {
   skillBonuses: Record<string, number>; // skillId: totalBonus
-  abilityScoreBonuses: Array<Pick<AbilityScoreEffect, "ability" | "value" | "bonusType" | "condition"> & { sourceFeat: string }>;
-  savingThrowBonuses: Array<Pick<SavingThrowEffect, "save" | "value" | "bonusType" | "condition"> & { sourceFeat: string }>;
-  attackRollBonuses: Array<Pick<AttackRollEffect, "value" | "bonusType" | "appliesTo" | "condition" | "rangeLimit" | "weaponTypes"> & { sourceFeat: string }>;
-  damageRollBonuses: Array<Pick<DamageRollEffect, "value" | "bonusType" | "appliesTo" | "condition" | "rangeLimit" | "weaponTypes"> & { sourceFeat: string }>;
-  acBonuses: Array<Pick<ArmorClassEffect, "value" | "acType" | "condition" | "appliesToScope" | "bonusType"> & { sourceFeat: string }>;
-  hpBonus: number;
-  initiativeBonus: number;
-  speedBonuses: Array<Pick<SpeedEffect, "speedType" | "modification" | "value" | "bonusType" | "condition"> & { sourceFeat: string }>;
-  resistanceBonuses: Array<Pick<ResistanceEffect, "resistanceTo" | "value" | "isDamageReduction" | "condition" | "bonusType"> & { sourceFeat: string }>;
-  casterLevelCheckBonuses: Array<Pick<CasterLevelCheckEffect, "value" | "forEvent" | "condition"> & { sourceFeat: string }>;
-  spellSaveDcBonuses: Array<Pick<SpellSaveDcEffect, "school" | "value" | "condition"> & { sourceFeat: string }>;
-  turnUndeadBonuses: Array<Pick<TurnUndeadEffect, "property" | "value" | "condition"> & { sourceFeat: string }>;
-  grantedAbilities: Array<Pick<GrantsAbilityEffect, "abilityKey" | "name" | "details" | "uses" | "actionType"> & { sourceFeat: string }>;
-  modifiedMechanics: Array<Pick<ModifiesMechanicEffect, "mechanicKey" | "change" | "details"> & { sourceFeat: string }>;
-  proficienciesGranted: Array<Pick<GrantsProficiencyEffect, "proficiencyType" | "itemCategory" | "specificItem"> & { sourceFeat: string }>;
-  bonusFeatSlots: Array<Pick<BonusFeatSlotEffect, "category" | "count" | "note"> & { sourceFeat: string }>;
-  languagesGranted: {
-      count: number; // How many bonus languages
-      specific: Array<{ languageId: LanguageId; note?: string; sourceFeat: string }>; // Specific languages granted
-      note?: string; // General note about languages from feats
+  abilityScoreBonuses: AbilityScoreEffect[]; // Array of all ability score effects from feats
+  // Initialize other aggregated fields here if they were defined in AggregatedFeatEffects
+  // For now, it's just skillBonuses based on the current plan
+  // In future iterations:
+  // hpBonus: number,
+  // initiativeBonus: number,
+  // acBonuses: [],
+  // savingThrowBonuses: { fortitude: 0, reflex: 0, will: 0, all: 0 },
+  // attackRollBonuses: [],
+  // damageRollBonuses: [],
+  // etc.
+  // FOR NOW, an example of how other fields might be structured.
+  // We will only implement skillBonuses and abilityScoreBonuses for this step.
+  savingThrowBonuses?: Array<SavingThrowEffect>;
+  attackRollBonuses?: Array<AttackRollEffect>;
+  damageRollBonuses?: Array<DamageRollEffect>;
+  acBonuses?: Array<ArmorClassEffect>;
+  hpBonus?: number;
+  initiativeBonus?: number;
+  speedBonuses?: Array<SpeedEffect>;
+  resistanceBonuses?: Array<ResistanceEffect>;
+  casterLevelCheckBonuses?: Array<CasterLevelCheckEffect>;
+  spellSaveDcBonuses?: Array<SpellSaveDcEffect>;
+  turnUndeadBonuses?: Array<TurnUndeadEffect>;
+  grantedAbilities?: Array<GrantsAbilityEffect>;
+  modifiedMechanics?: Array<ModifiesMechanicEffect>;
+  proficienciesGranted?: Array<GrantsProficiencyEffect>;
+  bonusFeatSlots?: Array<BonusFeatSlotEffect>;
+  languagesGranted?: {
+      count: number;
+      specific: Array<{ languageId: LanguageId; note?: string; sourceFeat: string }>;
+      note?: string;
   };
-  // Raw descriptive texts from all feats, could be displayed in a general "Feat Notes" section
-  descriptiveNotes: Array<{ text: string; sourceFeat: string }>;
+  descriptiveNotes?: Array<{ text: string; sourceFeat: string }>;
 }
 
 
-// Specific Effect Detail Types
-export interface AbilityScoreEffect {
-  type: "abilityScore";
-  ability: Exclude<AbilityName, 'none'>;
-  value: number;
-  bonusType?: "enhancement" | "inherent" | "morale" | "competence" | "circumstance" | "racial" | "size" | "untyped";
-  condition?: string;
-  duration?: string; // e.g., "1 minute/level", "permanent", "concentration"
-}
-
+// Specific Effect Detail Types for future use (many are placeholders for now)
 export interface SavingThrowEffect {
   type: "savingThrow";
   save: SavingThrowType | "all";
   value: number;
   bonusType?: "resistance" | "luck" | "morale" | "competence" | "circumstance" | "racial" | "untyped";
   condition?: string;
+  sourceFeat?: string;
 }
 
 export interface AttackRollEffect {
   type: "attackRoll";
   value: number;
-  bonusType?: "enhancement" | "luck" | "morale" | "competence" | "circumstance" | "insight" | "size" | "untyped";
-  appliesTo?: "all" | "melee" | "ranged" | `weapon:${string}` | `weaponCategory:${string}` | "unarmed" | "grapple" | "SPEC"; // SPEC for specialization by feat instance
-  weaponTypes?: Array<"slashing" | "piercing" | "bludgeoning" | "unarmed" | "specificWeapon">; // For broader categories or specific named weapon
+  bonusType?: string;
+  appliesTo: "all" | "melee" | "ranged" | `weapon:${string}` | `weaponCategory:${string}` | "unarmed" | "grapple" | "SPEC";
+  weaponTypes?: Array<"slashing" | "piercing" | "bludgeoning" | "unarmed" | "specificWeapon">;
   condition?: string;
-  rangeLimit?: number; // Numeric value for range, e.g., 30 (UI appends unit)
+  rangeLimit?: number;
+  sourceFeat?: string;
 }
 
 export interface DamageRollEffect {
   type: "damageRoll";
-  value: number; // Can be dice string like "1d6" or a number
-  bonusType?: "enhancement" | "luck" | "morale" | "competence" | "circumstance" | "insight" | "size" | "untyped";
+  value: number | string;
+  bonusType?: string;
   appliesTo?: "all" | "melee" | "ranged" | `weapon:${string}` | `weaponCategory:${string}` | "unarmed" | "grapple" | "SPEC";
   weaponTypes?: Array<"slashing" | "piercing" | "bludgeoning" | "unarmed" | "specificWeapon">;
   condition?: string;
   rangeLimit?: number;
-  damageMultiplier?: number; // e.g., 2 for double damage, 1.5 for STR bonus on two-handed
+  damageMultiplier?: number;
+  sourceFeat?: string;
 }
 
 export interface ArmorClassEffect {
   type: "armorClass";
-  value: number | "WIS" | "INT" | "CHA"; // Can be a number or refer to an ability mod
+  value: number | "WIS" | "INT" | "CHA";
   acType: "dodge" | "armor" | "shield" | "natural" | "deflection" | "insight" | "circumstance" | "untyped" | "monk";
-  bonusType?: "enhancement" | "luck" | "morale" | "competence" | "circumstance" | "insight" | "racial" | "size" | "untyped"; // Optional, as acType often implies this
+  bonusType?: string;
   condition?: string;
-  appliesToScope?: ("normal" | "touch" | "flatFooted")[]; // Which AC types this bonus applies to
-  maxDexBonus?: number | "unlimited"; // For armor/shield type effects
+  appliesToScope?: ("normal" | "touch" | "flatFooted")[];
+  maxDexBonus?: number | "unlimited";
+  sourceFeat?: string;
 }
 
 export interface HitPointsEffect {
   type: "hitPoints";
   value: number;
-  perLevel?: boolean; // If true, value is per character level
-  bonusType?: "untyped"; // HP bonuses are almost always untyped
+  perLevel?: boolean;
+  bonusType?: "untyped";
+  sourceFeat?: string;
 }
 
 export interface InitiativeEffect {
@@ -416,6 +433,7 @@ export interface InitiativeEffect {
   value: number;
   bonusType?: "competence" | "insight" | "untyped";
   condition?: string;
+  sourceFeat?: string;
 }
 
 export interface SpeedEffect {
@@ -425,16 +443,18 @@ export interface SpeedEffect {
   value: number;
   bonusType?: "enhancement" | "untyped";
   condition?: string;
+  sourceFeat?: string;
 }
 
 export interface ResistanceEffect {
   type: "resistance";
-  resistanceTo: string; // e.g., "fire", "cold", "spell", "slashing" (for DR)
+  resistanceTo: string;
   value: number;
-  isDamageReduction?: boolean; // True if this is DR X/- or DR X/magic etc.
-  bypassedBy?: string[]; // e.g., ["magic", "adamantine"] for DR
+  isDamageReduction?: boolean;
+  bypassedBy?: string[];
   bonusType?: "resistance" | "untyped";
   condition?: string;
+  sourceFeat?: string;
 }
 
 export interface CasterLevelCheckEffect {
@@ -443,14 +463,16 @@ export interface CasterLevelCheckEffect {
   forEvent?: "spellResistance" | "dispel" | "all";
   condition?: string;
   bonusType?: "untyped" | "competence";
+  sourceFeat?: string;
 }
 
 export interface SpellSaveDcEffect {
   type: "spellSaveDc";
-  school?: string | "all" | "SPEC"; // e.g., "evocation"
+  school?: string | "all" | "SPEC";
   value: number;
   condition?: string;
   bonusType?: "untyped";
+  sourceFeat?: string;
 }
 
 export interface TurnUndeadEffect {
@@ -459,58 +481,65 @@ export interface TurnUndeadEffect {
   value: number;
   bonusType?: "untyped";
   condition?: string;
+  sourceFeat?: string;
 }
 
 export interface GrantsAbilityEffect {
   type: "grantsAbility";
-  abilityKey: string; // Unique key for programmatic reference, e.g., "powerAttack", "scribeScroll"
-  name: string;       // Display name, e.g., "Power Attack"
-  details?: string;    // Brief explanation of what it allows
+  abilityKey: string;
+  name: string;
+  details?: string;
   uses?: { per: "day" | "encounter"; value: number | "levelBased" | "abilityModBased"; basedOnAbility?: Exclude<AbilityName, 'none'> };
   actionType?: "standard" | "move" | "fullRound" | "free" | "swift" | "immediate" | "reaction" | "passive";
+  sourceFeat?: string;
 }
 
 export interface ModifiesMechanicEffect {
   type: "modifiesMechanic";
-  mechanicKey: string; // e.g., "unarmedStrikeDamage", "criticalThreatRange", "aooLimit"
-  change: string;      // Human-readable description of the change, e.g., "Treated as armed", "Doubled for selected weapon"
-  details?: string;     // More detailed explanation
-  value?: number | string; // Optional numeric or string value associated with the modification
+  mechanicKey: string;
+  change: string;
+  details?: string;
+  value?: number | string;
   condition?: string;
+  sourceFeat?: string;
 }
 
 export interface GrantsProficiencyEffect {
   type: "grantsProficiency";
   proficiencyType: "weapon" | "armor" | "shield";
-  itemCategory?: "simple" | "martial" | "exotic" | "light" | "medium" | "heavy" | "tower"; // For broad categories
-  specificItem?: string; // For specific items like "longsword" or "full plate" or "SPEC" if specialized exotic weapon
+  itemCategory?: "simple" | "martial" | "exotic" | "light" | "medium" | "heavy" | "tower";
+  specificItem?: string;
+  sourceFeat?: string;
 }
 
 export interface BonusFeatSlotEffect {
   type: "bonusFeatSlot";
-  category: string; // e.g., "fighter", "wizardMetamagicOrItemCreation", "monkCombat", "general"
+  category: string;
   count: number;
-  note?: string; // E.g., "Choose from feats X, Y, or Z"
-  condition?: string; // e.g. "At level 5" if it's from a class feature that's also a feat
+  note?: string;
+  condition?: string;
+  sourceFeat?: string;
 }
 
 export interface LanguageEffect {
   type: "language";
-  count?: number; // Number of bonus languages to choose
-  specific?: LanguageId; // Specific language granted
-  note?: string; // e.g., "Druidic is a secret language"
+  count?: number;
+  specific?: LanguageId;
+  note?: string;
+  sourceFeat?: string;
 }
 
-export interface DescriptiveEffect {
+export interface DescriptiveEffectDetail { // Renamed to match other effect details
   type: "descriptive";
-  text: string; // Fallback for very complex or purely narrative effects
+  text: string;
+  sourceFeat?: string;
 }
 
 // The main union type for all possible structured feat effects
 export type StructuredFeatEffect =
   | SkillEffectDetail
-  | NoteEffectDetail // Keep for now as a bridge/fallback
-  | AbilityScoreEffect
+  | NoteEffectDetail
+  | AbilityScoreEffect // Added
   | SavingThrowEffect
   | AttackRollEffect
   | DamageRollEffect
@@ -527,12 +556,7 @@ export type StructuredFeatEffect =
   | GrantsProficiencyEffect
   | BonusFeatSlotEffect
   | LanguageEffect
-  | DescriptiveEffect;
-
-// Update FeatDefinitionJsonData to use this new union type
-// This was: export type FeatEffectDetail = SkillEffectDetail | NoteEffectDetail;
-// Now it's:
-// export type FeatEffectDetail = StructuredFeatEffect; // This was already updated indirectly in your last correct pass.
+  | DescriptiveEffectDetail; // Changed from DescriptiveEffect
 
 
 export interface BabBreakdownDetails {
@@ -578,4 +602,3 @@ export interface PrerequisiteMessage {
   orderKey: string;
   originalText?: string;
 }
-// Removed the stray ``` from here

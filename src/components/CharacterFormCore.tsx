@@ -10,7 +10,8 @@ import type {
   DndRaceOption, DetailedAbilityScores, AbilityScoreBreakdown,
   FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData, CharacterSize,
   ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType, ResistanceFieldKeySheet,
-  SpeedDetails, SpeedType, CharacterAlignment, ProcessedSiteData, SpeedPanelCharacterData, CombatPanelCharacterData, LanguageId
+  SpeedDetails, SpeedType, CharacterAlignment, ProcessedSiteData, SpeedPanelCharacterData, CombatPanelCharacterData, LanguageId,
+  AggregatedFeatEffects // Added
 } from '@/types/character';
 import {
   getNetAgingEffects,
@@ -19,7 +20,8 @@ import {
   getGrantedFeatsForCharacter,
   calculateDetailedAbilityScores,
   getRaceSkillPointsBonusPerLevel,
-  ABILITY_ORDER_INTERNAL
+  ABILITY_ORDER_INTERNAL,
+  calculateFeatEffects // Added
 } from '@/types/character';
 import {
   getBab,
@@ -251,7 +253,10 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
   const [raceSpecialQualities, setRaceSpecialQualities] = React.useState<CharacterFormCoreInfoSectionProps['raceSpecialQualities']>(null);
   const [activeInfoDialogType, setActiveInfoDialogType] = React.useState<InfoDialogContentType | null>(null);
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
+  
+  const [aggregatedFeatEffects, setAggregatedFeatEffects] = React.useState<AggregatedFeatEffects | null>(null);
   const [detailedAbilityScores, setDetailedAbilityScores] = React.useState<DetailedAbilityScores | null>(null);
+  
   const [isAddOrEditSkillDialogOpen, setIsAddOrEditSkillDialogOpen] = React.useState(false);
   const [skillToEdit, setSkillToEdit] = React.useState<CustomSkillDefinition | undefined>(undefined);
   const [isCustomFeatDialogOpen, setIsCustomFeatDialogOpen] = React.useState(false);
@@ -260,12 +265,13 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
   const router = useRouter();
   const { toast } = useToast();
 
-
   React.useEffect(() => {
     if (character && translations) {
+      const aggFeats = calculateFeatEffects(character.feats, allAvailableFeatDefinitions);
+      setAggregatedFeatEffects(aggFeats);
       setDetailedAbilityScores(calculateDetailedAbilityScores(
         character,
-        globalCustomFeatDefinitions,
+        aggFeats, // Pass aggregated feat effects
         translations.DND_RACES,
         translations.DND_RACE_ABILITY_MODIFIERS_DATA,
         translations.DND_RACE_BASE_MAX_AGE_DATA,
@@ -275,7 +281,8 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
         translations.ABILITY_LABELS
       ));
     }
-  }, [character, translations, globalCustomFeatDefinitions]);
+  }, [character, translations, allAvailableFeatDefinitions]); // Re-calculate when character or definitions change
+
 
   const actualAbilityScoresForSavesAndSkills = React.useMemo(() => {
     if (!character || !detailedAbilityScores) {
@@ -630,7 +637,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     onSave(finalCharacterData);
   }, [character, onSave, toast, translations]);
 
-  if (translationsLoading || !character || !translations || !detailedAbilityScores) { 
+  if (translationsLoading || !character || !translations || !detailedAbilityScores || !aggregatedFeatEffects) { 
     return (
       <div className="container mx-auto px-4 py-8 space-y-8">
         <div className="flex justify-center items-center py-10 min-h-[50vh]">
@@ -819,12 +826,13 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
         </div>
       </form>
 
-      {isInfoDialogOpen && activeInfoDialogType && character && (
+      {isInfoDialogOpen && activeInfoDialogType && character && aggregatedFeatEffects && (
         <InfoDisplayDialog
           isOpen={isInfoDialogOpen}
           onOpenChange={setIsInfoDialogOpen}
           character={character}
           contentType={activeInfoDialogType}
+          aggregatedFeatEffects={aggregatedFeatEffects} 
         />
       )}
       <AddCustomSkillDialog
@@ -847,5 +855,6 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     </>
   );
 };
+
 
 

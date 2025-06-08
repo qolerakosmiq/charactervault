@@ -15,6 +15,8 @@
         { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
         { "featId": "class-barbarian-fast-movement", "levelAcquired": 1, "note": "Vitesse +3 m" },
         { "featId": "class-barbarian-rage", "levelAcquired": 1, "note": "1/jour" },
+        { "featId": "class-barbarian-rage-strength", "levelAcquired": 1 },
+        { "featId": "class-barbarian-rage-constitution", "levelAcquired": 1 },
         { "featId": "class-barbarian-uncanny-dodge", "levelAcquired": 2 },
         { "featId": "class-barbarian-trap-sense", "levelAcquired": 3, "note": "Bonus +1" },
         { "featId": "class-barbarian-rage", "levelAcquired": 4, "note": "2/jour" },
