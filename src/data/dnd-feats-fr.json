@@ -143,7 +143,7 @@
       "description": "<b>Avantage :</b> Pendant votre action, vous désignez un adversaire et recevez un bonus d'esquive de +1 à la Classe d'Armure contre les attaques de cet adversaire.<br />Vous pouvez sélectionner un nouvel adversaire à chaque action.<br /><b>Spécial :</b> Une condition qui vous fait perdre votre bonus de Dextérité à la Classe d'Armure (le cas échéant) vous fait également perdre les bonus d'esquive.<br />De plus, les bonus d'esquive se cumulent entre eux, contrairement à la plupart des autres types de bonus.",
       "prerequisites": { "abilities": { "dexterity": 13 } },
       "effectsText": "Bonus d'esquive de +1 à la CA contre une cible.",
-      "effects": [{ "type": "note", "text": "Bonus d'esquive de +1 à la CA contre une cible." }],
+      "effects": [{ "type": "armorClass", "acType": "dodge", "value": 1, "condition": "vs_designated_opponent" }],
       "isClassFeature": false,
       "type": "special"
     },
@@ -202,7 +202,7 @@
       "label": "Vigueur surhumaine",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de sauvegarde de Vigueur.",
       "effectsText": "Bonus de +2 à tous les jets de sauvegarde de Vigueur.",
-      "effects": [{ "type": "note", "text": "Bonus de +2 à tous les jets de sauvegarde de Vigueur." }],
+      "effects": [{ "type": "savingThrow", "save": "fortitude", "value": 2, "bonusType": "untyped" }],
       "isClassFeature": false,
       "type": "special"
     },
@@ -274,7 +274,7 @@
       "label": "Initiative améliorée",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +4 aux tests d'initiative.",
       "effectsText": "Bonus de +4 aux tests d'initiative.",
-      "effects": [{ "type": "note", "text": "Bonus de +4 aux tests d'initiative." }],
+      "effects": [{ "type": "initiative", "value": 4, "bonusType": "untyped" }],
       "isClassFeature": false,
       "type": "special"
     },
@@ -353,7 +353,7 @@
       "label": "Volonté de fer",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de sauvegarde de Volonté.",
       "effectsText": "Bonus de +2 à tous les jets de sauvegarde de Volonté.",
-      "effects": [{ "type": "note", "text": "Bonus de +2 à tous les jets de sauvegarde de Volonté." }],
+      "effects": [{ "type": "savingThrow", "save": "will", "value": 2, "bonusType": "untyped" }],
       "isClassFeature": false,
       "type": "special"
     },
@@ -362,7 +362,7 @@
       "label": "Réflexes surhumains",
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de sauvegarde de Réflexes.",
       "effectsText": "Bonus de +2 à tous les jets de sauvegarde de Réflexes.",
-      "effects": [{ "type": "note", "text": "Bonus de +2 à tous les jets de sauvegarde de Réflexes." }],
+      "effects": [{ "type": "savingThrow", "save": "reflex", "value": 2, "bonusType": "untyped" }],
       "isClassFeature": false,
       "type": "special"
     },
@@ -722,7 +722,7 @@
       "label": "Robustesse",
       "description": "<b>Avantage :</b> Vous gagnez +3 points de vie.<br /><b>Spécial :</b> Un personnage peut acquérir ce don plusieurs fois.<br />Ses effets se cumulent.",
       "effectsText": "+3 points de vie.",
-      "effects": [{ "type": "note", "text": "+3 points de vie." }],
+      "effects": [{ "type": "hitPoints", "value": 3, "bonusType": "untyped" }],
       "canTakeMultipleTimes": true,
       "isClassFeature": false,
       "type": "special"
@@ -846,26 +846,54 @@
     { "value": "monk-weapon-proficiencies", "label": "Maniement des armes (Moine)", "effectsText":"Maîtrise du gourdin, arbalète (l/l), dague, hachette, javelot, kama, nunchaku, bâton, sai, shuriken, siangham, fronde.", "isClassFeature": true, "type": "special", "effects": [{"type": "note", "text": "Maîtrise du gourdin, arbalète (l/l), dague, hachette, javelot, kama, nunchaku, bâton, sai, shuriken, siangham, fronde."}] },
     { "value": "rogue-weapon-proficiencies", "label": "Maniement des armes (Roublard)", "effectsText":"Maîtrise du gourdin, arbalète (main), dague, fléchette, masse (l/l), morgenstern, bâton, rapière, matraque, arc court, épée courte.", "isClassFeature": true, "type": "special", "effects": [{"type": "note", "text": "Maîtrise du gourdin, arbalète (main), dague, fléchette, masse (l/l), morgenstern, bâton, rapière, matraque, arc court, épée courte."}] },
     { "value": "wizard-sorcerer-weapon-proficiencies", "label": "Maniement des armes (Magicien/Ensorceleur)", "effectsText":"Maîtrise du gourdin, dague, arbalète lourde, arbalète légère, bâton.", "isClassFeature": true, "type": "special", "effects": [{"type": "note", "text": "Maîtrise du gourdin, dague, arbalète lourde, arbalète légère, bâton."}] },
-    { "value": "class-barbarian-rage", "label": "Rage", "effectsText": "Confère des bonus temporaires à la For, Con, aux jets de Volonté ; pénalité à la CA. Voir description complète.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text": "For +4, Con +4, Vol +2 ; CA -2 temporairement. Évolue."}] },
+    { "value": "class-barbarian-rage", "label": "Rage", "effectsText": "Confère des bonus temporaires à la For, Con, aux jets de Volonté ; pénalité à la CA. Voir description complète.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"For +4, Con +4, Vol +2 ; CA -2 temporairement. Évolue."}] },
     { "value": "class-barbarian-fast-movement", "label": "Déplacement rapide", "effectsText": "+3 m à la vitesse terrestre (sans armure, armure légère/intermédiaire, pas de charge lourde).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"+3m à la vitesse terrestre sous certaines conditions."}] },
     { "value": "class-barbarian-trap-sense", "label": "Sens des pièges", "effectsText": "Bonus aux jets de Réflexes et à la CA contre les pièges (évolue avec le niveau).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Bonus évolutif aux jets de Réflexes et à la CA contre les pièges."}] },
     { "value": "class-barbarian-uncanny-dodge", "label": "Esquive instinctive", "effectsText": "Conserve le bonus de Dextérité à la CA en étant pris au dépourvu ou contre un attaquant invisible.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Conserve le bonus de Dex à la CA en étant pris au dépourvu."}] },
     { "value": "class-barbarian-improved-uncanny-dodge", "label": "Esquive instinctive améliorée", "effectsText": "Ne peut pas être pris en tenaille.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Ne peut pas être pris en tenaille."}] },
     { "value": "class-barbarian-damage-reduction", "label": "Réduction des dégâts", "effectsText": "RD X/— (évolue avec le niveau).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Obtient une Réduction des Dégâts X/- qui évolue avec le niveau."}] },
     { "value": "class-barbarian-greater-rage", "label": "Rage supérieure", "effectsText": "Les bonus de Rage s'améliorent à For/Con +6, Volonté +3.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Les bonus de Rage s'améliorent à For/Con +6, Volonté +3."}] },
-    { "value": "class-barbarian-indomitable-will", "label": "Volonté indomptable", "effectsText": "+4 au jet de Volonté contre les enchantements en rage.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"+4 au jet de Volonté contre les enchantements en rage."}] },
+    {
+      "value": "class-barbarian-indomitable-will",
+      "label": "Volonté indomptable",
+      "effectsText": "+4 au jet de Volonté contre les enchantements en rage.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "savingThrow", "save": "will", "value": 4, "bonusType": "morale", "condition": "raging_active" }
+      ]
+    },
     { "value": "class-barbarian-tireless-rage", "label": "Rage infatigable", "effectsText": "Ne devient plus fatigué après la rage.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Ne devient plus fatigué après la rage."}] },
     { "value": "class-barbarian-mighty-rage", "label": "Rage puissante", "effectsText": "Les bonus de Rage s'améliorent à For/Con +8, Volonté +4.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Les bonus de Rage s'améliorent à For/Con +8, Volonté +4."}] },
     { "value": "class-bard-bardic-music", "label": "Musique de barde", "effectsText":"Utilise le chant ou la poésie pour produire des effets magiques.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Utilise le chant ou la poésie pour produire des effets magiques."}] },
     { "value": "class-bard-bardic-knowledge", "label": "Savoir de barde", "effectsText":"Effectue un test de connaissance spécial sur des personnes, objets ou lieux locaux.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Effectue un test de connaissance spécial sur des personnes, objets ou lieux locaux."}] },
     { "value": "class-bard-countersong", "label": "Contre-chant", "effectsText":"Utilise la Représentation pour contrer les effets magiques sonores.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Utilise la Représentation pour contrer les effets magiques sonores."}] },
     { "value": "class-bard-fascinate", "label": "Fascination", "effectsText":"Fait que les créatures deviennent fascinées par la performance.", "isClassFeature": true, "type": "special-sp", "effects": [{"type": "note", "text":"Fait que les créatures deviennent fascinées par la performance."}] },
-    { "value": "class-bard-inspire-courage", "label": "Inspiration vaillante", "effectsText":"Renforce les alliés contre la peur, améliore les jets d'attaque/dégâts.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Renforce les alliés contre la peur, améliore les jets d'attaque/dégâts."}] },
+    {
+      "value": "class-bard-inspire-courage",
+      "label": "Inspiration vaillante",
+      "effectsText":"Renforce les alliés contre la peur, améliore les jets d'attaque/dégâts. Confère un bonus de moral aux jets de sauvegarde contre le charme et la peur (+1 au N1, augmentant jusqu'à +4 au N20).",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effects": [
+        { "type": "savingThrow", "save": "all", "value": 1, "bonusType": "morale", "condition": "inspire_courage_active_vs_charm_fear" },
+        { "type": "note", "text":"Améliore aussi les jets d'attaque/dégâts (effet évolutif non entièrement structuré ici). Le bonus de moral aux jets de sauvegarde contre le charme et la peur augmente avec le niveau."}]
+    },
     { "value": "class-bard-suggestion", "label": "Suggestion (Barde)", "effectsText":"Fait une suggestion (comme le sort) à une créature fascinée.", "isClassFeature": true, "type": "special-sp", "effects": [{"type": "note", "text":"Fait une suggestion (comme le sort) à une créature fascinée."}] },
     { "value": "class-bard-inspire-competence", "label": "Inspiration talentueuse", "effectsText":"Accorde à un allié un bonus de compétence de +2 aux tests de compétence.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Accorde à un allié un bonus de compétence de +2 aux tests de compétence."}] },
     { "value": "class-bard-inspire-greatness", "label": "Inspiration héroïque", "effectsText":"Accorde des dés de vie bonus, un bonus d'attaque et un bonus au jet de Vigueur.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Accorde des dés de vie bonus, un bonus d'attaque et un bonus au jet de Vigueur."}] },
     { "value": "class-bard-song-of-freedom", "label": "Chant de liberté", "effectsText":"Crée un effet équivalent à Délivrance des enchantements.", "isClassFeature": true, "type": "special-sp", "effects": [{"type": "note", "text":"Crée un effet équivalent à Délivrance des enchantements."}] },
-    { "value": "class-bard-inspire-heroics", "label": "Inspiration épique", "effectsText":"Accorde un bonus de moral de +4 aux jets de sauvegarde et un bonus d'esquive de +4 à la CA.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Accorde un bonus de moral de +4 aux jets de sauvegarde et un bonus d'esquive de +4 à la CA."}] },
+    {
+      "value": "class-bard-inspire-heroics",
+      "label": "Inspiration épique",
+      "effectsText":"Accorde un bonus de moral de +4 aux jets de sauvegarde et un bonus d'esquive de +4 à la CA.",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effects": [
+        { "type": "savingThrow", "save": "all", "value": 4, "bonusType": "morale", "condition": "inspire_heroics_active" },
+        { "type": "armorClass", "acType": "dodge", "value": 4, "condition": "inspire_heroics_active" }
+      ]
+    },
     { "value": "class-bard-mass-suggestion", "label": "Suggestion de masse", "effectsText":"Fait une suggestion à plusieurs créatures fascinées.", "isClassFeature": true, "type": "special-sp", "effects": [{"type": "note", "text":"Fait une suggestion à plusieurs créatures fascinées."}] },
     { "value": "class-cleric-turn-rebuke-undead", "label": "Renvoi ou intimidation des morts-vivants", "effectsText":"Affecte les créatures mortes-vivantes en canalisant la foi.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Affecte les créatures mortes-vivantes en canalisant la foi."}] },
     { "value": "class-druid-animal-companion", "label": "Compagnon animal", "effectsText":"Obtient un compagnon animal loyal.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Obtient un compagnon animal loyal."}] },
@@ -887,7 +915,16 @@
     { "value": "class-monk-ac-bonus", "label": "Bonus de CA de Moine", "effectsText":"Ajoute le bonus de Sag à la CA ; obtient un bonus de CA évolutif aux niveaux supérieurs.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Ajoute le bonus de Sag à la CA ; obtient un bonus de CA évolutif aux niveaux supérieurs."}] },
     { "value": "class-monk-unarmored-speed-bonus", "label": "Bonus de vitesse sans armure de Moine", "effectsText":"La vitesse sans armure augmente avec le niveau.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"La vitesse sans armure augmente avec le niveau."}] },
     { "value": "class-monk-evasion", "label": "Esquive totale", "effectsText":"Ne subit aucun dégât en cas de jet de Réflexes réussi pour la moitié.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Ne subit aucun dégât en cas de jet de Réflexes réussi pour la moitié."}] },
-    { "value": "class-monk-still-mind", "label": "Esprit calme", "effectsText":"Bonus de +2 aux jets de sauvegarde contre les enchantements.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Bonus de +2 aux jets de sauvegarde contre les enchantements."}] },
+    {
+      "value": "class-monk-still-mind",
+      "label": "Esprit calme",
+      "effectsText":"Bonus de +2 aux jets de sauvegarde contre les enchantements.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "savingThrow", "save": "all", "value": 2, "bonusType": "untyped", "condition": "vs_enchantment_effects" }
+      ]
+    },
     { "value": "class-monk-ki-strike", "label": "Frappe ki", "effectsText":"Les attaques à mains nues sont traitées comme magiques, puis loyales, puis en adamantium.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Les attaques à mains nues sont traitées comme magiques, puis loyales, puis en adamantium."}] },
     { "value": "class-monk-slow-fall", "label": "Chute ralentie", "effectsText":"Réduit les dégâts de chute en fonction de la distance au mur.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Réduit les dégâts de chute en fonction de la distance au mur."}] },
     { "value": "class-monk-purity-of-body", "label": "Pureté corporelle", "effectsText":"Immunisé à toutes les maladies (sauf magiques/surnaturelles).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Immunisé à toutes les maladies (sauf magiques/surnaturelles)."}] },
@@ -954,7 +991,7 @@
       "type": "special-ex",
       "effectsText": "Bonus temporaire de +4 à la Force en rage.",
       "effects": [
-        { "type": "abilityScore", "ability": "strength", "value": 4, "bonusType": "morale", "condition": "En Rage" }
+        { "type": "abilityScore", "ability": "strength", "value": 4, "bonusType": "morale", "condition": "raging_active" }
       ]
     },
     {
@@ -964,7 +1001,7 @@
       "type": "special-ex",
       "effectsText": "Bonus temporaire de +4 à la Constitution en rage.",
       "effects": [
-        { "type": "abilityScore", "ability": "constitution", "value": 4, "bonusType": "morale", "condition": "En Rage" }
+        { "type": "abilityScore", "ability": "constitution", "value": 4, "bonusType": "morale", "condition": "raging_active" }
       ]
     },
     {

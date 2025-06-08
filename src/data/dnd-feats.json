@@ -143,7 +143,7 @@
       "description": "<b>Benefit:</b> During your action, you designate an opponent and receive a +1 dodge bonus to Armor Class against attacks from that opponent.<br />You can select a new opponent on any action.<br /><b>Special:</b> A condition that makes you lose your Dexterity bonus to Armor Class (if any) also makes you lose dodge bonuses.<br />Also, dodge bonuses stack with each other, unlike most other types of bonuses.",
       "prerequisites": { "abilities": { "dexterity": 13 } },
       "effectsText": "+1 dodge bonus to AC against one target.",
-      "effects": [{ "type": "note", "text": "+1 dodge bonus to AC against one target." }],
+      "effects": [{ "type": "armorClass", "acType": "dodge", "value": 1, "condition": "vs_designated_opponent" }],
       "isClassFeature": false,
       "type": "special"
     },
@@ -202,7 +202,7 @@
       "label": "Great Fortitude",
       "description": "<b>Benefit:</b> You get a +2 bonus on all Fortitude saving throws.",
       "effectsText": "+2 bonus on all Fortitude saving throws.",
-      "effects": [{ "type": "note", "text": "+2 bonus on all Fortitude saving throws." }],
+      "effects": [{ "type": "savingThrow", "save": "fortitude", "value": 2, "bonusType": "untyped" }],
       "isClassFeature": false,
       "type": "special"
     },
@@ -274,7 +274,7 @@
       "label": "Improved Initiative",
       "description": "<b>Benefit:</b> You get a +4 bonus on initiative checks.",
       "effectsText": "+4 bonus on initiative checks.",
-      "effects": [{ "type": "note", "text": "+4 bonus on initiative checks." }],
+      "effects": [{ "type": "initiative", "value": 4, "bonusType": "untyped" }],
       "isClassFeature": false,
       "type": "special"
     },
@@ -353,7 +353,7 @@
       "label": "Iron Will",
       "description": "<b>Benefit:</b> You get a +2 bonus on all Will saving throws.",
       "effectsText": "+2 bonus on all Will saving throws.",
-      "effects": [{ "type": "note", "text": "+2 bonus on all Will saving throws." }],
+      "effects": [{ "type": "savingThrow", "save": "will", "value": 2, "bonusType": "untyped" }],
       "isClassFeature": false,
       "type": "special"
     },
@@ -362,7 +362,7 @@
       "label": "Lightning Reflexes",
       "description": "<b>Benefit:</b> You get a +2 bonus on all Reflex saving throws.",
       "effectsText": "+2 bonus on all Reflex saving throws.",
-      "effects": [{ "type": "note", "text": "+2 bonus on all Reflex saving throws." }],
+      "effects": [{ "type": "savingThrow", "save": "reflex", "value": 2, "bonusType": "untyped" }],
       "isClassFeature": false,
       "type": "special"
     },
@@ -722,7 +722,7 @@
       "label": "Toughness",
       "description": "<b>Benefit:</b> You gain +3 hit points.<br /><b>Special:</b> A character may gain this feat multiple times.<br />Its effects stack.",
       "effectsText": "+3 hit points.",
-      "effects": [{ "type": "note", "text": "+3 hit points." }],
+      "effects": [{ "type": "hitPoints", "value": 3, "bonusType": "untyped" }],
       "canTakeMultipleTimes": true,
       "isClassFeature": false,
       "type": "special"
@@ -853,19 +853,47 @@
     { "value": "class-barbarian-improved-uncanny-dodge", "label": "Improved Uncanny Dodge", "effectsText": "Cannot be flanked.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Cannot be flanked."}] },
     { "value": "class-barbarian-damage-reduction", "label": "Damage Reduction", "effectsText": "DR X/- (scales with level).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Gains Damage Reduction X/- which scales with level."}] },
     { "value": "class-barbarian-greater-rage", "label": "Greater Rage", "effectsText": "Rage bonuses improve to Str/Con +6, Will +3.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Rage bonuses improve to Str/Con +6, Will +3."}] },
-    { "value": "class-barbarian-indomitable-will", "label": "Indomitable Will", "effectsText": "+4 Will save vs. enchantments while raging.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"+4 Will save vs. enchantments while raging."}] },
+    {
+      "value": "class-barbarian-indomitable-will",
+      "label": "Indomitable Will",
+      "effectsText": "+4 Will save vs. enchantments while raging.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "savingThrow", "save": "will", "value": 4, "bonusType": "morale", "condition": "raging_active" }
+      ]
+    },
     { "value": "class-barbarian-tireless-rage", "label": "Tireless Rage", "effectsText": "No longer fatigued after rage.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"No longer fatigued after rage."}] },
     { "value": "class-barbarian-mighty-rage", "label": "Mighty Rage", "effectsText": "Rage bonuses improve to Str/Con +8, Will +4.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Rage bonuses improve to Str/Con +8, Will +4."}] },
     { "value": "class-bard-bardic-music", "label": "Bardic Music", "effectsText":"Use song or poetics to produce magical effects.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Use song or poetics to produce magical effects."}] },
     { "value": "class-bard-bardic-knowledge", "label": "Bardic Knowledge", "effectsText":"Make special knowledge check about local people, items, or places.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Make special knowledge check about local people, items, or places."}] },
     { "value": "class-bard-countersong", "label": "Countersong", "effectsText":"Use Perform to counter sound-dependent magical effects.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Use Perform to counter sound-dependent magical effects."}] },
     { "value": "class-bard-fascinate", "label": "Fascinate", "effectsText":"Cause creatures to become fascinated with performance.", "isClassFeature": true, "type": "special-sp", "effects": [{"type": "note", "text":"Cause creatures to become fascinated with performance."}] },
-    { "value": "class-bard-inspire-courage", "label": "Inspire Courage", "effectsText":"Bolster allies against fear, improve attack/damage rolls.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Bolster allies against fear, improve attack/damage rolls."}] },
+    {
+      "value": "class-bard-inspire-courage",
+      "label": "Inspire Courage",
+      "effectsText":"Bolster allies against fear, improve attack/damage rolls. Grants morale bonus on saving throws against charm and fear effects (+1 at L1, scaling to +4 at L20).",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effects": [
+        { "type": "savingThrow", "save": "all", "value": 1, "bonusType": "morale", "condition": "inspire_courage_active_vs_charm_fear" },
+        { "type": "note", "text":"Also improves attack/damage rolls (scaling effect not fully structured here)."}]
+    },
     { "value": "class-bard-suggestion", "label": "Suggestion (Bard)", "effectsText":"Make a suggestion (as spell) to a fascinated creature.", "isClassFeature": true, "type": "special-sp", "effects": [{"type": "note", "text":"Make a suggestion (as spell) to a fascinated creature."}] },
     { "value": "class-bard-inspire-competence", "label": "Inspire Competence", "effectsText":"Grant an ally +2 competence bonus on skill checks.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Grant an ally +2 competence bonus on skill checks."}] },
     { "value": "class-bard-inspire-greatness", "label": "Inspire Greatness", "effectsText":"Grant bonus HD, attack bonus, and Fort save bonus.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Grant bonus HD, attack bonus, and Fort save bonus."}] },
     { "value": "class-bard-song-of-freedom", "label": "Song of Freedom", "effectsText":"Create effect equivalent to break enchantment.", "isClassFeature": true, "type": "special-sp", "effects": [{"type": "note", "text":"Create effect equivalent to break enchantment."}] },
-    { "value": "class-bard-inspire-heroics", "label": "Inspire Heroics", "effectsText":"Grant +4 morale bonus on saves and +4 dodge bonus to AC.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Grant +4 morale bonus on saves and +4 dodge bonus to AC."}] },
+    {
+      "value": "class-bard-inspire-heroics",
+      "label": "Inspire Heroics",
+      "effectsText":"Grant +4 morale bonus on saving throws and +4 dodge bonus to AC.",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effects": [
+        { "type": "savingThrow", "save": "all", "value": 4, "bonusType": "morale", "condition": "inspire_heroics_active" },
+        { "type": "armorClass", "acType": "dodge", "value": 4, "condition": "inspire_heroics_active" }
+      ]
+    },
     { "value": "class-bard-mass-suggestion", "label": "Mass Suggestion", "effectsText":"Make suggestion to multiple fascinated creatures.", "isClassFeature": true, "type": "special-sp", "effects": [{"type": "note", "text":"Make suggestion to multiple fascinated creatures."}] },
     { "value": "class-cleric-turn-rebuke-undead", "label": "Turn or Rebuke Undead", "effectsText":"Affect undead creatures by channeling faith.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Affect undead creatures by channeling faith."}] },
     { "value": "class-druid-animal-companion", "label": "Animal Companion", "effectsText":"Gain a loyal animal companion.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Gain a loyal animal companion."}] },
@@ -887,7 +915,16 @@
     { "value": "class-monk-ac-bonus", "label": "Monk AC Bonus", "effectsText":"Add Wis bonus to AC; gain scaling AC bonus at higher levels.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Add Wis bonus to AC; gain scaling AC bonus at higher levels."}] },
     { "value": "class-monk-unarmored-speed-bonus", "label": "Monk Unarmored Speed Bonus", "effectsText":"Unarmored speed increases with level.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Unarmored speed increases with level."}] },
     { "value": "class-monk-evasion", "label": "Evasion", "effectsText":"Take no damage on successful Reflex save for half.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Take no damage on successful Reflex save for half."}] },
-    { "value": "class-monk-still-mind", "label": "Still Mind", "effectsText":"+2 save vs. enchantments.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"+2 save vs. enchantments."}] },
+    {
+      "value": "class-monk-still-mind",
+      "label": "Still Mind",
+      "effectsText":"+2 save vs. enchantments.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "savingThrow", "save": "all", "value": 2, "bonusType": "untyped", "condition": "vs_enchantment_effects" }
+      ]
+    },
     { "value": "class-monk-ki-strike", "label": "Ki Strike", "effectsText":"Unarmed attacks treated as magic, then lawful, then adamantine.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Unarmed attacks treated as magic, then lawful, then adamantine."}] },
     { "value": "class-monk-slow-fall", "label": "Slow Fall", "effectsText":"Reduce falling damage based on distance to wall.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Reduce falling damage based on distance to wall."}] },
     { "value": "class-monk-purity-of-body", "label": "Purity of Body", "effectsText":"Immune to all diseases (except magical/supernatural).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Immune to all diseases (except magical/supernatural)."}] },
@@ -954,7 +991,7 @@
       "type": "special-ex",
       "effectsText": "Temporary +4 Strength while raging.",
       "effects": [
-        { "type": "abilityScore", "ability": "strength", "value": 4, "bonusType": "morale", "condition": "While Raging" }
+        { "type": "abilityScore", "ability": "strength", "value": 4, "bonusType": "morale", "condition": "raging_active" }
       ]
     },
     {
@@ -964,7 +1001,7 @@
       "type": "special-ex",
       "effectsText": "Temporary +4 Constitution while raging.",
       "effects": [
-        { "type": "abilityScore", "ability": "constitution", "value": 4, "bonusType": "morale", "condition": "While Raging" }
+        { "type": "abilityScore", "ability": "constitution", "value": 4, "bonusType": "morale", "condition": "raging_active" }
       ]
     },
     {
