@@ -53,7 +53,7 @@ export const AbilityScoreBreakdownContentDisplay = ({
               <span className="flex-shrink-0 mr-2">{displaySource}</span>
               <div className="flex items-baseline">
                 {renderModifierValue(comp.value)}
-                {comp.condition && <span className="ml-1 text-xs text-muted-foreground italic">({comp.condition})</span>}
+                {comp.condition && <span className="ml-1 text-xs text-muted-foreground">({comp.condition})</span>}
               </div>
             </div>
           );
@@ -64,7 +64,7 @@ export const AbilityScoreBreakdownContentDisplay = ({
             <span className="flex-shrink-0 mr-2">
               {uiStrings.abilityScoreSourceFeatsGroupLabel || "Feats"}
               {featConditions.length > 0 && (
-                <small className="ml-1 text-xs text-muted-foreground italic">
+                <small className="ml-1 text-xs text-muted-foreground">
                   ({featConditions.join(", ")})
                 </small>
               )}
