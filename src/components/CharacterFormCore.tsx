@@ -734,7 +734,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     damageReduction: character.damageReduction, fortification: character.fortification,
   };
 
-  const languagesData = {
+  const languagesPanelData = {
     characterLanguages: character.languages || [],
     characterRaceId: character.race,
     characterIntelligenceScore: detailedAbilityScores.intelligence.finalScore,
@@ -766,7 +766,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           onAbilityScoreTempCustomModifierChange={handleAbilityScoreTempCustomModifierChange}
           onOpenAbilityScoreBreakdownDialog={handleOpenAbilityScoreBreakdownDialog}
         />
-
+        
         <SavingThrowsPanel
             savingThrowsData={savingThrowsData}
             abilityScores={actualAbilityScoresForSavesAndSkills}
@@ -816,6 +816,14 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           onFieldChange={handleCharacterFieldUpdate as any}
           onPortraitChange={handlePortraitChange}
         />
+        
+        <LanguagesPanel
+          characterLanguages={languagesPanelData.characterLanguages}
+          onLanguagesChange={handleLanguagesChange}
+          characterRaceId={languagesPanelData.characterRaceId}
+          characterIntelligenceScore={languagesPanelData.characterIntelligenceScore}
+          speakLanguageSkillRanks={languagesPanelData.speakLanguageSkillRanks}
+        />
 
         <SkillsFormSection
           skillsData={skillsData}
@@ -838,14 +846,6 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           skills={character.skills}
           allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
-        />
-        
-        <LanguagesPanel
-          characterLanguages={languagesData.characterLanguages}
-          onLanguagesChange={handleLanguagesChange}
-          characterRaceId={languagesData.characterRaceId}
-          characterIntelligenceScore={languagesData.characterIntelligenceScore}
-          speakLanguageSkillRanks={languagesData.speakLanguageSkillRanks}
         />
 
 
