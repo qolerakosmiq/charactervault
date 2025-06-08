@@ -612,8 +612,9 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
   const handleOpenResistanceInfoDialog = React.useCallback((resistanceField: ResistanceFieldKeySheet) => {
     openInfoDialog({ type: 'resistanceBreakdown', resistanceField });
   }, [openInfoDialog]);
-  const handleOpenSavingThrowInfoDialog = React.useCallback((saveTypeArg: SavingThrowType) => {
-      openInfoDialog({ type: 'savingThrowBreakdown', saveType: saveTypeArg });
+
+  const handleOpenSavingThrowInfoDialog = React.useCallback((contentType: InfoDialogContentType) => {
+    openInfoDialog(contentType);
   }, [openInfoDialog]);
 
 
