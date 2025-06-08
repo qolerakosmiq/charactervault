@@ -124,7 +124,7 @@ export const SavingThrowsPanel = ({
       rowKey: 'miscModDisplay',
     },
     {
-      label: UI_STRINGS.savingThrowsRowLabelTemporaryModifier || "Temp. Modifier",
+      label: UI_STRINGS.savingThrowsRowLabelTemporaryModifier || "Temporary Modifier", // Changed from Temp. Modifier
       getValue: (saveDataProp, localMiscMod, baseSave, abilityMod, totalFromProp, saveType?: SavingThrowType, setLocalMiscMod?: (val: number) => void) => (
         <div className="flex justify-center">
           <NumberSpinnerInput
@@ -197,3 +197,4 @@ export const SavingThrowsPanel = ({
   );
 };
 // SavingThrowsPanel.displayName = 'SavingThrowsPanelComponent';
+
