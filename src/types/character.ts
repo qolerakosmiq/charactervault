@@ -528,11 +528,10 @@ export function calculateDetailedAbilityScores(
   DND_RACE_BASE_MAX_AGE_DATA: Record<string, number>,
   RACE_TO_AGING_CATEGORY_MAP_DATA: Record<string, string>,
   DND_RACE_AGING_EFFECTS_DATA: Record<string, { categories: Array<{ categoryName: string; ageFactor: number; effects: Record<string, number> }> }>,
-  DND_FEATS_DEFINITIONS: readonly FeatDefinitionJsonData[],
   ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[]
 ): DetailedAbilityScores {
   const result: Partial<DetailedAbilityScores> = {};
-  const racialQualities = getRaceSpecialQualities(character.race, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, [], DND_FEATS_DEFINITIONS, ABILITY_LABELS);
+  const racialQualities = getRaceSpecialQualities(character.race, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, [], [], ABILITY_LABELS); // Pass empty skills/feats defs as not needed here
   const agingDetails = getNetAgingEffects(character.race, character.age, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, ABILITY_LABELS);
   const tempCustomModifiers = character.abilityScoreTempCustomModifiers ||
     ABILITY_ORDER_INTERNAL.reduce((acc, key) => { acc[key] = 0; return acc; }, {} as AbilityScores);
@@ -559,17 +558,15 @@ export function calculateDetailedAbilityScores(
       for (const featEffect of aggregatedFeatEffects.abilityScoreBonuses) {
         if (featEffect.ability === ability) {
           components.push({
-            source: `Feat: ${featEffect.sourceFeat || 'Unknown Feat'}`,
+            source: `Feat: ${featEffect.sourceFeat || 'Unknown Feat'}`, // Keep for breakdown
             value: featEffect.value,
-            condition: featEffect.condition,
+            condition: featEffect.condition, // Keep for breakdown
           });
-          if ((!featEffect.condition || featEffect.condition.trim() === "") &&
-              (!featEffect.bonusType || featEffect.bonusType === 'inherent' || featEffect.bonusType === 'untyped' || featEffect.bonusType === 'enhancement')) {
-             // Only add inherent, untyped, or enhancement bonuses if they are unconditional
-            currentScore += featEffect.value;
-          }
-          // Note: Morale bonuses from feats (like Rage) are conditional and won't apply to currentScore here
-          // Stacking for different bonus types (e.g. highest enhancement) will be handled in Phase 2.
+          // MODIFICATION: Add the value of *all active* feat effects to currentScore.
+          // `calculateFeatEffects` has already filtered these effects based on `conditionalEffectStates`.
+          // Stacking rules for different bonus types (e.g., only highest morale) will be Phase 2.
+          // For Phase 1, we sum all active effects for the display total.
+          currentScore += featEffect.value;
         }
       }
     }
@@ -625,7 +622,8 @@ export function calculateFeatEffects(
         effectIsActive = !!featInstance.conditionalEffectStates?.[effect.condition];
       }
 
-      if (!effectIsActive && effect.type !== 'note') { // Notes are always "active" for display
+      // Only process the effect if it's active or if it's a note (notes are always relevant for display)
+      if (!effectIsActive && effect.type !== 'note' && effect.type !== 'descriptive') {
         continue;
       }
 
@@ -633,10 +631,14 @@ export function calculateFeatEffects(
         case "skill":
           const skillEffect = effect as SkillEffectDetail;
           let actualSkillId = skillEffect.skillId;
+          // Handle specialization where skillId is null, and the actual skill is in specializationDetail
           if (actualSkillId === null && definition.requiresSpecialization === 'skill' && featInstance.specializationDetail) {
             actualSkillId = featInstance.specializationDetail;
           }
           if (actualSkillId) {
+            // Stacking: For Phase 1, we'll assume untyped bonuses stack.
+            // Typed bonuses (competence, circumstance, racial) should ideally only take the highest.
+            // This simplified aggregation just sums them for now.
             newAggregatedEffects.skillBonuses[actualSkillId] =
               (newAggregatedEffects.skillBonuses[actualSkillId] || 0) + skillEffect.value;
           }
@@ -645,17 +647,67 @@ export function calculateFeatEffects(
           const abilityEffect = effect as AbilityScoreEffect;
           newAggregatedEffects.abilityScoreBonuses.push({
             ...abilityEffect,
-            sourceFeat: definition.label,
+            sourceFeat: definition.label, // Add source for traceability
           });
           break;
-        case "note":
-          // Notes are for display, not direct calculation in this phase.
-          // Can be collected if needed for display purposes elsewhere.
+        case "savingThrow":
+          newAggregatedEffects.savingThrowBonuses.push({...effect, sourceFeat: definition.label} as SavingThrowEffect & { sourceFeat?: string });
           break;
-        // Placeholder for future effect types
-        // case "savingThrow": newAggregatedEffects.savingThrowBonuses.push(effect as SavingThrowEffect); break;
-        // case "attackRoll": newAggregatedEffects.attackRollBonuses.push(effect as AttackRollEffect); break;
-        // ... etc.
+        case "attackRoll":
+          newAggregatedEffects.attackRollBonuses.push({...effect, sourceFeat: definition.label} as AttackRollEffect & { sourceFeat?: string });
+          break;
+        case "damageRoll":
+          newAggregatedEffects.damageRollBonuses.push({...effect, sourceFeat: definition.label} as DamageRollEffect & { sourceFeat?: string });
+          break;
+        case "armorClass":
+          newAggregatedEffects.acBonuses.push({...effect, sourceFeat: definition.label} as ArmorClassEffect & { sourceFeat?: string });
+          break;
+        case "hitPoints":
+          const hpEffect = effect as HitPointsEffect;
+          // For now, just sum. PerLevel might need characterLevel if we had it here.
+          newAggregatedEffects.hpBonus += hpEffect.value;
+          break;
+        case "initiative":
+          const initiativeEffect = effect as InitiativeEffect;
+          newAggregatedEffects.initiativeBonus += initiativeEffect.value;
+          break;
+        case "speed":
+          newAggregatedEffects.speedBonuses.push({...effect, sourceFeat: definition.label} as SpeedEffect & { sourceFeat?: string });
+          break;
+        case "resistance":
+          newAggregatedEffects.resistanceBonuses.push({...effect, sourceFeat: definition.label} as ResistanceEffect & { sourceFeat?: string });
+          break;
+        case "casterLevelCheck":
+          newAggregatedEffects.casterLevelCheckBonuses.push({...effect, sourceFeat: definition.label} as CasterLevelCheckEffect & { sourceFeat?: string });
+          break;
+        case "spellSaveDc":
+          newAggregatedEffects.spellSaveDcBonuses.push({...effect, sourceFeat: definition.label} as SpellSaveDcEffect & { sourceFeat?: string });
+          break;
+        case "turnUndead":
+          newAggregatedEffects.turnUndeadBonuses.push({...effect, sourceFeat: definition.label} as TurnUndeadEffect & { sourceFeat?: string });
+          break;
+        case "grantsAbility":
+          newAggregatedEffects.grantedAbilities.push({...effect, sourceFeat: definition.label} as GrantsAbilityEffect & { sourceFeat?: string });
+          break;
+        case "modifiesMechanic":
+          newAggregatedEffects.modifiedMechanics.push({...effect, sourceFeat: definition.label} as ModifiesMechanicEffect & { sourceFeat?: string });
+          break;
+        case "grantsProficiency":
+          newAggregatedEffects.proficienciesGranted.push({...effect, sourceFeat: definition.label} as GrantsProficiencyEffect & { sourceFeat?: string });
+          break;
+        case "bonusFeatSlot":
+          newAggregatedEffects.bonusFeatSlots.push({...effect, sourceFeat: definition.label} as BonusFeatSlotEffect & { sourceFeat?: string });
+          break;
+        case "language":
+          const langEffect = effect as LanguageEffect;
+          if(langEffect.count) newAggregatedEffects.languagesGranted.count += langEffect.count;
+          if(langEffect.specific) newAggregatedEffects.languagesGranted.specific.push({languageId: langEffect.specific, note: langEffect.note, sourceFeat: definition.label});
+          break;
+        case "note": // NoteEffectDetail, for textual descriptions that aren't directly calculated but might be displayed.
+        case "descriptive": // DescriptiveEffectDetail
+          newAggregatedEffects.descriptiveNotes.push({...effect, sourceFeat: definition.label} as (NoteEffectDetail | DescriptiveEffectDetail) & { sourceFeat?: string });
+          break;
+        // Add other effect types here as they are defined
       }
     }
   }
@@ -749,33 +801,37 @@ export function isAlignmentCompatible(
   itemAlignment: CharacterAlignment | '' | 'any' | 'any-good' | 'any-evil' | 'any-lawful' | 'any-chaotic' | 'any-neutral'
 ): boolean {
   if (itemAlignment === 'any' || !itemAlignment) return true;
-  if (!characterAlignment) return false;
+  if (!characterAlignment) return false; // Character must have an alignment if item requires one
 
-  const charParts = characterAlignment.split('-');
+  const charParts = characterAlignment.split('-'); // e.g., ["lawful", "good"] or ["true", "neutral"]
 
-  // Handle generic "any-" alignments for deities
-  if (itemAlignment === 'any-good' && charParts.includes('good')) return true;
-  if (itemAlignment === 'any-evil' && charParts.includes('evil')) return true;
-  if (itemAlignment === 'any-lawful' && charParts.includes('lawful')) return true;
-  if (itemAlignment === 'any-chaotic' && charParts.includes('chaotic')) return true;
-  if (itemAlignment === 'any-neutral' && (charParts.includes('neutral') || characterAlignment === 'true-neutral')) return true;
+  // Handle specific deity/item alignments like "any-good", "any-lawful", etc.
+  if (itemAlignment.startsWith('any-')) {
+    const requiredGeneric = itemAlignment.split('-')[1]; // "good", "evil", "lawful", "chaotic", "neutral"
+    if (requiredGeneric === 'good' && charParts.includes('good')) return true;
+    if (requiredGeneric === 'evil' && charParts.includes('evil')) return true;
+    if (requiredGeneric === 'lawful' && charParts.includes('lawful')) return true;
+    if (requiredGeneric === 'chaotic' && charParts.includes('chaotic')) return true;
+    if (requiredGeneric === 'neutral' && (charParts.includes('neutral') || characterAlignment === 'true-neutral')) return true;
+    return false;
+  }
 
   // Direct match (e.g. "lawful-good" matches "lawful-good")
   if (characterAlignment === itemAlignment) return true;
 
-  // For generic alignments from feat prerequisites (e.g. "lawful", "good")
-  // These are usually single words.
-  const itemParts = (itemAlignment as string).split('-');
-  if (itemParts.length === 1) {
-    const genericAlign = itemParts[0];
-    if (genericAlign === 'lawful' && charParts[0] === 'lawful') return true;
-    if (genericAlign === 'chaotic' && charParts[0] === 'chaotic') return true;
-    if (genericAlign === 'good' && charParts.length > 1 && charParts[1] === 'good') return true;
-    if (genericAlign === 'evil' && charParts.length > 1 && charParts[1] === 'evil') return true;
-    // For "neutral-lc" (neutral on law/chaos axis) or "neutral-ge" (neutral on good/evil axis)
-    if (genericAlign === 'neutral-lc' && (charParts[0] === 'neutral' || characterAlignment === 'true-neutral')) return true;
-    if (genericAlign === 'neutral-ge' && ((charParts.length > 1 && charParts[1] === 'neutral') || characterAlignment === 'true-neutral')) return true;
-  }
+  // For generic feat prerequisite alignments (e.g. "lawful", "good", "neutral-lc", "neutral-ge")
+  // These are usually single words or hyphenated generics.
+  const itemAlignLower = (itemAlignment as string).toLowerCase();
+
+  if (itemAlignLower === 'lawful' && charParts[0] === 'lawful') return true;
+  if (itemAlignLower === 'chaotic' && charParts[0] === 'chaotic') return true;
+  if (itemAlignLower === 'good' && charParts.length > 1 && charParts[1] === 'good') return true;
+  if (itemAlignLower === 'evil' && charParts.length > 1 && charParts[1] === 'evil') return true;
+  
+  // Neutral on Law/Chaos axis (e.g., NG, N, NE)
+  if (itemAlignLower === 'neutral-lc' && (charParts[0] === 'neutral' || characterAlignment === 'true-neutral')) return true;
+  // Neutral on Good/Evil axis (e.g., LN, N, CN)
+  if (itemAlignLower === 'neutral-ge' && ((charParts.length > 1 && charParts[1] === 'neutral') || characterAlignment === 'true-neutral')) return true;
 
   return false;
 }
@@ -799,3 +855,4 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
+
