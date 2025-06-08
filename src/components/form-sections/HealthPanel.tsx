@@ -6,13 +6,13 @@ import type { Character, AbilityScores } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
+import { Progress } from '@/components/ui/progress'; // Added Progress import
 import { Heart, Activity, Loader2 } from 'lucide-react';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
-import { Separator } from '@/components/ui/separator'; // Added Separator import
 
 const DEBOUNCE_DELAY_HEALTH = 400;
 
@@ -60,8 +60,10 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
   );
 
   React.useEffect(() => {
-    if(localHp > (calculatedMaxHp + localTemporaryHp)) {
-        setLocalHp(calculatedMaxHp + localTemporaryHp);
+    // Ensure current HP does not exceed max HP (including temp HP for the cap)
+    const currentMaxWithTemp = calculatedMaxHp + localTemporaryHp;
+    if(localHp > currentMaxWithTemp) {
+        setLocalHp(currentMaxWithTemp);
     }
   }, [calculatedMaxHp, localHp, setLocalHp, localTemporaryHp]);
 
@@ -92,6 +94,17 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
   const { UI_STRINGS, ABILITY_LABELS } = translations;
   const conModifier = calculateAbilityModifier(healthData.abilityScores.constitution || 10);
   const conAbbr = ABILITY_LABELS.find(al => al.value === 'constitution')?.abbr || 'CON';
+
+  const valueForPercentageBar = Math.min(localHp, calculatedMaxHp);
+  const hpPercentage = calculatedMaxHp > 0 ? (valueForPercentageBar / calculatedMaxHp) * 100 : 0;
+
+  let progressBarColorClass = 'bg-emerald-600'; // Default to green
+  if (hpPercentage < 25) {
+    progressBarColorClass = 'bg-destructive';
+  } else if (hpPercentage <= 75) {
+    progressBarColorClass = 'bg-amber-500';
+  }
+
 
   return (
     <Card>
@@ -156,8 +169,12 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                 />
             </div>
         </div>
-
-        <Separator className="my-4" /> 
+        
+        <Progress
+          value={Math.max(0, Math.min(hpPercentage, 100))}
+          className="w-full h-3 my-4" // Added my-4 for spacing
+          indicatorClassName={progressBarColorClass}
+        />
         
         <div>
             <div className="text-center mb-3">
