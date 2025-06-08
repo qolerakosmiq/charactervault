@@ -1,5 +1,4 @@
 
-
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -48,7 +47,9 @@ import type {
   GrantsProficiencyEffect,
   BonusFeatSlotEffect,
   LanguageEffect,
-  DescriptiveEffectDetail
+  DescriptiveEffectDetail,
+  LanguageId, // Added
+  LanguageOption // Added
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { getBab } from '@/lib/dnd-utils';
@@ -562,10 +563,6 @@ export function calculateDetailedAbilityScores(
             value: featEffect.value,
             condition: featEffect.condition, // Keep for breakdown
           });
-          // MODIFICATION: Add the value of *all active* feat effects to currentScore.
-          // `calculateFeatEffects` has already filtered these effects based on `conditionalEffectStates`.
-          // Stacking rules for different bonus types (e.g., only highest morale) will be Phase 2.
-          // For Phase 1, we sum all active effects for the display total.
           currentScore += featEffect.value;
         }
       }
@@ -622,7 +619,6 @@ export function calculateFeatEffects(
         effectIsActive = !!featInstance.conditionalEffectStates?.[effect.condition];
       }
 
-      // Only process the effect if it's active or if it's a note (notes are always relevant for display)
       if (!effectIsActive && effect.type !== 'note' && effect.type !== 'descriptive') {
         continue;
       }
@@ -631,14 +627,10 @@ export function calculateFeatEffects(
         case "skill":
           const skillEffect = effect as SkillEffectDetail;
           let actualSkillId = skillEffect.skillId;
-          // Handle specialization where skillId is null, and the actual skill is in specializationDetail
           if (actualSkillId === null && definition.requiresSpecialization === 'skill' && featInstance.specializationDetail) {
             actualSkillId = featInstance.specializationDetail;
           }
           if (actualSkillId) {
-            // Stacking: For Phase 1, we'll assume untyped bonuses stack.
-            // Typed bonuses (competence, circumstance, racial) should ideally only take the highest.
-            // This simplified aggregation just sums them for now.
             newAggregatedEffects.skillBonuses[actualSkillId] =
               (newAggregatedEffects.skillBonuses[actualSkillId] || 0) + skillEffect.value;
           }
@@ -647,7 +639,7 @@ export function calculateFeatEffects(
           const abilityEffect = effect as AbilityScoreEffect;
           newAggregatedEffects.abilityScoreBonuses.push({
             ...abilityEffect,
-            sourceFeat: definition.label, // Add source for traceability
+            sourceFeat: definition.label,
           });
           break;
         case "savingThrow":
@@ -664,7 +656,6 @@ export function calculateFeatEffects(
           break;
         case "hitPoints":
           const hpEffect = effect as HitPointsEffect;
-          // For now, just sum. PerLevel might need characterLevel if we had it here.
           newAggregatedEffects.hpBonus += hpEffect.value;
           break;
         case "initiative":
@@ -703,11 +694,10 @@ export function calculateFeatEffects(
           if(langEffect.count) newAggregatedEffects.languagesGranted.count += langEffect.count;
           if(langEffect.specific) newAggregatedEffects.languagesGranted.specific.push({languageId: langEffect.specific, note: langEffect.note, sourceFeat: definition.label});
           break;
-        case "note": // NoteEffectDetail, for textual descriptions that aren't directly calculated but might be displayed.
-        case "descriptive": // DescriptiveEffectDetail
+        case "note":
+        case "descriptive":
           newAggregatedEffects.descriptiveNotes.push({...effect, sourceFeat: definition.label} as (NoteEffectDetail | DescriptiveEffectDetail) & { sourceFeat?: string });
           break;
-        // Add other effect types here as they are defined
       }
     }
   }
@@ -733,7 +723,7 @@ export function calculateSpeedBreakdown(
     components.push({ source: (UI_STRINGS.infoDialogSpeedBaseRaceLabel || "Base ({raceName})").replace("{raceName}", raceLabel), value: racialSpeed });
     currentSpeed = racialSpeed;
   } else if (speedType === 'land' && racialSpeed === undefined) {
-    const defaultLandSpeed = 30; // Assuming a default for races not specifying land speed.
+    const defaultLandSpeed = 30;
     components.push({ source: (UI_STRINGS.infoDialogSpeedBaseRaceLabel || "Base ({raceName})").replace("{raceName}", raceLabel), value: defaultLandSpeed });
     currentSpeed = defaultLandSpeed;
   }
@@ -759,7 +749,7 @@ export function calculateSpeedBreakdown(
     components.push({ source: UI_STRINGS.infoDialogSpeedMonkLabel || "Monk Unarmored Speed", value: monkSpeedBonus });
     currentSpeed += monkSpeedBonus;
   }
-  if (barbarianFastMovementBonus > 0 && currentSpeed > 0) { // only apply if they have a speed to begin with
+  if (barbarianFastMovementBonus > 0 && currentSpeed > 0) {
      components.push({ source: UI_STRINGS.infoDialogSpeedBarbarianLabel || "Barbarian Fast Movement", value: barbarianFastMovementBonus });
      currentSpeed += barbarianFastMovementBonus;
   }
@@ -771,7 +761,6 @@ export function calculateSpeedBreakdown(
     currentSpeed += miscModForThisSpeed;
   }
 
-  // Apply penalties only if the character has a speed to penalize
   if (currentSpeed > 0) {
     const armorPenaltyVal = (character.armorSpeedPenalty_miscModifier || 0) - (character.armorSpeedPenalty_base || 0);
     if (armorPenaltyVal !== 0) {
@@ -792,7 +781,7 @@ export function calculateSpeedBreakdown(
   return {
     name: speedName,
     components,
-    total: Math.max(0, currentSpeed), // Ensure speed doesn't go below 0
+    total: Math.max(0, currentSpeed),
   };
 }
 
@@ -801,13 +790,12 @@ export function isAlignmentCompatible(
   itemAlignment: CharacterAlignment | '' | 'any' | 'any-good' | 'any-evil' | 'any-lawful' | 'any-chaotic' | 'any-neutral'
 ): boolean {
   if (itemAlignment === 'any' || !itemAlignment) return true;
-  if (!characterAlignment) return false; // Character must have an alignment if item requires one
+  if (!characterAlignment) return false;
 
-  const charParts = characterAlignment.split('-'); // e.g., ["lawful", "good"] or ["true", "neutral"]
+  const charParts = characterAlignment.split('-');
 
-  // Handle specific deity/item alignments like "any-good", "any-lawful", etc.
   if (itemAlignment.startsWith('any-')) {
-    const requiredGeneric = itemAlignment.split('-')[1]; // "good", "evil", "lawful", "chaotic", "neutral"
+    const requiredGeneric = itemAlignment.split('-')[1];
     if (requiredGeneric === 'good' && charParts.includes('good')) return true;
     if (requiredGeneric === 'evil' && charParts.includes('evil')) return true;
     if (requiredGeneric === 'lawful' && charParts.includes('lawful')) return true;
@@ -816,11 +804,8 @@ export function isAlignmentCompatible(
     return false;
   }
 
-  // Direct match (e.g. "lawful-good" matches "lawful-good")
   if (characterAlignment === itemAlignment) return true;
 
-  // For generic feat prerequisite alignments (e.g. "lawful", "good", "neutral-lc", "neutral-ge")
-  // These are usually single words or hyphenated generics.
   const itemAlignLower = (itemAlignment as string).toLowerCase();
 
   if (itemAlignLower === 'lawful' && charParts[0] === 'lawful') return true;
@@ -828,9 +813,7 @@ export function isAlignmentCompatible(
   if (itemAlignLower === 'good' && charParts.length > 1 && charParts[1] === 'good') return true;
   if (itemAlignLower === 'evil' && charParts.length > 1 && charParts[1] === 'evil') return true;
   
-  // Neutral on Law/Chaos axis (e.g., NG, N, NE)
   if (itemAlignLower === 'neutral-lc' && (charParts[0] === 'neutral' || characterAlignment === 'true-neutral')) return true;
-  // Neutral on Good/Evil axis (e.g., LN, N, CN)
   if (itemAlignLower === 'neutral-ge' && ((charParts.length > 1 && charParts[1] === 'neutral') || characterAlignment === 'true-neutral')) return true;
 
   return false;
@@ -854,5 +837,9 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 };
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
-export * from './character-core';
+// Re-export specific utilities from dnd-utils that are fundamental to character type system
+// or frequently used alongside character types.
+// SAVING_THROW_ABILITIES is needed by InfoDisplayDialog when importing from here.
+export { SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 
+export * from './character-core';
