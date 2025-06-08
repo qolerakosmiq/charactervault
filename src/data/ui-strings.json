@@ -247,7 +247,7 @@
     "healthPanelDescription": "Manage hit points, damage, and related attributes.",
     "healthPanelCurrentHpLabel": "Current Hit Points",
     "healthPanelNonlethalDamageLabel": "Nonlethal Damage",
-    "healthPanelTemporaryHpLabel": "Temporary HP",
+    "healthPanelTemporaryHitPointsLabel": "Temporary Hit Points",
     "healthPanelMaxHpLabel": "Maximum Hit Points",
     "healthPanelBaseMaxHpLabel": "Base Hit Points",
     "healthPanelAbilityModLabel": "Ability Modifier",

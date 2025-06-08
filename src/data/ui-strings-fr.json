@@ -247,7 +247,7 @@
     "healthPanelDescription": "Gérez les points de vie, les dégâts et les attributs associés.",
     "healthPanelCurrentHpLabel": "Points de vie actuels",
     "healthPanelNonlethalDamageLabel": "Dégâts non létaux",
-    "healthPanelTemporaryHpLabel": "PV temporaires",
+    "healthPanelTemporaryHitPointsLabel": "Points de vie temporaires",
     "healthPanelMaxHpLabel": "Points de vie maximum",
     "healthPanelBaseMaxHpLabel": "Points de vie de base",
     "healthPanelAbilityModLabel": "Modificateur de caractéristique",

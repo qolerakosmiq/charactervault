@@ -34,7 +34,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
 
   const [localHp, setLocalHp] = useDebouncedFormField(
     healthData.hp,
-    (value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp)), // Cap current HP by calculated max
+    (value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp + (healthData.temporaryHp || 0) )), // Cap current HP by calculated max + temp
     DEBOUNCE_DELAY_HEALTH
   );
   const [localBaseMaxHp, setLocalBaseMaxHp] = useDebouncedFormField(
@@ -59,10 +59,10 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
   );
 
   React.useEffect(() => {
-    if(localHp > calculatedMaxHp) {
-        setLocalHp(calculatedMaxHp);
+    if(localHp > (calculatedMaxHp + localTemporaryHp)) { // Consider temp HP when capping current HP
+        setLocalHp(calculatedMaxHp + localTemporaryHp);
     }
-  }, [calculatedMaxHp, localHp, setLocalHp]);
+  }, [calculatedMaxHp, localHp, setLocalHp, localTemporaryHp]);
 
 
   if (translationsLoading || !translations) {
@@ -135,7 +135,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
             </div>
             <div className="flex flex-col items-center space-y-1">
                 <Label htmlFor="temporary-hp" className="text-xs text-muted-foreground">
-                    {UI_STRINGS.healthPanelTemporaryHpLabel || "Temporary HP"}
+                    {UI_STRINGS.healthPanelTemporaryHitPointsLabel || "Temporary Hit Points"}
                 </Label>
                 <NumberSpinnerInput
                     id="temporary-hp"
