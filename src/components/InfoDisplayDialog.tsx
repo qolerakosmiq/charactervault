@@ -15,7 +15,7 @@ import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon,
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
-  InfoDialogContentType, ResistanceFieldKeySheet, SavingThrowType, // Added SavingThrowType
+  InfoDialogContentType, ResistanceFieldKeySheet, SavingThrowType,
   FeatDefinitionJsonData, SkillDefinitionForDisplay, SkillDefinitionJsonData,
   BabBreakdownDetails as BabBreakdownDetailsType,
   InitiativeBreakdownDetails as InitiativeBreakdownDetailsType,
@@ -40,7 +40,7 @@ import {
   calculateSpeedBreakdown,
   ABILITY_ORDER_INTERNAL,
   getRaceSkillPointsBonusPerLevel,
-  SAVING_THROW_ABILITIES // Added SAVING_THROW_ABILITIES
+  SAVING_THROW_ABILITIES
 } from '@/types/character';
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
 import { useI18n } from '@/context/I18nProvider';
@@ -48,7 +48,7 @@ import { Separator } from '@/components/ui/separator';
 
 import {
   calculateAbilityModifier, getAbilityModifierByName, getBab, getSizeModifierAC, getSizeModifierGrapple,
-  calculateInitiative, calculateGrapple, getUnarmedGrappleDamage, getBaseSaves // Added getBaseSaves
+  calculateInitiative, calculateGrapple, getUnarmedGrappleDamage, getBaseSaves
 } from '@/lib/dnd-utils';
 
 import { RaceContentDisplay } from './info-dialog-content/RaceContentDisplay';
@@ -64,7 +64,7 @@ import { InitiativeBreakdownContentDisplay } from './info-dialog-content/Initiat
 import { GrappleModifierBreakdownContentDisplay } from './info-dialog-content/GrappleModifierBreakdownContentDisplay';
 import { GrappleDamageBreakdownContentDisplay } from './info-dialog-content/GrappleDamageBreakdownContentDisplay';
 import { SpeedBreakdownContentDisplay } from './info-dialog-content/SpeedBreakdownContentDisplay';
-import { SavingThrowBreakdownContentDisplay, type SavingThrowBreakdownDetails } from './info-dialog-content/SavingThrowBreakdownContentDisplay'; // New Import
+import { SavingThrowBreakdownContentDisplay, type SavingThrowBreakdownDetails } from './info-dialog-content/SavingThrowBreakdownContentDisplay';
 import { GenericHtmlContentDisplay } from './info-dialog-content/GenericHtmlContentDisplay';
 
 
@@ -114,8 +114,8 @@ const DIALOG_ICONS: Record<string, React.ElementType> = {
   skillModifierBreakdown: SparklesIcon,
   armorSpeedPenaltyBreakdown: ShieldOff,
   loadSpeedPenaltyBreakdown: Weight,
-  fortitude: Zap, reflex: Zap, will: Zap, // Added icons for saves
-  error: AlertTriangle, // Added error icon
+  fortitude: Zap, reflex: Zap, will: Zap,
+  error: AlertTriangle,
   default: Info,
 };
 
@@ -125,7 +125,7 @@ export function InfoDisplayDialog({
   onOpenChange,
   character,
   contentType,
-  aggregatedFeatEffects: aggregatedFeatEffectsProp, // Renamed prop
+  aggregatedFeatEffects: aggregatedFeatEffectsProp,
 }: InfoDisplayDialogProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
   const { customFeatDefinitions, customSkillDefinitions } = useDefinitionsStore(state => ({
@@ -646,26 +646,21 @@ export function InfoDisplayDialog({
       }
       case 'savingThrowBreakdown': {
         const currentSaveType = contentType.saveType;
-        const isValidSaveType = ['fortitude', 'reflex', 'will'].includes(currentSaveType);
-
-        if (!isValidSaveType) {
-          iconKey = 'error';
-          data = {
-            title: UI_STRINGS.infoDialogErrorInvalidSaveTypeTitle || "Error: Invalid Save Type",
-            content: [<p key="error-msg">{(UI_STRINGS.infoDialogErrorReceivedInvalidSaveTypeDesc || "Received an unexpected save type value: {receivedValue}").replace("{receivedValue}", String(currentSaveType))}</p>]
-          };
-          break;
-        }
-        iconKey = currentSaveType;
-        const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.value === currentSaveType)?.label || currentSaveType;
+        // Removed the isValidSaveType check to allow direct processing or failure
+        
+        iconKey = typeof currentSaveType === 'string' && ['fortitude', 'reflex', 'will'].includes(currentSaveType) ? currentSaveType : 'error';
+        
+        // Attempt to get labels and keys, will be problematic if currentSaveType is not a string
+        const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.value === currentSaveType)?.label || String(currentSaveType);
         const dialogTitle = (UI_STRINGS.infoDialogTitleSavingThrowBreakdown || "{saveTypeLabel} Breakdown").replace("{saveTypeLabel}", saveTypeLabel);
 
         const calculatedBaseSaves = getBaseSaves(character.classes, DND_CLASSES);
-        const baseSave = calculatedBaseSaves[currentSaveType];
-        const abilityKeyForSave = SAVING_THROW_ABILITIES[currentSaveType];
+        // The following lines will likely cause errors if currentSaveType is an object
+        const baseSave = calculatedBaseSaves[currentSaveType as SavingThrowType];
+        const abilityKeyForSave = SAVING_THROW_ABILITIES[currentSaveType as SavingThrowType];
         const abilityMod = getAbilityModifierByName(finalAbilityScores, abilityKeyForSave);
-        const magicMod = character.savingThrows?.[currentSaveType]?.magicMod || 0;
-        const userTemporaryMod = character.savingThrows?.[currentSaveType]?.miscMod || 0; // This is the direct input
+        const magicMod = character.savingThrows?.[currentSaveType as SavingThrowType]?.magicMod || 0;
+        const userTemporaryMod = character.savingThrows?.[currentSaveType as SavingThrowType]?.miscMod || 0;
 
         const featComponents: SavingThrowBreakdownDetails['featComponents'] = [];
         let featBonusTotal = 0;
@@ -678,10 +673,10 @@ export function InfoDisplayDialog({
             } else if (typeof effect.value === 'string' && ABILITY_ORDER_INTERNAL.includes(effect.value as Exclude<AbilityName, 'none'>)) {
               numericValueFromEffect = getAbilityModifierByName(finalAbilityScores, effect.value as Exclude<AbilityName, 'none'>);
             }
-            if (numericValueFromEffect !== 0 || effect.condition) { // Include if bonus is non-zero OR if there's a condition
+            if (numericValueFromEffect !== 0 || effect.condition) {
                 featComponents.push({
                     sourceFeat: effect.sourceFeat || 'Unknown Feat',
-                    value: numericValueFromEffect, // Store the resolved numeric value
+                    value: numericValueFromEffect,
                     condition: effect.condition,
                 });
             }
@@ -692,7 +687,7 @@ export function InfoDisplayDialog({
         const totalCalculatedSave = baseSave + abilityMod + magicMod + userTemporaryMod + featBonusTotal;
 
         const breakdownDetails: SavingThrowBreakdownDetails = {
-          saveType: currentSaveType,
+          saveType: currentSaveType as SavingThrowType, // This cast will be problematic if currentSaveType is an object
           saveTypeLabel,
           baseSave,
           abilityKey: abilityKeyForSave,
@@ -792,4 +787,3 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
-    
