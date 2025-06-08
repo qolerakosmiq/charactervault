@@ -11,7 +11,7 @@ import type {
   FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData, CharacterSize,
   ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType, ResistanceFieldKeySheet,
   SpeedDetails, SpeedType, CharacterAlignment, ProcessedSiteData, SpeedPanelCharacterData, CombatPanelCharacterData, LanguageId,
-  AggregatedFeatEffects // Added
+  AggregatedFeatEffects
 } from '@/types/character';
 import {
   getNetAgingEffects,
@@ -21,7 +21,7 @@ import {
   calculateDetailedAbilityScores,
   getRaceSkillPointsBonusPerLevel,
   ABILITY_ORDER_INTERNAL,
-  calculateFeatEffects // Added
+  calculateFeatEffects
 } from '@/types/character';
 import {
   getBab,
@@ -53,6 +53,7 @@ import { ResistancesPanel } from '@/components/form-sections/ResistancesPanel';
 import { LanguagesPanel } from '@/components/form-sections/LanguagesPanel';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
+import { ConditionsPanel } from '@/components/form-sections/ConditionsPanel'; // New import
 
 import { Loader2 } from 'lucide-react';
 
@@ -271,7 +272,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
       setAggregatedFeatEffects(aggFeats);
       setDetailedAbilityScores(calculateDetailedAbilityScores(
         character,
-        aggFeats, // Pass aggregated feat effects
+        aggFeats, 
         translations.DND_RACES,
         translations.DND_RACE_ABILITY_MODIFIERS_DATA,
         translations.DND_RACE_BASE_MAX_AGE_DATA,
@@ -281,7 +282,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
         translations.ABILITY_LABELS
       ));
     }
-  }, [character, translations, allAvailableFeatDefinitions]); // Re-calculate when character or definitions change
+  }, [character, translations, allAvailableFeatDefinitions]); 
 
 
   const actualAbilityScoresForSavesAndSkills = React.useMemo(() => {
@@ -570,6 +571,27 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     setCharacter(prev => prev ? ({ ...prev, languages: updatedLanguages }) : null);
   }, []);
 
+  const handleConditionToggle = React.useCallback((conditionKey: string, isActive: boolean) => {
+    setCharacter(prevCharacter => {
+      if (!prevCharacter) return null;
+      return {
+        ...prevCharacter,
+        feats: prevCharacter.feats.map(featInstance => {
+          const definition = allAvailableFeatDefinitions.find(def => def.value === featInstance.definitionId);
+          const hasThisCondition = definition?.effects?.some(eff => eff.condition === conditionKey);
+
+          if (hasThisCondition) {
+            const newStates = { ...(featInstance.conditionalEffectStates || {}) };
+            newStates[conditionKey] = isActive; // Store true or false explicitly
+            return { ...featInstance, conditionalEffectStates: newStates };
+          }
+          return featInstance;
+        }),
+      };
+    });
+  }, [allAvailableFeatDefinitions]);
+
+
   const handleCancel = React.useCallback(() => { router.push('/'); }, [router]);
 
   const openInfoDialog = React.useCallback((contentType: InfoDialogContentType) => { setActiveInfoDialogType(contentType); setIsInfoDialogOpen(true); }, []);
@@ -812,8 +834,15 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
             onDamageReductionChange={handleDamageReductionChange}
             onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
           />
-          {/* ResistancesPanel will now be full width on md screens */}
         </div>
+
+        {(character?.feats?.length ?? 0) > 0 && (
+          <ConditionsPanel
+            characterFeats={character.feats}
+            allFeatDefinitions={allAvailableFeatDefinitions}
+            onConditionToggle={handleConditionToggle}
+          />
+        )}
 
 
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-12 pt-8 border-t">
@@ -855,6 +884,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     </>
   );
 };
+
 
 
 

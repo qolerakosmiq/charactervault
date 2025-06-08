@@ -30,7 +30,24 @@ import type {
   FeatEffectDetail,
   SkillEffectDetail,
   NoteEffectDetail,
-  AbilityScoreEffect // Added
+  AbilityScoreEffect,
+  SavingThrowEffect,
+  AttackRollEffect,
+  DamageRollEffect,
+  ArmorClassEffect,
+  HitPointsEffect,
+  InitiativeEffect,
+  SpeedEffect,
+  ResistanceEffect,
+  CasterLevelCheckEffect,
+  SpellSaveDcEffect,
+  TurnUndeadEffect,
+  GrantsAbilityEffect,
+  ModifiesMechanicEffect,
+  GrantsProficiencyEffect,
+  BonusFeatSlotEffect,
+  LanguageEffect,
+  DescriptiveEffectDetail
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { getBab } from '@/lib/dnd-utils';
@@ -215,35 +232,6 @@ export function calculateTotalSynergyBonus(
   return totalBonus;
 }
 
-export function calculateFeatBonusesForSkill( // This specific function might be deprecated if skill bonuses are solely in AggregatedFeatEffects
-  skillId_kebab: string,
-  characterFeatInstances: CharacterFeatInstance[],
-  allFeatDefinitions: (FeatDefinitionJsonData & { isCustom?: boolean })[]
-): number {
-  let totalBonus = 0;
-  for (const instance of characterFeatInstances) {
-    const definition = allFeatDefinitions.find(def => def.value === instance.definitionId);
-    if (definition?.effects && Array.isArray(definition.effects)) {
-      for (const effect of definition.effects) {
-        if (effect.type === "skill") {
-          const skillEffect = effect as SkillEffectDetail;
-          let actualSkillId = skillEffect.skillId;
-
-          if (actualSkillId === null && definition.requiresSpecialization === 'skill' && instance.specializationDetail) {
-            actualSkillId = instance.specializationDetail;
-          }
-
-          if (actualSkillId === skillId_kebab) {
-            totalBonus += skillEffect.value;
-          }
-        }
-      }
-    }
-  }
-  return totalBonus;
-}
-
-
 export function calculateRacialSkillBonus(
   skillId_kebab: string,
   raceId: DndRaceId | string,
@@ -303,8 +291,6 @@ export function calculateAvailableFeats(
         classBonusFeats += 1;
       }
     }
-    // TODO: Add logic for Wizard bonus feats if/when those are structured
-    // For now, other classes don't grant bonus feat slots in the same way as Fighter for generic feat selection.
   });
 
   const totalFeats = baseFeat + racialBonus + levelProgressionFeats + classBonusFeats;
@@ -326,7 +312,7 @@ export function getGrantedFeatsForCharacter(
   DND_CLASSES: readonly DndClassOption[]
 ): CharacterFeatInstance[] {
   const grantedInstances: CharacterFeatInstance[] = [];
-  const addedDefinitionIds = new Set<string>(); // To avoid duplicate non-stacking granted feats
+  const addedDefinitionIds = new Set<string>(); 
 
   const addGrantedInstance = (featDefId: string, note: string | undefined, source: string, levelAcquired?: number) => {
     if (!featDefId || (levelAcquired !== undefined && levelAcquired > characterLevel)) {
@@ -334,7 +320,7 @@ export function getGrantedFeatsForCharacter(
     }
     const featDef = allFeatDefinitions.find(f => f.value === featDefId);
     if (featDef) {
-      const instanceId = featDef.value; // For non-stacking, definitionId can serve as instanceId for granted
+      const instanceId = featDef.value; 
       if (addedDefinitionIds.has(instanceId) && !featDef.canTakeMultipleTimes) return;
 
       grantedInstances.push({
@@ -342,6 +328,7 @@ export function getGrantedFeatsForCharacter(
         instanceId: featDef.canTakeMultipleTimes ? `${featDef.value}-GRANTED-${crypto.randomUUID()}` : instanceId,
         isGranted: true,
         grantedNote: note ? `${note}` : undefined,
+        conditionalEffectStates: {}, // Initialize for granted feats
       });
       if (!featDef.canTakeMultipleTimes) {
         addedDefinitionIds.add(instanceId);
@@ -379,8 +366,8 @@ export function checkFeatPrerequisites(
   featDefinitionToCheck: FeatDefinitionJsonData,
   character: Pick<Character, 'abilityScores' | 'skills' | 'feats' | 'classes' | 'race' | 'age' | 'alignment'>,
   allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[],
-  ALL_SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[], // Combined predefined and custom
-  allCustomSkillDefinitions: readonly CustomSkillDefinition[], // For custom skills from store
+  ALL_SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[], 
+  allCustomSkillDefinitions: readonly CustomSkillDefinition[], 
   DND_CLASSES: readonly DndClassOption[],
   DND_RACES: readonly DndRaceOption[],
   ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[],
@@ -534,13 +521,13 @@ export function checkFeatPrerequisites(
 
 export function calculateDetailedAbilityScores(
   character: Pick<Character, 'abilityScores' | 'race' | 'age' | 'feats' | 'abilityScoreTempCustomModifiers'>,
-  aggregatedFeatEffects: AggregatedFeatEffects, // New parameter
+  aggregatedFeatEffects: AggregatedFeatEffects,
   DND_RACES: readonly DndRaceOption[],
   DND_RACE_ABILITY_MODIFIERS_DATA: Record<string, Partial<Record<Exclude<AbilityName, 'none'>, number>>>,
   DND_RACE_BASE_MAX_AGE_DATA: Record<string, number>,
   RACE_TO_AGING_CATEGORY_MAP_DATA: Record<string, string>,
   DND_RACE_AGING_EFFECTS_DATA: Record<string, { categories: Array<{ categoryName: string; ageFactor: number; effects: Record<string, number> }> }>,
-  DND_FEATS_DEFINITIONS: readonly FeatDefinitionJsonData[], // Predefined feats
+  DND_FEATS_DEFINITIONS: readonly FeatDefinitionJsonData[], 
   ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[]
 ): DetailedAbilityScores {
   const result: Partial<DetailedAbilityScores> = {};
@@ -567,24 +554,23 @@ export function calculateDetailedAbilityScores(
       components.push({ source: `Aging (${agingDetails.categoryName})`, value: agingModObj.change });
     }
 
-    let totalFeatBonusForThisAbility = 0;
     if (aggregatedFeatEffects.abilityScoreBonuses) {
       for (const featEffect of aggregatedFeatEffects.abilityScoreBonuses) {
         if (featEffect.ability === ability) {
+          // Add to components for display, including the condition
           components.push({
             source: `Feat: ${featEffect.sourceFeat || 'Unknown Feat'}`,
             value: featEffect.value,
-            condition: featEffect.condition,
+            condition: featEffect.condition, // Pass condition for display
           });
-          // Only add to final score if unconditional for Phase 1
-          if (!featEffect.condition) {
-            // Phase 2: Consider bonusType for stacking (e.g., only highest enhancement)
-            // For Phase 1, sum inherent, untyped, and specific morale/enhancement if non-conditional.
-            if (featEffect.bonusType === 'inherent' || featEffect.bonusType === 'untyped' || !featEffect.bonusType) {
-              currentScore += featEffect.value;
-              totalFeatBonusForThisAbility += featEffect.value;
-            }
-            // Conditional bonuses like 'morale' from Rage are listed but not auto-applied to base sheet score here.
+          // Only add to final score if it's an always-on type of bonus
+          // (unconditional from the effect itself, AND a type that stacks or is unique like inherent)
+          // calculateFeatEffects already filtered for active conditions, so featEffect.condition here is the *original* condition
+          if (!featEffect.condition || featEffect.condition.trim() === "") { // Check if the *original* effect was unconditional
+             if (!featEffect.bonusType || featEffect.bonusType === 'untyped' || featEffect.bonusType === 'inherent') {
+                 currentScore += featEffect.value;
+             }
+             // Phase 2: Add logic for typed bonuses (e.g., highest enhancement)
           }
         }
       }
@@ -604,132 +590,6 @@ export function calculateDetailedAbilityScores(
 }
 
 
-const alignmentAxisMap: Record<string, number> = {
-  lawful: 0, chaotic: 2,
-  good: 0, evil: 2,
-  neutral: 1,
-  'true-neutral': 1,
-};
-
-function getAlignmentAxisValue(part: string): number {
-  if (part === 'neutral' && alignmentAxisMap[part] === undefined) return 1;
-  if (part === 'true' && alignmentAxisMap[part] === undefined) return 1;
-  return alignmentAxisMap[part] ?? 1;
-}
-
-export function isAlignmentCompatible(
-  characterAlignment: CharacterAlignment | '',
-  deityAlignmentString: CharacterAlignment
-): boolean {
-  if (!characterAlignment || !deityAlignmentString) {
-    return true;
-  }
-
-  const parseAlignment = (alignStr: CharacterAlignment) => {
-    if (alignStr === 'true-neutral') {
-      return { lc: 1, ge: 1 };
-    }
-    const parts = alignStr.split('-');
-    return {
-      lc: getAlignmentAxisValue(parts[0]),
-      ge: getAlignmentAxisValue(parts[1]),
-    };
-  };
-
-  const charAlignNumeric = parseAlignment(characterAlignment as CharacterAlignment);
-  const deityAlignNumeric = parseAlignment(deityAlignmentString);
-
-  const lcDiff = Math.abs(charAlignNumeric.lc - deityAlignNumeric.lc);
-  const geDiff = Math.abs(charAlignNumeric.ge - deityAlignNumeric.ge);
-
-  return lcDiff <= 1 && geDiff <= 1;
-}
-
-export function calculateSpeedBreakdown(
-  speedType: SpeedType,
-  character: Pick<Character, 'race' | 'size' | 'classes' | 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed' | 'armorSpeedPenalty_base' | 'armorSpeedPenalty_miscModifier' | 'loadSpeedPenalty_base' | 'loadSpeedPenalty_miscModifier'>,
-  DND_RACES: readonly DndRaceOption[],
-  DND_CLASSES: readonly DndClassOption[],
-  SIZES: readonly CharacterSizeObject[],
-  uiStrings: Record<string, string>
-): SpeedBreakdownDetails {
-  const components: { source: string; value: number | string }[] = [];
-  let currentTotal = 0;
-
-  const raceData = DND_RACES.find(r => r.value === character.race);
-  const raceLabel = raceData?.label || character.race || 'Unknown Race';
-  let baseSpeedFromRace = 0;
-
-  if (raceData?.speeds && raceData.speeds[speedType] !== undefined) {
-    baseSpeedFromRace = raceData.speeds[speedType] as number;
-  } else if (speedType === 'land') {
-    const sizeData = SIZES.find(s => s.value === character.size);
-    baseSpeedFromRace = (sizeData?.value === 'small' || sizeData?.value === 'tiny' || sizeData?.value === 'diminutive' || sizeData?.value === 'fine') ? 20 : 30;
-  }
-
-  const baseLabelText = uiStrings.infoDialogSpeedBaseRaceLabel || "Base ({raceName})";
-  components.push({ source: baseLabelText.replace("{raceName}", raceLabel), value: baseSpeedFromRace });
-  currentTotal += baseSpeedFromRace;
-
-  const charSpeedDetails = character[`${speedType}Speed` as keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>];
-  if (charSpeedDetails?.miscModifier && charSpeedDetails.miscModifier !== 0) {
-    components.push({ source: uiStrings.infoDialogSpeedMiscModifierLabel || "Misc Modifier", value: charSpeedDetails.miscModifier });
-    currentTotal += charSpeedDetails.miscModifier;
-  }
-
-  if (speedType === 'land') {
-    const monkClass = character.classes.find(c => c.className === 'monk');
-    if (monkClass) {
-      const monkLevel = monkClass.level;
-      let monkSpeedBonus = 0;
-      if (monkLevel >= 18) monkSpeedBonus = 60;
-      else if (monkLevel >= 15) monkSpeedBonus = 50;
-      else if (monkLevel >= 12) monkSpeedBonus = 40;
-      else if (monkLevel >= 9) monkSpeedBonus = 30;
-      else if (monkLevel >= 6) monkSpeedBonus = 20;
-      else if (monkLevel >= 3) monkSpeedBonus = 10;
-      if (monkSpeedBonus > 0) {
-        components.push({ source: uiStrings.infoDialogSpeedMonkLabel || "Monk Unarmored Speed", value: monkSpeedBonus });
-        currentTotal += monkSpeedBonus;
-      }
-    }
-
-    const barbarianClass = character.classes.find(c => c.className === 'barbarian');
-    if (barbarianClass && barbarianClass.level >= 1) {
-        components.push({ source: uiStrings.infoDialogSpeedBarbarianLabel || "Barbarian Fast Movement", value: 10 });
-        currentTotal += 10;
-    }
-
-    const netArmorEffectOnSpeed = (character.armorSpeedPenalty_miscModifier || 0) - (character.armorSpeedPenalty_base || 0);
-    if (netArmorEffectOnSpeed !== 0) {
-        components.push({ source: uiStrings.armorPenaltyCardTitle || "Armor Penalty Effect", value: netArmorEffectOnSpeed });
-        currentTotal += netArmorEffectOnSpeed;
-    }
-
-    const netLoadEffectOnSpeed = (character.loadSpeedPenalty_miscModifier || 0) - (character.loadSpeedPenalty_base || 0);
-    if (netLoadEffectOnSpeed !== 0) {
-        components.push({ source: uiStrings.loadPenaltyCardTitle || "Load Penalty Effect", value: netLoadEffectOnSpeed });
-        currentTotal += netLoadEffectOnSpeed;
-    }
-  }
-
-  const speedTypeToLabelKey: Record<SpeedType, string> = {
-    land: 'speedLabelLand',
-    burrow: 'speedLabelBurrow',
-    climb: 'speedLabelClimb',
-    fly: 'speedLabelFly',
-    swim: 'speedLabelSwim',
-  };
-  const speedName = uiStrings[speedTypeToLabelKey[speedType]] || speedType.charAt(0).toUpperCase() + speedType.slice(1);
-
-  return {
-    name: speedName,
-    components,
-    total: Math.max(0, currentTotal),
-  };
-}
-
-
 export function calculateFeatEffects(
   characterFeats: CharacterFeatInstance[],
   allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]
@@ -737,7 +597,6 @@ export function calculateFeatEffects(
   const newAggregatedEffects: AggregatedFeatEffects = {
     skillBonuses: {},
     abilityScoreBonuses: [],
-    // Initialize other fields as empty arrays or default values
     savingThrowBonuses: [],
     attackRollBonuses: [],
     damageRollBonuses: [],
@@ -753,7 +612,7 @@ export function calculateFeatEffects(
     modifiedMechanics: [],
     proficienciesGranted: [],
     bonusFeatSlots: [],
-    languagesGranted: { count: 0, specific: [], note: '' },
+    languagesGranted: { count: 0, specific: [] },
     descriptiveNotes: [],
   };
 
@@ -764,6 +623,17 @@ export function calculateFeatEffects(
     }
 
     for (const effect of definition.effects) {
+      let effectIsActive = true; // Assume active unless a condition exists and is not met
+
+      if (effect.condition && effect.condition.trim() !== "") {
+        effectIsActive = !!featInstance.conditionalEffectStates?.[effect.condition];
+      }
+
+      if (!effectIsActive) {
+        continue; // Skip this specific effect if its condition is not met
+      }
+
+      // Process the effect if it's active
       switch (effect.type) {
         case "skill":
           const skillEffect = effect as SkillEffectDetail;
@@ -780,18 +650,15 @@ export function calculateFeatEffects(
           const abilityEffect = effect as AbilityScoreEffect;
           newAggregatedEffects.abilityScoreBonuses.push({
             ...abilityEffect,
-            sourceFeat: definition.label, // Add source feat for traceability
+            sourceFeat: definition.label, // Include original condition for display in breakdowns
           });
           break;
         case "note":
-          // Notes are currently ignored for calculation, but could be collected for display
-          // newAggregatedEffects.descriptiveNotes.push({ text: effect.text, sourceFeat: definition.label });
+          // Notes are currently for display/future processing, not direct calculation.
+          // We could collect them in newAggregatedEffects.descriptiveNotes if needed.
           break;
-        // Future: Add cases for other effect types
-        // case "savingThrow":
-        //   newAggregatedEffects.savingThrowBonuses.push({...(effect as SavingThrowEffect), sourceFeat: definition.label});
-        //   break;
-        // ... and so on
+        // TODO: Add cases for other structured effect types as they are defined
+        // e.g., savingThrow, attackRoll, damageRoll, armorClass, hitPoints, etc.
       }
     }
   }
