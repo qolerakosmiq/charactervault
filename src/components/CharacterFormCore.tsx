@@ -1,7 +1,7 @@
 
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import type {
   AbilityName, Character, CharacterClass,
@@ -560,7 +560,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
         ...prev.savingThrows,
         [saveType]: {
           ...prev.savingThrows[saveType],
-          miscMod: value, // This is the temporary modifier
+          miscMod: value,
         },
       },
     }) : null);
@@ -758,6 +758,12 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           onOpenDeityInfoDialog={handleOpenDeityInfoDialog}
         />
 
+        <CharacterFormStoryPortraitSection
+          storyAndAppearanceData={storyAndAppearanceData}
+          onFieldChange={handleCharacterFieldUpdate as any}
+          onPortraitChange={handlePortraitChange}
+        />
+
         <CharacterFormAbilityScoresSection
           abilityScoresData={abilityScoresData}
           detailedAbilityScores={detailedAbilityScores}
@@ -765,12 +771,6 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           onMultipleBaseAbilityScoresChange={handleMultipleBaseAbilityScoresChange}
           onAbilityScoreTempCustomModifierChange={handleAbilityScoreTempCustomModifierChange}
           onOpenAbilityScoreBreakdownDialog={handleOpenAbilityScoreBreakdownDialog}
-        />
-
-        <CharacterFormStoryPortraitSection
-          storyAndAppearanceData={storyAndAppearanceData}
-          onFieldChange={handleCharacterFieldUpdate as any}
-          onPortraitChange={handlePortraitChange}
         />
 
         <SkillsFormSection
@@ -803,32 +803,35 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
             onSavingThrowTemporaryModChange={handleSavingThrowTemporaryModChange}
             onOpenInfoDialog={handleOpenSavingThrowInfoDialog}
         />
+        
+        <ArmorClassPanel
+          acData={acData}
+          onCharacterUpdate={handleCharacterFieldUpdate as any}
+          onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
+        />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:items-start">
-          <div className="space-y-6"> {/* Column 1: AC and Languages */}
-            <ArmorClassPanel
-              acData={acData}
-              onCharacterUpdate={handleCharacterFieldUpdate as any}
-              onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
-            />
-            <LanguagesPanel
-              characterLanguages={languagesData.characterLanguages}
-              onLanguagesChange={handleLanguagesChange}
-              characterRaceId={languagesData.characterRaceId}
-              characterIntelligenceScore={languagesData.characterIntelligenceScore}
-              speakLanguageSkillRanks={languagesData.speakLanguageSkillRanks}
-            />
-          </div>
-          <div> {/* Column 2: Speed Panel */}
-            <SpeedPanel
-              speedData={speedData}
-              onCharacterUpdate={handleCharacterFieldUpdate as any}
-              onOpenSpeedInfoDialog={handleOpenSpeedInfoDialog}
-              onOpenArmorSpeedPenaltyInfoDialog={handleOpenArmorSpeedPenaltyInfoDialog}
-              onOpenLoadSpeedPenaltyInfoDialog={handleOpenLoadSpeedPenaltyInfoDialog}
-            />
-          </div>
-        </div>
+        <ResistancesPanel
+          characterData={resistancesData}
+          onResistanceChange={handleResistanceChange}
+          onDamageReductionChange={handleDamageReductionChange}
+          onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
+        />
+        
+        <LanguagesPanel
+          characterLanguages={languagesData.characterLanguages}
+          onLanguagesChange={handleLanguagesChange}
+          characterRaceId={languagesData.characterRaceId}
+          characterIntelligenceScore={languagesData.characterIntelligenceScore}
+          speakLanguageSkillRanks={languagesData.speakLanguageSkillRanks}
+        />
+
+        <SpeedPanel
+          speedData={speedData}
+          onCharacterUpdate={handleCharacterFieldUpdate as any}
+          onOpenSpeedInfoDialog={handleOpenSpeedInfoDialog}
+          onOpenArmorSpeedPenaltyInfoDialog={handleOpenArmorSpeedPenaltyInfoDialog}
+          onOpenLoadSpeedPenaltyInfoDialog={handleOpenLoadSpeedPenaltyInfoDialog}
+        />
 
         <CombatPanel
             combatData={combatData}
@@ -836,15 +839,6 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
             onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog}
             onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
         />
-
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-6 md:items-start">
-          <ResistancesPanel
-            characterData={resistancesData}
-            onResistanceChange={handleResistanceChange}
-            onDamageReductionChange={handleDamageReductionChange}
-            onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
-          />
-        </div>
 
         {(character?.feats?.length ?? 0) > 0 && (
           <ConditionsPanel
@@ -894,4 +888,6 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     </>
   );
 };
+    
+
     
