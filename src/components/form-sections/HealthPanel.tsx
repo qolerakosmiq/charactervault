@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator'; // Added Separator import
 
 const DEBOUNCE_DELAY_HEALTH = 400;
 
@@ -22,7 +23,7 @@ type HealthPanelData = Pick<Character,
 
 interface HealthPanelProps {
   healthData: HealthPanelData;
-  calculatedMaxHp: number; // This will be passed down from CharacterFormCore
+  calculatedMaxHp: number; 
   onCharacterUpdate: (
     field: keyof Pick<Character, 'hp' | 'baseMaxHp' | 'miscMaxHpModifier' | 'nonlethalDamage' | 'temporaryHp'>, 
     value: number
@@ -34,7 +35,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
 
   const [localHp, setLocalHp] = useDebouncedFormField(
     healthData.hp,
-    (value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp + (healthData.temporaryHp || 0) )), // Cap current HP by calculated max + temp
+    (value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp + (healthData.temporaryHp || 0) )),
     DEBOUNCE_DELAY_HEALTH
   );
   const [localBaseMaxHp, setLocalBaseMaxHp] = useDebouncedFormField(
@@ -59,7 +60,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
   );
 
   React.useEffect(() => {
-    if(localHp > (calculatedMaxHp + localTemporaryHp)) { // Consider temp HP when capping current HP
+    if(localHp > (calculatedMaxHp + localTemporaryHp)) {
         setLocalHp(calculatedMaxHp + localTemporaryHp);
     }
   }, [calculatedMaxHp, localHp, setLocalHp, localTemporaryHp]);
@@ -102,7 +103,6 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
         <CardDescription>{UI_STRINGS.healthPanelDescription || "Manage hit points, damage, and related attributes."}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Current HP */}
         <div className="flex flex-col items-center space-y-1">
           <Label htmlFor="current-hp" className="text-sm font-medium text-muted-foreground">
             {UI_STRINGS.healthPanelCurrentHpLabel || "Current Hit Points"}
@@ -111,8 +111,8 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
             id="current-hp"
             value={localHp}
             onChange={setLocalHp}
-            min={-999} // Allow negative for dead but not disintegrated
-            max={calculatedMaxHp + localTemporaryHp} // Current HP can exceed Max HP due to Temp HP
+            min={-999} 
+            max={calculatedMaxHp + localTemporaryHp}
             inputClassName={cn(
               "w-28 h-12 text-2xl text-center font-bold",
               localHp <= 0 && "text-destructive",
@@ -122,7 +122,6 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
           />
         </div>
         
-        {/* Nonlethal and Temporary HP */}
          <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col items-center space-y-1">
                 <Label htmlFor="nonlethal-damage" className="text-xs text-muted-foreground">
@@ -158,8 +157,9 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
             </div>
         </div>
 
-        {/* Max HP Display and Components */}
-        <div className="pt-3 border-t border-border/60">
+        <Separator className="my-4" /> 
+        
+        <div>
             <div className="text-center mb-3">
                 <Label className="text-sm font-medium text-muted-foreground">
                     {UI_STRINGS.healthPanelMaxHpLabel || "Maximum Hit Points"}
@@ -170,33 +170,39 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
             <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between">
                     <Label htmlFor="base-max-hp">{UI_STRINGS.healthPanelBaseMaxHpLabel || "Base Hit Points"}</Label>
-                    <NumberSpinnerInput
-                        id="base-max-hp"
-                        value={localBaseMaxHp}
-                        onChange={setLocalBaseMaxHp}
-                        min={0}
-                        inputClassName="w-24 h-8"
-                        buttonClassName="h-8 w-8"
-                    />
+                    <div className="w-36 flex justify-center">
+                        <NumberSpinnerInput
+                            id="base-max-hp"
+                            value={localBaseMaxHp}
+                            onChange={setLocalBaseMaxHp}
+                            min={0}
+                            inputClassName="w-20 h-8"
+                            buttonClassName="h-8 w-8"
+                        />
+                    </div>
                 </div>
                 <div className="flex items-center justify-between">
                     <Label>
                         {UI_STRINGS.healthPanelAbilityModLabel || "Ability Modifier"}
                         <span className="text-xs text-muted-foreground ml-1">({conAbbr})</span>
                     </Label>
-                    <span className={cn("font-semibold", conModifier >= 0 ? "text-emerald-600" : "text-destructive")}>
-                        {conModifier >= 0 ? `+${conModifier}` : conModifier}
-                    </span>
+                    <div className="w-36 text-center">
+                        <span className={cn("font-semibold", conModifier >= 0 ? "text-emerald-600" : "text-destructive")}>
+                            {conModifier >= 0 ? `+${conModifier}` : conModifier}
+                        </span>
+                    </div>
                 </div>
                 <div className="flex items-center justify-between">
                     <Label htmlFor="misc-max-hp-mod">{UI_STRINGS.healthPanelMiscModLabel || "Misc Modifier"}</Label>
-                    <NumberSpinnerInput
-                        id="misc-max-hp-mod"
-                        value={localMiscMaxHpModifier}
-                        onChange={setLocalMiscMaxHpModifier}
-                        inputClassName="w-24 h-8"
-                        buttonClassName="h-8 w-8"
-                    />
+                    <div className="w-36 flex justify-center">
+                        <NumberSpinnerInput
+                            id="misc-max-hp-mod"
+                            value={localMiscMaxHpModifier}
+                            onChange={setLocalMiscMaxHpModifier}
+                            inputClassName="w-20 h-8"
+                            buttonClassName="h-8 w-8"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
