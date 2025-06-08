@@ -1,3 +1,4 @@
+
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -24,7 +25,11 @@ import type {
   SpeedType,
   SpeedBreakdownDetails,
   CharacterAlignment,
-  AbilityScoreComponentValue
+  AbilityScoreComponentValue,
+  AggregatedFeatEffects,
+  FeatEffectDetail,
+  SkillEffectDetail,
+  NoteEffectDetail
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { getBab } from '@/lib/dnd-utils';
@@ -209,7 +214,7 @@ export function calculateTotalSynergyBonus(
   return totalBonus;
 }
 
-export function calculateFeatBonusesForSkill(
+export function calculateFeatBonusesForSkill( // This specific function might be deprecated if skill bonuses are solely in AggregatedFeatEffects
   skillId_kebab: string,
   characterFeatInstances: CharacterFeatInstance[],
   allFeatDefinitions: (FeatDefinitionJsonData & { isCustom?: boolean })[]
@@ -217,12 +222,26 @@ export function calculateFeatBonusesForSkill(
   let totalBonus = 0;
   for (const instance of characterFeatInstances) {
     const definition = allFeatDefinitions.find(def => def.value === instance.definitionId);
-    if (definition?.effects?.skills && definition.effects.skills[skillId_kebab]) {
-      totalBonus += definition.effects.skills[skillId_kebab];
+    if (definition?.effects) { // Check if effects array exists
+      for (const effect of definition.effects) {
+        if (effect.type === "skill") {
+          const skillEffect = effect as SkillEffectDetail;
+          let actualSkillId = skillEffect.skillId;
+          // If skillId is null, it means it's specialized via requiresSpecialization and instance.specializationDetail
+          if (actualSkillId === null && definition.requiresSpecialization === 'skill' && instance.specializationDetail) {
+            actualSkillId = instance.specializationDetail;
+          }
+
+          if (actualSkillId === skillId_kebab) {
+            totalBonus += skillEffect.value;
+          }
+        }
+      }
     }
   }
   return totalBonus;
 }
+
 
 export function calculateRacialSkillBonus(
   skillId_kebab: string,
@@ -278,11 +297,13 @@ export function calculateAvailableFeats(
   let classBonusFeats = 0;
   characterClasses.forEach(charClass => {
     if (charClass.className === 'fighter') {
-      if (charClass.level >= 1) classBonusFeats += 1;
-      for (let i = 2; i <= charClass.level; i += 2) {
+      if (charClass.level >= 1) classBonusFeats += 1; // Fighter bonus feat at L1
+      for (let i = 2; i <= charClass.level; i += 2) { // And every 2 levels thereafter
         classBonusFeats += 1;
       }
     }
+    // TODO: Add logic for Wizard bonus feats if/when those are structured
+    // For now, other classes don't grant bonus feat slots in the same way as Fighter for generic feat selection.
   });
 
   const totalFeats = baseFeat + racialBonus + levelProgressionFeats + classBonusFeats;
@@ -304,7 +325,7 @@ export function getGrantedFeatsForCharacter(
   DND_CLASSES: readonly DndClassOption[]
 ): CharacterFeatInstance[] {
   const grantedInstances: CharacterFeatInstance[] = [];
-  const addedDefinitionIds = new Set<string>();
+  const addedDefinitionIds = new Set<string>(); // To avoid duplicate non-stacking granted feats
 
   const addGrantedInstance = (featDefId: string, note: string | undefined, source: string, levelAcquired?: number) => {
     if (!featDefId || (levelAcquired !== undefined && levelAcquired > characterLevel)) {
@@ -312,7 +333,7 @@ export function getGrantedFeatsForCharacter(
     }
     const featDef = allFeatDefinitions.find(f => f.value === featDefId);
     if (featDef) {
-      const instanceId = featDef.value;
+      const instanceId = featDef.value; // For non-stacking, definitionId can serve as instanceId for granted
       if (addedDefinitionIds.has(instanceId) && !featDef.canTakeMultipleTimes) return;
 
       grantedInstances.push({
@@ -406,20 +427,20 @@ export function checkFeatPrerequisites(
     let isMet = false;
     const requiredAlignmentLabel = ALIGNMENT_PREREQUISITE_OPTIONS.find(opt => opt.value === reqAlign)?.label || reqAlign;
 
-    if (charAlign === '') { 
+    if (charAlign === '') {
         isMet = false;
-    } else if (reqAlign.includes('-')) { 
+    } else if (reqAlign.includes('-')) {
         isMet = charAlign === reqAlign;
-    } else { 
-        const charParts = charAlign.split('-'); 
+    } else {
+        const charParts = charAlign.split('-');
         if (charParts.length === 2) {
             if (reqAlign === 'lawful' && charParts[0] === 'lawful') isMet = true;
             else if (reqAlign === 'chaotic' && charParts[0] === 'chaotic') isMet = true;
             else if (reqAlign === 'good' && charParts[1] === 'good') isMet = true;
             else if (reqAlign === 'evil' && charParts[1] === 'evil') isMet = true;
-            else if (reqAlign === 'neutral-lc' && charParts[0] === 'neutral') isMet = true; 
-            else if (reqAlign === 'neutral-ge' && charParts[1] === 'neutral') isMet = true; 
-        } else if (charAlign === 'true-neutral') { 
+            else if (reqAlign === 'neutral-lc' && charParts[0] === 'neutral') isMet = true;
+            else if (reqAlign === 'neutral-ge' && charParts[1] === 'neutral') isMet = true;
+        } else if (charAlign === 'true-neutral') {
             if (reqAlign === 'neutral-lc' || reqAlign === 'neutral-ge' || reqAlign === 'true-neutral') isMet = true;
         }
     }
@@ -473,12 +494,12 @@ export function checkFeatPrerequisites(
       const skillDef = combinedSkillDefsForPrereq.find(sd => sd.id === skillReq.id);
       const skillName = skillDef?.label || skillReq.id;
       const isMet = charSkillInstance ? charSkillInstance.ranks >= skillReq.ranks : false;
-      
+
       const messageText = formatString
         .replace("{skillName}", skillName)
         .replace("{ranksValue}", String(skillReq.ranks))
         .replace("{ranksLabel}", ranksLabel);
-      
+
       messages.push({ text: messageText, isMet, orderKey: `skill_${skillReq.id}`, originalText: skillName });
     }
   }
@@ -524,7 +545,7 @@ export function calculateDetailedAbilityScores(
   const result: Partial<DetailedAbilityScores> = {};
   const racialQualities = getRaceSpecialQualities(character.race, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, [], DND_FEATS_DEFINITIONS, ABILITY_LABELS); // Empty skills/feats for this specific call context
   const agingDetails = getNetAgingEffects(character.race, character.age, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, ABILITY_LABELS);
-  const tempCustomModifiers = character.abilityScoreTempCustomModifiers || 
+  const tempCustomModifiers = character.abilityScoreTempCustomModifiers ||
     ABILITY_ORDER_INTERNAL.reduce((acc, key) => { acc[key] = 0; return acc; }, {} as AbilityScores);
 
 
@@ -542,35 +563,38 @@ export function calculateDetailedAbilityScores(
     if (racialModObj && racialModObj.change !== 0) {
       currentScore += racialModObj.change;
       const raceLabel = DND_RACES.find(r => r.value === character.race)?.label || character.race || 'Unknown Race';
-      components.push({ source: `Race (${raceLabel})`, value: racialModObj.change }); 
+      components.push({ source: `Race (${raceLabel})`, value: racialModObj.change });
     }
 
     const agingModObj = agingDetails.effects.find(eff => eff.ability === ability);
     if (agingModObj && agingModObj.change !== 0) {
       currentScore += agingModObj.change;
-      components.push({ source: `Aging (${agingDetails.categoryName})`, value: agingModObj.change }); 
+      components.push({ source: `Aging (${agingDetails.categoryName})`, value: agingModObj.change });
     }
 
     const tempCustomModValue = tempCustomModifiers[ability];
     if (tempCustomModValue !== 0 && tempCustomModValue !== undefined) {
       currentScore += tempCustomModValue;
-      components.push({ source: "tempMod", value: tempCustomModValue }); 
+      components.push({ source: "tempMod", value: tempCustomModValue });
     }
 
-    let featTotalMod = 0;
-    for (const featInstance of character.feats) {
-      const definition = allFeatDefs.find(def => def.value === featInstance.definitionId);
-      if (definition?.effects?.abilities && definition.effects.abilities[ability]) {
-        const featModVal = definition.effects.abilities[ability]!;
-        if (featModVal !== 0) {
-          featTotalMod += featModVal;
-        }
-      }
-    }
-    if (featTotalMod !== 0) {
-      currentScore += featTotalMod;
-      components.push({ source: "feats", value: featTotalMod }); 
-    }
+    // This section will be replaced/enhanced when ability score effects are fully structured
+    // For now, it's a placeholder or would need to parse "note" effects if any related to abilities.
+    // let featTotalMod = 0;
+    // for (const featInstance of character.feats) {
+    //   const definition = allFeatDefs.find(def => def.value === featInstance.definitionId);
+    //   if (definition?.effects) { // Check if effects array exists
+    //     for (const effect of definition.effects) {
+    //       if (effect.type === "abilityScore" && effect.ability === ability) { // Placeholder for future structured type
+    //         // featTotalMod += effect.value;
+    //       }
+    //     }
+    //   }
+    // }
+    // if (featTotalMod !== 0) {
+    //   currentScore += featTotalMod;
+    //   components.push({ source: "feats", value: featTotalMod });
+    // }
 
     result[ability] = {
       ability, base: baseScore, components, finalScore: currentScore,
@@ -584,13 +608,13 @@ const alignmentAxisMap: Record<string, number> = {
   lawful: 0, chaotic: 2,
   good: 0, evil: 2,
   neutral: 1,
-  'true-neutral': 1, 
+  'true-neutral': 1,
 };
 
 function getAlignmentAxisValue(part: string): number {
-  if (part === 'neutral' && alignmentAxisMap[part] === undefined) return 1; 
-  if (part === 'true' && alignmentAxisMap[part] === undefined) return 1; 
-  return alignmentAxisMap[part] ?? 1; 
+  if (part === 'neutral' && alignmentAxisMap[part] === undefined) return 1;
+  if (part === 'true' && alignmentAxisMap[part] === undefined) return 1;
+  return alignmentAxisMap[part] ?? 1;
 }
 
 export function isAlignmentCompatible(
@@ -598,14 +622,14 @@ export function isAlignmentCompatible(
   deityAlignmentString: CharacterAlignment
 ): boolean {
   if (!characterAlignment || !deityAlignmentString) {
-    return true; 
+    return true;
   }
 
   const parseAlignment = (alignStr: CharacterAlignment) => {
     if (alignStr === 'true-neutral') {
-      return { lc: 1, ge: 1 }; 
+      return { lc: 1, ge: 1 };
     }
-    const parts = alignStr.split('-'); 
+    const parts = alignStr.split('-');
     return {
       lc: getAlignmentAxisValue(parts[0]),
       ge: getAlignmentAxisValue(parts[1]),
@@ -638,12 +662,12 @@ export function calculateSpeedBreakdown(
 
   if (raceData?.speeds && raceData.speeds[speedType] !== undefined) {
     baseSpeedFromRace = raceData.speeds[speedType] as number;
-  } else if (speedType === 'land') { 
+  } else if (speedType === 'land') {
     const sizeData = SIZES.find(s => s.value === character.size);
     baseSpeedFromRace = (sizeData?.value === 'small' || sizeData?.value === 'tiny' || sizeData?.value === 'diminutive' || sizeData?.value === 'fine') ? 20 : 30;
   }
-  
-  const baseLabelText = uiStrings.infoDialogSpeedBaseRaceLabel || "Base ({raceName})"; 
+
+  const baseLabelText = uiStrings.infoDialogSpeedBaseRaceLabel || "Base ({raceName})";
   components.push({ source: baseLabelText.replace("{raceName}", raceLabel), value: baseSpeedFromRace });
   currentTotal += baseSpeedFromRace;
 
@@ -675,20 +699,20 @@ export function calculateSpeedBreakdown(
         components.push({ source: uiStrings.infoDialogSpeedBarbarianLabel || "Barbarian Fast Movement", value: 10 });
         currentTotal += 10;
     }
-    
+
     const netArmorEffectOnSpeed = (character.armorSpeedPenalty_miscModifier || 0) - (character.armorSpeedPenalty_base || 0);
     if (netArmorEffectOnSpeed !== 0) {
         components.push({ source: uiStrings.armorPenaltyCardTitle || "Armor Penalty Effect", value: netArmorEffectOnSpeed });
         currentTotal += netArmorEffectOnSpeed;
     }
-    
+
     const netLoadEffectOnSpeed = (character.loadSpeedPenalty_miscModifier || 0) - (character.loadSpeedPenalty_base || 0);
     if (netLoadEffectOnSpeed !== 0) {
         components.push({ source: uiStrings.loadPenaltyCardTitle || "Load Penalty Effect", value: netLoadEffectOnSpeed });
         currentTotal += netLoadEffectOnSpeed;
     }
   }
-  
+
   const speedTypeToLabelKey: Record<SpeedType, string> = {
     land: 'speedLabelLand',
     burrow: 'speedLabelBurrow',
@@ -701,9 +725,69 @@ export function calculateSpeedBreakdown(
   return {
     name: speedName,
     components,
-    total: Math.max(0, currentTotal), 
+    total: Math.max(0, currentTotal),
   };
 }
+
+
+export function calculateFeatEffects(
+  characterFeats: CharacterFeatInstance[],
+  allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]
+): AggregatedFeatEffects {
+  const newAggregatedEffects: AggregatedFeatEffects = {
+    skillBonuses: {},
+    // Initialize other aggregated fields here if they were defined in AggregatedFeatEffects
+    // For now, it's just skillBonuses based on the current plan
+    // In future iterations:
+    // hpBonus: 0,
+    // initiativeBonus: 0,
+    // acBonuses: [],
+    // savingThrowBonuses: { fortitude: 0, reflex: 0, will: 0, all: 0 },
+    // attackRollBonuses: [],
+    // damageRollBonuses: [],
+    // etc.
+  };
+
+  for (const featInstance of characterFeats) {
+    const definition = allFeatDefinitions.find(def => def.value === featInstance.definitionId);
+    if (!definition || !definition.effects || !Array.isArray(definition.effects)) {
+      continue;
+    }
+
+    for (const effect of definition.effects) {
+      if (effect.type === "skill") {
+        const skillEffect = effect as SkillEffectDetail; // Cast to the specific type
+        let actualSkillId = skillEffect.skillId;
+
+        if (actualSkillId === null) {
+          // Only use specializationDetail if requiresSpecialization indicates a skill.
+          // A more robust system might check `definition.requiresSpecialization === 'skill'`
+          // or have the specialization category directly on the effect.
+          // For now, we assume if skillId is null, specializationDetail IS the skillId.
+          if (definition.requiresSpecialization && featInstance.specializationDetail) {
+            actualSkillId = featInstance.specializationDetail;
+          } else {
+            console.warn(`Feat ${definition.value} effect has skillId: null but no specializationDetail or requiresSpecialization not met for skill.`);
+            continue; // Skip this effect if we can't resolve the skill
+          }
+        }
+        
+        if (actualSkillId) { // Ensure actualSkillId is truthy after resolution
+            newAggregatedEffects.skillBonuses[actualSkillId] =
+            (newAggregatedEffects.skillBonuses[actualSkillId] || 0) + skillEffect.value;
+        }
+      } else if (effect.type === "note") {
+        // Notes are ignored for calculation in this phase.
+        // They might be collected for display purposes later.
+      }
+      // Future: else if (effect.type === "abilityScore") { ... }
+      // Future: else if (effect.type === "armorClass") { ... }
+      // etc.
+    }
+  }
+  return newAggregatedEffects;
+}
+
 
 export const DEFAULT_ABILITIES_DATA: AbilityScores = {
   strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10,
@@ -716,12 +800,11 @@ export const DEFAULT_SAVING_THROWS_DATA = {
 };
 
 export const DEFAULT_SPEED_DETAILS_DATA = { base: 0, miscModifier: 0 };
-export const DEFAULT_SPEED_PENALTIES_DATA = { 
-  armorSpeedPenalty_base: 0, armorSpeedPenalty_miscModifier: 0, 
-  loadSpeedPenalty_base: 0, loadSpeedPenalty_miscModifier: 0 
+export const DEFAULT_SPEED_PENALTIES_DATA = {
+  armorSpeedPenalty_base: 0, armorSpeedPenalty_miscModifier: 0,
+  loadSpeedPenalty_base: 0, loadSpeedPenalty_miscModifier: 0
 };
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
-// REMOVED: export function getUnarmedGrappleDamage(...) - It now lives in dnd-utils.ts
-    
+
