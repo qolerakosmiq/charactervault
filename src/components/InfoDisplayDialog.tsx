@@ -64,7 +64,7 @@ import { InitiativeBreakdownContentDisplay } from './info-dialog-content/Initiat
 import { GrappleModifierBreakdownContentDisplay } from './info-dialog-content/GrappleModifierBreakdownContentDisplay';
 import { GrappleDamageBreakdownContentDisplay } from './info-dialog-content/GrappleDamageBreakdownContentDisplay';
 import { SpeedBreakdownContentDisplay } from './info-dialog-content/SpeedBreakdownContentDisplay';
-import { SavingThrowBreakdownContentDisplay, type SavingThrowBreakdownDetails } from './info-dialog-content/SavingThrowBreakdownContentDisplay';
+import { SavingThrowBreakdownContentDisplay, type SavingThrowBreakdownDetails, type SavingThrowFeatComponent } from './info-dialog-content/SavingThrowBreakdownContentDisplay';
 import { GenericHtmlContentDisplay } from './info-dialog-content/GenericHtmlContentDisplay';
 
 
@@ -114,7 +114,7 @@ const DIALOG_ICONS: Record<string, React.ElementType> = {
   skillModifierBreakdown: SparklesIcon,
   armorSpeedPenaltyBreakdown: ShieldOff,
   loadSpeedPenaltyBreakdown: Weight,
-  fortitude: Zap, reflex: Zap, will: Zap,
+  fortitude: Zap, reflex: Zap, will: Zap, // Individual save types can map to Zap
   error: AlertTriangle,
   default: Info,
 };
@@ -645,7 +645,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'savingThrowBreakdown': {
-        const currentSaveType = contentType.saveType as SavingThrowType; // Assume it's a valid string now
+        const currentSaveType = contentType.saveType;
         iconKey = currentSaveType;
         
         const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.value === currentSaveType)?.label || currentSaveType;
@@ -659,27 +659,27 @@ export function InfoDisplayDialog({
         const magicMod = character.savingThrows?.[currentSaveType]?.magicMod || 0;
         const userTemporaryMod = character.savingThrows?.[currentSaveType]?.miscMod || 0;
 
-        const featComponents: SavingThrowBreakdownDetails['featComponents'] = [];
+        const featComponents: SavingThrowFeatComponent[] = [];
         let featBonusTotal = 0;
 
-        aggregatedFeatEffectsProp.savingThrowBonuses.forEach(effect => {
-          if (effect.save === currentSaveType || effect.save === "all") {
-            let numericValueFromEffect = 0;
-            if (typeof effect.value === 'number') {
-              numericValueFromEffect = effect.value;
-            } else if (typeof effect.value === 'string' && ABILITY_ORDER_INTERNAL.includes(effect.value as Exclude<AbilityName, 'none'>)) {
-              numericValueFromEffect = getAbilityModifierByName(finalAbilityScores, effect.value as Exclude<AbilityName, 'none'>);
+        if (aggregatedFeatEffectsProp?.savingThrowBonuses) {
+          aggregatedFeatEffectsProp.savingThrowBonuses.forEach(effect => {
+            if (effect.save === currentSaveType || effect.save === "all") {
+              let numericValueFromEffect = 0;
+              if (typeof effect.value === 'number') {
+                numericValueFromEffect = effect.value;
+              }
+              // Note: Conditional effect activation logic would ideally be handled before or within aggregatedFeatEffectsProp
+              // For now, we list all potential contributions and their conditions.
+              featComponents.push({
+                sourceFeat: effect.sourceFeat || UI_STRINGS.infoDialogUnknownFeatSource || 'Unknown Feat',
+                value: numericValueFromEffect,
+                condition: effect.condition,
+              });
+              featBonusTotal += numericValueFromEffect;
             }
-            if (numericValueFromEffect !== 0 || effect.condition) {
-                featComponents.push({
-                    sourceFeat: effect.sourceFeat || 'Unknown Feat',
-                    value: numericValueFromEffect,
-                    condition: effect.condition,
-                });
-            }
-            featBonusTotal += numericValueFromEffect;
-          }
-        });
+          });
+        }
 
         const totalCalculatedSave = baseSave + abilityMod + magicMod + userTemporaryMod + featBonusTotal;
 
@@ -785,3 +785,4 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
+

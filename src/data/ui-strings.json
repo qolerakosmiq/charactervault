@@ -411,7 +411,8 @@
     "languagesPanelAutomaticBadgeLabel": "Automatic",
     "conditionsPanelTitle": "Active Conditions",
     "conditionsPanelDescription": "Toggle conditional effects from your character's feats and abilities.",
-    "conditionsPanelTooltipSourcesLabel": "Sources:"
+    "conditionsPanelTooltipSourcesLabel": "Sources:",
+    "infoDialogUnknownFeatSource": "Unknown Feat"
   }
 }
     

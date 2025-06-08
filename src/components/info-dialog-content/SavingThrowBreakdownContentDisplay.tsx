@@ -20,9 +20,9 @@ export interface SavingThrowBreakdownDetails {
   abilityKey: Exclude<AbilityName, 'none'> | undefined; 
   abilityMod: number;
   magicMod: number;
-  userMiscModifier: number;
-  featBonusTotal: number;
-  featComponents: SavingThrowFeatComponent[];
+  userMiscModifier: number; // This is the "Temporary Modifier" from the panel
+  featBonusTotal: number; // Sum of all feat contributions for this save
+  featComponents: SavingThrowFeatComponent[]; // Individual feat contributions
   totalSave: number;
 }
 

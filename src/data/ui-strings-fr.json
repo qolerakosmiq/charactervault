@@ -411,7 +411,8 @@
     "languagesPanelAutomaticBadgeLabel": "Automatique",
     "conditionsPanelTitle": "Conditions Actives",
     "conditionsPanelDescription": "Activez ou désactivez les effets conditionnels des dons et capacités de votre personnage.",
-    "conditionsPanelTooltipSourcesLabel": "Sources :"
+    "conditionsPanelTooltipSourcesLabel": "Sources :",
+    "infoDialogUnknownFeatSource": "Don inconnu"
   }
 }
     

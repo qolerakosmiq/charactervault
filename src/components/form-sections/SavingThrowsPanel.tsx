@@ -2,14 +2,14 @@
 'use client';
 
 import *as React from 'react';
-import type { AbilityScores, CharacterClass, SavingThrows, SavingThrowType, SingleSavingThrow, Character, AbilityName, InfoDialogContentType } from '@/types/character';
+import type { AbilityScores, CharacterClass, SavingThrows, SavingThrowType, SingleSavingThrow, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 import { Zap, Loader2, Info } from 'lucide-react'; // Added Info
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button'; // Added Button
+import { Button } from '@/components/ui/button';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
@@ -20,6 +20,7 @@ const DEBOUNCE_DELAY = 400;
 interface SavingThrowsPanelProps {
   savingThrowsData: Pick<Character, 'savingThrows' | 'classes'>;
   abilityScores: AbilityScores;
+  aggregatedFeatEffects: AggregatedFeatEffects | null; // Added
   onSavingThrowMiscModChange: (saveType: SavingThrowType, value: number) => void;
   onOpenInfoDialog: (contentType: InfoDialogContentType) => void;
 }
@@ -29,6 +30,7 @@ const SAVE_TYPES: SavingThrowType[] = ['fortitude', 'reflex', 'will'];
 export const SavingThrowsPanel = ({
   savingThrowsData,
   abilityScores,
+  aggregatedFeatEffects, // Added
   onSavingThrowMiscModChange,
   onOpenInfoDialog,
 }: SavingThrowsPanelProps) => {
@@ -44,6 +46,21 @@ export const SavingThrowsPanel = ({
       DEBOUNCE_DELAY
     );
   });
+
+  const calculateFeatBonusForSave = React.useCallback((saveType: SavingThrowType): number => {
+    if (!aggregatedFeatEffects?.savingThrowBonuses) return 0;
+    return aggregatedFeatEffects.savingThrowBonuses.reduce((acc, effect) => {
+      if (effect.save === saveType || effect.save === 'all') {
+        // Assuming effect.value is numeric for direct summation.
+        // Conditional effects are listed in breakdown, but for panel total, we sum potential.
+        // A more advanced system might check active conditions here if available.
+        if (typeof effect.value === 'number') {
+          return acc + effect.value;
+        }
+      }
+      return acc;
+    }, 0);
+  }, [aggregatedFeatEffects]);
 
 
   if (translationsLoading || !translations) {
@@ -80,6 +97,7 @@ export const SavingThrowsPanel = ({
         localMiscModValue: number,
         baseSave: number,
         abilityMod: number,
+        featBonus: number, // Added featBonus
         totalCalculatedFromProp: number,
         saveType?: SavingThrowType,
         setLocalMiscMod?: (val: number) => void
@@ -88,7 +106,7 @@ export const SavingThrowsPanel = ({
   }> = [
     {
       labelKey: "savingThrowsRowLabelTotal",
-      getValue: (saveDataProp, localMiscMod, baseSave, abilityMod, totalFromProp, saveType) => (
+      getValue: (saveDataProp, localMiscMod, baseSave, abilityMod, featBonus, totalFromProp, saveType) => (
         <div className="flex items-center justify-center">
             <span className={cn("text-lg font-bold", totalFromProp >= 0 ? "text-accent" : "text-destructive")}>
               {totalFromProp >= 0 ? '+' : ''}{totalFromProp}
@@ -115,7 +133,7 @@ export const SavingThrowsPanel = ({
     },
     {
       labelKey: "savingThrowsRowLabelAbilityModifier",
-      getValue: (saveDataProp, localMiscMod, baseSave, abilityMod, totalFromProp, saveType?: SavingThrowType) => {
+      getValue: (saveDataProp, localMiscMod, baseSave, abilityMod, featBonus, totalFromProp, saveType?: SavingThrowType) => {
         if (!saveType) return renderModifierValue(abilityMod);
         const abilityKey = SAVING_THROW_ABILITIES[saveType];
         const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === abilityKey);
@@ -134,14 +152,15 @@ export const SavingThrowsPanel = ({
       getValue: (saveDataProp) => renderModifierValue(saveDataProp.magicMod),
       rowKey: 'magicMod',
     },
+    // This row is for display only if feats contribute; input is separate
     {
-      labelKey: "savingThrowsRowLabelMiscModifier",
-      getValue: (saveDataProp) => renderModifierValue(saveDataProp.miscMod),
-      rowKey: 'miscModDisplay',
+      labelKey: "savingThrowsFeatContributionsLabel", // New label for Feat Contributions
+      getValue: (saveDataProp, localMiscMod, baseSave, abilityMod, featBonus) => renderModifierValue(featBonus),
+      rowKey: 'featBonusDisplay',
     },
     {
       labelKey: "savingThrowsRowLabelTemporaryModifier",
-      getValue: (saveDataProp, localMiscMod, baseSave, abilityMod, totalFromProp, saveType?: SavingThrowType, setLocalMiscMod?: (val: number) => void) => (
+      getValue: (saveDataProp, localMiscMod, baseSave, abilityMod, featBonus, totalFromProp, saveType?: SavingThrowType, setLocalMiscMod?: (val: number) => void) => (
         <div className="flex justify-center">
           <NumberSpinnerInput
             value={localMiscMod}
@@ -183,6 +202,10 @@ export const SavingThrowsPanel = ({
             <tbody>
               {dataRows.map((dataRow) => {
                 const rowLabel = UI_STRINGS[dataRow.labelKey] || dataRow.labelKey.replace('savingThrowsRowLabel', '');
+                // Skip rendering feat bonus display row if no feats contribute at all to any save for cleaner UI
+                if (dataRow.rowKey === 'featBonusDisplay' && !SAVE_TYPES.some(st => calculateFeatBonusForSave(st) !== 0)) {
+                    return null;
+                }
                 return (
                   <tr key={dataRow.rowKey} className="border-b last:border-b-0 transition-colors">
                     <td className="py-3 px-1 text-left text-sm font-medium text-muted-foreground align-middle whitespace-normal md:whitespace-nowrap">
@@ -194,12 +217,13 @@ export const SavingThrowsPanel = ({
                       const baseSaveValue = calculatedBaseSaves[saveType];
                       const abilityKey = SAVING_THROW_ABILITIES[saveType];
                       const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
+                      const featBonusForThisSave = calculateFeatBonusForSave(saveType);
 
-                      const totalSaveCalculatedFromProp = baseSaveValue + abilityModifier + currentSaveDataFromProp.miscMod + (currentSaveDataFromProp.magicMod || 0);
+                      const totalSaveCalculatedFromProp = baseSaveValue + abilityModifier + currentSaveDataFromProp.miscMod + (currentSaveDataFromProp.magicMod || 0) + featBonusForThisSave;
 
                       return (
                         <td key={`${saveType}-${dataRow.rowKey}`} className="py-3 px-1 text-center text-sm text-foreground align-middle">
-                          {dataRow.getValue(currentSaveDataFromProp, localMiscMod, baseSaveValue, abilityModifier, totalSaveCalculatedFromProp, saveType, setLocalMiscMod)}
+                          {dataRow.getValue(currentSaveDataFromProp, localMiscMod, baseSaveValue, abilityModifier, featBonusForThisSave, totalSaveCalculatedFromProp, saveType, setLocalMiscMod)}
                         </td>
                       );
                     })}
@@ -213,3 +237,4 @@ export const SavingThrowsPanel = ({
     </Card>
   );
 };
+
