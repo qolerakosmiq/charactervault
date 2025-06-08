@@ -1,4 +1,5 @@
 
+
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -541,22 +542,19 @@ export function calculateDetailedAbilityScores(
     const components: AbilityScoreComponentValue[] = [];
     let currentScore = baseScore;
 
-    // 1. Racial Modifiers
     const racialModObj = racialQualities.abilityEffects.find(eff => eff.ability === ability);
     if (racialModObj && racialModObj.change !== 0) {
-      currentScore += racialModObj.change;
       const raceLabel = DND_RACES.find(r => r.value === character.race)?.label || character.race || 'Unknown Race';
       components.push({ source: `Race (${raceLabel})`, value: racialModObj.change });
+      currentScore += racialModObj.change;
     }
 
-    // 2. Aging Modifiers
     const agingModObj = agingDetails.effects.find(eff => eff.ability === ability);
     if (agingModObj && agingModObj.change !== 0) {
-      currentScore += agingModObj.change;
       components.push({ source: `Aging (${agingDetails.categoryName})`, value: agingModObj.change });
+      currentScore += agingModObj.change;
     }
 
-    // 3. Feat-based Modifiers (Only unconditional and specific types for Phase 1 actual score modification)
     if (aggregatedFeatEffects.abilityScoreBonuses) {
       for (const featEffect of aggregatedFeatEffects.abilityScoreBonuses) {
         if (featEffect.ability === ability) {
@@ -565,21 +563,21 @@ export function calculateDetailedAbilityScores(
             value: featEffect.value,
             condition: featEffect.condition,
           });
-          // Only apply to currentScore if unconditional AND specific stacking types (inherent, untyped)
           if ((!featEffect.condition || featEffect.condition.trim() === "") &&
-              (!featEffect.bonusType || featEffect.bonusType === 'inherent' || featEffect.bonusType === 'untyped')) {
+              (!featEffect.bonusType || featEffect.bonusType === 'inherent' || featEffect.bonusType === 'untyped' || featEffect.bonusType === 'enhancement')) {
+             // Only add inherent, untyped, or enhancement bonuses if they are unconditional
             currentScore += featEffect.value;
           }
-          // TODO Phase 2: Add logic for highest enhancement, morale (if not handled by condition), etc.
+          // Note: Morale bonuses from feats (like Rage) are conditional and won't apply to currentScore here
+          // Stacking for different bonus types (e.g. highest enhancement) will be handled in Phase 2.
         }
       }
     }
 
-    // 4. Temporary Custom Modifiers (applied last, as they are often situational overrides)
     const tempCustomModValue = tempCustomModifiers[ability];
     if (tempCustomModValue !== 0 && tempCustomModValue !== undefined) {
-      currentScore += tempCustomModValue;
       components.push({ source: "tempMod", value: tempCustomModValue });
+      currentScore += tempCustomModValue;
     }
 
     result[ability] = {
@@ -627,7 +625,7 @@ export function calculateFeatEffects(
         effectIsActive = !!featInstance.conditionalEffectStates?.[effect.condition];
       }
 
-      if (!effectIsActive) {
+      if (!effectIsActive && effect.type !== 'note') { // Notes are always "active" for display
         continue;
       }
 
@@ -651,10 +649,13 @@ export function calculateFeatEffects(
           });
           break;
         case "note":
-          // Note effects are primarily for textual display or future structured parsing.
-          // They don't directly contribute to numerical aggregation in this phase.
+          // Notes are for display, not direct calculation in this phase.
+          // Can be collected if needed for display purposes elsewhere.
           break;
-        // Other effect types will be handled here in future phases
+        // Placeholder for future effect types
+        // case "savingThrow": newAggregatedEffects.savingThrowBonuses.push(effect as SavingThrowEffect); break;
+        // case "attackRoll": newAggregatedEffects.attackRollBonuses.push(effect as AttackRollEffect); break;
+        // ... etc.
       }
     }
   }
@@ -675,27 +676,21 @@ export function calculateSpeedBreakdown(
   const charRaceData = DND_RACES.find(r => r.value === character.race);
   const raceLabel = charRaceData?.label || character.race || 'Unknown Race';
 
-  // 1. Base Racial Speed
   const racialSpeed = charRaceData?.speeds?.[speedType];
   if (racialSpeed !== undefined && racialSpeed > 0) {
     components.push({ source: (UI_STRINGS.infoDialogSpeedBaseRaceLabel || "Base ({raceName})").replace("{raceName}", raceLabel), value: racialSpeed });
     currentSpeed = racialSpeed;
-  } else if (speedType === 'land' && racialSpeed === undefined) { // Default land speed if no racial land speed
-    const defaultLandSpeed = 30; // Common default, could be made configurable
+  } else if (speedType === 'land' && racialSpeed === undefined) {
+    const defaultLandSpeed = 30; // Assuming a default for races not specifying land speed.
     components.push({ source: (UI_STRINGS.infoDialogSpeedBaseRaceLabel || "Base ({raceName})").replace("{raceName}", raceLabel), value: defaultLandSpeed });
     currentSpeed = defaultLandSpeed;
   }
 
-
-  // 2. Class-based speed bonuses (e.g., Monk, Barbarian)
   let monkSpeedBonus = 0;
   let barbarianFastMovementBonus = 0;
 
   character.classes.forEach(charClass => {
     if (charClass.className === 'monk' && speedType === 'land') {
-      const monkClassDef = DND_CLASSES.find(c => c.value === 'monk');
-      // Simplified: assume a direct bonus rather than complex table lookup for this example
-      // PHB p.41: +10ft at 3rd, +20ft at 6th, etc.
       if (charClass.level >= 18) monkSpeedBonus = 60;
       else if (charClass.level >= 15) monkSpeedBonus = 50;
       else if (charClass.level >= 12) monkSpeedBonus = 40;
@@ -704,29 +699,19 @@ export function calculateSpeedBreakdown(
       else if (charClass.level >= 3) monkSpeedBonus = 10;
     }
     if (charClass.className === 'barbarian' && speedType === 'land') {
-       barbarianFastMovementBonus = 10; // Barbarian Fast Movement is +10ft
+       barbarianFastMovementBonus = 10;
     }
   });
 
   if (monkSpeedBonus > 0) {
     components.push({ source: UI_STRINGS.infoDialogSpeedMonkLabel || "Monk Unarmored Speed", value: monkSpeedBonus });
-    currentSpeed += monkSpeedBonus; // Monk speed is typically an enhancement bonus to base
+    currentSpeed += monkSpeedBonus;
   }
-  if (barbarianFastMovementBonus > 0 && currentSpeed > 0) { // Fast movement applies if they have a speed
+  if (barbarianFastMovementBonus > 0 && currentSpeed > 0) { // only apply if they have a speed to begin with
      components.push({ source: UI_STRINGS.infoDialogSpeedBarbarianLabel || "Barbarian Fast Movement", value: barbarianFastMovementBonus });
      currentSpeed += barbarianFastMovementBonus;
   }
 
-
-  // 3. Feat-based speed bonuses (placeholder for future)
-  // const featSpeedBonus = aggregatedFeatEffects.speedBonuses.find(b => b.speedType === speedType || b.speedType === 'all');
-  // if (featSpeedBonus) {
-  // components.push({ source: "Feats", value: featSpeedBonus.value });
-  // currentSpeed += featSpeedBonus.value;
-  // }
-
-
-  // 4. Misc Modifier from character sheet for this specific speed type
   const speedFieldKey = `${speedType}Speed` as keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>;
   const miscModForThisSpeed = character[speedFieldKey]?.miscModifier || 0;
   if (miscModForThisSpeed !== 0) {
@@ -734,29 +719,65 @@ export function calculateSpeedBreakdown(
     currentSpeed += miscModForThisSpeed;
   }
 
-  // 5. Penalties (only apply if currentSpeed > 0 and typically to land speed, but could affect others based on rules)
+  // Apply penalties only if the character has a speed to penalize
   if (currentSpeed > 0) {
-    const armorPenalty = (character.armorSpeedPenalty_miscModifier || 0) - (character.armorSpeedPenalty_base || 0);
-    if (armorPenalty !== 0) {
-      components.push({ source: UI_STRINGS.infoDialogSpeedArmorPenaltyLabel || "Armor Penalty", value: armorPenalty });
-      currentSpeed = Math.max(0, currentSpeed + armorPenalty); // Speed cannot be negative
+    const armorPenaltyVal = (character.armorSpeedPenalty_miscModifier || 0) - (character.armorSpeedPenalty_base || 0);
+    if (armorPenaltyVal !== 0) {
+      components.push({ source: UI_STRINGS.infoDialogSpeedArmorPenaltyLabel || "Armor Penalty", value: armorPenaltyVal });
+      currentSpeed = Math.max(0, currentSpeed + armorPenaltyVal);
     }
 
-    const loadPenalty = (character.loadSpeedPenalty_miscModifier || 0) - (character.loadSpeedPenalty_base || 0);
-    if (loadPenalty !== 0) {
-       components.push({ source: UI_STRINGS.infoDialogSpeedLoadPenaltyLabel || "Load Penalty", value: loadPenalty });
-       currentSpeed = Math.max(0, currentSpeed + loadPenalty);
+    const loadPenaltyVal = (character.loadSpeedPenalty_miscModifier || 0) - (character.loadSpeedPenalty_base || 0);
+    if (loadPenaltyVal !== 0) {
+       components.push({ source: UI_STRINGS.infoDialogSpeedLoadPenaltyLabel || "Load Penalty", value: loadPenaltyVal });
+       currentSpeed = Math.max(0, currentSpeed + loadPenaltyVal);
     }
   }
-  
+
   const speedTypeLabelKey = `speedLabel${speedType.charAt(0).toUpperCase() + speedType.slice(1)}` as keyof typeof UI_STRINGS;
   const speedName = UI_STRINGS[speedTypeLabelKey] || speedType;
 
   return {
     name: speedName,
     components,
-    total: Math.max(0, currentSpeed), // Ensure total speed is not negative
+    total: Math.max(0, currentSpeed), // Ensure speed doesn't go below 0
   };
+}
+
+export function isAlignmentCompatible(
+  characterAlignment: CharacterAlignment | '',
+  itemAlignment: CharacterAlignment | '' | 'any' | 'any-good' | 'any-evil' | 'any-lawful' | 'any-chaotic' | 'any-neutral'
+): boolean {
+  if (itemAlignment === 'any' || !itemAlignment) return true;
+  if (!characterAlignment) return false;
+
+  const charParts = characterAlignment.split('-');
+
+  // Handle generic "any-" alignments for deities
+  if (itemAlignment === 'any-good' && charParts.includes('good')) return true;
+  if (itemAlignment === 'any-evil' && charParts.includes('evil')) return true;
+  if (itemAlignment === 'any-lawful' && charParts.includes('lawful')) return true;
+  if (itemAlignment === 'any-chaotic' && charParts.includes('chaotic')) return true;
+  if (itemAlignment === 'any-neutral' && (charParts.includes('neutral') || characterAlignment === 'true-neutral')) return true;
+
+  // Direct match (e.g. "lawful-good" matches "lawful-good")
+  if (characterAlignment === itemAlignment) return true;
+
+  // For generic alignments from feat prerequisites (e.g. "lawful", "good")
+  // These are usually single words.
+  const itemParts = (itemAlignment as string).split('-');
+  if (itemParts.length === 1) {
+    const genericAlign = itemParts[0];
+    if (genericAlign === 'lawful' && charParts[0] === 'lawful') return true;
+    if (genericAlign === 'chaotic' && charParts[0] === 'chaotic') return true;
+    if (genericAlign === 'good' && charParts.length > 1 && charParts[1] === 'good') return true;
+    if (genericAlign === 'evil' && charParts.length > 1 && charParts[1] === 'evil') return true;
+    // For "neutral-lc" (neutral on law/chaos axis) or "neutral-ge" (neutral on good/evil axis)
+    if (genericAlign === 'neutral-lc' && (charParts[0] === 'neutral' || characterAlignment === 'true-neutral')) return true;
+    if (genericAlign === 'neutral-ge' && ((charParts.length > 1 && charParts[1] === 'neutral') || characterAlignment === 'true-neutral')) return true;
+  }
+
+  return false;
 }
 
 
