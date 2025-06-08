@@ -113,7 +113,11 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
             onChange={setLocalHp}
             min={-999} // Allow negative for dead but not disintegrated
             max={calculatedMaxHp + localTemporaryHp} // Current HP can exceed Max HP due to Temp HP
-            inputClassName="w-28 h-12 text-2xl text-center font-bold"
+            inputClassName={cn(
+              "w-28 h-12 text-2xl text-center font-bold",
+              localHp <= 0 && "text-destructive",
+              localHp > 0 && "text-emerald-600"
+            )}
             buttonClassName="h-12 w-12"
           />
         </div>
@@ -129,7 +133,10 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                     value={localNonlethalDamage}
                     onChange={setLocalNonlethalDamage}
                     min={0}
-                    inputClassName="w-24 h-9 text-base"
+                    inputClassName={cn(
+                      "w-24 h-9 text-base",
+                      localNonlethalDamage > 0 && "text-destructive"
+                    )}
                     buttonClassName="h-9 w-9"
                 />
             </div>
@@ -142,7 +149,10 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                     value={localTemporaryHp}
                     onChange={setLocalTemporaryHp}
                     min={0}
-                    inputClassName="w-24 h-9 text-base"
+                     inputClassName={cn(
+                      "w-24 h-9 text-base",
+                      localTemporaryHp > 0 && "text-emerald-600"
+                    )}
                     buttonClassName="h-9 w-9"
                 />
             </div>
