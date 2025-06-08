@@ -3,7 +3,7 @@
 
 import *as React from 'react';
 import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, CharacterFeatInstance, DndRaceOption, SkillDefinitionJsonData, FeatDefinitionJsonData, CharacterSize, InfoDialogContentType, Character } from '@/types/character';
-import { getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateFeatBonusesForSkill, calculateRacialSkillBonus, calculateSizeSpecificSkillBonus } from '@/types/character';
+import { getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateRacialSkillBonus, calculateSizeSpecificSkillBonus } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -188,6 +188,33 @@ const SkillsFormSectionComponent = ({
   const skillsForDisplay: SkillDisplayInfo[] = React.useMemo(() => {
     return characterSkillInstances.map(instance => {
       const definition = allCombinedSkillDefinitions.find(def => def.id === instance.id);
+      let featSkillBonus = 0;
+      if (selectedFeats && allFeatDefinitions) {
+        selectedFeats.forEach(featInstance => {
+          const featDef = allFeatDefinitions.find(def => def.value === featInstance.definitionId);
+          if (featDef?.effects && Array.isArray(featDef.effects)) {
+            featDef.effects.forEach(effect => {
+              if (effect.type === "skill") {
+                let effectIsActive = true;
+                if (effect.condition && effect.condition.trim() !== "") {
+                  effectIsActive = !!featInstance.conditionalEffectStates?.[effect.condition];
+                }
+                
+                if (effectIsActive) {
+                  let actualSkillId = effect.skillId;
+                  if (actualSkillId === null && featDef.requiresSpecialization === 'skill' && featInstance.specializationDetail) {
+                    actualSkillId = featInstance.specializationDetail;
+                  }
+                  if (actualSkillId === instance.id) {
+                    featSkillBonus += effect.value;
+                  }
+                }
+              }
+            });
+          }
+        });
+      }
+
       return {
         ...instance, 
         name: definition?.name || 'Unknown Skill',
@@ -195,9 +222,10 @@ const SkillsFormSectionComponent = ({
         description: definition?.description,
         isCustom: definition?.isCustom || false,
         definitionProvidesSynergies: definition?.providesSynergies,
+        // Recalculate miscModifier if needed, or ensure it's passed correctly
       };
     }).sort((a,b) => a.name.localeCompare(b.name));
-  }, [characterSkillInstances, allCombinedSkillDefinitions]);
+  }, [characterSkillInstances, allCombinedSkillDefinitions, selectedFeats, allFeatDefinitions]);
 
 
   const handleTriggerSkillInfoDialog = (skillId: string) => {
@@ -322,7 +350,34 @@ const SkillsFormSectionComponent = ({
                 : 0;
 
               const synergyBonus = calculateTotalSynergyBonus(skillDef.id, characterSkillInstances, SKILL_DEFINITIONS, SKILL_SYNERGIES, allCustomSkillDefinitions);
-              const featSkillBonus = calculateFeatBonusesForSkill(skillDef.id, selectedFeats, allFeatDefinitions);
+              
+              let featSkillBonus = 0;
+              if (selectedFeats && allFeatDefinitions) {
+                selectedFeats.forEach(featInstance => {
+                  const featDef = allFeatDefinitions.find(def => def.value === featInstance.definitionId);
+                   if (featDef?.effects && Array.isArray(featDef.effects)) {
+                    featDef.effects.forEach(effect => {
+                      if (effect.type === "skill") {
+                        let effectIsActive = true; 
+                        if (effect.condition && effect.condition.trim() !== "") {
+                           effectIsActive = !!featInstance.conditionalEffectStates?.[effect.condition];
+                        }
+                        
+                        if (effectIsActive) {
+                          let actualSkillIdForEffect = effect.skillId;
+                          if (actualSkillIdForEffect === null && featDef.requiresSpecialization === 'skill' && featInstance.specializationDetail) {
+                            actualSkillIdForEffect = featInstance.specializationDetail;
+                          }
+                          if (actualSkillIdForEffect === skillDef.id) {
+                            featSkillBonus += effect.value;
+                          }
+                        }
+                      }
+                    });
+                  }
+                });
+              }
+              
               const currentRacialBonus = calculateRacialSkillBonus(skillDef.id, characterRace, DND_RACES, SKILL_DEFINITIONS);
               const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skillDef.id, characterSize, SIZES);
 
