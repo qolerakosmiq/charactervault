@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare, ShieldOff, Weight, Zap, AlertTriangle } from 'lucide-react'; // Added Zap, AlertTriangle
+import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare, ShieldOff, Weight, Zap, AlertTriangle } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
@@ -645,64 +645,80 @@ export function InfoDisplayDialog({
         break;
       }
       case 'savingThrowBreakdown': {
-        const currentSaveType = contentType.saveType;
-        // Removed the isValidSaveType check to allow direct processing or failure
-        
-        iconKey = typeof currentSaveType === 'string' && ['fortitude', 'reflex', 'will'].includes(currentSaveType) ? currentSaveType : 'error';
-        
-        // Attempt to get labels and keys, will be problematic if currentSaveType is not a string
-        const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.value === currentSaveType)?.label || String(currentSaveType);
-        const dialogTitle = (UI_STRINGS.infoDialogTitleSavingThrowBreakdown || "{saveTypeLabel} Breakdown").replace("{saveTypeLabel}", saveTypeLabel);
+        const currentSaveTypeFromContent = contentType.saveType;
 
-        const calculatedBaseSaves = getBaseSaves(character.classes, DND_CLASSES);
-        // The following lines will likely cause errors if currentSaveType is an object
-        const baseSave = calculatedBaseSaves[currentSaveType as SavingThrowType];
-        const abilityKeyForSave = SAVING_THROW_ABILITIES[currentSaveType as SavingThrowType];
-        const abilityMod = getAbilityModifierByName(finalAbilityScores, abilityKeyForSave);
-        const magicMod = character.savingThrows?.[currentSaveType as SavingThrowType]?.magicMod || 0;
-        const userTemporaryMod = character.savingThrows?.[currentSaveType as SavingThrowType]?.miscMod || 0;
+        if (typeof currentSaveTypeFromContent !== 'string' || !['fortitude', 'reflex', 'will'].includes(currentSaveTypeFromContent)) {
+            data = {
+                title: UI_STRINGS.infoDialogErrorInvalidSaveTypeTitle || "Error: Invalid Save Type",
+                content: [GenericHtmlContentDisplay({ htmlContent: `<p>${(UI_STRINGS.infoDialogErrorReceivedInvalidSaveTypeDesc || "Received an unexpected save type value: {receivedValue}").replace("{receivedValue}", String(currentSaveTypeFromContent))}</p>` })],
+                iconKey: 'error',
+            };
+        } else {
+            const currentSaveType = currentSaveTypeFromContent as SavingThrowType;
+            iconKey = currentSaveType;
+            
+            const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.value === currentSaveType)?.label || currentSaveType;
+            const dialogTitle = (UI_STRINGS.infoDialogTitleSavingThrowBreakdown || "{saveTypeLabel} Breakdown").replace("{saveTypeLabel}", saveTypeLabel);
 
-        const featComponents: SavingThrowBreakdownDetails['featComponents'] = [];
-        let featBonusTotal = 0;
+            const calculatedBaseSaves = getBaseSaves(character.classes, DND_CLASSES);
+            const baseSave = calculatedBaseSaves[currentSaveType];
+            const abilityKeyForSave: Exclude<AbilityName, 'none'> | undefined = SAVING_THROW_ABILITIES[currentSaveType];
 
-        aggregatedFeatEffectsProp.savingThrowBonuses.forEach(effect => {
-          if (effect.save === currentSaveType || effect.save === "all") {
-            let numericValueFromEffect = 0;
-            if (typeof effect.value === 'number') {
-              numericValueFromEffect = effect.value;
-            } else if (typeof effect.value === 'string' && ABILITY_ORDER_INTERNAL.includes(effect.value as Exclude<AbilityName, 'none'>)) {
-              numericValueFromEffect = getAbilityModifierByName(finalAbilityScores, effect.value as Exclude<AbilityName, 'none'>);
-            }
-            if (numericValueFromEffect !== 0 || effect.condition) {
-                featComponents.push({
-                    sourceFeat: effect.sourceFeat || 'Unknown Feat',
-                    value: numericValueFromEffect,
-                    condition: effect.condition,
+            if (!abilityKeyForSave) {
+                 data = {
+                    title: UI_STRINGS.infoDialogErrorGeneric || "Error",
+                    content: [GenericHtmlContentDisplay({ htmlContent: `<p>Internal error: Could not map save type '${currentSaveType}' to an ability.</p>` })],
+                    iconKey: 'error',
+                };
+            } else {
+                const abilityMod = getAbilityModifierByName(finalAbilityScores, abilityKeyForSave);
+                const magicMod = character.savingThrows?.[currentSaveType]?.magicMod || 0;
+                const userTemporaryMod = character.savingThrows?.[currentSaveType]?.miscMod || 0;
+
+                const featComponents: SavingThrowBreakdownDetails['featComponents'] = [];
+                let featBonusTotal = 0;
+
+                aggregatedFeatEffectsProp.savingThrowBonuses.forEach(effect => {
+                  if (effect.save === currentSaveType || effect.save === "all") {
+                    let numericValueFromEffect = 0;
+                    if (typeof effect.value === 'number') {
+                      numericValueFromEffect = effect.value;
+                    } else if (typeof effect.value === 'string' && ABILITY_ORDER_INTERNAL.includes(effect.value as Exclude<AbilityName, 'none'>)) {
+                      numericValueFromEffect = getAbilityModifierByName(finalAbilityScores, effect.value as Exclude<AbilityName, 'none'>);
+                    }
+                    if (numericValueFromEffect !== 0 || effect.condition) {
+                        featComponents.push({
+                            sourceFeat: effect.sourceFeat || 'Unknown Feat',
+                            value: numericValueFromEffect,
+                            condition: effect.condition,
+                        });
+                    }
+                    featBonusTotal += numericValueFromEffect;
+                  }
                 });
+
+                const totalCalculatedSave = baseSave + abilityMod + magicMod + userTemporaryMod + featBonusTotal;
+
+                const breakdownDetails: SavingThrowBreakdownDetails = {
+                  saveType: currentSaveType,
+                  saveTypeLabel,
+                  baseSave,
+                  abilityKey: abilityKeyForSave,
+                  abilityMod,
+                  magicMod,
+                  userMiscModifier: userTemporaryMod,
+                  featBonusTotal,
+                  featComponents,
+                  totalSave: totalCalculatedSave,
+                };
+
+                data = {
+                  title: dialogTitle,
+                  content: [SavingThrowBreakdownContentDisplay({ breakdown: breakdownDetails, uiStrings: UI_STRINGS, abilityLabels: ABILITY_LABELS })],
+                  iconKey: currentSaveType,
+                };
             }
-            featBonusTotal += numericValueFromEffect;
-          }
-        });
-
-        const totalCalculatedSave = baseSave + abilityMod + magicMod + userTemporaryMod + featBonusTotal;
-
-        const breakdownDetails: SavingThrowBreakdownDetails = {
-          saveType: currentSaveType as SavingThrowType, // This cast will be problematic if currentSaveType is an object
-          saveTypeLabel,
-          baseSave,
-          abilityKey: abilityKeyForSave,
-          abilityMod,
-          magicMod,
-          userMiscModifier: userTemporaryMod,
-          featBonusTotal,
-          featComponents,
-          totalSave: totalCalculatedSave,
-        };
-
-        data = {
-          title: dialogTitle,
-          content: [SavingThrowBreakdownContentDisplay({ breakdown: breakdownDetails, uiStrings: UI_STRINGS, abilityLabels: ABILITY_LABELS })],
-        };
+        }
         break;
       }
       case 'genericHtml':

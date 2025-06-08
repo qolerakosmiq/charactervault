@@ -17,7 +17,7 @@ export interface SavingThrowBreakdownDetails {
   saveType: SavingThrowType;
   saveTypeLabel: string;
   baseSave: number;
-  abilityKey: Exclude<AbilityName, 'none'>;
+  abilityKey: Exclude<AbilityName, 'none'> | undefined; // Can be undefined if saveType was invalid upstream
   abilityMod: number;
   magicMod: number;
   userMiscModifier: number;
@@ -39,7 +39,9 @@ export const SavingThrowBreakdownContentDisplay = ({
 }: SavingThrowBreakdownContentDisplayProps) => {
   if (!breakdown) return null;
 
-  const abilityAbbr = abilityLabels.find(al => al.value === breakdown.abilityKey)?.abbr || breakdown.abilityKey.substring(0,3).toUpperCase();
+  const abilityAbbr = breakdown.abilityKey
+    ? (abilityLabels.find(al => al.value === breakdown.abilityKey)?.abbr || String(breakdown.abilityKey).substring(0,3).toUpperCase())
+    : 'N/A';
 
   return (
     <div>
