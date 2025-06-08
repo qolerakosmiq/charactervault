@@ -2,15 +2,16 @@
 'use client';
 
 import *as React from 'react';
-import type { AbilityScores, CharacterClass, SavingThrows, SavingThrowType, SingleSavingThrow, Character, AbilityName } from '@/types/character';
+import type { AbilityScores, CharacterClass, SavingThrows, SavingThrowType, SingleSavingThrow, Character, AbilityName, InfoDialogContentType } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
-import { Zap, Loader2 } from 'lucide-react';
+import { Zap, Loader2, Info } from 'lucide-react'; // Added Info
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
-import { useI18n } from '@/context/I18nProvider'; 
-import { Skeleton } from '@/components/ui/skeleton'; 
+import { Button } from '@/components/ui/button'; // Added Button
+import { useI18n } from '@/context/I18nProvider';
+import { Skeleton } from '@/components/ui/skeleton';
 import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 
@@ -18,8 +19,9 @@ const DEBOUNCE_DELAY = 400;
 
 interface SavingThrowsPanelProps {
   savingThrowsData: Pick<Character, 'savingThrows' | 'classes'>;
-  abilityScores: AbilityScores; 
+  abilityScores: AbilityScores;
   onSavingThrowMiscModChange: (saveType: SavingThrowType, value: number) => void;
+  onOpenInfoDialog: (contentType: InfoDialogContentType) => void; // New prop
 }
 
 const SAVE_TYPES: SavingThrowType[] = ['fortitude', 'reflex', 'will'];
@@ -28,6 +30,7 @@ export const SavingThrowsPanel = ({
   savingThrowsData,
   abilityScores,
   onSavingThrowMiscModChange,
+  onOpenInfoDialog, // New prop
 }: SavingThrowsPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
@@ -67,38 +70,51 @@ export const SavingThrowsPanel = ({
   }
 
   const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations;
-  
+
   const calculatedBaseSaves = getBaseSaves(savingThrowsData.classes, DND_CLASSES);
-  
+
   const dataRows: Array<{
-    label: string; 
+    labelKey: keyof typeof UI_STRINGS; // Use key for dynamic translation
     getValue: (
-        saveDataFromProp: SingleSavingThrow, 
-        localMiscModValue: number,       
-        baseSave: number, 
-        abilityMod: number, 
-        totalCalculatedFromProp: number,  
-        saveType?: SavingThrowType, 
+        saveDataFromProp: SingleSavingThrow,
+        localMiscModValue: number,
+        baseSave: number,
+        abilityMod: number,
+        totalCalculatedFromProp: number,
+        saveType?: SavingThrowType,
         setLocalMiscMod?: (val: number) => void
     ) => React.ReactNode;
     rowKey: string;
   }> = [
     {
-      label: UI_STRINGS.savingThrowsRowLabelTotal || "Total",
-      getValue: (saveDataProp, localMiscMod, baseSave, abilityMod, totalFromProp) => (
-        <span className={cn("text-lg font-bold", totalFromProp >= 0 ? "text-accent" : "text-destructive")}>
-          {totalFromProp >= 0 ? '+' : ''}{totalFromProp}
-        </span>
+      labelKey: "savingThrowsRowLabelTotal",
+      getValue: (saveDataProp, localMiscMod, baseSave, abilityMod, totalFromProp, saveType) => (
+        <div className="flex items-center justify-center">
+            <span className={cn("text-lg font-bold", totalFromProp >= 0 ? "text-accent" : "text-destructive")}>
+              {totalFromProp >= 0 ? '+' : ''}{totalFromProp}
+            </span>
+            {saveType && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
+                onClick={() => onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType })}
+              >
+                <Info className="h-4 w-4" />
+              </Button>
+            )}
+        </div>
       ),
       rowKey: 'total',
     },
     {
-      label: UI_STRINGS.savingThrowsRowLabelBase || "Base",
+      labelKey: "savingThrowsRowLabelBase",
       getValue: (saveDataProp, localMiscMod, baseSave) => baseSave,
       rowKey: 'base',
     },
     {
-      label: UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability Modifier",
+      labelKey: "savingThrowsRowLabelAbilityModifier",
       getValue: (saveDataProp, localMiscMod, baseSave, abilityMod, totalFromProp, saveType?: SavingThrowType) => {
         if (!saveType) return renderModifierValue(abilityMod);
         const abilityKey = SAVING_THROW_ABILITIES[saveType];
@@ -114,21 +130,21 @@ export const SavingThrowsPanel = ({
       rowKey: 'abilityMod',
     },
      {
-      label: UI_STRINGS.savingThrowsRowLabelMagicModifier || "Magic Modifier",
-      getValue: (saveDataProp) => renderModifierValue(saveDataProp.magicMod), 
+      labelKey: "savingThrowsRowLabelMagicModifier",
+      getValue: (saveDataProp) => renderModifierValue(saveDataProp.magicMod),
       rowKey: 'magicMod',
     },
     {
-      label: UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier",
-      getValue: (saveDataProp) => renderModifierValue(saveDataProp.miscMod), 
+      labelKey: "savingThrowsRowLabelMiscModifier",
+      getValue: (saveDataProp) => renderModifierValue(saveDataProp.miscMod),
       rowKey: 'miscModDisplay',
     },
     {
-      label: UI_STRINGS.savingThrowsRowLabelTemporaryModifier || "Temporary Modifier", // Changed from Temp. Modifier
+      labelKey: "savingThrowsRowLabelTemporaryModifier",
       getValue: (saveDataProp, localMiscMod, baseSave, abilityMod, totalFromProp, saveType?: SavingThrowType, setLocalMiscMod?: (val: number) => void) => (
         <div className="flex justify-center">
           <NumberSpinnerInput
-            value={localMiscMod} 
+            value={localMiscMod}
             onChange={(newValue) => setLocalMiscMod && setLocalMiscMod(newValue)}
             min={-20}
             max={20}
@@ -166,10 +182,11 @@ export const SavingThrowsPanel = ({
             </thead>
             <tbody>
               {dataRows.map((dataRow) => {
+                const rowLabel = UI_STRINGS[dataRow.labelKey] || dataRow.labelKey.replace('savingThrowsRowLabel', '');
                 return (
                   <tr key={dataRow.rowKey} className="border-b last:border-b-0 transition-colors">
                     <td className="py-3 px-1 text-left text-sm font-medium text-muted-foreground align-middle whitespace-normal md:whitespace-nowrap">
-                      {dataRow.label}
+                      {rowLabel}
                     </td>
                     {SAVE_TYPES.map((saveType) => {
                       const [localMiscMod, setLocalMiscMod] = debouncedMiscMods[saveType];
@@ -177,9 +194,9 @@ export const SavingThrowsPanel = ({
                       const baseSaveValue = calculatedBaseSaves[saveType];
                       const abilityKey = SAVING_THROW_ABILITIES[saveType];
                       const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
-                      
+
                       const totalSaveCalculatedFromProp = baseSaveValue + abilityModifier + currentSaveDataFromProp.miscMod + (currentSaveDataFromProp.magicMod || 0);
-                      
+
                       return (
                         <td key={`${saveType}-${dataRow.rowKey}`} className="py-3 px-1 text-center text-sm text-foreground align-middle">
                           {dataRow.getValue(currentSaveDataFromProp, localMiscMod, baseSaveValue, abilityModifier, totalSaveCalculatedFromProp, saveType, setLocalMiscMod)}
@@ -196,5 +213,4 @@ export const SavingThrowsPanel = ({
     </Card>
   );
 };
-// SavingThrowsPanel.displayName = 'SavingThrowsPanelComponent';
-
+    

@@ -53,7 +53,7 @@ import { ResistancesPanel } from '@/components/form-sections/ResistancesPanel';
 import { LanguagesPanel } from '@/components/form-sections/LanguagesPanel';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
-import { ConditionsPanel } from '@/components/form-sections/ConditionsPanel'; // New import
+import { ConditionsPanel } from '@/components/form-sections/ConditionsPanel';
 
 import { Loader2 } from 'lucide-react';
 
@@ -84,9 +84,9 @@ function createBaseCharacterData(
     const defaultUnarmedGrappleDice = getUnarmedGrappleDamage(defaultSize, SIZES);
 
     const initialSkills = getInitialCharacterSkills(defaultClasses, SKILL_DEFINITIONS, CLASS_SKILLS);
-    
+
     const allSkillDefinitionsForBase = [...SKILL_DEFINITIONS.map(sd => ({...sd, isCustom: false})), ...globalCustomSkillDefinitions.map(csd => ({value: csd.id, label: csd.name, keyAbility: csd.keyAbility, isCustom: true}))];
-    
+
     const skillsWithAllGlobals = allSkillDefinitionsForBase.map(skillDef => {
         const existingInstance = initialSkills.find(is => is.id === skillDef.value);
         if (existingInstance) {
@@ -117,14 +117,14 @@ function createBaseCharacterData(
       savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)),
       classes: defaultClasses,
       skills: skillsWithAllGlobals,
-      feats: [], 
+      feats: [],
       inventory: [], personalStory: '', portraitDataUrl: undefined,
       fireResistance: { ...DEFAULT_RESISTANCE_VALUE }, coldResistance: { ...DEFAULT_RESISTANCE_VALUE }, acidResistance: { ...DEFAULT_RESISTANCE_VALUE }, electricityResistance: { ...DEFAULT_RESISTANCE_VALUE }, sonicResistance: { ...DEFAULT_RESISTANCE_VALUE },
       spellResistance: { ...DEFAULT_RESISTANCE_VALUE }, powerResistance: { ...DEFAULT_RESISTANCE_VALUE }, damageReduction: [], fortification: { ...DEFAULT_RESISTANCE_VALUE },
       landSpeed: { ...DEFAULT_SPEED_DETAILS }, burrowSpeed: { ...DEFAULT_SPEED_DETAILS }, climbSpeed: { ...DEFAULT_SPEED_DETAILS }, flySpeed: { ...DEFAULT_SPEED_DETAILS }, swimSpeed: { ...DEFAULT_SPEED_DETAILS },
       armorSpeedPenalty_base: DEFAULT_SPEED_PENALTIES.armorSpeedPenalty || 0,
-      armorSpeedPenalty_miscModifier: 0, 
-      loadSpeedPenalty_base: DEFAULT_SPEED_PENALTIES.loadSpeedPenalty || 0, 
+      armorSpeedPenalty_miscModifier: 0,
+      loadSpeedPenalty_base: DEFAULT_SPEED_PENALTIES.loadSpeedPenalty || 0,
       loadSpeedPenalty_miscModifier: 0,
     };
 }
@@ -190,7 +190,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
         ...skillInstance,
         isClassSkill: finalCharacter.classes[0]?.className ? (CLASS_SKILLS[finalCharacter.classes[0].className as keyof typeof CLASS_SKILLS] || []).includes(skillInstance.id) : false,
     }));
-    
+
     const skillInstancesToAdd: SkillType[] = [];
     globalCustomSkillDefinitions.forEach(globalDef => {
         if (!currentSkills.find(s => s.id === globalDef.id)) {
@@ -208,7 +208,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     const characterLevel = finalCharacter.classes.reduce((sum, c) => sum + c.level, 0) || 1;
     const newGrantedFeats = getGrantedFeatsForCharacter(finalCharacter.race, finalCharacter.classes, characterLevel, allAvailableFeatDefinitions, DND_RACES, DND_CLASSES);
     const userChosenFeats = finalCharacter.feats?.filter(fi => !fi.isGranted) || [];
-    
+
     const combinedFeatsMap = new Map<string, CharacterFeatInstance>();
     newGrantedFeats.forEach(inst => combinedFeatsMap.set(inst.instanceId, inst));
     userChosenFeats.forEach(inst => {
@@ -229,12 +229,12 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     const barbarianLevel = barbarianClass?.level || 0;
     let grantedDrValue = 0;
     if (barbarianLevel >= 19) grantedDrValue = 5; else if (barbarianLevel >= 16) grantedDrValue = 4; else if (barbarianLevel >= 13) grantedDrValue = 3; else if (barbarianLevel >= 10) grantedDrValue = 2; else if (barbarianLevel >= 7) grantedDrValue = 1;
-    
+
     const existingUserDrInstances = finalCharacter.damageReduction?.filter(dr => !dr.isGranted) || [];
     let finalDrArray = [...existingUserDrInstances];
     if (grantedDrValue > 0) {
         const existingGrantedBarbDrDefinition = finalCharacter.damageReduction?.find(dr => dr.isGranted && dr.source === 'Barbarian Class');
-        finalDrArray.unshift({ 
+        finalDrArray.unshift({
             id: existingGrantedBarbDrDefinition?.id || `granted-barb-dr-${crypto.randomUUID()}`,
             value: grantedDrValue, type: 'none', rule: 'bypassed-by-type', isGranted: true, source: 'Barbarian Class'
         });
@@ -245,7 +245,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
 
   }, [
     isClient, translationsLoading, translations,
-    globalCustomFeatDefinitionsFromStore, globalCustomSkillDefinitionsFromStore, 
+    globalCustomFeatDefinitionsFromStore, globalCustomSkillDefinitionsFromStore,
     allAvailableFeatDefinitions, allAvailableSkillDefinitionsForDisplay, globalCustomSkillDefinitions
   ]);
 
@@ -254,10 +254,10 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
   const [raceSpecialQualities, setRaceSpecialQualities] = React.useState<CharacterFormCoreInfoSectionProps['raceSpecialQualities']>(null);
   const [activeInfoDialogType, setActiveInfoDialogType] = React.useState<InfoDialogContentType | null>(null);
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
-  
+
   const [aggregatedFeatEffects, setAggregatedFeatEffects] = React.useState<AggregatedFeatEffects | null>(null);
   const [detailedAbilityScores, setDetailedAbilityScores] = React.useState<DetailedAbilityScores | null>(null);
-  
+
   const [isAddOrEditSkillDialogOpen, setIsAddOrEditSkillDialogOpen] = React.useState(false);
   const [skillToEdit, setSkillToEdit] = React.useState<CustomSkillDefinition | undefined>(undefined);
   const [isCustomFeatDialogOpen, setIsCustomFeatDialogOpen] = React.useState(false);
@@ -272,17 +272,16 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
       setAggregatedFeatEffects(aggFeats);
       setDetailedAbilityScores(calculateDetailedAbilityScores(
         character,
-        aggFeats, 
+        aggFeats,
         translations.DND_RACES,
         translations.DND_RACE_ABILITY_MODIFIERS_DATA,
         translations.DND_RACE_BASE_MAX_AGE_DATA,
         translations.RACE_TO_AGING_CATEGORY_MAP_DATA,
         translations.DND_RACE_AGING_EFFECTS_DATA,
-        translations.DND_FEATS_DEFINITIONS, 
         translations.ABILITY_LABELS
       ));
     }
-  }, [character, translations, allAvailableFeatDefinitions]); 
+  }, [character, translations, allAvailableFeatDefinitions]);
 
 
   const actualAbilityScoresForSavesAndSkills = React.useMemo(() => {
@@ -326,7 +325,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
         translations.DND_RACES,
         translations.DND_RACE_ABILITY_MODIFIERS_DATA,
         translations.SKILL_DEFINITIONS,
-        translations.DND_FEATS_DEFINITIONS, 
+        translations.DND_FEATS_DEFINITIONS,
         translations.ABILITY_LABELS
       );
       setRaceSpecialQualities(details);
@@ -356,12 +355,12 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
         }
       }
     }
-  }, [character?.race, character?.age, translations]); 
+  }, [character?.race, character?.age, translations]);
 
   const handleCoreInfoFieldChange = React.useCallback((field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender'>, value: any) => {
      setCharacter(prev => prev ? ({ ...prev, [field as keyof Character]: value }) : null);
   }, []);
-  
+
   const handleCharacterFieldUpdate = React.useCallback((
     field: keyof Character | `${SpeedType}Speed.miscModifier` | `armorSpeedPenalty_miscModifier` | `loadSpeedPenalty_miscModifier`,
     value: any
@@ -582,7 +581,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
 
           if (hasThisCondition) {
             const newStates = { ...(featInstance.conditionalEffectStates || {}) };
-            newStates[conditionKey] = isActive; // Store true or false explicitly
+            newStates[conditionKey] = isActive;
             return { ...featInstance, conditionalEffectStates: newStates };
           }
           return featInstance;
@@ -594,7 +593,11 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
 
   const handleCancel = React.useCallback(() => { router.push('/'); }, [router]);
 
-  const openInfoDialog = React.useCallback((contentType: InfoDialogContentType) => { setActiveInfoDialogType(contentType); setIsInfoDialogOpen(true); }, []);
+  const openInfoDialog = React.useCallback((newContentType: InfoDialogContentType) => {
+    setActiveInfoDialogType(newContentType);
+    setIsInfoDialogOpen(true);
+  }, [setActiveInfoDialogType, setIsInfoDialogOpen]);
+
   const handleOpenRaceInfoDialog = React.useCallback(() => { if (character?.race) { openInfoDialog({ type: 'race' }); } }, [character?.race, openInfoDialog]);
   const handleOpenClassInfoDialog = React.useCallback(() => { if (character?.classes[0]?.className) { openInfoDialog({ type: 'class' }); } }, [character?.classes, openInfoDialog]);
   const handleOpenAlignmentInfoDialog = React.useCallback(() => openInfoDialog({ type: 'alignmentSummary' }), [openInfoDialog]);
@@ -609,13 +612,16 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
   const handleOpenResistanceInfoDialog = React.useCallback((resistanceField: ResistanceFieldKeySheet) => {
     openInfoDialog({ type: 'resistanceBreakdown', resistanceField });
   }, [openInfoDialog]);
+  const handleOpenSavingThrowInfoDialog = React.useCallback((saveTypeArg: SavingThrowType) => {
+      openInfoDialog({ type: 'savingThrowBreakdown', saveType: saveTypeArg });
+  }, [openInfoDialog]);
 
 
   const handleSubmit = React.useCallback((e: FormEvent) => {
     e.preventDefault();
-    if (!character || !translations) { 
-      toast({ title: translations?.UI_STRINGS.toastCharacterDataNotLoadedTitle || "Save Error", description: translations?.UI_STRINGS.toastCharacterDataNotLoadedDesc || "Character data not loaded.", variant: "destructive" }); 
-      return; 
+    if (!character || !translations) {
+      toast({ title: translations?.UI_STRINGS.toastCharacterDataNotLoadedTitle || "Save Error", description: translations?.UI_STRINGS.toastCharacterDataNotLoadedDesc || "Character data not loaded.", variant: "destructive" });
+      return;
     }
     const UI_STRINGS = translations.UI_STRINGS;
     if (!character.name || character.name.trim() === '') { toast({ title: UI_STRINGS.toastMissingCharacterNameTitle, description: UI_STRINGS.toastMissingCharacterNameDesc, variant: "destructive" }); return; }
@@ -625,26 +631,26 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
 
     const selectedRaceInfoForValidation = translations.DND_RACES.find(r => r.value === character.race);
     const minAgeForValidation = (selectedRaceInfoForValidation ? translations.DND_RACE_MIN_ADULT_AGE_DATA[selectedRaceInfoForValidation.value as DndRaceId] : undefined) || 1;
-    if (character.age < minAgeForValidation) { 
-      toast({ 
-        title: UI_STRINGS.toastInvalidAgeTitle, 
+    if (character.age < minAgeForValidation) {
+      toast({
+        title: UI_STRINGS.toastInvalidAgeTitle,
         description: UI_STRINGS.toastInvalidAgeDesc
           .replace('{minAge}', String(minAgeForValidation))
           .replace('{raceContext}', selectedRaceInfoForValidation ? ` for a ${selectedRaceInfoForValidation.label}` : ''),
-        variant: "destructive" 
-      }); 
-      return; 
+        variant: "destructive"
+      });
+      return;
     }
 
     for (const ability of abilityNames) {
       if (ability === 'none') continue;
-      if (character.abilityScores[ability] <= 0) { 
-        toast({ 
+      if (character.abilityScores[ability] <= 0) {
+        toast({
           title: UI_STRINGS.toastInvalidAbilityScoreTitle.replace('{abilityName}', translations.ABILITY_LABELS.find(al => al.value === ability)?.label || ability),
-          description: UI_STRINGS.toastInvalidAbilityScoreDesc.replace('{abilityName}', translations.ABILITY_LABELS.find(al => al.value === ability)?.label || ability), 
-          variant: "destructive" 
-        }); 
-        return; 
+          description: UI_STRINGS.toastInvalidAbilityScoreDesc.replace('{abilityName}', translations.ABILITY_LABELS.find(al => al.value === ability)?.label || ability),
+          variant: "destructive"
+        });
+        return;
       }
     }
 
@@ -653,13 +659,13 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
       classes: character.classes.length > 0 ? character.classes : [{id: crypto.randomUUID(), className: '', level: 1}],
     };
     if (finalCharacterData.classes[0]) {
-        finalCharacterData.classes[0].level = 1; 
+        finalCharacterData.classes[0].level = 1;
     }
 
     onSave(finalCharacterData);
   }, [character, onSave, toast, translations]);
 
-  if (translationsLoading || !character || !translations || !detailedAbilityScores || !aggregatedFeatEffects) { 
+  if (translationsLoading || !character || !translations || !detailedAbilityScores || !aggregatedFeatEffects) {
     return (
       <div className="container mx-auto px-4 py-8 space-y-8">
         <div className="flex justify-center items-center py-10 min-h-[50vh]">
@@ -687,7 +693,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     height: character.height, weight: character.weight, eyes: character.eyes, hair: character.hair, skin: character.skin,
     homeland: character.homeland,
   };
-  
+
   const skillsData: SkillsFormSectionProps['skillsData'] = {
     skills: character.skills, classes: character.classes, race: character.race, size: character.size, feats: character.feats,
   };
@@ -761,7 +767,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
 
         <CharacterFormStoryPortraitSection
           storyAndAppearanceData={storyAndAppearanceData}
-          onFieldChange={handleCharacterFieldUpdate as any} 
+          onFieldChange={handleCharacterFieldUpdate as any}
           onPortraitChange={handlePortraitChange}
         />
 
@@ -772,7 +778,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
           onSkillChange={handleSkillChange}
-          onEditCustomSkillDefinition={handleOpenEditCustomSkillDialog} 
+          onEditCustomSkillDefinition={handleOpenEditCustomSkillDialog}
           onOpenSkillInfoDialog={handleOpenSkillInfoDialog}
         />
 
@@ -787,18 +793,19 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
           allCustomSkillDefinitions={globalCustomSkillDefinitions}
         />
-        
+
         <SavingThrowsPanel
             savingThrowsData={savingThrowsData}
             abilityScores={actualAbilityScoresForSavesAndSkills}
             onSavingThrowMiscModChange={handleSavingThrowMiscModChange}
+            onOpenInfoDialog={handleOpenSavingThrowInfoDialog}
         />
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:items-start">
           <div className="space-y-6"> {/* Column 1: AC and Languages */}
             <ArmorClassPanel
               acData={acData}
-              onCharacterUpdate={handleCharacterFieldUpdate as any} 
+              onCharacterUpdate={handleCharacterFieldUpdate as any}
               onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
             />
             <LanguagesPanel
@@ -812,17 +819,17 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           <div> {/* Column 2: Speed Panel */}
             <SpeedPanel
               speedData={speedData}
-              onCharacterUpdate={handleCharacterFieldUpdate as any} 
+              onCharacterUpdate={handleCharacterFieldUpdate as any}
               onOpenSpeedInfoDialog={handleOpenSpeedInfoDialog}
               onOpenArmorSpeedPenaltyInfoDialog={handleOpenArmorSpeedPenaltyInfoDialog}
               onOpenLoadSpeedPenaltyInfoDialog={handleOpenLoadSpeedPenaltyInfoDialog}
             />
           </div>
         </div>
-        
+
         <CombatPanel
             combatData={combatData}
-            onCharacterUpdate={handleCharacterFieldUpdate as any} 
+            onCharacterUpdate={handleCharacterFieldUpdate as any}
             onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog}
             onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
         />
@@ -861,7 +868,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           onOpenChange={setIsInfoDialogOpen}
           character={character}
           contentType={activeInfoDialogType}
-          aggregatedFeatEffects={aggregatedFeatEffects} 
+          aggregatedFeatEffects={aggregatedFeatEffects}
         />
       )}
       <AddCustomSkillDialog
@@ -876,7 +883,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
         onOpenChange={setIsCustomFeatDialogOpen}
         onSave={handleCustomFeatDefinitionSaveToStore}
         initialFeatData={editingCustomFeatDefinition}
-        allFeats={translations.DND_FEATS_DEFINITIONS} 
+        allFeats={translations.DND_FEATS_DEFINITIONS}
         allSkills={allSkillOptionsForDialog}
         allClasses={translations.DND_CLASSES}
         allRaces={translations.DND_RACES}
@@ -884,7 +891,4 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     </>
   );
 };
-
-
-
-
+    
