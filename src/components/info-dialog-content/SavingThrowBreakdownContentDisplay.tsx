@@ -46,7 +46,7 @@ export const SavingThrowBreakdownContentDisplay = ({
 
   const activeFeatSourcesText = breakdown.featComponents
     .filter(fc => fc.value !== 0)
-    .map(fc => `${fc.sourceFeat}${fc.condition ? ` (${fc.condition})` : ''}`)
+    .map(fc => fc.sourceFeat) // Changed this line
     .join(', ');
 
   return (
