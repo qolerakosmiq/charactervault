@@ -180,7 +180,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
                   <div className="flex items-center justify-center space-x-1 mb-1">
                     <span className="text-xl font-bold text-accent">{displayTotalScore}</span>
-                    <span className="text-xl text-accent">({displayModifier >= 0 ? '+' : ''}{displayModifier})</span>
+                    <span className="text-xl text-accent font-normal">({displayModifier >= 0 ? '+' : ''}{displayModifier})</span>
                     {actualScoreData && (
                        <Button
                         type="button"
