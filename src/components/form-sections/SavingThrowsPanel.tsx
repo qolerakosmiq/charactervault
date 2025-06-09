@@ -41,7 +41,7 @@ export const SavingThrowsPanel = ({
   SAVE_TYPES.forEach(saveType => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     debouncedTemporaryMods[saveType] = useDebouncedFormField(
-      savingThrowsData.savingThrows[saveType].miscMod || 0, // This is the temporary modifier from user input
+      savingThrowsData.savingThrows[saveType].miscMod || 0, 
       (value) => onSavingThrowTemporaryModChange(saveType, value),
       DEBOUNCE_DELAY
     );
@@ -49,10 +49,9 @@ export const SavingThrowsPanel = ({
 
   const calculateCalculatedMiscBonusForSave = React.useCallback((saveType: SavingThrowType): number => {
     if (!aggregatedFeatEffects?.savingThrowBonuses) return 0;
-    // Currently, only feats contribute to calculated misc bonuses. This can be expanded.
     return aggregatedFeatEffects.savingThrowBonuses.reduce((acc, effect) => {
       if (effect.save === saveType || effect.save === 'all') {
-        if (typeof effect.value === 'number') { // Assuming active conditions are handled in aggregation
+        if (typeof effect.value === 'number') { 
           return acc + effect.value;
         }
       }
@@ -151,7 +150,7 @@ export const SavingThrowsPanel = ({
       rowKey: 'magicMod',
     },
     {
-      labelKey: "savingThrowsRowLabelMiscModifier", // Changed from Feat Contributions
+      labelKey: "savingThrowsRowLabelMiscModifier", 
       getValue: (saveDataProp, localTemporaryMod, baseSave, abilityMod, calculatedMiscBonus) => renderModifierValue(calculatedMiscBonus),
       rowKey: 'calculatedMiscBonusDisplay',
     },
