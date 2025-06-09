@@ -13,6 +13,8 @@ import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import { Progress } from '@/components/ui/progress';
+
 
 const DEBOUNCE_DELAY_HEALTH = 400;
 
@@ -94,13 +96,21 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
   const conModifier = calculateAbilityModifier(healthData.abilityScores.constitution || 10);
   const conAbbr = ABILITY_LABELS.find(al => al.value === 'constitution')?.abbr || 'CON';
   
-  const missingHp = calculatedMaxHp - localHp;
+  const missingHp = Math.max(0, calculatedMaxHp - localHp);
 
   // Health Bar Calculations
-  const actualCurrentHp = Math.max(0, localHp);
-  const currentHpBarWidthPercentage = calculatedMaxHp > 0 ? (actualCurrentHp / calculatedMaxHp) * 100 : 0;
-  const tempHpBarWidthPercentage = calculatedMaxHp > 0 ? Math.min(((actualCurrentHp + localTemporaryHp) / calculatedMaxHp) * 100, 100) : 0;
-  const nonlethalDamageBarWidthPercentage = calculatedMaxHp > 0 ? Math.min((localNonlethalDamage / calculatedMaxHp) * 100, 100) : 0;
+  const actualCurrentHpForBar = Math.max(0, localHp); // Current HP, but not less than 0 for bar width
+  const effectiveTotalHpForBar = Math.max(1, calculatedMaxHp); // Denominator, at least 1 to avoid division by zero
+
+  // Percentage for the blue bar (Temporary HP extending beyond current HP, capped at Max HP)
+  const tempHpBarWidthPercentage = ((actualCurrentHpForBar + localTemporaryHp) / effectiveTotalHpForBar) * 100;
+  
+  // Percentage for the green bar (Current HP)
+  const currentHpBarWidthPercentage = (actualCurrentHpForBar / effectiveTotalHpForBar) * 100;
+  
+  // Percentage for the red bar (Nonlethal Damage) from the right
+  const nonlethalDamageBarWidthPercentage = (localNonlethalDamage / effectiveTotalHpForBar) * 100;
+
 
   // Status Calculation
   let statusText = UI_STRINGS.healthStatusNormal || "Normal";
@@ -116,27 +126,24 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
     statusText = UI_STRINGS.healthStatusDisabled || "Disabled";
     statusColorClass = "text-amber-600";
   }
-  // Nonlethal damage effects can override previous states if character is not dead or dying already
-  if (localHp > -10) {
+  
+  // Nonlethal damage effects
+  if (localHp > -10) { // Only apply if not already dead
     if (localNonlethalDamage > 0 && localNonlethalDamage >= localHp) {
-        statusText = UI_STRINGS.healthStatusUnconscious || "Unconscious";
-        statusColorClass = "text-destructive";
-    } else if (localNonlethalDamage > 0 && localNonlethalDamage === localHp -1 && localHp > 0) { 
-      //This is a common house rule for "about to pass out", PHB is just staggered if NL = current
-      //For strict PHB, this else if can be removed or merged with staggered.
-      //For now, let's assume Staggered if NL = currentHP > 0
-    }
-    if (localNonlethalDamage > 0 && localNonlethalDamage < localHp && localHp > 0) {
-         // If NL damage has been taken, but not enough to cause unconsciousness, consider Staggered
-         // This interpretation assumes any amount of NL damage that doesn't render unconscious makes one Staggered
-         // A more common interpretation is Staggered when NL = Current HP.
-         // Let's stick to Staggered when NL = Current HP and Current HP > 0
+      // If NL damage meets or exceeds current HP, character is Unconscious (unless already dead/dying)
+      statusText = UI_STRINGS.healthStatusUnconscious || "Unconscious";
+      statusColorClass = "text-destructive"; // Unconscious is a critical state
+    } else if (localHp > 0 && localNonlethalDamage > 0 && localNonlethalDamage === (localHp -1) && localNonlethalDamage < localHp ) {
+      // This covers a specific house rule condition; for PHB Staggered, see below.
+      // This would be a narrow case where NL is exactly 1 less than current HP, and HP > 0.
+      // Let's ensure this doesn't override a more severe state.
+      // statusText = "About to Pass Out (Staggered)";
+      // statusColorClass = "text-amber-600";
     }
   }
+
   // PHB p.146: "When your nonlethal damage equals your current hit points, you’re staggered."
-  // "When your nonlethal damage exceeds your current hit points, you fall unconscious."
-  // This means if hp=5, nl=5 -> staggered. if hp=5, nl=6 -> unconscious.
-  // If hp=0, nl=0 -> disabled. If hp=0, nl=1 -> unconscious.
+  // This applies IF the character is not already unconscious or worse due to HP.
   if (localHp > 0 && localNonlethalDamage === localHp) {
       statusText = UI_STRINGS.healthStatusStaggered || "Staggered";
       statusColorClass = "text-amber-600";
@@ -157,30 +164,32 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
         {/* Stacked Health Bar */}
         <div className="my-4 space-y-1">
           <div className="relative w-full h-6 bg-muted rounded-full overflow-hidden border border-border">
-            {/* Temporary HP Bar (Blue) - shows total potential HP with temp */}
-            <div
-              className="absolute top-0 left-0 h-full bg-sky-500 rounded-full z-10 transition-all duration-300 ease-out"
-              style={{ width: `${tempHpBarWidthPercentage}%` }}
-            />
+            {/* Temporary HP Bar (Blue) */}
+            {localTemporaryHp > 0 && (
+              <div
+                className="absolute top-0 left-0 h-full bg-sky-500 rounded-full z-10 transition-all duration-300 ease-out"
+                style={{ width: `${Math.min(tempHpBarWidthPercentage, 100)}%` }}
+              />
+            )}
             {/* Current HP Bar (Green) */}
             <div
               className="absolute top-0 left-0 h-full bg-emerald-600 rounded-full z-20 transition-all duration-300 ease-out"
-              style={{ width: `${currentHpBarWidthPercentage}%` }}
+              style={{ width: `${Math.min(currentHpBarWidthPercentage, 100)}%` }}
             />
-            {/* Nonlethal Damage Bar (Red) - overlays from the right */}
+            {/* Nonlethal Damage Bar (Red) */}
             {localNonlethalDamage > 0 && (
               <div
-                className="absolute top-0 right-0 h-full bg-destructive/70 z-30 transition-all duration-300 ease-out"
-                style={{ width: `${nonlethalDamageBarWidthPercentage}%` }}
+                className="absolute top-0 right-0 h-full bg-destructive/70 rounded-full z-30 transition-all duration-300 ease-out"
+                style={{ width: `${Math.min(nonlethalDamageBarWidthPercentage, 100)}%` }}
               />
             )}
           </div>
           <div className="flex justify-between text-xs text-muted-foreground px-1">
             <span>
-              {localHp + localTemporaryHp} / {calculatedMaxHp} HP
-              {localTemporaryHp > 0 && ` (${localTemporaryHp} Temp)`}
+              {localHp} / {calculatedMaxHp} {UI_STRINGS.hpLabelShort || "HP"}
+              {localTemporaryHp > 0 && ` (+${localTemporaryHp} ${UI_STRINGS.tempHpLabelShort || "Temp"})`}
             </span>
-            {localNonlethalDamage > 0 && <span>{localNonlethalDamage} NL</span>}
+            {localNonlethalDamage > 0 && <span>{localNonlethalDamage} {UI_STRINGS.nonlethalDamageLabelShort || "NL"}</span>}
           </div>
         </div>
 
@@ -193,7 +202,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
         <Separator className="my-6" />
         
         {/* Inputs and Readouts */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           <div className="space-y-1">
             <Label htmlFor="current-hp-input" className="text-sm font-medium">
               {UI_STRINGS.healthPanelCurrentHpLabel || "Current Hit Points"}
@@ -206,8 +215,8 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
               max={calculatedMaxHp + localTemporaryHp}
               inputClassName={cn(
                 "w-full h-10 text-lg text-center font-bold",
-                localHp <= 0 && localHp > -10 && "text-amber-600", // Dying/Disabled more amber
-                localHp <= -10 && "text-destructive", // Dead
+                localHp <= 0 && localHp > -10 && "text-amber-600",
+                localHp <= -10 && "text-destructive", 
                 localHp > 0 && "text-emerald-600"
               )}
               buttonClassName="h-10 w-10"
@@ -223,10 +232,11 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                 onChange={setLocalNonlethalDamage}
                 min={0}
                 inputClassName={cn(
-                  "w-full h-10 text-lg text-center font-bold",
+                  "w-20 h-10 text-lg text-center font-bold", // w-20 from previous change
                   localNonlethalDamage > 0 ? "text-destructive" : "text-muted-foreground"
                 )}
                 buttonClassName="h-10 w-10"
+                className="justify-center sm:justify-start"
             />
           </div>
           <div className="space-y-1">
@@ -239,18 +249,19 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                 onChange={setLocalTemporaryHp}
                 min={0}
                 inputClassName={cn(
-                  "w-full h-10 text-lg text-center font-bold",
+                  "w-20 h-10 text-lg text-center font-bold", // w-20 from previous change
                   localTemporaryHp > 0 ? "text-sky-500" : "text-muted-foreground"
                 )}
                 buttonClassName="h-10 w-10"
+                className="justify-center sm:justify-start"
             />
           </div>
           <div className="space-y-1 text-center sm:text-left">
             <Label className="text-sm font-medium">
               {UI_STRINGS.healthPanelMissingHpLabel || "Missing Hit Points"}
             </Label>
-            <p className="text-lg font-bold text-muted-foreground h-10 flex items-center justify-center sm:justify-start">
-                {missingHp > 0 ? missingHp : 0}
+            <p className="text-2xl font-bold text-muted-foreground h-10 flex items-center justify-center sm:justify-start">
+                {missingHp}
             </p>
           </div>
         </div>
@@ -294,6 +305,14 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                     />
                 </div>
             </div>
+            <div className="flex items-center justify-between pt-1">
+                <Label className="font-semibold">{UI_STRINGS.healthPanelMaxHpLabel || "Maximum Hit Points"}</Label>
+                 <div className="w-36 text-center">
+                    <span className="text-2xl font-bold text-accent">
+                        {calculatedMaxHp}
+                    </span>
+                </div>
+            </div>
         </div>
 
       </CardContent>
@@ -302,4 +321,3 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
 };
 
 HealthPanel.displayName = 'HealthPanel';
-
