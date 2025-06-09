@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -75,22 +75,41 @@ export function FeatSelectionDialog({
 
   const isLoadingEffective = propIsLoadingTranslations || i18nIsLoading;
 
-  const sortedAndFilteredFeats = React.useMemo(() => {
+  const baseSortedFeats = React.useMemo(() => {
     if (isLoadingEffective) return [];
     return [...allFeats]
       .filter(featDef => featDef.isClassFeature !== true)
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [allFeats, isLoadingEffective]);
 
+  const displayedFeats = React.useMemo(() => {
+    if (!searchTerm.trim()) {
+      return baseSortedFeats;
+    }
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return baseSortedFeats.filter(featDef => {
+      const labelMatch = featDef.label.toLowerCase().includes(lowerSearchTerm);
+      const descriptionMatch = (featDef.description ? stripHtml(featDef.description).toLowerCase() : '').includes(lowerSearchTerm);
+      return labelMatch || descriptionMatch;
+    });
+  }, [baseSortedFeats, searchTerm]);
+
   React.useEffect(() => {
-    if (isOpen && scrollAreaRef.current) {
-      const viewport = scrollAreaRef.current.querySelector<HTMLDivElement>('[data-radix-scroll-area-viewport]');
-      if (viewport) {
-        viewport.scrollTop = 0;
+    if (isOpen) {
+      if (scrollAreaRef.current) {
+        const viewport = scrollAreaRef.current.querySelector<HTMLDivElement>('[data-radix-scroll-area-viewport]');
+        if (viewport) {
+          // Use setTimeout to ensure scroll reset happens after cmdk might have updated
+          setTimeout(() => {
+            viewport.scrollTop = 0;
+          }, 0);
+        }
       }
     }
-    if(!isOpen) setSearchTerm('');
-  }, [isOpen, searchTerm]);
+    if (!isOpen) {
+      setSearchTerm(''); // Clear search term when dialog closes
+    }
+  }, [isOpen, searchTerm]); // searchTerm dependency will trigger scroll reset on search
 
   if (isLoadingEffective || !translations) {
     return (
@@ -124,14 +143,17 @@ export function FeatSelectionDialog({
       <DialogContent className="sm:max-w-xl md:max-w-2xl flex flex-col h-[75vh]">
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif">
-            <BookOpenText className="mr-2 h-6 w-6 text-primary" /> 
+            <BookOpenText className="mr-2 h-6 w-6 text-primary" />
             {UI_STRINGS.featSelectionDialogTitle || "Select a Feat"}
           </DialogTitle>
           <DialogDescription>
             {UI_STRINGS.featSelectionDialogDescription || "Search and choose a feat from the list. Descriptions and prerequisites are shown below each feat."}
           </DialogDescription>
         </DialogHeader>
-        <Command className="rounded-lg border shadow-md flex-grow min-h-0 flex flex-col">
+        <Command
+          shouldFilter={false} // Disable cmdk's internal filtering
+          className="rounded-lg border shadow-md flex-grow min-h-0 flex flex-col"
+        >
           <CommandInput
             placeholder={UI_STRINGS.featSelectionDialogSearchPlaceholder || "Search feats by name or description..."}
             value={searchTerm}
@@ -141,23 +163,23 @@ export function FeatSelectionDialog({
             <CommandList className="max-h-none">
               <CommandEmpty>{UI_STRINGS.featSelectionDialogEmpty || "No feats found."}</CommandEmpty>
               <CommandGroup>
-                {sortedAndFilteredFeats.map((featDef) => {
+                {displayedFeats.map((featDef) => {
                   const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(
                     featDef,
                     character,
-                    allFeats,
+                    allFeats, // Pass allFeats for prereq checking, not just displayedFeats
                     allPredefinedSkillDefinitions,
                     allCustomSkillDefinitions,
                     allClasses,
                     allRaces,
                     abilityLabels,
                     alignmentPrereqOptions,
-                    UI_STRINGS 
+                    UI_STRINGS
                   );
                   return (
                     <CommandItem
                       key={featDef.value}
-                      value={`${featDef.label} ${stripHtml(featDef.description || '')}`}
+                      value={featDef.label} // Use label for cmdk's selection matching
                       onSelect={() => {
                         onFeatSelected(featDef.value);
                         onOpenChange(false);
@@ -165,7 +187,7 @@ export function FeatSelectionDialog({
                       className="flex flex-col items-start p-3 hover:bg-accent/10 cursor-pointer data-[selected=true]:bg-accent/20"
                     >
                       <div className="font-medium text-sm text-foreground">
-                        {featDef.label} 
+                        {featDef.label}
                         {featDef.isCustom && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 ml-1.5 font-normal whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
                       </div>
                       {featDef.description && (
