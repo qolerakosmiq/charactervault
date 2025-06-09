@@ -326,8 +326,62 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
             <Separator className="my-6" />
              <div>
               <h4 className="text-lg font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
-                <div className="grid md:grid-cols-2 gap-x-6 gap-y-4">
-                  <div className="space-y-3"> 
+                <div className="grid md:grid-cols-3 gap-x-6 gap-y-4"> {/* Changed to md:grid-cols-3 */}
+                  <div className="md:col-span-1 space-y-3 border md:border-r md:border-t-0 p-4 rounded-md md:pr-6"> {/* Form on left, col-span-1 */}
+                    <Label className="text-md font-medium">{UI_STRINGS.resistancesPanelAddCustomDrLabel}</Label>
+                    <div className="w-fit space-y-1">
+                        <Label htmlFor="form-dr-value" className="text-xs text-center block">{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
+                        <NumberSpinnerInput
+                        id="form-dr-value"
+                        value={newDrValue}
+                        onChange={setNewDrValue}
+                        min={1}
+                        inputClassName="h-9 text-sm w-20"
+                        buttonClassName="h-9 w-9"
+                        buttonSize="sm"
+                        className="justify-center"
+                        />
+                    </div>
+                    <div className="space-y-1">
+                          <Label htmlFor="form-dr-rule" className="text-xs">{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
+                          <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
+                              <SelectTrigger id="form-dr-rule" className="h-9 text-sm">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                  {DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (
+                                      <SelectItem key={option.value} value={option.value}>
+                                          {option.label}
+                                      </SelectItem>
+                                  ))}
+                              </SelectContent>
+                          </Select>
+                      </div>
+                    <div className="space-y-1">
+                        <Label htmlFor="form-dr-type" className="text-xs">{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
+                        <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
+                            <SelectTrigger id="form-dr-type" className="h-9 text-sm">
+                              <SelectValue placeholder="Select type..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {DAMAGE_REDUCTION_TYPES.map(option => (
+                                    <SelectItem 
+                                      key={option.value} 
+                                      value={option.value}
+                                      disabled={option.value === 'none' && newDrRule !== 'bypassed-by-type'}
+                                    >
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <Button type="button" onClick={handleAddDamageReduction} size="sm" className="mt-3">
+                        <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.resistancesPanelAddDrButton}
+                    </Button>
+                  </div>
+                  
+                  <div className="md:col-span-2 space-y-3"> {/* List on right, col-span-2 */}
                     {characterData.damageReduction.length > 0 ? (
                       characterData.damageReduction.map(dr => {
                         const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
@@ -361,61 +415,8 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                     )}
                   </div>
 
-                <div className="space-y-3 border md:border-l md:border-t-0 p-4 rounded-md md:pl-6">
-                  <Label className="text-md font-medium">{UI_STRINGS.resistancesPanelAddCustomDrLabel}</Label>
-                  <div className="w-fit space-y-1">
-                      <Label htmlFor="form-dr-value" className="text-xs text-center block">{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
-                      <NumberSpinnerInput
-                      id="form-dr-value"
-                      value={newDrValue}
-                      onChange={setNewDrValue}
-                      min={1}
-                      inputClassName="h-9 text-sm w-20"
-                      buttonClassName="h-9 w-9"
-                      buttonSize="sm"
-                      className="justify-center"
-                      />
-                  </div>
-                   <div className="space-y-1">
-                        <Label htmlFor="form-dr-rule" className="text-xs">{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
-                         <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
-                            <SelectTrigger id="form-dr-rule" className="h-9 text-sm">
-                               <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (
-                                    <SelectItem key={option.value} value={option.value}>
-                                        {option.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                  <div className="space-y-1">
-                      <Label htmlFor="form-dr-type" className="text-xs">{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
-                       <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
-                          <SelectTrigger id="form-dr-type" className="h-9 text-sm">
-                             <SelectValue placeholder="Select type..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                              {DAMAGE_REDUCTION_TYPES.map(option => (
-                                  <SelectItem 
-                                    key={option.value} 
-                                    value={option.value}
-                                    disabled={option.value === 'none' && newDrRule !== 'bypassed-by-type'}
-                                  >
-                                      {option.label}
-                                  </SelectItem>
-                              ))}
-                          </SelectContent>
-                      </Select>
-                  </div>
-                  <Button type="button" onClick={handleAddDamageReduction} size="sm" className="mt-3">
-                      <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.resistancesPanelAddDrButton}
-                  </Button>
                 </div>
               </div>
-            </div>
 
           </div>
         </CardContent>
@@ -425,3 +426,4 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
 };
 ResistancesPanelComponent.displayName = 'ResistancesPanelComponent';
 export const ResistancesPanel = React.memo(ResistancesPanelComponent);
+
