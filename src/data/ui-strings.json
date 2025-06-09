@@ -63,7 +63,7 @@
     "maxHpDialogAbilityModLabel": "Ability Modifier",
     "maxHpDialogMiscModLabel": "Misc Modifier",
     "maxHpDialogCustomModLabel": "Custom Modifier",
-    "maxHpDialogTotalLabel": "Total Maximum HP",
+    "maxHpDialogTotalLabel": "Maximum Hit Points",
     "maxHpDialogFeatsSubLabel": "Feats/Effects",
     "infoDialogErrorInvalidSaveTypeTitle": "Error: Invalid Save Type",
     "infoDialogErrorReceivedInvalidSaveTypeDesc": "Received an unexpected save type value: {receivedValue}",

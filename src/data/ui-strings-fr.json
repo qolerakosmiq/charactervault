@@ -63,7 +63,7 @@
     "maxHpDialogAbilityModLabel": "Modificateur de Caractéristique",
     "maxHpDialogMiscModLabel": "Modificateur Divers",
     "maxHpDialogCustomModLabel": "Modificateur Personnalisé",
-    "maxHpDialogTotalLabel": "Total Points de Vie Max.",
+    "maxHpDialogTotalLabel": "Points de vie maximum",
     "maxHpDialogFeatsSubLabel": "Dons/Effets",
     "infoDialogErrorInvalidSaveTypeTitle": "Erreur : Type de sauvegarde invalide",
     "infoDialogErrorReceivedInvalidSaveTypeDesc": "Type de sauvegarde inattendu reçu : {receivedValue}",
