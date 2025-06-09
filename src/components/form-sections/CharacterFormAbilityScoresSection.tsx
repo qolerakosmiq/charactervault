@@ -160,9 +160,9 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 ? actualScoreData.finalScore 
                 : (abilityScoresData.abilityScores[ability] || 0) + 
                   (abilityScoresData.abilityScoreTempCustomModifiers?.[ability] || 0) +
-                  (actualScoreData?.components.find(c => c.source.startsWith("Race"))?.value || 0) +
-                  (actualScoreData?.components.find(c => c.source.startsWith("Aging"))?.value || 0) +
-                  (actualScoreData?.components.find(c => c.source === "feats")?.value || 0);
+                  (actualScoreData?.components.find(c => c.sourceLabel === "Race")?.value || 0) +
+                  (actualScoreData?.components.find(c => c.sourceLabel === "Aging")?.value || 0) +
+                  (actualScoreData?.components.find(c => c.sourceLabel === "Feat")?.value || 0);
               
               const displayModifier = calculateAbilityModifier(displayTotalScore);
 
@@ -224,7 +224,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
               );
             })}
           </div>
-           <p className="text-xs text-muted-foreground mt-4 pt-2 border-t border-border/30">
+           <p className="text-sm text-muted-foreground mt-4 pt-2 border-t border-border/30">
             <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.abilityScoresNote_prefix || "<strong>Note:</strong> The " }} />
             <Badge variant="outline" className="text-xs font-normal px-1 py-0.5 align-baseline mx-0.5">
               {UI_STRINGS.abilityScoresNote_badge0_text || "Temporary Modifier"}
@@ -254,3 +254,4 @@ const CharacterFormAbilityScoresSectionComponent = ({
 };
 CharacterFormAbilityScoresSectionComponent.displayName = 'CharacterFormAbilityScoresSectionComponent';
 export const CharacterFormAbilityScoresSection = React.memo(CharacterFormAbilityScoresSectionComponent);
+
