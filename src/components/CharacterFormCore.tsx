@@ -57,7 +57,7 @@ import { LanguagesPanel, type LanguagesPanelProps } from '@/components/form-sect
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 import { ConditionsPanel, type ConditionsPanelProps } from '@/components/form-sections/ConditionsPanel';
-import { ExperiencePanel, type ExperiencePanelProps } from '@/components/form-sections/ExperiencePanel'; // Added
+import { ExperiencePanel, type ExperiencePanelProps } from '@/components/form-sections/ExperiencePanel';
 
 import { Loader2 } from 'lucide-react';
 
@@ -123,7 +123,7 @@ function createBaseCharacterData(
 
     return {
       id: crypto.randomUUID(), name: '', playerName: '', campaign: '', homeland: '', race: defaultRaceValue, alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
-      height: '', weight: '', eyes: '', hair: '', skin: '', languages: [], experiencePoints: 0, // Added
+      height: '', weight: '', eyes: '', hair: '', skin: '', languages: [], experiencePoints: 0,
       abilityScores: { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES))) },
       abilityScoreTempCustomModifiers: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
       hp: initialMaxHp,
@@ -762,7 +762,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     };
   }, [character]);
 
-  const experiencePanelData = React.useMemo<ExperiencePanelData | undefined>(() => { // Added
+  const experiencePanelData = React.useMemo<ExperiencePanelData | undefined>(() => {
     if (!character) return undefined;
     return {
       currentXp: character.experiencePoints || 0,
@@ -911,27 +911,32 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           />
         )}
         
-        {acData && <ArmorClassPanel acData={acData} onCharacterUpdate={handleCharacterFieldUpdate as any} onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}/>}
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {healthPanelData && (
-            <HealthPanel
-              healthData={healthPanelData}
-              calculatedMaxHp={calculatedMaxHpForPanel}
-              finalConstitutionModifier={finalConstitutionModifierForPanel}
-              calculatedMiscMaxHpBonus={calculatedMiscMaxHpBonusForPanel}
-              onCharacterUpdate={handleHealthFieldChange}
-              onOpenHealthInfoDialog={handleOpenHealthInfoDialog}
-            />
-          )}
-           {experiencePanelData && translations.XP_TABLE && ( // Added ExperiencePanel
-            <ExperiencePanel
-              experienceData={experiencePanelData}
-              onXpChange={(newXp) => handleCharacterFieldUpdate('experiencePoints', newXp)}
-              xpTable={translations.XP_TABLE}
-              epicLevelXpIncrease={translations.EPIC_LEVEL_XP_INCREASE}
-            />
-          )}
+          <div className="space-y-8"> {/* Left column for AC and XP */}
+            {acData && <ArmorClassPanel acData={acData} onCharacterUpdate={handleCharacterFieldUpdate as any} onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}/>}
+            
+            {experiencePanelData && translations.XP_TABLE && (
+              <ExperiencePanel
+                experienceData={experiencePanelData}
+                onXpChange={(newXp) => handleCharacterFieldUpdate('experiencePoints', newXp)}
+                xpTable={translations.XP_TABLE}
+                epicLevelXpIncrease={translations.EPIC_LEVEL_XP_INCREASE}
+              />
+            )}
+          </div>
+          
+          <div> {/* Right column for Health Panel */}
+            {healthPanelData && (
+              <HealthPanel
+                healthData={healthPanelData}
+                calculatedMaxHp={calculatedMaxHpForPanel}
+                finalConstitutionModifier={finalConstitutionModifierForPanel}
+                calculatedMiscMaxHpBonus={calculatedMiscMaxHpBonusForPanel}
+                onCharacterUpdate={handleHealthFieldChange}
+                onOpenHealthInfoDialog={handleOpenHealthInfoDialog}
+              />
+            )}
+          </div>
         </div>
         
         {resistancesData && (
@@ -1058,3 +1063,4 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
+
