@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
 
 const DEBOUNCE_DELAY_HEALTH = 400;
 
@@ -195,6 +196,8 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                 </div>
             </div>
 
+            <Separator className="my-4 border-border/60" />
+            
             <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between">
                     <Label htmlFor="base-max-hp">{UI_STRINGS.healthPanelBaseMaxHpLabel || "Base Hit Points"}</Label>
