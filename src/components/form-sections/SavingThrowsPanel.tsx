@@ -137,7 +137,7 @@ const SavingThrowsPanelComponent = ({
         const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === abilityKey);
         const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
         return (
-          <span className="inline-flex items-center"> {/* Changed from items-baseline */}
+          <span className="inline-flex items-baseline"> {/* Changed from items-center */}
             {renderModifierValue(abilityMod)}
             <Badge variant="outline" className="ml-1.5 text-xs font-normal px-1.5 py-0.5 whitespace-nowrap">{abilityAbbr}</Badge>
           </span>
