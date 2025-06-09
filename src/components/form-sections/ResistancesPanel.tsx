@@ -389,8 +389,8 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                         const ruleLabel = ruleDef?.label || dr.rule;
                         return (
                           <div key={dr.id} className="flex flex-col items-start justify-between p-2 border rounded-md bg-muted/5 text-sm">
-                            <div className="flex items-baseline justify-between w-full">
-                                <div className="flex items-baseline gap-x-1 flex-wrap">
+                            <div className="flex items-center justify-between w-full">
+                                <div className="flex items-center gap-x-1 flex-wrap"> {/* Changed items-baseline to items-center */}
                                   <span className="font-semibold text-xl text-accent">{getDrPrimaryNotation(dr)}</span>
                                   <Badge variant="outline" className="text-sm font-normal h-5 mr-1 whitespace-nowrap">
                                      {ruleLabel}
