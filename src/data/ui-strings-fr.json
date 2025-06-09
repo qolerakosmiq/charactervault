@@ -252,6 +252,7 @@
     "healthPanelBaseMaxHpLabel": "Points de vie de base",
     "healthPanelAbilityModLabel": "Modificateur de caractéristique",
     "healthPanelCustomModLabel": "Modificateur personnalisé",
+    "healthPanelMiscMaxHpLabel": "Modificateur Divers",
     "healthPanelStatusLabel": "Statut :",
     "healthStatusNormal": "Normal",
     "healthStatusStaggered": "Affaibli",
@@ -430,13 +431,9 @@
     "conditionsPanelTitle": "Conditions Actives",
     "conditionsPanelDescription": "Activez ou désactivez les effets conditionnels des dons et capacités de votre personnage.",
     "conditionsPanelTooltipSourcesLabel": "Sources :",
-    "infoDialogUnknownFeatSource": "Don inconnu",
-    "healthBarLabelHitPoints": "Points de vie",
-    "healthBarLabelTemporary": "Temporaires",
-    "healthBarLabelNonlethal": "Non-létaux"
+    "infoDialogUnknownFeatSource": "Don inconnu"
   }
 }
     
     
     
-

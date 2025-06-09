@@ -26,18 +26,25 @@ export interface HealthPanelProps {
   healthData: HealthPanelData;
   calculatedMaxHp: number; 
   finalConstitutionModifier: number;
+  calculatedMiscMaxHpBonus: number; // New prop for misc/feat HP bonus
   onCharacterUpdate: (
     field: keyof Pick<Character, 'hp' | 'baseMaxHp' | 'customMaxHpModifier' | 'nonlethalDamage' | 'temporaryHp' | 'numberOfWounds'>, 
     value: number
   ) => void;
 }
 
-const HealthPanelComponent: React.FC<HealthPanelProps> = ({ healthData, calculatedMaxHp, finalConstitutionModifier, onCharacterUpdate }) => {
+const HealthPanelComponent: React.FC<HealthPanelProps> = ({ 
+  healthData, 
+  calculatedMaxHp, 
+  finalConstitutionModifier,
+  calculatedMiscMaxHpBonus, 
+  onCharacterUpdate 
+}) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const [localHp, setLocalHp] = useDebouncedFormField(
     healthData.hp,
-    (value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp)),
+    (value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp > 0 ? calculatedMaxHp : value)), // Allow current HP to exceed max if max is 0 or less for edge cases.
     DEBOUNCE_DELAY_HEALTH
   );
   const [localBaseMaxHp, setLocalBaseMaxHp] = useDebouncedFormField(
@@ -68,7 +75,7 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({ healthData, calculat
 
 
   React.useEffect(() => {
-    if (localHp > calculatedMaxHp && calculatedMaxHp > 0) { 
+    if (calculatedMaxHp > 0 && localHp > calculatedMaxHp) { 
         setLocalHp(calculatedMaxHp);
     }
   }, [calculatedMaxHp, localHp, setLocalHp]);
@@ -142,6 +149,8 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({ healthData, calculat
     }
   }
 
+  const displayMaxHp = localBaseMaxHp + finalConstitutionModifier + calculatedMiscMaxHpBonus + localCustomMaxHpModifier;
+
 
   return (
     <Card>
@@ -202,7 +211,7 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({ healthData, calculat
               value={localHp}
               onChange={setLocalHp}
               min={-999} 
-              max={calculatedMaxHp} 
+              max={calculatedMaxHp > 0 ? calculatedMaxHp : 999} // Allow going over if max is 0 or less, for data integrity
               inputClassName={cn(
                 "w-full h-10 text-lg text-center font-bold",
                 localHp <= 0 && localHp > -10 && "text-amber-600",
@@ -282,8 +291,18 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({ healthData, calculat
                     <span className="text-xs text-muted-foreground ml-1">({conAbbr})</span>
                 </Label>
                  <div className="w-36 text-center">
-                    <span className={cn("font-semibold", finalConstitutionModifier >= 0 ? "text-emerald-600" : "text-destructive", "font-bold")}>
+                    <span className={cn("font-semibold font-bold", finalConstitutionModifier >= 0 ? "text-emerald-600" : "text-destructive")}>
                         {finalConstitutionModifier >= 0 ? `+${finalConstitutionModifier}` : finalConstitutionModifier}
+                    </span>
+                </div>
+            </div>
+             <div className="flex items-center justify-between">
+                <Label>
+                    {UI_STRINGS.healthPanelMiscMaxHpLabel || "Misc Modifier"}
+                </Label>
+                 <div className="w-36 text-center">
+                    <span className={cn("font-semibold font-bold", calculatedMiscMaxHpBonus >= 0 ? "text-emerald-600" : "text-destructive")}>
+                        {calculatedMiscMaxHpBonus >= 0 ? `+${calculatedMiscMaxHpBonus}` : calculatedMiscMaxHpBonus}
                     </span>
                 </div>
             </div>
@@ -304,7 +323,7 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({ healthData, calculat
                 <Label className="font-semibold">{UI_STRINGS.healthPanelMaxHpLabel || "Maximum Hit Points"}</Label>
                  <div className="w-36 text-center">
                     <span className="text-2xl font-bold text-accent">
-                        {calculatedMaxHp}
+                        {displayMaxHp}
                     </span>
                 </div>
             </div>

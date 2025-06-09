@@ -718,6 +718,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     return calculateAbilityModifier(detailedAbilityScores.constitution.finalScore);
   }, [detailedAbilityScores]);
 
+  const calculatedMiscMaxHpBonusForPanel = React.useMemo(() => {
+    return aggregatedFeatEffects?.hpBonus || 0;
+  }, [aggregatedFeatEffects]);
+
 
   const coreInfoData = React.useMemo<CharacterFormCoreInfoSectionProps['characterData'] | undefined>(() => {
     if (!character) return undefined;
@@ -901,6 +905,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
               healthData={healthPanelData}
               calculatedMaxHp={calculatedMaxHpForPanel}
               finalConstitutionModifier={finalConstitutionModifierForPanel}
+              calculatedMiscMaxHpBonus={calculatedMiscMaxHpBonusForPanel}
               onCharacterUpdate={handleHealthFieldChange}
             />
           )}

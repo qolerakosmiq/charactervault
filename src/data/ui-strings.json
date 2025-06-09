@@ -252,6 +252,7 @@
     "healthPanelBaseMaxHpLabel": "Base Hit Points",
     "healthPanelAbilityModLabel": "Ability Modifier",
     "healthPanelCustomModLabel": "Custom Modifier",
+    "healthPanelMiscMaxHpLabel": "Misc Modifier",
     "healthPanelStatusLabel": "Status:",
     "healthStatusNormal": "Normal",
     "healthStatusStaggered": "Staggered",
@@ -430,13 +431,9 @@
     "conditionsPanelTitle": "Active Conditions",
     "conditionsPanelDescription": "Toggle conditional effects from your character's feats and abilities.",
     "conditionsPanelTooltipSourcesLabel": "Sources:",
-    "infoDialogUnknownFeatSource": "Unknown Feat",
-    "healthBarLabelHitPoints": "Hit Points",
-    "healthBarLabelTemporary": "Temporary",
-    "healthBarLabelNonlethal": "Nonlethal"
+    "infoDialogUnknownFeatSource": "Unknown Feat"
   }
 }
     
     
     
-
