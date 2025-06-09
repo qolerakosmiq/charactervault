@@ -260,6 +260,9 @@
     "healthStatusDisabled": "Handicapé",
     "healthStatusDying": "Mourant",
     "healthStatusDead": "Mort",
+    "hpLabel": "Points de Vie",
+    "tempHpLabel": "Temporaires",
+    "nonlethalDamageLabel": "Non-létaux",
     "speedPanelTitle": "Vitesses de déplacement",
     "speedPanelDescription": "Gérez les diverses capacités de mouvement et les pénalités de votre personnage.",
     "speedPanelLoadingSpeeds": "Chargement des détails des vitesses...",
@@ -431,5 +434,6 @@
     "infoDialogUnknownFeatSource": "Don inconnu"
   }
 }
+    
     
     

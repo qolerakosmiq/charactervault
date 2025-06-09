@@ -176,10 +176,10 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
           </div>
           <div className="flex justify-between text-xs text-muted-foreground px-1">
             <span>
-              {localHp} / {calculatedMaxHp} {UI_STRINGS.hpLabelShort || "HP"}
-              {localTemporaryHp > 0 && ` (+${localTemporaryHp} ${UI_STRINGS.tempHpLabelShort || "Temp"})`}
+              {localHp} / {calculatedMaxHp} {UI_STRINGS.hpLabel || "Hit Points"}
+              {localTemporaryHp > 0 && ` (+${localTemporaryHp} ${UI_STRINGS.tempHpLabel || "Temporary"})`}
             </span>
-            {localNonlethalDamage > 0 && <span>{localNonlethalDamage} {UI_STRINGS.nonlethalDamageLabelShort || "NL"}</span>}
+            {localNonlethalDamage > 0 && <span>{localNonlethalDamage} {UI_STRINGS.nonlethalDamageLabel || "Nonlethal"}</span>}
           </div>
         </div>
 
@@ -242,7 +242,6 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                 buttonClassName="h-10 w-10"
             />
           </div>
-           {/* Missing Hit Points display has been moved below */}
         </div>
         
         <Separator className="my-2" />
