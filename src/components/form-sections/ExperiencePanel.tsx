@@ -79,6 +79,18 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
 
   const { UI_STRINGS } = translations;
 
+  const labelText = UI_STRINGS.experiencePanelCurrentXpLabel || "Current Experience Points (XP)";
+  const xpPartRegex = /\((XP|xp|Xp|xP)\)/;
+  const match = labelText.match(xpPartRegex);
+  let mainLabelPart = labelText;
+  let xpSubLabelPart = "";
+
+  if (match) {
+    mainLabelPart = labelText.substring(0, match.index).trim();
+    xpSubLabelPart = match[0]; 
+  }
+
+
   return (
     <Card>
       <CardHeader>
@@ -86,12 +98,13 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
           <Award className="h-8 w-8 text-primary" />
           <CardTitle className="text-2xl font-serif">{UI_STRINGS.experiencePanelTitle || "Experience"}</CardTitle>
         </div>
-        <CardDescription>{UI_STRINGS.experiencePanelDescription || "Track your character's progression."}</CardDescription>
+        <CardDescription>{UI_STRINGS.experiencePanelDescription || "Track your character's progression and current experience points."}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 pt-4">
         <div>
           <Label htmlFor="current-xp" className="text-sm font-medium block w-full text-center mb-1.5">
-            {UI_STRINGS.experiencePanelCurrentXpLabel || "Current XP"}
+            {mainLabelPart}
+            {xpSubLabelPart && <span className="text-xs text-muted-foreground ml-1">{xpSubLabelPart}</span>}
           </Label>
           <div className="flex justify-center">
             <NumberSpinnerInput
