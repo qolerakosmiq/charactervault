@@ -22,7 +22,7 @@ import {
   getRaceSkillPointsBonusPerLevel,
   ABILITY_ORDER_INTERNAL,
   calculateFeatEffects,
-  calculateLevelFromXp // Import the new function
+  calculateLevelFromXp
 } from '@/types/character';
 import {
   getBab,
@@ -57,7 +57,7 @@ import { LanguagesPanel, type LanguagesPanelProps } from '@/components/form-sect
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 import { ConditionsPanel, type ConditionsPanelProps } from '@/components/form-sections/ConditionsPanel';
-import { ExperiencePanel, type ExperiencePanelProps } from '@/components/form-sections/ExperiencePanel';
+import { ExperiencePanel, type ExperiencePanelData as ExperiencePanelDataType } from '@/components/form-sections/ExperiencePanel'; // Renamed import
 
 import { Loader2 } from 'lucide-react';
 
@@ -766,7 +766,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     };
   }, [character]);
 
-  const experiencePanelData = React.useMemo<ExperiencePanelData | undefined>(() => {
+  const experiencePanelData = React.useMemo<ExperiencePanelDataType | undefined>(() => {
     if (!character) return undefined;
     return {
       currentXp: character.experiencePoints || 0,
@@ -915,8 +915,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           />
         )}
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 space-y-8"> {/* Left column for AC and XP */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="space-y-8"> {/* Left column for AC and XP */}
             {acData && <ArmorClassPanel acData={acData} onCharacterUpdate={handleCharacterFieldUpdate as any} onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}/>}
             
             {experiencePanelData && translations.XP_TABLE && (
@@ -929,7 +929,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             )}
           </div>
           
-          <div className="md:col-span-1"> {/* Right column for Health Panel */}
+          <div> {/* Right column for Health Panel */}
             {healthPanelData && (
               <HealthPanel
                 healthData={healthPanelData}
