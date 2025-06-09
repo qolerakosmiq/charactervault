@@ -37,7 +37,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
 
   const [localHp, setLocalHp] = useDebouncedFormField(
     healthData.hp,
-    (value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp + (healthData.temporaryHp || 0) )),
+    (value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp + (localTemporaryHp || 0) )),
     DEBOUNCE_DELAY_HEALTH
   );
   const [localBaseMaxHp, setLocalBaseMaxHp] = useDebouncedFormField(
@@ -106,7 +106,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
   const currentHpBarWidthPercentage = (actualCurrentHpForBar / effectiveTotalHpForBar) * 100;
   const nonlethalDamageBarWidthPercentage = (localNonlethalDamage / effectiveTotalHpForBar) * 100;
 
-  const healthBarIndicatorColor = "bg-emerald-600"; // Always green
+  const healthBarIndicatorColor = "bg-emerald-600";
 
 
   // Status Calculation
@@ -169,7 +169,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
             />
             {localNonlethalDamage > 0 && (
               <div
-                className="absolute top-0 right-0 h-full bg-gradient-to-l from-red-800/70 to-transparent rounded-full z-30 transition-all duration-300 ease-out"
+                className="absolute top-0 right-0 h-full bg-destructive/70 rounded-full z-30 transition-all duration-300 ease-out"
                 style={{ width: `${Math.min(nonlethalDamageBarWidthPercentage, 100)}%` }}
               />
             )}
@@ -242,6 +242,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                 buttonClassName="h-10 w-10"
             />
           </div>
+           {/* Missing Hit Points display has been moved below */}
         </div>
         
         <Separator className="my-2" />
@@ -310,3 +311,5 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
 
 HealthPanel.displayName = 'HealthPanel';
 
+
+    
