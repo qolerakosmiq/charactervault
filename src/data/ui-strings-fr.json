@@ -249,6 +249,7 @@
     "healthPanelNonlethalDamageLabel": "Dégâts non létaux",
     "healthPanelTemporaryHitPointsLabel": "Points de vie temporaires",
     "healthPanelMaxHpLabel": "Points de vie maximum",
+    "healthPanelMissingHpLabel": "Points de vie manquants",
     "healthPanelBaseMaxHpLabel": "Points de vie de base",
     "healthPanelAbilityModLabel": "Modificateur de caractéristique",
     "healthPanelMiscModLabel": "Modificateur divers",
@@ -423,4 +424,5 @@
     "infoDialogUnknownFeatSource": "Don inconnu"
   }
 }
+    
     

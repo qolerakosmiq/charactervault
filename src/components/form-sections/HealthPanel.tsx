@@ -6,7 +6,7 @@ import type { Character, AbilityScores } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Progress } from '@/components/ui/progress'; // Added Progress import
+import { Progress } from '@/components/ui/progress';
 import { Heart, Activity, Loader2 } from 'lucide-react';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -60,7 +60,6 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
   );
 
   React.useEffect(() => {
-    // Ensure current HP does not exceed max HP (including temp HP for the cap)
     const currentMaxWithTemp = calculatedMaxHp + localTemporaryHp;
     if(localHp > currentMaxWithTemp) {
         setLocalHp(currentMaxWithTemp);
@@ -98,12 +97,14 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
   const valueForPercentageBar = Math.min(localHp, calculatedMaxHp);
   const hpPercentage = calculatedMaxHp > 0 ? (valueForPercentageBar / calculatedMaxHp) * 100 : 0;
 
-  let progressBarColorClass = 'bg-emerald-600'; // Default to green
+  let progressBarColorClass = 'bg-emerald-600';
   if (hpPercentage < 25) {
     progressBarColorClass = 'bg-destructive';
   } else if (hpPercentage <= 75) {
     progressBarColorClass = 'bg-amber-500';
   }
+  
+  const missingHp = calculatedMaxHp - localHp;
 
 
   return (
@@ -172,16 +173,26 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
         
         <Progress
           value={Math.max(0, Math.min(hpPercentage, 100))}
-          className="w-full h-3 my-4" // Added my-4 for spacing
+          className="w-full h-3 my-4" 
           indicatorClassName={progressBarColorClass}
         />
         
         <div>
-            <div className="text-center mb-3">
-                <Label className="text-sm font-medium text-muted-foreground">
-                    {UI_STRINGS.healthPanelMaxHpLabel || "Maximum Hit Points"}
-                </Label>
-                <p className="text-2xl font-bold text-accent">{calculatedMaxHp}</p>
+            <div className="grid grid-cols-2 gap-x-4 text-center mb-3">
+                <div>
+                    <Label className="text-sm font-medium text-muted-foreground">
+                        {UI_STRINGS.healthPanelMaxHpLabel || "Maximum Hit Points"}
+                    </Label>
+                    <p className="text-2xl font-bold text-muted-foreground">{calculatedMaxHp}</p>
+                </div>
+                <div>
+                    <Label className="text-sm font-medium text-muted-foreground">
+                        {UI_STRINGS.healthPanelMissingHpLabel || "Missing Hit Points"}
+                    </Label>
+                    <p className={cn("text-2xl font-bold", missingHp > 0 ? "text-destructive" : "text-muted-foreground")}>
+                        {missingHp}
+                    </p>
+                </div>
             </div>
 
             <div className="space-y-2 text-sm">
@@ -230,3 +241,6 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
 };
 
 HealthPanel.displayName = 'HealthPanel';
+
+
+    
