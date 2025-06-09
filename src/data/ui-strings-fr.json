@@ -136,6 +136,7 @@
     "abilityScoreSourceFeatsGroupLabel": "Dons",
     "abilityScoreSourceRace": "Race ({raceLabel})",
     "abilityScoreSourceAging": "Vieillissement ({categoryName})",
+    "abilityScoreSourceMonkWisdom": "Sagesse du Moine",
     "rollerDialogTitle": "Lancer les caractéristiques initiales",
     "rollerDialogTitleLoading": "Lancer les caractéristiques initiales",
     "rollerDialogDescPart1": "Lancez 4d6 (gardez les 3 meilleurs",
@@ -242,6 +243,7 @@
     "armorClassFlatFootedLabel": "Pris au dépourvu",
     "armorClassTempModifierLabel": "Modificateur temporaire",
     "acBreakdownCalculatedMiscLabel": "Modificateur divers",
+    "acBreakdownMiscFeatModifierLabel": "Modificateur Divers (Dons)",
     "acBreakdownBaseLabel": "Base",
     "acBreakdownArmorBonusLabel": "Bonus d'armure",
     "acBreakdownShieldBonusLabel": "Bonus de bouclier",
@@ -451,4 +453,5 @@
     "conditionVsDesignatedOpponent": "contre Adversaire Désigné"
   }
 }
+    
     

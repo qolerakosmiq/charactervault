@@ -52,7 +52,7 @@
     "infoDialogTitleScoreCalculation": "{abilityName} Score Calculation",
     "infoDialogTitleModifierBreakdown": "{skillName} Modifier Breakdown",
     "infoDialogTitleResistanceBreakdown": "{resistanceName} Resistance Breakdown",
-    "infoDialogTitleAcBreakdown": "Armor Class Breakdown ({acType})",
+    "infoDialogTitleAcBreakdown": "{acType} Armor Class Breakdown",
     "infoDialogTitleBabBreakdown": "Base Attack Bonus Breakdown",
     "infoDialogTitleInitiativeBreakdown": "Initiative Breakdown",
     "infoDialogTitleGrappleModifierBreakdown": "Grapple Modifier Breakdown",
@@ -136,6 +136,7 @@
     "abilityScoreSourceFeatsGroupLabel": "Feats",
     "abilityScoreSourceRace": "Race ({raceLabel})",
     "abilityScoreSourceAging": "Aging ({categoryName})",
+    "abilityScoreSourceMonkWisdom": "Monk Wisdom",
     "rollerDialogTitle": "Roll Initial Ability Scores",
     "rollerDialogTitleLoading": "Roll Initial Ability Scores",
     "rollerDialogDescPart1": "Roll 4d6 (drop lowest",
@@ -242,6 +243,7 @@
     "armorClassFlatFootedLabel": "Flat-Footed",
     "armorClassTempModifierLabel": "Temporary Modifier",
     "acBreakdownCalculatedMiscLabel": "Misc Modifier",
+    "acBreakdownMiscFeatModifierLabel": "Misc Modifier (Feats)",
     "acBreakdownBaseLabel": "Base",
     "acBreakdownArmorBonusLabel": "Armor Bonus",
     "acBreakdownShieldBonusLabel": "Shield Bonus",
@@ -451,4 +453,5 @@
     "conditionVsDesignatedOpponent": "vs. Designated Opponent"
   }
 }
+    
     
