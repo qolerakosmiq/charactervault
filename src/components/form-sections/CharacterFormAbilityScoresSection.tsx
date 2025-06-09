@@ -153,7 +153,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
             {abilityKeys.map(ability => {
               const [baseScoreValue, setBaseScoreValue] = debouncedStates[ability];
-              const [tempCustomModValue, setTempCustomModValue] = debouncedStates[`${ability}TempMod`];
+              const [tempCustomModValue, setTempCustomModValue] = debouncedStates[`${key}TempMod`];
 
               const actualScoreData = detailedAbilityScores ? detailedAbilityScores[ability] : null;
               const displayTotalScore = actualScoreData 
@@ -179,7 +179,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   </Label>
 
                   <div className="flex items-center justify-center space-x-1 mb-1">
-                    <span className="text-3xl font-bold text-accent">{displayTotalScore}</span>
+                    <span className="text-xl font-bold text-accent">{displayTotalScore}</span>
                     <span className="text-xl text-accent">({displayModifier >= 0 ? '+' : ''}{displayModifier})</span>
                     {actualScoreData && (
                        <Button
