@@ -38,13 +38,13 @@ export const MaxHpBreakdownContentDisplay = ({
   if (miscModifierValue !== 0 && aggregatedFeatEffects.hpBonusSources && aggregatedFeatEffects.hpBonusSources.length > 0) {
     const activeFeatSources = aggregatedFeatEffects.hpBonusSources
       .filter(source => !source.condition) // Assuming unconditional for now, or would need condition checking
-      .map(source => source.sourceFeatName);
+      .map(source => source.sourceFeatName)
+      .filter(name => !!name); // Filter out any undefined or empty names
     if (activeFeatSources.length > 0) {
       miscModifierSubLabel = `(${activeFeatSources.join(', ')})`;
     }
-  } else if (miscModifierValue !== 0) {
-    miscModifierSubLabel = `(${uiStrings.maxHpDialogFeatsSubLabel || "Feats/Effects"})`;
   }
+  // Removed the 'else if (miscModifierValue !== 0)' block to prevent generic fallback
 
 
   return (
