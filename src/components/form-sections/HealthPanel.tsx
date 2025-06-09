@@ -136,7 +136,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
           />
         </div>
         
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col items-center space-y-1">
                 <Label htmlFor="nonlethal-damage" className="text-xs text-muted-foreground">
                     {UI_STRINGS.healthPanelNonlethalDamageLabel || "Nonlethal Damage"}
@@ -147,7 +147,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                     onChange={setLocalNonlethalDamage}
                     min={0}
                      inputClassName={cn(
-                      "w-24 h-9 text-base",
+                      "w-20 h-9 text-base", // Changed w-24 to w-20
                       localNonlethalDamage > 0 ? "text-destructive" : ""
                     )}
                     buttonClassName="h-9 w-9"
@@ -163,7 +163,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                     onChange={setLocalTemporaryHp}
                     min={0}
                      inputClassName={cn(
-                      "w-24 h-9 text-base",
+                      "w-20 h-9 text-base", // Changed w-24 to w-20
                       localTemporaryHp > 0 ? "text-emerald-600" : ""
                     )}
                     buttonClassName="h-9 w-9"
@@ -243,4 +243,3 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
 };
 
 HealthPanel.displayName = 'HealthPanel';
-
