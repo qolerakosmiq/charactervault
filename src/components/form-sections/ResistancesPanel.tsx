@@ -330,7 +330,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                   <div className="md:col-span-1 space-y-3 border p-4 rounded-md">
                     <Label className="text-md font-medium">{UI_STRINGS.resistancesPanelAddCustomDrLabel}</Label>
                     <div className="w-full space-y-1">
-                        <Label htmlFor="form-dr-value" className="text-xs text-center block">{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
+                        <Label htmlFor="form-dr-value" className="text-sm">{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
                         <NumberSpinnerInput
                         id="form-dr-value"
                         value={newDrValue}
@@ -343,7 +343,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                         />
                     </div>
                     <div className="space-y-1">
-                          <Label htmlFor="form-dr-rule" className="text-xs">{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
+                          <Label htmlFor="form-dr-rule" className="text-sm">{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
                           <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
                               <SelectTrigger id="form-dr-rule" className="h-9 text-sm">
                                 <SelectValue />
@@ -358,7 +358,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                           </Select>
                       </div>
                     <div className="space-y-1">
-                        <Label htmlFor="form-dr-type" className="text-xs">{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
+                        <Label htmlFor="form-dr-type" className="text-sm">{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
                         <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
                             <SelectTrigger id="form-dr-type" className="h-9 text-sm">
                               <SelectValue placeholder="Select type..." />
