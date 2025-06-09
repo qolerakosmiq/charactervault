@@ -336,7 +336,7 @@ const HealthPanelComponent = React.memo(({
             <div className="flex items-center justify-between pt-1">
                 <Label className="font-semibold">{UI_STRINGS.healthPanelMaxHpLabel || "Maximum Hit Points"}</Label>
                  <div className="w-36 text-center flex items-center justify-center">
-                    <span className="text-2xl font-bold text-accent">
+                    <span className="text-xl font-bold text-accent">
                         {displayMaxHp}
                     </span>
                     <Button
