@@ -1,4 +1,5 @@
 
+
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -593,6 +594,7 @@ export function calculateFeatEffects(
     damageRollBonuses: [],
     acBonuses: [],
     hpBonus: 0,
+    hpBonusSources: [],
     initiativeBonus: 0,
     speedBonuses: [],
     resistanceBonuses: [],
@@ -657,6 +659,13 @@ export function calculateFeatEffects(
         case "hitPoints":
           const hpEffect = effect as HitPointsEffect;
           newAggregatedEffects.hpBonus += hpEffect.value;
+          if (definition.label) {
+            newAggregatedEffects.hpBonusSources.push({
+              sourceFeatName: definition.label,
+              value: hpEffect.value,
+              condition: hpEffect.condition,
+            });
+          }
           break;
         case "initiative":
           const initiativeEffect = effect as InitiativeEffect;
@@ -843,3 +852,4 @@ export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 export { SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 
 export * from './character-core';
+

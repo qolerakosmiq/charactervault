@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React from 'react';
@@ -27,23 +28,22 @@ export const MaxHpBreakdownContentDisplay = ({
 
   const baseHp = character.baseMaxHp || 0;
   const finalConstitutionModifier = calculateAbilityModifier(detailedAbilityScores.constitution.finalScore);
-  const miscModifier = aggregatedFeatEffects.hpBonus || 0;
+  const miscModifierValue = aggregatedFeatEffects.hpBonus || 0;
   const customModifier = character.customMaxHpModifier || 0;
   const totalMaxHp = character.maxHp;
 
   const conAbbr = abilityLabels.find(al => al.value === 'constitution')?.abbr || 'CON';
 
-  let miscModifierSources: string[] = [];
-  if (miscModifier !== 0) {
-     // Try to find specific feat sources for HP bonus
-     const hpFeatEffects = aggregatedFeatEffects.descriptiveNotes.filter(
-        note => note.sourceFeat && note.text.toLowerCase().includes("hit points")
-     );
-     if (hpFeatEffects.length > 0) {
-        miscModifierSources = hpFeatEffects.map(eff => eff.sourceFeat || uiStrings.infoDialogUnknownFeatSource || "Unknown Feat");
-     } else if (aggregatedFeatEffects.hpBonus !== 0) {
-        miscModifierSources = [uiStrings.maxHpDialogFeatsSubLabel || "Feats/Effects"];
-     }
+  let miscModifierSubLabel = "";
+  if (miscModifierValue !== 0 && aggregatedFeatEffects.hpBonusSources && aggregatedFeatEffects.hpBonusSources.length > 0) {
+    const activeFeatSources = aggregatedFeatEffects.hpBonusSources
+      .filter(source => !source.condition) // Assuming unconditional for now, or would need condition checking
+      .map(source => source.sourceFeatName);
+    if (activeFeatSources.length > 0) {
+      miscModifierSubLabel = `(${activeFeatSources.join(', ')})`;
+    }
+  } else if (miscModifierValue !== 0) {
+    miscModifierSubLabel = `(${uiStrings.maxHpDialogFeatsSubLabel || "Feats/Effects"})`;
   }
 
 
@@ -62,15 +62,15 @@ export const MaxHpBreakdownContentDisplay = ({
           </span>
           {renderModifierValue(finalConstitutionModifier)}
         </div>
-        {miscModifier !== 0 && (
+        {miscModifierValue !== 0 && (
             <div className="flex justify-between items-baseline">
                 <span className="flex-shrink-0 mr-2">
                     {uiStrings.maxHpDialogMiscModLabel || "Misc Modifier"}
-                    {miscModifierSources.length > 0 && (
-                        <span className="ml-1 text-xs text-muted-foreground">({miscModifierSources.join(', ')})</span>
+                    {miscModifierSubLabel && (
+                        <span className="ml-1 text-xs text-muted-foreground">{miscModifierSubLabel}</span>
                     )}
                 </span>
-                {renderModifierValue(miscModifier)}
+                {renderModifierValue(miscModifierValue)}
             </div>
         )}
         {customModifier !== 0 && (
@@ -81,10 +81,11 @@ export const MaxHpBreakdownContentDisplay = ({
         )}
         <div style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}><Separator /></div>
         <div className="flex justify-between text-base">
-          <span className="font-semibold">{uiStrings.maxHpDialogTotalLabel || "Total Maximum HP"}</span>
+          <span className="font-semibold">{uiStrings.maxHpDialogTotalLabel || "Maximum Hit Points"}</span>
           <span className="font-bold text-accent">{totalMaxHp}</span>
         </div>
       </div>
     </div>
   );
 };
+

@@ -529,6 +529,7 @@ export interface AggregatedFeatEffects {
   damageRollBonuses: DamageRollEffect[];
   acBonuses: ArmorClassEffect[];
   hpBonus: number; // Sum of all HP bonuses
+  hpBonusSources: Array<{ sourceFeatName: string; value: number; condition?: string }>; // Detailed sources
   initiativeBonus: number; // Sum of all initiative bonuses
   speedBonuses: SpeedEffect[];
   resistanceBonuses: ResistanceEffect[];
@@ -589,3 +590,4 @@ export interface PrerequisiteMessage {
   orderKey: string;
   originalText?: string;
 }
+
