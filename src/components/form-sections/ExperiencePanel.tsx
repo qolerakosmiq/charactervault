@@ -11,7 +11,7 @@ import { useI18n } from '@/context/I18nProvider';
 import type { XpDataEntry } from '@/i18n/i18n-data';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getXpRequiredForLevel } from '@/types/character'; // Import the utility function
+import { getXpRequiredForLevel } from '@/types/character';
 
 const DEBOUNCE_DELAY_XP = 500;
 
@@ -51,10 +51,10 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
   }, [currentLevel, xpTable, epicLevelXpIncrease]);
 
   const progressPercentage = React.useMemo(() => {
-    if (xpForNextLevel === Infinity || xpForNextLevel === xpForCurrentLevelStart) return 0; // Max level or error
+    if (xpForNextLevel === Infinity || xpForNextLevel === xpForCurrentLevelStart) return 0; 
     const progressInCurrentLevel = Math.max(0, localCurrentXp - xpForCurrentLevelStart);
     const xpNeededForThisLevel = xpForNextLevel - xpForCurrentLevelStart;
-    if (xpNeededForThisLevel <= 0) return 100; // Should not happen if XP table is correct
+    if (xpNeededForThisLevel <= 0) return 100; 
     return Math.min(100, (progressInCurrentLevel / xpNeededForThisLevel) * 100);
   }, [localCurrentXp, xpForCurrentLevelStart, xpForNextLevel]);
 
@@ -89,6 +89,8 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
     mainLabelPart = labelText.substring(0, match.index).trim();
     xpSubLabelPart = match[0]; 
   }
+  
+  const levelLabelFormat = UI_STRINGS.experiencePanelLevelLabelFormat || "Level {levelNumber}";
 
 
   return (
@@ -121,7 +123,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
         <div className="space-y-1.5">
           <Progress value={progressPercentage} className="h-3" indicatorClassName="bg-primary" />
           <div className="flex justify-between text-xs text-muted-foreground px-1">
-            <span>Lv. {currentLevel}</span>
+            <span>{levelLabelFormat.replace("{levelNumber}", String(currentLevel))}</span>
             {xpForNextLevel !== Infinity ? (
               <span>
                 {(UI_STRINGS.experiencePanelXpToLevelUpFormat || "{currentXp} / {xpForNextLevel} XP")
@@ -132,7 +134,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
             ) : (
               <span className="font-semibold text-primary">{UI_STRINGS.experiencePanelMaxLevel || "Max Level"}</span>
             )}
-            {xpForNextLevel !== Infinity && <span>Lv. {currentLevel + 1}</span>}
+            {xpForNextLevel !== Infinity && <span>{levelLabelFormat.replace("{levelNumber}", String(currentLevel + 1))}</span>}
           </div>
         </div>
       </CardContent>
@@ -141,3 +143,4 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
 };
 ExperiencePanelComponent.displayName = "ExperiencePanelComponent";
 export const ExperiencePanel = React.memo(ExperiencePanelComponent);
+

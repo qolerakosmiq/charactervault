@@ -439,11 +439,13 @@
     "conditionsPanelDescription": "Activez ou désactivez les effets conditionnels des dons et capacités de votre personnage.",
     "conditionsPanelTooltipSourcesLabel": "Sources :",
     "infoDialogUnknownFeatSource": "Don inconnu",
-    "experiencePanelTitle": "Expérience",
-    "experiencePanelDescription": "Suivez la progression et les points d'expérience actuels de votre personnage.",
-    "experiencePanelCurrentXpLabel": "Points d'Expérience Actuels (XP)",
-    "experiencePanelNextLevelLabel": "Niveau Suivant à",
+    "experiencePanelTitle": "Experience",
+    "experiencePanelDescription": "Track your character's progression and current experience points.",
+    "experiencePanelCurrentXpLabel": "Current Experience Points (XP)",
+    "experiencePanelLevelLabelFormat": "Level {levelNumber}",
+    "experiencePanelNextLevelLabel": "Next Level At",
     "experiencePanelXpToLevelUpFormat": "{currentXp} / {xpForNextLevel} XP",
-    "experiencePanelMaxLevel": "Niveau Max Atteint"
+    "experiencePanelMaxLevel": "Max Level Reached"
   }
 }
+

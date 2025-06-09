@@ -442,8 +442,10 @@
     "experiencePanelTitle": "Experience",
     "experiencePanelDescription": "Track your character's progression and current experience points.",
     "experiencePanelCurrentXpLabel": "Current Experience Points (XP)",
+    "experiencePanelLevelLabelFormat": "Level {levelNumber}",
     "experiencePanelNextLevelLabel": "Next Level At",
     "experiencePanelXpToLevelUpFormat": "{currentXp} / {xpForNextLevel} XP",
     "experiencePanelMaxLevel": "Max Level Reached"
   }
 }
+
