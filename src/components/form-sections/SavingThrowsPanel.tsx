@@ -139,7 +139,7 @@ const SavingThrowsPanelComponent = ({
         return (
           <span className="inline-flex items-baseline">
             {renderModifierValue(abilityMod)}
-            <Badge variant="outline" className="ml-1.5 text-xs font-normal px-1.5 py-0.5 whitespace-nowrap">{abilityAbbr}</Badge>
+            <Badge variant="outline" className="ml-1.5 text-sm font-normal px-1.5 py-0.5 whitespace-nowrap">{abilityAbbr}</Badge>
           </span>
         );
       },
