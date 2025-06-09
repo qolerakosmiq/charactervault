@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
+import { cn } from '@/lib/utils';
 
 const DEBOUNCE_DELAY = 400;
 
@@ -343,7 +344,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                         />
                     </div>
                     <div className="space-y-1">
-                          <Label htmlFor="form-dr-rule" className="text-sm">{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
+                          <Label htmlFor="form-dr-rule" className="text-sm inline-block w-full text-center">{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
                           <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
                               <SelectTrigger id="form-dr-rule" className="h-9 text-sm">
                                 <SelectValue />
@@ -358,7 +359,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                           </Select>
                       </div>
                     <div className="space-y-1">
-                        <Label htmlFor="form-dr-type" className="text-sm">{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
+                        <Label htmlFor="form-dr-type" className="text-sm inline-block w-full text-center">{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
                         <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
                             <SelectTrigger id="form-dr-type" className="h-9 text-sm">
                               <SelectValue placeholder="Select type..." />
@@ -390,7 +391,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                           <div key={dr.id} className="flex flex-col items-start justify-between p-2 border rounded-md bg-muted/5 text-sm">
                             <div className="flex items-baseline justify-between w-full">
                                 <div className="flex items-baseline gap-x-1.5 flex-wrap">
-                                  <span className="font-semibold">{getDrPrimaryNotation(dr)}</span>
+                                  <span className="font-semibold text-xl text-accent">{getDrPrimaryNotation(dr)}</span>
                                   <Badge variant="outline" className="text-xs font-normal px-1.5 py-0.5 whitespace-nowrap">
                                     {ruleLabel}
                                   </Badge>
@@ -404,7 +405,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                                 </Button>
                                 )}
                             </div>
-                            <div className="mt-1 text-xs text-muted-foreground w-full">
+                            <div className="mt-1 text-sm text-muted-foreground w-full">
                                 {getDrRuleDescription(dr)}
                             </div>
                           </div>
@@ -427,5 +428,3 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
 ResistancesPanelComponent.displayName = 'ResistancesPanelComponent';
 export const ResistancesPanel = React.memo(ResistancesPanelComponent);
 
-
-    
