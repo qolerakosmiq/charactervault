@@ -390,12 +390,12 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                         return (
                           <div key={dr.id} className="flex flex-col items-start justify-between p-2 border rounded-md bg-muted/5 text-sm">
                             <div className="flex items-baseline justify-between w-full">
-                                <div className="flex items-baseline gap-x-1.5 flex-wrap">
+                                <div className="flex items-baseline gap-x-1 flex-wrap">
                                   <span className="font-semibold text-xl text-accent">{getDrPrimaryNotation(dr)}</span>
-                                  <Badge variant="outline" className="text-xs font-normal px-1.5 py-0.5 whitespace-nowrap">
-                                    {ruleLabel}
-                                  </Badge>
-                                  {dr.isGranted && dr.source && (
+                                  <Badge variant="outline" className="text-sm font-normal h-5 mr-1 whitespace-nowrap">
+                                     {ruleLabel}
+                                   </Badge>
+                                   {dr.isGranted && dr.source && (
                                     <Badge variant="secondary" className="text-xs whitespace-nowrap">{dr.source}</Badge>
                                   )}
                                 </div>
