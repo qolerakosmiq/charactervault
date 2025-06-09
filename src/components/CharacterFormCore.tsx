@@ -127,7 +127,7 @@ function createBaseCharacterData(
       hp: initialMaxHp, 
       maxHp: initialMaxHp,
       baseMaxHp: initialBaseMaxHp,
-      miscMaxHpModifier: 0,
+      customMaxHpModifier: 0,
       nonlethalDamage: 0,
       temporaryHp: 0,
       numberOfWounds: 0,
@@ -149,7 +149,7 @@ function createBaseCharacterData(
 }
 
 
-export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps) => {
+const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
   const {
     customFeatDefinitions: globalCustomFeatDefinitionsFromStore,
@@ -303,7 +303,7 @@ export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps)
 
       const conMod = calculateAbilityModifier(detailedScores.constitution.finalScore);
       const featHpBonus = aggFeats.hpBonus || 0;
-      const newMaxHp = (character.baseMaxHp || 0) + conMod + (character.miscMaxHpModifier || 0) + featHpBonus;
+      const newMaxHp = (character.baseMaxHp || 0) + conMod + (character.customMaxHpModifier || 0) + featHpBonus;
       
       if(character.maxHp !== newMaxHp || character.hp > newMaxHp) {
         setCharacter(prev => {
@@ -395,7 +395,7 @@ export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps)
      setCharacter(prev => prev ? ({ ...prev, [field as keyof Character]: value }) : null);
   }, []);
 
-  const handleHealthFieldChange = React.useCallback((field: keyof Pick<Character, 'hp' | 'baseMaxHp' | 'miscMaxHpModifier' | 'nonlethalDamage' | 'temporaryHp' | 'numberOfWounds'>, value: number) => {
+  const handleHealthFieldChange = React.useCallback((field: keyof Pick<Character, 'hp' | 'baseMaxHp' | 'customMaxHpModifier' | 'nonlethalDamage' | 'temporaryHp' | 'numberOfWounds'>, value: number) => {
     setCharacter(prev => prev ? ({ ...prev, [field]: value }) : null);
   }, []);
 
@@ -710,8 +710,8 @@ export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps)
     if (!character || !detailedAbilityScores || !aggregatedFeatEffects) return 0;
     const conMod = calculateAbilityModifier(detailedAbilityScores.constitution.finalScore);
     const featHpBonus = aggregatedFeatEffects.hpBonus || 0;
-    return (character.baseMaxHp || 0) + conMod + (character.miscMaxHpModifier || 0) + featHpBonus;
-  }, [character?.baseMaxHp, character?.miscMaxHpModifier, detailedAbilityScores, aggregatedFeatEffects]);
+    return (character.baseMaxHp || 0) + conMod + (character.customMaxHpModifier || 0) + featHpBonus;
+  }, [character?.baseMaxHp, character?.customMaxHpModifier, detailedAbilityScores, aggregatedFeatEffects]);
 
   const finalConstitutionModifierForPanel = React.useMemo(() => {
     if (!detailedAbilityScores) return 0;
@@ -725,27 +725,27 @@ export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps)
       name: character.name, playerName: character.playerName, race: character.race, alignment: character.alignment,
       deity: character.deity, size: character.size, age: character.age, gender: character.gender, classes: character.classes,
     };
-  }, [character?.name, character?.playerName, character?.race, character?.alignment, character?.deity, character?.size, character?.age, character?.gender, character?.classes]);
+  }, [character]);
 
   const abilityScoresData = React.useMemo<CharacterFormAbilityScoresSectionProps['abilityScoresData'] | undefined>(() => {
     if (!character) return undefined;
     return {
       abilityScores: character.abilityScores, abilityScoreTempCustomModifiers: character.abilityScoreTempCustomModifiers,
     };
-  }, [character?.abilityScores, character?.abilityScoreTempCustomModifiers]);
+  }, [character]);
 
   const healthPanelData = React.useMemo<HealthPanelProps['healthData'] | undefined>(() => {
     if (!character) return undefined;
     return {
       hp: character.hp,
       baseMaxHp: character.baseMaxHp,
-      miscMaxHpModifier: character.miscMaxHpModifier,
+      customMaxHpModifier: character.customMaxHpModifier,
       nonlethalDamage: character.nonlethalDamage,
       temporaryHp: character.temporaryHp,
       numberOfWounds: character.numberOfWounds,
       abilityScores: character.abilityScores, 
     };
-  }, [character?.hp, character?.baseMaxHp, character?.miscMaxHpModifier, character?.nonlethalDamage, character?.temporaryHp, character?.numberOfWounds, character?.abilityScores]);
+  }, [character]);
 
   const storyAndAppearanceData = React.useMemo<CharacterFormStoryPortraitSectionProps['storyAndAppearanceData'] | undefined>(() => {
     if (!character) return undefined;
@@ -754,26 +754,26 @@ export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps)
       height: character.height, weight: character.weight, eyes: character.eyes, hair: character.hair, skin: character.skin,
       homeland: character.homeland,
     };
-  }, [character?.campaign, character?.personalStory, character?.portraitDataUrl, character?.height, character?.weight, character?.eyes, character?.hair, character?.skin, character?.homeland]);
+  }, [character]);
 
   const skillsData = React.useMemo<SkillsFormSectionProps['skillsData'] | undefined>(() => {
     if (!character) return undefined;
     return {
       skills: character.skills, classes: character.classes, race: character.race, size: character.size, feats: character.feats,
     };
-  }, [character?.skills, character?.classes, character?.race, character?.size, character?.feats]);
+  }, [character]);
   
   const featSectionData = React.useMemo<FeatsFormSectionProps['featSectionData'] | undefined>(() => {
     if (!character) return undefined;
     return {
       race: character.race, classes: character.classes, feats: character.feats, age: character.age, alignment: character.alignment,
     };
-  }, [character?.race, character?.classes, character?.feats, character?.age, character?.alignment]);
+  }, [character]);
 
   const savingThrowsData = React.useMemo<SavingThrowsPanelProps['savingThrowsData'] | undefined>(() => {
     if(!character) return undefined;
     return { savingThrows: character.savingThrows, classes: character.classes };
-  }, [character?.savingThrows, character?.classes]);
+  }, [character]);
 
   const acData = React.useMemo<ArmorClassPanelProps['acData'] | undefined>(() => {
     if(!character) return undefined;
@@ -781,7 +781,7 @@ export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps)
       abilityScores: character.abilityScores, size: character.size, armorBonus: character.armorBonus, shieldBonus: character.shieldBonus,
       naturalArmor: character.naturalArmor, deflectionBonus: character.deflectionBonus, dodgeBonus: character.dodgeBonus, acMiscModifier: character.acMiscModifier,
     };
-  }, [character?.abilityScores, character?.size, character?.armorBonus, character?.shieldBonus, character?.naturalArmor, character?.deflectionBonus, character?.dodgeBonus, character?.acMiscModifier]);
+  }, [character]);
 
   const speedData = React.useMemo<SpeedPanelProps['speedData'] | undefined>(() => {
     if(!character) return undefined;
@@ -791,10 +791,7 @@ export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps)
       armorSpeedPenalty_base: character.armorSpeedPenalty_base, armorSpeedPenalty_miscModifier: character.armorSpeedPenalty_miscModifier,
       loadSpeedPenalty_base: character.loadSpeedPenalty_base, loadSpeedPenalty_miscModifier: character.loadSpeedPenalty_miscModifier,
     };
-  }, [
-    character?.race, character?.size, character?.classes, character?.landSpeed, character?.burrowSpeed, character?.climbSpeed, character?.flySpeed, character?.swimSpeed,
-    character?.armorSpeedPenalty_base, character?.armorSpeedPenalty_miscModifier, character?.loadSpeedPenalty_base, character?.loadSpeedPenalty_miscModifier
-  ]);
+  }, [character]);
 
   const combatData = React.useMemo<CombatPanelProps['combatData'] | undefined>(() => {
     if(!character) return undefined;
@@ -804,10 +801,7 @@ export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps)
       grappleDamage_baseNotes: character.grappleDamage_baseNotes, grappleDamage_bonus: character.grappleDamage_bonus,
       grappleWeaponChoice: character.grappleWeaponChoice,
     };
-  }, [
-    character?.abilityScores, character?.classes, character?.size, character?.babMiscModifier, character?.initiativeMiscModifier,
-    character?.grappleMiscModifier, character?.grappleDamage_baseNotes, character?.grappleDamage_bonus, character?.grappleWeaponChoice
-  ]);
+  }, [character]);
 
   const resistancesData = React.useMemo<ResistancesPanelProps['characterData'] | undefined>(() => {
     if(!character) return undefined;
@@ -817,10 +811,7 @@ export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps)
       spellResistance: character.spellResistance, powerResistance: character.powerResistance,
       damageReduction: character.damageReduction, fortification: character.fortification,
     };
-  }, [
-    character?.fireResistance, character?.coldResistance, character?.acidResistance, character?.electricityResistance, character?.sonicResistance,
-    character?.spellResistance, character?.powerResistance, character?.damageReduction, character?.fortification
-  ]);
+  }, [character]);
 
   const languagesPanelData = React.useMemo<LanguagesPanelProps | undefined>(() => {
     if (!character || !detailedAbilityScores) return undefined;
@@ -831,7 +822,7 @@ export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps)
       characterIntelligenceScore: detailedAbilityScores.intelligence.finalScore,
       speakLanguageSkillRanks: character.skills.find(s => s.id === 'speak-language')?.ranks || 0,
     };
-  }, [character?.languages, character?.race, detailedAbilityScores, character?.skills, handleLanguagesChange]);
+  }, [character, detailedAbilityScores, handleLanguagesChange]);
 
   const conditionsPanelData = React.useMemo<ConditionsPanelProps | undefined>(() => {
     if (!character || !allAvailableFeatDefinitions) return undefined;
@@ -840,7 +831,7 @@ export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps)
         allFeatDefinitions: allAvailableFeatDefinitions,
         onConditionToggle: handleConditionToggle,
     };
-  }, [character?.feats, allAvailableFeatDefinitions, handleConditionToggle]);
+  }, [character, allAvailableFeatDefinitions, handleConditionToggle]);
 
 
   if (translationsLoading || !character || !translations || !detailedAbilityScores || !aggregatedFeatEffects || !coreInfoData) {
@@ -876,7 +867,7 @@ export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps)
           />
         )}
 
-        {abilityScoresData && (
+        {abilityScoresData && detailedAbilityScores && (
           <CharacterFormAbilityScoresSection
             abilityScoresData={abilityScoresData}
             detailedAbilityScores={detailedAbilityScores}
@@ -887,7 +878,7 @@ export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps)
           />
         )}
         
-        {savingThrowsData && (
+        {savingThrowsData && aggregatedFeatEffects && (
           <SavingThrowsPanel
               savingThrowsData={savingThrowsData}
               abilityScores={actualAbilityScoresForSavesAndSkills}
@@ -959,7 +950,7 @@ export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps)
           />
         )}
 
-        {skillsData && (
+        {skillsData && aggregatedFeatEffects && (
           <SkillsFormSection
             skillsData={skillsData}
             actualAbilityScores={actualAbilityScoresForSavesAndSkills}
@@ -1035,6 +1026,8 @@ export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps)
       />
     </>
   );
-});
-CharacterFormCore.displayName = "CharacterFormCore";
+};
+CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
+export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
     
+

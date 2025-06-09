@@ -18,7 +18,7 @@ import { Progress } from '@/components/ui/progress';
 const DEBOUNCE_DELAY_HEALTH = 400;
 
 export type HealthPanelData = Pick<Character, 
-  'hp' | 'baseMaxHp' | 'miscMaxHpModifier' | 
+  'hp' | 'baseMaxHp' | 'customMaxHpModifier' | 
   'nonlethalDamage' | 'temporaryHp' | 'abilityScores' | 'numberOfWounds'
 >;
 
@@ -27,7 +27,7 @@ export interface HealthPanelProps {
   calculatedMaxHp: number; 
   finalConstitutionModifier: number;
   onCharacterUpdate: (
-    field: keyof Pick<Character, 'hp' | 'baseMaxHp' | 'miscMaxHpModifier' | 'nonlethalDamage' | 'temporaryHp' | 'numberOfWounds'>, 
+    field: keyof Pick<Character, 'hp' | 'baseMaxHp' | 'customMaxHpModifier' | 'nonlethalDamage' | 'temporaryHp' | 'numberOfWounds'>, 
     value: number
   ) => void;
 }
@@ -45,9 +45,9 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({ healthData, calculat
     (value) => onCharacterUpdate('baseMaxHp', value),
     DEBOUNCE_DELAY_HEALTH
   );
-  const [localMiscMaxHpModifier, setLocalMiscMaxHpModifier] = useDebouncedFormField(
-    healthData.miscMaxHpModifier,
-    (value) => onCharacterUpdate('miscMaxHpModifier', value),
+  const [localCustomMaxHpModifier, setLocalCustomMaxHpModifier] = useDebouncedFormField(
+    healthData.customMaxHpModifier,
+    (value) => onCharacterUpdate('customMaxHpModifier', value),
     DEBOUNCE_DELAY_HEALTH
   );
   const [localNonlethalDamage, setLocalNonlethalDamage] = useDebouncedFormField(
@@ -181,7 +181,7 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({ healthData, calculat
               {localHp} / {calculatedMaxHp} {UI_STRINGS.healthBarLabelHitPoints || "Hit Points"}
               {localTemporaryHp > 0 && ` (+${localTemporaryHp} ${UI_STRINGS.healthBarLabelTemporary || "Temporary"})`}
             </span>
-            {localNonlethalDamage > 0 && <span>{localNonlethalDamage} {UI_STRINGS.healthBarLabelNonlethal || "Non-létaux"}</span>}
+            {localNonlethalDamage > 0 && <span>{localNonlethalDamage} {UI_STRINGS.healthBarLabelNonlethal || "Nonlethal"}</span>}
           </div>
         </div>
 
@@ -262,9 +262,7 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({ healthData, calculat
           </div>
         </div>
         
-        <Separator className="my-2" />
-            
-        <div className="space-y-2 text-sm">
+        <div className="space-y-2 text-sm mt-4">
             <div className="flex items-center justify-between">
                 <Label htmlFor="base-max-hp">{UI_STRINGS.healthPanelBaseMaxHpLabel || "Base Hit Points"}</Label>
                 <div className="w-36 flex justify-center">
@@ -284,18 +282,18 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({ healthData, calculat
                     <span className="text-xs text-muted-foreground ml-1">({conAbbr})</span>
                 </Label>
                  <div className="w-36 text-center">
-                    <span className={cn("font-semibold", finalConstitutionModifier >= 0 ? "text-emerald-600" : "text-destructive")}>
+                    <span className={cn("font-semibold", finalConstitutionModifier >= 0 ? "text-emerald-600" : "text-destructive", "font-bold")}>
                         {finalConstitutionModifier >= 0 ? `+${finalConstitutionModifier}` : finalConstitutionModifier}
                     </span>
                 </div>
             </div>
             <div className="flex items-center justify-between">
-                <Label htmlFor="misc-max-hp-mod">{UI_STRINGS.healthPanelMiscModLabel || "Misc Modifier"}</Label>
+                <Label htmlFor="custom-max-hp-mod">{UI_STRINGS.healthPanelCustomModLabel || "Custom Modifier"}</Label>
                 <div className="w-36 flex justify-center">
                     <NumberSpinnerInput
-                        id="misc-max-hp-mod"
-                        value={localMiscMaxHpModifier}
-                        onChange={setLocalMiscMaxHpModifier}
+                        id="custom-max-hp-mod"
+                        value={localCustomMaxHpModifier}
+                        onChange={setLocalCustomMaxHpModifier}
                         inputClassName="w-20 h-8"
                         buttonClassName="h-8 w-8"
                     />
@@ -327,3 +325,4 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({ healthData, calculat
 };
 HealthPanelComponent.displayName = 'HealthPanelComponent';
 export const HealthPanel = React.memo(HealthPanelComponent);
+

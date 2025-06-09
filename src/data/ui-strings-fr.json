@@ -70,11 +70,10 @@
     "infoDialogSynergyBonusLabel": "Bonus de synergie",
     "infoDialogFeatBonusLabel": "Bonus de don",
     "infoDialogRacialBonusLabel": "Bonus racial",
-    "infoDialogMiscModifierLabel": "Modificateur divers",
+    "infoDialogCustomModifierLabel": "Modificateur personnalisé",
     "infoDialogTotalBonusLabel": "Bonus total",
     "infoDialogTotalLabel": "Total",
     "infoDialogBaseValueLabel": "Valeur de base",
-    "infoDialogCustomModifierLabel": "Modificateur divers",
     "infoDialogTotalResistanceLabel": "Résistance totale",
     "infoDialogSpeedBaseRaceLabel": "Base ({raceName})",
     "infoDialogSpeedMiscModifierLabel": "Modificateur divers",
@@ -235,7 +234,6 @@
     "armorClassTouchLabel": "Contact",
     "armorClassFlatFootedLabel": "Pris au dépourvu",
     "armorClassTempModifierLabel": "Modificateur temporaire",
-    "armorClassMiscModifierLabel": "Modificateur divers",
     "acBreakdownCalculatedMiscLabel": "Modificateur divers",
     "acBreakdownBaseLabel": "Base",
     "acBreakdownArmorBonusLabel": "Bonus d'armure",
@@ -253,7 +251,7 @@
     "healthPanelMissingHpLabel": "Points de vie manquants",
     "healthPanelBaseMaxHpLabel": "Points de vie de base",
     "healthPanelAbilityModLabel": "Modificateur de caractéristique",
-    "healthPanelMiscModLabel": "Modificateur divers",
+    "healthPanelCustomModLabel": "Modificateur personnalisé",
     "healthPanelStatusLabel": "Statut :",
     "healthStatusNormal": "Normal",
     "healthStatusStaggered": "Affaibli",
@@ -441,3 +439,4 @@
     
     
     
+

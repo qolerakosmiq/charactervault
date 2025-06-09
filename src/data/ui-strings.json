@@ -70,11 +70,10 @@
     "infoDialogSynergyBonusLabel": "Synergy Bonus",
     "infoDialogFeatBonusLabel": "Feat Bonus",
     "infoDialogRacialBonusLabel": "Racial Bonus",
-    "infoDialogMiscModifierLabel": "Misc Modifier",
+    "infoDialogCustomModifierLabel": "Custom Modifier",
     "infoDialogTotalBonusLabel": "Total Bonus",
     "infoDialogTotalLabel": "Total",
     "infoDialogBaseValueLabel": "Base Value",
-    "infoDialogCustomModifierLabel": "Misc Modifier",
     "infoDialogTotalResistanceLabel": "Total Resistance",
     "infoDialogSpeedBaseRaceLabel": "Base ({raceName})",
     "infoDialogSpeedMiscModifierLabel": "Misc Modifier",
@@ -235,7 +234,6 @@
     "armorClassTouchLabel": "Touch",
     "armorClassFlatFootedLabel": "Flat-Footed",
     "armorClassTempModifierLabel": "Temporary Modifier",
-    "armorClassMiscModifierLabel": "Misc Modifier",
     "acBreakdownCalculatedMiscLabel": "Misc Modifier",
     "acBreakdownBaseLabel": "Base",
     "acBreakdownArmorBonusLabel": "Armor Bonus",
@@ -253,7 +251,7 @@
     "healthPanelMissingHpLabel": "Missing Hit Points",
     "healthPanelBaseMaxHpLabel": "Base Hit Points",
     "healthPanelAbilityModLabel": "Ability Modifier",
-    "healthPanelMiscModLabel": "Misc Modifier",
+    "healthPanelCustomModLabel": "Custom Modifier",
     "healthPanelStatusLabel": "Status:",
     "healthStatusNormal": "Normal",
     "healthStatusStaggered": "Staggered",
@@ -261,9 +259,9 @@
     "healthStatusDisabled": "Disabled",
     "healthStatusDying": "Dying",
     "healthStatusDead": "Dead",
-    "hpLabel": "Hit Points",
-    "tempHpLabel": "Temporary",
-    "nonlethalDamageLabel": "Nonlethal",
+    "healthBarLabelHitPoints": "Hit Points",
+    "healthBarLabelTemporary": "Temporary",
+    "healthBarLabelNonlethal": "Nonlethal",
     "speedPanelTitle": "Movement Speeds",
     "speedPanelDescription": "Manage your character's various movement capabilities and penalties.",
     "speedPanelLoadingSpeeds": "Loading speed details...",
@@ -441,3 +439,4 @@
     
     
     
+

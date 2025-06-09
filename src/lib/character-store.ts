@@ -29,10 +29,10 @@ const FULL_CHARACTER_DEFAULTS: Omit<Character, 'id'> = {
   hp: 10,
   maxHp: 10,
   baseMaxHp: 10, 
-  miscMaxHpModifier: 0, 
+  customMaxHpModifier: 0, 
   nonlethalDamage: 0, 
   temporaryHp: 0, 
-  numberOfWounds: 0, // New field default
+  numberOfWounds: 0,
   armorBonus: 0,
   shieldBonus: 0,
   sizeModifierAC: 0,
@@ -107,10 +107,10 @@ function ensureCharacterDefaults(character: Partial<Character>): Character {
 
   // Ensure new health fields have defaults if not present
   hydratedCharacter.baseMaxHp = character.baseMaxHp ?? FULL_CHARACTER_DEFAULTS.baseMaxHp;
-  hydratedCharacter.miscMaxHpModifier = character.miscMaxHpModifier ?? FULL_CHARACTER_DEFAULTS.miscMaxHpModifier;
+  hydratedCharacter.customMaxHpModifier = character.customMaxHpModifier ?? FULL_CHARACTER_DEFAULTS.customMaxHpModifier;
   hydratedCharacter.nonlethalDamage = character.nonlethalDamage ?? FULL_CHARACTER_DEFAULTS.nonlethalDamage;
   hydratedCharacter.temporaryHp = character.temporaryHp ?? FULL_CHARACTER_DEFAULTS.temporaryHp;
-  hydratedCharacter.numberOfWounds = character.numberOfWounds ?? FULL_CHARACTER_DEFAULTS.numberOfWounds; // Ensure default
+  hydratedCharacter.numberOfWounds = character.numberOfWounds ?? FULL_CHARACTER_DEFAULTS.numberOfWounds;
   
   // Ensure all top-level keys from defaults are present
   for (const key of Object.keys(FULL_CHARACTER_DEFAULTS) as Array<keyof typeof FULL_CHARACTER_DEFAULTS>) {
@@ -216,3 +216,4 @@ export function removeCharacter(id: string): void {
   characters = characters.filter(c => c.id !== id);
   saveCharactersToStorage(characters);
 }
+
