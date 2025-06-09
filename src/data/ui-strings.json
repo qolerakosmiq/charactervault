@@ -431,8 +431,12 @@
     "conditionsPanelTitle": "Active Conditions",
     "conditionsPanelDescription": "Toggle conditional effects from your character's feats and abilities.",
     "conditionsPanelTooltipSourcesLabel": "Sources:",
-    "infoDialogUnknownFeatSource": "Unknown Feat"
+    "infoDialogUnknownFeatSource": "Unknown Feat",
+    "healthBarLabelHitPoints": "Hit Points",
+    "healthBarLabelTemporary": "Temporary",
+    "healthBarLabelNonlethal": "Nonlethal"
   }
 }
+    
     
     
