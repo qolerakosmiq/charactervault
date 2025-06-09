@@ -202,9 +202,9 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
         <Separator className="my-6" />
         
         {/* Inputs and Readouts */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
           <div className="space-y-1">
-            <Label htmlFor="current-hp-input" className="text-sm font-medium">
+            <Label htmlFor="current-hp-input" className="text-sm font-medium block w-full text-center">
               {UI_STRINGS.healthPanelCurrentHpLabel || "Current Hit Points"}
             </Label>
             <NumberSpinnerInput
@@ -223,7 +223,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor="nonlethal-damage-input" className="text-sm font-medium">
+            <Label htmlFor="nonlethal-damage-input" className="text-sm font-medium block w-full text-center">
                 {UI_STRINGS.healthPanelNonlethalDamageLabel || "Nonlethal Damage"}
             </Label>
             <NumberSpinnerInput
@@ -239,7 +239,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor="temporary-hp-input" className="text-sm font-medium">
+            <Label htmlFor="temporary-hp-input" className="text-sm font-medium block w-full text-center">
                 {UI_STRINGS.healthPanelTemporaryHitPointsLabel || "Temporary Hit Points"}
             </Label>
             <NumberSpinnerInput
@@ -254,14 +254,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                 buttonClassName="h-10 w-10"
             />
           </div>
-          <div className="space-y-1 text-center sm:text-left">
-            <Label className="text-sm font-medium">
-              {UI_STRINGS.healthPanelMissingHpLabel || "Missing Hit Points"}
-            </Label>
-            <p className="text-2xl font-bold text-muted-foreground h-10 flex items-center justify-center sm:justify-start">
-                {missingHp}
-            </p>
-          </div>
+          {/* Missing Hit Points is moved below */}
         </div>
         
         <Separator className="my-6" />
@@ -303,6 +296,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                     />
                 </div>
             </div>
+            <Separator className="my-2" />
             <div className="flex items-center justify-between pt-1">
                 <Label className="font-semibold">{UI_STRINGS.healthPanelMaxHpLabel || "Maximum Hit Points"}</Label>
                  <div className="w-36 text-center">
@@ -310,6 +304,16 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                         {calculatedMaxHp}
                     </span>
                 </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-medium">
+                {UI_STRINGS.healthPanelMissingHpLabel || "Missing Hit Points"}
+              </Label>
+              <div className="w-36 text-center">
+                <span className="text-lg font-bold text-muted-foreground">
+                    {missingHp}
+                </span>
+              </div>
             </div>
         </div>
 
@@ -320,5 +324,3 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
 
 HealthPanel.displayName = 'HealthPanel';
 
-
-    
