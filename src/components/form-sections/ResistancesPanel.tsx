@@ -249,7 +249,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
+                        className="h-6 w-6 text-muted-foreground hover:text-foreground"
                         onClick={() => handleTriggerResistanceInfoDialog(field)}
                       >
                         <Info className="h-4 w-4" />
@@ -300,7 +300,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
+                        className="h-6 w-6 text-muted-foreground hover:text-foreground"
                         onClick={() => handleTriggerResistanceInfoDialog(field)}
                       >
                         <Info className="h-4 w-4" />
