@@ -226,11 +226,11 @@ const CharacterFormAbilityScoresSectionComponent = ({
           </div>
            <p className="text-sm text-muted-foreground mt-4 pt-2 border-t border-border/30">
             <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.abilityScoresNote_prefix || "<strong>Note:</strong> The " }} />
-            <Badge variant="outline" className="text-xs font-normal px-1 py-0.5 align-baseline mx-0.5">
+            <Badge variant="outline" className="text-sm font-normal px-1 py-0.5 align-baseline mx-0.5">
               {UI_STRINGS.abilityScoresNote_badge0_text || "Temporary Modifier"}
             </Badge>
             {UI_STRINGS.abilityScoresNote_text_after_badge0 || " field adjusts the "}
-            <Badge variant="outline" className="text-xs font-normal px-1 py-0.5 align-baseline mx-0.5">
+            <Badge variant="outline" className="text-sm font-normal px-1 py-0.5 align-baseline mx-0.5">
               {UI_STRINGS.abilityScoresNote_badge1_text || "Base Score"}
             </Badge>
             {UI_STRINGS.abilityScoresNote_suffix || ", not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score."}
