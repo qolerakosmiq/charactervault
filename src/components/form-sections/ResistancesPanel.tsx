@@ -242,7 +242,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                       </span>
                     </div>
                     <div className="flex items-center justify-center">
-                      <p className="text-2xl font-bold text-accent">
+                      <p className="text-xl font-bold text-accent min-w-[40px] text-center">
                         {totalValue}
                       </p>
                       <Button
@@ -293,7 +293,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                         </span>
                       </div>
                     <div className="flex items-center justify-center">
-                      <p className="text-2xl font-bold text-accent">
+                      <p className="text-xl font-bold text-accent min-w-[40px] text-center">
                         {totalValue}
                       </p>
                        <Button
@@ -427,5 +427,3 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
 ResistancesPanelComponent.displayName = 'ResistancesPanelComponent';
 export const ResistancesPanel = React.memo(ResistancesPanelComponent);
 
-
-    
