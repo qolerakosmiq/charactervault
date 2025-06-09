@@ -52,7 +52,7 @@
     "infoDialogTitleScoreCalculation": "{abilityName} Score Calculation",
     "infoDialogTitleModifierBreakdown": "{skillName} Modifier Breakdown",
     "infoDialogTitleResistanceBreakdown": "{resistanceName} Resistance Breakdown",
-    "infoDialogTitleAcBreakdown": "{acType} AC Breakdown",
+    "infoDialogTitleAcBreakdown": "Armor Class Breakdown ({acType})",
     "infoDialogTitleBabBreakdown": "Base Attack Bonus Breakdown",
     "infoDialogTitleInitiativeBreakdown": "Initiative Breakdown",
     "infoDialogTitleGrappleModifierBreakdown": "Grapple Modifier Breakdown",
@@ -449,3 +449,4 @@
   }
 }
 
+    

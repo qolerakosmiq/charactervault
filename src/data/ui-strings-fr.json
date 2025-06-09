@@ -52,7 +52,7 @@
     "infoDialogTitleScoreCalculation": "Calcul de {abilityName}",
     "infoDialogTitleModifierBreakdown": "Détail du modificateur de {skillName}",
     "infoDialogTitleResistanceBreakdown": "Détail de la résistance à {resistanceName}",
-    "infoDialogTitleAcBreakdown": "Détail de la classe d'armure ({acType})",
+    "infoDialogTitleAcBreakdown": "Classe d'Armure - Détail ({acType})",
     "infoDialogTitleBabBreakdown": "Détail du bonus de base à l'attaque",
     "infoDialogTitleInitiativeBreakdown": "Détail de l'initiative",
     "infoDialogTitleGrappleModifierBreakdown": "Détail du modificateur de lutte",
@@ -438,7 +438,7 @@
     "conditionsPanelTitle": "Conditions Actives",
     "conditionsPanelDescription": "Activez ou désactivez les effets conditionnels des dons et capacités de votre personnage.",
     "conditionsPanelTooltipSourcesLabel": "Sources :",
-    "infoDialogUnknownFeatSource": "Don inconnu",
+    "infoDialogUnknownFeatSource": "Unknown Feat",
     "experiencePanelTitle": "Experience",
     "experiencePanelDescription": "Track your character's progression and current experience points.",
     "experiencePanelCurrentXpLabel": "Current Experience Points (XP)",
@@ -449,3 +449,4 @@
   }
 }
 
+    
