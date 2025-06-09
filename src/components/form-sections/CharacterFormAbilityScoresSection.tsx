@@ -153,7 +153,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
             {abilityKeys.map(ability => {
               const [baseScoreValue, setBaseScoreValue] = debouncedStates[ability];
-              const [tempCustomModValue, setTempCustomModValue] = debouncedStates[`${key}TempMod`];
+              const [tempCustomModValue, setTempCustomModValue] = debouncedStates[`${ability}TempMod`];
 
               const actualScoreData = detailedAbilityScores ? detailedAbilityScores[ability] : null;
               const displayTotalScore = actualScoreData 
