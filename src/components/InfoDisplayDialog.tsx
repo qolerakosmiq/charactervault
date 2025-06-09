@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare, ShieldOff, Weight, Zap, AlertTriangle, Heart, ShieldQuestion, Swords, Dices, Brain, UserCircle2, Palette, ScrollText, Languages as LanguagesIcon, Award, Backpack, Sparkles as SpellsIcon, Users as UsersIcon } from 'lucide-react';
+import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare, ShieldOff, Weight, Zap, AlertTriangle, Heart, ShieldQuestion, Swords, Dices, Brain, UserCircle2, Palette, ScrollText, Languages as LanguagesIcon, Award, Backpack, Sparkles as SpellsIcon, Users as UsersIcon, Shield } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
@@ -113,23 +113,23 @@ interface InfoDisplayDialogProps {
 
 const DIALOG_ICONS: Record<string, React.ElementType> = {
   race: UsersIcon,
-  class: Award, // Placeholder, could be specific class icons if available
-  alignmentSummary: ShieldQuestion, // Placeholder
-  deity: SparklesIcon, // Placeholder
+  class: Award, 
+  alignmentSummary: ShieldQuestion, 
+  deity: SparklesIcon, 
   abilityScoreBreakdown: Dices,
   skillModifierBreakdown: Brain,
-  resistanceBreakdown: ShieldCheck,
+  resistanceBreakdown: Shield, 
   acBreakdown: Shield,
   babBreakdown: Swords,
   initiativeBreakdown: Zap,
-  grappleModifierBreakdown: Swords, // Placeholder
-  grappleDamageBreakdown: Swords,  // Placeholder
+  grappleModifierBreakdown: Swords, 
+  grappleDamageBreakdown: Swords,  
   land: Wind, burrow: Shell, climb: MoveVertical, fly: Feather, swim: Waves,
   armorSpeedPenaltyBreakdown: ShieldOff,
   loadSpeedPenaltyBreakdown: Weight,
-  fortitude: Heart, // More thematic for Fortitude
-  reflex: Zap, // Good for Reflex
-  will: Brain, // Good for Will
+  fortitude: Heart, 
+  reflex: Zap, 
+  will: Brain, 
   maxHpBreakdown: Heart, 
   genericHtml: Info,
   error: AlertTriangle,
@@ -508,7 +508,6 @@ export function InfoDisplayDialog({
 
             if (aggregatedFeatEffectsProp?.acBonuses) {
                 aggregatedFeatEffectsProp.acBonuses.forEach(featEffect => {
-                    // Effects in aggregatedFeatEffectsProp are assumed to be active
                     let appliesToThisSpecificAcBreakdownView = false;
                     if (!featEffect.appliesToScope || featEffect.appliesToScope.length === 0) { appliesToThisSpecificAcBreakdownView = true; }
                     else {
@@ -523,11 +522,8 @@ export function InfoDisplayDialog({
                             bonusFromThisFeat = featEffect.value;
                         } else if (featEffect.value === "WIS" && detailedCharScoresForDialog) {
                             const wisModForAc = calculateAbilityModifier(detailedCharScoresForDialog.wisdom.finalScore);
-                             // Monk AC bonus from Wisdom is not applied if Wisdom modifier is negative
                             bonusFromThisFeat = featEffect.acType === "monk_wisdom" && wisModForAc < 0 ? 0 : wisModForAc;
                         }
-                        // Add similar checks for INT, CHA if they become AC sources in other feats
-
                         totalFeatBonusForThisType += bonusFromThisFeat;
                         if (featEffect.sourceFeat) {
                             featSourcesForThisType.push(featEffect.sourceFeat + (featEffect.condition ? ` (${UI_STRINGS[featEffect.condition as keyof typeof UI_STRINGS] || featEffect.condition})` : ''));
@@ -566,7 +562,6 @@ export function InfoDisplayDialog({
 
         if (aggregatedFeatEffectsProp?.acBonuses) {
             aggregatedFeatEffectsProp.acBonuses.forEach(featEffect => {
-                // Effects are assumed active
                 let appliesToThisSpecificAcBreakdownView = false;
                 if (!featEffect.appliesToScope || featEffect.appliesToScope.length === 0) { appliesToThisSpecificAcBreakdownView = true; }
                 else {
@@ -583,7 +578,6 @@ export function InfoDisplayDialog({
                         const wisModForAc = calculateAbilityModifier(detailedCharScoresForDialog.wisdom.finalScore);
                         bonusVal = featEffect.acType === "monk_wisdom" && wisModForAc < 0 ? 0 : wisModForAc;
                     }
-                    // Add INT, CHA checks if they become sources for AC
 
                     if (bonusVal !== 0) {
                         sumOfOtherFeatBonuses += bonusVal;
@@ -610,7 +604,6 @@ export function InfoDisplayDialog({
             details.push({ label: UI_STRINGS.armorClassTempModifierLabel || "Temporary Modifier", value: character.acMiscModifier });
         }
         
-        // Recalculate totalAC based on components that *should* apply to this specific AC type view
         let totalACValueForDialog = 10 + sizeModACVal;
         if (contentType.acType === 'Normal' || contentType.acType === 'Touch') {
             totalACValueForDialog += dexMod;
@@ -629,7 +622,7 @@ export function InfoDisplayDialog({
                 let featVal = 0;
                 if (aggregatedFeatEffectsProp?.acBonuses) {
                      aggregatedFeatEffectsProp.acBonuses.forEach(featEffect => {
-                         if (featEffect.acType === acItem.bonusType) { // And applies to this scope
+                         if (featEffect.acType === acItem.bonusType) { 
                             let effectAppliesToScope = false;
                             if (!featEffect.appliesToScope || featEffect.appliesToScope.length === 0) effectAppliesToScope = true;
                             else {
@@ -639,7 +632,6 @@ export function InfoDisplayDialog({
                             }
                             if(effectAppliesToScope){
                                 if(typeof featEffect.value === 'number') featVal += featEffect.value;
-                                // No WIS/INT/CHA to typed bonuses like armor/shield here.
                             }
                          }
                      });
@@ -670,7 +662,7 @@ export function InfoDisplayDialog({
               miscModifier: character.babMiscModifier || 0,
               totalBab: baseBabArrayVal.map(b => b + (character.babMiscModifier || 0)),
               characterClassLabel: DND_CLASSES.find(c => c.value === character.classes[0]?.className)?.label || character.classes[0]?.className,
-              featAttackBonus: 0, // This would come from aggregatedFeatEffects if needed
+              featAttackBonus: 0, 
             },
             uiStrings: UI_STRINGS
           })],
@@ -806,7 +798,6 @@ export function InfoDisplayDialog({
 
         if (aggregatedFeatEffectsProp?.savingThrowBonuses) {
           aggregatedFeatEffectsProp.savingThrowBonuses.forEach(effect => {
-            // Effects in aggregatedFeatEffectsProp are assumed to be active
             if (effect.save === currentSaveType || effect.save === "all") {
               let numericValueFromEffect = 0;
               if (typeof effect.value === 'number') {
@@ -815,7 +806,7 @@ export function InfoDisplayDialog({
               featComponents.push({
                 sourceFeat: effect.sourceFeat || UI_STRINGS.infoDialogUnknownFeatSource || 'Unknown Feat',
                 value: numericValueFromEffect,
-                condition: effect.condition, // Keep condition info for display if needed
+                condition: effect.condition, 
               });
               featBonusTotal += numericValueFromEffect;
             }
@@ -943,3 +934,4 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
+
