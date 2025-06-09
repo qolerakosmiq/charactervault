@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare, ShieldOff, Weight, Zap, AlertTriangle } from 'lucide-react';
+import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare, ShieldOff, Weight, Zap, AlertTriangle, Heart } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
@@ -27,7 +27,7 @@ import type {
   SpeedBreakdownDetails as SpeedBreakdownDetailsType,
   SpeedComponent,
   CharacterSizeObject,
-  DndRaceOption, DndClassOption, AbilityScores, AggregatedFeatEffects
+  DndRaceOption, DndClassOption, AbilityScores, AggregatedFeatEffects, DetailedAbilityScores
 } from '@/types/character';
 
 import {
@@ -66,6 +66,7 @@ import { GrappleDamageBreakdownContentDisplay } from './info-dialog-content/Grap
 import { SpeedBreakdownContentDisplay } from './info-dialog-content/SpeedBreakdownContentDisplay';
 import { SavingThrowBreakdownContentDisplay, type SavingThrowBreakdownDetails, type SavingThrowFeatComponent } from './info-dialog-content/SavingThrowBreakdownContentDisplay';
 import { GenericHtmlContentDisplay } from './info-dialog-content/GenericHtmlContentDisplay';
+import { MaxHpBreakdownContentDisplay } from './info-dialog-content/MaxHpBreakdownContentDisplay';
 
 
 export interface ResistanceBreakdownDetails {
@@ -107,6 +108,7 @@ interface InfoDisplayDialogProps {
   character: Character;
   contentType: InfoDialogContentType | null;
   aggregatedFeatEffects: AggregatedFeatEffects;
+  detailedAbilityScores: DetailedAbilityScores | null; // Added
 }
 
 const DIALOG_ICONS: Record<string, React.ElementType> = {
@@ -115,6 +117,7 @@ const DIALOG_ICONS: Record<string, React.ElementType> = {
   armorSpeedPenaltyBreakdown: ShieldOff,
   loadSpeedPenaltyBreakdown: Weight,
   fortitude: Zap, reflex: Zap, will: Zap,
+  maxHpBreakdown: Heart, // Added
   error: AlertTriangle,
   default: Info,
 };
@@ -126,6 +129,7 @@ export function InfoDisplayDialog({
   character,
   contentType,
   aggregatedFeatEffects: aggregatedFeatEffectsProp,
+  detailedAbilityScores: detailedAbilityScoresProp, // Added
 }: InfoDisplayDialogProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
   const { customFeatDefinitions, customSkillDefinitions } = useDefinitionsStore(state => ({
@@ -181,7 +185,7 @@ export function InfoDisplayDialog({
 
 
   const derivedData = React.useMemo((): DerivedDialogData | null => {
-    if (!isOpen || !contentType || !character || translationsLoading || !translations || !aggregatedFeatEffectsProp) {
+    if (!isOpen || !contentType || !character || translationsLoading || !translations || !aggregatedFeatEffectsProp || !detailedAbilityScoresProp) {
       return null;
     }
 
@@ -197,7 +201,7 @@ export function InfoDisplayDialog({
     let detailsListHeading: string = UI_STRINGS.infoDialogSectionHeadingDetails || "Details";
     let iconKey = "default";
 
-    const detailedCharScoresForDialog = calculateDetailedAbilityScores(character, aggregatedFeatEffectsProp, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, ABILITY_LABELS);
+    const detailedCharScoresForDialog = detailedAbilityScoresProp;
     const finalAbilityScores: AbilityScores = (ABILITY_ORDER_INTERNAL).reduce((acc, ability) => {
         acc[ability] = detailedCharScoresForDialog[ability].finalScore;
         return acc;
@@ -701,6 +705,23 @@ export function InfoDisplayDialog({
         };
         break;
       }
+      case 'maxHpBreakdown': { // Added case
+        iconKey = 'maxHpBreakdown';
+        data = {
+          title: UI_STRINGS.infoDialogTitleMaxHpBreakdown || "Maximum HP Breakdown",
+          content: [
+            <MaxHpBreakdownContentDisplay
+              key="max-hp-breakdown"
+              character={character}
+              detailedAbilityScores={detailedAbilityScoresProp}
+              aggregatedFeatEffects={aggregatedFeatEffectsProp}
+              uiStrings={UI_STRINGS}
+              abilityLabels={ABILITY_LABELS}
+            />
+          ],
+        };
+        break;
+      }
       case 'genericHtml':
         iconKey = 'genericHtml'; // This key needs to exist in DIALOG_ICONS or be handled by default
         data = { title: contentType.title, content: [GenericHtmlContentDisplay({htmlContent: contentType.content})] };
@@ -708,7 +729,7 @@ export function InfoDisplayDialog({
     }
     data.iconKey = iconKey;
     return data;
-  }, [isOpen, contentType, character, translationsLoading, translations, customFeatDefinitions, customSkillDefinitions, allCombinedFeatDefinitions, allCombinedSkillDefinitionsForDisplay, expandedItems, toggleExpanded, aggregatedFeatEffectsProp]);
+  }, [isOpen, contentType, character, translationsLoading, translations, customFeatDefinitions, customSkillDefinitions, allCombinedFeatDefinitions, allCombinedSkillDefinitionsForDisplay, expandedItems, toggleExpanded, aggregatedFeatEffectsProp, detailedAbilityScoresProp]);
 
 
   if (translationsLoading || !translations || !isOpen || !derivedData) {
@@ -783,4 +804,3 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
-

@@ -2,11 +2,12 @@
 'use client';
 
 import *as React from 'react';
-import type { Character, AbilityScores } from '@/types/character';
+import type { Character, AbilityScores, InfoDialogContentType } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Heart, Activity, Loader2 } from 'lucide-react';
+import { Heart, Activity, Loader2, Info } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
@@ -31,15 +32,17 @@ export interface HealthPanelProps {
     field: keyof Pick<Character, 'hp' | 'baseMaxHp' | 'customMaxHpModifier' | 'nonlethalDamage' | 'temporaryHp' | 'numberOfWounds'>, 
     value: number
   ) => void;
+  onOpenHealthInfoDialog: (contentType: InfoDialogContentType) => void;
 }
 
-const HealthPanelComponent: React.FC<HealthPanelProps> = ({ 
+const HealthPanelComponent = React.memo(({ 
   healthData, 
   calculatedMaxHp, 
   finalConstitutionModifier,
   calculatedMiscMaxHpBonus, 
-  onCharacterUpdate 
-}) => {
+  onCharacterUpdate,
+  onOpenHealthInfoDialog
+}: HealthPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const [localHp, setLocalHp] = useDebouncedFormField(
@@ -293,8 +296,9 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({
                  <div className="w-36 text-center">
                     <span className={cn(
                         "font-semibold font-bold",
-                        finalConstitutionModifier > 0 ? "text-emerald-600" : 
-                        finalConstitutionModifier < 0 ? "text-destructive" : "text-muted-foreground"
+                        finalConstitutionModifier === 0 && "text-muted-foreground",
+                        finalConstitutionModifier > 0 && "text-emerald-600", 
+                        finalConstitutionModifier < 0 && "text-destructive"
                     )}>
                         {finalConstitutionModifier >= 0 ? `+${finalConstitutionModifier}` : finalConstitutionModifier}
                     </span>
@@ -307,8 +311,9 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({
                  <div className="w-36 text-center">
                     <span className={cn(
                         "font-semibold font-bold", 
-                        calculatedMiscMaxHpBonus > 0 ? "text-emerald-600" : 
-                        calculatedMiscMaxHpBonus < 0 ? "text-destructive" : "text-muted-foreground"
+                        calculatedMiscMaxHpBonus === 0 && "text-muted-foreground",
+                        calculatedMiscMaxHpBonus > 0 && "text-emerald-600", 
+                        calculatedMiscMaxHpBonus < 0 && "text-destructive"
                     )}>
                         {calculatedMiscMaxHpBonus >= 0 ? `+${calculatedMiscMaxHpBonus}` : calculatedMiscMaxHpBonus}
                     </span>
@@ -329,10 +334,19 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({
             <Separator className="my-2" />
             <div className="flex items-center justify-between pt-1">
                 <Label className="font-semibold">{UI_STRINGS.healthPanelMaxHpLabel || "Maximum Hit Points"}</Label>
-                 <div className="w-36 text-center">
+                 <div className="w-36 text-center flex items-center justify-center">
                     <span className="text-2xl font-bold text-accent">
                         {displayMaxHp}
                     </span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
+                      onClick={() => onOpenHealthInfoDialog({ type: 'maxHpBreakdown' })}
+                    >
+                      <Info className="h-4 w-4" />
+                    </Button>
                 </div>
             </div>
             <div className="flex items-center justify-between">
@@ -349,7 +363,7 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({
       </CardContent>
     </Card>
   );
-};
+});
 HealthPanelComponent.displayName = 'HealthPanelComponent';
 export const HealthPanel = React.memo(HealthPanelComponent);
 

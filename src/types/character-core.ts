@@ -425,11 +425,11 @@ export interface Character {
   abilityScoreTempCustomModifiers: AbilityScores;
   hp: number;
   maxHp: number;
-  baseMaxHp: number; 
-  customMaxHpModifier: number; 
-  nonlethalDamage: number; 
-  temporaryHp: number; 
-  numberOfWounds?: number;
+  baseMaxHp: number;
+  customMaxHpModifier: number;
+  nonlethalDamage: number;
+  temporaryHp: number;
+  numberOfWounds: number;
   armorBonus: number;
   shieldBonus: number;
   sizeModifierAC: number;
@@ -495,6 +495,7 @@ export type InfoDialogContentType =
   | { type: 'armorSpeedPenaltyBreakdown' }
   | { type: 'loadSpeedPenaltyBreakdown' }
   | { type: 'savingThrowBreakdown'; saveType: SavingThrowType }
+  | { type: 'maxHpBreakdown' }
   | { type: 'genericHtml'; title: string; content: string };
 
 export interface SkillDefinitionForDisplay {
@@ -588,4 +589,3 @@ export interface PrerequisiteMessage {
   orderKey: string;
   originalText?: string;
 }
-

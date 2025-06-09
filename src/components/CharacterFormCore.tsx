@@ -656,6 +656,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const handleOpenResistanceInfoDialog = React.useCallback((resistanceField: ResistanceFieldKeySheet) => {
     openInfoDialog({ type: 'resistanceBreakdown', resistanceField });
   }, [openInfoDialog]);
+  
+  const handleOpenHealthInfoDialog = React.useCallback((contentType: InfoDialogContentType) => {
+    openInfoDialog(contentType);
+  }, [openInfoDialog]);
 
 
   const handleSubmit = React.useCallback((e: FormEvent) => {
@@ -907,6 +911,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
               finalConstitutionModifier={finalConstitutionModifierForPanel}
               calculatedMiscMaxHpBonus={calculatedMiscMaxHpBonusForPanel}
               onCharacterUpdate={handleHealthFieldChange}
+              onOpenHealthInfoDialog={handleOpenHealthInfoDialog}
             />
           )}
         </div>
@@ -1003,13 +1008,14 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         </div>
       </form>
 
-      {isInfoDialogOpen && activeInfoDialogType && character && aggregatedFeatEffects && (
+      {isInfoDialogOpen && activeInfoDialogType && character && aggregatedFeatEffects && detailedAbilityScores && (
         <InfoDisplayDialog
           isOpen={isInfoDialogOpen}
           onOpenChange={setIsInfoDialogOpen}
           character={character}
           contentType={activeInfoDialogType}
           aggregatedFeatEffects={aggregatedFeatEffects}
+          detailedAbilityScores={detailedAbilityScores}
         />
       )}
       <AddCustomSkillDialog
@@ -1035,4 +1041,3 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
     
-
