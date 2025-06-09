@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { Character, AbilityScores } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -9,7 +9,6 @@ import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Heart, Activity, Loader2 } from 'lucide-react';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
-import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
@@ -26,13 +25,14 @@ export type HealthPanelData = Pick<Character,
 export interface HealthPanelProps {
   healthData: HealthPanelData;
   calculatedMaxHp: number; 
+  finalConstitutionModifier: number;
   onCharacterUpdate: (
     field: keyof Pick<Character, 'hp' | 'baseMaxHp' | 'miscMaxHpModifier' | 'nonlethalDamage' | 'temporaryHp'>, 
     value: number
   ) => void;
 }
 
-const HealthPanelComponent = ({ healthData, calculatedMaxHp, onCharacterUpdate }: HealthPanelProps) => {
+const HealthPanelComponent = ({ healthData, calculatedMaxHp, finalConstitutionModifier, onCharacterUpdate }: HealthPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const [localHp, setLocalHp] = useDebouncedFormField(
@@ -62,7 +62,7 @@ const HealthPanelComponent = ({ healthData, calculatedMaxHp, onCharacterUpdate }
   );
 
   React.useEffect(() => {
-    if (localHp > calculatedMaxHp) {
+    if (localHp > calculatedMaxHp && calculatedMaxHp > 0) { // Added check for calculatedMaxHp > 0
         setLocalHp(calculatedMaxHp);
     }
   }, [calculatedMaxHp, localHp, setLocalHp]);
@@ -92,7 +92,6 @@ const HealthPanelComponent = ({ healthData, calculatedMaxHp, onCharacterUpdate }
   }
 
   const { UI_STRINGS, ABILITY_LABELS } = translations;
-  const conModifier = calculateAbilityModifier(healthData.abilityScores.constitution || 10);
   const conAbbr = ABILITY_LABELS.find(al => al.value === 'constitution')?.abbr || 'CON';
   
   const missingHp = Math.max(0, calculatedMaxHp - localHp);
@@ -263,8 +262,8 @@ const HealthPanelComponent = ({ healthData, calculatedMaxHp, onCharacterUpdate }
                     <span className="text-xs text-muted-foreground ml-1">({conAbbr})</span>
                 </Label>
                  <div className="w-36 text-center">
-                    <span className={cn("font-semibold", conModifier >= 0 ? "text-emerald-600" : "text-destructive")}>
-                        {conModifier >= 0 ? `+${conModifier}` : conModifier}
+                    <span className={cn("font-semibold", finalConstitutionModifier >= 0 ? "text-emerald-600" : "text-destructive")}>
+                        {finalConstitutionModifier >= 0 ? `+${finalConstitutionModifier}` : finalConstitutionModifier}
                     </span>
                 </div>
             </div>
@@ -306,3 +305,4 @@ const HealthPanelComponent = ({ healthData, calculatedMaxHp, onCharacterUpdate }
 };
 HealthPanelComponent.displayName = 'HealthPanelComponent';
 export const HealthPanel = React.memo(HealthPanelComponent);
+
