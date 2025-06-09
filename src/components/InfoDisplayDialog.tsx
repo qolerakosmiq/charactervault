@@ -526,7 +526,7 @@ export function InfoDisplayDialog({
                         }
                         totalFeatBonusForThisType += bonusFromThisFeat;
                         if (featEffect.sourceFeat) {
-                            featSourcesForThisType.push(featEffect.sourceFeat + (featEffect.condition ? ` (${UI_STRINGS[featEffect.condition as keyof typeof UI_STRINGS] || featEffect.condition})` : ''));
+                            featSourcesForThisType.push(featEffect.sourceFeat);
                         }
                     }
                 });
@@ -585,7 +585,7 @@ export function InfoDisplayDialog({
                         if (featEffect.acType === "monk_wisdom") {
                             sourceName = UI_STRINGS.abilityScoreSourceMonkWisdom || "Monk Wisdom";
                         }
-                        otherFeatBonusSources.push(sourceName + (featEffect.condition ? ` (${UI_STRINGS[featEffect.condition as keyof typeof UI_STRINGS] || featEffect.condition})` : ''));
+                        otherFeatBonusSources.push(sourceName);
                     }
                 }
             });
@@ -934,4 +934,5 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
+
 
