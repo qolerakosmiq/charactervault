@@ -116,24 +116,24 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
 
         <div className="space-y-1">
           <Progress value={progressPercentage} className="h-3" indicatorClassName="bg-primary" />
-          <div className="flex justify-between items-center text-sm text-muted-foreground px-1">
+          <div className="flex justify-between items-center text-xs text-muted-foreground px-1">
             <span className={cn(
-                "font-semibold",
-                currentLevel === 0 ? "text-muted-foreground" : "text-accent text-xl"
+                "font-semibold text-xl",
+                currentLevel === 0 ? "text-muted-foreground" : "text-accent"
             )}>
               {levelLabelFormat.replace("{levelNumber}", String(currentLevel))}
             </span>
             {xpForNextLevel !== Infinity ? (
-              <span className="text-sm">
+              <span className="text-xs">
                 {(UI_STRINGS.experiencePanelXpToLevelUpFormat || "{currentXp} / {xpForNextLevel} XP")
                   .replace("{currentXp}", localCurrentXp.toLocaleString())
                   .replace("{xpForNextLevel}", xpForNextLevel.toLocaleString())
                 }
               </span>
             ) : (
-              <span className="font-semibold text-primary">{UI_STRINGS.experiencePanelMaxLevel || "Max Level"}</span>
+              <span className="font-semibold text-primary text-xs">{UI_STRINGS.experiencePanelMaxLevel || "Max Level"}</span>
             )}
-            {xpForNextLevel !== Infinity && <span>{levelLabelFormat.replace("{levelNumber}", String(currentLevel + 1))}</span>}
+            {xpForNextLevel !== Infinity && <span className="text-xs">{levelLabelFormat.replace("{levelNumber}", String(currentLevel + 1))}</span>}
           </div>
         </div>
       </CardContent>
