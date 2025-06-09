@@ -33,7 +33,7 @@ export const GrappleModifierBreakdownContentDisplay = ({
           <span>
             {uiStrings.infoDialogGrappleModAbilityLabel || "Ability Modifier"}
             {strengthAbilityInfo && (
-              <span className="text-muted-foreground"> ({strengthAbilityInfo.abbr})</span>
+              <span className="text-muted-foreground ml-1">({strengthAbilityInfo.abbr})</span>
             )}
           </span>
           {renderModifierValue(grappleModifierBreakdown.strengthModifier)}

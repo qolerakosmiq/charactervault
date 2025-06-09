@@ -19,14 +19,14 @@ export const SpeedBreakdownContentDisplay = ({
   const speedUnit = uiStrings.speedUnit || "ft.";
 
   const renderSource = (source: string) => {
-    const match = source.match(/^(.*?)\s*\((.*)\)$/); // Matches "Text (Details)"
+    const match = source.match(/^(.*?)\s*\((.*)\)$/); 
     if (match) {
-      const mainText = match[1].trim(); // e.g., "Base"
-      const detailText = match[2].trim(); // e.g., "Human"
+      const mainText = match[1].trim(); 
+      const detailText = match[2].trim(); 
       return (
         <>
-          {mainText}{' '}
-          <span className="text-muted-foreground">({detailText})</span>
+          {mainText}
+          <span className="text-muted-foreground ml-1">({detailText})</span>
         </>
       );
     }

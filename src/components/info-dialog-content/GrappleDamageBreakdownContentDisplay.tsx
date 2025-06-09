@@ -36,7 +36,7 @@ export const GrappleDamageBreakdownContentDisplay = ({
         <div className="flex justify-between">
           <span>{uiStrings.infoDialogGrappleDmgWeaponLabel || "Weapon Damage"}</span>
           {grappleDamageBreakdown.baseDamage.toLowerCase().includes('unarmed') ? (
-              <span className="font-semibold text-muted-foreground">{uiStrings.infoDialogGrappleDmgUnarmedLabel || "Unarmed"}</span>
+              <span className="font-semibold text-muted-foreground ml-1">({uiStrings.infoDialogGrappleDmgUnarmedLabel || "Unarmed"})</span>
           ) : (
               renderModifierValue(0) 
           )}
@@ -45,7 +45,7 @@ export const GrappleDamageBreakdownContentDisplay = ({
           <span>
             {uiStrings.infoDialogGrappleDmgAbilityLabel || "Ability Modifier"}
             {strengthAbilityInfo && (
-              <span className="text-muted-foreground"> ({strengthAbilityInfo.abbr})</span>
+              <span className="text-muted-foreground ml-1">({strengthAbilityInfo.abbr})</span>
             )}
           </span>
           {renderModifierValue(grappleDamageBreakdown.strengthModifier)}

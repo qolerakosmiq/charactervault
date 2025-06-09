@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React from 'react';
@@ -37,14 +36,13 @@ export const MaxHpBreakdownContentDisplay = ({
   let miscModifierSubLabel = "";
   if (miscModifierValue !== 0 && aggregatedFeatEffects.hpBonusSources && aggregatedFeatEffects.hpBonusSources.length > 0) {
     const activeFeatSources = aggregatedFeatEffects.hpBonusSources
-      .filter(source => !source.condition) // Assuming unconditional for now, or would need condition checking
+      .filter(source => !source.condition) 
       .map(source => source.sourceFeatName)
-      .filter(name => !!name); // Filter out any undefined or empty names
+      .filter(name => !!name); 
     if (activeFeatSources.length > 0) {
       miscModifierSubLabel = `(${activeFeatSources.join(', ')})`;
     }
   }
-  // Removed the 'else if (miscModifierValue !== 0)' block to prevent generic fallback
 
 
   return (
@@ -58,7 +56,7 @@ export const MaxHpBreakdownContentDisplay = ({
         <div className="flex justify-between">
           <span>
             {uiStrings.maxHpDialogAbilityModLabel || "Ability Modifier"}
-            <span className="text-muted-foreground"> ({conAbbr})</span>
+            <span className="text-muted-foreground ml-1">({conAbbr})</span>
           </span>
           {renderModifierValue(finalConstitutionModifier)}
         </div>
@@ -67,7 +65,7 @@ export const MaxHpBreakdownContentDisplay = ({
                 <span className="flex-shrink-0 mr-2">
                     {uiStrings.maxHpDialogMiscModLabel || "Misc Modifier"}
                     {miscModifierSubLabel && (
-                        <span className="ml-1 text-xs text-muted-foreground">{miscModifierSubLabel}</span>
+                        <span className="ml-1 text-muted-foreground">{miscModifierSubLabel}</span>
                     )}
                 </span>
                 {renderModifierValue(miscModifierValue)}
@@ -88,4 +86,3 @@ export const MaxHpBreakdownContentDisplay = ({
     </div>
   );
 };
-

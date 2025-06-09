@@ -11,9 +11,12 @@ export interface AcBreakdownDetailItem {
   mainLabel: string | React.ReactNode;
   value: string | number | React.ReactNode;
   isBold?: boolean;
-  // Removed type, abilityAbbr, sizeName, featSource, condition
-  // Those specific details are now handled by how mainLabel and suffixDetails are constructed
   suffixDetails?: string[];
+  // Properties for specific, non-generic suffix styling (fallback)
+  type?: 'acAbilityMod' | 'acSizeMod' | 'acFeatBonus';
+  abilityAbbr?: string;
+  sizeName?: string;
+  condition?: string; // For feat bonus conditions
 }
 
 interface AcBreakdownContentDisplayProps {
@@ -21,9 +24,9 @@ interface AcBreakdownContentDisplayProps {
   totalACValue?: number;
   detailsListHeading: string;
   uiStrings: Record<string, string>;
-  abilityLabels: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
-  aggregatedFeatEffects?: AggregatedFeatEffects | null; // Still needed for context if any complex logic remains
-  acType?: 'Normal' | 'Touch' | 'Flat-Footed'; // Still needed for context
+  // abilityLabels: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[]; // May not be used directly if labels pre-formatted
+  // aggregatedFeatEffects?: AggregatedFeatEffects | null;
+  // acType?: 'Normal' | 'Touch' | 'Flat-Footed';
 }
 
 export const AcBreakdownContentDisplay = ({
@@ -31,9 +34,6 @@ export const AcBreakdownContentDisplay = ({
   totalACValue,
   detailsListHeading,
   uiStrings,
-  // abilityLabels, // May not be directly used in rendering if mainLabel is pre-formatted
-  // aggregatedFeatEffects,
-  // acType,
 }: AcBreakdownContentDisplayProps) => {
   if (!detailsList || detailsList.length === 0) return null;
 
@@ -45,19 +45,41 @@ export const AcBreakdownContentDisplay = ({
             ? renderModifierValue(detail.value as number | string)
             : detail.value;
         
-        let labelNode = detail.mainLabel;
-        // Specific suffix handling for DEX/Size should ideally be pre-formatted into suffixDetails if needed,
-        // or mainLabel should include it if it's part of the primary label text.
-        // For now, we'll assume mainLabel is the primary text, and suffixDetails handles parenthetical additions.
+        let mainText = detail.mainLabel;
+        let suffixText = detail.suffixDetails && detail.suffixDetails.length > 0 ? `(${detail.suffixDetails.join(", ")})` : null;
+
+        // Fallback for specifically structured ability/size modifiers if not using suffixDetails
+        if (!suffixText) {
+          if (detail.type === 'acAbilityMod' && detail.abilityAbbr) {
+            mainText = detail.mainLabel; // Should already be just "Ability Modifier"
+            suffixText = `(${detail.abilityAbbr})`;
+          } else if (detail.type === 'acSizeMod' && detail.sizeName) {
+            mainText = detail.mainLabel; // Should already be just "Size Modifier"
+            suffixText = `(${detail.sizeName})`;
+          }
+        }
+        
+        // If the mainLabel itself already contains the suffix, split it
+        if (typeof mainText === 'string') {
+          const suffixMatch = mainText.match(/\s(\([^)]+\))$/);
+          if (suffixMatch && !suffixText) { // only if suffixText wasn't already set by suffixDetails
+            mainText = mainText.substring(0, mainText.length - suffixMatch[0].length);
+            suffixText = suffixMatch[1];
+          }
+        }
+
 
         return (
           <div key={index} className="flex justify-between text-sm mb-0.5">
             <span className="text-foreground">
-              {labelNode}
-              {detail.suffixDetails && detail.suffixDetails.length > 0 && (
+              {mainText}
+              {suffixText && (
                 <span className="text-muted-foreground ml-1">
-                  ({detail.suffixDetails.join(", ")})
+                  {suffixText}
                 </span>
+              )}
+              {detail.type === 'acFeatBonus' && detail.condition && (
+                <span className="text-muted-foreground italic ml-1">({detail.condition})</span>
               )}
             </span>
             <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{valueToRender as React.ReactNode}</span>

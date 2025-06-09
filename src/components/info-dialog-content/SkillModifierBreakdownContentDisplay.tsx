@@ -38,7 +38,7 @@ export const SkillModifierBreakdownContentDisplay = ({
     outputBlocks.push(
       <div key="skill-synergies-block">
         <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
-        <ul className="space-y-0.5 mt-2"> {/* Removed ml-4 */}
+        <ul className="space-y-0.5 mt-2"> 
           {synergyInfoList.map((synergyItem) => {
             const IconComponent = synergyItem.isActive ? CheckSquare : Square;
             return (
@@ -59,13 +59,12 @@ export const SkillModifierBreakdownContentDisplay = ({
     outputBlocks.push(
       <div key="skill-calculation-block">
         <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-        <div className="space-y-1 text-sm mt-2"> {/* Removed ml-4 */}
+        <div className="space-y-1 text-sm mt-2"> 
           {skillModifierBreakdown.keyAbilityName && (
             <div className="flex justify-between">
               <span>
                 {uiStrings.infoDialogKeyAbilityLabel || "Key Ability"}
-                {" "}
-                <span className="text-muted-foreground">({skillModifierBreakdown.keyAbilityName})</span>
+                <span className="text-muted-foreground ml-1">({skillModifierBreakdown.keyAbilityName})</span>
               </span>
               {renderModifierValue(skillModifierBreakdown.keyAbilityModifier)}
             </div>
@@ -116,6 +115,11 @@ export const SkillModifierBreakdownContentDisplay = ({
   
   if (outputBlocks.length === 0) return null;
 
-  return outputBlocks;
+  return outputBlocks.map((block, index, arr) => (
+        <React.Fragment key={index}>
+          {block}
+          {index < arr.length - 1 && <Separator className="my-3" />}
+        </React.Fragment>
+      ));
 };
 // SkillModifierBreakdownContentDisplay.displayName = 'SkillModifierBreakdownContentDisplayComponent';
