@@ -1,7 +1,7 @@
 
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Loader2 } from 'lucide-react';
@@ -330,16 +330,16 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                   <div className="md:col-span-1 space-y-3 border p-4 rounded-md">
                     <Label className="text-md font-medium">{UI_STRINGS.resistancesPanelAddCustomDrLabel}</Label>
                     <div className="w-full space-y-1">
-                        <Label htmlFor="form-dr-value" className="text-sm">{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
+                        <Label htmlFor="form-dr-value" className="text-sm inline-block w-full text-center">{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
                         <NumberSpinnerInput
                         id="form-dr-value"
                         value={newDrValue}
                         onChange={setNewDrValue}
                         min={1}
-                        inputClassName="h-9 text-sm w-full"
+                        inputClassName="h-9 text-sm w-full text-center"
                         buttonClassName="h-9 w-9"
                         buttonSize="sm"
-                        className="w-full justify-between"
+                        className="justify-center"
                         />
                     </div>
                     <div className="space-y-1">
@@ -427,3 +427,5 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
 ResistancesPanelComponent.displayName = 'ResistancesPanelComponent';
 export const ResistancesPanel = React.memo(ResistancesPanelComponent);
 
+
+    
