@@ -23,7 +23,7 @@ export interface SavingThrowBreakdownDetails {
   magicMod: number;
   userTemporaryModifier: number;
   featBonusTotal: number; 
-  featComponents: SavingThrowFeatComponent[]; 
+  featComponents: SavingThrowFeatComponent[]; // Changed to be more structured for display
   totalSave: number;
 }
 
@@ -44,10 +44,10 @@ export const SavingThrowBreakdownContentDisplay = ({
     ? (abilityLabels.find(al => al.value === breakdown.abilityKey)?.abbr || String(breakdown.abilityKey).substring(0,3).toUpperCase())
     : 'N/A';
 
-  const activeFeatSourcesText = breakdown.featComponents
-    .filter(fc => fc.value !== 0)
-    .map(fc => fc.sourceFeat) // Changed this line
-    .join(', ');
+  const activeFeatSourceNames = breakdown.featComponents
+    .filter(fc => fc.value !== 0) // Only include components that contribute
+    .map(fc => fc.condition ? `${fc.sourceFeat} (${fc.condition})` : fc.sourceFeat);
+
 
   return (
     <div>
@@ -66,11 +66,13 @@ export const SavingThrowBreakdownContentDisplay = ({
         </div>
         
         {breakdown.featBonusTotal !== 0 && (
-          <div className="flex justify-between">
-            <span>
+          <div className="flex justify-between items-baseline">
+            <span className="flex-shrink-0 mr-2">
               {uiStrings.savingThrowsFeatsModifierLabel || "Feats Modifier"}
-              {activeFeatSourcesText && (
-                <span className="ml-1 text-xs text-muted-foreground">({activeFeatSourcesText})</span>
+              {activeFeatSourceNames.length > 0 && (
+                <span className="text-muted-foreground ml-1">
+                  ({activeFeatSourceNames.join(", ")})
+                </span>
               )}
             </span>
             {renderModifierValue(breakdown.featBonusTotal)}

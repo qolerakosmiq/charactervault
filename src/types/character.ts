@@ -564,13 +564,13 @@ export function calculateDetailedAbilityScores(
     const racialModObj = racialQualities.abilityEffects.find(eff => eff.ability === ability);
     if (racialModObj && racialModObj.change !== 0) {
       const raceLabel = DND_RACES.find(r => r.value === character.race)?.label || character.race || 'Unknown Race';
-      components.push({ source: `Race (${raceLabel})`, value: racialModObj.change });
+      components.push({ sourceLabel: "Race", sourceDetail: raceLabel, value: racialModObj.change });
       currentScore += racialModObj.change;
     }
 
     const agingModObj = agingDetails.effects.find(eff => eff.ability === ability);
     if (agingModObj && agingModObj.change !== 0) {
-      components.push({ source: `Aging (${agingDetails.categoryName})`, value: agingModObj.change });
+      components.push({ sourceLabel: "Aging", sourceDetail: agingDetails.categoryName, value: agingModObj.change });
       currentScore += agingModObj.change;
     }
 
@@ -584,7 +584,8 @@ export function calculateDetailedAbilityScores(
           }
           if(effectIsActive) {
             components.push({
-              source: `Feat: ${featEffect.sourceFeat || 'Unknown Feat'}`, 
+              sourceLabel: "Feat", 
+              sourceDetail: featEffect.sourceFeat || 'Unknown Feat',
               value: featEffect.value,
               condition: featEffect.condition, 
             });
@@ -596,7 +597,7 @@ export function calculateDetailedAbilityScores(
 
     const tempCustomModValue = tempCustomModifiers[ability];
     if (tempCustomModValue !== 0 && tempCustomModValue !== undefined) {
-      components.push({ source: "tempMod", value: tempCustomModValue });
+      components.push({ sourceLabel: "Temporary Modifier", value: tempCustomModValue });
       currentScore += tempCustomModValue;
     }
 
@@ -894,3 +895,4 @@ export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 export { SAVING_THROW_ABILITIES, calculateLevelFromXp, getXpRequiredForLevel } from '@/lib/dnd-utils'; // Updated calculateSumOfClassLevels
 
 export * from './character-core';
+

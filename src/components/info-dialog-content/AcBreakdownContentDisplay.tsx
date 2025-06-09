@@ -8,14 +8,12 @@ import { Separator } from '@/components/ui/separator';
 import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
 
 export interface AcBreakdownDetailItem {
-  label: string | React.ReactNode; // Allow ReactNode for already complex labels
+  mainLabel: string | React.ReactNode;
   value: string | number | React.ReactNode;
   isBold?: boolean;
-  type?: 'acAbilityMod' | 'acSizeMod' | 'acFeatBonus';
-  abilityAbbr?: string;
-  sizeName?: string;
-  featSource?: string;
-  condition?: string;
+  // Removed type, abilityAbbr, sizeName, featSource, condition
+  // Those specific details are now handled by how mainLabel and suffixDetails are constructed
+  suffixDetails?: string[];
 }
 
 interface AcBreakdownContentDisplayProps {
@@ -24,8 +22,8 @@ interface AcBreakdownContentDisplayProps {
   detailsListHeading: string;
   uiStrings: Record<string, string>;
   abilityLabels: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
-  aggregatedFeatEffects?: AggregatedFeatEffects | null;
-  acType?: 'Normal' | 'Touch' | 'Flat-Footed';
+  aggregatedFeatEffects?: AggregatedFeatEffects | null; // Still needed for context if any complex logic remains
+  acType?: 'Normal' | 'Touch' | 'Flat-Footed'; // Still needed for context
 }
 
 export const AcBreakdownContentDisplay = ({
@@ -33,9 +31,9 @@ export const AcBreakdownContentDisplay = ({
   totalACValue,
   detailsListHeading,
   uiStrings,
-  abilityLabels,
-  aggregatedFeatEffects,
-  acType,
+  // abilityLabels, // May not be directly used in rendering if mainLabel is pre-formatted
+  // aggregatedFeatEffects,
+  // acType,
 }: AcBreakdownContentDisplayProps) => {
   if (!detailsList || detailsList.length === 0) return null;
 
@@ -43,60 +41,25 @@ export const AcBreakdownContentDisplay = ({
     <div>
       <h3 className={sectionHeadingClass}>{detailsListHeading}</h3>
       {detailsList.map((detail, index) => {
-        const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string)))) && !String(detail.label).toLowerCase().includes('base attack bonus')
+        const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string)))) && !String(detail.mainLabel).toLowerCase().includes('base attack bonus')
             ? renderModifierValue(detail.value as number | string)
             : detail.value;
-
-        let labelNode: React.ReactNode;
-
-        if (typeof detail.label === 'string') {
-          const match = detail.label.match(/^(.*?)(\s\([^)]*\))?$/);
-          if (match && match[2]) { // If there's a parenthetical suffix like " (Dodge)" or " (Source1, Source2)"
-            const mainText = match[1];
-            const suffixText = match[2].trim(); // e.g., "(Dodge)"
-            labelNode = (
-              <>
-                {mainText}
-                <span className="text-xs text-muted-foreground ml-1">{suffixText}</span>
-              </>
-            );
-          } else if (detail.type === 'acAbilityMod' && detail.abilityAbbr) {
-            const baseLabelText = detail.label.replace(`(${detail.abilityAbbr})`, "").trim();
-            labelNode = (
-              <>
-                {baseLabelText || uiStrings.infoDialogAcAbilityLabel || "Ability Modifier"}
-                <span className="text-xs text-muted-foreground ml-1">({detail.abilityAbbr})</span>
-              </>
-            );
-          } else if (detail.type === 'acSizeMod' && detail.sizeName) {
-            const baseLabelText = detail.label.replace(`(${detail.sizeName})`, "").trim();
-            labelNode = (
-              <>
-                {baseLabelText || uiStrings.infoDialogSizeModifierLabel || "Size Modifier"}
-                <span className="text-xs text-muted-foreground ml-1">({detail.sizeName})</span>
-              </>
-            );
-          } else if (detail.type === 'acFeatBonus' && detail.condition) {
-             labelNode = (
-              <>
-                {detail.label} {/* Assume detail.label is just the feat name here */}
-                <span className="text-xs text-muted-foreground italic ml-1">({detail.condition})</span>
-              </>
-            );
-          }
-          else {
-            labelNode = detail.label;
-          }
-        } else {
-          // If detail.label is already a ReactNode, use it as is
-          labelNode = detail.label;
-        }
-
-        const labelContent = <span className="text-foreground">{labelNode}</span>;
+        
+        let labelNode = detail.mainLabel;
+        // Specific suffix handling for DEX/Size should ideally be pre-formatted into suffixDetails if needed,
+        // or mainLabel should include it if it's part of the primary label text.
+        // For now, we'll assume mainLabel is the primary text, and suffixDetails handles parenthetical additions.
 
         return (
           <div key={index} className="flex justify-between text-sm mb-0.5">
-            {labelContent}
+            <span className="text-foreground">
+              {labelNode}
+              {detail.suffixDetails && detail.suffixDetails.length > 0 && (
+                <span className="text-muted-foreground ml-1">
+                  ({detail.suffixDetails.join(", ")})
+                </span>
+              )}
+            </span>
             <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{valueToRender as React.ReactNode}</span>
           </div>
         );

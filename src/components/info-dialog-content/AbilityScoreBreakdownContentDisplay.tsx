@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import type { AbilityScoreBreakdown, AbilityScoreComponentValue } from '@/types/character';
+import type { AbilityScoreBreakdown, AbilityScoreComponentValue, AbilityName } from '@/types/character'; // Updated AbilityScoreComponentValue import
 import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { Separator } from '@/components/ui/separator';
@@ -19,19 +19,8 @@ export const AbilityScoreBreakdownContentDisplay = ({
 }: AbilityScoreBreakdownContentDisplayProps) => {
   if (!abilityScoreBreakdown) return null;
 
-  const dialogDisplayScore = abilityScoreBreakdown.base +
-    abilityScoreBreakdown.components.reduce((sum, comp: AbilityScoreComponentValue) => {
-      const numericValue = typeof comp.value === 'number' ? comp.value : 0;
-      return sum + numericValue;
-    }, 0);
-
+  const dialogDisplayScore = abilityScoreBreakdown.finalScore; // Use finalScore directly
   const dialogDisplayModifier = calculateAbilityModifier(dialogDisplayScore);
-
-  const featBasedComponents = abilityScoreBreakdown.components.filter(comp => comp.source.startsWith("Feat:"));
-  const otherComponents = abilityScoreBreakdown.components.filter(comp => !comp.source.startsWith("Feat:"));
-
-  const totalFeatValue = featBasedComponents.reduce((sum, fc) => sum + fc.value, 0);
-  const featConditions = Array.from(new Set(featBasedComponents.map(fc => fc.condition).filter(Boolean)));
 
   return (
     <div>
@@ -42,38 +31,33 @@ export const AbilityScoreBreakdownContentDisplay = ({
           <span className="font-bold">{abilityScoreBreakdown.base}</span>
         </div>
 
-        {otherComponents.map((comp, index) => {
-           let displaySource = comp.source;
-           if (comp.source === "tempMod" && uiStrings.abilityScoreSourceTempMod) { displaySource = uiStrings.abilityScoreSourceTempMod; }
-           else if (comp.source.startsWith("Race (") && uiStrings.abilityScoreSourceRace) { displaySource = (uiStrings.abilityScoreSourceRace).replace("{raceLabel}", comp.source.match(/Race \((.*?)\)/)?.[1] || ''); }
-           else if (comp.source.startsWith("Aging (") && uiStrings.abilityScoreSourceAging) { displaySource = (uiStrings.abilityScoreSourceAging).replace("{categoryName}", comp.source.match(/Aging \((.*?)\)/)?.[1] || '');}
-
+        {abilityScoreBreakdown.components.map((comp, index) => {
+          let displaySourceLabel = comp.sourceLabel; // Already structured
+          if (comp.sourceLabel === "Race" && uiStrings.abilityScoreSourceRace && comp.sourceDetail) { 
+            displaySourceLabel = (uiStrings.abilityScoreSourceRace).replace("{raceLabel}", comp.sourceDetail);
+          } else if (comp.sourceLabel === "Aging" && uiStrings.abilityScoreSourceAging && comp.sourceDetail) {
+            displaySourceLabel = (uiStrings.abilityScoreSourceAging).replace("{categoryName}", comp.sourceDetail);
+          } else if (comp.sourceLabel === "Feat" && comp.sourceDetail) { // Display feat name if available
+            displaySourceLabel = uiStrings.abilityScoreSourceFeatsGroupLabel || "Feats";
+          } else if (comp.sourceLabel === "tempMod" && uiStrings.abilityScoreSourceTempMod) {
+            displaySourceLabel = uiStrings.abilityScoreSourceTempMod;
+          }
+          
           return (comp.value !== 0 || comp.condition) && (
-            <div key={`other-${index}-${comp.source}`} className="flex justify-between items-baseline">
-              <span className="flex-shrink-0 mr-2">{displaySource}</span>
+            <div key={`comp-${index}-${comp.sourceLabel}-${comp.sourceDetail || ''}`} className="flex justify-between items-baseline">
+              <span className="flex-shrink-0 mr-2">
+                {displaySourceLabel}
+                {comp.sourceLabel === "Feat" && comp.sourceDetail && (
+                     <span className="text-muted-foreground ml-1">({comp.sourceDetail})</span>
+                )}
+              </span>
               <div className="flex items-baseline">
                 {renderModifierValue(comp.value)}
-                {comp.condition && <span className="ml-1 text-xs text-muted-foreground">({comp.condition})</span>}
+                {comp.condition && <span className="ml-1 text-xs text-muted-foreground italic">({comp.condition})</span>}
               </div>
             </div>
           );
         })}
-
-        {featBasedComponents.length > 0 && totalFeatValue !== 0 && (
-          <div className="flex justify-between items-baseline">
-            <span className="flex-shrink-0 mr-2">
-              {uiStrings.abilityScoreSourceFeatsGroupLabel || "Feats"}
-              {featConditions.length > 0 && (
-                <small className="ml-1 text-xs text-muted-foreground">
-                  ({featConditions.join(", ")})
-                </small>
-              )}
-            </span>
-            <div className="flex items-baseline">
-              {renderModifierValue(totalFeatValue)}
-            </div>
-          </div>
-        )}
 
         <div style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}><Separator /></div>
         <div className="flex justify-between text-base">
@@ -88,5 +72,4 @@ export const AbilityScoreBreakdownContentDisplay = ({
     </div>
   );
 };
-// AbilityScoreBreakdownContentDisplay.displayName = 'AbilityScoreBreakdownContentDisplayComponent';
 

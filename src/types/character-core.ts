@@ -103,7 +103,7 @@ export interface DamageRollEffect {
 export interface ArmorClassEffect {
   type: "armorClass";
   value: number | "WIS" | "INT" | "CHA"; // Can be specific value or ability mod
-  acType: "dodge" | "armor" | "shield" | "natural" | "deflection" | "insight" | "circumstance" | "untyped" | "monk";
+  acType: "dodge" | "armor" | "shield" | "natural" | "deflection" | "insight" | "circumstance" | "untyped" | "monk_wisdom" | "other_feat_bonus";
   bonusType?: string; // Sometimes AC bonuses have types, often they are named by acType
   condition?: string;
   appliesToScope?: ("normal" | "touch" | "flatFooted")[];
@@ -508,9 +508,10 @@ export interface SkillDefinitionForDisplay {
 }
 
 export interface AbilityScoreComponentValue {
-  source: string;
+  sourceLabel: string;      // e.g., "Race", "Aging", "Feat", "Temporary Modifier"
+  sourceDetail?: string;    // e.g., "Human", "Middle Age", "Feat Name"
   value: number;
-  condition?: string;
+  condition?: string;       // For conditional feat effects
 }
 export interface AbilityScoreBreakdown {
   ability: Exclude<AbilityName, 'none'>;
@@ -590,3 +591,4 @@ export interface PrerequisiteMessage {
   orderKey: string;
   originalText?: string;
 }
+

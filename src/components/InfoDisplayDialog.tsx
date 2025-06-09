@@ -486,19 +486,25 @@ export function InfoDisplayDialog({
         const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
         
         const details: AcBreakdownDetailItem[] = [];
-        details.push({ label: UI_STRINGS.acBreakdownBaseLabel || "Base", value: 10 });
+        details.push({ mainLabel: UI_STRINGS.acBreakdownBaseLabel || "Base", value: 10 });
 
         if (contentType.acType === 'Normal' || contentType.acType === 'Touch') {
-            details.push({ label: UI_STRINGS.infoDialogAcAbilityLabel || "Ability Modifier", value: dexMod, type: 'acAbilityMod', abilityAbbr: ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX' });
+            details.push({ 
+                mainLabel: `${UI_STRINGS.infoDialogAcAbilityLabel || "Ability Modifier"} (${ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX'})`, 
+                value: dexMod 
+            });
         }
-        details.push({ label: UI_STRINGS.infoDialogSizeModifierLabel || "Size Modifier", value: sizeModACVal, type: 'acSizeMod', sizeName: sizeLabel });
+        details.push({ 
+            mainLabel: `${UI_STRINGS.infoDialogSizeModifierLabel || "Size Modifier"} (${sizeLabel})`, 
+            value: sizeModACVal 
+        });
 
-        const mainAcTypes: Array<{ key: keyof Character; label: string; bonusType: "armor" | "shield" | "natural" | "deflection" | "dodge" }> = [
-            { key: 'armorBonus', label: UI_STRINGS.acBreakdownArmorBonusLabel || "Armor Bonus", bonusType: "armor"},
-            { key: 'shieldBonus', label: UI_STRINGS.acBreakdownShieldBonusLabel || "Shield Bonus", bonusType: "shield" },
-            { key: 'naturalArmor', label: UI_STRINGS.acBreakdownNaturalArmorLabel || "Natural Armor", bonusType: "natural" },
-            { key: 'deflectionBonus', label: UI_STRINGS.acBreakdownDeflectionBonusLabel || "Deflection Bonus", bonusType: "deflection" },
-            { key: 'dodgeBonus', label: UI_STRINGS.acBreakdownDodgeBonusLabel || "Dodge Bonus", bonusType: "dodge" },
+        const mainAcTypes: Array<{ key: keyof Character; labelKey: keyof typeof UI_STRINGS; bonusType: "armor" | "shield" | "natural" | "deflection" | "dodge" }> = [
+            { key: 'armorBonus', labelKey: 'acBreakdownArmorBonusLabel', bonusType: "armor"},
+            { key: 'shieldBonus', labelKey: 'acBreakdownShieldBonusLabel', bonusType: "shield" },
+            { key: 'naturalArmor', labelKey: 'acBreakdownNaturalArmorLabel', bonusType: "natural" },
+            { key: 'deflectionBonus', labelKey: 'acBreakdownDeflectionBonusLabel', bonusType: "deflection" },
+            { key: 'dodgeBonus', labelKey: 'acBreakdownDodgeBonusLabel', bonusType: "dodge" },
         ];
 
         mainAcTypes.forEach(acItem => {
@@ -521,8 +527,8 @@ export function InfoDisplayDialog({
                         if (typeof featEffect.value === 'number') {
                             bonusFromThisFeat = featEffect.value;
                         } else if (featEffect.value === "WIS" && detailedCharScoresForDialog) {
-                            const wisModForAc = calculateAbilityModifier(detailedCharScoresForDialog.wisdom.finalScore);
-                            bonusFromThisFeat = featEffect.acType === "monk_wisdom" && wisModForAc < 0 ? 0 : wisModForAc;
+                             // Monk wisdom bonus is handled in the "other feat bonuses" typically, or should be a specific type.
+                             // This direct WIS check here for specific AC types like 'armor' or 'shield' is unlikely.
                         }
                         totalFeatBonusForThisType += bonusFromThisFeat;
                         if (featEffect.sourceFeat) {
@@ -543,14 +549,10 @@ export function InfoDisplayDialog({
 
             if (shouldDisplayComponentLineFn(contentType.acType, acItem.bonusType)) {
                  if (totalComponentValue !== 0 || (totalComponentValue === 0 && featSourcesForThisType.length > 0)) {
-                    let labelText = acItem.label;
-                    if (featSourcesForThisType.length > 0) {
-                        labelText += ` (${featSourcesForThisType.join(", ")})`;
-                    }
                     details.push({ 
-                        label: labelText, 
-                        value: totalComponentValue, 
-                        type: `ac${acItem.bonusType.charAt(0).toUpperCase() + acItem.bonusType.slice(1)}Mod` as any 
+                        mainLabel: UI_STRINGS[acItem.labelKey] || acItem.bonusType, 
+                        value: totalComponentValue,
+                        suffixDetails: featSourcesForThisType.length > 0 ? featSourcesForThisType : undefined,
                     });
                 }
             }
@@ -576,7 +578,12 @@ export function InfoDisplayDialog({
                         bonusVal = featEffect.value;
                     } else if (featEffect.value === "WIS" && detailedCharScoresForDialog) {
                         const wisModForAc = calculateAbilityModifier(detailedCharScoresForDialog.wisdom.finalScore);
-                        bonusVal = featEffect.acType === "monk_wisdom" && wisModForAc < 0 ? 0 : wisModForAc;
+                        // Monk Wisdom to AC only if not wearing armor/shield and unencumbered, typically.
+                        // The feat effect itself in dnd-feats for monk AC has acType: "monk_wisdom".
+                        // Here we check if the effect is explicitly "monk_wisdom"
+                        if (featEffect.acType === "monk_wisdom") {
+                           bonusVal = wisModForAc > 0 ? wisModForAc : 0; // Monk bonus doesn't apply if Wis mod is negative
+                        }
                     }
 
                     if (bonusVal !== 0) {
@@ -591,17 +598,16 @@ export function InfoDisplayDialog({
             });
         }
 
-        if (sumOfOtherFeatBonuses !== 0) {
-          const sourcesString = otherFeatBonusSources.length > 0 ? ` (${otherFeatBonusSources.join(", ")})` : "";
+        if (sumOfOtherFeatBonuses !== 0 || otherFeatBonusSources.length > 0) {
           details.push({
-            label: `${UI_STRINGS.acBreakdownMiscFeatModifierLabel || "Misc Modifier (Feats)"}${sourcesString}`,
+            mainLabel: UI_STRINGS.acBreakdownMiscFeatModifierLabel || "Misc Modifier (Feats)",
             value: sumOfOtherFeatBonuses,
-            type: 'acFeatBonus' 
+            suffixDetails: otherFeatBonusSources.length > 0 ? otherFeatBonusSources : undefined,
           });
         }
 
         if (character.acMiscModifier && character.acMiscModifier !== 0) {
-            details.push({ label: UI_STRINGS.armorClassTempModifierLabel || "Temporary Modifier", value: character.acMiscModifier });
+            details.push({ mainLabel: UI_STRINGS.armorClassTempModifierLabel || "Temporary Modifier", value: character.acMiscModifier });
         }
         
         let totalACValueForDialog = 10 + sizeModACVal;
@@ -793,7 +799,7 @@ export function InfoDisplayDialog({
         const magicMod = character.savingThrows?.[currentSaveType]?.magicMod || 0;
         const userTemporaryModifier = character.savingThrows?.[currentSaveType]?.miscMod || 0; 
 
-        const featComponents: SavingThrowFeatComponent[] = [];
+        const featComponentsForDialog: SavingThrowFeatComponent[] = [];
         let featBonusTotal = 0; 
 
         if (aggregatedFeatEffectsProp?.savingThrowBonuses) {
@@ -803,7 +809,7 @@ export function InfoDisplayDialog({
               if (typeof effect.value === 'number') {
                 numericValueFromEffect = effect.value;
               }
-              featComponents.push({
+              featComponentsForDialog.push({
                 sourceFeat: effect.sourceFeat || UI_STRINGS.infoDialogUnknownFeatSource || 'Unknown Feat',
                 value: numericValueFromEffect,
                 condition: effect.condition, 
@@ -824,7 +830,7 @@ export function InfoDisplayDialog({
           magicMod,
           userTemporaryModifier: userTemporaryModifier, 
           featBonusTotal: featBonusTotal, 
-          featComponents, 
+          featComponents: featComponentsForDialog, 
           totalSave: totalCalculatedSave,
         };
 
