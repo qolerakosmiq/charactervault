@@ -23,8 +23,8 @@ export function getAbilityModifierByName(scores: AbilityScores, abilityName: Abi
   return calculateAbilityModifier(score);
 }
 
-// Renamed function
-export function calculateCharacterTotalLevel(classes: CharacterClass[]): number {
+// Renamed function to be specific about summing class levels
+export function calculateSumOfClassLevels(classes: CharacterClass[]): number {
   return classes.reduce((sum, currentClass) => sum + currentClass.level, 0) || 1;
 }
 
@@ -86,6 +86,7 @@ export function getBaseSaves(
       baseSavesResult.reflex += calculateClassSaveContribution(charClass.level, classDef.saves.reflex);
       baseSavesResult.will += calculateClassSaveContribution(charClass.level, classDef.saves.will);
     } else if (classDef) {
+      // Fallback if saves not defined, treat as poor for all
       const poorSave = Math.floor(charClass.level / 3);
       baseSavesResult.fortitude += poorSave;
       baseSavesResult.reflex += poorSave;

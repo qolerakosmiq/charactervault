@@ -22,7 +22,7 @@ import {
   getRaceSkillPointsBonusPerLevel,
   ABILITY_ORDER_INTERNAL,
   calculateFeatEffects,
-  calculateLevelFromXp
+  calculateLevelFromXp // Now directly from types/character (which re-exports from dnd-utils)
 } from '@/types/character';
 import {
   getBab,
@@ -31,7 +31,8 @@ import {
   calculateInitiative,
   calculateGrapple,
   getUnarmedGrappleDamage,
-  calculateAbilityModifier
+  calculateAbilityModifier,
+  calculateSumOfClassLevels // Renamed utility
 } from '@/lib/dnd-utils';
 
 
@@ -57,7 +58,7 @@ import { LanguagesPanel, type LanguagesPanelProps } from '@/components/form-sect
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 import { ConditionsPanel, type ConditionsPanelProps } from '@/components/form-sections/ConditionsPanel';
-import { ExperiencePanel, type ExperiencePanelData as ExperiencePanelDataType } from '@/components/form-sections/ExperiencePanel'; // Renamed import
+import { ExperiencePanel } from '@/components/form-sections/ExperiencePanel'; 
 
 import { Loader2 } from 'lucide-react';
 
@@ -204,7 +205,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     characterDataToProcess = createBaseCharacterData(translations, globalCustomSkillDefinitions);
 
     const finalCharacter = { ...characterDataToProcess };
-    const { CLASS_SKILLS, SIZES, DND_RACES, DND_CLASSES } = translations;
+    const { CLASS_SKILLS, SIZES, DND_RACES, DND_CLASSES, XP_TABLE, EPIC_LEVEL_XP_INCREASE } = translations;
 
     let currentSkills = [...finalCharacter.skills];
     currentSkills = currentSkills.map(skillInstance => ({
@@ -226,8 +227,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     }
     finalCharacter.skills = currentSkills.sort((a, b) => (allAvailableSkillDefinitionsForDisplay.find(d => d.value === a.id)?.label || '').localeCompare(allAvailableSkillDefinitionsForDisplay.find(d => d.value === b.id)?.label || ''));
 
-    const characterLevel = finalCharacter.classes.reduce((sum, c) => sum + c.level, 0) || 1;
-    const newGrantedFeats = getGrantedFeatsForCharacter(finalCharacter.race, finalCharacter.classes, characterLevel, allAvailableFeatDefinitions, DND_RACES, DND_CLASSES);
+    const characterLevelFromXP = calculateLevelFromXp(finalCharacter.experiencePoints || 0, XP_TABLE, EPIC_LEVEL_XP_INCREASE);
+    const newGrantedFeats = getGrantedFeatsForCharacter(finalCharacter.race, finalCharacter.classes, characterLevelFromXP, allAvailableFeatDefinitions, DND_RACES, DND_CLASSES);
     const userChosenFeats = finalCharacter.feats?.filter(fi => !fi.isGranted) || [];
 
     const combinedFeatsMap = new Map<string, CharacterFeatInstance>();
@@ -286,6 +287,15 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
   const router = useRouter();
   const { toast } = useToast();
+
+  const characterLevelFromXP = React.useMemo(() => {
+    if (!character || !translations) return 1;
+    return calculateLevelFromXp(
+      character.experiencePoints || 0,
+      translations.XP_TABLE,
+      translations.EPIC_LEVEL_XP_INCREASE
+    );
+  }, [character, translations]);
 
   React.useEffect(() => {
     if (character && translations && allAvailableFeatDefinitions) {
@@ -482,9 +492,12 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         const nameB = allAvailableSkillDefinitionsForDisplay.find(d => d.value === b.id)?.label || '';
         return nameA.localeCompare(nameB);
       });
-      const characterLevel = updatedClasses.reduce((sum, c) => sum + c.level, 0) || 1;
-      const newGrantedFeats = getGrantedFeatsForCharacter(prev.race, updatedClasses, characterLevel, allAvailableFeatDefinitions, translations.DND_RACES, translations.DND_CLASSES);
+
+      // Re-calculate granted feats based on potentially new class and current XP-derived level
+      const currentLevelFromXP = calculateLevelFromXp(prev.experiencePoints || 0, translations.XP_TABLE, translations.EPIC_LEVEL_XP_INCREASE);
+      const newGrantedFeats = getGrantedFeatsForCharacter(prev.race, updatedClasses, currentLevelFromXP, allAvailableFeatDefinitions, translations.DND_RACES, translations.DND_CLASSES);
       const userChosenFeats = prev.feats.filter(fi => !fi.isGranted);
+
       const combinedFeatsMap = new Map<string, CharacterFeatInstance>();
       newGrantedFeats.forEach(inst => combinedFeatsMap.set(inst.instanceId, inst));
       userChosenFeats.forEach(inst => {
@@ -706,7 +719,17 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       classes: character.classes.length > 0 ? character.classes : [{id: crypto.randomUUID(), className: '', level: 1}],
     };
     if (finalCharacterData.classes[0]) {
-        finalCharacterData.classes[0].level = 1;
+        // The level for the first class should reflect the XP-derived level only if it's the *only* class,
+        // or for a more complex multiclassing system which isn't fully implemented.
+        // For now, keeping it at 1 for a new character, or its existing value if it's an edit form.
+        // If character creation *always* starts at level 1, then this is fine.
+        // If character creation *can* start at higher levels, and those levels are put into a single class,
+        // then this should reflect characterLevelFromXP if classes.length === 1.
+        // For now, let's assume new characters start with one class at level 1.
+        // The XP will determine their actual game level.
+         if (finalCharacterData.id === (characterDataToProcess?.id || 'new-id-placeholder') && finalCharacterData.classes.length === 1) {
+            finalCharacterData.classes[0].level = 1; // For new characters, always start class level at 1
+        }
     }
 
     onSave(finalCharacterData);
@@ -727,15 +750,6 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const calculatedMiscMaxHpBonusForPanel = React.useMemo(() => {
     return aggregatedFeatEffects?.hpBonus || 0;
   }, [aggregatedFeatEffects]);
-
-  const currentCalculatedLevelForXpPanel = React.useMemo(() => {
-    if (!character || !translations) return 1;
-    return calculateLevelFromXp(
-      character.experiencePoints || 0,
-      translations.XP_TABLE,
-      translations.EPIC_LEVEL_XP_INCREASE
-    );
-  }, [character, translations]);
 
 
   const coreInfoData = React.useMemo<CharacterFormCoreInfoSectionProps['characterData'] | undefined>(() => {
@@ -766,13 +780,13 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     };
   }, [character]);
 
-  const experiencePanelData = React.useMemo<ExperiencePanelDataType | undefined>(() => {
+  const experiencePanelData = React.useMemo<ExperiencePanelData | undefined>(() => {
     if (!character) return undefined;
     return {
       currentXp: character.experiencePoints || 0,
-      currentLevel: currentCalculatedLevelForXpPanel,
+      currentLevel: characterLevelFromXP, // Use XP-derived level
     };
-  }, [character, currentCalculatedLevelForXpPanel]);
+  }, [character, characterLevelFromXP]);
 
   const storyAndAppearanceData = React.useMemo<CharacterFormStoryPortraitSectionProps['storyAndAppearanceData'] | undefined>(() => {
     if (!character) return undefined;
@@ -783,17 +797,17 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     };
   }, [character]);
 
-  const skillsData = React.useMemo<SkillsFormSectionProps['skillsData'] | undefined>(() => {
+  const skillsData = React.useMemo<Omit<SkillsFormSectionProps, 'characterLevel' | 'onSkillChange' | 'onEditCustomSkillDefinition' | 'onOpenSkillInfoDialog' | 'allFeatDefinitions' | 'allPredefinedSkillDefinitions' | 'allCustomSkillDefinitions' | 'actualAbilityScores'>['skillsData'] | undefined>(() => {
     if (!character) return undefined;
     return {
       skills: character.skills, classes: character.classes, race: character.race, size: character.size, feats: character.feats,
     };
   }, [character]);
   
-  const featSectionData = React.useMemo<FeatsFormSectionProps['featSectionData'] | undefined>(() => {
+  const featSectionData = React.useMemo<Omit<FeatsFormSectionProps, 'characterLevel' | 'allAvailableFeatDefinitions' | 'chosenFeatInstances' | 'onFeatInstancesChange' | 'onEditCustomFeatDefinition' | 'abilityScores' | 'skills' | 'allPredefinedSkillDefinitions' | 'allCustomSkillDefinitions'>['featSectionData'] | undefined>(() => {
     if (!character) return undefined;
     return {
-      race: character.race, classes: character.classes, feats: character.feats, age: character.age, alignment: character.alignment,
+      race: character.race, classes: character.classes, feats: character.feats, age: character.age, alignment: character.alignment, experiencePoints: character.experiencePoints,
     };
   }, [character]);
 
@@ -916,7 +930,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         )}
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-8"> {/* Left column for AC and XP */}
+          <div className="space-y-8 md:col-span-1"> {/* Left column for AC and XP */}
             {acData && <ArmorClassPanel acData={acData} onCharacterUpdate={handleCharacterFieldUpdate as any} onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}/>}
             
             {experiencePanelData && translations.XP_TABLE && (
@@ -929,7 +943,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             )}
           </div>
           
-          <div> {/* Right column for Health Panel */}
+          <div className="md:col-span-1"> {/* Right column for Health Panel */}
             {healthPanelData && (
               <HealthPanel
                 healthData={healthPanelData}
@@ -997,6 +1011,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             onSkillChange={handleSkillChange}
             onEditCustomSkillDefinition={handleOpenEditCustomSkillDialog}
             onOpenSkillInfoDialog={handleOpenSkillInfoDialog}
+            characterLevel={characterLevelFromXP} 
           />
         )}
 
@@ -1011,6 +1026,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             skills={character.skills}
             allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
             allCustomSkillDefinitions={globalCustomSkillDefinitions}
+            characterLevel={characterLevelFromXP} 
           />
         )}
         

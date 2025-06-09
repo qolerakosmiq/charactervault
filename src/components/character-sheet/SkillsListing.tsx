@@ -6,25 +6,37 @@ import type { AbilityName } from '@/types/character-core'; // Explicitly from co
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Scroll, Loader2 } from 'lucide-react';
-import { getAbilityModifierByName, calculateCharacterTotalLevel } from '@/lib/dnd-utils'; // Updated import
+import { getAbilityModifierByName, calculateSumOfClassLevels } from '@/lib/dnd-utils'; // Updated import
 import { calculateMaxRanks } from '@/lib/constants';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
+import { calculateLevelFromXp } from '@/types/character'; // Import the XP-based level calculator
 
 interface SkillsListingProps {
   skills: SkillType[];
   abilityScores: AbilityScores;
   characterClasses: Character['classes'];
+  characterExperiencePoints: number; // Add XP to props
   onSkillChange: (skillId: string, ranks: number, miscModifier: number, isClassSkill?: boolean) => void;
 }
 
-export const SkillsListing: React.FC<SkillsListingProps> = ({ skills, abilityScores, characterClasses, onSkillChange }) => {
+export const SkillsListing: React.FC<SkillsListingProps> = ({
+  skills,
+  abilityScores,
+  characterClasses,
+  characterExperiencePoints, // Use XP
+  onSkillChange,
+}) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
-  const overallLevel = calculateCharacterTotalLevel(characterClasses); // Updated usage
+  const overallLevel = React.useMemo(() => {
+    if (translationsLoading || !translations) return 1;
+    return calculateLevelFromXp(characterExperiencePoints, translations.XP_TABLE, translations.EPIC_LEVEL_XP_INCREASE);
+  }, [characterExperiencePoints, translations, translationsLoading]);
+
   const intelligenceModifier = getAbilityModifierByName(abilityScores, 'intelligence');
 
   if (translationsLoading || !translations) {

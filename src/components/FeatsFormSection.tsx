@@ -22,7 +22,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export interface FeatsFormSectionProps {
-  featSectionData: Pick<Character, 'race' | 'classes' | 'feats' | 'age' | 'alignment'>;
+  featSectionData: Pick<Character, 'race' | 'classes' | 'feats' | 'age' | 'alignment' | 'experiencePoints'>; // Added experiencePoints
   allAvailableFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]; 
   chosenFeatInstances: CharacterFeatInstance[]; 
   onFeatInstancesChange: (updatedInstances: CharacterFeatInstance[]) => void;
@@ -31,6 +31,7 @@ export interface FeatsFormSectionProps {
   skills: Skill[];
   allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[]; 
   allCustomSkillDefinitions: readonly CustomSkillDefinition[]; 
+  characterLevel: number; // XP-derived character level
 }
 
 const FeatsFormSectionComponent = ({
@@ -43,15 +44,17 @@ const FeatsFormSectionComponent = ({
   skills,
   allPredefinedSkillDefinitions,
   allCustomSkillDefinitions,
+  characterLevel, // Use this for calculations
 }: FeatsFormSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
-  const characterLevel = featSectionData.classes.reduce((sum, cls) => sum + cls.level, 0) || 1;
+  // characterLevel is now passed as a prop (XP-derived)
   const { toast } = useToast();
 
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
 
   const featSlotsBreakdown = React.useMemo(() => {
     if (translationsLoading || !translations) return { total: 0, base: 0, racial: 0, levelProgression: 0, classBonus: 0 };
+    // Use the XP-derived characterLevel for calculating available feat slots
     return calculateAvailableFeats(featSectionData.race, characterLevel, featSectionData.classes, translations.DND_RACES);
   }, [featSectionData.race, characterLevel, featSectionData.classes, translations, translationsLoading]);
 
@@ -80,6 +83,8 @@ const FeatsFormSectionComponent = ({
     ...featSectionData, 
     abilityScores,
     skills,
+    // Ensure experiencePoints is available if checkFeatPrerequisites needs it for special conditions
+    experiencePoints: featSectionData.experiencePoints || 0,
   }), [featSectionData, abilityScores, skills]);
 
   const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs whitespace-nowrap";

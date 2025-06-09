@@ -1,5 +1,4 @@
 
-
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -49,11 +48,11 @@ import type {
   BonusFeatSlotEffect,
   LanguageEffect,
   DescriptiveEffectDetail,
-  LanguageId, // Added
-  LanguageOption // Added
+  LanguageId, 
+  LanguageOption 
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
-import { getBab } from '@/lib/dnd-utils';
+import { getBab, calculateSumOfClassLevels } from '@/lib/dnd-utils'; // Updated import
 
 
 // Utility Functions (many will now need translated data passed in)
@@ -271,7 +270,7 @@ export interface AvailableFeatSlotsBreakdown {
 
 export function calculateAvailableFeats(
   characterRaceId: DndRaceId | string,
-  level: number,
+  level: number, // This should be the XP-derived character level
   characterClasses: CharacterClass[],
   DND_RACES: readonly DndRaceOption[]
 ): AvailableFeatSlotsBreakdown {
@@ -294,6 +293,7 @@ export function calculateAvailableFeats(
         classBonusFeats += 1;
       }
     }
+    // Add other class-specific bonus feat logic here if needed
   });
 
   const totalFeats = baseFeat + racialBonus + levelProgressionFeats + classBonusFeats;
@@ -309,7 +309,7 @@ export function calculateAvailableFeats(
 export function getGrantedFeatsForCharacter(
   characterRaceId: DndRaceId | string,
   characterClasses: CharacterClass[],
-  characterLevel: number,
+  characterLevel: number, // This should be the XP-derived character level
   allFeatDefinitions: readonly FeatDefinitionJsonData[],
   DND_RACES: readonly DndRaceOption[],
   DND_CLASSES: readonly DndClassOption[]
@@ -318,7 +318,7 @@ export function getGrantedFeatsForCharacter(
   const addedDefinitionIds = new Set<string>();
 
   const addGrantedInstance = (featDefId: string, note: string | undefined, source: string, levelAcquired?: number) => {
-    if (!featDefId || (levelAcquired !== undefined && levelAcquired > characterLevel)) {
+    if (!featDefId || (levelAcquired !== undefined && levelAcquired > characterLevel)) { // Check against overall character level
       return;
     }
     const featDef = allFeatDefinitions.find(f => f.value === featDefId);
@@ -351,6 +351,7 @@ export function getGrantedFeatsForCharacter(
     const classData = DND_CLASSES.find(c => c.value === charClass.className);
     if (classData?.grantedFeats) {
       classData.grantedFeats.forEach(gf => {
+        // Class features are granted based on *class level*, not overall character level
         if (gf.levelAcquired === undefined || gf.levelAcquired <= charClass.level) {
           addGrantedInstance(gf.featId, gf.note, classData.label, gf.levelAcquired);
         }
@@ -367,7 +368,7 @@ export const PREREQ_ORDER_MAP: Record<string, number> = {
 
 export function checkFeatPrerequisites(
   featDefinitionToCheck: FeatDefinitionJsonData,
-  character: Pick<Character, 'abilityScores' | 'skills' | 'feats' | 'classes' | 'race' | 'age' | 'alignment'>,
+  character: Pick<Character, 'abilityScores' | 'skills' | 'feats' | 'classes' | 'race' | 'age' | 'alignment' | 'experiencePoints'>, // Added experiencePoints
   allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[],
   ALL_SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[],
   allCustomSkillDefinitions: readonly CustomSkillDefinition[],
@@ -506,7 +507,24 @@ export function checkFeatPrerequisites(
   }
 
   if (prerequisites.special) {
-    messages.push({ text: prerequisites.special, isMet: true, orderKey: 'special', originalText: prerequisites.special });
+    // This is a placeholder for special prerequisites that can't be easily machine-checked.
+    // We could parse common ones like "Character level X"
+    let isMetSpecial = true; // Assume met unless proven otherwise
+    let specialText = prerequisites.special;
+
+    const charLevelMatch = prerequisites.special.match(/Character level (\d+)/i);
+    if (charLevelMatch && character.experiencePoints !== undefined) {
+        const requiredLevel = parseInt(charLevelMatch[1], 10);
+        // This is a simplified check; ideally, `calculateLevelFromXp` would be available here or its result.
+        // For now, assuming we don't have the XP table here, we can't fully validate.
+        // If we could pass XP table:
+        // const charActualLevel = calculateLevelFromXp(character.experiencePoints, XP_TABLE, EPIC_LEVEL_XP_INCREASE);
+        // isMetSpecial = charActualLevel >= requiredLevel;
+        // For now, we just display it. If character level were part of the character prop passed in:
+        // isMetSpecial = character.level >= requiredLevel;
+    }
+
+    messages.push({ text: specialText, isMet: isMetSpecial, orderKey: 'special', originalText: specialText });
   }
 
   messages.sort((a, b) => {
@@ -559,12 +577,19 @@ export function calculateDetailedAbilityScores(
     if (aggregatedFeatEffects.abilityScoreBonuses) {
       for (const featEffect of aggregatedFeatEffects.abilityScoreBonuses) {
         if (featEffect.ability === ability) {
-          components.push({
-            source: `Feat: ${featEffect.sourceFeat || 'Unknown Feat'}`, // Keep for breakdown
-            value: featEffect.value,
-            condition: featEffect.condition, // Keep for breakdown
-          });
-          currentScore += featEffect.value;
+          let effectIsActive = true;
+          if (featEffect.condition && featEffect.condition.trim() !== "") {
+            const featInstance = character.feats.find(fi => fi.definitionId === featEffect.sourceFeat?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')); // Approximation
+            effectIsActive = !!featInstance?.conditionalEffectStates?.[featEffect.condition];
+          }
+          if(effectIsActive) {
+            components.push({
+              source: `Feat: ${featEffect.sourceFeat || 'Unknown Feat'}`, 
+              value: featEffect.value,
+              condition: featEffect.condition, 
+            });
+            currentScore += featEffect.value;
+          }
         }
       }
     }
@@ -625,6 +650,8 @@ export function calculateFeatEffects(
         continue;
       }
 
+      const sourceFeatName = definition.label || definition.value;
+
       switch (effect.type) {
         case "skill":
           const skillEffect = effect as SkillEffectDetail;
@@ -638,74 +665,67 @@ export function calculateFeatEffects(
           }
           break;
         case "abilityScore":
-          const abilityEffect = effect as AbilityScoreEffect;
-          newAggregatedEffects.abilityScoreBonuses.push({
-            ...abilityEffect,
-            sourceFeat: definition.label,
-          });
+          newAggregatedEffects.abilityScoreBonuses.push({...effect, sourceFeat: sourceFeatName } as AbilityScoreEffect & { sourceFeat?: string });
           break;
         case "savingThrow":
-          newAggregatedEffects.savingThrowBonuses.push({...effect, sourceFeat: definition.label} as SavingThrowEffect & { sourceFeat?: string });
+          newAggregatedEffects.savingThrowBonuses.push({...effect, sourceFeat: sourceFeatName} as SavingThrowEffect & { sourceFeat?: string });
           break;
         case "attackRoll":
-          newAggregatedEffects.attackRollBonuses.push({...effect, sourceFeat: definition.label} as AttackRollEffect & { sourceFeat?: string });
+          newAggregatedEffects.attackRollBonuses.push({...effect, sourceFeat: sourceFeatName} as AttackRollEffect & { sourceFeat?: string });
           break;
         case "damageRoll":
-          newAggregatedEffects.damageRollBonuses.push({...effect, sourceFeat: definition.label} as DamageRollEffect & { sourceFeat?: string });
+          newAggregatedEffects.damageRollBonuses.push({...effect, sourceFeat: sourceFeatName} as DamageRollEffect & { sourceFeat?: string });
           break;
         case "armorClass":
-          newAggregatedEffects.acBonuses.push({...effect, sourceFeat: definition.label} as ArmorClassEffect & { sourceFeat?: string });
+          newAggregatedEffects.acBonuses.push({...effect, sourceFeat: sourceFeatName} as ArmorClassEffect & { sourceFeat?: string });
           break;
         case "hitPoints":
           const hpEffect = effect as HitPointsEffect;
           newAggregatedEffects.hpBonus += hpEffect.value;
-          if (definition.label) {
-            newAggregatedEffects.hpBonusSources.push({
-              sourceFeatName: definition.label,
-              value: hpEffect.value,
-              condition: hpEffect.condition,
-            });
-          }
+          newAggregatedEffects.hpBonusSources.push({
+            sourceFeatName: sourceFeatName,
+            value: hpEffect.value,
+            condition: hpEffect.condition,
+          });
           break;
         case "initiative":
-          const initiativeEffect = effect as InitiativeEffect;
-          newAggregatedEffects.initiativeBonus += initiativeEffect.value;
+          newAggregatedEffects.initiativeBonus += (effect as InitiativeEffect).value;
           break;
         case "speed":
-          newAggregatedEffects.speedBonuses.push({...effect, sourceFeat: definition.label} as SpeedEffect & { sourceFeat?: string });
+          newAggregatedEffects.speedBonuses.push({...effect, sourceFeat: sourceFeatName} as SpeedEffect & { sourceFeat?: string });
           break;
         case "resistance":
-          newAggregatedEffects.resistanceBonuses.push({...effect, sourceFeat: definition.label} as ResistanceEffect & { sourceFeat?: string });
+          newAggregatedEffects.resistanceBonuses.push({...effect, sourceFeat: sourceFeatName} as ResistanceEffect & { sourceFeat?: string });
           break;
         case "casterLevelCheck":
-          newAggregatedEffects.casterLevelCheckBonuses.push({...effect, sourceFeat: definition.label} as CasterLevelCheckEffect & { sourceFeat?: string });
+          newAggregatedEffects.casterLevelCheckBonuses.push({...effect, sourceFeat: sourceFeatName} as CasterLevelCheckEffect & { sourceFeat?: string });
           break;
         case "spellSaveDc":
-          newAggregatedEffects.spellSaveDcBonuses.push({...effect, sourceFeat: definition.label} as SpellSaveDcEffect & { sourceFeat?: string });
+          newAggregatedEffects.spellSaveDcBonuses.push({...effect, sourceFeat: sourceFeatName} as SpellSaveDcEffect & { sourceFeat?: string });
           break;
         case "turnUndead":
-          newAggregatedEffects.turnUndeadBonuses.push({...effect, sourceFeat: definition.label} as TurnUndeadEffect & { sourceFeat?: string });
+          newAggregatedEffects.turnUndeadBonuses.push({...effect, sourceFeat: sourceFeatName} as TurnUndeadEffect & { sourceFeat?: string });
           break;
         case "grantsAbility":
-          newAggregatedEffects.grantedAbilities.push({...effect, sourceFeat: definition.label} as GrantsAbilityEffect & { sourceFeat?: string });
+          newAggregatedEffects.grantedAbilities.push({...effect, sourceFeat: sourceFeatName} as GrantsAbilityEffect & { sourceFeat?: string });
           break;
         case "modifiesMechanic":
-          newAggregatedEffects.modifiedMechanics.push({...effect, sourceFeat: definition.label} as ModifiesMechanicEffect & { sourceFeat?: string });
+          newAggregatedEffects.modifiedMechanics.push({...effect, sourceFeat: sourceFeatName} as ModifiesMechanicEffect & { sourceFeat?: string });
           break;
         case "grantsProficiency":
-          newAggregatedEffects.proficienciesGranted.push({...effect, sourceFeat: definition.label} as GrantsProficiencyEffect & { sourceFeat?: string });
+          newAggregatedEffects.proficienciesGranted.push({...effect, sourceFeat: sourceFeatName} as GrantsProficiencyEffect & { sourceFeat?: string });
           break;
         case "bonusFeatSlot":
-          newAggregatedEffects.bonusFeatSlots.push({...effect, sourceFeat: definition.label} as BonusFeatSlotEffect & { sourceFeat?: string });
+          newAggregatedEffects.bonusFeatSlots.push({...effect, sourceFeat: sourceFeatName} as BonusFeatSlotEffect & { sourceFeat?: string });
           break;
         case "language":
           const langEffect = effect as LanguageEffect;
           if(langEffect.count) newAggregatedEffects.languagesGranted.count += langEffect.count;
-          if(langEffect.specific) newAggregatedEffects.languagesGranted.specific.push({languageId: langEffect.specific, note: langEffect.note, sourceFeat: definition.label});
+          if(langEffect.specific) newAggregatedEffects.languagesGranted.specific.push({languageId: langEffect.specific, note: langEffect.note, sourceFeat: sourceFeatName});
           break;
         case "note":
         case "descriptive":
-          newAggregatedEffects.descriptiveNotes.push({...effect, sourceFeat: definition.label} as (NoteEffectDetail | DescriptiveEffectDetail) & { sourceFeat?: string });
+          newAggregatedEffects.descriptiveNotes.push({...effect, sourceFeat: sourceFeatName} as (NoteEffectDetail | DescriptiveEffectDetail) & { sourceFeat?: string });
           break;
       }
     }
@@ -732,7 +752,8 @@ export function calculateSpeedBreakdown(
     components.push({ source: (UI_STRINGS.infoDialogSpeedBaseRaceLabel || "Base ({raceName})").replace("{raceName}", raceLabel), value: racialSpeed });
     currentSpeed = racialSpeed;
   } else if (speedType === 'land' && racialSpeed === undefined) {
-    const defaultLandSpeed = 30;
+    // Assume a default land speed if none is specified by race and it's land speed.
+    const defaultLandSpeed = (SIZES.find(s => s.value === character.size)?.label === "Small" || SIZES.find(s => s.value === character.size)?.label === "Gnome") ? 20 : 30;
     components.push({ source: (UI_STRINGS.infoDialogSpeedBaseRaceLabel || "Base ({raceName})").replace("{raceName}", raceLabel), value: defaultLandSpeed });
     currentSpeed = defaultLandSpeed;
   }
@@ -750,15 +771,35 @@ export function calculateSpeedBreakdown(
       else if (charClass.level >= 3) monkSpeedBonus = 10;
     }
     if (charClass.className === 'barbarian' && speedType === 'land') {
-       barbarianFastMovementBonus = 10;
+       barbarianFastMovementBonus = 10; // This is a flat bonus for Barbarians with Fast Movement
     }
   });
 
   if (monkSpeedBonus > 0) {
-    components.push({ source: UI_STRINGS.infoDialogSpeedMonkLabel || "Monk Unarmored Speed", value: monkSpeedBonus });
-    currentSpeed += monkSpeedBonus;
+    // Monk speed bonus *replaces* base, it's not additive to racial typically.
+    // However, if racial is higher, that usually takes precedence or they combine in specific ways.
+    // For simplicity, if monk bonus is active, we assume it's the primary speed source before other mods.
+    // This logic might need refinement based on exact D&D 3.5 stacking rules for monk speed.
+    // Let's assume for now it adds to the highest of current base or its own progression.
+    currentSpeed = Math.max(currentSpeed, monkSpeedBonus); // If monk speed is better, use it.
+    // If we strictly add it, it would be:
+    // components.push({ source: UI_STRINGS.infoDialogSpeedMonkLabel || "Monk Unarmored Speed", value: monkSpeedBonus });
+    // currentSpeed += monkSpeedBonus;
+    // For now, let's reflect it as an addition IF it's not already the base.
+    // This part is complex. Official ruling is often "use the better of the two".
+    // Let's find the difference if Monk is better and add that as a component.
+    const initialSpeedBeforeMonk = components.reduce((sum,c) => sum + c.value, 0);
+    if (monkSpeedBonus > initialSpeedBeforeMonk && speedType === 'land') { // Only add if it's a net positive change specifically from monk
+        components.push({ source: UI_STRINGS.infoDialogSpeedMonkLabel || "Monk Unarmored Speed", value: monkSpeedBonus - initialSpeedBeforeMonk });
+        currentSpeed = initialSpeedBeforeMonk + (monkSpeedBonus - initialSpeedBeforeMonk); // update currentSpeed
+    } else if (monkSpeedBonus > 0 && initialSpeedBeforeMonk === 0 && speedType === 'land') { // if base speed was 0, monk provides it
+        components.push({ source: UI_STRINGS.infoDialogSpeedMonkLabel || "Monk Unarmored Speed", value: monkSpeedBonus });
+        currentSpeed = monkSpeedBonus;
+    }
+
+
   }
-  if (barbarianFastMovementBonus > 0 && currentSpeed > 0) {
+  if (barbarianFastMovementBonus > 0 && currentSpeed > 0 && speedType === 'land') { // Barbarian bonus adds to existing land speed.
      components.push({ source: UI_STRINGS.infoDialogSpeedBarbarianLabel || "Barbarian Fast Movement", value: barbarianFastMovementBonus });
      currentSpeed += barbarianFastMovementBonus;
   }
@@ -770,7 +811,7 @@ export function calculateSpeedBreakdown(
     currentSpeed += miscModForThisSpeed;
   }
 
-  if (currentSpeed > 0) {
+  if (currentSpeed > 0) { // Penalties only apply if there's a speed to penalize
     const armorPenaltyVal = (character.armorSpeedPenalty_miscModifier || 0) - (character.armorSpeedPenalty_base || 0);
     if (armorPenaltyVal !== 0) {
       components.push({ source: UI_STRINGS.infoDialogSpeedArmorPenaltyLabel || "Armor Penalty", value: armorPenaltyVal });
@@ -790,7 +831,7 @@ export function calculateSpeedBreakdown(
   return {
     name: speedName,
     components,
-    total: Math.max(0, currentSpeed),
+    total: Math.max(0, currentSpeed), // Ensure speed doesn't go below 0
   };
 }
 
@@ -815,6 +856,7 @@ export function isAlignmentCompatible(
 
   if (characterAlignment === itemAlignment) return true;
 
+  // Handle generic alignment prerequisites (e.g., "lawful" matches "lawful-good", "lawful-neutral", "lawful-evil")
   const itemAlignLower = (itemAlignment as string).toLowerCase();
 
   if (itemAlignLower === 'lawful' && charParts[0] === 'lawful') return true;
@@ -822,6 +864,7 @@ export function isAlignmentCompatible(
   if (itemAlignLower === 'good' && charParts.length > 1 && charParts[1] === 'good') return true;
   if (itemAlignLower === 'evil' && charParts.length > 1 && charParts[1] === 'evil') return true;
   
+  // For "Any Neutral (Law/Chaos Axis)" or "Any Neutral (Good/Evil Axis)"
   if (itemAlignLower === 'neutral-lc' && (charParts[0] === 'neutral' || characterAlignment === 'true-neutral')) return true;
   if (itemAlignLower === 'neutral-ge' && ((charParts.length > 1 && charParts[1] === 'neutral') || characterAlignment === 'true-neutral')) return true;
 
@@ -848,8 +891,6 @@ export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 // Re-export specific utilities from dnd-utils that are fundamental to character type system
 // or frequently used alongside character types.
-export { SAVING_THROW_ABILITIES, calculateCharacterTotalLevel, getXpRequiredForLevel, calculateLevelFromXp } from '@/lib/dnd-utils';
+export { SAVING_THROW_ABILITIES, calculateLevelFromXp, getXpRequiredForLevel } from '@/lib/dnd-utils'; // Updated calculateSumOfClassLevels
 
 export * from './character-core';
-
-

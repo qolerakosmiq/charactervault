@@ -52,6 +52,7 @@ interface SkillsFormSectionProps {
   onSkillChange: (skillId: string, ranks: number, isClassSkill?: boolean) => void;
   onEditCustomSkillDefinition: (skillDefId: string) => void;
   onOpenSkillInfoDialog: (skillId: string) => void;
+  characterLevel: number; // XP-derived character level
 }
 
 
@@ -93,6 +94,7 @@ const SkillsFormSectionComponent = ({
   onSkillChange,
   onEditCustomSkillDefinition,
   onOpenSkillInfoDialog,
+  characterLevel, // Use this for calculations
 }: SkillsFormSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
@@ -103,7 +105,7 @@ const SkillsFormSectionComponent = ({
   const selectedFeats = skillsData.feats;
 
   const firstClass = characterClasses[0];
-  const characterLevel = firstClass?.level || 1;
+  // characterLevel is now passed as a prop (XP-derived)
 
   const {
     totalSkillPointsAvailable,
@@ -131,7 +133,8 @@ const SkillsFormSectionComponent = ({
     const pointsPerLevelBeforeMin = currentBaseSkillPoints + currentIntMod + currentRacialBonus;
     const pointsPerRegularLevel = Math.max(1, pointsPerLevelBeforeMin);
 
-    const currentPointsForFirstLevel = pointsPerRegularLevel * 4;
+    // Use the XP-derived characterLevel for calculating skill points
+    const currentPointsForFirstLevel = characterLevel >= 1 ? pointsPerRegularLevel * 4 : 0;
     const currentPointsFromLevelProgression = characterLevel > 1 ? pointsPerRegularLevel * (characterLevel - 1) : 0;
     const currentTotalSkillPointsAvailable = currentPointsForFirstLevel + currentPointsFromLevelProgression;
 
@@ -162,7 +165,7 @@ const SkillsFormSectionComponent = ({
     firstClass?.className,
     characterRace,
     actualAbilityScores,
-    characterLevel,
+    characterLevel, // Now depends on XP-derived level
     characterSkillInstances,
   ]);
 
@@ -386,7 +389,7 @@ const SkillsFormSectionComponent = ({
               const committedRankValue = skillInstanceProp.ranks || 0; 
               const totalBonus = committedRankValue + baseAbilityMod + calculatedMiscModifier + (skillInstanceProp.miscModifier || 0);
               
-              const maxRanksValue = calculateMaxRanks(characterLevel, skillInstanceProp.isClassSkill || false, intelligenceModifier);
+              const maxRanksValue = calculateMaxRanks(characterLevel, skillInstanceProp.isClassSkill || false, intelligenceModifier); // Use XP-derived characterLevel
               const skillCostDisplay = (skillDef.keyAbility === 'none' || skillInstanceProp.isClassSkill) ? 1 : 2;
               const currentStepForInput = (skillDef.keyAbility === 'none' || skillInstanceProp.isClassSkill) ? 1 : 0.5;
 
