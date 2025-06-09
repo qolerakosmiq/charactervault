@@ -12,6 +12,7 @@ import type { XpDataEntry } from '@/i18n/i18n-data';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getXpRequiredForLevel } from '@/types/character';
+import { cn } from '@/lib/utils';
 
 const DEBOUNCE_DELAY_XP = 500;
 
@@ -115,10 +116,12 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
 
         <div className="space-y-1.5">
           <Progress value={progressPercentage} className="h-3" indicatorClassName="bg-primary" />
-          <div className="flex justify-between text-xs text-muted-foreground px-1">
-            <span>{levelLabelFormat.replace("{levelNumber}", String(currentLevel))}</span>
+          <div className="flex justify-between items-baseline text-xs text-muted-foreground px-1">
+            <span className="text-xl text-accent font-semibold">
+              {levelLabelFormat.replace("{levelNumber}", String(currentLevel))}
+            </span>
             {xpForNextLevel !== Infinity ? (
-              <span>
+              <span className="text-sm">
                 {(UI_STRINGS.experiencePanelXpToLevelUpFormat || "{currentXp} / {xpForNextLevel} XP")
                   .replace("{currentXp}", localCurrentXp.toLocaleString())
                   .replace("{xpForNextLevel}", xpForNextLevel.toLocaleString())
