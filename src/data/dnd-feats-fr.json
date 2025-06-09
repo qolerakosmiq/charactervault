@@ -728,6 +728,17 @@
       "type": "special"
     },
     {
+      "value": "epic-toughness",
+      "label": "Robustesse Épique",
+      "description": "<b>Avantage :</b> Vous gagnez +20 points de vie.",
+      "effectsText": "+20 points de vie.",
+      "prerequisites": { "feats": ["toughness"], "special": "Niveau de personnage 21" },
+      "effects": [{ "type": "hitPoints", "value": 20, "bonusType": "untyped" }],
+      "canTakeMultipleTimes": true,
+      "isClassFeature": false,
+      "type": "special"
+    },
+    {
       "value": "track",
       "label": "Pistage",
       "description": "<b>Avantage :</b> Pour trouver des pistes ou les suivre sur 1,5 kilomètre, un test de Survie réussi est nécessaire.<br />Vous devez effectuer un autre test de Survie chaque fois que les pistes deviennent difficiles à suivre.",
@@ -1034,4 +1045,6 @@
     { "value": "special-ex-su", "label": "Capacité Extraordinaire/Surnaturelle" }
   ]
 }
+    
+
     

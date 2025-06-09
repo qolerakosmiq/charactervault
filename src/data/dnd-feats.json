@@ -728,6 +728,17 @@
       "type": "special"
     },
     {
+      "value": "epic-toughness",
+      "label": "Epic Toughness",
+      "description": "<b>Benefit:</b> You gain +20 hit points.",
+      "effectsText": "+20 hit points.",
+      "prerequisites": { "feats": ["toughness"], "special": "Character level 21st" },
+      "effects": [{ "type": "hitPoints", "value": 20, "bonusType": "untyped" }],
+      "canTakeMultipleTimes": true,
+      "isClassFeature": false,
+      "type": "special"
+    },
+    {
       "value": "track",
       "label": "Track",
       "description": "<b>Benefit:</b> To find tracks or to follow them for 1 mile requires a successful Survival check.<br />You must make another Survival check every time the tracks become difficult to follow.",
@@ -1034,4 +1045,6 @@
     { "value": "special-ex-su", "label": "Extraordinary/Supernatural Ability" }
   ]
 }
+    
+
     
