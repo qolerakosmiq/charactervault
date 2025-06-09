@@ -22,7 +22,7 @@ import {
   getRaceSkillPointsBonusPerLevel,
   ABILITY_ORDER_INTERNAL,
   calculateFeatEffects,
-  calculateLevelFromXp // Now directly from types/character (which re-exports from dnd-utils)
+  calculateLevelFromXp
 } from '@/types/character';
 import {
   getBab,
@@ -32,7 +32,7 @@ import {
   calculateGrapple,
   getUnarmedGrappleDamage,
   calculateAbilityModifier,
-  calculateSumOfClassLevels // Renamed utility
+  calculateSumOfClassLevels
 } from '@/lib/dnd-utils';
 
 
@@ -267,8 +267,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
   }, [
     isClient, translationsLoading, translations,
-    globalCustomFeatDefinitionsFromStore, globalCustomSkillDefinitionsFromStore,
-    allAvailableFeatDefinitions, allAvailableSkillDefinitionsForDisplay, globalCustomSkillDefinitions
+    globalCustomFeatDefinitionsFromStore, globalCustomSkillDefinitionsFromStore, // Direct dependencies from store
+    allAvailableFeatDefinitions, allAvailableSkillDefinitionsForDisplay, globalCustomSkillDefinitions // Memoized derived values used inside effect
   ]);
 
 
@@ -295,7 +295,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       translations.XP_TABLE,
       translations.EPIC_LEVEL_XP_INCREASE
     );
-  }, [character, translations]);
+  }, [character?.experiencePoints, translations]);
+
 
   React.useEffect(() => {
     if (character && translations && allAvailableFeatDefinitions) {
@@ -388,7 +389,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       return translations.DND_RACE_MIN_ADULT_AGE_DATA[raceKey] || 1;
     }
     return 1;
-  }, [character, translations, translationsLoading]);
+  }, [character?.race, translations, translationsLoading]);
 
   React.useEffect(() => {
     if (character && character.race && translations) {
@@ -784,9 +785,9 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     if (!character) return undefined;
     return {
       currentXp: character.experiencePoints || 0,
-      currentLevel: characterLevelFromXP, // Use XP-derived level
+      currentLevel: characterLevelFromXP,
     };
-  }, [character, characterLevelFromXP]);
+  }, [character?.experiencePoints, characterLevelFromXP]);
 
   const storyAndAppearanceData = React.useMemo<CharacterFormStoryPortraitSectionProps['storyAndAppearanceData'] | undefined>(() => {
     if (!character) return undefined;
@@ -930,9 +931,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         )}
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-8 md:col-span-1"> {/* Left column for AC and XP */}
-            {acData && <ArmorClassPanel acData={acData} onCharacterUpdate={handleCharacterFieldUpdate as any} onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}/>}
-            
+          <div className="space-y-8">
+            {acData && <ArmorClassPanel acData={acData} aggregatedFeatEffects={aggregatedFeatEffects} onCharacterUpdate={handleCharacterFieldUpdate as any} onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}/>}
             {experiencePanelData && translations.XP_TABLE && (
               <ExperiencePanel
                 experienceData={experiencePanelData}
@@ -943,7 +943,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             )}
           </div>
           
-          <div className="md:col-span-1"> {/* Right column for Health Panel */}
+          <div className="space-y-8">
             {healthPanelData && (
               <HealthPanel
                 healthData={healthPanelData}
@@ -1083,4 +1083,5 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
+
 

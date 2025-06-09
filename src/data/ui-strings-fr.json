@@ -438,15 +438,17 @@
     "conditionsPanelTitle": "Conditions Actives",
     "conditionsPanelDescription": "Activez ou désactivez les effets conditionnels des dons et capacités de votre personnage.",
     "conditionsPanelTooltipSourcesLabel": "Sources :",
-    "infoDialogUnknownFeatSource": "Unknown Feat",
-    "experiencePanelTitle": "Experience",
-    "experiencePanelDescription": "Track your character's progression and current experience points.",
-    "experiencePanelCurrentXpLabel": "Current Experience Points (XP)",
-    "experiencePanelLevelLabelFormat": "Level {levelNumber}",
-    "experiencePanelNextLevelLabel": "Next Level At",
+    "infoDialogUnknownFeatSource": "Don inconnu",
+    "experiencePanelTitle": "Expérience",
+    "experiencePanelDescription": "Suivez la progression et les points d'expérience actuels de votre personnage.",
+    "experiencePanelCurrentXpLabel": "Points d'expérience actuels (XP)",
+    "experiencePanelLevelLabelFormat": "Niveau {levelNumber}",
+    "experiencePanelNextLevelLabel": "Niveau suivant à",
     "experiencePanelXpToLevelUpFormat": "{currentXp} / {xpForNextLevel} XP",
-    "experiencePanelMaxLevel": "Max Level Reached"
+    "experiencePanelMaxLevel": "Niveau Max Atteint",
+    "conditionWieldingTwoWeaponsOrDouble": "Manie Deux Armes ou Arme Double",
+    "conditionFightingDefensivelyOrTotalDefenseWithTwoWeapons": "Combat Défensif ou Défense Totale (avec Deux Armes)",
+    "conditionVsDesignatedOpponent": "contre Adversaire Désigné"
   }
 }
-
     

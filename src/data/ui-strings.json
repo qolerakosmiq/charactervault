@@ -445,8 +445,10 @@
     "experiencePanelLevelLabelFormat": "Level {levelNumber}",
     "experiencePanelNextLevelLabel": "Next Level At",
     "experiencePanelXpToLevelUpFormat": "{currentXp} / {xpForNextLevel} XP",
-    "experiencePanelMaxLevel": "Max Level Reached"
+    "experiencePanelMaxLevel": "Max Level Reached",
+    "conditionWieldingTwoWeaponsOrDouble": "Wielding Two Weapons or Double Weapon",
+    "conditionFightingDefensivelyOrTotalDefenseWithTwoWeapons": "Fighting Defensively or Total Defense (with Two Weapons)",
+    "conditionVsDesignatedOpponent": "vs. Designated Opponent"
   }
 }
-
     

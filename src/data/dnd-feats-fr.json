@@ -143,7 +143,7 @@
       "description": "<b>Avantage :</b> Pendant votre action, vous désignez un adversaire et recevez un bonus d'esquive de +1 à la Classe d'Armure contre les attaques de cet adversaire.<br />Vous pouvez sélectionner un nouvel adversaire à chaque action.<br /><b>Spécial :</b> Une condition qui vous fait perdre votre bonus de Dextérité à la Classe d'Armure (le cas échéant) vous fait également perdre les bonus d'esquive.<br />De plus, les bonus d'esquive se cumulent entre eux, contrairement à la plupart des autres types de bonus.",
       "prerequisites": { "abilities": { "dexterity": 13 } },
       "effectsText": "Bonus d'esquive de +1 à la CA contre une cible.",
-      "effects": [{ "type": "armorClass", "acType": "dodge", "value": 1, "condition": "vs_designated_opponent" }],
+      "effects": [{ "type": "armorClass", "acType": "dodge", "value": 1, "condition": "conditionVsDesignatedOpponent" }],
       "isClassFeature": false,
       "type": "special"
     },
@@ -414,7 +414,7 @@
       "description": "<b>Avantage :</b> Vous obtenez un bonus d'esquive de +4 à la Classe d'Armure contre les attaques d'opportunité provoquées lorsque vous vous déplacez hors ou à l'intérieur d'une zone menacée.<br />Une condition qui vous fait perdre votre bonus de Dextérité à la Classe d'Armure (le cas échéant) vous fait également perdre les bonus d'esquive.<br />Les bonus d'esquive se cumulent entre eux, contrairement à la plupart des autres types de bonus.",
       "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge"] },
       "effectsText": "Bonus d'esquive de +4 à la CA contre les AoO dues au mouvement.",
-      "effects": [{ "type": "note", "text": "Bonus d'esquive de +4 à la CA contre les AoO dues au mouvement." }],
+      "effects": [{ "type": "armorClass", "acType": "dodge", "value": 4, "condition": "vs_movement_aoo" }],
       "isClassFeature": false,
       "type": "special"
     },
@@ -762,8 +762,11 @@
       "label": "Combat à deux armes (défense)",
       "description": "<b>Avantage :</b> Lorsque vous maniez une arme double ou deux armes (à l'exclusion des armes naturelles ou des frappes à mains nues), vous gagnez un bonus de bouclier de +1 à votre CA.<br />Lorsque vous combattez sur la défensive ou utilisez l'action de défense totale, ce bonus de bouclier passe à +2.",
       "prerequisites": { "abilities": { "dexterity": 15 }, "feats": ["two-weapon-fighting"] },
-      "effectsText": "Bonus de bouclier de +1 à la CA en combat à deux armes (+2 en combat défensif/défense totale).",
-      "effects": [{ "type": "note", "text": "Bonus de bouclier de +1 à la CA en combat à deux armes (+2 en combat défensif/défense totale)." }],
+      "effectsText": "Bonus de bouclier de +1 à la CA (+2 en combat défensif/défense totale).",
+      "effects": [
+        { "type": "armorClass", "acType": "shield", "value": 1, "condition": "conditionWieldingTwoWeaponsOrDouble" },
+        { "type": "armorClass", "acType": "shield", "value": 1, "condition": "conditionFightingDefensivelyOrTotalDefenseWithTwoWeapons" }
+      ],
       "isClassFeature": false,
       "type": "special"
     },
@@ -923,7 +926,17 @@
     { "value": "class-monk-bonus-feat-slot", "label": "Emplacement de don supplémentaire de Moine", "effectsText":"Obtient un don supplémentaire de la liste des Moines.", "isClassFeature": true, "type": "special", "effects": [{"type": "note", "text":"Obtient un don supplémentaire de la liste des Moines."}] },
     { "value": "class-monk-flurry-of-blows", "label": "Déluge de coups", "effectsText":"Effectue des attaques supplémentaires sans armure avec une pénalité.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Effectue des attaques supplémentaires sans armure avec une pénalité."}] },
     { "value": "class-monk-unarmed-strike-damage", "label": "Frappe à mains nues de Moine", "effectsText":"Les frappes à mains nues infligent plus de dégâts (évolue avec le niveau).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Les frappes à mains nues infligent plus de dégâts (évolue avec le niveau)."}] },
-    { "value": "class-monk-ac-bonus", "label": "Bonus de CA de Moine", "effectsText":"Ajoute le bonus de Sag à la CA ; obtient un bonus de CA évolutif aux niveaux supérieurs.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Ajoute le bonus de Sag à la CA ; obtient un bonus de CA évolutif aux niveaux supérieurs."}] },
+    {
+      "value": "class-monk-ac-bonus",
+      "label": "Bonus de CA de Moine",
+      "effectsText": "Ajoute le bonus de Sag à la CA ; obtient un bonus de CA évolutif aux niveaux supérieurs.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "armorClass", "acType": "monk_wisdom", "value": "WIS", "bonusType": "untyped" },
+        { "type": "note", "text": "Le bonus de CA évolutif (+1 au N5, +2 au N10, etc.) s'ajoute à la Sagesse." }
+      ]
+    },
     { "value": "class-monk-unarmored-speed-bonus", "label": "Bonus de vitesse sans armure de Moine", "effectsText":"La vitesse sans armure augmente avec le niveau.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"La vitesse sans armure augmente avec le niveau."}] },
     { "value": "class-monk-evasion", "label": "Esquive totale", "effectsText":"Ne subit aucun dégât en cas de jet de Réflexes réussi pour la moitié.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Ne subit aucun dégât en cas de jet de Réflexes réussi pour la moitié."}] },
     {
@@ -1045,6 +1058,4 @@
     { "value": "special-ex-su", "label": "Capacité Extraordinaire/Surnaturelle" }
   ]
 }
-    
-
     

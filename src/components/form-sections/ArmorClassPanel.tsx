@@ -2,7 +2,7 @@
 'use client';
 
 import *as React from 'react';
-import type { Character, InfoDialogContentType } from '@/types/character';
+import type { Character, InfoDialogContentType, AggregatedFeatEffects } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Shield, Info, Loader2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
@@ -20,11 +20,12 @@ export type ArmorClassPanelData = Pick<Character, 'abilityScores' | 'size' | 'ar
 
 export interface ArmorClassPanelProps {
   acData?: ArmorClassPanelData;
+  aggregatedFeatEffects?: AggregatedFeatEffects | null; // Added
   onCharacterUpdate?: (field: keyof ArmorClassPanelData, value: any) => void;
   onOpenAcBreakdownDialog?: (acType: 'Normal' | 'Touch' | 'Flat-Footed') => void;
 }
 
-const ArmorClassPanelComponent = ({ acData, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) => {
+const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const [localTemporaryAcModifier, setLocalTemporaryAcModifier] = useDebouncedFormField(
@@ -32,6 +33,36 @@ const ArmorClassPanelComponent = ({ acData, onCharacterUpdate, onOpenAcBreakdown
     (value) => { if (onCharacterUpdate) onCharacterUpdate('acMiscModifier', value); },
     DEBOUNCE_DELAY
   );
+
+  const calculateTotalAcComponent = React.useCallback((
+    baseValue: number | undefined,
+    featAcType: "dodge" | "armor" | "shield" | "natural" | "deflection" | "insight" | "circumstance" | "untyped" | "monk_wisdom" | "other_feat_bonus"
+  ): number => {
+    let total = baseValue || 0;
+    if (aggregatedFeatEffects?.acBonuses) {
+      aggregatedFeatEffects.acBonuses.forEach(effect => {
+        if (effect.acType === featAcType && typeof effect.value === 'number') {
+          // Basic condition check - assumes condition is active if present,
+          // real implementation needs to check actual condition state from character.feats
+          let isEffectActive = !effect.condition; 
+          if (effect.condition) {
+            // This is a placeholder for actual condition checking logic.
+            // For example, if feat has instanceId 'feat-two-weapon-defense' and condition 'wielding_two_weapons_or_double',
+            // you'd check character.feats.find(f => f.instanceId === 'feat-two-weapon-defense')?.conditionalEffectStates?.['wielding_two_weapons_or_double']
+            isEffectActive = true; // For now, assume active if condition exists for calculation
+          }
+          if(isEffectActive) total += effect.value;
+        } else if (featAcType === "other_feat_bonus" && effect.acType !== "dodge" && effect.acType !== "armor" && effect.acType !== "shield" && effect.acType !== "natural" && effect.acType !== "deflection" && typeof effect.value === 'number' ) {
+            // This is a simplified catch-all for other types; monk_wisdom needs special handling
+             if (effect.acType !== "monk_wisdom") { // Exclude monk_wisdom here, it's handled separately
+                total += effect.value;
+             }
+        }
+      });
+    }
+    return total;
+  }, [aggregatedFeatEffects]);
+
 
   if (translationsLoading || !translations || !acData) {
     return (
@@ -102,37 +133,29 @@ const ArmorClassPanelComponent = ({ acData, onCharacterUpdate, onOpenAcBreakdown
   const currentSize = acData.size || 'medium';
 
   const dexModifier = getAbilityModifierByName(currentAbilityScores, 'dexterity');
+  const wisModifier = getAbilityModifierByName(currentAbilityScores, 'wisdom'); // For Monk
   const sizeModAC = getSizeModifierAC(currentSize, SIZES);
 
-  const acCalculatedMiscModifier = 0; 
+  const totalArmorBonus = calculateTotalAcComponent(acData.armorBonus, "armor");
+  const totalShieldBonus = calculateTotalAcComponent(acData.shieldBonus, "shield");
+  const totalNaturalArmor = calculateTotalAcComponent(acData.naturalArmor, "natural");
+  const totalDeflectionBonus = calculateTotalAcComponent(acData.deflectionBonus, "deflection");
+  const totalDodgeBonus = calculateTotalAcComponent(acData.dodgeBonus, "dodge");
+  
+  let monkWisdomAcBonus = 0;
+  if (aggregatedFeatEffects?.acBonuses) {
+    const monkWisEffect = aggregatedFeatEffects.acBonuses.find(eff => eff.acType === "monk_wisdom" && eff.value === "WIS");
+    if (monkWisEffect) {
+        // Add actual condition checking if monkWisEffect.condition exists
+        monkWisdomAcBonus = wisModifier > 0 ? wisModifier : 0; // Monk bonus doesn't apply if Wis mod is negative
+    }
+  }
 
-  const normalAC = 10 +
-    (acData.armorBonus || 0) +
-    (acData.shieldBonus || 0) +
-    dexModifier +
-    sizeModAC +
-    (acData.naturalArmor || 0) +
-    (acData.deflectionBonus || 0) +
-    (acData.dodgeBonus || 0) +
-    (acCalculatedMiscModifier || 0) + 
-    (acData.acMiscModifier || 0);  
+  const calculatedFeatMiscAcBonus = calculateTotalAcComponent(0, "other_feat_bonus") + monkWisdomAcBonus;
 
-  const touchAC = 10 +
-    dexModifier +
-    sizeModAC +
-    (acData.deflectionBonus || 0) +
-    (acData.dodgeBonus || 0) +
-    (acCalculatedMiscModifier || 0) + 
-    (acData.acMiscModifier || 0);  
-
-  const flatFootedAC = 10 +
-    (acData.armorBonus || 0) +
-    (acData.shieldBonus || 0) +
-    sizeModAC +
-    (acData.naturalArmor || 0) +
-    (acData.deflectionBonus || 0) +
-    (acCalculatedMiscModifier || 0) + 
-    (acData.acMiscModifier || 0);  
+  const normalAC = 10 + totalArmorBonus + totalShieldBonus + dexModifier + sizeModAC + totalNaturalArmor + totalDeflectionBonus + totalDodgeBonus + calculatedFeatMiscAcBonus + (acData.acMiscModifier || 0);
+  const touchAC = 10 + dexModifier + sizeModAC + totalDeflectionBonus + totalDodgeBonus + calculatedFeatMiscAcBonus + (acData.acMiscModifier || 0);
+  const flatFootedAC = 10 + totalArmorBonus + totalShieldBonus + sizeModAC + totalNaturalArmor + totalDeflectionBonus + calculatedFeatMiscAcBonus + (acData.acMiscModifier || 0);
 
 
   const handleShowAcBreakdown = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
@@ -203,3 +226,4 @@ const ArmorClassPanelComponent = ({ acData, onCharacterUpdate, onOpenAcBreakdown
 };
 ArmorClassPanelComponent.displayName = 'ArmorClassPanelComponent';
 export const ArmorClassPanel = React.memo(ArmorClassPanelComponent);
+

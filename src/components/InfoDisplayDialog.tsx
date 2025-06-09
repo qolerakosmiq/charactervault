@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare, ShieldOff, Weight, Zap, AlertTriangle, Heart } from 'lucide-react';
+import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare, ShieldOff, Weight, Zap, AlertTriangle, Heart, ShieldQuestion } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
@@ -108,7 +108,7 @@ interface InfoDisplayDialogProps {
   character: Character;
   contentType: InfoDialogContentType | null;
   aggregatedFeatEffects: AggregatedFeatEffects;
-  detailedAbilityScores: DetailedAbilityScores | null; // Added
+  detailedAbilityScores: DetailedAbilityScores | null; 
 }
 
 const DIALOG_ICONS: Record<string, React.ElementType> = {
@@ -117,7 +117,8 @@ const DIALOG_ICONS: Record<string, React.ElementType> = {
   armorSpeedPenaltyBreakdown: ShieldOff,
   loadSpeedPenaltyBreakdown: Weight,
   fortitude: Zap, reflex: Zap, will: Zap,
-  maxHpBreakdown: Heart, // Added
+  maxHpBreakdown: Heart, 
+  acBreakdown: ShieldQuestion,
   error: AlertTriangle,
   default: Info,
 };
@@ -129,7 +130,7 @@ export function InfoDisplayDialog({
   character,
   contentType,
   aggregatedFeatEffects: aggregatedFeatEffectsProp,
-  detailedAbilityScores: detailedAbilityScoresProp, // Added
+  detailedAbilityScores: detailedAbilityScoresProp, 
 }: InfoDisplayDialogProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
   const { customFeatDefinitions, customSkillDefinitions } = useDefinitionsStore(state => ({
@@ -210,7 +211,7 @@ export function InfoDisplayDialog({
 
     switch (contentType.type) {
       case 'race': {
-        iconKey = 'race'; // This key needs to exist in DIALOG_ICONS or be handled by default
+        iconKey = 'race'; 
         const raceId = character.race;
         const raceData = DND_RACES.find(r => r.value === raceId);
         const qualities = getRaceSpecialQualities(raceId, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, SKILL_DEFINITIONS, PREDEFINED_FEATS, ABILITY_LABELS);
@@ -240,7 +241,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'class': {
-        iconKey = 'class'; // This key needs to exist in DIALOG_ICONS or be handled by default
+        iconKey = 'class'; 
         const classId = character.classes[0]?.className;
         const classData = DND_CLASSES.find(c => c.value === classId);
         const classSpecificDetails: Array<{ label: string; value: string | number; isBold?: boolean }> = [];
@@ -280,14 +281,14 @@ export function InfoDisplayDialog({
         break;
       }
       case 'alignmentSummary':
-        iconKey = 'alignmentSummary'; // This key needs to exist in DIALOG_ICONS or be handled by default
+        iconKey = 'alignmentSummary'; 
         data = {
           title: UI_STRINGS.infoDialogAlignmentsTitle || 'Alignments',
           content: [AlignmentSummaryContentDisplay({htmlContent: ALIGNMENTS.map(a => `<p><b>${a.label}:</b><br />${a.description}</p>`).join('')})],
         };
         break;
       case 'deity':
-        iconKey = 'deity'; // This key needs to exist in DIALOG_ICONS or be handled by default
+        iconKey = 'deity'; 
         const deityId = character.deity;
         const deityData = DND_DEITIES.find(d => d.value === deityId);
         if (deityData) {
@@ -299,7 +300,7 @@ export function InfoDisplayDialog({
         }
         break;
       case 'abilityScoreBreakdown': {
-        iconKey = 'abilityScoreBreakdown'; // This key needs to exist in DIALOG_ICONS or be handled by default
+        iconKey = 'abilityScoreBreakdown'; 
         const abilityKeyForTitle = contentType.abilityName as Exclude<AbilityName, 'none'>;
         const abilityLabelForTitle = ABILITY_LABELS.find(al => al.value === abilityKeyForTitle);
         const abilityNameString = abilityLabelForTitle?.label || abilityKeyForTitle;
@@ -446,7 +447,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'resistanceBreakdown':
-        iconKey = 'resistanceBreakdown'; // This key needs to exist in DIALOG_ICONS or be handled by default
+        iconKey = 'resistanceBreakdown'; 
         const resistanceValue = character[contentType.resistanceField] as ResistanceValue;
         const resistanceFieldLabelKey = `resistanceLabel${contentType.resistanceField.charAt(0).toUpperCase() + contentType.resistanceField.slice(1).replace('Resistance', '')}` as keyof typeof UI_STRINGS;
         const resistanceLabel = UI_STRINGS[resistanceFieldLabelKey] || contentType.resistanceField.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).replace(' Resistance', '');
@@ -465,13 +466,12 @@ export function InfoDisplayDialog({
         };
         break;
       case 'acBreakdown': {
-        iconKey = 'acBreakdown'; // This key needs to exist in DIALOG_ICONS or be handled by default
+        iconKey = 'acBreakdown'; 
         const dexMod = calculateAbilityModifier(finalAbilityScores.dexterity);
         const sizeModACVal = getSizeModifierAC(character.size, SIZES);
         const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
         const details: AcBreakdownDetailItem[] = [];
 
-        const acCalculatedMiscModifier = 0;
         const temporaryAcModifier = character.acMiscModifier || 0;
 
         details.push({ label: UI_STRINGS.acBreakdownBaseLabel || "Base", value: 10 });
@@ -498,10 +498,7 @@ export function InfoDisplayDialog({
         }
         if (character.deflectionBonus) details.push({ label: UI_STRINGS.acBreakdownDeflectionBonusLabel || "Deflection Bonus", value: character.deflectionBonus });
 
-        if (acCalculatedMiscModifier !== 0) {
-          details.push({ label: UI_STRINGS.acBreakdownCalculatedMiscLabel || "Misc Modifier", value: acCalculatedMiscModifier });
-        }
-
+        
         if ((contentType.acType === 'Normal' || contentType.acType === 'Touch') && character.dodgeBonus) {
           details.push({ label: UI_STRINGS.acBreakdownDodgeBonusLabel || "Dodge Bonus", value: character.dodgeBonus });
         }
@@ -510,21 +507,84 @@ export function InfoDisplayDialog({
           details.push({ label: UI_STRINGS.armorClassTempModifierLabel || "Temporary Modifier", value: temporaryAcModifier });
         }
 
+        // Calculate total by summing up all active feat bonuses and then the base components
         let totalCalculated = 10;
-        if (contentType.acType === 'Normal') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + dexMod + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (acCalculatedMiscModifier || 0) + (temporaryAcModifier || 0);
-        else if (contentType.acType === 'Touch') totalCalculated = 10 + dexMod + sizeModACVal + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (acCalculatedMiscModifier || 0) + (temporaryAcModifier || 0);
-        else if (contentType.acType === 'Flat-Footed') totalCalculated = 10 + (character.armorBonus || 0) + (character.shieldBonus || 0) + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (acCalculatedMiscModifier || 0) + (temporaryAcModifier || 0);
+        let calculatedFeatMiscAcBonus = 0;
 
-        const titleTemplate = UI_STRINGS.infoDialogTitleAcBreakdown || "AC Breakdown ({acType})";
+        if (aggregatedFeatEffectsProp?.acBonuses) {
+            aggregatedFeatEffectsProp.acBonuses.forEach(featEffect => {
+                let effectIsActive = true; // Simplified: assume active if condition not explicitly false
+                if (featEffect.condition) {
+                    const featInstance = character.feats.find(f => f.definitionId === featEffect.sourceFeat?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''));
+                    if (featInstance && featInstance.conditionalEffectStates) {
+                        effectIsActive = !!featInstance.conditionalEffectStates[featEffect.condition];
+                    } else {
+                        effectIsActive = false; // If condition present but no state, assume inactive
+                    }
+                }
+
+                if (effectIsActive && typeof featEffect.value === 'number') {
+                    let appliesToThisAcType = false;
+                    if (!featEffect.appliesToScope || featEffect.appliesToScope.length === 0) {
+                        appliesToThisAcType = true; // Applies to all if scope not defined
+                    } else {
+                        if (contentType.acType === 'Normal' && featEffect.appliesToScope.includes('normal')) appliesToThisAcType = true;
+                        if (contentType.acType === 'Touch' && featEffect.appliesToScope.includes('touch')) appliesToThisAcType = true;
+                        if (contentType.acType === 'Flat-Footed' && featEffect.appliesToScope.includes('flatFooted')) appliesToThisAcType = true;
+                    }
+
+                    if (appliesToThisAcType) {
+                        switch (featEffect.acType) {
+                            case 'armor': if (contentType.acType === 'Normal' || contentType.acType === 'Flat-Footed') totalCalculated += featEffect.value; break;
+                            case 'shield': if (contentType.acType === 'Normal' || contentType.acType === 'Flat-Footed') totalCalculated += featEffect.value; break;
+                            case 'natural': if (contentType.acType === 'Normal' || contentType.acType === 'Flat-Footed') totalCalculated += featEffect.value; break;
+                            case 'deflection': totalCalculated += featEffect.value; break; // Applies to Normal, Touch, Flat-Footed
+                            case 'dodge': if (contentType.acType === 'Normal' || contentType.acType === 'Touch') totalCalculated += featEffect.value; break;
+                            case 'monk_wisdom': 
+                                if (featEffect.value === "WIS") {
+                                    const wisMod = calculateAbilityModifier(finalAbilityScores.wisdom);
+                                    calculatedFeatMiscAcBonus += (wisMod > 0 ? wisMod : 0);
+                                } else {
+                                     calculatedFeatMiscAcBonus += featEffect.value;
+                                }
+                                break;
+                            default: calculatedFeatMiscAcBonus += featEffect.value; break; // Other types like insight, circumstance, untyped
+                        }
+                    }
+                } else if (effectIsActive && featEffect.acType === "monk_wisdom" && featEffect.value === "WIS") {
+                     let appliesToThisAcType = false;
+                    if (!featEffect.appliesToScope || featEffect.appliesToScope.length === 0) {
+                        appliesToThisAcType = true;
+                    } else {
+                        if (contentType.acType === 'Normal' && featEffect.appliesToScope.includes('normal')) appliesToThisAcType = true;
+                        if (contentType.acType === 'Touch' && featEffect.appliesToScope.includes('touch')) appliesToThisAcType = true;
+                        if (contentType.acType === 'Flat-Footed' && featEffect.appliesToScope.includes('flatFooted')) appliesToThisAcType = true;
+                    }
+                    if(appliesToThisAcType){
+                        const wisMod = calculateAbilityModifier(finalAbilityScores.wisdom);
+                        calculatedFeatMiscAcBonus += (wisMod > 0 ? wisMod : 0);
+                    }
+                }
+            });
+        }
+        totalCalculated += calculatedFeatMiscAcBonus;
+
+
+        if (contentType.acType === 'Normal') totalCalculated += (character.armorBonus || 0) + (character.shieldBonus || 0) + dexMod + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (temporaryAcModifier || 0);
+        else if (contentType.acType === 'Touch') totalCalculated += dexMod + sizeModACVal + (character.deflectionBonus || 0) + (character.dodgeBonus || 0) + (temporaryAcModifier || 0);
+        else if (contentType.acType === 'Flat-Footed') totalCalculated += (character.armorBonus || 0) + (character.shieldBonus || 0) + sizeModACVal + (character.naturalArmor || 0) + (character.deflectionBonus || 0) + (temporaryAcModifier || 0);
+
+
+        const titleTemplate = UI_STRINGS.infoDialogTitleAcBreakdown || "Armor Class Breakdown ({acType})";
         const acTypeLabel = contentType.acType === 'Normal' ? (UI_STRINGS.armorClassNormalLabel || 'Normal')
                           : contentType.acType === 'Touch' ? (UI_STRINGS.armorClassTouchLabel || 'Touch')
                           : (UI_STRINGS.armorClassFlatFootedLabel || 'Flat-Footed');
-
-        data = { title: titleTemplate.replace("{acType}", acTypeLabel), content: [AcBreakdownContentDisplay({detailsList: details, totalACValue: totalCalculated, detailsListHeading, uiStrings: UI_STRINGS, abilityLabels: ABILITY_LABELS })] };
+                          
+        data = { title: titleTemplate.replace("{acType}", acTypeLabel), content: [AcBreakdownContentDisplay({detailsList: details, totalACValue: totalCalculated, detailsListHeading, uiStrings: UI_STRINGS, abilityLabels: ABILITY_LABELS, aggregatedFeatEffects: aggregatedFeatEffectsProp, acType: contentType.acType })] };
         break;
       }
       case 'babBreakdown': {
-        iconKey = 'babBreakdown'; // This key needs to exist in DIALOG_ICONS or be handled by default
+        iconKey = 'babBreakdown'; 
         const baseBabArrayVal = getBab(character.classes, DND_CLASSES);
         data = {
           title: UI_STRINGS.infoDialogTitleBabBreakdown || 'Base Attack Bonus Breakdown',
@@ -534,7 +594,7 @@ export function InfoDisplayDialog({
               miscModifier: character.babMiscModifier || 0,
               totalBab: baseBabArrayVal.map(b => b + (character.babMiscModifier || 0)),
               characterClassLabel: DND_CLASSES.find(c => c.value === character.classes[0]?.className)?.label || character.classes[0]?.className,
-              featAttackBonus: 0, // Assuming no direct feat bonus to BAB itself
+              featAttackBonus: 0, 
             },
             uiStrings: UI_STRINGS
           })],
@@ -542,7 +602,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'initiativeBreakdown': {
-        iconKey = 'initiativeBreakdown'; // This key needs to exist in DIALOG_ICONS or be handled by default
+        iconKey = 'initiativeBreakdown'; 
         const dexMod = calculateAbilityModifier(finalAbilityScores.dexterity);
         data = {
           title: UI_STRINGS.infoDialogTitleInitiativeBreakdown || 'Initiative Breakdown',
@@ -551,7 +611,7 @@ export function InfoDisplayDialog({
               dexModifier: dexMod,
               miscModifier: character.initiativeMiscModifier || 0,
               totalInitiative: calculateInitiative(dexMod, character.initiativeMiscModifier || 0),
-              featBonus: 0, // Assuming no direct feat bonus to initiative base
+              featBonus: 0, 
             },
             uiStrings: UI_STRINGS,
             abilityLabels: ABILITY_LABELS,
@@ -560,7 +620,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'grappleModifierBreakdown': {
-        iconKey = 'grappleModifierBreakdown'; // This key needs to exist in DIALOG_ICONS or be handled by default
+        iconKey = 'grappleModifierBreakdown'; 
         const strMod = calculateAbilityModifier(finalAbilityScores.strength);
         const baseBabArrayVal = getBab(character.classes, DND_CLASSES);
         const sizeModGrappleVal = getSizeModifierGrapple(character.size, SIZES);
@@ -573,7 +633,7 @@ export function InfoDisplayDialog({
                 sizeModifierGrapple: sizeModGrappleVal,
                 miscModifier: character.grappleMiscModifier || 0,
                 totalGrappleModifier: calculateGrapple(character.classes, strMod, sizeModGrappleVal, DND_CLASSES) + (character.grappleMiscModifier || 0),
-                featBonus: 0, // Assuming no direct feat bonus to grapple modifier base
+                featBonus: 0, 
             },
             uiStrings: UI_STRINGS,
             abilityLabels: ABILITY_LABELS,
@@ -582,7 +642,7 @@ export function InfoDisplayDialog({
         break;
       }
        case 'grappleDamageBreakdown': {
-        iconKey = 'grappleDamageBreakdown'; // This key needs to exist in DIALOG_ICONS or be handled by default
+        iconKey = 'grappleDamageBreakdown'; 
         const strMod = calculateAbilityModifier(finalAbilityScores.strength);
         data = {
           title: UI_STRINGS.infoDialogTitleGrappleDamageBreakdown || 'Grapple Damage Breakdown',
@@ -591,7 +651,7 @@ export function InfoDisplayDialog({
               baseDamage: character.grappleDamage_baseNotes || getUnarmedGrappleDamage(character.size, SIZES),
               bonus: character.grappleDamage_bonus || 0,
               strengthModifier: strMod,
-              featBonus: 0, // Assuming no direct feat bonus to grapple damage base
+              featBonus: 0, 
             },
             uiStrings: UI_STRINGS,
             abilityLabels: ABILITY_LABELS,
@@ -660,15 +720,25 @@ export function InfoDisplayDialog({
 
         const abilityMod = getAbilityModifierByName(finalAbilityScores, abilityKeyForSave);
         const magicMod = character.savingThrows?.[currentSaveType]?.magicMod || 0;
-        const userTemporaryModifier = character.savingThrows?.[currentSaveType]?.miscMod || 0; // This is the manually entered temporary mod
+        const userTemporaryModifier = character.savingThrows?.[currentSaveType]?.miscMod || 0; 
 
         const featComponents: SavingThrowFeatComponent[] = [];
-        let featBonusTotal = 0; // This will be the sum of calculated misc bonuses (currently only feats)
+        let featBonusTotal = 0; 
 
         if (aggregatedFeatEffectsProp?.savingThrowBonuses) {
           aggregatedFeatEffectsProp.savingThrowBonuses.forEach(effect => {
-            // Consider active conditions if they were pre-filtered in aggregatedFeatEffectsProp
-            if (effect.save === currentSaveType || effect.save === "all") {
+            
+            let isEffectActive = !effect.condition;
+            if (effect.condition) {
+                const featInstance = character.feats.find(f => f.definitionId === effect.sourceFeat?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''));
+                if (featInstance && featInstance.conditionalEffectStates) {
+                    isEffectActive = !!featInstance.conditionalEffectStates[effect.condition];
+                } else {
+                    isEffectActive = false; 
+                }
+            }
+
+            if (isEffectActive && (effect.save === currentSaveType || effect.save === "all")) {
               let numericValueFromEffect = 0;
               if (typeof effect.value === 'number') {
                 numericValueFromEffect = effect.value;
@@ -692,9 +762,9 @@ export function InfoDisplayDialog({
           abilityKey: abilityKeyForSave,
           abilityMod,
           magicMod,
-          userTemporaryModifier: userTemporaryModifier, // User-entered temporary modifier
-          featBonusTotal: featBonusTotal, // Sum of calculated misc modifiers (e.g., feats)
-          featComponents, // Detailed list of misc modifier sources (e.g., feats)
+          userTemporaryModifier: userTemporaryModifier, 
+          featBonusTotal: featBonusTotal, 
+          featComponents, 
           totalSave: totalCalculatedSave,
         };
 
@@ -705,7 +775,7 @@ export function InfoDisplayDialog({
         };
         break;
       }
-      case 'maxHpBreakdown': { // Added case
+      case 'maxHpBreakdown': { 
         iconKey = 'maxHpBreakdown';
         data = {
           title: UI_STRINGS.infoDialogTitleMaxHpBreakdown || "Maximum HP Breakdown",
@@ -723,7 +793,7 @@ export function InfoDisplayDialog({
         break;
       }
       case 'genericHtml':
-        iconKey = 'genericHtml'; // This key needs to exist in DIALOG_ICONS or be handled by default
+        iconKey = 'genericHtml'; 
         data = { title: contentType.title, content: [GenericHtmlContentDisplay({htmlContent: contentType.content})] };
         break;
     }
@@ -804,3 +874,4 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
+

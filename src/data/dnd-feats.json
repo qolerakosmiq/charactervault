@@ -143,7 +143,7 @@
       "description": "<b>Benefit:</b> During your action, you designate an opponent and receive a +1 dodge bonus to Armor Class against attacks from that opponent.<br />You can select a new opponent on any action.<br /><b>Special:</b> A condition that makes you lose your Dexterity bonus to Armor Class (if any) also makes you lose dodge bonuses.<br />Also, dodge bonuses stack with each other, unlike most other types of bonuses.",
       "prerequisites": { "abilities": { "dexterity": 13 } },
       "effectsText": "+1 dodge bonus to AC against one target.",
-      "effects": [{ "type": "armorClass", "acType": "dodge", "value": 1, "condition": "vs_designated_opponent" }],
+      "effects": [{ "type": "armorClass", "acType": "dodge", "value": 1, "condition": "conditionVsDesignatedOpponent" }],
       "isClassFeature": false,
       "type": "special"
     },
@@ -414,7 +414,7 @@
       "description": "<b>Benefit:</b> You get a +4 dodge bonus to Armor Class against attacks of opportunity caused when you move out of or within a threatened area.<br />A condition that makes you lose your Dexterity bonus to Armor Class (if any) also makes you lose dodge bonuses.<br />Dodge bonuses stack with each other, unlike most other types of bonuses.",
       "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge"] },
       "effectsText": "+4 dodge bonus to AC vs. AoOs from movement.",
-      "effects": [{ "type": "note", "text": "+4 dodge bonus to AC vs. AoOs from movement." }],
+      "effects": [{ "type": "armorClass", "acType": "dodge", "value": 4, "condition": "vs_movement_aoo" }],
       "isClassFeature": false,
       "type": "special"
     },
@@ -762,8 +762,11 @@
       "label": "Two-Weapon Defense",
       "description": "<b>Benefit:</b> When wielding a double weapon or two weapons (not including natural weapons or unarmed strikes), you gain a +1 shield bonus to your AC.<br />When you are fighting defensively or using the total defense action, this shield bonus increases to +2.",
       "prerequisites": { "abilities": { "dexterity": 15 }, "feats": ["two-weapon-fighting"] },
-      "effectsText": "+1 shield bonus to AC when fighting with two weapons (+2 if fighting defensively/total defense).",
-      "effects": [{ "type": "note", "text": "+1 shield bonus to AC when fighting with two weapons (+2 if fighting defensively/total defense)." }],
+      "effectsText": "+1 shield bonus to AC (+2 when fighting defensively/total defense).",
+      "effects": [
+        { "type": "armorClass", "acType": "shield", "value": 1, "condition": "conditionWieldingTwoWeaponsOrDouble" },
+        { "type": "armorClass", "acType": "shield", "value": 1, "condition": "conditionFightingDefensivelyOrTotalDefenseWithTwoWeapons" }
+      ],
       "isClassFeature": false,
       "type": "special"
     },
@@ -923,7 +926,17 @@
     { "value": "class-monk-bonus-feat-slot", "label": "Monk Bonus Feat Slot", "effectsText":"Gain a bonus feat from Monk list.", "isClassFeature": true, "type": "special", "effects": [{"type": "note", "text":"Gain a bonus feat from Monk list."}] },
     { "value": "class-monk-flurry-of-blows", "label": "Flurry of Blows", "effectsText":"Make extra attacks when unarmored at penalty.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Make extra attacks when unarmored at penalty."}] },
     { "value": "class-monk-unarmed-strike-damage", "label": "Monk Unarmed Strike", "effectsText":"Unarmed strikes deal more damage (scales with level).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Unarmed strikes deal more damage (scales with level)."}] },
-    { "value": "class-monk-ac-bonus", "label": "Monk AC Bonus", "effectsText":"Add Wis bonus to AC; gain scaling AC bonus at higher levels.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Add Wis bonus to AC; gain scaling AC bonus at higher levels."}] },
+    {
+      "value": "class-monk-ac-bonus",
+      "label": "Monk AC Bonus",
+      "effectsText": "Add Wis bonus to AC; gain scaling AC bonus at higher levels.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "armorClass", "acType": "monk_wisdom", "value": "WIS", "bonusType": "untyped" },
+        { "type": "note", "text": "Scaling AC bonus (+1 at L5, +2 at L10, etc.) applies in addition to Wisdom." }
+      ]
+    },
     { "value": "class-monk-unarmored-speed-bonus", "label": "Monk Unarmored Speed Bonus", "effectsText":"Unarmored speed increases with level.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Unarmored speed increases with level."}] },
     { "value": "class-monk-evasion", "label": "Evasion", "effectsText":"Take no damage on successful Reflex save for half.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Take no damage on successful Reflex save for half."}] },
     {
@@ -1045,6 +1058,4 @@
     { "value": "special-ex-su", "label": "Extraordinary/Supernatural Ability" }
   ]
 }
-    
-
     
