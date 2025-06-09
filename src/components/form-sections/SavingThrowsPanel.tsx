@@ -106,7 +106,7 @@ const SavingThrowsPanelComponent = ({
       labelKey: "savingThrowsRowLabelTotal",
       getValue: (saveDataProp, localTemporaryMod, baseSave, abilityMod, calculatedMiscBonus, totalFromProp, saveType) => (
         <div className="flex items-center justify-center">
-            <span className={cn("text-lg font-bold", totalFromProp >= 0 ? "text-accent" : "text-destructive")}>
+            <span className={cn("text-xl font-bold", totalFromProp >= 0 ? "text-accent" : "text-destructive")}>
               {totalFromProp >= 0 ? '+' : ''}{totalFromProp}
             </span>
             {saveType && (
@@ -137,7 +137,7 @@ const SavingThrowsPanelComponent = ({
         const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === abilityKey);
         const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
         return (
-          <span className="inline-flex items-baseline"> {/* Changed from items-center */}
+          <span className="inline-flex items-baseline">
             {renderModifierValue(abilityMod)}
             <Badge variant="outline" className="ml-1.5 text-xs font-normal px-1.5 py-0.5 whitespace-nowrap">{abilityAbbr}</Badge>
           </span>
