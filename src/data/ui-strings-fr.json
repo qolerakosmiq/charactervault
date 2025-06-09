@@ -432,7 +432,7 @@
     "conditionsPanelDescription": "Activez ou désactivez les effets conditionnels des dons et capacités de votre personnage.",
     "conditionsPanelTooltipSourcesLabel": "Sources :",
     "infoDialogUnknownFeatSource": "Don inconnu",
-    "healthBarLabelHitPoints": "Points de Vie",
+    "healthBarLabelHitPoints": "Points de vie",
     "healthBarLabelTemporary": "Temporaires",
     "healthBarLabelNonlethal": "Non-létaux"
   }
