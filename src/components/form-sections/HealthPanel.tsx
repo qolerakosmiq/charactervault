@@ -118,7 +118,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-col items-center space-y-1">
-          <Label htmlFor="current-hp" className="text-sm font-medium text-muted-foreground">
+          <Label htmlFor="current-hp" className="text-sm font-medium">
             {UI_STRINGS.healthPanelCurrentHpLabel || "Current Hit Points"}
           </Label>
           <NumberSpinnerInput
@@ -180,16 +180,16 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
         <div>
             <div className="grid grid-cols-2 gap-x-4 text-center mb-3">
                 <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
+                    <Label className="text-sm font-medium">
                         {UI_STRINGS.healthPanelMaxHpLabel || "Maximum Hit Points"}
                     </Label>
-                    <p className="text-2xl font-bold text-muted-foreground">{calculatedMaxHp}</p>
+                    <p className="text-2xl font-bold text-accent">{calculatedMaxHp}</p>
                 </div>
                 <div>
                     <Label className="text-sm font-medium text-muted-foreground">
                         {UI_STRINGS.healthPanelMissingHpLabel || "Missing Hit Points"}
                     </Label>
-                    <p className={cn("text-2xl font-bold", missingHp > 0 ? "text-destructive" : "text-muted-foreground")}>
+                    <p className="text-2xl font-bold text-muted-foreground">
                         {missingHp}
                     </p>
                 </div>
@@ -242,5 +242,3 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
 
 HealthPanel.displayName = 'HealthPanel';
 
-
-    
