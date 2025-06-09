@@ -14,6 +14,7 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 
 
 const DEBOUNCE_DELAY_HEALTH = 400;
@@ -289,9 +290,9 @@ const HealthPanelComponent = React.memo(({
                 </div>
             </div>
             <div className="flex items-center justify-between">
-                <Label>
+                <Label className="inline-flex items-baseline">
                     {UI_STRINGS.healthPanelAbilityModLabel || "Ability Modifier"}
-                    <span className="text-xs text-muted-foreground ml-1">({conAbbr})</span>
+                    <Badge variant="outline" className="ml-1.5 text-sm font-normal px-1.5 py-0.5 whitespace-nowrap">{conAbbr}</Badge>
                 </Label>
                  <div className="w-36 text-center">
                     <span className={cn(
