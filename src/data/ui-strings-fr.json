@@ -246,7 +246,7 @@
     "healthPanelTitle": "Santé & vitalité",
     "healthPanelDescription": "Gérez les points de vie, les dégâts et les attributs associés.",
     "healthPanelCurrentHpLabel": "Points de vie actuels",
-    "healthPanelNonlethalDamageLabel": "Dégâts non létaux",
+    "healthPanelNonlethalDamageLabel": "Dégâts non-létaux",
     "healthPanelTemporaryHitPointsLabel": "Points de vie temporaires",
     "healthPanelMaxHpLabel": "Points de vie maximum",
     "healthPanelMissingHpLabel": "Points de vie manquants",
