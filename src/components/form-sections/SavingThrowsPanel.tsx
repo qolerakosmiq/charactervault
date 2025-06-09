@@ -14,6 +14,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
+import { Badge } from '@/components/ui/badge'; // Added import
 
 const DEBOUNCE_DELAY = 400;
 
@@ -136,9 +137,9 @@ const SavingThrowsPanelComponent = ({
         const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === abilityKey);
         const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
         return (
-          <span className="inline-flex items-baseline">
+          <span className="inline-flex items-center"> {/* Changed from items-baseline */}
             {renderModifierValue(abilityMod)}
-            <span className="ml-1 text-xs text-muted-foreground">({abilityAbbr})</span>
+            <Badge variant="outline" className="ml-1.5 text-xs font-normal px-1.5 py-0.5 whitespace-nowrap">{abilityAbbr}</Badge>
           </span>
         );
       },
@@ -232,3 +233,4 @@ const SavingThrowsPanelComponent = ({
 
 SavingThrowsPanelComponent.displayName = 'SavingThrowsPanelComponent';
 export const SavingThrowsPanel = React.memo(SavingThrowsPanelComponent);
+
