@@ -11,6 +11,7 @@ import { useI18n } from '@/context/I18nProvider';
 import type { XpDataEntry } from '@/i18n/i18n-data';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getXpRequiredForLevel } from '@/types/character'; // Import the utility function
 
 const DEBOUNCE_DELAY_XP = 500;
 
@@ -24,21 +25,6 @@ export interface ExperiencePanelProps {
   onXpChange: (newXp: number) => void;
   xpTable: readonly XpDataEntry[];
   epicLevelXpIncrease: number;
-}
-
-function getXpForLevel(level: number, xpTable: readonly XpDataEntry[], epicLevelXpIncrease: number): number {
-  if (level <= 1) return 0;
-  const standardEntry = xpTable.find(entry => entry.level === level);
-  if (standardEntry) {
-    return standardEntry.xpRequired;
-  }
-  // Handle epic levels
-  if (level > 20) {
-    const xpForLevel20 = xpTable.find(entry => entry.level === 20)?.xpRequired || 190000;
-    return xpForLevel20 + (level - 20) * epicLevelXpIncrease;
-  }
-  // Should not happen if table is complete up to 20
-  return Infinity;
 }
 
 const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
@@ -57,11 +43,11 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
   );
 
   const xpForCurrentLevelStart = React.useMemo(() => {
-    return getXpForLevel(currentLevel, xpTable, epicLevelXpIncrease);
+    return getXpRequiredForLevel(currentLevel, xpTable, epicLevelXpIncrease);
   }, [currentLevel, xpTable, epicLevelXpIncrease]);
 
   const xpForNextLevel = React.useMemo(() => {
-    return getXpForLevel(currentLevel + 1, xpTable, epicLevelXpIncrease);
+    return getXpRequiredForLevel(currentLevel + 1, xpTable, epicLevelXpIncrease);
   }, [currentLevel, xpTable, epicLevelXpIncrease]);
 
   const progressPercentage = React.useMemo(() => {

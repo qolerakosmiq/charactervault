@@ -22,7 +22,7 @@ import {
   getRaceSkillPointsBonusPerLevel,
   ABILITY_ORDER_INTERNAL,
   calculateFeatEffects,
-  calculateCharacterTotalLevel
+  calculateLevelFromXp // Import the new function
 } from '@/types/character';
 import {
   getBab,
@@ -728,10 +728,14 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     return aggregatedFeatEffects?.hpBonus || 0;
   }, [aggregatedFeatEffects]);
 
-  const currentCharacterLevelForXpPanel = React.useMemo(() => {
-    if (!character) return 1;
-    return calculateCharacterTotalLevel(character.classes);
-  }, [character]);
+  const currentCalculatedLevelForXpPanel = React.useMemo(() => {
+    if (!character || !translations) return 1;
+    return calculateLevelFromXp(
+      character.experiencePoints || 0,
+      translations.XP_TABLE,
+      translations.EPIC_LEVEL_XP_INCREASE
+    );
+  }, [character, translations]);
 
 
   const coreInfoData = React.useMemo<CharacterFormCoreInfoSectionProps['characterData'] | undefined>(() => {
@@ -766,9 +770,9 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     if (!character) return undefined;
     return {
       currentXp: character.experiencePoints || 0,
-      currentLevel: currentCharacterLevelForXpPanel,
+      currentLevel: currentCalculatedLevelForXpPanel,
     };
-  }, [character, currentCharacterLevelForXpPanel]);
+  }, [character, currentCalculatedLevelForXpPanel]);
 
   const storyAndAppearanceData = React.useMemo<CharacterFormStoryPortraitSectionProps['storyAndAppearanceData'] | undefined>(() => {
     if (!character) return undefined;
@@ -911,8 +915,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           />
         )}
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-8"> {/* Left column for AC and XP */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="md:col-span-2 space-y-8"> {/* Left column for AC and XP */}
             {acData && <ArmorClassPanel acData={acData} onCharacterUpdate={handleCharacterFieldUpdate as any} onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}/>}
             
             {experiencePanelData && translations.XP_TABLE && (
@@ -925,7 +929,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             )}
           </div>
           
-          <div> {/* Right column for Health Panel */}
+          <div className="md:col-span-1"> {/* Right column for Health Panel */}
             {healthPanelData && (
               <HealthPanel
                 healthData={healthPanelData}

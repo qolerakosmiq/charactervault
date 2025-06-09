@@ -8,6 +8,7 @@ import type {
   SavingThrowType,
   CharacterSizeObject,
 } from '@/types/character';
+import type { XpDataEntry } from '@/i18n/i18n-data';
 
 export function calculateAbilityModifier(score: number): number {
   return Math.floor((score - 10) / 2);
@@ -168,3 +169,42 @@ export const SAVING_THROW_ABILITIES: Record<SavingThrowType, AbilityName> = {
   reflex: 'dexterity',
   will: 'wisdom',
 };
+
+export function getXpRequiredForLevel(level: number, xpTable: readonly XpDataEntry[], epicLevelXpIncrease: number): number {
+  if (level <= 1) return 0;
+  const standardEntry = xpTable.find(entry => entry.level === level);
+  if (standardEntry) {
+    return standardEntry.xpRequired;
+  }
+  // Handle epic levels (assuming level > 20, as SRD table goes to 20)
+  const level20Entry = xpTable.find(entry => entry.level === 20);
+  if (level > 20 && level20Entry && epicLevelXpIncrease > 0) {
+    return level20Entry.xpRequired + (level - 20) * epicLevelXpIncrease;
+  }
+  // For levels beyond the table that are not epic (e.g., next level if current is max table level but not epic yet)
+  // or if epicLevelXpIncrease is 0, effectively it's max level
+  return Infinity;
+}
+
+export function calculateLevelFromXp(xp: number, xpTable: readonly XpDataEntry[], epicLevelXpIncrease: number): number {
+  if (xp < 0) return 1; // XP cannot be negative
+
+  // Iterate backwards from highest defined level in the table
+  for (let i = xpTable.length - 1; i >= 0; i--) {
+    const entry = xpTable[i];
+    if (xp >= entry.xpRequired) {
+      // Found the highest level bracket the character falls into from the table
+      // Now check for epic levels if this is the max table level (e.g. 20)
+      const maxStandardLevelEntry = xpTable[xpTable.length - 1]; // Assumes table is sorted by level
+      if (entry.level === maxStandardLevelEntry.level && epicLevelXpIncrease > 0 && xp >= entry.xpRequired) {
+          const xpIntoEpic = xp - entry.xpRequired;
+          const epicLevelsGained = Math.floor(xpIntoEpic / epicLevelXpIncrease);
+          return entry.level + epicLevelsGained;
+      }
+      return entry.level;
+    }
+  }
+  // If XP is less than the requirement for the lowest level > 1 in the table,
+  // it implies level 1 (assuming level 1 requires 0 XP, which is standard)
+  return 1;
+}
