@@ -424,10 +424,11 @@ export interface Character {
   abilityScoreTempCustomModifiers: AbilityScores;
   hp: number;
   maxHp: number;
-  baseMaxHp: number; // New field
-  miscMaxHpModifier: number; // New field
-  nonlethalDamage: number; // New field
-  temporaryHp: number; // New field
+  baseMaxHp: number; 
+  miscMaxHpModifier: number; 
+  nonlethalDamage: number; 
+  temporaryHp: number; 
+  numberOfWounds?: number; // New field
   armorBonus: number;
   shieldBonus: number;
   sizeModifierAC: number;

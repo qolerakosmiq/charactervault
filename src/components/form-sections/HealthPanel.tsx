@@ -19,7 +19,7 @@ const DEBOUNCE_DELAY_HEALTH = 400;
 
 export type HealthPanelData = Pick<Character, 
   'hp' | 'baseMaxHp' | 'miscMaxHpModifier' | 
-  'nonlethalDamage' | 'temporaryHp' | 'abilityScores'
+  'nonlethalDamage' | 'temporaryHp' | 'abilityScores' | 'numberOfWounds'
 >;
 
 export interface HealthPanelProps {
@@ -27,12 +27,12 @@ export interface HealthPanelProps {
   calculatedMaxHp: number; 
   finalConstitutionModifier: number;
   onCharacterUpdate: (
-    field: keyof Pick<Character, 'hp' | 'baseMaxHp' | 'miscMaxHpModifier' | 'nonlethalDamage' | 'temporaryHp'>, 
+    field: keyof Pick<Character, 'hp' | 'baseMaxHp' | 'miscMaxHpModifier' | 'nonlethalDamage' | 'temporaryHp' | 'numberOfWounds'>, 
     value: number
   ) => void;
 }
 
-const HealthPanelComponent = ({ healthData, calculatedMaxHp, finalConstitutionModifier, onCharacterUpdate }: HealthPanelProps) => {
+const HealthPanelComponent: React.FC<HealthPanelProps> = ({ healthData, calculatedMaxHp, finalConstitutionModifier, onCharacterUpdate }) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const [localHp, setLocalHp] = useDebouncedFormField(
@@ -60,9 +60,15 @@ const HealthPanelComponent = ({ healthData, calculatedMaxHp, finalConstitutionMo
     (value) => onCharacterUpdate('temporaryHp', value),
     DEBOUNCE_DELAY_HEALTH
   );
+  const [localNumberOfWounds, setLocalNumberOfWounds] = useDebouncedFormField(
+    healthData.numberOfWounds || 0,
+    (value) => onCharacterUpdate('numberOfWounds', value),
+    DEBOUNCE_DELAY_HEALTH
+  );
+
 
   React.useEffect(() => {
-    if (localHp > calculatedMaxHp && calculatedMaxHp > 0) { // Added check for calculatedMaxHp > 0
+    if (localHp > calculatedMaxHp && calculatedMaxHp > 0) { 
         setLocalHp(calculatedMaxHp);
     }
   }, [calculatedMaxHp, localHp, setLocalHp]);
@@ -175,7 +181,7 @@ const HealthPanelComponent = ({ healthData, calculatedMaxHp, finalConstitutionMo
               {localHp} / {calculatedMaxHp} {UI_STRINGS.healthBarLabelHitPoints || "Hit Points"}
               {localTemporaryHp > 0 && ` (+${localTemporaryHp} ${UI_STRINGS.healthBarLabelTemporary || "Temporary"})`}
             </span>
-            {localNonlethalDamage > 0 && <span>{localNonlethalDamage} {UI_STRINGS.healthBarLabelNonlethal || "Nonlethal"}</span>}
+            {localNonlethalDamage > 0 && <span>{localNonlethalDamage} {UI_STRINGS.healthBarLabelNonlethal || "Non-létaux"}</span>}
           </div>
         </div>
 
@@ -234,6 +240,22 @@ const HealthPanelComponent = ({ healthData, calculatedMaxHp, finalConstitutionMo
                 inputClassName={cn(
                   "w-full h-10 text-lg text-center font-bold", 
                   localTemporaryHp > 0 ? "text-sky-500" : "text-muted-foreground"
+                )}
+                buttonClassName="h-10 w-10"
+            />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="number-of-wounds-input" className="text-sm font-medium block w-full text-center">
+                {UI_STRINGS.healthPanelNumberOfWoundsLabel || "Number of Wounds"}
+            </Label>
+            <NumberSpinnerInput
+                id="number-of-wounds-input"
+                value={localNumberOfWounds}
+                onChange={setLocalNumberOfWounds}
+                min={0}
+                inputClassName={cn(
+                  "w-full h-10 text-lg text-center font-bold", 
+                  localNumberOfWounds > 0 ? "text-destructive" : "text-muted-foreground"
                 )}
                 buttonClassName="h-10 w-10"
             />
@@ -305,4 +327,3 @@ const HealthPanelComponent = ({ healthData, calculatedMaxHp, finalConstitutionMo
 };
 HealthPanelComponent.displayName = 'HealthPanelComponent';
 export const HealthPanel = React.memo(HealthPanelComponent);
-

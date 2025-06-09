@@ -28,10 +28,11 @@ const FULL_CHARACTER_DEFAULTS: Omit<Character, 'id'> = {
   abilityScoreTempCustomModifiers: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
   hp: 10,
   maxHp: 10,
-  baseMaxHp: 10, // New field
-  miscMaxHpModifier: 0, // New field
-  nonlethalDamage: 0, // New field
-  temporaryHp: 0, // New field
+  baseMaxHp: 10, 
+  miscMaxHpModifier: 0, 
+  nonlethalDamage: 0, 
+  temporaryHp: 0, 
+  numberOfWounds: 0, // New field default
   armorBonus: 0,
   shieldBonus: 0,
   sizeModifierAC: 0,
@@ -109,6 +110,7 @@ function ensureCharacterDefaults(character: Partial<Character>): Character {
   hydratedCharacter.miscMaxHpModifier = character.miscMaxHpModifier ?? FULL_CHARACTER_DEFAULTS.miscMaxHpModifier;
   hydratedCharacter.nonlethalDamage = character.nonlethalDamage ?? FULL_CHARACTER_DEFAULTS.nonlethalDamage;
   hydratedCharacter.temporaryHp = character.temporaryHp ?? FULL_CHARACTER_DEFAULTS.temporaryHp;
+  hydratedCharacter.numberOfWounds = character.numberOfWounds ?? FULL_CHARACTER_DEFAULTS.numberOfWounds; // Ensure default
   
   // Ensure all top-level keys from defaults are present
   for (const key of Object.keys(FULL_CHARACTER_DEFAULTS) as Array<keyof typeof FULL_CHARACTER_DEFAULTS>) {

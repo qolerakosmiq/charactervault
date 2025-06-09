@@ -248,6 +248,7 @@
     "healthPanelCurrentHpLabel": "Current Hit Points",
     "healthPanelNonlethalDamageLabel": "Nonlethal Damage",
     "healthPanelTemporaryHitPointsLabel": "Temporary Hit Points",
+    "healthPanelNumberOfWoundsLabel": "Number of Wounds",
     "healthPanelMaxHpLabel": "Maximum Hit Points",
     "healthPanelMissingHpLabel": "Missing Hit Points",
     "healthPanelBaseMaxHpLabel": "Base Hit Points",

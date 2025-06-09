@@ -130,6 +130,7 @@ function createBaseCharacterData(
       miscMaxHpModifier: 0,
       nonlethalDamage: 0,
       temporaryHp: 0,
+      numberOfWounds: 0,
       armorBonus: 0, shieldBonus: 0, sizeModifierAC: 0, naturalArmor: 0, deflectionBonus: 0, dodgeBonus: 0, acMiscModifier: 0, babMiscModifier: 0, initiativeMiscModifier: 0,
       grappleMiscModifier: 0, grappleWeaponChoice: 'unarmed', grappleDamage_baseNotes: `${defaultUnarmedGrappleDice} (${sizeLabelForGrapple} Unarmed)`, grappleDamage_bonus: 0,
       savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)),
@@ -148,7 +149,7 @@ function createBaseCharacterData(
 }
 
 
-export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
+export const CharacterFormCore = React.memo(({ onSave }: CharacterFormCoreProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
   const {
     customFeatDefinitions: globalCustomFeatDefinitionsFromStore,
@@ -394,7 +395,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
      setCharacter(prev => prev ? ({ ...prev, [field as keyof Character]: value }) : null);
   }, []);
 
-  const handleHealthFieldChange = React.useCallback((field: keyof Pick<Character, 'hp' | 'baseMaxHp' | 'miscMaxHpModifier' | 'nonlethalDamage' | 'temporaryHp'>, value: number) => {
+  const handleHealthFieldChange = React.useCallback((field: keyof Pick<Character, 'hp' | 'baseMaxHp' | 'miscMaxHpModifier' | 'nonlethalDamage' | 'temporaryHp' | 'numberOfWounds'>, value: number) => {
     setCharacter(prev => prev ? ({ ...prev, [field]: value }) : null);
   }, []);
 
@@ -741,9 +742,10 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
       miscMaxHpModifier: character.miscMaxHpModifier,
       nonlethalDamage: character.nonlethalDamage,
       temporaryHp: character.temporaryHp,
-      abilityScores: character.abilityScores,
+      numberOfWounds: character.numberOfWounds,
+      abilityScores: character.abilityScores, 
     };
-  }, [character?.hp, character?.baseMaxHp, character?.miscMaxHpModifier, character?.nonlethalDamage, character?.temporaryHp, character?.abilityScores]);
+  }, [character?.hp, character?.baseMaxHp, character?.miscMaxHpModifier, character?.nonlethalDamage, character?.temporaryHp, character?.numberOfWounds, character?.abilityScores]);
 
   const storyAndAppearanceData = React.useMemo<CharacterFormStoryPortraitSectionProps['storyAndAppearanceData'] | undefined>(() => {
     if (!character) return undefined;
@@ -1033,5 +1035,6 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
       />
     </>
   );
-};
+});
+CharacterFormCore.displayName = "CharacterFormCore";
     
