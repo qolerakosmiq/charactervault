@@ -114,12 +114,12 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
           </div>
         </div>
 
-        <div className="space-y-1">
+        <div>
           <Progress value={progressPercentage} className="h-3" indicatorClassName="bg-primary" />
-          <div className="flex justify-between items-center text-xs text-muted-foreground px-1">
+          <div className="flex justify-between items-center text-muted-foreground px-1">
             <span className={cn(
-                "font-semibold text-xl",
-                currentLevel === 0 ? "text-muted-foreground" : "text-accent"
+                "font-semibold text-xl text-accent",
+                currentLevel === 0 && "text-muted-foreground" 
             )}>
               {levelLabelFormat.replace("{levelNumber}", String(currentLevel))}
             </span>
