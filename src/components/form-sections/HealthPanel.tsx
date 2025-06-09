@@ -106,13 +106,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
   const currentHpBarWidthPercentage = (actualCurrentHpForBar / effectiveTotalHpForBar) * 100;
   const nonlethalDamageBarWidthPercentage = (localNonlethalDamage / effectiveTotalHpForBar) * 100;
 
-  let healthBarIndicatorColor = "bg-emerald-600"; // Default Green
-  const hpPercentage = calculatedMaxHp > 0 ? (localHp / calculatedMaxHp) * 100 : 0;
-  if (hpPercentage < 25) {
-    healthBarIndicatorColor = "bg-destructive"; // Red
-  } else if (hpPercentage <= 75) {
-    healthBarIndicatorColor = "bg-amber-500"; // Orange
-  }
+  const healthBarIndicatorColor = "bg-emerald-600"; // Always green
 
 
   // Status Calculation
@@ -132,14 +126,14 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
   
   if (localHp > -10) { 
     if (localNonlethalDamage > 0 && localNonlethalDamage >= localHp) {
-      if (localHp > 0) { // If still has positive HP but nonlethal equals or exceeds it
+      if (localHp > 0) { 
         statusText = UI_STRINGS.healthStatusStaggered || "Staggered";
         statusColorClass = "text-amber-600";
-        if (localNonlethalDamage > localHp) { // Nonlethal exceeds current HP means unconscious
+        if (localNonlethalDamage > localHp) { 
             statusText = UI_STRINGS.healthStatusUnconscious || "Unconscious";
             statusColorClass = "text-destructive";
         }
-      } else { // HP is 0 or less, nonlethal means unconscious
+      } else { 
         statusText = UI_STRINGS.healthStatusUnconscious || "Unconscious";
         statusColorClass = "text-destructive";
       }
@@ -158,28 +152,24 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
       </CardHeader>
       <CardContent className="space-y-4">
 
-        {/* Stacked Health Bar */}
         <div className="my-4 space-y-1">
           <div className="relative w-full h-6 bg-muted rounded-full overflow-hidden border border-border">
-            {/* Temporary HP Bar (Blue) - Extends from Current HP */}
             {localTemporaryHp > 0 && (
               <div
-                className="absolute top-0 left-0 h-full bg-sky-500 rounded-l-full z-10 transition-all duration-300 ease-out"
+                className="absolute top-0 left-0 h-full bg-sky-500 rounded-full z-10 transition-all duration-300 ease-out"
                 style={{ width: `${Math.min(tempHpBarWidthPercentage, 100)}%` }}
               />
             )}
-            {/* Current HP Bar (Green/Orange/Red) */}
             <div
               className={cn(
-                "absolute top-0 left-0 h-full rounded-l-full z-20 transition-all duration-300 ease-out",
+                "absolute top-0 left-0 h-full rounded-full z-20 transition-all duration-300 ease-out",
                 healthBarIndicatorColor
               )}
               style={{ width: `${Math.min(currentHpBarWidthPercentage, 100)}%` }}
             />
-            {/* Nonlethal Damage Bar (Red overlay from right) */}
             {localNonlethalDamage > 0 && (
               <div
-                className="absolute top-0 right-0 h-full bg-destructive/70 rounded-full z-30 transition-all duration-300 ease-out"
+                className="absolute top-0 right-0 h-full bg-gradient-to-l from-red-800/70 to-transparent rounded-full z-30 transition-all duration-300 ease-out"
                 style={{ width: `${Math.min(nonlethalDamageBarWidthPercentage, 100)}%` }}
               />
             )}
@@ -193,7 +183,6 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
           </div>
         </div>
 
-        {/* Status Indicator */}
         <div className="text-center">
           <span className="text-sm font-medium">{UI_STRINGS.healthPanelStatusLabel || "Status:"} </span>
           <span className={cn("font-semibold", statusColorClass)}>{statusText}</span>
@@ -201,7 +190,6 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
 
         <Separator className="my-6" />
         
-        {/* Inputs and Readouts */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
           <div className="space-y-1">
             <Label htmlFor="current-hp-input" className="text-sm font-medium block w-full text-center">
@@ -254,10 +242,9 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                 buttonClassName="h-10 w-10"
             />
           </div>
-          {/* Missing Hit Points is moved below */}
         </div>
         
-        <Separator className="my-6" />
+        <Separator className="my-2" />
             
         <div className="space-y-2 text-sm">
             <div className="flex items-center justify-between">
@@ -316,7 +303,6 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
               </div>
             </div>
         </div>
-
       </CardContent>
     </Card>
   );
