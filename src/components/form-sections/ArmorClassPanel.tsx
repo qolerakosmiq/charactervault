@@ -84,7 +84,7 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
             <>
               <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
                 <div className="flex items-center">
-                  <Label htmlFor="normal-ac-display" className="text-lg font-medium">{translations?.UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
+                  <Label htmlFor="normal-ac-display" className="text-sm font-medium">{translations?.UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" disabled>
                     <Info className="h-4 w-4" />
                   </Button>
@@ -93,7 +93,7 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
               </div>
               <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
                 <div className="flex items-center">
-                  <Label htmlFor="touch-ac-display" className="text-lg font-medium">{translations?.UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
+                  <Label htmlFor="touch-ac-display" className="text-sm font-medium">{translations?.UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" disabled>
                     <Info className="h-4 w-4" />
                   </Button>
@@ -102,7 +102,7 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
               </div>
               <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
                 <div className="flex items-center">
-                  <Label htmlFor="flat-footed-ac-display" className="text-lg font-medium">{translations?.UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
+                  <Label htmlFor="flat-footed-ac-display" className="text-sm font-medium">{translations?.UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" disabled>
                     <Info className="h-4 w-4" />
                   </Button>
@@ -179,30 +179,30 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
             <div className="flex items-center">
-              <Label htmlFor="normal-ac-display" className="text-lg font-medium">{UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
+              <Label htmlFor="normal-ac-display" className="text-sm font-medium">{UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
               <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')} disabled={!onOpenAcBreakdownDialog}>
                 <Info className="h-4 w-4" />
               </Button>
             </div>
-            <p id="normal-ac-display" className="text-lg font-bold text-accent">{normalAC}</p>
+            <p id="normal-ac-display" className="text-xl font-bold text-accent">{normalAC}</p>
           </div>
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
              <div className="flex items-center">
-              <Label htmlFor="touch-ac-display" className="text-lg font-medium">{UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
+              <Label htmlFor="touch-ac-display" className="text-sm font-medium">{UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
               <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')} disabled={!onOpenAcBreakdownDialog}>
                 <Info className="h-4 w-4" />
               </Button>
             </div>
-            <p id="touch-ac-display" className="text-lg font-bold text-accent">{touchAC}</p>
+            <p id="touch-ac-display" className="text-xl font-bold text-accent">{touchAC}</p>
           </div>
           <div className="flex items-center justify-between p-2 border rounded-md bg-muted/10">
             <div className="flex items-center">
-              <Label htmlFor="flat-footed-ac-display" className="text-lg font-medium">{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
+              <Label htmlFor="flat-footed-ac-display" className="text-sm font-medium">{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
               <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Flat-Footed')} disabled={!onOpenAcBreakdownDialog}>
                 <Info className="h-4 w-4" />
               </Button>
             </div>
-            <p id="flat-footed-ac-display" className="text-lg font-bold text-accent">{flatFootedAC}</p>
+            <p id="flat-footed-ac-display" className="text-xl font-bold text-accent">{flatFootedAC}</p>
           </div>
 
           <Separator className="my-3" />
