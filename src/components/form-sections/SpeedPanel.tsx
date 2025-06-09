@@ -17,14 +17,14 @@ import { cn } from '@/lib/utils';
 
 const DEBOUNCE_DELAY = 400;
 
-type SpeedPanelCharacterData = Pick<Character, 
+export type SpeedPanelCharacterData = Pick<Character, 
   'race' | 'size' | 'classes' | 
   'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed' |
   'armorSpeedPenalty_base' | 'armorSpeedPenalty_miscModifier' | 
   'loadSpeedPenalty_base' | 'loadSpeedPenalty_miscModifier'
 >;
 
-type SpeedFieldKey = 
+export type SpeedFieldKey = 
   | 'landSpeed.miscModifier' 
   | 'burrowSpeed.miscModifier' 
   | 'climbSpeed.miscModifier' 
@@ -33,7 +33,7 @@ type SpeedFieldKey =
   | 'armorSpeedPenalty_miscModifier' 
   | 'loadSpeedPenalty_miscModifier';
 
-interface SpeedPanelProps {
+export interface SpeedPanelProps {
   speedData: SpeedPanelCharacterData;
   onCharacterUpdate: (
     field: SpeedFieldKey, 
@@ -44,7 +44,7 @@ interface SpeedPanelProps {
   onOpenLoadSpeedPenaltyInfoDialog: () => void;
 }
 
-export const SpeedPanel = ({ 
+const SpeedPanelComponent = ({ 
   speedData, 
   onCharacterUpdate, 
   onOpenSpeedInfoDialog, 
@@ -110,10 +110,10 @@ export const SpeedPanel = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
-                    <Skeleton className="h-5 w-20 mb-1" /> {/* Icon + Label */}
-                    <Skeleton className="h-9 w-16 mb-1" /> {/* Speed value */}
-                    <Skeleton className="h-4 w-24 mb-1" /> {/* Misc Mod Label */}
-                    <Skeleton className="h-8 w-32" />    {/* NumberSpinnerInput */}
+                    <Skeleton className="h-5 w-20 mb-1" /> 
+                    <Skeleton className="h-9 w-16 mb-1" /> 
+                    <Skeleton className="h-4 w-24 mb-1" /> 
+                    <Skeleton className="h-8 w-32" />    
                   </div>
                 ))}
               </div>
@@ -121,10 +121,10 @@ export const SpeedPanel = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                  {[...Array(2)].map((_, i) => (
                   <div key={`penalty-skel-${i}`} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
-                    <Skeleton className="h-5 w-24 mb-1" /> {/* Icon + Label */}
-                    <Skeleton className="h-9 w-12 mb-1" /> {/* Penalty value */}
-                    <Skeleton className="h-4 w-24 mb-1" /> {/* Misc Mod Label */}
-                    <Skeleton className="h-8 w-32" />    {/* NumberSpinnerInput */}
+                    <Skeleton className="h-5 w-24 mb-1" /> 
+                    <Skeleton className="h-9 w-12 mb-1" /> 
+                    <Skeleton className="h-4 w-24 mb-1" /> 
+                    <Skeleton className="h-8 w-32" />    
                   </div>
                  ))}
               </div>
@@ -205,7 +205,6 @@ export const SpeedPanel = ({
         <Separator />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Armor Penalty Card */}
           <div className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
             <div className="flex items-center justify-center">
               <ShieldOff className="h-5 w-5 mr-1.5 text-muted-foreground" />
@@ -250,7 +249,6 @@ export const SpeedPanel = ({
             </div>
           </div>
 
-          {/* Load Penalty Card */}
           <div className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
             <div className="flex items-center justify-center">
               <Weight className="h-5 w-5 mr-1.5 text-muted-foreground" />
@@ -299,4 +297,5 @@ export const SpeedPanel = ({
     </Card>
   );
 };
-// SpeedPanel.displayName = 'SpeedPanelComponent';
+SpeedPanelComponent.displayName = 'SpeedPanelComponent';
+export const SpeedPanel = React.memo(SpeedPanelComponent);

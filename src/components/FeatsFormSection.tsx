@@ -21,7 +21,7 @@ import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 
-interface FeatsFormSectionProps {
+export interface FeatsFormSectionProps {
   featSectionData: Pick<Character, 'race' | 'classes' | 'feats' | 'age' | 'alignment'>;
   allAvailableFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]; 
   chosenFeatInstances: CharacterFeatInstance[]; 
@@ -176,7 +176,7 @@ const FeatsFormSectionComponent = ({
 
     const prereqMessages = checkFeatPrerequisites(
       definition, 
-      characterForPrereqCheck as Character, // Cast as it expects full Character
+      characterForPrereqCheck as Character, 
       allAvailableFeatDefinitions, 
       allPredefinedSkillDefinitions, 
       allCustomSkillDefinitions,    
@@ -371,6 +371,5 @@ const FeatsFormSectionComponent = ({
     </>
   );
 };
-
+FeatsFormSectionComponent.displayName = "FeatsFormSectionComponent";
 export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
-

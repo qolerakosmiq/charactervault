@@ -34,7 +34,7 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 const DEBOUNCE_DELAY = 400; // ms
 const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__";
 
-interface CharacterFormCoreInfoSectionProps {
+export interface CharacterFormCoreInfoSectionProps {
   characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
   onFieldChange: (field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender'>, value: any) => void;
   onClassChange: (className: DndClassId | string) => void;
@@ -47,7 +47,7 @@ interface CharacterFormCoreInfoSectionProps {
   onOpenDeityInfoDialog: () => void;
 }
 
-export const CharacterFormCoreInfoSection = ({
+const CharacterFormCoreInfoSectionComponent = ({
   characterData,
   onFieldChange,
   onClassChange,
@@ -374,4 +374,6 @@ export const CharacterFormCoreInfoSection = ({
     </Card>
   );
 };
-// CharacterFormCoreInfoSection.displayName = 'CharacterFormCoreInfoSectionComponent';
+CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
+export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
+

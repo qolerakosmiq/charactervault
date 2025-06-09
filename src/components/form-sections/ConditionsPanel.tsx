@@ -12,31 +12,26 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button'; // Added import
+import { Button } from '@/components/ui/button'; 
 
-interface ConditionsPanelProps {
+export interface ConditionsPanelProps {
   characterFeats: CharacterFeatInstance[];
   allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
-  onConditionToggle: (conditionKey: string, isActive: boolean) => void; // Global toggle for a condition string
+  onConditionToggle: (conditionKey: string, isActive: boolean) => void; 
 }
 
 interface DisplayCondition {
-  conditionKey: string; // The raw condition string from the feat definition
-  displayText: string;  // For UI, potentially translated
-  // Individual feat instances that have this condition string
+  conditionKey: string; 
+  displayText: string;  
   sources: Array<{
     featInstanceId: string;
     featName: string;
-    // Is this specific condition on this specific feat instance currently active?
-    // This helps decide the aggregate checkbox state.
     isCurrentlyActiveOnThisInstance: boolean; 
   }>;
-  // Overall state of the checkbox for this unique conditionKey
-  // True if *at least one* source instance has this condition active.
   isGloballyActive: boolean; 
 }
 
-export const ConditionsPanel: React.FC<ConditionsPanelProps> = ({
+const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
   characterFeats,
   allFeatDefinitions,
   onConditionToggle,
@@ -52,8 +47,6 @@ export const ConditionsPanel: React.FC<ConditionsPanelProps> = ({
         definition.effects.forEach(effect => {
           if (effect.condition && effect.condition.trim() !== "") {
             const conditionKey = effect.condition;
-            // For now, displayText is the same as conditionKey.
-            // Future: map conditionKey to a translated UI string from translations.UI_STRINGS.
             const displayText = effect.condition; 
             
             const isCurrentlyActiveOnThisInstance = !!featInstance.conditionalEffectStates?.[conditionKey];
@@ -63,7 +56,7 @@ export const ConditionsPanel: React.FC<ConditionsPanelProps> = ({
                 conditionKey,
                 displayText,
                 sources: [],
-                isGloballyActive: false, // Will be updated below
+                isGloballyActive: false, 
               });
             }
             const conditionEntry = conditionsMap.get(conditionKey)!;
@@ -77,7 +70,6 @@ export const ConditionsPanel: React.FC<ConditionsPanelProps> = ({
       }
     });
     
-    // Determine the global active state for each unique condition
     conditionsMap.forEach(entry => {
       entry.isGloballyActive = entry.sources.some(s => s.isCurrentlyActiveOnThisInstance);
     });
@@ -90,7 +82,6 @@ export const ConditionsPanel: React.FC<ConditionsPanelProps> = ({
 
 
   const handleToggle = (conditionKey: string, checked: boolean) => {
-    // This now calls the CharacterFormCore handler which will update all relevant feat instances
     onConditionToggle(conditionKey, checked);
   };
   
@@ -164,6 +155,5 @@ export const ConditionsPanel: React.FC<ConditionsPanelProps> = ({
     </Card>
   );
 };
-
-// ConditionsPanel.displayName = "ConditionsPanel";
-
+ConditionsPanelComponent.displayName = "ConditionsPanelComponent";
+export const ConditionsPanel = React.memo(ConditionsPanelComponent);

@@ -41,21 +41,21 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
-import { CharacterFormCoreInfoSection } from '@/components/form-sections/CharacterFormCoreInfoSection';
-import { CharacterFormAbilityScoresSection } from '@/components/form-sections/CharacterFormAbilityScoresSection';
-import { CharacterFormStoryPortraitSection } from '@/components/form-sections/CharacterFormStoryPortraitSection';
-import { SkillsFormSection } from '@/components/SkillsFormSection';
-import { FeatsFormSection } from '@/components/FeatsFormSection';
-import { SavingThrowsPanel } from '@/components/form-sections/SavingThrowsPanel';
-import { ArmorClassPanel } from '@/components/form-sections/ArmorClassPanel';
-import { HealthPanel } from '@/components/form-sections/HealthPanel'; // Added
-import { SpeedPanel } from '@/components/form-sections/SpeedPanel';
-import { CombatPanel } from '@/components/form-sections/CombatPanel';
-import { ResistancesPanel } from '@/components/form-sections/ResistancesPanel';
-import { LanguagesPanel } from '@/components/form-sections/LanguagesPanel';
+import { CharacterFormCoreInfoSection, type CharacterFormCoreInfoSectionProps } from '@/components/form-sections/CharacterFormCoreInfoSection';
+import { CharacterFormAbilityScoresSection, type CharacterFormAbilityScoresSectionProps } from '@/components/form-sections/CharacterFormAbilityScoresSection';
+import { CharacterFormStoryPortraitSection, type CharacterFormStoryPortraitSectionProps } from '@/components/form-sections/CharacterFormStoryPortraitSection';
+import { SkillsFormSection, type SkillsFormSectionProps } from '@/components/SkillsFormSection';
+import { FeatsFormSection, type FeatsFormSectionProps } from '@/components/FeatsFormSection';
+import { SavingThrowsPanel, type SavingThrowsPanelProps } from '@/components/form-sections/SavingThrowsPanel';
+import { ArmorClassPanel, type ArmorClassPanelProps } from '@/components/form-sections/ArmorClassPanel';
+import { HealthPanel, type HealthPanelProps } from '@/components/form-sections/HealthPanel';
+import { SpeedPanel, type SpeedPanelProps } from '@/components/form-sections/SpeedPanel';
+import { CombatPanel, type CombatPanelProps } from '@/components/form-sections/CombatPanel';
+import { ResistancesPanel, type ResistancesPanelProps } from '@/components/form-sections/ResistancesPanel';
+import { LanguagesPanel, type LanguagesPanelProps } from '@/components/form-sections/LanguagesPanel';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
-import { ConditionsPanel } from '@/components/form-sections/ConditionsPanel';
+import { ConditionsPanel, type ConditionsPanelProps } from '@/components/form-sections/ConditionsPanel';
 
 import { Loader2 } from 'lucide-react';
 
@@ -107,13 +107,12 @@ function createBaseCharacterData(
         return nameA.localeCompare(nameB);
     });
     
-    // Base Max HP Calculation for default
     const defaultClassDef = DND_CLASSES.find(c => c.value === defaultClassNameValue);
-    let initialBaseMaxHp = 10; // Fallback
+    let initialBaseMaxHp = 10; 
     if (defaultClassDef?.hitDice) {
-        const hitDiceValue = parseInt(defaultClassDef.hitDice.substring(1)); // e.g., "d10" -> 10
+        const hitDiceValue = parseInt(defaultClassDef.hitDice.substring(1)); 
         if (!isNaN(hitDiceValue)) {
-            initialBaseMaxHp = hitDiceValue; // Start with max of first HD
+            initialBaseMaxHp = hitDiceValue; 
         }
     }
     const initialConMod = calculateAbilityModifier(DEFAULT_ABILITIES.constitution);
@@ -184,7 +183,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
         providesSynergies: (translations.SKILL_SYNERGIES as Record<string, any>)[sd.value] || [],
     }));
     const custom = globalCustomSkillDefinitions.map(csd => ({
-        value: csd.id, // Map id to value for consistency
+        value: csd.id, 
         label: csd.name,
         keyAbility: csd.keyAbility,
         description: csd.description,
@@ -286,7 +285,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
   const { toast } = useToast();
 
   React.useEffect(() => {
-    if (character && translations) {
+    if (character && translations && allAvailableFeatDefinitions) { // Ensure allAvailableFeatDefinitions is ready
       const aggFeats = calculateFeatEffects(character.feats, allAvailableFeatDefinitions);
       setAggregatedFeatEffects(aggFeats);
       const detailedScores = calculateDetailedAbilityScores(
@@ -301,13 +300,17 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
       );
       setDetailedAbilityScores(detailedScores);
 
-      // Recalculate maxHp based on detailed scores and other factors
       const conMod = calculateAbilityModifier(detailedScores.constitution.finalScore);
       const featHpBonus = aggFeats.hpBonus || 0;
       const newMaxHp = (character.baseMaxHp || 0) + conMod + (character.miscMaxHpModifier || 0) + featHpBonus;
       
-      if(character.maxHp !== newMaxHp) {
-        setCharacter(prev => prev ? ({...prev, maxHp: newMaxHp, hp: Math.min(prev.hp, newMaxHp) }) : null);
+      if(character.maxHp !== newMaxHp || character.hp > newMaxHp) {
+        setCharacter(prev => {
+          if (!prev) return null;
+          const currentHp = prev.hp > newMaxHp ? newMaxHp : prev.hp;
+          if (prev.maxHp === newMaxHp && prev.hp === currentHp) return prev; // Avoid unnecessary re-render
+          return {...prev, maxHp: newMaxHp, hp: currentHp };
+        });
       }
     }
   }, [character, translations, allAvailableFeatDefinitions]);
@@ -348,20 +351,21 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
   }, [character?.race, character?.age, translations]);
 
   React.useEffect(() => {
-    if (character && character.race && translations) {
+    if (character && character.race && translations && allAvailableFeatDefinitions && allAvailableSkillDefinitionsForDisplay) {
       const details = getRaceSpecialQualities(
         character.race as DndRaceId,
         translations.DND_RACES,
         translations.DND_RACE_ABILITY_MODIFIERS_DATA,
-        translations.SKILL_DEFINITIONS,
-        translations.DND_FEATS_DEFINITIONS,
+        allAvailableSkillDefinitionsForDisplay, // Using the broader definition list
+        allAvailableFeatDefinitions,
         translations.ABILITY_LABELS
       );
       setRaceSpecialQualities(details);
     } else {
       setRaceSpecialQualities(null);
     }
-  }, [character?.race, translations]);
+  }, [character?.race, translations, allAvailableFeatDefinitions, allAvailableSkillDefinitionsForDisplay]);
+
 
   const currentMinAgeForInput = React.useMemo(() => {
     if (!character || !character.race || !translations || translationsLoading) return 1;
@@ -594,7 +598,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
         ...prev.savingThrows,
         [saveType]: {
           ...prev.savingThrows[saveType],
-          miscMod: value, // miscMod is used for temporary user-input adjustments
+          miscMod: value, 
         },
       },
     }) : null);
@@ -630,7 +634,7 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
   const openInfoDialog = React.useCallback((newContentType: InfoDialogContentType) => {
     setActiveInfoDialogType(newContentType);
     setIsInfoDialogOpen(true);
-  }, [setActiveInfoDialogType, setIsInfoDialogOpen]);
+  }, []);
 
   const handleOpenRaceInfoDialog = React.useCallback(() => { if (character?.race) { openInfoDialog({ type: 'race' }); } }, [character?.race, openInfoDialog]);
   const handleOpenClassInfoDialog = React.useCallback(() => { if (character?.classes[0]?.className) { openInfoDialog({ type: 'class' }); } }, [character?.classes, openInfoDialog]);
@@ -706,10 +710,125 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     const conMod = calculateAbilityModifier(detailedAbilityScores.constitution.finalScore);
     const featHpBonus = aggregatedFeatEffects.hpBonus || 0;
     return (character.baseMaxHp || 0) + conMod + (character.miscMaxHpModifier || 0) + featHpBonus;
-  }, [character, detailedAbilityScores, aggregatedFeatEffects]);
+  }, [character?.baseMaxHp, character?.miscMaxHpModifier, detailedAbilityScores, aggregatedFeatEffects]);
 
 
-  if (translationsLoading || !character || !translations || !detailedAbilityScores || !aggregatedFeatEffects) {
+  // Memoized Props for Panels
+  const coreInfoData: CharacterFormCoreInfoSectionProps['characterData'] | undefined = React.useMemo(() => {
+    if (!character) return undefined;
+    return {
+      name: character.name, playerName: character.playerName, race: character.race, alignment: character.alignment,
+      deity: character.deity, size: character.size, age: character.age, gender: character.gender, classes: character.classes,
+    };
+  }, [character?.name, character?.playerName, character?.race, character?.alignment, character?.deity, character?.size, character?.age, character?.gender, character?.classes]);
+
+  const abilityScoresData: CharacterFormAbilityScoresSectionProps['abilityScoresData'] | undefined = React.useMemo(() => {
+    if (!character) return undefined;
+    return {
+      abilityScores: character.abilityScores, abilityScoreTempCustomModifiers: character.abilityScoreTempCustomModifiers,
+    };
+  }, [character?.abilityScores, character?.abilityScoreTempCustomModifiers]);
+
+  const healthPanelData: HealthPanelProps['healthData'] | undefined = React.useMemo(() => {
+    if (!character) return undefined;
+    return {
+      hp: character.hp,
+      baseMaxHp: character.baseMaxHp,
+      miscMaxHpModifier: character.miscMaxHpModifier,
+      nonlethalDamage: character.nonlethalDamage,
+      temporaryHp: character.temporaryHp,
+      abilityScores: character.abilityScores,
+    };
+  }, [character?.hp, character?.baseMaxHp, character?.miscMaxHpModifier, character?.nonlethalDamage, character?.temporaryHp, character?.abilityScores]);
+
+  const storyAndAppearanceData: CharacterFormStoryPortraitSectionProps['storyAndAppearanceData'] | undefined = React.useMemo(() => {
+    if (!character) return undefined;
+    return {
+      campaign: character.campaign, personalStory: character.personalStory, portraitDataUrl: character.portraitDataUrl,
+      height: character.height, weight: character.weight, eyes: character.eyes, hair: character.hair, skin: character.skin,
+      homeland: character.homeland,
+    };
+  }, [character?.campaign, character?.personalStory, character?.portraitDataUrl, character?.height, character?.weight, character?.eyes, character?.hair, character?.skin, character?.homeland]);
+
+  const skillsData: SkillsFormSectionProps['skillsData'] | undefined = React.useMemo(() => {
+    if (!character) return undefined;
+    return {
+      skills: character.skills, classes: character.classes, race: character.race, size: character.size, feats: character.feats,
+    };
+  }, [character?.skills, character?.classes, character?.race, character?.size, character?.feats]);
+  
+  const featSectionData: FeatsFormSectionProps['featSectionData'] | undefined = React.useMemo(() => {
+    if (!character) return undefined;
+    return {
+      race: character.race, classes: character.classes, feats: character.feats, age: character.age, alignment: character.alignment,
+    };
+  }, [character?.race, character?.classes, character?.feats, character?.age, character?.alignment]);
+
+  const savingThrowsData: SavingThrowsPanelProps['savingThrowsData'] | undefined = React.useMemo(() => {
+    if(!character) return undefined;
+    return { savingThrows: character.savingThrows, classes: character.classes };
+  }, [character?.savingThrows, character?.classes]);
+
+  const acData: ArmorClassPanelProps['acData'] | undefined = React.useMemo(() => {
+    if(!character) return undefined;
+    return {
+      abilityScores: character.abilityScores, size: character.size, armorBonus: character.armorBonus, shieldBonus: character.shieldBonus,
+      naturalArmor: character.naturalArmor, deflectionBonus: character.deflectionBonus, dodgeBonus: character.dodgeBonus, acMiscModifier: character.acMiscModifier,
+    };
+  }, [character?.abilityScores, character?.size, character?.armorBonus, character?.shieldBonus, character?.naturalArmor, character?.deflectionBonus, character?.dodgeBonus, character?.acMiscModifier]);
+
+  const speedData: SpeedPanelProps['speedData'] | undefined = React.useMemo(() => {
+    if(!character) return undefined;
+    return {
+      race: character.race, size: character.size, classes: character.classes, landSpeed: character.landSpeed, burrowSpeed: character.burrowSpeed,
+      climbSpeed: character.climbSpeed, flySpeed: character.flySpeed, swimSpeed: character.swimSpeed,
+      armorSpeedPenalty_base: character.armorSpeedPenalty_base, armorSpeedPenalty_miscModifier: character.armorSpeedPenalty_miscModifier,
+      loadSpeedPenalty_base: character.loadSpeedPenalty_base, loadSpeedPenalty_miscModifier: character.loadSpeedPenalty_miscModifier,
+    };
+  }, [
+    character?.race, character?.size, character?.classes, character?.landSpeed, character?.burrowSpeed, character?.climbSpeed, character?.flySpeed, character?.swimSpeed,
+    character?.armorSpeedPenalty_base, character?.armorSpeedPenalty_miscModifier, character?.loadSpeedPenalty_base, character?.loadSpeedPenalty_miscModifier
+  ]);
+
+  const combatData: CombatPanelProps['combatData'] | undefined = React.useMemo(() => {
+    if(!character) return undefined;
+    return {
+      abilityScores: character.abilityScores, classes: character.classes, size: character.size, babMiscModifier: character.babMiscModifier,
+      initiativeMiscModifier: character.initiativeMiscModifier, grappleMiscModifier: character.grappleMiscModifier,
+      grappleDamage_baseNotes: character.grappleDamage_baseNotes, grappleDamage_bonus: character.grappleDamage_bonus,
+      grappleWeaponChoice: character.grappleWeaponChoice,
+    };
+  }, [
+    character?.abilityScores, character?.classes, character?.size, character?.babMiscModifier, character?.initiativeMiscModifier,
+    character?.grappleMiscModifier, character?.grappleDamage_baseNotes, character?.grappleDamage_bonus, character?.grappleWeaponChoice
+  ]);
+
+  const resistancesData: ResistancesPanelProps['characterData'] | undefined = React.useMemo(() => {
+    if(!character) return undefined;
+    return {
+      fireResistance: character.fireResistance, coldResistance: character.coldResistance, acidResistance: character.acidResistance,
+      electricityResistance: character.electricityResistance, sonicResistance: character.sonicResistance,
+      spellResistance: character.spellResistance, powerResistance: character.powerResistance,
+      damageReduction: character.damageReduction, fortification: character.fortification,
+    };
+  }, [
+    character?.fireResistance, character?.coldResistance, character?.acidResistance, character?.electricityResistance, character?.sonicResistance,
+    character?.spellResistance, character?.powerResistance, character?.damageReduction, character?.fortification
+  ]);
+
+  const languagesPanelData: LanguagesPanelProps | undefined = React.useMemo(() => {
+    if (!character || !detailedAbilityScores) return undefined;
+    return {
+      characterLanguages: character.languages || [],
+      onLanguagesChange: handleLanguagesChange, // Callback is stable
+      characterRaceId: character.race,
+      characterIntelligenceScore: detailedAbilityScores.intelligence.finalScore,
+      speakLanguageSkillRanks: character.skills.find(s => s.id === 'speak-language')?.ranks || 0,
+    };
+  }, [character?.languages, character?.race, detailedAbilityScores, character?.skills, handleLanguagesChange]);
+
+
+  if (translationsLoading || !character || !translations || !detailedAbilityScores || !aggregatedFeatEffects || !coreInfoData) {
     return (
       <div className="container mx-auto px-4 py-8 space-y-8">
         <div className="flex justify-center items-center py-10 min-h-[50vh]">
@@ -722,75 +841,6 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
     );
   }
   const { UI_STRINGS } = translations;
-
-  const coreInfoData: CharacterFormCoreInfoSectionProps['characterData'] = {
-    name: character.name, playerName: character.playerName, race: character.race, alignment: character.alignment,
-    deity: character.deity, size: character.size, age: character.age, gender: character.gender, classes: character.classes,
-  };
-
-  const abilityScoresData: CharacterFormAbilityScoresSectionProps['abilityScoresData'] = {
-    abilityScores: character.abilityScores, abilityScoreTempCustomModifiers: character.abilityScoreTempCustomModifiers,
-  };
-
-  const healthPanelData: HealthPanelProps['healthData'] = {
-    hp: character.hp,
-    baseMaxHp: character.baseMaxHp,
-    miscMaxHpModifier: character.miscMaxHpModifier,
-    nonlethalDamage: character.nonlethalDamage,
-    temporaryHp: character.temporaryHp,
-    abilityScores: character.abilityScores, // Pass full scores for CON mod calculation
-  };
-
-  const storyAndAppearanceData: CharacterFormStoryPortraitSectionProps['storyAndAppearanceData'] = {
-    campaign: character.campaign, personalStory: character.personalStory, portraitDataUrl: character.portraitDataUrl,
-    height: character.height, weight: character.weight, eyes: character.eyes, hair: character.hair, skin: character.skin,
-    homeland: character.homeland,
-  };
-
-  const skillsData: SkillsFormSectionProps['skillsData'] = {
-    skills: character.skills, classes: character.classes, race: character.race, size: character.size, feats: character.feats,
-  };
-
-  const featSectionData: FeatsFormSectionProps['featSectionData'] = {
-    race: character.race, classes: character.classes, feats: character.feats, age: character.age, alignment: character.alignment,
-  };
-
-  const savingThrowsData: SavingThrowsPanelProps['savingThrowsData'] = {
-    savingThrows: character.savingThrows, classes: character.classes,
-  };
-
-  const acData: ArmorClassPanelProps['acData'] = {
-    abilityScores: character.abilityScores, size: character.size, armorBonus: character.armorBonus, shieldBonus: character.shieldBonus,
-    naturalArmor: character.naturalArmor, deflectionBonus: character.deflectionBonus, dodgeBonus: character.dodgeBonus, acMiscModifier: character.acMiscModifier,
-  };
-
-  const speedData: SpeedPanelProps['speedData'] = {
-    race: character.race, size: character.size, classes: character.classes, landSpeed: character.landSpeed, burrowSpeed: character.burrowSpeed,
-    climbSpeed: character.climbSpeed, flySpeed: character.flySpeed, swimSpeed: character.swimSpeed,
-    armorSpeedPenalty_base: character.armorSpeedPenalty_base, armorSpeedPenalty_miscModifier: character.armorSpeedPenalty_miscModifier,
-    loadSpeedPenalty_base: character.loadSpeedPenalty_base, loadSpeedPenalty_miscModifier: character.loadSpeedPenalty_miscModifier,
-  };
-
-  const combatData: CombatPanelProps['combatData'] = {
-    abilityScores: character.abilityScores, classes: character.classes, size: character.size, babMiscModifier: character.babMiscModifier,
-    initiativeMiscModifier: character.initiativeMiscModifier, grappleMiscModifier: character.grappleMiscModifier,
-    grappleDamage_baseNotes: character.grappleDamage_baseNotes, grappleDamage_bonus: character.grappleDamage_bonus,
-    grappleWeaponChoice: character.grappleWeaponChoice,
-  };
-
-  const resistancesData: ResistancesPanelProps['characterData'] = {
-    fireResistance: character.fireResistance, coldResistance: character.coldResistance, acidResistance: character.acidResistance,
-    electricityResistance: character.electricityResistance, sonicResistance: character.sonicResistance,
-    spellResistance: character.spellResistance, powerResistance: character.powerResistance,
-    damageReduction: character.damageReduction, fortification: character.fortification,
-  };
-
-  const languagesPanelData = {
-    characterLanguages: character.languages || [],
-    characterRaceId: character.race,
-    characterIntelligenceScore: detailedAbilityScores.intelligence.finalScore,
-    speakLanguageSkillRanks: character.skills.find(s => s.id === 'speak-language')?.ranks || 0,
-  };
 
 
   return (
@@ -809,49 +859,61 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           onOpenDeityInfoDialog={handleOpenDeityInfoDialog}
         />
 
-        <CharacterFormAbilityScoresSection
-          abilityScoresData={abilityScoresData}
-          detailedAbilityScores={detailedAbilityScores}
-          onBaseAbilityScoreChange={handleBaseAbilityScoreChange}
-          onMultipleBaseAbilityScoresChange={handleMultipleBaseAbilityScoresChange}
-          onAbilityScoreTempCustomModifierChange={handleAbilityScoreTempCustomModifierChange}
-          onOpenAbilityScoreBreakdownDialog={handleOpenAbilityScoreBreakdownDialog}
-        />
+        {abilityScoresData && (
+          <CharacterFormAbilityScoresSection
+            abilityScoresData={abilityScoresData}
+            detailedAbilityScores={detailedAbilityScores}
+            onBaseAbilityScoreChange={handleBaseAbilityScoreChange}
+            onMultipleBaseAbilityScoresChange={handleMultipleBaseAbilityScoresChange}
+            onAbilityScoreTempCustomModifierChange={handleAbilityScoreTempCustomModifierChange}
+            onOpenAbilityScoreBreakdownDialog={handleOpenAbilityScoreBreakdownDialog}
+          />
+        )}
         
-        <SavingThrowsPanel
-            savingThrowsData={savingThrowsData}
-            abilityScores={actualAbilityScoresForSavesAndSkills}
-            aggregatedFeatEffects={aggregatedFeatEffects}
-            onSavingThrowTemporaryModChange={handleSavingThrowTemporaryModChange}
-            onOpenInfoDialog={handleOpenSavingThrowInfoDialog}
-        />
+        {savingThrowsData && (
+          <SavingThrowsPanel
+              savingThrowsData={savingThrowsData}
+              abilityScores={actualAbilityScoresForSavesAndSkills}
+              aggregatedFeatEffects={aggregatedFeatEffects}
+              onSavingThrowTemporaryModChange={handleSavingThrowTemporaryModChange}
+              onOpenInfoDialog={handleOpenSavingThrowInfoDialog}
+          />
+        )}
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <ArmorClassPanel
-            acData={acData}
-            onCharacterUpdate={handleCharacterFieldUpdate as any}
-            onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
-          />
-          <HealthPanel
-            healthData={healthPanelData}
-            calculatedMaxHp={calculatedMaxHpForPanel}
-            onCharacterUpdate={handleHealthFieldChange}
-          />
+          {acData && (
+            <ArmorClassPanel
+              acData={acData}
+              onCharacterUpdate={handleCharacterFieldUpdate as any}
+              onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
+            />
+          )}
+          {healthPanelData && (
+            <HealthPanel
+              healthData={healthPanelData}
+              calculatedMaxHp={calculatedMaxHpForPanel}
+              onCharacterUpdate={handleHealthFieldChange}
+            />
+          )}
         </div>
         
-        <ResistancesPanel
-          characterData={resistancesData}
-          onResistanceChange={handleResistanceChange}
-          onDamageReductionChange={handleDamageReductionChange}
-          onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
-        />
+        {resistancesData && (
+          <ResistancesPanel
+            characterData={resistancesData}
+            onResistanceChange={handleResistanceChange}
+            onDamageReductionChange={handleDamageReductionChange}
+            onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
+          />
+        )}
         
-        <CombatPanel
-            combatData={combatData}
-            onCharacterUpdate={handleCharacterFieldUpdate as any}
-            onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog}
-            onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
-        />
+        {combatData && (
+          <CombatPanel
+              combatData={combatData}
+              onCharacterUpdate={handleCharacterFieldUpdate as any}
+              onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog}
+              onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
+          />
+        )}
 
         {(character?.feats?.length ?? 0) > 0 && (
           <ConditionsPanel
@@ -861,50 +923,60 @@ export const CharacterFormCore = ({ onSave }: CharacterFormCoreProps) => {
           />
         )}
 
-        <CharacterFormStoryPortraitSection
-          storyAndAppearanceData={storyAndAppearanceData}
-          onFieldChange={handleCharacterFieldUpdate as any}
-          onPortraitChange={handlePortraitChange}
-        />
+        {storyAndAppearanceData && (
+          <CharacterFormStoryPortraitSection
+            storyAndAppearanceData={storyAndAppearanceData}
+            onFieldChange={handleCharacterFieldUpdate as any}
+            onPortraitChange={handlePortraitChange}
+          />
+        )}
         
-        <LanguagesPanel
-          characterLanguages={languagesPanelData.characterLanguages}
-          onLanguagesChange={handleLanguagesChange}
-          characterRaceId={languagesPanelData.characterRaceId}
-          characterIntelligenceScore={languagesPanelData.characterIntelligenceScore}
-          speakLanguageSkillRanks={languagesPanelData.speakLanguageSkillRanks}
-        />
+        {languagesPanelData && (
+          <LanguagesPanel
+            characterLanguages={languagesPanelData.characterLanguages}
+            onLanguagesChange={handleLanguagesChange}
+            characterRaceId={languagesPanelData.characterRaceId}
+            characterIntelligenceScore={languagesPanelData.characterIntelligenceScore}
+            speakLanguageSkillRanks={languagesPanelData.speakLanguageSkillRanks}
+          />
+        )}
 
-        <SkillsFormSection
-          skillsData={skillsData}
-          actualAbilityScores={actualAbilityScoresForSavesAndSkills}
-          allFeatDefinitions={allAvailableFeatDefinitions}
-          allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
-          allCustomSkillDefinitions={globalCustomSkillDefinitions}
-          onSkillChange={handleSkillChange}
-          onEditCustomSkillDefinition={handleOpenEditCustomSkillDialog}
-          onOpenSkillInfoDialog={handleOpenSkillInfoDialog}
-        />
+        {skillsData && (
+          <SkillsFormSection
+            skillsData={skillsData}
+            actualAbilityScores={actualAbilityScoresForSavesAndSkills}
+            allFeatDefinitions={allAvailableFeatDefinitions}
+            allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
+            allCustomSkillDefinitions={globalCustomSkillDefinitions}
+            onSkillChange={handleSkillChange}
+            onEditCustomSkillDefinition={handleOpenEditCustomSkillDialog}
+            onOpenSkillInfoDialog={handleOpenSkillInfoDialog}
+          />
+        )}
 
-        <FeatsFormSection
-          featSectionData={featSectionData}
-          allAvailableFeatDefinitions={allAvailableFeatDefinitions}
-          chosenFeatInstances={character.feats}
-          onFeatInstancesChange={handleFeatInstancesChange}
-          onEditCustomFeatDefinition={handleOpenEditCustomFeatDefinitionDialog}
-          abilityScores={actualAbilityScoresForSavesAndSkills}
-          skills={character.skills}
-          allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
-          allCustomSkillDefinitions={globalCustomSkillDefinitions}
-        />
+        {featSectionData && (
+          <FeatsFormSection
+            featSectionData={featSectionData}
+            allAvailableFeatDefinitions={allAvailableFeatDefinitions}
+            chosenFeatInstances={character.feats}
+            onFeatInstancesChange={handleFeatInstancesChange}
+            onEditCustomFeatDefinition={handleOpenEditCustomFeatDefinitionDialog}
+            abilityScores={actualAbilityScoresForSavesAndSkills}
+            skills={character.skills}
+            allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
+            allCustomSkillDefinitions={globalCustomSkillDefinitions}
+          />
+        )}
         
-        <SpeedPanel
-          speedData={speedData}
-          onCharacterUpdate={handleCharacterFieldUpdate as any}
-          onOpenSpeedInfoDialog={handleOpenSpeedInfoDialog}
-          onOpenArmorSpeedPenaltyInfoDialog={handleOpenArmorSpeedPenaltyInfoDialog}
-          onOpenLoadSpeedPenaltyInfoDialog={handleOpenLoadSpeedPenaltyInfoDialog}
-        />
+        {speedData && (
+          <SpeedPanel
+            speedData={speedData}
+            onCharacterUpdate={handleCharacterFieldUpdate as any}
+            onOpenSpeedInfoDialog={handleOpenSpeedInfoDialog}
+            onOpenArmorSpeedPenaltyInfoDialog={handleOpenArmorSpeedPenaltyInfoDialog}
+            onOpenLoadSpeedPenaltyInfoDialog={handleOpenLoadSpeedPenaltyInfoDialog}
+          />
+        )}
 
 
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-12 pt-8 border-t">

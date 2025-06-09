@@ -18,7 +18,7 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 
 const DEBOUNCE_DELAY = 400;
 
-interface ResistancesPanelProps {
+export interface ResistancesPanelProps {
   characterData: {
     fireResistance: ResistanceValue;
     coldResistance: ResistanceValue;
@@ -35,7 +35,7 @@ interface ResistancesPanelProps {
   onOpenResistanceInfoDialog: (resistanceField: ResistanceFieldKeySheet) => void;
 }
 
-export const ResistancesPanel = ({ characterData, onResistanceChange, onDamageReductionChange, onOpenResistanceInfoDialog }: ResistancesPanelProps) => {
+const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamageReductionChange, onOpenResistanceInfoDialog }: ResistancesPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
   const { toast } = useToast();
 
@@ -423,5 +423,5 @@ export const ResistancesPanel = ({ characterData, onResistanceChange, onDamageRe
     </>
   );
 };
-// ResistancesPanel.displayName = 'ResistancesPanelComponent';
-
+ResistancesPanelComponent.displayName = 'ResistancesPanelComponent';
+export const ResistancesPanel = React.memo(ResistancesPanelComponent);

@@ -15,13 +15,13 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 
 const DEBOUNCE_DELAY = 400; // ms
 
-interface CharacterFormStoryPortraitSectionProps {
+export interface CharacterFormStoryPortraitSectionProps {
   storyAndAppearanceData: Pick<Character, 'campaign' | 'personalStory' | 'portraitDataUrl' | 'height' | 'weight' | 'eyes' | 'hair' | 'skin' | 'homeland'>;
   onFieldChange: (field: keyof Pick<Character, 'campaign' | 'personalStory' | 'height' | 'weight' | 'eyes' | 'hair' | 'skin' | 'homeland'>, value: string) => void;
   onPortraitChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const CharacterFormStoryPortraitSection = ({
+const CharacterFormStoryPortraitSectionComponent = ({
   storyAndAppearanceData,
   onFieldChange,
   onPortraitChange,
@@ -78,7 +78,7 @@ export const CharacterFormStoryPortraitSection = ({
             </div>
             <div className="md:col-span-2 space-y-2 flex flex-col">
               <Skeleton className="h-5 w-32" />
-              <Skeleton className="min-h-[160px] md:flex-grow md:min-h-0 rounded-md" /> {/* Adjusted height */}
+              <Skeleton className="min-h-[160px] md:flex-grow md:min-h-0 rounded-md" /> 
               <Skeleton className="h-5 w-24 mt-4" />
               <Skeleton className="h-10 w-full" />
             </div>
@@ -153,7 +153,7 @@ export const CharacterFormStoryPortraitSection = ({
             )}
           </div>
 
-          <div className="md:col-span-2 space-y-4 flex flex-col"> {/* Added space-y-4 here */}
+          <div className="md:col-span-2 space-y-4 flex flex-col"> 
             <div className="space-y-1.5 flex-grow flex flex-col">
               <Label htmlFor="personalStory">{UI_STRINGS.personalStoryLabel || "Personal Story"}</Label>
               <Textarea
@@ -162,7 +162,7 @@ export const CharacterFormStoryPortraitSection = ({
                 value={localPersonalStory}
                 onChange={(e) => setLocalPersonalStory(e.target.value)}
                 placeholder={UI_STRINGS.personalStoryPlaceholder || "Describe your character's history, motivations, personality, and defining moments..."}
-                className="min-h-[160px] md:flex-grow md:min-h-0" // Reduced height
+                className="min-h-[160px] md:flex-grow md:min-h-0" 
               />
             </div>
             <div className="space-y-1.5">
@@ -207,3 +207,5 @@ export const CharacterFormStoryPortraitSection = ({
     </Card>
   );
 };
+CharacterFormStoryPortraitSectionComponent.displayName = 'CharacterFormStoryPortraitSectionComponent';
+export const CharacterFormStoryPortraitSection = React.memo(CharacterFormStoryPortraitSectionComponent);

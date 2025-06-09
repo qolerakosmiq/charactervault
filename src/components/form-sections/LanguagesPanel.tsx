@@ -14,7 +14,7 @@ import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
-interface LanguagesPanelProps {
+export interface LanguagesPanelProps {
   characterLanguages: LanguageId[];
   onLanguagesChange: (updatedLanguages: LanguageId[]) => void;
   characterRaceId: DndRaceId | '';
@@ -22,7 +22,7 @@ interface LanguagesPanelProps {
   speakLanguageSkillRanks: number;
 }
 
-export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
+const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
   characterLanguages,
   onLanguagesChange,
   characterRaceId,
@@ -43,7 +43,7 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
           <Skeleton className="h-4 w-3/4 mt-1" />
         </CardHeader>
         <CardContent className="space-y-4">
-          <Skeleton className="h-12 w-full mb-2" /> {/* For the summary box */}
+          <Skeleton className="h-12 w-full mb-2" /> 
           <Skeleton className="h-8 w-1/2 mb-2" />
           <Skeleton className="h-10 w-full mb-2" />
           <Skeleton className="h-10 w-full" />
@@ -81,7 +81,7 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
 
 
   const availableLanguagesForAdding = LANGUAGES.filter(
-    lang => !allKnownLanguageIds.includes(lang.value) && lang.value !== 'druidic' // Exclude Druidic from general selection
+    lang => !allKnownLanguageIds.includes(lang.value) && lang.value !== 'druidic' 
   ).sort((a,b) => a.label.localeCompare(b.label));
 
   const handleAddLanguage = () => {
@@ -129,11 +129,11 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
 
         <div>
           {allKnownLanguagesToDisplay.length > 0 ? (
-            <div className="mt-1"> {/* Removed space-y-0.5 */}
+            <div className="mt-1"> 
               {allKnownLanguagesToDisplay.map(langObj => {
                 const isAutomatic = automaticLanguages.includes(langObj.value);
                 return (
-                  <div key={`known-${langObj.value}`} className="flex items-center justify-between py-1 px-1.5 rounded-md text-sm"> {/* Changed p-1.5 to py-1 px-1.5 */}
+                  <div key={`known-${langObj.value}`} className="flex items-center justify-between py-1 px-1.5 rounded-md text-sm"> 
                     <span>
                       {langObj.label}
                       {isAutomatic && <Badge variant="outline" className="ml-2 text-xs text-muted-foreground border-muted-foreground/50">{UI_STRINGS.languagesPanelAutomaticBadgeLabel || "Automatic"}</Badge>}
@@ -180,4 +180,5 @@ export const LanguagesPanel: React.FC<LanguagesPanelProps> = ({
     </Card>
   );
 };
-    
+LanguagesPanelComponent.displayName = "LanguagesPanelComponent";
+export const LanguagesPanel = React.memo(LanguagesPanelComponent);

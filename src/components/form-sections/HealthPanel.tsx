@@ -18,12 +18,12 @@ import { Progress } from '@/components/ui/progress';
 
 const DEBOUNCE_DELAY_HEALTH = 400;
 
-type HealthPanelData = Pick<Character, 
+export type HealthPanelData = Pick<Character, 
   'hp' | 'baseMaxHp' | 'miscMaxHpModifier' | 
   'nonlethalDamage' | 'temporaryHp' | 'abilityScores'
 >;
 
-interface HealthPanelProps {
+export interface HealthPanelProps {
   healthData: HealthPanelData;
   calculatedMaxHp: number; 
   onCharacterUpdate: (
@@ -32,12 +32,12 @@ interface HealthPanelProps {
   ) => void;
 }
 
-export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: HealthPanelProps) => {
+const HealthPanelComponent = ({ healthData, calculatedMaxHp, onCharacterUpdate }: HealthPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const [localHp, setLocalHp] = useDebouncedFormField(
     healthData.hp,
-    (value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp)), // Cap at actual maxHP
+    (value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp)),
     DEBOUNCE_DELAY_HEALTH
   );
   const [localBaseMaxHp, setLocalBaseMaxHp] = useDebouncedFormField(
@@ -62,13 +62,9 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
   );
 
   React.useEffect(() => {
-    // Cap current HP at max HP, independent of temporary HP.
-    // Temporary HP is a buffer, not an increase to current HP beyond max.
     if (localHp > calculatedMaxHp) {
         setLocalHp(calculatedMaxHp);
     }
-    // If current HP is somehow negative (dying/dead), temp HP doesn't change that state,
-    // but it does absorb incoming damage.
   }, [calculatedMaxHp, localHp, setLocalHp]);
 
 
@@ -101,7 +97,6 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
   
   const missingHp = Math.max(0, calculatedMaxHp - localHp);
 
-  // Health Bar Calculations
   const actualCurrentHpForBar = Math.max(0, localHp); 
   const effectiveTotalHpForBar = Math.max(1, calculatedMaxHp); 
 
@@ -112,7 +107,6 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
   const healthBarIndicatorColor = "bg-emerald-600";
 
 
-  // Status Calculation
   let statusText = UI_STRINGS.healthStatusNormal || "Normal";
   let statusColorClass = "text-emerald-600";
 
@@ -203,7 +197,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
               value={localHp}
               onChange={setLocalHp}
               min={-999} 
-              max={calculatedMaxHp} // Current HP capped at Max HP
+              max={calculatedMaxHp} 
               inputClassName={cn(
                 "w-full h-10 text-lg text-center font-bold",
                 localHp <= 0 && localHp > -10 && "text-amber-600",
@@ -245,7 +239,6 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                 buttonClassName="h-10 w-10"
             />
           </div>
-           {/* Missing Hit Points is now displayed below Max HP */}
         </div>
         
         <Separator className="my-2" />
@@ -311,7 +304,5 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
     </Card>
   );
 };
-
-HealthPanel.displayName = 'HealthPanel';
-
-    
+HealthPanelComponent.displayName = 'HealthPanelComponent';
+export const HealthPanel = React.memo(HealthPanelComponent);

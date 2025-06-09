@@ -16,29 +16,28 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 
 const DEBOUNCE_DELAY = 400;
 
-type CombatPanelCharacterData = Pick<Character,
+export type CombatPanelCharacterData = Pick<Character,
   'abilityScores' | 'classes' | 'size' |
   'babMiscModifier' | 'initiativeMiscModifier' | 'grappleMiscModifier' |
   'grappleDamage_baseNotes' | 'grappleDamage_bonus' | 'grappleWeaponChoice'
 >;
 
-type CombatFieldKey = keyof Pick<Character,
+export type CombatFieldKey = keyof Pick<Character,
   'babMiscModifier' | 'initiativeMiscModifier' | 'grappleMiscModifier' |
   'grappleDamage_bonus' | 'grappleWeaponChoice'
 >;
 
 
-interface CombatPanelProps {
+export interface CombatPanelProps {
   combatData: CombatPanelCharacterData;
   onCharacterUpdate: (field: CombatFieldKey, value: any) => void;
   onOpenCombatStatInfoDialog: (contentType: InfoDialogContentType) => void;
   onOpenAcBreakdownDialog?: (acType: 'Normal' | 'Touch' | 'Flat-Footed') => void;
 }
 
-export const CombatPanel = ({ combatData, onCharacterUpdate, onOpenCombatStatInfoDialog }: CombatPanelProps) => {
+const CombatPanelComponent = ({ combatData, onCharacterUpdate, onOpenCombatStatInfoDialog }: CombatPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
-  // Guard against undefined combatData or loading translations
   if (!combatData || translationsLoading || !translations) {
     return (
       <Card>
@@ -249,6 +248,5 @@ export const CombatPanel = ({ combatData, onCharacterUpdate, onOpenCombatStatInf
     </>
   );
 };
-// CombatPanel.displayName = 'CombatPanelComponent';
-
-    
+CombatPanelComponent.displayName = 'CombatPanelComponent';
+export const CombatPanel = React.memo(CombatPanelComponent);

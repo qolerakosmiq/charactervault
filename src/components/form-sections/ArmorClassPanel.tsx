@@ -16,15 +16,15 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 
 const DEBOUNCE_DELAY = 400;
 
-type ArmorClassPanelData = Pick<Character, 'abilityScores' | 'size' | 'armorBonus' | 'shieldBonus' | 'naturalArmor' | 'deflectionBonus' | 'dodgeBonus' | 'acMiscModifier'>;
+export type ArmorClassPanelData = Pick<Character, 'abilityScores' | 'size' | 'armorBonus' | 'shieldBonus' | 'naturalArmor' | 'deflectionBonus' | 'dodgeBonus' | 'acMiscModifier'>;
 
-interface ArmorClassPanelProps {
+export interface ArmorClassPanelProps {
   acData?: ArmorClassPanelData;
   onCharacterUpdate?: (field: keyof ArmorClassPanelData, value: any) => void;
   onOpenAcBreakdownDialog?: (acType: 'Normal' | 'Touch' | 'Flat-Footed') => void;
 }
 
-export const ArmorClassPanel = ({ acData, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) => {
+const ArmorClassPanelComponent = ({ acData, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const [localTemporaryAcModifier, setLocalTemporaryAcModifier] = useDebouncedFormField(
@@ -201,4 +201,5 @@ export const ArmorClassPanel = ({ acData, onCharacterUpdate, onOpenAcBreakdownDi
     </>
   );
 };
-// ArmorClassPanel.displayName = 'ArmorClassPanelComponent';
+ArmorClassPanelComponent.displayName = 'ArmorClassPanelComponent';
+export const ArmorClassPanel = React.memo(ArmorClassPanelComponent);

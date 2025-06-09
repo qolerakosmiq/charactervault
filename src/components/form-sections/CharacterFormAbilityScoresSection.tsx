@@ -22,7 +22,7 @@ const DEBOUNCE_DELAY = 400; // ms
 
 const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
-interface CharacterFormAbilityScoresSectionProps {
+export interface CharacterFormAbilityScoresSectionProps {
   abilityScoresData: Pick<Character, 'abilityScores' | 'abilityScoreTempCustomModifiers'>;
   detailedAbilityScores: DetailedAbilityScores | null;
   onBaseAbilityScoreChange: (ability: Exclude<AbilityName, 'none'>, value: number) => void;
@@ -31,7 +31,7 @@ interface CharacterFormAbilityScoresSectionProps {
   onOpenAbilityScoreBreakdownDialog: (ability: Exclude<AbilityName, 'none'>) => void;
 }
 
-export const CharacterFormAbilityScoresSection = ({
+const CharacterFormAbilityScoresSectionComponent = ({
   abilityScoresData,
   detailedAbilityScores,
   onBaseAbilityScoreChange,
@@ -114,12 +114,12 @@ export const CharacterFormAbilityScoresSection = ({
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
             {abilityKeys.map(ability => (
               <div key={ability} className="flex flex-col items-center space-y-1.5 p-3 border rounded-md bg-card shadow-sm">
-                <Skeleton className="h-6 w-12 mb-1" /> {/* Ability Abbr + Name */}
-                <Skeleton className="h-8 w-16 mb-1" /> {/* Score + Modifier */}
-                <Skeleton className="h-4 w-16 mb-1" /> {/* Base Score Label */}
-                <Skeleton className="h-8 w-full" />   {/* NumberSpinnerInput */}
-                <Skeleton className="h-4 w-20 mt-1" /> {/* Temp Mod Label */}
-                <Skeleton className="h-8 w-full" />   {/* NumberSpinnerInput */}
+                <Skeleton className="h-6 w-12 mb-1" /> 
+                <Skeleton className="h-8 w-16 mb-1" /> 
+                <Skeleton className="h-4 w-16 mb-1" /> 
+                <Skeleton className="h-8 w-full" />   
+                <Skeleton className="h-4 w-20 mt-1" /> 
+                <Skeleton className="h-8 w-full" />   
               </div>
             ))}
           </div>
@@ -252,4 +252,5 @@ export const CharacterFormAbilityScoresSection = ({
     </>
   );
 };
-// CharacterFormAbilityScoresSection.displayName = 'CharacterFormAbilityScoresSectionComponent';
+CharacterFormAbilityScoresSectionComponent.displayName = 'CharacterFormAbilityScoresSectionComponent';
+export const CharacterFormAbilityScoresSection = React.memo(CharacterFormAbilityScoresSectionComponent);

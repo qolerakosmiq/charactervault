@@ -17,7 +17,7 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 
 const DEBOUNCE_DELAY = 400;
 
-interface SavingThrowsPanelProps {
+export interface SavingThrowsPanelProps {
   savingThrowsData: Pick<Character, 'savingThrows' | 'classes'>;
   abilityScores: AbilityScores;
   aggregatedFeatEffects: AggregatedFeatEffects | null;
@@ -27,7 +27,7 @@ interface SavingThrowsPanelProps {
 
 const SAVE_TYPES: SavingThrowType[] = ['fortitude', 'reflex', 'will'];
 
-export const SavingThrowsPanel = ({
+const SavingThrowsPanelComponent = ({
   savingThrowsData,
   abilityScores,
   aggregatedFeatEffects,
@@ -230,3 +230,5 @@ export const SavingThrowsPanel = ({
   );
 };
 
+SavingThrowsPanelComponent.displayName = 'SavingThrowsPanelComponent';
+export const SavingThrowsPanel = React.memo(SavingThrowsPanelComponent);
