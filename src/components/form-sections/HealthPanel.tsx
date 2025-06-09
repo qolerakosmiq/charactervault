@@ -136,7 +136,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
           />
         </div>
         
-         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <div className="flex flex-col items-center space-y-1">
                 <Label htmlFor="nonlethal-damage" className="text-xs text-muted-foreground">
                     {UI_STRINGS.healthPanelNonlethalDamageLabel || "Nonlethal Damage"}
@@ -146,9 +146,9 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                     value={localNonlethalDamage}
                     onChange={setLocalNonlethalDamage}
                     min={0}
-                    inputClassName={cn(
+                     inputClassName={cn(
                       "w-24 h-9 text-base",
-                      localNonlethalDamage > 0 && "text-destructive"
+                      localNonlethalDamage > 0 ? "text-destructive" : ""
                     )}
                     buttonClassName="h-9 w-9"
                 />
@@ -164,7 +164,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                     min={0}
                      inputClassName={cn(
                       "w-24 h-9 text-base",
-                      localTemporaryHp > 0 && "text-emerald-600"
+                      localTemporaryHp > 0 ? "text-emerald-600" : ""
                     )}
                     buttonClassName="h-9 w-9"
                 />
@@ -216,7 +216,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                         {UI_STRINGS.healthPanelAbilityModLabel || "Ability Modifier"}
                         <span className="text-xs text-muted-foreground ml-1">({conAbbr})</span>
                     </Label>
-                    <div className="w-36 text-center">
+                     <div className="w-36 text-center">
                         <span className={cn("font-semibold", conModifier >= 0 ? "text-emerald-600" : "text-destructive")}>
                             {conModifier >= 0 ? `+${conModifier}` : conModifier}
                         </span>
