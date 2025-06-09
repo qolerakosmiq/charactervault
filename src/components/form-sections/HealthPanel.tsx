@@ -26,7 +26,7 @@ export interface HealthPanelProps {
   healthData: HealthPanelData;
   calculatedMaxHp: number; 
   finalConstitutionModifier: number;
-  calculatedMiscMaxHpBonus: number; // New prop for misc/feat HP bonus
+  calculatedMiscMaxHpBonus: number; 
   onCharacterUpdate: (
     field: keyof Pick<Character, 'hp' | 'baseMaxHp' | 'customMaxHpModifier' | 'nonlethalDamage' | 'temporaryHp' | 'numberOfWounds'>, 
     value: number
@@ -44,7 +44,7 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({
 
   const [localHp, setLocalHp] = useDebouncedFormField(
     healthData.hp,
-    (value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp > 0 ? calculatedMaxHp : value)), // Allow current HP to exceed max if max is 0 or less for edge cases.
+    (value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp > 0 ? calculatedMaxHp : value)),
     DEBOUNCE_DELAY_HEALTH
   );
   const [localBaseMaxHp, setLocalBaseMaxHp] = useDebouncedFormField(
@@ -211,7 +211,7 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({
               value={localHp}
               onChange={setLocalHp}
               min={-999} 
-              max={calculatedMaxHp > 0 ? calculatedMaxHp : 999} // Allow going over if max is 0 or less, for data integrity
+              max={calculatedMaxHp > 0 ? calculatedMaxHp : 999}
               inputClassName={cn(
                 "w-full h-10 text-lg text-center font-bold",
                 localHp <= 0 && localHp > -10 && "text-amber-600",
@@ -291,7 +291,11 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({
                     <span className="text-xs text-muted-foreground ml-1">({conAbbr})</span>
                 </Label>
                  <div className="w-36 text-center">
-                    <span className={cn("font-semibold font-bold", finalConstitutionModifier >= 0 ? "text-emerald-600" : "text-destructive")}>
+                    <span className={cn(
+                        "font-semibold font-bold",
+                        finalConstitutionModifier > 0 ? "text-emerald-600" : 
+                        finalConstitutionModifier < 0 ? "text-destructive" : "text-muted-foreground"
+                    )}>
                         {finalConstitutionModifier >= 0 ? `+${finalConstitutionModifier}` : finalConstitutionModifier}
                     </span>
                 </div>
@@ -301,7 +305,11 @@ const HealthPanelComponent: React.FC<HealthPanelProps> = ({
                     {UI_STRINGS.healthPanelMiscMaxHpLabel || "Misc Modifier"}
                 </Label>
                  <div className="w-36 text-center">
-                    <span className={cn("font-semibold font-bold", calculatedMiscMaxHpBonus >= 0 ? "text-emerald-600" : "text-destructive")}>
+                    <span className={cn(
+                        "font-semibold font-bold", 
+                        calculatedMiscMaxHpBonus > 0 ? "text-emerald-600" : 
+                        calculatedMiscMaxHpBonus < 0 ? "text-destructive" : "text-muted-foreground"
+                    )}>
                         {calculatedMiscMaxHpBonus >= 0 ? `+${calculatedMiscMaxHpBonus}` : calculatedMiscMaxHpBonus}
                     </span>
                 </div>
