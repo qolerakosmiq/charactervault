@@ -184,10 +184,10 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
     const typeLabel = getDrTypeUiLabel(dr.type);
     const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
     
-    const valueBadge = <Badge variant="outline" className="text-xs font-medium px-1 py-0.5 mx-0.5">{dr.value}</Badge>;
+    const valueBadge = <Badge variant="outline" className="text-sm font-medium px-1 py-0.5 mx-0.5">{dr.value}</Badge>;
     const typeIsNone = dr.type === "none" || typeLabel === (DAMAGE_REDUCTION_TYPES.find(t => t.value === 'none')?.label || "None");
     const typeBadge = !typeIsNone
-        ? <Badge variant="outline" className="text-xs font-medium px-1 py-0.5 mx-0.5">{typeLabel}</Badge>
+        ? <Badge variant="outline" className="text-sm font-medium px-1 py-0.5 mx-0.5">{typeLabel}</Badge>
         : <span className="italic mx-0.5">{typeLabel}</span>;
 
 
@@ -337,7 +337,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                         value={newDrValue}
                         onChange={setNewDrValue}
                         min={1}
-                        inputClassName="h-9 text-sm w-full text-center"
+                        inputClassName="h-9 text-sm text-center"
                         buttonClassName="h-9 w-9"
                         buttonSize="sm"
                         className="justify-center"
@@ -390,7 +390,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                         return (
                           <div key={dr.id} className="flex flex-col items-start justify-between p-2 border rounded-md bg-muted/5 text-sm">
                             <div className="flex items-center justify-between w-full">
-                                <div className="flex items-center gap-x-1 flex-wrap"> {/* Changed items-baseline to items-center */}
+                                <div className="flex items-center gap-x-1 flex-wrap">
                                   <span className="font-semibold text-xl text-accent">{getDrPrimaryNotation(dr)}</span>
                                   <Badge variant="outline" className="text-sm font-normal h-5 mr-1 whitespace-nowrap">
                                      {ruleLabel}
