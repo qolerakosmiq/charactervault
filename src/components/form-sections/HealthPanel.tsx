@@ -1,7 +1,7 @@
 
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import type { Character, AbilityScores } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -37,7 +37,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
 
   const [localHp, setLocalHp] = useDebouncedFormField(
     healthData.hp,
-    (value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp + (localTemporaryHp || 0) )),
+    (value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp)), // Cap at actual maxHP
     DEBOUNCE_DELAY_HEALTH
   );
   const [localBaseMaxHp, setLocalBaseMaxHp] = useDebouncedFormField(
@@ -62,11 +62,14 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
   );
 
   React.useEffect(() => {
-    const currentMaxWithTemp = calculatedMaxHp + localTemporaryHp;
-    if(localHp > currentMaxWithTemp) {
-        setLocalHp(currentMaxWithTemp);
+    // Cap current HP at max HP, independent of temporary HP.
+    // Temporary HP is a buffer, not an increase to current HP beyond max.
+    if (localHp > calculatedMaxHp) {
+        setLocalHp(calculatedMaxHp);
     }
-  }, [calculatedMaxHp, localHp, setLocalHp, localTemporaryHp]);
+    // If current HP is somehow negative (dying/dead), temp HP doesn't change that state,
+    // but it does absorb incoming damage.
+  }, [calculatedMaxHp, localHp, setLocalHp]);
 
 
   if (translationsLoading || !translations) {
@@ -176,10 +179,10 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
           </div>
           <div className="flex justify-between text-xs text-muted-foreground px-1">
             <span>
-              {localHp} / {calculatedMaxHp} {UI_STRINGS.hpLabel || "Hit Points"}
-              {localTemporaryHp > 0 && ` (+${localTemporaryHp} ${UI_STRINGS.tempHpLabel || "Temporary"})`}
+              {localHp} / {calculatedMaxHp} {UI_STRINGS.healthBarLabelHitPoints || "Hit Points"}
+              {localTemporaryHp > 0 && ` (+${localTemporaryHp} ${UI_STRINGS.healthBarLabelTemporary || "Temporary"})`}
             </span>
-            {localNonlethalDamage > 0 && <span>{localNonlethalDamage} {UI_STRINGS.nonlethalDamageLabel || "Nonlethal"}</span>}
+            {localNonlethalDamage > 0 && <span>{localNonlethalDamage} {UI_STRINGS.healthBarLabelNonlethal || "Nonlethal"}</span>}
           </div>
         </div>
 
@@ -200,7 +203,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
               value={localHp}
               onChange={setLocalHp}
               min={-999} 
-              max={calculatedMaxHp + localTemporaryHp}
+              max={calculatedMaxHp} // Current HP capped at Max HP
               inputClassName={cn(
                 "w-full h-10 text-lg text-center font-bold",
                 localHp <= 0 && localHp > -10 && "text-amber-600",
@@ -242,6 +245,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                 buttonClassName="h-10 w-10"
             />
           </div>
+           {/* Missing Hit Points is now displayed below Max HP */}
         </div>
         
         <Separator className="my-2" />
@@ -309,6 +313,5 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
 };
 
 HealthPanel.displayName = 'HealthPanel';
-
 
     
