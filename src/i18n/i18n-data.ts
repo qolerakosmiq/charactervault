@@ -28,8 +28,8 @@ import type {
   ResistanceValue,
   SpeedDetails,
   CharacterClass,
-  LanguageId, // Added
-  LanguageOption // Added
+  LanguageId,
+  LanguageOption
 } from '@/types/character-core';
 
 // Define types for the structure of each JSON file's data
@@ -43,13 +43,23 @@ export interface AlignmentsJson {
   ALIGNMENTS_DATA: AlignmentDataEntry[];
 }
 
-export interface LanguageDataEntry { // Added
+export interface LanguageDataEntry {
   value: LanguageId;
   label: string;
 }
-export interface LanguagesJson { // Added
+export interface LanguagesJson {
   LANGUAGES_DATA: LanguageDataEntry[];
 }
+
+export interface XpDataEntry {
+  level: number;
+  xpRequired: number;
+}
+export interface XpJson {
+  XP_TABLE_DATA: XpDataEntry[];
+  EPIC_LEVEL_XP_INCREASE: number;
+}
+
 
 export interface SizeDataEntry {
   value: CharacterSize;
@@ -162,7 +172,8 @@ export interface LocaleDataBundle {
   feats: FeatsJson;
   races: RacesJson;
   skills: SkillsJson;
-  languages: LanguagesJson; // Added
+  languages: LanguagesJson;
+  xpTable: XpJson; // Added
   uiStrings?: UiStringsJson;
   customAlignments?: AlignmentsJson;
   customBase?: Partial<BaseJson>;
@@ -171,13 +182,15 @@ export interface LocaleDataBundle {
   customFeats?: FeatsJson;
   customRaces?: RacesJson;
   customSkills?: SkillsJson;
-  customLanguages?: LanguagesJson; // Added
+  customLanguages?: LanguagesJson;
   customUiStrings?: UiStringsJson;
 }
 
 export interface ProcessedSiteData {
   ALIGNMENTS: readonly CharacterAlignmentObject[];
-  LANGUAGES: readonly LanguageOption[]; // Added
+  LANGUAGES: readonly LanguageOption[];
+  XP_TABLE: readonly XpDataEntry[]; // Added
+  EPIC_LEVEL_XP_INCREASE: number; // Added
   SIZES: readonly CharacterSizeObject[];
   GENDERS: readonly { value: GenderId | string; label: string }[];
   DND_RACES: readonly DndRaceOption[];
@@ -216,6 +229,11 @@ function mergeArrayData<T extends { value: string; label?: string }>(base: T[] =
   return Array.from(combinedMap.values()).sort((a, b) => (a.label || a.value).localeCompare(b.label || b.value));
 }
 
+function mergeXpTableData(base: XpDataEntry[] = []): XpDataEntry[] {
+  // XP table is not merged with custom, it's just loaded directly
+  return base.sort((a, b) => a.level - b.level);
+}
+
 
 function mergeObjectData<T extends Record<string, any>>(base: T, custom?: Partial<T>): T {
   return { ...base, ...custom };
@@ -230,9 +248,12 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
   const customAlignments = bundle.customAlignments?.ALIGNMENTS_DATA;
   const ALIGNMENTS = mergeArrayData(baseAlignments, customAlignments);
 
-  const baseLanguages = bundle.languages.LANGUAGES_DATA; // Added
-  const customLanguages = bundle.customLanguages?.LANGUAGES_DATA; // Added
-  const LANGUAGES = mergeArrayData(baseLanguages, customLanguages); // Added
+  const baseLanguages = bundle.languages.LANGUAGES_DATA;
+  const customLanguages = bundle.customLanguages?.LANGUAGES_DATA;
+  const LANGUAGES = mergeArrayData(baseLanguages, customLanguages);
+
+  const XP_TABLE = mergeXpTableData(bundle.xpTable.XP_TABLE_DATA); // Added
+  const EPIC_LEVEL_XP_INCREASE = bundle.xpTable.EPIC_LEVEL_XP_INCREASE; // Added
 
   const baseSizes = bundle.base.SIZES_DATA;
   const customSizes = bundle.customBase?.SIZES_DATA;
@@ -278,7 +299,9 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
 
   return {
     ALIGNMENTS,
-    LANGUAGES, // Added
+    LANGUAGES,
+    XP_TABLE, // Added
+    EPIC_LEVEL_XP_INCREASE, // Added
     SIZES,
     GENDERS,
     DND_RACES,

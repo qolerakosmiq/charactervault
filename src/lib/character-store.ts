@@ -24,14 +24,15 @@ const FULL_CHARACTER_DEFAULTS: Omit<Character, 'id'> = {
   hair: '',
   skin: '',
   languages: [],
+  experiencePoints: 0, // Added
   abilityScores: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
   abilityScoreTempCustomModifiers: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
   hp: 10,
   maxHp: 10,
-  baseMaxHp: 10, 
-  customMaxHpModifier: 0, 
-  nonlethalDamage: 0, 
-  temporaryHp: 0, 
+  baseMaxHp: 10,
+  customMaxHpModifier: 0,
+  nonlethalDamage: 0,
+  temporaryHp: 0,
   numberOfWounds: 0,
   armorBonus: 0,
   shieldBonus: 0,
@@ -44,14 +45,14 @@ const FULL_CHARACTER_DEFAULTS: Omit<Character, 'id'> = {
   initiativeMiscModifier: 0,
   grappleMiscModifier: 0,
   grappleWeaponChoice: 'unarmed',
-  grappleDamage_baseNotes: '1d3', 
+  grappleDamage_baseNotes: '1d3',
   grappleDamage_bonus: 0,
   savingThrows: {
     fortitude: { base: 0, magicMod: 0, miscMod: 0 },
     reflex: { base: 0, magicMod: 0, miscMod: 0 },
     will: { base: 0, magicMod: 0, miscMod: 0 },
   },
-  classes: [], 
+  classes: [],
   skills: [],
   feats: [],
   inventory: [],
@@ -104,6 +105,7 @@ function ensureCharacterDefaults(character: Partial<Character>): Character {
   hydratedCharacter.inventory = character.inventory || [];
   hydratedCharacter.damageReduction = character.damageReduction || [];
   hydratedCharacter.languages = character.languages || [];
+  hydratedCharacter.experiencePoints = character.experiencePoints ?? FULL_CHARACTER_DEFAULTS.experiencePoints; // Added
 
   // Ensure new health fields have defaults if not present
   hydratedCharacter.baseMaxHp = character.baseMaxHp ?? FULL_CHARACTER_DEFAULTS.baseMaxHp;
@@ -118,7 +120,7 @@ function ensureCharacterDefaults(character: Partial<Character>): Character {
       (hydratedCharacter as any)[key] = FULL_CHARACTER_DEFAULTS[key];
     }
   }
-  if (!hydratedCharacter.id) { 
+  if (!hydratedCharacter.id) {
     hydratedCharacter.id = crypto.randomUUID();
   }
 
@@ -216,4 +218,3 @@ export function removeCharacter(id: string): void {
   characters = characters.filter(c => c.id !== id);
   saveCharactersToStorage(characters);
 }
-

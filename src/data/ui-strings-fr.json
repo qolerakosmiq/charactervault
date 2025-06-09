@@ -421,7 +421,7 @@
     "toastInvalidAgeTitle": "Âge invalide",
     "toastInvalidAgeDesc": "L'âge doit être d'au moins {minAge}{raceContext}.",
     "toastInvalidAbilityScoreTitle": "Score de {abilityName} invalide",
-    "toastInvalidAbilityScoreDesc": "Le score de {abilityName} doit être supérieur à 0.",
+    "toastInvalidAbilityScoreDesc": "{abilityName} score doit être supérieur à 0.",
     "languagesPanelTitle": "Langues",
     "languagesPanelDescription": "Gérez les langues connues de votre personnage.",
     "languagesPanelAddButton": "Ajouter une langue",
@@ -438,9 +438,12 @@
     "conditionsPanelTitle": "Conditions Actives",
     "conditionsPanelDescription": "Activez ou désactivez les effets conditionnels des dons et capacités de votre personnage.",
     "conditionsPanelTooltipSourcesLabel": "Sources :",
-    "infoDialogUnknownFeatSource": "Don inconnu"
+    "infoDialogUnknownFeatSource": "Don inconnu",
+    "experiencePanelTitle": "Expérience",
+    "experiencePanelDescription": "Suivez la progression et les points d'expérience actuels de votre personnage.",
+    "experiencePanelCurrentXpLabel": "XP Actuels",
+    "experiencePanelNextLevelLabel": "Niveau Suivant à",
+    "experiencePanelXpToLevelUpFormat": "{currentXp} / {xpForNextLevel} XP",
+    "experiencePanelMaxLevel": "Niveau Max Atteint"
   }
 }
-    
-    
-    

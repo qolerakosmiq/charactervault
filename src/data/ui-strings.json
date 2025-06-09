@@ -438,9 +438,12 @@
     "conditionsPanelTitle": "Active Conditions",
     "conditionsPanelDescription": "Toggle conditional effects from your character's feats and abilities.",
     "conditionsPanelTooltipSourcesLabel": "Sources:",
-    "infoDialogUnknownFeatSource": "Unknown Feat"
+    "infoDialogUnknownFeatSource": "Unknown Feat",
+    "experiencePanelTitle": "Experience",
+    "experiencePanelDescription": "Track your character's progression and current experience points.",
+    "experiencePanelCurrentXpLabel": "Current XP",
+    "experiencePanelNextLevelLabel": "Next Level At",
+    "experiencePanelXpToLevelUpFormat": "{currentXp} / {xpForNextLevel} XP",
+    "experiencePanelMaxLevel": "Max Level Reached"
   }
 }
-    
-    
-    

@@ -848,8 +848,7 @@ export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 // Re-export specific utilities from dnd-utils that are fundamental to character type system
 // or frequently used alongside character types.
-// SAVING_THROW_ABILITIES is needed by InfoDisplayDialog when importing from here.
-export { SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
+export { SAVING_THROW_ABILITIES, calculateCharacterTotalLevel } from '@/lib/dnd-utils';
 
 export * from './character-core';
 

@@ -11,7 +11,7 @@ import type {
   FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData, CharacterSize,
   ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType, ResistanceFieldKeySheet,
   SpeedDetails, SpeedType, CharacterAlignment, ProcessedSiteData, SpeedPanelCharacterData, CombatPanelCharacterData, LanguageId,
-  AggregatedFeatEffects
+  AggregatedFeatEffects, ExperiencePanelData
 } from '@/types/character';
 import {
   getNetAgingEffects,
@@ -21,7 +21,8 @@ import {
   calculateDetailedAbilityScores,
   getRaceSkillPointsBonusPerLevel,
   ABILITY_ORDER_INTERNAL,
-  calculateFeatEffects
+  calculateFeatEffects,
+  calculateCharacterTotalLevel
 } from '@/types/character';
 import {
   getBab,
@@ -56,6 +57,7 @@ import { LanguagesPanel, type LanguagesPanelProps } from '@/components/form-sect
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 import { ConditionsPanel, type ConditionsPanelProps } from '@/components/form-sections/ConditionsPanel';
+import { ExperiencePanel, type ExperiencePanelProps } from '@/components/form-sections/ExperiencePanel'; // Added
 
 import { Loader2 } from 'lucide-react';
 
@@ -108,11 +110,11 @@ function createBaseCharacterData(
     });
     
     const defaultClassDef = DND_CLASSES.find(c => c.value === defaultClassNameValue);
-    let initialBaseMaxHp = 10; 
+    let initialBaseMaxHp = 10;
     if (defaultClassDef?.hitDice) {
-        const hitDiceValue = parseInt(defaultClassDef.hitDice.substring(1)); 
+        const hitDiceValue = parseInt(defaultClassDef.hitDice.substring(1));
         if (!isNaN(hitDiceValue)) {
-            initialBaseMaxHp = hitDiceValue; 
+            initialBaseMaxHp = hitDiceValue;
         }
     }
     const initialConMod = calculateAbilityModifier(DEFAULT_ABILITIES.constitution);
@@ -121,10 +123,10 @@ function createBaseCharacterData(
 
     return {
       id: crypto.randomUUID(), name: '', playerName: '', campaign: '', homeland: '', race: defaultRaceValue, alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, age: 20, gender: '',
-      height: '', weight: '', eyes: '', hair: '', skin: '', languages: [],
+      height: '', weight: '', eyes: '', hair: '', skin: '', languages: [], experiencePoints: 0, // Added
       abilityScores: { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES))) },
       abilityScoreTempCustomModifiers: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
-      hp: initialMaxHp, 
+      hp: initialMaxHp,
       maxHp: initialMaxHp,
       baseMaxHp: initialBaseMaxHp,
       customMaxHpModifier: 0,
@@ -184,7 +186,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         providesSynergies: (translations.SKILL_SYNERGIES as Record<string, any>)[sd.value] || [],
     }));
     const custom = globalCustomSkillDefinitions.map(csd => ({
-        value: csd.id, 
+        value: csd.id,
         label: csd.name,
         keyAbility: csd.keyAbility,
         description: csd.description,
@@ -286,12 +288,12 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const { toast } = useToast();
 
   React.useEffect(() => {
-    if (character && translations && allAvailableFeatDefinitions) { 
+    if (character && translations && allAvailableFeatDefinitions) {
       const aggFeats = calculateFeatEffects(character.feats, allAvailableFeatDefinitions);
       setAggregatedFeatEffects(aggFeats);
       const detailedScores = calculateDetailedAbilityScores(
         character,
-        aggFeats, 
+        aggFeats,
         translations.DND_RACES,
         translations.DND_RACE_ABILITY_MODIFIERS_DATA,
         translations.DND_RACE_BASE_MAX_AGE_DATA,
@@ -309,7 +311,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         setCharacter(prev => {
           if (!prev) return null;
           const currentHp = prev.hp > newMaxHp ? newMaxHp : prev.hp;
-          if (prev.maxHp === newMaxHp && prev.hp === currentHp) return prev; 
+          if (prev.maxHp === newMaxHp && prev.hp === currentHp) return prev;
           return {...prev, maxHp: newMaxHp, hp: currentHp };
         });
       }
@@ -357,7 +359,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         character.race as DndRaceId,
         translations.DND_RACES,
         translations.DND_RACE_ABILITY_MODIFIERS_DATA,
-        allAvailableSkillDefinitionsForDisplay, 
+        allAvailableSkillDefinitionsForDisplay,
         allAvailableFeatDefinitions,
         translations.ABILITY_LABELS
       );
@@ -599,7 +601,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         ...prev.savingThrows,
         [saveType]: {
           ...prev.savingThrows[saveType],
-          miscMod: value, 
+          miscMod: value,
         },
       },
     }) : null);
@@ -726,6 +728,11 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     return aggregatedFeatEffects?.hpBonus || 0;
   }, [aggregatedFeatEffects]);
 
+  const currentCharacterLevelForXpPanel = React.useMemo(() => {
+    if (!character) return 1;
+    return calculateCharacterTotalLevel(character.classes);
+  }, [character]);
+
 
   const coreInfoData = React.useMemo<CharacterFormCoreInfoSectionProps['characterData'] | undefined>(() => {
     if (!character) return undefined;
@@ -751,9 +758,17 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       nonlethalDamage: character.nonlethalDamage,
       temporaryHp: character.temporaryHp,
       numberOfWounds: character.numberOfWounds,
-      abilityScores: character.abilityScores, 
+      abilityScores: character.abilityScores,
     };
   }, [character]);
+
+  const experiencePanelData = React.useMemo<ExperiencePanelData | undefined>(() => { // Added
+    if (!character) return undefined;
+    return {
+      currentXp: character.experiencePoints || 0,
+      currentLevel: currentCharacterLevelForXpPanel,
+    };
+  }, [character, currentCharacterLevelForXpPanel]);
 
   const storyAndAppearanceData = React.useMemo<CharacterFormStoryPortraitSectionProps['storyAndAppearanceData'] | undefined>(() => {
     if (!character) return undefined;
@@ -825,7 +840,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     if (!character || !detailedAbilityScores) return undefined;
     return {
       characterLanguages: character.languages || [],
-      onLanguagesChange: handleLanguagesChange, 
+      onLanguagesChange: handleLanguagesChange,
       characterRaceId: character.race,
       characterIntelligenceScore: detailedAbilityScores.intelligence.finalScore,
       speakLanguageSkillRanks: character.skills.find(s => s.id === 'speak-language')?.ranks || 0,
@@ -896,14 +911,9 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           />
         )}
         
+        {acData && <ArmorClassPanel acData={acData} onCharacterUpdate={handleCharacterFieldUpdate as any} onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}/>}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {acData && (
-            <ArmorClassPanel
-              acData={acData}
-              onCharacterUpdate={handleCharacterFieldUpdate as any}
-              onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
-            />
-          )}
           {healthPanelData && (
             <HealthPanel
               healthData={healthPanelData}
@@ -912,6 +922,14 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
               calculatedMiscMaxHpBonus={calculatedMiscMaxHpBonusForPanel}
               onCharacterUpdate={handleHealthFieldChange}
               onOpenHealthInfoDialog={handleOpenHealthInfoDialog}
+            />
+          )}
+           {experiencePanelData && translations.XP_TABLE && ( // Added ExperiencePanel
+            <ExperiencePanel
+              experienceData={experiencePanelData}
+              onXpChange={(newXp) => handleCharacterFieldUpdate('experiencePoints', newXp)}
+              xpTable={translations.XP_TABLE}
+              epicLevelXpIncrease={translations.EPIC_LEVEL_XP_INCREASE}
             />
           )}
         </div>
@@ -1040,4 +1058,3 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
-    
