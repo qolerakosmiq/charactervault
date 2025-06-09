@@ -130,14 +130,13 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
             max={calculatedMaxHp + localTemporaryHp}
             inputClassName={cn(
               "w-28 h-12 text-2xl text-center font-bold",
-              localHp <= 0 && "text-destructive",
-              localHp > 0 && "text-emerald-600"
+              localHp <= 0 ? "text-destructive" : "text-emerald-600"
             )}
             buttonClassName="h-12 w-12"
           />
         </div>
         
-         <div className="grid grid-cols-2 gap-3">
+         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col items-center space-y-1">
                 <Label htmlFor="nonlethal-damage" className="text-xs text-muted-foreground">
                     {UI_STRINGS.healthPanelNonlethalDamageLabel || "Nonlethal Damage"}
@@ -196,7 +195,7 @@ export const HealthPanel = ({ healthData, calculatedMaxHp, onCharacterUpdate }: 
                 </div>
             </div>
 
-            <Separator className="my-4 border-border/60" />
+            <Separator className="my-4" />
             
             <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between">
