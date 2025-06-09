@@ -450,7 +450,9 @@
     "experiencePanelMaxLevel": "Max Level Reached",
     "conditionWieldingTwoWeaponsOrDouble": "Wielding Two Weapons or Double Weapon",
     "conditionFightingDefensivelyOrTotalDefenseWithTwoWeapons": "Fighting Defensively or Total Defense (with Two Weapons)",
-    "conditionVsDesignatedOpponent": "vs. Designated Opponent"
+    "conditionVsDesignatedOpponent": "vs. Designated Opponent",
+    "conditionVsDesignatedOpponent2": "vs. Designated Opponent (Dodge2 Test)",
+    "conditionVsDesignatedOpponent3": "vs. Designated Opponent (Dodge3 Test)"
   }
 }
     

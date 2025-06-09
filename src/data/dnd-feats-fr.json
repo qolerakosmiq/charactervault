@@ -148,6 +148,26 @@
       "type": "special"
     },
     {
+      "value": "dodge2",
+      "label": "Esquive2 (Test)",
+      "description": "<b>Avantage :</b> Pendant votre action, vous désignez un adversaire et recevez un bonus d'esquive de +1 à la Classe d'Armure contre les attaques de cet adversaire (Don de Test).<br />Vous pouvez sélectionner un nouvel adversaire à chaque action.<br /><b>Spécial :</b> Une condition qui vous fait perdre votre bonus de Dextérité à la Classe d'Armure (le cas échéant) vous fait également perdre les bonus d'esquive.<br />De plus, les bonus d'esquive se cumulent entre eux, contrairement à la plupart des autres types de bonus.",
+      "prerequisites": { "abilities": { "dexterity": 13 } },
+      "effectsText": "Bonus d'esquive de +1 à la CA contre une cible (Test).",
+      "effects": [{ "type": "armorClass", "acType": "dodge", "value": 1, "condition": "conditionVsDesignatedOpponent2" }],
+      "isClassFeature": false,
+      "type": "special"
+    },
+    {
+      "value": "dodge3-natural",
+      "label": "Esquive3 (Armure Naturelle Test)",
+      "description": "<b>Avantage :</b> Pendant votre action, vous désignez un adversaire et recevez un bonus d'armure naturelle de +1 à la Classe d'Armure contre les attaques de cet adversaire (Don de Test).<br />Vous pouvez sélectionner un nouvel adversaire à chaque action.<br /><b>Spécial :</b> Une condition qui vous fait perdre votre bonus de Dextérité à la Classe d'Armure (le cas échéant) vous fait également perdre les bonus d'esquive (bien que l'armure naturelle elle-même ne soit généralement pas perdue de cette manière).",
+      "prerequisites": { "abilities": { "dexterity": 13 } },
+      "effectsText": "Bonus d'armure naturelle de +1 à la CA contre une cible (Test).",
+      "effects": [{ "type": "armorClass", "acType": "natural", "value": 1, "condition": "conditionVsDesignatedOpponent3" }],
+      "isClassFeature": false,
+      "type": "special"
+    },
+    {
       "value": "endurance",
       "label": "Endurance",
       "description": "<b>Avantage :</b> Vous gagnez un bonus de +4 aux tests et jets de sauvegarde suivants : tests de Natation pour résister aux dégâts non létaux, tests de Constitution pour continuer à courir, tests de Constitution pour éviter les dégâts non létaux d'une marche forcée, tests de Constitution pour retenir votre souffle, tests de Constitution pour éviter les dégâts non létaux de la faim ou de la soif, jets de Vigueur pour éviter les dégâts non létaux des environnements chauds ou froids, et jets de Vigueur pour résister aux dégâts de suffocation.<br />De plus, vous pouvez dormir en armure légère ou intermédiaire sans être fatigué.",

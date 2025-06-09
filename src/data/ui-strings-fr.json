@@ -450,7 +450,9 @@
     "experiencePanelMaxLevel": "Niveau Max Atteint",
     "conditionWieldingTwoWeaponsOrDouble": "Manie Deux Armes ou Arme Double",
     "conditionFightingDefensivelyOrTotalDefenseWithTwoWeapons": "Combat Défensif ou Défense Totale (avec Deux Armes)",
-    "conditionVsDesignatedOpponent": "contre Adversaire Désigné"
+    "conditionVsDesignatedOpponent": "contre Adversaire Désigné",
+    "conditionVsDesignatedOpponent2": "contre Adversaire Désigné (Test Esquive2)",
+    "conditionVsDesignatedOpponent3": "contre Adversaire Désigné (Test Esquive3)"
   }
 }
     

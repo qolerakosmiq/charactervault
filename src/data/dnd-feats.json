@@ -148,6 +148,26 @@
       "type": "special"
     },
     {
+      "value": "dodge2",
+      "label": "Dodge2 (Test)",
+      "description": "<b>Benefit:</b> During your action, you designate an opponent and receive a +1 dodge bonus to Armor Class against attacks from that opponent (Test Feat).<br />You can select a new opponent on any action.<br /><b>Special:</b> A condition that makes you lose your Dexterity bonus to Armor Class (if any) also makes you lose dodge bonuses.<br />Also, dodge bonuses stack with each other, unlike most other types of bonuses.",
+      "prerequisites": { "abilities": { "dexterity": 13 } },
+      "effectsText": "+1 dodge bonus to AC against one target (Test).",
+      "effects": [{ "type": "armorClass", "acType": "dodge", "value": 1, "condition": "conditionVsDesignatedOpponent2" }],
+      "isClassFeature": false,
+      "type": "special"
+    },
+    {
+      "value": "dodge3-natural",
+      "label": "Dodge3 (Natural Armor Test)",
+      "description": "<b>Benefit:</b> During your action, you designate an opponent and receive a +1 natural armor bonus to Armor Class against attacks from that opponent (Test Feat).<br />You can select a new opponent on any action.<br /><b>Special:</b> A condition that makes you lose your Dexterity bonus to Armor Class (if any) also makes you lose dodge bonuses (though natural armor itself isn't typically lost this way).",
+      "prerequisites": { "abilities": { "dexterity": 13 } },
+      "effectsText": "+1 natural armor bonus to AC against one target (Test).",
+      "effects": [{ "type": "armorClass", "acType": "natural", "value": 1, "condition": "conditionVsDesignatedOpponent3" }],
+      "isClassFeature": false,
+      "type": "special"
+    },
+    {
       "value": "endurance",
       "label": "Endurance",
       "description": "<b>Benefit:</b> You gain a +4 bonus on the following checks and saves: Swim checks made to resist nonlethal damage, Constitution checks made to continue running, Constitution checks made to avoid nonlethal damage from a forced march, Constitution checks made to hold your breath, Constitution checks made to avoid nonlethal damage from starvation or thirst, Fortitude saves made to avoid nonlethal damage from hot or cold environments, and Fortitude saves made to resist damage from suffocation.<br />Also, you may sleep in light or medium armor without becoming fatigued.",
