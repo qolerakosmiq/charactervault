@@ -21,8 +21,7 @@ import {
   calculateDetailedAbilityScores,
   getRaceSkillPointsBonusPerLevel,
   ABILITY_ORDER_INTERNAL,
-  calculateFeatEffects,
-  calculateLevelFromXp
+  calculateFeatEffects
 } from '@/types/character';
 import {
   getBab,
@@ -32,7 +31,8 @@ import {
   calculateGrapple,
   getUnarmedGrappleDamage,
   calculateAbilityModifier,
-  calculateSumOfClassLevels
+  calculateSumOfClassLevels,
+  calculateLevelFromXp // Corrected import path
 } from '@/lib/dnd-utils';
 
 

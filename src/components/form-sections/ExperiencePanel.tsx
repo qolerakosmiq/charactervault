@@ -11,7 +11,7 @@ import { useI18n } from '@/context/I18nProvider';
 import type { XpDataEntry } from '@/i18n/i18n-data';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getXpRequiredForLevel } from '@/types/character';
+import { getXpRequiredForLevel } from '@/lib/dnd-utils'; // Corrected import path
 import { cn } from '@/lib/utils';
 
 const DEBOUNCE_DELAY_XP = 500;
@@ -52,10 +52,10 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
   }, [currentLevel, xpTable, epicLevelXpIncrease]);
 
   const progressPercentage = React.useMemo(() => {
-    if (xpForNextLevel === Infinity || xpForNextLevel === xpForCurrentLevelStart) return 0; 
+    if (xpForNextLevel === Infinity || xpForNextLevel === xpForCurrentLevelStart) return 0;
     const progressInCurrentLevel = Math.max(0, localCurrentXp - xpForCurrentLevelStart);
     const xpNeededForThisLevel = xpForNextLevel - xpForCurrentLevelStart;
-    if (xpNeededForThisLevel <= 0) return 100; 
+    if (xpNeededForThisLevel <= 0) return 100;
     return Math.min(100, (progressInCurrentLevel / xpNeededForThisLevel) * 100);
   }, [localCurrentXp, xpForCurrentLevelStart, xpForNextLevel]);
 
@@ -79,7 +79,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
   }
 
   const { UI_STRINGS } = translations;
-  
+
   const levelLabelFormat = UI_STRINGS.experiencePanelLevelLabelFormat || "Level {levelNumber}";
 
 
@@ -119,7 +119,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
           <div className="flex justify-between items-center text-muted-foreground px-1">
             <span className={cn(
                 "font-semibold text-xl text-accent",
-                currentLevel === 0 && "text-muted-foreground" 
+                currentLevel === 0 && "text-muted-foreground"
             )}>
               {levelLabelFormat.replace("{levelNumber}", String(currentLevel))}
             </span>
