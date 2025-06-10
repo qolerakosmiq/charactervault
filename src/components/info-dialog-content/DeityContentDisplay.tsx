@@ -38,7 +38,7 @@ export const DeityContentDisplay = ({
         deityData.attributes.map((attr, index) => (
           <React.Fragment key={index}>
             <div>
-              <h4 className="text-sm font-semibold text-foreground mt-2 mb-0.5">{attr.key}</h4>
+              <h4 className="text-sm font-medium text-muted-foreground mt-2 mb-0.5">{attr.key}</h4>
               <p className="text-sm text-foreground">{attr.value}</p>
             </div>
             {index < deityData.attributes.length - 1 && <Separator className="my-2" />}
@@ -50,3 +50,4 @@ export const DeityContentDisplay = ({
     </div>
   );
 };
+
