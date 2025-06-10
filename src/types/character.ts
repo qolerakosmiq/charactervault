@@ -53,7 +53,7 @@ import type {
   FeatEffectScalingSpecificLevel,
   AvailableFeatSlotsBreakdown,
   CharacterFavoredEnemy,
-  DomainDefinition // Added
+  DomainDefinition
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 // Import calculateLevelFromXp and other used utilities directly
@@ -246,7 +246,7 @@ export function calculateTotalSynergyBonus(
 export function calculateRacialSkillBonus(
   skillId_kebab: string,
   raceId: DndRaceId | string,
-  DND_RACES: readonly DndRaceOption[]
+  DND_RACES: readonly DndRaceOption[],
 ): number {
   if (!raceId) return 0;
   const raceData = DND_RACES.find(r => r.value === raceId);
@@ -752,16 +752,21 @@ export function calculateFeatEffects(
         switch (effectToPush.type) {
           case "skill":
             const skillEffect = effectToPush as SkillEffectDetail;
-            let actualSkillId = skillEffect.skillId;
-            if (actualSkillId === null && definition.requiresSpecialization === 'skill' && featInstance.specializationDetail) {
-              actualSkillId = featInstance.specializationDetail;
+            let actualSkillIdForAggregation = skillEffect.skillId;
+
+            if (actualSkillIdForAggregation === null && definition.requiresSpecialization === 'skill' && featInstance.specializationDetail) {
+              actualSkillIdForAggregation = featInstance.specializationDetail;
             }
-            if (actualSkillId) {
-              if (definition.value === 'class-ranger-favored-enemy' && newAggregatedEffects.favoredEnemyBonuses && typeof skillEffect.value === 'number') {
-                newAggregatedEffects.favoredEnemyBonuses.skillBonus = Math.max(newAggregatedEffects.favoredEnemyBonuses.skillBonus, skillEffect.value);
-              } else if(typeof skillEffect.value === 'number') {
-                newAggregatedEffects.skillBonuses[actualSkillId] =
-                  (newAggregatedEffects.skillBonuses[actualSkillId] || 0) + skillEffect.value;
+
+            if (actualSkillIdForAggregation && typeof skillEffect.value === 'number') {
+              if (definition.value === 'class-ranger-favored-enemy' && newAggregatedEffects.favoredEnemyBonuses) {
+                newAggregatedEffects.favoredEnemyBonuses.skillBonus = Math.max(
+                  newAggregatedEffects.favoredEnemyBonuses.skillBonus,
+                  skillEffect.value
+                );
+              } else {
+                newAggregatedEffects.skillBonuses[actualSkillIdForAggregation] =
+                  (newAggregatedEffects.skillBonuses[actualSkillIdForAggregation] || 0) + skillEffect.value;
               }
             }
             break;
