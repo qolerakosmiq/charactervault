@@ -507,6 +507,9 @@
     "attacksPanelWeaponCriticalLabel": "Critical",
     "attacksPanelWeaponRangeLabel": "Range",
     "attacksPanelWeaponDamageTypeLabel": "Type",
+    "attacksPanelBaseWeaponDamageLabel": "Base Weapon Damage",
+    "unarmedDamageDefault": "1d3",
+    "attacksPanelNoAbilityDamageBonusRanged": "No Ability/Feat Bonus to Damage",
     "powerAttackValueLabel": "Power Attack",
     "powerAttackDescription": "Set attack penalty for damage bonus.",
     "powerAttackPenaltyLabel": "Power Attack Penalty",
@@ -599,6 +602,7 @@
     
     
     
+
 
 
 
