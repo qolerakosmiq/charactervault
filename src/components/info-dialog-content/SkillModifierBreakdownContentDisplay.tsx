@@ -116,10 +116,11 @@ export const SkillModifierBreakdownContentDisplay = ({
   if (outputBlocks.length === 0) return null;
 
   return outputBlocks.map((block, index, arr) => (
-        <React.Fragment key={index}>
+        <React.Fragment key={(block as React.ReactElement)?.key || index}>
           {block}
-          {index < arr.length - 1 && <Separator className="my-3" />}
+          {index < arr.length - 1 && <Separator className="my-3" />} 
         </React.Fragment>
       ));
 };
 // SkillModifierBreakdownContentDisplay.displayName = 'SkillModifierBreakdownContentDisplayComponent';
+
