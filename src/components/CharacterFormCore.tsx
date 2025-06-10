@@ -698,17 +698,28 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     setIsRollDialogOpen(true);
   }, []);
 
-  const handleRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number) => {
+  const handleRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number, weaponDamageDice?: string) => {
     if (!translations) return;
     const UI_STRINGS = translations.UI_STRINGS;
+    
+    let description = "";
+    if (weaponDamageDice && (rollDialogProps?.rollType.startsWith('damage_roll'))) {
+        description = (UI_STRINGS.rollDialogResultDamageFormat || "Base: {weaponDamageDice}, Bonus: {totalBonus} Total: {finalResult}")
+          .replace("{weaponDamageDice}", weaponDamageDice)
+          .replace("{totalBonus}", String(totalBonus >=0 ? `+${totalBonus}` : totalBonus))
+          .replace("{finalResult}", `${weaponDamageDice}${totalBonus >= 0 ? '+' : ''}${totalBonus}`);
+    } else {
+        description = (UI_STRINGS.rollDialogResultDescription || "Rolled {diceResult} + {totalBonus} = {finalResult}")
+          .replace("{diceResult}", String(diceResult))
+          .replace("{totalBonus}", String(totalBonus >=0 ? `+${totalBonus}` : totalBonus))
+          .replace("{finalResult}", String(finalResult));
+    }
+
     toast({
       title: UI_STRINGS.rollDialogResultTitle || "Roll Result",
-      description: (UI_STRINGS.rollDialogResultDescription || "Rolled {diceResult} + {totalBonus} = {finalResult}")
-        .replace("{diceResult}", String(diceResult))
-        .replace("{totalBonus}", String(totalBonus >=0 ? `+${totalBonus}` : totalBonus))
-        .replace("{finalResult}", String(finalResult)),
+      description: description,
     });
-  }, [toast, translations]);
+  }, [toast, translations, rollDialogProps?.rollType]);
 
 
   const handleOpenRaceInfoDialog = React.useCallback(() => { if (character?.race) { openInfoDialog({ type: 'race' }); } }, [character?.race, openInfoDialog]);
@@ -716,7 +727,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const handleOpenAlignmentInfoDialog = React.useCallback(() => openInfoDialog({ type: 'alignmentSummary' }), [openInfoDialog]);
   const handleOpenDeityInfoDialog = React.useCallback(() => openInfoDialog({ type: 'deity' }), [openInfoDialog]);
   
-  const handleOpenAbilityCheckRollDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => { // Renamed
+  const handleOpenAbilityCheckRollDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => { 
     if (!detailedAbilityScores || !translations) return;
     const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.value === ability);
     const abilityName = abilityLabelInfo?.label || ability;
@@ -725,9 +736,9 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       { label: translations.UI_STRINGS.abilityScoreLabel || "Ability Score", value: detailedAbilityScores[ability].finalScore },
       { label: translations.UI_STRINGS.abilityModifierLabel || "Modifier", value: finalModifier, isBold: true }
     ];
-    handleOpenRollDialog({ // Call the centralized handler
+    handleOpenRollDialog({ 
       dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck || "{abilityName} Check").replace("{abilityName}", abilityName),
-      rollType: `${abilityName} Check`,
+      rollType: `ability_check_${ability}`,
       baseModifier: finalModifier,
       calculationBreakdown: breakdown,
     });
@@ -1189,6 +1200,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           rollType={rollDialogProps.rollType}
           baseModifier={rollDialogProps.baseModifier}
           calculationBreakdown={rollDialogProps.calculationBreakdown}
+          weaponDamageDice={rollDialogProps.weaponDamageDice}
           onRoll={handleRollResult}
         />
       )}
@@ -1214,5 +1226,6 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
+
 
 

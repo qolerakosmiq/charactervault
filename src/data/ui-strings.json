@@ -586,6 +586,7 @@
     "rollDialogSkillCheckAriaLabel": "Roll {skillName} Check",
     "rollDialogResultTitle": "Roll Result",
     "rollDialogResultDescription": "Rolled {diceResult} + {totalBonus} = {finalResult}",
+    "rollDialogResultDamageFormat": "Base: {weaponDamageDice}, Bonus: {totalBonus}, Total: {finalResult}",
     "rollDialogSkillRanksLabel": "Ranks",
     "rollDialogSkillKeyAbilityLabel": "Key Ability ({abilityAbbr})",
     "rollDialogSkillSynergyBonusLabel": "Synergy Bonus",
@@ -596,12 +597,19 @@
     "rollDialogTitleMeleeAttackFormat": "Roll Melee Attack ({weaponName})",
     "rollDialogTitleRangedAttackFormat": "Roll Ranged Attack ({weaponName})",
     "rollDialogMeleeAttackAriaLabel": "Roll Melee Attack with {weaponName}",
-    "rollDialogRangedAttackAriaLabel": "Roll Ranged Attack with {weaponName}"
+    "rollDialogRangedAttackAriaLabel": "Roll Ranged Attack with {weaponName}",
+    "rollDialogTitleMeleeDamageFormat": "Melee Damage ({weaponName}: {dice})",
+    "rollDialogTitleRangedDamageFormat": "Ranged Damage ({weaponName}: {dice})",
+    "rollDialogDamageAriaLabel": "Roll Damage for {weaponName}",
+    "rollDialogConfirmDamageButton": "Confirm Damage",
+    "rollDialogFinalDamageStringLabel": "Total Damage:",
+    "rollDialogTotalNumericBonusLabel": "Total Numeric Bonus"
   }
 }
     
     
     
+
 
 
 

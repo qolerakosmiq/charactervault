@@ -510,11 +510,11 @@
     "attacksPanelBaseWeaponDamageLabel": "Dégâts de Base de l'Arme",
     "unarmedDamageDefault": "1d3",
     "attacksPanelNoAbilityDamageBonusRanged": "Aucun Bonus de Caractéristique/Don aux Dégâts",
-    "powerAttackValueLabel": "Valeur d'Attaque en Puissance",
+    "powerAttackValueLabel": "Attaque en Puissance",
     "powerAttackDescription": "Définir le malus à l'attaque pour un bonus aux dégâts.",
     "powerAttackPenaltyLabel": "Malus d'Attaque en Puissance",
     "powerAttackDamageBonusLabel": "Bonus de Dégâts d'Attaque en Puissance",
-    "combatExpertiseValueLabel": "Valeur d'Expertise du Combat",
+    "combatExpertiseValueLabel": "Expertise du Combat",
     "combatExpertiseDescription": "Définir le malus à l'attaque pour un bonus à la CA.",
     "combatExpertisePenaltyLabel": "Malus d'Expertise du Combat",
     "combatExpertiseAcBonusLabel": "Bonus de CA d'Expertise du Combat",
@@ -586,6 +586,7 @@
     "rollDialogSkillCheckAriaLabel": "Lancer un test de {skillName}",
     "rollDialogResultTitle": "Résultat du lancer",
     "rollDialogResultDescription": "Lancé {diceResult} + {totalBonus} = {finalResult}",
+    "rollDialogResultDamageFormat": "Base : {weaponDamageDice}, Bonus : {totalBonus}, Total : {finalResult}",
     "rollDialogSkillRanksLabel": "Rangs",
     "rollDialogSkillKeyAbilityLabel": "Caractéristique Clé ({abilityAbbr})",
     "rollDialogSkillSynergyBonusLabel": "Bonus de Synergie",
@@ -596,12 +597,19 @@
     "rollDialogTitleMeleeAttackFormat": "Lancer une Attaque de Mêlée ({weaponName})",
     "rollDialogTitleRangedAttackFormat": "Lancer une Attaque à Distance ({weaponName})",
     "rollDialogMeleeAttackAriaLabel": "Lancer une attaque de mêlée avec {weaponName}",
-    "rollDialogRangedAttackAriaLabel": "Lancer une attaque à distance avec {weaponName}"
+    "rollDialogRangedAttackAriaLabel": "Lancer une attaque à distance avec {weaponName}",
+    "rollDialogTitleMeleeDamageFormat": "Dégâts de Mêlée ({weaponName}: {dice})",
+    "rollDialogTitleRangedDamageFormat": "Dégâts à Distance ({weaponName}: {dice})",
+    "rollDialogDamageAriaLabel": "Lancer les Dégâts pour {weaponName}",
+    "rollDialogConfirmDamageButton": "Confirmer les Dégâts",
+    "rollDialogFinalDamageStringLabel": "Dégâts Totaux :",
+    "rollDialogTotalNumericBonusLabel": "Bonus Numérique Total"
   }
 }
     
     
     
+
 
 
 
