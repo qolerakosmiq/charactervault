@@ -589,12 +589,17 @@
     "rollDialogSkillFeatBonusLabel": "Bonus de Don",
     "rollDialogSkillRacialBonusLabel": "Bonus Racial",
     "rollDialogSkillSizeBonusLabel": "Bonus de Taille",
-    "rollDialogSkillUserMiscModLabel": "Modificateur Divers (Utilisateur)"
+    "rollDialogSkillUserMiscModLabel": "Modificateur Divers (Utilisateur)",
+    "rollDialogTitleMeleeAttackFormat": "Lancer une Attaque de Mêlée ({weaponName})",
+    "rollDialogTitleRangedAttackFormat": "Lancer une Attaque à Distance ({weaponName})",
+    "rollDialogMeleeAttackAriaLabel": "Lancer une attaque de mêlée avec {weaponName}",
+    "rollDialogRangedAttackAriaLabel": "Lancer une attaque à distance avec {weaponName}"
   }
 }
     
     
     
+
 
 
 

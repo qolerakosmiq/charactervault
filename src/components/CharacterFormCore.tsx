@@ -44,7 +44,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
-import { RollDialog, type RollDialogProps } from '@/components/RollDialog'; // Added RollDialog import
+import { RollDialog, type RollDialogProps } from '@/components/RollDialog';
 import { CharacterFormCoreInfoSection, type CharacterFormCoreInfoSectionProps } from '@/components/form-sections/CharacterFormCoreInfoSection';
 import { CharacterFormAbilityScoresSection, type CharacterFormAbilityScoresSectionProps } from '@/components/form-sections/CharacterFormAbilityScoresSection';
 import { CharacterFormStoryPortraitSection, type CharacterFormStoryPortraitSectionProps } from '@/components/form-sections/CharacterFormStoryPortraitSection';
@@ -716,7 +716,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const handleOpenAlignmentInfoDialog = React.useCallback(() => openInfoDialog({ type: 'alignmentSummary' }), [openInfoDialog]);
   const handleOpenDeityInfoDialog = React.useCallback(() => openInfoDialog({ type: 'deity' }), [openInfoDialog]);
   
-  const handleOpenAbilityCheckRollDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => {
+  const handleOpenAbilityCheckRollDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => { // Renamed
     if (!detailedAbilityScores || !translations) return;
     const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.value === ability);
     const abilityName = abilityLabelInfo?.label || ability;
@@ -725,7 +725,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       { label: translations.UI_STRINGS.abilityScoreLabel || "Ability Score", value: detailedAbilityScores[ability].finalScore },
       { label: translations.UI_STRINGS.abilityModifierLabel || "Modifier", value: finalModifier, isBold: true }
     ];
-    handleOpenRollDialog({
+    handleOpenRollDialog({ // Call the centralized handler
       dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck || "{abilityName} Check").replace("{abilityName}", abilityName),
       rollType: `${abilityName} Check`,
       baseModifier: finalModifier,
@@ -1017,7 +1017,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             onMultipleBaseAbilityScoresChange={handleMultipleBaseAbilityScoresChange}
             onAbilityScoreTempCustomModifierChange={handleAbilityScoreTempCustomModifierChange}
             onOpenAbilityScoreBreakdownDialog={handleOpenAbilityScoreBreakdownDialog}
-            onOpenRollDialog={handleOpenAbilityCheckRollDialog} // Updated prop name
+            onOpenRollDialog={handleOpenAbilityCheckRollDialog}
           />
         )}
 
@@ -1028,7 +1028,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
               aggregatedFeatEffects={aggregatedFeatEffects}
               onSavingThrowTemporaryModChange={handleSavingThrowTemporaryModChange}
               onOpenInfoDialog={handleOpenSavingThrowInfoDialog}
-              onOpenRollDialog={handleOpenRollDialog} // Pass the centralized roll dialog opener
+              onOpenRollDialog={handleOpenRollDialog}
           />
         )}
 
@@ -1085,6 +1085,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
                 onCharacterUpdate={handleCharacterFieldUpdate as any}
                 onOpenAttackBonusInfoDialog={handleOpenAttackBonusInfoDialog}
                 onOpenDamageBonusInfoDialog={handleOpenDamageBonusInfoDialog}
+                onOpenRollDialog={handleOpenRollDialog}
             />
         )}
 
@@ -1125,7 +1126,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             onSkillChange={handleSkillChange}
             onEditCustomSkillDefinition={handleOpenEditCustomSkillDialog}
             onOpenSkillInfoDialog={handleOpenSkillInfoDialog}
-            onOpenRollDialog={handleOpenRollDialog} // Pass the centralized roll dialog opener
+            onOpenRollDialog={handleOpenRollDialog}
             characterLevel={characterLevelFromXP}
           />
         )}
@@ -1213,4 +1214,5 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
+
 

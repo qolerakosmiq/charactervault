@@ -589,12 +589,17 @@
     "rollDialogSkillFeatBonusLabel": "Feat Bonus",
     "rollDialogSkillRacialBonusLabel": "Racial Bonus",
     "rollDialogSkillSizeBonusLabel": "Size Bonus",
-    "rollDialogSkillUserMiscModLabel": "User Misc Modifier"
+    "rollDialogSkillUserMiscModLabel": "User Misc Modifier",
+    "rollDialogTitleMeleeAttackFormat": "Roll Melee Attack ({weaponName})",
+    "rollDialogTitleRangedAttackFormat": "Roll Ranged Attack ({weaponName})",
+    "rollDialogMeleeAttackAriaLabel": "Roll Melee Attack with {weaponName}",
+    "rollDialogRangedAttackAriaLabel": "Roll Ranged Attack with {weaponName}"
   }
 }
     
     
     
+
 
 
 
