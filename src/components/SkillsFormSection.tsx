@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollText, Info, Loader2 } from 'lucide-react'; // Removed Pencil
+import { ScrollText, Info, Loader2 } from 'lucide-react';
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -325,7 +325,7 @@ const SkillsFormSectionComponent = ({
             <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
               <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderClassLabel || "Class?" }} />
               <span className="pl-1">{UI_STRINGS.skillsTableHeaderSkillLabel || "Skill"}</span>
-              <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderSkillModLabel || "Skill<br/>Mod" }} />
+              <span className="text-right w-20 pr-1" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderSkillModLabel || "Skill<br/>Mod" }} />
               <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderKeyAbilityLabel || "Key<br/>Ability" }} />
               <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderAbilityModLabel || "Ability<br/>Mod" }} />
               <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderMiscModLabel || "Misc<br/>Mod" }} />
@@ -406,24 +406,26 @@ const SkillsFormSectionComponent = ({
                     />
                   </div>
                   <div className="flex items-center">
-                       <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-5 w-5 mr-1 text-muted-foreground hover:text-foreground"
-                          onClick={() => handleTriggerSkillInfoDialog(skillInstanceProp.id)}
-                          aria-label={(UI_STRINGS.skillsTableTooltipInfoForSkill || "Info for {skillName}").replace("{skillName}", skillDef.name)}
-                        >
-                          <Info className="h-3 w-3" />
-                        </Button>
                       <Label htmlFor={`skill_ranks_${skillInstanceProp.id}`} className="text-sm pr-1 leading-tight flex-grow flex items-center">
                           {skillDef.name}
                           {skillDef.isCustom && (
-                              <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 ml-1.5 font-normal whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>
+                              <Badge variant="outline" className="text-sm text-primary/70 border-primary/50 h-5 ml-1.5 font-normal whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>
                           )}
                       </Label>
                   </div>
-                  <span className="font-bold text-accent text-lg text-center w-12">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
+                  <div className="flex items-center justify-end w-20 pr-1">
+                    <span className="font-bold text-accent text-xl">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-foreground"
+                      onClick={() => handleTriggerSkillInfoDialog(skillInstanceProp.id)}
+                      aria-label={(UI_STRINGS.skillsTableTooltipInfoForSkill || "Info for {skillName}").replace("{skillName}", skillDef.name)}
+                    >
+                      <Info className="h-4 w-4" />
+                    </Button>
+                  </div>
                   <span className="text-sm text-muted-foreground text-center w-10">{keyAbilityDisplay}</span>
                   <span className="text-sm text-center w-12">{baseAbilityMod >= 0 ? '+' : ''}{baseAbilityMod}</span>
                   <span className="text-sm text-center w-12">{calculatedMiscModifier >= 0 ? '+' : ''}{calculatedMiscModifier}</span>
@@ -456,3 +458,4 @@ SkillsFormSectionComponent.displayName = 'SkillsFormSectionComponent';
 
 export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
     
+
