@@ -109,11 +109,11 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
         <div className="mb-4 p-3 border rounded-md bg-muted/30">
           <div className="flex justify-between items-center">
             <p className="text-sm font-medium">
-              {UI_STRINGS.languagesPanelSlotsAvailableLabel || "Languages Available:"} <span className="text-lg font-bold text-primary">{totalBonusLanguageSlots}</span>
+              {UI_STRINGS.languagesPanelSlotsAvailableLabel || "Languages Available:"} <span className="text-xl font-bold text-primary">{totalBonusLanguageSlots}</span>
             </p>
             <p className="text-sm font-medium">
               {UI_STRINGS.languagesPanelSlotsLeftLabel || "Languages Left:"} <span className={cn(
-                "text-lg font-bold",
+                "text-xl font-bold",
                 slotsRemaining > 0 && "text-emerald-500",
                 slotsRemaining < 0 && "text-destructive",
                 slotsRemaining === 0 && "text-accent"
@@ -136,7 +136,7 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
                   <div key={`known-${langObj.value}`} className="flex items-center justify-between py-1 px-1.5 rounded-md text-sm"> 
                     <span>
                       {langObj.label}
-                      {isAutomatic && <Badge variant="outline" className="ml-2 text-xs text-muted-foreground border-muted-foreground/50">{UI_STRINGS.languagesPanelAutomaticBadgeLabel || "Automatic"}</Badge>}
+                      {isAutomatic && <Badge variant="outline" className="ml-2 text-sm text-muted-foreground border-muted-foreground/50">{UI_STRINGS.languagesPanelAutomaticBadgeLabel || "Automatic"}</Badge>}
                     </span>
                     {!isAutomatic && (
                       <Button
@@ -171,7 +171,7 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
               emptyPlaceholder={UI_STRINGS.languagesPanelComboboxEmpty || "No language found."}
               triggerClassName="h-9 text-sm"
             />
-            <Button type="button" onClick={handleAddLanguage} size="sm" disabled={!selectedLanguageToAdd}>
+            <Button type="button" onClick={handleAddLanguage} size="sm" disabled={!selectedLanguageToAdd || slotsRemaining <= 0}>
               <PlusCircle className="mr-2 h-4 w-4" /> Add
             </Button>
           </div>
@@ -182,3 +182,4 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
 };
 LanguagesPanelComponent.displayName = "LanguagesPanelComponent";
 export const LanguagesPanel = React.memo(LanguagesPanelComponent);
+
