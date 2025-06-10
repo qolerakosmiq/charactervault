@@ -55,8 +55,7 @@ import type {
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 // Import calculateLevelFromXp and other used utilities directly
-import { getBab, calculateSumOfClassLevels, calculateAbilityModifier, getXpRequiredForLevel, calculateLevelFromXp as calculateLevelFromXpUtil, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
-import { calculateLevelFromXp } from '@/lib/dnd-utils';
+import { getBab, calculateSumOfClassLevels, calculateAbilityModifier, getXpRequiredForLevel, calculateLevelFromXp, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 
 
 // Utility Functions (many will now need translated data passed in)
@@ -273,6 +272,11 @@ export function calculateAvailableFeats(
   EPIC_LEVEL_XP_INCREASE: number
 ): AvailableFeatSlotsBreakdown {
 
+  if (!Array.isArray(DND_RACES)) { // Defensive check
+    console.warn("calculateAvailableFeats called with DND_RACES not being an array. Data might not be fully loaded.");
+    return { total: 0, base: 0, racial: 0, classBonus: 0, classBonusDetails: [] };
+  }
+
   const characterLevel = calculateLevelFromXp(character.experiencePoints || 0, XP_TABLE, EPIC_LEVEL_XP_INCREASE);
 
   let baseFeatSlots = 0;
@@ -331,6 +335,13 @@ export function getGrantedFeatsForCharacter(
 ): CharacterFeatInstance[] {
   const grantedInstances: CharacterFeatInstance[] = [];
   const addedDefinitionIds = new Set<string>();
+
+  if (!Array.isArray(DND_RACES) || !Array.isArray(DND_CLASSES) || !Array.isArray(allFeatDefinitions)) {
+    console.warn("getGrantedFeatsForCharacter called with invalid DND_RACES, DND_CLASSES, or allFeatDefinitions. Data might not be fully loaded.");
+    return [];
+  }
+
+
   const characterLevel = calculateLevelFromXp(character.experiencePoints || 0, XP_TABLE, EPIC_LEVEL_XP_INCREASE);
 
 
@@ -376,6 +387,7 @@ export function getGrantedFeatsForCharacter(
       });
     }
 
+    // Ranger Combat Style Feats
     if (classData?.value === 'ranger' && character.chosenCombatStyle) {
       const rangerLevel = charClass.level;
       const styleNotePrefix = character.chosenCombatStyle === 'archery' ? 'Ranger Archery Style' : 'Ranger TWF Style';
@@ -795,6 +807,17 @@ export function calculateFeatEffects(
             const mechEffect = effectToProcess as ModifiesMechanicEffect;
             if (mechEffect.mechanicKey === "favoredEnemySlots" && typeof mechEffect.value === 'number') {
               newAggregatedEffects.favoredEnemySlots = (newAggregatedEffects.favoredEnemySlots || 0) + mechEffect.value;
+            } else if (mechEffect.mechanicKey === "slowFallDistance" && typeof resolvedValue === 'number') { // Ensure resolvedValue is used
+              // Find if an existing slowFallDistance effect exists to avoid duplicates from multiple sources, though unlikely for this specific mechanic
+              const existingSlowFall = newAggregatedEffects.modifiedMechanics.find(m => m.mechanicKey === "slowFallDistance");
+              if (existingSlowFall) {
+                // Update if new value is better (e.g., -1 for any distance, or a higher specific distance)
+                if (resolvedValue === -1 || (existingSlowFall.value !== -1 && typeof resolvedValue === 'number' && (typeof existingSlowFall.value !== 'number' || resolvedValue > existingSlowFall.value))) {
+                  existingSlowFall.value = resolvedValue;
+                }
+              } else {
+                newAggregatedEffects.modifiedMechanics.push({ ...mechEffect, value: resolvedValue });
+              }
             } else {
               newAggregatedEffects.modifiedMechanics.push(mechEffect);
             }
@@ -824,7 +847,7 @@ export function calculateFeatEffects(
             case "attackRoll": newAggregatedEffects.attackRollBonuses.push(effectToProcess as AttackRollEffect & { sourceFeat?: string }); break;
             case "damageRoll": newAggregatedEffects.damageRollBonuses.push(effectToProcess as DamageRollEffect & { sourceFeat?: string }); break;
             case "armorClass": newAggregatedEffects.acBonuses.push(effectToProcess as ArmorClassEffect & { sourceFeat?: string }); break;
-            case "hitPoints": // Track source for inactive conditional HP as well for display
+            case "hitPoints":
               const hpEffect = effectToProcess as HitPointsEffect;
               if (typeof hpEffect.value === 'number') {
                   newAggregatedEffects.hpBonusSources.push({
@@ -971,4 +994,5 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
+
 
