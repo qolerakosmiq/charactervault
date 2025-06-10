@@ -9,6 +9,7 @@ import type {
   SkillDefinitionJsonData,
   DndClassOption,
   DndRaceOption,
+  ClassAttribute
 } from '@/types/character';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { ExpandableDetailWrapper, sectionHeadingClass } from './dialog-utils';
@@ -18,9 +19,10 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 
 interface ClassContentDisplayProps {
-  htmlContent?: string;
+  htmlContent?: string; // This will become generalDescription
+  loreAttributes?: ClassAttribute[]; // Added
   grantedFeats?: Array<{ featId: string; name: string; note?: string; levelAcquired?: number }>;
-  detailsList?: Array<{ label: string; value: string | number; isBold?: boolean }>;
+  detailsList?: Array<{ label: string; value: string | number; isBold?: boolean }>; // For Hit Dice, Saves
   translations: {
     UI_STRINGS: Record<string, string>;
     ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
@@ -37,9 +39,10 @@ interface ClassContentDisplayProps {
 }
 
 export const ClassContentDisplay = ({
-  htmlContent,
+  htmlContent, // Will now be classData.generalDescription
+  loreAttributes, // New prop
   grantedFeats,
-  detailsList,
+  detailsList, // For Hit Dice, Saves
   translations,
   allCombinedFeatDefinitions,
   customSkillDefinitions,
@@ -53,12 +56,37 @@ export const ClassContentDisplay = ({
   if (htmlContent) {
     outputBlocks.push(
       <div
-        key="class-html-content-block"
+        key="class-general-description-block"
         className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
     );
   }
+
+  if (loreAttributes && loreAttributes.length > 0) {
+     if (outputBlocks.length > 0) {
+      outputBlocks.push(<Separator key="sep-after-general-desc" className="my-3" />);
+    }
+    outputBlocks.push(
+      <div key="class-lore-attributes-section" className="space-y-2">
+        {loreAttributes.map((attr, index) => (
+          <div key={`lore-attr-${index}`}>
+            <h4 className="text-sm font-medium text-muted-foreground mt-2 mb-0.5">{attr.key}</h4>
+            <p className="text-sm text-foreground">{attr.value}</p>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+
+  const classSpecificsAndFeatsExist = (detailsList && detailsList.length > 0) || (grantedFeats && grantedFeats.length > 0);
+
+  if (classSpecificsAndFeatsExist && outputBlocks.length > 0) {
+    // Add separator if there was general description or lore attributes before class specifics/feats
+    outputBlocks.push(<Separator key="sep-before-specifics-feats" className="my-3" />);
+  }
+
 
   if (detailsList && detailsList.length > 0) {
     outputBlocks.push(
@@ -79,6 +107,9 @@ export const ClassContentDisplay = ({
   }
 
   if (grantedFeats && grantedFeats.length > 0) {
+    if (detailsList && detailsList.length > 0) {
+         outputBlocks.push(<Separator key="sep-between-specifics-feats" className="my-3" />);
+    }
     outputBlocks.push(
       <div key="class-granted-feats-section">
         <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h3>
@@ -96,7 +127,7 @@ export const ClassContentDisplay = ({
                   >
                     {feat.levelAcquired !== undefined && (
                       <Badge variant="outline" className={cn(
-                        "text-sm font-normal h-5 whitespace-nowrap shrink-0 justify-center", // Changed text-xs to text-sm
+                        "text-sm font-normal h-5 whitespace-nowrap shrink-0 justify-center",
                         "min-w-[5rem]"
                       )}>
                         {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
@@ -138,9 +169,11 @@ export const ClassContentDisplay = ({
   }
   
   return outputBlocks.length > 0 ? <div className="space-y-3">{outputBlocks.map((block, index, arr) => (
-        <React.Fragment key={`class-display-block-${index}`}>
+        // This mapping is to avoid double separators if some blocks are empty.
+        // A separator is added before a block if the block is not the first one AND the previous block was also rendered.
+        <React.Fragment key={`class-display-root-block-${index}`}>
+          {/* Separator logic is now handled by pushing Separator components directly into outputBlocks */}
           {block}
-          {index < arr.length - 1 && <Separator className="my-3" />}
         </React.Fragment>
       ))}</div> : null;
 };

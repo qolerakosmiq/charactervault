@@ -23,14 +23,15 @@ import type {
   DndRaceOption,
   DndClassOption,
   DndDeityOption,
-  DeityAttribute, // Added
+  DeityAttribute,
   AbilityScores,
   SavingThrows,
   ResistanceValue,
   SpeedDetails,
   CharacterClass,
   LanguageId,
-  LanguageOption
+  LanguageOption,
+  ClassAttribute // Added
 } from '@/types/character-core';
 
 // Define types for the structure of each JSON file's data
@@ -119,8 +120,9 @@ export interface ClassDataEntry {
   value: DndClassId | string;
   label: string;
   hitDice: string;
+  generalDescription: string; // Renamed
+  loreAttributes?: ClassAttribute[]; // Added
   saves: { fortitude: 'good' | 'poor'; reflex: 'good' | 'poor'; will: 'good' | 'poor' };
-  description: string;
   casting?: ClassCastingDetails;
   grantedFeats?: Array<{ featId: string; note?: string; levelAcquired?: number }>;
 }
@@ -131,10 +133,9 @@ export interface ClassesJson {
 export interface DeityDataEntry {
   value: DndDeityId | string;
   label: string; // Short name for select/filter
-  alignment: CharacterAlignment;
+  alignment: CharacterAlignment | ''; // Updated to allow empty string for custom
   fullName: string; // Epithet or long name for display
   attributes: DeityAttribute[];
-  // description?: string; // This will be removed
 }
 export interface DeitiesJson {
   DND_DEITIES_DATA: DeityDataEntry[];
@@ -176,7 +177,7 @@ export interface LocaleDataBundle {
   races: RacesJson;
   skills: SkillsJson;
   languages: LanguagesJson;
-  xpTable: XpJson; // Added
+  xpTable: XpJson;
   uiStrings?: UiStringsJson;
   customAlignments?: AlignmentsJson;
   customBase?: Partial<BaseJson>;
@@ -192,8 +193,8 @@ export interface LocaleDataBundle {
 export interface ProcessedSiteData {
   ALIGNMENTS: readonly CharacterAlignmentObject[];
   LANGUAGES: readonly LanguageOption[];
-  XP_TABLE: readonly XpDataEntry[]; // Added
-  EPIC_LEVEL_XP_INCREASE: number; // Added
+  XP_TABLE: readonly XpDataEntry[];
+  EPIC_LEVEL_XP_INCREASE: number;
   SIZES: readonly CharacterSizeObject[];
   GENDERS: readonly { value: GenderId | string; label: string }[];
   DND_RACES: readonly DndRaceOption[];
@@ -255,8 +256,8 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
   const customLanguages = bundle.customLanguages?.LANGUAGES_DATA;
   const LANGUAGES = mergeArrayData(baseLanguages, customLanguages);
 
-  const XP_TABLE = mergeXpTableData(bundle.xpTable.XP_TABLE_DATA); // Added
-  const EPIC_LEVEL_XP_INCREASE = bundle.xpTable.EPIC_LEVEL_XP_INCREASE; // Added
+  const XP_TABLE = mergeXpTableData(bundle.xpTable.XP_TABLE_DATA);
+  const EPIC_LEVEL_XP_INCREASE = bundle.xpTable.EPIC_LEVEL_XP_INCREASE;
 
   const baseSizes = bundle.base.SIZES_DATA;
   const customSizes = bundle.customBase?.SIZES_DATA;
@@ -303,8 +304,8 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
   return {
     ALIGNMENTS,
     LANGUAGES,
-    XP_TABLE, // Added
-    EPIC_LEVEL_XP_INCREASE, // Added
+    XP_TABLE,
+    EPIC_LEVEL_XP_INCREASE,
     SIZES,
     GENDERS,
     DND_RACES,
@@ -335,4 +336,3 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
     UI_STRINGS,
   };
 }
-

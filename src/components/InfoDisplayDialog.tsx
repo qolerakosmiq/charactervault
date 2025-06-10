@@ -28,7 +28,7 @@ import type {
   SpeedComponent,
   CharacterSizeObject,
   DndRaceOption, DndClassOption, AbilityScores, AggregatedFeatEffects, DetailedAbilityScores,
-  CharacterAlignmentObject, DndDeityOption
+  CharacterAlignmentObject, DndDeityOption, ClassAttribute
 } from '@/types/character';
 
 import {
@@ -281,9 +281,10 @@ export function InfoDisplayDialog({
         data = {
           title: classData?.label || UI_STRINGS.infoDialogClassDefaultTitle || 'Class Information',
           content: ClassContentDisplay({
-            htmlContent: classData?.description || `<p>${UI_STRINGS.infoDialogNoSkillDescription || 'No description available.'}</p>`,
+            htmlContent: classData?.generalDescription || `<p>${UI_STRINGS.infoDialogNoSkillDescription || 'No description available.'}</p>`,
+            loreAttributes: classData?.loreAttributes,
             grantedFeats: grantedFeatsFormatted,
-            detailsList: classSpecificDetails,
+            detailsList: classSpecificDetails.length > 0 ? classSpecificDetails : undefined,
             translations,
             allCombinedFeatDefinitions,
             customSkillDefinitions,
@@ -308,16 +309,15 @@ export function InfoDisplayDialog({
         
         if (deityData) {
             data = {
-                title: deityData.label, // Short name for dialog title
+                title: deityData.label,
                 content: [DeityContentDisplay({ deityData, uiStrings: UI_STRINGS })]
             };
         } else if (deityId && deityId.trim() !== '') {
-             // Handle custom typed deity - attempt to show label if it matches character.deity or just use character.deity
              const customDeityDisplay: DndDeityOption = {
                 value: deityId,
-                label: deityId, // Use the typed value as label
-                alignment: '', // No alignment info for custom
-                fullName: deityId, // Use the typed value as full name
+                label: deityId,
+                alignment: '', 
+                fullName: deityId, 
                 attributes: [{ key: (UI_STRINGS.infoDialogDeityPlaceholder || "Custom deity. No predefined information available."), value: ""}]
              };
             data = { title: deityId, content: [DeityContentDisplay({ deityData: customDeityDisplay, uiStrings: UI_STRINGS })] };
@@ -927,7 +927,7 @@ export function InfoDisplayDialog({
       return contentBlocks.map((block, index, arr) => (
         <React.Fragment key={index}>
           {block}
-          {index < arr.length - 1 && <Separator className="my-3" />}
+          {/* Removed automatic separator here, individual content displays will manage their own separators */}
         </React.Fragment>
       ));
     }
@@ -962,7 +962,3 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
-
-
-
-

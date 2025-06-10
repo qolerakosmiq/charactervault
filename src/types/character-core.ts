@@ -359,6 +359,12 @@ export interface ClassCastingDetails {
   startsAtLevel?: number;
   levelOffset?: number;
 }
+
+export interface ClassAttribute {
+  key: string;
+  value: string;
+}
+
 export interface DndRaceOption {
   value: DndRaceId;
   label: string;
@@ -373,7 +379,8 @@ export interface DndClassOption {
   value: DndClassId | string;
   label: string;
   hitDice: string;
-  description: string;
+  generalDescription: string; // Renamed from description
+  loreAttributes?: ClassAttribute[]; // Added
   casting?: ClassCastingDetails;
   grantedFeats?: Array<{ featId: string; note?: string; name?: string; levelAcquired?: number }>;
   saves?: {
@@ -390,7 +397,7 @@ export interface DeityAttribute {
 export interface DndDeityOption {
   value: DndDeityId | string;
   label: string; // Short name for select/filter
-  alignment: CharacterAlignment;
+  alignment: CharacterAlignment | '';
   fullName: string; // Epithet or long name for display
   attributes: DeityAttribute[];
 }
@@ -597,4 +604,3 @@ export interface PrerequisiteMessage {
   orderKey: string;
   originalText?: string;
 }
-
