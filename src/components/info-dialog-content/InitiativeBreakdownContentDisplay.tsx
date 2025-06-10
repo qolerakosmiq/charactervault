@@ -24,24 +24,30 @@ export const InitiativeBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div className="space-y-1 text-sm">
-        <div className="flex justify-between">
-          <span>
+      <div className="space-y-1">
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">
             {uiStrings.infoDialogInitiativeAbilityModLabel || "Ability Modifier"}
             {dexterityAbilityInfo && (
-              <span className="text-muted-foreground"> ({dexterityAbilityInfo.abbr})</span>
+              <span className="text-muted-foreground/80 ml-1"> ({dexterityAbilityInfo.abbr})</span>
             )}
           </span>
           {renderModifierValue(initiativeBreakdown.dexModifier)}
         </div>
+        {initiativeBreakdown.featBonus !== 0 && initiativeBreakdown.featBonus !== undefined && (
+           <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}</span>
+              {renderModifierValue(initiativeBreakdown.featBonus)}
+          </div>
+        )}
         {initiativeBreakdown.miscModifier !== 0 && (
-          <div className="flex justify-between">
-              <span>{uiStrings.infoDialogCustomModifierLabel || "Custom Modifier"}</span>
+          <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{uiStrings.infoDialogCustomModifierLabel || "Custom Modifier"}</span>
               {renderModifierValue(initiativeBreakdown.miscModifier)}
           </div>
         )}
-        <div style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}><Separator /></div>
-        <div className="flex justify-between text-base">
+        <Separator className="my-2" />
+        <div className="flex justify-between text-xl">
           <span className="font-semibold">{uiStrings.infoDialogInitiativeTotalLabel || "Total Initiative"}</span>
           <span className="font-bold text-accent">{renderModifierValue(initiativeBreakdown.totalInitiative)}</span>
         </div>
@@ -49,4 +55,4 @@ export const InitiativeBreakdownContentDisplay = ({
     </div>
   );
 };
-// InitiativeBreakdownContentDisplay.displayName = 'InitiativeBreakdownContentDisplayComponent';
+

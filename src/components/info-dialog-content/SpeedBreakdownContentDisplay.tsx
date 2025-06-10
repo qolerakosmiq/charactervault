@@ -26,7 +26,7 @@ export const SpeedBreakdownContentDisplay = ({
       return (
         <>
           {mainText}
-          <span className="text-muted-foreground ml-1">({detailText})</span>
+          <span className="text-muted-foreground/80 ml-1">({detailText})</span>
         </>
       );
     }
@@ -36,17 +36,17 @@ export const SpeedBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div className="space-y-1 text-sm">
+      <div className="space-y-1">
         {speedBreakdown.components.map((comp, index) => {
           return (
-            <div key={index} className="flex justify-between">
-              <span>{renderSource(comp.source)}</span>
-              {renderModifierValue(comp.value)}
+            <div key={index} className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{renderSource(comp.source)}</span>
+              <span className="font-bold">{renderModifierValue(comp.value)}</span>
             </div>
           );
         })}
-        <div style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}><Separator /></div>
-        <div className="flex justify-between text-base">
+        <Separator className="my-2" />
+        <div className="flex justify-between text-xl">
           <span className="font-semibold">{(uiStrings.infoDialogSpeedTotalPrefixLabel || "Total")} {speedBreakdown.name}</span>
           <span className="font-bold text-accent">{speedBreakdown.total} {speedUnit}</span>
         </div>
@@ -54,4 +54,4 @@ export const SpeedBreakdownContentDisplay = ({
     </div>
   );
 };
-// SpeedBreakdownContentDisplay.displayName = 'SpeedBreakdownContentDisplayComponent';
+

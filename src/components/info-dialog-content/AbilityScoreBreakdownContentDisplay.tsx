@@ -25,9 +25,9 @@ export const AbilityScoreBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div className="space-y-1 text-sm">
-        <div className="flex justify-between">
-          <span>{uiStrings.infoDialogBaseScoreLabel || "Base Score"}</span>
+      <div className="space-y-1">
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">{uiStrings.infoDialogBaseScoreLabel || "Base Score"}</span>
           <span className="font-bold">{abilityScoreBreakdown.base}</span>
         </div>
 
@@ -44,29 +44,29 @@ export const AbilityScoreBreakdownContentDisplay = ({
           }
           
           return (comp.value !== 0 || comp.condition) && (
-            <div key={`comp-${index}-${comp.sourceLabel}-${comp.sourceDetail || ''}`} className="flex justify-between items-baseline">
-              <span className="flex-shrink-0 mr-2">
+            <div key={`comp-${index}-${comp.sourceLabel}-${comp.sourceDetail || ''}`} className="flex justify-between items-baseline text-sm">
+              <span className="text-muted-foreground flex-shrink-0 mr-2">
                 {displaySourceLabel}
                 {comp.sourceLabel === "Feat" && comp.sourceDetail && (
-                     <span className="text-muted-foreground ml-1">({comp.sourceDetail})</span>
+                     <span className="text-muted-foreground/80 ml-1">({comp.sourceDetail})</span>
                 )}
               </span>
               <div className="flex items-baseline">
                 {renderModifierValue(comp.value)}
-                {comp.condition && <span className="ml-1 text-xs text-muted-foreground italic">({comp.condition})</span>}
+                {comp.condition && <span className="ml-1 text-xs text-muted-foreground/80 italic">({comp.condition})</span>}
               </div>
             </div>
           );
         })}
 
-        <div style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}><Separator /></div>
-        <div className="flex justify-between text-base">
+        <Separator className="my-2" />
+        <div className="flex justify-between text-xl">
           <span className="font-semibold">{uiStrings.infoDialogFinalScoreLabel || "Final Score"}</span>
           <span className="font-bold text-accent">{dialogDisplayScore}</span>
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between text-xl">
           <span className="font-semibold">{uiStrings.infoDialogFinalModifierLabel || "Final Modifier"}</span>
-          {renderModifierValue(dialogDisplayModifier)}
+          <span className="font-bold text-accent">{renderModifierValue(dialogDisplayModifier)}</span>
         </div>
       </div>
     </div>

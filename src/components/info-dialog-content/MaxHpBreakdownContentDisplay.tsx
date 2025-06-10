@@ -48,37 +48,37 @@ export const MaxHpBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div className="space-y-1 text-sm">
-        <div className="flex justify-between">
-          <span>{uiStrings.maxHpDialogBaseHpLabel || "Base Hit Points"}</span>
+      <div className="space-y-1">
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">{uiStrings.maxHpDialogBaseHpLabel || "Base Hit Points"}</span>
           <span className="font-bold">{baseHp}</span>
         </div>
-        <div className="flex justify-between">
-          <span>
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">
             {uiStrings.maxHpDialogAbilityModLabel || "Ability Modifier"}
-            <span className="text-muted-foreground ml-1">({conAbbr})</span>
+            <span className="text-muted-foreground/80 ml-1">({conAbbr})</span>
           </span>
           {renderModifierValue(finalConstitutionModifier)}
         </div>
         {miscModifierValue !== 0 && (
-            <div className="flex justify-between items-baseline">
-                <span className="flex-shrink-0 mr-2">
+            <div className="flex justify-between items-baseline text-sm">
+                <span className="text-muted-foreground flex-shrink-0 mr-2">
                     {uiStrings.maxHpDialogMiscModLabel || "Misc Modifier"}
                     {miscModifierSubLabel && (
-                        <span className="ml-1 text-muted-foreground">{miscModifierSubLabel}</span>
+                        <span className="ml-1 text-muted-foreground/80">{miscModifierSubLabel}</span>
                     )}
                 </span>
                 {renderModifierValue(miscModifierValue)}
             </div>
         )}
         {customModifier !== 0 && (
-            <div className="flex justify-between">
-            <span>{uiStrings.maxHpDialogCustomModLabel || "Custom Modifier"}</span>
+            <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">{uiStrings.maxHpDialogCustomModLabel || "Custom Modifier"}</span>
             {renderModifierValue(customModifier)}
             </div>
         )}
-        <div style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}><Separator /></div>
-        <div className="flex justify-between text-base">
+        <Separator className="my-2" />
+        <div className="flex justify-between text-xl">
           <span className="font-semibold">{uiStrings.maxHpDialogTotalLabel || "Maximum Hit Points"}</span>
           <span className="font-bold text-accent">{totalMaxHp}</span>
         </div>
@@ -86,3 +86,4 @@ export const MaxHpBreakdownContentDisplay = ({
     </div>
   );
 };
+

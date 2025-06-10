@@ -50,7 +50,6 @@ export const ClassContentDisplay = ({
   const { UI_STRINGS, ABILITY_LABELS, DND_CLASSES, DND_RACES, ALIGNMENT_PREREQUISITE_OPTIONS, SKILL_DEFINITIONS } = translations;
   const outputBlocks: React.ReactNode[] = [];
 
-  // Block 1: HTML Content
   if (htmlContent) {
     outputBlocks.push(
       <div
@@ -61,17 +60,16 @@ export const ClassContentDisplay = ({
     );
   }
 
-  // Block 2: Class Specifics (Hit Dice, Saves, etc.)
   if (detailsList && detailsList.length > 0) {
     outputBlocks.push(
       <div key="class-details-list-section">
         <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogClassSpecificsListHeading || "Class Specifics"}</h3>
-        <div className="mt-2" key="details-list-content"> {/* No ml-4 here */}
+        <div className="mt-2" key="details-list-content">
           <div className="space-y-0.5 text-sm mb-2">
             {detailsList.map((detail, index) => (
               <div key={index} className="flex justify-between">
-                <span className="text-foreground">{detail.label}</span>
-                <span className={detail.isBold ? "font-bold text-foreground" : "text-foreground"}>{detail.value}</span>
+                <span className="text-sm text-muted-foreground">{detail.label}</span>
+                <span className={cn("text-sm font-semibold text-foreground", detail.isBold && "font-bold")}>{detail.value}</span>
               </div>
             ))}
           </div>
@@ -80,12 +78,11 @@ export const ClassContentDisplay = ({
     );
   }
 
-  // Block 3: Granted Features & Feats
   if (grantedFeats && grantedFeats.length > 0) {
     outputBlocks.push(
       <div key="class-granted-feats-section">
         <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h3>
-        <ul className="list-none space-y-0.5 text-sm mt-2" key="granted-feats-list"> {/* No ml-4 here */}
+        <ul className="list-none space-y-0.5 text-sm mt-2" key="granted-feats-list">
           {grantedFeats.map(feat => {
             const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
             return (
@@ -100,7 +97,7 @@ export const ClassContentDisplay = ({
                     {feat.levelAcquired !== undefined && (
                       <Badge variant="outline" className={cn(
                         "text-xs font-normal h-5 whitespace-nowrap shrink-0 justify-center",
-                        "min-w-[5rem]" // Adjusted min-width
+                        "min-w-[5rem]"
                       )}>
                         {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
                       </Badge>
@@ -115,7 +112,7 @@ export const ClassContentDisplay = ({
                      </div>
                   </div>
                   {expandedItems.has(uniqueKey) && (
-                   <div id={`feat-details-${uniqueKey}`} className="my-1 mb-1"> {/* Indentation for details wrapper is fine */}
+                   <div id={`feat-details-${uniqueKey}`} className="my-1 mb-1">
                       <ExpandableDetailWrapper>
                         <FeatDetailsDisplay
                             featId={feat.featId}
@@ -141,9 +138,10 @@ export const ClassContentDisplay = ({
   }
   
   return outputBlocks.length > 0 ? <div className="space-y-3">{outputBlocks.map((block, index, arr) => (
-        <React.Fragment key={index}>
+        <React.Fragment key={`class-display-block-${index}`}>
           {block}
           {index < arr.length - 1 && <Separator className="my-3" />}
         </React.Fragment>
       ))}</div> : null;
 };
+

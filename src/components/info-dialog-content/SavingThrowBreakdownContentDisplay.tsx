@@ -52,25 +52,25 @@ export const SavingThrowBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div className="space-y-1 text-sm">
-        <div className="flex justify-between">
-          <span>{uiStrings.savingThrowsRowLabelBase || "Base"}</span>
+      <div className="space-y-1">
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">{uiStrings.savingThrowsRowLabelBase || "Base"}</span>
           <span className="font-bold">{breakdown.baseSave}</span>
         </div>
-        <div className="flex justify-between">
-          <span>
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">
             {uiStrings.savingThrowsRowLabelAbilityModifier || "Ability Modifier"}
-            <span className="text-muted-foreground ml-1">({abilityAbbr})</span>
+            <span className="text-muted-foreground/80 ml-1">({abilityAbbr})</span>
           </span>
           {renderModifierValue(breakdown.abilityMod)}
         </div>
         
         {breakdown.featBonusTotal !== 0 && (
-          <div className="flex justify-between items-baseline">
-            <span className="flex-shrink-0 mr-2">
+          <div className="flex justify-between items-baseline text-sm">
+            <span className="text-muted-foreground flex-shrink-0 mr-2">
               {uiStrings.savingThrowsFeatsModifierLabel || "Feats Modifier"}
               {activeFeatSourceNamesAndConditions.length > 0 && (
-                <span className="text-muted-foreground ml-1">
+                <span className="text-muted-foreground/80 ml-1">
                   ({activeFeatSourceNamesAndConditions.join(", ")})
                 </span>
               )}
@@ -80,21 +80,21 @@ export const SavingThrowBreakdownContentDisplay = ({
         )}
 
         {breakdown.magicMod !== 0 && (
-          <div className="flex justify-between">
-            <span>{uiStrings.savingThrowsRowLabelMagicModifier || "Magic Modifier"}</span>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">{uiStrings.savingThrowsRowLabelMagicModifier || "Magic Modifier"}</span>
             {renderModifierValue(breakdown.magicMod)}
           </div>
         )}
 
         {breakdown.userTemporaryModifier !== 0 && (
-            <div className="flex justify-between">
-                <span>{uiStrings.savingThrowsRowLabelTemporaryModifier || "Temporary Modifier"}</span>
+            <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">{uiStrings.savingThrowsRowLabelTemporaryModifier || "Temporary Modifier"}</span>
                 {renderModifierValue(breakdown.userTemporaryModifier)}
             </div>
         )}
 
-        <div style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}><Separator /></div>
-        <div className="flex justify-between text-base">
+        <Separator className="my-2" />
+        <div className="flex justify-between text-xl">
           <span className="font-semibold">{uiStrings.savingThrowsRowLabelTotal || "Total"} {breakdown.saveTypeLabel}</span>
           <span className="font-bold text-accent">{renderModifierValue(breakdown.totalSave)}</span>
         </div>

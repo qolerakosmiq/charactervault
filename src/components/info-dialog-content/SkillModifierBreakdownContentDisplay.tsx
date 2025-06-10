@@ -30,9 +30,9 @@ export const SkillModifierBreakdownContentDisplay = ({
     />
   ) : null;
 
-  const badgeClass = "font-normal h-5 px-1.5 py-0.5 align-baseline whitespace-nowrap text-sm"; // Explicitly text-sm
+  const badgeClass = "font-normal h-5 px-1.5 py-0.5 align-baseline whitespace-nowrap text-sm";
 
-  const hasCalculationBlock = !!skillModifierBreakdown;
+  const hasCalculationBlock = !!skillModifierBreakdown; // Used to determine if synergyBlock needs mb-3
 
   const synergyBlock = (synergyInfoList && synergyInfoList.length > 0) ? (
     <div key="skill-synergies-block" className={cn((htmlContentBlock) && "mt-3")}>
@@ -52,7 +52,7 @@ export const SkillModifierBreakdownContentDisplay = ({
                     key={`badge-${index}`}
                     variant="outline"
                     className={cn(badgeClass)}
-                    style={{ fontSize: '0.875rem' }} // Forcing size due to Tailwind mysteries
+                    style={{ fontSize: '0.875rem' }}
                   >
                     {match ? match[0] : part}
                   </Badge>
@@ -67,7 +67,7 @@ export const SkillModifierBreakdownContentDisplay = ({
                   if (child.type === Badge) {
                     return React.cloneElement(child as React.ReactElement<any>, {
                       className: cn((child.props.className || ''), badgeClass),
-                      style: { ...(child.props.style || {}), fontSize: '0.875rem' }, // Forcing size
+                      style: { ...(child.props.style || {}), fontSize: '0.875rem' },
                     });
                   }
                   if (child.props.children) {
@@ -81,7 +81,6 @@ export const SkillModifierBreakdownContentDisplay = ({
             };
             textNode = styleBadgesInChildren(synergyItem.text);
           }
-
 
           return (
             <li key={synergyItem.id} className="flex">
@@ -102,10 +101,10 @@ export const SkillModifierBreakdownContentDisplay = ({
   const calculationBlock = hasCalculationBlock ? (
     <div key="skill-calculation-block" className={cn(((htmlContentBlock && !synergyBlock) || synergyBlock) && "mt-3")}>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div className="space-y-1 text-sm mt-2">
+      <div className="space-y-1 mt-2">
         {skillModifierBreakdown!.keyAbilityName && (
-          <div className="flex justify-between">
-            <span className="inline-flex items-baseline">
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground inline-flex items-baseline">
               {uiStrings.infoDialogKeyAbilityLabel || "Key Ability"}
               <Badge variant="outline" className="text-sm font-normal px-1.5 py-0.5 ml-1.5 whitespace-nowrap">
                 {skillModifierBreakdown!.keyAbilityName}
@@ -114,42 +113,42 @@ export const SkillModifierBreakdownContentDisplay = ({
             {renderModifierValue(skillModifierBreakdown!.keyAbilityModifier)}
           </div>
         )}
-        <div className="flex justify-between">
-          <span>{uiStrings.infoDialogRanksLabel || "Ranks"}</span>
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">{uiStrings.infoDialogRanksLabel || "Ranks"}</span>
           {renderModifierValue(skillModifierBreakdown!.ranks)}
         </div>
         {skillModifierBreakdown!.sizeSpecificBonus !== 0 && (
-          <div className="flex justify-between">
-            <span>{uiStrings.infoDialogSizeModifierLabel || "Size Modifier"}</span>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">{uiStrings.infoDialogSizeModifierLabel || "Size Modifier"}</span>
             {renderModifierValue(skillModifierBreakdown!.sizeSpecificBonus)}
           </div>
         )}
         {skillModifierBreakdown!.synergyBonus !== 0 && (
-          <div className="flex justify-between">
-            <span>{uiStrings.infoDialogSynergyBonusLabel || "Synergy Bonus"}</span>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">{uiStrings.infoDialogSynergyBonusLabel || "Synergy Bonus"}</span>
             {renderModifierValue(skillModifierBreakdown!.synergyBonus)}
           </div>
         )}
         {skillModifierBreakdown!.featBonus !== 0 && (
-          <div className="flex justify-between">
-            <span>{uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}</span>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">{uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}</span>
             {renderModifierValue(skillModifierBreakdown!.featBonus)}
           </div>
         )}
         {skillModifierBreakdown!.racialBonus !== 0 && (
-          <div className="flex justify-between">
-            <span>{uiStrings.infoDialogRacialBonusLabel || "Racial Bonus"}</span>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">{uiStrings.infoDialogRacialBonusLabel || "Racial Bonus"}</span>
             {renderModifierValue(skillModifierBreakdown!.racialBonus)}
           </div>
         )}
         {skillModifierBreakdown!.miscModifier !== 0 && (
-          <div className="flex justify-between">
-            <span>{uiStrings.infoDialogCustomModifierLabel || "Misc Modifier"}</span>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">{uiStrings.infoDialogCustomModifierLabel || "Misc Modifier"}</span>
             {renderModifierValue(skillModifierBreakdown!.miscModifier)}
           </div>
         )}
-        <div style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}><Separator /></div>
-        <div className="flex justify-between text-base">
+        <Separator className="my-2" />
+        <div className="flex justify-between text-xl">
           <span className="font-semibold">{uiStrings.infoDialogTotalBonusLabel || "Total Bonus"}</span>
           <span className="font-bold text-accent">{renderModifierValue(skillModifierBreakdown!.totalBonus)}</span>
         </div>
@@ -161,7 +160,6 @@ export const SkillModifierBreakdownContentDisplay = ({
   if (htmlContentBlock) contentBlocksToRender.push(htmlContentBlock);
   if (synergyBlock) contentBlocksToRender.push(synergyBlock);
   if (calculationBlock) contentBlocksToRender.push(calculationBlock);
-
 
   if (contentBlocksToRender.length === 0) {
     return <p className="text-sm text-muted-foreground">{uiStrings.infoDialogNoSkillDescription || "No details available for this skill."}</p>;
@@ -180,5 +178,4 @@ export const SkillModifierBreakdownContentDisplay = ({
     </>
   );
 };
-// SkillModifierBreakdownContentDisplay.displayName = 'SkillModifierBreakdownContentDisplayComponent';
 

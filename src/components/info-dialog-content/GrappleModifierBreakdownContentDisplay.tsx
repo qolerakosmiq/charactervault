@@ -24,32 +24,38 @@ export const GrappleModifierBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div className="space-y-1 text-sm">
-        <div className="flex justify-between">
-          <span>{uiStrings.infoDialogGrappleModBabLabel || "Base Attack Bonus"}</span>
-          {renderModifierValue(grappleModifierBreakdown.baseAttackBonus)}
+      <div className="space-y-1">
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">{uiStrings.infoDialogGrappleModBabLabel || "Base Attack Bonus"}</span>
+          <span className="font-bold">{renderModifierValue(grappleModifierBreakdown.baseAttackBonus)}</span>
         </div>
-        <div className="flex justify-between">
-          <span>
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">
             {uiStrings.infoDialogGrappleModAbilityLabel || "Ability Modifier"}
             {strengthAbilityInfo && (
-              <span className="text-muted-foreground ml-1">({strengthAbilityInfo.abbr})</span>
+              <span className="text-muted-foreground/80 ml-1">({strengthAbilityInfo.abbr})</span>
             )}
           </span>
           {renderModifierValue(grappleModifierBreakdown.strengthModifier)}
         </div>
-        <div className="flex justify-between">
-          <span>{uiStrings.infoDialogGrappleModSizeLabel || "Size Modifier"}</span>
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">{uiStrings.infoDialogGrappleModSizeLabel || "Size Modifier"}</span>
           {renderModifierValue(grappleModifierBreakdown.sizeModifierGrapple)}
         </div>
+        {grappleModifierBreakdown.featBonus !== 0 && grappleModifierBreakdown.featBonus !== undefined && (
+          <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}</span>
+              {renderModifierValue(grappleModifierBreakdown.featBonus)}
+          </div>
+        )}
         {grappleModifierBreakdown.miscModifier !== 0 && (
-          <div className="flex justify-between">
-              <span>{uiStrings.infoDialogCustomModifierLabel || "Custom Modifier"}</span>
+          <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{uiStrings.infoDialogCustomModifierLabel || "Custom Modifier"}</span>
               {renderModifierValue(grappleModifierBreakdown.miscModifier)}
           </div>
         )}
-        <div style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}><Separator /></div>
-        <div className="flex justify-between text-base">
+        <Separator className="my-2" />
+        <div className="flex justify-between text-xl">
           <span className="font-semibold">{uiStrings.infoDialogGrappleModTotalLabel || "Total Grapple Modifier"}</span>
           <span className="font-bold text-accent">{renderModifierValue(grappleModifierBreakdown.totalGrappleModifier)}</span>
         </div>
@@ -57,4 +63,4 @@ export const GrappleModifierBreakdownContentDisplay = ({
     </div>
   );
 };
-// GrappleModifierBreakdownContentDisplay.displayName = 'GrappleModifierBreakdownContentDisplayComponent';
+

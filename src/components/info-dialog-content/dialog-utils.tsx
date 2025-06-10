@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -19,4 +20,5 @@ export const ExpandableDetailWrapper: React.FC<{ children: React.ReactNode }> = 
   );
 };
 
-export const sectionHeadingClass = "text-md font-semibold mb-2 text-primary";
+export const sectionHeadingClass = "text-lg font-semibold mb-2 text-primary";
+

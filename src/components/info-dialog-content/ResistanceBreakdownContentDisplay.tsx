@@ -20,22 +20,22 @@ export const ResistanceBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div className="space-y-1 text-sm">
-        <div className="flex justify-between">
-          <span>{uiStrings.infoDialogBaseValueLabel || "Base Value:"}</span>
+      <div className="space-y-1">
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">{uiStrings.infoDialogBaseValueLabel || "Base Value"}</span>
           <span className="font-bold">{resistanceBreakdown.base}</span>
         </div>
-        <div className="flex justify-between">
-          <span>{uiStrings.infoDialogCustomModifierLabel || "Custom Modifier:"}</span>
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">{uiStrings.infoDialogCustomModifierLabel || "Custom Modifier"}</span>
           {renderModifierValue(resistanceBreakdown.customMod)}
         </div>
-        <div style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}><Separator /></div>
-        <div className="flex justify-between text-base">
-          <span className="font-semibold">{uiStrings.infoDialogTotalResistanceLabel || "Total Resistance:"}</span>
+        <Separator className="my-2" />
+        <div className="flex justify-between text-xl">
+          <span className="font-semibold">{uiStrings.infoDialogTotalResistanceLabel || "Total Resistance"}</span>
           <span className="font-bold text-accent">{resistanceBreakdown.total}</span>
         </div>
       </div>
     </div>
   );
 };
-// ResistanceBreakdownContentDisplay.displayName = 'ResistanceBreakdownContentDisplayComponent';
+

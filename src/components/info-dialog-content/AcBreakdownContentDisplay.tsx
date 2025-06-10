@@ -12,11 +12,10 @@ export interface AcBreakdownDetailItem {
   value: string | number | React.ReactNode;
   isBold?: boolean;
   suffixDetails?: string[];
-  // Properties for specific, non-generic suffix styling (fallback)
   type?: 'acAbilityMod' | 'acSizeMod' | 'acFeatBonus';
   abilityAbbr?: string;
   sizeName?: string;
-  condition?: string; // For feat bonus conditions
+  condition?: string;
 }
 
 interface AcBreakdownContentDisplayProps {
@@ -24,9 +23,6 @@ interface AcBreakdownContentDisplayProps {
   totalACValue?: number;
   detailsListHeading: string;
   uiStrings: Record<string, string>;
-  // abilityLabels: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[]; // May not be used directly if labels pre-formatted
-  // aggregatedFeatEffects?: AggregatedFeatEffects | null;
-  // acType?: 'Normal' | 'Touch' | 'Flat-Footed';
 }
 
 export const AcBreakdownContentDisplay = ({
@@ -48,38 +44,35 @@ export const AcBreakdownContentDisplay = ({
         let mainText = detail.mainLabel;
         let suffixText = detail.suffixDetails && detail.suffixDetails.length > 0 ? `(${detail.suffixDetails.join(", ")})` : null;
 
-        // Fallback for specifically structured ability/size modifiers if not using suffixDetails
         if (!suffixText) {
           if (detail.type === 'acAbilityMod' && detail.abilityAbbr) {
-            mainText = detail.mainLabel; // Should already be just "Ability Modifier"
+            mainText = detail.mainLabel; 
             suffixText = `(${detail.abilityAbbr})`;
           } else if (detail.type === 'acSizeMod' && detail.sizeName) {
-            mainText = detail.mainLabel; // Should already be just "Size Modifier"
+            mainText = detail.mainLabel; 
             suffixText = `(${detail.sizeName})`;
           }
         }
         
-        // If the mainLabel itself already contains the suffix, split it
         if (typeof mainText === 'string') {
           const suffixMatch = mainText.match(/\s(\([^)]+\))$/);
-          if (suffixMatch && !suffixText) { // only if suffixText wasn't already set by suffixDetails
+          if (suffixMatch && !suffixText) { 
             mainText = mainText.substring(0, mainText.length - suffixMatch[0].length);
             suffixText = suffixMatch[1];
           }
         }
 
-
         return (
           <div key={index} className="flex justify-between text-sm mb-0.5">
-            <span className="text-foreground">
+            <span className="text-muted-foreground">
               {mainText}
               {suffixText && (
-                <span className="text-muted-foreground ml-1">
+                <span className="text-muted-foreground/80 ml-1">
                   {suffixText}
                 </span>
               )}
               {detail.type === 'acFeatBonus' && detail.condition && (
-                <span className="text-muted-foreground italic ml-1">({detail.condition})</span>
+                <span className="text-muted-foreground/80 italic ml-1">({detail.condition})</span>
               )}
             </span>
             <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{valueToRender as React.ReactNode}</span>
@@ -89,8 +82,8 @@ export const AcBreakdownContentDisplay = ({
 
       {totalACValue !== undefined && (
         <>
-          <div style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}><Separator /></div>
-          <div className="flex justify-between text-base">
+          <Separator className="my-2" />
+          <div className="flex justify-between text-xl">
             <span className="font-semibold">{uiStrings.infoDialogTotalLabel || 'Total'}</span>
             <span className="font-bold text-accent">{renderModifierValue(totalACValue)}</span>
           </div>
@@ -99,3 +92,4 @@ export const AcBreakdownContentDisplay = ({
     </div>
   );
 };
+
