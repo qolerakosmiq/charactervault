@@ -1098,7 +1098,7 @@
             "classId": "monk",
             "specificLevels": [
               {"level": 1, "value": "1d6"}, {"level": 4, "value": "1d8"}, {"level": 8, "value": "1d10"},
-              {"level": 12, "value": "2d4"}, {"level": 16, "value": "2d6"}, {"level": 20, "value": "2d8"}
+              {"level": 12, "value": "2d6"}, {"level": 16, "value": "2d8"}, {"level": 20, "value": "2d10"}
             ]
           }
         }
@@ -1248,7 +1248,7 @@
     { "value": "class-rogue-improved-uncanny-dodge", "label": "Improved Uncanny Dodge (Rogue)", "effectsText":"Cannot be flanked.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Cannot be flanked."}] },
     { "value": "class-rogue-special-ability-slot", "label": "Rogue Special Ability Slot", "effectsText":"Choose a special ability from list.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Choose a special ability from list."}] },
     { "value": "class-sorcerer-summon-familiar", "label": "Summon Familiar", "effectsText":"Can obtain a familiar.", "isClassFeature": true, "type": "special-sp", "effects": [{"type": "note", "text":"Can obtain a familiar."}] },
-    { "value": "class-wizard-bonus-feat-slot", "label": "Wizard Bonus Feat Slot", "effectsText":"Gain a bonus Metamagic, Item Creation, or Spell Mastery feat.", "isClassFeature": true, "type": "special", "effects": [{"type": "note", "text":"Gain a bonus Metamagic, Item Creation, or Spell Mastery feat."}] },
+    { "value": "class-wizard-bonus-feat-slot", "label": "Wizard Bonus Feat Slot", "effectsText":"Gain a bonus Metamagic, Item Creation, or Spell Mastery feat.", "isClassFeature": true, "type": "special", "category": "wizardBonusFeat", "effects": [{"type": "bonusFeatSlot", "category": "wizardBonusFeat", "count": 1 }] },
     { "value": "class-ranger-animal-companion", "label": "Animal Companion (Ranger)", "effectsText":"Gain an animal companion (effective druid level is half ranger level).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Gain an animal companion (effective druid level is half ranger level)."}] },
     { "value": "class-soulknife-mind-blade", "label": "Mind Blade", "effectsText": "Create psychic short sword; damage/enhancement scales.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text": "Create psychic short sword; damage/enhancement scales."}] },
     { "value": "weapon-focus-mind-blade", "label": "Weapon Focus (Mind Blade)", "description": "<b>Benefit:</b> You gain a +1 bonus on all attack rolls you make using your mind blade.", "effectsText": "+1 to attack rolls with Mind Blade.", "isClassFeature": true, "type": "special", "effects": [{"type": "note", "text": "+1 to attack rolls with Mind Blade."}] },
@@ -1313,3 +1313,4 @@
     { "value": "special-ex-su", "label": "Extraordinary/Supernatural Ability" }
   ]
 }
+
