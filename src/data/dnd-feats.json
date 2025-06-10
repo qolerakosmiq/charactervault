@@ -252,8 +252,8 @@
       "prerequisites": { "bab": 8, "special": "Proficient with weapon" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "weapon",
-      "effectsText": "Doubles threat range for chosen weapon.",
-      "effects": [{ "type": "note", "text": "Doubles threat range for chosen weapon." }],
+      "effectsText": "Doubles threat range for the specialized weapon.",
+      "effects": [{ "type": "note", "text": "Doubles threat range for the specialized weapon." }],
       "isClassFeature": false,
       "type": "special",
       "category": "fighterBonusFeat"
@@ -851,12 +851,12 @@
     {
       "value": "weapon-focus",
       "label": "Weapon Focus",
-      "description": "<b>Benefit:</b> Choose one type of weapon (such as greataxe).<br />You can also choose unarmed strike or grapple as your weapon for purposes of this feat.<br />You gain a +1 bonus on all attack rolls you make using the selected weapon.<br /><b>Special:</b> You can gain this feat multiple times.<br />Its effects do not stack.<br />Each time you take the feat, it applies to a new type of weapon.",
+      "description": "<b>Benefit:</b> You gain a +1 bonus on all attack rolls you make using the selected weapon.",
       "prerequisites": { "bab": 1, "special": "Proficiency with weapon" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "weapon",
-      "effectsText": "+1 bonus on attack rolls with chosen weapon.",
-      "effects": [{ "type": "note", "text": "+1 bonus on attack rolls with chosen weapon." }],
+      "effectsText": "+1 bonus on attack rolls with selected weapon.",
+      "effects": [{ "type": "attackRoll", "value": 1, "bonusType": "untyped", "appliesTo": "all" }],
       "isClassFeature": false,
       "type": "special",
       "category": "fighterBonusFeat"
@@ -864,12 +864,12 @@
     {
       "value": "greater-weapon-focus",
       "label": "Greater Weapon Focus",
-      "description": "<b>Benefit:</b> Choose one type of weapon (such as greataxe) for which you have already selected Weapon Focus.<br />You gain a +1 bonus on all attack rolls you make using the selected weapon.<br />This bonus stacks with other bonuses on attack rolls, including the one from Weapon Focus.<br /><b>Special:</b> You can gain this feat multiple times.<br />Its effects do not stack.<br />Each time you take the feat, it applies to a new type of weapon for which you already have Weapon Focus.<br />A fighter may select Greater Weapon Focus as one of his fighter bonus feats.",
+      "description": "<b>Benefit:</b> You gain a +1 bonus on all attack rolls you make using the selected weapon.<br />This bonus stacks with other bonuses on attack rolls, including the one from Weapon Focus.",
       "prerequisites": { "feats": ["weapon-focus"], "special": "Fighter level 8th, Proficiency with weapon" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "weapon",
-      "effectsText": "Additional +1 bonus on attack rolls with chosen weapon (stacks with Weapon Focus).",
-      "effects": [{ "type": "note", "text": "Additional +1 bonus on attack rolls with chosen weapon (stacks with Weapon Focus)." }],
+      "effectsText": "Additional +1 bonus on attack rolls with selected weapon (stacks).",
+      "effects": [{ "type": "attackRoll", "value": 1, "bonusType": "untyped", "appliesTo": "all" }],
       "isClassFeature": false,
       "type": "special",
       "category": "fighterBonusFeat"
@@ -877,12 +877,12 @@
     {
       "value": "weapon-specialization",
       "label": "Weapon Specialization",
-      "description": "<b>Benefit:</b> Choose one type of weapon (such as greataxe) for which you have already selected Weapon Focus.<br />You gain a +2 bonus on all damage rolls you make using the selected weapon.<br /><b>Special:</b> You can gain this feat multiple times.<br />Its effects do not stack.<br />Each time you take the feat, it applies to a new type of weapon for which you already have Weapon Focus.<br />A fighter may select Weapon Specialization as one of his fighter bonus feats.",
+      "description": "<b>Benefit:</b> You gain a +2 bonus on all damage rolls you make using the selected weapon.",
       "prerequisites": { "feats": ["weapon-focus"], "special": "Fighter level 4th, Proficiency with weapon" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "weapon",
-      "effectsText": "+2 bonus on damage rolls with chosen weapon.",
-      "effects": [{ "type": "note", "text": "+2 bonus on damage rolls with chosen weapon." }],
+      "effectsText": "+2 bonus on damage rolls with selected weapon.",
+      "effects": [{ "type": "damageRoll", "value": 2, "bonusType": "untyped", "appliesTo": "all" }],
       "isClassFeature": false,
       "type": "special",
       "category": "fighterBonusFeat"
@@ -890,12 +890,12 @@
     {
       "value": "greater-weapon-specialization",
       "label": "Greater Weapon Specialization",
-      "description": "<b>Benefit:</b> Choose one type of weapon (such as greataxe) for which you have already selected Weapon Specialization.<br />You gain a +2 bonus on all damage rolls you make using the selected weapon.<br />This bonus stacks with other bonuses on damage rolls, including the one from Weapon Specialization.<br /><b>Special:</b> You can gain this feat multiple times.<br />Its effects do not stack.<br />Each time you take the feat, it applies to a new type of weapon for which you already have Weapon Specialization.<br />A fighter may select Greater Weapon Specialization as one of his fighter bonus feats.",
+      "description": "<b>Benefit:</b> You gain a +2 bonus on all damage rolls you make using the selected weapon.<br />This bonus stacks with other bonuses on damage rolls, including the one from Weapon Specialization.",
       "prerequisites": { "feats": ["weapon-focus", "weapon-specialization", "greater-weapon-focus"], "special": "Fighter level 12th, Proficiency with weapon" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "weapon",
-      "effectsText": "Additional +2 bonus on damage rolls with chosen weapon (stacks).",
-      "effects": [{ "type": "note", "text": "Additional +2 bonus on damage rolls with chosen weapon (stacks)." }],
+      "effectsText": "Additional +2 bonus on damage rolls with selected weapon (stacks).",
+      "effects": [{ "type": "damageRoll", "value": 2, "bonusType": "untyped", "appliesTo": "all" }],
       "isClassFeature": false,
       "type": "special",
       "category": "fighterBonusFeat"
@@ -939,7 +939,7 @@
             {"level": 1, "value": 4, "tierName": "Rage"}, {"level": 11, "value": 6, "tierName": "Greater Rage"}, {"level": 20, "value": 8, "tierName": "Mighty Rage"}
           ] }
         },
-        { "type": "savingThrow", "save": "will", "value": 0, "bonusType": "morale", "condition": "raging_active",
+        { "type": "savingThrow", "save": "all", "value": 0, "bonusType": "morale", "condition": "raging_active",
           "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
             {"level": 1, "value": 2, "tierName": "Rage Will"}, {"level": 11, "value": 3, "tierName": "Greater Rage Will"}, {"level": 14, "value": 4, "tierName": "Indomitable Will (Rage)"}
           ] }
@@ -1324,9 +1324,9 @@
       "label": "Skill Mastery (Rogue)",
       "description": "<b>Benefit:</b> The rogue becomes so certain in the use of certain skills that she can use them reliably even under adverse conditions. Upon gaining this ability, she selects a number of skills equal to 3 + her Intelligence modifier. When making a skill check with one of these skills, she may take 10 even if stress and distractions would normally prevent her from doing so.",
       "prerequisites": { "special": "Rogue level 10+" },
-      "requiresSpecialization": "skill",
       "effectsText": "Select (3+Int mod) skills; can Take 10 on these skills even under stress.",
       "isClassFeature": false, "type": "special-ex", "category": "rogueSpecialAbility",
+      "requiresSpecialization": "skill (multiple, 3+Int)",
       "effects": [{ "type": "note", "text": "Select (3+Int mod) skills; can Take 10 on these skills even under stress."}]
     },
     {
@@ -1359,4 +1359,3 @@
 }
 
     
-

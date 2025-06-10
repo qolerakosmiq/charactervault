@@ -252,8 +252,8 @@
       "prerequisites": { "bab": 8, "special": "Maîtrise de l'arme" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "arme",
-      "effectsText": "Double la plage de critique pour l'arme choisie.",
-      "effects": [{ "type": "note", "text": "Double la plage de critique pour l'arme choisie." }],
+      "effectsText": "Double la plage de critique pour l'arme spécialisée.",
+      "effects": [{ "type": "note", "text": "Double la plage de critique pour l'arme spécialisée." }],
       "isClassFeature": false,
       "type": "special",
       "category": "fighterBonusFeat"
@@ -851,12 +851,12 @@
     {
       "value": "weapon-focus",
       "label": "Arme de prédilection",
-      "description": "<b>Avantage :</b> Choisissez un type d'arme (comme une grande hache).<br />Vous pouvez également choisir une frappe à mains nues ou une lutte comme arme aux fins de ce don.<br />Vous gagnez un bonus de +1 à tous les jets d'attaque que vous effectuez avec l'arme sélectionnée.<br /><b>Spécial :</b> Vous pouvez acquérir ce don plusieurs fois.<br />Ses effets ne se cumulent pas.<br />Chaque fois que vous prenez ce don, il s'applique à un nouveau type d'arme.",
+      "description": "<b>Avantage :</b> Vous gagnez un bonus de +1 à tous les jets d'attaque que vous effectuez avec l'arme sélectionnée.",
       "prerequisites": { "bab": 1, "special": "Maîtrise de l'arme" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "weapon",
       "effectsText": "Bonus de +1 aux jets d'attaque avec l'arme choisie.",
-      "effects": [{ "type": "note", "text": "Bonus de +1 aux jets d'attaque avec l'arme choisie." }],
+      "effects": [{ "type": "attackRoll", "value": 1, "bonusType": "untyped", "appliesTo": "all" }],
       "isClassFeature": false,
       "type": "special",
       "category": "fighterBonusFeat"
@@ -864,12 +864,12 @@
     {
       "value": "greater-weapon-focus",
       "label": "Arme de prédilection supérieure",
-      "description": "<b>Avantage :</b> Choisissez un type d'arme (comme une grande hache) pour lequel vous avez déjà choisi Arme de prédilection.<br />Vous gagnez un bonus de +1 à tous les jets d'attaque que vous effectuez avec l'arme sélectionnée.<br />Ce bonus se cumule avec d'autres bonus aux jets d'attaque, y compris celui d'Arme de prédilection.<br /><b>Spécial :</b> Vous pouvez acquérir ce don plusieurs fois.<br />Ses effets ne se cumulent pas.<br />Chaque fois que vous prenez ce don, il s'applique à un nouveau type d'arme pour lequel vous avez déjà Arme de prédilection.<br />Un guerrier peut choisir Arme de prédilection supérieure comme l'un de ses dons supplémentaires de guerrier.",
+      "description": "<b>Avantage :</b> Choisissez un type d'arme (comme une grande hache) pour lequel vous avez déjà choisi Arme de prédilection.<br />Vous gagnez un bonus de +1 à tous les jets d'attaque que vous effectuez avec l'arme sélectionnée.<br />Ce bonus se cumule avec d'autres bonus aux jets d'attaque, y compris celui d'Arme de prédilection.",
       "prerequisites": { "feats": ["weapon-focus"], "special": "Niveau 8 de Guerrier, Maîtrise de l'arme" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "weapon",
       "effectsText": "Bonus supplémentaire de +1 aux jets d'attaque avec l'arme choisie (cumulable avec Arme de Prédilection).",
-      "effects": [{ "type": "note", "text": "Bonus supplémentaire de +1 aux jets d'attaque avec l'arme choisie (cumulable avec Arme de Prédilection)." }],
+      "effects": [{ "type": "attackRoll", "value": 1, "bonusType": "untyped", "appliesTo": "all" }],
       "isClassFeature": false,
       "type": "special",
       "category": "fighterBonusFeat"
@@ -877,12 +877,12 @@
     {
       "value": "weapon-specialization",
       "label": "Spécialisation martiale",
-      "description": "<b>Avantage :</b> Choisissez un type d'arme (comme une grande hache) pour lequel vous avez déjà choisi Arme de prédilection.<br />Vous gagnez un bonus de +2 à tous les jets de dégâts que vous effectuez avec l'arme sélectionnée.<br /><b>Spécial :</b> Vous pouvez acquérir ce don plusieurs fois.<br />Ses effets ne se cumulent pas.<br />Chaque fois que vous prenez ce don, il s'applique à un nouveau type d'arme pour lequel vous avez déjà Arme de prédilection.<br />Un guerrier peut choisir Spécialisation martiale comme l'un de ses dons supplémentaires de guerrier.",
+      "description": "<b>Avantage :</b> Choisissez un type d'arme (comme une grande hache) pour lequel vous avez déjà choisi Arme de prédilection.<br />Vous gagnez un bonus de +2 à tous les jets de dégâts que vous effectuez avec l'arme sélectionnée.",
       "prerequisites": { "feats": ["weapon-focus"], "special": "Niveau 4 de Guerrier, Maîtrise de l'arme" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "weapon",
       "effectsText": "Bonus de +2 aux jets de dégâts avec l'arme choisie.",
-      "effects": [{ "type": "note", "text": "Bonus de +2 aux jets de dégâts avec l'arme choisie." }],
+      "effects": [{ "type": "damageRoll", "value": 2, "bonusType": "untyped", "appliesTo": "all" }],
       "isClassFeature": false,
       "type": "special",
       "category": "fighterBonusFeat"
@@ -890,12 +890,12 @@
     {
       "value": "greater-weapon-specialization",
       "label": "Spécialisation martiale supérieure",
-      "description": "<b>Avantage :</b> Choisissez un type d'arme (comme une grande hache) pour lequel vous avez déjà choisi Spécialisation martiale.<br />Vous gagnez un bonus de +2 à tous les jets de dégâts que vous effectuez avec l'arme sélectionnée.<br />Ce bonus se cumule avec d'autres bonus aux jets de dégâts, y compris celui de Spécialisation martiale.<br /><b>Spécial :</b> Vous pouvez acquérir ce don plusieurs fois.<br />Ses effets ne se cumulent pas.<br />Chaque fois que vous prenez ce don, il s'applique à un nouveau type d'arme pour lequel vous avez déjà Spécialisation martiale.<br />Un guerrier peut choisir Spécialisation martiale supérieure comme l'un de ses dons supplémentaires de guerrier.",
+      "description": "<b>Avantage :</b> Choisissez un type d'arme (comme une grande hache) pour lequel vous avez déjà choisi Spécialisation martiale.<br />Vous gagnez un bonus de +2 à tous les jets de dégâts que vous effectuez avec l'arme sélectionnée.<br />Ce bonus se cumule avec d'autres bonus aux jets de dégâts, y compris celui de Spécialisation martiale.",
       "prerequisites": { "feats": ["weapon-focus", "weapon-specialization", "greater-weapon-focus"], "special": "Niveau 12 de Guerrier, Maîtrise de l'arme" },
       "canTakeMultipleTimes": true,
       "requiresSpecialization": "weapon",
       "effectsText": "Bonus supplémentaire de +2 aux jets de dégâts avec l'arme choisie (cumulable).",
-      "effects": [{ "type": "note", "text": "Bonus supplémentaire de +2 aux jets de dégâts avec l'arme choisie (cumulable)." }],
+      "effects": [{ "type": "damageRoll", "value": 2, "bonusType": "untyped", "appliesTo": "all" }],
       "isClassFeature": false,
       "type": "special",
       "category": "fighterBonusFeat"
@@ -939,7 +939,7 @@
             {"level": 1, "value": 4, "tierName": "Rage"}, {"level": 11, "value": 6, "tierName": "Grande Rage"}, {"level": 20, "value": 8, "tierName": "Rage Puissante"}
           ] }
         },
-        { "type": "savingThrow", "save": "will", "value": 0, "bonusType": "morale", "condition": "raging_active",
+        { "type": "savingThrow", "save": "all", "value": 0, "bonusType": "morale", "condition": "raging_active",
           "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
             {"level": 1, "value": 2, "tierName": "Rage Volonté"}, {"level": 11, "value": 3, "tierName": "Grande Rage Volonté"}, {"level": 14, "value": 4, "tierName": "Volonté Indomptable (Rage)"}
           ] }
@@ -1359,4 +1359,3 @@
 }
 
     
-

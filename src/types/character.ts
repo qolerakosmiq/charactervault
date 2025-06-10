@@ -777,13 +777,20 @@ export function calculateFeatEffects(
             newAggregatedEffects.savingThrowBonuses.push(effectToPush as SavingThrowEffect & { sourceFeat?: string });
             break;
           case "attackRoll":
-            newAggregatedEffects.attackRollBonuses.push(effectToPush as AttackRollEffect & { sourceFeat?: string });
+            const attackEffect = effectToPush as AttackRollEffect & { sourceFeat?: string };
+            if (definition.requiresSpecialization === 'weapon' && featInstance.specializationDetail) {
+              attackEffect.weaponId = featInstance.specializationDetail;
+            }
+            newAggregatedEffects.attackRollBonuses.push(attackEffect);
             break;
           case "damageRoll":
-            const damageEffect = effectToPush as DamageRollEffect;
+            const damageEffect = effectToPush as DamageRollEffect & { sourceFeat?: string };
             if (definition.value === 'class-ranger-favored-enemy' && newAggregatedEffects.favoredEnemyBonuses && typeof damageEffect.value === 'number') {
               newAggregatedEffects.favoredEnemyBonuses.damageBonus = Math.max(newAggregatedEffects.favoredEnemyBonuses.damageBonus, damageEffect.value);
             } else {
+              if (definition.requiresSpecialization === 'weapon' && featInstance.specializationDetail) {
+                damageEffect.weaponId = featInstance.specializationDetail;
+              }
               newAggregatedEffects.damageRollBonuses.push(damageEffect);
             }
             break;
