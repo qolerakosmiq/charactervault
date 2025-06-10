@@ -68,7 +68,7 @@ export const ClassContentDisplay = ({
           <div className="space-y-0.5 text-sm mb-2">
             {detailsList.map((detail, index) => (
               <div key={index} className="flex justify-between">
-                <span className="text-sm text-muted-foreground">{detail.label}</span>
+                <span className="text-sm text-foreground">{detail.label}</span> {/* Changed text-muted-foreground to text-foreground */}
                 <span className={cn("text-sm font-semibold text-foreground", detail.isBold && "font-bold")}>{detail.value}</span>
               </div>
             ))}
@@ -144,4 +144,3 @@ export const ClassContentDisplay = ({
         </React.Fragment>
       ))}</div> : null;
 };
-
