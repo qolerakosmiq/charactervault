@@ -1,0 +1,50 @@
+
+{
+  "DND_MAGIC_SCHOOLS_DATA": [
+    {
+      "value": "universal",
+      "label": "Universelle",
+      "description": "Un magicien généraliste, ne se spécialisant dans aucune école particulière, et n'étant interdit d'aucune."
+    },
+    {
+      "value": "abjuration",
+      "label": "Abjuration",
+      "description": "Sorts qui protègent, bannissent ou bloquent. Les abjurateurs sont maîtres de la magie défensive."
+    },
+    {
+      "value": "conjuration",
+      "label": "Invocation",
+      "description": "Sorts qui amènent des créatures ou des matériaux au lanceur. Les invocateurs sont maîtres de l'invocation et de la création."
+    },
+    {
+      "value": "divination",
+      "label": "Divination",
+      "description": "Sorts qui révèlent des informations. Les devins sont maîtres de la vision à distance, de la prophétie et de la scrutation."
+    },
+    {
+      "value": "enchantment",
+      "label": "Enchantement",
+      "description": "Sorts qui confèrent au destinataire une certaine propriété ou accordent au lanceur un pouvoir sur un autre être. Les enchanteurs sont maîtres des charmes et des compulsions."
+    },
+    {
+      "value": "evocation",
+      "label": "Évocation",
+      "description": "Sorts qui manipulent l'énergie ou créent quelque chose à partir de rien. Les évocateurs sont maîtres des sorts d'énergie destructrice."
+    },
+    {
+      "value": "illusion",
+      "label": "Illusion",
+      "description": "Sorts qui altèrent la perception ou créent de fausses images. Les illusionnistes sont maîtres de la tromperie et des fantasmes."
+    },
+    {
+      "value": "necromancy",
+      "label": "Nécromancie",
+      "description": "Sorts qui manipulent le pouvoir de la mort, de la non-vie et de la force vitale. Les nécromanciens sont maîtres des morts-vivants et des effets de drainage de vie."
+    },
+    {
+      "value": "transmutation",
+      "label": "Transmutation",
+      "description": "Sorts qui modifient les propriétés d'une créature, d'une chose ou d'une condition. Les transmutateurs sont maîtres de l'altération et de l'amélioration physique."
+    }
+  ]
+}

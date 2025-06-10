@@ -459,10 +459,21 @@
     "clericDomain1Label": "First Domain",
     "clericDomain2Label": "Second Domain",
     "selectDomainPlaceholder": "Select Domain...",
-    "domainNoneOption": "None"
+    "domainNoneOption": "None",
+    "wizardSpecializationTitle": "Wizard Specialization",
+    "wizardSpecializationSchoolLabel": "Specialization School",
+    "wizardSpecialistBonusSpellInfo": "Grants one bonus spell of the chosen school per spell level per day.",
+    "wizardProhibitedSchool1Label": "First Prohibited School",
+    "wizardProhibitedSchool2Label": "Second Prohibited School",
+    "wizardProhibitedSchoolInfo": "Spells from prohibited schools cannot be learned or cast. Divination cannot be prohibited.",
+    "selectMagicSchoolPlaceholder": "Select School...",
+    "selectProhibitedSchoolPlaceholder": "Select Prohibited School...",
+    "prohibitedSchoolNoneOption": "None"
   }
 }
     
     
     
 
+
+```

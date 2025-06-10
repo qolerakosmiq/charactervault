@@ -373,6 +373,8 @@ export type DndDeityId = string;
 export type GenderId = string;
 export type LanguageId = string;
 export type DomainId = string;
+export type MagicSchoolId = string;
+
 
 export interface LanguageOption {
   value: LanguageId;
@@ -473,11 +475,18 @@ export interface DomainDefinition {
   value: DomainId;
   label: string;
   description: string;
-  grantedPowerDescription: string;
-  grantedPowerFeatId?: string;
-  domainSpells: DomainSpell[];
-  deityAlignmentRestrictions?: CharacterAlignment[];
+  grantedPowerDescription: string; // Textual description of the power
+  grantedPowerFeatId?: string;    // Optional feat ID if power is represented by a feat
+  domainSpells: DomainSpell[];     // List of spells granted by the domain
+  deityAlignmentRestrictions?: CharacterAlignment[]; // Optional alignments a cleric must be to take this domain from a specific deity
 }
+
+export interface MagicSchoolDefinition {
+  value: MagicSchoolId;
+  label: string;
+  description?: string;
+}
+
 
 export interface Character {
   id: string;
@@ -548,6 +557,8 @@ export interface Character {
   chosenCombatStyle?: "archery" | "twoWeaponFighting";
   chosenFavoredEnemies?: CharacterFavoredEnemy[];
   chosenDomains?: [DomainId | undefined, DomainId | undefined];
+  chosenSpecializationSchool?: MagicSchoolId;
+  prohibitedSchools?: MagicSchoolId[];
 }
 
 // Informational/Breakdown types
@@ -681,3 +692,5 @@ export interface PrerequisiteMessage {
   orderKey: string;
   originalText?: string;
 }
+
+```

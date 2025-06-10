@@ -17,15 +17,16 @@ import type {
   DndClassOption,
   AggregatedFeatEffects,
   CharacterFavoredEnemy,
-  DomainDefinition, // Added
-  DomainId // Added
+  DomainDefinition,
+  DomainId,
+  MagicSchoolId // Added
 } from '@/types/character-core';
 import { isAlignmentCompatible } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollText, Info, Loader2, Users, Swords as BarbarianRageIcon, BookOpen } from 'lucide-react'; // Added BookOpen
+import { ScrollText, Info, Loader2, Users, Swords as BarbarianRageIcon, BookOpen, Wand2 } from 'lucide-react'; // Added Wand2
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -38,12 +39,15 @@ import { Separator } from '@/components/ui/separator';
 
 const DEBOUNCE_DELAY = 400; // ms
 const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__";
-const DOMAIN_NONE_OPTION_VALUE = "__NONE_DOMAIN__"; // Added
+const DOMAIN_NONE_OPTION_VALUE = "__NONE_DOMAIN__";
+const MAGIC_SCHOOL_NONE_OPTION_VALUE = "__NONE_SCHOOL__"; // Universal/Generalist
+const PROHIBITED_SCHOOL_NONE_VALUE = "__NONE_PROHIBITED__";
+
 
 export interface CharacterFormCoreInfoSectionProps {
-  characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes' | 'chosenCombatStyle' | 'chosenFavoredEnemies' | 'chosenDomains'>; // Added chosenDomains
+  characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes' | 'chosenCombatStyle' | 'chosenFavoredEnemies' | 'chosenDomains' | 'chosenSpecializationSchool' | 'prohibitedSchools'>;
   onFieldChange: (
-    field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'chosenCombatStyle' | 'chosenFavoredEnemies' | 'chosenDomains'>, // Added chosenDomains
+    field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'chosenCombatStyle' | 'chosenFavoredEnemies' | 'chosenDomains' | 'chosenSpecializationSchool' | 'prohibitedSchools'>,
     value: any
   ) => void;
   onClassChange: (className: DndClassId | string) => void;
@@ -104,7 +108,7 @@ const CharacterFormCoreInfoSectionComponent = ({
   );
   const [localAge, setLocalAge] = useDebouncedFormField(
     characterData.age,
-    (value) => onFieldChange('age', Math.max(value, currentMinAgeForInput)), 
+    (value) => onFieldChange('age', Math.max(value, currentMinAgeForInput)),
     DEBOUNCE_DELAY
   );
   const [localGender, setLocalGender] = useDebouncedFormField(
@@ -122,7 +126,17 @@ const CharacterFormCoreInfoSectionComponent = ({
     (value) => onFieldChange('chosenCombatStyle', value as "archery" | "twoWeaponFighting" | undefined),
     DEBOUNCE_DELAY
   );
-  
+  const [localSpecializationSchool, setLocalSpecializationSchool] = useDebouncedFormField(
+    characterData.chosenSpecializationSchool || MAGIC_SCHOOL_NONE_OPTION_VALUE,
+    (value) => {
+      onFieldChange('chosenSpecializationSchool', value === MAGIC_SCHOOL_NONE_OPTION_VALUE ? undefined : value as MagicSchoolId);
+      if (value === MAGIC_SCHOOL_NONE_OPTION_VALUE || value === 'universal') {
+        onFieldChange('prohibitedSchools', []); // Clear prohibited schools if generalist
+      }
+    },
+    DEBOUNCE_DELAY
+  );
+
   const handleFavoredEnemyChange = (index: number, newType: string) => {
     const updatedEnemies = [...(characterData.chosenFavoredEnemies || [])];
     while (updatedEnemies.length <= index) {
@@ -138,16 +152,23 @@ const CharacterFormCoreInfoSectionComponent = ({
     onFieldChange('chosenDomains', currentDomains as [DomainId | undefined, DomainId | undefined]);
   };
 
+  const handleProhibitedSchoolChange = (index: 0 | 1, newSchoolId: MagicSchoolId | undefined) => {
+    const currentProhibited = characterData.prohibitedSchools ? [...characterData.prohibitedSchools] : [undefined, undefined];
+    currentProhibited[index] = newSchoolId === PROHIBITED_SCHOOL_NONE_VALUE ? undefined : newSchoolId;
+    // Ensure no duplicates and filter out undefined before saving
+    onFieldChange('prohibitedSchools', currentProhibited.filter((s, i, arr) => s && arr.indexOf(s) === i) as MagicSchoolId[]);
+  };
+
 
   React.useEffect(() => {
     if (translationsLoading || !translations) return;
     if (!localRace && translations.DND_RACES.length > 0) {
         const defaultRace = translations.DND_RACES.find(r => r.value === 'human')?.value || translations.DND_RACES[0]?.value || '';
-        setLocalRace(defaultRace as DndRaceId); 
+        setLocalRace(defaultRace as DndRaceId);
     }
     if (!localClassName && translations.DND_CLASSES.length > 0) {
         const defaultClass = translations.DND_CLASSES.find(c => c.value === 'fighter')?.value || translations.DND_CLASSES[0]?.value || '';
-        setLocalClassName(defaultClass as DndClassId); 
+        setLocalClassName(defaultClass as DndClassId);
     }
   }, [translationsLoading, translations, localRace, setLocalRace, localClassName, setLocalClassName]);
 
@@ -175,7 +196,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     const noneOptionLabel = translations.UI_STRINGS?.deityNoneOption || "None";
     return [{ value: DEITY_NONE_OPTION_VALUE, label: noneOptionLabel }, ...filteredDeities.map(deity => ({value: deity.value, label: deity.label}))];
   }, [translationsLoading, translations, filteredDeities]);
-  
+
   React.useEffect(() => {
     if (translationsLoading || !translations || !localAlignment || !localDeity) return;
     if (localDeity !== DEITY_NONE_OPTION_VALUE) {
@@ -205,7 +226,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     if (translationsLoading || !translations) return null;
     return translations.SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>);
   }, [translationsLoading, translations]);
-  
+
   const domainOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [{ value: DOMAIN_NONE_OPTION_VALUE, label: "Loading..." }];
     const noneOptionLabel = translations.UI_STRINGS?.domainNoneOption || "None";
@@ -220,6 +241,32 @@ const CharacterFormCoreInfoSectionComponent = ({
     return domainOptions.filter(opt => opt.value !== selectedDomain1);
   }, [domainOptions, selectedDomain1]);
 
+  const magicSchoolOptions = React.useMemo(() => {
+    if (translationsLoading || !translations) return [{ value: MAGIC_SCHOOL_NONE_OPTION_VALUE, label: "Loading..." }];
+    const generalistLabel = translations.DND_MAGIC_SCHOOLS.find(s => s.value === 'universal')?.label || "Generalist";
+    return [
+      { value: MAGIC_SCHOOL_NONE_OPTION_VALUE, label: generalistLabel },
+      ...translations.DND_MAGIC_SCHOOLS.filter(s => s.value !== 'universal').map(s => ({ value: s.value, label: s.label }))
+    ];
+  }, [translations, translationsLoading]);
+
+  const prohibitedSchoolOptions = React.useMemo(() => {
+    if (translationsLoading || !translations) return [{ value: PROHIBITED_SCHOOL_NONE_VALUE, label: "Loading..." }];
+    const noneLabel = translations.UI_STRINGS?.prohibitedSchoolNoneOption || "None";
+    return [
+      {value: PROHIBITED_SCHOOL_NONE_VALUE, label: noneLabel},
+      ...translations.DND_MAGIC_SCHOOLS.filter(s => s.value !== 'universal' && s.value !== localSpecializationSchool).map(s => ({value: s.value, label: s.label}))
+    ];
+  }, [translations, translationsLoading, localSpecializationSchool]);
+
+  const selectedProhibitedSchool1 = characterData.prohibitedSchools?.[0];
+  const selectedProhibitedSchool2 = characterData.prohibitedSchools?.[1];
+
+  const prohibitedSchoolOptionsForSecondPicker = React.useMemo(() => {
+    if(!selectedProhibitedSchool1) return prohibitedSchoolOptions;
+    return prohibitedSchoolOptions.filter(opt => opt.value !== selectedProhibitedSchool1);
+  }, [prohibitedSchoolOptions, selectedProhibitedSchool1]);
+
 
   const isRanger = selectedClassInfo?.value === 'ranger';
   const rangerLevel = isRanger ? (characterData.classes[0]?.level || 0) : 0;
@@ -229,8 +276,10 @@ const CharacterFormCoreInfoSectionComponent = ({
   const isBarbarian = selectedClassInfo?.value === 'barbarian';
   const rageUsesAbility = aggregatedFeatEffects?.grantedAbilities.find(ab => ab.abilityKey === 'barbarianRageUses');
   const rageUsesPerDay = rageUsesAbility?.uses?.value || 0;
-  
+
   const isCleric = selectedClassInfo?.value === 'cleric';
+  const isWizard = selectedClassInfo?.value === 'wizard';
+  const isSpecialistWizard = isWizard && localSpecializationSchool !== MAGIC_SCHOOL_NONE_OPTION_VALUE && localSpecializationSchool !== 'universal';
 
 
   if (translationsLoading || !translations) {
@@ -324,7 +373,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               <div className="flex-grow">
                 <Select
                   value={localClassName}
-                  onValueChange={(value) => setLocalClassName(value as DndClassId)} 
+                  onValueChange={(value) => setLocalClassName(value as DndClassId)}
                 >
                   <SelectTrigger id="className"> <SelectValue placeholder={UI_STRINGS.selectClassPlaceholder || "Select class"} /> </SelectTrigger>
                   <SelectContent> {classSelectOptions} </SelectContent>
@@ -339,7 +388,7 @@ const CharacterFormCoreInfoSectionComponent = ({
             )}
           </div>
         </div>
-        
+
         {isCleric && (
           <div className="space-y-4 p-3 border rounded-md bg-muted/20">
             <Label className="flex items-center text-md font-medium">
@@ -374,6 +423,64 @@ const CharacterFormCoreInfoSectionComponent = ({
             </div>
           </div>
         )}
+
+        {isWizard && (
+          <div className="space-y-4 p-3 border rounded-md bg-muted/20">
+            <Label className="flex items-center text-md font-medium">
+              <Wand2 className="mr-2 h-5 w-5 text-primary/70" />
+              {UI_STRINGS.wizardSpecializationTitle || "Wizard Specialization"}
+            </Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <Label htmlFor="wizard-specialization" className="text-sm">{UI_STRINGS.wizardSpecializationSchoolLabel || "Specialization School"}</Label>
+                <ComboboxPrimitive
+                  id="wizard-specialization"
+                  options={magicSchoolOptions}
+                  value={localSpecializationSchool}
+                  onChange={(val) => setLocalSpecializationSchool(val as MagicSchoolId)}
+                  placeholder={UI_STRINGS.selectMagicSchoolPlaceholder || "Select School..."}
+                  triggerClassName="h-9 text-sm"
+                />
+                {localSpecializationSchool !== MAGIC_SCHOOL_NONE_OPTION_VALUE && localSpecializationSchool !== 'universal' && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {UI_STRINGS.wizardSpecialistBonusSpellInfo || "Grants one bonus spell of the chosen school per spell level per day."}
+                  </p>
+                )}
+              </div>
+              {isSpecialistWizard && (
+                <>
+                  <div className="space-y-1">
+                    <Label htmlFor="wizard-prohibited-1" className="text-sm">{UI_STRINGS.wizardProhibitedSchool1Label || "First Prohibited School"}</Label>
+                    <ComboboxPrimitive
+                      id="wizard-prohibited-1"
+                      options={prohibitedSchoolOptions}
+                      value={selectedProhibitedSchool1 || PROHIBITED_SCHOOL_NONE_VALUE}
+                      onChange={(val) => handleProhibitedSchoolChange(0, val as MagicSchoolId)}
+                      placeholder={UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School..."}
+                      triggerClassName="h-9 text-sm"
+                    />
+                  </div>
+                   <div className="space-y-1 md:col-start-2"> {/* Ensures second prohibited school is below the first on md+ screens */}
+                    <Label htmlFor="wizard-prohibited-2" className="text-sm">{UI_STRINGS.wizardProhibitedSchool2Label || "Second Prohibited School"}</Label>
+                    <ComboboxPrimitive
+                      id="wizard-prohibited-2"
+                      options={prohibitedSchoolOptionsForSecondPicker}
+                      value={selectedProhibitedSchool2 || PROHIBITED_SCHOOL_NONE_VALUE}
+                      onChange={(val) => handleProhibitedSchoolChange(1, val as MagicSchoolId)}
+                      placeholder={UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School..."}
+                      triggerClassName="h-9 text-sm"
+                      disabled={!selectedProhibitedSchool1 || selectedProhibitedSchool1 === PROHIBITED_SCHOOL_NONE_VALUE}
+                    />
+                  </div>
+                   <p className="text-xs text-muted-foreground mt-1 md:col-span-2">
+                     {UI_STRINGS.wizardProhibitedSchoolInfo || "Spells from prohibited schools cannot be learned or cast. Divination cannot be prohibited."}
+                   </p>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
 
         {isBarbarian && rageUsesPerDay > 0 && (
             <div className="p-3 border rounded-md bg-muted/20 space-y-1">
@@ -468,15 +575,15 @@ const CharacterFormCoreInfoSectionComponent = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
           <div className="space-y-1.5">
             <Label htmlFor="age" className="inline-block w-full text-center md:text-center">{UI_STRINGS.ageLabel || "Age"}</Label>
-            <NumberSpinnerInput 
-              id="age" 
-              value={localAge} 
+            <NumberSpinnerInput
+              id="age"
+              value={localAge}
               onChange={setLocalAge}
-              min={currentMinAgeForInput} 
-              max={1000} 
-              inputClassName="w-full h-10 text-base text-center" 
-              buttonClassName="h-10 w-10" 
-              buttonSize="icon" 
+              min={currentMinAgeForInput}
+              max={1000}
+              inputClassName="w-full h-10 text-base text-center"
+              buttonClassName="h-10 w-10"
+              buttonSize="icon"
               className="justify-center"
             />
             {ageEffectsDetails && (ageEffectsDetails.categoryName !== 'Adult' || ageEffectsDetails.effects.length > 0) && (
@@ -494,14 +601,14 @@ const CharacterFormCoreInfoSectionComponent = ({
             </div>
           <div className="space-y-1.5">
             <Label htmlFor="gender">{UI_STRINGS.genderLabel || "Gender"}</Label>
-             <ComboboxPrimitive 
-                options={GENDERS} 
-                value={localGender} 
-                onChange={setLocalGender} 
-                placeholder={UI_STRINGS.selectGenderPlaceholder || "Select or type gender..."} 
-                searchPlaceholder="Search genders..." 
-                emptyPlaceholder="No gender found." 
-                isEditable={true} 
+             <ComboboxPrimitive
+                options={GENDERS}
+                value={localGender}
+                onChange={setLocalGender}
+                placeholder={UI_STRINGS.selectGenderPlaceholder || "Select or type gender..."}
+                searchPlaceholder="Search genders..."
+                emptyPlaceholder="No gender found."
+                isEditable={true}
             />
           </div>
           <div className="space-y-1.5">
@@ -531,3 +638,5 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
+
+```

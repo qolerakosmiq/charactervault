@@ -4,8 +4,8 @@ import type { LanguageCode } from './config';
 
 export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBundle> {
   const [
-    alignments, base, classes, deities, feats, races, skills, languages, xpData, domains, // Added domains
-    customAlignments, customBase, customClasses, customDeities, customFeats, customRaces, customSkills, customLanguages, customDomains, // Added customDomains
+    alignments, base, classes, deities, feats, races, skills, languages, xpData, domains, magicSchools, // Added magicSchools
+    customAlignments, customBase, customClasses, customDeities, customFeats, customRaces, customSkills, customLanguages, customDomains, customMagicSchools, // Added customMagicSchools
     uiStrings, customUiStrings
   ] = await Promise.all([
     import(`../data/dnd-alignments${lang === 'en' ? '' : '-fr'}.json`),
@@ -17,7 +17,8 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
     import(`../data/dnd-skills${lang === 'en' ? '' : '-fr'}.json`),
     import(`../data/dnd-languages${lang === 'en' ? '' : '-fr'}.json`),
     import(`../data/dnd-xp${lang === 'en' ? '' : '-fr'}.json`),
-    import(`../data/dnd-domains${lang === 'en' ? '' : '-fr'}.json`), // Added domains import
+    import(`../data/dnd-domains${lang === 'en' ? '' : '-fr'}.json`),
+    import(`../data/dnd-magic-schools${lang === 'en' ? '' : '-fr'}.json`), // Added
     import(`../data/custom-alignments${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ ALIGNMENTS_DATA: [] })),
     import(`../data/custom-base${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({})),
     import(`../data/custom-classes${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ DND_CLASSES_DATA: [] })),
@@ -26,7 +27,8 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
     import(`../data/custom-races${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ DND_RACES_DATA: [] })),
     import(`../data/custom-skills${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ SKILL_DEFINITIONS_DATA: [], CLASS_SKILLS_DATA: {}, CLASS_SKILL_POINTS_BASE_DATA: {}, SKILL_SYNERGIES_DATA: {} })),
     import(`../data/custom-languages${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ LANGUAGES_DATA: [] })),
-    import(`../data/custom-domains${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ DND_DOMAINS_DATA: [] })), // Added custom domains import
+    import(`../data/custom-domains${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ DND_DOMAINS_DATA: [] })),
+    import(`../data/custom-magic-schools${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ DND_MAGIC_SCHOOLS_DATA: [] })), // Added
     import(`../data/ui-strings${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ UI_STRINGS_DATA: {} })),
     import(`../data/custom-ui-strings${lang === 'en' ? '' : '-fr'}.json`).catch(() => ({ UI_STRINGS_DATA: {} })),
   ]);
@@ -41,7 +43,8 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
     skills: skills.default || skills,
     languages: languages.default || languages,
     xpTable: xpData.default || xpData,
-    domains: domains.default || domains, // Added
+    domains: domains.default || domains,
+    magicSchools: magicSchools.default || magicSchools, // Added
     uiStrings: uiStrings.default || uiStrings,
     customAlignments: customAlignments.default || customAlignments,
     customBase: customBase.default || customBase,
@@ -51,7 +54,9 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
     customRaces: customRaces.default || customRaces,
     customSkills: customSkills.default || customSkills,
     customLanguages: customLanguages.default || customLanguages,
-    customDomains: customDomains.default || customDomains, // Added
+    customDomains: customDomains.default || customDomains,
+    customMagicSchools: customMagicSchools.default || customMagicSchools, // Added
     customUiStrings: customUiStrings.default || customUiStrings,
   };
 }
+

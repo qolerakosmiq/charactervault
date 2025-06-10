@@ -459,10 +459,21 @@
     "clericDomain1Label": "Premier domaine",
     "clericDomain2Label": "Second domaine",
     "selectDomainPlaceholder": "Choisir un domaine...",
-    "domainNoneOption": "Aucun"
+    "domainNoneOption": "Aucun",
+    "wizardSpecializationTitle": "Spécialisation de Magicien",
+    "wizardSpecializationSchoolLabel": "École de spécialisation",
+    "wizardSpecialistBonusSpellInfo": "Confère un sort supplémentaire de l'école choisie par niveau de sort par jour.",
+    "wizardProhibitedSchool1Label": "Première École Interdite",
+    "wizardProhibitedSchool2Label": "Deuxième École Interdite",
+    "wizardProhibitedSchoolInfo": "Les sorts des écoles interdites ne peuvent être ni appris ni lancés. La Divination ne peut être interdite.",
+    "selectMagicSchoolPlaceholder": "Choisir une École...",
+    "selectProhibitedSchoolPlaceholder": "Choisir une École Interdite...",
+    "prohibitedSchoolNoneOption": "Aucune"
   }
 }
     
     
     
 
+
+```

@@ -32,8 +32,10 @@ import type {
   LanguageId,
   LanguageOption,
   ClassAttribute,
-  DomainDefinition, // Added
-  DomainId // Added
+  DomainDefinition,
+  DomainId,
+  MagicSchoolId, // Added
+  MagicSchoolDefinition // Added
 } from '@/types/character-core';
 
 // Define types for the structure of each JSON file's data
@@ -64,8 +66,12 @@ export interface XpJson {
   EPIC_LEVEL_XP_INCREASE: number;
 }
 
-export interface DomainJson { // Added
+export interface DomainJson {
   DND_DOMAINS_DATA: DomainDefinition[];
+}
+
+export interface MagicSchoolsJson { // Added
+  DND_MAGIC_SCHOOLS_DATA: MagicSchoolDefinition[];
 }
 
 
@@ -185,7 +191,8 @@ export interface LocaleDataBundle {
   skills: SkillsJson;
   languages: LanguagesJson;
   xpTable: XpJson;
-  domains: DomainJson; // Added
+  domains: DomainJson;
+  magicSchools: MagicSchoolsJson; // Added
   uiStrings?: UiStringsJson;
   customAlignments?: AlignmentsJson;
   customBase?: Partial<BaseJson>;
@@ -195,7 +202,8 @@ export interface LocaleDataBundle {
   customRaces?: RacesJson;
   customSkills?: SkillsJson;
   customLanguages?: LanguagesJson;
-  customDomains?: DomainJson; // Added
+  customDomains?: DomainJson;
+  customMagicSchools?: MagicSchoolsJson; // Added
   customUiStrings?: UiStringsJson;
 }
 
@@ -209,7 +217,8 @@ export interface ProcessedSiteData {
   DND_RACES: readonly DndRaceOption[];
   DND_CLASSES: readonly DndClassOption[];
   DND_DEITIES: readonly DndDeityOption[];
-  DND_DOMAINS: readonly DomainDefinition[]; // Added
+  DND_DOMAINS: readonly DomainDefinition[];
+  DND_MAGIC_SCHOOLS: readonly MagicSchoolDefinition[]; // Added
   SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[];
   DND_FEATS_DEFINITIONS: readonly FeatDefinitionJsonData[];
   FEAT_TYPES: readonly { value: FeatTypeString; label: string }[];
@@ -269,9 +278,13 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
   const XP_TABLE = mergeXpTableData(bundle.xpTable.XP_TABLE_DATA);
   const EPIC_LEVEL_XP_INCREASE = bundle.xpTable.EPIC_LEVEL_XP_INCREASE;
 
-  const baseDomains = bundle.domains.DND_DOMAINS_DATA; // Added
-  const customDomains = bundle.customDomains?.DND_DOMAINS_DATA; // Added
-  const DND_DOMAINS = mergeArrayData(baseDomains, customDomains); // Added
+  const baseDomains = bundle.domains.DND_DOMAINS_DATA;
+  const customDomains = bundle.customDomains?.DND_DOMAINS_DATA;
+  const DND_DOMAINS = mergeArrayData(baseDomains, customDomains);
+
+  const baseMagicSchools = bundle.magicSchools.DND_MAGIC_SCHOOLS_DATA; // Added
+  const customMagicSchools = bundle.customMagicSchools?.DND_MAGIC_SCHOOLS_DATA; // Added
+  const DND_MAGIC_SCHOOLS = mergeArrayData(baseMagicSchools, customMagicSchools); // Added
 
   const baseSizes = bundle.base.SIZES_DATA;
   const customSizes = bundle.customBase?.SIZES_DATA;
@@ -325,7 +338,8 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
     DND_RACES,
     DND_CLASSES,
     DND_DEITIES,
-    DND_DOMAINS, // Added
+    DND_DOMAINS,
+    DND_MAGIC_SCHOOLS, // Added
     SKILL_DEFINITIONS,
     DND_FEATS_DEFINITIONS,
     FEAT_TYPES,
@@ -351,3 +365,5 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
     UI_STRINGS,
   };
 }
+
+```
