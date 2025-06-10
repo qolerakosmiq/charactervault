@@ -30,15 +30,14 @@ export const SkillModifierBreakdownContentDisplay = ({
     />
   ) : null;
 
-  const badgeClass = "font-normal h-5 px-1.5 py-0.5 align-baseline whitespace-nowrap";
+  const badgeClass = "font-normal h-5 px-1.5 py-0.5 align-baseline whitespace-nowrap text-sm"; // Explicitly text-sm
 
-  // Define whether calculationBlock will exist *before* synergyBlock needs this info
   const hasCalculationBlock = !!skillModifierBreakdown;
 
   const synergyBlock = (synergyInfoList && synergyInfoList.length > 0) ? (
     <div key="skill-synergies-block" className={cn((htmlContentBlock) && "mt-3")}>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
-      <ul className={cn("space-y-0.5 mt-2", hasCalculationBlock ? "mb-3" : "")}> {/* Use hasCalculationBlock here */}
+      <ul className={cn("space-y-0.5 mt-2", hasCalculationBlock ? "mb-3" : "")}>
         {synergyInfoList.map((synergyItem) => {
           const IconComponent = synergyItem.isActive ? CheckSquare : Square;
           const parts = typeof synergyItem.text === 'string' ? synergyItem.text.split(/({value}|{typeLabel})/g) : [];
@@ -52,8 +51,8 @@ export const SkillModifierBreakdownContentDisplay = ({
                   <Badge
                     key={`badge-${index}`}
                     variant="outline"
-                    className={cn(badgeClass, "text-sm")}
-                    style={{ fontSize: '0.875rem' }}
+                    className={cn(badgeClass)}
+                    style={{ fontSize: '0.875rem' }} // Forcing size due to Tailwind mysteries
                   >
                     {match ? match[0] : part}
                   </Badge>
@@ -67,8 +66,8 @@ export const SkillModifierBreakdownContentDisplay = ({
                 if (React.isValidElement(child)) {
                   if (child.type === Badge) {
                     return React.cloneElement(child as React.ReactElement<any>, {
-                      className: cn((child.props.className || ''), badgeClass, 'text-sm'), 
-                      style: { ...child.props.style, fontSize: '0.875rem' },
+                      className: cn((child.props.className || ''), badgeClass),
+                      style: { ...(child.props.style || {}), fontSize: '0.875rem' }, // Forcing size
                     });
                   }
                   if (child.props.children) {
@@ -88,7 +87,7 @@ export const SkillModifierBreakdownContentDisplay = ({
             <li key={synergyItem.id} className="flex">
               <IconComponent
                 className={cn("h-5 w-5 mr-2 shrink-0", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")}
-                style={{ marginTop: '0.05rem' }}
+                style={{ marginTop: '0.1rem' }}
               />
               <span className={cn("text-sm", synergyItem.isActive ? "text-emerald-600" : "text-muted-foreground")}>
                 {textNode}
@@ -104,11 +103,11 @@ export const SkillModifierBreakdownContentDisplay = ({
     <div key="skill-calculation-block" className={cn(((htmlContentBlock && !synergyBlock) || synergyBlock) && "mt-3")}>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
       <div className="space-y-1 text-sm mt-2">
-        {skillModifierBreakdown!.keyAbilityName && ( // skillModifierBreakdown is guaranteed to exist here by hasCalculationBlock
+        {skillModifierBreakdown!.keyAbilityName && (
           <div className="flex justify-between">
             <span className="inline-flex items-baseline">
               {uiStrings.infoDialogKeyAbilityLabel || "Key Ability"}
-              <Badge variant="outline" className={cn(badgeClass, "text-sm", "ml-1.5 px-1.5 py-0.5")}>
+              <Badge variant="outline" className="text-sm font-normal px-1.5 py-0.5 ml-1.5 whitespace-nowrap">
                 {skillModifierBreakdown!.keyAbilityName}
               </Badge>
             </span>
@@ -173,7 +172,7 @@ export const SkillModifierBreakdownContentDisplay = ({
       {contentBlocksToRender.map((block, index, arr) => (
         <React.Fragment key={`content-block-${index}`}>
           {block}
-          {index < arr.length - 1 && (block || arr[index+1]) && ( // Ensure separator only if current or next block exists
+          {index < arr.length - 1 && (block || arr[index+1]) && (
             <Separator className="my-2" />
           )}
         </React.Fragment>
