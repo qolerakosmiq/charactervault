@@ -20,32 +20,16 @@
         { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Formation de classe" },
         { "featId": "armor-proficiency-medium", "levelAcquired": 1, "note": "Formation de classe" },
         { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
-        { "featId": "class-barbarian-fast-movement", "levelAcquired": 1, "note": "Vitesse +3 m" },
-        { "featId": "class-barbarian-rage", "levelAcquired": 1, "note": "1/jour" },
-        { "featId": "class-barbarian-rage-strength", "levelAcquired": 1 },
-        { "featId": "class-barbarian-rage-constitution", "levelAcquired": 1 },
+        { "featId": "class-barbarian-fast-movement", "levelAcquired": 1 },
+        { "featId": "class-barbarian-rage", "levelAcquired": 1 },
         { "featId": "class-barbarian-uncanny-dodge", "levelAcquired": 2 },
-        { "featId": "class-barbarian-trap-sense", "levelAcquired": 3, "note": "Bonus +1" },
-        { "featId": "class-barbarian-rage", "levelAcquired": 4, "note": "2/jour" },
+        { "featId": "class-barbarian-trap-sense", "levelAcquired": 3 },
         { "featId": "class-barbarian-improved-uncanny-dodge", "levelAcquired": 5 },
-        { "featId": "class-barbarian-trap-sense", "levelAcquired": 6, "note": "Bonus +2" },
-        { "featId": "class-barbarian-damage-reduction", "levelAcquired": 7, "note": "RD 1/—" },
-        { "featId": "class-barbarian-rage", "levelAcquired": 8, "note": "3/jour" },
-        { "featId": "class-barbarian-trap-sense", "levelAcquired": 9, "note": "Bonus +3" },
-        { "featId": "class-barbarian-damage-reduction", "levelAcquired": 10, "note": "RD 2/—" },
+        { "featId": "class-barbarian-damage-reduction", "levelAcquired": 7 },
         { "featId": "class-barbarian-greater-rage", "levelAcquired": 11 },
-        { "featId": "class-barbarian-rage", "levelAcquired": 12, "note": "4/jour" },
-        { "featId": "class-barbarian-trap-sense", "levelAcquired": 12, "note": "Bonus +4" },
-        { "featId": "class-barbarian-damage-reduction", "levelAcquired": 13, "note": "RD 3/—" },
         { "featId": "class-barbarian-indomitable-will", "levelAcquired": 14 },
-        { "featId": "class-barbarian-trap-sense", "levelAcquired": 15, "note": "Bonus +5" },
-        { "featId": "class-barbarian-damage-reduction", "levelAcquired": 16, "note": "RD 4/—" },
-        { "featId": "class-barbarian-rage", "levelAcquired": 16, "note": "5/jour" },
         { "featId": "class-barbarian-tireless-rage", "levelAcquired": 17 },
-        { "featId": "class-barbarian-trap-sense", "levelAcquired": 18, "note": "Bonus +6" },
-        { "featId": "class-barbarian-damage-reduction", "levelAcquired": 19, "note": "RD 5/—" },
-        { "featId": "class-barbarian-mighty-rage", "levelAcquired": 20 },
-        { "featId": "class-barbarian-rage", "levelAcquired": 20, "note": "6/jour" }
+        { "featId": "class-barbarian-mighty-rage", "levelAcquired": 20 }
       ]
     },
     {
@@ -53,7 +37,7 @@
       "label": "Barde",
       "hitDice": "d6",
       "babProgression": "average",
-      "casting": { "type": "full" },
+      "casting": { "type": "full", "casterAbility": "charisma" },
       "saves": { "fortitude": "poor", "reflex": "good", "will": "good" },
       "generalDescription": "<p>Les bardes sont des artistes polyvalents, tissant la magie par la musique et les mots.<br />Ce sont des conteurs, des diplomates et des aventuriers, souvent charismatiques et vifs d'esprit.</p>",
       "loreAttributes": [
@@ -71,16 +55,13 @@
         { "featId": "class-bard-bardic-knowledge", "levelAcquired": 1 },
         { "featId": "class-bard-countersong", "levelAcquired": 1 },
         { "featId": "class-bard-fascinate", "levelAcquired": 1 },
-        { "featId": "class-bard-inspire-courage", "levelAcquired": 1, "note": "Bonus de moral +1" },
+        { "featId": "class-bard-inspire-courage", "levelAcquired": 1 },
         { "featId": "class-bard-inspire-competence", "levelAcquired": 3 },
         { "featId": "class-bard-suggestion", "levelAcquired": 6 },
-        { "featId": "class-bard-inspire-courage", "levelAcquired": 8, "note": "Bonus de moral +2" },
         { "featId": "class-bard-inspire-greatness", "levelAcquired": 9 },
         { "featId": "class-bard-song-of-freedom", "levelAcquired": 12 },
-        { "featId": "class-bard-inspire-courage", "levelAcquired": 14, "note": "Bonus de moral +3" },
         { "featId": "class-bard-inspire-heroics", "levelAcquired": 15 },
-        { "featId": "class-bard-mass-suggestion", "levelAcquired": 18 },
-        { "featId": "class-bard-inspire-courage", "levelAcquired": 20, "note": "Bonus de moral +4" }
+        { "featId": "class-bard-mass-suggestion", "levelAcquired": 18 }
       ]
     },
     {
@@ -88,7 +69,7 @@
       "label": "Prêtre",
       "hitDice": "d8",
       "babProgression": "average",
-      "casting": { "type": "full" },
+      "casting": { "type": "full", "casterAbility": "wisdom" },
       "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
       "generalDescription": "<p>Les prêtres sont des agents divins, canalisant le pouvoir de leur divinité choisie pour guérir les malades, châtier les méchants ou protéger les fidèles.<br />Ils sont maîtres de la magie divine et servent souvent de guides spirituels.</p>",
       "loreAttributes": [
@@ -111,7 +92,7 @@
       "label": "Druide",
       "hitDice": "d8",
       "babProgression": "average",
-      "casting": { "type": "full" },
+      "casting": { "type": "full", "casterAbility": "wisdom" },
       "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
       "generalDescription": "<p>Les druides sont les gardiens du monde naturel, puisant leur pouvoir dans la nature sauvage indomptée.<br />Ils peuvent se métamorphoser en animaux, commander aux plantes et invoquer la fureur de la nature.</p>",
       "loreAttributes": [
@@ -206,46 +187,23 @@
         { "featId": "class-monk-bonus-feat-slot", "note": "Niveau 2", "levelAcquired": 2 },
         { "featId": "class-monk-evasion", "levelAcquired": 2 },
         { "featId": "class-monk-still-mind", "levelAcquired": 3 },
-        { "featId": "class-monk-unarmored-speed-bonus", "note": "Bonus Vitesse +3 m", "levelAcquired": 3 },
         { "featId": "class-monk-ki-strike", "note": "Magie", "levelAcquired": 4 },
         { "featId": "class-monk-slow-fall", "note": "6 m", "levelAcquired": 4 },
-        { "featId": "class-monk-unarmed-strike-damage", "note": "Dégâts 1d8 (Moyen)", "levelAcquired": 4 },
         { "featId": "class-monk-purity-of-body", "levelAcquired": 5 },
-        { "featId": "class-monk-ac-bonus", "note": "+1 (total Sag + 1)", "levelAcquired": 5 },
         { "featId": "class-monk-bonus-feat-slot", "note": "Niveau 6", "levelAcquired": 6 },
-        { "featId": "class-monk-slow-fall", "note": "9 m", "levelAcquired": 6 },
-        { "featId": "class-monk-unarmored-speed-bonus", "note": "Bonus Vitesse +6 m", "levelAcquired": 6 },
         { "featId": "class-monk-wholeness-of-body", "levelAcquired": 7 },
-        { "featId": "class-monk-slow-fall", "note": "12 m", "levelAcquired": 8 },
-        { "featId": "class-monk-unarmed-strike-damage", "note": "Dégâts 1d10 (Moyen)", "levelAcquired": 8 },
         { "featId": "class-monk-improved-evasion", "levelAcquired": 9 },
-        { "featId": "class-monk-unarmored-speed-bonus", "note": "Bonus Vitesse +9 m", "levelAcquired": 9 },
         { "featId": "class-monk-ki-strike", "note": "Loyal", "levelAcquired": 10 },
-        { "featId": "class-monk-slow-fall", "note": "15 m", "levelAcquired": 10 },
-        { "featId": "class-monk-ac-bonus", "note": "Bonus CA +2 (total Sag + 2)", "levelAcquired": 10 },
         { "featId": "class-monk-diamond-body", "levelAcquired": 11 },
         { "featId": "class-monk-greater-flurry", "levelAcquired": 11 },
         { "featId": "class-monk-abundant-step", "levelAcquired": 12 },
-        { "featId": "class-monk-slow-fall", "note": "18 m", "levelAcquired": 12 },
-        { "featId": "class-monk-unarmed-strike-damage", "note": "Dégâts 2d6 (Moyen)", "levelAcquired": 12 },
-        { "featId": "class-monk-unarmored-speed-bonus", "note": "Bonus Vitesse +12 m", "levelAcquired": 12 },
         { "featId": "class-monk-diamond-soul", "levelAcquired": 13 },
-        { "featId": "class-monk-slow-fall", "note": "21 m", "levelAcquired": 14 },
         { "featId": "class-monk-quivering-palm", "levelAcquired": 15 },
-        { "featId": "class-monk-ac-bonus", "note": "Bonus CA +3 (total Sag + 3)", "levelAcquired": 15 },
-        { "featId": "class-monk-unarmored-speed-bonus", "note": "Bonus Vitesse +15 m", "levelAcquired": 15 },
         { "featId": "class-monk-ki-strike", "note": "Adamantium", "levelAcquired": 16 },
-        { "featId": "class-monk-slow-fall", "note": "24 m", "levelAcquired": 16 },
-        { "featId": "class-monk-unarmed-strike-damage", "note": "Dégâts 2d8 (Moyen)", "levelAcquired": 16 },
         { "featId": "class-druid-timeless-body", "levelAcquired": 17, "note": "Aptitude de Moine"},
         { "featId": "class-monk-tongue-sun-moon", "levelAcquired": 17 },
-        { "featId": "class-monk-slow-fall", "note": "27 m", "levelAcquired": 18 },
-        { "featId": "class-monk-unarmored-speed-bonus", "note": "Bonus Vitesse +18 m", "levelAcquired": 18 },
         { "featId": "class-monk-empty-body", "levelAcquired": 19 },
-        { "featId": "class-monk-perfect-self", "levelAcquired": 20 },
-        { "featId": "class-monk-slow-fall", "note": "Toute distance", "levelAcquired": 20 },
-        { "featId": "class-monk-unarmed-strike-damage", "note": "Dégâts 2d10 (Moyen)", "levelAcquired": 20 },
-        { "featId": "class-monk-ac-bonus", "note": "Bonus CA +4 (total Sag + 4)", "levelAcquired": 20 }
+        { "featId": "class-monk-perfect-self", "levelAcquired": 20 }
       ]
     },
     {
@@ -253,7 +211,7 @@
       "label": "Paladin",
       "hitDice": "d10",
       "babProgression": "good",
-      "casting": { "type": "partial", "startsAtLevel": 4, "levelOffset": -3 },
+      "casting": { "type": "partial", "casterAbility": "wisdom", "startsAtLevel": 4, "levelOffset": -3 },
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
       "generalDescription": "<p>Les paladins sont de saints champions de la droiture, jurant de faire respecter la justice et de châtier le mal.<br />Ils reçoivent des pouvoirs divins pour aider leur cause, y compris la guérison, la protection et la capacité de repousser les morts-vivants.</p>",
       "loreAttributes": [
@@ -294,7 +252,7 @@
       "label": "Rôdeur",
       "hitDice": "d8",
       "babProgression": "good",
-      "casting": { "type": "partial", "startsAtLevel": 4, "levelOffset": -3 },
+      "casting": { "type": "partial", "casterAbility": "wisdom", "startsAtLevel": 4, "levelOffset": -3 },
       "saves": { "fortitude": "good", "reflex": "good", "will": "poor" },
       "generalDescription": "<p>Les rôdeurs sont des chasseurs et des pisteurs habiles, à l'aise dans la nature et experts dans le combat contre des types spécifiques de créatures.<br />Ils possèdent souvent une certaine magie divine liée à la nature et un compagnon animal.</p>",
       "loreAttributes": [
@@ -377,7 +335,7 @@
       "label": "Ensorceleur",
       "hitDice": "d4",
       "babProgression": "poor",
-      "casting": { "type": "full" },
+      "casting": { "type": "full", "casterAbility": "charisma" },
       "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
       "generalDescription": "<p>Les ensorceleurs manient la magie profane grâce à un talent inné, découlant souvent d'une ascendance draconique ou féerique.<br />Leur magie est intuitive et flexible, non apprise par une étude rigoureuse.</p>",
       "loreAttributes": [
@@ -396,7 +354,7 @@
       "label": "Magicien",
       "hitDice": "d4",
       "babProgression": "poor",
-      "casting": { "type": "full" },
+      "casting": { "type": "full", "casterAbility": "intelligence" },
       "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
       "generalDescription": "<p>Les magiciens sont des érudits de l'arcane, maîtrisant la magie par une étude intense, la recherche et la pratique.<br />Ils commandent un vaste répertoire de sorts, préparés quotidiennement à partir de leurs grimoires.</p>",
       "loreAttributes": [
@@ -459,3 +417,5 @@
     }
   ]
 }
+
+```

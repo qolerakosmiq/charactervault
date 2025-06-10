@@ -144,10 +144,10 @@ function createBaseCharacterData(
       fireResistance: { ...DEFAULT_RESISTANCE_VALUE }, coldResistance: { ...DEFAULT_RESISTANCE_VALUE }, acidResistance: { ...DEFAULT_RESISTANCE_VALUE }, electricityResistance: { ...DEFAULT_RESISTANCE_VALUE }, sonicResistance: { ...DEFAULT_RESISTANCE_VALUE },
       spellResistance: { ...DEFAULT_RESISTANCE_VALUE }, powerResistance: { ...DEFAULT_RESISTANCE_VALUE }, damageReduction: [], fortification: { ...DEFAULT_RESISTANCE_VALUE },
       landSpeed: { ...DEFAULT_SPEED_DETAILS }, burrowSpeed: { ...DEFAULT_SPEED_DETAILS }, climbSpeed: { ...DEFAULT_SPEED_DETAILS }, flySpeed: { ...DEFAULT_SPEED_DETAILS }, swimSpeed: { ...DEFAULT_SPEED_DETAILS },
-      armorSpeedPenalty_base: DEFAULT_SPEED_PENALTIES.armorSpeedPenalty || 0,
-      armorSpeedPenalty_miscModifier: 0,
-      loadSpeedPenalty_base: DEFAULT_SPEED_PENALTIES.loadSpeedPenalty || 0,
-      loadSpeedPenalty_miscModifier: 0,
+      armorSpeedPenalty_base: DEFAULT_SPEED_PENALTIES.armorSpeedPenalty_base || 0,
+      armorSpeedPenalty_miscModifier: DEFAULT_SPEED_PENALTIES.armorSpeedPenalty_miscModifier || 0,
+      loadSpeedPenalty_base: DEFAULT_SPEED_PENALTIES.loadSpeedPenalty_base || 0,
+      loadSpeedPenalty_miscModifier: DEFAULT_SPEED_PENALTIES.loadSpeedPenalty_miscModifier || 0,
     };
 }
 
@@ -169,6 +169,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const globalCustomSkillDefinitions = isClient ? globalCustomSkillDefinitionsFromStore : [];
 
   const [character, setCharacter] = React.useState<Character | null>(null);
+  const [characterDataToProcess, setCharacterDataToProcess] = React.useState<Character | null>(null);
+
 
   const allAvailableFeatDefinitions = React.useMemo(() => {
     if (translationsLoading || !translations) return [];
@@ -201,10 +203,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   React.useEffect(() => {
     if (!isClient || translationsLoading || !translations) return;
 
-    let characterDataToProcess: Character;
-    characterDataToProcess = createBaseCharacterData(translations, globalCustomSkillDefinitions);
+    let initialCharData = createBaseCharacterData(translations, globalCustomSkillDefinitions);
+    setCharacterDataToProcess(initialCharData); // Store for handleSubmit reference if needed
 
-    const finalCharacter = { ...characterDataToProcess };
+    const finalCharacter = { ...initialCharData }; // Use a mutable copy
     const { CLASS_SKILLS, SIZES, DND_RACES, DND_CLASSES, XP_TABLE, EPIC_LEVEL_XP_INCREASE } = translations;
 
     let currentSkills = [...finalCharacter.skills];
@@ -250,6 +252,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     const barbarianClass = finalCharacter.classes.find(c => c.className === 'barbarian');
     const barbarianLevel = barbarianClass?.level || 0;
     let grantedDrValue = 0;
+    // This specific DR progression for Barbarian should eventually move to feat effects with scaleWithClassLevel
     if (barbarianLevel >= 19) grantedDrValue = 5; else if (barbarianLevel >= 16) grantedDrValue = 4; else if (barbarianLevel >= 13) grantedDrValue = 3; else if (barbarianLevel >= 10) grantedDrValue = 2; else if (barbarianLevel >= 7) grantedDrValue = 1;
 
     const existingUserDrInstances = finalCharacter.damageReduction?.filter(dr => !dr.isGranted) || [];
@@ -300,7 +303,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
   React.useEffect(() => {
     if (character && translations && allAvailableFeatDefinitions) {
-      const aggFeats = calculateFeatEffects(character.feats, allAvailableFeatDefinitions);
+      const aggFeats = calculateFeatEffects(character.feats, allAvailableFeatDefinitions, character.classes);
       setAggregatedFeatEffects(aggFeats);
       const detailedScores = calculateDetailedAbilityScores(
         character,
@@ -370,7 +373,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         character.race as DndRaceId,
         translations.DND_RACES,
         translations.DND_RACE_ABILITY_MODIFIERS_DATA,
-        allAvailableSkillDefinitionsForDisplay,
+        allAvailableSkillDefinitionsForDisplay.map(sdd => ({value: sdd.value, label: sdd.label, keyAbility: sdd.keyAbility})), // Map to basic structure
         allAvailableFeatDefinitions,
         translations.ABILITY_LABELS
       );
@@ -680,7 +683,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
   const handleSubmit = React.useCallback((e: FormEvent) => {
     e.preventDefault();
-    if (!character || !translations) {
+    if (!character || !translations || !characterDataToProcess) { // Added characterDataToProcess check
       toast({ title: translations?.UI_STRINGS.toastCharacterDataNotLoadedTitle || "Save Error", description: translations?.UI_STRINGS.toastCharacterDataNotLoadedDesc || "Character data not loaded.", variant: "destructive" });
       return;
     }
@@ -720,21 +723,13 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       classes: character.classes.length > 0 ? character.classes : [{id: crypto.randomUUID(), className: '', level: 1}],
     };
     if (finalCharacterData.classes[0]) {
-        // The level for the first class should reflect the XP-derived level only if it's the *only* class,
-        // or for a more complex multiclassing system which isn't fully implemented.
-        // For now, keeping it at 1 for a new character, or its existing value if it's an edit form.
-        // If character creation *always* starts at level 1, then this is fine.
-        // If character creation *can* start at higher levels, and those levels are put into a single class,
-        // then this should reflect characterLevelFromXP if classes.length === 1.
-        // For now, let's assume new characters start with one class at level 1.
-        // The XP will determine their actual game level.
          if (finalCharacterData.id === (characterDataToProcess?.id || 'new-id-placeholder') && finalCharacterData.classes.length === 1) {
-            finalCharacterData.classes[0].level = 1; // For new characters, always start class level at 1
+            finalCharacterData.classes[0].level = 1; 
         }
     }
 
     onSave(finalCharacterData);
-  }, [character, onSave, toast, translations]);
+  }, [character, onSave, toast, translations, characterDataToProcess]); // Added characterDataToProcess dependency
 
   const calculatedMaxHpForPanel = React.useMemo(() => {
     if (!character || !detailedAbilityScores || !aggregatedFeatEffects) return 0;
@@ -1030,9 +1025,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           />
         )}
         
-        {speedData && (
+        {speedData && aggregatedFeatEffects && ( // Pass aggregatedFeatEffects to SpeedPanel
           <SpeedPanel
             speedData={speedData}
+            aggregatedFeatEffects={aggregatedFeatEffects}
             onCharacterUpdate={handleCharacterFieldUpdate as any}
             onOpenSpeedInfoDialog={handleOpenSpeedInfoDialog}
             onOpenArmorSpeedPenaltyInfoDialog={handleOpenArmorSpeedPenaltyInfoDialog}
@@ -1083,5 +1079,3 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
-
-

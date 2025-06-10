@@ -2,7 +2,7 @@
 'use client';
 
 import *as React from 'react';
-import type { Character, SpeedType, SpeedDetails, InfoDialogContentType, DndRaceOption, DndClassOption } from '@/types/character';
+import type { Character, SpeedType, SpeedDetails, InfoDialogContentType, DndRaceOption, DndClassOption, AggregatedFeatEffects } from '@/types/character'; // Added AggregatedFeatEffects
 import { calculateSpeedBreakdown } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -17,26 +17,27 @@ import { cn } from '@/lib/utils';
 
 const DEBOUNCE_DELAY = 400;
 
-export type SpeedPanelCharacterData = Pick<Character, 
-  'race' | 'size' | 'classes' | 
+export type SpeedPanelCharacterData = Pick<Character,
+  'race' | 'size' | 'classes' |
   'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed' |
-  'armorSpeedPenalty_base' | 'armorSpeedPenalty_miscModifier' | 
+  'armorSpeedPenalty_base' | 'armorSpeedPenalty_miscModifier' |
   'loadSpeedPenalty_base' | 'loadSpeedPenalty_miscModifier'
 >;
 
-export type SpeedFieldKey = 
-  | 'landSpeed.miscModifier' 
-  | 'burrowSpeed.miscModifier' 
-  | 'climbSpeed.miscModifier' 
-  | 'flySpeed.miscModifier' 
-  | 'swimSpeed.miscModifier' 
-  | 'armorSpeedPenalty_miscModifier' 
+export type SpeedFieldKey =
+  | 'landSpeed.miscModifier'
+  | 'burrowSpeed.miscModifier'
+  | 'climbSpeed.miscModifier'
+  | 'flySpeed.miscModifier'
+  | 'swimSpeed.miscModifier'
+  | 'armorSpeedPenalty_miscModifier'
   | 'loadSpeedPenalty_miscModifier';
 
 export interface SpeedPanelProps {
   speedData: SpeedPanelCharacterData;
+  aggregatedFeatEffects: AggregatedFeatEffects | null; // Added
   onCharacterUpdate: (
-    field: SpeedFieldKey, 
+    field: SpeedFieldKey,
     value: any
   ) => void;
   onOpenSpeedInfoDialog: (speedType: SpeedType) => void;
@@ -44,18 +45,19 @@ export interface SpeedPanelProps {
   onOpenLoadSpeedPenaltyInfoDialog: () => void;
 }
 
-const SpeedPanelComponent = ({ 
-  speedData, 
-  onCharacterUpdate, 
-  onOpenSpeedInfoDialog, 
+const SpeedPanelComponent = ({
+  speedData,
+  aggregatedFeatEffects, // Added
+  onCharacterUpdate,
+  onOpenSpeedInfoDialog,
   onOpenArmorSpeedPenaltyInfoDialog,
-  onOpenLoadSpeedPenaltyInfoDialog 
+  onOpenLoadSpeedPenaltyInfoDialog
 }: SpeedPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const speedTypesConfig: Array<{
     type: SpeedType;
-    labelKey: keyof NonNullable<NonNullable<typeof translations>['UI_STRINGS']>; 
+    labelKey: keyof NonNullable<NonNullable<typeof translations>['UI_STRINGS']>;
     Icon: React.ElementType;
     fieldKey: keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>;
   }> = [
@@ -89,7 +91,7 @@ const SpeedPanelComponent = ({
   );
 
 
-  if (translationsLoading || !translations) {
+  if (translationsLoading || !translations || !aggregatedFeatEffects) { // Added aggregatedFeatEffects check
     return (
       <Card>
         <CardHeader>
@@ -100,7 +102,7 @@ const SpeedPanelComponent = ({
           <CardDescription>{translations?.UI_STRINGS.speedPanelDescription || "Manage your character's various movement capabilities and penalties."}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          {translationsLoading || !translations ? ( 
+          {translationsLoading || !translations ? (
             <div className="flex justify-center items-center py-10">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.speedPanelLoadingSpeeds || "Loading speed details..."}</p>
@@ -110,10 +112,10 @@ const SpeedPanelComponent = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
-                    <Skeleton className="h-5 w-20 mb-1" /> 
-                    <Skeleton className="h-9 w-16 mb-1" /> 
-                    <Skeleton className="h-4 w-24 mb-1" /> 
-                    <Skeleton className="h-8 w-32" />    
+                    <Skeleton className="h-5 w-20 mb-1" />
+                    <Skeleton className="h-9 w-16 mb-1" />
+                    <Skeleton className="h-4 w-24 mb-1" />
+                    <Skeleton className="h-8 w-32" />
                   </div>
                 ))}
               </div>
@@ -121,10 +123,10 @@ const SpeedPanelComponent = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                  {[...Array(2)].map((_, i) => (
                   <div key={`penalty-skel-${i}`} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
-                    <Skeleton className="h-5 w-24 mb-1" /> 
-                    <Skeleton className="h-9 w-12 mb-1" /> 
-                    <Skeleton className="h-4 w-24 mb-1" /> 
-                    <Skeleton className="h-8 w-32" />    
+                    <Skeleton className="h-5 w-24 mb-1" />
+                    <Skeleton className="h-9 w-12 mb-1" />
+                    <Skeleton className="h-4 w-24 mb-1" />
+                    <Skeleton className="h-8 w-32" />
                   </div>
                  ))}
               </div>
@@ -134,7 +136,7 @@ const SpeedPanelComponent = ({
       </Card>
     );
   }
-  
+
   const { DND_RACES, DND_CLASSES, SIZES, UI_STRINGS } = translations;
   const speedUnit = UI_STRINGS.speedUnit || "ft.";
   const speedStep = parseFloat(UI_STRINGS.speedStepIncrement || "5");
@@ -155,7 +157,7 @@ const SpeedPanelComponent = ({
       <CardContent className="space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {speedTypesConfig.map(({ type, labelKey, Icon, fieldKey }) => {
-            const speedDataForBreakdown = calculateSpeedBreakdown(type, speedData, DND_RACES, DND_CLASSES, SIZES, UI_STRINGS);
+            const speedDataForBreakdown = calculateSpeedBreakdown(type, speedData, aggregatedFeatEffects, DND_RACES, DND_CLASSES, SIZES, UI_STRINGS); // Pass aggregatedFeatEffects
             const [localMiscMod, setLocalMiscMod] = debouncedSpeedMods[type];
             const label = UI_STRINGS[labelKey] || type;
 
@@ -165,7 +167,7 @@ const SpeedPanelComponent = ({
                   <Icon className="h-5 w-5 mr-1.5 text-muted-foreground" />
                   <span className="text-sm font-medium">{label}</span>
                 </div>
-                <div className="flex items-center justify-center space-x-1 h-9"> 
+                <div className="flex items-center justify-center space-x-1 h-9">
                   <span className="text-lg font-bold text-accent">
                     {speedDataForBreakdown.total}
                   </span>
@@ -188,8 +190,8 @@ const SpeedPanelComponent = ({
                     id={`speed-misc-${type}`}
                     value={localMiscMod}
                     onChange={setLocalMiscMod}
-                    min={-100} 
-                    max={100}  
+                    min={-100}
+                    max={100}
                     step={speedStep}
                     inputClassName="w-20 h-8 text-sm text-center"
                     buttonClassName="h-8 w-8"
@@ -201,7 +203,7 @@ const SpeedPanelComponent = ({
             );
           })}
         </div>
-        
+
         <Separator />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -217,7 +219,7 @@ const SpeedPanelComponent = ({
                 netArmorEffectOnSpeed < 0 && "text-destructive",
                 netArmorEffectOnSpeed === 0 && "text-accent"
               )}>
-                {netArmorEffectOnSpeed >= 0 ? '+' : ''}{netArmorEffectOnSpeed} 
+                {netArmorEffectOnSpeed >= 0 ? '+' : ''}{netArmorEffectOnSpeed}
               </span>
               <span className="text-base font-normal text-muted-foreground">
                 {speedUnit}
@@ -238,7 +240,7 @@ const SpeedPanelComponent = ({
                 id="armor-penalty-misc-mod"
                 value={localArmorPenaltyMiscMod}
                 onChange={setLocalArmorPenaltyMiscMod}
-                min={-100} 
+                min={-100}
                 max={100}
                 step={speedStep}
                 inputClassName="w-20 h-8 text-sm text-center"
@@ -282,7 +284,7 @@ const SpeedPanelComponent = ({
                 id="load-penalty-misc-mod"
                 value={localLoadPenaltyMiscMod}
                 onChange={setLocalLoadPenaltyMiscMod}
-                min={-100} 
+                min={-100}
                 max={100}
                 step={speedStep}
                 inputClassName="w-20 h-8 text-sm text-center"

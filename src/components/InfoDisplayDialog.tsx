@@ -238,7 +238,7 @@ export function InfoDisplayDialog({
         data = {
           title: raceData?.label || UI_STRINGS.infoDialogRaceDefaultTitle || 'Race Information',
           content: RaceContentDisplay({
-            htmlContent: raceData?.description || `<p>${UI_STRINGS.infoDialogNoSkillDescription || 'No description available.'}</p>`,
+            htmlContent: raceData?.generalDescription,
             abilityModifiers: qualities.abilityEffects,
             skillBonuses: qualities.skillBonuses,
             grantedFeats: qualities.grantedFeats,
@@ -281,7 +281,7 @@ export function InfoDisplayDialog({
         data = {
           title: classData?.label || UI_STRINGS.infoDialogClassDefaultTitle || 'Class Information',
           content: ClassContentDisplay({
-            htmlContent: classData?.generalDescription || `<p>${UI_STRINGS.infoDialogNoSkillDescription || 'No description available.'}</p>`,
+            htmlContent: classData?.generalDescription,
             loreAttributes: classData?.loreAttributes,
             grantedFeats: grantedFeatsFormatted,
             detailsList: classSpecificDetails.length > 0 ? classSpecificDetails : undefined,
@@ -550,9 +550,6 @@ export function InfoDisplayDialog({
                         let bonusFromThisFeat = 0;
                         if (typeof featEffect.value === 'number') {
                             bonusFromThisFeat = featEffect.value;
-                        } else if (featEffect.value === "WIS" && detailedCharScoresForDialog) {
-                             // Monk wisdom bonus is handled in the "other feat bonuses" typically, or should be a specific type.
-                             // This direct WIS check here for specific AC types like 'armor' or 'shield' is unlikely.
                         }
                         totalFeatBonusForThisType += bonusFromThisFeat;
                         if (featEffect.sourceFeat) {
@@ -600,11 +597,11 @@ export function InfoDisplayDialog({
                     let bonusVal = 0;
                     if (typeof featEffect.value === 'number') {
                         bonusVal = featEffect.value;
-                    } else if (featEffect.value === "WIS" && detailedCharScoresForDialog) {
-                        const wisModForAc = calculateAbilityModifier(detailedCharScoresForDialog.wisdom.finalScore);
-                        if (featEffect.acType === "monk_wisdom") {
-                           bonusVal = wisModForAc > 0 ? wisModForAc : 0; 
-                        }
+                    } else if (featEffect.value === "WIS" && detailedCharScoresForDialog && featEffect.acType === "monk_wisdom") {
+                       const wisModForAc = calculateAbilityModifier(detailedCharScoresForDialog.wisdom.finalScore);
+                       bonusVal = wisModForAc > 0 ? wisModForAc : 0; 
+                    } else if (featEffect.acType === "monkScaling" && typeof featEffect.value === 'number') { // Added for Monk Scaling AC
+                        bonusVal = featEffect.value;
                     }
 
                     if (bonusVal !== 0) {
@@ -612,6 +609,8 @@ export function InfoDisplayDialog({
                         let sourceName = featEffect.sourceFeat || UI_STRINGS.infoDialogUnknownFeatSource || "Unknown Feat";
                         if (featEffect.acType === "monk_wisdom") {
                             sourceName = UI_STRINGS.abilityScoreSourceMonkWisdom || "Monk Wisdom";
+                        } else if (featEffect.acType === "monkScaling") {
+                            sourceName = (UI_STRINGS.acBreakdownMonkScalingLabel || "Monk AC Bonus");
                         }
                         otherFeatBonusSources.push({ name: sourceName, condition: featEffect.condition });
                     }
@@ -760,7 +759,7 @@ export function InfoDisplayDialog({
       }
       case 'speedBreakdown': {
         iconKey = contentType.speedType;
-        const speedBreakdownDetails = calculateSpeedBreakdown(contentType.speedType, character, DND_RACES, DND_CLASSES, SIZES, UI_STRINGS, aggregatedFeatEffectsProp);
+        const speedBreakdownDetails = calculateSpeedBreakdown(contentType.speedType, character, aggregatedFeatEffectsProp, DND_RACES, DND_CLASSES, SIZES, UI_STRINGS);
         const speedNameString = speedBreakdownDetails.name;
         data = {
           title: (UI_STRINGS.infoDialogTitleSpeedBreakdown || "{speedName} Breakdown").replace("{speedName}", speedNameString),

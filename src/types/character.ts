@@ -1,4 +1,5 @@
 
+
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -52,7 +53,7 @@ import type {
   LanguageOption 
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
-import { getBab, calculateSumOfClassLevels } from '@/lib/dnd-utils'; // Updated import
+import { getBab, calculateSumOfClassLevels, calculateAbilityModifier } from '@/lib/dnd-utils'; // Updated import
 
 
 // Utility Functions (many will now need translated data passed in)
@@ -286,6 +287,8 @@ export function calculateAvailableFeats(
   const levelProgressionFeats = Math.floor(level / 3);
 
   let classBonusFeats = 0;
+  // This will be replaced by parsing BonusFeatSlotEffect from aggregatedFeatEffects
+  // For now, keeping simplified Fighter logic as placeholder
   characterClasses.forEach(charClass => {
     if (charClass.className === 'fighter') {
       if (charClass.level >= 1) classBonusFeats += 1; // Fighter bonus feat at L1
@@ -293,7 +296,6 @@ export function calculateAvailableFeats(
         classBonusFeats += 1;
       }
     }
-    // Add other class-specific bonus feat logic here if needed
   });
 
   const totalFeats = baseFeat + racialBonus + levelProgressionFeats + classBonusFeats;
@@ -541,7 +543,7 @@ export function checkFeatPrerequisites(
 }
 
 export function calculateDetailedAbilityScores(
-  character: Pick<Character, 'abilityScores' | 'race' | 'age' | 'feats' | 'abilityScoreTempCustomModifiers'>,
+  character: Pick<Character, 'abilityScores' | 'race' | 'age' | 'feats' | 'abilityScoreTempCustomModifiers' | 'classes'>,
   aggregatedFeatEffects: AggregatedFeatEffects,
   DND_RACES: readonly DndRaceOption[],
   DND_RACE_ABILITY_MODIFIERS_DATA: Record<string, Partial<Record<Exclude<AbilityName, 'none'>, number>>>,
@@ -582,14 +584,21 @@ export function calculateDetailedAbilityScores(
             const featInstance = character.feats.find(fi => fi.definitionId === featEffect.sourceFeat?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')); // Approximation
             effectIsActive = !!featInstance?.conditionalEffectStates?.[featEffect.condition];
           }
-          if(effectIsActive) {
+          if(effectIsActive && typeof featEffect.value === 'number') { // Ensure value is number for direct addition
             components.push({
-              sourceLabel: "Feat", 
+              sourceLabel: "Feat",
               sourceDetail: featEffect.sourceFeat || 'Unknown Feat',
               value: featEffect.value,
-              condition: featEffect.condition, 
+              condition: featEffect.condition,
             });
             currentScore += featEffect.value;
+          } else if (effectIsActive && typeof featEffect.value === 'string') {
+            // Handle ability-to-ability bonuses (e.g., Monk Wisdom to AC, but this is ability score context)
+            // This specific location might not be where "WIS to AC" is handled, but if a feat granted, e.g. "CHA to INT checks", this would be the place.
+            // For now, we assume numeric values or direct pass-through for non-numeric for later interpretation.
+            // Example: if a feat said "+CHA to Fortitude", it would be handled in Fortitude calc, not here.
+            // If it said "+WIS to INT score", this is where it would try to apply.
+            // This part needs careful consideration based on specific feat effects.
           }
         }
       }
@@ -610,7 +619,8 @@ export function calculateDetailedAbilityScores(
 
 export function calculateFeatEffects(
   characterFeats: CharacterFeatInstance[],
-  allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]
+  allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[],
+  characterClasses: CharacterClass[] // Added characterClasses for scaling
 ): AggregatedFeatEffects {
   const newAggregatedEffects: AggregatedFeatEffects = {
     skillBonuses: {},
@@ -633,6 +643,10 @@ export function calculateFeatEffects(
     bonusFeatSlots: [],
     languagesGranted: { count: 0, specific: [] },
     descriptiveNotes: [],
+    classLevels: characterClasses.reduce((acc, cur) => {
+      if (cur.className) acc[cur.className] = cur.level;
+      return acc;
+    }, {} as Record<DndClassId, number>),
   };
 
   for (const featInstance of characterFeats) {
@@ -652,10 +666,32 @@ export function calculateFeatEffects(
       }
 
       const sourceFeatName = definition.label || definition.value;
+      let resolvedValue: any = (effect as any).value; // Default to the effect's value
+
+      if (effect.scaleWithClassLevel && effect.scaleWithClassLevel.specificLevels) {
+        const classLevel = newAggregatedEffects.classLevels[effect.scaleWithClassLevel.classId] || 0;
+        let foundLevelValue: any = undefined;
+        // Find the highest specificLevel entry that the character meets
+        for (const levelEntry of [...effect.scaleWithClassLevel.specificLevels].sort((a,b) => b.level - a.level)) {
+          if (classLevel >= levelEntry.level) {
+            foundLevelValue = levelEntry.value;
+            break;
+          }
+        }
+        if (foundLevelValue !== undefined) {
+          resolvedValue = foundLevelValue;
+        } else if ((effect as any).value === undefined && effect.scaleWithClassLevel.specificLevels.length > 0) {
+          // If no direct value on effect but scaling exists, use lowest scaling value as default if level is 0 or too low
+          resolvedValue = [...effect.scaleWithClassLevel.specificLevels].sort((a,b) => a.level - b.level)[0].value;
+        }
+      }
+      
+      const effectToPush = { ...effect, value: resolvedValue, sourceFeat: sourceFeatName };
+
 
       switch (effect.type) {
         case "skill":
-          const skillEffect = effect as SkillEffectDetail;
+          const skillEffect = effectToPush as SkillEffectDetail;
           let actualSkillId = skillEffect.skillId;
           if (actualSkillId === null && definition.requiresSpecialization === 'skill' && featInstance.specializationDetail) {
             actualSkillId = featInstance.specializationDetail;
@@ -666,22 +702,22 @@ export function calculateFeatEffects(
           }
           break;
         case "abilityScore":
-          newAggregatedEffects.abilityScoreBonuses.push({...effect, sourceFeat: sourceFeatName } as AbilityScoreEffect & { sourceFeat?: string });
+          newAggregatedEffects.abilityScoreBonuses.push(effectToPush as AbilityScoreEffect & { sourceFeat?: string });
           break;
         case "savingThrow":
-          newAggregatedEffects.savingThrowBonuses.push({...effect, sourceFeat: sourceFeatName} as SavingThrowEffect & { sourceFeat?: string });
+          newAggregatedEffects.savingThrowBonuses.push(effectToPush as SavingThrowEffect & { sourceFeat?: string });
           break;
         case "attackRoll":
-          newAggregatedEffects.attackRollBonuses.push({...effect, sourceFeat: sourceFeatName} as AttackRollEffect & { sourceFeat?: string });
+          newAggregatedEffects.attackRollBonuses.push(effectToPush as AttackRollEffect & { sourceFeat?: string });
           break;
         case "damageRoll":
-          newAggregatedEffects.damageRollBonuses.push({...effect, sourceFeat: sourceFeatName} as DamageRollEffect & { sourceFeat?: string });
+          newAggregatedEffects.damageRollBonuses.push(effectToPush as DamageRollEffect & { sourceFeat?: string });
           break;
         case "armorClass":
-          newAggregatedEffects.acBonuses.push({...effect, sourceFeat: sourceFeatName} as ArmorClassEffect & { sourceFeat?: string });
+          newAggregatedEffects.acBonuses.push(effectToPush as ArmorClassEffect & { sourceFeat?: string });
           break;
         case "hitPoints":
-          const hpEffect = effect as HitPointsEffect;
+          const hpEffect = effectToPush as HitPointsEffect;
           newAggregatedEffects.hpBonus += hpEffect.value;
           newAggregatedEffects.hpBonusSources.push({
             sourceFeatName: sourceFeatName,
@@ -690,43 +726,57 @@ export function calculateFeatEffects(
           });
           break;
         case "initiative":
-          newAggregatedEffects.initiativeBonus += (effect as InitiativeEffect).value;
+          newAggregatedEffects.initiativeBonus += (effectToPush as InitiativeEffect).value;
           break;
         case "speed":
-          newAggregatedEffects.speedBonuses.push({...effect, sourceFeat: sourceFeatName} as SpeedEffect & { sourceFeat?: string });
+          newAggregatedEffects.speedBonuses.push(effectToPush as SpeedEffect & { sourceFeat?: string });
           break;
         case "resistance":
-          newAggregatedEffects.resistanceBonuses.push({...effect, sourceFeat: sourceFeatName} as ResistanceEffect & { sourceFeat?: string });
+          newAggregatedEffects.resistanceBonuses.push(effectToPush as ResistanceEffect & { sourceFeat?: string });
           break;
         case "casterLevelCheck":
-          newAggregatedEffects.casterLevelCheckBonuses.push({...effect, sourceFeat: sourceFeatName} as CasterLevelCheckEffect & { sourceFeat?: string });
+          newAggregatedEffects.casterLevelCheckBonuses.push(effectToPush as CasterLevelCheckEffect & { sourceFeat?: string });
           break;
         case "spellSaveDc":
-          newAggregatedEffects.spellSaveDcBonuses.push({...effect, sourceFeat: sourceFeatName} as SpellSaveDcEffect & { sourceFeat?: string });
+          newAggregatedEffects.spellSaveDcBonuses.push(effectToPush as SpellSaveDcEffect & { sourceFeat?: string });
           break;
         case "turnUndead":
-          newAggregatedEffects.turnUndeadBonuses.push({...effect, sourceFeat: sourceFeatName} as TurnUndeadEffect & { sourceFeat?: string });
+          newAggregatedEffects.turnUndeadBonuses.push(effectToPush as TurnUndeadEffect & { sourceFeat?: string });
           break;
         case "grantsAbility":
-          newAggregatedEffects.grantedAbilities.push({...effect, sourceFeat: sourceFeatName} as GrantsAbilityEffect & { sourceFeat?: string });
+          const grantsAbility = effectToPush as GrantsAbilityEffect & { sourceFeat?: string };
+          if (grantsAbility.uses?.scaleWithClassLevel && grantsAbility.uses.scaleWithClassLevel.specificLevels) {
+              const classLvl = newAggregatedEffects.classLevels[grantsAbility.uses.scaleWithClassLevel.classId] || 0;
+              let foundUsesValue: number | undefined;
+              for (const lvlEntry of [...grantsAbility.uses.scaleWithClassLevel.specificLevels].sort((a,b) => b.level - a.level)) {
+                  if (classLvl >= lvlEntry.level) {
+                      foundUsesValue = lvlEntry.value;
+                      break;
+                  }
+              }
+              if (foundUsesValue !== undefined && grantsAbility.uses) {
+                  grantsAbility.uses.value = foundUsesValue;
+              }
+          }
+          newAggregatedEffects.grantedAbilities.push(grantsAbility);
           break;
         case "modifiesMechanic":
-          newAggregatedEffects.modifiedMechanics.push({...effect, sourceFeat: sourceFeatName} as ModifiesMechanicEffect & { sourceFeat?: string });
+          newAggregatedEffects.modifiedMechanics.push(effectToPush as ModifiesMechanicEffect & { sourceFeat?: string });
           break;
         case "grantsProficiency":
-          newAggregatedEffects.proficienciesGranted.push({...effect, sourceFeat: sourceFeatName} as GrantsProficiencyEffect & { sourceFeat?: string });
+          newAggregatedEffects.proficienciesGranted.push(effectToPush as GrantsProficiencyEffect & { sourceFeat?: string });
           break;
         case "bonusFeatSlot":
-          newAggregatedEffects.bonusFeatSlots.push({...effect, sourceFeat: sourceFeatName} as BonusFeatSlotEffect & { sourceFeat?: string });
+          newAggregatedEffects.bonusFeatSlots.push(effectToPush as BonusFeatSlotEffect & { sourceFeat?: string });
           break;
         case "language":
-          const langEffect = effect as LanguageEffect;
+          const langEffect = effectToPush as LanguageEffect;
           if(langEffect.count) newAggregatedEffects.languagesGranted.count += langEffect.count;
           if(langEffect.specific) newAggregatedEffects.languagesGranted.specific.push({languageId: langEffect.specific, note: langEffect.note, sourceFeat: sourceFeatName});
           break;
         case "note":
         case "descriptive":
-          newAggregatedEffects.descriptiveNotes.push({...effect, sourceFeat: sourceFeatName} as (NoteEffectDetail | DescriptiveEffectDetail) & { sourceFeat?: string });
+          newAggregatedEffects.descriptiveNotes.push(effectToPush as (NoteEffectDetail | DescriptiveEffectDetail) & { sourceFeat?: string });
           break;
       }
     }
@@ -737,6 +787,7 @@ export function calculateFeatEffects(
 export function calculateSpeedBreakdown(
   speedType: SpeedType,
   character: Pick<Character, 'race' | 'size' | 'classes' | `${SpeedType}Speed` | 'armorSpeedPenalty_base' | 'armorSpeedPenalty_miscModifier' | 'loadSpeedPenalty_base' | 'loadSpeedPenalty_miscModifier'>,
+  aggregatedFeatEffects: AggregatedFeatEffects, // Added
   DND_RACES: readonly DndRaceOption[],
   DND_CLASSES: readonly DndClassOption[],
   SIZES: readonly CharacterSizeObject[],
@@ -753,57 +804,29 @@ export function calculateSpeedBreakdown(
     components.push({ source: (UI_STRINGS.infoDialogSpeedBaseRaceLabel || "Base ({raceName})").replace("{raceName}", raceLabel), value: racialSpeed });
     currentSpeed = racialSpeed;
   } else if (speedType === 'land' && racialSpeed === undefined) {
-    // Assume a default land speed if none is specified by race and it's land speed.
     const defaultLandSpeed = (SIZES.find(s => s.value === character.size)?.label === "Small" || SIZES.find(s => s.value === character.size)?.label === "Gnome") ? 20 : 30;
     components.push({ source: (UI_STRINGS.infoDialogSpeedBaseRaceLabel || "Base ({raceName})").replace("{raceName}", raceLabel), value: defaultLandSpeed });
     currentSpeed = defaultLandSpeed;
   }
 
-  let monkSpeedBonus = 0;
-  let barbarianFastMovementBonus = 0;
-
-  character.classes.forEach(charClass => {
-    if (charClass.className === 'monk' && speedType === 'land') {
-      if (charClass.level >= 18) monkSpeedBonus = 60;
-      else if (charClass.level >= 15) monkSpeedBonus = 50;
-      else if (charClass.level >= 12) monkSpeedBonus = 40;
-      else if (charClass.level >= 9) monkSpeedBonus = 30;
-      else if (charClass.level >= 6) monkSpeedBonus = 20;
-      else if (charClass.level >= 3) monkSpeedBonus = 10;
-    }
-    if (charClass.className === 'barbarian' && speedType === 'land') {
-       barbarianFastMovementBonus = 10; // This is a flat bonus for Barbarians with Fast Movement
-    }
-  });
-
-  if (monkSpeedBonus > 0) {
-    // Monk speed bonus *replaces* base, it's not additive to racial typically.
-    // However, if racial is higher, that usually takes precedence or they combine in specific ways.
-    // For simplicity, if monk bonus is active, we assume it's the primary speed source before other mods.
-    // This logic might need refinement based on exact D&D 3.5 stacking rules for monk speed.
-    // Let's assume for now it adds to the highest of current base or its own progression.
-    currentSpeed = Math.max(currentSpeed, monkSpeedBonus); // If monk speed is better, use it.
-    // If we strictly add it, it would be:
-    // components.push({ source: UI_STRINGS.infoDialogSpeedMonkLabel || "Monk Unarmored Speed", value: monkSpeedBonus });
-    // currentSpeed += monkSpeedBonus;
-    // For now, let's reflect it as an addition IF it's not already the base.
-    // This part is complex. Official ruling is often "use the better of the two".
-    // Let's find the difference if Monk is better and add that as a component.
-    const initialSpeedBeforeMonk = components.reduce((sum,c) => sum + c.value, 0);
-    if (monkSpeedBonus > initialSpeedBeforeMonk && speedType === 'land') { // Only add if it's a net positive change specifically from monk
-        components.push({ source: UI_STRINGS.infoDialogSpeedMonkLabel || "Monk Unarmored Speed", value: monkSpeedBonus - initialSpeedBeforeMonk });
-        currentSpeed = initialSpeedBeforeMonk + (monkSpeedBonus - initialSpeedBeforeMonk); // update currentSpeed
-    } else if (monkSpeedBonus > 0 && initialSpeedBeforeMonk === 0 && speedType === 'land') { // if base speed was 0, monk provides it
-        components.push({ source: UI_STRINGS.infoDialogSpeedMonkLabel || "Monk Unarmored Speed", value: monkSpeedBonus });
-        currentSpeed = monkSpeedBonus;
-    }
-
-
+  // Apply feat-based speed bonuses
+  if (aggregatedFeatEffects?.speedBonuses) {
+    aggregatedFeatEffects.speedBonuses.forEach(effect => {
+      if (effect.speedType === speedType || effect.speedType === 'all') {
+        if (effect.modification === 'bonus') {
+          components.push({ source: effect.sourceFeat || (UI_STRINGS.infoDialogFeatBonusLabel || "Feat Bonus"), value: effect.value });
+          currentSpeed += effect.value;
+        } else if (effect.modification === 'setAbsolute') {
+          // This would replace currentSpeed, complex logic needed if multiple setAbsolute effects
+          // For now, let's assume only one setAbsolute or it's additive like bonus.
+          // A more robust system would handle this with priorities or specific source labels.
+          components.push({ source: `${effect.sourceFeat || 'Feat'} (Set to)`, value: effect.value - currentSpeed }); // Show the delta
+          currentSpeed = effect.value;
+        }
+      }
+    });
   }
-  if (barbarianFastMovementBonus > 0 && currentSpeed > 0 && speedType === 'land') { // Barbarian bonus adds to existing land speed.
-     components.push({ source: UI_STRINGS.infoDialogSpeedBarbarianLabel || "Barbarian Fast Movement", value: barbarianFastMovementBonus });
-     currentSpeed += barbarianFastMovementBonus;
-  }
+
 
   const speedFieldKey = `${speedType}Speed` as keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>;
   const miscModForThisSpeed = character[speedFieldKey]?.miscModifier || 0;
@@ -896,3 +919,4 @@ export { SAVING_THROW_ABILITIES, calculateLevelFromXp, getXpRequiredForLevel } f
 
 export * from './character-core';
 
+```

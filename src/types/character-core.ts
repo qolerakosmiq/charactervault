@@ -53,7 +53,6 @@ export interface FeatPrerequisiteDetails {
 export interface FeatEffectScaling {
   classId: DndClassId | string; // The class whose level dictates the scaling
   specificLevels: Array<{ level: number; value: any /* number, string, dice object, etc. */ }>;
-  // valuePerLevel?: number; // Alternative for simple linear scaling
 }
 
 // Structured feat effect types
@@ -76,7 +75,7 @@ export interface NoteEffectDetail {
 export interface AbilityScoreEffect {
   type: "abilityScore";
   ability: Exclude<AbilityName, 'none'>;
-  value: number;
+  value: number | string; // string can be "WIS", "INT", "CHA" for ability-to-ability bonuses
   bonusType?: "enhancement" | "inherent" | "morale" | "competence" | "circumstance" | "size" | "untyped";
   condition?: string;
   sourceFeat?: string;
@@ -118,7 +117,7 @@ export interface DamageRollEffect {
 export interface ArmorClassEffect {
   type: "armorClass";
   value: number | "WIS" | "INT" | "CHA"; // Can be specific value or ability mod
-  acType: "dodge" | "armor" | "shield" | "natural" | "deflection" | "insight" | "circumstance" | "untyped" | "monk_wisdom" | "other_feat_bonus";
+  acType: "dodge" | "armor" | "shield" | "natural" | "deflection" | "insight" | "circumstance" | "untyped" | "monk_wisdom" | "monkScaling" | "other_feat_bonus";
   bonusType?: string; // Sometimes AC bonuses have types, often they are named by acType
   condition?: string;
   appliesToScope?: ("normal" | "touch" | "flatFooted")[];
@@ -207,11 +206,12 @@ export interface GrantsAbilityEffect {
     per: "day" | "encounter";
     value: number | "levelBased" | "abilityModBased" | "scaled"; // 'scaled' indicates using scaleWithClassLevel
     basedOnAbility?: Exclude<AbilityName, 'none'>;
+    scaleWithClassLevel?: FeatEffectScaling; // For uses.value if it's "scaled"
   };
   actionType?: "standard" | "move" | "fullRound" | "free" | "swift" | "immediate" | "reaction" | "passive";
   condition?: string;
   sourceFeat?: string;
-  scaleWithClassLevel?: FeatEffectScaling; // For uses.value if it's "scaled"
+  scaleWithClassLevel?: FeatEffectScaling; // If the general applicability scales
 }
 
 export interface ModifiesMechanicEffect {
@@ -241,7 +241,6 @@ export interface BonusFeatSlotEffect {
   note?: string;
   condition?: string;
   sourceFeat?: string;
-  // scaleWithClassLevel could be used if number of slots granted changes with level, though often it's just granted at specific levels
 }
 
 export interface LanguageEffect {
@@ -296,7 +295,7 @@ export interface FeatDefinitionJsonData { // Base structure for feat definitions
   type?: FeatTypeString;
   isClassFeature?: boolean;
   isCustom?: boolean;
-  category?: string; // e.g., "fighterBonusFeat", "monkBonusFeat"
+  category?: string; // e.g., "fighterBonusFeat", "monkBonusFeat", "wizardBonusFeat"
 }
 
 
@@ -304,6 +303,7 @@ export interface CharacterFeatInstance {
   definitionId: string;
   instanceId: string;
   specializationDetail?: string;
+  chosenSpecializationCategory?: string; // e.g., For Ranger Combat Style, this could be "archery" or "twoWeaponFighting"
   isGranted?: boolean;
   grantedNote?: string;
   conditionalEffectStates?: Record<string, boolean>; // Key: condition string, Value: isActive
@@ -387,8 +387,9 @@ export interface CharacterAlignmentObject {
 
 export interface ClassCastingDetails {
   type: 'full' | 'partial' | 'none';
-  startsAtLevel?: number;
-  levelOffset?: number;
+  casterAbility?: Exclude<AbilityName, 'none' | 'strength' | 'dexterity' | 'constitution'>; // Typically Int, Wis, or Cha
+  startsAtLevel?: number; // For partial casters like Paladin, Ranger
+  levelOffset?: number; // For partial casters, e.g., Paladin CL = Paladin Level - 3
 }
 
 export interface ClassAttribute {
@@ -411,7 +412,7 @@ export interface DndClassOption {
   value: DndClassId | string;
   label: string;
   hitDice: string;
-  babProgression: "good" | "average" | "poor"; // Added
+  babProgression: "good" | "average" | "poor";
   generalDescription: string;
   loreAttributes?: ClassAttribute[];
   casting?: ClassCastingDetails;
@@ -574,29 +575,30 @@ export type DetailedAbilityScores = Record<Exclude<AbilityName, 'none'>, Ability
 
 
 export interface AggregatedFeatEffects {
-  skillBonuses: Record<string, number>;
-  abilityScoreBonuses: AbilityScoreEffect[];
-  savingThrowBonuses: SavingThrowEffect[];
-  attackRollBonuses: AttackRollEffect[];
-  damageRollBonuses: DamageRollEffect[];
-  acBonuses: ArmorClassEffect[];
+  skillBonuses: Record<string, number>; // skillId: bonusAmount
+  abilityScoreBonuses: Array<AbilityScoreEffect & { sourceFeat?: string }>;
+  savingThrowBonuses: Array<SavingThrowEffect & { sourceFeat?: string }>;
+  attackRollBonuses: Array<AttackRollEffect & { sourceFeat?: string }>;
+  damageRollBonuses: Array<DamageRollEffect & { sourceFeat?: string }>;
+  acBonuses: Array<ArmorClassEffect & { sourceFeat?: string }>;
   hpBonus: number;
   hpBonusSources: Array<{ sourceFeatName: string; value: number; condition?: string }>;
   initiativeBonus: number;
-  speedBonuses: SpeedEffect[];
-  resistanceBonuses: ResistanceEffect[];
-  casterLevelCheckBonuses: CasterLevelCheckEffect[];
-  spellSaveDcBonuses: SpellSaveDcEffect[];
-  turnUndeadBonuses: TurnUndeadEffect[];
-  grantedAbilities: GrantsAbilityEffect[];
-  modifiedMechanics: ModifiesMechanicEffect[];
-  proficienciesGranted: GrantsProficiencyEffect[];
-  bonusFeatSlots: BonusFeatSlotEffect[];
+  speedBonuses: Array<SpeedEffect & { sourceFeat?: string }>;
+  resistanceBonuses: Array<ResistanceEffect & { sourceFeat?: string }>;
+  casterLevelCheckBonuses: Array<CasterLevelCheckEffect & { sourceFeat?: string }>;
+  spellSaveDcBonuses: Array<SpellSaveDcEffect & { sourceFeat?: string }>;
+  turnUndeadBonuses: Array<TurnUndeadEffect & { sourceFeat?: string }>;
+  grantedAbilities: Array<GrantsAbilityEffect & { sourceFeat?: string }>;
+  modifiedMechanics: Array<ModifiesMechanicEffect & { sourceFeat?: string }>;
+  proficienciesGranted: Array<GrantsProficiencyEffect & { sourceFeat?: string }>;
+  bonusFeatSlots: Array<BonusFeatSlotEffect & { sourceFeat?: string }>;
   languagesGranted: {
       count: number;
       specific: Array<{ languageId: LanguageId; note?: string; sourceFeat?: string }>;
   };
-  descriptiveNotes: DescriptiveEffectDetail[];
+  descriptiveNotes: Array<(NoteEffectDetail | DescriptiveEffectDetail) & { sourceFeat?: string }>;
+  classLevels: Record<DndClassId, number>; // To pass class levels for scaling
 }
 
 export interface BabBreakdownDetails {
@@ -643,3 +645,4 @@ export interface PrerequisiteMessage {
   originalText?: string;
 }
 
+```
