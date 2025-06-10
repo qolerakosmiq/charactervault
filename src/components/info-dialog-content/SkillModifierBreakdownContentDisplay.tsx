@@ -82,8 +82,11 @@ export const SkillModifierBreakdownContentDisplay = ({
 
 
           return (
-            <li key={synergyItem.id} className="flex text-sm"> {/* Removed items-center */}
-              <IconComponent className={cn("h-5 w-5 mr-2 shrink-0", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")} /> {/* Icon size h-5 w-5, removed margin top */}
+            <li key={synergyItem.id} className="flex text-sm">
+              <IconComponent
+                className={cn("h-5 w-5 mr-2 shrink-0", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")}
+                style={{ marginTop: '0.05rem' }}
+              />
               <span className={cn(synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")}>
                 {textNode}
               </span>
@@ -150,7 +153,11 @@ export const SkillModifierBreakdownContentDisplay = ({
     </div>
   ) : null;
 
-  const contentBlocksToRender = [htmlContentBlock, synergyBlock, calculationBlock].filter(Boolean);
+  const contentBlocksToRender: React.ReactNode[] = [];
+  if (htmlContentBlock) contentBlocksToRender.push(htmlContentBlock);
+  if (synergyBlock) contentBlocksToRender.push(synergyBlock);
+  if (calculationBlock) contentBlocksToRender.push(calculationBlock);
+
 
   if (contentBlocksToRender.length === 0) {
     return null;
