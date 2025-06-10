@@ -77,7 +77,7 @@
     "infoDialogSynergyBonusLabel": "Bonus de synergie",
     "infoDialogFeatBonusLabel": "Bonus de don",
     "infoDialogRacialBonusLabel": "Bonus racial",
-    "infoDialogCustomModifierLabel": "Modificateur personnalisé",
+    "infoDialogCustomModifierLabel": "Modificateur divers",
     "infoDialogTotalBonusLabel": "Bonus total",
     "infoDialogTotalLabel": "Total",
     "infoDialogBaseValueLabel": "Valeur de base",
@@ -446,7 +446,7 @@
     "experiencePanelCurrentXpMainLabel": "XP Actuels",
     "experiencePanelCurrentXpSubLabel": "Points d'expérience",
     "experiencePanelLevelLabelFormat": "Niveau {levelNumber}",
-    "experiencePanelNextLevelLabel": "Niveau suivant à",
+    "experiencePanelNextLevelLabel": "Niveau Suivant à",
     "experiencePanelXpToLevelUpFormat": "{currentXp} / {xpForNextLevel} XP",
     "experiencePanelMaxLevel": "Niveau Max Atteint",
     "conditionWieldingTwoWeaponsOrDouble": "Manie Deux Armes ou Arme Double",
@@ -456,5 +456,6 @@
     "conditionVsDesignatedOpponent3": "contre Adversaire Désigné (Test Esquive3)"
   }
 }
+    
     
     

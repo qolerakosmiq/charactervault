@@ -77,7 +77,7 @@
     "infoDialogSynergyBonusLabel": "Synergy Bonus",
     "infoDialogFeatBonusLabel": "Feat Bonus",
     "infoDialogRacialBonusLabel": "Racial Bonus",
-    "infoDialogCustomModifierLabel": "Custom Modifier",
+    "infoDialogCustomModifierLabel": "Misc Modifier",
     "infoDialogTotalBonusLabel": "Total Bonus",
     "infoDialogTotalLabel": "Total",
     "infoDialogBaseValueLabel": "Base Value",
@@ -456,5 +456,6 @@
     "conditionVsDesignatedOpponent3": "vs. Designated Opponent (Dodge3 Test)"
   }
 }
+    
     
     
