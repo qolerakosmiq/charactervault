@@ -152,24 +152,15 @@
       "category": "fighterBonusFeat monkBonusFeat"
     },
     {
-      "value": "dodge2",
-      "label": "Esquive2 (Test)",
-      "description": "<b>Avantage :</b> Pendant votre action, vous désignez un adversaire et recevez un bonus d'esquive de +1 à la Classe d'Armure contre les attaques de cet adversaire (Don de Test).<br />Vous pouvez sélectionner un nouvel adversaire à chaque action.<br /><b>Spécial :</b> Une condition qui vous fait perdre votre bonus de Dextérité à la Classe d'Armure (le cas échéant) vous fait également perdre les bonus d'esquive.<br />De plus, les bonus d'esquive se cumulent entre eux, contrairement à la plupart des autres types de bonus.",
-      "prerequisites": { "abilities": { "dexterity": 13 } },
-      "effectsText": "Bonus d'esquive de +1 à la CA contre une cible (Test).",
-      "effects": [{ "type": "armorClass", "acType": "dodge", "value": 1, "condition": "conditionVsDesignatedOpponent2" }],
+      "value": "deflect-arrows",
+      "label": "Déviation de projectiles",
+      "description": "<b>Avantage :</b> Vous devez avoir au moins une main libre (ne tenant rien) pour utiliser ce don. Une fois par round, lorsque vous seriez normalement touché par une arme à distance, vous pouvez la dévier de manière à ne subir aucun dégât. Vous devez être conscient de l'attaque et ne pas être pris au dépourvu. Tenter de dévier une arme à distance ne compte pas comme une action. Les armes à distance inhabituellement grandes (telles que les rochers ou les carreaux de baliste) et les attaques à distance générées par des attaques naturelles ou des effets de sorts ne peuvent pas être déviées.",
+      "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["improved-unarmed-strike"]},
+      "effectsText": "Une fois par round, annule les dégâts d'une attaque d'arme à distance.",
+      "effects": [{ "type": "note", "text": "Une fois par round, annule les dégâts d'une attaque d'arme à distance." }],
       "isClassFeature": false,
-      "type": "special"
-    },
-    {
-      "value": "dodge3-natural",
-      "label": "Esquive3 (Armure Naturelle Test)",
-      "description": "<b>Avantage :</b> Pendant votre action, vous désignez un adversaire et recevez un bonus d'armure naturelle de +1 à la Classe d'Armure contre les attaques de cet adversaire (Don de Test).<br />Vous pouvez sélectionner un nouvel adversaire à chaque action.<br /><b>Spécial :</b> Une condition qui vous fait perdre votre bonus de Dextérité à la Classe d'Armure (le cas échéant) vous fait également perdre les bonus d'esquive (bien que l'armure naturelle elle-même ne soit généralement pas perdue de cette manière).",
-      "prerequisites": { "abilities": { "dexterity": 13 } },
-      "effectsText": "Bonus d'armure naturelle de +1 à la CA contre une cible (Test).",
-      "effects": [{ "type": "armorClass", "acType": "natural", "value": 1, "condition": "conditionVsDesignatedOpponent3" }],
-      "isClassFeature": false,
-      "type": "special"
+      "type": "special",
+      "category": "monkBonusFeat"
     },
     {
       "value": "endurance",
@@ -1247,7 +1238,13 @@
     { "value": "class-rogue-trap-sense", "label": "Sens des pièges (Roublard)", "effectsText":"Bonus évolutif aux jets de Réflexes et à la CA contre les pièges.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Bonus évolutif aux jets de Réflexes et à la CA contre les pièges."}] },
     { "value": "class-rogue-uncanny-dodge", "label": "Esquive instinctive (Roublard)", "effectsText":"Conserve le bonus de Dextérité à la CA en étant pris au dépourvu ou contre un attaquant invisible.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Conserve le bonus de Dextérité à la CA en étant pris au dépourvu ou contre un attaquant invisible."}] },
     { "value": "class-rogue-improved-uncanny-dodge", "label": "Esquive instinctive améliorée (Roublard)", "effectsText":"Ne peut pas être pris en tenaille.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Ne peut pas être pris en tenaille."}] },
-    { "value": "class-rogue-special-ability-slot", "label": "Emplacement de Capacité Spéciale de Roublard", "effectsText":"Choisit une capacité spéciale dans une liste.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Choisit une capacité spéciale dans une liste."}] },
+    {
+      "value": "class-rogue-special-ability-slot",
+      "label": "Emplacement de Capacité Spéciale de Roublard",
+      "effectsText":"Choisit une capacité spéciale dans une liste.",
+      "isClassFeature": true, "type": "special",
+      "effects": [{ "type": "bonusFeatSlot", "category": "rogueSpecialAbility", "count": 1 }]
+    },
     { "value": "class-sorcerer-summon-familiar", "label": "Invocation de familier", "effectsText":"Peut obtenir un familier.", "isClassFeature": true, "type": "special-sp", "effects": [{"type": "note", "text":"Peut obtenir un familier."}] },
     { "value": "class-wizard-bonus-feat-slot", "label": "Emplacement de don supplémentaire de Magicien", "effectsText":"Obtient un don supplémentaire de Métamagie, Création d'objet ou Maîtrise des sorts.", "isClassFeature": true, "type": "special", "category": "wizardBonusFeat", "effects": [{"type": "bonusFeatSlot", "category": "wizardBonusFeat", "count": 1 }] },
     { "value": "class-ranger-animal-companion", "label": "Compagnon animal (Rôdeur)", "effectsText":"Obtient un compagnon animal (niveau de druide effectif égal à la moitié du niveau de rôdeur).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Obtient un compagnon animal (niveau de druide effectif égal à la moitié du niveau de rôdeur)."}] },
@@ -1303,6 +1300,51 @@
       "effects": [{ "type": "savingThrow", "save": "all", "value": 5, "bonusType": "untyped", "condition": "Well Fed" }],
       "isClassFeature": false,
       "type": "special"
+    },
+    {
+      "value": "rogue-special-ability-crippling-strike",
+      "label": "Frappe incapacitante (Roublard)",
+      "description": "<b>Avantage :</b> Un roublard doté de cette capacité peut effectuer des attaques sournoises sur ses adversaires avec une telle précision que ses coups les affaiblissent et les entravent. Un adversaire blessé par l'une de ses attaques sournoises subit également 2 points de dégâts de Force.",
+      "prerequisites": { "special": "Niveau de Roublard 10+" },
+      "effectsText": "L'attaque sournoise inflige 2 points de dégâts de Force.",
+      "isClassFeature": false, "type": "special-ex", "category": "rogueSpecialAbility",
+      "effects": [{ "type": "note", "text": "L'attaque sournoise inflige 2 points de dégâts de Force."}]
+    },
+    {
+      "value": "rogue-special-ability-defensive-roll",
+      "label": "Roulade défensive (Roublard)",
+      "description": "<b>Avantage :</b> Le roublard peut encaisser un coup potentiellement mortel pour subir moins de dégâts qu'il n'en aurait subis autrement. Une fois par jour, lorsqu'il serait réduit à 0 point de vie ou moins par des dégâts en combat (d'une arme ou d'un autre coup, pas d'un sort ou d'une capacité spéciale), le roublard peut tenter d'encaisser les dégâts. Pour utiliser cette capacité, il doit effectuer un jet de sauvegarde de Réflexes (DD = dégâts infligés). S'il réussit son jet de sauvegarde, il ne subit que la moitié des dégâts du coup ; s'il échoue, il subit la totalité des dégâts. Il doit être conscient de l'attaque et capable d'y réagir pour exécuter sa roulade défensive — s'il est privé de son bonus de Dextérité à la CA, il ne peut pas utiliser cette capacité. Étant donné que cet effet ne permettrait normalement pas à un personnage d'effectuer un jet de sauvegarde de Réflexes pour la moitié des dégâts, la capacité d'esquive du roublard ne s'applique pas à la roulade défensive.",
+      "prerequisites": { "special": "Niveau de Roublard 10+" },
+      "effectsText": "Une fois/jour, jet de Réflexes (DD=dégâts) pour subir la moitié des dégâts d'un coup qui réduirait à 0 PV ou moins.",
+      "isClassFeature": false, "type": "special-ex", "category": "rogueSpecialAbility",
+      "effects": [{ "type": "note", "text": "Une fois/jour, jet de Réflexes (DD=dégâts) pour subir la moitié des dégâts d'un coup qui réduirait à 0 PV ou moins."}]
+    },
+    {
+      "value": "rogue-special-ability-skill-mastery",
+      "label": "Maîtrise des compétences (Roublard)",
+      "description": "<b>Avantage :</b> Le roublard devient si sûr de lui dans l'utilisation de certaines compétences qu'il peut les utiliser de manière fiable même dans des conditions défavorables. En acquérant cette capacité, il choisit un nombre de compétences égal à 3 + son modificateur d'Intelligence. Lorsqu'il effectue un test de compétence avec l'une de ces compétences, il peut faire 10 même si le stress et les distractions l'en empêcheraient normalement.",
+      "prerequisites": { "special": "Niveau de Roublard 10+" },
+      "effectsText": "Choisir (3+mod. Int) compétences ; peut faire 10 à ces tests de compétence même sous pression.",
+      "isClassFeature": false, "type": "special-ex", "category": "rogueSpecialAbility",
+      "effects": [{ "type": "note", "text": "Choisir (3+mod. Int) compétences ; peut faire 10 à ces tests de compétence même sous pression."}]
+    },
+    {
+      "value": "rogue-special-ability-slippery-mind",
+      "label": "Esprit fuyant (Roublard)",
+      "description": "<b>Avantage :</b> Cette capacité représente l'aptitude du roublard à se libérer des effets magiques qui le contrôleraient ou le contraindraient autrement. Si un roublard doté d'un esprit fuyant est affecté par un sort ou un effet d'enchantement et rate son jet de sauvegarde, il peut le retenter 1 round plus tard au même DD. Il n'a droit qu'à cette seule chance supplémentaire de réussir son jet de sauvegarde.",
+      "prerequisites": { "special": "Niveau de Roublard 10+" },
+      "effectsText": "S'il rate un jet de sauvegarde contre un enchantement, peut le retenter 1 round plus tard.",
+      "isClassFeature": false, "type": "special-ex", "category": "rogueSpecialAbility",
+      "effects": [{ "type": "note", "text": "S'il rate un jet de sauvegarde contre un enchantement, peut le retenter 1 round plus tard."}]
+    },
+    {
+      "value": "rogue-special-ability-improved-evasion",
+      "label": "Esquive totale améliorée (Capacité de Roublard)",
+      "description": "<b>Avantage :</b> Cette capacité fonctionne comme l'esquive totale, sauf que si le roublard ne subit toujours aucun dégât sur un jet de Réflexes réussi contre les attaques, il ne subit désormais que la moitié des dégâts sur un jet de sauvegarde raté.",
+      "prerequisites": { "special": "Niveau de Roublard 10+, Capacité de classe Esquive totale" },
+      "effectsText": "Ne subit aucun dégât sur un jet de Réflexes réussi pour la moitié, moitié des dégâts sur un jet raté.",
+      "isClassFeature": false, "type": "special-ex", "category": "rogueSpecialAbility",
+      "effects": [{ "type": "note", "text": "Ne subit aucun dégât sur un jet de Réflexes réussi pour la moitié, moitié des dégâts sur un jet raté."}]
     }
   ],
   "FEAT_TYPES_DATA": [
@@ -1315,3 +1357,4 @@
   ]
 }
 
+    
