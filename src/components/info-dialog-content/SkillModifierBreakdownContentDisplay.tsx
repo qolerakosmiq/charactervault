@@ -30,7 +30,7 @@ export const SkillModifierBreakdownContentDisplay = ({
     />
   ) : null;
 
-  const badgeClass = "font-normal h-5 mx-0.5 px-1.5 py-0.5 align-baseline whitespace-nowrap"; // Removed text-xs
+  const badgeClass = "text-sm font-normal h-5 mx-0.5 px-1.5 py-0.5 align-baseline whitespace-nowrap";
 
   const synergyBlock = (synergyInfoList && synergyInfoList.length > 0) ? (
     <div key="skill-synergies-block" className={cn((htmlContentBlock) && "mt-3")}>
@@ -39,8 +39,8 @@ export const SkillModifierBreakdownContentDisplay = ({
         {synergyInfoList.map((synergyItem) => {
           const IconComponent = synergyItem.isActive ? CheckSquare : Square;
           return (
-            <li key={synergyItem.id} className="flex items-center text-sm"> {/* Changed items-start to items-center */}
-              <IconComponent className={cn("h-4 w-4 mr-2 shrink-0", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")} /> {/* Removed mt-1 */}
+            <li key={synergyItem.id} className="flex items-center text-sm">
+              <IconComponent className={cn("h-4 w-4 mr-2 shrink-0", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")} />
               <span className={cn(synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")}>
                 {synergyItem.text}
               </span>
