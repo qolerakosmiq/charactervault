@@ -131,7 +131,7 @@ const CombatPanelComponent = ({ combatData, onCharacterUpdate, onOpenCombatStatI
         <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
           <Label htmlFor="bab-display" className="text-md font-medium block">{UI_STRINGS.combatPanelBabLabel || "Base Attack Bonus"}</Label>
           <div className="flex items-center justify-center">
-            <p id="bab-display" className="text-2xl font-bold text-accent">
+            <p id="bab-display" className="text-xl font-bold text-accent">
               {totalBabWithModifier.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}
             </p>
             <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleBabInfo}>
@@ -139,7 +139,7 @@ const CombatPanelComponent = ({ combatData, onCharacterUpdate, onOpenCombatStatI
             </Button>
           </div>
           <div className="mt-auto space-y-1">
-            <Label htmlFor="bab-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Custom Modifier"}</Label>
+            <Label htmlFor="bab-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
             <div className="flex justify-center">
               <NumberSpinnerInput
                 id="bab-custom-mod"
@@ -156,7 +156,7 @@ const CombatPanelComponent = ({ combatData, onCharacterUpdate, onOpenCombatStatI
         <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
           <Label htmlFor="initiative-display" className="text-md font-medium block">{UI_STRINGS.combatPanelInitiativeLabel || "Initiative"}</Label>
            <div className="flex items-center justify-center">
-            <p id="initiative-display" className="text-2xl font-bold text-accent">
+            <p id="initiative-display" className="text-xl font-bold text-accent">
               {baseInitiative >= 0 ? '+' : ''}{baseInitiative}
             </p>
             <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleInitiativeInfo}>
@@ -164,7 +164,7 @@ const CombatPanelComponent = ({ combatData, onCharacterUpdate, onOpenCombatStatI
             </Button>
           </div>
           <div className="mt-auto space-y-1">
-            <Label htmlFor="initiative-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Custom Modifier"}</Label>
+            <Label htmlFor="initiative-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
             <div className="flex justify-center">
               <NumberSpinnerInput
                 id="initiative-custom-mod"
@@ -181,7 +181,7 @@ const CombatPanelComponent = ({ combatData, onCharacterUpdate, onOpenCombatStatI
         <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
           <Label htmlFor="grapple-mod-display" className="text-md font-medium block">{UI_STRINGS.combatPanelGrappleModifierLabel || "Grapple Modifier"}</Label>
           <div className="flex items-center justify-center">
-            <p id="grapple-mod-display" className="text-2xl font-bold text-accent">
+            <p id="grapple-mod-display" className="text-xl font-bold text-accent">
               {totalGrappleModifier >= 0 ? '+' : ''}{totalGrappleModifier}
             </p>
             <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleGrappleModifierInfo}>
@@ -189,7 +189,7 @@ const CombatPanelComponent = ({ combatData, onCharacterUpdate, onOpenCombatStatI
             </Button>
           </div>
           <div className="mt-auto space-y-1">
-            <Label htmlFor="grapple-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Custom Modifier"}</Label>
+            <Label htmlFor="grapple-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
             <div className="flex justify-center">
               <NumberSpinnerInput
                 id="grapple-custom-mod"
@@ -206,7 +206,7 @@ const CombatPanelComponent = ({ combatData, onCharacterUpdate, onOpenCombatStatI
         <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
             <Label htmlFor="grapple-damage-display" className="text-md font-medium block">{UI_STRINGS.combatPanelGrappleDamageLabel || "Grapple Damage"}</Label>
             <div className="flex items-center justify-center">
-                <p id="grapple-damage-display" className="text-2xl font-bold text-accent">
+                <p id="grapple-damage-display" className="text-xl font-bold text-accent">
                   {displayedGrappleDamageTotal}
                 </p>
                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleGrappleDamageInfo}>
@@ -229,7 +229,7 @@ const CombatPanelComponent = ({ combatData, onCharacterUpdate, onOpenCombatStatI
                     </Select>
                 </div>
                 <div className="space-y-1">
-                    <Label htmlFor="grapple-damage-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Custom Modifier"}</Label>
+                    <Label htmlFor="grapple-damage-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
                     <div className="flex justify-center">
                       <NumberSpinnerInput
                           id="grapple-damage-custom-mod"
@@ -250,3 +250,4 @@ const CombatPanelComponent = ({ combatData, onCharacterUpdate, onOpenCombatStatI
 };
 CombatPanelComponent.displayName = 'CombatPanelComponent';
 export const CombatPanel = React.memo(CombatPanelComponent);
+
