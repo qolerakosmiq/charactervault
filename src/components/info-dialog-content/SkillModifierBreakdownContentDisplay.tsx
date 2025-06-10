@@ -22,8 +22,6 @@ export const SkillModifierBreakdownContentDisplay = ({
   skillModifierBreakdown,
   uiStrings,
 }: SkillModifierBreakdownContentDisplayProps) => {
-  const outputBlocks: React.ReactNode[] = [];
-
   const htmlContentBlock = (htmlContent && htmlContent.trim() !== '' && htmlContent.trim() !== '<p></p>') ? (
     <div
       key="skill-html-content-block"
@@ -107,22 +105,44 @@ export const SkillModifierBreakdownContentDisplay = ({
     </div>
   ) : null;
 
-  const contentOnlyBlocks = [htmlContentBlock, synergyBlock, calculationBlock].filter(Boolean);
-  if (contentOnlyBlocks.length === 0) return null;
+  const contentBlocks = [
+    htmlContentBlock && { type: 'html', content: htmlContentBlock },
+    synergyBlock && { type: 'synergy', content: synergyBlock },
+    calculationBlock && { type: 'calculation', content: calculationBlock },
+  ].filter(Boolean) as Array<{ type: string; content: React.ReactNode }>;
 
-  return contentOnlyBlocks.map((block, index) => (
-    <React.Fragment key={(block as React.ReactElement)?.key || `content-block-${index}`}>
-      {block}
-      {/* Add separator only after the htmlContentBlock if there are more blocks after it */}
-      {block === htmlContentBlock && index < contentOnlyBlocks.length - 1 && (
-        <Separator className="my-3" />
-      )}
-      {/* Or, if there's no htmlContentBlock, but synergyBlock is the first and there's a calculationBlock after it, add a separator */}
-      {!htmlContentBlock && block === synergyBlock && index < contentOnlyBlocks.length - 1 && contentOnlyBlocks[index + 1] === calculationBlock && (
-         <Separator className="my-3" />
-      )}
-    </React.Fragment>
-  ));
+  if (contentBlocks.length === 0) return null;
+
+  return (
+    <>
+      {contentBlocks.map((item, index) => (
+        <React.Fragment key={item.type}>
+          {item.content}
+          {index < contentBlocks.length - 1 && (
+            (() => {
+              const currentBlockType = item.type;
+              const nextBlockType = contentBlocks[index + 1].type;
+
+              // Add separator between HTML and Calculation IFF Synergy is NOT present
+              if (currentBlockType === 'html' && nextBlockType === 'calculation' && !synergyBlock) {
+                return <Separator className="my-3" />;
+              }
+              // Add separator between Synergy and Calculation IFF HTML was NOT present
+              if (currentBlockType === 'synergy' && nextBlockType === 'calculation' && !htmlContentBlock) {
+                return <Separator className="my-3" />;
+              }
+              // Add separator between HTML and Synergy IFF Calculation is NOT present (and synergy is last)
+              if (currentBlockType === 'html' && nextBlockType === 'synergy' && !calculationBlock) {
+                 return <Separator className="my-3" />;
+              }
+              
+              return null;
+            })()
+          )}
+        </React.Fragment>
+      ))}
+    </>
+  );
 };
 // SkillModifierBreakdownContentDisplay.displayName = 'SkillModifierBreakdownContentDisplayComponent';
 
