@@ -30,12 +30,12 @@ export const SkillModifierBreakdownContentDisplay = ({
     />
   ) : null;
 
-  const badgeClass = "font-normal h-5 mx-0.5 px-1.5 py-0.5 align-baseline whitespace-nowrap";
+  const badgeClass = "font-normal h-5 px-1.5 py-0.5 align-baseline whitespace-nowrap";
 
   const synergyBlock = (synergyInfoList && synergyInfoList.length > 0) ? (
     <div key="skill-synergies-block" className={cn((htmlContentBlock) && "mt-3")}>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
-      <ul className="space-y-0.5 mt-2">
+      <ul className={cn("space-y-0.5 mt-2", calculationBlock ? "mb-3" : "")}> {/* Added mb-3 if calculationBlock follows */}
         {synergyInfoList.map((synergyItem) => {
           const IconComponent = synergyItem.isActive ? CheckSquare : Square;
           const parts = typeof synergyItem.text === 'string' ? synergyItem.text.split(/({value}|{typeLabel})/g) : [];
@@ -64,7 +64,7 @@ export const SkillModifierBreakdownContentDisplay = ({
                 if (React.isValidElement(child)) {
                   if (child.type === Badge) {
                     return React.cloneElement(child as React.ReactElement<any>, {
-                      className: cn((child.props.className || ''), badgeClass),
+                      className: cn((child.props.className || ''), badgeClass, 'text-sm'), // Ensure text-sm for badges in synergy
                       style: { ...child.props.style, fontSize: '0.875rem' },
                     });
                   }
@@ -82,12 +82,12 @@ export const SkillModifierBreakdownContentDisplay = ({
 
 
           return (
-            <li key={synergyItem.id} className="flex text-sm">
+            <li key={synergyItem.id} className="flex">
               <IconComponent
                 className={cn("h-5 w-5 mr-2 shrink-0", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")}
                 style={{ marginTop: '0.05rem' }}
               />
-              <span className={cn(synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")}>
+              <span className={cn("text-sm", synergyItem.isActive ? "text-emerald-600" : "text-muted-foreground")}>
                 {textNode}
               </span>
             </li>
@@ -162,7 +162,7 @@ export const SkillModifierBreakdownContentDisplay = ({
 
 
   if (contentBlocksToRender.length === 0) {
-    return null;
+    return <p className="text-sm text-muted-foreground">{uiStrings.infoDialogNoSkillDescription || "No details available for this skill."}</p>;
   }
 
   return (
