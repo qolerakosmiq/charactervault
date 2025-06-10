@@ -107,58 +107,19 @@ export const SkillModifierBreakdownContentDisplay = ({
     </div>
   ) : null;
 
-  const finalRenderBlocks: React.ReactNode[] = [];
-  if (htmlContentBlock) {
-    finalRenderBlocks.push(htmlContentBlock);
-  }
-
-  if (synergyBlock) {
-    if (finalRenderBlocks.length > 0) { // If description was present, add separator before synergies
-      finalRenderBlocks.push(<Separator className="my-3" key="sep-before-synergy" />);
-    }
-    finalRenderBlocks.push(synergyBlock);
-  }
-
-  if (calculationBlock) {
-    // Add separator before calculation ONLY if synergy block was NOT present AND description (or any previous block) was.
-    // If synergy block WAS present, we do NOT add a separator here, grouping synergy and calculation.
-    if (!synergyBlock && finalRenderBlocks.length > 0) {
-      finalRenderBlocks.push(<Separator className="my-3" key="sep-before-calc-no-synergy" />);
-    } else if (synergyBlock && finalRenderBlocks.length > 0) {
-      // This line ensures if Synergy block was present, it IS separated from calculation.
-      // To group them (remove separator), this line should be commented out or made conditional.
-      // Based on user wanting fewer separators around synergy, this implies
-      // if synergy is there, it should be grouped with calculation, removing this specific separator.
-      // The image shows: Desc --- Syn --- Calc.
-      // If user means "don't insert 2 separators" as in, remove one of these two,
-      // removing the one between Syn and Calc is a common visual grouping.
-      // Let's keep the separator if synergy block was present to match current behavior but ensure only one.
-       finalRenderBlocks.push(<Separator className="my-3" key="sep-before-calc-with-synergy" />);
-    }
-    finalRenderBlocks.push(calculationBlock);
-  }
-  
-  if (finalRenderBlocks.length === 0) return null;
-
-  // This mapping adds separators *between* the items in finalRenderBlocks.
-  // The logic above explicitly pushes separators *into* finalRenderBlocks.
-  // We need to choose one method. Let's use the explicit pushing.
-
-  // The bug might be if finalRenderBlocks contains separators, and then this map adds more.
-  // Let's reconstruct finalRenderBlocks to only contain content, and add separators in the map.
-
   const contentOnlyBlocks = [htmlContentBlock, synergyBlock, calculationBlock].filter(Boolean);
   if (contentOnlyBlocks.length === 0) return null;
 
   return contentOnlyBlocks.map((block, index) => (
     <React.Fragment key={(block as React.ReactElement)?.key || `content-block-${index}`}>
       {block}
-      {/* Add separator after this block if it's not the last one */}
-      {/* AND if the current block is description AND next is synergy */}
-      {/* OR if current block is synergy AND next is calculation */}
-      {/* This ensures a single separator between the main sections. */}
-      {index < contentOnlyBlocks.length - 1 && (
+      {/* Add separator only after the htmlContentBlock if there are more blocks after it */}
+      {block === htmlContentBlock && index < contentOnlyBlocks.length - 1 && (
         <Separator className="my-3" />
+      )}
+      {/* Or, if there's no htmlContentBlock, but synergyBlock is the first and there's a calculationBlock after it, add a separator */}
+      {!htmlContentBlock && block === synergyBlock && index < contentOnlyBlocks.length - 1 && contentOnlyBlocks[index + 1] === calculationBlock && (
+         <Separator className="my-3" />
       )}
     </React.Fragment>
   ));
