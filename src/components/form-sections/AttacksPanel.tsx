@@ -18,7 +18,7 @@ import { Separator } from '@/components/ui/separator';
 const DEBOUNCE_DELAY = 400;
 
 export type AttacksPanelCharacterData = Pick<Character,
-  'abilityScores' | 'classes' | 'size' | 'inventory' | 'feats' | 'babMiscModifier'
+  'abilityScores' | 'classes' | 'size' | 'inventory' | 'feats' | 'babMiscModifier' | 'sizeModifierAttack'
 >;
 
 export interface AttacksPanelProps {
@@ -63,10 +63,13 @@ const AttacksPanelComponent = ({
   }
   const { DND_CLASSES, SIZES, ABILITY_LABELS, UI_STRINGS } = translations;
 
-  const { abilityScores, classes, size, inventory, feats } = attacksPanelData;
+  const { abilityScores, classes, size, inventory, feats, sizeModifierAttack } = attacksPanelData; // Ensure sizeModifierAttack is destructured
   const strMod = getAbilityModifierByName(abilityScores, 'strength');
   const dexMod = getAbilityModifierByName(abilityScores, 'dexterity');
-  const sizeModAttack = getSizeModifierAttack(size, SIZES);
+  
+  // Use sizeModifierAttack from props, which is already calculated based on character.size
+  const actualSizeModAttack = sizeModifierAttack || 0;
+
 
   const baseBabArray = getBab(classes, DND_CLASSES);
   const totalBabWithModifier = baseBabArray.map(bab => bab + localBabMiscModifier);
@@ -85,23 +88,33 @@ const AttacksPanelComponent = ({
   }
   let meleeAttackFeatBonus = 0;
   aggregatedFeatEffects.attackRollBonuses.forEach(effect => {
-    if (effect.appliesTo === 'all' || effect.appliesTo === 'melee' || (selectedMeleeWeaponId === 'unarmed' && effect.appliesTo === 'unarmed')) {
-      meleeAttackFeatBonus += (typeof effect.value === 'number' ? effect.value : 0);
-    } else if (effect.weaponId && selectedMeleeWeapon && effect.weaponId === selectedMeleeWeapon.name) {
-      meleeAttackFeatBonus += (typeof effect.value === 'number' ? effect.value : 0);
+    if (typeof effect.value === 'number') {
+        const isGenericBonus = (effect.appliesTo === 'all' || effect.appliesTo === 'melee') && !effect.weaponId;
+        const isUnarmedBonus = selectedMeleeWeaponId === 'unarmed' && effect.appliesTo === 'unarmed' && !effect.weaponId;
+        const isSpecificWeaponBonus = selectedMeleeWeapon && effect.weaponId === selectedMeleeWeapon.name;
+
+        if (isGenericBonus || isUnarmedBonus || isSpecificWeaponBonus) {
+            // TODO: Add condition checking from featInstance.conditionalEffectStates if effect.condition exists
+            meleeAttackFeatBonus += effect.value;
+        }
     }
   });
-  const calculatedMeleeAttackBonus = totalBabWithModifier[0] + meleeAttackAbilityMod + sizeModAttack + meleeAttackFeatBonus;
+  const calculatedMeleeAttackBonus = totalBabWithModifier[0] + meleeAttackAbilityMod + actualSizeModAttack + meleeAttackFeatBonus;
 
   // --- Melee Damage Bonus Calculation ---
   let meleeDamageAbilityMod = strMod;
-  // TODO: Add logic for 1.5x STR for two-handed weapons later
+  // TODO: Add logic for 1.5x STR for two-handed weapons later if selectedMeleeWeapon.isTwoHandedWeapon
   let meleeDamageFeatBonus = 0;
   aggregatedFeatEffects.damageRollBonuses.forEach(effect => {
-     if (effect.appliesTo === 'all' || effect.appliesTo === 'melee' || (selectedMeleeWeaponId === 'unarmed' && effect.appliesTo === 'unarmed')) {
-      meleeDamageFeatBonus += (typeof effect.value === 'number' ? effect.value : 0);
-    } else if (effect.weaponId && selectedMeleeWeapon && effect.weaponId === selectedMeleeWeapon.name) {
-      meleeDamageFeatBonus += (typeof effect.value === 'number' ? effect.value : 0);
+    if (typeof effect.value === 'number') {
+        const isGenericBonus = (effect.appliesTo === 'all' || effect.appliesTo === 'melee') && !effect.weaponId;
+        const isUnarmedBonus = selectedMeleeWeaponId === 'unarmed' && effect.appliesTo === 'unarmed' && !effect.weaponId;
+        const isSpecificWeaponBonus = selectedMeleeWeapon && effect.weaponId === selectedMeleeWeapon.name;
+        
+        if (isGenericBonus || isUnarmedBonus || isSpecificWeaponBonus) {
+             // TODO: Add condition checking
+            meleeDamageFeatBonus += effect.value;
+        }
     }
   });
   const calculatedMeleeDamageBonus = meleeDamageAbilityMod + meleeDamageFeatBonus;
@@ -109,24 +122,33 @@ const AttacksPanelComponent = ({
   // --- Ranged Attack Bonus Calculation ---
   let rangedAttackFeatBonus = 0;
    aggregatedFeatEffects.attackRollBonuses.forEach(effect => {
-    if (effect.appliesTo === 'all' || effect.appliesTo === 'ranged') {
-      rangedAttackFeatBonus += (typeof effect.value === 'number' ? effect.value : 0);
-    } else if (effect.weaponId && selectedRangedWeapon && effect.weaponId === selectedRangedWeapon.name) {
-      rangedAttackFeatBonus += (typeof effect.value === 'number' ? effect.value : 0);
+    if (typeof effect.value === 'number') {
+        const isGenericBonus = (effect.appliesTo === 'all' || effect.appliesTo === 'ranged') && !effect.weaponId;
+        const isSpecificWeaponBonus = selectedRangedWeapon && effect.weaponId === selectedRangedWeapon.name;
+
+        if (isGenericBonus || isSpecificWeaponBonus) {
+            // TODO: Add condition checking
+            rangedAttackFeatBonus += effect.value;
+        }
     }
   });
-  const calculatedRangedAttackBonus = totalBabWithModifier[0] + dexMod + sizeModAttack + rangedAttackFeatBonus;
+  const calculatedRangedAttackBonus = totalBabWithModifier[0] + dexMod + actualSizeModAttack + rangedAttackFeatBonus;
 
   // --- Ranged Damage Bonus Calculation ---
   let rangedDamageFeatBonus = 0;
+  // Note: STR to ranged damage (e.g., thrown, mighty composite bows) is complex and not implemented by default here.
+  // Specific feats (like a mighty composite bow effect) would need to add STR or a fixed bonus via damageRollBonuses.
   aggregatedFeatEffects.damageRollBonuses.forEach(effect => {
-    if (effect.appliesTo === 'all' || effect.appliesTo === 'ranged') {
-       rangedDamageFeatBonus += (typeof effect.value === 'number' ? effect.value : 0);
-    } else if (effect.weaponId && selectedRangedWeapon && effect.weaponId === selectedRangedWeapon.name) {
-       rangedDamageFeatBonus += (typeof effect.value === 'number' ? effect.value : 0);
+    if (typeof effect.value === 'number') {
+        const isGenericBonus = (effect.appliesTo === 'all' || effect.appliesTo === 'ranged') && !effect.weaponId;
+        const isSpecificWeaponBonus = selectedRangedWeapon && effect.weaponId === selectedRangedWeapon.name;
+
+        if (isGenericBonus || isSpecificWeaponBonus) {
+            // TODO: Add condition checking
+           rangedDamageFeatBonus += effect.value;
+        }
     }
   });
-  // Placeholder for STR to ranged damage (e.g. thrown, mighty composite bows) - not implemented yet
   const calculatedRangedDamageBonus = rangedDamageFeatBonus;
 
 
@@ -262,3 +284,4 @@ const AttacksPanelComponent = ({
 };
 AttacksPanelComponent.displayName = 'AttacksPanelComponent';
 export const AttacksPanel = React.memo(AttacksPanelComponent);
+
