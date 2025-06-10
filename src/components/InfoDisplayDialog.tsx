@@ -40,8 +40,7 @@ import {
   checkFeatPrerequisites,
   calculateSpeedBreakdown,
   ABILITY_ORDER_INTERNAL,
-  getRaceSkillPointsBonusPerLevel,
-  SAVING_THROW_ABILITIES
+  getRaceSkillPointsBonusPerLevel
 } from '@/types/character';
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
 import { useI18n } from '@/context/I18nProvider';
@@ -49,7 +48,7 @@ import { Separator } from '@/components/ui/separator';
 
 import {
   calculateAbilityModifier, getAbilityModifierByName, getBab, getSizeModifierAC, getSizeModifierGrapple,
-  calculateInitiative, calculateGrapple, getUnarmedGrappleDamage, getBaseSaves
+  calculateInitiative, calculateGrapple, getUnarmedGrappleDamage, getBaseSaves, SAVING_THROW_ABILITIES
 } from '@/lib/dnd-utils';
 
 import { RaceContentDisplay } from './info-dialog-content/RaceContentDisplay';
@@ -961,3 +960,4 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
+
