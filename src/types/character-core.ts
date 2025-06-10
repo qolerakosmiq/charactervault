@@ -588,6 +588,8 @@ export interface Character {
   chosenDomains?: [DomainId | undefined, DomainId | undefined];
   chosenSpecializationSchool?: MagicSchoolId;
   prohibitedSchools?: MagicSchoolId[];
+  powerAttackValue?: number;
+  combatExpertiseValue?: number;
 }
 
 // Informational/Breakdown types
@@ -601,6 +603,13 @@ export type SpeedType = 'land' | 'burrow' | 'climb' | 'fly' | 'swim';
 export interface ComboboxOption { // Moved from ComboboxPrimitive.tsx
   value: string;
   label: string;
+}
+
+export interface GenericBreakdownItem {
+  label: string;
+  value: string | number;
+  isBold?: boolean;
+  isSubItem?: boolean;
 }
 
 export type InfoDialogContentType =
@@ -621,7 +630,9 @@ export type InfoDialogContentType =
   | { type: 'loadSpeedPenaltyBreakdown' }
   | { type: 'savingThrowBreakdown'; saveType: SavingThrowType }
   | { type: 'maxHpBreakdown' }
-  | { type: 'genericHtml'; title: string; content: string };
+  | { type: 'genericHtml'; title: string; content: string }
+  | { type: 'genericNumericalBreakdown'; titleKey: keyof ProcessedSiteData['UI_STRINGS']; components: GenericBreakdownItem[] };
+
 
 export interface SkillDefinitionForDisplay {
   id: string;
@@ -726,4 +737,3 @@ export interface PrerequisiteMessage {
   orderKey: string;
   originalText?: string;
 }
-

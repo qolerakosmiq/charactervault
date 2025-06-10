@@ -54,6 +54,11 @@
     "infoDialogTitleResistanceBreakdown": "Détail de la résistance à {resistanceName}",
     "infoDialogTitleAcBreakdown": "Classe d'Armure - Détail ({acType})",
     "infoDialogTitleBabBreakdown": "Détail du bonus de base à l'attaque",
+    "infoDialogTitleTotalBabBreakdown": "Détail du Bonus de Base à l'Attaque Total",
+    "infoDialogTitleMeleeAttackBreakdown": "Détail du Bonus d'Attaque en Mêlée",
+    "infoDialogTitleMeleeDamageBreakdown": "Détail du Bonus de Dégâts en Mêlée",
+    "infoDialogTitleRangedAttackBreakdown": "Détail du Bonus d'Attaque à Distance",
+    "infoDialogTitleRangedDamageBreakdown": "Détail du Bonus de Dégâts à Distance",
     "infoDialogTitleInitiativeBreakdown": "Détail de l'initiative",
     "infoDialogTitleGrappleModifierBreakdown": "Détail du modificateur de lutte",
     "infoDialogTitleGrappleDamageBreakdown": "Détail des dégâts de lutte",
@@ -106,7 +111,7 @@
     "infoDialogGrappleDmgUnarmedLabel": "À mains nues",
     "infoDialogGrappleDmgAbilityLabel": "Modificateur de caractéristique",
     "infoDialogGrappleDmgTotalLabel": "Total",
-    "prereqBabLabel": "Bonus de base à l'attaque",
+    "prereqBabLabel": "BBA",
     "skillRankPrereqFormat": "{skillName} {ranksValue} {ranksLabel}",
     "prereqSkillRanksLabel": "Rangs",
     "prereqCasterLevelLabel": "Niv. de lanceur de sorts",
@@ -499,6 +504,17 @@
     "attacksPanelWeaponCriticalLabel": "Critique",
     "attacksPanelWeaponRangeLabel": "Portée",
     "attacksPanelWeaponDamageTypeLabel": "Type",
+    "powerAttackValueLabel": "Valeur d'Attaque en Puissance",
+    "powerAttackDescription": "Définir le malus à l'attaque pour un bonus aux dégâts.",
+    "powerAttackPenaltyLabel": "Malus d'Attaque en Puissance",
+    "powerAttackDamageBonusLabel": "Bonus de Dégâts d'Attaque en Puissance",
+    "combatExpertiseValueLabel": "Valeur d'Expertise du Combat",
+    "combatExpertiseDescription": "Définir le malus à l'attaque pour un bonus à la CA.",
+    "combatExpertisePenaltyLabel": "Malus d'Expertise du Combat",
+    "combatExpertiseAcBonusLabel": "CA d'Expertise du Combat",
+    "attacksPanelAbilityModLabel": "Mod. Carac. ({abilityAbbr})",
+    "attacksPanelSizeModLabel": "Mod. Taille (Attaque)",
+    "attacksPanelFeatBonusLabel": "Bonus de Don",
     "inventoryPanelTitle": "Inventaire",
     "inventoryPanelDescription": "Gérez l'équipement et les possessions de votre personnage.",
     "inventoryEditItemTitle": "Modifier l'Objet",
@@ -559,4 +575,3 @@
 
 
 
-```

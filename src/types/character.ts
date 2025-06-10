@@ -53,7 +53,8 @@ import type {
   FeatEffectScalingSpecificLevel,
   AvailableFeatSlotsBreakdown,
   CharacterFavoredEnemy,
-  DomainDefinition
+  DomainDefinition,
+  Character // Import full Character type
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 // Import calculateLevelFromXp and other used utilities directly
@@ -655,9 +656,8 @@ export function calculateDetailedAbilityScores(
 }
 
 export function calculateFeatEffects(
-  characterFeats: CharacterFeatInstance[],
-  allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[],
-  characterClasses: CharacterClass[]
+  character: Character, // Now takes the full character object
+  allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]
 ): AggregatedFeatEffects {
   const newAggregatedEffects: AggregatedFeatEffects = {
     skillBonuses: {},
@@ -682,13 +682,34 @@ export function calculateFeatEffects(
     bonusFeatSlots: [],
     languagesGranted: { count: 0, specific: [] },
     descriptiveNotes: [],
-    classLevels: characterClasses.reduce((acc, cur) => {
+    classLevels: character.classes.reduce((acc, cur) => {
       if (cur.className) acc[cur.className] = cur.level;
       return acc;
     }, {} as Record<DndClassId, number>),
   };
 
-  for (const featInstance of characterFeats) {
+  // Power Attack and Combat Expertise effects
+  if (character.feats.some(f => f.definitionId === 'power-attack') && character.powerAttackValue && character.powerAttackValue > 0) {
+    newAggregatedEffects.attackRollBonuses.push({
+      type: "attackRoll", value: -character.powerAttackValue, appliesTo: "melee", sourceFeat: "Power Attack Effect"
+    });
+    // TODO: Add logic for 1.5x or 2x damage bonus for two-handed weapons if applicable
+    // For now, 1:1 damage bonus. This might require knowing the equipped weapon.
+    newAggregatedEffects.damageRollBonuses.push({
+      type: "damageRoll", value: character.powerAttackValue, appliesTo: "melee", sourceFeat: "Power Attack Effect"
+    });
+  }
+  if (character.feats.some(f => f.definitionId === 'combat-expertise') && character.combatExpertiseValue && character.combatExpertiseValue > 0) {
+    newAggregatedEffects.attackRollBonuses.push({
+      type: "attackRoll", value: -character.combatExpertiseValue, appliesTo: "melee", sourceFeat: "Combat Expertise Effect"
+    });
+    newAggregatedEffects.acBonuses.push({
+      type: "armorClass", value: character.combatExpertiseValue, acType: "dodge", bonusType: "dodge", sourceFeat: "Combat Expertise Effect" // Using dodge type for AC, might need specific handling
+    });
+  }
+
+
+  for (const featInstance of character.feats) {
     const definition = allFeatDefinitions.find(def => def.value === featInstance.definitionId);
     if (!definition || !definition.effects || !Array.isArray(definition.effects)) {
       continue;
@@ -1021,3 +1042,4 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
+

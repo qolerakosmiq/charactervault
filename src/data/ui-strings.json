@@ -54,6 +54,11 @@
     "infoDialogTitleResistanceBreakdown": "{resistanceName} Resistance Breakdown",
     "infoDialogTitleAcBreakdown": "{acType} Armor Class Breakdown",
     "infoDialogTitleBabBreakdown": "Base Attack Bonus Breakdown",
+    "infoDialogTitleTotalBabBreakdown": "Total Base Attack Bonus Breakdown",
+    "infoDialogTitleMeleeAttackBreakdown": "Melee Attack Bonus Breakdown",
+    "infoDialogTitleMeleeDamageBreakdown": "Melee Damage Bonus Breakdown",
+    "infoDialogTitleRangedAttackBreakdown": "Ranged Attack Bonus Breakdown",
+    "infoDialogTitleRangedDamageBreakdown": "Ranged Damage Bonus Breakdown",
     "infoDialogTitleInitiativeBreakdown": "Initiative Breakdown",
     "infoDialogTitleGrappleModifierBreakdown": "Grapple Modifier Breakdown",
     "infoDialogTitleGrappleDamageBreakdown": "Grapple Damage Breakdown",
@@ -106,7 +111,7 @@
     "infoDialogGrappleDmgUnarmedLabel": "Unarmed",
     "infoDialogGrappleDmgAbilityLabel": "Ability Modifier",
     "infoDialogGrappleDmgTotalLabel": "Total",
-    "prereqBabLabel": "Base Attack Bonus",
+    "prereqBabLabel": "BAB",
     "skillRankPrereqFormat": "{skillName} {ranksValue} {ranksLabel}",
     "prereqSkillRanksLabel": "Ranks",
     "prereqCasterLevelLabel": "Caster Level",
@@ -499,6 +504,17 @@
     "attacksPanelWeaponCriticalLabel": "Critical",
     "attacksPanelWeaponRangeLabel": "Range",
     "attacksPanelWeaponDamageTypeLabel": "Type",
+    "powerAttackValueLabel": "Power Attack Value",
+    "powerAttackDescription": "Set attack penalty for damage bonus.",
+    "powerAttackPenaltyLabel": "Power Attack Penalty",
+    "powerAttackDamageBonusLabel": "Power Attack Damage",
+    "combatExpertiseValueLabel": "Combat Expertise Value",
+    "combatExpertiseDescription": "Set attack penalty for AC bonus.",
+    "combatExpertisePenaltyLabel": "Combat Expertise Penalty",
+    "combatExpertiseAcBonusLabel": "Combat Expertise AC",
+    "attacksPanelAbilityModLabel": "Ability Mod ({abilityAbbr})",
+    "attacksPanelSizeModLabel": "Size Mod (Attack)",
+    "attacksPanelFeatBonusLabel": "Feat Bonus",
     "inventoryPanelTitle": "Inventory",
     "inventoryPanelDescription": "Manage your character's equipment and possessions.",
     "inventoryEditItemTitle": "Edit Item",
@@ -559,4 +575,3 @@
 
 
 
-```
