@@ -108,7 +108,7 @@ export interface AttackRollEffect {
   rangeLimit?: number; // Numeric value, UI appends unit
   sourceFeat?: string;
   scaleWithClassLevel?: FeatEffectScaling;
-  weaponId?: string; // Added for specialized weapon effects
+  weaponId?: string; 
 }
 
 export interface DamageRollEffect {
@@ -120,7 +120,7 @@ export interface DamageRollEffect {
   rangeLimit?: number; // Numeric value
   sourceFeat?: string;
   scaleWithClassLevel?: FeatEffectScaling; // For dice string or numeric value
-  weaponId?: string; // Added for specialized weapon effects
+  weaponId?: string; 
 }
 
 export interface ArmorClassEffect {
@@ -318,13 +318,39 @@ export interface CharacterFeatInstance {
   conditionalEffectStates?: Record<string, boolean>; // Key: condition string, Value: isActive
 }
 
+export type ItemBaseType = 'weapon' | 'armor' | 'shield' | 'potion' | 'scroll' | 'wand' | 'ring' | 'amulet' | 'boots' | 'belt' | 'bracers' | 'cloak' | 'gloves' | 'headband' | 'robe' | 'rod' | 'staff' | 'wondrous' | 'other';
+export type WeaponStyleType = 'melee' | 'ranged' | 'melee-or-ranged';
+export type WeaponProficiencyCategory = 'simple' | 'martial' | 'exotic';
+
 export interface Item {
   id: string;
   name: string;
   quantity: number;
   description?: string;
-  weight?: number;
+  weight?: number; // in lbs or relevant unit
+  itemType?: ItemBaseType;
+  // Weapon-specific properties
+  weaponType?: WeaponStyleType; // melee, ranged, or both
+  damage?: string; // e.g., "1d8", "2d6"
+  criticalRange?: string; // e.g., "19-20", "20"
+  criticalMultiplier?: string; // e.g., "x2", "x3"
+  rangeIncrement?: number; // in feet or relevant unit
+  damageType?: string; // e.g., "Slashing", "Piercing", "Bludgeoning", "Fire"
+  isFinesseWeapon?: boolean;
+  isLightWeapon?: boolean;
+  isTwoHandedWeapon?: boolean;
+  proficiencyCategory?: WeaponProficiencyCategory;
+  specialProperties?: string; // Text field for other properties like "Masterwork", "Vorpal"
+  // Armor/Shield specific properties
+  armorBonus?: number;
+  shieldBonus?: number;
+  maxDexBonus?: number;
+  armorCheckPenalty?: number;
+  spellFailureChance?: number; // as percentage, e.g., 20 for 20%
+  speedWhenWorn?: number; // if different from character's normal speed
+  armorType?: 'light' | 'medium' | 'heavy' | 'shield'; // For easier filtering
 }
+
 
 export type SavingThrowType = 'fortitude' | 'reflex' | 'will';
 
@@ -500,6 +526,7 @@ export interface Character {
   alignment: CharacterAlignment;
   deity?: DndDeityId | string;
   size: CharacterSize;
+  sizeModifierAttack?: number; // New field for attack size modifier
   age: number;
   gender: GenderId | string | '';
   height?: string;
@@ -700,3 +727,4 @@ export interface PrerequisiteMessage {
   originalText?: string;
 }
 
+```
