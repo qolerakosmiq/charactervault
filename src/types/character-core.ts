@@ -372,6 +372,7 @@ export type DndClassId = string;
 export type DndDeityId = string;
 export type GenderId = string;
 export type LanguageId = string;
+export type DomainId = string;
 
 export interface LanguageOption {
   value: LanguageId;
@@ -462,6 +463,22 @@ export interface CharacterFavoredEnemy {
   note?: string; // Optional note, e.g., "From 1st level choice"
 }
 
+export interface DomainSpell {
+  level: number;
+  spellId: string; // Placeholder ID for now
+  spellName?: string; // Can be populated from a future spell list
+}
+
+export interface DomainDefinition {
+  value: DomainId;
+  label: string;
+  description: string;
+  grantedPowerDescription: string;
+  grantedPowerFeatId?: string;
+  domainSpells: DomainSpell[];
+  deityAlignmentRestrictions?: CharacterAlignment[];
+}
+
 export interface Character {
   id: string;
   name: string;
@@ -530,6 +547,7 @@ export interface Character {
   loadSpeedPenalty_miscModifier: number;
   chosenCombatStyle?: "archery" | "twoWeaponFighting";
   chosenFavoredEnemies?: CharacterFavoredEnemy[];
+  chosenDomains?: [DomainId | undefined, DomainId | undefined];
 }
 
 // Informational/Breakdown types

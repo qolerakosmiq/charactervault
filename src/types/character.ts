@@ -52,7 +52,8 @@ import type {
   DescriptiveEffectDetail,
   FeatEffectScalingSpecificLevel,
   AvailableFeatSlotsBreakdown,
-  CharacterFavoredEnemy
+  CharacterFavoredEnemy,
+  DomainDefinition // Added
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 // Import calculateLevelFromXp and other used utilities directly
@@ -333,15 +334,16 @@ export function calculateAvailableFeats(
 }
 
 export function getGrantedFeatsForCharacter(
-  character: Pick<Character, 'race' | 'classes' | 'experiencePoints' | 'chosenCombatStyle'>,
+  character: Pick<Character, 'race' | 'classes' | 'experiencePoints' | 'chosenCombatStyle' | 'chosenDomains'>, // Added chosenDomains
   allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[],
   DND_RACES: readonly DndRaceOption[],
   DND_CLASSES: readonly DndClassOption[],
+  DND_DOMAINS: readonly DomainDefinition[], // Added DND_DOMAINS
   XP_TABLE: readonly { level: number; xpRequired: number }[],
   EPIC_LEVEL_XP_INCREASE: number
 ): CharacterFeatInstance[] {
-  if (!Array.isArray(DND_RACES) || !Array.isArray(DND_CLASSES) || !Array.isArray(allFeatDefinitions)) {
-    console.warn("getGrantedFeatsForCharacter called with invalid DND_RACES, DND_CLASSES or allFeatDefinitions. Data might not be fully loaded.");
+  if (!Array.isArray(DND_RACES) || !Array.isArray(DND_CLASSES) || !Array.isArray(allFeatDefinitions) || !Array.isArray(DND_DOMAINS)) {
+    console.warn("getGrantedFeatsForCharacter called with invalid DND_RACES, DND_CLASSES, DND_DOMAINS or allFeatDefinitions. Data might not be fully loaded.");
     return [];
   }
 
@@ -404,6 +406,17 @@ export function getGrantedFeatsForCharacter(
         if (rangerLevel >= 6) addGrantedInstance('improved-two-weapon-fighting', styleNotePrefix, 'Ranger', 6);
         if (rangerLevel >= 11) addGrantedInstance('greater-two-weapon-fighting', styleNotePrefix, 'Ranger', 11);
       }
+    }
+
+    if (classData?.value === 'cleric' && character.chosenDomains) {
+      character.chosenDomains.forEach(domainId => {
+        if (domainId) {
+          const domainDef = DND_DOMAINS.find(d => d.value === domainId);
+          if (domainDef?.grantedPowerFeatId) {
+            addGrantedInstance(domainDef.grantedPowerFeatId, `Granted by ${domainDef.label} Domain`, 'Domain Power');
+          }
+        }
+      });
     }
   });
   return grantedInstances;

@@ -16,14 +16,16 @@ import type {
   DndRaceOption,
   DndClassOption,
   AggregatedFeatEffects,
-  CharacterFavoredEnemy
+  CharacterFavoredEnemy,
+  DomainDefinition, // Added
+  DomainId // Added
 } from '@/types/character-core';
 import { isAlignmentCompatible } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollText, Info, Loader2, Users, Swords as BarbarianRageIcon } from 'lucide-react';
+import { ScrollText, Info, Loader2, Users, Swords as BarbarianRageIcon, BookOpen } from 'lucide-react'; // Added BookOpen
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -36,11 +38,12 @@ import { Separator } from '@/components/ui/separator';
 
 const DEBOUNCE_DELAY = 400; // ms
 const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__";
+const DOMAIN_NONE_OPTION_VALUE = "__NONE_DOMAIN__"; // Added
 
 export interface CharacterFormCoreInfoSectionProps {
-  characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes' | 'chosenCombatStyle' | 'chosenFavoredEnemies'>;
+  characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes' | 'chosenCombatStyle' | 'chosenFavoredEnemies' | 'chosenDomains'>; // Added chosenDomains
   onFieldChange: (
-    field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'chosenCombatStyle' | 'chosenFavoredEnemies'>,
+    field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'chosenCombatStyle' | 'chosenFavoredEnemies' | 'chosenDomains'>, // Added chosenDomains
     value: any
   ) => void;
   onClassChange: (className: DndClassId | string) => void;
@@ -122,21 +125,17 @@ const CharacterFormCoreInfoSectionComponent = ({
   
   const handleFavoredEnemyChange = (index: number, newType: string) => {
     const updatedEnemies = [...(characterData.chosenFavoredEnemies || [])];
-    // Ensure the array is long enough
     while (updatedEnemies.length <= index) {
         updatedEnemies.push({ id: crypto.randomUUID(), type: '' });
     }
-
-    if (updatedEnemies[index]) {
-        updatedEnemies[index] = { ...updatedEnemies[index], type: newType };
-    } else {
-        // This case should ideally not be hit if the above while loop works
-        updatedEnemies[index] = { id: crypto.randomUUID(), type: newType };
-    }
-    // Filter out empty entries if user clears an input for an existing slot, 
-    // but keep placeholders for newly available slots.
-    // For this component, we'll pass back the potentially sparse array and let CharacterFormCore handle it.
+    updatedEnemies[index] = { ...updatedEnemies[index], type: newType };
     onFieldChange('chosenFavoredEnemies', updatedEnemies);
+  };
+
+  const handleDomainChange = (index: 0 | 1, newDomainId: DomainId | undefined) => {
+    const currentDomains = characterData.chosenDomains ? [...characterData.chosenDomains] : [undefined, undefined];
+    currentDomains[index] = newDomainId === DOMAIN_NONE_OPTION_VALUE ? undefined : newDomainId;
+    onFieldChange('chosenDomains', currentDomains as [DomainId | undefined, DomainId | undefined]);
   };
 
 
@@ -207,6 +206,21 @@ const CharacterFormCoreInfoSectionComponent = ({
     return translations.SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>);
   }, [translationsLoading, translations]);
   
+  const domainOptions = React.useMemo(() => {
+    if (translationsLoading || !translations) return [{ value: DOMAIN_NONE_OPTION_VALUE, label: "Loading..." }];
+    const noneOptionLabel = translations.UI_STRINGS?.domainNoneOption || "None";
+    return [{ value: DOMAIN_NONE_OPTION_VALUE, label: noneOptionLabel }, ...translations.DND_DOMAINS.map(d => ({ value: d.value, label: d.label }))];
+  }, [translations, translationsLoading]);
+
+  const selectedDomain1 = characterData.chosenDomains?.[0];
+  const selectedDomain2 = characterData.chosenDomains?.[1];
+
+  const domainOptionsForSecondPicker = React.useMemo(() => {
+    if (!selectedDomain1) return domainOptions;
+    return domainOptions.filter(opt => opt.value !== selectedDomain1);
+  }, [domainOptions, selectedDomain1]);
+
+
   const isRanger = selectedClassInfo?.value === 'ranger';
   const rangerLevel = isRanger ? (characterData.classes[0]?.level || 0) : 0;
   const canChooseCombatStyle = isRanger && rangerLevel >= 2;
@@ -215,6 +229,8 @@ const CharacterFormCoreInfoSectionComponent = ({
   const isBarbarian = selectedClassInfo?.value === 'barbarian';
   const rageUsesAbility = aggregatedFeatEffects?.grantedAbilities.find(ab => ab.abilityKey === 'barbarianRageUses');
   const rageUsesPerDay = rageUsesAbility?.uses?.value || 0;
+  
+  const isCleric = selectedClassInfo?.value === 'cleric';
 
 
   if (translationsLoading || !translations) {
@@ -323,6 +339,41 @@ const CharacterFormCoreInfoSectionComponent = ({
             )}
           </div>
         </div>
+        
+        {isCleric && (
+          <div className="space-y-4 p-3 border rounded-md bg-muted/20">
+            <Label className="flex items-center text-md font-medium">
+              <BookOpen className="mr-2 h-5 w-5 text-primary/70" />
+              {UI_STRINGS.clericDomainsTitle || "Cleric Domains"}
+            </Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <Label htmlFor="cleric-domain-1" className="text-sm">{UI_STRINGS.clericDomain1Label || "First Domain"}</Label>
+                <ComboboxPrimitive
+                  id="cleric-domain-1"
+                  options={domainOptions}
+                  value={selectedDomain1 || DOMAIN_NONE_OPTION_VALUE}
+                  onChange={(val) => handleDomainChange(0, val as DomainId)}
+                  placeholder={UI_STRINGS.selectDomainPlaceholder || "Select Domain..."}
+                  triggerClassName="h-9 text-sm"
+                />
+                {selectedDomain1 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.value === selectedDomain1)?.grantedPowerDescription}</p>}
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="cleric-domain-2" className="text-sm">{UI_STRINGS.clericDomain2Label || "Second Domain"}</Label>
+                <ComboboxPrimitive
+                  id="cleric-domain-2"
+                  options={domainOptionsForSecondPicker}
+                  value={selectedDomain2 || DOMAIN_NONE_OPTION_VALUE}
+                  onChange={(val) => handleDomainChange(1, val as DomainId)}
+                  placeholder={UI_STRINGS.selectDomainPlaceholder || "Select Domain..."}
+                  triggerClassName="h-9 text-sm"
+                />
+                 {selectedDomain2 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.value === selectedDomain2)?.grantedPowerDescription}</p>}
+              </div>
+            </div>
+          </div>
+        )}
 
         {isBarbarian && rageUsesPerDay > 0 && (
             <div className="p-3 border rounded-md bg-muted/20 space-y-1">
@@ -370,7 +421,7 @@ const CharacterFormCoreInfoSectionComponent = ({
             {Array.from({ length: favoredEnemySlots }).map((_, index) => (
               <div key={`favored-enemy-${index}`} className="space-y-1">
                 <Label htmlFor={`favored-enemy-input-${index}`} className="text-xs">
-                  {UI_STRINGS.favoredEnemySlotLabel || "Favored Enemy Slot"} {index + 1}
+                  {(UI_STRINGS.favoredEnemySlotLabel || "Favored Enemy Slot {slotNum}").replace("{slotNum}", String(index + 1))}
                 </Label>
                 <Input
                   id={`favored-enemy-input-${index}`}

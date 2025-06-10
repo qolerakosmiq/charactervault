@@ -1,0 +1,113 @@
+
+{
+  "DND_DOMAINS_DATA": [
+    {
+      "value": "air",
+      "label": "Air",
+      "description": "Grants powers related to air and electricity.",
+      "grantedPowerDescription": "Turn or destroy earth creatures, rebuke or command air creatures.",
+      "grantedPowerFeatId": "feat-domain-power-air",
+      "domainSpells": [
+        { "level": 1, "spellId": "spell_obscuring_mist" },
+        { "level": 2, "spellId": "spell_wind_wall" },
+        { "level": 3, "spellId": "spell_gaseous_form" },
+        { "level": 4, "spellId": "spell_air_walk" },
+        { "level": 5, "spellId": "spell_control_winds" },
+        { "level": 6, "spellId": "spell_chain_lightning" },
+        { "level": 7, "spellId": "spell_control_weather" },
+        { "level": 8, "spellId": "spell_whirlwind" },
+        { "level": 9, "spellId": "spell_elemental_swarm_air" }
+      ]
+    },
+    {
+      "value": "animal",
+      "label": "Animal",
+      "description": "Grants powers related to animals and beasts.",
+      "grantedPowerDescription": "Speak with animals once per day.",
+      "grantedPowerFeatId": "feat-domain-power-animal",
+      "domainSpells": [
+        { "level": 1, "spellId": "spell_calm_animals" },
+        { "level": 2, "spellId": "spell_hold_animal" },
+        { "level": 3, "spellId": "spell_dominate_animal" },
+        { "level": 4, "spellId": "spell_summon_natures_ally_iv_animal" },
+        { "level": 5, "spellId": "spell_commune_with_nature" },
+        { "level": 6, "spellId": "spell_antilife_shell" },
+        { "level": 7, "spellId": "spell_animal_shapes" },
+        { "level": 8, "spellId": "spell_summon_natures_ally_viii_animal" },
+        { "level": 9, "spellId": "spell_shapechange" }
+      ]
+    },
+    {
+      "value": "death",
+      "label": "Death",
+      "description": "Grants powers over death and the undead.",
+      "grantedPowerDescription": "Death touch: Once per day, successful melee touch attack against a living creature inflicts (Cleric level) hit points of damage. This ability is negated by a successful Fortitude save (DC 10 + 1/2 Cleric level + Wis modifier).",
+      "grantedPowerFeatId": "feat-domain-power-death",
+      "domainSpells": [
+        { "level": 1, "spellId": "spell_cause_fear" },
+        { "level": 2, "spellId": "spell_death_knell" },
+        { "level": 3, "spellId": "spell_animate_dead" },
+        { "level": 4, "spellId": "spell_death_ward" },
+        { "level": 5, "spellId": "spell_slay_living" },
+        { "level": 6, "spellId": "spell_create_undead" },
+        { "level": 7, "spellId": "spell_destruction" },
+        { "level": 8, "spellId": "spell_create_greater_undead" },
+        { "level": 9, "spellId": "spell_wail_of_the_banshee" }
+      ]
+    },
+    {
+      "value": "healing",
+      "label": "Healing",
+      "description": "Grants enhanced healing capabilities.",
+      "grantedPowerDescription": "Cast healing spells at +1 caster level.",
+      "grantedPowerFeatId": "feat-domain-power-healing",
+      "domainSpells": [
+        { "level": 1, "spellId": "spell_cure_light_wounds" },
+        { "level": 2, "spellId": "spell_cure_moderate_wounds" },
+        { "level": 3, "spellId": "spell_cure_serious_wounds" },
+        { "level": 4, "spellId": "spell_cure_critical_wounds" },
+        { "level": 5, "spellId": "spell_cure_light_wounds_mass" },
+        { "level": 6, "spellId": "spell_heal" },
+        { "level": 7, "spellId": "spell_regenerate" },
+        { "level": 8, "spellId": "spell_cure_critical_wounds_mass" },
+        { "level": 9, "spellId": "spell_heal_mass" }
+      ]
+    },
+    {
+      "value": "knowledge",
+      "label": "Knowledge",
+      "description": "Grants access to lore and divination.",
+      "grantedPowerDescription": "All Knowledge skills are class skills. Cast divinations at +1 caster level.",
+      "grantedPowerFeatId": "feat-domain-power-knowledge",
+      "domainSpells": [
+        { "level": 1, "spellId": "spell_detect_secret_doors" },
+        { "level": 2, "spellId": "spell_detect_thoughts" },
+        { "level": 3, "spellId": "spell_clairaudience_clairvoyance" },
+        { "level": 4, "spellId": "spell_divination" },
+        { "level": 5, "spellId": "spell_true_seeing" },
+        { "level": 6, "spellId": "spell_find_the_path" },
+        { "level": 7, "spellId": "spell_legend_lore" },
+        { "level": 8, "spellId": "spell_discern_location" },
+        { "level": 9, "spellId": "spell_foresight" }
+      ]
+    },
+    {
+      "value": "strength",
+      "label": "Strength",
+      "description": "Grants powers enhancing physical might.",
+      "grantedPowerDescription": "Feat of strength: +Cleric level to Strength score for 1 round, 1/day.",
+      "grantedPowerFeatId": "feat-domain-power-strength",
+      "domainSpells": [
+        { "level": 1, "spellId": "spell_enlarge_person" },
+        { "level": 2, "spellId": "spell_bulls_strength" },
+        { "level": 3, "spellId": "spell_magic_vestment" },
+        { "level": 4, "spellId": "spell_spell_immunity" },
+        { "level": 5, "spellId": "spell_righteous_might" },
+        { "level": 6, "spellId": "spell_stoneskin" },
+        { "level": 7, "spellId": "spell_grasping_hand" },
+        { "level": 8, "spellId": "spell_clenched_fist" },
+        { "level": 9, "spellId": "spell_crushing_hand" }
+      ]
+    }
+  ]
+}

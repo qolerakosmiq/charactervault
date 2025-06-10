@@ -454,9 +454,15 @@
     "conditionFightingDefensivelyOrTotalDefenseWithTwoWeapons": "Combat Défensif ou Défense Totale (avec Deux Armes)",
     "conditionVsDesignatedOpponent": "contre Adversaire Désigné",
     "conditionVsDesignatedOpponent2": "contre Adversaire Désigné (Test Esquive2)",
-    "conditionVsDesignatedOpponent3": "contre Adversaire Désigné (Test Esquive3)"
+    "conditionVsDesignatedOpponent3": "contre Adversaire Désigné (Test Esquive3)",
+    "clericDomainsTitle": "Domaines de prêtre",
+    "clericDomain1Label": "Premier domaine",
+    "clericDomain2Label": "Second domaine",
+    "selectDomainPlaceholder": "Choisir un domaine...",
+    "domainNoneOption": "Aucun"
   }
 }
     
     
     
+

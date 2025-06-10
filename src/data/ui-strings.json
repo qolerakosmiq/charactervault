@@ -454,9 +454,15 @@
     "conditionFightingDefensivelyOrTotalDefenseWithTwoWeapons": "Fighting Defensively or Total Defense (with Two Weapons)",
     "conditionVsDesignatedOpponent": "vs. Designated Opponent",
     "conditionVsDesignatedOpponent2": "vs. Designated Opponent (Dodge2 Test)",
-    "conditionVsDesignatedOpponent3": "vs. Designated Opponent (Dodge3 Test)"
+    "conditionVsDesignatedOpponent3": "vs. Designated Opponent (Dodge3 Test)",
+    "clericDomainsTitle": "Cleric Domains",
+    "clericDomain1Label": "First Domain",
+    "clericDomain2Label": "Second Domain",
+    "selectDomainPlaceholder": "Select Domain...",
+    "domainNoneOption": "None"
   }
 }
     
     
     
+
