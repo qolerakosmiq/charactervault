@@ -27,7 +27,8 @@ import type {
   SpeedBreakdownDetails as SpeedBreakdownDetailsType,
   SpeedComponent,
   CharacterSizeObject,
-  DndRaceOption, DndClassOption, AbilityScores, AggregatedFeatEffects, DetailedAbilityScores
+  DndRaceOption, DndClassOption, AbilityScores, AggregatedFeatEffects, DetailedAbilityScores,
+  CharacterAlignmentObject
 } from '@/types/character';
 
 import {
@@ -297,7 +298,7 @@ export function InfoDisplayDialog({
         iconKey = 'alignmentSummary'; 
         data = {
           title: UI_STRINGS.infoDialogAlignmentsTitle || 'Alignments',
-          content: [AlignmentSummaryContentDisplay({htmlContent: ALIGNMENTS.map(a => `<p><b>${a.label}:</b><br />${a.description}</p>`).join('')})],
+          content: [AlignmentSummaryContentDisplay({ alignments: ALIGNMENTS, uiStrings: UI_STRINGS })],
         };
         break;
       case 'deity':
@@ -340,7 +341,7 @@ export function InfoDisplayDialog({
 
           const currentSkillId = contentType.skillId;
           const synergyItems: SynergyInfoItem[] = [];
-          const badgeClass = "text-xs font-normal h-5 mx-0.5 px-1.5 py-0.5 align-baseline whitespace-nowrap";
+          const badgeClass = "text-sm font-normal h-5 mx-0.5 px-1.5 py-0.5 align-baseline whitespace-nowrap";
 
           allCombinedSkillDefinitionsForDisplay.forEach(providingSkillDef => {
               const providingSkillName = <strong>{providingSkillDef.name}</strong>;
@@ -490,13 +491,17 @@ export function InfoDisplayDialog({
 
         if (contentType.acType === 'Normal' || contentType.acType === 'Touch') {
             details.push({ 
-                mainLabel: `${UI_STRINGS.infoDialogAcAbilityLabel || "Ability Modifier"} (${ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX'})`, 
-                value: dexMod 
+                mainLabel: `${UI_STRINGS.infoDialogAcAbilityLabel || "Ability Modifier"}`, 
+                value: dexMod,
+                type: 'acAbilityMod',
+                abilityAbbr: ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX'
             });
         }
         details.push({ 
-            mainLabel: `${UI_STRINGS.infoDialogSizeModifierLabel || "Size Modifier"} (${sizeLabel})`, 
-            value: sizeModACVal 
+            mainLabel: `${UI_STRINGS.infoDialogSizeModifierLabel || "Size Modifier"}`, 
+            value: sizeModACVal,
+            type: 'acSizeMod',
+            sizeName: sizeLabel
         });
 
         const mainAcTypes: Array<{ key: keyof Character; labelKey: keyof typeof UI_STRINGS; bonusType: "armor" | "shield" | "natural" | "deflection" | "dodge" }> = [
@@ -559,7 +564,7 @@ export function InfoDisplayDialog({
         });
         
         let sumOfOtherFeatBonuses = 0;
-        const otherFeatBonusSources: string[] = [];
+        const otherFeatBonusSources: Array<{name: string, condition?: string}> = [];
         const mainBonusTypesHandled = ["armor", "shield", "natural", "deflection", "dodge"];
 
         if (aggregatedFeatEffectsProp?.acBonuses) {
@@ -578,11 +583,8 @@ export function InfoDisplayDialog({
                         bonusVal = featEffect.value;
                     } else if (featEffect.value === "WIS" && detailedCharScoresForDialog) {
                         const wisModForAc = calculateAbilityModifier(detailedCharScoresForDialog.wisdom.finalScore);
-                        // Monk Wisdom to AC only if not wearing armor/shield and unencumbered, typically.
-                        // The feat effect itself in dnd-feats for monk AC has acType: "monk_wisdom".
-                        // Here we check if the effect is explicitly "monk_wisdom"
                         if (featEffect.acType === "monk_wisdom") {
-                           bonusVal = wisModForAc > 0 ? wisModForAc : 0; // Monk bonus doesn't apply if Wis mod is negative
+                           bonusVal = wisModForAc > 0 ? wisModForAc : 0; 
                         }
                     }
 
@@ -592,7 +594,7 @@ export function InfoDisplayDialog({
                         if (featEffect.acType === "monk_wisdom") {
                             sourceName = UI_STRINGS.abilityScoreSourceMonkWisdom || "Monk Wisdom";
                         }
-                        otherFeatBonusSources.push(sourceName);
+                        otherFeatBonusSources.push({ name: sourceName, condition: featEffect.condition });
                     }
                 }
             });
@@ -602,7 +604,8 @@ export function InfoDisplayDialog({
           details.push({
             mainLabel: UI_STRINGS.acBreakdownMiscFeatModifierLabel || "Misc Modifier (Feats)",
             value: sumOfOtherFeatBonuses,
-            suffixDetails: otherFeatBonusSources.length > 0 ? otherFeatBonusSources : undefined,
+            suffixDetails: otherFeatBonusSources.map(s => s.condition ? `${s.name} (${s.condition})` : s.name),
+            type: 'acFeatBonus'
           });
         }
 
@@ -654,7 +657,7 @@ export function InfoDisplayDialog({
                           : contentType.acType === 'Touch' ? (UI_STRINGS.armorClassTouchLabel || 'Touch')
                           : (UI_STRINGS.armorClassFlatFootedLabel || 'Flat-Footed');
                           
-        data = { title: titleTemplate.replace("{acType}", acTypeLabel), content: [AcBreakdownContentDisplay({detailsList: details, totalACValue: totalACValueForDialog, detailsListHeading, uiStrings: UI_STRINGS, abilityLabels: ABILITY_LABELS, aggregatedFeatEffects: aggregatedFeatEffectsProp, acType: contentType.acType})] };
+        data = { title: titleTemplate.replace("{acType}", acTypeLabel), content: [AcBreakdownContentDisplay({detailsList: details, totalACValue: totalACValueForDialog, detailsListHeading, uiStrings: UI_STRINGS})] };
         break;
       }
       case 'babBreakdown': {
@@ -940,5 +943,6 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
+
 
 
