@@ -222,7 +222,7 @@
     "featsPanelNoFeatsYet": "Aucun don sélectionné ou accordé pour l'instant.",
     "featInstanceEditAriaLabel": "Modifier la définition du don personnalisé {featLabel}",
     "featInstanceRemoveAriaLabel": "Supprimer le Don",
-    "featEditSpecializationAriaLabel": "Modifier la Spécialisation",
+    "featEditSpecializationAriaLabel": "Modifier la Spécialisation de {featLabel}",
     "featSpecializationLabel": "Spécialisation",
     "featSpecializationPlaceholder": "Entrer le détail de la spécialisation",
     "featNoSpecializationNeeded": "Ce don ne nécessite pas de spécialisation.",
@@ -252,6 +252,7 @@
     "acBreakdownNaturalArmorLabel": "Armure naturelle",
     "acBreakdownDeflectionBonusLabel": "Bonus de déflexion",
     "acBreakdownDodgeBonusLabel": "Bonus d'esquive",
+    "acBreakdownMonkScalingLabel": "Bonus CA de Moine",
     "healthPanelTitle": "Santé & vitalité",
     "healthPanelDescription": "Gérez les points de vie, les dégâts et les attributs associés.",
     "healthPanelCurrentHpLabel": "Points de vie actuels",
@@ -486,5 +487,6 @@
     
     
     
+
 
 

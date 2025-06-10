@@ -26,6 +26,7 @@ interface SpecializationInputDialogProps {
   onSave: (specializationDetail: string) => void;
   allSkills: ComboboxOption[];
   allMagicSchools: ComboboxOption[];
+  initialSpecializationDetail?: string; // New prop
 }
 
 export function SpecializationInputDialog({
@@ -35,6 +36,7 @@ export function SpecializationInputDialog({
   onSave,
   allSkills,
   allMagicSchools,
+  initialSpecializationDetail, // Destructure new prop
 }: SpecializationInputDialogProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
   const { toast } = useToast();
@@ -42,9 +44,9 @@ export function SpecializationInputDialog({
 
   React.useEffect(() => {
     if (isOpen) {
-      setSpecializationDetail(''); // Reset on open
+      setSpecializationDetail(initialSpecializationDetail || ''); // Use initial value if provided
     }
-  }, [isOpen]);
+  }, [isOpen, initialSpecializationDetail]);
 
   const handleSave = () => {
     if (!featDefinition) return;
@@ -140,7 +142,7 @@ export function SpecializationInputDialog({
           </DialogTitle>
           <DialogDescription>
             {(UI_STRINGS.specializationDialogDescription || "Please provide the required specialization for the feat '{featName}'.").replace("{featName}", featName)}
-            {specializationType && ` (Type: ${specializationType})`}
+            {specializationType && <span className="text-muted-foreground text-xs"> ({specializationType})</span>}
           </DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-2">

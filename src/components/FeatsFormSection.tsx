@@ -12,10 +12,10 @@ import {
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, PlusCircle, Trash2, Pencil, Loader2, Info } from 'lucide-react';
+import { Award, PlusCircle, Trash2, Pencil, Loader2, Info, Edit3 } from 'lucide-react'; // Added Edit3
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
-import { SpecializationInputDialog } from './SpecializationInputDialog'; // Added import
+import { SpecializationInputDialog } from './SpecializationInputDialog';
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -32,8 +32,8 @@ export interface FeatsFormSectionProps {
   skills: Skill[];
   allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
   allCustomSkillDefinitions: readonly CustomSkillDefinition[];
-  allSkillOptionsForDialog: ComboboxOption[]; // Added prop
-  allMagicSchoolOptionsForDialog: ComboboxOption[]; // Added prop
+  allSkillOptionsForDialog: ComboboxOption[];
+  allMagicSchoolOptionsForDialog: ComboboxOption[];
   characterLevel: number;
   aggregatedFeatEffects?: AggregatedFeatEffects | null;
 }
@@ -48,8 +48,8 @@ const FeatsFormSectionComponent = ({
   skills,
   allPredefinedSkillDefinitions,
   allCustomSkillDefinitions,
-  allSkillOptionsForDialog, // Destructure
-  allMagicSchoolOptionsForDialog, // Destructure
+  allSkillOptionsForDialog,
+  allMagicSchoolOptionsForDialog,
   characterLevel,
   aggregatedFeatEffects,
 }: FeatsFormSectionProps) => {
@@ -58,8 +58,10 @@ const FeatsFormSectionComponent = ({
 
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
   const [featDialogFilterCategory, setFeatDialogFilterCategory] = React.useState<string | undefined>(undefined);
-  const [featToSpecialize, setFeatToSpecialize] = React.useState<FeatDefinitionJsonData | null>(null); // Added state
-  const [isSpecializationDialogOpen, setIsSpecializationDialogOpen] = React.useState(false); // Added state
+  const [featToSpecialize, setFeatToSpecialize] = React.useState<FeatDefinitionJsonData | null>(null);
+  const [isSpecializationDialogOpen, setIsSpecializationDialogOpen] = React.useState(false);
+  const [editingFeatInstanceId, setEditingFeatInstanceId] = React.useState<string | null>(null); // For editing specialization
+  const [initialSpecializationForEdit, setInitialSpecializationForEdit] = React.useState<string | undefined>(undefined);
 
 
   const featSlotsBreakdown = React.useMemo(() => {
@@ -130,6 +132,7 @@ const FeatsFormSectionComponent = ({
       }
     }
     setFeatDialogFilterCategory(filterCategoryForDialog);
+    setEditingFeatInstanceId(null); // Ensure we are in "add new" mode
     setIsFeatDialogOpen(true);
   };
 
@@ -143,13 +146,15 @@ const FeatsFormSectionComponent = ({
       return;
     }
 
+    setEditingFeatInstanceId(null); // Reset edit mode for this flow (add new)
+    setInitialSpecializationForEdit(undefined);
+
     if (definition.requiresSpecialization) {
       setFeatToSpecialize(definition);
       setIsSpecializationDialogOpen(true);
-      return; // Wait for specialization
+      return;
     }
 
-    // If no specialization needed, proceed as before
     const existingChosenInstances = chosenFeatInstances.filter(
       inst => inst.definitionId === definitionId && !inst.isGranted
     );
@@ -196,52 +201,82 @@ const FeatsFormSectionComponent = ({
     }));
   };
 
+  const handleOpenEditSpecializationDialog = (instance: CharacterFeatInstance) => {
+    const definition = allAvailableFeatDefinitions.find(def => def.value === instance.definitionId);
+    if (definition && definition.requiresSpecialization) {
+      setFeatToSpecialize(definition);
+      setEditingFeatInstanceId(instance.instanceId);
+      setInitialSpecializationForEdit(instance.specializationDetail || '');
+      setIsSpecializationDialogOpen(true);
+    }
+  };
+
   const handleSpecializationProvided = (specializationDetail: string) => {
     if (!featToSpecialize || !translations) return;
     const UI_STRINGS = translations.UI_STRINGS;
-    const definition = featToSpecialize; // Already have the full definition
+    const definition = featToSpecialize;
 
-    const existingChosenInstances = chosenFeatInstances.filter(
-      inst => inst.definitionId === definition.value && !inst.isGranted && inst.specializationDetail === specializationDetail
-    );
-    const isAlreadyGrantedWithSameSpecialization = chosenFeatInstances.some(
-      inst => inst.definitionId === definition.value && inst.isGranted && inst.specializationDetail === specializationDetail
-    );
+    if (editingFeatInstanceId) { // Editing existing specialization
+      const updatedInstances = chosenFeatInstances.map(inst => {
+        if (inst.instanceId === editingFeatInstanceId) {
+          // For editing, we generally keep the instanceId unless the specialization change makes it a "new" variant
+          // of a feat that can be taken multiple times with different specializations.
+          // For simplicity now, just update the detail. If ID needs to change, it might conflict.
+          // A more robust approach might involve removing the old and adding a new one if IDs must strictly follow `featValue-specSlug`.
+          // For now, let's assume the instance ID remains stable on edit, and uniqueness is managed at add time.
+          // If Weapon Focus (Longsword) becomes Weapon Focus (Greatsword), its specific effects might change,
+          // but it's still that "slot" of Weapon Focus.
+          // However, if the ID *must* encode the spec, then:
+          let newFinalInstanceId = `${definition.value}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`;
+          // Check if this new ID would clash with another existing feat (excluding the one being edited)
+          if (chosenFeatInstances.some(otherInst => otherInst.instanceId === newFinalInstanceId && otherInst.instanceId !== editingFeatInstanceId)) {
+            newFinalInstanceId = `${newFinalInstanceId}-${crypto.randomUUID().substring(0,8)}`; // Make unique
+          }
+          return { ...inst, specializationDetail: specializationDetail.trim() || undefined, instanceId: newFinalInstanceId };
+        }
+        return inst;
+      });
+      onFeatInstancesChange(sortInstancesByLabel(updatedInstances));
 
-    if (!definition.canTakeMultipleTimes) {
-      if (isAlreadyGrantedWithSameSpecialization) {
-         toast({ title: UI_STRINGS.toastFeatAlreadyGrantedTitle, description: (UI_STRINGS.toastFeatAlreadyGrantedDesc || '"{featLabel}" is already granted with this specialization and cannot be chosen again.').replace('{featLabel}', definition.label), variant: "destructive" });
-        return;
+    } else { // Adding new specialized feat
+      const existingChosenInstances = chosenFeatInstances.filter(
+        inst => inst.definitionId === definition.value && !inst.isGranted && inst.specializationDetail === specializationDetail
+      );
+      const isAlreadyGrantedWithSameSpecialization = chosenFeatInstances.some(
+        inst => inst.definitionId === definition.value && inst.isGranted && inst.specializationDetail === specializationDetail
+      );
+
+      if (!definition.canTakeMultipleTimes) {
+        if (isAlreadyGrantedWithSameSpecialization) {
+          toast({ title: UI_STRINGS.toastFeatAlreadyGrantedTitle, description: (UI_STRINGS.toastFeatAlreadyGrantedDesc || '"{featLabel}" is already granted with this specialization and cannot be chosen again.').replace('{featLabel}', definition.label), variant: "destructive" });
+          return;
+        }
+        if (existingChosenInstances.length > 0) {
+          toast({ title: UI_STRINGS.toastDuplicateFeatTitle, description: (UI_STRINGS.toastDuplicateFeatDesc || 'You have already chosen "{featLabel}" with this specialization, and it cannot be taken multiple times.').replace('{featLabel}', definition.label), variant: "destructive" });
+          return;
+        }
       }
-      if (existingChosenInstances.length > 0) {
-        toast({ title: UI_STRINGS.toastDuplicateFeatTitle, description: (UI_STRINGS.toastDuplicateFeatDesc || 'You have already chosen "{featLabel}" with this specialization, and it cannot be taken multiple times.').replace('{featLabel}', definition.label), variant: "destructive" });
-        return;
+
+      let newInstanceId = `${definition.value}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`;
+      if (definition.canTakeMultipleTimes || chosenFeatInstances.some(fi => fi.instanceId === newInstanceId)) {
+        newInstanceId = `${definition.value}-SPEC-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID()}`;
       }
+
+      const newInstance: CharacterFeatInstance = {
+        definitionId: definition.value,
+        instanceId: newInstanceId,
+        specializationDetail: specializationDetail.trim() || undefined,
+        isGranted: false,
+        chosenSpecializationCategory: definition.requiresSpecializationCategory,
+        conditionalEffectStates: {},
+      };
+      onFeatInstancesChange(sortInstancesByLabel([...chosenFeatInstances, newInstance]));
     }
-
-
-    let newInstanceId = `${definition.value}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`;
-    if (definition.canTakeMultipleTimes || chosenFeatInstances.some(fi => fi.instanceId === newInstanceId)) {
-      newInstanceId = `${definition.value}-SPEC-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID()}`;
-    }
-
-    const newInstance: CharacterFeatInstance = {
-      definitionId: definition.value,
-      instanceId: newInstanceId,
-      specializationDetail: specializationDetail,
-      isGranted: false,
-      chosenSpecializationCategory: definition.requiresSpecializationCategory,
-      conditionalEffectStates: {},
-    };
-
-    onFeatInstancesChange([...chosenFeatInstances, newInstance].sort((a, b) => {
-      const defA = allAvailableFeatDefinitions.find(d => d.value === a.definitionId);
-      const defB = allAvailableFeatDefinitions.find(d => d.value === b.definitionId);
-      return (defA?.label || '').localeCompare(defB?.label || '');
-    }));
 
     setFeatToSpecialize(null);
     setIsSpecializationDialogOpen(false);
+    setEditingFeatInstanceId(null);
+    setInitialSpecializationForEdit(undefined);
   };
 
 
@@ -346,6 +381,14 @@ const FeatsFormSectionComponent = ({
               aria-label={(UI_STRINGS.featInstanceEditAriaLabel || "Edit custom feat definition {featLabel}").replace("{featLabel}", definition.label)}
             ><Pencil className="h-4 w-4" /></Button>
           )}
+          {!instance.isGranted && definition.requiresSpecialization && (
+             <Button
+              type="button" variant="ghost" size="icon"
+              onClick={() => handleOpenEditSpecializationDialog(instance)}
+              className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-50 group-hover:opacity-100 transition-opacity"
+              aria-label={(UI_STRINGS.featEditSpecializationAriaLabel || "Edit Specialization for {featLabel}").replace("{featLabel}", definition.label)}
+            ><Edit3 className="h-4 w-4" /></Button>
+          )}
           {!instance.isGranted && (
             <Button
               type="button" variant="ghost" size="icon"
@@ -357,7 +400,7 @@ const FeatsFormSectionComponent = ({
         </div>
       </div>
     );
-  }, [translationsLoading, translations, allAvailableFeatDefinitions, characterForPrereqCheck, allPredefinedSkillDefinitions, allCustomSkillDefinitions, getFeatSource, handleOpenEditDialog, handleRemoveChosenFeatInstance]);
+  }, [translationsLoading, translations, allAvailableFeatDefinitions, characterForPrereqCheck, allPredefinedSkillDefinitions, allCustomSkillDefinitions, getFeatSource, handleOpenEditDialog, handleRemoveChosenFeatInstance, handleOpenEditSpecializationDialog]);
 
 
   if (translationsLoading || !translations) {
@@ -492,6 +535,7 @@ const FeatsFormSectionComponent = ({
         isOpen={isSpecializationDialogOpen}
         onOpenChange={setIsSpecializationDialogOpen}
         featDefinition={featToSpecialize}
+        initialSpecializationDetail={initialSpecializationForEdit}
         onSave={handleSpecializationProvided}
         allSkills={allSkillOptionsForDialog}
         allMagicSchools={allMagicSchoolOptionsForDialog}
