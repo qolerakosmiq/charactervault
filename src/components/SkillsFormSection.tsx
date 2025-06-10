@@ -2,7 +2,7 @@
 'use client';
 
 import *as React from 'react';
-import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, CharacterFeatInstance, DndRaceOption, SkillDefinitionJsonData, FeatDefinitionJsonData, CharacterSize, InfoDialogContentType, Character } from '@/types/character';
+import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, CharacterFeatInstance, DndRaceOption, SkillDefinitionJsonData, FeatDefinitionJsonData, CharacterSize, InfoDialogContentType, Character } from '@/types/character-core'; 
 import { getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateRacialSkillBonus, calculateSizeSpecificSkillBonus } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -195,12 +195,12 @@ const SkillsFormSectionComponent = ({
       if (selectedFeats && allFeatDefinitions) {
         selectedFeats.forEach(featInstance => {
           const featDef = allFeatDefinitions.find(def => def.value === featInstance.definitionId);
-          if (featDef?.effects && Array.isArray(featDef.effects)) {
+           if (featDef?.effects && Array.isArray(featDef.effects)) {
             featDef.effects.forEach(effect => {
               if (effect.type === "skill") {
-                let effectIsActive = true;
+                let effectIsActive = true; 
                 if (effect.condition && effect.condition.trim() !== "") {
-                  effectIsActive = !!featInstance.conditionalEffectStates?.[effect.condition];
+                   effectIsActive = !!featInstance.conditionalEffectStates?.[effect.condition];
                 }
                 
                 if (effectIsActive) {
@@ -276,11 +276,11 @@ const SkillsFormSectionComponent = ({
         <div className="mb-4 p-3 border rounded-md bg-muted/30">
           <div className="flex justify-between items-center">
             <p className="text-sm font-medium">
-              {UI_STRINGS.skillPointsAvailableLabel || "Skill Points Available:"} <span className="text-lg font-bold text-primary">{totalSkillPointsAvailable}</span>
+              {UI_STRINGS.skillPointsAvailableLabel || "Skill Points Available:"} <span className="text-xl font-bold text-primary">{totalSkillPointsAvailable}</span>
             </p>
             <p className="text-sm font-medium">
               {UI_STRINGS.skillPointsLeftLabel || "Skill Points Left:"} <span className={cn(
-                "text-lg font-bold",
+                "text-xl font-bold",
                 skillPointsLeft > 0 && "text-emerald-500",
                 skillPointsLeft < 0 && "text-destructive",
                 skillPointsLeft === 0 && "text-accent"
