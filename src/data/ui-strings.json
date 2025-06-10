@@ -124,7 +124,7 @@
     "savingThrowsRowLabelBase": "Base",
     "savingThrowsRowLabelAbilityModifier": "Ability Modifier",
     "savingThrowsRowLabelMagicModifier": "Magic Modifier",
-    "savingThrowsRowLabelMiscModifier": "Misc Modifier",
+    "savingThrowsRowLabelMiscModifier": "Misc Modifier (Feats)",
     "savingThrowsRowLabelTemporaryModifier": "Temporary Modifier",
     "savingThrowsFeatsModifierLabel": "Feats Modifier",
     "abilityScoresSectionTitle": "Ability Scores",
@@ -571,6 +571,7 @@
     "weaponProficiencyExotic": "Exotic",
     "rollDialogTitleAbilityCheck": "{abilityName} Check",
     "rollDialogTitleSavingThrow": "{saveTypeLabel} Save",
+    "rollDialogTitleSkillCheck": "Roll {skillName}",
     "rollDialogDescriptionFormat": "Performing a {rollType}.",
     "rollDialogCalculationBreakdownTitle": "Calculation Breakdown:",
     "rollDialogTotalBonusLabel": "Total Bonus",
@@ -579,13 +580,22 @@
     "rollDialogRollButton": "Roll 1d20",
     "rollDialogAbilityCheckAriaLabel": "Roll {abilityName} Check",
     "rollDialogSavingThrowAriaLabel": "Roll {saveTypeLabel} Save",
+    "rollDialogSkillCheckAriaLabel": "Roll {skillName} Check",
     "rollDialogResultTitle": "Roll Result",
-    "rollDialogResultDescription": "Rolled {diceResult} + {totalBonus} = {finalResult}"
+    "rollDialogResultDescription": "Rolled {diceResult} + {totalBonus} = {finalResult}",
+    "rollDialogSkillRanksLabel": "Ranks",
+    "rollDialogSkillKeyAbilityLabel": "Key Ability ({abilityAbbr})",
+    "rollDialogSkillSynergyBonusLabel": "Synergy Bonus",
+    "rollDialogSkillFeatBonusLabel": "Feat Bonus",
+    "rollDialogSkillRacialBonusLabel": "Racial Bonus",
+    "rollDialogSkillSizeBonusLabel": "Size Bonus",
+    "rollDialogSkillUserMiscModLabel": "User Misc Modifier"
   }
 }
     
     
     
+
 
 
 

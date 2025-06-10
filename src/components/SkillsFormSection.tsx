@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollText, Info, Loader2 } from 'lucide-react';
+import { ScrollText, Info, Loader2, Dices } from 'lucide-react'; // Added Dices
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -19,6 +19,8 @@ import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
+import type { RollDialogProps } from '@/components/RollDialog'; // Added RollDialogProps import
+import type { GenericBreakdownItem } from '@/types/character-core'; // Added GenericBreakdownItem import
 
 const DEBOUNCE_DELAY_SKILLS = 500; // ms
 
@@ -52,6 +54,7 @@ interface SkillsFormSectionProps {
   onSkillChange: (skillId: string, ranks: number, isClassSkill?: boolean) => void;
   onEditCustomSkillDefinition: (skillDefId: string) => void;
   onOpenSkillInfoDialog: (skillId: string) => void;
+  onOpenRollDialog: (data: Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'>) => void; // New prop
   characterLevel: number; // XP-derived character level
 }
 
@@ -94,6 +97,7 @@ const SkillsFormSectionComponent = ({
   onSkillChange,
   onEditCustomSkillDefinition,
   onOpenSkillInfoDialog,
+  onOpenRollDialog, // Destructure new prop
   characterLevel, // Use this for calculations
 }: SkillsFormSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
@@ -234,6 +238,72 @@ const SkillsFormSectionComponent = ({
   const handleTriggerSkillInfoDialog = (skillId: string) => {
     onOpenSkillInfoDialog(skillId);
   };
+
+  const handleTriggerSkillRollDialog = (skillId: string) => {
+    if (!translations || !actualAbilityScores) return;
+    const skillDef = allCombinedSkillDefinitions.find(def => def.id === skillId);
+    const skillInstance = characterSkillInstances.find(s => s.id === skillId);
+    if (!skillDef || !skillInstance) return;
+
+    const { UI_STRINGS, ABILITY_LABELS, DND_RACES, SKILL_DEFINITIONS, SKILL_SYNERGIES, SIZES } = translations;
+
+    const keyAbility = skillDef.keyAbility;
+    const abilityMod = (keyAbility && keyAbility !== 'none') ? getAbilityModifierByName(actualAbilityScores, keyAbility) : 0;
+    const synergyBonus = calculateTotalSynergyBonus(skillDef.id, characterSkillInstances, SKILL_DEFINITIONS, SKILL_SYNERGIES, allCustomSkillDefinitions);
+    let featSkillBonus = 0;
+    if (selectedFeats && allFeatDefinitions) {
+        selectedFeats.forEach(featInstance => {
+          const featDef = allFeatDefinitions.find(def => def.value === featInstance.definitionId);
+           if (featDef?.effects && Array.isArray(featDef.effects)) {
+            featDef.effects.forEach(effect => {
+              if (effect.type === "skill") {
+                let effectIsActive = true; 
+                if (effect.condition && effect.condition.trim() !== "") {
+                   effectIsActive = !!featInstance.conditionalEffectStates?.[effect.condition];
+                }
+                if (effectIsActive) {
+                  let actualSkillIdForEffect = effect.skillId;
+                  if (actualSkillIdForEffect === null && featDef.requiresSpecialization === 'skill' && featInstance.specializationDetail) {
+                    actualSkillIdForEffect = featInstance.specializationDetail;
+                  }
+                  if (actualSkillIdForEffect === skillDef.id) {
+                    featSkillBonus += effect.value;
+                  }
+                }
+              }
+            });
+          }
+        });
+    }
+    const racialBonus = calculateRacialSkillBonus(skillDef.id, characterRace, DND_RACES);
+    const sizeSpecificBonus = calculateSizeSpecificSkillBonus(skillDef.id, characterSize, SIZES);
+    const userMiscMod = skillInstance.miscModifier || 0;
+
+    const totalBonus = (skillInstance.ranks || 0) + abilityMod + synergyBonus + featSkillBonus + racialBonus + sizeSpecificBonus + userMiscMod;
+    const keyAbilityName = keyAbility && keyAbility !== 'none' ? (ABILITY_LABELS.find(al => al.value === keyAbility)?.abbr || keyAbility.toUpperCase()) : 'N/A';
+
+    const breakdown: GenericBreakdownItem[] = [
+      { label: UI_STRINGS.rollDialogSkillRanksLabel || "Ranks", value: skillInstance.ranks || 0 },
+    ];
+    if (keyAbility !== 'none') {
+      breakdown.push({ label: (UI_STRINGS.rollDialogSkillKeyAbilityLabel || "Key Ability ({abilityAbbr})").replace("{abilityAbbr}", keyAbilityName), value: abilityMod });
+    }
+    if (synergyBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillSynergyBonusLabel || "Synergy Bonus", value: synergyBonus });
+    if (featSkillBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillFeatBonusLabel || "Feat Bonus", value: featSkillBonus });
+    if (racialBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillRacialBonusLabel || "Racial Bonus", value: racialBonus });
+    if (sizeSpecificBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillSizeBonusLabel || "Size Bonus", value: sizeSpecificBonus });
+    if (userMiscMod !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillUserMiscModLabel || "User Misc Modifier", value: userMiscMod });
+    
+    breakdown.push({ label: UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus", value: totalBonus, isBold: true });
+
+    onOpenRollDialog({
+      dialogTitle: (UI_STRINGS.rollDialogTitleSkillCheck || "Roll {skillName}").replace("{skillName}", skillDef.name),
+      rollType: `${skillDef.name} Check`,
+      baseModifier: totalBonus,
+      calculationBreakdown: breakdown,
+    });
+  };
+
 
   const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 whitespace-nowrap"; // Removed text-xs
 
@@ -424,6 +494,16 @@ const SkillsFormSectionComponent = ({
                       aria-label={(UI_STRINGS.skillsTableTooltipInfoForSkill || "Info for {skillName}").replace("{skillName}", skillDef.name)}
                     >
                       <Info className="h-4 w-4" />
+                    </Button>
+                     <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-muted-foreground hover:text-primary"
+                        onClick={() => handleTriggerSkillRollDialog(skillInstanceProp.id)}
+                        aria-label={(UI_STRINGS.rollDialogSkillCheckAriaLabel || "Roll {skillName} Check").replace("{skillName}", skillDef.name)}
+                      >
+                        <Dices className="h-4 w-4" />
                     </Button>
                   </div>
                   <span className="text-sm text-muted-foreground text-center w-10">{keyAbilityDisplay}</span>

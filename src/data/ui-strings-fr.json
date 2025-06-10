@@ -124,7 +124,7 @@
     "savingThrowsRowLabelBase": "Base",
     "savingThrowsRowLabelAbilityModifier": "Modificateur caractéristique",
     "savingThrowsRowLabelMagicModifier": "Modificateur magie",
-    "savingThrowsRowLabelMiscModifier": "Modificateur divers",
+    "savingThrowsRowLabelMiscModifier": "Modificateur divers (Dons)",
     "savingThrowsRowLabelTemporaryModifier": "Modificateur Temporaire",
     "savingThrowsFeatsModifierLabel": "Modificateur de Dons",
     "abilityScoresSectionTitle": "Caractéristiques",
@@ -571,6 +571,7 @@
     "weaponProficiencyExotic": "Exotique",
     "rollDialogTitleAbilityCheck": "Test de {abilityName}",
     "rollDialogTitleSavingThrow": "Jet de {saveTypeLabel}",
+    "rollDialogTitleSkillCheck": "Test de {skillName}",
     "rollDialogDescriptionFormat": "Effectuer un {rollType}.",
     "rollDialogCalculationBreakdownTitle": "Détail du calcul :",
     "rollDialogTotalBonusLabel": "Bonus Total",
@@ -579,13 +580,22 @@
     "rollDialogRollButton": "Lancer 1d20",
     "rollDialogAbilityCheckAriaLabel": "Lancer un test de {abilityName}",
     "rollDialogSavingThrowAriaLabel": "Lancer un jet de {saveTypeLabel}",
+    "rollDialogSkillCheckAriaLabel": "Lancer un test de {skillName}",
     "rollDialogResultTitle": "Résultat du lancer",
-    "rollDialogResultDescription": "Lancé {diceResult} + {totalBonus} = {finalResult}"
+    "rollDialogResultDescription": "Lancé {diceResult} + {totalBonus} = {finalResult}",
+    "rollDialogSkillRanksLabel": "Rangs",
+    "rollDialogSkillKeyAbilityLabel": "Caractéristique Clé ({abilityAbbr})",
+    "rollDialogSkillSynergyBonusLabel": "Bonus de Synergie",
+    "rollDialogSkillFeatBonusLabel": "Bonus de Don",
+    "rollDialogSkillRacialBonusLabel": "Bonus Racial",
+    "rollDialogSkillSizeBonusLabel": "Bonus de Taille",
+    "rollDialogSkillUserMiscModLabel": "Modificateur Divers (Utilisateur)"
   }
 }
     
     
     
+
 
 
 

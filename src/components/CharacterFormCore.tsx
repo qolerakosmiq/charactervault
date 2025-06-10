@@ -446,7 +446,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
 
   const handleCharacterFieldUpdate = React.useCallback((
-    field: keyof Character | `${SpeedType}Speed.miscModifier` | `armorSpeedPenalty_miscModifier` | `loadSpeedPenalty_miscModifier` | `babMiscModifier`,
+    field: keyof Character | `${SpeedType}Speed.miscModifier` | `armorSpeedPenalty_miscModifier` | `loadSpeedPenalty_miscModifier` | `babMiscModifier` | `powerAttackValue` | `combatExpertiseValue`,
     value: any
   ) => {
      setCharacter(prev => {
@@ -715,6 +715,24 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const handleOpenClassInfoDialog = React.useCallback(() => { if (character?.classes[0]?.className) { openInfoDialog({ type: 'class' }); } }, [character?.classes, openInfoDialog]);
   const handleOpenAlignmentInfoDialog = React.useCallback(() => openInfoDialog({ type: 'alignmentSummary' }), [openInfoDialog]);
   const handleOpenDeityInfoDialog = React.useCallback(() => openInfoDialog({ type: 'deity' }), [openInfoDialog]);
+  
+  const handleOpenAbilityCheckRollDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => {
+    if (!detailedAbilityScores || !translations) return;
+    const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.value === ability);
+    const abilityName = abilityLabelInfo?.label || ability;
+    const finalModifier = calculateAbilityModifier(detailedAbilityScores[ability].finalScore);
+    const breakdown: GenericBreakdownItem[] = [
+      { label: translations.UI_STRINGS.abilityScoreLabel || "Ability Score", value: detailedAbilityScores[ability].finalScore },
+      { label: translations.UI_STRINGS.abilityModifierLabel || "Modifier", value: finalModifier, isBold: true }
+    ];
+    handleOpenRollDialog({
+      dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck || "{abilityName} Check").replace("{abilityName}", abilityName),
+      rollType: `${abilityName} Check`,
+      baseModifier: finalModifier,
+      calculationBreakdown: breakdown,
+    });
+  }, [detailedAbilityScores, translations, handleOpenRollDialog]);
+
   const handleOpenAbilityScoreBreakdownDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => { openInfoDialog({ type: 'abilityScoreBreakdown', abilityName: ability }); }, [openInfoDialog]);
   const handleOpenCombatStatInfoDialog = React.useCallback((contentType: InfoDialogContentType) => { openInfoDialog(contentType); }, [openInfoDialog]);
   const handleOpenSkillInfoDialog = React.useCallback((skillId: string) => { openInfoDialog({ type: 'skillModifierBreakdown', skillId }); }, [openInfoDialog]);
@@ -860,7 +878,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     };
   }, [character]);
 
-  const skillsData = React.useMemo<Omit<SkillsFormSectionProps, 'characterLevel' | 'onSkillChange' | 'onEditCustomSkillDefinition' | 'onOpenSkillInfoDialog' | 'allFeatDefinitions' | 'allPredefinedSkillDefinitions' | 'allCustomSkillDefinitions' | 'actualAbilityScores' | 'onOpenRollDialog'>['skillsData'] | undefined>(() => {
+  const skillsData = React.useMemo<Omit<SkillsFormSectionProps, 'characterLevel' | 'onSkillChange' | 'onEditCustomSkillDefinition' | 'onOpenSkillInfoDialog' | 'onOpenRollDialog' | 'allFeatDefinitions' | 'allPredefinedSkillDefinitions' | 'allCustomSkillDefinitions' | 'actualAbilityScores'>['skillsData'] | undefined>(() => {
     if (!character) return undefined;
     return {
       skills: character.skills, classes: character.classes, race: character.race, size: character.size, feats: character.feats,
@@ -999,7 +1017,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             onMultipleBaseAbilityScoresChange={handleMultipleBaseAbilityScoresChange}
             onAbilityScoreTempCustomModifierChange={handleAbilityScoreTempCustomModifierChange}
             onOpenAbilityScoreBreakdownDialog={handleOpenAbilityScoreBreakdownDialog}
-            onOpenRollDialog={handleOpenRollDialog}
+            onOpenRollDialog={handleOpenAbilityCheckRollDialog} // Updated prop name
           />
         )}
 
@@ -1010,7 +1028,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
               aggregatedFeatEffects={aggregatedFeatEffects}
               onSavingThrowTemporaryModChange={handleSavingThrowTemporaryModChange}
               onOpenInfoDialog={handleOpenSavingThrowInfoDialog}
-              onOpenRollDialog={handleOpenRollDialog}
+              onOpenRollDialog={handleOpenRollDialog} // Pass the centralized roll dialog opener
           />
         )}
 
@@ -1107,6 +1125,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             onSkillChange={handleSkillChange}
             onEditCustomSkillDefinition={handleOpenEditCustomSkillDialog}
             onOpenSkillInfoDialog={handleOpenSkillInfoDialog}
+            onOpenRollDialog={handleOpenRollDialog} // Pass the centralized roll dialog opener
             characterLevel={characterLevelFromXP}
           />
         )}
