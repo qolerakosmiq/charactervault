@@ -30,9 +30,9 @@ export interface AttacksPanelProps {
   onOpenDamageBonusInfoDialog: (type: 'melee' | 'ranged') => void;
 }
 
-const AttacksPanelComponent = ({ 
-    attacksPanelData, 
-    aggregatedFeatEffects, 
+const AttacksPanelComponent = ({
+    attacksPanelData,
+    aggregatedFeatEffects,
     allFeatDefinitions,
     onCharacterUpdate,
     onOpenAttackBonusInfoDialog,
@@ -71,7 +71,7 @@ const AttacksPanelComponent = ({
   const baseBabArray = getBab(classes, DND_CLASSES);
   const totalBabWithModifier = baseBabArray.map(bab => bab + localBabMiscModifier);
 
-  const meleeWeapons = [{id: 'unarmed', name: UI_STRINGS.attacksPanelUnarmedOption || 'Unarmed', itemType: 'weapon' as const, weaponType: 'melee' as const, damage: '1d3', criticalRange: '20', criticalMultiplier: 'x2'}, 
+  const meleeWeapons = [{id: 'unarmed', name: UI_STRINGS.attacksPanelUnarmedOption || 'Unarmed', itemType: 'weapon' as const, weaponType: 'melee' as const, damage: '1d3', criticalRange: '20', criticalMultiplier: 'x2'},
                         ...(inventory.filter(item => item.itemType === 'weapon' && (item.weaponType === 'melee' || item.weaponType === 'melee-or-ranged')))];
   const rangedWeapons = inventory.filter(item => item.itemType === 'weapon' && (item.weaponType === 'ranged' || item.weaponType === 'melee-or-ranged'));
 
@@ -92,7 +92,7 @@ const AttacksPanelComponent = ({
     }
   });
   const calculatedMeleeAttackBonus = totalBabWithModifier[0] + meleeAttackAbilityMod + sizeModAttack + meleeAttackFeatBonus;
-  
+
   // --- Melee Damage Bonus Calculation ---
   let meleeDamageAbilityMod = strMod;
   // TODO: Add logic for 1.5x STR for two-handed weapons later
@@ -262,5 +262,3 @@ const AttacksPanelComponent = ({
 };
 AttacksPanelComponent.displayName = 'AttacksPanelComponent';
 export const AttacksPanel = React.memo(AttacksPanelComponent);
-
-```

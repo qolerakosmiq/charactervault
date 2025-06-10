@@ -108,7 +108,7 @@ export interface AttackRollEffect {
   rangeLimit?: number; // Numeric value, UI appends unit
   sourceFeat?: string;
   scaleWithClassLevel?: FeatEffectScaling;
-  weaponId?: string; 
+  weaponId?: string;
 }
 
 export interface DamageRollEffect {
@@ -120,7 +120,7 @@ export interface DamageRollEffect {
   rangeLimit?: number; // Numeric value
   sourceFeat?: string;
   scaleWithClassLevel?: FeatEffectScaling; // For dice string or numeric value
-  weaponId?: string; 
+  weaponId?: string;
 }
 
 export interface ArmorClassEffect {
@@ -727,4 +727,3 @@ export interface PrerequisiteMessage {
   originalText?: string;
 }
 
-```

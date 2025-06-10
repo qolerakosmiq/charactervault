@@ -142,6 +142,18 @@ export function getSizeModifierAC(
   return sizeObject ? sizeObject.acModifier : 0;
 }
 
+export function getSizeModifierAttack(
+  sizeId: CharacterSize | '',
+  SIZES_DATA: readonly CharacterSizeObject[]
+): number {
+  if (!sizeId) return 0;
+  // Per PHB p.135 Table 8-1, the "Size Modifier" applies to Attack Rolls and AC.
+  // So this function returns the same value as getSizeModifierAC.
+  const sizeObject = SIZES_DATA.find(s => s.value === sizeId);
+  return sizeObject ? sizeObject.acModifier : 0;
+}
+
+
 export function getSizeModifierGrapple(
   sizeId: CharacterSize | '',
   SIZES_DATA: readonly CharacterSizeObject[]
