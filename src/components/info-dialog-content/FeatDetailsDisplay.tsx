@@ -57,36 +57,43 @@ export const FeatDetailsDisplay: React.FC<FeatDetailsDisplayProps> = ({
     uiStrings
   );
 
+  const labelStyle = "font-bold text-muted-foreground mr-1";
+
+  let benefitContent = featDef.description || "";
+  if (benefitContent.toLowerCase().startsWith("<b>benefit:</b>")) {
+    benefitContent = benefitContent.substring("<b>Benefit:</b>".length).trimStart();
+  } else if (benefitContent.toLowerCase().startsWith("benefit:")) {
+     benefitContent = benefitContent.substring("Benefit:".length).trimStart();
+  }
+
+
   return (
-    <>
-      {featDef.description && (
-        <div
-          className="prose prose-sm dark:prose-invert max-w-none"
-          dangerouslySetInnerHTML={{ __html: featDef.description }}
-        />
+    <div className="space-y-1">
+      {benefitContent && (
+        <div className="text-sm">
+          <span className={labelStyle}>{uiStrings.featBenefitLabel || "Benefit:"}</span>
+          <span dangerouslySetInnerHTML={{ __html: benefitContent }} />
+        </div>
       )}
+
       {prereqMessages.length > 0 && (
-        <div className="mt-3">
-          <p className="text-sm font-medium text-muted-foreground">{uiStrings.featPrerequisitesLabel || "Prerequisites:"}</p>
-          <ul className="list-disc list-inside text-sm">
-            {prereqMessages.map((msg, index) => (
-              <li key={index} className={cn(!msg.isMet && "text-destructive")}>
-                <span dangerouslySetInnerHTML={{ __html: msg.text }}></span>
-              </li>
-            ))}
-          </ul>
+        <div className="text-sm">
+          <span className={labelStyle}>{uiStrings.featPrerequisitesLabel || "Prerequisites:"}</span>
+          {prereqMessages.map((msg, index) => (
+            <React.Fragment key={index}>
+              <span className={cn(!msg.isMet && "text-destructive")} dangerouslySetInnerHTML={{ __html: msg.text }} />
+              {index < prereqMessages.length - 1 && ', '}
+            </React.Fragment>
+          ))}
         </div>
       )}
+
       {featDef.effectsText && (
-        <div className="mt-3">
-          <p
-            className="text-sm font-medium text-muted-foreground"
-            dangerouslySetInnerHTML={{ __html: uiStrings.featEffectsLabel || "<b>Effects:</b>" }}
-          />
-          <p className="text-sm">{featDef.effectsText}</p>
+        <div className="text-sm">
+          <span className={labelStyle}>{(uiStrings.featEffectsLabel || "Effects:").replace(/<\/?b>/g, '')}</span>
+          <span>{featDef.effectsText}</span>
         </div>
       )}
-    </>
+    </div>
   );
 };
-
