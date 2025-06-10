@@ -51,10 +51,12 @@ import type {
   LanguageEffect,
   LanguageId,
   LanguageOption,
-  DescriptiveEffectDetail
+  DescriptiveEffectDetail,
+  FeatEffectScalingSpecificLevel // Added to ensure it's imported if used by other types
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
-import { getBab, calculateSumOfClassLevels, calculateAbilityModifier, getXpRequiredForLevel } from '@/lib/dnd-utils'; // Updated import
+// Import calculateLevelFromXp and other used utilities directly
+import { getBab, calculateSumOfClassLevels, calculateAbilityModifier, getXpRequiredForLevel, calculateLevelFromXp } from '@/lib/dnd-utils';
 
 
 // Utility Functions (many will now need translated data passed in)
@@ -275,8 +277,8 @@ export function calculateAvailableFeats(
   character: Pick<Character, 'race' | 'classes' | 'feats' | 'experiencePoints'>,
   allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[],
   DND_RACES: readonly DndRaceOption[],
-  XP_TABLE: readonly { level: number; xpRequired: number }[],
-  EPIC_LEVEL_XP_INCREASE: number
+  XP_TABLE: readonly { level: number; xpRequired: number }[], // Added XP_TABLE
+  EPIC_LEVEL_XP_INCREASE: number // Added EPIC_LEVEL_XP_INCREASE
 ): AvailableFeatSlotsBreakdown {
 
   const characterLevel = calculateLevelFromXp(character.experiencePoints || 0, XP_TABLE, EPIC_LEVEL_XP_INCREASE);
@@ -295,7 +297,6 @@ export function calculateAvailableFeats(
   let classBonusFeatSlotsTotal = 0;
   const classBonusDetails: Array<{ category: string; count: number; sourceFeatLabel?: string }> = [];
 
-  // Process character's *existing granted* feats to find bonus feat slots
   if (character.feats) {
     for (const featInstance of character.feats) {
       if (featInstance.isGranted) {
@@ -303,7 +304,7 @@ export function calculateAvailableFeats(
         if (featDef?.effects) {
           for (const effect of featDef.effects) {
             if (effect.type === 'bonusFeatSlot') {
-              const slotEffect = effect as BonusFeatSlotEffectType; // Cast for type safety
+              const slotEffect = effect as BonusFeatSlotEffectType;
               classBonusFeatSlotsTotal += slotEffect.count;
               const existingDetail = classBonusDetails.find(d => d.category === slotEffect.category);
               if (existingDetail) {
@@ -642,7 +643,7 @@ export function calculateDetailedAbilityScores(
 export function calculateFeatEffects(
   characterFeats: CharacterFeatInstance[],
   allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[],
-  characterClasses: CharacterClass[]
+  characterClasses: CharacterClass[] // Added for class level scaling
 ): AggregatedFeatEffects {
   const newAggregatedEffects: AggregatedFeatEffects = {
     skillBonuses: {},
@@ -665,7 +666,7 @@ export function calculateFeatEffects(
     bonusFeatSlots: [],
     languagesGranted: { count: 0, specific: [] },
     descriptiveNotes: [],
-    classLevels: characterClasses.reduce((acc, cur) => {
+    classLevels: characterClasses.reduce((acc, cur) => { // Populate classLevels map
       if (cur.className) acc[cur.className] = cur.level;
       return acc;
     }, {} as Record<DndClassId, number>),
@@ -688,12 +689,12 @@ export function calculateFeatEffects(
       }
 
       const sourceFeatName = definition.label || definition.value;
-      let resolvedValue: any = (effect as any).value;
+      let resolvedValue: any = (effect as any).value; // Default to original value
 
+      // Apply scaling if scaleWithClassLevel is present
       if (effect.scaleWithClassLevel && effect.scaleWithClassLevel.specificLevels) {
         const classLevel = newAggregatedEffects.classLevels[effect.scaleWithClassLevel.classId] || 0;
         let foundLevelValue: any = undefined;
-        // Find the highest specificLevel entry that the character meets
         for (const levelEntry of [...effect.scaleWithClassLevel.specificLevels].sort((a, b) => b.level - a.level)) {
           if (classLevel >= levelEntry.level) {
             foundLevelValue = levelEntry.value;
@@ -703,16 +704,18 @@ export function calculateFeatEffects(
         if (foundLevelValue !== undefined) {
           resolvedValue = foundLevelValue;
         } else if ((effect as any).value === undefined && effect.scaleWithClassLevel.specificLevels.length > 0) {
-          resolvedValue = [...effect.scaleWithClassLevel.specificLevels].sort((a, b) => a.level - b.level)[0].value;
+          // If no specific level is met but there's a base value in scaling (e.g. for level 1), use the first one.
+          resolvedValue = [...effect.scaleWithClassLevel.specificLevels].sort((a,b) => a.level - b.level)[0].value;
         }
       }
-
+      
+      // Create a copy of the effect to modify its value for this instance
       let effectToPush: FeatEffectDetail & { sourceFeat?: string } = { ...effect, sourceFeat: sourceFeatName };
       if (resolvedValue !== undefined && effectToPush.hasOwnProperty('value')) {
         (effectToPush as any).value = resolvedValue;
       }
       
-      // Special handling for GrantsAbilityEffect uses, as its 'value' is within a nested 'uses' object
+      // Handle special scaling for GrantsAbilityEffect uses
       if (effect.type === 'grantsAbility' && effect.uses?.scaleWithClassLevel?.specificLevels) {
           const grantsAbilityEffect = effectToPush as GrantsAbilityEffect & { sourceFeat?: string };
           if (grantsAbilityEffect.uses) { // Ensure uses exists
@@ -720,14 +723,15 @@ export function calculateFeatEffects(
               let foundUsesValue: number | undefined;
               for (const lvlEntry of [...effect.uses.scaleWithClassLevel.specificLevels].sort((a,b) => b.level - a.level)) {
                   if (classLevel >= lvlEntry.level) {
-                      foundUsesValue = lvlEntry.value;
+                      foundUsesValue = lvlEntry.value as number; // Assuming uses.value is numeric
                       break;
                   }
               }
               if (foundUsesValue !== undefined) {
                   grantsAbilityEffect.uses.value = foundUsesValue;
               } else if (effect.uses.scaleWithClassLevel.specificLevels.length > 0) {
-                  grantsAbilityEffect.uses.value = [...effect.uses.scaleWithClassLevel.specificLevels].sort((a, b) => a.level - b.level)[0].value;
+                  // Fallback to the lowest defined level if none are met but scaling exists
+                  grantsAbilityEffect.uses.value = [...effect.uses.scaleWithClassLevel.specificLevels].sort((a, b) => a.level - b.level)[0].value as number;
               }
           }
       }
@@ -942,7 +946,6 @@ export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 // Re-export specific utilities from dnd-utils that are fundamental to character type system
 // or frequently used alongside character types.
-export { SAVING_THROW_ABILITIES, calculateLevelFromXp, getXpRequiredForLevel } from '@/lib/dnd-utils'; // Updated calculateSumOfClassLevels
+export { SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 
 export * from './character-core';
-
