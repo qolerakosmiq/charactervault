@@ -143,6 +143,9 @@
     "abilityScoreSourceRace": "Race ({raceLabel})",
     "abilityScoreSourceAging": "Vieillissement ({categoryName})",
     "abilityScoreSourceMonkWisdom": "Sagesse du Moine",
+    "abilityScoreLabel": "Score de Caractéristique",
+    "abilityModifierLabel": "Modificateur",
+    "infoDialogAbilityBreakdownAriaLabel": "Infos pour le détail du score de {abilityName}",
     "rollerDialogTitle": "Lancer les caractéristiques initiales",
     "rollerDialogTitleLoading": "Lancer les caractéristiques initiales",
     "rollerDialogDescPart1": "Lancez 4d6 (gardez les 3 meilleurs",
@@ -511,7 +514,7 @@
     "combatExpertiseValueLabel": "Valeur d'Expertise du Combat",
     "combatExpertiseDescription": "Définir le malus à l'attaque pour un bonus à la CA.",
     "combatExpertisePenaltyLabel": "Malus d'Expertise du Combat",
-    "combatExpertiseAcBonusLabel": "CA d'Expertise du Combat",
+    "combatExpertiseAcBonusLabel": "Bonus de CA d'Expertise du Combat",
     "attacksPanelAbilityModLabel": "Mod. Carac. ({abilityAbbr})",
     "attacksPanelSizeModLabel": "Mod. Taille (Attaque)",
     "attacksPanelFeatBonusLabel": "Bonus de Don",
@@ -565,12 +568,23 @@
     "weaponTypeMeleeOrRanged": "Mêlée ou Distance",
     "weaponProficiencySimple": "Courante",
     "weaponProficiencyMartial": "De guerre",
-    "weaponProficiencyExotic": "Exotique"
+    "weaponProficiencyExotic": "Exotique",
+    "rollDialogTitleAbilityCheck": "Test de {abilityName}",
+    "rollDialogDescriptionFormat": "Effectuer un {rollType}.",
+    "rollDialogCalculationBreakdownTitle": "Détail du calcul :",
+    "rollDialogTotalBonusLabel": "Bonus Total",
+    "rollDialogDiceRollLabel": "Résultat du dé (1d20) :",
+    "rollDialogFinalResultLabel": "Résultat Final :",
+    "rollDialogRollButton": "Lancer 1d20",
+    "rollDialogAbilityCheckAriaLabel": "Lancer un test de {abilityName}",
+    "rollDialogResultTitle": "Résultat du lancer",
+    "rollDialogResultDescription": "Lancé {diceResult} + {totalBonus} = {finalResult}"
   }
 }
     
     
     
+
 
 
 

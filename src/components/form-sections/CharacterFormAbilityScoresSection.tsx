@@ -2,7 +2,7 @@
 'use client';
 
 import *as React from 'react';
-import type { AbilityName, AbilityScores, DetailedAbilityScores, Character } from '@/types/character';
+import type { AbilityName, AbilityScores, DetailedAbilityScores, Character, GenericBreakdownItem } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,11 +12,13 @@ import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
 import { AbilityScorePointBuyDialog } from '@/components/AbilityScorePointBuyDialog';
+import { RollDialog, type RollDialogProps } from '@/components/RollDialog'; // Added RollDialog import
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
+import { useToast } from '@/hooks/use-toast'; // Added useToast
 
 const DEBOUNCE_DELAY = 400; // ms
 
@@ -41,6 +43,10 @@ const CharacterFormAbilityScoresSectionComponent = ({
 }: CharacterFormAbilityScoresSectionProps) => {
   const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
   const [isPointBuyDialogOpen, setIsPointBuyDialogOpen] = React.useState(false);
+  const [isRollAbilityDialogOpen, setIsRollAbilityDialogOpen] = React.useState(false); // State for RollDialog
+  const [rollAbilityDialogData, setRollAbilityDialogData] = React.useState<Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'> | null>(null); // Data for RollDialog
+  const { toast } = useToast(); // For showing roll results
+
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const { rerollOnesForAbilityScores, pointBuyBudget: rawPointBuyBudgetFromStore } = useDefinitionsStore(state => ({
@@ -93,6 +99,38 @@ const CharacterFormAbilityScoresSectionComponent = ({
       debouncedStates[key][1](newScores[key]);
     });
     setIsPointBuyDialogOpen(false);
+  };
+
+  const handleOpenRollDialog = (ability: Exclude<AbilityName, 'none'>) => {
+    if (!detailedAbilityScores || !translations) return;
+    const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.value === ability);
+    const abilityName = abilityLabelInfo?.label || ability;
+    const finalModifier = calculateAbilityModifier(detailedAbilityScores[ability].finalScore);
+
+    const breakdown: GenericBreakdownItem[] = [
+      { label: translations.UI_STRINGS.abilityScoreLabel || "Ability Score", value: detailedAbilityScores[ability].finalScore },
+      { label: translations.UI_STRINGS.abilityModifierLabel || "Modifier", value: finalModifier, isBold: true }
+    ];
+
+    setRollAbilityDialogData({
+      dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck || "{abilityName} Check").replace("{abilityName}", abilityName),
+      rollType: `${abilityName} Check`,
+      baseModifier: finalModifier,
+      calculationBreakdown: breakdown,
+    });
+    setIsRollAbilityDialogOpen(true);
+  };
+
+  const handleAbilityRollResult = (diceResult: number, totalBonus: number, finalResult: number) => {
+    if (!translations) return;
+    const UI_STRINGS = translations.UI_STRINGS;
+    toast({
+      title: UI_STRINGS.rollDialogResultTitle || "Roll Result",
+      description: (UI_STRINGS.rollDialogResultDescription || "Rolled {diceResult} + {totalBonus} = {finalResult}")
+        .replace("{diceResult}", String(diceResult))
+        .replace("{totalBonus}", String(totalBonus >=0 ? `+${totalBonus}` : totalBonus))
+        .replace("{finalResult}", String(finalResult)),
+    });
   };
   
   if (translationsLoading || !translations) {
@@ -159,10 +197,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
               const displayTotalScore = actualScoreData 
                 ? actualScoreData.finalScore 
                 : (abilityScoresData.abilityScores[ability] || 0) + 
-                  (abilityScoresData.abilityScoreTempCustomModifiers?.[ability] || 0) +
-                  (actualScoreData?.components.find(c => c.sourceLabel === "Race")?.value || 0) +
-                  (actualScoreData?.components.find(c => c.sourceLabel === "Aging")?.value || 0) +
-                  (actualScoreData?.components.find(c => c.sourceLabel === "Feat")?.value || 0);
+                  (abilityScoresData.abilityScoreTempCustomModifiers?.[ability] || 0);
               
               const displayModifier = calculateAbilityModifier(displayTotalScore);
 
@@ -181,6 +216,17 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   <div className="flex items-center justify-center space-x-1 mb-1">
                     <span className="text-xl font-bold text-accent">{displayTotalScore}</span>
                     <span className="text-xl text-accent font-normal">({displayModifier >= 0 ? '+' : ''}{displayModifier})</span>
+                    
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5 mt-0.5"
+                        onClick={() => handleOpenRollDialog(ability)}
+                        aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
+                      >
+                        <Dices className="h-3.5 w-3.5" />
+                    </Button>
                     {actualScoreData && (
                        <Button
                         type="button"
@@ -188,6 +234,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                         size="icon"
                         className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5 mt-0.5"
                         onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
+                         aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel || "Info for {abilityName} score breakdown").replace("{abilityName}", abilityDisplayName)}
                       >
                         <Info className="h-3.5 w-3.5" />
                       </Button>
@@ -249,9 +296,19 @@ const CharacterFormAbilityScoresSectionComponent = ({
           onScoresApplied={handleApplyPointBuyScores}
           totalPointsBudget={pointBuyBudget}
       />
+      {rollAbilityDialogData && (
+        <RollDialog
+          isOpen={isRollAbilityDialogOpen}
+          onOpenChange={setIsRollAbilityDialogOpen}
+          dialogTitle={rollAbilityDialogData.dialogTitle}
+          rollType={rollAbilityDialogData.rollType}
+          baseModifier={rollAbilityDialogData.baseModifier}
+          calculationBreakdown={rollAbilityDialogData.calculationBreakdown}
+          onRoll={handleAbilityRollResult}
+        />
+      )}
     </>
   );
 };
 CharacterFormAbilityScoresSectionComponent.displayName = 'CharacterFormAbilityScoresSectionComponent';
 export const CharacterFormAbilityScoresSection = React.memo(CharacterFormAbilityScoresSectionComponent);
-
