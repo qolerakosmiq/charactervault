@@ -44,6 +44,16 @@ export interface FeatPrerequisiteDetails {
   raceId?: DndRaceId | string;
   alignment?: string; // This might be a specific alignment value or a generic one like "lawful"
   special?: string;
+  specialConditions?: Array<{ // For more complex, non-standard prerequisites
+    type: string; // e.g., "hasFeatSpecialization", "isRangerStyleFeat"
+    [key: string]: any; // Other properties specific to the condition type
+  }>;
+}
+
+export interface FeatEffectScaling {
+  classId: DndClassId | string; // The class whose level dictates the scaling
+  specificLevels: Array<{ level: number; value: any /* number, string, dice object, etc. */ }>;
+  // valuePerLevel?: number; // Alternative for simple linear scaling
 }
 
 // Structured feat effect types
@@ -54,6 +64,7 @@ export interface SkillEffectDetail {
   bonusType?: "competence" | "circumstance" | "racial" | "untyped";
   condition?: string; // Plain text, e.g., "When flanking"
   sourceFeat?: string;
+  scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface NoteEffectDetail {
@@ -69,6 +80,7 @@ export interface AbilityScoreEffect {
   bonusType?: "enhancement" | "inherent" | "morale" | "competence" | "circumstance" | "size" | "untyped";
   condition?: string;
   sourceFeat?: string;
+  scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface SavingThrowEffect {
@@ -78,6 +90,7 @@ export interface SavingThrowEffect {
   bonusType?: "resistance" | "luck" | "morale" | "competence" | "circumstance" | "racial" | "untyped";
   condition?: string;
   sourceFeat?: string;
+  scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface AttackRollEffect {
@@ -88,6 +101,7 @@ export interface AttackRollEffect {
   condition?: string;
   rangeLimit?: number; // Numeric value, UI appends unit
   sourceFeat?: string;
+  scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface DamageRollEffect {
@@ -98,6 +112,7 @@ export interface DamageRollEffect {
   condition?: string;
   rangeLimit?: number; // Numeric value
   sourceFeat?: string;
+  scaleWithClassLevel?: FeatEffectScaling; // For dice string or numeric value
 }
 
 export interface ArmorClassEffect {
@@ -108,6 +123,7 @@ export interface ArmorClassEffect {
   condition?: string;
   appliesToScope?: ("normal" | "touch" | "flatFooted")[];
   sourceFeat?: string;
+  scaleWithClassLevel?: FeatEffectScaling; // For numeric value
 }
 
 export interface HitPointsEffect {
@@ -117,6 +133,7 @@ export interface HitPointsEffect {
   bonusType?: "untyped";
   condition?: string;
   sourceFeat?: string;
+  scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface InitiativeEffect {
@@ -125,6 +142,7 @@ export interface InitiativeEffect {
   bonusType?: "competence" | "insight" | "untyped";
   condition?: string;
   sourceFeat?: string;
+  scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface SpeedEffect {
@@ -135,6 +153,7 @@ export interface SpeedEffect {
   bonusType?: "enhancement" | "untyped";
   condition?: string;
   sourceFeat?: string;
+  scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface ResistanceEffect {
@@ -146,6 +165,7 @@ export interface ResistanceEffect {
   bonusType?: "resistance" | "untyped";
   condition?: string;
   sourceFeat?: string;
+  scaleWithClassLevel?: FeatEffectScaling; // For DR value
 }
 
 export interface CasterLevelCheckEffect {
@@ -155,6 +175,7 @@ export interface CasterLevelCheckEffect {
   bonusType?: "untyped" | "competence";
   condition?: string;
   sourceFeat?: string;
+  scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface SpellSaveDcEffect {
@@ -164,6 +185,7 @@ export interface SpellSaveDcEffect {
   bonusType?: "untyped";
   condition?: string;
   sourceFeat?: string;
+  scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface TurnUndeadEffect {
@@ -173,6 +195,7 @@ export interface TurnUndeadEffect {
   bonusType?: "untyped";
   condition?: string;
   sourceFeat?: string;
+  scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface GrantsAbilityEffect {
@@ -180,20 +203,26 @@ export interface GrantsAbilityEffect {
   abilityKey: string;
   name: string;
   details?: string;
-  uses?: { per: "day" | "encounter"; value: number | "levelBased" | "abilityModBased"; basedOnAbility?: Exclude<AbilityName, 'none'> };
+  uses?: {
+    per: "day" | "encounter";
+    value: number | "levelBased" | "abilityModBased" | "scaled"; // 'scaled' indicates using scaleWithClassLevel
+    basedOnAbility?: Exclude<AbilityName, 'none'>;
+  };
   actionType?: "standard" | "move" | "fullRound" | "free" | "swift" | "immediate" | "reaction" | "passive";
   condition?: string;
   sourceFeat?: string;
+  scaleWithClassLevel?: FeatEffectScaling; // For uses.value if it's "scaled"
 }
 
 export interface ModifiesMechanicEffect {
   type: "modifiesMechanic";
-  mechanicKey: string; // e.g., "unarmedStrikeThreatRange", "twoWeaponFightingPenalties"
-  change: string; // Descriptive of the change
+  mechanicKey: string; // e.g., "unarmedStrikeThreatRange", "twoWeaponFightingPenalties", "kiStrikeBypass"
+  change: string; // Descriptive of the change, or a key to a value for scaling
   details?: string;
-  value?: number | string;
+  value?: number | string | boolean; // Value associated with the change, could be type for ki strike
   condition?: string;
   sourceFeat?: string;
+  scaleWithClassLevel?: FeatEffectScaling; // If the 'value' or applicability scales
 }
 
 export interface GrantsProficiencyEffect {
@@ -212,6 +241,7 @@ export interface BonusFeatSlotEffect {
   note?: string;
   condition?: string;
   sourceFeat?: string;
+  // scaleWithClassLevel could be used if number of slots granted changes with level, though often it's just granted at specific levels
 }
 
 export interface LanguageEffect {
@@ -266,6 +296,7 @@ export interface FeatDefinitionJsonData { // Base structure for feat definitions
   type?: FeatTypeString;
   isClassFeature?: boolean;
   isCustom?: boolean;
+  category?: string; // e.g., "fighterBonusFeat", "monkBonusFeat"
 }
 
 
@@ -368,7 +399,8 @@ export interface ClassAttribute {
 export interface DndRaceOption {
   value: DndRaceId;
   label: string;
-  description?: string;
+  generalDescription?: string; // Changed from description
+  loreAttributes?: ClassAttribute[];
   bonusFeatSlots?: number;
   racialSkillBonuses?: Record<string, number>; // skillId: bonus
   grantedFeats?: Array<{ featId: string; note?: string; name?: string; levelAcquired?: number }>;
@@ -379,8 +411,9 @@ export interface DndClassOption {
   value: DndClassId | string;
   label: string;
   hitDice: string;
-  generalDescription: string; // Renamed from description
-  loreAttributes?: ClassAttribute[]; // Added
+  babProgression: "good" | "average" | "poor"; // Added
+  generalDescription: string;
+  loreAttributes?: ClassAttribute[];
   casting?: ClassCastingDetails;
   grantedFeats?: Array<{ featId: string; note?: string; name?: string; levelAcquired?: number }>;
   saves?: {
@@ -433,7 +466,7 @@ export interface Character {
   hair?: string;
   skin?: string;
   languages?: LanguageId[];
-  experiencePoints?: number; // Added
+  experiencePoints?: number;
   abilityScores: AbilityScores;
   abilityScoreTempCustomModifiers: AbilityScores;
   hp: number;
@@ -481,6 +514,11 @@ export interface Character {
   armorSpeedPenalty_miscModifier: number;
   loadSpeedPenalty_base: number;
   loadSpeedPenalty_miscModifier: number;
+  chosenCombatStyle?: "archery" | "twoWeaponFighting"; // For Ranger
+  chosenFavoredEnemies?: Array<{ // For Ranger
+    type: string; // e.g., "goblinoid", "undead" - typically a keyword from a predefined list
+    // Bonus is typically class-level dependent and applies globally to all chosen.
+  }>;
 }
 
 // Informational/Breakdown types
@@ -604,3 +642,4 @@ export interface PrerequisiteMessage {
   orderKey: string;
   originalText?: string;
 }
+

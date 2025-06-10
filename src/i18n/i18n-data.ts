@@ -31,7 +31,7 @@ import type {
   CharacterClass,
   LanguageId,
   LanguageOption,
-  ClassAttribute // Added
+  ClassAttribute
 } from '@/types/character-core';
 
 // Define types for the structure of each JSON file's data
@@ -120,8 +120,9 @@ export interface ClassDataEntry {
   value: DndClassId | string;
   label: string;
   hitDice: string;
-  generalDescription: string; // Renamed
-  loreAttributes?: ClassAttribute[]; // Added
+  babProgression: "good" | "average" | "poor"; // Added
+  generalDescription: string;
+  loreAttributes?: ClassAttribute[];
   saves: { fortitude: 'good' | 'poor'; reflex: 'good' | 'poor'; will: 'good' | 'poor' };
   casting?: ClassCastingDetails;
   grantedFeats?: Array<{ featId: string; note?: string; levelAcquired?: number }>;
@@ -133,7 +134,7 @@ export interface ClassesJson {
 export interface DeityDataEntry {
   value: DndDeityId | string;
   label: string; // Short name for select/filter
-  alignment: CharacterAlignment | ''; // Updated to allow empty string for custom
+  alignment: CharacterAlignment | '';
   fullName: string; // Epithet or long name for display
   attributes: DeityAttribute[];
 }
@@ -151,7 +152,7 @@ export interface FeatsJson {
   FEAT_TYPES_DATA: FeatTypeDataEntry[];
 }
 
-export interface RaceDataEntry extends DndRaceOption {}
+export interface RaceDataEntry extends DndRaceOption {} // DndRaceOption now includes generalDescription and loreAttributes
 export interface RacesJson {
   DND_RACES_DATA: RaceDataEntry[];
 }
@@ -336,3 +337,4 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
     UI_STRINGS,
   };
 }
+

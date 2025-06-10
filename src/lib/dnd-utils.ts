@@ -30,7 +30,7 @@ export function calculateSumOfClassLevels(classes: CharacterClass[]): number {
 
 export function getBab(
   classes: CharacterClass[],
-  allClassDefinitions: readonly DndClassOption[]
+  allClassDefinitions: readonly DndClassOption[] // Now takes class definitions as an argument
 ): number[] {
   if (classes.length === 0 || !classes[0]?.className) return [0];
 
@@ -38,23 +38,33 @@ export function getBab(
   classes.forEach(charClass => {
     if (!charClass.className) return;
     const classDef = allClassDefinitions.find(cd => cd.value === charClass.className);
-    if (!classDef) return;
+    if (!classDef || !classDef.babProgression) { // Check for babProgression
+      // Fallback or error if babProgression is missing
+      // For now, let's assume poor progression if undefined
+      totalBab += Math.floor(charClass.level * 0.5);
+      return;
+    }
 
-    const classNameLower = classDef.label.toLowerCase();
     let classBabContribution = 0;
-    if (['barbarian', 'fighter', 'paladin', 'ranger', 'soulknife'].some(name => classNameLower.includes(name))) {
-      classBabContribution = charClass.level;
-    } else if (['bard', 'cleric', 'druid', 'monk', 'rogue'].some(name => classNameLower.includes(name))) {
-      classBabContribution = Math.floor(charClass.level * 0.75);
-    } else {
-      classBabContribution = Math.floor(charClass.level * 0.5);
+    switch (classDef.babProgression) {
+      case 'good':
+        classBabContribution = charClass.level;
+        break;
+      case 'average':
+        classBabContribution = Math.floor(charClass.level * 0.75);
+        break;
+      case 'poor':
+        classBabContribution = Math.floor(charClass.level * 0.5);
+        break;
+      default:
+        classBabContribution = Math.floor(charClass.level * 0.5); // Fallback to poor
     }
     totalBab += classBabContribution;
   });
 
   const attacks: number[] = [totalBab];
   let nextAttack = totalBab - 5;
-  while (nextAttack >= 1) {
+  while (nextAttack >= 1) { // PHB p.22, "Multiple Attacks" - only attacks with BAB +1 or higher.
     attacks.push(nextAttack);
     nextAttack -= 5;
   }
@@ -209,3 +219,4 @@ export function calculateLevelFromXp(xp: number, xpTable: readonly XpDataEntry[]
   // it implies level 1 (assuming level 1 requires 0 XP, which is standard)
   return 1;
 }
+

@@ -5,6 +5,7 @@
       "value": "barbarian",
       "label": "Barbarian",
       "hitDice": "d12",
+      "babProgression": "good",
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
       "generalDescription": "<p>Barbarians are savage warriors from the wild frontiers, relying on their primal fury and immense strength.<br />They are often tribal, disdainful of civilization, and fiercely independent.<br/><b>Note:</b> Barbarians are illiterate unless they spend skill points on the Read/Write Language skill or take a level in another class.</p>",
       "loreAttributes": [
@@ -51,6 +52,7 @@
       "value": "bard",
       "label": "Bard",
       "hitDice": "d6",
+      "babProgression": "average",
       "casting": { "type": "full" },
       "saves": { "fortitude": "poor", "reflex": "good", "will": "good" },
       "generalDescription": "<p>Bards are versatile performers, weaving magic through music and words.<br />They are storytellers, diplomats, and adventurers, often charismatic and quick-witted.</p>",
@@ -85,6 +87,7 @@
       "value": "cleric",
       "label": "Cleric",
       "hitDice": "d8",
+      "babProgression": "average",
       "casting": { "type": "full" },
       "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
       "generalDescription": "<p>Clerics are divine agents, channeling the power of their chosen deity to heal the sick, smite the wicked, or protect the faithful.<br />They are masters of divine magic and often serve as spiritual leaders.</p>",
@@ -107,6 +110,7 @@
       "value": "druid",
       "label": "Druid",
       "hitDice": "d8",
+      "babProgression": "average",
       "casting": { "type": "full" },
       "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
       "generalDescription": "<p>Druids are guardians of the natural world, drawing power from the untamed wilderness.<br />They can shapeshift into animals, command plants, and call upon nature's fury.</p>",
@@ -147,6 +151,7 @@
       "value": "fighter",
       "label": "Fighter",
       "hitDice": "d10",
+      "babProgression": "good",
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
       "generalDescription": "<p>Fighters are masters of martial combat, excelling with all forms of weapons and armor.<br />They are the backbone of armies, the sellswords in taverns, and the dedicated protectors of kingdoms.</p>",
       "loreAttributes": [
@@ -181,6 +186,7 @@
       "value": "monk",
       "label": "Monk",
       "hitDice": "d8",
+      "babProgression": "average",
       "saves": { "fortitude": "good", "reflex": "good", "will": "good" },
       "generalDescription": "<p>Monks are disciplined warriors who perfect their bodies and minds to achieve extraordinary martial prowess.<br />They eschew armor and traditional weapons, relying on their ki-powered unarmed strikes and mystical abilities.<br /><b>Bonus Feats:</b> A monk may select a bonus feat at 1st level, 2nd level, and 6th level from a specific list (e.g., Improved Grapple, Combat Reflexes, Deflect Arrows, Stunning Fist). These are in addition to other feats.</p>",
       "loreAttributes": [
@@ -246,6 +252,7 @@
       "value": "paladin",
       "label": "Paladin",
       "hitDice": "d10",
+      "babProgression": "good",
       "casting": { "type": "partial", "startsAtLevel": 4, "levelOffset": -3 },
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
       "generalDescription": "<p>Paladins are holy champions of righteousness, sworn to uphold justice and smite evil.<br />They are granted divine powers to aid their cause, including healing, protection, and the ability to turn undead.</p>",
@@ -286,6 +293,7 @@
       "value": "ranger",
       "label": "Ranger",
       "hitDice": "d8",
+      "babProgression": "good",
       "casting": { "type": "partial", "startsAtLevel": 4, "levelOffset": -3 },
       "saves": { "fortitude": "good", "reflex": "good", "will": "poor" },
       "generalDescription": "<p>Rangers are skilled hunters and trackers, at home in the wilderness and adept at fighting specific types of creatures.<br />They often possess some divine magic related to nature and an animal companion.</p>",
@@ -326,6 +334,7 @@
       "value": "rogue",
       "label": "Rogue",
       "hitDice": "d6",
+      "babProgression": "average",
       "saves": { "fortitude": "poor", "reflex": "good", "will": "poor" },
       "generalDescription": "<p>Rogues are masters of stealth, trickery, and skill.<br />They excel at disarming traps, picking locks, and striking from the shadows.<br />They can be charming scoundrels, deadly assassins, or cunning investigators.</p>",
       "loreAttributes": [
@@ -367,6 +376,7 @@
       "value": "sorcerer",
       "label": "Sorcerer",
       "hitDice": "d4",
+      "babProgression": "poor",
       "casting": { "type": "full" },
       "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
       "generalDescription": "<p>Sorcerers wield arcane magic through innate talent, often stemming from draconic or fey ancestry.<br />Their magic is intuitive and flexible, not learned through rigorous study.</p>",
@@ -385,6 +395,7 @@
       "value": "wizard",
       "label": "Wizard",
       "hitDice": "d4",
+      "babProgression": "poor",
       "casting": { "type": "full" },
       "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
       "generalDescription": "<p>Wizards are scholars of the arcane, mastering magic through intense study, research, and practice.<br />They command a vast repertoire of spells, prepared daily from their spellbooks.</p>",
@@ -408,6 +419,7 @@
       "value": "soulknife",
       "label": "Soulknife",
       "hitDice": "d10",
+      "babProgression": "good",
       "saves": { "fortitude": "poor", "reflex": "good", "will": "good" },
       "generalDescription": "<p>A soulknife is the warrior ideal, a master of combat who dispatches his foes with a blade made of his own psychic energy.</p>",
       "loreAttributes": [
@@ -447,3 +459,4 @@
     }
   ]
 }
+
