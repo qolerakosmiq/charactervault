@@ -94,7 +94,7 @@ export const SkillModifierBreakdownContentDisplay = ({
         )}
         {skillModifierBreakdown.miscModifier !== 0 && (
           <div className="flex justify-between">
-            <span>{uiStrings.infoDialogMiscModifierLabel || "Misc Modifier"}</span>
+            <span>{uiStrings.infoDialogCustomModifierLabel || "Misc Modifier"}</span>
             {renderModifierValue(skillModifierBreakdown.miscModifier)}
           </div>
         )}
