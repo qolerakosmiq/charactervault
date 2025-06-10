@@ -28,7 +28,7 @@ import type {
   SpeedComponent,
   CharacterSizeObject,
   DndRaceOption, DndClassOption, AbilityScores, AggregatedFeatEffects, DetailedAbilityScores,
-  CharacterAlignmentObject
+  CharacterAlignmentObject, DndDeityOption
 } from '@/types/character';
 
 import {
@@ -302,15 +302,34 @@ export function InfoDisplayDialog({
         };
         break;
       case 'deity':
-        iconKey = 'deity'; 
+        iconKey = 'deity';
         const deityId = character.deity;
         const deityData = DND_DEITIES.find(d => d.value === deityId);
+        
         if (deityData) {
-            data = { title: deityData.label, content: [DeityContentDisplay({htmlContent: deityData.description || `<p>${(UI_STRINGS.infoDialogNoSkillDescription || 'No detailed description available for').replace('{itemName}', deityData.label)}</p>`})] };
+            data = {
+                title: deityData.label, // Short name for dialog title
+                content: [DeityContentDisplay({ deityData, uiStrings: UI_STRINGS })]
+            };
         } else if (deityId && deityId.trim() !== '') {
-            data = { title: deityId, content: [DeityContentDisplay({htmlContent: `<p>${UI_STRINGS.infoDialogDeityPlaceholder || 'Custom deity. No predefined information available.'}</p>`})] };
+             // Handle custom typed deity - attempt to show label if it matches character.deity or just use character.deity
+             const customDeityDisplay: DndDeityOption = {
+                value: deityId,
+                label: deityId, // Use the typed value as label
+                alignment: '', // No alignment info for custom
+                fullName: deityId, // Use the typed value as full name
+                attributes: [{ key: (UI_STRINGS.infoDialogDeityPlaceholder || "Custom deity. No predefined information available."), value: ""}]
+             };
+            data = { title: deityId, content: [DeityContentDisplay({ deityData: customDeityDisplay, uiStrings: UI_STRINGS })] };
         } else {
-            data = { title: UI_STRINGS.infoDialogDeityDefaultTitle || "Deity Information", content: [DeityContentDisplay({htmlContent: `<p>${UI_STRINGS.infoDialogDeityPlaceholder || "Select or type a deity to see more information."}</p>`})]};
+             const placeholderDeity: DndDeityOption = {
+                value: "__placeholder__",
+                label: UI_STRINGS.infoDialogDeityDefaultTitle || "Deity Information",
+                alignment: '',
+                fullName: UI_STRINGS.infoDialogDeityDefaultTitle || "Deity Information",
+                attributes: [{ key: (UI_STRINGS.infoDialogDeityPlaceholder || "Select or type a deity to see more information."), value: ""}]
+             };
+            data = { title: UI_STRINGS.infoDialogDeityDefaultTitle || "Deity Information", content: [DeityContentDisplay({ deityData: placeholderDeity, uiStrings: UI_STRINGS })]};
         }
         break;
       case 'abilityScoreBreakdown': {
@@ -943,6 +962,7 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
+
 
 
 

@@ -382,11 +382,17 @@ export interface DndClassOption {
     will: "good" | "poor";
   };
 }
+
+export interface DeityAttribute {
+  key: string;
+  value: string;
+}
 export interface DndDeityOption {
   value: DndDeityId | string;
-  label: string;
+  label: string; // Short name for select/filter
   alignment: CharacterAlignment;
-  description?: string;
+  fullName: string; // Epithet or long name for display
+  attributes: DeityAttribute[];
 }
 
 export interface SkillDefinitionJsonData {

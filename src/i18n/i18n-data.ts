@@ -23,6 +23,7 @@ import type {
   DndRaceOption,
   DndClassOption,
   DndDeityOption,
+  DeityAttribute, // Added
   AbilityScores,
   SavingThrows,
   ResistanceValue,
@@ -129,9 +130,11 @@ export interface ClassesJson {
 
 export interface DeityDataEntry {
   value: DndDeityId | string;
-  label: string;
+  label: string; // Short name for select/filter
   alignment: CharacterAlignment;
-  description: string;
+  fullName: string; // Epithet or long name for display
+  attributes: DeityAttribute[];
+  // description?: string; // This will be removed
 }
 export interface DeitiesJson {
   DND_DEITIES_DATA: DeityDataEntry[];
@@ -332,3 +335,4 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
     UI_STRINGS,
   };
 }
+

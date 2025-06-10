@@ -5,259 +5,560 @@
       "value": "boccob",
       "label": "Boccob",
       "alignment": "true-neutral",
-      "description": "<b>The Uncaring, Lord of All Magics</b><p><b>Alignment:</b> Neutral<br/><b>Portfolio:</b> Magic, arcane knowledge, balance, foresight<br/><b>Worshippers:</b> Wizards, sorcerers, sages, and those who seek knowledge or practice magic<br/><b>Domains:</b> Knowledge, Magic, Trickery<br/><b>Favored Weapon:</b> Quarterstaff</p>"
+      "fullName": "The Uncaring, Lord of All Magics",
+      "attributes": [
+        { "key": "Alignment", "value": "Neutral" },
+        { "key": "Portfolio", "value": "Magic, arcane knowledge, balance, foresight" },
+        { "key": "Worshippers", "value": "Wizards, sorcerers, sages, and those who seek knowledge or practice magic" },
+        { "key": "Domains", "value": "Knowledge, Magic, Trickery" },
+        { "key": "Favored Weapon", "value": "Quarterstaff" }
+      ]
     },
     {
       "value": "corellon-larethian",
       "label": "Corellon Larethian",
       "alignment": "chaotic-good",
-      "description": "<b>Creator of the Elves, The Protector</b><p><b>Alignment:</b> Chaotic Good<br/><b>Portfolio:</b> Elves, magic, music, arts, crafts, war, poetry<br/><b>Worshippers:</b> Elves, half-elves, bards, artists, warriors<br/><b>Domains:</b> Chaos, Good, Magic, Protection, War<br/><b>Favored Weapon:</b> Longsword</p>"
+      "fullName": "Creator of the Elves, The Protector",
+      "attributes": [
+        { "key": "Alignment", "value": "Chaotic Good" },
+        { "key": "Portfolio", "value": "Elves, magic, music, arts, crafts, war, poetry" },
+        { "key": "Worshippers", "value": "Elves, half-elves, bards, artists, warriors" },
+        { "key": "Domains", "value": "Chaos, Good, Magic, Protection, War" },
+        { "key": "Favored Weapon", "value": "Longsword" }
+      ]
     },
     {
       "value": "ehlonna",
       "label": "Ehlonna",
       "alignment": "neutral-good",
-      "description": "<b>Ehlonna of the Forests</b><p><b>Alignment:</b> Neutral Good<br/><b>Portfolio:</b> Forests, woodlands, flora, fauna, fertility<br/><b>Worshippers:</b> Rangers, druids, hunters, elves, woodsmen<br/><b>Domains:</b> Animal, Good, Plant, Sun<br/><b>Favored Weapon:</b> Longbow</p>"
+      "fullName": "Ehlonna of the Forests",
+      "attributes": [
+        { "key": "Alignment", "value": "Neutral Good" },
+        { "key": "Portfolio", "value": "Forests, woodlands, flora, fauna, fertility" },
+        { "key": "Worshippers", "value": "Rangers, druids, hunters, elves, woodsmen" },
+        { "key": "Domains", "value": "Animal, Good, Plant, Sun" },
+        { "key": "Favored Weapon", "value": "Longbow" }
+      ]
     },
     {
       "value": "erythnul",
       "label": "Erythnul",
       "alignment": "chaotic-evil",
-      "description": "<b>The Many, God of Slaughter</b><p><b>Alignment:</b> Chaotic Evil<br/><b>Portfolio:</b> Malice, envy, slaughter, panic, ugliness<br/><b>Worshippers:</b> Evil warriors, bandits, sadists, those who revel in destruction<br/><b>Domains:</b> Chaos, Evil, Trickery, War<br/><b>Favored Weapon:</b> Morningstar</p>"
+      "fullName": "The Many, God of Slaughter",
+      "attributes": [
+        { "key": "Alignment", "value": "Chaotic Evil" },
+        { "key": "Portfolio", "value": "Malice, envy, slaughter, panic, ugliness" },
+        { "key": "Worshippers", "value": "Evil warriors, bandits, sadists, those who revel in destruction" },
+        { "key": "Domains", "value": "Chaos, Evil, Trickery, War" },
+        { "key": "Favored Weapon", "value": "Morningstar" }
+      ]
     },
     {
       "value": "fharlanghn",
       "label": "Fharlanghn",
       "alignment": "true-neutral",
-      "description": "<b>Dweller on the Horizon, The Wanderer</b><p><b>Alignment:</b> Neutral<br/><b>Portfolio:</b> Horizons, distance, travel, roads<br/><b>Worshippers:</b> Travelers, explorers, merchants, adventurers<br/><b>Domains:</b> Luck, Protection, Travel<br/><b>Favored Weapon:</b> Quarterstaff</p>"
+      "fullName": "Dweller on the Horizon, The Wanderer",
+      "attributes": [
+        { "key": "Alignment", "value": "Neutral" },
+        { "key": "Portfolio", "value": "Horizons, distance, travel, roads" },
+        { "key": "Worshippers", "value": "Travelers, explorers, merchants, adventurers" },
+        { "key": "Domains", "value": "Luck, Protection, Travel" },
+        { "key": "Favored Weapon", "value": "Quarterstaff" }
+      ]
     },
     {
       "value": "garl-glittergold",
       "label": "Garl Glittergold",
       "alignment": "neutral-good",
-      "description": "<b>The Watchful Protector, The Joker</b><p><b>Alignment:</b> Neutral Good<br/><b>Portfolio:</b> Gnomes, humor, wit, gemcutting, protection, trickery<br/><b>Worshippers:</b> Gnomes, jesters, jewelers, pranksters<br/><b>Domains:</b> Good, Protection, Trickery<br/><b>Favored Weapon:</b> Battleaxe</p>"
+      "fullName": "The Watchful Protector, The Joker",
+      "attributes": [
+        { "key": "Alignment", "value": "Neutral Good" },
+        { "key": "Portfolio", "value": "Gnomes, humor, wit, gemcutting, protection, trickery" },
+        { "key": "Worshippers", "value": "Gnomes, jesters, jewelers, pranksters" },
+        { "key": "Domains", "value": "Good, Protection, Trickery" },
+        { "key": "Favored Weapon", "value": "Battleaxe" }
+      ]
     },
     {
       "value": "gruumsh",
       "label": "Gruumsh",
       "alignment": "chaotic-evil",
-      "description": "<b>One-Eye, He Who Never Sleeps</b><p><b>Alignment:</b> Chaotic Evil<br/><b>Portfolio:</b> Orcs, war, territory, strength<br/><b>Worshippers:</b> Orcs and half-orcs<br/><b>Domains:</b> Chaos, Evil, Strength, War<br/><b>Favored Weapon:</b> Spear</p>"
+      "fullName": "One-Eye, He Who Never Sleeps",
+      "attributes": [
+        { "key": "Alignment", "value": "Chaotic Evil" },
+        { "key": "Portfolio", "value": "Orcs, war, territory, strength" },
+        { "key": "Worshippers", "value": "Orcs and half-orcs" },
+        { "key": "Domains", "value": "Chaos, Evil, Strength, War" },
+        { "key": "Favored Weapon", "value": "Spear" }
+      ]
     },
     {
       "value": "heironeous",
       "label": "Heironeous",
       "alignment": "lawful-good",
-      "description": "<b>The Invincible, The Valorous Knight</b><p><b>Alignment:</b> Lawful Good<br/><b>Portfolio:</b> Valor, chivalry, justice, honor, war, daring<br/><b>Worshippers:</b> Paladins, good fighters and warriors, guards, leaders<br/><b>Domains:</b> Good, Law, War<br/><b>Favored Weapon:</b> Longsword</p>"
+      "fullName": "The Invincible, The Valorous Knight",
+      "attributes": [
+        { "key": "Alignment", "value": "Lawful Good" },
+        { "key": "Portfolio", "value": "Valor, chivalry, justice, honor, war, daring" },
+        { "key": "Worshippers", "value": "Paladins, good fighters and warriors, guards, leaders" },
+        { "key": "Domains", "value": "Good, Law, War" },
+        { "key": "Favored Weapon", "value": "Longsword" }
+      ]
     },
     {
       "value": "hextor",
       "label": "Hextor",
       "alignment": "lawful-evil",
-      "description": "<b>Scourge of Battle, Champion of Evil</b><p><b>Alignment:</b> Lawful Evil<br/><b>Portfolio:</b> War, discord, massacre, conflict, fitness, tyranny<br/><b>Worshippers:</b> Evil fighters and monks, tyrants, conquerors<br/><b>Domains:</b> Destruction, Evil, Law, War<br/><b>Favored Weapon:</b> Flail</p>"
+      "fullName": "Scourge of Battle, Champion of Evil",
+      "attributes": [
+        { "key": "Alignment", "value": "Lawful Evil" },
+        { "key": "Portfolio", "value": "War, discord, massacre, conflict, fitness, tyranny" },
+        { "key": "Worshippers", "value": "Evil fighters and monks, tyrants, conquerors" },
+        { "key": "Domains", "value": "Destruction, Evil, Law, War" },
+        { "key": "Favored Weapon", "value": "Flail" }
+      ]
     },
     {
       "value": "kord",
       "label": "Kord",
       "alignment": "chaotic-good",
-      "description": "<b>The Brawler, The Mighty</b><p><b>Alignment:</b> Chaotic Good<br/><b>Portfolio:</b> Strength, athletics, sports, brawling, courage<br/><b>Worshippers:</b> Barbarians, fighters, athletes, and those who value strength<br/><b>Domains:</b> Chaos, Good, Luck, Strength<br/><b>Favored Weapon:</b> Greatsword</p>"
+      "fullName": "The Brawler, The Mighty",
+      "attributes": [
+        { "key": "Alignment", "value": "Chaotic Good" },
+        { "key": "Portfolio", "value": "Strength, athletics, sports, brawling, courage" },
+        { "key": "Worshippers", "value": "Barbarians, fighters, athletes, and those who value strength" },
+        { "key": "Domains", "value": "Chaos, Good, Luck, Strength" },
+        { "key": "Favored Weapon", "value": "Greatsword" }
+      ]
     },
     {
       "value": "moradin",
       "label": "Moradin",
       "alignment": "lawful-good",
-      "description": "<b>Soul Forger, Dwarffather</b><p><b>Alignment:</b> Lawful Good<br/><b>Portfolio:</b> Dwarves, creation, smithing, protection, metalcraft, stonework<br/><b>Worshippers:</b> Dwarves, smiths, engineers, architects<br/><b>Domains:</b> Earth, Good, Law, Protection<br/><b>Favored Weapon:</b> Warhammer</p>"
+      "fullName": "Soul Forger, Dwarffather",
+      "attributes": [
+        { "key": "Alignment", "value": "Lawful Good" },
+        { "key": "Portfolio", "value": "Dwarves, creation, smithing, protection, metalcraft, stonework" },
+        { "key": "Worshippers", "value": "Dwarves, smiths, engineers, architects" },
+        { "key": "Domains", "value": "Earth, Good, Law, Protection" },
+        { "key": "Favored Weapon", "value": "Warhammer" }
+      ]
     },
     {
       "value": "nerull",
       "label": "Nerull",
       "alignment": "neutral-evil",
-      "description": "<b>The Reaper, Foe of All Good</b><p><b>Alignment:</b> Neutral Evil<br/><b>Portfolio:</b> Death, darkness, murder, the underworld<br/><b>Worshippers:</b> Assassins, necromancers, evil cultists, those who profit from death<br/><b>Domains:</b> Death, Evil, Trickery<br/><b>Favored Weapon:</b> Scythe</p>"
+      "fullName": "The Reaper, Foe of All Good",
+      "attributes": [
+        { "key": "Alignment", "value": "Neutral Evil" },
+        { "key": "Portfolio", "value": "Death, darkness, murder, the underworld" },
+        { "key": "Worshippers", "value": "Assassins, necromancers, evil cultists, those who profit from death" },
+        { "key": "Domains", "value": "Death, Evil, Trickery" },
+        { "key": "Favored Weapon", "value": "Scythe" }
+      ]
     },
     {
       "value": "obad-hai",
       "label": "Obad-Hai",
       "alignment": "true-neutral",
-      "description": "<b>The Shalm, The Hidden Woodcaster</b><p><b>Alignment:</b> Neutral<br/><b>Portfolio:</b> Nature, woodlands, freedom, hunting, beasts<br/><b>Worshippers:</b> Druids, rangers, hunters, barbarians, those who live in harmony with nature<br/><b>Domains:</b> Air, Animal, Earth, Fire, Plant, Water<br/><b>Favored Weapon:</b> Quarterstaff</p>"
+      "fullName": "The Shalm, The Hidden Woodcaster",
+      "attributes": [
+        { "key": "Alignment", "value": "Neutral" },
+        { "key": "Portfolio", "value": "Nature, woodlands, freedom, hunting, beasts" },
+        { "key": "Worshippers", "value": "Druids, rangers, hunters, barbarians, those who live in harmony with nature" },
+        { "key": "Domains", "value": "Air, Animal, Earth, Fire, Plant, Water" },
+        { "key": "Favored Weapon", "value": "Quarterstaff" }
+      ]
     },
     {
       "value": "olidammara",
       "label": "Olidammara",
       "alignment": "chaotic-neutral",
-      "description": "<b>The Laughing Rogue</b><p><b>Alignment:</b> Chaotic Neutral<br/><b>Portfolio:</b> Music, revels, wine, rogues, humor, tricks<br/><b>Worshippers:</b> Rogues, bards, minstrels, hedonists, jesters<br/><b>Domains:</b> Chaos, Luck, Trickery<br/><b>Favored Weapon:</b> Rapier</p>"
+      "fullName": "The Laughing Rogue",
+      "attributes": [
+        { "key": "Alignment", "value": "Chaotic Neutral" },
+        { "key": "Portfolio", "value": "Music, revels, wine, rogues, humor, tricks" },
+        { "key": "Worshippers", "value": "Rogues, bards, minstrels, hedonists, jesters" },
+        { "key": "Domains", "value": "Chaos, Luck, Trickery" },
+        { "key": "Favored Weapon", "value": "Rapier" }
+      ]
     },
     {
       "value": "pelor",
       "label": "Pelor",
       "alignment": "neutral-good",
-      "description": "<b>The Sun Father, The Shining One</b><p><b>Alignment:</b> Neutral Good<br/><b>Portfolio:</b> Sun, light, strength, healing, life<br/><b>Worshippers:</b> Healers, protectors, common folk, those who fight against darkness and undeath<br/><b>Domains:</b> Good, Healing, Strength, Sun<br/><b>Favored Weapon:</b> Mace (heavy or light)</p>"
+      "fullName": "The Sun Father, The Shining One",
+      "attributes": [
+        { "key": "Alignment", "value": "Neutral Good" },
+        { "key": "Portfolio", "value": "Sun, light, strength, healing, life" },
+        { "key": "Worshippers", "value": "Healers, protectors, common folk, those who fight against darkness and undeath" },
+        { "key": "Domains", "value": "Good, Healing, Strength, Sun" },
+        { "key": "Favored Weapon", "value": "Mace (heavy or light)" }
+      ]
     },
     {
       "value": "st-cuthbert",
       "label": "St. Cuthbert",
       "alignment": "lawful-neutral",
-      "description": "<b>St. Cuthbert of the Cudgel</b><p><b>Alignment:</b> Lawful Neutral<br/><b>Portfolio:</b> Common sense, wisdom, zeal, honesty, truth, discipline<br/><b>Worshippers:</b> Judges, guards, common folk who value order and truth<br/><b>Domains:</b> Destruction, Law, Protection, Strength<br/><b>Favored Weapon:</b> Mace (heavy or light)</p>"
+      "fullName": "St. Cuthbert of the Cudgel",
+      "attributes": [
+        { "key": "Alignment", "value": "Lawful Neutral" },
+        { "key": "Portfolio", "value": "Common sense, wisdom, zeal, honesty, truth, discipline" },
+        { "key": "Worshippers", "value": "Judges, guards, common folk who value order and truth" },
+        { "key": "Domains", "value": "Destruction, Law, Protection, Strength" },
+        { "key": "Favored Weapon", "value": "Mace (heavy or light)" }
+      ]
     },
     {
       "value": "vecna",
       "label": "Vecna",
       "alignment": "neutral-evil",
-      "description": "<b>The Maimed Lord, The Whispered One</b><p><b>Alignment:</b> Neutral Evil<br/><b>Portfolio:</b> Undead, evil secrets, necromancy, forbidden knowledge<br/><b>Worshippers:</b> Evil necromancers, power-hungry mages, seekers of forbidden lore<br/><b>Domains:</b> Evil, Knowledge, Magic<br/><b>Favored Weapon:</b> Dagger</p>"
+      "fullName": "The Maimed Lord, The Whispered One",
+      "attributes": [
+        { "key": "Alignment", "value": "Neutral Evil" },
+        { "key": "Portfolio", "value": "Undead, evil secrets, necromancy, forbidden knowledge" },
+        { "key": "Worshippers", "value": "Evil necromancers, power-hungry mages, seekers of forbidden lore" },
+        { "key": "Domains", "value": "Evil, Knowledge, Magic" },
+        { "key": "Favored Weapon", "value": "Dagger" }
+      ]
     },
     {
       "value": "wee-jas",
       "label": "Wee Jas",
       "alignment": "lawful-neutral",
-      "description": "<b>The Ruby Sorceress, Stern Lady</b><p><b>Alignment:</b> Lawful Neutral<br/><b>Portfolio:</b> Magic, death, vanity, law, order in death<br/><b>Worshippers:</b> Wizards, necromancers, judges, those who respect order and the finality of death<br/><b>Domains:</b> Death, Law, Magic<br/><b>Favored Weapon:</b> Dagger</p>"
+      "fullName": "The Ruby Sorceress, Stern Lady",
+      "attributes": [
+        { "key": "Alignment", "value": "Lawful Neutral" },
+        { "key": "Portfolio", "value": "Magic, death, vanity, law, order in death" },
+        { "key": "Worshippers", "value": "Wizards, necromancers, judges, those who respect order and the finality of death" },
+        { "key": "Domains", "value": "Death, Law, Magic" },
+        { "key": "Favored Weapon", "value": "Dagger" }
+      ]
     },
     {
       "value": "yondalla",
       "label": "Yondalla",
       "alignment": "lawful-good",
-      "description": "<b>The Protector and Provider, The Nurturing Matriarch</b><p><b>Alignment:</b> Lawful Good<br/><b>Portfolio:</b> Halflings, protection, bounty, family, tradition<br/><b>Worshippers:</b> Halflings, community leaders, protectors<br/><b>Domains:</b> Good, Law, Protection<br/><b>Favored Weapon:</b> Short sword</p>"
+      "fullName": "The Protector and Provider, The Nurturing Matriarch",
+      "attributes": [
+        { "key": "Alignment", "value": "Lawful Good" },
+        { "key": "Portfolio", "value": "Halflings, protection, bounty, family, tradition" },
+        { "key": "Worshippers", "value": "Halflings, community leaders, protectors" },
+        { "key": "Domains", "value": "Good, Law, Protection" },
+        { "key": "Favored Weapon", "value": "Short sword" }
+      ]
     },
     {
       "value": "bane",
       "label": "Bane",
       "alignment": "lawful-evil",
-      "description": "<b>The Black Lord, Lord of Darkness</b><p><b>Alignment:</b> Lawful Evil<br/><b>Portfolio:</b> Strife, hatred, tyranny, fear<br/><b>Worshippers:</b> Tyrants, conquerors, evil warriors, those who seek to dominate others<br/><b>Domains:</b> Evil, Destruction, Hatred, Law, Tyranny<br/><b>Favored Weapon:</b> Morningstar</p>"
+      "fullName": "The Black Lord, Lord of Darkness",
+      "attributes": [
+        { "key": "Alignment", "value": "Lawful Evil" },
+        { "key": "Portfolio", "value": "Strife, hatred, tyranny, fear" },
+        { "key": "Worshippers", "value": "Tyrants, conquerors, evil warriors, those who seek to dominate others" },
+        { "key": "Domains", "value": "Evil, Destruction, Hatred, Law, Tyranny" },
+        { "key": "Favored Weapon", "value": "Morningstar" }
+      ]
     },
     {
       "value": "chauntea",
       "label": "Chauntea",
       "alignment": "neutral-good",
-      "description": "<b>The Great Mother, Grain Goddess</b><p><b>Alignment:</b> Neutral Good<br/><b>Portfolio:</b> Agriculture, plants cultivated by humans, farmers, gardeners, summer<br/><b>Worshippers:</b> Farmers, gardeners, common folk<br/><b>Domains:</b> Earth, Good, Plant, Protection, Renewal<br/><b>Favored Weapon:</b> Scythe</p>"
+      "fullName": "The Great Mother, Grain Goddess",
+      "attributes": [
+        { "key": "Alignment", "value": "Neutral Good" },
+        { "key": "Portfolio", "value": "Agriculture, plants cultivated by humans, farmers, gardeners, summer" },
+        { "key": "Worshippers", "value": "Farmers, gardeners, common folk" },
+        { "key": "Domains", "value": "Earth, Good, Plant, Protection, Renewal" },
+        { "key": "Favored Weapon", "value": "Scythe" }
+      ]
     },
     {
       "value": "cyric",
       "label": "Cyric",
       "alignment": "chaotic-evil",
-      "description": "<b>The Prince of Lies, The Dark Sun</b><p><b>Alignment:</b> Chaotic Evil<br/><b>Portfolio:</b> Murder, lies, intrigue, deception, illusion<br/><b>Worshippers:</b> Assassins, liars, madmen, those who thrive on chaos and deceit<br/><b>Domains:</b> Chaos, Destruction, Evil, Illusion, Trickery<br/><b>Favored Weapon:</b> Longsword</p>"
+      "fullName": "The Prince of Lies, The Dark Sun",
+      "attributes": [
+        { "key": "Alignment", "value": "Chaotic Evil" },
+        { "key": "Portfolio", "value": "Murder, lies, intrigue, deception, illusion" },
+        { "key": "Worshippers", "value": "Assassins, liars, madmen, those who thrive on chaos and deceit" },
+        { "key": "Domains", "value": "Chaos, Destruction, Evil, Illusion, Trickery" },
+        { "key": "Favored Weapon", "value": "Longsword" }
+      ]
     },
     {
       "value": "helm",
       "label": "Helm",
       "alignment": "lawful-neutral",
-      "description": "<b>The Vigilant One, The Watcher</b><p><b>Alignment:</b> Lawful Neutral<br/><b>Portfolio:</b> Guardians, protectors, protection, vigilance<br/><b>Worshippers:</b> Guards, sentinels, those who protect others<br/><b>Domains:</b> Law, Planning, Protection, Strength<br/><b>Favored Weapon:</b> Bastard sword</p>"
+      "fullName": "The Vigilant One, The Watcher",
+      "attributes": [
+        { "key": "Alignment", "value": "Lawful Neutral" },
+        { "key": "Portfolio", "value": "Guardians, protectors, protection, vigilance" },
+        { "key": "Worshippers", "value": "Guards, sentinels, those who protect others" },
+        { "key": "Domains", "value": "Law, Planning, Protection, Strength" },
+        { "key": "Favored Weapon", "value": "Bastard sword" }
+      ]
     },
     {
       "value": "ilmater",
       "label": "Ilmater",
       "alignment": "lawful-good",
-      "description": "<b>The Crying God, The Rack-Broken Lord</b><p><b>Alignment:</b> Lawful Good<br/><b>Portfolio:</b> Endurance, suffering, martyrdom, perseverance<br/><b>Worshippers:</b> The oppressed, the persecuted, the poor, monks<br/><b>Domains:</b> Good, Healing, Law, Strength, Suffering<br/><b>Favored Weapon:</b> Unarmed strike</p>"
+      "fullName": "The Crying God, The Rack-Broken Lord",
+      "attributes": [
+        { "key": "Alignment", "value": "Lawful Good" },
+        { "key": "Portfolio", "value": "Endurance, suffering, martyrdom, perseverance" },
+        { "key": "Worshippers", "value": "The oppressed, the persecuted, the poor, monks" },
+        { "key": "Domains", "value": "Good, Healing, Law, Strength, Suffering" },
+        { "key": "Favored Weapon", "value": "Unarmed strike" }
+      ]
     },
     {
       "value": "kelemvor",
       "label": "Kelemvor",
       "alignment": "lawful-neutral",
-      "description": "<b>Lord of the Dead, Judge of the Damned</b><p><b>Alignment:</b> Lawful Neutral<br/><b>Portfolio:</b> Death, the dead<br/><b>Worshippers:</b> Those who seek a peaceful passing, mourners, undertakers<br/><b>Domains:</b> Death, Fate, Law, Protection, Travel<br/><b>Favored Weapon:</b> Bastard sword</p>"
+      "fullName": "Lord of the Dead, Judge of the Damned",
+      "attributes": [
+        { "key": "Alignment", "value": "Lawful Neutral" },
+        { "key": "Portfolio", "value": "Death, the dead" },
+        { "key": "Worshippers", "value": "Those who seek a peaceful passing, mourners, undertakers" },
+        { "key": "Domains", "value": "Death, Fate, Law, Protection, Travel" },
+        { "key": "Favored Weapon", "value": "Bastard sword" }
+      ]
     },
     {
       "value": "lathander",
       "label": "Lathander",
       "alignment": "neutral-good",
-      "description": "<b>The Morninglord, Inspiration's Dawn</b><p><b>Alignment:</b> Neutral Good<br/><b>Portfolio:</b> Spring, dawn, birth, renewal, creativity, youth, vitality, athletics<br/><b>Worshippers:</b> Artists, athletes, commoners, merchants, the young<br/><b>Domains:</b> Good, Nobility, Protection, Renewal, Strength, Sun<br/><b>Favored Weapon:</b> Mace (heavy or light)</p>"
+      "fullName": "The Morninglord, Inspiration's Dawn",
+      "attributes": [
+        { "key": "Alignment", "value": "Neutral Good" },
+        { "key": "Portfolio", "value": "Spring, dawn, birth, renewal, creativity, youth, vitality, athletics" },
+        { "key": "Worshippers", "value": "Artists, athletes, commoners, merchants, the young" },
+        { "key": "Domains", "value": "Good, Nobility, Protection, Renewal, Strength, Sun" },
+        { "key": "Favored Weapon", "value": "Mace (heavy or light)" }
+      ]
     },
     {
       "value": "mystra",
       "label": "Mystra",
       "alignment": "neutral-good",
-      "description": "<b>The Mother of All Magic, The Lady of Mysteries</b><p><b>Alignment:</b> Neutral Good<br/><b>Portfolio:</b> Magic, spells, the Weave<br/><b>Worshippers:</b> Wizards, sorcerers, bards, all users of magic<br/><b>Domains:</b> Good, Illusion, Knowledge, Magic, Rune, Spell<br/><b>Favored Weapon:</b> Quarterstaff</p>"
+      "fullName": "The Mother of All Magic, The Lady of Mysteries",
+      "attributes": [
+        { "key": "Alignment", "value": "Neutral Good" },
+        { "key": "Portfolio", "value": "Magic, spells, the Weave" },
+        { "key": "Worshippers", "value": "Wizards, sorcerers, bards, all users of magic" },
+        { "key": "Domains", "value": "Good, Illusion, Knowledge, Magic, Rune, Spell" },
+        { "key": "Favored Weapon", "value": "Quarterstaff" }
+      ]
     },
     {
       "value": "oghma",
       "label": "Oghma",
       "alignment": "true-neutral",
-      "description": "<b>The Lord of Knowledge, The Binder</b><p><b>Alignment:</b> Neutral<br/><b>Portfolio:</b> Knowledge, invention, inspiration, bards<br/><b>Worshippers:</b> Sages, scholars, inventors, bards, loremasters<br/><b>Domains:</b> Charm, Knowledge, Luck, Travel, Trickery<br/><b>Favored Weapon:</b> Longsword</p>"
+      "fullName": "The Lord of Knowledge, The Binder",
+      "attributes": [
+        { "key": "Alignment", "value": "Neutral" },
+        { "key": "Portfolio", "value": "Knowledge, invention, inspiration, bards" },
+        { "key": "Worshippers", "value": "Sages, scholars, inventors, bards, loremasters" },
+        { "key": "Domains", "value": "Charm, Knowledge, Luck, Travel, Trickery" },
+        { "key": "Favored Weapon", "value": "Longsword" }
+      ]
     },
     {
       "value": "selune",
       "label": "Selûne",
       "alignment": "chaotic-good",
-      "description": "<b>Our Lady of Silver, Moonmaiden</b><p><b>Alignment:</b> Chaotic Good<br/><b>Portfolio:</b> Moon, stars, navigation, navigators, wanderers, questers, good and neutral lycanthropes<br/><b>Worshippers:</b> Sailors, travelers, good lycanthropes, those who seek guidance or protection at night<br/><b>Domains:</b> Chaos, Good, Moon, Protection, Travel<br/><b>Favored Weapon:</b> Heavy mace</p>"
+      "fullName": "Our Lady of Silver, Moonmaiden",
+      "attributes": [
+        { "key": "Alignment", "value": "Chaotic Good" },
+        { "key": "Portfolio", "value": "Moon, stars, navigation, navigators, wanderers, questers, good and neutral lycanthropes" },
+        { "key": "Worshippers", "value": "Sailors, travelers, good lycanthropes, those who seek guidance or protection at night" },
+        { "key": "Domains", "value": "Chaos, Good, Moon, Protection, Travel" },
+        { "key": "Favored Weapon", "value": "Heavy mace" }
+      ]
     },
     {
       "value": "shar",
       "label": "Shar",
       "alignment": "neutral-evil",
-      "description": "<b>Mistress of the Night, Lady of Loss</b><p><b>Alignment:</b> Neutral Evil<br/><b>Portfolio:</b> Dark, night, loss, forgetfulness, secrets, caverns, dungeons, the Underdark<br/><b>Worshippers:</b> Those who dwell in darkness, nihilists, those who have suffered great loss<br/><b>Domains:</b> Cavern, Darkness, Evil, Knowledge<br/><b>Favored Weapon:</b> Chakram (treat as shuriken)</p>"
+      "fullName": "Mistress of the Night, Lady of Loss",
+      "attributes": [
+        { "key": "Alignment", "value": "Neutral Evil" },
+        { "key": "Portfolio", "value": "Dark, night, loss, forgetfulness, secrets, caverns, dungeons, the Underdark" },
+        { "key": "Worshippers", "value": "Those who dwell in darkness, nihilists, those who have suffered great loss" },
+        { "key": "Domains", "value": "Cavern, Darkness, Evil, Knowledge" },
+        { "key": "Favored Weapon", "value": "Chakram (treat as shuriken)" }
+      ]
     },
     {
       "value": "silvanus",
       "label": "Silvanus",
       "alignment": "true-neutral",
-      "description": "<b>Oak Father, Forest Father</b><p><b>Alignment:</b> Neutral<br/><b>Portfolio:</b> Wild nature, druids<br/><b>Worshippers:</b> Druids, rangers, those who live in wild, untamed lands<br/><b>Domains:</b> Animal, Plant, Protection, Renewal, Water<br/><b>Favored Weapon:</b> Greatclub</p>"
+      "fullName": "Oak Father, Forest Father",
+      "attributes": [
+        { "key": "Alignment", "value": "Neutral" },
+        { "key": "Portfolio", "value": "Wild nature, druids" },
+        { "key": "Worshippers", "value": "Druids, rangers, those who live in wild, untamed lands" },
+        { "key": "Domains", "value": "Animal, Plant, Protection, Renewal, Water" },
+        { "key": "Favored Weapon", "value": "Greatclub" }
+      ]
     },
     {
       "value": "sune",
       "label": "Sune",
       "alignment": "chaotic-good",
-      "description": "<b>Lady Firehair, The Lady of Love</b><p><b>Alignment:</b> Chaotic Good<br/><b>Portfolio:</b> Beauty, love, passion<br/><b>Worshippers:</b> Lovers, artists, hedonists, those who appreciate beauty<br/><b>Domains:</b> Chaos, Charm, Good, Protection<br/><b>Favored Weapon:</b> Whip</p>"
+      "fullName": "Lady Firehair, The Lady of Love",
+      "attributes": [
+        { "key": "Alignment", "value": "Chaotic Good" },
+        { "key": "Portfolio", "value": "Beauty, love, passion" },
+        { "key": "Worshippers", "value": "Lovers, artists, hedonists, those who appreciate beauty" },
+        { "key": "Domains", "value": "Chaos, Charm, Good, Protection" },
+        { "key": "Favored Weapon", "value": "Whip" }
+      ]
     },
     {
       "value": "talos",
       "label": "Talos",
       "alignment": "chaotic-evil",
-      "description": "<b>The Stormlord, The Destroyer</b><p><b>Alignment:</b> Chaotic Evil<br/><b>Portfolio:</b> Storms, destruction, rebellion, conflagrations, earthquakes, vortices<br/><b>Worshippers:</b> Those who revel in destruction, barbarians, raiders<br/><b>Domains:</b> Chaos, Destruction, Evil, Fire, Storm<br/><b>Favored Weapon:</b> Spear</p>"
+      "fullName": "The Stormlord, The Destroyer",
+      "attributes": [
+        { "key": "Alignment", "value": "Chaotic Evil" },
+        { "key": "Portfolio", "value": "Storms, destruction, rebellion, conflagrations, earthquakes, vortices" },
+        { "key": "Worshippers", "value": "Those who revel in destruction, barbarians, raiders" },
+        { "key": "Domains", "value": "Chaos, Destruction, Evil, Fire, Storm" },
+        { "key": "Favored Weapon", "value": "Spear" }
+      ]
     },
     {
       "value": "tempus",
       "label": "Tempus",
       "alignment": "true-neutral",
-      "description": "<b>Lord of Battles, Foehammer</b><p><b>Alignment:</b> Neutral<br/><b>Portfolio:</b> War, battle, warriors<br/><b>Worshippers:</b> Fighters, barbarians, rangers, soldiers, mercenaries<br/><b>Domains:</b> Protection, Strength, War<br/><b>Favored Weapon:</b> Battleaxe</p>"
+      "fullName": "Lord of Battles, Foehammer",
+      "attributes": [
+        { "key": "Alignment", "value": "Neutral" },
+        { "key": "Portfolio", "value": "War, battle, warriors" },
+        { "key": "Worshippers", "value": "Fighters, barbarians, rangers, soldiers, mercenaries" },
+        { "key": "Domains", "value": "Protection, Strength, War" },
+        { "key": "Favored Weapon", "value": "Battleaxe" }
+      ]
     },
     {
       "value": "torm",
       "label": "Torm",
       "alignment": "lawful-good",
-      "description": "<b>The True, The Loyal Fury</b><p><b>Alignment:</b> Lawful Good<br/><b>Portfolio:</b> Duty, loyalty, obedience, paladins<br/><b>Worshippers:</b> Paladins, guards, those who serve a cause or master<br/><b>Domains:</b> Good, Healing, Law, Protection, Strength<br/><b>Favored Weapon:</b> Greatsword</p>"
+      "fullName": "The True, The Loyal Fury",
+      "attributes": [
+        { "key": "Alignment", "value": "Lawful Good" },
+        { "key": "Portfolio", "value": "Duty, loyalty, obedience, paladins" },
+        { "key": "Worshippers", "value": "Paladins, guards, those who serve a cause or master" },
+        { "key": "Domains", "value": "Good, Healing, Law, Protection, Strength" },
+        { "key": "Favored Weapon", "value": "Greatsword" }
+      ]
     },
     {
       "value": "tymora",
       "label": "Tymora",
       "alignment": "chaotic-good",
-      "description": "<b>Lady Luck, Our Smiling Lady</b><p><b>Alignment:</b> Chaotic Good<br/><b>Portfolio:</b> Good fortune, skill, victory, adventurers<br/><b>Worshippers:</b> Adventurers, gamblers, risk-takers<br/><b>Domains:</b> Chaos, Good, Luck, Protection, Travel<br/><b>Favored Weapon:</b> Shuriken</p>"
+      "fullName": "Lady Luck, Our Smiling Lady",
+      "attributes": [
+        { "key": "Alignment", "value": "Chaotic Good" },
+        { "key": "Portfolio", "value": "Good fortune, skill, victory, adventurers" },
+        { "key": "Worshippers", "value": "Adventurers, gamblers, risk-takers" },
+        { "key": "Domains", "value": "Chaos, Good, Luck, Protection, Travel" },
+        { "key": "Favored Weapon", "value": "Shuriken" }
+      ]
     },
     {
       "value": "tyr",
       "label": "Tyr",
       "alignment": "lawful-good",
-      "description": "<b>The Maimed God, The Even-Handed</b><p><b>Alignment:</b> Lawful Good<br/><b>Portfolio:</b> Justice<br/><b>Worshippers:</b> Judges, lawyers, paladins, those who seek justice<br/><b>Domains:</b> Good, Knowledge, Law, Retribution, War<br/><b>Favored Weapon:</b> Longsword</p>"
+      "fullName": "The Maimed God, The Even-Handed",
+      "attributes": [
+        { "key": "Alignment", "value": "Lawful Good" },
+        { "key": "Portfolio", "value": "Justice" },
+        { "key": "Worshippers", "value": "Judges, lawyers, paladins, those who seek justice" },
+        { "key": "Domains", "value": "Good, Knowledge, Law, Retribution, War" },
+        { "key": "Favored Weapon", "value": "Longsword" }
+      ]
     },
     {
       "value": "umberlee",
       "label": "Umberlee",
       "alignment": "chaotic-evil",
-      "description": "<b>The Bitch Queen, Queen of the Deeps</b><p><b>Alignment:</b> Chaotic Evil<br/><b>Portfolio:</b> Oceans, currents, waves, sea winds<br/><b>Worshippers:</b> Sailors, pirates, those who live by the sea and fear its wrath<br/><b>Domains:</b> Chaos, Destruction, Evil, Ocean, Storm, Water<br/><b>Favored Weapon:</b> Trident</p>"
+      "fullName": "The Bitch Queen, Queen of the Deeps",
+      "attributes": [
+        { "key": "Alignment", "value": "Chaotic Evil" },
+        { "key": "Portfolio", "value": "Oceans, currents, waves, sea winds" },
+        { "key": "Worshippers", "value": "Sailors, pirates, those who live by the sea and fear its wrath" },
+        { "key": "Domains", "value": "Chaos, Destruction, Evil, Ocean, Storm, Water" },
+        { "key": "Favored Weapon", "value": "Trident" }
+      ]
     },
     {
       "value": "lolth",
       "label": "Lolth",
       "alignment": "chaotic-evil",
-      "description": "<b>Queen of Spiders, Queen of the Demonweb Pits</b><p><b>Alignment:</b> Chaotic Evil<br/><b>Portfolio:</b> Drow, spiders, evil, darkness, chaos<br/><b>Worshippers:</b> Drow, some evil arcanists<br/><b>Domains:</b> Chaos, Destruction, Drow, Evil, Spider, Trickery<br/><b>Favored Weapon:</b> Whip (looks like a spider's leg, or a scourge with spider-shaped-or-ended tails)</p>"
+      "fullName": "Queen of Spiders, Queen of the Demonweb Pits",
+      "attributes": [
+        { "key": "Alignment", "value": "Chaotic Evil" },
+        { "key": "Portfolio", "value": "Drow, spiders, evil, darkness, chaos" },
+        { "key": "Worshippers", "value": "Drow, some evil arcanists" },
+        { "key": "Domains", "value": "Chaos, Destruction, Drow, Evil, Spider, Trickery" },
+        { "key": "Favored Weapon", "value": "Whip (looks like a spider's leg, or a scourge with spider-shaped-or-ended tails)" }
+      ]
     },
     {
       "value": "tiamat",
       "label": "Tiamat",
       "alignment": "lawful-evil",
-      "description": "<b>The Chromatic Dragon, Dragon Queen</b><p><b>Alignment:</b> Lawful Evil<br/><b>Portfolio:</b> Evil dragons, conquest, greed, vengeance<br/><b>Worshippers:</b> Evil dragons, cultists who seek power through dragons<br/><b>Domains:</b> Destruction, Evil, Law, Scalykind, Trickery, Tyranny<br/><b>Favored Weapon:</b> Heavy pick (her head spike)</p>"
+      "fullName": "The Chromatic Dragon, Dragon Queen",
+      "attributes": [
+        { "key": "Alignment", "value": "Lawful Evil" },
+        { "key": "Portfolio", "value": "Evil dragons, conquest, greed, vengeance" },
+        { "key": "Worshippers", "value": "Evil dragons, cultists who seek power through dragons" },
+        { "key": "Domains", "value": "Destruction, Evil, Law, Scalykind, Trickery, Tyranny" },
+        { "key": "Favored Weapon", "value": "Heavy pick (her head spike)" }
+      ]
     },
     {
       "value": "bahamut",
       "label": "Bahamut",
       "alignment": "lawful-good",
-      "description": "<b>The Platinum Dragon, King of Good Dragons</b><p><b>Alignment:</b> Lawful Good<br/><b>Portfolio:</b> Good dragons, wisdom, wind, justice, protection<br/><b>Worshippers:</b> Good dragons, those who seek justice and protection<br/><b>Domains:</b> Air, Good, Luck, Nobility, Protection, Storm<br/><b>Favored Weapon:</b> Longsword (bite)</p>"
+      "fullName": "The Platinum Dragon, King of Good Dragons",
+      "attributes": [
+        { "key": "Alignment", "value": "Lawful Good" },
+        { "key": "Portfolio", "value": "Good dragons, wisdom, wind, justice, protection" },
+        { "key": "Worshippers", "value": "Good dragons, those who seek justice and protection" },
+        { "key": "Domains", "value": "Air, Good, Luck, Nobility, Protection, Storm" },
+        { "key": "Favored Weapon", "value": "Longsword (bite)" }
+      ]
     },
     {
       "value": "kurtulmak",
       "label": "Kurtulmak",
       "alignment": "lawful-evil",
-      "description": "<b>Steelscale, The Cunning</b><p><b>Alignment:</b> Lawful Evil<br/><b>Portfolio:</b> Kobolds, traps, mining<br/><b>Worshippers:</b> Kobolds<br/><b>Domains:</b> Earth, Evil, Law, Luck, Trickery<br/><b>Favored Weapon:</b> Heavy pick</p>"
+      "fullName": "Steelscale, The Cunning",
+      "attributes": [
+        { "key": "Alignment", "value": "Lawful Evil" },
+        { "key": "Portfolio", "value": "Kobolds, traps, mining" },
+        { "key": "Worshippers", "value": "Kobolds" },
+        { "key": "Domains", "value": "Earth, Evil, Law, Luck, Trickery" },
+        { "key": "Favored Weapon", "value": "Heavy pick" }
+      ]
     },
     {
       "value": "maglubiyet",
       "label": "Maglubiyet",
       "alignment": "lawful-evil",
-      "description": "<b>The Mighty One, The Battle Lord</b><p><b>Alignment:</b> Lawful Evil<br/><b>Portfolio:</b> Goblins, hobgoblins, war, rulership<br/><b>Worshippers:</b> Goblins, hobgoblins, and other goblinoids<br/><b>Domains:</b> Destruction, Evil, Law, Trickery, War<br/><b>Favored Weapon:</b> Battleaxe</p>"
+      "fullName": "The Mighty One, The Battle Lord",
+      "attributes": [
+        { "key": "Alignment", "value": "Lawful Evil" },
+        { "key": "Portfolio", "value": "Goblins, hobgoblins, war, rulership" },
+        { "key": "Worshippers", "value": "Goblins, hobgoblins, and other goblinoids" },
+        { "key": "Domains", "value": "Destruction, Evil, Law, Trickery, War" },
+        { "key": "Favored Weapon", "value": "Battleaxe" }
+      ]
     }
   ]
 }
