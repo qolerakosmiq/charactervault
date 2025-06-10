@@ -2,10 +2,10 @@
 'use client';
 
 import *as React from 'react';
-import type { AbilityScores, SavingThrows, SavingThrowType, SingleSavingThrow, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects } from '@/types/character';
+import type { AbilityScores, SavingThrows, SavingThrowType, SingleSavingThrow, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects, GenericBreakdownItem } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
-import { Zap, Loader2, Info } from 'lucide-react';
+import { Zap, Loader2, Info, Dices } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
@@ -14,7 +14,8 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
-import { Badge } from '@/components/ui/badge'; // Added import
+import { Badge } from '@/components/ui/badge';
+import type { RollDialogProps } from '@/components/RollDialog';
 
 const DEBOUNCE_DELAY = 400;
 
@@ -24,6 +25,7 @@ export interface SavingThrowsPanelProps {
   aggregatedFeatEffects: AggregatedFeatEffects | null;
   onSavingThrowTemporaryModChange: (saveType: SavingThrowType, value: number) => void;
   onOpenInfoDialog: (contentType: InfoDialogContentType) => void;
+  onOpenRollDialog: (data: Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'>) => void; // New prop
 }
 
 const SAVE_TYPES: SavingThrowType[] = ['fortitude', 'reflex', 'will'];
@@ -34,6 +36,7 @@ const SavingThrowsPanelComponent = ({
   aggregatedFeatEffects,
   onSavingThrowTemporaryModChange,
   onOpenInfoDialog,
+  onOpenRollDialog, // New prop
 }: SavingThrowsPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
@@ -42,7 +45,7 @@ const SavingThrowsPanelComponent = ({
   SAVE_TYPES.forEach(saveType => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     debouncedTemporaryMods[saveType] = useDebouncedFormField(
-      savingThrowsData.savingThrows[saveType].miscMod || 0, 
+      savingThrowsData.savingThrows[saveType].miscMod || 0,
       (value) => onSavingThrowTemporaryModChange(saveType, value),
       DEBOUNCE_DELAY
     );
@@ -52,13 +55,52 @@ const SavingThrowsPanelComponent = ({
     if (!aggregatedFeatEffects?.savingThrowBonuses) return 0;
     return aggregatedFeatEffects.savingThrowBonuses.reduce((acc, effect) => {
       if (effect.save === saveType || effect.save === 'all') {
-        if (typeof effect.value === 'number') { 
+        if (typeof effect.value === 'number') {
           return acc + effect.value;
         }
       }
       return acc;
     }, 0);
   }, [aggregatedFeatEffects]);
+
+  const handleOpenSavingThrowRollDialog = (saveType: SavingThrowType) => {
+    if (!translations || !abilityScores) return;
+    const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations;
+    const currentSaveDataFromProp = savingThrowsData.savingThrows[saveType];
+    const calculatedBaseSaves = getBaseSaves(savingThrowsData.classes, DND_CLASSES);
+    const baseSaveValue = calculatedBaseSaves[saveType];
+    const abilityKey = SAVING_THROW_ABILITIES[saveType];
+    const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
+    const calculatedMiscBonusForThisSave = calculateCalculatedMiscBonusForSave(saveType);
+    const [localTemporaryMod] = debouncedTemporaryMods[saveType];
+    const magicModifier = currentSaveDataFromProp.magicMod || 0;
+
+    const totalSaveModifier = baseSaveValue + abilityModifier + magicModifier + calculatedMiscBonusForThisSave + localTemporaryMod;
+    const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.value === saveType)?.label || saveType;
+    const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === abilityKey);
+
+    const breakdown: GenericBreakdownItem[] = [
+      { label: UI_STRINGS.savingThrowsRowLabelBase || "Base", value: baseSaveValue },
+      { label: `${UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability Modifier"} (${abilityLabelInfo?.abbr || abilityKey.toUpperCase()})`, value: abilityModifier },
+    ];
+    if (magicModifier !== 0) {
+      breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelMagicModifier || "Magic Modifier", value: magicModifier });
+    }
+    if (calculatedMiscBonusForThisSave !== 0) {
+      breakdown.push({ label: UI_STRINGS.savingThrowsFeatsModifierLabel || "Feats Modifier", value: calculatedMiscBonusForThisSave });
+    }
+    if (localTemporaryMod !== 0) {
+      breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelTemporaryModifier || "Temporary Modifier", value: localTemporaryMod });
+    }
+    breakdown.push({ label: UI_STRINGS.infoDialogTotalLabel || "Total", value: totalSaveModifier, isBold: true });
+
+    onOpenRollDialog({
+      dialogTitle: (UI_STRINGS.rollDialogTitleSavingThrow || "{saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel),
+      rollType: saveTypeLabel,
+      baseModifier: totalSaveModifier,
+      calculationBreakdown: breakdown,
+    });
+  };
 
 
   if (translationsLoading || !translations) {
@@ -110,15 +152,27 @@ const SavingThrowsPanelComponent = ({
               {totalFromProp >= 0 ? '+' : ''}{totalFromProp}
             </span>
             {saveType && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
-                onClick={() => onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType: saveType })}
-              >
-                <Info className="h-4 w-4" />
-              </Button>
+              <>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
+                  onClick={() => onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType: saveType })}
+                >
+                  <Info className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 text-muted-foreground hover:text-primary"
+                  onClick={() => handleOpenSavingThrowRollDialog(saveType)}
+                  aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.value === saveType)?.label || saveType)}
+                >
+                  <Dices className="h-4 w-4" />
+                </Button>
+              </>
             )}
         </div>
       ),
@@ -151,7 +205,7 @@ const SavingThrowsPanelComponent = ({
       rowKey: 'magicMod',
     },
     {
-      labelKey: "savingThrowsRowLabelMiscModifier", 
+      labelKey: "savingThrowsRowLabelMiscModifier",
       getValue: (saveDataProp, localTemporaryMod, baseSave, abilityMod, calculatedMiscBonus) => renderModifierValue(calculatedMiscBonus),
       rowKey: 'calculatedMiscBonusDisplay',
     },

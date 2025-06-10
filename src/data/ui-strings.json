@@ -570,6 +570,7 @@
     "weaponProficiencyMartial": "Martial",
     "weaponProficiencyExotic": "Exotic",
     "rollDialogTitleAbilityCheck": "{abilityName} Check",
+    "rollDialogTitleSavingThrow": "{saveTypeLabel} Save",
     "rollDialogDescriptionFormat": "Performing a {rollType}.",
     "rollDialogCalculationBreakdownTitle": "Calculation Breakdown:",
     "rollDialogTotalBonusLabel": "Total Bonus",
@@ -577,6 +578,7 @@
     "rollDialogFinalResultLabel": "Final Result:",
     "rollDialogRollButton": "Roll 1d20",
     "rollDialogAbilityCheckAriaLabel": "Roll {abilityName} Check",
+    "rollDialogSavingThrowAriaLabel": "Roll {saveTypeLabel} Save",
     "rollDialogResultTitle": "Roll Result",
     "rollDialogResultDescription": "Rolled {diceResult} + {totalBonus} = {finalResult}"
   }
@@ -584,6 +586,7 @@
     
     
     
+
 
 
 

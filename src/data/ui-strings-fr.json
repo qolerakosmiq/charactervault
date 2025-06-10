@@ -570,6 +570,7 @@
     "weaponProficiencyMartial": "De guerre",
     "weaponProficiencyExotic": "Exotique",
     "rollDialogTitleAbilityCheck": "Test de {abilityName}",
+    "rollDialogTitleSavingThrow": "Jet de {saveTypeLabel}",
     "rollDialogDescriptionFormat": "Effectuer un {rollType}.",
     "rollDialogCalculationBreakdownTitle": "Détail du calcul :",
     "rollDialogTotalBonusLabel": "Bonus Total",
@@ -577,6 +578,7 @@
     "rollDialogFinalResultLabel": "Résultat Final :",
     "rollDialogRollButton": "Lancer 1d20",
     "rollDialogAbilityCheckAriaLabel": "Lancer un test de {abilityName}",
+    "rollDialogSavingThrowAriaLabel": "Lancer un jet de {saveTypeLabel}",
     "rollDialogResultTitle": "Résultat du lancer",
     "rollDialogResultDescription": "Lancé {diceResult} + {totalBonus} = {finalResult}"
   }
@@ -584,6 +586,7 @@
     
     
     
+
 
 
 

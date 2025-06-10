@@ -44,6 +44,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
+import { RollDialog, type RollDialogProps } from '@/components/RollDialog'; // Added RollDialog import
 import { CharacterFormCoreInfoSection, type CharacterFormCoreInfoSectionProps } from '@/components/form-sections/CharacterFormCoreInfoSection';
 import { CharacterFormAbilityScoresSection, type CharacterFormAbilityScoresSectionProps } from '@/components/form-sections/CharacterFormAbilityScoresSection';
 import { CharacterFormStoryPortraitSection, type CharacterFormStoryPortraitSectionProps } from '@/components/form-sections/CharacterFormStoryPortraitSection';
@@ -54,7 +55,7 @@ import { ArmorClassPanel, type ArmorClassPanelProps } from '@/components/form-se
 import { HealthPanel, type HealthPanelProps } from '@/components/form-sections/HealthPanel';
 import { SpeedPanel, type SpeedPanelProps } from '@/components/form-sections/SpeedPanel';
 import { CombatPanel, type CombatPanelProps } from '@/components/form-sections/CombatPanel';
-import { AttacksPanel, type AttacksPanelCharacterData } from '@/components/form-sections/AttacksPanel'; // Added AttacksPanel
+import { AttacksPanel, type AttacksPanelCharacterData } from '@/components/form-sections/AttacksPanel';
 import { ResistancesPanel, type ResistancesPanelProps } from '@/components/form-sections/ResistancesPanel';
 import { LanguagesPanel, type LanguagesPanelProps } from '@/components/form-sections/LanguagesPanel';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
@@ -89,7 +90,7 @@ function createBaseCharacterData(
     const defaultSize: CharacterSize = 'medium';
     const sizeLabelForGrapple = SIZES.find(s => s.value === defaultSize)?.label || defaultSize;
     const defaultUnarmedGrappleDice = getUnarmedGrappleDamage(defaultSize, SIZES);
-    const defaultSizeModifierAttack = getSizeModifierAttack(defaultSize, SIZES); // Added for attack size mod
+    const defaultSizeModifierAttack = getSizeModifierAttack(defaultSize, SIZES);
 
     const initialSkills = getInitialCharacterSkills(defaultClasses, SKILL_DEFINITIONS, CLASS_SKILLS);
 
@@ -151,8 +152,8 @@ function createBaseCharacterData(
       armorSpeedPenalty_miscModifier: DEFAULT_SPEED_PENALTIES.armorSpeedPenalty_miscModifier || 0,
       loadSpeedPenalty_base: DEFAULT_SPEED_PENALTIES.loadSpeedPenalty_base || 0,
       loadSpeedPenalty_miscModifier: DEFAULT_SPEED_PENALTIES.loadSpeedPenalty_miscModifier || 0,
-      powerAttackValue: 0, // Initialize new field
-      combatExpertiseValue: 0, // Initialize new field
+      powerAttackValue: 0,
+      combatExpertiseValue: 0,
     };
 }
 
@@ -257,7 +258,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         finalCharacter.grappleDamage_baseNotes = `${unarmedDamageDice} (${currentSizeLabelGrapple} Unarmed)`;
     }
 
-    finalCharacter.sizeModifierAttack = getSizeModifierAttack(finalCharacter.size, SIZES); // Set initial attack size mod
+    finalCharacter.sizeModifierAttack = getSizeModifierAttack(finalCharacter.size, SIZES);
 
     const barbarianClass = finalCharacter.classes.find(c => c.className === 'barbarian');
     const barbarianLevel = barbarianClass?.level || 0;
@@ -296,6 +297,9 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const [skillToEdit, setSkillToEdit] = React.useState<CustomSkillDefinition | undefined>(undefined);
   const [isCustomFeatDialogOpen, setIsCustomFeatDialogOpen] = React.useState(false);
   const [editingCustomFeatDefinition, setEditingCustomFeatDefinition] = React.useState<(FeatDefinitionJsonData & { isCustom: true }) | undefined>(undefined);
+
+  const [isRollDialogOpen, setIsRollDialogOpen] = React.useState(false);
+  const [rollDialogProps, setRollDialogProps] = React.useState<Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'> | null>(null);
 
   const router = useRouter();
   const { toast } = useToast();
@@ -412,7 +416,6 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         if (minAdultAge !== undefined && character.age < minAdultAge) {
           setCharacter(prev => prev ? ({ ...prev, age: minAdultAge }) : null);
         }
-        // Update sizeModifierAttack when race changes
         const newSizeModifierAttack = getSizeModifierAttack(character.size, translations.SIZES);
         if (character.sizeModifierAttack !== newSizeModifierAttack) {
             setCharacter(prev => prev ? ({...prev, sizeModifierAttack: newSizeModifierAttack}) : null);
@@ -429,7 +432,6 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
      setCharacter(prev => {
         if (!prev) return null;
         let updatedChar = { ...prev, [field as keyof Character]: value };
-        // If size changed, update sizeModifierAttack
         if (field === 'size' && translations) {
             const newSizeModifierAttack = getSizeModifierAttack(value as CharacterSize, translations.SIZES);
             updatedChar = {...updatedChar, sizeModifierAttack: newSizeModifierAttack };
@@ -459,7 +461,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
                     miscModifier: value,
                 }
             };
-        } else if (field === 'armorSpeedPenalty_miscModifier' || field === 'loadSpeedPenalty_miscModifier' || field === 'babMiscModifier' || field === 'powerAttackValue' || field === 'combatExpertiseValue') { // Added powerAttackValue and combatExpertiseValue
+        } else if (field === 'armorSpeedPenalty_miscModifier' || field === 'loadSpeedPenalty_miscModifier' || field === 'babMiscModifier' || field === 'powerAttackValue' || field === 'combatExpertiseValue') {
           return { ...prev, [field]: value };
         }
         return { ...prev, [field as keyof Character]: value };
@@ -690,6 +692,24 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     setActiveInfoDialogType(newContentType);
     setIsInfoDialogOpen(true);
   }, []);
+  
+  const handleOpenRollDialog = React.useCallback((data: Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'>) => {
+    setRollDialogProps(data);
+    setIsRollDialogOpen(true);
+  }, []);
+
+  const handleRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number) => {
+    if (!translations) return;
+    const UI_STRINGS = translations.UI_STRINGS;
+    toast({
+      title: UI_STRINGS.rollDialogResultTitle || "Roll Result",
+      description: (UI_STRINGS.rollDialogResultDescription || "Rolled {diceResult} + {totalBonus} = {finalResult}")
+        .replace("{diceResult}", String(diceResult))
+        .replace("{totalBonus}", String(totalBonus >=0 ? `+${totalBonus}` : totalBonus))
+        .replace("{finalResult}", String(finalResult)),
+    });
+  }, [toast, translations]);
+
 
   const handleOpenRaceInfoDialog = React.useCallback(() => { if (character?.race) { openInfoDialog({ type: 'race' }); } }, [character?.race, openInfoDialog]);
   const handleOpenClassInfoDialog = React.useCallback(() => { if (character?.classes[0]?.className) { openInfoDialog({ type: 'class' }); } }, [character?.classes, openInfoDialog]);
@@ -698,7 +718,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const handleOpenAbilityScoreBreakdownDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => { openInfoDialog({ type: 'abilityScoreBreakdown', abilityName: ability }); }, [openInfoDialog]);
   const handleOpenCombatStatInfoDialog = React.useCallback((contentType: InfoDialogContentType) => { openInfoDialog(contentType); }, [openInfoDialog]);
   const handleOpenSkillInfoDialog = React.useCallback((skillId: string) => { openInfoDialog({ type: 'skillModifierBreakdown', skillId }); }, [openInfoDialog]);
-  const handleOpenAcBreakdownDialog = React.useCallback((contentType: InfoDialogContentType) => { // Changed to accept contentType
+  const handleOpenAcBreakdownDialog = React.useCallback((contentType: InfoDialogContentType) => {
     openInfoDialog(contentType);
   }, [openInfoDialog]);
   const handleOpenSpeedInfoDialog = React.useCallback((speedType: SpeedType) => { openInfoDialog({ type: 'speedBreakdown', speedType }); }, [openInfoDialog]);
@@ -840,7 +860,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     };
   }, [character]);
 
-  const skillsData = React.useMemo<Omit<SkillsFormSectionProps, 'characterLevel' | 'onSkillChange' | 'onEditCustomSkillDefinition' | 'onOpenSkillInfoDialog' | 'allFeatDefinitions' | 'allPredefinedSkillDefinitions' | 'allCustomSkillDefinitions' | 'actualAbilityScores'>['skillsData'] | undefined>(() => {
+  const skillsData = React.useMemo<Omit<SkillsFormSectionProps, 'characterLevel' | 'onSkillChange' | 'onEditCustomSkillDefinition' | 'onOpenSkillInfoDialog' | 'allFeatDefinitions' | 'allPredefinedSkillDefinitions' | 'allCustomSkillDefinitions' | 'actualAbilityScores' | 'onOpenRollDialog'>['skillsData'] | undefined>(() => {
     if (!character) return undefined;
     return {
       skills: character.skills, classes: character.classes, race: character.race, size: character.size, feats: character.feats,
@@ -865,7 +885,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     return {
       abilityScores: character.abilityScores, size: character.size, armorBonus: character.armorBonus, shieldBonus: character.shieldBonus,
       naturalArmor: character.naturalArmor, deflectionBonus: character.deflectionBonus, dodgeBonus: character.dodgeBonus, acMiscModifier: character.acMiscModifier,
-      feats: character.feats, // Pass feats for condition checking in AC panel
+      feats: character.feats,
     };
   }, [character]);
 
@@ -876,7 +896,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       climbSpeed: character.climbSpeed, flySpeed: character.flySpeed, swimSpeed: character.swimSpeed,
       armorSpeedPenalty_base: character.armorSpeedPenalty_base, armorSpeedPenalty_miscModifier: character.armorSpeedPenalty_miscModifier,
       loadSpeedPenalty_base: character.loadSpeedPenalty_base, loadSpeedPenalty_miscModifier: character.loadSpeedPenalty_miscModifier,
-      feats: character.feats, // Pass feats for condition checking
+      feats: character.feats,
     };
   }, [character]);
 
@@ -979,6 +999,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             onMultipleBaseAbilityScoresChange={handleMultipleBaseAbilityScoresChange}
             onAbilityScoreTempCustomModifierChange={handleAbilityScoreTempCustomModifierChange}
             onOpenAbilityScoreBreakdownDialog={handleOpenAbilityScoreBreakdownDialog}
+            onOpenRollDialog={handleOpenRollDialog}
           />
         )}
 
@@ -989,6 +1010,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
               aggregatedFeatEffects={aggregatedFeatEffects}
               onSavingThrowTemporaryModChange={handleSavingThrowTemporaryModChange}
               onOpenInfoDialog={handleOpenSavingThrowInfoDialog}
+              onOpenRollDialog={handleOpenRollDialog}
           />
         )}
 
@@ -1028,12 +1050,12 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           />
         )}
 
-        {combatData && ( /* This is for Grapple etc, not general attacks */
+        {combatData && (
           <CombatPanel
               combatData={combatData}
               onCharacterUpdate={handleCharacterFieldUpdate as any}
               onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog}
-              onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
+              onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog as any}
           />
         )}
 
@@ -1139,6 +1161,17 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           detailedAbilityScores={detailedAbilityScores}
         />
       )}
+      {isRollDialogOpen && rollDialogProps && (
+        <RollDialog
+          isOpen={isRollDialogOpen}
+          onOpenChange={setIsRollDialogOpen}
+          dialogTitle={rollDialogProps.dialogTitle}
+          rollType={rollDialogProps.rollType}
+          baseModifier={rollDialogProps.baseModifier}
+          calculationBreakdown={rollDialogProps.calculationBreakdown}
+          onRoll={handleRollResult}
+        />
+      )}
       <AddCustomSkillDialog
         isOpen={isAddOrEditSkillDialogOpen}
         onOpenChange={setIsAddOrEditSkillDialogOpen}
@@ -1161,3 +1194,4 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
+
