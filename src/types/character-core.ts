@@ -298,7 +298,7 @@ export interface FeatDefinitionJsonData { // Base structure for feat definitions
   effectsText?: string; // General textual summary of all effects
   effects?: FeatEffectDetail[]; // Array of structured effects
   canTakeMultipleTimes?: boolean;
-  requiresSpecialization?: string; // e.g., "skill", "weapon", "school of magic", "rangerCombatStyle"
+  requiresSpecialization?: string; // e.g., "skill", "weapon", "school of magic"
   requiresSpecializationCategory?: string; // e.g., "rangerFavoredEnemy", "rangerCombatStyle"
   isClassFeature?: boolean;
   isCustom?: boolean;
@@ -529,7 +529,7 @@ export interface Character {
   loadSpeedPenalty_base: number;
   loadSpeedPenalty_miscModifier: number;
   chosenCombatStyle?: "archery" | "twoWeaponFighting";
-  chosenFavoredEnemies?: CharacterFavoredEnemy[]; // Updated from Array<{ type: string; note?: string }>
+  chosenFavoredEnemies?: CharacterFavoredEnemy[];
 }
 
 // Informational/Breakdown types
@@ -663,6 +663,3 @@ export interface PrerequisiteMessage {
   orderKey: string;
   originalText?: string;
 }
-
-
-```

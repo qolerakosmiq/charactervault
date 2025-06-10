@@ -4,8 +4,8 @@
 import *as React from 'react';
 import type {
   FeatDefinitionJsonData, CharacterFeatInstance, Character, AbilityScores, Skill,
-  SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown // Moved AvailableFeatSlotsBreakdown to character-core
-} from '@/types/character-core'; 
+  SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown, AggregatedFeatEffects // Added AggregatedFeatEffects
+} from '@/types/character-core'; // Updated to use character-core
 import {
   checkFeatPrerequisites, calculateAvailableFeats
 } from '@/types/character';
@@ -22,17 +22,17 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export interface FeatsFormSectionProps {
-  featSectionData: Pick<Character, 'race' | 'classes' | 'feats' | 'age' | 'alignment' | 'experiencePoints' | 'chosenCombatStyle'>;
-  allAvailableFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]; 
-  chosenFeatInstances: CharacterFeatInstance[]; 
+  featSectionData: Pick<Character, 'race' | 'classes' | 'feats' | 'age' | 'alignment' | 'experiencePoints' | 'chosenCombatStyle' | 'chosenFavoredEnemies'>;
+  allAvailableFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
+  chosenFeatInstances: CharacterFeatInstance[];
   onFeatInstancesChange: (updatedInstances: CharacterFeatInstance[]) => void;
   onEditCustomFeatDefinition: (featDefId: string) => void;
-  abilityScores: AbilityScores; 
+  abilityScores: AbilityScores;
   skills: Skill[];
-  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[]; 
-  allCustomSkillDefinitions: readonly CustomSkillDefinition[]; 
-  characterLevel: number; 
-  aggregatedFeatEffects?: AggregatedFeatEffects | null;
+  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
+  allCustomSkillDefinitions: readonly CustomSkillDefinition[];
+  characterLevel: number;
+  aggregatedFeatEffects?: AggregatedFeatEffects | null; // Added prop
 }
 
 const FeatsFormSectionComponent = ({
@@ -46,7 +46,7 @@ const FeatsFormSectionComponent = ({
   allPredefinedSkillDefinitions,
   allCustomSkillDefinitions,
   characterLevel,
-  aggregatedFeatEffects,
+  aggregatedFeatEffects, // Destructure the new prop
 }: FeatsFormSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
   const { toast } = useToast();
@@ -56,14 +56,21 @@ const FeatsFormSectionComponent = ({
 
   const featSlotsBreakdown = React.useMemo(() => {
     if (translationsLoading || !translations) return { total: 0, base: 0, racial: 0, classBonus: 0, classBonusDetails: [] };
+    // Pass the correct structure for the first argument, which includes experiencePoints
     return calculateAvailableFeats(
-      featSectionData,
+      {
+        race: featSectionData.race,
+        classes: featSectionData.classes,
+        feats: featSectionData.feats, // Pass feats for any logic within calculateAvailableFeats that might need them
+        experiencePoints: featSectionData.experiencePoints || 0,
+      },
       allAvailableFeatDefinitions,
       translations.DND_RACES,
       translations.XP_TABLE,
       translations.EPIC_LEVEL_XP_INCREASE
     );
   }, [featSectionData, allAvailableFeatDefinitions, translations, translationsLoading]);
+
 
   const { total: availableFeatSlots, classBonusDetails } = featSlotsBreakdown;
 
@@ -87,26 +94,32 @@ const FeatsFormSectionComponent = ({
   const featSlotsLeft = availableFeatSlots - userChosenFeatInstancesCount;
 
   const characterForPrereqCheck = React.useMemo(() => ({
-    ...featSectionData, 
+    ...featSectionData,
     abilityScores,
     skills,
-    experiencePoints: featSectionData.experiencePoints || 0,
+    experiencePoints: featSectionData.experiencePoints || 0, // Ensure XP is passed
   }), [featSectionData, abilityScores, skills]);
+
 
   const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 whitespace-nowrap";
 
   const handleOpenFeatDialog = () => {
     let filterCategoryForDialog: string | undefined = undefined;
     if (featSlotsLeft <= 0 && classBonusDetails && classBonusDetails.length > 0) {
-      for (const bonusDetail of classBonusDetails) {
+      const availableBonusCategories = classBonusDetails.filter(detail => {
         const chosenInCategory = userChosenFeatInstances.filter(inst => {
           const def = allAvailableFeatDefinitions.find(d => d.value === inst.definitionId);
-          return def?.category === bonusDetail.category;
+          return def?.category === detail.category &&
+                 (!def.requiresSpecializationCategory || def.requiresSpecializationCategory === detail.category);
         }).length;
-        if (chosenInCategory < bonusDetail.count) {
-          filterCategoryForDialog = bonusDetail.category;
-          break;
-        }
+        const totalSlotsForCategory = classBonusDetails
+          .filter(bd => bd.category === detail.category)
+          .reduce((sum, bd) => sum + bd.count, 0);
+        return chosenInCategory < totalSlotsForCategory;
+      });
+
+      if (availableBonusCategories.length > 0) {
+        filterCategoryForDialog = availableBonusCategories[0].category;
       }
     }
     setFeatDialogFilterCategory(filterCategoryForDialog);
@@ -132,34 +145,35 @@ const FeatsFormSectionComponent = ({
 
     if (!definition.canTakeMultipleTimes) {
       if (isAlreadyGranted) {
-        toast({ 
-            title: UI_STRINGS.toastFeatAlreadyGrantedTitle, 
-            description: (UI_STRINGS.toastFeatAlreadyGrantedDesc || '"{featLabel}" is already granted and cannot be chosen again.').replace('{featLabel}', definition.label), 
-            variant: "destructive" 
+        toast({
+            title: UI_STRINGS.toastFeatAlreadyGrantedTitle,
+            description: (UI_STRINGS.toastFeatAlreadyGrantedDesc || '"{featLabel}" is already granted and cannot be chosen again.').replace('{featLabel}', definition.label),
+            variant: "destructive"
         });
         return;
       }
       if (existingChosenInstances.length > 0) {
-        toast({ 
-            title: UI_STRINGS.toastDuplicateFeatTitle, 
-            description: (UI_STRINGS.toastDuplicateFeatDesc || 'You have already chosen "{featLabel}", and it cannot be taken multiple times.').replace('{featLabel}', definition.label), 
-            variant: "destructive" 
+        toast({
+            title: UI_STRINGS.toastDuplicateFeatTitle,
+            description: (UI_STRINGS.toastDuplicateFeatDesc || 'You have already chosen "{featLabel}", and it cannot be taken multiple times.').replace('{featLabel}', definition.label),
+            variant: "destructive"
         });
         return;
       }
     }
-    
-    let newInstanceId = definition.value; 
+
+    let newInstanceId = definition.value;
     if (definition.canTakeMultipleTimes) {
       newInstanceId = `${definition.value}-MULTI-INSTANCE-${crypto.randomUUID()}`;
     }
-    
+
     const newInstance: CharacterFeatInstance = {
       definitionId: definition.value,
       instanceId: newInstanceId,
       specializationDetail: specializationDetail || '',
-      isGranted: false, 
-      chosenSpecializationCategory: definition.requiresSpecializationCategory,
+      isGranted: false,
+      chosenSpecializationCategory: definition.requiresSpecializationCategory, // Store the category if it was chosen for this slot
+      conditionalEffectStates: {}, // Initialize
     };
 
     onFeatInstancesChange([...chosenFeatInstances, newInstance].sort((a, b) => {
@@ -206,20 +220,20 @@ const FeatsFormSectionComponent = ({
     if (!definition) return null;
 
     const prereqMessages = checkFeatPrerequisites(
-      definition, 
-      characterForPrereqCheck as Character, 
-      allAvailableFeatDefinitions, 
-      allPredefinedSkillDefinitions, 
-      allCustomSkillDefinitions,    
-      translations.DND_CLASSES,      
-      translations.DND_RACES,        
-      translations.ABILITY_LABELS,   
+      definition,
+      characterForPrereqCheck as Character,
+      allAvailableFeatDefinitions,
+      allPredefinedSkillDefinitions,
+      allCustomSkillDefinitions,
+      translations.DND_CLASSES,
+      translations.DND_RACES,
+      translations.ABILITY_LABELS,
       translations.ALIGNMENT_PREREQUISITE_OPTIONS,
       translations.UI_STRINGS
     );
     const isCustomDefinition = definition.isCustom;
-    
-    const featTypeLabel = definition.type && definition.type !== "special" 
+
+    const featTypeLabel = definition.type && definition.type !== "special"
       ? translations.FEAT_TYPES.find(ft => ft.value === definition.type)?.label
       : null;
 
@@ -263,7 +277,7 @@ const FeatsFormSectionComponent = ({
           )}
         </div>
         <div className="flex items-center shrink-0">
-          {isCustomDefinition && ( 
+          {isCustomDefinition && (
             <Button
               type="button" variant="ghost" size="icon"
               onClick={() => handleOpenEditDialog(instance.definitionId)}
@@ -349,16 +363,17 @@ const FeatsFormSectionComponent = ({
           {aggregatedFeatEffects?.favoredEnemyBonuses && (aggregatedFeatEffects.favoredEnemyBonuses.skillBonus > 0 || aggregatedFeatEffects.favoredEnemyBonuses.damageBonus > 0) && (
             <div className="mt-1 mb-3 p-2 border border-dashed border-primary/50 rounded-md bg-primary/5 text-sm text-primary">
               <Info className="inline h-4 w-4 mr-1.5 mb-0.5" />
-              {UI_STRINGS.favoredEnemyBonusDisplayInfo || "Favored Enemy Bonus: +{skillBonus} to Bluff, Listen, Sense Motive, Spot, Survival checks and +{damageBonus} damage against chosen favored enemies."}
-                { ' ' }({UI_STRINGS.favoredEnemySlotsAvailable || "Slots available:"} {aggregatedFeatEffects.favoredEnemySlots || 0})
+              {(UI_STRINGS.favoredEnemyBonusDisplayInfo || "Favored Enemy Bonus: +{skillBonus} to Bluff, Listen, Sense Motive, Spot, Survival checks and +{damageBonus} damage against chosen favored enemies.")
                 .replace('{skillBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.skillBonus))
-                .replace('{damageBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.damageBonus))
+                .replace('{damageBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.damageBonus))}
+                { ' ' }
+                ({(UI_STRINGS.favoredEnemySlotsAvailable || "Slots available: {slots}").replace('{slots}', String(aggregatedFeatEffects.favoredEnemySlots || 0))})
             </div>
           )}
 
 
           <div className="mt-3 mb-1 flex gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={handleOpenFeatDialog}>
+            <Button type="button" variant="outline" size="sm" onClick={handleOpenFeatDialog} disabled={featSlotsLeft <= 0 && (!classBonusDetails || classBonusDetails.length === 0 || classBonusDetails.every(d => d.count === 0))}>
               <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.featsPanelAddButton || "Choose Feat"}
             </Button>
           </div>
@@ -380,7 +395,7 @@ const FeatsFormSectionComponent = ({
               <h3
                 className={cn(
                   "text-lg font-semibold mb-2 text-primary",
-                   userChosenFeatInstances.length === 0 ? "mt-2" : "" 
+                   userChosenFeatInstances.length === 0 ? "mt-2" : ""
                 )}
               >
                 {UI_STRINGS.featsPanelGrantedFeatsTitle || "Granted Feats"}
@@ -390,7 +405,7 @@ const FeatsFormSectionComponent = ({
               </div>
             </>
           )}
-          
+
           {userChosenFeatInstances.length === 0 && grantedFeatInstances.length === 0 && (
              <p className="text-sm text-muted-foreground mt-4">{UI_STRINGS.featsPanelNoFeatsYet || "No feats selected or granted yet."}</p>
           )}
@@ -401,8 +416,8 @@ const FeatsFormSectionComponent = ({
         isOpen={isFeatDialogOpen}
         onOpenChange={setIsFeatDialogOpen}
         onFeatSelected={handleAddOrUpdateChosenFeatInstance}
-        allFeats={allAvailableFeatDefinitions} 
-        character={characterForPrereqCheck as Character} 
+        allFeats={allAvailableFeatDefinitions}
+        character={characterForPrereqCheck as Character}
         allPredefinedSkillDefinitions={allPredefinedSkillDefinitions}
         allCustomSkillDefinitions={allCustomSkillDefinitions}
         allClasses={DND_CLASSES}
@@ -417,6 +432,3 @@ const FeatsFormSectionComponent = ({
 };
 FeatsFormSectionComponent.displayName = "FeatsFormSectionComponent";
 export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
-
-
-```

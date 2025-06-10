@@ -122,13 +122,21 @@ const CharacterFormCoreInfoSectionComponent = ({
   
   const handleFavoredEnemyChange = (index: number, newType: string) => {
     const updatedEnemies = [...(characterData.chosenFavoredEnemies || [])];
-    if (index < updatedEnemies.length) {
-      updatedEnemies[index] = { ...updatedEnemies[index], type: newType };
-    } else {
-      updatedEnemies[index] = { id: crypto.randomUUID(), type: newType };
+    // Ensure the array is long enough
+    while (updatedEnemies.length <= index) {
+        updatedEnemies.push({ id: crypto.randomUUID(), type: '' });
     }
-    // Filter out empty entries if user clears an input
-    onFieldChange('chosenFavoredEnemies', updatedEnemies.filter(e => e.type.trim() !== ''));
+
+    if (updatedEnemies[index]) {
+        updatedEnemies[index] = { ...updatedEnemies[index], type: newType };
+    } else {
+        // This case should ideally not be hit if the above while loop works
+        updatedEnemies[index] = { id: crypto.randomUUID(), type: newType };
+    }
+    // Filter out empty entries if user clears an input for an existing slot, 
+    // but keep placeholders for newly available slots.
+    // For this component, we'll pass back the potentially sparse array and let CharacterFormCore handle it.
+    onFieldChange('chosenFavoredEnemies', updatedEnemies);
   };
 
 
@@ -472,6 +480,3 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
-
-
-```
