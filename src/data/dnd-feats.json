@@ -949,7 +949,7 @@
         },
         { "type": "savingThrow", "save": "will", "value": 0, "bonusType": "morale", "condition": "raging_active",
           "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
-            {"level": 1, "value": 2, "tierName": "Rage"}, {"level": 11, "value": 3, "tierName": "Greater Rage"}, {"level": 20, "value": 4, "tierName": "Mighty Rage"}
+            {"level": 1, "value": 2, "tierName": "Rage Will"}, {"level": 11, "value": 3, "tierName": "Greater Rage Will"}, {"level": 14, "value": 4, "tierName": "Indomitable Will (Rage)"}
           ] }
         },
         { "type": "armorClass", "acType": "untyped", "value": -2, "condition": "raging_active" },
@@ -1005,12 +1005,9 @@
     {
       "value": "class-barbarian-indomitable-will",
       "label": "Indomitable Will",
-      "effectsText": "+4 morale bonus on Will saves vs. enchantments while raging.",
+      "effectsText": "+4 morale bonus on Will saves vs. enchantments while raging (already included in Rage scaling).",
       "isClassFeature": true,
-      "type": "special-ex",
-      "effects": [
-        { "type": "savingThrow", "save": "will", "value": 4, "bonusType": "morale", "condition": "raging_active" }
-      ]
+      "type": "special-ex"
     },
     { "value": "class-barbarian-tireless-rage", "label": "Tireless Rage", "effectsText": "No longer fatigued after rage.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"No longer fatigued after rage."}] },
     { "value": "class-barbarian-mighty-rage", "label": "Mighty Rage", "effectsText": "Rage bonuses improve further (handled by base Rage scaling).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Rage bonuses improve further (handled by base Rage scaling)."}] },
@@ -1316,5 +1313,3 @@
     { "value": "special-ex-su", "label": "Extraordinary/Supernatural Ability" }
   ]
 }
-
-    

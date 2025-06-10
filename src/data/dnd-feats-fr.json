@@ -949,7 +949,7 @@
         },
         { "type": "savingThrow", "save": "will", "value": 0, "bonusType": "morale", "condition": "raging_active",
           "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
-            {"level": 1, "value": 2, "tierName": "Rage"}, {"level": 11, "value": 3, "tierName": "Grande Rage"}, {"level": 20, "value": 4, "tierName": "Rage Puissante"}
+            {"level": 1, "value": 2, "tierName": "Rage Volonté"}, {"level": 11, "value": 3, "tierName": "Grande Rage Volonté"}, {"level": 14, "value": 4, "tierName": "Volonté Indomptable (Rage)"}
           ] }
         },
         { "type": "armorClass", "acType": "untyped", "value": -2, "condition": "raging_active" },
@@ -1005,12 +1005,9 @@
     {
       "value": "class-barbarian-indomitable-will",
       "label": "Volonté indomptable",
-      "effectsText": "+4 au jet de Volonté contre les enchantements en rage.",
+      "effectsText": "Bonus de moral de +4 aux jets de Volonté contre les enchantements en rage (déjà inclus dans l'évolution de Rage).",
       "isClassFeature": true,
-      "type": "special-ex",
-      "effects": [
-        { "type": "savingThrow", "save": "will", "value": 4, "bonusType": "morale", "condition": "raging_active" }
-      ]
+      "type": "special-ex"
     },
     { "value": "class-barbarian-tireless-rage", "label": "Rage infatigable", "effectsText": "Ne devient plus fatigué après la rage.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Ne devient plus fatigué après la rage."}] },
     { "value": "class-barbarian-mighty-rage", "label": "Rage puissante", "effectsText": "Les bonus de Rage s'améliorent encore (géré par la mise à l'échelle de la Rage de base).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Les bonus de Rage s'améliorent encore (géré par la mise à l'échelle de la Rage de base)."}] },
@@ -1101,7 +1098,7 @@
             "classId": "monk",
             "specificLevels": [
               {"level": 1, "value": "1d6"}, {"level": 4, "value": "1d8"}, {"level": 8, "value": "1d10"},
-              {"level": 12, "value": "2d4"}, {"level": 16, "value": "2d6"}, {"level": 20, "value": "2d8"}
+              {"level": 12, "value": "1d12"}, {"level": 16, "value": "2d8"}, {"level": 20, "value": "2d10"}
             ]
           }
         }
@@ -1316,5 +1313,3 @@
     { "value": "special-ex-su", "label": "Capacité Extraordinaire/Surnaturelle" }
   ]
 }
-
-    
