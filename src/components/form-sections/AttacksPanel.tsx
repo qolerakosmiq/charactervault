@@ -2,13 +2,13 @@
 'use client';
 
 import *as React from 'react';
-import type { Character, BabBreakdownDetails, InitiativeBreakdownDetails, GrappleModifierBreakdownDetails, GrappleDamageBreakdownDetails, CharacterSize, InfoDialogContentType, AbilityScores, FeatDefinitionJsonData, AggregatedFeatEffects, Item } from '@/types/character';
+import type { Character, BabBreakdownDetails, InitiativeBreakdownDetails, GrappleModifierBreakdownDetails, GrappleDamageBreakdownDetails, CharacterSize, InfoDialogContentType, AbilityScores, FeatDefinitionJsonData, AggregatedFeatEffects, Item, GenericBreakdownItem } from '@/types/character';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Swords, Info, Loader2, Minus, Plus, Hand, ArrowRightLeft, Activity } from 'lucide-react';
+import { Swords, Info, Loader2, Hand, ArrowRightLeft, Activity, Shield } from 'lucide-react';
 import { getAbilityModifierByName, getBab, getSizeModifierAttack } from '@/lib/dnd-utils';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -34,7 +34,7 @@ export interface AttacksPanelProps {
 const AttacksPanelComponent = ({
     attacksPanelData,
     aggregatedFeatEffects,
-    allFeatDefinitions,
+    allFeatDefinitions, // Keep if needed for feat name lookup, though sourceFeat is now in effect
     onCharacterUpdate,
     onOpenAttackBonusInfoDialog,
     onOpenDamageBonusInfoDialog,
@@ -93,111 +93,98 @@ const AttacksPanelComponent = ({
 
   const selectedMeleeWeapon = meleeWeapons.find(w => w.id === selectedMeleeWeaponId);
   const selectedRangedWeapon = rangedWeapons.find(w => w.id === selectedRangedWeaponId);
+  
+  const calculateFinalAttackBonus = (
+    baseBab: number,
+    abilityMod: number,
+    sizeMod: number,
+    weaponType: 'melee' | 'ranged' | 'unarmed',
+    selectedWeapon?: Item
+  ): number => {
+    let totalBonus = baseBab + abilityMod + sizeMod;
+    aggregatedFeatEffects.attackRollBonuses.forEach(effect => {
+      let applies = false;
+      if (effect.appliesTo === 'all') applies = true;
+      else if (effect.appliesTo === weaponType) applies = true;
+      else if (weaponType === 'melee' && selectedWeapon?.id === 'unarmed' && effect.appliesTo === 'unarmed') applies = true;
+      else if (selectedWeapon && effect.weaponId === selectedWeapon.name) applies = true;
+
+      if (applies && typeof effect.value === 'number') {
+        totalBonus += effect.value;
+      }
+    });
+    return totalBonus;
+  };
+
+  const calculateFinalDamageBonus = (
+    abilityMod: number, // Only pass STR for melee, 0 for ranged default
+    weaponType: 'melee' | 'ranged' | 'unarmed',
+    selectedWeapon?: Item
+  ): number => {
+    let totalBonus = abilityMod;
+     aggregatedFeatEffects.damageRollBonuses.forEach(effect => {
+      let applies = false;
+      if (effect.appliesTo === 'all') applies = true;
+      else if (effect.appliesTo === weaponType) applies = true;
+      else if (weaponType === 'melee' && selectedWeapon?.id === 'unarmed' && effect.appliesTo === 'unarmed') applies = true;
+      else if (selectedWeapon && effect.weaponId === selectedWeapon.name) applies = true;
+      
+      if (applies && typeof effect.value === 'number') {
+        totalBonus += effect.value;
+      }
+    });
+    return totalBonus;
+  };
+
 
   // --- Melee Attack Bonus Calculation ---
-  let meleeAttackAbilityMod = strMod;
+  let meleeAttackAbilityModForCalc = strMod;
   if (selectedMeleeWeapon?.isFinesseWeapon && dexMod > strMod) {
-    meleeAttackAbilityMod = dexMod;
+    meleeAttackAbilityModForCalc = dexMod;
   }
-  let meleeAttackFeatBonus = 0;
-  aggregatedFeatEffects.attackRollBonuses.forEach(effect => {
-    if (typeof effect.value === 'number') {
-        const isGenericBonus = (effect.appliesTo === 'all' || effect.appliesTo === 'melee') && !effect.weaponId;
-        const isUnarmedBonus = selectedMeleeWeaponId === 'unarmed' && effect.appliesTo === 'unarmed' && !effect.weaponId;
-        const isSpecificWeaponBonus = selectedMeleeWeapon && effect.weaponId === selectedMeleeWeapon.name;
-        const isPowerAttack = effect.sourceFeat === "Power Attack Effect";
-        const isCombatExpertise = effect.sourceFeat === "Combat Expertise Effect";
-
-
-        if ((isGenericBonus || isUnarmedBonus || isSpecificWeaponBonus || isPowerAttack || isCombatExpertise) && effect.appliesTo !== 'ranged') {
-            meleeAttackFeatBonus += effect.value;
-        }
-    }
-  });
-  const calculatedMeleeAttackBonus = totalBabWithModifier[0] + meleeAttackAbilityMod + actualSizeModAttack + meleeAttackFeatBonus;
-
-  // --- Melee Damage Bonus Calculation ---
-  let meleeDamageAbilityMod = strMod;
-  let meleeDamageFeatBonus = 0;
-  aggregatedFeatEffects.damageRollBonuses.forEach(effect => {
-    if (typeof effect.value === 'number') {
-        const isGenericBonus = (effect.appliesTo === 'all' || effect.appliesTo === 'melee') && !effect.weaponId;
-        const isUnarmedBonus = selectedMeleeWeaponId === 'unarmed' && effect.appliesTo === 'unarmed' && !effect.weaponId;
-        const isSpecificWeaponBonus = selectedMeleeWeapon && effect.weaponId === selectedMeleeWeapon.name;
-        const isPowerAttack = effect.sourceFeat === "Power Attack Effect";
-        
-        if ((isGenericBonus || isUnarmedBonus || isSpecificWeaponBonus || isPowerAttack) && effect.appliesTo !== 'ranged') {
-            meleeDamageFeatBonus += effect.value;
-        }
-    }
-  });
-  const calculatedMeleeDamageBonus = meleeDamageAbilityMod + meleeDamageFeatBonus;
+  const calculatedMeleeAttackBonus = calculateFinalAttackBonus(totalBabWithModifier[0], meleeAttackAbilityModForCalc, actualSizeModAttack, selectedMeleeWeaponId === 'unarmed' ? 'unarmed' : 'melee', selectedMeleeWeapon);
+  const calculatedMeleeDamageBonus = calculateFinalDamageBonus(strMod, selectedMeleeWeaponId === 'unarmed' ? 'unarmed' : 'melee', selectedMeleeWeapon); // STR applies by default
 
   // --- Ranged Attack Bonus Calculation ---
-  let rangedAttackFeatBonus = 0;
-   aggregatedFeatEffects.attackRollBonuses.forEach(effect => {
-    if (typeof effect.value === 'number') {
-        const isGenericBonus = (effect.appliesTo === 'all' || effect.appliesTo === 'ranged') && !effect.weaponId;
-        const isSpecificWeaponBonus = selectedRangedWeapon && effect.weaponId === selectedRangedWeapon.name;
-
-        if ((isGenericBonus || isSpecificWeaponBonus) && effect.appliesTo !== 'melee' && effect.appliesTo !== 'unarmed') {
-            rangedAttackFeatBonus += effect.value;
-        }
-    }
-  });
-  const calculatedRangedAttackBonus = totalBabWithModifier[0] + dexMod + actualSizeModAttack + rangedAttackFeatBonus;
-
-  // --- Ranged Damage Bonus Calculation ---
-  let rangedDamageFeatBonus = 0;
-  aggregatedFeatEffects.damageRollBonuses.forEach(effect => {
-    if (typeof effect.value === 'number') {
-        const isGenericBonus = (effect.appliesTo === 'all' || effect.appliesTo === 'ranged') && !effect.weaponId;
-        const isSpecificWeaponBonus = selectedRangedWeapon && effect.weaponId === selectedRangedWeapon.name;
-
-        if ((isGenericBonus || isSpecificWeaponBonus) && effect.appliesTo !== 'melee' && effect.appliesTo !== 'unarmed') {
-           rangedDamageFeatBonus += effect.value;
-        }
-    }
-  });
-  const calculatedRangedDamageBonus = rangedDamageFeatBonus;
+  const calculatedRangedAttackBonus = calculateFinalAttackBonus(totalBabWithModifier[0], dexMod, actualSizeModAttack, 'ranged', selectedRangedWeapon);
+  const calculatedRangedDamageBonus = calculateFinalDamageBonus(0, 'ranged', selectedRangedWeapon); // Ranged typically doesn't add ability mod to damage by default
 
   const hasPowerAttackFeat = feats.some(f => f.definitionId === 'power-attack');
   const hasCombatExpertiseFeat = feats.some(f => f.definitionId === 'combat-expertise');
 
   const handleOpenBabInfo = () => {
-    const components = getBabBreakdownComponents(totalBabWithModifier, localBabMiscModifier, UI_STRINGS, ABILITY_LABELS);
+    const components = getBabBreakdownComponents(baseBabArray, localBabMiscModifier, UI_STRINGS);
     onOpenAttackBonusInfoDialog({type: 'genericNumericalBreakdown', titleKey: 'infoDialogTitleTotalBabBreakdown', components});
   };
 
   const handleOpenMeleeAttackInfo = () => {
     const components = getMeleeAttackBonusBreakdownComponents(
-        totalBabWithModifier[0], meleeAttackAbilityMod, actualSizeModAttack, meleeAttackFeatBonus,
+        totalBabWithModifier[0], meleeAttackAbilityModForCalc, actualSizeModAttack,
         UI_STRINGS, ABILITY_LABELS, selectedMeleeWeapon?.isFinesseWeapon ? 'dexterity' : 'strength',
-        localPowerAttackValue, localCombatExpertiseValue, aggregatedFeatEffects, selectedMeleeWeapon?.name
+        aggregatedFeatEffects, selectedMeleeWeapon
     );
     onOpenAttackBonusInfoDialog({type: 'genericNumericalBreakdown', titleKey: 'infoDialogTitleMeleeAttackBreakdown', components});
   };
   const handleOpenMeleeDamageInfo = () => {
     const components = getMeleeDamageBonusBreakdownComponents(
-        meleeDamageAbilityMod, meleeDamageFeatBonus,
-        UI_STRINGS, ABILITY_LABELS, 'strength',
-        localPowerAttackValue, aggregatedFeatEffects, selectedMeleeWeapon?.name
+        strMod, // Base ability mod for melee damage is STR
+        UI_STRINGS, ABILITY_LABELS,
+        aggregatedFeatEffects, selectedMeleeWeapon
     );
     onOpenDamageBonusInfoDialog({type: 'genericNumericalBreakdown', titleKey: 'infoDialogTitleMeleeDamageBreakdown', components});
   };
    const handleOpenRangedAttackInfo = () => {
     const components = getRangedAttackBonusBreakdownComponents(
-        totalBabWithModifier[0], dexMod, actualSizeModAttack, rangedAttackFeatBonus,
-        UI_STRINGS, ABILITY_LABELS, 'dexterity',
-        aggregatedFeatEffects, selectedRangedWeapon?.name
+        totalBabWithModifier[0], dexMod, actualSizeModAttack,
+        UI_STRINGS, ABILITY_LABELS,
+        aggregatedFeatEffects, selectedRangedWeapon
     );
     onOpenAttackBonusInfoDialog({type: 'genericNumericalBreakdown', titleKey: 'infoDialogTitleRangedAttackBreakdown', components});
   };
   const handleOpenRangedDamageInfo = () => {
     const components = getRangedDamageBonusBreakdownComponents(
-        rangedDamageFeatBonus,
-        UI_STRINGS, ABILITY_LABELS,
-        aggregatedFeatEffects, selectedRangedWeapon?.name
+        UI_STRINGS, ABILITY_LABELS, // Ranged damage usually has 0 ability mod unless specific feats
+        aggregatedFeatEffects, selectedRangedWeapon
     );
     onOpenDamageBonusInfoDialog({type: 'genericNumericalBreakdown', titleKey: 'infoDialogTitleRangedDamageBreakdown', components});
   };
@@ -254,7 +241,7 @@ const AttacksPanelComponent = ({
                 value={localPowerAttackValue}
                 onChange={setLocalPowerAttackValue}
                 min={0}
-                max={maxBabForSpinners > 0 ? maxBabForSpinners : 0} // Ensure max is not negative
+                max={maxBabForSpinners > 0 ? maxBabForSpinners : 0}
                 inputClassName="h-8 text-sm w-20"
                 buttonClassName="h-8 w-8"
               />
@@ -387,141 +374,120 @@ const AttacksPanelComponent = ({
 AttacksPanelComponent.displayName = 'AttacksPanelComponent';
 export const AttacksPanel = React.memo(AttacksPanelComponent);
 
-function getBabBreakdownComponents(totalBabWithModifier: number[], localBabMiscModifier: number, UI_STRINGS: Record<string,string>, ABILITY_LABELS: any[]) {
-    return [
-        { label: UI_STRINGS.attacksPanelBabLabel || "Base Attack Bonus (from Classes)", value: totalBabWithModifier.map(b => b - localBabMiscModifier).map(b => `${b >= 0 ? '+' : ''}${b}`).join('/') },
-        ...(localBabMiscModifier !== 0 ? [{ label: UI_STRINGS.attacksPanelBabMiscModLabel || "Misc Modifier", value: localBabMiscModifier }] : []),
-        { label: UI_STRINGS.infoDialogTitleTotalBabBreakdown || "Total BAB", value: totalBabWithModifier.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/'), isBold: true },
-    ];
+function getBabBreakdownComponents(baseBabArray: number[], localBabMiscModifier: number, UI_STRINGS: Record<string,string>): GenericBreakdownItem[] {
+    const components: GenericBreakdownItem[] = [];
+    components.push({ label: UI_STRINGS.attacksPanelBabBaseLabel || "Base BAB (from Classes)", value: baseBabArray.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/') });
+    if (localBabMiscModifier !== 0) {
+        components.push({ label: UI_STRINGS.attacksPanelBabMiscModLabel || "Misc Modifier", value: localBabMiscModifier });
+    }
+    const totalBabWithModifier = baseBabArray.map(bab => bab + localBabMiscModifier);
+    components.push({ label: UI_STRINGS.infoDialogTitleTotalBabBreakdown || "Total BAB", value: totalBabWithModifier.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/'), isBold: true });
+    return components;
 }
 
 function getMeleeAttackBonusBreakdownComponents(
-    baseAttackBonus: number, abilityMod: number, sizeMod: number, featBonus: number,
+    baseAttackBonus: number, abilityMod: number, sizeMod: number,
     UI_STRINGS: Record<string,string>, ABILITY_LABELS: any[], abilityKey: 'strength' | 'dexterity',
-    powerAttackValue?: number, combatExpertiseValue?: number,
-    aggregatedFeatEffects?: AggregatedFeatEffects | null, selectedWeaponName?: string
-) {
-    const components = [
+    aggregatedFeatEffects: AggregatedFeatEffects | null, selectedWeapon?: Item | null
+): GenericBreakdownItem[] {
+    const components: GenericBreakdownItem[] = [
         { label: UI_STRINGS.attacksPanelBabLabel || "Base Attack Bonus", value: baseAttackBonus },
         { label: (UI_STRINGS.attacksPanelAbilityModLabel || "Ability Modifier ({abilityAbbr})").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.value === abilityKey)?.abbr || abilityKey.toUpperCase()), value: abilityMod },
-        { label: UI_STRINGS.attacksPanelSizeModLabel || "Size Modifier", value: sizeMod },
+        { label: UI_STRINGS.attacksPanelSizeModLabel || "Size Modifier (Attack)", value: sizeMod },
     ];
-    if (powerAttackValue && powerAttackValue > 0) {
-        components.push({ label: UI_STRINGS.powerAttackPenaltyLabel || "Power Attack Penalty", value: -powerAttackValue });
-    }
-    if (combatExpertiseValue && combatExpertiseValue > 0) {
-        components.push({ label: UI_STRINGS.combatExpertisePenaltyLabel || "Combat Expertise Penalty", value: -combatExpertiseValue });
-    }
 
-    let otherFeatBonusTotal = 0;
-    const featSources: string[] = [];
-    aggregatedFeatEffects?.attackRollBonuses.forEach(effect => {
-        if (effect.sourceFeat === "Power Attack Effect" || effect.sourceFeat === "Combat Expertise Effect") return; // Already handled
+    let totalBonusFromFeats = 0;
+    aggregatedFeatEffects?.attackRollBonuses?.forEach(effect => {
+        let applies = false;
+        if (effect.appliesTo === 'all' || effect.appliesTo === 'melee') applies = true;
+        if (selectedWeapon?.id === 'unarmed' && effect.appliesTo === 'unarmed') applies = true;
+        if (selectedWeapon && effect.weaponId === selectedWeapon.name) applies = true;
 
-        const isGeneric = (effect.appliesTo === 'all' || effect.appliesTo === 'melee') && !effect.weaponId;
-        const isSpecific = selectedWeaponName && effect.weaponId === selectedWeaponName;
-        const isUnarmed = selectedWeaponName === (UI_STRINGS.attacksPanelUnarmedOption || 'Unarmed') && effect.appliesTo === 'unarmed';
-
-        if ((isGeneric || isSpecific || isUnarmed) && typeof effect.value === 'number') {
-            otherFeatBonusTotal += effect.value;
-            if (effect.sourceFeat) featSources.push(effect.sourceFeat);
+        if (applies && typeof effect.value === 'number') {
+            totalBonusFromFeats += effect.value;
+            components.push({label: effect.sourceFeat || (UI_STRINGS.attacksPanelFeatBonusLabel || "Feat Bonus"), value: effect.value});
         }
     });
-    if (otherFeatBonusTotal !== 0) {
-        components.push({ label: (UI_STRINGS.attacksPanelFeatBonusLabel || "Feat Bonus") + (featSources.length > 0 ? ` (${featSources.join(', ')})` : ''), value: otherFeatBonusTotal });
-    }
 
-    const total = baseAttackBonus + abilityMod + sizeMod + (powerAttackValue ? -powerAttackValue : 0) + (combatExpertiseValue ? -combatExpertiseValue : 0) + otherFeatBonusTotal;
+    const total = baseAttackBonus + abilityMod + sizeMod + totalBonusFromFeats;
     components.push({ label: UI_STRINGS.infoDialogTotalLabel || "Total", value: total, isBold: true });
     return components;
 }
 
 function getMeleeDamageBonusBreakdownComponents(
-    abilityMod: number, featBonus: number,
-    UI_STRINGS: Record<string,string>, ABILITY_LABELS: any[], abilityKey: 'strength',
-    powerAttackValue?: number,
-    aggregatedFeatEffects?: AggregatedFeatEffects | null, selectedWeaponName?: string
-) {
-    const components = [
-        { label: (UI_STRINGS.attacksPanelAbilityModLabel || "Ability Modifier ({abilityAbbr})").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.value === abilityKey)?.abbr || abilityKey.toUpperCase()), value: abilityMod },
+    abilityMod: number, // Base STR mod
+    UI_STRINGS: Record<string,string>, ABILITY_LABELS: any[],
+    aggregatedFeatEffects: AggregatedFeatEffects | null, selectedWeapon?: Item | null
+): GenericBreakdownItem[] {
+    const components: GenericBreakdownItem[] = [
+        { label: (UI_STRINGS.attacksPanelAbilityModLabel || "Ability Modifier ({abilityAbbr})").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.value === 'strength')?.abbr || 'STR'), value: abilityMod },
     ];
-    if (powerAttackValue && powerAttackValue > 0) {
-         // TODO: Adjust for 2H weapon (x1.5 or x2) if possible
-        components.push({ label: UI_STRINGS.powerAttackDamageBonusLabel || "Power Attack Bonus", value: powerAttackValue });
-    }
-    let otherFeatBonusTotal = 0;
-    const featSources: string[] = [];
-     aggregatedFeatEffects?.damageRollBonuses.forEach(effect => {
-        if (effect.sourceFeat === "Power Attack Effect") return;
+    let totalBonusFromFeats = 0;
+    aggregatedFeatEffects?.damageRollBonuses?.forEach(effect => {
+        let applies = false;
+        if (effect.appliesTo === 'all' || effect.appliesTo === 'melee') applies = true;
+        if (selectedWeapon?.id === 'unarmed' && effect.appliesTo === 'unarmed') applies = true;
+        if (selectedWeapon && effect.weaponId === selectedWeapon.name) applies = true;
 
-        const isGeneric = (effect.appliesTo === 'all' || effect.appliesTo === 'melee') && !effect.weaponId;
-        const isSpecific = selectedWeaponName && effect.weaponId === selectedWeaponName;
-        const isUnarmed = selectedWeaponName === (UI_STRINGS.attacksPanelUnarmedOption || 'Unarmed') && effect.appliesTo === 'unarmed';
-
-        if ((isGeneric || isSpecific || isUnarmed) && typeof effect.value === 'number') {
-            otherFeatBonusTotal += effect.value;
-            if (effect.sourceFeat) featSources.push(effect.sourceFeat);
+        if (applies && typeof effect.value === 'number') {
+            totalBonusFromFeats += effect.value;
+            components.push({label: effect.sourceFeat || (UI_STRINGS.attacksPanelFeatBonusLabel || "Feat Bonus"), value: effect.value});
         }
     });
-    if (otherFeatBonusTotal !== 0) {
-        components.push({ label: (UI_STRINGS.attacksPanelFeatBonusLabel || "Feat Bonus") + (featSources.length > 0 ? ` (${featSources.join(', ')})` : ''), value: otherFeatBonusTotal });
-    }
-    const total = abilityMod + (powerAttackValue || 0) + otherFeatBonusTotal;
+    const total = abilityMod + totalBonusFromFeats;
     components.push({ label: UI_STRINGS.infoDialogTotalLabel || "Total", value: total, isBold: true });
     return components;
 }
 
 function getRangedAttackBonusBreakdownComponents(
-    baseAttackBonus: number, abilityMod: number, sizeMod: number, featBonus: number,
-    UI_STRINGS: Record<string,string>, ABILITY_LABELS: any[], abilityKey: 'dexterity',
-    aggregatedFeatEffects?: AggregatedFeatEffects | null, selectedWeaponName?: string
-) {
-    const components = [
+    baseAttackBonus: number, abilityMod: number, sizeMod: number,
+    UI_STRINGS: Record<string,string>, ABILITY_LABELS: any[],
+    aggregatedFeatEffects: AggregatedFeatEffects | null, selectedWeapon?: Item | null
+): GenericBreakdownItem[] {
+    const components: GenericBreakdownItem[] = [
         { label: UI_STRINGS.attacksPanelBabLabel || "Base Attack Bonus", value: baseAttackBonus },
-        { label: (UI_STRINGS.attacksPanelAbilityModLabel || "Ability Modifier ({abilityAbbr})").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.value === abilityKey)?.abbr || abilityKey.toUpperCase()), value: abilityMod },
-        { label: UI_STRINGS.attacksPanelSizeModLabel || "Size Modifier", value: sizeMod },
+        { label: (UI_STRINGS.attacksPanelAbilityModLabel || "Ability Modifier ({abilityAbbr})").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX'), value: abilityMod },
+        { label: UI_STRINGS.attacksPanelSizeModLabel || "Size Modifier (Attack)", value: sizeMod },
     ];
-    let otherFeatBonusTotal = 0;
-    const featSources: string[] = [];
-    aggregatedFeatEffects?.attackRollBonuses.forEach(effect => {
-        const isGeneric = (effect.appliesTo === 'all' || effect.appliesTo === 'ranged') && !effect.weaponId;
-        const isSpecific = selectedWeaponName && effect.weaponId === selectedWeaponName;
-         if ((isGeneric || isSpecific) && typeof effect.value === 'number') {
-            otherFeatBonusTotal += effect.value;
-            if (effect.sourceFeat) featSources.push(effect.sourceFeat);
+    let totalBonusFromFeats = 0;
+    aggregatedFeatEffects?.attackRollBonuses?.forEach(effect => {
+        let applies = false;
+        if (effect.appliesTo === 'all' || effect.appliesTo === 'ranged') applies = true;
+        if (selectedWeapon && effect.weaponId === selectedWeapon.name) applies = true;
+        
+        if (applies && typeof effect.value === 'number') {
+            totalBonusFromFeats += effect.value;
+             components.push({label: effect.sourceFeat || (UI_STRINGS.attacksPanelFeatBonusLabel || "Feat Bonus"), value: effect.value});
         }
     });
-    if (otherFeatBonusTotal !== 0) {
-        components.push({ label: (UI_STRINGS.attacksPanelFeatBonusLabel || "Feat Bonus") + (featSources.length > 0 ? ` (${featSources.join(', ')})` : ''), value: otherFeatBonusTotal });
-    }
-
-    const total = baseAttackBonus + abilityMod + sizeMod + otherFeatBonusTotal;
+    const total = baseAttackBonus + abilityMod + sizeMod + totalBonusFromFeats;
     components.push({ label: UI_STRINGS.infoDialogTotalLabel || "Total", value: total, isBold: true });
     return components;
 }
 
 function getRangedDamageBonusBreakdownComponents(
-    featBonus: number,
     UI_STRINGS: Record<string,string>, ABILITY_LABELS: any[],
-    aggregatedFeatEffects?: AggregatedFeatEffects | null, selectedWeaponName?: string
-) {
-    const components = [];
-    let otherFeatBonusTotal = 0;
-    const featSources: string[] = [];
-    aggregatedFeatEffects?.damageRollBonuses.forEach(effect => {
-        const isGeneric = (effect.appliesTo === 'all' || effect.appliesTo === 'ranged') && !effect.weaponId;
-        const isSpecific = selectedWeaponName && effect.weaponId === selectedWeaponName;
-        if ((isGeneric || isSpecific) && typeof effect.value === 'number') {
-            otherFeatBonusTotal += effect.value;
-            if (effect.sourceFeat) featSources.push(effect.sourceFeat);
+    aggregatedFeatEffects: AggregatedFeatEffects | null, selectedWeapon?: Item | null
+): GenericBreakdownItem[] {
+    const components: GenericBreakdownItem[] = [];
+    let totalBonusFromFeats = 0;
+    aggregatedFeatEffects?.damageRollBonuses?.forEach(effect => {
+         let applies = false;
+        if (effect.appliesTo === 'all' || effect.appliesTo === 'ranged') applies = true;
+        if (selectedWeapon && effect.weaponId === selectedWeapon.name) applies = true;
+
+        if (applies && typeof effect.value === 'number') {
+            totalBonusFromFeats += effect.value;
+            components.push({label: effect.sourceFeat || (UI_STRINGS.attacksPanelFeatBonusLabel || "Feat Bonus"), value: effect.value});
         }
     });
-    if (otherFeatBonusTotal !== 0) {
-        components.push({ label: (UI_STRINGS.attacksPanelFeatBonusLabel || "Feat Bonus") + (featSources.length > 0 ? ` (${featSources.join(', ')})` : ''), value: otherFeatBonusTotal });
+    // Ranged damage typically doesn't add ability mod unless specific feats grant it (handled by feat effects).
+    const total = totalBonusFromFeats;
+    if (totalBonusFromFeats === 0) { // If no feat bonuses, add a placeholder if needed or keep it clean
+        components.push({label: UI_STRINGS.attacksPanelNoAbilityDamageBonusRanged || "No Ability Bonus to Damage (Typical for Ranged)", value: 0});
     }
-    // Note: STR to ranged damage is typically not added unless specific feats/items grant it.
-    // Those would be part of 'otherFeatBonusTotal'.
-    const total = otherFeatBonusTotal;
     components.push({ label: UI_STRINGS.infoDialogTotalLabel || "Total", value: total, isBold: true });
     return components;
 }
+
+    
