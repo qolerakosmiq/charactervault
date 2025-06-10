@@ -15,13 +15,15 @@ import type {
   RaceSpecialQualities,
   DndRaceOption,
   DndClassOption,
+  AggregatedFeatEffects,
+  CharacterFavoredEnemy
 } from '@/types/character-core';
 import { isAlignmentCompatible } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollText, Info, Loader2, Users } from 'lucide-react'; // Added Users icon for Ranger choices
+import { ScrollText, Info, Loader2, Users, Swords as BarbarianRageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -30,14 +32,15 @@ import { ComboboxPrimitive } from '@/components/ui/combobox';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
+import { Separator } from '@/components/ui/separator';
 
 const DEBOUNCE_DELAY = 400; // ms
 const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__";
 
 export interface CharacterFormCoreInfoSectionProps {
-  characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes' | 'chosenCombatStyle' | 'chosenFavoredEnemies'>; // Added chosenCombatStyle, chosenFavoredEnemies
+  characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes' | 'chosenCombatStyle' | 'chosenFavoredEnemies'>;
   onFieldChange: (
-    field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'chosenCombatStyle'>, // Added chosenCombatStyle
+    field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'chosenCombatStyle' | 'chosenFavoredEnemies'>,
     value: any
   ) => void;
   onClassChange: (className: DndClassId | string) => void;
@@ -48,8 +51,7 @@ export interface CharacterFormCoreInfoSectionProps {
   onOpenClassInfoDialog: () => void;
   onOpenAlignmentInfoDialog: () => void;
   onOpenDeityInfoDialog: () => void;
-  // Potentially add props for Favored Enemy/Combat Style dialogs if they are complex
-  // aggregatedFeatEffects?: AggregatedFeatEffects | null; // To get favoredEnemySlots
+  aggregatedFeatEffects?: AggregatedFeatEffects | null;
 }
 
 const CharacterFormCoreInfoSectionComponent = ({
@@ -63,7 +65,7 @@ const CharacterFormCoreInfoSectionComponent = ({
   onOpenClassInfoDialog,
   onOpenAlignmentInfoDialog,
   onOpenDeityInfoDialog,
-  // aggregatedFeatEffects, // If needed for slot display
+  aggregatedFeatEffects,
 }: CharacterFormCoreInfoSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
@@ -112,13 +114,24 @@ const CharacterFormCoreInfoSectionComponent = ({
     (value) => onFieldChange('size', value as CharacterSize),
     DEBOUNCE_DELAY
   );
-  // Ranger specific state
   const [localChosenCombatStyle, setLocalChosenCombatStyle] = useDebouncedFormField(
     characterData.chosenCombatStyle || '',
     (value) => onFieldChange('chosenCombatStyle', value as "archery" | "twoWeaponFighting" | undefined),
     DEBOUNCE_DELAY
   );
   
+  const handleFavoredEnemyChange = (index: number, newType: string) => {
+    const updatedEnemies = [...(characterData.chosenFavoredEnemies || [])];
+    if (index < updatedEnemies.length) {
+      updatedEnemies[index] = { ...updatedEnemies[index], type: newType };
+    } else {
+      updatedEnemies[index] = { id: crypto.randomUUID(), type: newType };
+    }
+    // Filter out empty entries if user clears an input
+    onFieldChange('chosenFavoredEnemies', updatedEnemies.filter(e => e.type.trim() !== ''));
+  };
+
+
   React.useEffect(() => {
     if (translationsLoading || !translations) return;
     if (!localRace && translations.DND_RACES.length > 0) {
@@ -189,8 +202,12 @@ const CharacterFormCoreInfoSectionComponent = ({
   const isRanger = selectedClassInfo?.value === 'ranger';
   const rangerLevel = isRanger ? (characterData.classes[0]?.level || 0) : 0;
   const canChooseCombatStyle = isRanger && rangerLevel >= 2;
-  // Favored enemy slots display would require aggregatedFeatEffects, which is not currently passed.
-  // Placeholder for now: const favoredEnemySlots = aggregatedFeatEffects?.favoredEnemySlots || 0;
+  const favoredEnemySlots = aggregatedFeatEffects?.favoredEnemySlots || 0;
+
+  const isBarbarian = selectedClassInfo?.value === 'barbarian';
+  const rageUsesAbility = aggregatedFeatEffects?.grantedAbilities.find(ab => ab.abilityKey === 'barbarianRageUses');
+  const rageUsesPerDay = rageUsesAbility?.uses?.value || 0;
+
 
   if (translationsLoading || !translations) {
     return (
@@ -299,6 +316,17 @@ const CharacterFormCoreInfoSectionComponent = ({
           </div>
         </div>
 
+        {isBarbarian && rageUsesPerDay > 0 && (
+            <div className="p-3 border rounded-md bg-muted/20 space-y-1">
+                <Label className="text-sm font-medium flex items-center">
+                    <BarbarianRageIcon className="mr-2 h-4 w-4 text-destructive" />
+                    {UI_STRINGS.barbarianRageUsesLabel || "Rage Uses Per Day"}
+                </Label>
+                <p className="text-2xl font-bold text-destructive">{rageUsesPerDay}</p>
+            </div>
+        )}
+
+
         {canChooseCombatStyle && (
           <div className="space-y-1.5">
             <Label htmlFor="rangerCombatStyle">{UI_STRINGS.rangerCombatStyleLabel || "Ranger Combat Style"}</Label>
@@ -321,16 +349,30 @@ const CharacterFormCoreInfoSectionComponent = ({
           </div>
         )}
 
-        {/* Placeholder for Favored Enemy selection - Full UI in a later batch */}
-        {isRanger && (
-          <div className="space-y-1.5 p-3 border rounded-md bg-muted/20">
-            <Label className="flex items-center">
-              <Users className="mr-2 h-4 w-4 text-primary/70" />
+        {isRanger && favoredEnemySlots > 0 && (
+          <div className="space-y-3 p-3 border rounded-md bg-muted/20">
+            <Label className="flex items-center text-md font-medium">
+              <Users className="mr-2 h-5 w-5 text-primary/70" />
               {UI_STRINGS.favoredEnemyTitle || "Favored Enemies"}
+              <Badge variant="outline" className="ml-2">{favoredEnemySlots} {UI_STRINGS.favoredEnemySlotsAvailableShort || "Slot(s)"}</Badge>
             </Label>
-            <p className="text-sm text-muted-foreground">
-              {UI_STRINGS.favoredEnemySlotsAvailable || "Slots available:"} {/*favoredEnemySlots*/} {`(Full selection UI coming soon)`}
+            <p className="text-xs text-muted-foreground">
+                {UI_STRINGS.favoredEnemyDescription || "Select creature types your Ranger specializes against. Bonuses apply automatically when relevant."}
             </p>
+            {Array.from({ length: favoredEnemySlots }).map((_, index) => (
+              <div key={`favored-enemy-${index}`} className="space-y-1">
+                <Label htmlFor={`favored-enemy-input-${index}`} className="text-xs">
+                  {UI_STRINGS.favoredEnemySlotLabel || "Favored Enemy Slot"} {index + 1}
+                </Label>
+                <Input
+                  id={`favored-enemy-input-${index}`}
+                  value={characterData.chosenFavoredEnemies?.[index]?.type || ''}
+                  onChange={(e) => handleFavoredEnemyChange(index, e.target.value)}
+                  placeholder={UI_STRINGS.favoredEnemyPlaceholder || "e.g., Orc, Goblin, Undead"}
+                  className="h-9 text-sm"
+                />
+              </div>
+            ))}
           </div>
         )}
 
@@ -431,3 +473,5 @@ const CharacterFormCoreInfoSectionComponent = ({
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
 
+
+```

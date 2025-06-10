@@ -4,15 +4,15 @@
 import *as React from 'react';
 import type {
   FeatDefinitionJsonData, CharacterFeatInstance, Character, AbilityScores, Skill,
-  SkillDefinitionJsonData, FeatTypeString
+  SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown // Moved AvailableFeatSlotsBreakdown to character-core
 } from '@/types/character-core'; 
 import {
-  checkFeatPrerequisites, calculateAvailableFeats, AvailableFeatSlotsBreakdown
+  checkFeatPrerequisites, calculateAvailableFeats
 } from '@/types/character';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, PlusCircle, Trash2, Pencil, Loader2 } from 'lucide-react';
+import { Award, PlusCircle, Trash2, Pencil, Loader2, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
 import { useToast } from "@/hooks/use-toast";
@@ -22,7 +22,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export interface FeatsFormSectionProps {
-  featSectionData: Pick<Character, 'race' | 'classes' | 'feats' | 'age' | 'alignment' | 'experiencePoints'>; // Added experiencePoints
+  featSectionData: Pick<Character, 'race' | 'classes' | 'feats' | 'age' | 'alignment' | 'experiencePoints' | 'chosenCombatStyle'>;
   allAvailableFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]; 
   chosenFeatInstances: CharacterFeatInstance[]; 
   onFeatInstancesChange: (updatedInstances: CharacterFeatInstance[]) => void;
@@ -31,7 +31,8 @@ export interface FeatsFormSectionProps {
   skills: Skill[];
   allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[]; 
   allCustomSkillDefinitions: readonly CustomSkillDefinition[]; 
-  characterLevel: number; // XP-derived character level
+  characterLevel: number; 
+  aggregatedFeatEffects?: AggregatedFeatEffects | null;
 }
 
 const FeatsFormSectionComponent = ({
@@ -45,6 +46,7 @@ const FeatsFormSectionComponent = ({
   allPredefinedSkillDefinitions,
   allCustomSkillDefinitions,
   characterLevel,
+  aggregatedFeatEffects,
 }: FeatsFormSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
   const { toast } = useToast();
@@ -94,11 +96,8 @@ const FeatsFormSectionComponent = ({
   const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 whitespace-nowrap";
 
   const handleOpenFeatDialog = () => {
+    let filterCategoryForDialog: string | undefined = undefined;
     if (featSlotsLeft <= 0 && classBonusDetails && classBonusDetails.length > 0) {
-      // Check if any bonus feat slots of a specific category are unfilled
-      // This is a simplified approach: assumes a character fills one type of bonus slot at a time.
-      // A more robust system would track which specific bonus slot is being filled.
-      let filterCategoryForDialog: string | undefined = undefined;
       for (const bonusDetail of classBonusDetails) {
         const chosenInCategory = userChosenFeatInstances.filter(inst => {
           const def = allAvailableFeatDefinitions.find(d => d.value === inst.definitionId);
@@ -109,10 +108,8 @@ const FeatsFormSectionComponent = ({
           break;
         }
       }
-      setFeatDialogFilterCategory(filterCategoryForDialog);
-    } else {
-      setFeatDialogFilterCategory(undefined); // General feat slot
     }
+    setFeatDialogFilterCategory(filterCategoryForDialog);
     setIsFeatDialogOpen(true);
   };
 
@@ -162,6 +159,7 @@ const FeatsFormSectionComponent = ({
       instanceId: newInstanceId,
       specializationDetail: specializationDetail || '',
       isGranted: false, 
+      chosenSpecializationCategory: definition.requiresSpecializationCategory,
     };
 
     onFeatInstancesChange([...chosenFeatInstances, newInstance].sort((a, b) => {
@@ -340,13 +338,24 @@ const FeatsFormSectionComponent = ({
               )}
               {featSlotsBreakdown.classBonusDetails && featSlotsBreakdown.classBonusDetails.length > 0 && (
                 featSlotsBreakdown.classBonusDetails.map(detail => (
-                    <React.Fragment key={detail.category}>
+                    <React.Fragment key={`${detail.category}-${detail.sourceFeatLabel || 'general'}`}>
                     {' + '} {detail.sourceFeatLabel || detail.category} <Badge variant="outline" className={badgeClassName}>{detail.count}</Badge>
                     </React.Fragment>
                 ))
               )}
             </p>
           </div>
+
+          {aggregatedFeatEffects?.favoredEnemyBonuses && (aggregatedFeatEffects.favoredEnemyBonuses.skillBonus > 0 || aggregatedFeatEffects.favoredEnemyBonuses.damageBonus > 0) && (
+            <div className="mt-1 mb-3 p-2 border border-dashed border-primary/50 rounded-md bg-primary/5 text-sm text-primary">
+              <Info className="inline h-4 w-4 mr-1.5 mb-0.5" />
+              {UI_STRINGS.favoredEnemyBonusDisplayInfo || "Favored Enemy Bonus: +{skillBonus} to Bluff, Listen, Sense Motive, Spot, Survival checks and +{damageBonus} damage against chosen favored enemies."}
+                { ' ' }({UI_STRINGS.favoredEnemySlotsAvailable || "Slots available:"} {aggregatedFeatEffects.favoredEnemySlots || 0})
+                .replace('{skillBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.skillBonus))
+                .replace('{damageBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.damageBonus))
+            </div>
+          )}
+
 
           <div className="mt-3 mb-1 flex gap-2">
             <Button type="button" variant="outline" size="sm" onClick={handleOpenFeatDialog}>
@@ -409,3 +418,5 @@ const FeatsFormSectionComponent = ({
 FeatsFormSectionComponent.displayName = "FeatsFormSectionComponent";
 export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
 
+
+```

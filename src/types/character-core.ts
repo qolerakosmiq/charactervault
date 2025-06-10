@@ -456,6 +456,11 @@ export type ClassSkillPointsBaseJsonData = Record<string, number>;
 export type SynergyEffectJsonData = { targetSkill: string; ranksRequired: number; bonus: number };
 export type SkillSynergiesJsonData = Record<string, SynergyEffectJsonData[]>;
 
+export interface CharacterFavoredEnemy {
+  id: string; // Unique ID for this instance of chosen favored enemy
+  type: string; // e.g., "Orc", "Goblinoid", "Magical Beast" - free text for now, maybe later a predefined list
+  note?: string; // Optional note, e.g., "From 1st level choice"
+}
 
 export interface Character {
   id: string;
@@ -524,7 +529,7 @@ export interface Character {
   loadSpeedPenalty_base: number;
   loadSpeedPenalty_miscModifier: number;
   chosenCombatStyle?: "archery" | "twoWeaponFighting";
-  chosenFavoredEnemies?: Array<{ type: string; note?: string }>;
+  chosenFavoredEnemies?: CharacterFavoredEnemy[]; // Updated from Array<{ type: string; note?: string }>
 }
 
 // Informational/Breakdown types
@@ -578,6 +583,13 @@ export interface AbilityScoreBreakdown {
 }
 export type DetailedAbilityScores = Record<Exclude<AbilityName, 'none'>, AbilityScoreBreakdown>;
 
+export interface AvailableFeatSlotsBreakdown {
+  total: number;
+  base: number;
+  racial: number;
+  classBonus: number;
+  classBonusDetails: Array<{ category: string; count: number; sourceFeatLabel?: string }>;
+}
 
 export interface AggregatedFeatEffects {
   skillBonuses: Record<string, number>;
@@ -606,13 +618,6 @@ export interface AggregatedFeatEffects {
   };
   descriptiveNotes: Array<(NoteEffectDetail | DescriptiveEffectDetail) & { sourceFeat?: string }>;
   classLevels: Record<DndClassId, number>;
-}
-export interface AvailableFeatSlotsBreakdown {
-  total: number;
-  base: number;
-  racial: number;
-  classBonus: number;
-  classBonusDetails: Array<{ category: string; count: number; sourceFeatLabel?: string }>;
 }
 
 export interface BabBreakdownDetails {
@@ -659,3 +664,5 @@ export interface PrerequisiteMessage {
   originalText?: string;
 }
 
+
+```
