@@ -938,18 +938,25 @@
       "isClassFeature": true, "type": "special-ex",
       "effects": [
         { "type": "abilityScore", "ability": "strength", "value": 4, "bonusType": "morale", "condition": "raging_active",
-          "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [ {"level": 1, "value": 4}, {"level": 11, "value": 6}, {"level": 20, "value": 8} ] }
+          "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
+            {"level": 1, "value": 4, "tierName": "Rage"}, {"level": 11, "value": 6, "tierName": "Grande Rage"}, {"level": 20, "value": 8, "tierName": "Rage Puissante"}
+          ] }
         },
         { "type": "abilityScore", "ability": "constitution", "value": 4, "bonusType": "morale", "condition": "raging_active",
-          "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [ {"level": 1, "value": 4}, {"level": 11, "value": 6}, {"level": 20, "value": 8} ] }
+          "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
+            {"level": 1, "value": 4, "tierName": "Rage"}, {"level": 11, "value": 6, "tierName": "Grande Rage"}, {"level": 20, "value": 8, "tierName": "Rage Puissante"}
+          ] }
         },
         { "type": "savingThrow", "save": "will", "value": 2, "bonusType": "morale", "condition": "raging_active",
-          "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [ {"level": 1, "value": 2}, {"level": 11, "value": 3}, {"level": 20, "value": 4} ] }
+          "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
+            {"level": 1, "value": 2, "tierName": "Rage"}, {"level": 11, "value": 3, "tierName": "Grande Rage"}, {"level": 20, "value": 4, "tierName": "Rage Puissante"}
+          ] }
         },
         { "type": "armorClass", "acType": "untyped", "value": -2, "condition": "raging_active" },
         { "type": "grantsAbility", "abilityKey": "barbarianRageUses", "name": "Utilisations de Rage",
           "uses": {
-            "per": "day", "value": 0, "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
+            "per": "day",
+            "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
               {"level": 1, "value": 1}, {"level": 4, "value": 2}, {"level": 8, "value": 3}, {"level": 12, "value": 4}, {"level": 16, "value": 5}, {"level": 20, "value": 6}
             ]}
           }
@@ -994,7 +1001,7 @@
           ]}
       }]
     },
-    { "value": "class-barbarian-greater-rage", "label": "Rage supérieure", "effectsText": "Les bonus de Rage s'améliorent (géré par la mise à l'échelle de la Rage de base).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Les bonus de Rage s'améliorent (géré par la mise à l'échelle de la Rage de base)."}] },
+    { "value": "class-barbarian-greater-rage", "label": "Grande Rage", "effectsText": "Les bonus de Rage s'améliorent (géré par la mise à l'échelle de la Rage de base).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Les bonus de Rage s'améliorent (géré par la mise à l'échelle de la Rage de base)."}] },
     {
       "value": "class-barbarian-indomitable-will",
       "label": "Volonté indomptable",
@@ -1023,12 +1030,12 @@
             {"level": 1, "value": 1}, {"level": 8, "value": 2}, {"level": 14, "value": 3}, {"level": 20, "value": 4}
           ]}
         },
-        { "type": "attackRoll", "bonusType": "morale", "appliesTo": "all", "condition": "inspire_courage_active", "value": 0,
+        { "type": "attackRoll", "bonusType": "morale", "appliesTo": "all", "condition": "inspire_courage_active",
           "scaleWithClassLevel": { "classId": "bard", "specificLevels": [
             {"level": 1, "value": 1}, {"level": 8, "value": 2}, {"level": 14, "value": 3}, {"level": 20, "value": 4}
           ]}
         },
-        { "type": "damageRoll", "bonusType": "morale", "appliesTo": "all", "condition": "inspire_courage_active", "value": 0,
+        { "type": "damageRoll", "bonusType": "morale", "appliesTo": "all", "condition": "inspire_courage_active",
           "scaleWithClassLevel": { "classId": "bard", "specificLevels": [
             {"level": 1, "value": 1}, {"level": 8, "value": 2}, {"level": 14, "value": 3}, {"level": 20, "value": 4}
           ]}
@@ -1069,6 +1076,7 @@
       "label": "Emplacement de don supplémentaire de Guerrier",
       "effectsText":"Obtient un don supplémentaire orienté combat.",
       "isClassFeature": true, "type": "special",
+      "category": "fighterBonusFeat",
       "effects": [{ "type": "bonusFeatSlot", "category": "fighterBonusFeat", "count": 1 }]
     },
     {
@@ -1076,10 +1084,29 @@
       "label": "Emplacement de don supplémentaire de Moine",
       "effectsText":"Obtient un don supplémentaire de la liste des Moines.",
       "isClassFeature": true, "type": "special",
+      "category": "monkBonusFeat",
       "effects": [{ "type": "bonusFeatSlot", "category": "monkBonusFeat", "count": 1 }]
     },
     { "value": "class-monk-flurry-of-blows", "label": "Déluge de coups", "effectsText":"Effectue des attaques supplémentaires sans armure avec une pénalité.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Effectue des attaques supplémentaires sans armure avec une pénalité."}] },
-    { "value": "class-monk-unarmed-strike-damage", "label": "Frappe à mains nues de Moine", "effectsText":"Les frappes à mains nues infligent plus de dégâts (évolue avec le niveau).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Les frappes à mains nues infligent plus de dégâts (évolue avec le niveau)."}] },
+    {
+      "value": "class-monk-unarmed-strike-damage",
+      "label": "Frappe à mains nues de Moine",
+      "effectsText":"Les frappes à mains nues infligent plus de dégâts (évolue avec le niveau).",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        {
+          "type": "damageRoll", "appliesTo": "unarmed", "bonusType": "untyped", "value": "1d6",
+          "scaleWithClassLevel": {
+            "classId": "monk",
+            "specificLevels": [
+              {"level": 1, "value": "1d6"}, {"level": 4, "value": "1d8"}, {"level": 8, "value": "1d10"},
+              {"level": 12, "value": "1d12"}, {"level": 16, "value": "2d6"}, {"level": 20, "value": "2d8"}
+            ]
+          }
+        }
+      ]
+    },
     {
       "value": "class-monk-ac-bonus",
       "label": "Bonus de CA de Moine",
@@ -1118,8 +1145,40 @@
         { "type": "savingThrow", "save": "all", "value": 2, "bonusType": "untyped", "condition": "vs_enchantment_effects" }
       ]
     },
-    { "value": "class-monk-ki-strike", "label": "Frappe ki", "effectsText":"Les attaques à mains nues sont traitées comme magiques, puis loyales, puis en adamantium.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Les attaques à mains nues sont traitées comme magiques, puis loyales, puis en adamantium."}] },
-    { "value": "class-monk-slow-fall", "label": "Chute ralentie", "effectsText":"Réduit les dégâts de chute en fonction de la distance au mur.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Réduit les dégâts de chute en fonction de la distance au mur."}] },
+    {
+      "value": "class-monk-ki-strike",
+      "label": "Frappe ki",
+      "effectsText":"Les attaques à mains nues sont traitées comme magiques, puis loyales, puis en adamantium.",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effects": [
+        { "type": "modifiesMechanic", "mechanicKey": "kiStrikeBypass", "value": "magic",
+          "scaleWithClassLevel": { "classId": "monk", "specificLevels": [ { "level": 4, "value": "magic"} ]}
+        },
+        { "type": "modifiesMechanic", "mechanicKey": "kiStrikeBypass", "value": "lawful",
+          "scaleWithClassLevel": { "classId": "monk", "specificLevels": [ { "level": 10, "value": "lawful"} ]}
+        },
+        { "type": "modifiesMechanic", "mechanicKey": "kiStrikeBypass", "value": "adamantine",
+          "scaleWithClassLevel": { "classId": "monk", "specificLevels": [ { "level": 16, "value": "adamantine"} ]}
+        }
+      ]
+    },
+    {
+      "value": "class-monk-slow-fall",
+      "label": "Chute ralentie",
+      "effectsText":"Réduit les dégâts de chute en fonction de la distance au mur.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "modifiesMechanic", "mechanicKey": "slowFallDistance", "value": 0,
+          "scaleWithClassLevel": { "classId": "monk", "specificLevels": [
+            {"level": 4, "value": 6}, {"level": 6, "value": 9}, {"level": 8, "value": 12},
+            {"level": 10, "value": 15}, {"level": 12, "value": 18}, {"level": 14, "value": 21},
+            {"level": 16, "value": 24}, {"level": 18, "value": 27}, {"level": 20, "value": -1}
+          ]}
+        }
+      ]
+    },
     { "value": "class-monk-purity-of-body", "label": "Pureté corporelle", "effectsText":"Immunisé à toutes les maladies (sauf magiques/surnaturelles).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Immunisé à toutes les maladies (sauf magiques/surnaturelles)."}] },
     { "value": "class-monk-wholeness-of-body", "label": "Intégrité corporelle", "effectsText":"Soigne ses propres blessures (2x niveau de moine PV/jour).", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Soigne ses propres blessures (2x niveau de moine PV/jour)."}] },
     { "value": "class-monk-improved-evasion", "label": "Esquive totale améliorée", "effectsText":"Subit la moitié des dégâts en cas de jet de Réflexes raté pour la moitié.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Subit la moitié des dégâts en cas de jet de Réflexes raté pour la moitié."}] },
@@ -1227,6 +1286,5 @@
     { "value": "special-ex-su", "label": "Capacité Extraordinaire/Surnaturelle" }
   ]
 }
-    
 
-```
+    

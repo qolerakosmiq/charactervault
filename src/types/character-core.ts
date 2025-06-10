@@ -50,9 +50,19 @@ export interface FeatPrerequisiteDetails {
   }>;
 }
 
+export interface FeatEffectScalingSpecificLevel {
+  level: number;
+  value: any; // number, string, dice object, etc.
+  tierName?: string; // e.g., "Greater Rage", "Mighty Rage"
+}
+
 export interface FeatEffectScaling {
   classId: DndClassId | string; // The class whose level dictates the scaling
-  specificLevels: Array<{ level: number; value: any /* number, string, dice object, etc. */ }>;
+  specificLevels: FeatEffectScalingSpecificLevel[];
+  // Option 2: Define a value per level (for linear progression, less common for these complex features)
+  valuePerLevel?: number;
+  // Option 3: Reference a table key within the class JSON (more complex to implement)
+  // progressionTableKey?: string;
 }
 
 // Structured feat effect types
@@ -197,17 +207,18 @@ export interface TurnUndeadEffect {
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
+export interface GrantsAbilityEffectUses {
+  per: "day" | "encounter";
+  value?: number | "levelBased" | "abilityModBased" | "scaled"; // 'scaled' indicates using scaleWithClassLevel
+  basedOnAbility?: Exclude<AbilityName, 'none'>;
+  scaleWithClassLevel?: FeatEffectScaling; // For uses.value if it's "scaled"
+}
 export interface GrantsAbilityEffect {
   type: "grantsAbility";
   abilityKey: string;
   name: string;
   details?: string;
-  uses?: {
-    per: "day" | "encounter";
-    value: number | "levelBased" | "abilityModBased" | "scaled"; // 'scaled' indicates using scaleWithClassLevel
-    basedOnAbility?: Exclude<AbilityName, 'none'>;
-    scaleWithClassLevel?: FeatEffectScaling; // For uses.value if it's "scaled"
-  };
+  uses?: GrantsAbilityEffectUses;
   actionType?: "standard" | "move" | "fullRound" | "free" | "swift" | "immediate" | "reaction" | "passive";
   condition?: string;
   sourceFeat?: string;
@@ -216,9 +227,8 @@ export interface GrantsAbilityEffect {
 
 export interface ModifiesMechanicEffect {
   type: "modifiesMechanic";
-  mechanicKey: string; // e.g., "unarmedStrikeThreatRange", "twoWeaponFightingPenalties", "kiStrikeBypass"
-  change: string; // Descriptive of the change, or a key to a value for scaling
-  details?: string;
+  mechanicKey: string; // e.g., "unarmedStrikeThreatRange", "twoWeaponFightingPenalties", "kiStrikeBypass", "slowFallDistance"
+  change?: string; // Descriptive of the change, or a key to a value for scaling
   value?: number | string | boolean; // Value associated with the change, could be type for ki strike
   condition?: string;
   sourceFeat?: string;
@@ -422,6 +432,7 @@ export interface DndClassOption {
     reflex: "good" | "poor";
     will: "good" | "poor";
   };
+  // Add new structured progression fields here if needed (alternative to feat-based approach)
 }
 
 export interface DeityAttribute {
@@ -516,10 +527,7 @@ export interface Character {
   loadSpeedPenalty_base: number;
   loadSpeedPenalty_miscModifier: number;
   chosenCombatStyle?: "archery" | "twoWeaponFighting"; // For Ranger
-  chosenFavoredEnemies?: Array<{ // For Ranger
-    type: string; // e.g., "goblinoid", "undead" - typically a keyword from a predefined list
-    // Bonus is typically class-level dependent and applies globally to all chosen.
-  }>;
+  chosenFavoredEnemies?: Array<{ type: string; } >; // For Ranger
 }
 
 // Informational/Breakdown types
@@ -644,3 +652,4 @@ export interface PrerequisiteMessage {
   orderKey: string;
   originalText?: string;
 }
+

@@ -938,18 +938,25 @@
       "isClassFeature": true, "type": "special-ex",
       "effects": [
         { "type": "abilityScore", "ability": "strength", "value": 4, "bonusType": "morale", "condition": "raging_active",
-          "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [ {"level": 1, "value": 4}, {"level": 11, "value": 6}, {"level": 20, "value": 8} ] }
+          "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
+            {"level": 1, "value": 4}, {"level": 11, "value": 6, "tierName": "Greater Rage"}, {"level": 20, "value": 8, "tierName": "Mighty Rage"}
+          ] }
         },
         { "type": "abilityScore", "ability": "constitution", "value": 4, "bonusType": "morale", "condition": "raging_active",
-          "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [ {"level": 1, "value": 4}, {"level": 11, "value": 6}, {"level": 20, "value": 8} ] }
+          "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
+            {"level": 1, "value": 4}, {"level": 11, "value": 6, "tierName": "Greater Rage"}, {"level": 20, "value": 8, "tierName": "Mighty Rage"}
+          ] }
         },
         { "type": "savingThrow", "save": "will", "value": 2, "bonusType": "morale", "condition": "raging_active",
-          "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [ {"level": 1, "value": 2}, {"level": 11, "value": 3}, {"level": 20, "value": 4} ] }
+          "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
+            {"level": 1, "value": 2}, {"level": 11, "value": 3, "tierName": "Greater Rage"}, {"level": 20, "value": 4, "tierName": "Mighty Rage"}
+          ] }
         },
         { "type": "armorClass", "acType": "untyped", "value": -2, "condition": "raging_active" },
         { "type": "grantsAbility", "abilityKey": "barbarianRageUses", "name": "Rage Uses",
           "uses": {
-            "per": "day", "value": 0, "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
+            "per": "day",
+            "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
               {"level": 1, "value": 1}, {"level": 4, "value": 2}, {"level": 8, "value": 3}, {"level": 12, "value": 4}, {"level": 16, "value": 5}, {"level": 20, "value": 6}
             ]}
           }
@@ -961,7 +968,7 @@
       "label": "Fast Movement",
       "effectsText": "+10 ft. to land speed (unarmored, light/medium armor, not heavy load).",
       "isClassFeature": true, "type": "special-ex",
-      "effects": [{ "type": "speed", "speedType": "land", "modification": "bonus", "value": 10, "condition": "unarmored_light_medium_armor_not_heavy_load" }]
+      "effects": [{ "type": "speed", "speedType": "land", "modification": "bonus", "value": 10, "bonusType": "untyped", "condition": "unarmored_light_medium_armor_not_heavy_load" }]
     },
     {
       "value": "class-barbarian-trap-sense",
@@ -1069,6 +1076,7 @@
       "label": "Fighter Bonus Feat Slot",
       "effectsText":"Gain a bonus combat-oriented feat.",
       "isClassFeature": true, "type": "special",
+      "category": "fighterBonusFeat",
       "effects": [{ "type": "bonusFeatSlot", "category": "fighterBonusFeat", "count": 1 }]
     },
     {
@@ -1076,10 +1084,29 @@
       "label": "Monk Bonus Feat Slot",
       "effectsText":"Gain a bonus feat from Monk list.",
       "isClassFeature": true, "type": "special",
+      "category": "monkBonusFeat",
       "effects": [{ "type": "bonusFeatSlot", "category": "monkBonusFeat", "count": 1 }]
     },
     { "value": "class-monk-flurry-of-blows", "label": "Flurry of Blows", "effectsText":"Make extra attacks when unarmored at penalty.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Make extra attacks when unarmored at penalty."}] },
-    { "value": "class-monk-unarmed-strike-damage", "label": "Monk Unarmed Strike", "effectsText":"Unarmed strikes deal more damage (scales with level).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Unarmed strikes deal more damage (scales with level)."}] },
+    {
+      "value": "class-monk-unarmed-strike-damage",
+      "label": "Monk Unarmed Strike",
+      "effectsText":"Unarmed strikes deal more damage (scales with level).",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        {
+          "type": "damageRoll", "appliesTo": "unarmed", "bonusType": "untyped", "value": "1d6",
+          "scaleWithClassLevel": {
+            "classId": "monk",
+            "specificLevels": [
+              {"level": 1, "value": "1d6"}, {"level": 4, "value": "1d8"}, {"level": 8, "value": "1d10"},
+              {"level": 12, "value": "2d4"}, {"level": 16, "value": "2d6"}, {"level": 20, "value": "2d8"}
+            ]
+          }
+        }
+      ]
+    },
     {
       "value": "class-monk-ac-bonus",
       "label": "Monk AC Bonus",
@@ -1118,8 +1145,40 @@
         { "type": "savingThrow", "save": "all", "value": 2, "bonusType": "untyped", "condition": "vs_enchantment_effects" }
       ]
     },
-    { "value": "class-monk-ki-strike", "label": "Ki Strike", "effectsText":"Unarmed attacks treated as magic, then lawful, then adamantine.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Unarmed attacks treated as magic, then lawful, then adamantine."}] },
-    { "value": "class-monk-slow-fall", "label": "Slow Fall", "effectsText":"Reduce falling damage based on distance to wall.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Reduce falling damage based on distance to wall."}] },
+    {
+      "value": "class-monk-ki-strike",
+      "label": "Ki Strike",
+      "effectsText":"Unarmed attacks treated as magic, then lawful, then adamantine.",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effects": [
+        { "type": "modifiesMechanic", "mechanicKey": "kiStrikeBypass", "value": "magic",
+          "scaleWithClassLevel": { "classId": "monk", "specificLevels": [ { "level": 4, "value": "magic"} ]}
+        },
+        { "type": "modifiesMechanic", "mechanicKey": "kiStrikeBypass", "value": "lawful",
+          "scaleWithClassLevel": { "classId": "monk", "specificLevels": [ { "level": 10, "value": "lawful"} ]}
+        },
+        { "type": "modifiesMechanic", "mechanicKey": "kiStrikeBypass", "value": "adamantine",
+          "scaleWithClassLevel": { "classId": "monk", "specificLevels": [ { "level": 16, "value": "adamantine"} ]}
+        }
+      ]
+    },
+    {
+      "value": "class-monk-slow-fall",
+      "label": "Slow Fall",
+      "effectsText":"Reduce falling damage based on distance to wall.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "modifiesMechanic", "mechanicKey": "slowFallDistance", "value": 0,
+          "scaleWithClassLevel": { "classId": "monk", "specificLevels": [
+            {"level": 4, "value": 20}, {"level": 6, "value": 30}, {"level": 8, "value": 40},
+            {"level": 10, "value": 50}, {"level": 12, "value": 60}, {"level": 14, "value": 70},
+            {"level": 16, "value": 80}, {"level": 18, "value": 90}, {"level": 20, "value": -1}
+          ]}
+        }
+      ]
+    },
     { "value": "class-monk-purity-of-body", "label": "Purity of Body", "effectsText":"Immune to all diseases (except magical/supernatural).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Immune to all diseases (except magical/supernatural)."}] },
     { "value": "class-monk-wholeness-of-body", "label": "Wholeness of Body", "effectsText":"Heal own wounds (2x monk level HP/day).", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Heal own wounds (2x monk level HP/day)."}] },
     { "value": "class-monk-improved-evasion", "label": "Improved Evasion", "effectsText":"Take half damage on failed Reflex save for half.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Take half damage on failed Reflex save for half."}] },
@@ -1227,6 +1286,5 @@
     { "value": "special-ex-su", "label": "Extraordinary/Supernatural Ability" }
   ]
 }
-    
 
-```
+    

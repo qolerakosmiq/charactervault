@@ -47,13 +47,14 @@ import type {
   ModifiesMechanicEffect,
   GrantsProficiencyEffect,
   BonusFeatSlotEffect,
+  BonusFeatSlotEffect as BonusFeatSlotEffectType,
   LanguageEffect,
-  DescriptiveEffectDetail,
-  LanguageId, 
-  LanguageOption 
+  LanguageId,
+  LanguageOption,
+  DescriptiveEffectDetail
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
-import { getBab, calculateSumOfClassLevels, calculateAbilityModifier } from '@/lib/dnd-utils'; // Updated import
+import { getBab, calculateSumOfClassLevels, calculateAbilityModifier, getXpRequiredForLevel } from '@/lib/dnd-utils'; // Updated import
 
 
 // Utility Functions (many will now need translated data passed in)
@@ -267,44 +268,65 @@ export interface AvailableFeatSlotsBreakdown {
   racial: number;
   levelProgression: number;
   classBonus: number;
+  classBonusDetails: Array<{ category: string; count: number; sourceFeatLabel?: string }>;
 }
 
 export function calculateAvailableFeats(
-  characterRaceId: DndRaceId | string,
-  level: number, // This should be the XP-derived character level
-  characterClasses: CharacterClass[],
-  DND_RACES: readonly DndRaceOption[]
+  character: Pick<Character, 'race' | 'classes' | 'feats' | 'experiencePoints'>,
+  allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[],
+  DND_RACES: readonly DndRaceOption[],
+  XP_TABLE: readonly { level: number; xpRequired: number }[],
+  EPIC_LEVEL_XP_INCREASE: number
 ): AvailableFeatSlotsBreakdown {
-  let baseFeat = 0;
-  if (level >= 1) baseFeat = 1;
 
-  let racialBonus = 0;
-  const raceData = DND_RACES.find(r => r.value === characterRaceId);
+  const characterLevel = calculateLevelFromXp(character.experiencePoints || 0, XP_TABLE, EPIC_LEVEL_XP_INCREASE);
+
+  let baseFeatSlots = 0;
+  if (characterLevel >= 1) baseFeatSlots = 1; // 1st level
+
+  let racialBonusSlots = 0;
+  const raceData = DND_RACES.find(r => r.value === character.race);
   if (raceData?.bonusFeatSlots) {
-    racialBonus = raceData.bonusFeatSlots;
+    racialBonusSlots = raceData.bonusFeatSlots;
   }
 
-  const levelProgressionFeats = Math.floor(level / 3);
+  const levelProgressionFeatSlots = Math.floor(characterLevel / 3);
 
-  let classBonusFeats = 0;
-  // This will be replaced by parsing BonusFeatSlotEffect from aggregatedFeatEffects
-  // For now, keeping simplified Fighter logic as placeholder
-  characterClasses.forEach(charClass => {
-    if (charClass.className === 'fighter') {
-      if (charClass.level >= 1) classBonusFeats += 1; // Fighter bonus feat at L1
-      for (let i = 2; i <= charClass.level; i += 2) { // And every 2 levels thereafter
-        classBonusFeats += 1;
+  let classBonusFeatSlotsTotal = 0;
+  const classBonusDetails: Array<{ category: string; count: number; sourceFeatLabel?: string }> = [];
+
+  // Process character's *existing granted* feats to find bonus feat slots
+  if (character.feats) {
+    for (const featInstance of character.feats) {
+      if (featInstance.isGranted) {
+        const featDef = allFeatDefinitions.find(def => def.value === featInstance.definitionId);
+        if (featDef?.effects) {
+          for (const effect of featDef.effects) {
+            if (effect.type === 'bonusFeatSlot') {
+              const slotEffect = effect as BonusFeatSlotEffectType; // Cast for type safety
+              classBonusFeatSlotsTotal += slotEffect.count;
+              const existingDetail = classBonusDetails.find(d => d.category === slotEffect.category);
+              if (existingDetail) {
+                existingDetail.count += slotEffect.count;
+              } else {
+                classBonusDetails.push({ category: slotEffect.category, count: slotEffect.count, sourceFeatLabel: featDef.label });
+              }
+            }
+          }
+        }
       }
     }
-  });
+  }
 
-  const totalFeats = baseFeat + racialBonus + levelProgressionFeats + classBonusFeats;
+  const totalFeats = baseFeatSlots + racialBonusSlots + levelProgressionFeatSlots + classBonusFeatSlotsTotal;
+
   return {
     total: totalFeats,
-    base: baseFeat,
-    racial: racialBonus,
-    levelProgression: levelProgressionFeats,
-    classBonus: classBonusFeats,
+    base: baseFeatSlots,
+    racial: racialBonusSlots,
+    levelProgression: levelProgressionFeatSlots,
+    classBonus: classBonusFeatSlotsTotal,
+    classBonusDetails,
   };
 }
 
@@ -620,7 +642,7 @@ export function calculateDetailedAbilityScores(
 export function calculateFeatEffects(
   characterFeats: CharacterFeatInstance[],
   allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[],
-  characterClasses: CharacterClass[] // Added characterClasses for scaling
+  characterClasses: CharacterClass[]
 ): AggregatedFeatEffects {
   const newAggregatedEffects: AggregatedFeatEffects = {
     skillBonuses: {},
@@ -666,13 +688,13 @@ export function calculateFeatEffects(
       }
 
       const sourceFeatName = definition.label || definition.value;
-      let resolvedValue: any = (effect as any).value; // Default to the effect's value
+      let resolvedValue: any = (effect as any).value;
 
       if (effect.scaleWithClassLevel && effect.scaleWithClassLevel.specificLevels) {
         const classLevel = newAggregatedEffects.classLevels[effect.scaleWithClassLevel.classId] || 0;
         let foundLevelValue: any = undefined;
         // Find the highest specificLevel entry that the character meets
-        for (const levelEntry of [...effect.scaleWithClassLevel.specificLevels].sort((a,b) => b.level - a.level)) {
+        for (const levelEntry of [...effect.scaleWithClassLevel.specificLevels].sort((a, b) => b.level - a.level)) {
           if (classLevel >= levelEntry.level) {
             foundLevelValue = levelEntry.value;
             break;
@@ -681,12 +703,34 @@ export function calculateFeatEffects(
         if (foundLevelValue !== undefined) {
           resolvedValue = foundLevelValue;
         } else if ((effect as any).value === undefined && effect.scaleWithClassLevel.specificLevels.length > 0) {
-          // If no direct value on effect but scaling exists, use lowest scaling value as default if level is 0 or too low
-          resolvedValue = [...effect.scaleWithClassLevel.specificLevels].sort((a,b) => a.level - b.level)[0].value;
+          resolvedValue = [...effect.scaleWithClassLevel.specificLevels].sort((a, b) => a.level - b.level)[0].value;
         }
       }
+
+      let effectToPush: FeatEffectDetail & { sourceFeat?: string } = { ...effect, sourceFeat: sourceFeatName };
+      if (resolvedValue !== undefined && effectToPush.hasOwnProperty('value')) {
+        (effectToPush as any).value = resolvedValue;
+      }
       
-      const effectToPush = { ...effect, value: resolvedValue, sourceFeat: sourceFeatName };
+      // Special handling for GrantsAbilityEffect uses, as its 'value' is within a nested 'uses' object
+      if (effect.type === 'grantsAbility' && effect.uses?.scaleWithClassLevel?.specificLevels) {
+          const grantsAbilityEffect = effectToPush as GrantsAbilityEffect & { sourceFeat?: string };
+          if (grantsAbilityEffect.uses) { // Ensure uses exists
+              const classLevel = newAggregatedEffects.classLevels[effect.uses.scaleWithClassLevel.classId] || 0;
+              let foundUsesValue: number | undefined;
+              for (const lvlEntry of [...effect.uses.scaleWithClassLevel.specificLevels].sort((a,b) => b.level - a.level)) {
+                  if (classLevel >= lvlEntry.level) {
+                      foundUsesValue = lvlEntry.value;
+                      break;
+                  }
+              }
+              if (foundUsesValue !== undefined) {
+                  grantsAbilityEffect.uses.value = foundUsesValue;
+              } else if (effect.uses.scaleWithClassLevel.specificLevels.length > 0) {
+                  grantsAbilityEffect.uses.value = [...effect.uses.scaleWithClassLevel.specificLevels].sort((a, b) => a.level - b.level)[0].value;
+              }
+          }
+      }
 
 
       switch (effect.type) {
@@ -744,21 +788,7 @@ export function calculateFeatEffects(
           newAggregatedEffects.turnUndeadBonuses.push(effectToPush as TurnUndeadEffect & { sourceFeat?: string });
           break;
         case "grantsAbility":
-          const grantsAbility = effectToPush as GrantsAbilityEffect & { sourceFeat?: string };
-          if (grantsAbility.uses?.scaleWithClassLevel && grantsAbility.uses.scaleWithClassLevel.specificLevels) {
-              const classLvl = newAggregatedEffects.classLevels[grantsAbility.uses.scaleWithClassLevel.classId] || 0;
-              let foundUsesValue: number | undefined;
-              for (const lvlEntry of [...grantsAbility.uses.scaleWithClassLevel.specificLevels].sort((a,b) => b.level - a.level)) {
-                  if (classLvl >= lvlEntry.level) {
-                      foundUsesValue = lvlEntry.value;
-                      break;
-                  }
-              }
-              if (foundUsesValue !== undefined && grantsAbility.uses) {
-                  grantsAbility.uses.value = foundUsesValue;
-              }
-          }
-          newAggregatedEffects.grantedAbilities.push(grantsAbility);
+          newAggregatedEffects.grantedAbilities.push(effectToPush as GrantsAbilityEffect & { sourceFeat?: string });
           break;
         case "modifiesMechanic":
           newAggregatedEffects.modifiedMechanics.push(effectToPush as ModifiesMechanicEffect & { sourceFeat?: string });
@@ -787,7 +817,7 @@ export function calculateFeatEffects(
 export function calculateSpeedBreakdown(
   speedType: SpeedType,
   character: Pick<Character, 'race' | 'size' | 'classes' | `${SpeedType}Speed` | 'armorSpeedPenalty_base' | 'armorSpeedPenalty_miscModifier' | 'loadSpeedPenalty_base' | 'loadSpeedPenalty_miscModifier'>,
-  aggregatedFeatEffects: AggregatedFeatEffects, // Added
+  aggregatedFeatEffects: AggregatedFeatEffects | null,
   DND_RACES: readonly DndRaceOption[],
   DND_CLASSES: readonly DndClassOption[],
   SIZES: readonly CharacterSizeObject[],
@@ -817,9 +847,6 @@ export function calculateSpeedBreakdown(
           components.push({ source: effect.sourceFeat || (UI_STRINGS.infoDialogFeatBonusLabel || "Feat Bonus"), value: effect.value });
           currentSpeed += effect.value;
         } else if (effect.modification === 'setAbsolute') {
-          // This would replace currentSpeed, complex logic needed if multiple setAbsolute effects
-          // For now, let's assume only one setAbsolute or it's additive like bonus.
-          // A more robust system would handle this with priorities or specific source labels.
           components.push({ source: `${effect.sourceFeat || 'Feat'} (Set to)`, value: effect.value - currentSpeed }); // Show the delta
           currentSpeed = effect.value;
         }
@@ -887,7 +914,7 @@ export function isAlignmentCompatible(
   if (itemAlignLower === 'chaotic' && charParts[0] === 'chaotic') return true;
   if (itemAlignLower === 'good' && charParts.length > 1 && charParts[1] === 'good') return true;
   if (itemAlignLower === 'evil' && charParts.length > 1 && charParts[1] === 'evil') return true;
-  
+
   // For "Any Neutral (Law/Chaos Axis)" or "Any Neutral (Good/Evil Axis)"
   if (itemAlignLower === 'neutral-lc' && (charParts[0] === 'neutral' || characterAlignment === 'true-neutral')) return true;
   if (itemAlignLower === 'neutral-ge' && ((charParts.length > 1 && charParts[1] === 'neutral') || characterAlignment === 'true-neutral')) return true;
@@ -918,3 +945,4 @@ export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 export { SAVING_THROW_ABILITIES, calculateLevelFromXp, getXpRequiredForLevel } from '@/lib/dnd-utils'; // Updated calculateSumOfClassLevels
 
 export * from './character-core';
+
