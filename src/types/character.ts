@@ -918,5 +918,3 @@ export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 export { SAVING_THROW_ABILITIES, calculateLevelFromXp, getXpRequiredForLevel } from '@/lib/dnd-utils'; // Updated calculateSumOfClassLevels
 
 export * from './character-core';
-
-```
