@@ -121,8 +121,8 @@ export const RaceContentDisplay = ({
   }
   if (bonusFeatSlots !== undefined && bonusFeatSlots > 0) {
     generalTraitsSubSections.push(
-       <div className="flex justify-between text-sm mt-2" key="bonus-feat-slots-item">
-        <span className="text-sm text-muted-foreground font-medium">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</span>
+      <div className="flex justify-between text-sm mt-2" key="bonus-feat-slots-item">
+        <span className="text-sm text-muted-foreground">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</span>
         <span className="text-sm font-semibold">{renderModifierValue(bonusFeatSlots)}</span>
       </div>
     );
@@ -155,7 +155,7 @@ export const RaceContentDisplay = ({
                   >
                     {feat.levelAcquired !== undefined && (
                       <Badge variant="outline" className={cn(
-                        "text-xs font-normal h-5 whitespace-nowrap shrink-0 justify-center",
+                        "text-sm font-normal h-5 whitespace-nowrap shrink-0 justify-center",
                         "min-w-[5rem]"
                       )}>
                         {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
