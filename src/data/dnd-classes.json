@@ -148,12 +148,13 @@
       "label": "Fighter",
       "hitDice": "d10",
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
-      "generalDescription": "<p>Fighters are masters of martial combat, excelling with all forms of weapons and armor.<br />They are the backbone of armies, the sellswords in taverns, and the dedicated protectors of kingdoms.<br/><b>Bonus Feats:</b> A fighter gains a bonus combat-oriented feat at 1st level, at 2nd level, and at every two fighter levels thereafter (4th, 6th, 8th, 10th, 12th, 14th, 16th, 18th, and 20th). These bonus feats must be selected from those listed as fighter bonus feats in the Player's Handbook. These are in addition to the feat that any character gets at 1st level and every three levels thereafter, and the bonus feat for a human character.</p>",
+      "generalDescription": "<p>Fighters are masters of martial combat, excelling with all forms of weapons and armor.<br />They are the backbone of armies, the sellswords in taverns, and the dedicated protectors of kingdoms.</p>",
       "loreAttributes": [
         { "key": "Alignment", "value": "Any." },
         { "key": "Religion", "value": "Fighters may worship deities of war, strength, or protection, or none at all." },
         { "key": "Background", "value": "Varied, from noble knights to grizzled mercenaries or simple village guards." },
-        { "key": "Races", "value": "All races produce skilled fighters, especially humans, dwarves, and half-orcs." }
+        { "key": "Races", "value": "All races produce skilled fighters, especially humans, dwarves, and half-orcs." },
+        { "key": "Bonus Feats", "value": "A fighter gains a bonus combat-oriented feat at 1st level, at 2nd level, and at every two fighter levels thereafter (4th, 6th, 8th, 10th, 12th, 14th, 16th, 18th, and 20th). These bonus feats must be selected from those listed as fighter bonus feats in the Player's Handbook. These are in addition to the feat that any character gets at 1st level and every three levels thereafter, and the bonus feat for a human character." }
       ],
       "grantedFeats": [
         { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },

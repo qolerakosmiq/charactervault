@@ -148,12 +148,13 @@
       "label": "Guerrier",
       "hitDice": "d10",
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
-      "generalDescription": "<p>Les guerriers sont maîtres du combat martial, excellant avec toutes les formes d'armes et d'armures.<br />Ils sont l'épine dorsale des armées, les mercenaires dans les tavernes et les protecteurs dévoués des royaumes.<br/><b>Dons supplémentaires :</b> Un guerrier gagne un don supplémentaire orienté combat au niveau 1, au niveau 2, et tous les deux niveaux de guerrier par la suite (4e, 6e, 8e, 10e, 12e, 14e, 16e, 18e et 20e). Ces dons supplémentaires doivent être sélectionnés parmi ceux listés comme dons supplémentaires de guerrier dans le Manuel des Joueurs. Ils s'ajoutent au don que tout personnage reçoit au niveau 1 et tous les trois niveaux par la suite, ainsi qu'au don supplémentaire pour un personnage humain.</p>",
+      "generalDescription": "<p>Les guerriers sont maîtres du combat martial, excellant avec toutes les formes d'armes et d'armures.<br />Ils sont l'épine dorsale des armées, les mercenaires dans les tavernes et les protecteurs dévoués des royaumes.</p>",
       "loreAttributes": [
         { "key": "Alignement", "value": "Tout." },
         { "key": "Religion", "value": "Les guerriers peuvent vénérer des divinités de la guerre, de la force ou de la protection, ou aucune du tout." },
         { "key": "Antécédents", "value": "Variés, des nobles chevaliers aux mercenaires aguerris ou simples gardes de village." },
-        { "key": "Races", "value": "Toutes les races produisent des guerriers compétents, en particulier les humains, les nains et les demi-orques." }
+        { "key": "Races", "value": "Toutes les races produisent des guerriers compétents, en particulier les humains, les nains et les demi-orques." },
+        { "key": "Dons supplémentaires", "value": "Un guerrier gagne un don supplémentaire orienté combat au niveau 1, au niveau 2, et tous les deux niveaux de guerrier par la suite (4e, 6e, 8e, 10e, 12e, 14e, 16e, 18e et 20e). Ces dons supplémentaires doivent être sélectionnés parmi ceux listés comme dons supplémentaires de guerrier dans le Manuel des Joueurs. Ils s'ajoutent au don que tout personnage reçoit au niveau 1 et tous les trois niveaux par la suite, ainsi qu'au don supplémentaire pour un personnage humain." }
       ],
       "grantedFeats": [
         { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Formation de classe" },
