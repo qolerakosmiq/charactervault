@@ -30,7 +30,7 @@ export const SkillModifierBreakdownContentDisplay = ({
     />
   ) : null;
 
-  const badgeClass = "font-normal h-5 mx-0.5 px-1.5 py-0.5 align-baseline whitespace-nowrap"; 
+  const badgeClass = "font-normal h-5 mx-0.5 px-1.5 py-0.5 align-baseline whitespace-nowrap";
 
   const synergyBlock = (synergyInfoList && synergyInfoList.length > 0) ? (
     <div key="skill-synergies-block" className={cn((htmlContentBlock) && "mt-3")}>
@@ -43,14 +43,14 @@ export const SkillModifierBreakdownContentDisplay = ({
 
           if (typeof synergyItem.text === 'string' && parts.length > 1) {
             textNode = parts.map((part, index) => {
-              if (part === "{value}" || part === "{typeLabel}") { 
-                const match = synergyItem.text?.toString().match(/\b\d+\b|\+\d+|\-\d+/g); 
+              if (part === "{value}" || part === "{typeLabel}") {
+                const match = synergyItem.text?.toString().match(/\b\d+\b|\+\d+|\-\d+/g);
                 return (
                   <Badge
                     key={`badge-${index}`}
                     variant="outline"
                     className={badgeClass}
-                    style={{ fontSize: '0.875rem' }} 
+                    style={{ fontSize: '0.875rem' }}
                   >
                     {match ? match[0] : part}
                   </Badge>
@@ -103,9 +103,11 @@ export const SkillModifierBreakdownContentDisplay = ({
       <div className="space-y-1 text-sm mt-2">
         {skillModifierBreakdown.keyAbilityName && (
           <div className="flex justify-between">
-            <span>
+            <span className="inline-flex items-baseline">
               {uiStrings.infoDialogKeyAbilityLabel || "Key Ability"}
-              <span className="text-muted-foreground ml-1">({skillModifierBreakdown.keyAbilityName})</span>
+              <Badge variant="outline" className="ml-1.5 text-sm font-normal px-1.5 py-0.5 whitespace-nowrap">
+                {skillModifierBreakdown.keyAbilityName}
+              </Badge>
             </span>
             {renderModifierValue(skillModifierBreakdown.keyAbilityModifier)}
           </div>
