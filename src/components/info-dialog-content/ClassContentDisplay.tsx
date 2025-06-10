@@ -68,7 +68,7 @@ export const ClassContentDisplay = ({
           <div className="space-y-0.5 text-sm mb-2">
             {detailsList.map((detail, index) => (
               <div key={index} className="flex justify-between">
-                <span className="text-sm text-foreground">{detail.label}</span> {/* Changed text-muted-foreground to text-foreground */}
+                <span className="text-sm text-foreground">{detail.label}</span>
                 <span className={cn("text-sm font-semibold text-foreground", detail.isBold && "font-bold")}>{detail.value}</span>
               </div>
             ))}
@@ -96,7 +96,7 @@ export const ClassContentDisplay = ({
                   >
                     {feat.levelAcquired !== undefined && (
                       <Badge variant="outline" className={cn(
-                        "text-xs font-normal h-5 whitespace-nowrap shrink-0 justify-center",
+                        "text-sm font-normal h-5 whitespace-nowrap shrink-0 justify-center", // Changed text-xs to text-sm
                         "min-w-[5rem]"
                       )}>
                         {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
