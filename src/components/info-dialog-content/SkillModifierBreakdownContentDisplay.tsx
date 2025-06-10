@@ -30,7 +30,7 @@ export const SkillModifierBreakdownContentDisplay = ({
     />
   ) : null;
 
-  const badgeClass = "font-normal h-5 mx-0.5 px-1.5 py-0.5 align-baseline whitespace-nowrap"; // Removed text-sm as it was not effective, inline style will be used
+  const badgeClass = "font-normal h-5 mx-0.5 px-1.5 py-0.5 align-baseline whitespace-nowrap"; 
 
   const synergyBlock = (synergyInfoList && synergyInfoList.length > 0) ? (
     <div key="skill-synergies-block" className={cn((htmlContentBlock) && "mt-3")}>
@@ -43,16 +43,14 @@ export const SkillModifierBreakdownContentDisplay = ({
 
           if (typeof synergyItem.text === 'string' && parts.length > 1) {
             textNode = parts.map((part, index) => {
-              if (part === "{value}" || part === "{typeLabel}") { // These were placeholders from DR, adapt for skills
-                // Find the actual value/label within the text, e.g. the number for ranks or bonus
-                // This is a simplified placeholder; actual badge content is complex within the synergyItem.text node
-                const match = synergyItem.text?.toString().match(/\b\d+\b|\+\d+|\-\d+/g); // Attempt to find numbers
+              if (part === "{value}" || part === "{typeLabel}") { 
+                const match = synergyItem.text?.toString().match(/\b\d+\b|\+\d+|\-\d+/g); 
                 return (
                   <Badge
                     key={`badge-${index}`}
                     variant="outline"
                     className={badgeClass}
-                    style={{ fontSize: '0.875rem' }} // Force font size
+                    style={{ fontSize: '0.875rem' }} 
                   >
                     {match ? match[0] : part}
                   </Badge>
@@ -61,8 +59,6 @@ export const SkillModifierBreakdownContentDisplay = ({
               return part;
             });
           } else if (React.isValidElement(synergyItem.text)) {
-            // If synergyItem.text is already a React element (likely from translation function),
-            // we need to recursively find and style Badges within it.
             const styleBadgesInChildren = (children: React.ReactNode): React.ReactNode => {
               return React.Children.map(children, (child) => {
                 if (React.isValidElement(child)) {
@@ -86,8 +82,8 @@ export const SkillModifierBreakdownContentDisplay = ({
 
 
           return (
-            <li key={synergyItem.id} className="flex items-center text-sm">
-              <IconComponent className={cn("h-4 w-4 mr-2 shrink-0", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")} />
+            <li key={synergyItem.id} className="flex text-sm"> {/* Removed items-center */}
+              <IconComponent className={cn("h-5 w-5 mr-2 shrink-0", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")} /> {/* Icon size h-5 w-5, removed margin top */}
               <span className={cn(synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")}>
                 {textNode}
               </span>
