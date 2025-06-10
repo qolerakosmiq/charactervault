@@ -102,7 +102,7 @@
       "effects": [{ "type": "note", "text": "AoO supplémentaires basées sur la Dex ; peut faire des AoO en étant pris au dépourvu." }],
       "isClassFeature": false,
       "type": "special",
-      "category": "fighterBonusFeat"
+      "category": "fighterBonusFeat monkBonusFeat"
     },
     {
       "value": "deceitful",
@@ -149,7 +149,7 @@
       "effects": [{ "type": "armorClass", "acType": "dodge", "value": 1, "condition": "conditionVsDesignatedOpponent" }],
       "isClassFeature": false,
       "type": "special",
-      "category": "fighterBonusFeat"
+      "category": "fighterBonusFeat monkBonusFeat"
     },
     {
       "value": "dodge2",
@@ -947,7 +947,7 @@
             {"level": 1, "value": 4, "tierName": "Rage"}, {"level": 11, "value": 6, "tierName": "Grande Rage"}, {"level": 20, "value": 8, "tierName": "Rage Puissante"}
           ] }
         },
-        { "type": "savingThrow", "save": "will", "value": 2, "bonusType": "morale", "condition": "raging_active",
+        { "type": "savingThrow", "save": "will", "value": 0, "bonusType": "morale", "condition": "raging_active",
           "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
             {"level": 1, "value": 2, "tierName": "Rage"}, {"level": 11, "value": 3, "tierName": "Grande Rage"}, {"level": 20, "value": 4, "tierName": "Rage Puissante"}
           ] }
@@ -955,7 +955,7 @@
         { "type": "armorClass", "acType": "untyped", "value": -2, "condition": "raging_active" },
         { "type": "grantsAbility", "abilityKey": "barbarianRageUses", "name": "Utilisations de Rage",
           "uses": {
-            "per": "day",
+            "per": "day", "value": 0,
             "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
               {"level": 1, "value": 1}, {"level": 4, "value": 2}, {"level": 8, "value": 3}, {"level": 12, "value": 4}, {"level": 16, "value": 5}, {"level": 20, "value": 6}
             ]}
@@ -976,12 +976,12 @@
       "effectsText": "Bonus aux jets de Réflexes et à la CA contre les pièges (évolue avec le niveau).",
       "isClassFeature": true, "type": "special-ex",
       "effects": [
-        { "type": "savingThrow", "save": "reflex", "bonusType": "untyped", "condition": "vs_traps",
+        { "type": "savingThrow", "save": "reflex", "value": 0, "bonusType": "untyped", "condition": "vs_traps",
           "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
             {"level": 3, "value": 1}, {"level": 6, "value": 2}, {"level": 9, "value": 3}, {"level": 12, "value": 4}, {"level": 15, "value": 5}, {"level": 18, "value": 6}
           ]}
         },
-        { "type": "armorClass", "acType": "dodge", "condition": "vs_traps",
+        { "type": "armorClass", "acType": "dodge", "value": 0, "condition": "vs_traps",
           "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
             {"level": 3, "value": 1}, {"level": 6, "value": 2}, {"level": 9, "value": 3}, {"level": 12, "value": 4}, {"level": 15, "value": 5}, {"level": 18, "value": 6}
           ]}
@@ -995,7 +995,7 @@
       "label": "Réduction des dégâts (Barbare)",
       "effectsText": "RD X/— (évolue avec le niveau).",
       "isClassFeature": true, "type": "special-ex",
-      "effects": [{ "type": "resistance", "resistanceTo": "allPhysical", "isDamageReduction": true, "bypassedBy": [],
+      "effects": [{ "type": "resistance", "resistanceTo": "allPhysical", "isDamageReduction": true, "bypassedBy": [], "value": 0,
           "scaleWithClassLevel": { "classId": "barbarian", "specificLevels": [
             {"level": 7, "value": 1}, {"level": 10, "value": 2}, {"level": 13, "value": 3}, {"level": 16, "value": 4}, {"level": 19, "value": 5}
           ]}
@@ -1030,12 +1030,12 @@
             {"level": 1, "value": 1}, {"level": 8, "value": 2}, {"level": 14, "value": 3}, {"level": 20, "value": 4}
           ]}
         },
-        { "type": "attackRoll", "bonusType": "morale", "appliesTo": "all", "condition": "inspire_courage_active",
+        { "type": "attackRoll", "bonusType": "morale", "appliesTo": "all", "condition": "inspire_courage_active", "value": 0,
           "scaleWithClassLevel": { "classId": "bard", "specificLevels": [
             {"level": 1, "value": 1}, {"level": 8, "value": 2}, {"level": 14, "value": 3}, {"level": 20, "value": 4}
           ]}
         },
-        { "type": "damageRoll", "bonusType": "morale", "appliesTo": "all", "condition": "inspire_courage_active",
+        { "type": "damageRoll", "bonusType": "morale", "appliesTo": "all", "condition": "inspire_courage_active", "value": 0,
           "scaleWithClassLevel": { "classId": "bard", "specificLevels": [
             {"level": 1, "value": 1}, {"level": 8, "value": 2}, {"level": 14, "value": 3}, {"level": 20, "value": 4}
           ]}
@@ -1101,7 +1101,7 @@
             "classId": "monk",
             "specificLevels": [
               {"level": 1, "value": "1d6"}, {"level": 4, "value": "1d8"}, {"level": 8, "value": "1d10"},
-              {"level": 12, "value": "1d12"}, {"level": 16, "value": "2d6"}, {"level": 20, "value": "2d8"}
+              {"level": 12, "value": "2d4"}, {"level": 16, "value": "2d6"}, {"level": 20, "value": "2d8"}
             ]
           }
         }
@@ -1152,14 +1152,10 @@
       "isClassFeature": true,
       "type": "special-su",
       "effects": [
-        { "type": "modifiesMechanic", "mechanicKey": "kiStrikeBypass", "value": "magic",
-          "scaleWithClassLevel": { "classId": "monk", "specificLevels": [ { "level": 4, "value": "magic"} ]}
-        },
-        { "type": "modifiesMechanic", "mechanicKey": "kiStrikeBypass", "value": "lawful",
-          "scaleWithClassLevel": { "classId": "monk", "specificLevels": [ { "level": 10, "value": "lawful"} ]}
-        },
-        { "type": "modifiesMechanic", "mechanicKey": "kiStrikeBypass", "value": "adamantine",
-          "scaleWithClassLevel": { "classId": "monk", "specificLevels": [ { "level": 16, "value": "adamantine"} ]}
+        { "type": "modifiesMechanic", "mechanicKey": "kiStrikeBypass", "value": "none",
+          "scaleWithClassLevel": { "classId": "monk", "specificLevels": [
+            { "level": 4, "value": "magic"}, { "level": 10, "value": "lawful"}, { "level": 16, "value": "adamantine"}
+          ]}
         }
       ]
     },
@@ -1200,7 +1196,47 @@
     { "value": "class-paladin-turn-undead", "label": "Renvoi des morts-vivants (Paladin)", "effectsText":"Renvoie les morts-vivants comme un prêtre de niveau Paladin - 3.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text":"Renvoie les morts-vivants comme un prêtre de niveau Paladin - 3."}] },
     { "value": "class-paladin-special-mount", "label": "Monture spéciale", "effectsText":"Obtient une monture spéciale.", "isClassFeature": true, "type": "special-sp", "effects": [{"type": "note", "text":"Obtient une monture spéciale."}] },
     { "value": "class-paladin-remove-disease", "label": "Guérison des maladies", "effectsText":"Utilise Guérison des maladies (comme le sort) chaque semaine.", "isClassFeature": true, "type": "special-sp", "effects": [{"type": "note", "text":"Utilise Guérison des maladies (comme le sort) chaque semaine."}] },
-    { "value": "class-ranger-favored-enemy", "label": "Ennemi juré", "effectsText":"Bonus aux compétences et aux dégâts contre les types de créatures choisis.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Bonus aux compétences et aux dégâts contre les types de créatures choisis."}] },
+    {
+      "value": "class-ranger-favored-enemy",
+      "label": "Ennemi juré",
+      "isClassFeature": true, "type": "special-ex",
+      "requiresSpecializationCategory": "rangerFavoredEnemy",
+      "effectsText":"Bonus aux compétences et aux dégâts contre les types de créatures choisis (évolue).",
+      "effects": [
+        { "type": "skill", "skillId": "bluff", "value": 0, "bonusType": "untyped", "condition": "vs_favored_enemy",
+          "scaleWithClassLevel": { "classId": "ranger", "specificLevels": [{"level":1,"value":2},{"level":5,"value":4},{"level":10,"value":6},{"level":15,"value":8},{"level":20,"value":10}]}
+        },
+        { "type": "skill", "skillId": "listen", "value": 0, "bonusType": "untyped", "condition": "vs_favored_enemy",
+          "scaleWithClassLevel": { "classId": "ranger", "specificLevels": [{"level":1,"value":2},{"level":5,"value":4},{"level":10,"value":6},{"level":15,"value":8},{"level":20,"value":10}]}
+        },
+        { "type": "skill", "skillId": "sense-motive", "value": 0, "bonusType": "untyped", "condition": "vs_favored_enemy",
+          "scaleWithClassLevel": { "classId": "ranger", "specificLevels": [{"level":1,"value":2},{"level":5,"value":4},{"level":10,"value":6},{"level":15,"value":8},{"level":20,"value":10}]}
+        },
+        { "type": "skill", "skillId": "spot", "value": 0, "bonusType": "untyped", "condition": "vs_favored_enemy",
+          "scaleWithClassLevel": { "classId": "ranger", "specificLevels": [{"level":1,"value":2},{"level":5,"value":4},{"level":10,"value":6},{"level":15,"value":8},{"level":20,"value":10}]}
+        },
+        { "type": "skill", "skillId": "survival", "value": 0, "bonusType": "untyped", "condition": "vs_favored_enemy",
+          "scaleWithClassLevel": { "classId": "ranger", "specificLevels": [{"level":1,"value":2},{"level":5,"value":4},{"level":10,"value":6},{"level":15,"value":8},{"level":20,"value":10}]}
+        },
+        { "type": "damageRoll", "appliesTo": "all", "value": 0, "bonusType": "untyped", "condition": "vs_favored_enemy",
+          "scaleWithClassLevel": { "classId": "ranger", "specificLevels": [{"level":1,"value":2},{"level":5,"value":4},{"level":10,"value":6},{"level":15,"value":8},{"level":20,"value":10}]}
+        },
+        { "type": "modifiesMechanic", "mechanicKey": "favoredEnemySlots", "value": 0,
+          "scaleWithClassLevel": { "classId": "ranger", "specificLevels": [
+              {"level":1,"value":1},{"level":5,"value":1},{"level":10,"value":1},{"level":15,"value":1},{"level":20,"value":1}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "value": "class-ranger-combat-style-choice",
+      "label": "Choix du Style de Combat",
+      "effectsText": "Choisit le style de combat Archerie ou Combat à deux armes.",
+      "isClassFeature": true, "type": "special-ex",
+      "requiresSpecialization": "rangerCombatStyle",
+      "requiresSpecializationCategory": "rangerCombatStyle"
+    },
     { "value": "class-ranger-wild-empathy", "label": "Empathie sauvage (Rôdeur)", "effectsText":"Améliore l'attitude d'un animal.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Améliore l'attitude d'un animal."}] },
     { "value": "class-ranger-woodland-stride", "label": "Déplacement en milieu naturel (Rôdeur)", "effectsText":"Se déplace dans les sous-bois naturels à vitesse normale.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Se déplace dans les sous-bois naturels à vitesse normale."}] },
     { "value": "class-ranger-swift-tracker", "label": "Pisteur rapide", "effectsText":"Piste à vitesse normale sans pénalité.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Piste à vitesse normale sans pénalité."}] },
@@ -1217,12 +1253,6 @@
     { "value": "class-sorcerer-summon-familiar", "label": "Invocation de familier", "effectsText":"Peut obtenir un familier.", "isClassFeature": true, "type": "special-sp", "effects": [{"type": "note", "text":"Peut obtenir un familier."}] },
     { "value": "class-wizard-bonus-feat-slot", "label": "Emplacement de don supplémentaire de Magicien", "effectsText":"Obtient un don supplémentaire de Métamagie, Création d'objet ou Maîtrise des sorts.", "isClassFeature": true, "type": "special", "effects": [{"type": "note", "text":"Obtient un don supplémentaire de Métamagie, Création d'objet ou Maîtrise des sorts."}] },
     { "value": "class-ranger-animal-companion", "label": "Compagnon animal (Rôdeur)", "effectsText":"Obtient un compagnon animal (niveau de druide effectif égal à la moitié du niveau de rôdeur).", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Obtient un compagnon animal (niveau de druide effectif égal à la moitié du niveau de rôdeur)."}] },
-    { "value": "class-ranger-archery-style-1", "label": "Style de combat (Archerie - Tir rapide)", "effectsText":"Accorde Tir rapide en armure légère/aucune.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Accorde Tir rapide en armure légère/aucune."}] },
-    { "value": "class-ranger-twf-style-1", "label": "Style de combat (Combat à deux armes)", "effectsText":"Accorde Combat à deux armes en armure légère/aucune.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Accorde Combat à deux armes en armure légère/aucune."}] },
-    { "value": "class-ranger-archery-style-2", "label": "Style de combat amélioré (Archerie - Tir rapide multiple)", "effectsText":"Accorde Tir rapide multiple en armure légère/aucune.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Accorde Tir rapide multiple en armure légère/aucune."}] },
-    { "value": "class-ranger-twf-style-2", "label": "Style de combat amélioré (Combat à deux armes)", "effectsText":"Accorde Combat à deux armes amélioré en armure légère/aucune.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Accorde Combat à deux armes amélioré en armure légère/aucune."}] },
-    { "value": "class-ranger-archery-style-3", "label": "Maîtrise du style de combat (Archerie - Tir de précision sup.)", "effectsText":"Accorde Tir de précision supérieur en armure légère/aucune.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Accorde Tir de précision supérieur en armure légère/aucune."}] },
-    { "value": "class-ranger-twf-style-3", "label": "Maîtrise du style de combat (Combat à deux armes)", "effectsText":"Accorde Combat à deux armes supérieur en armure légère/aucune.", "isClassFeature": true, "type": "special-ex", "effects": [{"type": "note", "text":"Accorde Combat à deux armes supérieur en armure légère/aucune."}] },
     { "value": "class-soulknife-mind-blade", "label": "Lame Mentale", "effectsText": "Crée une épée courte psychique ; dégâts/amélioration évoluent.", "isClassFeature": true, "type": "special-su", "effects": [{"type": "note", "text": "Crée une épée courte psychique ; dégâts/amélioration évoluent."}] },
     { "value": "weapon-focus-mind-blade", "label": "Arme de prédilection (Lame Mentale)", "description": "<b>Avantage :</b> Vous gagnez un bonus de +1 à tous les jets d'attaque que vous effectuez avec votre lame mentale.", "effectsText": "+1 aux jets d'attaque avec la Lame Mentale.", "isClassFeature": true, "type": "special", "effects": [{"type": "note", "text": "+1 aux jets d'attaque avec la Lame Mentale."}] },
     { "value": "wild-talent", "label": "Talent Inné", "description": "<b>Avantage :</b> Vous gagnez 1 point de pouvoir.", "effectsText": "Gagne 1 point de pouvoir.", "isClassFeature": true, "type": "special-ps", "effects": [{"type": "note", "text": "Gagne 1 point de pouvoir."}] },

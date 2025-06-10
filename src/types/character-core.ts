@@ -227,7 +227,7 @@ export interface GrantsAbilityEffect {
 
 export interface ModifiesMechanicEffect {
   type: "modifiesMechanic";
-  mechanicKey: string; // e.g., "unarmedStrikeThreatRange", "twoWeaponFightingPenalties", "kiStrikeBypass", "slowFallDistance"
+  mechanicKey: string; // e.g., "unarmedStrikeThreatRange", "twoWeaponFightingPenalties", "kiStrikeBypass", "slowFallDistance", "favoredEnemySlots"
   change?: string; // Descriptive of the change, or a key to a value for scaling
   value?: number | string | boolean; // Value associated with the change, could be type for ki strike
   condition?: string;
@@ -301,8 +301,8 @@ export interface FeatDefinitionJsonData { // Base structure for feat definitions
   effectsText?: string; // General textual summary of all effects
   effects?: FeatEffectDetail[]; // Array of structured effects
   canTakeMultipleTimes?: boolean;
-  requiresSpecialization?: string; // e.g., "skill", "weapon", "school of magic"
-  type?: FeatTypeString;
+  requiresSpecialization?: string; // e.g., "skill", "weapon", "school of magic", "rangerCombatStyle"
+  requiresSpecializationCategory?: string; // e.g., "rangerFavoredEnemy", "rangerCombatStyle"
   isClassFeature?: boolean;
   isCustom?: boolean;
   category?: string; // e.g., "fighterBonusFeat", "monkBonusFeat", "wizardBonusFeat"
@@ -423,6 +423,7 @@ export interface DndClassOption {
   label: string;
   hitDice: string;
   babProgression: "good" | "average" | "poor";
+  spellcasting?: ClassCastingDetails; // Added
   generalDescription: string;
   loreAttributes?: ClassAttribute[];
   casting?: ClassCastingDetails;
@@ -584,6 +585,8 @@ export type DetailedAbilityScores = Record<Exclude<AbilityName, 'none'>, Ability
 
 export interface AggregatedFeatEffects {
   skillBonuses: Record<string, number>; // skillId: bonusAmount
+  favoredEnemyBonuses?: { skillBonus: number; damageBonus: number; }; // Conditional bonuses
+  favoredEnemySlots?: number;
   abilityScoreBonuses: Array<AbilityScoreEffect & { sourceFeat?: string }>;
   savingThrowBonuses: Array<SavingThrowEffect & { sourceFeat?: string }>;
   attackRollBonuses: Array<AttackRollEffect & { sourceFeat?: string }>;
@@ -653,3 +656,5 @@ export interface PrerequisiteMessage {
   originalText?: string;
 }
 
+
+```

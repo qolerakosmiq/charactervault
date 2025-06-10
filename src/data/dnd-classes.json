@@ -37,7 +37,7 @@
       "label": "Bard",
       "hitDice": "d6",
       "babProgression": "average",
-      "casting": { "type": "full", "casterAbility": "charisma" },
+      "spellcasting": { "type": "full", "casterAbility": "charisma" },
       "saves": { "fortitude": "poor", "reflex": "good", "will": "good" },
       "generalDescription": "<p>Bards are versatile performers, weaving magic through music and words.<br />They are storytellers, diplomats, and adventurers, often charismatic and quick-witted.</p>",
       "loreAttributes": [
@@ -69,7 +69,7 @@
       "label": "Cleric",
       "hitDice": "d8",
       "babProgression": "average",
-      "casting": { "type": "full", "casterAbility": "wisdom" },
+      "spellcasting": { "type": "full", "casterAbility": "wisdom" },
       "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
       "generalDescription": "<p>Clerics are divine agents, channeling the power of their chosen deity to heal the sick, smite the wicked, or protect the faithful.<br />They are masters of divine magic and often serve as spiritual leaders.</p>",
       "loreAttributes": [
@@ -92,7 +92,7 @@
       "label": "Druid",
       "hitDice": "d8",
       "babProgression": "average",
-      "casting": { "type": "full", "casterAbility": "wisdom" },
+      "spellcasting": { "type": "full", "casterAbility": "wisdom" },
       "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
       "generalDescription": "<p>Druids are guardians of the natural world, drawing power from the untamed wilderness.<br />They can shapeshift into animals, command plants, and call upon nature's fury.</p>",
       "loreAttributes": [
@@ -181,25 +181,23 @@
         { "featId": "improved-unarmed-strike", "levelAcquired": 1, "note": "Granted by Monk"},
         { "featId": "class-monk-bonus-feat-slot", "note": "1st Level", "levelAcquired": 1 },
         { "featId": "class-monk-flurry-of-blows", "note": "-2/-2 (Full BAB progression)", "levelAcquired": 1 },
-        { "featId": "class-monk-unarmed-strike-damage", "note": "1d6 (Medium)", "levelAcquired": 1 },
-        { "featId": "class-monk-ac-bonus", "note": "Wis to AC", "levelAcquired": 1 },
-        { "featId": "class-monk-unarmored-speed-bonus", "note": "+0 ft.", "levelAcquired": 1 },
+        { "featId": "class-monk-unarmed-strike-damage", "levelAcquired": 1 },
+        { "featId": "class-monk-ac-bonus", "levelAcquired": 1 },
+        { "featId": "class-monk-unarmored-speed-bonus", "levelAcquired": 1 },
         { "featId": "class-monk-bonus-feat-slot", "note": "2nd Level", "levelAcquired": 2 },
         { "featId": "class-monk-evasion", "levelAcquired": 2 },
         { "featId": "class-monk-still-mind", "levelAcquired": 3 },
-        { "featId": "class-monk-ki-strike", "note": "Magic", "levelAcquired": 4 },
-        { "featId": "class-monk-slow-fall", "note": "20 ft.", "levelAcquired": 4 },
+        { "featId": "class-monk-ki-strike", "levelAcquired": 4 },
+        { "featId": "class-monk-slow-fall", "levelAcquired": 4 },
         { "featId": "class-monk-purity-of-body", "levelAcquired": 5 },
         { "featId": "class-monk-bonus-feat-slot", "note": "6th Level", "levelAcquired": 6 },
         { "featId": "class-monk-wholeness-of-body", "levelAcquired": 7 },
         { "featId": "class-monk-improved-evasion", "levelAcquired": 9 },
-        { "featId": "class-monk-ki-strike", "note": "Lawful", "levelAcquired": 10 },
         { "featId": "class-monk-diamond-body", "levelAcquired": 11 },
         { "featId": "class-monk-greater-flurry", "levelAcquired": 11 },
         { "featId": "class-monk-abundant-step", "levelAcquired": 12 },
         { "featId": "class-monk-diamond-soul", "levelAcquired": 13 },
         { "featId": "class-monk-quivering-palm", "levelAcquired": 15 },
-        { "featId": "class-monk-ki-strike", "note": "Adamantine", "levelAcquired": 16 },
         { "featId": "class-druid-timeless-body", "levelAcquired": 17, "note": "Monk Feature"},
         { "featId": "class-monk-tongue-sun-moon", "levelAcquired": 17 },
         { "featId": "class-monk-empty-body", "levelAcquired": 19 },
@@ -211,7 +209,7 @@
       "label": "Paladin",
       "hitDice": "d10",
       "babProgression": "good",
-      "casting": { "type": "partial", "casterAbility": "wisdom", "startsAtLevel": 4, "levelOffset": -3 },
+      "spellcasting": { "type": "partial", "casterAbility": "wisdom", "startsAtLevel": 4, "levelOffset": -3 },
       "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
       "generalDescription": "<p>Paladins are holy champions of righteousness, sworn to uphold justice and smite evil.<br />They are granted divine powers to aid their cause, including healing, protection, and the ability to turn undead.</p>",
       "loreAttributes": [
@@ -252,7 +250,7 @@
       "label": "Ranger",
       "hitDice": "d8",
       "babProgression": "good",
-      "casting": { "type": "partial", "casterAbility": "wisdom", "startsAtLevel": 4, "levelOffset": -3 },
+      "spellcasting": { "type": "partial", "casterAbility": "wisdom", "startsAtLevel": 4, "levelOffset": -3 },
       "saves": { "fortitude": "good", "reflex": "good", "will": "poor" },
       "generalDescription": "<p>Rangers are skilled hunters and trackers, at home in the wilderness and adept at fighting specific types of creatures.<br />They often possess some divine magic related to nature and an animal companion.</p>",
       "loreAttributes": [
@@ -266,26 +264,17 @@
         { "featId": "martial-weapon-proficiency-all", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
-        { "featId": "class-ranger-favored-enemy", "note": "1st Favored Enemy", "levelAcquired": 1 },
+        { "featId": "class-ranger-favored-enemy", "levelAcquired": 1 },
         { "featId": "track", "note": "Ranger Bonus Feat", "levelAcquired": 1 },
         { "featId": "class-ranger-wild-empathy", "levelAcquired": 1 },
-        { "featId": "class-ranger-archery-style-1", "levelAcquired": 2, "note": "If Archery Style chosen" },
-        { "featId": "class-ranger-twf-style-1", "levelAcquired": 2, "note": "If Two-Weapon Style chosen" },
+        { "featId": "class-ranger-combat-style-choice", "levelAcquired": 2 },
         { "featId": "endurance", "note": "Ranger Bonus Feat", "levelAcquired": 3 },
         { "featId": "class-ranger-animal-companion", "levelAcquired": 4 },
-        { "featId": "class-ranger-favored-enemy", "note": "2nd Favored Enemy", "levelAcquired": 5 },
-        { "featId": "class-ranger-archery-style-2", "levelAcquired": 6, "note": "If Archery Style chosen" },
-        { "featId": "class-ranger-twf-style-2", "levelAcquired": 6, "note": "If Two-Weapon Style chosen" },
         { "featId": "class-ranger-woodland-stride", "levelAcquired": 7 },
         { "featId": "class-ranger-swift-tracker", "levelAcquired": 8 },
         { "featId": "class-ranger-evasion", "levelAcquired": 9 },
-        { "featId": "class-ranger-favored-enemy", "note": "3rd Favored Enemy", "levelAcquired": 10 },
-        { "featId": "class-ranger-archery-style-3", "levelAcquired": 11, "note": "If Archery Style chosen" },
-        { "featId": "class-ranger-twf-style-3", "levelAcquired": 11, "note": "If Two-Weapon Style chosen" },
         { "featId": "class-ranger-camouflage", "levelAcquired": 13 },
-        { "featId": "class-ranger-favored-enemy", "note": "4th Favored Enemy", "levelAcquired": 15 },
-        { "featId": "class-ranger-hide-in-plain-sight", "levelAcquired": 17 },
-        { "featId": "class-ranger-favored-enemy", "note": "5th Favored Enemy", "levelAcquired": 20 }
+        { "featId": "class-ranger-hide-in-plain-sight", "levelAcquired": 17 }
       ]
     },
     {
@@ -335,7 +324,7 @@
       "label": "Sorcerer",
       "hitDice": "d4",
       "babProgression": "poor",
-      "casting": { "type": "full", "casterAbility": "charisma" },
+      "spellcasting": { "type": "full", "casterAbility": "charisma" },
       "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
       "generalDescription": "<p>Sorcerers wield arcane magic through innate talent, often stemming from draconic or fey ancestry.<br />Their magic is intuitive and flexible, not learned through rigorous study.</p>",
       "loreAttributes": [
@@ -354,7 +343,7 @@
       "label": "Wizard",
       "hitDice": "d4",
       "babProgression": "poor",
-      "casting": { "type": "full", "casterAbility": "intelligence" },
+      "spellcasting": { "type": "full", "casterAbility": "intelligence" },
       "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
       "generalDescription": "<p>Wizards are scholars of the arcane, mastering magic through intense study, research, and practice.<br />They command a vast repertoire of spells, prepared daily from their spellbooks.</p>",
       "loreAttributes": [
@@ -419,4 +408,3 @@
 }
 
 
-```
