@@ -59,10 +59,7 @@ export interface FeatEffectScalingSpecificLevel {
 export interface FeatEffectScaling {
   classId: DndClassId | string; // The class whose level dictates the scaling
   specificLevels: FeatEffectScalingSpecificLevel[];
-  // Option 2: Define a value per level (for linear progression, less common for these complex features)
   valuePerLevel?: number;
-  // Option 3: Reference a table key within the class JSON (more complex to implement)
-  // progressionTableKey?: string;
 }
 
 // Structured feat effect types
@@ -433,7 +430,6 @@ export interface DndClassOption {
     reflex: "good" | "poor";
     will: "good" | "poor";
   };
-  // Add new structured progression fields here if needed (alternative to feat-based approach)
 }
 
 export interface DeityAttribute {
@@ -527,8 +523,8 @@ export interface Character {
   armorSpeedPenalty_miscModifier: number;
   loadSpeedPenalty_base: number;
   loadSpeedPenalty_miscModifier: number;
-  chosenCombatStyle?: "archery" | "twoWeaponFighting"; // For Ranger
-  chosenFavoredEnemies?: Array<{ type: string; } >; // For Ranger
+  chosenCombatStyle?: "archery" | "twoWeaponFighting";
+  chosenFavoredEnemies?: Array<{ type: string; note?: string }>;
 }
 
 // Informational/Breakdown types
@@ -569,10 +565,10 @@ export interface SkillDefinitionForDisplay {
 }
 
 export interface AbilityScoreComponentValue {
-  sourceLabel: string;      // e.g., "Race", "Aging", "Feat", "Temporary Modifier"
-  sourceDetail?: string;    // e.g., "Human", "Middle Age", "Feat Name"
+  sourceLabel: string;
+  sourceDetail?: string;
   value: number;
-  condition?: string;       // For conditional feat effects
+  condition?: string;
 }
 export interface AbilityScoreBreakdown {
   ability: Exclude<AbilityName, 'none'>;
@@ -584,8 +580,8 @@ export type DetailedAbilityScores = Record<Exclude<AbilityName, 'none'>, Ability
 
 
 export interface AggregatedFeatEffects {
-  skillBonuses: Record<string, number>; // skillId: bonusAmount
-  favoredEnemyBonuses?: { skillBonus: number; damageBonus: number; }; // Conditional bonuses
+  skillBonuses: Record<string, number>;
+  favoredEnemyBonuses?: { skillBonus: number; damageBonus: number; };
   favoredEnemySlots?: number;
   abilityScoreBonuses: Array<AbilityScoreEffect & { sourceFeat?: string }>;
   savingThrowBonuses: Array<SavingThrowEffect & { sourceFeat?: string }>;
@@ -609,7 +605,14 @@ export interface AggregatedFeatEffects {
       specific: Array<{ languageId: LanguageId; note?: string; sourceFeat?: string }>;
   };
   descriptiveNotes: Array<(NoteEffectDetail | DescriptiveEffectDetail) & { sourceFeat?: string }>;
-  classLevels: Record<DndClassId, number>; // To pass class levels for scaling
+  classLevels: Record<DndClassId, number>;
+}
+export interface AvailableFeatSlotsBreakdown {
+  total: number;
+  base: number;
+  racial: number;
+  classBonus: number;
+  classBonusDetails: Array<{ category: string; count: number; sourceFeatLabel?: string }>;
 }
 
 export interface BabBreakdownDetails {
@@ -655,3 +658,4 @@ export interface PrerequisiteMessage {
   orderKey: string;
   originalText?: string;
 }
+

@@ -7,7 +7,7 @@ import type {
   SkillDefinitionJsonData, FeatTypeString
 } from '@/types/character-core'; 
 import {
-  checkFeatPrerequisites, calculateAvailableFeats
+  checkFeatPrerequisites, calculateAvailableFeats, AvailableFeatSlotsBreakdown
 } from '@/types/character';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { Button } from '@/components/ui/button';
@@ -44,21 +44,26 @@ const FeatsFormSectionComponent = ({
   skills,
   allPredefinedSkillDefinitions,
   allCustomSkillDefinitions,
-  characterLevel, // Use this for calculations
+  characterLevel,
 }: FeatsFormSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
-  // characterLevel is now passed as a prop (XP-derived)
   const { toast } = useToast();
 
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
+  const [featDialogFilterCategory, setFeatDialogFilterCategory] = React.useState<string | undefined>(undefined);
 
   const featSlotsBreakdown = React.useMemo(() => {
-    if (translationsLoading || !translations) return { total: 0, base: 0, racial: 0, levelProgression: 0, classBonus: 0 };
-    // Use the XP-derived characterLevel for calculating available feat slots
-    return calculateAvailableFeats(featSectionData.race, characterLevel, featSectionData.classes, translations.DND_RACES);
-  }, [featSectionData.race, characterLevel, featSectionData.classes, translations, translationsLoading]);
+    if (translationsLoading || !translations) return { total: 0, base: 0, racial: 0, classBonus: 0, classBonusDetails: [] };
+    return calculateAvailableFeats(
+      featSectionData,
+      allAvailableFeatDefinitions,
+      translations.DND_RACES,
+      translations.XP_TABLE,
+      translations.EPIC_LEVEL_XP_INCREASE
+    );
+  }, [featSectionData, allAvailableFeatDefinitions, translations, translationsLoading]);
 
-  const { total: availableFeatSlots, base: baseFeat, racial: racialBonus, levelProgression: levelProgressionFeats, classBonus: classBonusFeats } = featSlotsBreakdown;
+  const { total: availableFeatSlots, classBonusDetails } = featSlotsBreakdown;
 
   const sortInstancesByLabel = (instances: CharacterFeatInstance[]) => {
     return [...instances].sort((a, b) => {
@@ -83,11 +88,34 @@ const FeatsFormSectionComponent = ({
     ...featSectionData, 
     abilityScores,
     skills,
-    // Ensure experiencePoints is available if checkFeatPrerequisites needs it for special conditions
     experiencePoints: featSectionData.experiencePoints || 0,
   }), [featSectionData, abilityScores, skills]);
 
-  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 whitespace-nowrap"; // Removed text-xs
+  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 whitespace-nowrap";
+
+  const handleOpenFeatDialog = () => {
+    if (featSlotsLeft <= 0 && classBonusDetails && classBonusDetails.length > 0) {
+      // Check if any bonus feat slots of a specific category are unfilled
+      // This is a simplified approach: assumes a character fills one type of bonus slot at a time.
+      // A more robust system would track which specific bonus slot is being filled.
+      let filterCategoryForDialog: string | undefined = undefined;
+      for (const bonusDetail of classBonusDetails) {
+        const chosenInCategory = userChosenFeatInstances.filter(inst => {
+          const def = allAvailableFeatDefinitions.find(d => d.value === inst.definitionId);
+          return def?.category === bonusDetail.category;
+        }).length;
+        if (chosenInCategory < bonusDetail.count) {
+          filterCategoryForDialog = bonusDetail.category;
+          break;
+        }
+      }
+      setFeatDialogFilterCategory(filterCategoryForDialog);
+    } else {
+      setFeatDialogFilterCategory(undefined); // General feat slot
+    }
+    setIsFeatDialogOpen(true);
+  };
+
 
   const handleAddOrUpdateChosenFeatInstance = (definitionId: string, specializationDetail?: string) => {
     if (!translations) return;
@@ -303,24 +331,25 @@ const FeatsFormSectionComponent = ({
                 )}>{featSlotsLeft}</span>
               </p>
             </div>
-             <p className="text-sm text-muted-foreground mt-1"> {/* Changed text-xs to text-sm */}
-              {UI_STRINGS.featsPanelBreakdownBaseLabel || "Base"} <Badge variant="outline" className={badgeClassName}>{baseFeat}</Badge>
-              {racialBonus > 0 && (
+             <p className="text-sm text-muted-foreground mt-1">
+              {UI_STRINGS.featsPanelBreakdownBaseLabel || "Base"} <Badge variant="outline" className={badgeClassName}>{featSlotsBreakdown.base}</Badge>
+              {featSlotsBreakdown.racial > 0 && (
                 <>
-                  {' + '} {UI_STRINGS.featsPanelBreakdownRacialLabel || "Racial Bonus"} <Badge variant="outline" className={badgeClassName}>{racialBonus}</Badge>
+                  {' + '} {UI_STRINGS.featsPanelBreakdownRacialLabel || "Racial Bonus"} <Badge variant="outline" className={badgeClassName}>{featSlotsBreakdown.racial}</Badge>
                 </>
               )}
-              {' + '} {UI_STRINGS.featsPanelBreakdownLevelProgressionLabel || "Level Progression"} <Badge variant="outline" className={badgeClassName}>{levelProgressionFeats}</Badge>
-              {classBonusFeats > 0 && (
-                <>
-                  {' + '} {UI_STRINGS.featsPanelBreakdownClassGrantedLabel || "Class Granted"} <Badge variant="outline" className={badgeClassName}>{classBonusFeats}</Badge>
-                </>
+              {featSlotsBreakdown.classBonusDetails && featSlotsBreakdown.classBonusDetails.length > 0 && (
+                featSlotsBreakdown.classBonusDetails.map(detail => (
+                    <React.Fragment key={detail.category}>
+                    {' + '} {detail.sourceFeatLabel || detail.category} <Badge variant="outline" className={badgeClassName}>{detail.count}</Badge>
+                    </React.Fragment>
+                ))
               )}
             </p>
           </div>
 
           <div className="mt-3 mb-1 flex gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={() => setIsFeatDialogOpen(true)}>
+            <Button type="button" variant="outline" size="sm" onClick={handleOpenFeatDialog}>
               <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.featsPanelAddButton || "Choose Feat"}
             </Button>
           </div>
@@ -371,6 +400,7 @@ const FeatsFormSectionComponent = ({
         allRaces={DND_RACES}
         abilityLabels={ABILITY_LABELS}
         alignmentPrereqOptions={ALIGNMENT_PREREQUISITE_OPTIONS}
+        filterByCategory={featDialogFilterCategory}
         isLoadingTranslations={translationsLoading}
       />
     </>
@@ -378,3 +408,4 @@ const FeatsFormSectionComponent = ({
 };
 FeatsFormSectionComponent.displayName = "FeatsFormSectionComponent";
 export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
+

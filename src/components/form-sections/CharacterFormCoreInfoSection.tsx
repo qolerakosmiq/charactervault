@@ -21,7 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollText, Info, Loader2 } from 'lucide-react';
+import { ScrollText, Info, Loader2, Users } from 'lucide-react'; // Added Users icon for Ranger choices
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -35,8 +35,11 @@ const DEBOUNCE_DELAY = 400; // ms
 const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__";
 
 export interface CharacterFormCoreInfoSectionProps {
-  characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
-  onFieldChange: (field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender'>, value: any) => void;
+  characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes' | 'chosenCombatStyle' | 'chosenFavoredEnemies'>; // Added chosenCombatStyle, chosenFavoredEnemies
+  onFieldChange: (
+    field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'chosenCombatStyle'>, // Added chosenCombatStyle
+    value: any
+  ) => void;
   onClassChange: (className: DndClassId | string) => void;
   ageEffectsDetails: AgingEffectsDetails | null;
   raceSpecialQualities: RaceSpecialQualities | null;
@@ -45,6 +48,8 @@ export interface CharacterFormCoreInfoSectionProps {
   onOpenClassInfoDialog: () => void;
   onOpenAlignmentInfoDialog: () => void;
   onOpenDeityInfoDialog: () => void;
+  // Potentially add props for Favored Enemy/Combat Style dialogs if they are complex
+  // aggregatedFeatEffects?: AggregatedFeatEffects | null; // To get favoredEnemySlots
 }
 
 const CharacterFormCoreInfoSectionComponent = ({
@@ -58,6 +63,7 @@ const CharacterFormCoreInfoSectionComponent = ({
   onOpenClassInfoDialog,
   onOpenAlignmentInfoDialog,
   onOpenDeityInfoDialog,
+  // aggregatedFeatEffects, // If needed for slot display
 }: CharacterFormCoreInfoSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
@@ -104,6 +110,12 @@ const CharacterFormCoreInfoSectionComponent = ({
   const [localSize, setLocalSize] = useDebouncedFormField(
     characterData.size || 'medium',
     (value) => onFieldChange('size', value as CharacterSize),
+    DEBOUNCE_DELAY
+  );
+  // Ranger specific state
+  const [localChosenCombatStyle, setLocalChosenCombatStyle] = useDebouncedFormField(
+    characterData.chosenCombatStyle || '',
+    (value) => onFieldChange('chosenCombatStyle', value as "archery" | "twoWeaponFighting" | undefined),
     DEBOUNCE_DELAY
   );
   
@@ -174,6 +186,12 @@ const CharacterFormCoreInfoSectionComponent = ({
     return translations.SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>);
   }, [translationsLoading, translations]);
   
+  const isRanger = selectedClassInfo?.value === 'ranger';
+  const rangerLevel = isRanger ? (characterData.classes[0]?.level || 0) : 0;
+  const canChooseCombatStyle = isRanger && rangerLevel >= 2;
+  // Favored enemy slots display would require aggregatedFeatEffects, which is not currently passed.
+  // Placeholder for now: const favoredEnemySlots = aggregatedFeatEffects?.favoredEnemySlots || 0;
+
   if (translationsLoading || !translations) {
     return (
       <Card>
@@ -280,6 +298,42 @@ const CharacterFormCoreInfoSectionComponent = ({
             )}
           </div>
         </div>
+
+        {canChooseCombatStyle && (
+          <div className="space-y-1.5">
+            <Label htmlFor="rangerCombatStyle">{UI_STRINGS.rangerCombatStyleLabel || "Ranger Combat Style"}</Label>
+            <Select
+              name="chosenCombatStyle"
+              value={localChosenCombatStyle || ""}
+              onValueChange={(value) => setLocalChosenCombatStyle(value as "archery" | "twoWeaponFighting")}
+            >
+              <SelectTrigger id="rangerCombatStyle">
+                <SelectValue placeholder={UI_STRINGS.selectRangerCombatStylePlaceholder || "Select Combat Style..."} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="archery">{UI_STRINGS.rangerCombatStyleArchery || "Archery"}</SelectItem>
+                <SelectItem value="twoWeaponFighting">{UI_STRINGS.rangerCombatStyleTwoWeapon || "Two-Weapon Fighting"}</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              {UI_STRINGS.rangerCombatStyleDescription || "Choose your combat style at Ranger level 2. This grants bonus feats as you level."}
+            </p>
+          </div>
+        )}
+
+        {/* Placeholder for Favored Enemy selection - Full UI in a later batch */}
+        {isRanger && (
+          <div className="space-y-1.5 p-3 border rounded-md bg-muted/20">
+            <Label className="flex items-center">
+              <Users className="mr-2 h-4 w-4 text-primary/70" />
+              {UI_STRINGS.favoredEnemyTitle || "Favored Enemies"}
+            </Label>
+            <p className="text-sm text-muted-foreground">
+              {UI_STRINGS.favoredEnemySlotsAvailable || "Slots available:"} {/*favoredEnemySlots*/} {`(Full selection UI coming soon)`}
+            </p>
+          </div>
+        )}
+
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           <div className="space-y-1.5">

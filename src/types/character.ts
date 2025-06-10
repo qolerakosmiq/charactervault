@@ -1,5 +1,4 @@
 
-
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -57,6 +56,7 @@ import type {
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 // Import calculateLevelFromXp and other used utilities directly
 import { getBab, calculateSumOfClassLevels, calculateAbilityModifier, getXpRequiredForLevel, calculateLevelFromXp as calculateLevelFromXpUtil, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
+import { calculateLevelFromXp } from '@/lib/dnd-utils';
 
 
 // Utility Functions (many will now need translated data passed in)
@@ -273,11 +273,11 @@ export function calculateAvailableFeats(
   EPIC_LEVEL_XP_INCREASE: number
 ): AvailableFeatSlotsBreakdown {
 
-  const characterLevel = calculateLevelFromXpUtil(character.experiencePoints || 0, XP_TABLE, EPIC_LEVEL_XP_INCREASE);
+  const characterLevel = calculateLevelFromXp(character.experiencePoints || 0, XP_TABLE, EPIC_LEVEL_XP_INCREASE);
 
   let baseFeatSlots = 0;
-  if (characterLevel >= 1) baseFeatSlots = 1; // 1st level
-  baseFeatSlots += Math.floor(characterLevel / 3); // +1 every 3 levels (3, 6, 9, etc.)
+  if (characterLevel >= 1) baseFeatSlots = 1;
+  baseFeatSlots += Math.floor(characterLevel / 3);
 
   let racialBonusSlots = 0;
   const raceData = DND_RACES.find(r => r.value === character.race);
@@ -290,7 +290,7 @@ export function calculateAvailableFeats(
 
   if (character.feats) {
     for (const featInstance of character.feats) {
-      if (featInstance.isGranted) { // Only consider granted feats for bonus slots
+      if (featInstance.isGranted) {
         const featDef = allFeatDefinitions.find(def => def.value === featInstance.definitionId);
         if (featDef?.effects) {
           for (const effect of featDef.effects) {
@@ -322,16 +322,17 @@ export function calculateAvailableFeats(
 }
 
 export function getGrantedFeatsForCharacter(
-  characterRaceId: DndRaceId | string,
-  characterClasses: CharacterClass[],
-  characterLevel: number, // This should be the XP-derived character level
+  character: Pick<Character, 'race' | 'classes' | 'experiencePoints' | 'chosenCombatStyle'>,
   allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[],
   DND_RACES: readonly DndRaceOption[],
   DND_CLASSES: readonly DndClassOption[],
-  characterChosenCombatStyle?: Character['chosenCombatStyle']
+  XP_TABLE: readonly { level: number; xpRequired: number }[],
+  EPIC_LEVEL_XP_INCREASE: number
 ): CharacterFeatInstance[] {
   const grantedInstances: CharacterFeatInstance[] = [];
   const addedDefinitionIds = new Set<string>();
+  const characterLevel = calculateLevelFromXp(character.experiencePoints || 0, XP_TABLE, EPIC_LEVEL_XP_INCREASE);
+
 
   const addGrantedInstance = (featDefId: string, note: string | undefined, source: string, levelAcquired?: number, specializationDetail?: string, chosenSpecializationCategory?: string) => {
     if (!featDefId || (levelAcquired !== undefined && levelAcquired > characterLevel)) {
@@ -339,7 +340,7 @@ export function getGrantedFeatsForCharacter(
     }
     const featDef = allFeatDefinitions.find(f => f.value === featDefId);
     if (featDef) {
-      const instanceId = featDef.value; // For granted feats, instanceId can just be definitionId if not repeatable.
+      const instanceId = featDef.value;
       if (addedDefinitionIds.has(instanceId) && !featDef.canTakeMultipleTimes) return;
 
       grantedInstances.push({
@@ -357,14 +358,14 @@ export function getGrantedFeatsForCharacter(
     }
   };
 
-  const raceData = DND_RACES.find(r => r.value === characterRaceId);
+  const raceData = DND_RACES.find(r => r.value === character.race);
   if (raceData?.grantedFeats) {
     raceData.grantedFeats.forEach(gf => {
       addGrantedInstance(gf.featId, gf.note, raceData.label, gf.levelAcquired);
     });
   }
 
-  characterClasses.forEach(charClass => {
+  character.classes.forEach(charClass => {
     if (!charClass.className) return;
     const classData = DND_CLASSES.find(c => c.value === charClass.className);
     if (classData?.grantedFeats) {
@@ -375,17 +376,17 @@ export function getGrantedFeatsForCharacter(
       });
     }
 
-    // Ranger Combat Style Feat Granting
-    if (classData?.value === 'ranger' && characterChosenCombatStyle) {
-      const rangerLevel = charClass.level; // Current level in Ranger class
-      if (characterChosenCombatStyle === 'archery') {
-        if (rangerLevel >= 2) addGrantedInstance('rapid-shot', 'Ranger Archery Style', 'Ranger', 2);
-        if (rangerLevel >= 6) addGrantedInstance('manyshot', 'Ranger Archery Style', 'Ranger', 6);
-        if (rangerLevel >= 11) addGrantedInstance('improved-precise-shot', 'Ranger Archery Style', 'Ranger', 11);
-      } else if (characterChosenCombatStyle === 'twoWeaponFighting') {
-        if (rangerLevel >= 2) addGrantedInstance('two-weapon-fighting', 'Ranger TWF Style', 'Ranger', 2);
-        if (rangerLevel >= 6) addGrantedInstance('improved-two-weapon-fighting', 'Ranger TWF Style', 'Ranger', 6);
-        if (rangerLevel >= 11) addGrantedInstance('greater-two-weapon-fighting', 'Ranger TWF Style', 'Ranger', 11);
+    if (classData?.value === 'ranger' && character.chosenCombatStyle) {
+      const rangerLevel = charClass.level;
+      const styleNotePrefix = character.chosenCombatStyle === 'archery' ? 'Ranger Archery Style' : 'Ranger TWF Style';
+      if (character.chosenCombatStyle === 'archery') {
+        if (rangerLevel >= 2) addGrantedInstance('rapid-shot', styleNotePrefix, 'Ranger', 2);
+        if (rangerLevel >= 6) addGrantedInstance('manyshot', styleNotePrefix, 'Ranger', 6);
+        if (rangerLevel >= 11) addGrantedInstance('improved-precise-shot', styleNotePrefix, 'Ranger', 11);
+      } else if (character.chosenCombatStyle === 'twoWeaponFighting') {
+        if (rangerLevel >= 2) addGrantedInstance('two-weapon-fighting', styleNotePrefix, 'Ranger', 2);
+        if (rangerLevel >= 6) addGrantedInstance('improved-two-weapon-fighting', styleNotePrefix, 'Ranger', 6);
+        if (rangerLevel >= 11) addGrantedInstance('greater-two-weapon-fighting', styleNotePrefix, 'Ranger', 11);
       }
     }
   });
@@ -667,7 +668,6 @@ export function calculateFeatEffects(
     for (const originalEffect of definition.effects) {
       const sourceFeatName = definition.label || definition.value;
       
-      // Create a deep copy of the effect to modify if needed for scaling
       let effectToProcess: FeatEffectDetail & { sourceFeat?: string } = JSON.parse(JSON.stringify(originalEffect));
       effectToProcess.sourceFeat = sourceFeatName;
 
@@ -677,7 +677,7 @@ export function calculateFeatEffects(
         effectIsActive = !!featInstance.conditionalEffectStates?.[effectToProcess.condition];
       }
       
-      let resolvedValue: any = (effectToProcess as any).value; // Default to the effect's base value
+      let resolvedValue: any = (effectToProcess as any).value;
       
       if (effectToProcess.scaleWithClassLevel && effectToProcess.scaleWithClassLevel.specificLevels) {
         const classLevel = newAggregatedEffects.classLevels[effectToProcess.scaleWithClassLevel.classId] || 0;
@@ -824,6 +824,16 @@ export function calculateFeatEffects(
             case "attackRoll": newAggregatedEffects.attackRollBonuses.push(effectToProcess as AttackRollEffect & { sourceFeat?: string }); break;
             case "damageRoll": newAggregatedEffects.damageRollBonuses.push(effectToProcess as DamageRollEffect & { sourceFeat?: string }); break;
             case "armorClass": newAggregatedEffects.acBonuses.push(effectToProcess as ArmorClassEffect & { sourceFeat?: string }); break;
+            case "hitPoints": // Track source for inactive conditional HP as well for display
+              const hpEffect = effectToProcess as HitPointsEffect;
+              if (typeof hpEffect.value === 'number') {
+                  newAggregatedEffects.hpBonusSources.push({
+                    sourceFeatName: sourceFeatName,
+                    value: hpEffect.value,
+                    condition: hpEffect.condition,
+                  });
+              }
+              break;
             default: break;
           }
       }
@@ -834,7 +844,7 @@ export function calculateFeatEffects(
 
 export function calculateSpeedBreakdown(
   speedType: SpeedType,
-  character: Pick<Character, 'race' | 'size' | 'classes' | `${SpeedType}Speed` | 'armorSpeedPenalty_base' | 'armorSpeedPenalty_miscModifier' | 'loadSpeedPenalty_base' | 'loadSpeedPenalty_miscModifier' | 'feats'>, // Added feats
+  character: Pick<Character, 'race' | 'size' | 'classes' | `${SpeedType}Speed` | 'armorSpeedPenalty_base' | 'armorSpeedPenalty_miscModifier' | 'loadSpeedPenalty_base' | 'loadSpeedPenalty_miscModifier' | 'feats'>,
   aggregatedFeatEffects: AggregatedFeatEffects | null,
   DND_RACES: readonly DndRaceOption[],
   DND_CLASSES: readonly DndClassOption[],

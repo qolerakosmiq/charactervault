@@ -251,7 +251,8 @@
       "effectsText": "Can counterspell with a higher-level spell of the same school.",
       "effects": [{ "type": "note", "text": "Can counterspell with a higher-level spell of the same school." }],
       "isClassFeature": false,
-      "type": "special"
+      "type": "special",
+      "category": "wizardBonusFeat"
     },
     {
       "value": "improved-critical",
@@ -275,7 +276,7 @@
       "effects": [{ "type": "note", "text": "No AoO on disarm; +4 on opposed attack roll to disarm." }],
       "isClassFeature": false,
       "type": "special",
-      "category": "fighterBonusFeat"
+      "category": "fighterBonusFeat monkBonusFeat"
     },
     {
       "value": "improved-feint",
@@ -352,7 +353,7 @@
       "effects": [{ "type": "note", "text": "No AoO on trip; +4 on Str check; get extra attack if trip succeeds." }],
       "isClassFeature": false,
       "type": "special",
-      "category": "fighterBonusFeat"
+      "category": "fighterBonusFeat monkBonusFeat"
     },
     {
       "value": "improved-two-weapon-fighting",

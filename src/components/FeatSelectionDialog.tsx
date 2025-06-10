@@ -43,6 +43,7 @@ interface FeatSelectionDialogProps {
   allRaces: readonly DndRaceOption[];
   abilityLabels: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
   alignmentPrereqOptions: readonly { value: string; label: string }[];
+  filterByCategory?: string; // New prop for filtering
   isLoadingTranslations?: boolean;
 }
 
@@ -67,6 +68,7 @@ export function FeatSelectionDialog({
   allRaces,
   abilityLabels,
   alignmentPrereqOptions,
+  filterByCategory, // Destructure new prop
   isLoadingTranslations: propIsLoadingTranslations = false,
 }: FeatSelectionDialogProps) {
   const { translations, isLoading: i18nIsLoading } = useI18n();
@@ -75,31 +77,38 @@ export function FeatSelectionDialog({
 
   const isLoadingEffective = propIsLoadingTranslations || i18nIsLoading;
 
-  const baseSortedFeats = React.useMemo(() => {
+  const baseSortedAndFilteredFeats = React.useMemo(() => {
     if (isLoadingEffective) return [];
-    return [...allFeats]
-      .filter(featDef => featDef.isClassFeature !== true)
-      .sort((a, b) => a.label.localeCompare(b.label));
-  }, [allFeats, isLoadingEffective]);
+    let featsToProcess = [...allFeats].filter(featDef => featDef.isClassFeature !== true);
+
+    if (filterByCategory) {
+      featsToProcess = featsToProcess.filter(featDef => 
+        !featDef.category || featDef.category === filterByCategory
+      );
+    }
+    return featsToProcess.sort((a, b) => a.label.localeCompare(b.label));
+  }, [allFeats, isLoadingEffective, filterByCategory]);
+
 
   const displayedFeats = React.useMemo(() => {
     if (!searchTerm.trim()) {
-      return baseSortedFeats;
+      return baseSortedAndFilteredFeats;
     }
     const lowerSearchTerm = searchTerm.toLowerCase();
-    return baseSortedFeats.filter(featDef => {
+    return baseSortedAndFilteredFeats.filter(featDef => {
       const labelMatch = featDef.label.toLowerCase().includes(lowerSearchTerm);
       const descriptionMatch = (featDef.description ? stripHtml(featDef.description).toLowerCase() : '').includes(lowerSearchTerm);
-      return labelMatch || descriptionMatch;
+      const categoryMatch = (featDef.category ? featDef.category.toLowerCase() : '').includes(lowerSearchTerm);
+      const typeMatch = (featDef.type ? featDef.type.toLowerCase() : '').includes(lowerSearchTerm);
+      return labelMatch || descriptionMatch || categoryMatch || typeMatch;
     });
-  }, [baseSortedFeats, searchTerm]);
+  }, [baseSortedAndFilteredFeats, searchTerm]);
 
   React.useEffect(() => {
     if (isOpen) {
       if (scrollAreaRef.current) {
         const viewport = scrollAreaRef.current.querySelector<HTMLDivElement>('[data-radix-scroll-area-viewport]');
         if (viewport) {
-          // Use setTimeout to ensure scroll reset happens after cmdk might have updated
           setTimeout(() => {
             viewport.scrollTop = 0;
           }, 0);
@@ -107,9 +116,9 @@ export function FeatSelectionDialog({
       }
     }
     if (!isOpen) {
-      setSearchTerm(''); // Clear search term when dialog closes
+      setSearchTerm(''); 
     }
-  }, [isOpen, searchTerm]); // searchTerm dependency will trigger scroll reset on search
+  }, [isOpen, searchTerm]); 
 
   if (isLoadingEffective || !translations) {
     return (
@@ -147,11 +156,14 @@ export function FeatSelectionDialog({
             {UI_STRINGS.featSelectionDialogTitle || "Select a Feat"}
           </DialogTitle>
           <DialogDescription>
-            {UI_STRINGS.featSelectionDialogDescription || "Search and choose a feat from the list. Descriptions and prerequisites are shown below each feat."}
+            {filterByCategory 
+              ? `${UI_STRINGS.featSelectionDialogDescriptionCategoryFilter || "Choose a feat from the filtered list. Showing feats for category:"} ${filterByCategory}`
+              : UI_STRINGS.featSelectionDialogDescription || "Search and choose a feat from the list. Descriptions and prerequisites are shown below each feat."
+            }
           </DialogDescription>
         </DialogHeader>
         <Command
-          shouldFilter={false} // Disable cmdk's internal filtering
+          shouldFilter={false} 
           className="rounded-lg border shadow-md flex-grow min-h-0 flex flex-col"
         >
           <CommandInput
@@ -167,7 +179,7 @@ export function FeatSelectionDialog({
                   const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(
                     featDef,
                     character,
-                    allFeats, // Pass allFeats for prereq checking, not just displayedFeats
+                    allFeats, 
                     allPredefinedSkillDefinitions,
                     allCustomSkillDefinitions,
                     allClasses,
@@ -179,7 +191,7 @@ export function FeatSelectionDialog({
                   return (
                     <CommandItem
                       key={featDef.value}
-                      value={featDef.label} // Use label for cmdk's selection matching
+                      value={featDef.label} 
                       onSelect={() => {
                         onFeatSelected(featDef.value);
                         onOpenChange(false);
@@ -189,6 +201,7 @@ export function FeatSelectionDialog({
                       <div className="font-medium text-sm text-foreground">
                         {featDef.label}
                         {featDef.isCustom && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 ml-1.5 font-normal whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
+                        {featDef.category && <Badge variant="secondary" className="text-xs h-5 ml-1.5 font-normal whitespace-nowrap">{featDef.category}</Badge>}
                       </div>
                       {featDef.description && (
                         <div
@@ -228,3 +241,4 @@ export function FeatSelectionDialog({
     </Dialog>
   );
 }
+

@@ -251,7 +251,8 @@
       "effectsText": "Peut contrer avec un sort de niveau supérieur de la même école.",
       "effects": [{ "type": "note", "text": "Peut contrer avec un sort de niveau supérieur de la même école." }],
       "isClassFeature": false,
-      "type": "special"
+      "type": "special",
+      "category": "wizardBonusFeat"
     },
     {
       "value": "improved-critical",
@@ -275,7 +276,7 @@
       "effects": [{ "type": "note", "text": "Pas d'AoO en cas de désarmement ; +4 au jet d'attaque opposé pour désarmer." }],
       "isClassFeature": false,
       "type": "special",
-      "category": "fighterBonusFeat"
+      "category": "fighterBonusFeat monkBonusFeat"
     },
     {
       "value": "improved-feint",
@@ -352,7 +353,7 @@
       "effects": [{ "type": "note", "text": "Pas d'AoO en cas de croc-en-jambe ; +4 au test de Force ; attaque supplémentaire si le croc-en-jambe réussit." }],
       "isClassFeature": false,
       "type": "special",
-      "category": "fighterBonusFeat"
+      "category": "fighterBonusFeat monkBonusFeat"
     },
     {
       "value": "improved-two-weapon-fighting",
