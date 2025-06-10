@@ -31,7 +31,7 @@ export const SkillModifierBreakdownContentDisplay = ({
   ) : null;
 
   const synergyBlock = (synergyInfoList && synergyInfoList.length > 0) ? (
-    <div key="skill-synergies-block">
+    <div key="skill-synergies-block" className="mt-3">
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
       <ul className="space-y-0.5 mt-2">
         {synergyInfoList.map((synergyItem) => {
@@ -50,7 +50,7 @@ export const SkillModifierBreakdownContentDisplay = ({
   ) : null;
 
   const calculationBlock = skillModifierBreakdown ? (
-    <div key="skill-calculation-block">
+    <div key="skill-calculation-block" className={cn((htmlContentBlock || synergyBlock) && "mt-3")}>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
       <div className="space-y-1 text-sm mt-2">
         {skillModifierBreakdown.keyAbilityName && (
@@ -105,42 +105,27 @@ export const SkillModifierBreakdownContentDisplay = ({
     </div>
   ) : null;
 
-  const contentBlocks = [
-    htmlContentBlock && { type: 'html', content: htmlContentBlock },
-    synergyBlock && { type: 'synergy', content: synergyBlock },
-    calculationBlock && { type: 'calculation', content: calculationBlock },
-  ].filter(Boolean) as Array<{ type: string; content: React.ReactNode }>;
-
-  if (contentBlocks.length === 0) return null;
+  if (!htmlContentBlock && !synergyBlock && !calculationBlock) {
+    return null;
+  }
 
   return (
     <>
-      {contentBlocks.map((item, index) => (
-        <React.Fragment key={item.type}>
-          {item.content}
-          {index < contentBlocks.length - 1 && (
-            (() => {
-              const currentBlockType = item.type;
-              const nextBlockType = contentBlocks[index + 1].type;
+      {htmlContentBlock}
 
-              // Add separator between HTML and Calculation IFF Synergy is NOT present
-              if (currentBlockType === 'html' && nextBlockType === 'calculation' && !synergyBlock) {
-                return <Separator className="my-3" />;
-              }
-              // Add separator between Synergy and Calculation IFF HTML was NOT present
-              if (currentBlockType === 'synergy' && nextBlockType === 'calculation' && !htmlContentBlock) {
-                return <Separator className="my-3" />;
-              }
-              // Add separator between HTML and Synergy IFF Calculation is NOT present (and synergy is last)
-              if (currentBlockType === 'html' && nextBlockType === 'synergy' && !calculationBlock) {
-                 return <Separator className="my-3" />;
-              }
-              
-              return null;
-            })()
-          )}
-        </React.Fragment>
-      ))}
+      {/* Separator 1: Between Description and (Synergies OR Calculation if no Synergies) */}
+      {htmlContentBlock && (synergyBlock || calculationBlock) && (
+        <Separator className="my-3" />
+      )}
+
+      {synergyBlock}
+
+      {/* Separator 2: Between Synergies and Calculation, ONLY IF there was NO htmlContentBlock AND both synergy and calculation exist */}
+      {synergyBlock && calculationBlock && !htmlContentBlock && (
+         <Separator className="my-3" />
+      )}
+
+      {calculationBlock}
     </>
   );
 };
