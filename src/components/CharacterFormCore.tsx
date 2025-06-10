@@ -11,7 +11,7 @@ import type {
   FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData, CharacterSize,
   ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType, ResistanceFieldKeySheet,
   SpeedDetails, SpeedType, CharacterAlignment, ProcessedSiteData, SpeedPanelCharacterData, CombatPanelCharacterData, LanguageId,
-  AggregatedFeatEffects, ExperiencePanelData
+  AggregatedFeatEffects, ExperiencePanelData, ComboboxOption, MagicSchoolId
 } from '@/types/character';
 import {
   getNetAgingEffects,
@@ -204,10 +204,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     if (!isClient || translationsLoading || !translations) return;
 
     let initialCharData = createBaseCharacterData(translations, globalCustomSkillDefinitions);
-    setCharacterDataToProcess(initialCharData); // Store for handleSubmit reference if needed
+    setCharacterDataToProcess(initialCharData); 
 
-    const finalCharacter = { ...initialCharData }; // Use a mutable copy
-    const { CLASS_SKILLS, SIZES, DND_RACES, DND_CLASSES, XP_TABLE, EPIC_LEVEL_XP_INCREASE } = translations;
+    const finalCharacter = { ...initialCharData };
+    const { CLASS_SKILLS, SIZES, DND_RACES, DND_CLASSES, DND_DOMAINS, XP_TABLE, EPIC_LEVEL_XP_INCREASE } = translations;
 
     let currentSkills = [...finalCharacter.skills];
     currentSkills = currentSkills.map(skillInstance => ({
@@ -230,7 +230,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     finalCharacter.skills = currentSkills.sort((a, b) => (allAvailableSkillDefinitionsForDisplay.find(d => d.value === a.id)?.label || '').localeCompare(allAvailableSkillDefinitionsForDisplay.find(d => d.value === b.id)?.label || ''));
 
     const characterLevelFromXP = calculateLevelFromXp(finalCharacter.experiencePoints || 0, XP_TABLE, EPIC_LEVEL_XP_INCREASE);
-    const newGrantedFeats = getGrantedFeatsForCharacter(finalCharacter.race, finalCharacter.classes, characterLevelFromXP, allAvailableFeatDefinitions, DND_RACES, DND_CLASSES);
+    const newGrantedFeats = getGrantedFeatsForCharacter(
+      finalCharacter, // Pass the whole character object
+      allAvailableFeatDefinitions, DND_RACES, DND_CLASSES, DND_DOMAINS, XP_TABLE, EPIC_LEVEL_XP_INCREASE
+    );
     const userChosenFeats = finalCharacter.feats?.filter(fi => !fi.isGranted) || [];
 
     const combinedFeatsMap = new Map<string, CharacterFeatInstance>();
@@ -252,7 +255,6 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     const barbarianClass = finalCharacter.classes.find(c => c.className === 'barbarian');
     const barbarianLevel = barbarianClass?.level || 0;
     let grantedDrValue = 0;
-    // This specific DR progression for Barbarian should eventually move to feat effects with scaleWithClassLevel
     if (barbarianLevel >= 19) grantedDrValue = 5; else if (barbarianLevel >= 16) grantedDrValue = 4; else if (barbarianLevel >= 13) grantedDrValue = 3; else if (barbarianLevel >= 10) grantedDrValue = 2; else if (barbarianLevel >= 7) grantedDrValue = 1;
 
     const existingUserDrInstances = finalCharacter.damageReduction?.filter(dr => !dr.isGranted) || [];
@@ -270,8 +272,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
   }, [
     isClient, translationsLoading, translations,
-    globalCustomFeatDefinitionsFromStore, globalCustomSkillDefinitionsFromStore, // Direct dependencies from store
-    allAvailableFeatDefinitions, allAvailableSkillDefinitionsForDisplay, globalCustomSkillDefinitions // Memoized derived values used inside effect
+    globalCustomFeatDefinitionsFromStore, globalCustomSkillDefinitionsFromStore, 
+    allAvailableFeatDefinitions, allAvailableSkillDefinitionsForDisplay, globalCustomSkillDefinitions 
   ]);
 
 
@@ -373,7 +375,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         character.race as DndRaceId,
         translations.DND_RACES,
         translations.DND_RACE_ABILITY_MODIFIERS_DATA,
-        allAvailableSkillDefinitionsForDisplay.map(sdd => ({value: sdd.value, label: sdd.label, keyAbility: sdd.keyAbility})), // Map to basic structure
+        allAvailableSkillDefinitionsForDisplay.map(sdd => ({value: sdd.value, label: sdd.label, keyAbility: sdd.keyAbility})), 
         allAvailableFeatDefinitions,
         translations.ABILITY_LABELS
       );
@@ -407,7 +409,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     }
   }, [character?.race, character?.age, translations]);
 
-  const handleCoreInfoFieldChange = React.useCallback((field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender'>, value: any) => {
+  const handleCoreInfoFieldChange = React.useCallback((
+    field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'chosenCombatStyle' | 'chosenFavoredEnemies' | 'chosenDomains' | 'chosenSpecializationSchool' | 'prohibitedSchools'>,
+    value: any
+  ) => {
      setCharacter(prev => prev ? ({ ...prev, [field as keyof Character]: value }) : null);
   }, []);
 
@@ -497,9 +502,11 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         return nameA.localeCompare(nameB);
       });
 
-      // Re-calculate granted feats based on potentially new class and current XP-derived level
       const currentLevelFromXP = calculateLevelFromXp(prev.experiencePoints || 0, translations.XP_TABLE, translations.EPIC_LEVEL_XP_INCREASE);
-      const newGrantedFeats = getGrantedFeatsForCharacter(prev.race, updatedClasses, currentLevelFromXP, allAvailableFeatDefinitions, translations.DND_RACES, translations.DND_CLASSES);
+      const newGrantedFeats = getGrantedFeatsForCharacter(
+        { ...prev, classes: updatedClasses }, 
+        allAvailableFeatDefinitions, translations.DND_RACES, translations.DND_CLASSES, translations.DND_DOMAINS, translations.XP_TABLE, translations.EPIC_LEVEL_XP_INCREASE
+      );
       const userChosenFeats = prev.feats.filter(fi => !fi.isGranted);
 
       const combinedFeatsMap = new Map<string, CharacterFeatInstance>();
@@ -591,12 +598,18 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     }
   }, [definitionsActions, toast, translations]);
 
-  const allSkillOptionsForDialog = React.useMemo(() => {
+  const allSkillOptionsForDialog = React.useMemo((): ComboboxOption[] => {
     return allAvailableSkillDefinitionsForDisplay
-      .filter(skill => skill.value !== skillToEdit?.id)
       .map(s => ({ value: s.value, label: s.label }))
       .sort((a,b) => a.label.localeCompare(b.label));
-  }, [allAvailableSkillDefinitionsForDisplay, skillToEdit]);
+  }, [allAvailableSkillDefinitionsForDisplay]);
+
+  const allMagicSchoolOptionsForDialog = React.useMemo((): ComboboxOption[] => {
+    if (translationsLoading || !translations) return [];
+    return translations.DND_MAGIC_SCHOOLS.map(ms => ({ value: ms.value, label: ms.label }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [translationsLoading, translations]);
+
 
   const handlePortraitChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -683,7 +696,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
   const handleSubmit = React.useCallback((e: FormEvent) => {
     e.preventDefault();
-    if (!character || !translations || !characterDataToProcess) { // Added characterDataToProcess check
+    if (!character || !translations || !characterDataToProcess) { 
       toast({ title: translations?.UI_STRINGS.toastCharacterDataNotLoadedTitle || "Save Error", description: translations?.UI_STRINGS.toastCharacterDataNotLoadedDesc || "Character data not loaded.", variant: "destructive" });
       return;
     }
@@ -729,7 +742,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     }
 
     onSave(finalCharacterData);
-  }, [character, onSave, toast, translations, characterDataToProcess]); // Added characterDataToProcess dependency
+  }, [character, onSave, toast, translations, characterDataToProcess]); 
 
   const calculatedMaxHpForPanel = React.useMemo(() => {
     if (!character || !detailedAbilityScores || !aggregatedFeatEffects) return 0;
@@ -753,6 +766,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     return {
       name: character.name, playerName: character.playerName, race: character.race, alignment: character.alignment,
       deity: character.deity, size: character.size, age: character.age, gender: character.gender, classes: character.classes,
+      chosenCombatStyle: character.chosenCombatStyle, chosenFavoredEnemies: character.chosenFavoredEnemies, chosenDomains: character.chosenDomains,
+      chosenSpecializationSchool: character.chosenSpecializationSchool, prohibitedSchools: character.prohibitedSchools,
     };
   }, [character]);
 
@@ -800,10 +815,11 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     };
   }, [character]);
   
-  const featSectionData = React.useMemo<Omit<FeatsFormSectionProps, 'characterLevel' | 'allAvailableFeatDefinitions' | 'chosenFeatInstances' | 'onFeatInstancesChange' | 'onEditCustomFeatDefinition' | 'abilityScores' | 'skills' | 'allPredefinedSkillDefinitions' | 'allCustomSkillDefinitions'>['featSectionData'] | undefined>(() => {
+  const featSectionData = React.useMemo<Omit<FeatsFormSectionProps, 'characterLevel' | 'allAvailableFeatDefinitions' | 'chosenFeatInstances' | 'onFeatInstancesChange' | 'onEditCustomFeatDefinition' | 'abilityScores' | 'skills' | 'allPredefinedSkillDefinitions' | 'allCustomSkillDefinitions' | 'allSkillOptionsForDialog' | 'allMagicSchoolOptionsForDialog'>['featSectionData'] | undefined>(() => {
     if (!character) return undefined;
     return {
       race: character.race, classes: character.classes, feats: character.feats, age: character.age, alignment: character.alignment, experiencePoints: character.experiencePoints,
+      chosenCombatStyle: character.chosenCombatStyle, chosenFavoredEnemies: character.chosenFavoredEnemies
     };
   }, [character]);
 
@@ -901,6 +917,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             onOpenClassInfoDialog={handleOpenClassInfoDialog}
             onOpenAlignmentInfoDialog={handleOpenAlignmentInfoDialog}
             onOpenDeityInfoDialog={handleOpenDeityInfoDialog}
+            aggregatedFeatEffects={aggregatedFeatEffects}
           />
         )}
 
@@ -1021,11 +1038,14 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             skills={character.skills}
             allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
             allCustomSkillDefinitions={globalCustomSkillDefinitions}
+            allSkillOptionsForDialog={allSkillOptionsForDialog} 
+            allMagicSchoolOptionsForDialog={allMagicSchoolOptionsForDialog} 
             characterLevel={characterLevelFromXP} 
+            aggregatedFeatEffects={aggregatedFeatEffects}
           />
         )}
         
-        {speedData && aggregatedFeatEffects && ( // Pass aggregatedFeatEffects to SpeedPanel
+        {speedData && aggregatedFeatEffects && ( 
           <SpeedPanel
             speedData={speedData}
             aggregatedFeatEffects={aggregatedFeatEffects}

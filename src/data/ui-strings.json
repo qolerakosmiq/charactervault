@@ -230,6 +230,7 @@
     "aiSuggestedFeatLabel": "AI Suggested",
     "featSelectionDialogTitle": "Select a Feat",
     "featSelectionDialogDescription": "Search and choose a feat from the list. Descriptions and prerequisites are shown below each feat.",
+    "featSelectionDialogDescriptionCategoryFilter": "Choose a feat from the filtered list. Showing feats for category:",
     "featSelectionDialogSearchPlaceholder": "Search feats by name or description...",
     "featSelectionDialogEmpty": "No feats found.",
     "featSelectionDialogLoadingDescription": "Loading feat information...",
@@ -468,7 +469,18 @@
     "wizardProhibitedSchoolInfo": "Spells from prohibited schools cannot be learned or cast. Divination cannot be prohibited.",
     "selectMagicSchoolPlaceholder": "Select School...",
     "selectProhibitedSchoolPlaceholder": "Select Prohibited School...",
-    "prohibitedSchoolNoneOption": "None"
+    "prohibitedSchoolNoneOption": "None",
+    "specializationDialogTitle": "Feat Specialization: {featName}",
+    "specializationDialogDescription": "Please provide the required specialization for the feat '{featName}'.",
+    "specializationInputPlaceholderWeapon": "Enter weapon name (e.g., Longsword)",
+    "specializationSelectPlaceholderSkill": "Select skill...",
+    "specializationSelectPlaceholderSchool": "Select school of magic...",
+    "specializationSaveButton": "Confirm Specialization",
+    "specializationErrorRequired": "Specialization is required for this feat.",
+    "toastErrorTitle": "Error",
+    "loadingText": "Loading...",
+    "searchPlaceholder": "Search...",
+    "noOptionFoundPlaceholder": "No option found."
   }
 }
     
@@ -476,4 +488,3 @@
     
 
 
-```

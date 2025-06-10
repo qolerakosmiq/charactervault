@@ -1324,6 +1324,7 @@
       "label": "Skill Mastery (Rogue)",
       "description": "<b>Benefit:</b> The rogue becomes so certain in the use of certain skills that she can use them reliably even under adverse conditions. Upon gaining this ability, she selects a number of skills equal to 3 + her Intelligence modifier. When making a skill check with one of these skills, she may take 10 even if stress and distractions would normally prevent her from doing so.",
       "prerequisites": { "special": "Rogue level 10+" },
+      "requiresSpecialization": "skill",
       "effectsText": "Select (3+Int mod) skills; can Take 10 on these skills even under stress.",
       "isClassFeature": false, "type": "special-ex", "category": "rogueSpecialAbility",
       "effects": [{ "type": "note", "text": "Select (3+Int mod) skills; can Take 10 on these skills even under stress."}]
@@ -1359,4 +1360,3 @@
 
     
 
-```

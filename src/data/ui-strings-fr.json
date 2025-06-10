@@ -230,6 +230,7 @@
     "aiSuggestedFeatLabel": "Suggéré par IA",
     "featSelectionDialogTitle": "Choisir un don",
     "featSelectionDialogDescription": "Recherchez et choisissez un don dans la liste. Les descriptions et prérequis sont affichés sous chaque don.",
+    "featSelectionDialogDescriptionCategoryFilter": "Choisissez un don dans la liste filtrée. Affichage des dons pour la catégorie :",
     "featSelectionDialogSearchPlaceholder": "Rechercher des dons par nom ou description...",
     "featSelectionDialogEmpty": "Aucun don trouvé.",
     "featSelectionDialogLoadingDescription": "Chargement des informations sur les dons...",
@@ -468,7 +469,18 @@
     "wizardProhibitedSchoolInfo": "Les sorts des écoles interdites ne peuvent être ni appris ni lancés. La Divination ne peut être interdite.",
     "selectMagicSchoolPlaceholder": "Choisir une École...",
     "selectProhibitedSchoolPlaceholder": "Choisir une École Interdite...",
-    "prohibitedSchoolNoneOption": "Aucune"
+    "prohibitedSchoolNoneOption": "Aucune",
+    "specializationDialogTitle": "Spécialisation du don : {featName}",
+    "specializationDialogDescription": "Veuillez fournir la spécialisation requise pour le don '{featName}'.",
+    "specializationInputPlaceholderWeapon": "Entrer le nom de l'arme (ex: Épée longue)",
+    "specializationSelectPlaceholderSkill": "Choisir une compétence...",
+    "specializationSelectPlaceholderSchool": "Choisir une école de magie...",
+    "specializationSaveButton": "Confirmer la spécialisation",
+    "specializationErrorRequired": "La spécialisation est requise pour ce don.",
+    "toastErrorTitle": "Erreur",
+    "loadingText": "Chargement...",
+    "searchPlaceholder": "Rechercher...",
+    "noOptionFoundPlaceholder": "Aucune option trouvée."
   }
 }
     
@@ -476,4 +488,3 @@
     
 
 
-```

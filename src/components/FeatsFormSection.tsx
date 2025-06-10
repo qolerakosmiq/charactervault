@@ -4,8 +4,8 @@
 import *as React from 'react';
 import type {
   FeatDefinitionJsonData, CharacterFeatInstance, Character, AbilityScores, Skill,
-  SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown, AggregatedFeatEffects // Added AggregatedFeatEffects
-} from '@/types/character-core'; // Updated to use character-core
+  SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown, AggregatedFeatEffects, ComboboxOption
+} from '@/types/character-core';
 import {
   checkFeatPrerequisites, calculateAvailableFeats
 } from '@/types/character';
@@ -15,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Award, PlusCircle, Trash2, Pencil, Loader2, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
+import { SpecializationInputDialog } from './SpecializationInputDialog'; // Added import
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -31,8 +32,10 @@ export interface FeatsFormSectionProps {
   skills: Skill[];
   allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
   allCustomSkillDefinitions: readonly CustomSkillDefinition[];
+  allSkillOptionsForDialog: ComboboxOption[]; // Added prop
+  allMagicSchoolOptionsForDialog: ComboboxOption[]; // Added prop
   characterLevel: number;
-  aggregatedFeatEffects?: AggregatedFeatEffects | null; // Added prop
+  aggregatedFeatEffects?: AggregatedFeatEffects | null;
 }
 
 const FeatsFormSectionComponent = ({
@@ -45,23 +48,27 @@ const FeatsFormSectionComponent = ({
   skills,
   allPredefinedSkillDefinitions,
   allCustomSkillDefinitions,
+  allSkillOptionsForDialog, // Destructure
+  allMagicSchoolOptionsForDialog, // Destructure
   characterLevel,
-  aggregatedFeatEffects, // Destructure the new prop
+  aggregatedFeatEffects,
 }: FeatsFormSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
   const { toast } = useToast();
 
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
   const [featDialogFilterCategory, setFeatDialogFilterCategory] = React.useState<string | undefined>(undefined);
+  const [featToSpecialize, setFeatToSpecialize] = React.useState<FeatDefinitionJsonData | null>(null); // Added state
+  const [isSpecializationDialogOpen, setIsSpecializationDialogOpen] = React.useState(false); // Added state
+
 
   const featSlotsBreakdown = React.useMemo(() => {
     if (translationsLoading || !translations) return { total: 0, base: 0, racial: 0, classBonus: 0, classBonusDetails: [] };
-    // Pass the correct structure for the first argument, which includes experiencePoints
     return calculateAvailableFeats(
       {
         race: featSectionData.race,
         classes: featSectionData.classes,
-        feats: featSectionData.feats, // Pass feats for any logic within calculateAvailableFeats that might need them
+        feats: featSectionData.feats,
         experiencePoints: featSectionData.experiencePoints || 0,
       },
       allAvailableFeatDefinitions,
@@ -97,7 +104,7 @@ const FeatsFormSectionComponent = ({
     ...featSectionData,
     abilityScores,
     skills,
-    experiencePoints: featSectionData.experiencePoints || 0, // Ensure XP is passed
+    experiencePoints: featSectionData.experiencePoints || 0,
   }), [featSectionData, abilityScores, skills]);
 
 
@@ -127,7 +134,7 @@ const FeatsFormSectionComponent = ({
   };
 
 
-  const handleAddOrUpdateChosenFeatInstance = (definitionId: string, specializationDetail?: string) => {
+  const handleAddOrUpdateChosenFeatInstance = (definitionId: string) => {
     if (!translations) return;
     const UI_STRINGS = translations.UI_STRINGS;
     const definition = allAvailableFeatDefinitions.find(def => def.value === definitionId);
@@ -136,6 +143,13 @@ const FeatsFormSectionComponent = ({
       return;
     }
 
+    if (definition.requiresSpecialization) {
+      setFeatToSpecialize(definition);
+      setIsSpecializationDialogOpen(true);
+      return; // Wait for specialization
+    }
+
+    // If no specialization needed, proceed as before
     const existingChosenInstances = chosenFeatInstances.filter(
       inst => inst.definitionId === definitionId && !inst.isGranted
     );
@@ -170,10 +184,9 @@ const FeatsFormSectionComponent = ({
     const newInstance: CharacterFeatInstance = {
       definitionId: definition.value,
       instanceId: newInstanceId,
-      specializationDetail: specializationDetail || '',
       isGranted: false,
-      chosenSpecializationCategory: definition.requiresSpecializationCategory, // Store the category if it was chosen for this slot
-      conditionalEffectStates: {}, // Initialize
+      chosenSpecializationCategory: definition.requiresSpecializationCategory,
+      conditionalEffectStates: {},
     };
 
     onFeatInstancesChange([...chosenFeatInstances, newInstance].sort((a, b) => {
@@ -181,8 +194,56 @@ const FeatsFormSectionComponent = ({
       const defB = allAvailableFeatDefinitions.find(d => d.value === b.definitionId);
       return (defA?.label || '').localeCompare(defB?.label || '');
     }));
-    setIsFeatDialogOpen(false);
   };
+
+  const handleSpecializationProvided = (specializationDetail: string) => {
+    if (!featToSpecialize || !translations) return;
+    const UI_STRINGS = translations.UI_STRINGS;
+    const definition = featToSpecialize; // Already have the full definition
+
+    const existingChosenInstances = chosenFeatInstances.filter(
+      inst => inst.definitionId === definition.value && !inst.isGranted && inst.specializationDetail === specializationDetail
+    );
+    const isAlreadyGrantedWithSameSpecialization = chosenFeatInstances.some(
+      inst => inst.definitionId === definition.value && inst.isGranted && inst.specializationDetail === specializationDetail
+    );
+
+    if (!definition.canTakeMultipleTimes) {
+      if (isAlreadyGrantedWithSameSpecialization) {
+         toast({ title: UI_STRINGS.toastFeatAlreadyGrantedTitle, description: (UI_STRINGS.toastFeatAlreadyGrantedDesc || '"{featLabel}" is already granted with this specialization and cannot be chosen again.').replace('{featLabel}', definition.label), variant: "destructive" });
+        return;
+      }
+      if (existingChosenInstances.length > 0) {
+        toast({ title: UI_STRINGS.toastDuplicateFeatTitle, description: (UI_STRINGS.toastDuplicateFeatDesc || 'You have already chosen "{featLabel}" with this specialization, and it cannot be taken multiple times.').replace('{featLabel}', definition.label), variant: "destructive" });
+        return;
+      }
+    }
+
+
+    let newInstanceId = `${definition.value}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`;
+    if (definition.canTakeMultipleTimes || chosenFeatInstances.some(fi => fi.instanceId === newInstanceId)) {
+      newInstanceId = `${definition.value}-SPEC-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID()}`;
+    }
+
+    const newInstance: CharacterFeatInstance = {
+      definitionId: definition.value,
+      instanceId: newInstanceId,
+      specializationDetail: specializationDetail,
+      isGranted: false,
+      chosenSpecializationCategory: definition.requiresSpecializationCategory,
+      conditionalEffectStates: {},
+    };
+
+    onFeatInstancesChange([...chosenFeatInstances, newInstance].sort((a, b) => {
+      const defA = allAvailableFeatDefinitions.find(d => d.value === a.definitionId);
+      const defB = allAvailableFeatDefinitions.find(d => d.value === b.definitionId);
+      return (defA?.label || '').localeCompare(defB?.label || '');
+    }));
+
+    setFeatToSpecialize(null);
+    setIsSpecializationDialogOpen(false);
+  };
+
 
   const handleRemoveChosenFeatInstance = (instanceIdToRemove: string) => {
     const updatedInstances = chosenFeatInstances.filter(inst => inst.instanceId !== instanceIdToRemove);
@@ -426,6 +487,14 @@ const FeatsFormSectionComponent = ({
         alignmentPrereqOptions={ALIGNMENT_PREREQUISITE_OPTIONS}
         filterByCategory={featDialogFilterCategory}
         isLoadingTranslations={translationsLoading}
+      />
+      <SpecializationInputDialog
+        isOpen={isSpecializationDialogOpen}
+        onOpenChange={setIsSpecializationDialogOpen}
+        featDefinition={featToSpecialize}
+        onSave={handleSpecializationProvided}
+        allSkills={allSkillOptionsForDialog}
+        allMagicSchools={allMagicSchoolOptionsForDialog}
       />
     </>
   );

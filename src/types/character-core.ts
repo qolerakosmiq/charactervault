@@ -298,7 +298,7 @@ export interface FeatDefinitionJsonData { // Base structure for feat definitions
   effectsText?: string; // General textual summary of all effects
   effects?: FeatEffectDetail[]; // Array of structured effects
   canTakeMultipleTimes?: boolean;
-  requiresSpecialization?: string; // e.g., "skill", "weapon", "school of magic"
+  requiresSpecialization?: string; // e.g., "skill", "weapon", "school of magic", "favored enemy type", "ranger combat style feat"
   requiresSpecializationCategory?: string; // e.g., "rangerFavoredEnemy", "rangerCombatStyle"
   isClassFeature?: boolean;
   isCustom?: boolean;
@@ -569,6 +569,11 @@ export type ResistanceFieldKeySheet = Exclude<keyof Pick<Character,
 
 export type SpeedType = 'land' | 'burrow' | 'climb' | 'fly' | 'swim';
 
+export interface ComboboxOption { // Moved from ComboboxPrimitive.tsx
+  value: string;
+  label: string;
+}
+
 export type InfoDialogContentType =
   | { type: 'race' }
   | { type: 'class' }
@@ -692,3 +697,4 @@ export interface PrerequisiteMessage {
   orderKey: string;
   originalText?: string;
 }
+
