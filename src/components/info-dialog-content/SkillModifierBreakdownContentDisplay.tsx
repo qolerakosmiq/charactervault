@@ -30,6 +30,8 @@ export const SkillModifierBreakdownContentDisplay = ({
     />
   ) : null;
 
+  const badgeClass = "font-normal h-5 mx-0.5 px-1.5 py-0.5 align-baseline whitespace-nowrap"; // Removed text-xs
+
   const synergyBlock = (synergyInfoList && synergyInfoList.length > 0) ? (
     <div key="skill-synergies-block" className={cn((htmlContentBlock) && "mt-3")}>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
@@ -37,8 +39,8 @@ export const SkillModifierBreakdownContentDisplay = ({
         {synergyInfoList.map((synergyItem) => {
           const IconComponent = synergyItem.isActive ? CheckSquare : Square;
           return (
-            <li key={synergyItem.id} className="flex items-start text-sm">
-              <IconComponent className={cn("h-4 w-4 mr-2 shrink-0 mt-1", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")} />
+            <li key={synergyItem.id} className="flex items-center text-sm"> {/* Changed items-start to items-center */}
+              <IconComponent className={cn("h-4 w-4 mr-2 shrink-0", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")} /> {/* Removed mt-1 */}
               <span className={cn(synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")}>
                 {synergyItem.text}
               </span>
@@ -114,7 +116,7 @@ export const SkillModifierBreakdownContentDisplay = ({
   return (
     <>
       {contentBlocksToRender.map((block, index) => (
-        <React.Fragment key={index}>
+        <React.Fragment key={`content-block-${index}`}>
           {block}
           {index < contentBlocksToRender.length - 1 && (
             <Separator className="my-2" />

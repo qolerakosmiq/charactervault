@@ -87,7 +87,7 @@ const FeatsFormSectionComponent = ({
     experiencePoints: featSectionData.experiencePoints || 0,
   }), [featSectionData, abilityScores, skills]);
 
-  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs whitespace-nowrap";
+  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 whitespace-nowrap"; // Removed text-xs
 
   const handleAddOrUpdateChosenFeatInstance = (definitionId: string, specializationDetail?: string) => {
     if (!translations) return;
@@ -303,7 +303,7 @@ const FeatsFormSectionComponent = ({
                 )}>{featSlotsLeft}</span>
               </p>
             </div>
-             <p className="text-xs text-muted-foreground mt-1">
+             <p className="text-sm text-muted-foreground mt-1"> {/* Changed text-xs to text-sm */}
               {UI_STRINGS.featsPanelBreakdownBaseLabel || "Base"} <Badge variant="outline" className={badgeClassName}>{baseFeat}</Badge>
               {racialBonus > 0 && (
                 <>

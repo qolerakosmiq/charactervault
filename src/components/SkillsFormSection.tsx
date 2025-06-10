@@ -235,7 +235,7 @@ const SkillsFormSectionComponent = ({
     onOpenSkillInfoDialog(skillId);
   };
 
-  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs whitespace-nowrap";
+  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 whitespace-nowrap"; // Removed text-xs
 
   if (translationsLoading || !translations) {
     return (
@@ -413,7 +413,7 @@ const SkillsFormSectionComponent = ({
                           )}
                       </Label>
                   </div>
-                  <div className="flex items-center justify-end w-20 pr-1">
+                  <div className="flex items-center justify-end w-20 pr-1"> {/* Added justify-end */}
                     <span className="font-bold text-accent text-xl">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
                     <Button
                       type="button"
@@ -458,4 +458,3 @@ SkillsFormSectionComponent.displayName = 'SkillsFormSectionComponent';
 
 export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
     
-

@@ -53,7 +53,7 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
   }
 
   const { LANGUAGES, DND_RACES, UI_STRINGS } = translations;
-  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 text-xs whitespace-nowrap";
+  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 whitespace-nowrap"; // Removed text-xs
 
   const raceData = DND_RACES.find(r => r.value === characterRaceId);
   const automaticLanguages: LanguageId[] = ['common', ...(raceData?.automaticLanguages || [])];
@@ -136,7 +136,7 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
                   <div key={`known-${langObj.value}`} className="flex items-center justify-between py-1 px-1.5 rounded-md text-sm"> 
                     <span>
                       {langObj.label}
-                      {isAutomatic && <Badge variant="outline" className="ml-2 text-sm text-muted-foreground border-muted-foreground/50">{UI_STRINGS.languagesPanelAutomaticBadgeLabel || "Automatic"}</Badge>}
+                      {isAutomatic && <Badge variant="outline" className="ml-2 text-muted-foreground border-muted-foreground/50">{UI_STRINGS.languagesPanelAutomaticBadgeLabel || "Automatic"}</Badge>} {/* Ensure text-sm or inherited size */}
                     </span>
                     {!isAutomatic && (
                       <Button
