@@ -34,8 +34,8 @@ import type {
   ClassAttribute,
   DomainDefinition,
   DomainId,
-  MagicSchoolId, // Added
-  MagicSchoolDefinition // Added
+  MagicSchoolId,
+  MagicSchoolDefinition
 } from '@/types/character-core';
 
 // Define types for the structure of each JSON file's data
@@ -70,7 +70,7 @@ export interface DomainJson {
   DND_DOMAINS_DATA: DomainDefinition[];
 }
 
-export interface MagicSchoolsJson { // Added
+export interface MagicSchoolsJson {
   DND_MAGIC_SCHOOLS_DATA: MagicSchoolDefinition[];
 }
 
@@ -114,7 +114,7 @@ export interface BaseJson {
   DEFAULT_SAVING_THROWS_DATA: SavingThrows;
   DEFAULT_RESISTANCE_VALUE_DATA: ResistanceValue;
   DEFAULT_SPEED_DETAILS_DATA: SpeedDetails;
-  DEFAULT_SPEED_PENALTIES_DATA: { armorSpeedPenalty: number; loadSpeedPenalty: number };
+  DEFAULT_SPEED_PENALTIES_DATA: { armorSpeedPenalty_base: number; armorSpeedPenalty_miscModifier: number; loadSpeedPenalty_base: number; loadSpeedPenalty_miscModifier: number }; // Updated from armorSpeedPenalty and loadSpeedPenalty
   DND_RACE_MIN_ADULT_AGE_DATA: Record<string, number>;
   DND_RACE_BASE_MAX_AGE_DATA: Record<string, number>;
   RACE_TO_AGING_CATEGORY_MAP_DATA: Record<string, string>;
@@ -132,11 +132,11 @@ export interface ClassDataEntry {
   value: DndClassId | string;
   label: string;
   hitDice: string;
-  babProgression: "good" | "average" | "poor"; // Added
+  babProgression: "good" | "average" | "poor";
   generalDescription: string;
   loreAttributes?: ClassAttribute[];
   saves: { fortitude: 'good' | 'poor'; reflex: 'good' | 'poor'; will: 'good' | 'poor' };
-  casting?: ClassCastingDetails;
+  spellcasting?: ClassCastingDetails; // Changed from casting
   grantedFeats?: Array<{ featId: string; note?: string; levelAcquired?: number }>;
 }
 export interface ClassesJson {
@@ -164,7 +164,7 @@ export interface FeatsJson {
   FEAT_TYPES_DATA: FeatTypeDataEntry[];
 }
 
-export interface RaceDataEntry extends DndRaceOption {} // DndRaceOption now includes generalDescription and loreAttributes
+export interface RaceDataEntry extends DndRaceOption {}
 export interface RacesJson {
   DND_RACES_DATA: RaceDataEntry[];
 }
@@ -192,7 +192,7 @@ export interface LocaleDataBundle {
   languages: LanguagesJson;
   xpTable: XpJson;
   domains: DomainJson;
-  magicSchools: MagicSchoolsJson; // Added
+  magicSchools: MagicSchoolsJson;
   uiStrings?: UiStringsJson;
   customAlignments?: AlignmentsJson;
   customBase?: Partial<BaseJson>;
@@ -203,7 +203,7 @@ export interface LocaleDataBundle {
   customSkills?: SkillsJson;
   customLanguages?: LanguagesJson;
   customDomains?: DomainJson;
-  customMagicSchools?: MagicSchoolsJson; // Added
+  customMagicSchools?: MagicSchoolsJson;
   customUiStrings?: UiStringsJson;
 }
 
@@ -218,7 +218,7 @@ export interface ProcessedSiteData {
   DND_CLASSES: readonly DndClassOption[];
   DND_DEITIES: readonly DndDeityOption[];
   DND_DOMAINS: readonly DomainDefinition[];
-  DND_MAGIC_SCHOOLS: readonly MagicSchoolDefinition[]; // Added
+  DND_MAGIC_SCHOOLS: readonly MagicSchoolDefinition[];
   SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[];
   DND_FEATS_DEFINITIONS: readonly FeatDefinitionJsonData[];
   FEAT_TYPES: readonly { value: FeatTypeString; label: string }[];
@@ -231,7 +231,7 @@ export interface ProcessedSiteData {
   DEFAULT_SAVING_THROWS: SavingThrows;
   DEFAULT_RESISTANCE_VALUE: ResistanceValue;
   DEFAULT_SPEED_DETAILS: SpeedDetails;
-  DEFAULT_SPEED_PENALTIES: { armorSpeedPenalty: number; loadSpeedPenalty: number };
+  DEFAULT_SPEED_PENALTIES: { armorSpeedPenalty_base: number; armorSpeedPenalty_miscModifier: number; loadSpeedPenalty_base: number; loadSpeedPenalty_miscModifier: number };
   DND_RACE_MIN_ADULT_AGE_DATA: BaseJson['DND_RACE_MIN_ADULT_AGE_DATA'];
   DND_RACE_BASE_MAX_AGE_DATA: BaseJson['DND_RACE_BASE_MAX_AGE_DATA'];
   RACE_TO_AGING_CATEGORY_MAP_DATA: BaseJson['RACE_TO_AGING_CATEGORY_MAP_DATA'];
@@ -282,9 +282,9 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
   const customDomains = bundle.customDomains?.DND_DOMAINS_DATA;
   const DND_DOMAINS = mergeArrayData(baseDomains, customDomains);
 
-  const baseMagicSchools = bundle.magicSchools.DND_MAGIC_SCHOOLS_DATA; // Added
-  const customMagicSchools = bundle.customMagicSchools?.DND_MAGIC_SCHOOLS_DATA; // Added
-  const DND_MAGIC_SCHOOLS = mergeArrayData(baseMagicSchools, customMagicSchools); // Added
+  const baseMagicSchools = bundle.magicSchools.DND_MAGIC_SCHOOLS_DATA;
+  const customMagicSchools = bundle.customMagicSchools?.DND_MAGIC_SCHOOLS_DATA;
+  const DND_MAGIC_SCHOOLS = mergeArrayData(baseMagicSchools, customMagicSchools);
 
   const baseSizes = bundle.base.SIZES_DATA;
   const customSizes = bundle.customBase?.SIZES_DATA;
@@ -339,7 +339,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
     DND_CLASSES,
     DND_DEITIES,
     DND_DOMAINS,
-    DND_MAGIC_SCHOOLS, // Added
+    DND_MAGIC_SCHOOLS,
     SKILL_DEFINITIONS,
     DND_FEATS_DEFINITIONS,
     FEAT_TYPES,
@@ -365,5 +365,3 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
     UI_STRINGS,
   };
 }
-
-```

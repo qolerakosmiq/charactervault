@@ -302,7 +302,7 @@ export interface FeatDefinitionJsonData { // Base structure for feat definitions
   requiresSpecializationCategory?: string; // e.g., "rangerFavoredEnemy", "rangerCombatStyle"
   isClassFeature?: boolean;
   isCustom?: boolean;
-  category?: string; // e.g., "fighterBonusFeat", "monkBonusFeat", "wizardBonusFeat"
+  category?: string; // e.g., "fighterBonusFeat", "monkBonusFeat", "wizardBonusFeat", "rogueSpecialAbility"
 }
 
 
@@ -692,5 +692,3 @@ export interface PrerequisiteMessage {
   orderKey: string;
   originalText?: string;
 }
-
-```

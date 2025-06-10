@@ -19,14 +19,14 @@ import type {
   CharacterFavoredEnemy,
   DomainDefinition,
   DomainId,
-  MagicSchoolId // Added
+  MagicSchoolId
 } from '@/types/character-core';
 import { isAlignmentCompatible } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollText, Info, Loader2, Users, Swords as BarbarianRageIcon, BookOpen, Wand2 } from 'lucide-react'; // Added Wand2
+import { ScrollText, Info, Loader2, Users, Swords as BarbarianRageIcon, BookOpen, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -142,9 +142,10 @@ const CharacterFormCoreInfoSectionComponent = ({
     while (updatedEnemies.length <= index) {
         updatedEnemies.push({ id: crypto.randomUUID(), type: '' });
     }
-    updatedEnemies[index] = { ...updatedEnemies[index], type: newType };
+    updatedEnemies[index] = { ...(updatedEnemies[index] || { id: crypto.randomUUID() }), type: newType };
     onFieldChange('chosenFavoredEnemies', updatedEnemies);
   };
+
 
   const handleDomainChange = (index: 0 | 1, newDomainId: DomainId | undefined) => {
     const currentDomains = characterData.chosenDomains ? [...characterData.chosenDomains] : [undefined, undefined];
@@ -638,5 +639,3 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
-
-```
