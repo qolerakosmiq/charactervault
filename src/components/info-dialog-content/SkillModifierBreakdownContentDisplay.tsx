@@ -31,7 +31,7 @@ export const SkillModifierBreakdownContentDisplay = ({
   ) : null;
 
   const synergyBlock = (synergyInfoList && synergyInfoList.length > 0) ? (
-    <div key="skill-synergies-block" className="mt-3">
+    <div key="skill-synergies-block" className={cn((htmlContentBlock) && "mt-3")}>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
       <ul className="space-y-0.5 mt-2">
         {synergyInfoList.map((synergyItem) => {
@@ -50,7 +50,7 @@ export const SkillModifierBreakdownContentDisplay = ({
   ) : null;
 
   const calculationBlock = skillModifierBreakdown ? (
-    <div key="skill-calculation-block" className={cn((htmlContentBlock || synergyBlock) && "mt-3")}>
+    <div key="skill-calculation-block" className={cn(((htmlContentBlock && !synergyBlock) || synergyBlock) && "mt-3")}>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
       <div className="space-y-1 text-sm mt-2">
         {skillModifierBreakdown.keyAbilityName && (
@@ -105,27 +105,22 @@ export const SkillModifierBreakdownContentDisplay = ({
     </div>
   ) : null;
 
-  if (!htmlContentBlock && !synergyBlock && !calculationBlock) {
+  const contentBlocksToRender = [htmlContentBlock, synergyBlock, calculationBlock].filter(Boolean);
+
+  if (contentBlocksToRender.length === 0) {
     return null;
   }
 
   return (
     <>
-      {htmlContentBlock}
-
-      {/* Separator 1: Between Description and (Synergies OR Calculation if no Synergies) */}
-      {htmlContentBlock && (synergyBlock || calculationBlock) && (
-        <Separator className="my-3" />
-      )}
-
-      {synergyBlock}
-
-      {/* Separator 2: Between Synergies and Calculation, ONLY IF there was NO htmlContentBlock AND both synergy and calculation exist */}
-      {synergyBlock && calculationBlock && !htmlContentBlock && (
-         <Separator className="my-3" />
-      )}
-
-      {calculationBlock}
+      {contentBlocksToRender.map((block, index) => (
+        <React.Fragment key={index}>
+          {block}
+          {index < contentBlocksToRender.length - 1 && (
+            <Separator className="my-2" />
+          )}
+        </React.Fragment>
+      ))}
     </>
   );
 };
