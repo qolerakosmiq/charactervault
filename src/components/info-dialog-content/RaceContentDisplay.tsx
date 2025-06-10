@@ -76,7 +76,7 @@ export const RaceContentDisplay = ({
         <div className="space-y-0.5 text-sm mb-2 ml-4">
           {abilityModifiers.map(mod => (
             <div key={mod.ability} className="flex justify-between">
-              <span className="text-sm text-muted-foreground">{ABILITY_LABELS.find(al => al.value === mod.ability)?.label || mod.ability}</span>
+              <span className="text-sm text-foreground">{ABILITY_LABELS.find(al => al.value === mod.ability)?.label || mod.ability}</span>
               <span className="text-sm font-semibold">{renderModifierValue(mod.change)}</span>
             </div>
           ))}
@@ -91,7 +91,7 @@ export const RaceContentDisplay = ({
         <div className="space-y-0.5 text-sm mb-2 ml-4">
           {skillBonuses.map(bonus => (
             <div key={bonus.skillId} className="flex justify-between">
-              <span className="text-sm text-muted-foreground">{bonus.skillName}</span>
+              <span className="text-sm text-foreground">{bonus.skillName}</span>
               <span className="text-sm font-semibold">{renderModifierValue(bonus.bonus)}</span>
             </div>
           ))}
@@ -110,7 +110,7 @@ export const RaceContentDisplay = ({
             const speedName = UI_STRINGS[speedTypeKey] || type;
             return (
               <div key={type} className="flex justify-between">
-                <span className="text-sm text-muted-foreground">{speedName}</span>
+                <span className="text-sm text-foreground">{speedName}</span>
                 <span className="text-sm font-semibold text-foreground">{speedVal} {speedUnit}</span>
               </div>
             );
@@ -122,7 +122,7 @@ export const RaceContentDisplay = ({
   if (bonusFeatSlots !== undefined && bonusFeatSlots > 0) {
     generalTraitsSubSections.push(
       <div className="flex justify-between text-sm mt-2" key="bonus-feat-slots-item">
-        <span className="text-sm text-muted-foreground">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</span>
+        <span className="text-sm text-foreground">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</span>
         <span className="text-sm font-semibold">{renderModifierValue(bonusFeatSlots)}</span>
       </div>
     );
