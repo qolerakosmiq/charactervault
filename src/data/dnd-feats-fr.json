@@ -1,4 +1,3 @@
-
 {
   "DND_FEATS_DATA": [
     {
@@ -186,10 +185,12 @@
       "label": "Maîtrise des armes exotiques",
       "description": "<b>Avantage :</b> Choisissez une arme exotique, comme une épée bâtarde ou un fouet.<br />Vous comprenez comment utiliser cette arme au combat, et vous pouvez attaquer avec elle sans encourir de pénalité.<br />Vous maîtrisez cette arme.<br /><b>Normal :</b> Un personnage qui utilise une arme avec laquelle il n'est pas compétent subit une pénalité de –4 aux jets d'attaque.<br /><b>Spécial :</b> Vous pouvez acquérir ce don plusieurs fois.<br />Chaque fois que vous prenez le don, il s'applique à une nouvelle arme exotique.",
       "prerequisites": { "bab": 1 },
-      "effectsText": "Obtenez la maîtrise d'une arme exotique.",
-      "effects": [{ "type": "note", "text": "Obtenez la maîtrise d'une arme exotique." }],
+      "effectsText": "Obtenez la maîtrise d'une arme exotique. (Choisir le type via spécialisation)",
+      "requiresSpecialization": "weapon",
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "SPEC" }],
       "isClassFeature": false,
-      "type": "special"
+      "type": "special",
+      "category": "fighterBonusFeat"
     },
     {
       "value": "class-rogue-sneak-attack",
@@ -201,7 +202,7 @@
       "effects": [
         {
           "type": "damageRoll",
-          "value": "0d6", 
+          "value": "0d6",
           "bonusType": "precision",
           "condition": "vs_flat_footed_or_flanked_target",
           "appliesTo": "all",
@@ -258,8 +259,177 @@
           "sourceFeat": "class-barbarian-rage"
         }
       ]
+    },
+    {
+      "value": "simple-weapon-proficiency",
+      "label": "Maniement des armes courantes",
+      "description": "<b>Avantage :</b> Vous effectuez les jets d'attaque avec les armes courantes normalement.",
+      "effectsText": "Maîtrise de toutes les armes courantes.",
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "simple" }],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "martial-weapon-proficiency-all",
+      "label": "Maniement des armes de guerre (Toutes)",
+      "description": "<b>Avantage :</b> Vous effectuez les jets d'attaque avec toutes les armes de guerre normalement.",
+      "effectsText": "Maîtrise de toutes les armes de guerre.",
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "martial" }],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "armor-proficiency-light",
+      "label": "Port des armures légères",
+      "description": "<b>Avantage :</b> Vous êtes formé au port des armures légères.",
+      "effectsText": "Formation au port des armures légères.",
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "armor", "itemCategory": "light" }],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "armor-proficiency-medium",
+      "label": "Port des armures intermédiaires",
+      "description": "<b>Avantage :</b> Vous êtes formé au port des armures intermédiaires.",
+      "effectsText": "Formation au port des armures intermédiaires.",
+      "prerequisites": { "feats": ["armor-proficiency-light"] },
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "armor", "itemCategory": "medium" }],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "armor-proficiency-heavy",
+      "label": "Port des armures lourdes",
+      "description": "<b>Avantage :</b> Vous êtes formé au port des armures lourdes.",
+      "effectsText": "Formation au port des armures lourdes.",
+      "prerequisites": { "feats": ["armor-proficiency-medium"] },
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "armor", "itemCategory": "heavy" }],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "shield-proficiency",
+      "label": "Maniement des boucliers",
+      "description": "<b>Avantage :</b> Vous êtes formé au maniement des boucliers (sauf les pavois).",
+      "effectsText": "Formation au maniement des boucliers (sauf les pavois).",
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "shield" }],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "tower-shield-proficiency",
+      "label": "Maniement des pavois",
+      "description": "<b>Avantage :</b> Vous êtes formé au maniement des pavois.",
+      "effectsText": "Formation au maniement des pavois.",
+      "prerequisites": { "feats": ["shield-proficiency"] },
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "shield", "itemCategory": "tower" }],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "bard-weapon-proficiencies",
+      "label": "Maniement des armes (Barde)",
+      "description": "<b>Avantage :</b> Les bardes sont formés au maniement de toutes les armes courantes, plus l'épée longue, la rapière, la matraque, l'épée courte, l'arc court et le fouet.",
+      "effectsText": "Maîtrise de toutes les armes courantes, épée longue, rapière, matraque, épée courte, arc court, fouet.",
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "simple" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "longsword" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "rapier" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "sap" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "short-sword" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "shortbow" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "whip" }
+      ],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "druid-weapon-proficiencies",
+      "label": "Maniement des armes (Druide)",
+      "description": "<b>Avantage :</b> Les druides sont formés au maniement des armes suivantes : gourdin, dague, fléchette, bâton, cimeterre, faucille, épieu, fronde et lance.",
+      "effectsText": "Maîtrise du gourdin, de la dague, de la fléchette, du bâton, du cimeterre, de la faucille, de l'épieu, de la fronde, de la lance.",
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "club" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "dagger" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "dart" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "quarterstaff" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "scimitar" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "sickle" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "shortspear" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "sling" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "spear" }
+      ],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "druid-armor-shield-proficiencies",
+      "label": "Port des armures et maniement des boucliers (Druide)",
+      "description": "<b>Avantage :</b> Les druides sont formés au port des armures légères et intermédiaires mais il leur est interdit de porter des armures métalliques ; ainsi, ils ne peuvent porter que des armures matelassées, de cuir ou de peau. (Un druide peut aussi porter une armure en bois qui a été modifiée par le sort bois de fer pour qu'elle fonctionne comme de l'acier. Voir la description du sort bois de fer) Les druides sont formés au maniement des boucliers (sauf les pavois) mais ne doivent utiliser que ceux fabriqués en bois.",
+      "effectsText": "Formation au port des armures légères et intermédiaires non métalliques, et des boucliers en bois (sauf pavois).",
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "armor", "itemCategory": "light", "note": "Non-métallique uniquement" },
+        { "type": "grantsProficiency", "proficiencyType": "armor", "itemCategory": "medium", "note": "Non-métallique uniquement" },
+        { "type": "grantsProficiency", "proficiencyType": "shield", "note": "En bois uniquement, pas de pavois" }
+      ],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "monk-weapon-proficiencies",
+      "label": "Maniement des armes (Moine)",
+      "description": "<b>Avantage :</b> Les moines sont formés au maniement du gourdin, de l'arbalète (légère ou lourde), de la dague, de la hachette, du javelot, du kama, du nunchaku, du bâton, du shuriken, du siangham et de la fronde.",
+      "effectsText": "Maîtrise du gourdin, arbalète (légère/lourde), dague, hachette, javelot, kama, nunchaku, bâton, shuriken, siangham, fronde.",
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "club" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "crossbow-light" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "crossbow-heavy" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "dagger" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "handaxe" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "javelin" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "kama" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "nunchaku" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "quarterstaff" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "shuriken" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "siangham" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "sling" }
+      ],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "rogue-weapon-proficiencies",
+      "label": "Maniement des armes (Roublard)",
+      "description": "<b>Avantage :</b> Les roublards sont formés au maniement de toutes les armes courantes, plus l'arbalète de poing, la rapière, la matraque, l'arc court et l'épée courte.",
+      "effectsText": "Maîtrise de toutes les armes courantes, arbalète de poing, rapière, matraque, arc court, épée courte.",
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "simple" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "hand-crossbow" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "rapier" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "sap" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "shortbow" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "short-sword" }
+      ],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "wizard-sorcerer-weapon-proficiencies",
+      "label": "Maniement des armes (Magicien/Ensorceleur)",
+      "description": "<b>Avantage :</b> Les magiciens/ensorceleurs sont formés au maniement du gourdin, de la dague, de l'arbalète lourde, de l'arbalète légère et du bâton.",
+      "effectsText": "Maîtrise du gourdin, de la dague, de l'arbalète lourde, de l'arbalète légère, du bâton.",
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "club" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "dagger" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "crossbow-heavy" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "crossbow-light" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "quarterstaff" }
+      ],
+      "isClassFeature": true,
+      "type": "general"
     }
   ],
   "FEAT_TYPES_DATA": []
 }
+
     

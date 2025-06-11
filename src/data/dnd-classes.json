@@ -1,4 +1,3 @@
-
 {
   "DND_CLASSES_DATA": [
     {
@@ -12,7 +11,8 @@
         { "key": "Alignment", "value": "Any nonlawful." },
         { "key": "Religion", "value": "Barbarians may revere animal spirits, nature deities, or ancestors." },
         { "key": "Background", "value": "Often outcasts or members of nomadic tribes." },
-        { "key": "Races", "value": "Humans and half-orcs are common barbarians." }
+        { "key": "Races", "value": "Humans and half-orcs are common barbarians." },
+        { "key": "Weapon and Armor Proficiency", "value": "Barbarians are proficient with all simple and martial weapons, light and medium armor, and shields (except tower shields)." }
       ],
       "grantedFeats": [
         { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
@@ -44,10 +44,10 @@
         { "key": "Alignment", "value": "Any nonlawful." },
         { "key": "Religion", "value": "Bards may follow deities of art, travel, or trickery." },
         { "key": "Background", "value": "Often from performing troupes, scholarly institutions, or simply wanderers." },
-        { "key": "Races", "value": "Humans, elves, and half-elves frequently become bards." }
+        { "key": "Races", "value": "Humans, elves, and half-elves frequently become bards." },
+        { "key": "Weapon and Armor Proficiency", "value": "Bards are proficient with all simple weapons, plus the longsword, rapier, sap, short sword, shortbow, and whip. Bards are proficient with light armor and with shields (except tower shields)." }
       ],
       "grantedFeats": [
-        { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "bard-weapon-proficiencies", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
@@ -76,7 +76,8 @@
         { "key": "Alignment", "value": "Must be within one step of their deity's alignment." },
         { "key": "Religion", "value": "Central to their identity, clerics serve a specific deity from the pantheon." },
         { "key": "Background", "value": "Usually trained in temples or religious orders." },
-        { "key": "Races", "value": "All races produce clerics, as faith is universal." }
+        { "key": "Races", "value": "All races produce clerics, as faith is universal." },
+        { "key": "Weapon and Armor Proficiency", "value": "Clerics are proficient with all simple weapons, with all types of armor (light, medium, and heavy), and with shields (except tower shields)." }
       ],
       "grantedFeats": [
         { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
@@ -99,7 +100,8 @@
         { "key": "Alignment", "value": "Any neutral (Neutral Good, Lawful Neutral, True Neutral, Chaotic Neutral, or Neutral Evil)." },
         { "key": "Religion", "value": "Druids revere nature itself or specific nature deities." },
         { "key": "Background", "value": "Often solitary hermits, members of ancient circles, or protectors of sacred groves." },
-        { "key": "Races", "value": "Humans, elves, and gnomes often feel the call of the wild." }
+        { "key": "Races", "value": "Humans, elves, and gnomes often feel the call of the wild." },
+        { "key": "Weapon and Armor Proficiency", "value": "Druids are proficient with the following weapons: club, dagger, dart, quarterstaff, scimitar, sickle, shortspear, sling, and spear. They are proficient with light and medium armor but are prohibited from wearing metal armor; thus, they may wear only padded, leather, or hide armor. (A druid may also wear wooden armor that has been altered by the ironwood spell so that it functions as steel.) Druids are proficient with shields (except tower shields) but must use only those crafted from wood." }
       ],
        "grantedFeats": [
         { "featId": "druid-weapon-proficiencies", "levelAcquired": 1, "note": "Class Proficiency" },
@@ -140,6 +142,7 @@
         { "key": "Religion", "value": "Fighters may worship deities of war, strength, or protection, or none at all." },
         { "key": "Background", "value": "Varied, from noble knights to grizzled mercenaries or simple village guards." },
         { "key": "Races", "value": "All races produce skilled fighters, especially humans, dwarves, and half-orcs." },
+        { "key": "Weapon and Armor Proficiency", "value": "Fighters are proficient with all simple and martial weapons and with all armor (heavy, medium, and light) and shields (including tower shields)." },
         { "key": "Bonus Feats", "value": "A fighter gains a bonus combat-oriented feat at 1st level, at 2nd level, and at every two fighter levels thereafter (4th, 6th, 8th, 10th, 12th, 14th, 16th, 18th, and 20th). These bonus feats must be selected from those listed as fighter bonus feats in the Player's Handbook. These are in addition to the feat that any character gets at 1st level and every three levels thereafter, and the bonus feat for a human character." }
       ],
       "grantedFeats": [
@@ -174,7 +177,8 @@
         { "key": "Alignment", "value": "Must be lawful." },
         { "key": "Religion", "value": "Monks often follow philosophies of discipline and self-perfection, sometimes tied to specific deities of law or enlightenment." },
         { "key": "Background", "value": "Typically trained in remote monasteries." },
-        { "key": "Races", "value": "Humans are the most common monks, but any race with discipline can walk the path." }
+        { "key": "Races", "value": "Humans are the most common monks, but any race with discipline can walk the path." },
+        { "key": "Weapon and Armor Proficiency", "value": "Monks are proficient with club, crossbow (light or heavy), dagger, handaxe, javelin, kama, nunchaku, quarterstaff, shuriken, siangham, and sling. Monks are not proficient with any armor or shields." }
       ],
       "grantedFeats": [
         { "featId": "monk-weapon-proficiencies", "levelAcquired": 1, "note": "Class Proficiency" },
@@ -216,7 +220,8 @@
         { "key": "Alignment", "value": "Must be Lawful Good." },
         { "key": "Religion", "value": "Paladins are devoted servants of good-aligned deities." },
         { "key": "Background", "value": "Often from noble or devout families, trained in holy orders." },
-        { "key": "Races", "value": "Humans are the most common paladins, but any creature with a pure heart can be called." }
+        { "key": "Races", "value": "Humans are the most common paladins, but any creature with a pure heart can be called." },
+        { "key": "Weapon and Armor Proficiency", "value": "Paladins are proficient with all simple and martial weapons, with all types of armor (heavy, medium, and light), and with shields (except tower shields)." }
       ],
       "grantedFeats": [
         { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
@@ -257,7 +262,8 @@
         { "key": "Alignment", "value": "Any." },
         { "key": "Religion", "value": "Rangers often revere nature deities or gods of the hunt." },
         { "key": "Background", "value": "Typically raised in borderlands, deep forests, or among reclusive communities." },
-        { "key": "Races", "value": "Elves, half-elves, and humans make excellent rangers." }
+        { "key": "Races", "value": "Elves, half-elves, and humans make excellent rangers." },
+        { "key": "Weapon and Armor Proficiency", "value": "A ranger is proficient with all simple and martial weapons, and with light armor and shields (except tower shields)." }
       ],
       "grantedFeats": [
         { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
@@ -288,7 +294,8 @@
         { "key": "Alignment", "value": "Any." },
         { "key": "Religion", "value": "Rogues often favor deities of luck, shadows, or thievery, or remain unaffiliated." },
         { "key": "Background", "value": "From street urchins to guild thieves or spies." },
-        { "key": "Races", "value": "Halflings, elves, and humans are often drawn to the rogue's path." }
+        { "key": "Races", "value": "Halflings, elves, and humans are often drawn to the rogue's path." },
+        { "key": "Weapon and Armor Proficiency", "value": "Rogues are proficient with all simple weapons, plus the hand crossbow, rapier, sap, shortbow, and short sword. Rogues are proficient with light armor, but not with shields." }
       ],
       "grantedFeats": [
         { "featId": "rogue-weapon-proficiencies", "levelAcquired": 1, "note": "Class Proficiency" },
@@ -322,7 +329,8 @@
         { "key": "Alignment", "value": "Any." },
         { "key": "Religion", "value": "Sorcerers have varied religious beliefs, if any." },
         { "key": "Background", "value": "Their powers often manifest unexpectedly, leading to diverse life paths." },
-        { "key": "Races", "value": "Humans and those with magical bloodlines (like half-elves with fey heritage) are common sorcerers." }
+        { "key": "Races", "value": "Humans and those with magical bloodlines (like half-elves with fey heritage) are common sorcerers." },
+        { "key": "Weapon and Armor Proficiency", "value": "Sorcerers are proficient with all simple weapons. They are not proficient with any type of armor or shield." }
       ],
       "grantedFeats": [
         { "featId": "wizard-sorcerer-weapon-proficiencies", "levelAcquired": 1, "note": "Class Proficiency" },
@@ -341,7 +349,8 @@
         { "key": "Alignment", "value": "Any." },
         { "key": "Religion", "value": "Wizards often worship deities of knowledge, magic, or secrets, or focus purely on arcane pursuits." },
         { "key": "Background", "value": "Typically educated in academies, mentored by master wizards, or self-taught through ancient tomes." },
-        { "key": "Races", "value": "Humans, elves, and gnomes are most commonly drawn to wizardry." }
+        { "key": "Races", "value": "Humans, elves, and gnomes are most commonly drawn to wizardry." },
+        { "key": "Weapon and Armor Proficiency", "value": "Wizards are proficient with the club, dagger, heavy crossbow, light crossbow, and quarterstaff, but not with any type of armor or shield. Armor of any type interferes with a wizard’s movements, which can cause her spells with somatic components to fail." }
       ],
        "grantedFeats": [
         { "featId": "wizard-sorcerer-weapon-proficiencies", "levelAcquired": 1, "note": "Class Proficiency" },
@@ -397,4 +406,5 @@
     }
   ]
 }
+
     

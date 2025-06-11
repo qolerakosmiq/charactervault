@@ -1,4 +1,3 @@
-
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -625,20 +624,15 @@ export function calculateDetailedAbilityScores(
     if (aggregatedFeatEffects.abilityScoreBonuses) {
       for (const featEffect of aggregatedFeatEffects.abilityScoreBonuses) {
         if (featEffect.ability === ability && typeof featEffect.value === 'number') {
-          let effectIsActive = true;
-          if (featEffect.condition && featEffect.condition.trim() !== "") {
-            const featInstance = character.feats.find(fi => fi.definitionId === featEffect.sourceFeat?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''));
-            effectIsActive = !!featInstance?.conditionalEffectStates?.[featEffect.condition];
-          }
-          
+          // isActive is already set on featEffect from calculateFeatEffects
           components.push({
             sourceLabel: "Feat",
             sourceDetail: featEffect.sourceFeat || 'Unknown Feat',
             value: featEffect.value,
             condition: featEffect.condition,
-            isActive: effectIsActive,
+            isActive: featEffect.isActive,
           });
-          if(effectIsActive) {
+          if(featEffect.isActive) { // Only add to currentScore if active
             currentScore += featEffect.value;
           }
         }
@@ -691,9 +685,8 @@ export function calculateFeatEffects(
     }, {} as Record<DndClassId, number>),
   };
 
-  // Power Attack and Combat Expertise effects
   if (character.feats.some(f => f.definitionId === 'power-attack') && character.powerAttackValue && character.powerAttackValue > 0) {
-    const powerAttackActive = true; // Assuming if value > 0, it's active. Could be linked to a condition.
+    const powerAttackActive = true; 
     newAggregatedEffects.attackRollBonuses.push({
       type: "attackRoll", value: -character.powerAttackValue, appliesTo: "melee", sourceFeat: "Power Attack Effect", isActive: powerAttackActive
     });
@@ -702,7 +695,7 @@ export function calculateFeatEffects(
     });
   }
   if (character.feats.some(f => f.definitionId === 'combat-expertise') && character.combatExpertiseValue && character.combatExpertiseValue > 0) {
-    const combatExpertiseActive = true; // Assuming if value > 0, it's active.
+    const combatExpertiseActive = true;
     newAggregatedEffects.attackRollBonuses.push({
       type: "attackRoll", value: -character.combatExpertiseValue, appliesTo: "melee", sourceFeat: "Combat Expertise Effect", isActive: combatExpertiseActive
     });
@@ -721,11 +714,17 @@ export function calculateFeatEffects(
     for (const originalEffect of definition.effects) {
       const sourceFeatName = definition.label || definition.value;
 
-      let effectToPush: FeatEffectDetail & AggregatedFeatEffectBase = JSON.parse(JSON.stringify(originalEffect));
+      let effectToPush: FeatEffectDetail & AggregatedFeatEffectBase = JSON.parse(JSON.stringify(originalEffect)); // Deep clone
       effectToPush.sourceFeat = sourceFeatName;
 
-      let effectIsActive = true; // Default to active unless a condition says otherwise
-      if (effectToPush.condition && effectToPush.condition.trim() !== "") {
+      let effectIsActive = true;
+      if (definition.permanentEffect) { // If feat itself is permanent, its conditions are always active
+        effectIsActive = true;
+        if(effectToPush.condition) { // Mark the condition as active if it exists on a permanent effect
+             if(!featInstance.conditionalEffectStates) featInstance.conditionalEffectStates = {};
+             featInstance.conditionalEffectStates[effectToPush.condition] = true;
+        }
+      } else if (effectToPush.condition && effectToPush.condition.trim() !== "") {
         effectIsActive = !!featInstance.conditionalEffectStates?.[effectToPush.condition];
       }
       effectToPush.isActive = effectIsActive;
@@ -736,7 +735,8 @@ export function calculateFeatEffects(
       if (effectToPush.scaleWithClassLevel && effectToPush.scaleWithClassLevel.specificLevels) {
         const classLevel = newAggregatedEffects.classLevels[effectToPush.scaleWithClassLevel.classId] || 0;
         let foundLevelValue: any = undefined;
-        for (const levelEntry of [...effectToPush.scaleWithClassLevel.specificLevels].sort((a, b) => b.level - a.level)) {
+        const sortedSpecificLevels = [...effectToPush.scaleWithClassLevel.specificLevels].sort((a, b) => b.level - a.level);
+        for (const levelEntry of sortedSpecificLevels) {
           if (classLevel >= levelEntry.level) {
             foundLevelValue = levelEntry.value;
             break;
@@ -748,7 +748,7 @@ export function calculateFeatEffects(
            resolvedValue = [...effectToPush.scaleWithClassLevel.specificLevels].sort((a,b) => a.level - b.level)[0].value;
         }
       }
-
+      
       if (resolvedValue !== undefined && effectToPush.hasOwnProperty('value')) {
         (effectToPush as any).value = resolvedValue;
       }
@@ -756,11 +756,12 @@ export function calculateFeatEffects(
       if (effectToPush.type === 'grantsAbility' && effectToPush.uses) {
           const grantsAbilityEffect = effectToPush as GrantsAbilityEffect & AggregatedFeatEffectBase;
           if (grantsAbilityEffect.uses) {
-            grantsAbilityEffect.uses.isActive = effectIsActive; // The ability grant itself is conditional
+            grantsAbilityEffect.uses.isActive = effectIsActive; 
             if (grantsAbilityEffect.uses.value === "scaled" && grantsAbilityEffect.uses.scaleWithClassLevel?.specificLevels) {
                 const classLevel = newAggregatedEffects.classLevels[grantsAbilityEffect.uses.scaleWithClassLevel.classId] || 0;
                 let foundUsesValue: number | undefined;
-                for (const lvlEntry of [...grantsAbilityEffect.uses.scaleWithClassLevel.specificLevels].sort((a,b) => b.level - a.level)) {
+                const sortedUsesLevels = [...grantsAbilityEffect.uses.scaleWithClassLevel.specificLevels].sort((a,b) => b.level - a.level);
+                for (const lvlEntry of sortedUsesLevels) {
                     if (classLevel >= lvlEntry.level) {
                         foundUsesValue = lvlEntry.value as number;
                         break;
@@ -770,158 +771,62 @@ export function calculateFeatEffects(
                     grantsAbilityEffect.uses.value = foundUsesValue;
                 } else if (grantsAbilityEffect.uses.scaleWithClassLevel.specificLevels.length > 0) {
                     grantsAbilityEffect.uses.value = [...grantsAbilityEffect.uses.scaleWithClassLevel.specificLevels].sort((a, b) => a.level - b.level)[0].value as number;
+                } else {
+                    grantsAbilityEffect.uses.value = 0; // Default to 0 if no levels match
                 }
             }
           }
       }
 
-
-      // Apply effect value to aggregated totals ONLY if active
-      if (effectIsActive) {
-        switch (effectToPush.type) {
-          case "skill":
-            const skillEffect = effectToPush as SkillEffectDetail;
-            let actualSkillIdForAggregation = skillEffect.skillId;
-            if (actualSkillIdForAggregation === null && definition.requiresSpecialization === 'skill' && featInstance.specializationDetail) {
-              actualSkillIdForAggregation = featInstance.specializationDetail;
-            }
-            if (actualSkillIdForAggregation && typeof skillEffect.value === 'number') {
-              if (definition.value === 'class-ranger-favored-enemy' && newAggregatedEffects.favoredEnemyBonuses) {
-                newAggregatedEffects.favoredEnemyBonuses.skillBonus = Math.max(
-                  newAggregatedEffects.favoredEnemyBonuses.skillBonus,
-                  skillEffect.value
-                );
-              } else {
-                newAggregatedEffects.skillBonuses[actualSkillIdForAggregation] =
-                  (newAggregatedEffects.skillBonuses[actualSkillIdForAggregation] || 0) + skillEffect.value;
-              }
-            }
-            break;
-          case "abilityScore":
-            // Handled by calculateDetailedAbilityScores, but store for breakdown
-            newAggregatedEffects.abilityScoreBonuses.push(effectToPush as AbilityScoreEffect & AggregatedFeatEffectBase);
-            break;
-          case "savingThrow":
-            newAggregatedEffects.savingThrowBonuses.push(effectToPush as SavingThrowEffect & AggregatedFeatEffectBase);
-            break;
-          case "attackRoll":
-            const attackEffect = effectToPush as AttackRollEffect & AggregatedFeatEffectBase;
-            if (definition.requiresSpecialization === 'weapon' && featInstance.specializationDetail) {
-              attackEffect.weaponId = featInstance.specializationDetail;
-            }
-            newAggregatedEffects.attackRollBonuses.push(attackEffect);
-            break;
-          case "damageRoll":
-            const damageEffect = effectToPush as DamageRollEffect & AggregatedFeatEffectBase;
-            if (definition.value === 'class-ranger-favored-enemy' && newAggregatedEffects.favoredEnemyBonuses && typeof damageEffect.value === 'number') {
-              newAggregatedEffects.favoredEnemyBonuses.damageBonus = Math.max(newAggregatedEffects.favoredEnemyBonuses.damageBonus, damageEffect.value);
-            } else {
-              if (definition.requiresSpecialization === 'weapon' && featInstance.specializationDetail) {
-                damageEffect.weaponId = featInstance.specializationDetail;
-              }
-              newAggregatedEffects.damageRollBonuses.push(damageEffect);
-            }
-            break;
-          case "armorClass":
-            newAggregatedEffects.acBonuses.push(effectToPush as ArmorClassEffect & AggregatedFeatEffectBase);
-            break;
-          case "hitPoints":
-            const hpEffect = effectToPush as HitPointsEffect;
-            if (typeof hpEffect.value === 'number') {
-                newAggregatedEffects.hpBonus += hpEffect.value;
-            }
-            // Always add to sources for breakdown, isActive is on effectToPush
-            newAggregatedEffects.hpBonusSources.push({
-                sourceFeatName: sourceFeatName,
-                value: typeof hpEffect.value === 'number' ? hpEffect.value : 0, // Store 0 if not a number for source list
-                condition: hpEffect.condition,
-                isActive: effectIsActive,
-            });
-            break;
-          case "initiative":
-            const initEffect = effectToPush as InitiativeEffect;
-            if (typeof initEffect.value === 'number') {
-                newAggregatedEffects.initiativeBonus += initEffect.value;
-            }
-            break;
-          case "speed":
-            newAggregatedEffects.speedBonuses.push(effectToPush as SpeedEffect & AggregatedFeatEffectBase);
-            break;
-          case "resistance":
-            newAggregatedEffects.resistanceBonuses.push(effectToPush as ResistanceEffect & AggregatedFeatEffectBase);
-            break;
-          case "casterLevelCheck":
-            newAggregatedEffects.casterLevelCheckBonuses.push(effectToPush as CasterLevelCheckEffect & AggregatedFeatEffectBase);
-            break;
-          case "spellSaveDc":
-            newAggregatedEffects.spellSaveDcBonuses.push(effectToPush as SpellSaveDcEffect & AggregatedFeatEffectBase);
-            break;
-          case "turnUndead":
-            newAggregatedEffects.turnUndeadBonuses.push(effectToPush as TurnUndeadEffect & AggregatedFeatEffectBase);
-            break;
-          case "modifiesMechanic":
-            const mechEffect = effectToPush as ModifiesMechanicEffect & AggregatedFeatEffectBase;
-            if (mechEffect.mechanicKey === "favoredEnemySlots" && typeof resolvedValue === 'number') {
-              newAggregatedEffects.favoredEnemySlots = (newAggregatedEffects.favoredEnemySlots || 0) + resolvedValue;
-            }
-            // For other modifiesMechanic effects, ensure they are added to the list
-            newAggregatedEffects.modifiedMechanics.push(mechEffect);
-            break;
-          // Other cases that only add to their list
-          case "grantsAbility":
-            newAggregatedEffects.grantedAbilities.push(effectToPush as GrantsAbilityEffect & AggregatedFeatEffectBase & { uses?: GrantsAbilityEffectUses & { isActive?: boolean }});
-            break;
-          case "grantsProficiency":
-            newAggregatedEffects.proficienciesGranted.push(effectToPush as GrantsProficiencyEffect & AggregatedFeatEffectBase);
-            break;
-          case "bonusFeatSlot":
-            newAggregatedEffects.bonusFeatSlots.push(effectToPush as BonusFeatSlotEffect & AggregatedFeatEffectBase);
-            break;
-          case "language":
-            const langEffect = effectToPush as LanguageEffect & AggregatedFeatEffectBase;
-            if(langEffect.count && typeof langEffect.count === 'number') newAggregatedEffects.languagesGranted.count += langEffect.count;
-            if(langEffect.specific) newAggregatedEffects.languagesGranted.specific.push({languageId: langEffect.specific, note: langEffect.note, sourceFeat: sourceFeatName, condition: langEffect.condition, isActive: langEffect.isActive});
-            break;
-          case "note":
-          case "descriptive":
-            newAggregatedEffects.descriptiveNotes.push(effectToPush as (NoteEffectDetail | DescriptiveEffectDetail) & AggregatedFeatEffectBase);
-            break;
-        }
-      } else if (effectToPush.type !== "skill" && effectToPush.type !== "hitPoints" && effectToPush.type !== "initiative" && effectToPush.type !== 'language' && effectToPush.type !== 'note' && effectToPush.type !== 'descriptive' ) {
-        // If not active, but it's a type that should still be listed in its array for UI breakdown (e.g. an AC bonus)
-        // Note: Skill, HP, Initiative, Language, Note, Descriptive are either directly summed or handled differently if inactive
-        const arrayMap: Record<string, keyof AggregatedFeatEffects> = {
-          "abilityScore": "abilityScoreBonuses",
-          "savingThrow": "savingThrowBonuses",
-          "attackRoll": "attackRollBonuses",
-          "damageRoll": "damageRollBonuses",
-          "armorClass": "acBonuses",
-          "speed": "speedBonuses",
-          "resistance": "resistanceBonuses",
-          "casterLevelCheck": "casterLevelCheckBonuses",
-          "spellSaveDc": "spellSaveDcBonuses",
-          "turnUndead": "turnUndeadBonuses",
-          "grantsAbility": "grantedAbilities",
-          "modifiesMechanic": "modifiedMechanics",
-          "grantsProficiency": "proficienciesGranted",
-          "bonusFeatSlot": "bonusFeatSlots",
-        };
-        const targetArrayKey = arrayMap[effectToPush.type];
-        if (targetArrayKey) {
-          (newAggregatedEffects[targetArrayKey] as Array<any>).push(effectToPush);
-        }
-        // Specifically add to hpBonusSources even if inactive for breakdown
-        if (effectToPush.type === "hitPoints") {
-            const hpEffect = effectToPush as HitPointsEffect;
-             newAggregatedEffects.hpBonusSources.push({
-                sourceFeatName: sourceFeatName,
-                value: typeof hpEffect.value === 'number' ? hpEffect.value : 0,
-                condition: hpEffect.condition,
-                isActive: effectIsActive,
-            });
-        }
-      } else if (effectToPush.type === 'note' || effectToPush.type === 'descriptive') {
-           newAggregatedEffects.descriptiveNotes.push(effectToPush as (NoteEffectDetail | DescriptiveEffectDetail) & AggregatedFeatEffectBase);
+      // Store the effect with its active state, regardless of whether its value is applied to a sum
+      // Sums are for direct numerical impacts, arrays are for breakdowns/complex logic
+      switch (effectToPush.type) {
+        case "skill":
+          newAggregatedEffects.skillBonuses[effectToPush.skillId!] = (newAggregatedEffects.skillBonuses[effectToPush.skillId!] || 0) + (effectIsActive && typeof effectToPush.value === 'number' ? effectToPush.value : 0);
+          break;
+        case "abilityScore": newAggregatedEffects.abilityScoreBonuses.push(effectToPush as AbilityScoreEffect & AggregatedFeatEffectBase); break;
+        case "savingThrow": newAggregatedEffects.savingThrowBonuses.push(effectToPush as SavingThrowEffect & AggregatedFeatEffectBase); break;
+        case "attackRoll": newAggregatedEffects.attackRollBonuses.push(effectToPush as AttackRollEffect & AggregatedFeatEffectBase); break;
+        case "damageRoll": newAggregatedEffects.damageRollBonuses.push(effectToPush as DamageRollEffect & AggregatedFeatEffectBase); break;
+        case "armorClass": newAggregatedEffects.acBonuses.push(effectToPush as ArmorClassEffect & AggregatedFeatEffectBase); break;
+        case "hitPoints":
+          const hpEffect = effectToPush as HitPointsEffect;
+          if (effectIsActive && typeof hpEffect.value === 'number') {
+              newAggregatedEffects.hpBonus += hpEffect.value;
+          }
+          newAggregatedEffects.hpBonusSources.push({
+              sourceFeatName: sourceFeatName,
+              value: typeof hpEffect.value === 'number' ? hpEffect.value : 0,
+              condition: hpEffect.condition,
+              isActive: effectIsActive,
+          });
+          break;
+        case "initiative":
+          const initEffect = effectToPush as InitiativeEffect;
+          if (effectIsActive && typeof initEffect.value === 'number') {
+              newAggregatedEffects.initiativeBonus += initEffect.value;
+          }
+          // Still push to an array if we need to display conditional initiative bonuses in a breakdown later
+          // For now, initiativeBonus is a simple sum.
+          break;
+        case "speed": newAggregatedEffects.speedBonuses.push(effectToPush as SpeedEffect & AggregatedFeatEffectBase); break;
+        case "resistance": newAggregatedEffects.resistanceBonuses.push(effectToPush as ResistanceEffect & AggregatedFeatEffectBase); break;
+        case "casterLevelCheck": newAggregatedEffects.casterLevelCheckBonuses.push(effectToPush as CasterLevelCheckEffect & AggregatedFeatEffectBase); break;
+        case "spellSaveDc": newAggregatedEffects.spellSaveDcBonuses.push(effectToPush as SpellSaveDcEffect & AggregatedFeatEffectBase); break;
+        case "turnUndead": newAggregatedEffects.turnUndeadBonuses.push(effectToPush as TurnUndeadEffect & AggregatedFeatEffectBase); break;
+        case "grantsAbility": newAggregatedEffects.grantedAbilities.push(effectToPush as GrantsAbilityEffect & AggregatedFeatEffectBase & { uses?: GrantsAbilityEffectUses & { isActive?: boolean } }); break;
+        case "modifiesMechanic": newAggregatedEffects.modifiedMechanics.push(effectToPush as ModifiesMechanicEffect & AggregatedFeatEffectBase); break;
+        case "grantsProficiency": newAggregatedEffects.proficienciesGranted.push(effectToPush as GrantsProficiencyEffect & AggregatedFeatEffectBase); break;
+        case "bonusFeatSlot": newAggregatedEffects.bonusFeatSlots.push(effectToPush as BonusFeatSlotEffect & AggregatedFeatEffectBase); break;
+        case "language":
+          const langEffect = effectToPush as LanguageEffect & AggregatedFeatEffectBase;
+          if(effectIsActive && langEffect.count && typeof langEffect.count === 'number') newAggregatedEffects.languagesGranted.count += langEffect.count;
+          if(langEffect.specific) newAggregatedEffects.languagesGranted.specific.push({languageId: langEffect.specific, note: langEffect.note, sourceFeat: sourceFeatName, condition: langEffect.condition, isActive: langEffect.isActive});
+          break;
+        case "note":
+        case "descriptive":
+          newAggregatedEffects.descriptiveNotes.push(effectToPush as (NoteEffectDetail | DescriptiveEffectDetail) & AggregatedFeatEffectBase);
+          break;
       }
     }
   }
@@ -1056,5 +961,4 @@ export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
 
-
-
+    

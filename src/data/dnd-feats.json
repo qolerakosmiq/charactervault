@@ -1,4 +1,3 @@
-
 {
   "DND_FEATS_DATA": [
     {
@@ -186,10 +185,12 @@
       "label": "Exotic Weapon Proficiency",
       "description": "<b>Benefit:</b> Choose one exotic weapon, such as a bastard sword or whip.<br />You understand how to use that weapon in combat, and you can attack with it and incur no penalty.<br />You are proficient with that weapon.<br /><b>Normal:</b> A character who uses a weapon with which he or she is not proficient takes a –4 penalty on attack rolls.<br /><b>Special:</b> You can gain this feat multiple times.<br />Each time you take the feat, it applies to a new exotic weapon.",
       "prerequisites": { "bab": 1 },
-      "effectsText": "Gain proficiency with one exotic weapon.",
-      "effects": [{ "type": "note", "text": "Gain proficiency with one exotic weapon." }],
+      "effectsText": "Gain proficiency with one exotic weapon. (Choose type via specialization)",
+      "requiresSpecialization": "weapon",
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "SPEC" }],
       "isClassFeature": false,
-      "type": "special"
+      "type": "special",
+      "category": "fighterBonusFeat"
     },
     {
       "value": "class-rogue-sneak-attack",
@@ -201,7 +202,7 @@
       "effects": [
         {
           "type": "damageRoll",
-          "value": "0d6", 
+          "value": "0d6",
           "bonusType": "precision",
           "condition": "vs_flat_footed_or_flanked_target",
           "appliesTo": "all",
@@ -258,8 +259,177 @@
           "sourceFeat": "class-barbarian-rage"
         }
       ]
+    },
+    {
+      "value": "simple-weapon-proficiency",
+      "label": "Simple Weapon Proficiency",
+      "description": "<b>Benefit:</b> You make attack rolls with simple weapons normally.",
+      "effectsText": "Proficient with all simple weapons.",
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "simple" }],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "martial-weapon-proficiency-all",
+      "label": "Martial Weapon Proficiency (All)",
+      "description": "<b>Benefit:</b> You make attack rolls with all martial weapons normally.",
+      "effectsText": "Proficient with all martial weapons.",
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "martial" }],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "armor-proficiency-light",
+      "label": "Armor Proficiency (Light)",
+      "description": "<b>Benefit:</b> You are proficient with light armor.",
+      "effectsText": "Proficient with light armor.",
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "armor", "itemCategory": "light" }],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "armor-proficiency-medium",
+      "label": "Armor Proficiency (Medium)",
+      "description": "<b>Benefit:</b> You are proficient with medium armor.",
+      "effectsText": "Proficient with medium armor.",
+      "prerequisites": { "feats": ["armor-proficiency-light"] },
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "armor", "itemCategory": "medium" }],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "armor-proficiency-heavy",
+      "label": "Armor Proficiency (Heavy)",
+      "description": "<b>Benefit:</b> You are proficient with heavy armor.",
+      "effectsText": "Proficient with heavy armor.",
+      "prerequisites": { "feats": ["armor-proficiency-medium"] },
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "armor", "itemCategory": "heavy" }],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "shield-proficiency",
+      "label": "Shield Proficiency",
+      "description": "<b>Benefit:</b> You are proficient with shields (except tower shields).",
+      "effectsText": "Proficient with shields (except tower shields).",
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "shield" }],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "tower-shield-proficiency",
+      "label": "Tower Shield Proficiency",
+      "description": "<b>Benefit:</b> You are proficient with tower shields.",
+      "effectsText": "Proficient with tower shields.",
+      "prerequisites": { "feats": ["shield-proficiency"] },
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "shield", "itemCategory": "tower" }],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "bard-weapon-proficiencies",
+      "label": "Bard Weapon Proficiencies",
+      "description": "<b>Benefit:</b> Bards are proficient with all simple weapons, plus the longsword, rapier, sap, short sword, shortbow, and whip.",
+      "effectsText": "Proficient with all simple weapons, longsword, rapier, sap, short sword, shortbow, whip.",
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "simple" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "longsword" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "rapier" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "sap" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "short-sword" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "shortbow" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "whip" }
+      ],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "druid-weapon-proficiencies",
+      "label": "Druid Weapon Proficiencies",
+      "description": "<b>Benefit:</b> Druids are proficient with the following weapons: club, dagger, dart, quarterstaff, scimitar, sickle, shortspear, sling, and spear.",
+      "effectsText": "Proficient with club, dagger, dart, quarterstaff, scimitar, sickle, shortspear, sling, spear.",
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "club" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "dagger" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "dart" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "quarterstaff" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "scimitar" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "sickle" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "shortspear" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "sling" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "spear" }
+      ],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "druid-armor-shield-proficiencies",
+      "label": "Druid Armor and Shield Proficiencies",
+      "description": "<b>Benefit:</b> Druids are proficient with light and medium armor but are prohibited from wearing metal armor; thus, they may wear only padded, leather, or hide armor. (A druid may also wear wooden armor that has been altered by the ironwood spell so that it functions as steel. See the ironwood spell description) Druids are proficient with shields (except tower shields) but must use only those crafted from wood.",
+      "effectsText": "Proficient with light and medium nonmetal armor, and wooden shields (except tower).",
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "armor", "itemCategory": "light", "note": "Nonmetal only" },
+        { "type": "grantsProficiency", "proficiencyType": "armor", "itemCategory": "medium", "note": "Nonmetal only" },
+        { "type": "grantsProficiency", "proficiencyType": "shield", "note": "Wooden only, no tower shields" }
+      ],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "monk-weapon-proficiencies",
+      "label": "Monk Weapon Proficiencies",
+      "description": "<b>Benefit:</b> Monks are proficient with club, crossbow (light or heavy), dagger, handaxe, javelin, kama, nunchaku, quarterstaff, shuriken, siangham, and sling.",
+      "effectsText": "Proficient with club, crossbow (light/heavy), dagger, handaxe, javelin, kama, nunchaku, quarterstaff, shuriken, siangham, sling.",
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "club" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "crossbow-light" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "crossbow-heavy" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "dagger" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "handaxe" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "javelin" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "kama" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "nunchaku" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "quarterstaff" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "shuriken" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "siangham" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "sling" }
+      ],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "rogue-weapon-proficiencies",
+      "label": "Rogue Weapon Proficiencies",
+      "description": "<b>Benefit:</b> Rogues are proficient with all simple weapons, plus the hand crossbow, rapier, sap, shortbow, and short sword.",
+      "effectsText": "Proficient with all simple weapons, hand crossbow, rapier, sap, shortbow, short sword.",
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "simple" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "hand-crossbow" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "rapier" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "sap" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "shortbow" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "short-sword" }
+      ],
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "value": "wizard-sorcerer-weapon-proficiencies",
+      "label": "Wizard/Sorcerer Weapon Proficiencies",
+      "description": "<b>Benefit:</b> Wizards/Sorcerers are proficient with the club, dagger, heavy crossbow, light crossbow, and quarterstaff.",
+      "effectsText": "Proficient with club, dagger, heavy crossbow, light crossbow, quarterstaff.",
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "club" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "dagger" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "crossbow-heavy" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "crossbow-light" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "quarterstaff" }
+      ],
+      "isClassFeature": true,
+      "type": "general"
     }
   ],
   "FEAT_TYPES_DATA": []
 }
+
     
