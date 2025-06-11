@@ -113,7 +113,7 @@ export interface AttackRollEffect {
 
 export interface DamageRollEffect {
   type: "damageRoll";
-  value: number | string;
+  value: number | string; // Can be a number or a dice string like "1d6"
   bonusType?: "untyped" | "enhancement" | "competence" | "luck" | "precision" | "circumstance" | "specialization";
   appliesTo?: "all" | "melee" | "ranged" | "unarmed" | "grapple" | "SPEC" | `weaponCategory:${string}` | `weaponName:${string}`;
   weaponId?: string; // Use for specific weapon definition ID
@@ -166,10 +166,10 @@ export interface SpeedEffect {
 
 export interface ResistanceEffect {
   type: "resistance";
-  resistanceTo: string;
+  resistanceTo: string; // e.g., "fire", "cold", "acid", "electricity", "sonic", "spell", "power", "damageReduction"
   value: number;
-  isDamageReduction?: boolean;
-  bypassedBy?: string[];
+  isDamageReduction?: boolean; // True if this is a DR X/- or DR X/magic effect
+  bypassedBy?: string[]; // e.g., ["magic", "adamantine"] for DR
   bonusType?: "resistance" | "untyped";
   condition?: string;
   sourceFeat?: string;
@@ -211,25 +211,26 @@ export interface GrantsAbilityEffectUses {
   value?: number | "levelBased" | "abilityModBased" | "scaled";
   basedOnAbility?: Exclude<AbilityName, 'none'>;
   scaleWithClassLevel?: FeatEffectScaling;
-  isActive?: boolean;
+  isActive?: boolean; // To track if the uses themselves are currently active/available
 }
+
 export interface GrantsAbilityEffect {
   type: "grantsAbility";
-  abilityKey: string;
-  name: string;
-  details?: string;
+  abilityKey: string; // Unique identifier for the granted ability
+  name: string; // Display name
+  details?: string; // Description
   uses?: GrantsAbilityEffectUses;
   actionType?: "standard" | "move" | "fullRound" | "free" | "swift" | "immediate" | "reaction" | "passive";
-  condition?: string;
+  condition?: string; // Condition for the ability to be granted/usable
   sourceFeat?: string;
-  scaleWithClassLevel?: FeatEffectScaling;
+  scaleWithClassLevel?: FeatEffectScaling; // For abilities whose own properties might scale (e.g., damage of an ability)
 }
 
 export interface ModifiesMechanicEffect {
   type: "modifiesMechanic";
-  mechanicKey: string;
-  change?: string;
-  value?: number | string | boolean;
+  mechanicKey: string; // e.g., "cannotBeFlanked", "evasionActive", "kiStrikeBypass"
+  change?: string; // e.g., "adds", "sets", "removes" - for future more complex modifications
+  value?: any; // boolean, string (e.g., "magic", "adamantine"), number, or even a small object
   condition?: string;
   sourceFeat?: string;
   scaleWithClassLevel?: FeatEffectScaling;
@@ -241,6 +242,7 @@ export interface GrantsProficiencyEffect {
   proficiencyType: "weapon" | "armor" | "shield";
   itemCategory?: "simple" | "martial" | "exotic" | "light" | "medium" | "heavy" | "tower";
   specificItem?: string;
+  note?: string; // Added note
   condition?: string;
   sourceFeat?: string;
 }
@@ -248,7 +250,7 @@ export interface GrantsProficiencyEffect {
 
 export interface BonusFeatSlotEffect {
   type: "bonusFeatSlot";
-  category: string;
+  category: string; // e.g., "fighterBonusFeat", "wizardMetamagic", "monkBonusFeat"
   count: number;
   note?: string;
   condition?: string;
@@ -257,8 +259,8 @@ export interface BonusFeatSlotEffect {
 
 export interface LanguageEffect {
   type: "language";
-  count?: number;
-  specific?: LanguageId;
+  count?: number; // How many bonus languages
+  specific?: LanguageId; // A specific language granted
   note?: string;
   condition?: string;
   sourceFeat?: string;
@@ -304,10 +306,10 @@ export interface FeatDefinitionJsonData {
   effects?: FeatEffectDetail[];
   canTakeMultipleTimes?: boolean;
   requiresSpecialization?: string;
-  requiresSpecializationCategory?: string;
+  requiresSpecializationCategory?: string; // e.g. "fighterBonusFeat" for Weapon Focus (Fighter Bonus)
   isClassFeature?: boolean;
   isCustom?: boolean;
-  category?: string;
+  category?: string; // e.g. "fighterBonusFeat", "general", "divine"
   permanentEffect?: boolean;
 }
 
@@ -316,7 +318,7 @@ export interface CharacterFeatInstance {
   definitionId: string;
   instanceId: string;
   specializationDetail?: string;
-  chosenSpecializationCategory?: string;
+  chosenSpecializationCategory?: string; // Stores the category this instance fulfills if it's a bonus feat from a slot
   isGranted?: boolean;
   grantedNote?: string;
   conditionalEffectStates?: Record<string, boolean>;
@@ -656,6 +658,7 @@ export interface AbilityScoreComponentValue extends AggregatedFeatEffectBase {
   sourceLabel: string;
   sourceDetail?: string;
   value: number;
+  // isActive is inherited
 }
 export interface AbilityScoreBreakdown {
   ability: Exclude<AbilityName, 'none'>;
@@ -691,7 +694,7 @@ export interface AggregatedFeatEffects {
   casterLevelCheckBonuses: Array<CasterLevelCheckEffect & AggregatedFeatEffectBase>;
   spellSaveDcBonuses: Array<SpellSaveDcEffect & AggregatedFeatEffectBase>;
   turnUndeadBonuses: Array<TurnUndeadEffect & AggregatedFeatEffectBase>;
-  grantedAbilities: Array<GrantsAbilityEffect & AggregatedFeatEffectBase & { uses?: GrantsAbilityEffectUses & { isActive?: boolean } }>;
+  grantedAbilities: Array<GrantsAbilityEffect & AggregatedFeatEffectBase & { uses?: GrantsAbilityEffectUses }>; // Ensure uses here
   modifiedMechanics: Array<ModifiesMechanicEffect & AggregatedFeatEffectBase>;
   proficienciesGranted: Array<GrantsProficiencyEffect & AggregatedFeatEffectBase>;
   bonusFeatSlots: Array<BonusFeatSlotEffect & AggregatedFeatEffectBase>;
@@ -757,11 +760,14 @@ export interface AcBreakdownDetailItem {
   sizeName?: string;
   condition?: string;
   isActive?: boolean;
+  isSubItem?: boolean; // Added for MaxHpBreakdown indenting or specific AC bonus sources
 }
 
 export interface SavingThrowFeatComponent extends AggregatedFeatEffectBase {
   sourceFeat: string;
   value: number;
+  // condition?: string; // Already in AggregatedFeatEffectBase
+  // isActive?: boolean; // Already in AggregatedFeatEffectBase
 }
 
 export interface SavingThrowBreakdownDetails {
@@ -818,5 +824,3 @@ export type FeatDefinitionWithEffects = FeatDefinitionJsonData & { effects: Feat
 export const isFeatWithEffects = (feat: FeatDefinitionJsonData): feat is FeatDefinitionWithEffects => {
   return Array.isArray(feat.effects) && feat.effects.length > 0;
 };
-
-    

@@ -1,4 +1,3 @@
-
 {
   "DND_FEATS_DATA": [
     {
@@ -256,8 +255,7 @@
                 { "level": 20, "value": 6 }
               ]
             }
-          },
-          "sourceFeat": "class-barbarian-rage"
+          }
         }
       ]
     },
@@ -606,9 +604,55 @@
         { "type": "skill", "skillId": "SPEC", "value": 3, "bonusType": "untyped" }
       ],
       "type": "general"
+    },
+    {
+      "value": "test-daily-power",
+      "label": "Test Daily Power",
+      "description": "<b>Benefit:</b> Grants a test ability usable once per day.",
+      "effectsText": "Grants Test Power 1/day.",
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "testPowerAbility",
+          "name": "Test Power",
+          "details": "This is a test power that can be used once per day.",
+          "uses": {
+            "per": "day",
+            "value": 1
+          }
+        }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "test-scaled-daily-power",
+      "label": "Test Scaled Daily Power",
+      "description": "<b>Benefit:</b> Grants a test ability usable multiple times per day based on Fighter level.",
+      "effectsText": "Grants Scaled Test Power based on Fighter level.",
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "testScaledPowerAbility",
+          "name": "Scaled Test Power",
+          "details": "This test power scales its uses with Fighter level.",
+          "uses": {
+            "per": "day",
+            "value": "scaled",
+            "scaleWithClassLevel": {
+              "classId": "fighter",
+              "specificLevels": [
+                { "level": 1, "value": 1 },
+                { "level": 5, "value": 2 },
+                { "level": 10, "value": 3 }
+              ]
+            }
+          }
+        }
+      ],
+      "type": "special"
     }
   ],
   "FEAT_TYPES_DATA": []
 }
-
     
+```

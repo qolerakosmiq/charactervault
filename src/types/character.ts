@@ -56,7 +56,7 @@ import type {
   DomainDefinition,
   Character, // Import full Character type
   AggregatedFeatEffectBase,
-  GrantsAbilityEffectUses
+  GrantsAbilityEffectUses // Import this type
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 // Import calculateLevelFromXp and other used utilities directly
@@ -727,12 +727,10 @@ export function calculateFeatEffects(
       effectToPush.sourceFeat = sourceFeatName;
 
       let effectIsActive = true;
-      if (definition.permanentEffect) {
-        effectIsActive = true;
-        if(effectToPush.condition) {
-             if(!featInstance.conditionalEffectStates) featInstance.conditionalEffectStates = {};
-             featInstance.conditionalEffectStates[effectToPush.condition] = true;
-        }
+      if (definition.permanentEffect && effectToPush.condition) {
+         effectIsActive = true;
+         if(!featInstance.conditionalEffectStates) featInstance.conditionalEffectStates = {};
+         featInstance.conditionalEffectStates[effectToPush.condition] = true;
       } else if (effectToPush.condition && effectToPush.condition.trim() !== "") {
         effectIsActive = !!featInstance.conditionalEffectStates?.[effectToPush.condition];
       }
@@ -761,31 +759,36 @@ export function calculateFeatEffects(
       if (resolvedValue !== undefined && effectToPush.hasOwnProperty('value')) {
         (effectToPush as any).value = resolvedValue;
       }
-
-      if (effectToPush.type === 'grantsAbility' && effectToPush.uses) {
+      
+      // Handle scaling for GrantsAbilityEffect uses
+      if (effectToPush.type === 'grantsAbility') {
           const grantsAbilityEffect = effectToPush as GrantsAbilityEffect & AggregatedFeatEffectBase;
           if (grantsAbilityEffect.uses) {
             grantsAbilityEffect.uses.isActive = effectIsActive;
             if (grantsAbilityEffect.uses.value === "scaled" && grantsAbilityEffect.uses.scaleWithClassLevel?.specificLevels) {
-                const classLevel = newAggregatedEffects.classLevels[grantsAbilityEffect.uses.scaleWithClassLevel.classId] || 0;
+                const classIdForScaling = grantsAbilityEffect.uses.scaleWithClassLevel.classId;
+                const classLevel = newAggregatedEffects.classLevels[classIdForScaling] || 0;
                 let foundUsesValue: number | undefined;
                 const sortedUsesLevels = [...grantsAbilityEffect.uses.scaleWithClassLevel.specificLevels].sort((a,b) => b.level - a.level);
+                
                 for (const lvlEntry of sortedUsesLevels) {
                     if (classLevel >= lvlEntry.level) {
                         foundUsesValue = lvlEntry.value as number;
                         break;
                     }
                 }
+
                 if (foundUsesValue !== undefined) {
                     grantsAbilityEffect.uses.value = foundUsesValue;
                 } else if (grantsAbilityEffect.uses.scaleWithClassLevel.specificLevels.length > 0) {
                     grantsAbilityEffect.uses.value = [...grantsAbilityEffect.uses.scaleWithClassLevel.specificLevels].sort((a, b) => a.level - b.level)[0].value as number;
                 } else {
-                    grantsAbilityEffect.uses.value = 0; // Default to 0 if no levels match
+                    grantsAbilityEffect.uses.value = 0; 
                 }
             }
           }
       }
+
 
       switch (effectToPush.type) {
         case "skill":
@@ -823,7 +826,7 @@ export function calculateFeatEffects(
         case "casterLevelCheck": newAggregatedEffects.casterLevelCheckBonuses.push(effectToPush as CasterLevelCheckEffect & AggregatedFeatEffectBase); break;
         case "spellSaveDc": newAggregatedEffects.spellSaveDcBonuses.push(effectToPush as SpellSaveDcEffect & AggregatedFeatEffectBase); break;
         case "turnUndead": newAggregatedEffects.turnUndeadBonuses.push(effectToPush as TurnUndeadEffect & AggregatedFeatEffectBase); break;
-        case "grantsAbility": newAggregatedEffects.grantedAbilities.push(effectToPush as GrantsAbilityEffect & AggregatedFeatEffectBase & { uses?: GrantsAbilityEffectUses & { isActive?: boolean } }); break;
+        case "grantsAbility": newAggregatedEffects.grantedAbilities.push(effectToPush as GrantsAbilityEffect & AggregatedFeatEffectBase & { uses?: GrantsAbilityEffectUses }); break;
         case "modifiesMechanic": newAggregatedEffects.modifiedMechanics.push(effectToPush as ModifiesMechanicEffect & AggregatedFeatEffectBase); break;
         case "grantsProficiency": newAggregatedEffects.proficienciesGranted.push(effectToPush as GrantsProficiencyEffect & AggregatedFeatEffectBase); break;
         case "bonusFeatSlot": newAggregatedEffects.bonusFeatSlots.push(effectToPush as BonusFeatSlotEffect & AggregatedFeatEffectBase); break;
@@ -969,5 +972,3 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
-
-    

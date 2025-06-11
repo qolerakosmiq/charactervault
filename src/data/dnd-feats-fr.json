@@ -1,4 +1,3 @@
-
 {
   "DND_FEATS_DATA": [
     {
@@ -241,7 +240,7 @@
         {
           "type": "grantsAbility",
           "abilityKey": "barbarianRageUses",
-          "name": "Utilisations de Rage",
+          "name": "Rage Uses",
           "uses": {
             "per": "day",
             "value": "scaled",
@@ -256,8 +255,7 @@
                 { "level": 20, "value": 6 }
               ]
             }
-          },
-          "sourceFeat": "class-barbarian-rage"
+          }
         }
       ]
     },
@@ -606,9 +604,56 @@
         { "type": "skill", "skillId": "SPEC", "value": 3, "bonusType": "non_typé" }
       ],
       "type": "general"
+    },
+    {
+      "value": "test-daily-power",
+      "label": "Pouvoir Quotidien de Test",
+      "description": "<b>Avantage :</b> Accorde une capacité de test utilisable une fois par jour.",
+      "effectsText": "Accorde le Pouvoir de Test 1/jour.",
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "testPowerAbility",
+          "name": "Pouvoir de Test",
+          "details": "Ceci est un pouvoir de test qui peut être utilisé une fois par jour.",
+          "uses": {
+            "per": "day",
+            "value": 1
+          }
+        }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "test-scaled-daily-power",
+      "label": "Pouvoir Quotidien de Test Évolutif",
+      "description": "<b>Avantage :</b> Accorde une capacité de test utilisable plusieurs fois par jour en fonction du niveau de Guerrier.",
+      "effectsText": "Accorde le Pouvoir de Test Évolutif en fonction du niveau de Guerrier.",
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "testScaledPowerAbility",
+          "name": "Pouvoir de Test Évolutif",
+          "details": "Ce pouvoir de test fait évoluer ses utilisations avec le niveau de Guerrier.",
+          "uses": {
+            "per": "day",
+            "value": "scaled",
+            "scaleWithClassLevel": {
+              "classId": "fighter",
+              "specificLevels": [
+                { "level": 1, "value": 1 },
+                { "level": 5, "value": 2 },
+                { "level": 10, "value": 3 }
+              ]
+            }
+          }
+        }
+      ],
+      "type": "special"
     }
   ],
   "FEAT_TYPES_DATA": []
 }
 
     
+```
