@@ -115,24 +115,16 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
     setRollAbilityDialogData({
       dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck || "{abilityName} Check").replace("{abilityName}", abilityName),
-      rollType: `${abilityName} Check`, // Generic check type
+      rollType: `ability_check_${ability}`, 
       baseModifier: finalModifier,
       calculationBreakdown: breakdown,
-      rerollTwentiesForChecks: rerollTwentiesForChecks, // Pass the DM setting
+      rerollTwentiesForChecks: rerollTwentiesForChecks, 
     });
     setIsRollAbilityDialogOpen(true);
   };
 
   const handleAbilityRollResult = (diceResult: number, totalBonus: number, finalResult: number) => {
-    if (!translations) return;
-    const UI_STRINGS = translations.UI_STRINGS;
-    toast({
-      title: UI_STRINGS.rollDialogResultTitle || "Roll Result",
-      description: (UI_STRINGS.rollDialogResultDescription || "Rolled {diceResult} + {totalBonus} = {finalResult}")
-        .replace("{diceResult}", String(diceResult))
-        .replace("{totalBonus}", String(totalBonus >=0 ? `+${totalBonus}` : totalBonus))
-        .replace("{finalResult}", String(finalResult)),
-    });
+    // Toast notification removed from here
   };
   
   if (translationsLoading || !translations) {
@@ -315,3 +307,4 @@ const CharacterFormAbilityScoresSectionComponent = ({
 };
 CharacterFormAbilityScoresSectionComponent.displayName = 'CharacterFormAbilityScoresSectionComponent';
 export const CharacterFormAbilityScoresSection = React.memo(CharacterFormAbilityScoresSectionComponent);
+
