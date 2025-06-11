@@ -1,4 +1,5 @@
 
+
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -800,6 +801,13 @@ export function calculateFeatEffects(
           }
       }
 
+      // Resolve "SPEC" for attack/damage rolls
+      if ((effectToPush.type === "attackRoll" || effectToPush.type === "damageRoll") &&
+          (effectToPush as AttackRollEffect | DamageRollEffect).appliesTo === "SPEC" &&
+          featInstance.specializationDetail && definition.requiresSpecialization === "weapon") {
+        (effectToPush as AttackRollEffect | DamageRollEffect).appliesTo = `weaponName:${featInstance.specializationDetail}`;
+      }
+
 
       switch (effectToPush.type) {
         case "note":
@@ -1030,3 +1038,4 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
+
