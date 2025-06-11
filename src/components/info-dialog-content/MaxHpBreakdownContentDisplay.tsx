@@ -7,6 +7,7 @@ import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 interface MaxHpBreakdownContentDisplayProps {
   character: Character;
@@ -53,10 +54,10 @@ export const MaxHpBreakdownContentDisplay = ({
           <span className="text-muted-foreground">{uiStrings.maxHpDialogBaseHpLabel || "Base Hit Points"}</span>
           <span className="font-bold">{baseHp}</span>
         </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">
+        <div className="flex justify-between text-sm items-baseline">
+          <span className="text-muted-foreground inline-flex items-baseline">
             {uiStrings.maxHpDialogAbilityModLabel || "Ability Modifier"}
-            <span className="text-muted-foreground/80 ml-1">({conAbbr})</span>
+            <Badge variant="outline" className="ml-1.5 text-sm font-normal">{conAbbr}</Badge>
           </span>
           {renderModifierValue(finalConstitutionModifier)}
         </div>
