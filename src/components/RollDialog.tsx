@@ -116,18 +116,24 @@ export function RollDialog({
           {calculationBreakdown.length > 0 && (
             <div>
               <h4 className={cn(sectionHeadingClass, "mb-1")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle || "Calculation Breakdown:"}</h4>
-              <div className="space-y-0.5 text-sm bg-muted/30 p-3 rounded-md border">
-                {calculationBreakdown.map((item, index) => {
-                  const isTotalLine = item.label === (UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus") || item.label === (UI_STRINGS.rollDialogTotalNumericBonusLabel || "Total Numeric Bonus");
-                  return (
-                    <div key={`breakdown-${index}`} className={cn("flex justify-between", isTotalLine && "mt-1 pt-1 border-t")}>
-                      <span className={cn("text-muted-foreground", isTotalLine && "font-semibold")}>{item.label}:</span>
-                      <span className={cn("font-semibold", item.isBold && "font-bold", isTotalLine && "text-accent font-bold")}>
-                        {typeof item.value === 'number' || !isNaN(Number(item.value)) ? renderModifierValue(item.value) : item.value}
-                      </span>
-                    </div>
-                  );
-                })}
+              <div className="space-y-1 text-sm"> {/* Removed card-like styling */}
+                {calculationBreakdown.map((item, index) => (
+                  <div key={`breakdown-${index}`} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">{item.label}:</span>
+                    <span className={cn("font-semibold text-foreground", item.isBold && "font-bold")}>
+                      {typeof item.value === 'number' || !isNaN(Number(item.value)) ? renderModifierValue(item.value) : item.value}
+                    </span>
+                  </div>
+                ))}
+                <Separator className="my-2" /> {/* Separator after items */}
+                <div className="flex justify-between text-lg"> {/* Total line */}
+                  <span className="font-semibold">
+                    {isDamageRoll ? (UI_STRINGS.rollDialogTotalNumericBonusLabel || "Total Numeric Bonus") : (UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus")}:
+                  </span>
+                  <span className="font-bold text-accent">
+                    {renderModifierValue(baseModifier)}
+                  </span>
+                </div>
               </div>
             </div>
           )}
