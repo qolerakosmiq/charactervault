@@ -226,12 +226,14 @@
       "value": "class-barbarian-rage",
       "label": "Rage",
       "description": "<b>Avantage :</b> Un barbare peut entrer en rage un certain nombre de fois par jour. En rage, un barbare gagne temporairement un bonus de +4 en Force, un bonus de +4 en Constitution et un bonus de moral de +2 aux jets de Volonté, mais il subit une pénalité de –2 à la Classe d'Armure. L'augmentation de la Constitution augmente les points de vie du barbare de 2 points par niveau, mais ces points de vie disparaissent à la fin de la rage lorsque son score de Constitution revient à la normale. (Ces points de vie ne sont pas perdus en premier comme le sont les points de vie temporaires.) En rage, un barbare ne peut utiliser aucune compétence basée sur le Charisme, la Dextérité ou l'Intelligence (sauf Équilibre, Art de la Fugue, Intimidation et Équitation), la compétence Concentration, ou toute capacité qui nécessite de la patience ou de la concentration, ni lancer de sorts ou activer des objets magiques qui nécessitent un mot de commande, un déclencheur de sort (comme une baguette) ou l'achèvement d'un sort (comme un parchemin) pour fonctionner. Il peut utiliser n'importe quel don qu'il possède sauf Expertise du combat, les dons de création d'objets et les dons de métamagie. Un accès de rage dure un nombre de rounds égal à 3 + le modificateur de Constitution (nouvellement amélioré) du personnage. Un barbare peut mettre fin prématurément à sa rage. À la fin de la rage, le barbare perd les modificateurs et les restrictions de la rage et devient fatigué (pénalité de –2 en Force, pénalité de –2 en Dextérité, ne peut ni charger ni courir) pendant toute la durée de la rencontre. Un barbare ne peut entrer en rage qu'une seule fois par rencontre. Au niveau 1, il peut utiliser sa capacité de rage une fois par jour. Au niveau 4 et tous les quatre niveaux par la suite, il peut l'utiliser une fois de plus par jour (jusqu'à un maximum de six fois par jour au niveau 20). Entrer en rage ne prend pas de temps en soi, mais un barbare ne peut le faire que pendant son action, pas en réponse à l'action de quelqu'un d'autre.",
-      "effectsText": "En rage : +4 FOR, +4 CON. Fatigué après.",
+      "effectsText": "En rage : +4 FOR, +4 CON, +2 Vol, -2 CA. Fatigué après.",
       "type": "special-ex",
       "isClassFeature": true,
       "effects": [
         { "type": "abilityScore", "ability": "strength", "value": 4, "bonusType": "morale", "condition": "raging" },
-        { "type": "abilityScore", "ability": "constitution", "value": 4, "bonusType": "morale", "condition": "raging" }
+        { "type": "abilityScore", "ability": "constitution", "value": 4, "bonusType": "morale", "condition": "raging" },
+        { "type": "savingThrow", "save": "will", "value": 2, "bonusType": "morale", "condition": "raging" },
+        { "type": "armorClass", "acType": "untyped", "value": -2, "condition": "raging", "appliesToScope": ["normal", "flatFooted"] }
       ]
     }
   ],

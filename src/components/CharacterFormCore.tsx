@@ -699,23 +699,23 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   }, []);
 
   const handleRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number, weaponDamageDice?: string) => {
-    if (!translations || !rollDialogProps) return; // Added rollDialogProps check
+    if (!translations || !rollDialogProps) return;
     const UI_STRINGS = translations.UI_STRINGS;
     
     let description = "";
-    const weaponName = rollDialogProps.rollType.includes('melee') 
+    const weaponName = rollDialogProps.rollType.includes('melee') || rollDialogProps.rollType.includes('ranged')
                        ? rollDialogProps.dialogTitle.match(/\(([^:]+):/)?.[1] || '' 
-                       : rollDialogProps.dialogTitle.match(/\(([^:]+):/)?.[1] || '';
+                       : '';
 
 
     if (weaponDamageDice && rollDialogProps?.rollType.startsWith('damage_roll')) {
         const actualDicePart = weaponDamageDice.match(/^(\d*d\d+)/)?.[0] || weaponDamageDice;
         description = (UI_STRINGS.rollDialogResultDamageFormat || "Damage ({weaponName}): Rolled {diceSum} (from {diceString}) + {otherBonus} = {totalDamage}")
           .replace("{weaponName}", weaponName)
-          .replace("{diceSum}", String(diceResult)) // diceResult is now the sum from parseAndRollDice
-          .replace("{diceString}", actualDicePart) // actualDicePart is just XdY
-          .replace("{otherBonus}", String(totalBonus >=0 ? `+${totalBonus}` : totalBonus)) // totalBonus is the sum of other numerical bonuses
-          .replace("{totalDamage}", String(finalResult)); // finalResult is diceSum + otherBonus
+          .replace("{diceSum}", String(diceResult))
+          .replace("{diceString}", actualDicePart)
+          .replace("{otherBonus}", String(totalBonus >=0 ? `+${totalBonus}` : totalBonus))
+          .replace("{totalDamage}", String(finalResult));
     } else {
         description = (UI_STRINGS.rollDialogResultDescription || "Rolled {diceResult} + {totalBonus} = {finalResult}")
           .replace("{diceResult}", String(diceResult))
@@ -746,7 +746,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     ];
     handleOpenRollDialog({ 
       dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck || "{abilityName} Check").replace("{abilityName}", abilityName),
-      rollType: `${abilityName} Check`, // For potential future filtering/specific logic
+      rollType: `${abilityName} Check`,
       baseModifier: finalModifier,
       calculationBreakdown: breakdown,
     });
@@ -914,7 +914,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
   const savingThrowsData = React.useMemo<SavingThrowsPanelProps['savingThrowsData'] | undefined>(() => {
     if(!character) return undefined;
-    return { savingThrows: character.savingThrows, classes: character.classes };
+    return { savingThrows: character.savingThrows, classes: character.classes, feats: character.feats };
   }, [character]);
 
   const acData = React.useMemo<ArmorClassPanelProps['acData'] | undefined>(() => {
@@ -922,7 +922,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     return {
       abilityScores: character.abilityScores, size: character.size, armorBonus: character.armorBonus, shieldBonus: character.shieldBonus,
       naturalArmor: character.naturalArmor, deflectionBonus: character.deflectionBonus, dodgeBonus: character.dodgeBonus, acMiscModifier: character.acMiscModifier,
-      feats: character.feats, // Pass feats to AC Panel for conditional Monk AC
+      feats: character.feats,
     };
   }, [character]);
 
@@ -1036,7 +1036,6 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             onMultipleBaseAbilityScoresChange={handleMultipleBaseAbilityScoresChange}
             onAbilityScoreTempCustomModifierChange={handleAbilityScoreTempCustomModifierChange}
             onOpenAbilityScoreBreakdownDialog={handleOpenAbilityScoreBreakdownDialog}
-            onOpenRollDialog={handleOpenAbilityCheckRollDialog}
           />
         )}
 
@@ -1236,3 +1235,5 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
+
+    

@@ -12,6 +12,7 @@ export interface SavingThrowFeatComponent {
   sourceFeat: string;
   value: number;
   condition?: string;
+  isActive?: boolean; // Added to indicate if the condition is met
 }
 
 export interface SavingThrowBreakdownDetails {
@@ -44,11 +45,6 @@ export const SavingThrowBreakdownContentDisplay = ({
     ? (abilityLabels.find(al => al.value === breakdown.abilityKey)?.abbr || String(breakdown.abilityKey).substring(0,3).toUpperCase())
     : 'N/A';
 
-  const activeFeatSourceNamesAndConditions = breakdown.featComponents
-    .filter(fc => fc.value !== 0) 
-    .map(fc => fc.condition ? `${fc.sourceFeat} (${fc.condition})` : fc.sourceFeat);
-
-
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
@@ -65,18 +61,23 @@ export const SavingThrowBreakdownContentDisplay = ({
           {renderModifierValue(breakdown.abilityMod)}
         </div>
         
-        {breakdown.featBonusTotal !== 0 && (
-          <div className="flex justify-between items-baseline text-sm">
-            <span className="text-muted-foreground flex-shrink-0 mr-2">
-              {uiStrings.savingThrowsFeatsModifierLabel || "Feats Modifier"}
-              {activeFeatSourceNamesAndConditions.length > 0 && (
-                <span className="text-muted-foreground/80 ml-1">
-                  ({activeFeatSourceNamesAndConditions.join(", ")})
-                </span>
-              )}
-            </span>
-            {renderModifierValue(breakdown.featBonusTotal)}
-          </div>
+        {breakdown.featComponents && breakdown.featComponents.length > 0 && breakdown.featBonusTotal !== 0 && (
+          breakdown.featComponents.filter(fc => fc.value !== 0).map((fc, index) => (
+            <div key={`feat-comp-${index}-${fc.sourceFeat}`} className="flex justify-between items-baseline text-sm">
+              <span className="text-muted-foreground flex-shrink-0 mr-2">
+                {fc.sourceFeat}
+                {fc.condition && (
+                  <span className="text-muted-foreground/80 italic ml-1">
+                     ({uiStrings[`condition_${fc.condition}`] || fc.condition} - {fc.isActive 
+                       ? (uiStrings.conditionalEffectActiveSuffix || "(Active)")
+                       : (uiStrings.conditionalEffectInactiveSuffix || "(Inactive)")
+                     })
+                  </span>
+                )}
+              </span>
+              {renderModifierValue(fc.value)}
+            </div>
+          ))
         )}
 
         {breakdown.magicMod !== 0 && (
@@ -102,4 +103,5 @@ export const SavingThrowBreakdownContentDisplay = ({
     </div>
   );
 };
+    
     

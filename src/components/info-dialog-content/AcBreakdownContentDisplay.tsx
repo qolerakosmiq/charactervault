@@ -16,6 +16,7 @@ export interface AcBreakdownDetailItem {
   abilityAbbr?: string;
   sizeName?: string;
   condition?: string;
+  isActive?: boolean; // Added for conditional effects
 }
 
 interface AcBreakdownContentDisplayProps {
@@ -71,8 +72,13 @@ export const AcBreakdownContentDisplay = ({
                   {suffixText}
                 </span>
               )}
-              {detail.type === 'acFeatBonus' && detail.condition && (
-                <span className="text-muted-foreground/80 italic ml-1">({detail.condition})</span>
+              {detail.condition && (
+                <span className="text-muted-foreground/80 italic ml-1">
+                  ({uiStrings[`condition_${detail.condition}`] || detail.condition} - {detail.isActive 
+                    ? (uiStrings.conditionalEffectActiveSuffix || "(Active)")
+                    : (uiStrings.conditionalEffectInactiveSuffix || "(Inactive)")
+                  })
+                </span>
               )}
             </span>
             <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{valueToRender as React.ReactNode}</span>
@@ -93,3 +99,4 @@ export const AcBreakdownContentDisplay = ({
   );
 };
 
+    
