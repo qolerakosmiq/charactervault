@@ -26,7 +26,7 @@ export interface RollDialogProps {
   rollType: string; // e.g., "ability_check_strength", "saving_throw_fortitude", "skill_bluff", "damage_roll_melee_longsword"
   baseModifier: number; // Numerical bonus for attack/save/skill, or damage bonus for damage rolls
   calculationBreakdown: GenericBreakdownItem[];
-  weaponDamageDice?: string; // e.g., "1d8", "2d6", "1d4+1" - only for damage rolls
+  weaponDamageDice?: string; // e.g., "1d8", "2d6", "1d4-1" - only for damage rolls
   onRoll: (diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString?: string) => void;
 }
 
@@ -117,15 +117,20 @@ export function RollDialog({
 
         <div className="space-y-3 py-3 max-h-[60vh] overflow-y-auto pr-2">
           {calculationBreakdown.length > 0 && (
-            <div>
+            <div className="space-y-1">
               <h4 className={cn(sectionHeadingClass, "mb-1")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle || "Calculation Breakdown"}</h4>
-              <div className="space-y-1 text-sm">
                 {calculationBreakdown.map((item, index) => (
                   <div key={`breakdown-${index}`} className="flex justify-between text-sm">
                     <span className="text-muted-foreground">{item.label}</span>
-                    <span className={cn("font-semibold text-foreground", item.isBold && "font-bold")}>
-                      {typeof item.value === 'number' || !isNaN(Number(item.value)) ? renderModifierValue(item.value) : item.value}
-                    </span>
+                    {item.isRawValue ? (
+                      <span className={cn("font-bold text-foreground", item.isBold && "font-bold")}>
+                        {item.value}
+                      </span>
+                    ) : (
+                      <span className={cn("font-semibold text-foreground", item.isBold && "font-bold")}>
+                        {renderModifierValue(item.value as number | string)}
+                      </span>
+                    )}
                   </div>
                 ))}
                 <Separator className="my-2" />
@@ -138,7 +143,6 @@ export function RollDialog({
                   </span>
                 </div>
               </div>
-            </div>
           )}
 
           {diceResult !== null && (
@@ -191,4 +195,3 @@ export function RollDialog({
     </Dialog>
   );
 }
-

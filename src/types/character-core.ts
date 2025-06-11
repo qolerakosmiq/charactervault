@@ -617,6 +617,7 @@ export interface GenericBreakdownItem {
   value: string | number;
   isBold?: boolean;
   isSubItem?: boolean;
+  isRawValue?: boolean; // Added for raw score display
 }
 
 export type InfoDialogContentType =
