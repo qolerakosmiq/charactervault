@@ -132,7 +132,11 @@ export const RaceContentDisplay = ({
     outputBlocks.push(
       <div key="race-general-traits-section">
         <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading || "General Traits"}</h3>
-        {generalTraitsSubSections}
+        {generalTraitsSubSections.map((subSection, index) => (
+          <div key={`gen-trait-sub-${index}`} className={cn(index > 0 && "mt-0")}> {/* Ensures no extra top margin for subsequent sub-sections within general traits */}
+            {subSection}
+          </div>
+        ))}
       </div>
     );
   }
@@ -141,7 +145,7 @@ export const RaceContentDisplay = ({
     outputBlocks.push(
       <div key="race-granted-feats-section">
         <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h3>
-        <ul className="list-none space-y-0.5 text-sm mt-2" key="race-granted-feats-list">
+        <ul className="list-none space-y-0.5 text-sm mt-0" key="race-granted-feats-list">
           {grantedFeats.map(feat => {
             const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
             return (
@@ -196,12 +200,11 @@ export const RaceContentDisplay = ({
     );
   }
 
-  return outputBlocks.length > 0 ? <div className="space-y-2">{outputBlocks.map((block, index, arr) => (
+  return outputBlocks.length > 0 ? <div>{outputBlocks.map((block, index, arr) => (
         <React.Fragment key={`race-display-block-${index}`}>
           {block}
-          {index < arr.length - 1 && <Separator className="my-2" />}
+          {index < arr.length - 1 && <Separator className="mt-3 mb-2" />}
         </React.Fragment>
       ))}</div> : null;
 };
-
     
