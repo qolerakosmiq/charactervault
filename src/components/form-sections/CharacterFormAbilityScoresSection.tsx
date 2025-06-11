@@ -109,8 +109,8 @@ const CharacterFormAbilityScoresSectionComponent = ({
     const finalModifier = calculateAbilityModifier(detailedAbilityScores[ability].finalScore);
 
     const breakdown: GenericBreakdownItem[] = [
-      { label: translations.UI_STRINGS.abilityScoreLabel || "Ability Score", value: detailedAbilityScores[ability].finalScore, isRawValue: true },
-      { label: translations.UI_STRINGS.abilityModifierLabel || "Modifier", value: finalModifier, isBold: true }
+      // Removed: { label: translations.UI_STRINGS.abilityScoreLabel || "Ability Score", value: detailedAbilityScores[ability].finalScore, isRawValue: true },
+      { label: translations.UI_STRINGS.abilityModifierLabel || "Ability Modifier", value: finalModifier, isBold: true }
     ];
 
     setRollAbilityDialogData({
