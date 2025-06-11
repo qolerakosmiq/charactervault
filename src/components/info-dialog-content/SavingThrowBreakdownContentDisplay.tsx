@@ -56,7 +56,7 @@ export const SavingThrowBreakdownContentDisplay = ({
         </div>
         <div className="flex justify-between text-sm items-baseline">
           <span className="text-foreground inline-flex items-baseline">
-            {uiStrings.savingThrowsRowLabelAbilityModifier || "Ability Modifier"}{' '}
+            {uiStrings.savingThrowsRowLabelAbilityModifier || "Ability Modifier"}{'\u00A0'}
             <Badge variant="outline">{abilityAbbr}</Badge>
           </span>
           {renderModifierValue(breakdown.abilityMod)}
@@ -96,7 +96,7 @@ export const SavingThrowBreakdownContentDisplay = ({
 
         <Separator className="mt-2 mb-1" />
         <div className="flex justify-between text-lg">
-          <span className="font-semibold">{uiStrings.savingThrowsRowLabelTotal || "Total"}{' '}{breakdown.saveTypeLabel}</span>
+          <span className="font-semibold">{uiStrings.savingThrowsRowLabelTotal || "Total"}{'\u00A0'}{breakdown.saveTypeLabel}</span>
           <span className="font-bold text-accent">{renderModifierValue(breakdown.totalSave)}</span>
         </div>
       </div>

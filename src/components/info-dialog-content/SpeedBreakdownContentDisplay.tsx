@@ -32,7 +32,7 @@ export const SpeedBreakdownContentDisplay = ({
       if (mainText === baseTextPart) {
         return (
           <>
-            {mainText}{' '}
+            {mainText}{'\u00A0'}
             <Badge variant="outline">{detailText}</Badge>
           </>
         );
@@ -62,8 +62,8 @@ export const SpeedBreakdownContentDisplay = ({
         })}
         <Separator className="mt-2 mb-1" />
         <div className="flex justify-between text-lg">
-          <span className="font-semibold">{(uiStrings.infoDialogSpeedTotalPrefixLabel || "Total")}{' '}{speedBreakdown.name}</span>
-          <span className="font-bold text-accent">{speedBreakdown.total}{' '}{speedUnit}</span>
+          <span className="font-semibold">{(uiStrings.infoDialogSpeedTotalPrefixLabel || "Total")}{'\u00A0'}{speedBreakdown.name}</span>
+          <span className="font-bold text-accent">{speedBreakdown.total}{'\u00A0'}{speedUnit}</span>
         </div>
       </div>
     </div>

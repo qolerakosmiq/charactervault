@@ -76,7 +76,7 @@ export const AcBreakdownContentDisplay = ({
     return (
       <div key={`${String(detail.mainLabel)}-${index}`} className={cn("flex justify-between items-baseline text-sm mb-0.5", isConditionalSubItem && "ml-3")}>
         <span className="text-foreground inline-flex items-baseline">
-          {mainTextDisplay}{suffixBadgeDisplay && <>{' '}{suffixBadgeDisplay}</>}
+          {mainTextDisplay}{suffixBadgeDisplay && <>{'\u00A0'}{suffixBadgeDisplay}</>}
         </span>
         <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{valueToRender as React.ReactNode}</span>
       </div>

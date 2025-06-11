@@ -59,7 +59,7 @@ export const MaxHpBreakdownContentDisplay = ({
         </div>
         <div className="flex justify-between text-sm items-baseline">
           <span className="text-foreground inline-flex items-baseline">
-            {uiStrings.maxHpDialogAbilityModLabel || "Ability Modifier"}{' '}
+            {uiStrings.maxHpDialogAbilityModLabel || "Ability Modifier"}{'\u00A0'}
             <Badge variant="outline">{conAbbr}</Badge>
           </span>
           {renderModifierValue(finalConstitutionModifier)}

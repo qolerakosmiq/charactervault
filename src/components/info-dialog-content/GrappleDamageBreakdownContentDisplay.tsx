@@ -46,7 +46,7 @@ export const GrappleDamageBreakdownContentDisplay = ({
         <div className="flex justify-between text-sm items-baseline">
           <span className="text-foreground inline-flex items-baseline">
             {uiStrings.infoDialogGrappleDmgAbilityLabel || "Ability Modifier"}
-            {strengthAbilityInfo && <>{' '}<Badge variant="outline">{strengthAbilityInfo.abbr}</Badge></>}
+            {strengthAbilityInfo && <>{'\u00A0'}<Badge variant="outline">{strengthAbilityInfo.abbr}</Badge></>}
           </span>
           {renderModifierValue(grappleDamageBreakdown.strengthModifier)}
         </div>

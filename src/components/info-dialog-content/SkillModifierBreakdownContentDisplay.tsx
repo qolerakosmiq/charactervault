@@ -126,7 +126,7 @@ export const SkillModifierBreakdownContentDisplay = ({
         {skillModifierBreakdown!.keyAbilityName && (
           <div className="flex justify-between text-sm">
             <span className="text-foreground inline-flex items-baseline">
-              {uiStrings.infoDialogKeyAbilityLabel || "Key Ability"}{' '}
+              {uiStrings.infoDialogKeyAbilityLabel || "Key Ability"}{'\u00A0'}
               <Badge variant="outline">
                 {skillModifierBreakdown!.keyAbilityName}
               </Badge>

@@ -111,7 +111,7 @@ export const RaceContentDisplay = ({
             return (
               <div key={type} className="flex justify-between">
                 <span className="text-sm text-foreground">{speedName}</span>
-                <span className="text-sm font-semibold text-foreground">{speedVal}{' '}{speedUnit}</span>
+                <span className="text-sm font-semibold text-foreground">{speedVal}{'\u00A0'}{speedUnit}</span>
               </div>
             );
           })}
@@ -160,9 +160,9 @@ export const RaceContentDisplay = ({
                     {feat.levelAcquired !== undefined && (
                       <Badge variant="outline" className={cn(
                         "whitespace-nowrap shrink-0 justify-center",
-                        "min-w-[5rem]"
+                        "min-w-[5rem]" 
                       )}>
-                        {(UI_STRINGS.levelLabel || "Level")}{' '}{feat.levelAcquired}
+                        {(UI_STRINGS.levelLabel || "Level")}{'\u00A0'}{feat.levelAcquired}
                       </Badge>
                     )}
                      <div className="flex-grow">
