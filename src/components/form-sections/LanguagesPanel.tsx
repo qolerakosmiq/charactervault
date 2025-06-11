@@ -109,10 +109,10 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
         <div className="mb-4 p-3 border rounded-md bg-muted/30">
           <div className="flex justify-between items-center">
             <p className="text-sm font-medium">
-              {UI_STRINGS.languagesPanelSlotsAvailableLabel || "Languages Available:"} <span className="text-xl font-bold text-primary">{totalBonusLanguageSlots}</span>
+              {UI_STRINGS.languagesPanelSlotsAvailableLabel || "Languages Available:"}{\u00A0}<span className="text-xl font-bold text-primary">{totalBonusLanguageSlots}</span>
             </p>
             <p className="text-sm font-medium">
-              {UI_STRINGS.languagesPanelSlotsLeftLabel || "Languages Left:"} <span className={cn(
+              {UI_STRINGS.languagesPanelSlotsLeftLabel || "Languages Left:"}{\u00A0}<span className={cn(
                 "text-xl font-bold",
                 slotsRemaining > 0 && "text-emerald-500",
                 slotsRemaining < 0 && "text-destructive",
@@ -121,9 +121,9 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
             </p>
           </div>
            <p className="text-xs text-muted-foreground mt-1">
-              {UI_STRINGS.languagesPanelFormulaIntModLabel || "Intelligence Modifier"} <Badge variant="outline" className={badgeClassName}>{intBonusLanguages}</Badge>
-              {' + '} {UI_STRINGS.languagesPanelFormulaSkillRanksLabel || "Speak Language Ranks"} <Badge variant="outline" className={badgeClassName}>{skillBonusLanguages}</Badge>
-              {' = '} <span className="font-bold text-primary">{totalBonusLanguageSlots}</span>
+              {UI_STRINGS.languagesPanelFormulaIntModLabel || "Intelligence Modifier"}{\u00A0}<Badge variant="outline" className={badgeClassName}>{intBonusLanguages}</Badge>
+              {' + '}{UI_STRINGS.languagesPanelFormulaSkillRanksLabel || "Speak Language Ranks"}{\u00A0}<Badge variant="outline" className={badgeClassName}>{skillBonusLanguages}</Badge>
+              {' = '}<span className="font-bold text-primary">{totalBonusLanguageSlots}</span>
             </p>
         </div>
 
@@ -171,7 +171,7 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
               emptyPlaceholder={UI_STRINGS.languagesPanelComboboxEmpty || "No language found."}
               triggerClassName="h-9 text-sm"
             />
-            <Button type="button" onClick={handleAddLanguage} size="sm" disabled={!selectedLanguageToAdd || slotsRemaining <= 0}>
+            <Button type="button" onClick={handleAddLanguage} size="sm" disabled={!selectedLanguageToAdd}>
               <PlusCircle className="mr-2 h-4 w-4" /> Add
             </Button>
           </div>
@@ -182,3 +182,4 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
 };
 LanguagesPanelComponent.displayName = "LanguagesPanelComponent";
 export const LanguagesPanel = React.memo(LanguagesPanelComponent);
+
