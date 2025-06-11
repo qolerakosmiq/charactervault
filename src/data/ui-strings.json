@@ -586,7 +586,7 @@
     "rollDialogDescriptionFormat": "Performing a {rollType}",
     "rollDialogCalculationBreakdownTitle": "Calculation Breakdown",
     "rollDialogTotalBonusLabel": "Total Bonus",
-    "rollDialogDiceRollLabel": "Dice Roll (1d20)",
+    "rollDialogDiceRollLabel": "Dice Roll",
     "rollDialogBonusDiceRollLabel": "Bonus Dice Roll",
     "rollDialogFinalResultLabel": "Final Result",
     "rollDialogRollButton": "Roll 1d20",
@@ -623,3 +623,5 @@
     "barbarianRageUsesLabel": "Rage Uses Per Day"
   }
 }
+
+    

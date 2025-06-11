@@ -586,7 +586,7 @@
     "rollDialogDescriptionFormat": "Effectuer un {rollType}.",
     "rollDialogCalculationBreakdownTitle": "Détail du Calcul",
     "rollDialogTotalBonusLabel": "Bonus Total",
-    "rollDialogDiceRollLabel": "Résultat du Dé (1d20)",
+    "rollDialogDiceRollLabel": "Résultat du Dé",
     "rollDialogBonusDiceRollLabel": "Jet de Dé Bonus",
     "rollDialogFinalResultLabel": "Résultat Final",
     "rollDialogRollButton": "Lancer 1d20",
@@ -623,3 +623,5 @@
     "barbarianRageUsesLabel": "Utilisations de Rage par Jour"
   }
 }
+
+    
