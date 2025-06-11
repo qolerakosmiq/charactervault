@@ -1,7 +1,6 @@
-
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -102,22 +101,6 @@ export function RollDialog({
     }, 300);
   };
 
-  const getRollDialogSubtitle = () => {
-    if (!translations) return rollType;
-    const { UI_STRINGS } = translations;
-    if (rollType.startsWith('ability_check_')) return UI_STRINGS.rollDialogSubtitleAbilityCheck || "Ability Check";
-    if (rollType.startsWith('skill_check_')) return UI_STRINGS.rollDialogSubtitleSkillCheck || "Skill Check";
-    if (rollType.startsWith('saving_throw_')) return UI_STRINGS.rollDialogSubtitleSavingThrow || "Saving Throw";
-    if (rollType === 'initiative_check') return UI_STRINGS.rollDialogSubtitleInitiativeCheck || "Initiative Roll";
-    if (rollType.startsWith('melee_attack_')) return UI_STRINGS.rollDialogSubtitleMeleeAttack || "Melee Attack";
-    if (rollType.startsWith('ranged_attack_')) return UI_STRINGS.rollDialogSubtitleRangedAttack || "Ranged Attack";
-    if (rollType.startsWith('damage_roll_melee_')) return UI_STRINGS.rollDialogSubtitleMeleeDamage || "Melee Damage";
-    if (rollType.startsWith('damage_roll_ranged_')) return UI_STRINGS.rollDialogSubtitleRangedDamage || "Ranged Damage";
-    if (rollType === 'grapple_check') return UI_STRINGS.rollDialogSubtitleGrappleCheck || "Grapple Check";
-    return rollType;
-  };
-
-
   if (translationsLoading || !translations) {
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -158,8 +141,6 @@ export function RollDialog({
     "text-primary"
   );
   
-  const dialogSubtitle = getRollDialogSubtitle();
-
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -168,9 +149,7 @@ export function RollDialog({
             <Dices className="mr-2 h-5 w-5 text-primary" />
             {dialogTitle}
           </DialogTitle>
-          <DialogDescription className="text-left">
-            {dialogSubtitle}
-          </DialogDescription>
+          {/* DialogDescription removed */}
         </DialogHeader>
 
         <div className="space-y-3 py-3 max-h-[60vh] overflow-y-auto pr-2">
@@ -182,9 +161,23 @@ export function RollDialog({
                   let labelText = item.label;
 
                   if (item.label === (UI_STRINGS.abilityModifierLabel || "Ability Modifier")) {
-                     const match = dialogTitle.match(/\(([^)]+)\)/) || rollType.match(/ability_check_(\w+)/);
-                     if (match && match[1]) {
-                        const abilityKey = rollType.startsWith('ability_check_') ? rollType.substring('ability_check_'.length) : (translations.ABILITY_LABELS.find(al => al.label === match[1])?.value);
+                     const match = dialogTitle.match(/\(([^)]+)\)/) || rollType.match(/ability_check_(\w+)/) || rollType.match(/saving_throw_(\w+)/) || rollType.match(/skill_check_([a-zA-Z-]+)_(\w+)/);
+                     if (match) {
+                        let abilityKey: string | undefined;
+                        if (rollType.startsWith('ability_check_')) abilityKey = rollType.substring('ability_check_'.length);
+                        else if (rollType.startsWith('saving_throw_')) {
+                           const saveType = rollType.substring('saving_throw_'.length) as keyof typeof SAVING_THROW_ABILITIES;
+                           abilityKey = SAVING_THROW_ABILITIES[saveType];
+                        } else if (rollType.startsWith('skill_check_')) {
+                            const skillId = rollType.substring('skill_check_'.length);
+                            const skillDef = translations.SKILL_DEFINITIONS.find(sd => sd.value === skillId);
+                            if (skillDef) abilityKey = skillDef.keyAbility;
+                        } else if (dialogTitle.includes('(') && dialogTitle.includes(')')) { // Fallback for other titles like Melee Attack (STR)
+                            const extractedAbility = dialogTitle.substring(dialogTitle.indexOf('(') + 1, dialogTitle.indexOf(')'));
+                             const foundLabel = translations.ABILITY_LABELS.find(al => al.abbr === extractedAbility.toUpperCase() || al.label === extractedAbility);
+                             if (foundLabel) abilityKey = foundLabel.value;
+                        }
+                        
                         if(abilityKey){
                             abilityAbbr = translations.ABILITY_LABELS.find(al => al.value === abilityKey)?.abbr;
                         }
@@ -296,3 +289,17 @@ export function RollDialog({
   );
 }
 
+// Helper to get the subtitle - no longer needed if DialogDescription is removed
+// const getRollDialogSubtitle = (rollType: string, UI_STRINGS: Record<string, string>): string => {
+//   if (!UI_STRINGS) return rollType;
+//   if (rollType.startsWith('ability_check_')) return UI_STRINGS.rollDialogSubtitleAbilityCheck || "Ability Check";
+//   if (rollType.startsWith('skill_check_')) return UI_STRINGS.rollDialogSubtitleSkillCheck || "Skill Check";
+//   if (rollType.startsWith('saving_throw_')) return UI_STRINGS.rollDialogSubtitleSavingThrow || "Saving Throw";
+//   if (rollType === 'initiative_check') return UI_STRINGS.rollDialogSubtitleInitiativeCheck || "Initiative Roll";
+//   if (rollType.startsWith('melee_attack_')) return UI_STRINGS.rollDialogSubtitleMeleeAttack || "Melee Attack";
+//   if (rollType.startsWith('ranged_attack_')) return UI_STRINGS.rollDialogSubtitleRangedAttack || "Ranged Attack";
+//   if (rollType.startsWith('damage_roll_melee_')) return UI_STRINGS.rollDialogSubtitleMeleeDamage || "Melee Damage";
+//   if (rollType.startsWith('damage_roll_ranged_')) return UI_STRINGS.rollDialogSubtitleRangedDamage || "Ranged Damage";
+//   if (rollType === 'grapple_check') return UI_STRINGS.rollDialogSubtitleGrappleCheck || "Grapple Check";
+//   return rollType;
+// };
