@@ -102,7 +102,7 @@ const AddCustomFeatDialogComponent = ({
   }, [translations, translationsLoading]);
   
   const featTypeOptions = React.useMemo(() => {
-    if (translationsLoading || !translations) return [];
+    if (translationsLoading || !translations || !Array.isArray(translations.FEAT_TYPES)) return [];
     return translations.FEAT_TYPES;
   }, [translations, translationsLoading]);
 
@@ -331,7 +331,7 @@ const AddCustomFeatDialogComponent = ({
                             <SelectValue placeholder="Select feat type..." />
                         </SelectTrigger>
                         <SelectContent>
-                            {featTypeOptions.map(option => (
+                            {(featTypeOptions || []).map(option => (
                                 <SelectItem key={option.value} value={option.value}>
                                     {option.label}
                                 </SelectItem>
