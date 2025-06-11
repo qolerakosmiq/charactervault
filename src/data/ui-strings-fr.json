@@ -582,10 +582,10 @@
     "rollDialogTitleSavingThrow": "Jet de {saveTypeLabel}",
     "rollDialogTitleSkillCheck": "Test de {skillName}",
     "rollDialogDescriptionFormat": "Effectuer un {rollType}.",
-    "rollDialogCalculationBreakdownTitle": "Détail du calcul :",
+    "rollDialogCalculationBreakdownTitle": "Détail du Calcul",
     "rollDialogTotalBonusLabel": "Bonus Total",
-    "rollDialogDiceRollLabel": "Résultat du dé (1d20) :",
-    "rollDialogFinalResultLabel": "Résultat Final :",
+    "rollDialogDiceRollLabel": "Résultat du Dé (1d20)",
+    "rollDialogFinalResultLabel": "Résultat Final",
     "rollDialogRollButton": "Lancer 1d20",
     "rollDialogAbilityCheckAriaLabel": "Lancer un test de {abilityName}",
     "rollDialogSavingThrowAriaLabel": "Lancer un jet de {saveTypeLabel}",
@@ -594,7 +594,7 @@
     "rollDialogResultDescription": "Lancé {diceResult} + {totalBonus} = {finalResult}",
     "rollDialogResultDamageFormat": "Dégâts ({weaponName}) : Lancé {diceSum} (de {diceString}) + {otherBonus} = {totalDamage}",
     "rollDialogDamageWeaponDiceRolledLabel": "Dés d'Arme ({diceString}): Roulé {diceSum}",
-    "rollDialogDamageOtherBonusesLabel": "Autres Bonus :",
+    "rollDialogDamageOtherBonusesLabel": "Autres Bonus",
     "rollDialogSkillRanksLabel": "Rangs",
     "rollDialogSkillKeyAbilityLabel": "Caractéristique Clé ({abilityAbbr})",
     "rollDialogSkillSynergyBonusLabel": "Bonus de Synergie",
@@ -610,7 +610,7 @@
     "rollDialogTitleRangedDamageFormat": "Dégâts à Distance ({weaponName}: {dice})",
     "rollDialogDamageAriaLabel": "Lancer les Dégâts pour {weaponName}",
     "rollDialogConfirmDamageButton": "Confirmer les Dégâts",
-    "rollDialogFinalDamageStringLabel": "Dégâts Totaux :",
+    "rollDialogFinalDamageStringLabel": "Dégâts Totaux",
     "rollDialogTotalNumericBonusLabel": "Bonus Numérique Total",
     "rollDialogTitleInitiative": "Lancer l'Initiative",
     "rollDialogTitleGrappleCheck": "Lancer un Test de Lutte",
@@ -639,6 +639,5 @@
     
 
 
-```
 
     
