@@ -36,12 +36,12 @@ export const AcBreakdownContentDisplay = ({
 }: AcBreakdownContentDisplayProps) => {
   if (!detailsList || detailsList.length === 0) return null;
 
+  const activeDetailsList = detailsList.filter(detail => detail.isActive !== false);
+
   const staticComponents: AcBreakdownDetailItem[] = [];
   const conditionalFeatComponents: AcBreakdownDetailItem[] = [];
 
-  detailsList.forEach(detail => {
-    if (detail.isActive === false) return; 
-
+  activeDetailsList.forEach(detail => {
     if (detail.isSubItem) {
       conditionalFeatComponents.push(detail);
     } else {
@@ -50,39 +50,51 @@ export const AcBreakdownContentDisplay = ({
   });
 
   const renderItem = (detail: AcBreakdownDetailItem, index: string | number) => {
-    let mainText = detail.mainLabel;
-    let suffixBadge: React.ReactNode = null;
+    let mainTextDisplay: React.ReactNode = detail.mainLabel;
+    let suffixBadgeDisplay: React.ReactNode = null;
 
-    if (detail.type === 'acAbilityMod' && detail.abilityAbbr) {
-      mainText = detail.mainLabel;
-      suffixBadge = <Badge variant="outline" className="ml-1.5">{detail.abilityAbbr}</Badge>;
-    } else if (detail.type === 'acSizeMod' && detail.sizeName) {
-      mainText = detail.mainLabel;
-      suffixBadge = <Badge variant="outline" className="ml-1.5">{detail.sizeName}</Badge>;
-    } else if (detail.suffixDetails && detail.suffixDetails.length > 0) {
-      suffixBadge = <span className="text-muted-foreground/80 ml-1 text-xs">({detail.suffixDetails.join(", ")})</span>;
-    }
-
-    if (typeof mainText === 'string' && !suffixBadge) {
-      const suffixMatch = mainText.match(/\s(\([^)]+\))$/);
-      if (suffixMatch) {
-        mainText = mainText.substring(0, mainText.length - suffixMatch[0].length);
-        suffixBadge = <span className="text-muted-foreground/80 ml-1 text-xs">{suffixMatch[1]}</span>;
+    if (detail.isSubItem) {
+      // For conditional bonuses (sub-items), mainLabel is the feat name. No suffix badge.
+      mainTextDisplay = detail.mainLabel;
+      suffixBadgeDisplay = null;
+    } else {
+      // Logic for static components like Ability Mod, Size Mod
+      if (detail.type === 'acAbilityMod' && detail.abilityAbbr) {
+        mainTextDisplay = detail.mainLabel;
+        suffixBadgeDisplay = <Badge variant="outline" className="ml-1.5">{detail.abilityAbbr}</Badge>;
+      } else if (detail.type === 'acSizeMod' && detail.sizeName) {
+        mainTextDisplay = detail.mainLabel;
+        suffixBadgeDisplay = <Badge variant="outline" className="ml-1.5">{detail.sizeName}</Badge>;
+      } else if (detail.suffixDetails && detail.suffixDetails.length > 0) {
+        mainTextDisplay = detail.mainLabel;
+        suffixBadgeDisplay = <span className="text-muted-foreground/80 ml-1 text-xs">({detail.suffixDetails.join(", ")})</span>;
+      } else if (typeof detail.mainLabel === 'string') {
+        // Generic suffix parsing for other static items if needed - this might be too broad.
+        // For AC breakdown, specific types (ability, size) should handle their suffixes.
+        // This part is less likely to be hit if specific types are handled above.
+        // const suffixMatch = detail.mainLabel.match(/\s(\([^)]+\))$/);
+        // if (suffixMatch) {
+        //   mainTextDisplay = detail.mainLabel.substring(0, detail.mainLabel.length - suffixMatch[0].length);
+        //   suffixBadgeDisplay = <span className="text-muted-foreground/80 ml-1 text-xs">{suffixMatch[1]}</span>;
+        // }
+        // Keep mainTextDisplay as is for simpler cases
+        mainTextDisplay = detail.mainLabel;
       }
     }
 
     let valueToRender = detail.value;
-    if (String(detail.mainLabel).toLowerCase() === (uiStrings.acBreakdownBaseLabel || "Base").toLowerCase()) {
+    if (String(detail.mainLabel).toLowerCase() === (uiStrings.acBreakdownBaseLabel || "Base").toLowerCase() && typeof detail.value === 'number') {
       valueToRender = <span className="font-bold">{detail.value}</span>;
     } else if ((typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string))))) {
       valueToRender = renderModifierValue(detail.value as number | string);
     }
 
+
     return (
       <div key={`${String(detail.mainLabel)}-${index}`} className={cn("flex justify-between items-baseline text-sm mb-0.5", detail.isSubItem && "ml-3")}>
         <span className="text-muted-foreground inline-flex items-baseline">
-          {mainText}
-          {suffixBadge}
+          {mainTextDisplay}
+          {suffixBadgeDisplay}
         </span>
         <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{valueToRender as React.ReactNode}</span>
       </div>
@@ -96,11 +108,12 @@ export const AcBreakdownContentDisplay = ({
 
       {conditionalFeatComponents.length > 0 && (
         <>
-          <Separator className="my-2" />
-          <h4 className="text-md font-medium text-muted-foreground mb-1">
+          <h4 className="text-sm font-medium text-muted-foreground pt-1.5 pb-0.5 mt-1.5">
             {uiStrings.infoDialogConditionalBonusesHeading || "Conditional Bonuses"}
           </h4>
-          {conditionalFeatComponents.map((detail, index) => renderItem(detail, `conditional-${index}`))}
+          <div className="space-y-0.5"> 
+            {conditionalFeatComponents.map((detail, index) => renderItem(detail, `conditional-${index}`))}
+          </div>
         </>
       )}
 
