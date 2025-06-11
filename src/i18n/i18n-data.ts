@@ -35,7 +35,8 @@ import type {
   DomainDefinition,
   DomainId,
   MagicSchoolId,
-  MagicSchoolDefinition
+  MagicSchoolDefinition,
+  SpeedType // Added SpeedType
 } from '@/types/character-core';
 
 // Define types for the structure of each JSON file's data
@@ -164,10 +165,22 @@ export interface FeatsJson {
   FEAT_TYPES_DATA: FeatTypeDataEntry[];
 }
 
-export interface RaceDataEntry extends DndRaceOption {}
-export interface RacesJson {
-  DND_RACES_DATA: RaceDataEntry[];
+// Raw entry from JSON for Races
+export interface RawRaceDataEntry {
+  value: DndRaceId;
+  label: string;
+  description?: string; // Key used in JSON files
+  loreAttributes?: ClassAttribute[];
+  bonusFeatSlots?: number;
+  racialSkillBonuses?: Record<string, number>;
+  grantedFeats?: Array<{ featId: string; note?: string; name?: string; levelAcquired?: number }>;
+  speeds?: Partial<Record<SpeedType, number>>;
+  automaticLanguages?: LanguageId[];
 }
+export interface RacesJson {
+  DND_RACES_DATA: RawRaceDataEntry[];
+}
+
 
 export interface SkillDefinitionDataEntry extends SkillDefinitionJsonData {}
 export interface SkillsJson {
@@ -187,7 +200,7 @@ export interface LocaleDataBundle {
   classes: ClassesJson;
   deities: DeitiesJson;
   feats: FeatsJson;
-  races: RacesJson;
+  races: RacesJson; // Will now use RawRaceDataEntry internally
   skills: SkillsJson;
   languages: LanguagesJson;
   xpTable: XpJson;
@@ -199,7 +212,7 @@ export interface LocaleDataBundle {
   customClasses?: ClassesJson;
   customDeities?: DeitiesJson;
   customFeats?: FeatsJson;
-  customRaces?: RacesJson;
+  customRaces?: RacesJson; // Will use RawRaceDataEntry
   customSkills?: SkillsJson;
   customLanguages?: LanguagesJson;
   customDomains?: DomainJson;
@@ -214,7 +227,7 @@ export interface ProcessedSiteData {
   EPIC_LEVEL_XP_INCREASE: number;
   SIZES: readonly CharacterSizeObject[];
   GENDERS: readonly { value: GenderId | string; label: string }[];
-  DND_RACES: readonly DndRaceOption[];
+  DND_RACES: readonly DndRaceOption[]; // This will have generalDescription
   DND_CLASSES: readonly DndClassOption[];
   DND_DEITIES: readonly DndDeityOption[];
   DND_DOMAINS: readonly DomainDefinition[];
@@ -251,6 +264,16 @@ function mergeArrayData<T extends { value: string; label?: string }>(base: T[] =
   custom.forEach(item => combinedMap.set(item.value, item)); // Custom overrides base if keys are the same
   return Array.from(combinedMap.values()).sort((a, b) => (a.label || a.value).localeCompare(b.label || b.value));
 }
+
+// Specific merge for RawRaceDataEntry
+function mergeRawRaceArrayData(base: RawRaceDataEntry[] = [], custom?: RawRaceDataEntry[]): RawRaceDataEntry[] {
+  if (!custom) return base;
+  const combinedMap = new Map<string, RawRaceDataEntry>();
+  base.forEach(item => combinedMap.set(item.value, item));
+  custom.forEach(item => combinedMap.set(item.value, item));
+  return Array.from(combinedMap.values()).sort((a, b) => (a.label || a.value).localeCompare(b.label || b.value));
+}
+
 
 function mergeXpTableData(base: XpDataEntry[] = []): XpDataEntry[] {
   // XP table is not merged with custom, it's just loaded directly
@@ -294,9 +317,18 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
   const customGenders = bundle.customBase?.GENDERS_DATA;
   const GENDERS = mergeArrayData(baseGenders, customGenders);
 
-  const baseRaces = bundle.races.DND_RACES_DATA;
-  const customRaces = bundle.customRaces?.DND_RACES_DATA;
-  const DND_RACES = mergeArrayData(baseRaces, customRaces);
+  // Process Races: Map 'description' to 'generalDescription'
+  const baseRacesRaw = bundle.races.DND_RACES_DATA;
+  const customRacesRaw = bundle.customRaces?.DND_RACES_DATA;
+  const DND_RACES_merged_raw = mergeRawRaceArrayData(baseRacesRaw, customRacesRaw);
+  const DND_RACES = DND_RACES_merged_raw.map(r_raw => {
+    const { description, ...rest } = r_raw;
+    return {
+      ...rest,
+      generalDescription: description
+    } as DndRaceOption; // Asserting the final type
+  });
+
 
   const baseClasses = bundle.classes.DND_CLASSES_DATA;
   const customClasses = bundle.customClasses?.DND_CLASSES_DATA;
@@ -365,3 +397,4 @@ export function processRawDataBundle(bundle: LocaleDataBundle): ProcessedSiteDat
     UI_STRINGS,
   };
 }
+
