@@ -20,7 +20,7 @@ export const ResistanceBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div className="space-y-1">
+      <div> {/* Removed space-y-1 */}
         <div className="flex justify-between text-sm">
           <span className="text-foreground">{uiStrings.infoDialogBaseValueLabel || "Base Value"}</span>
           <span className="font-bold">{resistanceBreakdown.base}</span>

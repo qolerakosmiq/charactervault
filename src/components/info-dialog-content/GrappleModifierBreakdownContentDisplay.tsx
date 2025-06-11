@@ -26,7 +26,7 @@ export const GrappleModifierBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div className="space-y-1">
+      <div> {/* Removed space-y-1 */}
         <div className="flex justify-between text-sm">
           <span className="text-foreground">{uiStrings.infoDialogGrappleModBabLabel || "Base Attack Bonus"}</span>
           <span className="font-bold">{renderModifierValue(grappleModifierBreakdown.baseAttackBonus)}</span>

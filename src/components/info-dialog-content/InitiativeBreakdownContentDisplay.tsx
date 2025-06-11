@@ -26,7 +26,7 @@ export const InitiativeBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div className="space-y-1">
+      <div> {/* Removed space-y-1 */}
         <div className="flex justify-between text-sm items-baseline">
           <span className="text-foreground inline-flex items-baseline">
             {uiStrings.infoDialogInitiativeAbilityModLabel || "Ability Modifier"}

@@ -155,7 +155,7 @@ export function RollDialog({
 
         <div className="space-y-3 py-3 max-h-[60vh] overflow-y-auto pr-2">
           {calculationBreakdown.length > 0 && (
-            <div className="space-y-1">
+            <div> {/* Removed space-y-1 */}
               <h4 className={cn(sectionHeadingClass, "mb-1")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle || "Calculation Breakdown"}</h4>
                 {calculationBreakdown.map((item, index) => {
                   if (item.label === (UI_STRINGS.infoDialogTotalLabel || "Total") && item.isBold) {

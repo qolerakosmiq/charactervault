@@ -51,7 +51,7 @@ export const SpeedBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div className="space-y-1">
+      <div> {/* Removed space-y-1 */}
         {speedBreakdown.components.map((comp, index) => {
           return (
             <div key={index} className="flex justify-between text-sm">

@@ -20,7 +20,7 @@ export const BabBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div className="space-y-1">
+      <div> {/* Removed space-y-1 */}
         <div className="flex justify-between text-sm">
           <span className="text-foreground">{(uiStrings.infoDialogBabClassLabel || "{classLabel} Base Attack Bonus").replace("{classLabel}", babBreakdown.characterClassLabel || 'Class')}</span>
           <span className="font-bold">{babBreakdown.baseBabFromClasses.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
