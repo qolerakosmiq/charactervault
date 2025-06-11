@@ -226,6 +226,23 @@
       ]
     },
     {
+      "value": "class-barbarian-fast-movement",
+      "label": "Fast Movement",
+      "description": "<b>Benefit:</b> A barbarian’s land speed is faster than the norm for her race by +10 feet. This benefit applies only when she is wearing no armor, light armor, or medium armor and not carrying a heavy load. Apply this bonus before modifying the barbarian’s speed because of any load carried or armor worn. For example, a human barbarian has a speed of 40 feet, rather than 30 feet, when wearing light or no armor. When wearing medium armor or carrying a medium load, her speed drops to 30 feet. A halfling barbarian has a speed of 30 feet, rather than 20 feet, in light or no armor. When wearing medium armor or carrying a medium load, her speed drops to 20 feet.",
+      "effectsText": "+10 ft. to land speed (if not in heavy armor & not heavy load).",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        {
+          "type": "speed",
+          "speedType": "land",
+          "modification": "bonus",
+          "value": 10,
+          "bonusType": "enhancement"
+        }
+      ]
+    },
+    {
       "value": "class-barbarian-rage",
       "label": "Rage",
       "permanentEffect": false,
@@ -905,5 +922,4 @@
     { "value": "special-sp", "label": "Special Ability (Sp)" }
   ]
 }
-
     

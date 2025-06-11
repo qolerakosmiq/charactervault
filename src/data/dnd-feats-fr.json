@@ -226,6 +226,23 @@
       ]
     },
     {
+      "value": "class-barbarian-fast-movement",
+      "label": "Déplacement rapide",
+      "description": "<b>Avantage :</b> La vitesse terrestre d'un barbare est supérieure de +3 mètres à la normale pour sa race. Cet avantage ne s'applique que s'il ne porte pas d'armure, une armure légère ou intermédiaire et qu'il n'est pas lourdement chargé. Appliquez ce bonus avant de modifier la vitesse du barbare en fonction de la charge transportée ou de l'armure portée. Par exemple, un barbare humain a une vitesse de 12 mètres, au lieu de 9 mètres, lorsqu'il porte une armure légère ou aucune armure. Lorsqu'il porte une armure intermédiaire ou une charge moyenne, sa vitesse tombe à 9 mètres. Un barbare halfelin a une vitesse de 9 mètres, au lieu de 6 mètres, en armure légère ou sans armure. Lorsqu'il porte une armure intermédiaire ou une charge moyenne, sa vitesse tombe à 6 mètres.",
+      "effectsText": "+3m à la vitesse terrestre (si pas en armure lourde & pas lourdement chargé).",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        {
+          "type": "speed",
+          "speedType": "land",
+          "modification": "bonus",
+          "value": 3,
+          "bonusType": "enhancement"
+        }
+      ]
+    },
+    {
       "value": "class-barbarian-rage",
       "label": "Rage",
       "permanentEffect": false,
@@ -241,7 +258,7 @@
         {
           "type": "grantsAbility",
           "abilityKey": "barbarianRageUses",
-          "name": "Rage Uses",
+          "name": "Utilisations de Rage",
           "uses": {
             "per": "day",
             "value": "scaled",
