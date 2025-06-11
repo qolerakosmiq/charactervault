@@ -79,7 +79,7 @@
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +4 aux tests de Concentration effectués pour lancer un sort ou utiliser une capacité de type sort lorsque vous lancez en défensif ou que vous êtes agrippé ou maîtrisé.",
       "effectsText": "+4 Concentration lorsque vous lancez en défensif, que vous êtes agrippé ou maîtrisé.",
       "effects": [
-        { "type": "skill", "skillId": "concentration", "value": 4, "bonusType": "non_typé", "condition": "Lorsque vous lancez en défensif, que vous êtes agrippé ou maîtrisé" }
+        { "type": "skill", "skillId": "concentration", "value": 4, "bonusType": "untyped", "condition": "Lorsque vous lancez en défensif, que vous êtes agrippé ou maîtrisé" }
       ],
       "isClassFeature": false,
       "type": "special"
@@ -524,8 +524,8 @@
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Renseignement et de Fouille.",
       "effectsText": "+2 Renseignement, +2 Fouille.",
       "effects": [
-        { "type": "skill", "skillId": "gather-information", "value": 2, "bonusType": "non_typé" },
-        { "type": "skill", "skillId": "search", "value": 2, "bonusType": "non_typé" }
+        { "type": "skill", "skillId": "gather-information", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "search", "value": 2, "bonusType": "untyped" }
       ],
       "type": "special"
     },
@@ -535,8 +535,8 @@
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests d'Art de la magie et d'Utilisation d'objets magiques.",
       "effectsText": "+2 Art de la magie, +2 Utilisation d'objets magiques.",
       "effects": [
-        { "type": "skill", "skillId": "spellcraft", "value": 2, "bonusType": "non_typé" },
-        { "type": "skill", "skillId": "use-magic-device", "value": 2, "bonusType": "non_typé" }
+        { "type": "skill", "skillId": "spellcraft", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "use-magic-device", "value": 2, "bonusType": "untyped" }
       ],
       "type": "special"
     },
@@ -546,8 +546,8 @@
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Diplomatie et de Psychologie.",
       "effectsText": "+2 Diplomatie, +2 Psychologie.",
       "effects": [
-        { "type": "skill", "skillId": "diplomacy", "value": 2, "bonusType": "non_typé" },
-        { "type": "skill", "skillId": "sense-motive", "value": 2, "bonusType": "non_typé" }
+        { "type": "skill", "skillId": "diplomacy", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "sense-motive", "value": 2, "bonusType": "untyped" }
       ],
       "type": "special"
     },
@@ -557,8 +557,8 @@
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Désamorçage/Sabotage et de Crochetage.",
       "effectsText": "+2 Désamorçage/Sabotage, +2 Crochetage.",
       "effects": [
-        { "type": "skill", "skillId": "disable-device", "value": 2, "bonusType": "non_typé" },
-        { "type": "skill", "skillId": "open-lock", "value": 2, "bonusType": "non_typé" }
+        { "type": "skill", "skillId": "disable-device", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "open-lock", "value": 2, "bonusType": "untyped" }
       ],
       "type": "special"
     },
@@ -568,8 +568,8 @@
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Bluff et d'Intimidation.",
       "effectsText": "+2 Bluff, +2 Intimidation.",
       "effects": [
-        { "type": "skill", "skillId": "bluff", "value": 2, "bonusType": "non_typé" },
-        { "type": "skill", "skillId": "intimidate", "value": 2, "bonusType": "non_typé" }
+        { "type": "skill", "skillId": "bluff", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "intimidate", "value": 2, "bonusType": "untyped" }
       ],
       "type": "special"
     },
@@ -579,8 +579,8 @@
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Premiers secours et de Survie.",
       "effectsText": "+2 Premiers secours, +2 Survie.",
       "effects": [
-        { "type": "skill", "skillId": "heal", "value": 2, "bonusType": "non_typé" },
-        { "type": "skill", "skillId": "survival", "value": 2, "bonusType": "non_typé" }
+        { "type": "skill", "skillId": "heal", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "survival", "value": 2, "bonusType": "untyped" }
       ],
       "type": "special"
     },
@@ -590,8 +590,8 @@
       "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Discrétion et de Déplacement silencieux.",
       "effectsText": "+2 Discrétion, +2 Déplacement silencieux.",
       "effects": [
-        { "type": "skill", "skillId": "hide", "value": 2, "bonusType": "non_typé" },
-        { "type": "skill", "skillId": "move-silently", "value": 2, "bonusType": "non_typé" }
+        { "type": "skill", "skillId": "hide", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "move-silently", "value": 2, "bonusType": "untyped" }
       ],
       "type": "special"
     },
@@ -602,7 +602,7 @@
       "requiresSpecialization": "skill",
       "effectsText": "+3 à la compétence choisie.",
       "effects": [
-        { "type": "skill", "skillId": "SPEC", "value": 3, "bonusType": "non_typé" }
+        { "type": "skill", "skillId": "SPEC", "value": 3, "bonusType": "untyped" }
       ],
       "type": "general"
     },
@@ -678,12 +678,231 @@
         }
       ],
       "type": "special"
+    },
+    {
+      "value": "improved-unarmed-strike",
+      "label": "Combat à mains nues amélioré",
+      "description": "<b>Avantage :</b> Vous êtes considéré comme armé même lorsque vous êtes à mains nues — vous ne provoquez pas d'attaques d'opportunité lorsque vous attaquez des ennemis alors que vous êtes à mains nues. Vos frappes à mains nues peuvent infliger des dégâts létaux ou non létaux, à votre choix.",
+      "effectsText": "Considéré comme armé à mains nues. Les frappes à mains nues peuvent infliger des dégâts létaux/non létaux.",
+      "isClassFeature": false,
+      "type": "special",
+      "category": "fighterBonusFeat monkBonusFeat"
+    },
+    {
+      "value": "stunning-fist",
+      "label": "Poing étourdissant",
+      "description": "<b>Avantage :</b> Vous devez déclarer que vous utilisez ce don avant de faire votre jet d'attaque (ainsi, un jet d'attaque manqué gâche la tentative). Poing étourdissant force un ennemi endommagé par votre attaque à mains nues à faire un jet de sauvegarde de Vigueur (DD 10 + 1/2 de votre niveau de personnage + votre modificateur de Sagesse), en plus d'infliger des dégâts normalement. Un défenseur qui rate ce jet de sauvegarde est étourdi pendant 1 round (jusqu'à juste avant votre prochaine action). Un personnage étourdi ne peut pas agir, perd tout bonus de Dextérité à la CA et subit une pénalité de –2 à la CA. Vous pouvez tenter une attaque étourdissante une fois par jour pour chaque tranche de quatre niveaux que vous avez atteints (mais voir Spécial), et pas plus d'une fois par round. Les créatures artificielles, les vases, les plantes, les morts-vivants, les créatures intangibles et les créatures immunisées aux coups critiques ne peuvent pas être étourdies.",
+      "prerequisites": { "abilities": { "dexterity": 13, "wisdom": 13 }, "bab": 8, "feats": ["improved-unarmed-strike"] },
+      "effectsText": "Étourdit l'ennemi sur une frappe à mains nues (jet de Vigueur annule), utilisable 1/jour par 4 niveaux.",
+      "type": "special",
+      "category": "monkBonusFeat"
+    },
+    {
+      "value": "power-attack",
+      "label": "Attaque en puissance",
+      "description": "<b>Avantage :</b> Lors de votre action, avant de faire les jets d'attaque pour un round, vous pouvez choisir de soustraire un nombre à tous les jets d'attaque de mêlée et d'ajouter le même nombre à tous les jets de dégâts de mêlée. Ce nombre ne peut pas dépasser votre bonus de base à l'attaque. La pénalité aux attaques et le bonus aux dégâts s'appliquent jusqu'à votre prochain tour.",
+      "prerequisites": { "abilities": { "strength": 13 } },
+      "effectsText": "Échange un bonus d'attaque de mêlée contre un bonus de dégâts de mêlée.",
+      "type": "special",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "scribe-scroll",
+      "label": "Écriture de parchemins",
+      "description": "<b>Avantage :</b> Vous pouvez créer un parchemin de n'importe quel sort que vous connaissez. Écrire un parchemin prend 1 jour pour chaque tranche de 1 000 po de son prix de base. Le prix de base d'un parchemin est son niveau de sort × son niveau de lanceur de sorts × 25 po. Pour écrire un parchemin, vous devez dépenser 1/25 de ce prix de base en XP et utiliser des matières premières coûtant la moitié de ce prix de base.",
+      "prerequisites": { "casterLevel": 1 },
+      "type": "itemCreation"
+    },
+    {
+      "value": "class-monk-bonus-feat-slot",
+      "label": "Emplacement de don supplémentaire de Moine",
+      "description": "Un moine peut choisir un don supplémentaire aux niveaux 1, 2 et 6 parmi une liste spécifique.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "bonusFeatSlot", "category": "monkBonusFeat", "count": 1 }]
+    },
+    {
+      "value": "class-monk-flurry-of-blows",
+      "label": "Déluge de coups",
+      "description": "Lorsqu'il n'est pas en armure, un moine peut frapper avec un déluge de coups au détriment de sa précision. Ce faisant, il peut effectuer une attaque supplémentaire par round à son bonus de base à l'attaque le plus élevé, mais cette attaque subit une pénalité de –2, tout comme chaque autre attaque effectuée ce round. Le moine doit utiliser une action d'attaque à outrance pour frapper avec un déluge de coups.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Une attaque supplémentaire au BBA le plus élevé, toutes les attaques à -2 pour le round. Évolue avec le niveau."
+    },
+    {
+      "value": "class-monk-unarmed-strike-damage",
+      "label": "Dégâts à mains nues (Moine)",
+      "description": "Les frappes à mains nues du moine infligent plus de dégâts que la normale.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Les dégâts à mains nues augmentent avec le niveau de Moine (ex: 1d6 au N1, 1d8 au N4)."
+    },
+    {
+      "value": "class-monk-ac-bonus",
+      "label": "Bonus à la CA (Moine)",
+      "description": "Un moine est hautement entraîné à esquiver les coups, et il possède un sixième sens qui lui permet d'éviter même les attaques imprévues. Lorsqu'il n'est pas en armure et non encombré, le moine ajoute son bonus de Sagesse (le cas échéant) à sa CA. De plus, un moine gagne un bonus de +1 à la CA au niveau 5. Ce bonus augmente de 1 tous les cinq niveaux de moine par la suite (+2 au niveau 10, +3 au niveau 15 et +4 au niveau 20).",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "armorClass", "value": "WIS", "acType": "monk_wisdom", "bonusType": "untyped", "condition": "unarmored_unencumbered" },
+        {
+          "type": "armorClass",
+          "value": 0,
+          "acType": "monkScaling",
+          "bonusType": "untyped",
+          "condition": "unarmored_unencumbered",
+          "scaleWithClassLevel": {
+            "classId": "monk",
+            "specificLevels": [
+              { "level": 1, "value": 0 },
+              { "level": 5, "value": 1 },
+              { "level": 10, "value": 2 },
+              { "level": 15, "value": 3 },
+              { "level": 20, "value": 4 }
+            ]
+          }
+        }
+      ],
+      "effectsText": "Ajoute le bonus de Sagesse à la CA sans armure et sans encombrement. Gagne +1 CA au niveau 5, +1 tous les 5 niveaux par la suite."
+    },
+    {
+      "value": "class-monk-unarmored-speed-bonus",
+      "label": "Bonus de vitesse sans armure (Moine)",
+      "description": "Au niveau 1, un moine gagne un bonus d'altération à sa vitesse lorsqu'il n'est pas en armure et non encombré. Ce bonus commence à +3m et augmente de +3m tous les 3 niveaux.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "+3m de vitesse au N1, +3m tous les 3 niveaux par la suite (sans armure, sans encombrement)."
+    },
+    {
+      "value": "class-monk-evasion",
+      "label": "Esquive (Moine)",
+      "description": "Au niveau 2 ou supérieur, s'il réussit un jet de sauvegarde de Réflexes contre une attaque qui inflige normalement la moitié des dégâts sur un jet réussi, il ne subit aucun dégât à la place.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Ne subit aucun dégât sur un jet de Réflexes réussi contre les effets infligeant la moitié des dégâts."
+    },
+    {
+      "value": "class-monk-still-mind",
+      "label": "Esprit calme",
+      "description": "Un moine de niveau 3 ou plus gagne un bonus de +2 aux jets de sauvegarde contre les sorts et effets de l'école d'enchantement.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "savingThrow", "save": "will", "value": 2, "bonusType": "untyped", "condition": "vs_enchantment_effects" }],
+      "effectsText": "+2 bonus aux jets de sauvegarde contre les sorts/effets d'enchantement."
+    },
+    {
+      "value": "class-monk-ki-strike",
+      "label": "Frappe ki",
+      "description": "Au niveau 4, les attaques à mains nues d'un moine sont renforcées par le ki. Ses attaques à mains nues sont considérées comme des armes magiques pour infliger des dégâts aux créatures avec réduction des dégâts. La frappe ki s'améliore avec le niveau de moine du personnage. Au niveau 10, ses attaques à mains nues sont également considérées comme des armes loyales pour infliger des dégâts aux créatures avec réduction des dégâts. Au niveau 16, ses attaques à mains nues sont considérées comme des armes en adamantium pour infliger des dégâts aux créatures avec réduction des dégâts et ignorer la solidité.",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effectsText": "Les frappes à mains nues sont considérées comme magiques (N4), loyales (N10), adamantium (N16) pour la RD."
+    },
+    {
+      "value": "class-monk-slow-fall",
+      "label": "Chute ralentie",
+      "description": "Au niveau 4 ou supérieur, un moine à portée d'un mur peut l'utiliser pour ralentir sa descente. Lorsqu'il utilise cette capacité pour la première fois, il subit des dégâts comme si la chute était de 6 mètres de moins qu'elle ne l'est réellement. La capacité du moine à ralentir sa chute s'améliore avec son niveau de moine jusqu'à ce qu'au niveau 20, il puisse utiliser un mur pour ralentir sa descente et chuter de n'importe quelle distance sans subir de dégâts.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Réduit la distance de chute effective près d'un mur (6m au N4, augmente avec le niveau)."
+    },
+    {
+      "value": "class-monk-purity-of-body",
+      "label": "Pureté physique",
+      "description": "Au niveau 5, un moine gagne l'immunité à toutes les maladies, sauf les maladies surnaturelles et magiques.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Immunité à toutes les maladies normales."
+    },
+    {
+      "value": "class-monk-wholeness-of-body",
+      "label": "Plénitude physique",
+      "description": "Au niveau 7 ou supérieur, un moine peut guérir ses propres blessures. Il peut guérir un nombre de points de vie égal à deux fois son niveau de moine actuel chaque jour, et il peut répartir cette guérison sur plusieurs utilisations.",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effectsText": "Guérit (2 x Niveau de Moine) PV par jour."
+    },
+    {
+      "value": "class-monk-improved-evasion",
+      "label": "Esquive améliorée (Moine)",
+      "description": "Au niveau 9, la capacité d'esquive d'un moine s'améliore. Il ne subit toujours aucun dégât sur un jet de sauvegarde de Réflexes réussi contre les attaques, mais dorénavant il ne subit que la moitié des dégâts sur un jet raté.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Ne subit aucun dégât sur un jet de Réflexes réussi, la moitié sur un jet raté, contre les effets infligeant la moitié des dégâts."
+    },
+    {
+      "value": "class-monk-diamond-body",
+      "label": "Corps de diamant",
+      "description": "Au niveau 11, un moine gagne l'immunité à tous les poisons.",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effectsText": "Immunité à tous les poisons."
+    },
+    {
+      "value": "class-monk-greater-flurry",
+      "label": "Déluge de coups supérieur",
+      "description": "Au niveau 11, la capacité de déluge de coups d'un moine s'améliore. En plus de l'attaque supplémentaire standard qu'il obtient grâce au déluge de coups, il obtient une deuxième attaque supplémentaire à son bonus de base à l'attaque complet.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Le déluge de coups accorde une deuxième attaque supplémentaire au BBA complet."
+    },
+    {
+      "value": "class-monk-abundant-step",
+      "label": "Pas chassé",
+      "description": "Au niveau 12 ou supérieur, un moine peut se glisser magiquement entre les espaces, comme s'il utilisait le sort porte dimensionnelle, une fois par jour. Son niveau de lanceur de sorts pour cet effet est la moitié de son niveau de moine (arrondi à l'inférieur).",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effectsText": "Porte dimensionnelle 1/jour (NLS 1/2 Niveau de Moine)."
+    },
+    {
+      "value": "class-monk-diamond-soul",
+      "label": "Âme de diamant",
+      "description": "Au niveau 13, un moine gagne une résistance à la magie égale à son niveau de moine actuel + 10.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Résistance à la magie = Niveau de Moine + 10."
+    },
+    {
+      "value": "class-monk-quivering-palm",
+      "label": "Paume vibratoire",
+      "description": "À partir du niveau 15, un moine peut déclencher des vibrations dans le corps d'une autre créature qui peuvent ensuite être fatales si le moine le souhaite. Il peut utiliser cette attaque de paume vibratoire une fois par jour, et il doit annoncer son intention avant de faire son jet d'attaque. Les créatures artificielles, les vases, les plantes, les morts-vivants, les créatures intangibles et les créatures immunisées aux coups critiques ne peuvent pas être affectées. Sinon, si le moine frappe avec succès et que la cible subit des dégâts du coup, l'attaque de paume vibratoire réussit. Par la suite, le moine peut essayer de tuer la victime à tout moment ultérieur, tant que la tentative est faite dans un nombre de jours égal à son niveau de moine. Pour faire une telle tentative, le moine veut simplement que la cible meure (une action libre), et à moins que la cible ne réussisse un jet de sauvegarde de Vigueur (DD 10 + 1/2 de votre niveau de moine + votre modificateur de Sagesse), elle meurt. Si le jet de sauvegarde est réussi, la cible n'est plus en danger de cette attaque de paume vibratoire particulière, mais elle peut toujours être affectée par une autre à un moment ultérieur.",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effectsText": "Tue la cible d'un contact (jet de Vigueur annule), 1/jour."
+    },
+    {
+      "value": "class-monk-tongue-sun-moon",
+      "label": "Langage du soleil et de la lune",
+      "description": "Un moine de niveau 17 ou plus peut parler avec n'importe quelle créature vivante.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Parle avec n'importe quelle créature vivante."
+    },
+    {
+      "value": "class-monk-empty-body",
+      "label": "Corps intangible",
+      "description": "Au niveau 19, un moine peut prendre une forme éthérée pendant 1 round par niveau de moine par jour. Cette capacité fonctionne comme le sort état éthéré (niveau de lanceur de sorts égal au niveau de moine du personnage).",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effectsText": "Devient éthéré 1 round/niveau/jour."
+    },
+    {
+      "value": "class-monk-perfect-self",
+      "label": "Perfection de soi",
+      "description": "Au niveau 20, un moine devient une créature magique. Il est désormais traité comme un extérieur plutôt que comme un humanoïde (ou quel que soit le type de créature du moine). De plus, le moine gagne une réduction des dégâts de 10/magie.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Devient un extérieur, RD 10/magie."
     }
   ],
-  "FEAT_TYPES_DATA": []
+  "FEAT_TYPES_DATA": [
+    { "value": "general", "label": "Général" },
+    { "value": "special", "label": "Spécial" },
+    { "value": "itemCreation", "label": "Création d'objets" },
+    { "value": "metamagic", "label": "Métamagie" },
+    { "value": "special-ex", "label": "Aptitude Spéciale (Ext)" },
+    { "value": "special-su", "label": "Aptitude Spéciale (Sur)" },
+    { "value": "special-sp", "label": "Aptitude Spéciale (Mag)" }
+  ]
 }
-
-    
-```
-
     

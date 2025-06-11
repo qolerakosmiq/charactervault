@@ -678,11 +678,232 @@
         }
       ],
       "type": "special"
+    },
+    {
+      "value": "improved-unarmed-strike",
+      "label": "Improved Unarmed Strike",
+      "description": "<b>Benefit:</b> You are considered to be armed even when unarmed—you do not provoke attacks of opportunity when you attack foes while unarmed. Your unarmed strikes can deal lethal or nonlethal damage, at your option.",
+      "effectsText": "Considered armed when unarmed. Unarmed strikes can deal lethal/nonlethal damage.",
+      "isClassFeature": false,
+      "type": "special",
+      "category": "fighterBonusFeat monkBonusFeat"
+    },
+    {
+      "value": "stunning-fist",
+      "label": "Stunning Fist",
+      "description": "<b>Benefit:</b> You must declare that you are using this feat before you make your attack roll (thus, a failed attack roll ruins the attempt). Stunning Fist forces a foe damaged by your unarmed attack to make a Fortitude saving throw (DC 10 + 1/2 your character level + your Wis modifier), in addition to dealing damage normally. A defender who fails this saving throw is stunned for 1 round (until just before your next action). A stunned character can’t act, loses any Dexterity bonus to AC, and takes a –2 penalty to AC. You may attempt a stunning attack once per day for every four levels you have attained (but see Special), and no more than once per round. Constructs, oozes, plants, undead, incorporeal creatures, and creatures immune to critical hits cannot be stunned.",
+      "prerequisites": { "abilities": { "dexterity": 13, "wisdom": 13 }, "bab": 8, "feats": ["improved-unarmed-strike"] },
+      "effectsText": "Stun foe on unarmed strike (Fort save negates), usable 1/day per 4 levels.",
+      "type": "special",
+      "category": "monkBonusFeat"
+    },
+    {
+      "value": "power-attack",
+      "label": "Power Attack",
+      "description": "<b>Benefit:</b> On your action, before making attack rolls for a round, you may choose to subtract a number from all melee attack rolls and add the same number to all melee damage rolls. This number may not exceed your base attack bonus. The penalty on attacks and bonus on damage apply until your next turn.",
+      "prerequisites": { "abilities": { "strength": 13 } },
+      "effectsText": "Trade melee attack bonus for melee damage bonus.",
+      "type": "special",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "scribe-scroll",
+      "label": "Scribe Scroll",
+      "description": "<b>Benefit:</b> You can create a scroll of any spell that you know. Scribing a scroll takes 1 day for each 1,000 gp in its base price. The base price of a scroll is its spell level × its caster level × 25 gp. To scribe a scroll, you must spend 1/25 of this base price in XP and use up raw materials costing half of this base price.",
+      "prerequisites": { "casterLevel": 1 },
+      "type": "itemCreation"
+    },
+    {
+      "value": "class-monk-bonus-feat-slot",
+      "label": "Monk Bonus Feat Slot",
+      "description": "A monk may select a bonus feat at 1st level, 2nd level, and 6th level from a specific list.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "bonusFeatSlot", "category": "monkBonusFeat", "count": 1 }]
+    },
+    {
+      "value": "class-monk-flurry-of-blows",
+      "label": "Flurry of Blows",
+      "description": "When unarmored, a monk may strike with a flurry of blows at the expense of accuracy. When doing so, she may make one extra attack in a round at her highest base attack bonus, but this attack takes a –2 penalty, as does each other attack made that round. The monk must use a full attack action to strike with a flurry of blows.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "One extra attack at highest BAB, all attacks at -2 for the round. Scales with level."
+    },
+    {
+      "value": "class-monk-unarmed-strike-damage",
+      "label": "Unarmed Strike Damage",
+      "description": "Monk's unarmed strikes deal more damage than usual.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Unarmed damage increases with Monk level (e.g., 1d6 at L1, 1d8 at L4)."
+    },
+    {
+      "value": "class-monk-ac-bonus",
+      "label": "Monk AC Bonus",
+      "description": "A monk is highly trained at dodging blows, and she has a sixth sense that lets her avoid even unanticipated attacks. When unarmored and unencumbered, the monk adds her Wisdom bonus (if any) to her AC. In addition, a monk gains a +1 bonus to AC at 5th level. This bonus increases by 1 for every five monk levels thereafter (+2 at 10th, +3 at 15th, and +4 at 20th level).",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "armorClass", "value": "WIS", "acType": "monk_wisdom", "bonusType": "untyped", "condition": "unarmored_unencumbered" },
+        {
+          "type": "armorClass",
+          "value": 0,
+          "acType": "monkScaling",
+          "bonusType": "untyped",
+          "condition": "unarmored_unencumbered",
+          "scaleWithClassLevel": {
+            "classId": "monk",
+            "specificLevels": [
+              { "level": 1, "value": 0 },
+              { "level": 5, "value": 1 },
+              { "level": 10, "value": 2 },
+              { "level": 15, "value": 3 },
+              { "level": 20, "value": 4 }
+            ]
+          }
+        }
+      ],
+      "effectsText": "Adds Wisdom bonus to AC when unarmored and unencumbered. Gains +1 AC at 5th level, +1 every 5 levels thereafter."
+    },
+    {
+      "value": "class-monk-unarmored-speed-bonus",
+      "label": "Monk Unarmored Speed Bonus",
+      "description": "At 1st level, a monk gains an enhancement bonus to her speed when unarmored and unencumbered. This bonus starts at +10 feet and increases by +10 feet every 3 levels.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "+10ft speed at L1, +10ft every 3 levels thereafter (unarmored, unencumbered)."
+    },
+    {
+      "value": "class-monk-evasion",
+      "label": "Evasion (Monk)",
+      "description": "At 2nd level or higher, if she makes a successful Reflex saving throw against an attack that normally deals half damage on a successful save, she instead takes no damage.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Take no damage on successful Reflex save vs. half-damage effects."
+    },
+    {
+      "value": "class-monk-still-mind",
+      "label": "Still Mind",
+      "description": "A monk of 3rd level or higher gains a +2 bonus on saving throws against spells and effects from the school of enchantment.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "savingThrow", "save": "will", "value": 2, "bonusType": "untyped", "condition": "vs_enchantment_effects" }],
+      "effectsText": "+2 bonus on saves vs. enchantment spells/effects."
+    },
+    {
+      "value": "class-monk-ki-strike",
+      "label": "Ki Strike",
+      "description": "At 4th level, a monk’s unarmed attacks are empowered with ki. Her unarmed attacks are treated as magic weapons for the purpose of dealing damage to creatures with damage reduction. Ki strike improves with the character’s monk level. At 10th level, her unarmed attacks are also treated as lawful weapons for the purpose of dealing damage to creatures with damage reduction. At 16th level, her unarmed attacks are treated as adamantine weapons for the purposes of dealing damage to creatures with damage reduction and bypassing hardness.",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effectsText": "Unarmed strikes treated as magic (L4), lawful (L10), adamantine (L16) for DR."
+    },
+    {
+      "value": "class-monk-slow-fall",
+      "label": "Slow Fall",
+      "description": "At 4th level or higher, a monk within arm’s reach of a wall can use it to slow her descent. When first using this ability, she takes damage as if the fall were 20 feet shorter than it actually is. The monk’s ability to slow her fall improves with her monk level until at 20th level she can use a wall to slow her descent and fall any distance without harm.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Reduces effective falling distance when near a wall (20ft at L4, scaling up)."
+    },
+    {
+      "value": "class-monk-purity-of-body",
+      "label": "Purity of Body",
+      "description": "At 5th level, a monk gains immunity to all diseases except for supernatural and magical diseases.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Immunity to all normal diseases."
+    },
+    {
+      "value": "class-monk-wholeness-of-body",
+      "label": "Wholeness of Body",
+      "description": "At 7th level or higher, a monk can heal her own wounds. She can heal a number of hit points of damage equal to twice her current monk level each day, and she can spread this healing out among several uses.",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effectsText": "Heal (2 x Monk level) HP per day."
+    },
+    {
+      "value": "class-monk-improved-evasion",
+      "label": "Improved Evasion (Monk)",
+      "description": "At 9th level, a monk’s evasion ability improves. She still takes no damage on a successful Reflex saving throw against attacks, but henceforth she takes only half damage on a failed save.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Take no damage on successful Reflex save, half on failed save, vs. half-damage effects."
+    },
+    {
+      "value": "class-monk-diamond-body",
+      "label": "Diamond Body",
+      "description": "At 11th level, a monk gains immunity to poisons of all kinds.",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effectsText": "Immunity to all poisons."
+    },
+    {
+      "value": "class-monk-greater-flurry",
+      "label": "Greater Flurry",
+      "description": "At 11th level, a monk’s flurry of blows ability improves. In addition to the standard single extra attack she gets from flurry of blows, she gets a second extra attack at her full base attack bonus.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Flurry of blows grants a second extra attack at full BAB."
+    },
+    {
+      "value": "class-monk-abundant-step",
+      "label": "Abundant Step",
+      "description": "At 12th level or higher, a monk can slip magically between spaces, as if using the spell dimension door, once per day. Her caster level for this effect is one-half her monk level (rounded down).",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effectsText": "Dimension door 1/day (CL 1/2 Monk level)."
+    },
+    {
+      "value": "class-monk-diamond-soul",
+      "label": "Diamond Soul",
+      "description": "At 13th level, a monk gains spell resistance equal to her current monk level + 10.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Spell resistance = Monk level + 10."
+    },
+    {
+      "value": "class-monk-quivering-palm",
+      "label": "Quivering Palm",
+      "description": "Starting at 15th level, a monk can set up vibrations within the body of another creature that can thereafter be fatal if the monk so wishes. She can use this quivering palm attack once per day, and she must announce her intent before making her attack roll. Constructs, oozes, plants, undead, incorporeal creatures, and creatures immune to critical hits can’t be affected. Otherwise, if the monk strikes successfully and the target takes damage from the blow, the quivering palm attack succeeds. Thereafter, the monk can try to slay the victim at any later time, as long as the attempt is made within a number of days equal to her monk level. To make such an attempt, the monk merely wills the target to die (a free action), and unless the target makes a Fortitude saving throw (DC 10 + 1/2 your monk level + your Wis modifier), it dies. If the saving throw is successful, the target is no longer in danger from that particular quivering palm attack, but it may still be affected by another one at a later time.",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effectsText": "Kill target with a touch (Fort save negates), 1/day."
+    },
+    {
+      "value": "class-monk-tongue-sun-moon",
+      "label": "Tongue of the Sun and Moon",
+      "description": "A monk of 17th level or higher can speak with any living creature.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Speak with any living creature."
+    },
+    {
+      "value": "class-monk-empty-body",
+      "label": "Empty Body",
+      "description": "At 19th level, a monk can assume an ethereal state for 1 round per monk level per day. This ability functions like the spell etherealness (caster level equals the character’s monk level).",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effectsText": "Become ethereal 1 round/level/day."
+    },
+    {
+      "value": "class-monk-perfect-self",
+      "label": "Perfect Self",
+      "description": "At 20th level, a monk becomes a magical creature. She is forevermore treated as an outsider rather than as a humanoid (or whatever the monk’s creature type was). Additionally, the monk gains damage reduction 10/magic.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "Becomes an outsider, DR 10/magic."
     }
   ],
-  "FEAT_TYPES_DATA": []
+  "FEAT_TYPES_DATA": [
+    { "value": "general", "label": "General" },
+    { "value": "special", "label": "Special" },
+    { "value": "itemCreation", "label": "Item Creation" },
+    { "value": "metamagic", "label": "Metamagic" },
+    { "value": "special-ex", "label": "Special Ability (Ex)" },
+    { "value": "special-su", "label": "Special Ability (Su)" },
+    { "value": "special-sp", "label": "Special Ability (Sp)" }
+  ]
 }
-    
-```
 
     
