@@ -58,14 +58,14 @@ export const SavingThrowBreakdownContentDisplay = ({
         <div className="flex justify-between text-sm">
           <span className="text-foreground inline-flex items-baseline">
             {uiStrings.savingThrowsRowLabelAbilityModifier || "Ability Modifier"}
-            <Badge variant="outline">{abilityAbbr}</Badge>
+            <Badge variant="outline" className="ml-1.5">{abilityAbbr}</Badge>
           </span>
           {renderModifierValue(breakdown.abilityMod)}
         </div>
 
         {activeFeatComponents.length > 0 && (
           <>
-            <h4 className="text-lg font-bold text-muted-foreground pb-0.5">
+            <h4 className="text-sm font-bold text-muted-foreground pb-0.5">
                 {uiStrings.savingThrowsFeatsModifierLabel || "Feats Modifier"}
             </h4>
             {activeFeatComponents.map((fc, index) => (
@@ -102,3 +102,4 @@ export const SavingThrowBreakdownContentDisplay = ({
     </div>
   );
 };
+

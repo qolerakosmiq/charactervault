@@ -36,16 +36,17 @@ export const AcBreakdownContentDisplay = ({
 }: AcBreakdownContentDisplayProps) => {
   if (!detailsList || detailsList.length === 0) return null;
 
-  // Filter out inactive items first
-  const activeDetailsList = detailsList.filter(detail => detail.isActive !== false);
+  // Filter out inactive items first, except for the base AC which doesn't have isActive
+  const activeDetailsList = detailsList.filter(detail => detail.isActive !== false || String(detail.mainLabel).toLowerCase() === (uiStrings.acBreakdownBaseLabel || "Base").toLowerCase());
+
 
   const staticComponents: AcBreakdownDetailItem[] = [];
   const conditionalFeatComponents: AcBreakdownDetailItem[] = [];
 
   activeDetailsList.forEach(detail => {
-    if (detail.isSubItem) { // These are the individual conditional feat effects
+    if (detail.isSubItem && detail.isActive) { // These are the individual conditional feat effects
       conditionalFeatComponents.push(detail);
-    } else {
+    } else if (!detail.isSubItem) { // Only push non-sub-items (main categories)
       staticComponents.push(detail);
     }
   });
@@ -62,10 +63,11 @@ export const AcBreakdownContentDisplay = ({
       suffixBadgeDisplay = <Badge variant="outline" className="ml-1.5">{detail.sizeName}</Badge>;
     } else if (detail.suffixDetails && detail.suffixDetails.length > 0 && !isConditionalSubItem) {
       mainTextDisplay = detail.mainLabel;
-      suffixBadgeDisplay = <span className="text-muted-foreground/80 ml-1 text-xs">({detail.suffixDetails.join(", ")})</span>;
-    } else {
-      mainTextDisplay = detail.mainLabel; // For conditional items, mainLabel is usually the feat name
+      suffixBadgeDisplay = <span className="text-muted-foreground/80 ml-1">({detail.suffixDetails.join(", ")})</span>;
+    } else if (isConditionalSubItem) {
+        mainTextDisplay = detail.mainLabel; // For conditional items, mainLabel is usually the feat name
     }
+
 
     let valueToRender = detail.value;
     if (String(detail.mainLabel).toLowerCase() === (uiStrings.acBreakdownBaseLabel || "Base").toLowerCase() && typeof detail.value === 'number') {
@@ -93,7 +95,7 @@ export const AcBreakdownContentDisplay = ({
 
       {conditionalFeatComponents.length > 0 && (
         <>
-          <h4 className="text-lg font-bold text-muted-foreground pb-0.5">
+          <h4 className="text-sm font-bold text-muted-foreground pb-0.5">
             {uiStrings.infoDialogConditionalBonusesHeading || "Conditional Bonuses"}
           </h4>
           <div className="space-y-0.5">
@@ -114,3 +116,4 @@ export const AcBreakdownContentDisplay = ({
     </div>
   );
 };
+

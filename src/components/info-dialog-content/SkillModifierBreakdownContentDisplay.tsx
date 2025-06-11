@@ -108,7 +108,7 @@ export const SkillModifierBreakdownContentDisplay = ({
           <div className="flex justify-between text-sm">
             <span className="text-foreground inline-flex items-baseline">
               {uiStrings.infoDialogKeyAbilityLabel || "Key Ability"}
-              <Badge variant="outline">
+              <Badge variant="outline" className="ml-1.5">
                 {skillModifierBreakdown!.keyAbilityName}
               </Badge>
             </span>
@@ -134,7 +134,7 @@ export const SkillModifierBreakdownContentDisplay = ({
 
         {activeFeatSkillEffects.length > 0 && (
             <>
-                <h4 className="text-lg font-bold text-muted-foreground pb-0.5">
+                <h4 className="text-sm font-bold text-muted-foreground pb-0.5">
                     {uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}
                 </h4>
                 {activeFeatSkillEffects.map((eff, idx) => (
@@ -191,3 +191,4 @@ export const SkillModifierBreakdownContentDisplay = ({
     </>
   );
 };
+

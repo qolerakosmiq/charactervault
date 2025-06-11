@@ -71,7 +71,7 @@ export const AbilityScoreBreakdownContentDisplay = ({
 
         {conditionalActiveComponents.length > 0 && (
           <>
-            <h4 className="text-lg font-bold text-muted-foreground pb-0.5">
+            <h4 className="text-sm font-bold text-muted-foreground pb-0.5">
               {uiStrings.infoDialogConditionalBonusesHeading || "Conditional Bonuses"}
             </h4>
             {conditionalActiveComponents.map(comp => renderComponent(comp, true))}
@@ -91,3 +91,4 @@ export const AbilityScoreBreakdownContentDisplay = ({
     </div>
   );
 };
+

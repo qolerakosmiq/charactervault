@@ -61,7 +61,7 @@ export const MaxHpBreakdownContentDisplay = ({
         <div className="flex justify-between text-sm items-baseline">
           <span className="text-foreground inline-flex items-baseline">
             {uiStrings.maxHpDialogAbilityModLabel || "Ability Modifier"}
-            <Badge variant="outline">{conAbbr}</Badge>
+            <Badge variant="outline" className="ml-1.5">{conAbbr}</Badge>
           </span>
           {renderModifierValue(finalConstitutionModifier)}
         </div>
@@ -85,7 +85,7 @@ export const MaxHpBreakdownContentDisplay = ({
 
         {conditionalHpBonuses.length > 0 && (
             <>
-                <h4 className="text-lg font-bold text-muted-foreground pb-0.5">
+                <h4 className="text-sm font-bold text-muted-foreground pb-0.5">
                     {uiStrings.infoDialogConditionalBonusesHeading || "Conditional Bonuses"}
                 </h4>
                 {conditionalHpBonuses.map((bonus, index) => (
@@ -106,3 +106,4 @@ export const MaxHpBreakdownContentDisplay = ({
     </div>
   );
 };
+
