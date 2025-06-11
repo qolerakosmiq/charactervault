@@ -5,8 +5,8 @@ import React from 'react';
 import type { GrappleDamageBreakdownDetails, AbilityName } from '@/types/character';
 import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge'; // Added Badge import
-import { cn } from '@/lib/utils'; // Added cn import
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface GrappleDamageBreakdownContentDisplayProps {
   grappleDamageBreakdown?: GrappleDamageBreakdownDetails;
@@ -47,9 +47,7 @@ export const GrappleDamageBreakdownContentDisplay = ({
           <span className="text-muted-foreground inline-flex items-baseline">
             {uiStrings.infoDialogGrappleDmgAbilityLabel || "Ability Modifier"}
             {strengthAbilityInfo && (
-              <Badge variant="outline" className={cn("ml-1.5 text-sm font-normal px-1.5 py-0.5 whitespace-nowrap")}>
-                {strengthAbilityInfo.abbr}
-              </Badge>
+              <Badge variant="outline" className="ml-1.5">{strengthAbilityInfo.abbr}</Badge>
             )}
           </span>
           {renderModifierValue(grappleDamageBreakdown.strengthModifier)}
@@ -77,4 +75,3 @@ export const GrappleDamageBreakdownContentDisplay = ({
     </div>
   );
 };
-

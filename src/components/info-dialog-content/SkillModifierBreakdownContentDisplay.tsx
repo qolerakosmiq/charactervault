@@ -32,7 +32,7 @@ export const SkillModifierBreakdownContentDisplay = ({
     />
   ) : null;
 
-  const badgeClass = "font-normal h-5 px-1.5 py-0.5 align-baseline whitespace-nowrap text-sm";
+  const badgeClass = "align-baseline whitespace-nowrap"; 
 
   const hasCalculationBlock = !!skillModifierBreakdown;
 
@@ -54,7 +54,6 @@ export const SkillModifierBreakdownContentDisplay = ({
                     key={`badge-${index}`}
                     variant="outline"
                     className={cn(badgeClass)}
-                    style={{ fontSize: '0.875rem' }}
                   >
                     {match ? match[0] : part}
                   </Badge>
@@ -69,7 +68,6 @@ export const SkillModifierBreakdownContentDisplay = ({
                   if (child.type === Badge) {
                     return React.cloneElement(child as React.ReactElement<any>, {
                       className: cn((child.props.className || ''), badgeClass),
-                      style: { ...(child.props.style || {}), fontSize: '0.875rem' },
                     });
                   }
                   if (child.props.children) {
@@ -108,7 +106,7 @@ export const SkillModifierBreakdownContentDisplay = ({
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground inline-flex items-baseline">
               {uiStrings.infoDialogKeyAbilityLabel || "Key Ability"}
-              <Badge variant="outline" className="text-sm font-normal px-1.5 py-0.5 ml-1.5 whitespace-nowrap">
+              <Badge variant="outline" className="ml-1.5">
                 {skillModifierBreakdown!.keyAbilityName}
               </Badge>
             </span>
@@ -192,4 +190,3 @@ export const SkillModifierBreakdownContentDisplay = ({
     </>
   );
 };
-

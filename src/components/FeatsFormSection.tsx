@@ -110,7 +110,7 @@ const FeatsFormSectionComponent = ({
   }), [featSectionData, abilityScores, skills]);
 
 
-  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 whitespace-nowrap";
+  const badgeClassName = "text-primary border-primary whitespace-nowrap";
 
   const handleOpenFeatDialog = () => {
     let filterCategoryForDialog: string | undefined = undefined;
@@ -340,12 +340,12 @@ const FeatsFormSectionComponent = ({
       <div key={instance.instanceId} className="group flex items-start justify-between py-2 transition-colors">
         <div className="flex-grow mr-2">
           <div className="flex items-baseline flex-wrap gap-x-1.5 mb-1">
-            {featSource && <Badge variant="secondary" className="text-xs font-normal h-5 whitespace-nowrap">{featSource}</Badge>}
+            {featSource && <Badge variant="secondary" className="whitespace-nowrap">{featSource}</Badge>}
             <h4 className="font-medium text-foreground inline-flex items-center">
               {definition.label}
             </h4>
-            {featTypeLabel && <Badge variant="outline" className="text-xs font-normal h-5 whitespace-nowrap">{featTypeLabel}</Badge>}
-            {isCustomDefinition && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
+            {featTypeLabel && <Badge variant="outline" className="whitespace-nowrap">{featTypeLabel}</Badge>}
+            {isCustomDefinition && <Badge variant="outline" className="text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
             {instance.grantedNote && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
           </div>
           {definition.requiresSpecialization && instance.specializationDetail && <p className="text-sm text-muted-foreground mt-0.5 ml-1">({instance.specializationDetail})</p>}

@@ -56,7 +56,7 @@ export const SavingThrowBreakdownContentDisplay = ({
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground inline-flex items-baseline">
             {uiStrings.savingThrowsRowLabelAbilityModifier || "Ability Modifier"}
-            <Badge variant="outline" className="ml-1.5 text-sm font-normal px-1.5 py-0.5 whitespace-nowrap">{abilityAbbr}</Badge>
+            <Badge variant="outline" className="ml-1.5">{abilityAbbr}</Badge>
           </span>
           {renderModifierValue(breakdown.abilityMod)}
         </div>
@@ -103,4 +103,3 @@ export const SavingThrowBreakdownContentDisplay = ({
     </div>
   );
 };
-

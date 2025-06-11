@@ -203,7 +203,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 <div key={ability} className="flex flex-col items-center space-y-1.5 p-3 border rounded-md bg-card shadow-sm">
                   <Label htmlFor={`base-score-${ability}`} className="text-center text-md font-medium flex flex-col items-center">
                     <span>{abilityAbbr}</span>
-                    <span className="text-xs font-normal text-muted-foreground">{abilityDisplayName}</span>
+                    <span className="text-xs text-muted-foreground">{abilityDisplayName}</span>
                   </Label>
 
                   <div className="flex items-center justify-center space-x-1 mb-1">
@@ -266,11 +266,11 @@ const CharacterFormAbilityScoresSectionComponent = ({
           </div>
            <p className="text-sm text-muted-foreground mt-4 pt-2 border-t border-border/30">
             <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.abilityScoresNote_prefix || "<strong>Note:</strong> The " }} />
-            <Badge variant="outline" className="text-sm font-normal px-1 py-0.5 align-baseline mx-0.5">
+            <Badge variant="outline">
               {UI_STRINGS.abilityScoresNote_badge0_text || "Temporary Modifier"}
             </Badge>
             {UI_STRINGS.abilityScoresNote_text_after_badge0 || " field adjusts the "}
-            <Badge variant="outline" className="text-sm font-normal px-1 py-0.5 align-baseline mx-0.5">
+            <Badge variant="outline">
               {UI_STRINGS.abilityScoresNote_badge1_text || "Base Score"}
             </Badge>
             {UI_STRINGS.abilityScoresNote_suffix || ", not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score."}
@@ -306,4 +306,3 @@ const CharacterFormAbilityScoresSectionComponent = ({
 };
 CharacterFormAbilityScoresSectionComponent.displayName = 'CharacterFormAbilityScoresSectionComponent';
 export const CharacterFormAbilityScoresSection = React.memo(CharacterFormAbilityScoresSectionComponent);
-

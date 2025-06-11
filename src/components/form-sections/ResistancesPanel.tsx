@@ -184,10 +184,10 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
     const typeLabel = getDrTypeUiLabel(dr.type);
     const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
     
-    const valueBadge = <Badge variant="outline" className="text-sm font-medium px-1 py-0.5 mx-0.5">{dr.value}</Badge>;
+    const valueBadge = <Badge variant="outline">{dr.value}</Badge>;
     const typeIsNone = dr.type === "none" || typeLabel === (DAMAGE_REDUCTION_TYPES.find(t => t.value === 'none')?.label || "None");
     const typeBadge = !typeIsNone
-        ? <Badge variant="outline" className="text-sm font-medium px-1 py-0.5 mx-0.5">{typeLabel}</Badge>
+        ? <Badge variant="outline">{typeLabel}</Badge>
         : <span className="italic mx-0.5">{typeLabel}</span>;
 
 
@@ -337,10 +337,10 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                         value={newDrValue}
                         onChange={setNewDrValue}
                         min={1}
-                        inputClassName="h-9 text-sm w-full text-center" // Make input take full width
+                        inputClassName="h-9 text-sm w-full text-center" 
                         buttonClassName="h-9 w-9"
                         buttonSize="sm"
-                        className="w-full" // Make spinner component take full width
+                        className="w-full" 
                         />
                     </div>
                     <div className="space-y-1">
@@ -392,11 +392,11 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                             <div className="flex items-center justify-between w-full">
                                 <div className="flex items-center gap-x-1 flex-wrap">
                                   <span className="font-semibold text-xl text-accent">{getDrPrimaryNotation(dr)}</span>
-                                  <Badge variant="outline" className="text-sm font-normal h-5 mr-1 whitespace-nowrap">
+                                  <Badge variant="outline" className="ml-1">
                                      {ruleLabel}
                                    </Badge>
                                    {dr.isGranted && dr.source && (
-                                    <Badge variant="secondary" className="text-xs whitespace-nowrap">{dr.source}</Badge>
+                                    <Badge variant="secondary" className="ml-1">{dr.source}</Badge>
                                   )}
                                 </div>
                                 {!dr.isGranted && (
@@ -427,4 +427,3 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
 };
 ResistancesPanelComponent.displayName = 'ResistancesPanelComponent';
 export const ResistancesPanel = React.memo(ResistancesPanelComponent);
-

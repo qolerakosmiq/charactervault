@@ -127,8 +127,8 @@ export const ClassContentDisplay = ({
                   >
                     {feat.levelAcquired !== undefined && (
                       <Badge variant="outline" className={cn(
-                        "text-sm font-normal h-5 whitespace-nowrap shrink-0 justify-center",
-                        "min-w-[5rem]"
+                        "whitespace-nowrap shrink-0 justify-center",
+                        "min-w-[5rem]" 
                       )}>
                         {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
                       </Badge>

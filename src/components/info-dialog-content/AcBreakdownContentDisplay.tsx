@@ -6,7 +6,7 @@ import type { AbilityName, AggregatedFeatEffects } from '@/types/character';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
-import { Badge } from '@/components/ui/badge'; // Added Badge import
+import { Badge } from '@/components/ui/badge';
 
 export interface AcBreakdownDetailItem {
   mainLabel: string | React.ReactNode;
@@ -41,7 +41,7 @@ export const AcBreakdownContentDisplay = ({
       {detailsList.map((detail, index) => {
         let valueToRender = detail.value;
         if (String(detail.mainLabel).toLowerCase() === (uiStrings.acBreakdownBaseLabel || "Base").toLowerCase()) {
-          valueToRender = <span className="font-bold">{detail.value}</span>; // Display Base AC as normal number
+          valueToRender = <span className="font-bold">{detail.value}</span>; 
         } else if ((typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string)))) && !String(detail.mainLabel).toLowerCase().includes('base attack bonus')) {
           valueToRender = renderModifierValue(detail.value as number | string);
         }
@@ -51,16 +51,16 @@ export const AcBreakdownContentDisplay = ({
 
         if (detail.type === 'acAbilityMod' && detail.abilityAbbr) {
           mainText = detail.mainLabel; 
-          suffixBadge = <Badge variant="outline" className="ml-1.5 text-sm font-normal">{detail.abilityAbbr}</Badge>;
+          suffixBadge = <Badge variant="outline" className="ml-1.5">{detail.abilityAbbr}</Badge>;
         } else if (detail.type === 'acSizeMod' && detail.sizeName) {
           mainText = detail.mainLabel; 
-          suffixBadge = <Badge variant="outline" className="ml-1.5 text-sm font-normal">{detail.sizeName}</Badge>;
+          suffixBadge = <Badge variant="outline" className="ml-1.5">{detail.sizeName}</Badge>;
         } else if (detail.suffixDetails && detail.suffixDetails.length > 0) {
-          // Fallback for other suffix details if not ability/size for badge
+          
           suffixBadge = <span className="text-muted-foreground/80 ml-1">({detail.suffixDetails.join(", ")})</span>;
         }
         
-        // If suffix was already part of mainLabel and not handled by badge logic
+        
         if (typeof mainText === 'string' && !suffixBadge) {
           const suffixMatch = mainText.match(/\s(\([^)]+\))$/);
           if (suffixMatch) { 
@@ -101,5 +101,3 @@ export const AcBreakdownContentDisplay = ({
     </div>
   );
 };
-
-    

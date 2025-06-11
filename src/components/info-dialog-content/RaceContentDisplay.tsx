@@ -155,7 +155,7 @@ export const RaceContentDisplay = ({
                   >
                     {feat.levelAcquired !== undefined && (
                       <Badge variant="outline" className={cn(
-                        "text-sm font-normal h-5 whitespace-nowrap shrink-0 justify-center", // Changed text-xs to text-sm
+                        "whitespace-nowrap shrink-0 justify-center",
                         "min-w-[5rem]"
                       )}>
                         {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}

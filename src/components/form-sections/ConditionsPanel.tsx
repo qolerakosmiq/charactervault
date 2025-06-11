@@ -165,7 +165,7 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
               <Label htmlFor={`condition-toggle-${conditionKey.replace(/\W/g, '-')}`} className={cn("flex-grow text-sm cursor-pointer", isToggleDisabled && "cursor-default opacity-70")}>
                 {translatedDisplayText}
                  {isToggleDisabled && isGloballyActive && ( // Show "Permanent" only if it's active due to permanent sources
-                    <Badge variant="outline" className="ml-2 text-xs text-muted-foreground border-muted-foreground/50">
+                    <Badge variant="outline" className="ml-2 text-muted-foreground border-muted-foreground/50">
                       {UI_STRINGS.conditionsPanelPermanentLabel || "Permanent"}
                     </Badge>
                 )}
@@ -199,4 +199,3 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
 };
 ConditionsPanelComponent.displayName = "ConditionsPanelComponent";
 export const ConditionsPanel = React.memo(ConditionsPanelComponent);
-    

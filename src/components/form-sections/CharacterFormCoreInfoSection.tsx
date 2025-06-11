@@ -358,7 +358,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                <div className="flex flex-wrap items-baseline gap-1 pt-[6px] ml-1">
                 {raceSpecialQualities.abilityEffects.map((effect) => {
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
-                  let badgeClassName = "text-xs font-normal whitespace-nowrap";
+                  let badgeClassName = "whitespace-nowrap";
                   if (effect.change > 0) badgeClassName = cn(badgeClassName, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                   else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassName = cn(badgeClassName, "hover:bg-destructive"); }
                   else badgeClassName = cn(badgeClassName, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
@@ -385,14 +385,14 @@ const CharacterFormCoreInfoSectionComponent = ({
             </div>
             <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-[6px] ml-1">
               {selectedClassInfo?.hitDice && (
-                <Badge variant="secondary" className="text-xs font-normal whitespace-nowrap">
+                <Badge variant="secondary" className="whitespace-nowrap">
                   <Heart fill="currentColor" className="inline h-3 w-3 mr-1.5 text-primary/70" />
                   {UI_STRINGS.hitDiceLabel || "Hit Dice"}:{'\u00A0'}
                   <strong className="font-bold">{selectedClassInfo.hitDice}</strong>
                 </Badge>
               )}
               {isBarbarian && rageUsesPerDay > 0 && (
-                  <Badge className="text-xs font-normal whitespace-nowrap bg-accent text-accent-foreground">
+                  <Badge className="whitespace-nowrap bg-accent text-accent-foreground">
                     <Activity className="inline h-3 w-3 mr-1" />
                     {(UI_STRINGS.barbarianRageUsesLabel || "Rage Uses Per Day")}: <strong className="font-bold ml-1">{rageUsesPerDay}</strong>
                   </Badge>
@@ -589,13 +589,13 @@ const CharacterFormCoreInfoSectionComponent = ({
             />
             {ageEffectsDetails && (ageEffectsDetails.categoryName !== 'Adult' || ageEffectsDetails.effects.length > 0) && (
               <div className="flex flex-wrap items-baseline justify-center md:justify-start gap-1 pt-[6px] ml-1">
-                <Badge variant="secondary" className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground whitespace-nowrap"> {ageEffectsDetails.categoryName} </Badge>
+                <Badge variant="secondary" className="whitespace-nowrap"> {ageEffectsDetails.categoryName} </Badge>
                 {ageEffectsDetails.effects.map((effect) => {
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
-                  let badgeClassName = "text-xs font-normal whitespace-nowrap";
-                  if (effect.change > 0) badgeClassName = cn(badgeClassName, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
-                  else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassName = cn(badgeClassName, "hover:bg-destructive"); }
-                  return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassName}> {effect.ability.substring(0, 3).toUpperCase()}{effect.change !== 0 ? ' ' : ''} {effect.change > 0 ? '+' : ''} {effect.change} </Badge> );
+                  let badgeClassNameInternal = "whitespace-nowrap";
+                  if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
+                  else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
+                  return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {effect.ability.substring(0, 3).toUpperCase()}{effect.change !== 0 ? ' ' : ''} {effect.change > 0 ? '+' : ''} {effect.change} </Badge> );
                 })}
               </div>
             )}
@@ -623,7 +623,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
                   const acMod = selectedSizeObject.acModifier;
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
-                  let badgeClassNameForAc = "text-xs font-normal whitespace-nowrap";
+                  let badgeClassNameForAc = "whitespace-nowrap";
                   if (acMod > 0) badgeClassNameForAc = cn(badgeClassNameForAc, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                   else if (acMod < 0) { badgeVariantProp = "destructive"; badgeClassNameForAc = cn(badgeClassNameForAc, "hover:bg-destructive"); }
                   return ( <Badge variant={badgeVariantProp} className={badgeClassNameForAc}> AC{'\u00A0'}{acMod >= 0 ? '+' : ''}{acMod} </Badge> );
@@ -638,4 +638,3 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
-

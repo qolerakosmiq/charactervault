@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -31,20 +30,6 @@ export interface RollDialogProps {
   onRoll: (diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString?: string) => void;
   rerollTwentiesForChecks?: boolean;
 }
-
-function getRollDialogSubtitle(rollType: string, uiStrings: Record<string, string>): string {
-    if (rollType.startsWith('ability_check_')) return uiStrings.rollDialogSubtitleAbilityCheck || "Ability Check";
-    if (rollType.startsWith('skill_check_')) return uiStrings.rollDialogSubtitleSkillCheck || "Skill Check";
-    if (rollType.startsWith('saving_throw_')) return uiStrings.rollDialogSubtitleSavingThrow || "Saving Throw";
-    if (rollType === 'initiative_check') return uiStrings.rollDialogSubtitleInitiativeCheck || "Initiative Roll";
-    if (rollType.startsWith('melee_attack_')) return uiStrings.rollDialogSubtitleMeleeAttack || "Melee Attack";
-    if (rollType.startsWith('ranged_attack_')) return uiStrings.rollDialogSubtitleRangedAttack || "Ranged Attack";
-    if (rollType.startsWith('damage_roll_melee_')) return uiStrings.rollDialogSubtitleMeleeDamage || "Melee Damage";
-    if (rollType.startsWith('damage_roll_ranged_')) return uiStrings.rollDialogSubtitleRangedDamage || "Ranged Damage";
-    if (rollType === 'grapple_check') return uiStrings.rollDialogSubtitleGrappleCheck || "Grapple Check";
-    return uiStrings.rollDialogSubtitleGeneric || "Roll";
-}
-
 
 export function RollDialog({
   isOpen,
@@ -220,7 +205,7 @@ export function RollDialog({
                       <span className="text-muted-foreground inline-flex items-center">
                         {labelText}
                         {abilityAbbr && (
-                           <Badge variant="outline" className="ml-1.5 text-sm font-normal">{abilityAbbr}</Badge>
+                           <Badge variant="outline" className="ml-1.5">{abilityAbbr}</Badge>
                         )}
                       </span>
                       {item.isRawValue ? (
@@ -275,7 +260,7 @@ export function RollDialog({
                     <div className="flex justify-between items-center">
                       <div className="flex items-center">
                         <span className="text-sm text-muted-foreground">{UI_STRINGS.rollDialogDiceRollLabel || "Dice Roll"}</span>
-                        <Badge variant="outline" className="text-sm font-normal ml-1.5 px-1.5 py-0.5">1d20</Badge>
+                        <Badge variant="outline" className="ml-1.5">1d20</Badge>
                       </div>
                       <span className={diceResultColor}>{initialD20Roll}</span>
                     </div>
@@ -319,4 +304,3 @@ export function RollDialog({
     </Dialog>
   );
 }
-

@@ -200,8 +200,8 @@ export function FeatSelectionDialog({
                     >
                       <div className="font-medium text-sm text-foreground">
                         {featDef.label}
-                        {featDef.isCustom && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 h-5 ml-1.5 font-normal whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
-                        {featDef.category && <Badge variant="secondary" className="text-xs h-5 ml-1.5 font-normal whitespace-nowrap">{featDef.category}</Badge>}
+                        {featDef.isCustom && <Badge variant="outline" className="text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
+                        {featDef.category && <Badge variant="secondary" className="whitespace-nowrap">{featDef.category}</Badge>}
                       </div>
                       {featDef.description && (
                         <div
@@ -241,4 +241,3 @@ export function FeatSelectionDialog({
     </Dialog>
   );
 }
-

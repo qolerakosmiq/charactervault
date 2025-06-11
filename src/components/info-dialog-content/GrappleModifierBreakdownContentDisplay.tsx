@@ -5,8 +5,8 @@ import React from 'react';
 import type { GrappleModifierBreakdownDetails, AbilityName } from '@/types/character';
 import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge'; // Added Badge import
-import { cn } from '@/lib/utils'; // Added cn import
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface GrappleModifierBreakdownContentDisplayProps {
   grappleModifierBreakdown?: GrappleModifierBreakdownDetails;
@@ -31,13 +31,11 @@ export const GrappleModifierBreakdownContentDisplay = ({
           <span className="text-muted-foreground">{uiStrings.infoDialogGrappleModBabLabel || "Base Attack Bonus"}</span>
           <span className="font-bold">{renderModifierValue(grappleModifierBreakdown.baseAttackBonus)}</span>
         </div>
-        <div className="flex justify-between text-sm items-baseline"> {/* Ensure items-baseline */}
-          <span className="text-muted-foreground inline-flex items-baseline"> {/* Ensure items-baseline */}
+        <div className="flex justify-between text-sm items-baseline">
+          <span className="text-muted-foreground inline-flex items-baseline">
             {uiStrings.infoDialogGrappleModAbilityLabel || "Ability Modifier"}
             {strengthAbilityInfo && (
-              <Badge variant="outline" className={cn("ml-1.5 text-sm font-normal px-1.5 py-0.5 whitespace-nowrap")}>
-                {strengthAbilityInfo.abbr}
-              </Badge>
+              <Badge variant="outline" className="ml-1.5">{strengthAbilityInfo.abbr}</Badge>
             )}
           </span>
           {renderModifierValue(grappleModifierBreakdown.strengthModifier)}
@@ -67,4 +65,3 @@ export const GrappleModifierBreakdownContentDisplay = ({
     </div>
   );
 };
-

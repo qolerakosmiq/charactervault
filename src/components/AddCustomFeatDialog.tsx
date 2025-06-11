@@ -503,10 +503,10 @@ const AddCustomFeatDialogComponent = ({
               <div className="mt-4 space-y-2">
                 <Label>Defined Prerequisites:</Label>
                 {prerequisitesList.map(p => (
-                  <div key={p.tempId} className="flex items-center justify-between p-2 border rounded-md text-xs bg-background">
+                  <div key={p.tempId} className="flex items-center justify-between p-2 border rounded-md bg-background">
                     <div>
-                      <Badge variant="secondary" className="mr-2 capitalize whitespace-nowrap">{p.type}</Badge>
-                      <span className="font-medium">{p.itemLabel}</span>
+                      <Badge variant="secondary" className="capitalize whitespace-nowrap">{p.type}</Badge>
+                      <span className="font-medium ml-2">{p.itemLabel}</span>
                       {p.value !== undefined && <span className="text-muted-foreground"> (Min: {p.value}{p.type === 'skill' ? ' Ranks' : ''})</span>}
                     </div>
                     <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => handleRemovePrerequisite(p.tempId)} type="button" disabled={isFormDisabled}>

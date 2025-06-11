@@ -228,11 +228,11 @@ const SkillsFormSectionComponent = ({
     const abilityMod = (keyAbility && keyAbility !== 'none') ? getAbilityModifierByName(actualAbilityScores, keyAbility) : 0;
     const synergyBonus = calculateTotalSynergyBonus(skillDef.id, characterSkillInstances, SKILL_DEFINITIONS, SKILL_SYNERGIES, allCustomSkillDefinitions);
     const featSkillBonus = aggregatedFeatEffects.skillBonuses[skillDef.id] || 0;
-    const racialBonus = calculateRacialSkillBonus(skillDef.id, characterRace, DND_RACES, SKILL_DEFINITIONS);
-    const sizeSpecificBonus = calculateSizeSpecificSkillBonus(skillDef.id, characterSize, SIZES);
+    const currentRacialBonus = calculateRacialSkillBonus(skillDef.id, characterRace, DND_RACES, SKILL_DEFINITIONS);
+    const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skillDef.id, characterSize, SIZES);
     const userMiscMod = skillInstance.miscModifier || 0;
 
-    const totalBonus = (skillInstance.ranks || 0) + abilityMod + synergyBonus + featSkillBonus + racialBonus + sizeSpecificBonus + userMiscMod;
+    const totalBonus = (skillInstance.ranks || 0) + abilityMod + synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus + userMiscMod;
     const keyAbilityName = keyAbility && keyAbility !== 'none' ? (ABILITY_LABELS.find(al => al.value === keyAbility)?.abbr || keyAbility.toUpperCase()) : 'N/A';
 
     const breakdown: GenericBreakdownItem[] = [
@@ -243,8 +243,8 @@ const SkillsFormSectionComponent = ({
     }
     if (synergyBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillSynergyBonusLabel || "Synergy Bonus", value: synergyBonus });
     if (featSkillBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillFeatBonusLabel || "Feat Bonus", value: featSkillBonus });
-    if (racialBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillRacialBonusLabel || "Racial Bonus", value: racialBonus });
-    if (sizeSpecificBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillSizeBonusLabel || "Size Bonus", value: sizeSpecificBonus });
+    if (currentRacialBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillRacialBonusLabel || "Racial Bonus", value: currentRacialBonus });
+    if (currentSizeSpecificBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillSizeBonusLabel || "Size Bonus", value: currentSizeSpecificBonus });
     if (userMiscMod !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillUserMiscModLabel || "User Misc Modifier", value: userMiscMod });
 
     breakdown.push({ label: UI_STRINGS.infoDialogTotalLabel || "Total", value: totalBonus, isBold: true });
@@ -259,7 +259,7 @@ const SkillsFormSectionComponent = ({
   };
 
 
-  const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 whitespace-nowrap";
+  const badgeClassName = "text-primary border-primary whitespace-nowrap";
 
   if (translationsLoading || !translations || !aggregatedFeatEffects) {
     return (
@@ -403,7 +403,7 @@ const SkillsFormSectionComponent = ({
                       <Label htmlFor={`skill_ranks_${skillInstanceProp.id}`} className="text-sm pr-1 leading-tight flex-grow flex items-center">
                           {skillDef.name}
                           {skillDef.isCustom && (
-                              <Badge variant="outline" className="text-sm text-primary/70 border-primary/50 h-5 ml-1.5 font-normal whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>
+                              <Badge variant="outline" className="text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>
                           )}
                       </Label>
                   </div>
