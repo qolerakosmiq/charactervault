@@ -23,11 +23,12 @@ export interface RollDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   dialogTitle: string;
-  rollType: string; // e.g., "ability_check_strength", "saving_throw_fortitude", "skill_bluff", "damage_roll_melee_longsword"
-  baseModifier: number; // Numerical bonus for attack/save/skill, or damage bonus for damage rolls
+  rollType: string;
+  baseModifier: number;
   calculationBreakdown: GenericBreakdownItem[];
-  weaponDamageDice?: string; // e.g., "1d8", "2d6", "1d4-1" - only for damage rolls
+  weaponDamageDice?: string;
   onRoll: (diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString?: string) => void;
+  rerollTwentiesForChecks?: boolean; // New prop
 }
 
 export function RollDialog({
@@ -39,17 +40,25 @@ export function RollDialog({
   calculationBreakdown,
   weaponDamageDice,
   onRoll,
+  rerollTwentiesForChecks = false, // Default to false
 }: RollDialogProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
-  const [diceResult, setDiceResult] = React.useState<number | null>(null); // For d20 or sum of weapon dice
+  const [initialD20Roll, setInitialD20Roll] = React.useState<number | null>(null);
+  const [bonusRolls, setBonusRolls] = React.useState<number[]>([]);
+  const [totalDiceValue, setTotalDiceValue] = React.useState<number | null>(null); // Sum of initial + bonus rolls
   const [finalResult, setFinalResult] = React.useState<number | null>(null);
   const [isRolling, setIsRolling] = React.useState(false);
 
-  const isDamageRoll = rollType.startsWith('damage_roll');
+  const isDamageRoll = rollType.toLowerCase().includes('damage');
+  const isAttackRoll = rollType.toLowerCase().includes('attack');
+  const isCheckRoll = !isDamageRoll && !isAttackRoll;
+
 
   React.useEffect(() => {
     if (isOpen) {
-      setDiceResult(null);
+      setInitialD20Roll(null);
+      setBonusRolls([]);
+      setTotalDiceValue(null);
       setFinalResult(null);
     }
   }, [isOpen]);
@@ -59,16 +68,33 @@ export function RollDialog({
     setTimeout(() => {
       if (isDamageRoll && weaponDamageDice) {
         const weaponDiceRollResult = parseAndRollDice(weaponDamageDice);
-        const totalDamage = weaponDiceRollResult + baseModifier; // baseModifier is the sum of other bonuses
-        setDiceResult(weaponDiceRollResult); // Store the result of parsing/rolling the weaponDamageDice string
+        const totalDamage = weaponDiceRollResult + baseModifier;
+        setInitialD20Roll(null); // Not a d20 roll
+        setBonusRolls([]);
+        setTotalDiceValue(weaponDiceRollResult); // For damage, this is the sum of weapon dice
         setFinalResult(totalDamage);
         onRoll(weaponDiceRollResult, baseModifier, totalDamage, weaponDamageDice);
-      } else {
-        const d20Roll = Math.floor(Math.random() * 20) + 1;
-        const total = d20Roll + baseModifier;
-        setDiceResult(d20Roll);
-        setFinalResult(total);
-        onRoll(d20Roll, baseModifier, total);
+      } else { // Check or Attack roll (d20 based)
+        const firstRoll = Math.floor(Math.random() * 20) + 1;
+        setInitialD20Roll(firstRoll);
+
+        let currentTotalDice = firstRoll;
+        const currentBonusRolls: number[] = [];
+
+        if (isCheckRoll && rerollTwentiesForChecks && firstRoll === 20) {
+          let latestBonusRoll = 20;
+          while (latestBonusRoll === 20) {
+            latestBonusRoll = Math.floor(Math.random() * 20) + 1;
+            currentBonusRolls.push(latestBonusRoll);
+            currentTotalDice += latestBonusRoll;
+            if (currentBonusRolls.length > 10) break; // Safety break for extreme luck
+          }
+        }
+        setBonusRolls(currentBonusRolls);
+        setTotalDiceValue(currentTotalDice);
+        const calculatedFinalResult = currentTotalDice + baseModifier;
+        setFinalResult(calculatedFinalResult);
+        onRoll(currentTotalDice, baseModifier, calculatedFinalResult);
       }
       setIsRolling(false);
     }, 300);
@@ -94,13 +120,12 @@ export function RollDialog({
 
   const UI_STRINGS = translations.UI_STRINGS;
   const buttonText = isDamageRoll ? (UI_STRINGS.rollDialogConfirmDamageButton || "Confirm Damage") : (UI_STRINGS.rollDialogRollButton || "Roll 1d20");
-
   const actualWeaponDicePart = weaponDamageDice?.match(/^(\d*d\d+)/)?.[0] || weaponDamageDice;
 
-  const totalBonusLabelText = isDamageRoll ? (UI_STRINGS.rollDialogTotalNumericBonusLabel || "Total Numeric Bonus") : (UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus");
+  const isCritFailure = !isDamageRoll && initialD20Roll === 1;
+  // A natural 20 is still a critical success for attack rolls or if rerollTwenties is off for checks
+  const isCritSuccess = !isDamageRoll && initialD20Roll === 20 && (!isCheckRoll || !rerollTwentiesForChecks || bonusRolls.length === 0);
 
-  const isCritFailure = !isDamageRoll && diceResult === 1;
-  const isCritSuccess = !isDamageRoll && diceResult === 20;
 
   const resultCardBackground = cn(
     "p-3 border rounded-md space-y-1",
@@ -126,7 +151,7 @@ export function RollDialog({
           </DialogTitle>
           {!isDamageRoll && (
             <DialogDescription className="text-left">
-              {UI_STRINGS.rollDialogDescriptionFormat?.replace("{rollType}", rollType) || `Performing a ${rollType}.`}
+              {UI_STRINGS.rollDialogDescriptionFormat?.replace("{rollType}", rollType) || `Performing a ${rollType}`}
             </DialogDescription>
           )}
         </DialogHeader>
@@ -152,7 +177,7 @@ export function RollDialog({
                 <Separator className="my-2" />
                 <div className="flex justify-between text-lg">
                   <span className="font-semibold">
-                    {totalBonusLabelText}
+                    {isDamageRoll ? (UI_STRINGS.rollDialogTotalNumericBonusLabel || "Total Numeric Bonus") : (UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus")}
                   </span>
                   <span className="font-bold text-accent">
                     {renderModifierValue(baseModifier)}
@@ -161,7 +186,7 @@ export function RollDialog({
               </div>
           )}
 
-          {diceResult !== null && (
+          {totalDiceValue !== null && finalResult !== null && (
             <div className={resultCardBackground}>
               {isDamageRoll ? (
                 <>
@@ -169,10 +194,9 @@ export function RollDialog({
                     <span className="text-sm">
                       {(UI_STRINGS.rollDialogDamageWeaponDiceRolledLabel || "Weapon Dice ({diceString}): Rolled {diceSum}")
                           .replace("{diceString}", actualWeaponDicePart || 'N/A')
-                          .replace("{diceSum}", String(diceResult))
-                      }
+                          .replace("{diceSum}", String(totalDiceValue))}
                     </span>
-                    <span className="font-bold text-lg text-primary">{diceResult}</span>
+                    <span className="font-bold text-lg text-primary">{totalDiceValue}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm">{UI_STRINGS.rollDialogDamageOtherBonusesLabel}</span>
@@ -186,10 +210,18 @@ export function RollDialog({
                 </>
               ) : (
                 <>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">{UI_STRINGS.rollDialogDiceRollLabel}</span>
-                    <span className={diceResultColor}>{diceResult}</span>
-                  </div>
+                  {initialD20Roll !== null && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">{UI_STRINGS.rollDialogDiceRollLabel}</span>
+                      <span className={diceResultColor}>{initialD20Roll}</span>
+                    </div>
+                  )}
+                  {bonusRolls.length > 0 && (
+                     <div className="flex justify-between items-center">
+                      <span className="text-sm">{UI_STRINGS.rollDialogBonusDiceRollLabel}</span>
+                      <span className="font-bold text-lg text-primary">{bonusRolls.join(', ')}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between items-center">
                     <span className="text-sm">{UI_STRINGS.rollDialogTotalBonusLabel}</span>
                     <span className="font-bold text-sm text-primary">{renderModifierValue(baseModifier)}</span>
@@ -223,5 +255,3 @@ export function RollDialog({
     </Dialog>
   );
 }
-
-

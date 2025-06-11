@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollText, Info, Loader2, Dices } from 'lucide-react'; // Added Dices
+import { ScrollText, Info, Loader2, Dices } from 'lucide-react';
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -19,9 +19,10 @@ import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
-import type { RollDialogProps } from '@/components/RollDialog'; // Added RollDialogProps import
-import type { GenericBreakdownItem } from '@/types/character-core'; // Added GenericBreakdownItem import
-import type { AggregatedFeatEffects } from '@/types/character-core'; // Ensure AggregatedFeatEffects is imported
+import type { RollDialogProps } from '@/components/RollDialog';
+import type { GenericBreakdownItem } from '@/types/character-core';
+import type { AggregatedFeatEffects } from '@/types/character-core';
+import { useDefinitionsStore } from '@/lib/definitions-store';
 
 
 const DEBOUNCE_DELAY_SKILLS = 500; // ms
@@ -58,7 +59,6 @@ interface SkillsFormSectionProps {
   onOpenSkillInfoDialog: (skillId: string) => void;
   onOpenRollDialog: (data: Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'>) => void;
   characterLevel: number;
-  // Add aggregatedFeatEffects prop
   aggregatedFeatEffects: AggregatedFeatEffects | null;
 }
 
@@ -83,8 +83,6 @@ const DebouncedSkillRankInput: React.FC<{
       value={localRank}
       onChange={setLocalRank}
       min={0}
-      // Max constraint is now handled by validation/display logic, not directly in NumberSpinnerInput for ranks
-      // max={maxRanksValue}
       step={currentStepForInput}
       inputClassName="w-14 h-7 text-sm"
       buttonSize="sm"
@@ -105,15 +103,17 @@ const SkillsFormSectionComponent = ({
   onOpenSkillInfoDialog,
   onOpenRollDialog,
   characterLevel,
-  aggregatedFeatEffects, // Destructure the new prop
+  aggregatedFeatEffects,
 }: SkillsFormSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
+  const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({
+    rerollTwentiesForChecks: state.rerollTwentiesForChecks,
+  }));
 
   const characterSkillInstances = skillsData.skills;
   const characterClasses = skillsData.classes;
   const characterRace = skillsData.race as DndRaceId;
   const characterSize = skillsData.size as CharacterSize;
-  const selectedFeats = skillsData.feats; // This is CharacterFeatInstance[]
 
   const firstClass = characterClasses[0];
 
@@ -200,7 +200,6 @@ const SkillsFormSectionComponent = ({
   const skillsForDisplay: SkillDisplayInfo[] = React.useMemo(() => {
     return characterSkillInstances.map(instance => {
       const definition = allCombinedSkillDefinitions.find(def => def.id === instance.id);
-      // Feat skill bonus is now handled by aggregatedFeatEffects
       return {
         ...instance,
         name: definition?.name || 'Unknown Skill',
@@ -228,10 +227,7 @@ const SkillsFormSectionComponent = ({
     const keyAbility = skillDef.keyAbility;
     const abilityMod = (keyAbility && keyAbility !== 'none') ? getAbilityModifierByName(actualAbilityScores, keyAbility) : 0;
     const synergyBonus = calculateTotalSynergyBonus(skillDef.id, characterSkillInstances, SKILL_DEFINITIONS, SKILL_SYNERGIES, allCustomSkillDefinitions);
-
-    // Use aggregatedFeatEffects.skillBonuses for the sum of active, numerical feat bonuses
     const featSkillBonus = aggregatedFeatEffects.skillBonuses[skillDef.id] || 0;
-
     const racialBonus = calculateRacialSkillBonus(skillDef.id, characterRace, DND_RACES, SKILL_DEFINITIONS);
     const sizeSpecificBonus = calculateSizeSpecificSkillBonus(skillDef.id, characterSize, SIZES);
     const userMiscMod = skillInstance.miscModifier || 0;
@@ -251,20 +247,21 @@ const SkillsFormSectionComponent = ({
     if (sizeSpecificBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillSizeBonusLabel || "Size Bonus", value: sizeSpecificBonus });
     if (userMiscMod !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillUserMiscModLabel || "User Misc Modifier", value: userMiscMod });
 
-    breakdown.push({ label: UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus", value: totalBonus, isBold: true });
+    breakdown.push({ label: UI_STRINGS.infoDialogTotalLabel || "Total", value: totalBonus, isBold: true });
 
     onOpenRollDialog({
       dialogTitle: (UI_STRINGS.rollDialogTitleSkillCheck || "Roll {skillName}").replace("{skillName}", skillDef.name),
-      rollType: `${skillDef.name} Check`,
+      rollType: `skill_check_${skillDef.id}`, // More specific rollType for checks
       baseModifier: totalBonus,
       calculationBreakdown: breakdown,
+      rerollTwentiesForChecks: rerollTwentiesForChecks, // Pass the DM setting
     });
   };
 
 
   const badgeClassName = "text-primary border-primary font-bold px-1.5 py-0 whitespace-nowrap";
 
-  if (translationsLoading || !translations || !aggregatedFeatEffects) { // Added aggregatedFeatEffects check
+  if (translationsLoading || !translations || !aggregatedFeatEffects) {
     return (
       <Card>
         <CardHeader>
@@ -380,17 +377,12 @@ const SkillsFormSectionComponent = ({
                 : 0;
 
               const synergyBonus = calculateTotalSynergyBonus(skillDef.id, characterSkillInstances, SKILL_DEFINITIONS, SKILL_SYNERGIES, allCustomSkillDefinitions);
-
               const featSkillBonus = aggregatedFeatEffects.skillBonuses[skillDef.id] || 0;
-
               const currentRacialBonus = calculateRacialSkillBonus(skillDef.id, characterRace, DND_RACES, SKILL_DEFINITIONS);
               const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skillDef.id, characterSize, SIZES);
-
               const calculatedMiscModifier = synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus;
-
               const committedRankValue = skillInstanceProp.ranks || 0;
               const totalBonus = committedRankValue + baseAbilityMod + calculatedMiscModifier + (skillInstanceProp.miscModifier || 0);
-
               const maxRanksValue = calculateMaxRanks(characterLevel, skillInstanceProp.isClassSkill || false, intelligenceModifier);
               const skillCostDisplay = (skillDef.keyAbility === 'none' || skillInstanceProp.isClassSkill) ? 1 : 2;
               const currentStepForInput = (skillDef.keyAbility === 'none' || skillInstanceProp.isClassSkill) ? 1 : 0.5;
@@ -469,5 +461,3 @@ const SkillsFormSectionComponent = ({
 SkillsFormSectionComponent.displayName = 'SkillsFormSectionComponent';
 
 export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
-
-    

@@ -344,6 +344,8 @@
     "dmSettingsRerollOnesDescription": "Lors de l'utilisation de 4d6 (garder les 3 meilleurs), relancez tout dé affichant un 1 jusqu'à ce qu'il ne soit plus un 1.",
     "dmSettingsPointBuyBudgetLabel": "Budget d'achat par points pour les caractéristiques",
     "dmSettingsPointBuyBudgetDescription": "Par défaut, 25 points pour l'achat par points standard de D&D 3.5.",
+    "dmSettingsRerollTwentiesLabel": "Relancer les 20 pour les tests (Dés explosifs)",
+    "dmSettingsRerollTwentiesDescription": "Lors d'un 20 sur un d20 pour un test (pas une attaque/dégât), relancez et ajoutez. Répétez sur les 20 suivants.",
     "dmSettingsAddCustomSkillButton": "Ajouter une nouvelle compétence personnalisée",
     "dmSettingsEditCustomSkillButton": "Modifier la définition de compétence personnalisée",
     "dmSettingsAddCustomFeatButton": "Ajouter un nouveau don personnalisé",
@@ -585,6 +587,7 @@
     "rollDialogCalculationBreakdownTitle": "Détail du Calcul",
     "rollDialogTotalBonusLabel": "Bonus Total",
     "rollDialogDiceRollLabel": "Résultat du Dé (1d20)",
+    "rollDialogBonusDiceRollLabel": "Jet de Dé Bonus",
     "rollDialogFinalResultLabel": "Résultat Final",
     "rollDialogRollButton": "Lancer 1d20",
     "rollDialogAbilityCheckAriaLabel": "Lancer un test de {abilityName}",
@@ -620,25 +623,3 @@
     "barbarianRageUsesLabel": "Utilisations de Rage par Jour"
   }
 }
-    
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-    

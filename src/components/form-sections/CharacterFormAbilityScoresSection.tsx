@@ -12,13 +12,13 @@ import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
 import { AbilityScorePointBuyDialog } from '@/components/AbilityScorePointBuyDialog';
-import { RollDialog, type RollDialogProps } from '@/components/RollDialog'; // Added RollDialog import
+import { RollDialog, type RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
-import { useToast } from '@/hooks/use-toast'; // Added useToast
+import { useToast } from '@/hooks/use-toast';
 
 const DEBOUNCE_DELAY = 400; // ms
 
@@ -43,15 +43,16 @@ const CharacterFormAbilityScoresSectionComponent = ({
 }: CharacterFormAbilityScoresSectionProps) => {
   const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
   const [isPointBuyDialogOpen, setIsPointBuyDialogOpen] = React.useState(false);
-  const [isRollAbilityDialogOpen, setIsRollAbilityDialogOpen] = React.useState(false); // State for RollDialog
-  const [rollAbilityDialogData, setRollAbilityDialogData] = React.useState<Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'> | null>(null); // Data for RollDialog
-  const { toast } = useToast(); // For showing roll results
+  const [isRollAbilityDialogOpen, setIsRollAbilityDialogOpen] = React.useState(false);
+  const [rollAbilityDialogData, setRollAbilityDialogData] = React.useState<Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'> | null>(null);
+  const { toast } = useToast();
 
   const { translations, isLoading: translationsLoading } = useI18n();
 
-  const { rerollOnesForAbilityScores, pointBuyBudget: rawPointBuyBudgetFromStore } = useDefinitionsStore(state => ({
+  const { rerollOnesForAbilityScores, pointBuyBudget: rawPointBuyBudgetFromStore, rerollTwentiesForChecks } = useDefinitionsStore(state => ({
     rerollOnesForAbilityScores: state.rerollOnesForAbilityScores,
     pointBuyBudget: state.pointBuyBudget,
+    rerollTwentiesForChecks: state.rerollTwentiesForChecks,
   }));
   
   const debouncedStates = {} as Record<Exclude<AbilityName, 'none'>, [number, (val: number) => void]> & 
@@ -114,9 +115,10 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
     setRollAbilityDialogData({
       dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck || "{abilityName} Check").replace("{abilityName}", abilityName),
-      rollType: `${abilityName} Check`,
+      rollType: `${abilityName} Check`, // Generic check type
       baseModifier: finalModifier,
       calculationBreakdown: breakdown,
+      rerollTwentiesForChecks: rerollTwentiesForChecks, // Pass the DM setting
     });
     setIsRollAbilityDialogOpen(true);
   };
@@ -305,6 +307,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
           baseModifier={rollAbilityDialogData.baseModifier}
           calculationBreakdown={rollAbilityDialogData.calculationBreakdown}
           onRoll={handleAbilityRollResult}
+          rerollTwentiesForChecks={rollAbilityDialogData.rerollTwentiesForChecks}
         />
       )}
     </>

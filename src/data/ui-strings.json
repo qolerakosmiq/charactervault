@@ -344,6 +344,8 @@
     "dmSettingsRerollOnesDescription": "When using 4d6 drop lowest, reroll any die that shows a 1 until it is not a 1.",
     "dmSettingsPointBuyBudgetLabel": "Point Buy Budget for Ability Scores",
     "dmSettingsPointBuyBudgetDescription": "Default is 25 points for standard D&D 3.5 point buy.",
+    "dmSettingsRerollTwentiesLabel": "Reroll 20s for Checks (Exploding Dice)",
+    "dmSettingsRerollTwentiesDescription": "When rolling a 20 on a d20 for a check (not attack/damage), roll again and add. Repeat on subsequent 20s.",
     "dmSettingsAddCustomSkillButton": "Add New Custom Skill",
     "dmSettingsEditCustomSkillButton": "Edit Custom Skill Definition",
     "dmSettingsAddCustomFeatButton": "Add New Custom Feat",
@@ -585,6 +587,7 @@
     "rollDialogCalculationBreakdownTitle": "Calculation Breakdown",
     "rollDialogTotalBonusLabel": "Total Bonus",
     "rollDialogDiceRollLabel": "Dice Roll (1d20)",
+    "rollDialogBonusDiceRollLabel": "Bonus Dice Roll",
     "rollDialogFinalResultLabel": "Final Result",
     "rollDialogRollButton": "Roll 1d20",
     "rollDialogAbilityCheckAriaLabel": "Roll {abilityName} Check",
@@ -620,25 +623,3 @@
     "barbarianRageUsesLabel": "Rage Uses Per Day"
   }
 }
-    
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-    

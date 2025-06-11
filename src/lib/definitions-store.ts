@@ -18,7 +18,8 @@ interface DefinitionsStoreState {
   customFeatDefinitions: (FeatDefinitionJsonData & { isCustom: true })[];
   customSkillDefinitions: CustomSkillDefinition[];
   rerollOnesForAbilityScores: boolean;
-  pointBuyBudget: number; // New setting for point buy total
+  pointBuyBudget: number;
+  rerollTwentiesForChecks: boolean; // New setting
   actions: {
     addCustomFeatDefinition: (featDef: FeatDefinitionJsonData & { isCustom: true }) => void;
     updateCustomFeatDefinition: (featDef: FeatDefinitionJsonData & { isCustom: true }) => void;
@@ -29,7 +30,8 @@ interface DefinitionsStoreState {
     getCustomSkillDefinitionById: (skillDefId: string) => CustomSkillDefinition | undefined;
 
     toggleRerollOnesForAbilityScores: () => void;
-    setPointBuyBudget: (budget: number) => void; // New action
+    setPointBuyBudget: (budget: number) => void;
+    toggleRerollTwentiesForChecks: () => void; // New action
   };
 }
 
@@ -41,7 +43,8 @@ export const useDefinitionsStore = create<DefinitionsStoreState>()(
       customFeatDefinitions: [],
       customSkillDefinitions: [],
       rerollOnesForAbilityScores: false,
-      pointBuyBudget: 25, // Default point buy budget
+      pointBuyBudget: 25,
+      rerollTwentiesForChecks: false, // Default value
       actions: {
         addCustomFeatDefinition: (featDef) =>
           set((state) => ({
@@ -74,7 +77,11 @@ export const useDefinitionsStore = create<DefinitionsStoreState>()(
             rerollOnesForAbilityScores: !state.rerollOnesForAbilityScores,
           })),
         setPointBuyBudget: (budget) =>
-          set({ pointBuyBudget: Math.max(0, budget) }), // Ensure budget is not negative
+          set({ pointBuyBudget: Math.max(0, budget) }),
+        toggleRerollTwentiesForChecks: () => // New action implementation
+          set((state) => ({
+            rerollTwentiesForChecks: !state.rerollTwentiesForChecks,
+          })),
       },
     }),
     {
@@ -84,7 +91,8 @@ export const useDefinitionsStore = create<DefinitionsStoreState>()(
         customFeatDefinitions: state.customFeatDefinitions,
         customSkillDefinitions: state.customSkillDefinitions,
         rerollOnesForAbilityScores: state.rerollOnesForAbilityScores,
-        pointBuyBudget: state.pointBuyBudget, // Persist the new setting
+        pointBuyBudget: state.pointBuyBudget,
+        rerollTwentiesForChecks: state.rerollTwentiesForChecks, // Persist new setting
       }),
     }
   )

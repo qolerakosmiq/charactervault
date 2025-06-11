@@ -16,11 +16,12 @@ import { renderModifierValue } from '@/components/info-dialog-content/dialog-uti
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Badge } from '@/components/ui/badge';
 import type { RollDialogProps } from '@/components/RollDialog';
+import { useDefinitionsStore } from '@/lib/definitions-store'; // Import definitions store
 
 const DEBOUNCE_DELAY = 400;
 
 export interface SavingThrowsPanelProps {
-  savingThrowsData: Pick<Character, 'savingThrows' | 'classes' | 'feats'>; // Added feats to savingThrowsData
+  savingThrowsData: Pick<Character, 'savingThrows' | 'classes' | 'feats'>;
   abilityScores: AbilityScores;
   aggregatedFeatEffects: AggregatedFeatEffects | null;
   onSavingThrowTemporaryModChange: (saveType: SavingThrowType, value: number) => void;
@@ -39,6 +40,9 @@ const SavingThrowsPanelComponent = ({
   onOpenRollDialog,
 }: SavingThrowsPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
+  const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({ // Get the DM setting
+    rerollTwentiesForChecks: state.rerollTwentiesForChecks,
+  }));
 
   const debouncedTemporaryMods = {} as Record<SavingThrowType, [number, (val: number) => void]>;
 
@@ -98,9 +102,10 @@ const SavingThrowsPanelComponent = ({
 
     onOpenRollDialog({
       dialogTitle: (UI_STRINGS.rollDialogTitleSavingThrow || "{saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel),
-      rollType: saveTypeLabel,
+      rollType: `saving_throw_${saveType}`, // Specific rollType
       baseModifier: totalSaveModifier,
       calculationBreakdown: breakdown,
+      rerollTwentiesForChecks: rerollTwentiesForChecks, // Pass DM setting
     });
   };
 
@@ -150,7 +155,7 @@ const SavingThrowsPanelComponent = ({
       labelKey: "savingThrowsRowLabelTotal",
       getValue: (saveDataProp, localTemporaryMod, baseSave, abilityMod, calculatedTotalFeatBonus, totalFromProp, saveType) => (
         <div className="flex items-center justify-center">
-            <span className={cn("text-xl font-bold", totalFromProp >= 0 ? "text-accent" : "text-destructive")}>
+            <span className={cn("text-lg font-bold", totalFromProp >= 0 ? "text-accent" : "text-destructive")}>
               {totalFromProp >= 0 ? '+' : ''}{totalFromProp}
             </span>
             {saveType && (
@@ -289,5 +294,3 @@ const SavingThrowsPanelComponent = ({
 
 SavingThrowsPanelComponent.displayName = 'SavingThrowsPanelComponent';
 export const SavingThrowsPanel = React.memo(SavingThrowsPanelComponent);
-
-    

@@ -8,12 +8,13 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Swords, Info, Loader2, Dices } from 'lucide-react'; // Added Dices
+import { Swords, Info, Loader2, Dices } from 'lucide-react';
 import { getAbilityModifierByName, getBab, calculateInitiative, calculateGrapple, getSizeModifierGrapple, getUnarmedGrappleDamage } from '@/lib/dnd-utils';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import type { RollDialogProps } from '@/components/RollDialog';
+import { useDefinitionsStore } from '@/lib/definitions-store'; // Import definitions store
 
 const DEBOUNCE_DELAY = 400;
 
@@ -31,11 +32,11 @@ export type CombatFieldKey = keyof Pick<Character,
 
 export interface CombatPanelProps {
   combatData: CombatPanelCharacterData;
-  aggregatedFeatEffects: AggregatedFeatEffects | null; // Added
+  aggregatedFeatEffects: AggregatedFeatEffects | null;
   onCharacterUpdate: (field: CombatFieldKey, value: any) => void;
   onOpenCombatStatInfoDialog: (contentType: InfoDialogContentType) => void;
   onOpenAcBreakdownDialog?: (acType: 'Normal' | 'Touch' | 'Flat-Footed') => void;
-  onOpenRollDialog: (data: Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'>) => void; // Added
+  onOpenRollDialog: (data: Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'>) => void;
 }
 
 const CombatPanelComponent = ({ 
@@ -46,6 +47,10 @@ const CombatPanelComponent = ({
   onOpenRollDialog 
 }: CombatPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
+  const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({ // Get the DM setting
+    rerollTwentiesForChecks: state.rerollTwentiesForChecks,
+  }));
+
 
   if (!combatData || translationsLoading || !translations || !aggregatedFeatEffects) {
     return (
@@ -142,9 +147,10 @@ const CombatPanelComponent = ({
 
     onOpenRollDialog({
       dialogTitle: UI_STRINGS.rollDialogTitleInitiative || "Roll Initiative",
-      rollType: "Initiative",
+      rollType: "initiative_check", // Specific rollType
       baseModifier: baseInitiative,
       calculationBreakdown: breakdown,
+      rerollTwentiesForChecks: rerollTwentiesForChecks, // Pass DM setting
     });
   };
 
@@ -164,9 +170,10 @@ const CombatPanelComponent = ({
     
     onOpenRollDialog({
       dialogTitle: UI_STRINGS.rollDialogTitleGrappleCheck || "Roll Grapple Check",
-      rollType: "Grapple Check",
+      rollType: "grapple_check", // Specific rollType
       baseModifier: totalGrappleModifier,
       calculationBreakdown: breakdown,
+      rerollTwentiesForChecks: rerollTwentiesForChecks, // Pass DM setting
     });
   };
 
@@ -310,4 +317,3 @@ const CombatPanelComponent = ({
 };
 CombatPanelComponent.displayName = 'CombatPanelComponent';
 export const CombatPanel = React.memo(CombatPanelComponent);
-

@@ -17,6 +17,7 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import type { RollDialogProps } from '@/components/RollDialog';
+import { useDefinitionsStore } from '@/lib/definitions-store'; // Import definitions store
 
 const DEBOUNCE_DELAY = 400;
 
@@ -44,6 +45,9 @@ const AttacksPanelComponent = ({
     onOpenRollDialog,
 }: AttacksPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
+  const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({ // Get the DM setting
+    rerollTwentiesForChecks: state.rerollTwentiesForChecks,
+  }));
   const [selectedMeleeWeaponId, setSelectedMeleeWeaponId] = React.useState<string>('unarmed');
   const [selectedRangedWeaponId, setSelectedRangedWeaponId] = React.useState<string>('none');
 
@@ -106,17 +110,13 @@ const AttacksPanelComponent = ({
       if (!effect.isActive || typeof effect.value !== 'number') return false;
       if (effect.appliesTo === 'all') return true;
       if (effect.appliesTo === weaponType) return true;
-      if (effect.appliesTo === 'SPEC') {
-        const featInstance = feats.find(f => f.definitionId === effect.sourceFeat);
-        return featInstance?.specializationDetail === selectedWeaponItem?.name;
-      }
+      // SPEC was already resolved to weaponName: by calculateFeatEffects
       if (effect.appliesTo.startsWith('weaponName:') && selectedWeaponItem) {
         return effect.appliesTo.substring('weaponName:'.length) === selectedWeaponItem.name;
       }
-      if (effect.weaponId && selectedWeaponItem) { // Check against selected weapon's definition ID (if items had one) or name
-        return effect.weaponId === selectedWeaponItem.name; // Assuming weaponId on effect maps to Item.name for now
+      if (effect.weaponId && selectedWeaponItem) {
+        return effect.weaponId === selectedWeaponItem.name;
       }
-      // TODO: Add weaponCategory check if items have categories
       return false;
     });
   };
@@ -133,7 +133,7 @@ const AttacksPanelComponent = ({
     let totalBonus = baseBab + abilityMod + sizeMod;
     const activeBonuses = getActiveAttackBonuses(weaponType, selectedWeaponItem);
     activeBonuses.forEach(effect => {
-      totalBonus += effect.value; // Assumes effect.value is number due to filter
+      totalBonus += effect.value;
     });
 
     if (powerAttackVal > 0 && (weaponType === 'melee' || weaponType === 'unarmed')) {
@@ -151,20 +151,15 @@ const AttacksPanelComponent = ({
   ): DamageRollEffect[] => {
      return aggregatedFeatEffects.damageRollBonuses.filter(effect => {
       if (!effect.isActive) return false;
-      // For numerical sum, only include number types. Dice strings are for breakdown.
       if (effect.appliesTo === 'all') return true;
       if (effect.appliesTo === weaponType) return true;
-      if (effect.appliesTo === 'SPEC') {
-        const featInstance = feats.find(f => f.definitionId === effect.sourceFeat);
-        return featInstance?.specializationDetail === selectedWeaponItem?.name;
-      }
-       if (effect.appliesTo?.startsWith('weaponName:') && selectedWeaponItem) {
+      // SPEC was already resolved to weaponName: by calculateFeatEffects
+      if (effect.appliesTo?.startsWith('weaponName:') && selectedWeaponItem) {
         return effect.appliesTo.substring('weaponName:'.length) === selectedWeaponItem.name;
       }
       if (effect.weaponId && selectedWeaponItem) {
         return effect.weaponId === selectedWeaponItem.name;
       }
-      // TODO: Add weaponCategory check
       return false;
     });
   };
@@ -179,13 +174,13 @@ const AttacksPanelComponent = ({
     const activeBonuses = getActiveDamageBonuses(weaponType, selectedWeaponItem);
     
     activeBonuses.forEach(effect => {
-      if (typeof effect.value === 'number') { // Only sum numerical bonuses
+      if (typeof effect.value === 'number') {
         totalBonus += effect.value;
       }
     });
 
     if (powerAttackVal > 0 && (weaponType === 'melee' || weaponType === 'unarmed')) {
-      totalBonus += powerAttackVal; // Simplified 1-to-1 for PA damage. Could be 2x for two-handed.
+      totalBonus += powerAttackVal;
     }
     return totalBonus;
   };
@@ -350,6 +345,7 @@ const AttacksPanelComponent = ({
       rollType: `melee_attack_${selectedMeleeWeaponId}`,
       baseModifier: calculatedMeleeAttackBonus,
       calculationBreakdown: breakdown,
+      rerollTwentiesForChecks: false, // Attack rolls don't use this rule
     });
   };
 
@@ -362,6 +358,7 @@ const AttacksPanelComponent = ({
       rollType: `ranged_attack_${selectedRangedWeaponId}`,
       baseModifier: calculatedRangedAttackBonus,
       calculationBreakdown: breakdown,
+      rerollTwentiesForChecks: false, // Attack rolls don't use this rule
     });
   };
 
@@ -378,6 +375,7 @@ const AttacksPanelComponent = ({
       baseModifier: calculatedMeleeNumericalDamageBonus,
       calculationBreakdown: breakdown,
       weaponDamageDice: weaponDamageDiceString,
+      rerollTwentiesForChecks: false, // Damage rolls don't use this rule
     });
   };
 
@@ -394,6 +392,7 @@ const AttacksPanelComponent = ({
       baseModifier: calculatedRangedNumericalDamageBonus, 
       calculationBreakdown: breakdown,
       weaponDamageDice: weaponDamageDiceString,
+      rerollTwentiesForChecks: false, // Damage rolls don't use this rule
     });
   };
 
@@ -496,9 +495,9 @@ const AttacksPanelComponent = ({
             </div>
             {selectedMeleeWeapon && (
               <div className="p-2 border rounded-md bg-background text-xs space-y-0.5">
-                <p><strong>{UI_STRINGS.attacksPanelWeaponDamageLabel}:</strong> {selectedMeleeWeapon.damage || 'N/A'}</p>
-                <p><strong>{UI_STRINGS.attacksPanelWeaponCriticalLabel}:</strong> {selectedMeleeWeapon.criticalRange || 'N/A'} {selectedMeleeWeapon.criticalMultiplier || ''}</p>
-                {selectedMeleeWeapon.damageType && <p><strong>{UI_STRINGS.attacksPanelWeaponDamageTypeLabel}:</strong> {selectedMeleeWeapon.damageType}</p>}
+                <p><strong>{UI_STRINGS.attacksPanelWeaponDamageLabel}</strong> {selectedMeleeWeapon.damage || 'N/A'}</p>
+                <p><strong>{UI_STRINGS.attacksPanelWeaponCriticalLabel}</strong> {selectedMeleeWeapon.criticalRange || 'N/A'} {selectedMeleeWeapon.criticalMultiplier || ''}</p>
+                {selectedMeleeWeapon.damageType && <p><strong>{UI_STRINGS.attacksPanelWeaponDamageTypeLabel}</strong> {selectedMeleeWeapon.damageType}</p>}
               </div>
             )}
           </div>
@@ -568,10 +567,10 @@ const AttacksPanelComponent = ({
             </div>
              {selectedRangedWeapon && (
               <div className="p-2 border rounded-md bg-background text-xs space-y-0.5">
-                <p><strong>{UI_STRINGS.attacksPanelWeaponDamageLabel}:</strong> {selectedRangedWeapon.damage || 'N/A'}</p>
-                <p><strong>{UI_STRINGS.attacksPanelWeaponCriticalLabel}:</strong> {selectedRangedWeapon.criticalRange || 'N/A'} {selectedRangedWeapon.criticalMultiplier || ''}</p>
-                {selectedRangedWeapon.rangeIncrement && <p><strong>{UI_STRINGS.attacksPanelWeaponRangeLabel}:</strong> {selectedRangedWeapon.rangeIncrement} {UI_STRINGS.speedUnit || "ft."}</p>}
-                {selectedRangedWeapon.damageType && <p><strong>{UI_STRINGS.attacksPanelWeaponDamageTypeLabel}:</strong> {selectedRangedWeapon.damageType}</p>}
+                <p><strong>{UI_STRINGS.attacksPanelWeaponDamageLabel}</strong> {selectedRangedWeapon.damage || 'N/A'}</p>
+                <p><strong>{UI_STRINGS.attacksPanelWeaponCriticalLabel}</strong> {selectedRangedWeapon.criticalRange || 'N/A'} {selectedRangedWeapon.criticalMultiplier || ''}</p>
+                {selectedRangedWeapon.rangeIncrement && <p><strong>{UI_STRINGS.attacksPanelWeaponRangeLabel}</strong> {selectedRangedWeapon.rangeIncrement} {UI_STRINGS.speedUnit || "ft."}</p>}
+                {selectedRangedWeapon.damageType && <p><strong>{UI_STRINGS.attacksPanelWeaponDamageTypeLabel}</strong> {selectedRangedWeapon.damageType}</p>}
               </div>
             )}
           </div>
@@ -626,5 +625,3 @@ const AttacksPanelComponent = ({
 };
 AttacksPanelComponent.displayName = 'AttacksPanelComponent';
 export const AttacksPanel = React.memo(AttacksPanelComponent);
-
-    
