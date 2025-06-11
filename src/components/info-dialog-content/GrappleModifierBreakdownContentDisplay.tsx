@@ -44,10 +44,10 @@ export const GrappleModifierBreakdownContentDisplay = ({
           <span className="text-foreground">{uiStrings.infoDialogGrappleModSizeLabel || "Size Modifier"}</span>
           {renderModifierValue(grappleModifierBreakdown.sizeModifierGrapple)}
         </div>
-        {grappleModifierBreakdown.featBonus !== 0 && grappleModifierBreakdown.featBonus !== undefined && (
+        {(grappleModifierBreakdown.featBonus || 0) !== 0 && (
           <div className="flex justify-between text-sm">
               <span className="text-foreground">{uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}</span>
-              {renderModifierValue(grappleModifierBreakdown.featBonus)}
+              {renderModifierValue(grappleModifierBreakdown.featBonus || 0)}
           </div>
         )}
         {grappleModifierBreakdown.miscModifier !== 0 && (
@@ -65,3 +65,4 @@ export const GrappleModifierBreakdownContentDisplay = ({
     </div>
   );
 };
+

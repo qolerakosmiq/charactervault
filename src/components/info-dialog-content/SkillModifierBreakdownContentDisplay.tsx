@@ -39,9 +39,9 @@ export const SkillModifierBreakdownContentDisplay = ({
   const activeFeatSkillEffects = allSkillEffectDetails?.filter(eff => eff.isActive && eff.skillId === skillModifierBreakdown?.skillName && typeof eff.value === 'number' && eff.value !== 0) || [];
 
   const synergyBlock = (synergyInfoList && synergyInfoList.length > 0) ? (
-    <div key="skill-synergies-block" className={cn((htmlContentBlock) && "mt-3")}>
-      <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSynergiesSectionTitle || "Synergies"}</h3>
-      <ul className={cn("space-y-0.5 mt-2", hasCalculationBlock ? "mb-3" : "")}>
+    <div key="skill-synergies-block" className={cn((htmlContentBlock) && "mt-0 mb-0")}>
+      <h4 className="text-sm font-bold text-muted-foreground mb-0">{uiStrings.infoDialogSynergiesSectionTitle || "Synergies"}</h4>
+      <ul className={cn("space-y-0.5 mt-0 mb-0", hasCalculationBlock ? "" : "")}>
         {synergyInfoList.map((synergyItem) => {
           const IconComponent = synergyItem.isActive ? CheckSquare : Square;
           const parts = typeof synergyItem.text === 'string' ? synergyItem.text.split(/({value}|{typeLabel})/g) : [];
@@ -85,7 +85,7 @@ export const SkillModifierBreakdownContentDisplay = ({
           }
 
           return (
-            <li key={synergyItem.id} className="flex">
+            <li key={synergyItem.id} className="flex ml-3">
               <IconComponent
                 className={cn("h-5 w-5 mr-2 shrink-0", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")}
                 style={{ marginTop: '0.1rem' }}
@@ -101,9 +101,9 @@ export const SkillModifierBreakdownContentDisplay = ({
   ) : null;
 
   const calculationBlock = hasCalculationBlock ? (
-    <div key="skill-calculation-block" className={cn(((htmlContentBlock && !synergyBlock) || synergyBlock) && "mt-3")}>
+    <div key="skill-calculation-block" className={cn(((htmlContentBlock && !synergyBlock) || synergyBlock) && "mt-0 mb-0")}>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div className="space-y-1 mt-2">
+      <div className="space-y-1 mt-0 mb-0">
         {skillModifierBreakdown!.keyAbilityName && (
           <div className="flex justify-between text-sm">
             <span className="text-foreground inline-flex items-baseline">
@@ -134,12 +134,12 @@ export const SkillModifierBreakdownContentDisplay = ({
 
         {activeFeatSkillEffects.length > 0 && (
             <>
-                <h4 className="text-sm font-bold text-muted-foreground">
+                <h4 className="text-sm font-bold text-muted-foreground mb-0">
                     {uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}
                 </h4>
-                <div className="space-y-0.5">
+                <div className="space-y-0.5 ml-3 mt-0 mb-0">
                     {activeFeatSkillEffects.map((eff, idx) => (
-                        <div key={`feat-skill-bonus-${idx}`} className="flex justify-between items-baseline text-sm ml-3">
+                        <div key={`feat-skill-bonus-${idx}`} className="flex justify-between items-baseline text-sm">
                             <span className="text-foreground flex-shrink-0 mr-2">
                                 {eff.sourceFeat || (uiStrings.infoDialogFeatBonusLabel || "Feat Bonus")}
                             </span>
@@ -186,10 +186,11 @@ export const SkillModifierBreakdownContentDisplay = ({
         <React.Fragment key={`content-block-${index}`}>
           {block}
           {index < arr.length - 1 && (block || arr[index+1]) && (
-            <Separator className="my-2" />
+            <Separator className="my-1" />
           )}
         </React.Fragment>
       ))}
     </>
   );
 };
+

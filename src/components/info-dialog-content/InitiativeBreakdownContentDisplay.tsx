@@ -36,10 +36,10 @@ export const InitiativeBreakdownContentDisplay = ({
           </span>
           {renderModifierValue(initiativeBreakdown.dexModifier)}
         </div>
-        {initiativeBreakdown.featBonus !== 0 && initiativeBreakdown.featBonus !== undefined && (
+        {(initiativeBreakdown.featBonus || 0) !== 0 && (
            <div className="flex justify-between text-sm">
               <span className="text-foreground">{uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}</span>
-              {renderModifierValue(initiativeBreakdown.featBonus)}
+              {renderModifierValue(initiativeBreakdown.featBonus || 0)}
           </div>
         )}
         {initiativeBreakdown.miscModifier !== 0 && (
@@ -57,3 +57,4 @@ export const InitiativeBreakdownContentDisplay = ({
     </div>
   );
 };
+

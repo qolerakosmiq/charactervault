@@ -64,12 +64,12 @@ export const SavingThrowBreakdownContentDisplay = ({
 
         {activeFeatComponents.length > 0 && (
           <>
-            <h4 className="text-sm font-bold text-muted-foreground">
+            <h4 className="text-sm font-bold text-muted-foreground mb-0">
                 {uiStrings.savingThrowsFeatsModifierLabel || "Feats Modifier"}
             </h4>
-            <div className="space-y-0.5">
+            <div className="space-y-0.5 ml-3 mt-0 mb-0">
                 {activeFeatComponents.map((fc, index) => (
-                <div key={`feat-comp-${index}-${fc.sourceFeat}`} className="flex justify-between items-baseline text-sm ml-3">
+                <div key={`feat-comp-${index}-${fc.sourceFeat}`} className="flex justify-between items-baseline text-sm">
                     <span className="text-foreground flex-shrink-0 mr-2">
                     {fc.sourceFeat}
                     </span>
@@ -103,3 +103,4 @@ export const SavingThrowBreakdownContentDisplay = ({
     </div>
   );
 };
+

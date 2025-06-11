@@ -36,15 +36,15 @@ export const AcBreakdownContentDisplay = ({
 }: AcBreakdownContentDisplayProps) => {
   if (!detailsList || detailsList.length === 0) return null;
 
-  const activeDetailsList = detailsList.filter(detail => detail.isActive !== false || String(detail.mainLabel).toLowerCase() === (uiStrings.acBreakdownBaseLabel || "Base").toLowerCase());
-
   const staticComponents: AcBreakdownDetailItem[] = [];
   const conditionalFeatComponents: AcBreakdownDetailItem[] = [];
 
-  activeDetailsList.forEach(detail => {
-    if (detail.isSubItem && detail.isActive) { 
+  detailsList.forEach(detail => {
+    if (detail.isActive === false) return; // Skip inactive items
+
+    if (detail.isSubItem) { 
       conditionalFeatComponents.push(detail);
-    } else if (!detail.isSubItem) { 
+    } else { 
       staticComponents.push(detail);
     }
   });
@@ -93,10 +93,10 @@ export const AcBreakdownContentDisplay = ({
 
       {conditionalFeatComponents.length > 0 && (
         <>
-          <h4 className="text-sm font-bold text-muted-foreground">
+          <h4 className="text-sm font-bold text-muted-foreground mb-0">
             {uiStrings.infoDialogConditionalBonusesHeading || "Conditional Bonuses"}
           </h4>
-          <div className="space-y-0.5">
+          <div className="space-y-0.5 ml-3 mt-0 mb-0">
             {conditionalFeatComponents.map((detail, index) => renderItem(detail, `conditional-${index}`, true))}
           </div>
         </>
@@ -114,3 +114,4 @@ export const AcBreakdownContentDisplay = ({
     </div>
   );
 };
+

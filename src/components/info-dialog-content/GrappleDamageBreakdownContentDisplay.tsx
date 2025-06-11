@@ -52,10 +52,10 @@ export const GrappleDamageBreakdownContentDisplay = ({
           </span>
           {renderModifierValue(grappleDamageBreakdown.strengthModifier)}
         </div>
-        {grappleDamageBreakdown.featBonus !== 0 && grappleDamageBreakdown.featBonus !== undefined && (
+        {(grappleDamageBreakdown.featBonus || 0) !== 0 && (
           <div className="flex justify-between text-sm">
               <span className="text-foreground">{uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}</span>
-              {renderModifierValue(grappleDamageBreakdown.featBonus)}
+              {renderModifierValue(grappleDamageBreakdown.featBonus || 0)}
           </div>
         )}
         {grappleDamageBreakdown.bonus !== 0 && (
@@ -75,3 +75,4 @@ export const GrappleDamageBreakdownContentDisplay = ({
     </div>
   );
 };
+

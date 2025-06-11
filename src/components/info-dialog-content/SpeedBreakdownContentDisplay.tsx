@@ -71,3 +71,4 @@ export const SpeedBreakdownContentDisplay = ({
 };
 
 SpeedBreakdownContentDisplay.displayName = "SpeedBreakdownContentDisplayComponent";
+

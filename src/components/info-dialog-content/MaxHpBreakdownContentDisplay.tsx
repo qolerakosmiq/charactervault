@@ -84,12 +84,12 @@ export const MaxHpBreakdownContentDisplay = ({
 
         {conditionalHpBonuses.length > 0 && (
             <>
-                <h4 className="text-sm font-bold text-muted-foreground">
+                <h4 className="text-sm font-bold text-muted-foreground mb-0">
                     {uiStrings.infoDialogConditionalBonusesHeading || "Conditional Bonuses"}
                 </h4>
-                <div className="space-y-0.5">
+                <div className="space-y-0.5 ml-3 mt-0 mb-0">
                     {conditionalHpBonuses.map((bonus, index) => (
-                        <div key={`conditional-hp-${index}`} className="flex justify-between items-baseline text-sm ml-3">
+                        <div key={`conditional-hp-${index}`} className="flex justify-between items-baseline text-sm">
                             <span className="text-foreground flex-shrink-0 mr-2">{bonus.sourceFeatName}</span>
                             {renderModifierValue(bonus.value || 0)}
                         </div>
@@ -107,3 +107,4 @@ export const MaxHpBreakdownContentDisplay = ({
     </div>
   );
 };
+
