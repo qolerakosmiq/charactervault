@@ -292,7 +292,7 @@ const HealthPanelComponent = React.memo(({
             <div className="flex items-center justify-between">
                 <Label className="inline-flex items-baseline">
                     {UI_STRINGS.healthPanelAbilityModLabel || "Ability Modifier"}
-                    <Badge variant="outline" className="ml-1.5 text-sm font-normal px-1.5 py-0.5 whitespace-nowrap">{conAbbr}</Badge>
+                    <Badge variant="outline" className="ml-1.5 font-normal px-1.5 py-0.5 whitespace-nowrap">{conAbbr}</Badge>
                 </Label>
                  <div className="w-36 text-center">
                     <span className={cn(
