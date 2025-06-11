@@ -10,7 +10,7 @@ import type {
   AbilityName,
   Item,
   FeatDefinitionJsonData,
-  CombatPanelCharacterData, // Now includes more fields
+  CombatPanelCharacterData,
   AttackRollEffect,
   DamageRollEffect
 } from '@/types/character-core';
@@ -97,7 +97,7 @@ const CombatPanelComponent = ({
         return effect.appliesTo.substring('weaponName:'.length) === selectedWeaponItem.name;
       }
       if (effect.weaponId && selectedWeaponItem) {
-        return effect.weaponId === selectedWeaponItem.name; // Assuming weaponId matches item.name for simplicity, adjust if item.id is used
+        return effect.weaponId === selectedWeaponItem.name; 
       }
       return false;
     });
@@ -152,7 +152,7 @@ const CombatPanelComponent = ({
     selectedWeaponItem?: Item | null,
     powerAttackVal: number = 0
   ): number => {
-    let totalBonus = (weaponType === 'melee' || weaponType === 'unarmed') ? baseAbilityMod : 0; // Ranged typically doesn't add ability mod to damage unless specific feats
+    let totalBonus = (weaponType === 'melee' || weaponType === 'unarmed') ? baseAbilityMod : 0; 
     const activeBonuses = getActiveDamageBonuses(weaponType, selectedWeaponItem);
 
     activeBonuses.forEach(effect => {
@@ -162,8 +162,7 @@ const CombatPanelComponent = ({
     });
 
     if (powerAttackVal > 0 && (weaponType === 'melee' || weaponType === 'unarmed')) {
-      // PHB p.98 Power Attack: "If you attack with a two-handed weapon, or with a one-handed weapon wielded in two hands, add twice the number subtracted from your attack roll."
-      // This simplified version adds 1x the penalty. Full PHB rule would need more item details.
+      
       totalBonus += powerAttackVal;
     }
     return totalBonus;
@@ -226,7 +225,7 @@ const CombatPanelComponent = ({
   const calculatedMeleeNumericalDamageBonus = calculateFinalNumericalDamageBonus(strModifier, selectedMeleeWeaponId === 'unarmed' ? 'unarmed' : 'melee', selectedMeleeWeapon, localPowerAttackValue);
 
   const calculatedRangedAttackBonus = selectedRangedWeapon ? calculateFinalAttackBonus(totalBabWithModifier[0], dexModifier, actualSizeModAttack, 'ranged', selectedRangedWeapon) : 0;
-  const calculatedRangedNumericalDamageBonus = selectedRangedWeapon ? calculateFinalNumericalDamageBonus(0, 'ranged', selectedRangedWeapon) : 0; // Ranged attacks generally don't add Str to damage unless it's a composite bow or specific feat
+  const calculatedRangedNumericalDamageBonus = selectedRangedWeapon ? calculateFinalNumericalDamageBonus(0, 'ranged', selectedRangedWeapon) : 0; 
 
   const hasPowerAttackFeat = combatData.feats?.some(f => f.definitionId === 'power-attack') || false;
   const hasCombatExpertiseFeat = combatData.feats?.some(f => f.definitionId === 'combat-expertise') || false;
@@ -285,7 +284,7 @@ const CombatPanelComponent = ({
             const conditionText = UI_STRINGS[conditionTextKey] || effect.condition;
             label = `${label} (${conditionText})`;
         }
-        //const valueDisplay = typeof effect.value === 'string' ? effect.value : renderModifierValue(effect.value as number);
+        
         components.push({label, value: effect.value, isRawValue: typeof effect.value === 'string'});
     });
 
@@ -471,8 +470,8 @@ const CombatPanelComponent = ({
         <CardDescription>{UI_STRINGS.combatPanelDescription || "Key offensive and grappling statistics."}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Row 1: BAB, Initiative, Grapple Mod */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Row 1: BAB, Initiative */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
             <Label htmlFor="bab-display" className="text-md font-medium block">{UI_STRINGS.combatPanelBabLabel || "Base Attack Bonus"}</Label>
             <div className="flex items-center justify-center">
@@ -525,7 +524,10 @@ const CombatPanelComponent = ({
               </div>
             </div>
           </div>
+        </div>
 
+        {/* Row 2: Grapple Modifier, Grapple Damage */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
             <Label htmlFor="grapple-mod-display" className="text-md font-medium block">{UI_STRINGS.combatPanelGrappleModifierLabel || "Grapple Modifier"}</Label>
             <div className="flex items-center justify-center">
@@ -553,91 +555,94 @@ const CombatPanelComponent = ({
               </div>
             </div>
           </div>
+
+          <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
+              <Label htmlFor="grapple-damage-display" className="text-md font-medium block">{UI_STRINGS.combatPanelGrappleDamageLabel || "Grapple Damage"}</Label>
+              <div className="flex items-center justify-center">
+                  <p id="grapple-damage-display" className="text-xl font-bold text-accent">
+                    {displayedGrappleDamageTotal}
+                  </p>
+                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleGrappleDamageInfo}>
+                      <Info className="h-4 w-4" />
+                  </Button>
+              </div>
+              <div className="mt-auto space-y-2">
+                  <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground block">{UI_STRINGS.combatPanelGrappleWeaponLabel || "Weapon"}</Label>
+                      <Select
+                          value={localGrappleWeaponChoice}
+                          onValueChange={setLocalGrappleWeaponChoice}
+                      >
+                          <SelectTrigger className="h-8 text-sm w-full max-w-[200px] mx-auto">
+                              <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                              <SelectItem value="unarmed">{UI_STRINGS.infoDialogGrappleDmgUnarmedLabel || "Unarmed"}</SelectItem>
+                          </SelectContent>
+                      </Select>
+                  </div>
+                  <div className="space-y-1">
+                      <Label htmlFor="grapple-damage-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
+                      <div className="flex justify-center">
+                        <NumberSpinnerInput
+                            id="grapple-damage-custom-mod"
+                            value={localGrappleDamageBonus}
+                            onChange={setLocalGrappleDamageBonus}
+                            min={-20} max={20}
+                            inputClassName="h-8 text-sm w-20"
+                            buttonClassName="h-8 w-8"
+                        />
+                      </div>
+                  </div>
+              </div>
+          </div>
         </div>
 
-        <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center md:col-span-3">
-            <Label htmlFor="grapple-damage-display" className="text-md font-medium block">{UI_STRINGS.combatPanelGrappleDamageLabel || "Grapple Damage"}</Label>
-            <div className="flex items-center justify-center">
-                <p id="grapple-damage-display" className="text-xl font-bold text-accent">
-                  {displayedGrappleDamageTotal}
-                </p>
-                 <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleGrappleDamageInfo}>
-                    <Info className="h-4 w-4" />
-                </Button>
-            </div>
-            <div className="mt-auto space-y-2">
-                <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground block">{UI_STRINGS.combatPanelGrappleWeaponLabel || "Weapon"}</Label>
-                    <Select
-                        value={localGrappleWeaponChoice}
-                        onValueChange={setLocalGrappleWeaponChoice}
-                    >
-                        <SelectTrigger className="h-8 text-sm w-full max-w-[200px] mx-auto">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                             <SelectItem value="unarmed">{UI_STRINGS.infoDialogGrappleDmgUnarmedLabel || "Unarmed"}</SelectItem>
-                        </SelectContent>
-                    </Select>
+        <Separator className="my-4" />
+
+        {(hasPowerAttackFeat || hasCombatExpertiseFeat) && (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {hasPowerAttackFeat && (
+                <div className="p-3 border rounded-md bg-card space-y-1 text-center">
+                  <Label htmlFor="power-attack-value" className="text-sm font-medium flex items-center justify-center">
+                    <Activity className="mr-1.5 h-4 w-4 text-destructive/80"/>
+                    {UI_STRINGS.powerAttackValueLabel || "Power Attack"}
+                  </Label>
+                  <NumberSpinnerInput
+                    id="power-attack-value"
+                    value={localPowerAttackValue}
+                    onChange={setLocalPowerAttackValue}
+                    min={0}
+                    max={maxBabForSpinners > 0 ? maxBabForSpinners : 0}
+                    inputClassName="h-8 text-sm w-20"
+                    buttonClassName="h-8 w-8"
+                  />
+                  <p className="text-xs text-muted-foreground">{UI_STRINGS.powerAttackDescription || "Set penalty to attack for damage bonus."}</p>
                 </div>
-                <div className="space-y-1">
-                    <Label htmlFor="grapple-damage-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
-                    <div className="flex justify-center">
-                      <NumberSpinnerInput
-                          id="grapple-damage-custom-mod"
-                          value={localGrappleDamageBonus}
-                          onChange={setLocalGrappleDamageBonus}
-                          min={-20} max={20}
-                          inputClassName="h-8 text-sm w-20"
-                          buttonClassName="h-8 w-8"
-                      />
-                    </div>
+              )}
+              {hasCombatExpertiseFeat && (
+                <div className="p-3 border rounded-md bg-card space-y-1 text-center">
+                  <Label htmlFor="combat-expertise-value" className="text-sm font-medium flex items-center justify-center">
+                    <ShieldIcon className="mr-1.5 h-4 w-4 text-blue-500/80"/>
+                    {UI_STRINGS.combatExpertiseValueLabel || "Combat Expertise"}
+                  </Label>
+                  <NumberSpinnerInput
+                    id="combat-expertise-value"
+                    value={localCombatExpertiseValue}
+                    onChange={setLocalCombatExpertiseValue}
+                    min={0}
+                    max={maxBabForSpinners > 0 ? maxBabForSpinners : 0}
+                    inputClassName="h-8 text-sm w-20"
+                    buttonClassName="h-8 w-8"
+                  />
+                  <p className="text-xs text-muted-foreground">{UI_STRINGS.combatExpertiseDescription || "Set penalty to attack for AC bonus."}</p>
                 </div>
+              )}
             </div>
-        </div>
-
-        {(hasPowerAttackFeat || hasCombatExpertiseFeat) && <Separator />}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {hasPowerAttackFeat && (
-            <div className="p-3 border rounded-md bg-card space-y-1 text-center">
-              <Label htmlFor="power-attack-value" className="text-sm font-medium flex items-center justify-center">
-                <Activity className="mr-1.5 h-4 w-4 text-destructive/80"/>
-                {UI_STRINGS.powerAttackValueLabel || "Power Attack"}
-              </Label>
-               <NumberSpinnerInput
-                id="power-attack-value"
-                value={localPowerAttackValue}
-                onChange={setLocalPowerAttackValue}
-                min={0}
-                max={maxBabForSpinners > 0 ? maxBabForSpinners : 0}
-                inputClassName="h-8 text-sm w-20"
-                buttonClassName="h-8 w-8"
-              />
-              <p className="text-xs text-muted-foreground">{UI_STRINGS.powerAttackDescription || "Set penalty to attack for damage bonus."}</p>
-            </div>
-          )}
-          {hasCombatExpertiseFeat && (
-             <div className="p-3 border rounded-md bg-card space-y-1 text-center">
-              <Label htmlFor="combat-expertise-value" className="text-sm font-medium flex items-center justify-center">
-                <ShieldIcon className="mr-1.5 h-4 w-4 text-blue-500/80"/>
-                {UI_STRINGS.combatExpertiseValueLabel || "Combat Expertise"}
-              </Label>
-              <NumberSpinnerInput
-                id="combat-expertise-value"
-                value={localCombatExpertiseValue}
-                onChange={setLocalCombatExpertiseValue}
-                min={0}
-                max={maxBabForSpinners > 0 ? maxBabForSpinners : 0}
-                inputClassName="h-8 text-sm w-20"
-                buttonClassName="h-8 w-8"
-              />
-              <p className="text-xs text-muted-foreground">{UI_STRINGS.combatExpertiseDescription || "Set penalty to attack for AC bonus."}</p>
-            </div>
-          )}
-        </div>
-
-        <Separator />
+            <Separator className="my-4" />
+          </>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Melee Attacks Card */}
