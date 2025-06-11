@@ -109,7 +109,6 @@ const CharacterFormAbilityScoresSectionComponent = ({
     const finalModifier = calculateAbilityModifier(detailedAbilityScores[ability].finalScore);
 
     const breakdown: GenericBreakdownItem[] = [
-      // Removed: { label: translations.UI_STRINGS.abilityScoreLabel || "Ability Score", value: detailedAbilityScores[ability].finalScore, isRawValue: true },
       { label: translations.UI_STRINGS.abilityModifierLabel || "Ability Modifier", value: finalModifier, isBold: true }
     ];
 
@@ -211,16 +210,6 @@ const CharacterFormAbilityScoresSectionComponent = ({
                     <span className="text-xl font-bold text-accent">{displayTotalScore}</span>
                     <span className="text-xl text-accent font-normal">({displayModifier >= 0 ? '+' : ''}{displayModifier})</span>
                     
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5 mt-0.5"
-                        onClick={() => handleOpenRollDialog(ability)}
-                        aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
-                      >
-                        <Dices className="h-3.5 w-3.5" />
-                    </Button>
                     {actualScoreData && (
                        <Button
                         type="button"
@@ -233,6 +222,16 @@ const CharacterFormAbilityScoresSectionComponent = ({
                         <Info className="h-3.5 w-3.5" />
                       </Button>
                     )}
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5 mt-0.5"
+                        onClick={() => handleOpenRollDialog(ability)}
+                        aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
+                      >
+                        <Dices className="h-3.5 w-3.5" />
+                    </Button>
                   </div>
 
                   <div className="w-full space-y-0.5">
