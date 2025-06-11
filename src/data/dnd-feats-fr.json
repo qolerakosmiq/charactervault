@@ -1,3 +1,4 @@
+
 {
   "DND_FEATS_DATA": [
     {
@@ -243,7 +244,7 @@
           "name": "Utilisations de Rage",
           "uses": {
             "per": "day",
-            "value": "scaled",
+            "value": "scaled", 
             "scaleWithClassLevel": {
               "classId": "barbarian",
               "specificLevels": [
@@ -256,7 +257,7 @@
               ]
             }
           },
-          "sourceFeat": "class-barbarian-rage"
+          "sourceFeat": "class-barbarian-rage" 
         }
       ]
     },
@@ -272,7 +273,7 @@
     {
       "value": "martial-weapon-proficiency-all",
       "label": "Maniement des armes de guerre (Toutes)",
-      "description": "<b>Avantage :</b> Vous effectuez les jets d'attaque avec toutes les armes de guerre normalement.",
+      "description": "<b>Avantage :</b> Vous effectuez les jets d'attaque avec toutes les armes de guerre normally.",
       "effectsText": "Maîtrise de toutes les armes de guerre.",
       "effects": [{ "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "martial" }],
       "isClassFeature": true,
@@ -427,6 +428,72 @@
       ],
       "isClassFeature": true,
       "type": "general"
+    },
+    {
+      "value": "weapon-focus",
+      "label": "Arme de prédilection",
+      "description": "<b>Avantage :</b> Vous obtenez un bonus de +1 à tous les jets d'attaque que vous effectuez avec l'arme sélectionnée.",
+      "prerequisites": { "bab": 1 },
+      "requiresSpecialization": "weapon",
+      "effectsText": "+1 attaque avec l'arme choisie.",
+      "effects": [
+        { "type": "attackRoll", "value": 1, "bonusType": "untyped", "appliesTo": "SPEC" }
+      ],
+      "isClassFeature": false,
+      "type": "special",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "greater-weapon-focus",
+      "label": "Arme de prédilection supérieure",
+      "description": "<b>Avantage :</b> Vous obtenez un bonus supplémentaire de +1 à tous les jets d'attaque que vous effectuez avec l'arme sélectionnée. Ce bonus se cumule avec les autres bonus aux jets d'attaque, y compris celui d'Arme de prédilection.",
+      "prerequisites": { "feats": ["weapon-focus"], "classLevel": { "classId": "fighter", "level": 8 } },
+      "requiresSpecialization": "weapon",
+      "effectsText": "+1 attaque avec l'arme choisie (se cumule avec Arme de prédilection).",
+      "effects": [
+        { "type": "attackRoll", "value": 1, "bonusType": "untyped", "appliesTo": "SPEC" }
+      ],
+      "isClassFeature": false,
+      "type": "special",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "weapon-specialization",
+      "label": "Spécialisation martiale",
+      "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de dégâts que vous effectuez avec l'arme sélectionnée.",
+      "prerequisites": { "feats": ["weapon-focus"], "classLevel": { "classId": "fighter", "level": 4 } },
+      "requiresSpecialization": "weapon",
+      "effectsText": "+2 dégâts avec l'arme choisie.",
+      "effects": [
+        { "type": "damageRoll", "value": 2, "bonusType": "untyped", "appliesTo": "SPEC" }
+      ],
+      "isClassFeature": false,
+      "type": "special",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "greater-weapon-specialization",
+      "label": "Spécialisation martiale supérieure",
+      "description": "<b>Avantage :</b> Vous obtenez un bonus supplémentaire de +2 à tous les jets de dégâts que vous effectuez avec l'arme sélectionnée. Ce bonus se cumule avec les autres bonus aux jets de dégâts, y compris celui de Spécialisation martiale.",
+      "prerequisites": { "feats": ["weapon-focus", "greater-weapon-focus", "weapon-specialization"], "classLevel": { "classId": "fighter", "level": 12 } },
+      "requiresSpecialization": "weapon",
+      "effectsText": "+2 dégâts avec l'arme choisie (se cumule avec Spécialisation martiale).",
+      "effects": [
+        { "type": "damageRoll", "value": 2, "bonusType": "untyped", "appliesTo": "SPEC" }
+      ],
+      "isClassFeature": false,
+      "type": "special",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "class-fighter-bonus-feat-slot",
+      "label": "Emplacement de Don Supplémentaire de Guerrier",
+      "description": "Octroie un emplacement de don supplémentaire pouvant être utilisé pour les dons de la catégorie 'fighterBonusFeat'.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "bonusFeatSlot", "category": "fighterBonusFeat", "count": 1 }
+      ]
     }
   ],
   "FEAT_TYPES_DATA": []

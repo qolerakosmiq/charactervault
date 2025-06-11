@@ -1,3 +1,4 @@
+
 {
   "DND_FEATS_DATA": [
     {
@@ -243,7 +244,7 @@
           "name": "Rage Uses",
           "uses": {
             "per": "day",
-            "value": "scaled",
+            "value": "scaled", 
             "scaleWithClassLevel": {
               "classId": "barbarian",
               "specificLevels": [
@@ -256,7 +257,7 @@
               ]
             }
           },
-          "sourceFeat": "class-barbarian-rage"
+          "sourceFeat": "class-barbarian-rage" 
         }
       ]
     },
@@ -427,6 +428,72 @@
       ],
       "isClassFeature": true,
       "type": "general"
+    },
+    {
+      "value": "weapon-focus",
+      "label": "Weapon Focus",
+      "description": "<b>Benefit:</b> You gain a +1 bonus on all attack rolls you make using the selected weapon.",
+      "prerequisites": { "bab": 1 },
+      "requiresSpecialization": "weapon",
+      "effectsText": "+1 attack with chosen weapon.",
+      "effects": [
+        { "type": "attackRoll", "value": 1, "bonusType": "untyped", "appliesTo": "SPEC" }
+      ],
+      "isClassFeature": false,
+      "type": "special",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "greater-weapon-focus",
+      "label": "Greater Weapon Focus",
+      "description": "<b>Benefit:</b> You gain an additional +1 bonus on all attack rolls you make using the selected weapon. This bonus stacks with other bonuses on attack rolls, including the one from Weapon Focus.",
+      "prerequisites": { "feats": ["weapon-focus"], "classLevel": { "classId": "fighter", "level": 8 } },
+      "requiresSpecialization": "weapon",
+      "effectsText": "+1 attack with chosen weapon (stacks with Weapon Focus).",
+      "effects": [
+        { "type": "attackRoll", "value": 1, "bonusType": "untyped", "appliesTo": "SPEC" }
+      ],
+      "isClassFeature": false,
+      "type": "special",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "weapon-specialization",
+      "label": "Weapon Specialization",
+      "description": "<b>Benefit:</b> You gain a +2 bonus on all damage rolls you make using the selected weapon.",
+      "prerequisites": { "feats": ["weapon-focus"], "classLevel": { "classId": "fighter", "level": 4 } },
+      "requiresSpecialization": "weapon",
+      "effectsText": "+2 damage with chosen weapon.",
+      "effects": [
+        { "type": "damageRoll", "value": 2, "bonusType": "untyped", "appliesTo": "SPEC" }
+      ],
+      "isClassFeature": false,
+      "type": "special",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "greater-weapon-specialization",
+      "label": "Greater Weapon Specialization",
+      "description": "<b>Benefit:</b> You gain an additional +2 bonus on all damage rolls you make using the selected weapon. This bonus stacks with other bonuses on damage rolls, including the one from Weapon Specialization.",
+      "prerequisites": { "feats": ["weapon-focus", "greater-weapon-focus", "weapon-specialization"], "classLevel": { "classId": "fighter", "level": 12 } },
+      "requiresSpecialization": "weapon",
+      "effectsText": "+2 damage with chosen weapon (stacks with Weapon Specialization).",
+      "effects": [
+        { "type": "damageRoll", "value": 2, "bonusType": "untyped", "appliesTo": "SPEC" }
+      ],
+      "isClassFeature": false,
+      "type": "special",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "class-fighter-bonus-feat-slot",
+      "label": "Fighter Bonus Feat Slot",
+      "description": "Grants a bonus feat slot that can be used for feats in the 'fighterBonusFeat' category.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "bonusFeatSlot", "category": "fighterBonusFeat", "count": 1 }
+      ]
     }
   ],
   "FEAT_TYPES_DATA": []

@@ -1,3 +1,4 @@
+
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -54,7 +55,8 @@ import type {
   CharacterFavoredEnemy,
   DomainDefinition,
   Character, // Import full Character type
-  AggregatedFeatEffectBase
+  AggregatedFeatEffectBase,
+  GrantsAbilityEffectUses
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 // Import calculateLevelFromXp and other used utilities directly
@@ -301,19 +303,28 @@ export function calculateAvailableFeats(
 
   if (character.feats) {
     for (const featInstance of character.feats) {
+      // isGranted check is important here. Only granted feats provide bonus slots.
+      // If a feat that grants a slot is chosen by the player, it consumes a slot, it doesn't provide one in this context.
       if (featInstance.isGranted) {
         const featDef = allFeatDefinitions.find(def => def.value === featInstance.definitionId);
         if (featDef?.effects) {
           for (const effect of featDef.effects) {
             if (effect.type === 'bonusFeatSlot') {
               const slotEffect = effect as BonusFeatSlotEffect;
-              classBonusFeatSlotsTotal += slotEffect.count;
-              const key = `${slotEffect.category}-${featDef.label}`; // Ensure unique key per source
-              const existingDetail = classBonusDetailsMap.get(key);
-              if (existingDetail) {
-                existingDetail.count += slotEffect.count;
-              } else {
-                classBonusDetailsMap.set(key, { category: slotEffect.category, count: slotEffect.count, sourceFeatLabel: featDef.label });
+               // Check if the effect is active (though bonusFeatSlot effects are typically not conditional)
+              let isActive = true;
+              if (slotEffect.condition && featInstance.conditionalEffectStates) {
+                isActive = !!featInstance.conditionalEffectStates[slotEffect.condition];
+              }
+              if (isActive) {
+                classBonusFeatSlotsTotal += slotEffect.count;
+                const key = `${slotEffect.category}-${featDef.label}`; 
+                const existingDetail = classBonusDetailsMap.get(key);
+                if (existingDetail) {
+                  existingDetail.count += slotEffect.count;
+                } else {
+                  classBonusDetailsMap.set(key, { category: slotEffect.category, count: slotEffect.count, sourceFeatLabel: featDef.label });
+                }
               }
             }
           }
@@ -321,6 +332,7 @@ export function calculateAvailableFeats(
       }
     }
   }
+
 
   const classBonusDetails = Array.from(classBonusDetailsMap.values());
   const totalFeats = baseFeatSlots + racialBonusSlots + classBonusFeatSlotsTotal;
@@ -624,7 +636,6 @@ export function calculateDetailedAbilityScores(
     if (aggregatedFeatEffects.abilityScoreBonuses) {
       for (const featEffect of aggregatedFeatEffects.abilityScoreBonuses) {
         if (featEffect.ability === ability && typeof featEffect.value === 'number') {
-          // isActive is already set on featEffect from calculateFeatEffects
           components.push({
             sourceLabel: "Feat",
             sourceDetail: featEffect.sourceFeat || 'Unknown Feat',
@@ -632,7 +643,7 @@ export function calculateDetailedAbilityScores(
             condition: featEffect.condition,
             isActive: featEffect.isActive,
           });
-          if(featEffect.isActive) { // Only add to currentScore if active
+          if(featEffect.isActive) { 
             currentScore += featEffect.value;
           }
         }
@@ -653,7 +664,7 @@ export function calculateDetailedAbilityScores(
 }
 
 export function calculateFeatEffects(
-  character: Character,
+  character: Character, // Now expects full Character for all checks
   allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]
 ): AggregatedFeatEffects {
   const newAggregatedEffects: AggregatedFeatEffects = {
@@ -714,13 +725,13 @@ export function calculateFeatEffects(
     for (const originalEffect of definition.effects) {
       const sourceFeatName = definition.label || definition.value;
 
-      let effectToPush: FeatEffectDetail & AggregatedFeatEffectBase = JSON.parse(JSON.stringify(originalEffect)); // Deep clone
+      let effectToPush: FeatEffectDetail & AggregatedFeatEffectBase = JSON.parse(JSON.stringify(originalEffect)); 
       effectToPush.sourceFeat = sourceFeatName;
 
       let effectIsActive = true;
-      if (definition.permanentEffect) { // If feat itself is permanent, its conditions are always active
+      if (definition.permanentEffect) { 
         effectIsActive = true;
-        if(effectToPush.condition) { // Mark the condition as active if it exists on a permanent effect
+        if(effectToPush.condition) { 
              if(!featInstance.conditionalEffectStates) featInstance.conditionalEffectStates = {};
              featInstance.conditionalEffectStates[effectToPush.condition] = true;
         }
@@ -778,11 +789,11 @@ export function calculateFeatEffects(
           }
       }
 
-      // Store the effect with its active state, regardless of whether its value is applied to a sum
-      // Sums are for direct numerical impacts, arrays are for breakdowns/complex logic
       switch (effectToPush.type) {
         case "skill":
-          newAggregatedEffects.skillBonuses[effectToPush.skillId!] = (newAggregatedEffects.skillBonuses[effectToPush.skillId!] || 0) + (effectIsActive && typeof effectToPush.value === 'number' ? effectToPush.value : 0);
+          if (effectIsActive && typeof effectToPush.value === 'number') {
+            newAggregatedEffects.skillBonuses[effectToPush.skillId!] = (newAggregatedEffects.skillBonuses[effectToPush.skillId!] || 0) + effectToPush.value;
+          }
           break;
         case "abilityScore": newAggregatedEffects.abilityScoreBonuses.push(effectToPush as AbilityScoreEffect & AggregatedFeatEffectBase); break;
         case "savingThrow": newAggregatedEffects.savingThrowBonuses.push(effectToPush as SavingThrowEffect & AggregatedFeatEffectBase); break;
@@ -806,8 +817,6 @@ export function calculateFeatEffects(
           if (effectIsActive && typeof initEffect.value === 'number') {
               newAggregatedEffects.initiativeBonus += initEffect.value;
           }
-          // Still push to an array if we need to display conditional initiative bonuses in a breakdown later
-          // For now, initiativeBonus is a simple sum.
           break;
         case "speed": newAggregatedEffects.speedBonuses.push(effectToPush as SpeedEffect & AggregatedFeatEffectBase); break;
         case "resistance": newAggregatedEffects.resistanceBonuses.push(effectToPush as ResistanceEffect & AggregatedFeatEffectBase); break;
@@ -860,12 +869,12 @@ export function calculateSpeedBreakdown(
 
   if (aggregatedFeatEffects?.speedBonuses) {
     aggregatedFeatEffects.speedBonuses.forEach(effect => {
-      if (effect.isActive && (effect.speedType === speedType || effect.speedType === 'all')) { // Check isActive
+      if (effect.isActive && (effect.speedType === speedType || effect.speedType === 'all')) { 
         if (effect.modification === 'bonus' && typeof effect.value === 'number') {
           components.push({ source: effect.sourceFeat || (UI_STRINGS.infoDialogFeatBonusLabel || "Feat Bonus"), value: effect.value });
           currentSpeed += effect.value;
         } else if (effect.modification === 'setAbsolute' && typeof effect.value === 'number') {
-          components.push({ source: `${effect.sourceFeat || 'Feat'} (Set to)`, value: effect.value - currentSpeed }); // Show the change needed
+          components.push({ source: `${effect.sourceFeat || 'Feat'} (Set to)`, value: effect.value - currentSpeed }); 
           currentSpeed = effect.value;
         } else if (effect.modification === 'penalty' && typeof effect.value === 'number') {
           components.push({ source: effect.sourceFeat || (UI_STRINGS.infoDialogFeatBonusLabel || "Feat Penalty"), value: -effect.value });
@@ -883,7 +892,7 @@ export function calculateSpeedBreakdown(
     currentSpeed += miscModForThisSpeed;
   }
 
-  if (currentSpeed > 0 && speedType === 'land') { // Penalties typically only apply to land speed
+  if (currentSpeed > 0 && speedType === 'land') { 
     const armorPenaltyVal = (character.armorSpeedPenalty_miscModifier || 0) - (character.armorSpeedPenalty_base || 0);
     if (armorPenaltyVal !== 0) {
       components.push({ source: UI_STRINGS.infoDialogSpeedArmorPenaltyLabel || "Armor Penalty", value: armorPenaltyVal });
