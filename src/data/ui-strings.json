@@ -620,8 +620,19 @@
     "rollDialogInitiativeAriaLabel": "Roll Initiative",
     "rollDialogGrappleCheckAriaLabel": "Roll Grapple Check",
     "rollDialogCritFailureLabel": "Critical Failure!",
-    "barbarianRageUsesLabel": "Rage Uses Per Day"
+    "barbarianRageUsesLabel": "Rage Uses Per Day",
+    "condition_raging": "Raging",
+    "rangerCombatStyleLabel": "Ranger Combat Style",
+    "selectRangerCombatStylePlaceholder": "Select Combat Style...",
+    "rangerCombatStyleArchery": "Archery",
+    "rangerCombatStyleTwoWeapon": "Two-Weapon Fighting",
+    "rangerCombatStyleDescription": "Choose your combat style at Ranger level 2. This grants bonus feats as you level.",
+    "favoredEnemyTitle": "Favored Enemies",
+    "favoredEnemySlotsAvailableShort": "Slot(s)",
+    "favoredEnemyDescription": "Select creature types your Ranger specializes against. Bonuses apply automatically when relevant.",
+    "favoredEnemySlotLabel": "Favored Enemy Slot {slotNum}",
+    "favoredEnemyPlaceholder": "e.g., Orc, Goblin, Undead",
+    "favoredEnemyBonusDisplayInfo": "Favored Enemy Bonus: +{skillBonus} to Bluff, Listen, Sense Motive, Spot, Survival checks and +{damageBonus} damage against chosen favored enemies. (Slots available: {slots})"
   }
 }
-
     

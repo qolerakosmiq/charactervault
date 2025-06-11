@@ -620,8 +620,19 @@
     "rollDialogInitiativeAriaLabel": "Lancer l'Initiative",
     "rollDialogGrappleCheckAriaLabel": "Lancer un Test de Lutte",
     "rollDialogCritFailureLabel": "Échec Critique !",
-    "barbarianRageUsesLabel": "Utilisations de Rage par Jour"
+    "barbarianRageUsesLabel": "Utilisations de Rage par Jour",
+    "condition_raging": "Enragé",
+    "rangerCombatStyleLabel": "Style de Combat du Rôdeur",
+    "selectRangerCombatStylePlaceholder": "Choisir un Style de Combat...",
+    "rangerCombatStyleArchery": "Tir à l'arc",
+    "rangerCombatStyleTwoWeapon": "Combat à Deux Armes",
+    "rangerCombatStyleDescription": "Choisissez votre style de combat au niveau 2 de Rôdeur. Cela accorde des dons bonus à mesure que vous montez de niveau.",
+    "favoredEnemyTitle": "Ennemis Jurés",
+    "favoredEnemySlotsAvailableShort": "Emplacement(s)",
+    "favoredEnemyDescription": "Sélectionnez les types de créatures contre lesquelles votre Rôdeur se spécialise. Les bonus s'appliquent automatiquement lorsque c'est pertinent.",
+    "favoredEnemySlotLabel": "Emplacement d'Ennemi Juré {slotNum}",
+    "favoredEnemyPlaceholder": "Ex : Orque, Gobelin, Mort-vivant",
+    "favoredEnemyBonusDisplayInfo": "Bonus d'Ennemi Juré : +{skillBonus} aux tests de Bluff, Perception auditive, Psychologie, Détection, Survie et +{damageBonus} aux dégâts contre les ennemis jurés choisis. (Emplacements disponibles : {slots})"
   }
 }
-
     

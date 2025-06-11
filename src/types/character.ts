@@ -1,5 +1,4 @@
 
-
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -737,11 +736,14 @@ export function calculateFeatEffects(
       let effectToPush: FeatEffectDetail & AggregatedFeatEffectBase = JSON.parse(JSON.stringify(originalEffect));
       effectToPush.sourceFeat = sourceFeatName;
 
-      let effectIsActive = true;
-      if (definition.permanentEffect && effectToPush.condition) {
-         effectIsActive = true;
-         if(!featInstance.conditionalEffectStates) featInstance.conditionalEffectStates = {};
-         featInstance.conditionalEffectStates[effectToPush.condition] = true;
+      let effectIsActive = true; // Default to active
+      if (definition.permanentEffect) {
+        effectIsActive = true; // Permanent effects are always active
+        if (effectToPush.condition && featInstance.conditionalEffectStates) {
+           // For permanent effects, we can consider their conditions as 'always met' for calculation
+           // but store the actual toggled state if relevant for UI later (though permanent ones usually won't be toggled)
+           featInstance.conditionalEffectStates[effectToPush.condition] = true;
+        }
       } else if (effectToPush.condition && effectToPush.condition.trim() !== "") {
         effectIsActive = !!featInstance.conditionalEffectStates?.[effectToPush.condition];
       }
@@ -1027,3 +1029,4 @@ export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
 
+    

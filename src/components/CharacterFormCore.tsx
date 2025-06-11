@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import *as React from 'react';
@@ -672,12 +671,14 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         ...prevCharacter,
         feats: prevCharacter.feats.map(featInstance => {
           const definition = allAvailableFeatDefinitions.find(def => def.value === featInstance.definitionId);
-          const hasThisCondition = definition?.effects?.some(eff => eff.condition === conditionKey);
-
-          if (hasThisCondition) {
-            const newStates = { ...(featInstance.conditionalEffectStates || {}) };
-            newStates[conditionKey] = isActive;
-            return { ...featInstance, conditionalEffectStates: newStates };
+          // Only toggle if the feat is NOT a permanent effect source
+          if (definition && !definition.permanentEffect) {
+            const hasThisConditionInEffects = definition.effects?.some(eff => eff.condition === conditionKey);
+            if (hasThisConditionInEffects) {
+              const newStates = { ...(featInstance.conditionalEffectStates || {}) };
+              newStates[conditionKey] = isActive;
+              return { ...featInstance, conditionalEffectStates: newStates };
+            }
           }
           return featInstance;
         }),
@@ -695,7 +696,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   
   const handleOpenRollDialog = React.useCallback((data: Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'>) => {
     setRollDialogProps(data);
-    setIsRollDialogOpen(true);
+    setIsRollAbilityDialogOpen(true);
   }, []);
 
   const handleRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString?: string) => {
@@ -717,13 +718,14 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       { label: translations.UI_STRINGS.abilityScoreLabel || "Ability Score", value: detailedAbilityScores[ability].finalScore, isRawValue: true },
       { label: translations.UI_STRINGS.abilityModifierLabel || "Modifier", value: finalModifier, isBold: true }
     ];
-    handleOpenRollDialog({ 
+    setRollDialogProps({ 
       dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck || "{abilityName} Check").replace("{abilityName}", abilityName),
       rollType: `ability_check_${ability}`,
       baseModifier: finalModifier,
       calculationBreakdown: breakdown,
     });
-  }, [detailedAbilityScores, translations, handleOpenRollDialog]);
+    setIsRollDialogOpen(true); // Renamed from setIsRollAbilityDialogOpen to generic isRollDialogOpen
+  }, [detailedAbilityScores, translations]);
 
   const handleOpenAbilityScoreBreakdownDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => { openInfoDialog({ type: 'abilityScoreBreakdown', abilityName: ability }); }, [openInfoDialog]);
   const handleOpenCombatStatInfoDialog = React.useCallback((contentType: InfoDialogContentType) => { openInfoDialog(contentType); }, [openInfoDialog]);
@@ -898,7 +900,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       climbSpeed: character.climbSpeed, flySpeed: character.flySpeed, swimSpeed: character.swimSpeed,
       armorSpeedPenalty_base: character.armorSpeedPenalty_base, armorSpeedPenalty_miscModifier: character.armorSpeedPenalty_miscModifier,
       loadSpeedPenalty_base: character.loadSpeedPenalty_base, loadSpeedPenalty_miscModifier: character.loadSpeedPenalty_miscModifier,
-      feats: character.feats,
+      feats: character.feats, // Pass feats to SpeedPanel
     };
   }, [character]);
 
@@ -1186,3 +1188,4 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
 
+    

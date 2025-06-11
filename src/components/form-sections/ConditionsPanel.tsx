@@ -12,25 +12,27 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button'; 
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export interface ConditionsPanelProps {
   characterFeats: CharacterFeatInstance[];
   allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
-  onConditionToggle: (conditionKey: string, isActive: boolean) => void; 
+  onConditionToggle: (conditionKey: string, isActive: boolean) => void;
 }
 
 interface DisplayCondition {
-  conditionKey: string; 
-  displayText: string;  
+  conditionKey: string;
+  displayText: string;
   sources: Array<{
     featInstanceId: string;
     featName: string;
-    isCurrentlyActiveOnThisInstance: boolean; 
-    featIsPermanentEffectSource: boolean; // New flag
+    isCurrentlyActiveOnThisInstance: boolean;
+    isSourceFeatPermanentEffect: boolean; // True if the feat definition has permanentEffect: true
   }>;
-  isGloballyActive: boolean; 
-  isEffectivelyPermanent: boolean; // New: True if ANY source feat is permanent
+  isGloballyActive: boolean;
+  isEffectivelyPermanentAndActive: boolean; // True if ALL sources are permanent AND active
+  canBeToggled: boolean; // True if at least ONE source is NOT permanent
 }
 
 const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
@@ -49,18 +51,17 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
         definition.effects.forEach(effect => {
           if (effect.condition && effect.condition.trim() !== "") {
             const conditionKey = effect.condition;
-            const displayText = effect.condition; 
-            
-            const isCurrentlyActiveOnThisInstance = !!featInstance.conditionalEffectStates?.[conditionKey];
-            const featIsPermanentEffectSource = !!definition.permanentEffect; // Check the flag on the feat definition
+            const isSourceFeatPermanentEffect = !!definition.permanentEffect;
+            const isCurrentlyActiveOnThisInstance = isSourceFeatPermanentEffect || !!featInstance.conditionalEffectStates?.[conditionKey];
 
             if (!conditionsMap.has(conditionKey)) {
               conditionsMap.set(conditionKey, {
                 conditionKey,
-                displayText,
+                displayText: conditionKey, // Placeholder, will be translated
                 sources: [],
-                isGloballyActive: false, 
-                isEffectivelyPermanent: false, // Initialize
+                isGloballyActive: false,
+                isEffectivelyPermanentAndActive: true, // Assume permanent until a non-permanent source is found
+                canBeToggled: false, // Assume not toggleable until a non-permanent source is found
               });
             }
             const conditionEntry = conditionsMap.get(conditionKey)!;
@@ -68,21 +69,29 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
               featInstanceId: featInstance.instanceId,
               featName: definition.label || featInstance.definitionId,
               isCurrentlyActiveOnThisInstance,
-              featIsPermanentEffectSource, // Store if this source feat is permanent
+              isSourceFeatPermanentEffect,
             });
           }
         });
       }
     });
-    
+
     conditionsMap.forEach(entry => {
       entry.isGloballyActive = entry.sources.some(s => s.isCurrentlyActiveOnThisInstance);
-      // A condition is effectively permanent if any of its source feats are marked as permanentEffect
-      entry.isEffectivelyPermanent = entry.sources.some(s => s.featIsPermanentEffectSource);
-      // If it's effectively permanent, ensure its global active state is true
-      if (entry.isEffectivelyPermanent) {
-        entry.isGloballyActive = true;
-      }
+      
+      // A condition is considered "effectively permanent and active" if ALL its sources are permanent AND active.
+      // This might be too strict. A better definition might be:
+      // "Effectively permanent" if ALL sources are permanent.
+      // "Globally active" if ANY source is active.
+      // "Can be toggled" if ANY source is NOT permanent.
+      
+      const allSourcesArePermanent = entry.sources.every(s => s.isSourceFeatPermanentEffect);
+      entry.isEffectivelyPermanentAndActive = allSourcesArePermanent && entry.isGloballyActive;
+      entry.canBeToggled = entry.sources.some(s => !s.isSourceFeatPermanentEffect);
+
+      // If any source is permanent and active, the global state is active and it cannot be turned off by toggling non-permanent sources.
+      // However, the user might still want to toggle the non-permanent sources *if they exist*.
+      // The `disabled` state of the checkbox should depend on whether *all* active sources are permanent.
     });
 
     return conditionsMap;
@@ -93,10 +102,8 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
 
 
   const handleToggle = (conditionKey: string, checked: boolean) => {
-    const conditionEntry = uniqueConditionsMap.get(conditionKey);
-    if (conditionEntry && conditionEntry.isEffectivelyPermanent) {
-      return; // Don't allow toggling if the condition is from a permanent effect source
-    }
+    // This toggle should only affect non-permanent sources.
+    // The global state is derived from all sources including permanent ones.
     onConditionToggle(conditionKey, checked);
   };
   
@@ -138,21 +145,26 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
         <CardDescription>{UI_STRINGS.conditionsPanelDescription || "Toggle conditional effects from your character's feats and abilities."}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3 pt-4">
-        {uniqueConditionsForDisplay.map(({ conditionKey, displayText, sources, isGloballyActive, isEffectivelyPermanent }) => {
+        {uniqueConditionsForDisplay.map(({ conditionKey, displayText, sources, isGloballyActive, canBeToggled }) => {
            const translatedDisplayTextKey = `condition_${conditionKey}` as keyof typeof UI_STRINGS;
            const translatedDisplayText = UI_STRINGS[translatedDisplayTextKey] || displayText;
+           
+           // Checkbox is disabled if the condition can't be meaningfully toggled by the user
+           // (i.e., if all its sources are permanent or if it has no non-permanent sources to toggle).
+           const isToggleDisabled = !canBeToggled;
+
           return (
             <div key={conditionKey} className="flex items-center space-x-2 p-2.5 border rounded-lg bg-card shadow-sm hover:border-primary/50 transition-colors">
               <Checkbox
                 id={`condition-toggle-${conditionKey.replace(/\W/g, '-')}`}
-                checked={isGloballyActive} // This will be true if isEffectivelyPermanent is true
+                checked={isGloballyActive}
                 onCheckedChange={(checked) => handleToggle(conditionKey, !!checked)}
-                disabled={isEffectivelyPermanent} // Disable if any source is permanent
+                disabled={isToggleDisabled}
                 className="h-5 w-5"
               />
-              <Label htmlFor={`condition-toggle-${conditionKey.replace(/\W/g, '-')}`} className={cn("flex-grow text-sm cursor-pointer", isEffectivelyPermanent && "cursor-default")}>
+              <Label htmlFor={`condition-toggle-${conditionKey.replace(/\W/g, '-')}`} className={cn("flex-grow text-sm cursor-pointer", isToggleDisabled && "cursor-default opacity-70")}>
                 {translatedDisplayText}
-                 {isEffectivelyPermanent && (
+                 {isToggleDisabled && isGloballyActive && ( // Show "Permanent" only if it's active due to permanent sources
                     <Badge variant="outline" className="ml-2 text-xs text-muted-foreground border-muted-foreground/50">
                       {UI_STRINGS.conditionsPanelPermanentLabel || "Permanent"}
                     </Badge>
@@ -168,7 +180,12 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
                   <TooltipContent side="top" align="end" className="max-w-xs text-xs p-2">
                     <p className="font-medium mb-1">{UI_STRINGS.conditionsPanelTooltipSourcesLabel || "Sources:"}</p>
                     <ul className="list-disc list-inside space-y-0.5">
-                      {sources.map(s => <li key={s.featInstanceId}>{s.featName}{s.featIsPermanentEffectSource ? ` (${UI_STRINGS.conditionsPanelPermanentLabel || "Permanent"})` : ''}</li>)}
+                      {sources.map(s => (
+                        <li key={s.featInstanceId}>
+                          {s.featName}
+                          {s.isSourceFeatPermanentEffect ? ` (${UI_STRINGS.conditionsPanelPermanentLabel || "Permanent"})` : ''}
+                        </li>
+                      ))}
                     </ul>
                   </TooltipContent>
                 </Tooltip>
@@ -182,3 +199,4 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
 };
 ConditionsPanelComponent.displayName = "ConditionsPanelComponent";
 export const ConditionsPanel = React.memo(ConditionsPanelComponent);
+    
