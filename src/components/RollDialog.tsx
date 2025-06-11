@@ -97,7 +97,7 @@ export function RollDialog({
 
   const actualWeaponDicePart = weaponDamageDice?.match(/^(\d*d\d+)/)?.[0] || weaponDamageDice;
 
-  const totalBonusLabel = isDamageRoll ? (UI_STRINGS.rollDialogTotalNumericBonusLabel || "Total Numeric Bonus") : (UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus");
+  const totalBonusLabelText = isDamageRoll ? (UI_STRINGS.rollDialogTotalNumericBonusLabel || "Total Numeric Bonus") : (UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus");
 
   const isCritFailure = !isDamageRoll && diceResult === 1;
   const isCritSuccess = !isDamageRoll && diceResult === 20;
@@ -143,7 +143,7 @@ export function RollDialog({
                         {item.value}
                       </span>
                     ) : (
-                      <span className={cn("font-semibold text-foreground", item.isBold && "font-bold")}>
+                       <span className={cn("font-semibold text-foreground", item.isBold && "font-bold")}>
                         {renderModifierValue(item.value as number | string)}
                       </span>
                     )}
@@ -152,7 +152,7 @@ export function RollDialog({
                 <Separator className="my-2" />
                 <div className="flex justify-between text-lg">
                   <span className="font-semibold">
-                    {totalBonusLabel}
+                    {totalBonusLabelText}
                   </span>
                   <span className="font-bold text-accent">
                     {renderModifierValue(baseModifier)}
@@ -165,39 +165,39 @@ export function RollDialog({
             <div className={resultCardBackground}>
               {isDamageRoll ? (
                 <>
-                  <div className="flex justify-between items-center text-sm">
-                    <span>
-                      {(UI_STRINGS.rollDialogDamageWeaponDiceRolledLabel || "Weapon Dice ({diceString}) Rolled {diceSum}")
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">
+                      {(UI_STRINGS.rollDialogDamageWeaponDiceRolledLabel || "Weapon Dice ({diceString}): Rolled {diceSum}")
                           .replace("{diceString}", actualWeaponDicePart || 'N/A')
                           .replace("{diceSum}", String(diceResult))
                       }
                     </span>
                     <span className="font-bold text-lg text-primary">{diceResult}</span>
                   </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span>{(UI_STRINGS.rollDialogDamageOtherBonusesLabel || "Other Bonuses")}</span>
-                    <span className="font-bold text-lg text-primary">{renderModifierValue(baseModifier)}</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">{(UI_STRINGS.rollDialogDamageOtherBonusesLabel || "Other Bonuses")}</span>
+                    <span className="font-bold text-sm text-primary">{renderModifierValue(baseModifier)}</span>
                   </div>
                   <Separator className="my-1 bg-border/50"/>
-                  <div className="flex justify-between items-center text-lg">
-                    <span className="font-semibold">{UI_STRINGS.rollDialogFinalDamageStringLabel || "Total Damage"}</span>
-                    <span className="font-bold text-primary">{finalResult}</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalDamageStringLabel || "Total Damage"}</span>
+                    <span className="font-bold text-lg text-primary">{finalResult}</span>
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="flex justify-between items-center text-sm">
-                    <span>{UI_STRINGS.rollDialogDiceRollLabel || "Dice Roll (1d20)"}</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">{UI_STRINGS.rollDialogDiceRollLabel || "Dice Roll (1d20)"}</span>
                     <span className={diceResultColor}>{diceResult}</span>
                   </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span>{UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus"}</span>
-                    <span className="font-bold text-lg text-primary">{renderModifierValue(baseModifier)}</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">{UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus"}</span>
+                    <span className="font-bold text-sm text-primary">{renderModifierValue(baseModifier)}</span>
                   </div>
                   <Separator className="my-1 bg-border/50"/>
-                  <div className="flex justify-between items-center text-lg">
-                    <span className="font-semibold">{UI_STRINGS.rollDialogFinalResultLabel || "Final Result"}</span>
-                    <span className="font-bold text-primary">{finalResult}</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalResultLabel || "Final Result"}</span>
+                    <span className="font-bold text-lg text-primary">{finalResult}</span>
                   </div>
                 </>
               )}
