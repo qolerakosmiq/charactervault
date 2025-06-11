@@ -233,7 +233,28 @@
         { "type": "abilityScore", "ability": "strength", "value": 4, "bonusType": "morale", "condition": "raging" },
         { "type": "abilityScore", "ability": "constitution", "value": 4, "bonusType": "morale", "condition": "raging" },
         { "type": "savingThrow", "save": "will", "value": 2, "bonusType": "morale", "condition": "raging" },
-        { "type": "armorClass", "acType": "untyped", "value": -2, "condition": "raging", "appliesToScope": ["normal", "flatFooted"] }
+        { "type": "armorClass", "acType": "untyped", "value": -2, "condition": "raging", "appliesToScope": ["normal", "flatFooted"] },
+        {
+          "type": "grantsAbility",
+          "abilityKey": "barbarianRageUses",
+          "name": "Utilisations de Rage",
+          "uses": {
+            "per": "day",
+            "value": "scaled",
+            "scaleWithClassLevel": {
+              "classId": "barbarian",
+              "specificLevels": [
+                { "level": 1, "value": 1 },
+                { "level": 4, "value": 2 },
+                { "level": 8, "value": 3 },
+                { "level": 12, "value": 4 },
+                { "level": 16, "value": 5 },
+                { "level": 20, "value": 6 }
+              ]
+            }
+          },
+          "sourceFeat": "class-barbarian-rage"
+        }
       ]
     }
   ],

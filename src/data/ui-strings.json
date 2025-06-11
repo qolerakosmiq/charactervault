@@ -614,7 +614,8 @@
     "rollDialogTitleInitiative": "Roll Initiative",
     "rollDialogTitleGrappleCheck": "Roll Grapple Check",
     "rollDialogInitiativeAriaLabel": "Roll Initiative",
-    "rollDialogGrappleCheckAriaLabel": "Roll Grapple Check"
+    "rollDialogGrappleCheckAriaLabel": "Roll Grapple Check",
+    "barbarianRageUsesLabel": "Rage Uses Per Day"
   }
 }
     

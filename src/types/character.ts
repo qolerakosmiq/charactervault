@@ -611,13 +611,13 @@ export function calculateDetailedAbilityScores(
     const racialModObj = racialQualities.abilityEffects.find(eff => eff.ability === ability);
     if (racialModObj && racialModObj.change !== 0) {
       const raceLabel = DND_RACES.find(r => r.value === character.race)?.label || character.race || 'Unknown Race';
-      components.push({ sourceLabel: "Race", sourceDetail: raceLabel, value: racialModObj.change, isActive: true });
+      components.push({ sourceLabel: "Race", sourceDetail: raceLabel, value: racialModObj.change });
       currentScore += racialModObj.change;
     }
 
     const agingModObj = agingDetails.effects.find(eff => eff.ability === ability);
     if (agingModObj && agingModObj.change !== 0) {
-      components.push({ sourceLabel: "Aging", sourceDetail: agingDetails.categoryName, value: agingModObj.change, isActive: true });
+      components.push({ sourceLabel: "Aging", sourceDetail: agingDetails.categoryName, value: agingModObj.change });
       currentScore += agingModObj.change;
     }
 
@@ -646,7 +646,7 @@ export function calculateDetailedAbilityScores(
 
     const tempCustomModValue = tempCustomModifiers[ability];
     if (tempCustomModValue !== 0 && tempCustomModValue !== undefined) {
-      components.push({ sourceLabel: "Temporary Modifier", value: tempCustomModValue, isActive: true });
+      components.push({ sourceLabel: "Temporary Modifier", value: tempCustomModValue });
       currentScore += tempCustomModValue;
     }
 
@@ -732,6 +732,7 @@ export function calculateFeatEffects(
       if (effectToPush.scaleWithClassLevel && effectToPush.scaleWithClassLevel.specificLevels) {
         const classLevel = newAggregatedEffects.classLevels[effectToPush.scaleWithClassLevel.classId] || 0;
         let foundLevelValue: any = undefined;
+        // Iterate from highest level requirement down to find the best match
         for (const levelEntry of [...effectToPush.scaleWithClassLevel.specificLevels].sort((a, b) => b.level - a.level)) {
           if (classLevel >= levelEntry.level) {
             foundLevelValue = levelEntry.value;
@@ -741,6 +742,7 @@ export function calculateFeatEffects(
         if (foundLevelValue !== undefined) {
           resolvedValue = foundLevelValue;
         } else if ((effectToPush as any).value === undefined && effectToPush.scaleWithClassLevel.specificLevels.length > 0) {
+           // Fallback to lowest defined level if no specific match (e.g. character level 0 but effect starts at 1)
            resolvedValue = [...effectToPush.scaleWithClassLevel.specificLevels].sort((a,b) => a.level - b.level)[0].value;
         }
       }
@@ -748,12 +750,14 @@ export function calculateFeatEffects(
       if (resolvedValue !== undefined && effectToPush.hasOwnProperty('value')) {
         (effectToPush as any).value = resolvedValue;
       }
-
-      if (effectToPush.type === 'grantsAbility' && effectToPush.uses?.scaleWithClassLevel?.specificLevels) {
-          const grantsAbilityEffect = effectToPush as GrantsAbilityEffect & { sourceFeat?: string };
+      
+      // Specific scaling for grantsAbility uses
+      if (effectToPush.type === 'grantsAbility' && effectToPush.uses?.value === "scaled" && effectToPush.uses?.scaleWithClassLevel?.specificLevels) {
+          const grantsAbilityEffect = effectToPush as GrantsAbilityEffect & { sourceFeat?: string }; // Cast for type safety
           if (grantsAbilityEffect.uses && grantsAbilityEffect.uses.scaleWithClassLevel) {
               const classLevel = newAggregatedEffects.classLevels[grantsAbilityEffect.uses.scaleWithClassLevel.classId] || 0;
               let foundUsesValue: number | undefined;
+              // Iterate from highest level requirement down
               for (const lvlEntry of [...grantsAbilityEffect.uses.scaleWithClassLevel.specificLevels].sort((a,b) => b.level - a.level)) {
                   if (classLevel >= lvlEntry.level) {
                       foundUsesValue = lvlEntry.value as number;
@@ -763,6 +767,7 @@ export function calculateFeatEffects(
               if (foundUsesValue !== undefined) {
                   grantsAbilityEffect.uses.value = foundUsesValue;
               } else if (grantsAbilityEffect.uses.scaleWithClassLevel.specificLevels.length > 0) {
+                   // Default to the lowest defined level's uses if character level is below all thresholds
                   grantsAbilityEffect.uses.value = [...grantsAbilityEffect.uses.scaleWithClassLevel.specificLevels].sort((a, b) => a.level - b.level)[0].value as number;
               }
           }
@@ -1042,4 +1047,5 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
+
 

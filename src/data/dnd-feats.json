@@ -225,7 +225,7 @@
     {
       "value": "class-barbarian-rage",
       "label": "Rage",
-      "description": "<b>Benefit:</b> A barbarian can fly into a rage a certain number of times per day. In a rage, a barbarian temporarily gains a +4 bonus to Strength, a +4 bonus to Constitution, and a +2 morale bonus on Will saves, but he takes a –2 penalty to Armor Class. The increase in Constitution increases the barbarian’s hit points by 2 points per level, but these hit points go away at the end of the rage when his Constitution score returns to normal. (These hit points are not lost first the way temporary hit points are.) While raging, a barbarian cannot use any Charisma-, Dexterity-, or Intelligence-based skills (except for Balance, Escape Artist, Intimidate, and Ride), the Concentration skill, or any abilities that require patience or concentration, nor can he cast spells or activate magic items that require a command word, a spell trigger (such as a wand), or spell completion (such as a scroll) to function. He can use any feat he has except Combat Expertise, item creation feats, and metamagic feats. A fit of rage lasts for a number of rounds equal to 3 + the character’s (newly improved) Constitution modifier. A barbarian may prematurely end his rage. At the end of the rage, the barbarian loses the rage modifiers and restrictions and becomes fatigued (–2 penalty to Strength, –2 penalty to Dexterity, can’t charge or run) for the duration of the encounter. A barbarian can fly into a rage only once per encounter. At 1st level he can use his rage ability once per day. At 4th level and every four levels thereafter, he can use it one additional time per day (jusqu'à un maximum de six fois par jour au niveau 20). Entrer en rage ne prend pas de temps en soi, mais un barbare ne peut le faire que pendant son action, pas en réponse à l'action de quelqu'un d'autre.",
+      "description": "<b>Benefit:</b> A barbarian can fly into a rage a certain number of times per day. In a rage, a barbarian temporarily gains a +4 bonus to Strength, a +4 bonus to Constitution, and a +2 morale bonus on Will saves, but he takes a –2 penalty to Armor Class. The increase in Constitution increases the barbarian’s hit points by 2 points per level, but these hit points go away at the end of the rage when his Constitution score returns to normal. (These hit points are not lost first the way temporary hit points are.) While raging, a barbarian cannot use any Charisma-, Dexterity-, or Intelligence-based skills (except for Balance, Escape Artist, Intimidate, and Ride), the Concentration skill, or any abilities that require patience or concentration, nor can he cast spells or activate magic items that require a command word, a spell trigger (such as a wand), or spell completion (such as a scroll) to function. He can use any feat he has except Combat Expertise, item creation feats, and metamagic feats. A fit of rage lasts for a number of rounds equal to 3 + the character’s (newly improved) Constitution modifier. A barbarian may prematurely end his rage. At the end of the rage, the barbarian loses the rage modifiers and restrictions and becomes fatigued (–2 penalty to Strength, –2 penalty to Dexterity, can’t charge or run) for the duration of the encounter. A barbarian can fly into a rage only once per encounter. At 1st level he can use his rage ability once per day. At 4th level and every four levels thereafter, he can use it one additional time per day (up to a maximum of six times per day at 20th level). Entering a rage takes no time itself, but a barbarian can do it only during his action, not in response to someone else’s action.",
       "effectsText": "When raging: +4 STR, +4 CON, +2 Will, -2 AC. Fatigued after.",
       "type": "special-ex",
       "isClassFeature": true,
@@ -233,7 +233,28 @@
         { "type": "abilityScore", "ability": "strength", "value": 4, "bonusType": "morale", "condition": "raging" },
         { "type": "abilityScore", "ability": "constitution", "value": 4, "bonusType": "morale", "condition": "raging" },
         { "type": "savingThrow", "save": "will", "value": 2, "bonusType": "morale", "condition": "raging" },
-        { "type": "armorClass", "acType": "untyped", "value": -2, "condition": "raging", "appliesToScope": ["normal", "flatFooted"] }
+        { "type": "armorClass", "acType": "untyped", "value": -2, "condition": "raging", "appliesToScope": ["normal", "flatFooted"] },
+        {
+          "type": "grantsAbility",
+          "abilityKey": "barbarianRageUses",
+          "name": "Rage Uses",
+          "uses": {
+            "per": "day",
+            "value": "scaled",
+            "scaleWithClassLevel": {
+              "classId": "barbarian",
+              "specificLevels": [
+                { "level": 1, "value": 1 },
+                { "level": 4, "value": 2 },
+                { "level": 8, "value": 3 },
+                { "level": 12, "value": 4 },
+                { "level": 16, "value": 5 },
+                { "level": 20, "value": 6 }
+              ]
+            }
+          },
+          "sourceFeat": "class-barbarian-rage"
+        }
       ]
     }
   ],

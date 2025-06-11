@@ -614,7 +614,8 @@
     "rollDialogTitleInitiative": "Lancer l'Initiative",
     "rollDialogTitleGrappleCheck": "Lancer un Test de Lutte",
     "rollDialogInitiativeAriaLabel": "Lancer l'Initiative",
-    "rollDialogGrappleCheckAriaLabel": "Lancer un Test de Lutte"
+    "rollDialogGrappleCheckAriaLabel": "Lancer un Test de Lutte",
+    "barbarianRageUsesLabel": "Utilisations de Rage par Jour"
   }
 }
     

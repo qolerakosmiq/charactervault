@@ -387,6 +387,14 @@ const CharacterFormCoreInfoSectionComponent = ({
             {selectedClassInfo?.hitDice && (
               <div className="flex items-baseline gap-1 pt-[6px] ml-1"> <Badge variant="secondary" className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground whitespace-nowrap"> {UI_STRINGS.hitDiceLabel || "Hit Dice"}:{'\u00A0'} <strong className="font-bold">{selectedClassInfo.hitDice}</strong> </Badge> </div>
             )}
+            {isBarbarian && rageUsesPerDay > 0 && (
+              <div className="flex items-baseline gap-1 pt-[6px] ml-1">
+                <Badge variant="destructive" className="text-xs font-normal whitespace-nowrap">
+                    <BarbarianRageIcon className="inline h-3 w-3 mr-1" />
+                    {(UI_STRINGS.barbarianRageUsesLabel || "Rage Uses Per Day")}: <strong className="font-bold ml-1">{rageUsesPerDay}</strong>
+                </Badge>
+              </div>
+            )}
           </div>
         </div>
 
@@ -639,3 +647,4 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
+
