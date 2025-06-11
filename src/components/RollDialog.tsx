@@ -18,6 +18,7 @@ import { Separator } from '@/components/ui/separator';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
 import { cn } from '@/lib/utils';
 import { parseAndRollDice } from '@/lib/dnd-utils';
+import { Badge } from '@/components/ui/badge'; // Added import
 
 export interface RollDialogProps {
   isOpen: boolean;
@@ -83,11 +84,12 @@ export function RollDialog({
 
         if (isCheckRoll && rerollTwentiesForChecks && firstRoll === 20) {
           let latestBonusRoll = 20;
-          while (latestBonusRoll === 20) {
+          let safetyBreak = 0; // To prevent infinite loops in extreme cases
+          while (latestBonusRoll === 20 && safetyBreak < 10) { // Max 10 bonus rolls
             latestBonusRoll = Math.floor(Math.random() * 20) + 1;
             currentBonusRolls.push(latestBonusRoll);
             currentTotalDiceValue += latestBonusRoll;
-            if (currentBonusRolls.length > 10) break; 
+            safetyBreak++;
           }
         }
         setBonusRolls(currentBonusRolls);
@@ -123,20 +125,20 @@ export function RollDialog({
   const actualWeaponDicePart = weaponDamageDice?.match(/^(\d*d\d+)/)?.[0] || weaponDamageDice;
 
   const isCritFailure = !isDamageRoll && initialD20Roll === 1;
-  const isVisualCritSuccess = !isDamageRoll && initialD20Roll === 20;
+  const isInitialRollNat20 = !isDamageRoll && initialD20Roll === 20;
 
 
   const resultCardBackground = cn(
     "p-3 border rounded-md space-y-1",
     isCritFailure ? "bg-destructive/20 border-destructive/50" :
-    isVisualCritSuccess ? "bg-emerald-600/20 border-emerald-600/50" :
+    isInitialRollNat20 ? "bg-emerald-600/20 border-emerald-600/50" :
     "bg-card border-border"
   );
 
   const diceResultColor = cn(
     "font-bold text-lg",
     isCritFailure ? "text-destructive" :
-    isVisualCritSuccess ? "text-emerald-500" :
+    isInitialRollNat20 ? "text-emerald-500" :
     "text-primary"
   );
 
@@ -197,9 +199,9 @@ export function RollDialog({
                     </span>
                     <span className="font-bold text-lg text-primary">{totalDiceValue}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">{UI_STRINGS.rollDialogDamageOtherBonusesLabel}</span>
-                    <span className="font-bold text-sm text-primary">{renderModifierValue(baseModifier)}</span>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground">{UI_STRINGS.rollDialogDamageOtherBonusesLabel}</span>
+                    <span className="font-bold text-primary">{renderModifierValue(baseModifier)}</span>
                   </div>
                   <Separator className="my-1 bg-border/50"/>
                   <div className="flex justify-between items-center">
@@ -211,19 +213,22 @@ export function RollDialog({
                 <>
                   {initialD20Roll !== null && (
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">{UI_STRINGS.rollDialogDiceRollLabel}</span>
+                      <div className="flex items-center">
+                        <span className="text-sm text-muted-foreground">{UI_STRINGS.rollDialogDiceRollLabel}</span>
+                        <Badge variant="outline" className="text-sm font-normal ml-1.5 px-1.5 py-0.5">1d20</Badge>
+                      </div>
                       <span className={diceResultColor}>{initialD20Roll}</span>
                     </div>
                   )}
                   {bonusRolls.length > 0 && (
                      <div className="flex justify-between items-center">
-                      <span className="text-sm">{UI_STRINGS.rollDialogBonusDiceRollLabel}</span>
+                      <span className="text-sm text-muted-foreground">{UI_STRINGS.rollDialogBonusDiceRollLabel}</span>
                       <span className="font-bold text-lg text-primary">{bonusRolls.join(', ')}</span>
                     </div>
                   )}
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">{UI_STRINGS.rollDialogTotalBonusLabel}</span>
-                    <span className="font-bold text-sm text-primary">{renderModifierValue(baseModifier)}</span>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground">{UI_STRINGS.rollDialogTotalBonusLabel}</span>
+                    <span className="font-bold text-primary">{renderModifierValue(baseModifier)}</span>
                   </div>
                   <Separator className="my-1 bg-border/50"/>
                   <div className="flex justify-between items-center">
