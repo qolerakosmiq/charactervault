@@ -26,7 +26,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollText, Info, Loader2, Users, Activity, BookOpen, Wand2, Heart } from 'lucide-react'; // Added Heart
+import { ScrollText, Info, Loader2, Users, Activity, BookOpen, Wand2, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -385,14 +385,14 @@ const CharacterFormCoreInfoSectionComponent = ({
             </div>
             <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-[6px] ml-1">
               {selectedClassInfo?.hitDice && (
-                <Badge variant="secondary" className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground whitespace-nowrap">
-                  <Heart className="inline h-3 w-3 mr-1.5 text-primary/70" />
+                <Badge variant="secondary" className="text-xs font-normal whitespace-nowrap">
+                  <Heart fill="currentColor" className="inline h-3 w-3 mr-1.5 text-primary/70" />
                   {UI_STRINGS.hitDiceLabel || "Hit Dice"}:{'\u00A0'}
                   <strong className="font-bold">{selectedClassInfo.hitDice}</strong>
                 </Badge>
               )}
               {isBarbarian && rageUsesPerDay > 0 && (
-                  <Badge className="text-xs font-normal whitespace-nowrap bg-accent text-accent-foreground hover:bg-accent/90">
+                  <Badge className="text-xs font-normal whitespace-nowrap bg-accent text-accent-foreground">
                     <Activity className="inline h-3 w-3 mr-1" />
                     {(UI_STRINGS.barbarianRageUsesLabel || "Rage Uses Per Day")}: <strong className="font-bold ml-1">{rageUsesPerDay}</strong>
                   </Badge>
