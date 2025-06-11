@@ -17,6 +17,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Separator } from '@/components/ui/separator';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils'; // Assuming this utility is suitable
 import { cn } from '@/lib/utils';
+import { parseAndRollDice } from '@/lib/dnd-utils';
 
 export interface RollDialogProps {
   isOpen: boolean;
@@ -25,8 +26,8 @@ export interface RollDialogProps {
   rollType: string; // e.g., "ability_check_strength", "saving_throw_fortitude", "skill_bluff", "damage_roll_melee_longsword"
   baseModifier: number; // Numerical bonus for attack/save/skill, or damage bonus for damage rolls
   calculationBreakdown: GenericBreakdownItem[];
-  weaponDamageDice?: string; // e.g., "1d8", "2d6" - only for damage rolls
-  onRoll: (diceResult: number, totalBonus: number, finalResult: number, weaponDamageDice?: string) => void; // Added weaponDamageDice
+  weaponDamageDice?: string; // e.g., "1d8", "2d6", "1d4+1" - only for damage rolls
+  onRoll: (diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString?: string) => void;
 }
 
 export function RollDialog({
@@ -36,11 +37,11 @@ export function RollDialog({
   rollType,
   baseModifier,
   calculationBreakdown,
-  weaponDamageDice, // Destructure new prop
+  weaponDamageDice,
   onRoll,
 }: RollDialogProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
-  const [diceResult, setDiceResult] = React.useState<number | null>(null);
+  const [diceResult, setDiceResult] = React.useState<number | null>(null); // For d20 or sum of weapon dice
   const [finalResult, setFinalResult] = React.useState<number | null>(null);
   const [isRolling, setIsRolling] = React.useState(false);
 
@@ -55,17 +56,13 @@ export function RollDialog({
 
   const handleRollOrConfirm = () => {
     setIsRolling(true);
-    // Simulate a brief roll/confirmation
     setTimeout(() => {
-      if (isDamageRoll) {
-        // For damage, we don't roll d20. The 'finalResult' is conceptual (dice + bonus).
-        // The actual dice roll would be done by the player.
-        // We can pass the baseModifier (numerical bonus) and the weaponDamageDice to the onRoll callback.
-        // The `diceResult` could represent the dice string itself or be null.
-        // For simplicity, let's pass 0 for diceResult in this case, as it's not a d20 roll.
-        onRoll(0, baseModifier, baseModifier, weaponDamageDice); // diceResult is 0, finalResult is just the bonus
-        setDiceResult(null); // Or could set to weaponDamageDice string for display
-        setFinalResult(baseModifier); // Displaying the bonus part
+      if (isDamageRoll && weaponDamageDice) {
+        const weaponDiceRollResult = parseAndRollDice(weaponDamageDice);
+        const totalDamage = weaponDiceRollResult + baseModifier; // baseModifier is the sum of other bonuses
+        setDiceResult(weaponDiceRollResult); // Store the result of parsing/rolling the weaponDamageDice string
+        setFinalResult(totalDamage);
+        onRoll(weaponDiceRollResult, baseModifier, totalDamage, weaponDamageDice);
       } else {
         const d20Roll = Math.floor(Math.random() * 20) + 1;
         const total = d20Roll + baseModifier;
@@ -74,7 +71,7 @@ export function RollDialog({
         onRoll(d20Roll, baseModifier, total);
       }
       setIsRolling(false);
-    }, 300); 
+    }, 300);
   };
 
   if (translationsLoading || !translations) {
@@ -82,8 +79,8 @@ export function RollDialog({
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center font-serif">
-              <Dices className="mr-2 h-5 w-5 text-primary" />
+            <DialogTitle className="font-serif flex items-center">
+              <Loader2 className="mr-2 h-5 w-5 animate-spin text-primary" />
               {translations?.UI_STRINGS.loadingText || "Loading..."}
             </DialogTitle>
           </DialogHeader>
@@ -98,6 +95,7 @@ export function RollDialog({
   const UI_STRINGS = translations.UI_STRINGS;
   const buttonText = isDamageRoll ? (UI_STRINGS.rollDialogConfirmDamageButton || "Confirm Damage") : (UI_STRINGS.rollDialogRollButton || "Roll 1d20");
 
+  const actualWeaponDicePart = weaponDamageDice?.match(/^(\d*d\d+)/)?.[0] || weaponDamageDice;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -136,35 +134,39 @@ export function RollDialog({
             </div>
           )}
 
-          {diceResult !== null && !isDamageRoll && (
+          {diceResult !== null && (
             <div className="mt-3 p-3 border rounded-md bg-accent/10 text-center space-y-1">
-              <p className="text-sm">
-                {UI_STRINGS.rollDialogDiceRollLabel || "Dice Roll (1d20):"} <span className="font-bold text-lg text-primary">{diceResult}</span>
-              </p>
-              <p className="text-sm">
-                {UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus:"} <span className="font-bold text-lg text-primary">{renderModifierValue(baseModifier)}</span>
-              </p>
-              <Separator className="my-1 bg-accent/30"/>
-              <p className="text-lg font-semibold">
-                {UI_STRINGS.rollDialogFinalResultLabel || "Final Result:"} <span className="font-bold text-2xl text-primary">{finalResult}</span>
-              </p>
+              {isDamageRoll ? (
+                <>
+                  <p className="text-sm">
+                    {(UI_STRINGS.rollDialogDamageWeaponDiceRolledLabel || "Weapon Dice ({diceString}): Rolled {diceSum}")
+                        .replace("{diceString}", actualWeaponDicePart || 'N/A')
+                        .replace("{diceSum}", String(diceResult))
+                    }
+                  </p>
+                  <p className="text-sm">
+                    {(UI_STRINGS.rollDialogDamageOtherBonusesLabel || "Other Bonuses:")} <span className="font-bold text-lg text-primary">{renderModifierValue(baseModifier)}</span>
+                  </p>
+                  <Separator className="my-1 bg-accent/30"/>
+                  <p className="text-lg font-semibold">
+                    {UI_STRINGS.rollDialogFinalDamageStringLabel || "Total Damage:"} <span className="font-bold text-2xl text-primary">{finalResult}</span>
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm">
+                    {UI_STRINGS.rollDialogDiceRollLabel || "Dice Roll (1d20):"} <span className="font-bold text-lg text-primary">{diceResult}</span>
+                  </p>
+                  <p className="text-sm">
+                    {UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus:"} <span className="font-bold text-lg text-primary">{renderModifierValue(baseModifier)}</span>
+                  </p>
+                  <Separator className="my-1 bg-accent/30"/>
+                  <p className="text-lg font-semibold">
+                    {UI_STRINGS.rollDialogFinalResultLabel || "Final Result:"} <span className="font-bold text-2xl text-primary">{finalResult}</span>
+                  </p>
+                </>
+              )}
             </div>
-          )}
-          {isDamageRoll && finalResult !== null && (
-             <div className="mt-3 p-3 border rounded-md bg-accent/10 text-center space-y-1">
-               {weaponDamageDice && (
-                <p className="text-sm">
-                  {UI_STRINGS.attacksPanelBaseWeaponDamageLabel || "Base Weapon Damage:"} <span className="font-bold text-lg text-primary">{weaponDamageDice}</span>
-                </p>
-               )}
-                <p className="text-sm">
-                  {UI_STRINGS.rollDialogTotalNumericBonusLabel || "Total Numeric Bonus:"} <span className="font-bold text-lg text-primary">{renderModifierValue(baseModifier)}</span>
-                </p>
-                <Separator className="my-1 bg-accent/30"/>
-                <p className="text-lg font-semibold">
-                  {UI_STRINGS.rollDialogFinalDamageStringLabel || "Total Damage:"} <span className="font-bold text-2xl text-primary">{weaponDamageDice}{baseModifier !== 0 ? (baseModifier > 0 ? `+${baseModifier}`: `${baseModifier}`) : ''}</span>
-                </p>
-             </div>
           )}
         </div>
 
@@ -182,4 +184,3 @@ export function RollDialog({
     </Dialog>
   );
 }
-

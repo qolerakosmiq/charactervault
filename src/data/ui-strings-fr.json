@@ -586,7 +586,9 @@
     "rollDialogSkillCheckAriaLabel": "Lancer un test de {skillName}",
     "rollDialogResultTitle": "Résultat du lancer",
     "rollDialogResultDescription": "Lancé {diceResult} + {totalBonus} = {finalResult}",
-    "rollDialogResultDamageFormat": "Base : {weaponDamageDice}, Bonus : {totalBonus}, Total : {finalResult}",
+    "rollDialogResultDamageFormat": "Dégâts ({weaponName}) : Lancé {diceSum} (de {diceString}) + {otherBonus} = {totalDamage}",
+    "rollDialogDamageWeaponDiceRolledLabel": "Dés d'Arme ({diceString}): Roulé {diceSum}",
+    "rollDialogDamageOtherBonusesLabel": "Autres Bonus :",
     "rollDialogSkillRanksLabel": "Rangs",
     "rollDialogSkillKeyAbilityLabel": "Caractéristique Clé ({abilityAbbr})",
     "rollDialogSkillSynergyBonusLabel": "Bonus de Synergie",
@@ -613,6 +615,7 @@
     
     
     
+
 
 
 

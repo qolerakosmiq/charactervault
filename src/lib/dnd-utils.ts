@@ -232,3 +232,43 @@ export function calculateLevelFromXp(xp: number, xpTable: readonly XpDataEntry[]
   return 1;
 }
 
+/**
+ * Parses a dice string (e.g., "1d8", "2d6+2", "1d4-1") and rolls the dice.
+ * @param diceString The dice string to parse.
+ * @returns The sum of the dice rolls plus any static modifier.
+ */
+export function parseAndRollDice(diceString: string): number {
+  if (!diceString || typeof diceString !== 'string') {
+    return 0;
+  }
+
+  const cleanedString = diceString.toLowerCase().trim();
+  const match = cleanedString.match(/^(\d*)d(\d+)\s*([+-]\s*\d+)?$/);
+
+  if (!match) {
+    // Check if it's just a static number
+    const staticNumber = parseInt(cleanedString, 10);
+    if (!isNaN(staticNumber)) {
+      return staticNumber;
+    }
+    console.warn(`Invalid dice string format: ${diceString}`);
+    return 0; // Or throw an error
+  }
+
+  const numDice = match[1] ? parseInt(match[1], 10) : 1;
+  const numSides = parseInt(match[2], 10);
+  const modifierString = match[3] ? match[3].replace(/\s/g, '') : '';
+  const staticModifier = modifierString ? parseInt(modifierString, 10) : 0;
+
+  if (numDice <= 0 || numSides <= 0) {
+    console.warn(`Invalid dice numbers or sides in: ${diceString}`);
+    return staticModifier; // Return modifier if dice part is invalid
+  }
+
+  let totalRoll = 0;
+  for (let i = 0; i < numDice; i++) {
+    totalRoll += Math.floor(Math.random() * numSides) + 1;
+  }
+
+  return totalRoll + staticModifier;
+}

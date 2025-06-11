@@ -586,7 +586,9 @@
     "rollDialogSkillCheckAriaLabel": "Roll {skillName} Check",
     "rollDialogResultTitle": "Roll Result",
     "rollDialogResultDescription": "Rolled {diceResult} + {totalBonus} = {finalResult}",
-    "rollDialogResultDamageFormat": "Base: {weaponDamageDice}, Bonus: {totalBonus}, Total: {finalResult}",
+    "rollDialogResultDamageFormat": "Damage ({weaponName}): Rolled {diceSum} (from {diceString}) + {otherBonus} = {totalDamage}",
+    "rollDialogDamageWeaponDiceRolledLabel": "Weapon Dice ({diceString}): Rolled {diceSum}",
+    "rollDialogDamageOtherBonusesLabel": "Other Bonuses:",
     "rollDialogSkillRanksLabel": "Ranks",
     "rollDialogSkillKeyAbilityLabel": "Key Ability ({abilityAbbr})",
     "rollDialogSkillSynergyBonusLabel": "Synergy Bonus",
@@ -613,6 +615,7 @@
     
     
     
+
 
 
 
