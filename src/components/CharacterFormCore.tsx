@@ -696,7 +696,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   
   const handleOpenRollDialog = React.useCallback((data: Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'>) => {
     setRollDialogProps(data);
-    setIsRollAbilityDialogOpen(true);
+    setIsRollDialogOpen(true);
   }, []);
 
   const handleRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString?: string) => {
@@ -724,7 +724,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       baseModifier: finalModifier,
       calculationBreakdown: breakdown,
     });
-    setIsRollDialogOpen(true); // Renamed from setIsRollAbilityDialogOpen to generic isRollDialogOpen
+    setIsRollDialogOpen(true); 
   }, [detailedAbilityScores, translations]);
 
   const handleOpenAbilityScoreBreakdownDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => { openInfoDialog({ type: 'abilityScoreBreakdown', abilityName: ability }); }, [openInfoDialog]);
@@ -1188,4 +1188,3 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
 
-    
