@@ -28,7 +28,7 @@ import type {
   SpeedComponent,
   CharacterSizeObject,
   DndRaceOption, DndClassOption, AbilityScores, AggregatedFeatEffects, DetailedAbilityScores,
-  CharacterAlignmentObject, DndDeityOption, ClassAttribute, AggregatedFeatEffectBase, SkillEffectDetail // Added AggregatedFeatEffectBase and SkillEffectDetail
+  CharacterAlignmentObject, DndDeityOption, ClassAttribute, AggregatedFeatEffectBase, SkillEffectDetail
 } from '@/types/character';
 
 import {
@@ -350,17 +350,16 @@ export function InfoDisplayDialog({
           const keyAbilityMod = skillDef.keyAbility && skillDef.keyAbility !== 'none' ? getAbilityModifierByName(finalAbilityScores, skillDef.keyAbility) : 0;
           const synergyBonus = calculateTotalSynergyBonus(skillDef.id, character.skills, SKILL_DEFINITIONS, SKILL_SYNERGIES_DATA, customSkillDefinitions);
 
-          // Use aggregatedFeatEffects.skillBonuses for the summed active numerical feat bonuses
           const featBonus = aggregatedFeatEffectsProp.skillBonuses[skillDef.id] || 0;
           const racialBonus = calculateRacialSkillBonus(skillDef.id, character.race, DND_RACES);
           const sizeBonus = calculateSizeSpecificSkillBonus(skillDef.id, character.size, SIZES);
-          const calculatedMiscModifier = synergyBonus + racialBonus + sizeBonus; // Feat bonus handled separately now
+          const calculatedMiscModifier = synergyBonus + racialBonus + sizeBonus;
           const totalSkillBonus = (skillInstance.ranks || 0) + keyAbilityMod + calculatedMiscModifier + (skillInstance.miscModifier || 0) + featBonus;
           const keyAbilityLabel = skillDef.keyAbility && skillDef.keyAbility !== 'none' ? ABILITY_LABELS.find(al => al.value === skillDef.keyAbility)?.abbr : undefined;
 
           const currentSkillId = contentType.skillId;
           const synergyItems: SynergyInfoItem[] = [];
-          const badgeClass = "text-sm font-normal h-5 mx-0.5 px-1.5 py-0.5 align-baseline whitespace-nowrap";
+          const badgeClass = ""; 
 
           allCombinedSkillDefinitionsForDisplay.forEach(providingSkillDef => {
               const providingSkillName = <strong>{providingSkillDef.name}</strong>;
@@ -580,9 +579,8 @@ export function InfoDisplayDialog({
             }
         });
 
-        let sumOfOtherFeatBonuses = 0;
-        const otherFeatBonusSources: Array<{name: string, condition?: string, isActive?: boolean}> = [];
-        const mainBonusTypesHandled = ["armor", "shield", "natural", "deflection", "dodge"];
+        let sumOfOtherFeatBonuses = 0; // This will store the sum of *active* "other" feat bonuses
+        const otherFeatBonusSources: Array<{name: string; value: number; condition?: string; isActive?: boolean}> = [];
 
         if (aggregatedFeatEffectsProp?.acBonuses) {
             aggregatedFeatEffectsProp.acBonuses.forEach(featEffect => {
@@ -594,6 +592,7 @@ export function InfoDisplayDialog({
                     if (contentType.acType === 'Flat-Footed' && featEffect.appliesToScope.includes('flatFooted')) appliesToThisSpecificAcBreakdownView = true;
                 }
 
+                const mainBonusTypesHandled = ["armor", "shield", "natural", "deflection", "dodge"];
                 if (appliesToThisSpecificAcBreakdownView && !mainBonusTypesHandled.includes(featEffect.acType)) {
                     let bonusVal = 0;
                     if (typeof featEffect.value === 'number') {
@@ -604,39 +603,29 @@ export function InfoDisplayDialog({
                     } else if (featEffect.acType === "monkScaling" && typeof featEffect.value === 'number') {
                         bonusVal = featEffect.value;
                     }
-
-                    if (featEffect.isActive && bonusVal !== 0) { // Only add if active
-                        sumOfOtherFeatBonuses += bonusVal;
-                    }
-                     // Always add to sources for display, but note its active state
+                    
                     let sourceName = featEffect.sourceFeat || UI_STRINGS.infoDialogUnknownFeatSource || "Unknown Feat";
-                    if (featEffect.acType === "monk_wisdom") {
-                        sourceName = UI_STRINGS.abilityScoreSourceMonkWisdom || "Monk Wisdom";
-                    } else if (featEffect.acType === "monkScaling") {
-                        sourceName = (UI_STRINGS.acBreakdownMonkScalingLabel || "Monk AC Bonus");
+                    if (featEffect.acType === "monk_wisdom") sourceName = UI_STRINGS.abilityScoreSourceMonkWisdom || "Monk Wisdom";
+                    else if (featEffect.acType === "monkScaling") sourceName = (UI_STRINGS.acBreakdownMonkScalingLabel || "Monk AC Bonus");
+
+                    if (bonusVal !==0) { // Only add if there's a value
+                        otherFeatBonusSources.push({ name: sourceName, value: bonusVal, condition: featEffect.condition, isActive: featEffect.isActive });
+                        if(featEffect.isActive) {
+                            sumOfOtherFeatBonuses += bonusVal;
+                        }
                     }
-                    otherFeatBonusSources.push({ name: sourceName, condition: featEffect.condition, isActive: featEffect.isActive });
                 }
             });
         }
-
-        if (sumOfOtherFeatBonuses !== 0 || otherFeatBonusSources.some(s => s.isActive)) { // Only add main line if some active bonus
-          details.push({
-            mainLabel: UI_STRINGS.acBreakdownMiscFeatModifierLabel || "Misc Modifier (Feats)",
-            value: sumOfOtherFeatBonuses, // Sum of active bonuses
-            // Suffix details will now be handled by iterating otherFeatBonusSources in the component
-            type: 'acFeatBonus'
-          });
-        }
-         // Add individual sources for breakdown display, even if not active
+        
         otherFeatBonusSources.forEach(s => {
-            if(typeof aggregatedFeatEffectsProp.acBonuses.find(eff => eff.sourceFeat === s.name && eff.condition === s.condition)?.value === 'number'){
+            if (s.isActive && s.value !==0) { // Only push active, non-zero individual feat bonuses
                  details.push({
                     mainLabel: s.name,
-                    value: aggregatedFeatEffectsProp.acBonuses.find(eff => eff.sourceFeat === s.name && eff.condition === s.condition)?.value as number,
+                    value: s.value,
                     condition: s.condition,
                     isActive: s.isActive,
-                    isSubItem: true, // To indent or style differently
+                    isSubItem: true,
                  });
             }
         });
@@ -682,7 +671,7 @@ export function InfoDisplayDialog({
             }
         });
 
-        totalACValueForDialog += sumOfOtherFeatBonuses; // sumOfOtherFeatBonuses already contains only active effects
+        totalACValueForDialog += sumOfOtherFeatBonuses;
         totalACValueForDialog += (character.acMiscModifier || 0);
 
         const titleTemplate = UI_STRINGS.infoDialogTitleAcBreakdown || "{acType} Armor Class Breakdown";
@@ -850,9 +839,9 @@ export function InfoDisplayDialog({
                 sourceFeat: effect.sourceFeat || UI_STRINGS.infoDialogUnknownFeatSource || 'Unknown Feat',
                 value: numericValueFromEffect,
                 condition: effect.condition,
-                isActive: effect.isActive, // Pass isActive state
+                isActive: effect.isActive,
               });
-              if(effect.isActive) { // Only add to total if active
+              if(effect.isActive) {
                 featBonusTotal += numericValueFromEffect;
               }
             }
@@ -914,7 +903,7 @@ export function InfoDisplayDialog({
         <DialogContent className="sm:max-w-md md:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center font-serif text-left">
-              <Loader2 className="mr-2 h-6 w-6 animate-spin text-primary" />
+              <Loader2 className="mr-2 h-5 w-5 animate-spin text-primary" />
               {translations?.UI_STRINGS.infoDialogLoadingTitle || "Loading Information..."}
             </DialogTitle>
           </DialogHeader>
