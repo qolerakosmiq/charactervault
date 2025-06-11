@@ -1,12 +1,12 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
+  // DialogDescription, // Removed as per previous request
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -31,21 +31,6 @@ export interface RollDialogProps {
   onRoll: (diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString?: string) => void;
   rerollTwentiesForChecks?: boolean;
 }
-
-const getRollDialogSubtitle = (rollType: string, UI_STRINGS: Record<string, string>): string => {
-  if (!UI_STRINGS) return rollType; // Fallback
-  if (rollType.startsWith('ability_check_')) return UI_STRINGS.rollDialogSubtitleAbilityCheck || "Ability Check";
-  if (rollType.startsWith('skill_check_')) return UI_STRINGS.rollDialogSubtitleSkillCheck || "Skill Check";
-  if (rollType.startsWith('saving_throw_')) return UI_STRINGS.rollDialogSubtitleSavingThrow || "Saving Throw";
-  if (rollType === 'initiative_check') return UI_STRINGS.rollDialogSubtitleInitiativeCheck || "Initiative Roll";
-  if (rollType.startsWith('melee_attack_')) return UI_STRINGS.rollDialogSubtitleMeleeAttack || "Melee Attack";
-  if (rollType.startsWith('ranged_attack_')) return UI_STRINGS.rollDialogSubtitleRangedAttack || "Ranged Attack";
-  if (rollType.startsWith('damage_roll_melee_')) return UI_STRINGS.rollDialogSubtitleMeleeDamage || "Melee Damage";
-  if (rollType.startsWith('damage_roll_ranged_')) return UI_STRINGS.rollDialogSubtitleRangedDamage || "Ranged Damage";
-  if (rollType === 'grapple_check') return UI_STRINGS.rollDialogSubtitleGrappleCheck || "Grapple Check";
-  return rollType; // Fallback if no specific match
-};
-
 
 export function RollDialog({
   isOpen,
@@ -170,8 +155,13 @@ export function RollDialog({
         <div className="space-y-3 py-3 max-h-[60vh] overflow-y-auto pr-2">
           {calculationBreakdown.length > 0 && (
             <div className="space-y-1">
-              <h4 className={cn(sectionHeadingClass, "mb-1")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle}</h4>
+              <h4 className={cn(sectionHeadingClass, "mb-1")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle || "Calculation Breakdown"}</h4>
                 {calculationBreakdown.map((item, index) => {
+                  // Skip the "Total" row as "Total Bonus" serves this purpose
+                  if (item.label === (UI_STRINGS.infoDialogTotalLabel || "Total") && item.isBold) {
+                    return null;
+                  }
+
                   let abilityAbbr: string | undefined;
                   let labelText = item.label;
 
@@ -185,7 +175,7 @@ export function RollDialog({
                            abilityKey = SAVING_THROW_ABILITIES[saveType];
                         } else if (rollType.startsWith('skill_check_')) {
                             const skillIdParts = rollType.split('_');
-                            const skillId = skillIdParts.slice(2).join('_'); // Handles skill IDs with underscores
+                            const skillId = skillIdParts.slice(2).join('_'); 
                             const skillDef = translations.SKILL_DEFINITIONS.find(sd => sd.value === skillId);
                             if (skillDef) abilityKey = skillDef.keyAbility;
                         } else if (dialogTitle.includes('(') && dialogTitle.includes(')')) { 
@@ -223,7 +213,7 @@ export function RollDialog({
                 <Separator className="my-2" />
                 <div className="flex justify-between text-lg">
                   <span className="font-semibold">
-                    {isDamageRoll ? (UI_STRINGS.rollDialogTotalNumericBonusLabel) : (UI_STRINGS.rollDialogTotalBonusLabel)}
+                    {isDamageRoll ? (UI_STRINGS.rollDialogTotalNumericBonusLabel || "Total Numeric Bonus") : (UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus")}
                   </span>
                   <span className="font-bold text-accent">
                     {renderModifierValue(baseModifier)}
@@ -245,12 +235,12 @@ export function RollDialog({
                     <span className="font-bold text-lg text-primary">{totalDiceValue}</span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-muted-foreground">{UI_STRINGS.rollDialogDamageOtherBonusesLabel}</span>
+                    <span className="text-muted-foreground">{UI_STRINGS.rollDialogDamageOtherBonusesLabel || "Other Bonuses"}</span>
                     <span className="font-bold text-primary">{renderModifierValue(baseModifier)}</span>
                   </div>
                   <Separator className="my-1 bg-border/50"/>
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalDamageStringLabel}</span>
+                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalDamageStringLabel || "Total Damage"}</span>
                     <span className="font-bold text-lg text-primary">{finalResult}</span>
                   </div>
                 </>
@@ -259,7 +249,7 @@ export function RollDialog({
                   {initialD20Roll !== null && (
                     <div className="flex justify-between items-center">
                       <div className="flex items-center">
-                        <span className="text-sm text-muted-foreground">{UI_STRINGS.rollDialogDiceRollLabel}</span>
+                        <span className="text-sm text-muted-foreground">{UI_STRINGS.rollDialogDiceRollLabel || "Dice Roll"}</span>
                         <Badge variant="outline" className="text-sm font-normal ml-1.5 px-1.5 py-0.5">1d20</Badge>
                       </div>
                       <span className={diceResultColor}>{initialD20Roll}</span>
@@ -267,17 +257,17 @@ export function RollDialog({
                   )}
                   {bonusRolls.length > 0 && (
                      <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">{UI_STRINGS.rollDialogBonusDiceRollLabel}</span>
+                      <span className="text-sm text-muted-foreground">{UI_STRINGS.rollDialogBonusDiceRollLabel || "Bonus Dice Roll"}</span>
                       <span className="font-bold text-lg text-primary">{bonusRolls.join(', ')}</span>
                     </div>
                   )}
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-muted-foreground">{UI_STRINGS.rollDialogTotalBonusLabel}</span>
+                    <span className="text-muted-foreground">{UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus"}</span>
                     <span className="font-bold text-primary">{renderModifierValue(baseModifier)}</span>
                   </div>
                   <Separator className="my-1 bg-border/50"/>
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalResultLabel}</span>
+                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalResultLabel || "Final Result"}</span>
                     {isCritFailure ? (
                       <span className="font-bold text-lg text-destructive">{UI_STRINGS.rollDialogCritFailureLabel || "Critical Failure!"}</span>
                     ) : (
@@ -304,19 +294,3 @@ export function RollDialog({
     </Dialog>
   );
 }
-
-// Helper to get the subtitle - no longer needed if DialogDescription is removed
-// const getRollDialogSubtitle = (rollType: string, UI_STRINGS: Record<string, string>): string => {
-//   if (!UI_STRINGS) return rollType;
-//   if (rollType.startsWith('ability_check_')) return UI_STRINGS.rollDialogSubtitleAbilityCheck || "Ability Check";
-//   if (rollType.startsWith('skill_check_')) return UI_STRINGS.rollDialogSubtitleSkillCheck || "Skill Check";
-//   if (rollType.startsWith('saving_throw_')) return UI_STRINGS.rollDialogSubtitleSavingThrow || "Saving Throw";
-//   if (rollType === 'initiative_check') return UI_STRINGS.rollDialogSubtitleInitiativeCheck || "Initiative Roll";
-//   if (rollType.startsWith('melee_attack_')) return UI_STRINGS.rollDialogSubtitleMeleeAttack || "Melee Attack";
-//   if (rollType.startsWith('ranged_attack_')) return UI_STRINGS.rollDialogSubtitleRangedAttack || "Ranged Attack";
-//   if (rollType.startsWith('damage_roll_melee_')) return UI_STRINGS.rollDialogSubtitleMeleeDamage || "Melee Damage";
-//   if (rollType.startsWith('damage_roll_ranged_')) return UI_STRINGS.rollDialogSubtitleRangedDamage || "Ranged Damage";
-//   if (rollType === 'grapple_check') return UI_STRINGS.rollDialogSubtitleGrappleCheck || "Grapple Check";
-//   return rollType;
-// };
-
