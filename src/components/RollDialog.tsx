@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  // DialogDescription, // Removed as per previous request
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -107,7 +106,7 @@ export function RollDialog({
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-serif flex items-center">
+            <DialogTitle className="font-serif flex items-center text-left">
               <Loader2 className="mr-2 h-5 w-5 animate-spin text-primary" />
               {translations?.UI_STRINGS.loadingText || "Loading..."}
             </DialogTitle>
@@ -294,3 +293,4 @@ export function RollDialog({
     </Dialog>
   );
 }
+
