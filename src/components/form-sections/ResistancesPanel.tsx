@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Loader2 } from 'lucide-react';
@@ -337,14 +337,14 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                         value={newDrValue}
                         onChange={setNewDrValue}
                         min={1}
-                        inputClassName="h-9 text-sm text-center"
+                        inputClassName="h-9 text-sm w-full text-center" // Make input take full width
                         buttonClassName="h-9 w-9"
                         buttonSize="sm"
-                        className="justify-center"
+                        className="w-full" // Make spinner component take full width
                         />
                     </div>
                     <div className="space-y-1">
-                          <Label htmlFor="form-dr-rule" className="text-sm inline-block w-full text-center">{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
+                          <Label htmlFor="form-dr-rule" className="text-sm inline-block w-full text-left">{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
                           <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
                               <SelectTrigger id="form-dr-rule" className="h-9 text-sm">
                                 <SelectValue />
@@ -359,7 +359,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                           </Select>
                       </div>
                     <div className="space-y-1">
-                        <Label htmlFor="form-dr-type" className="text-sm inline-block w-full text-center">{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
+                        <Label htmlFor="form-dr-type" className="text-sm inline-block w-full text-left">{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
                         <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
                             <SelectTrigger id="form-dr-type" className="h-9 text-sm">
                               <SelectValue placeholder="Select type..." />
