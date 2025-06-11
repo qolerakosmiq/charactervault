@@ -80,8 +80,8 @@ export const ClassContentDisplay = ({
     outputBlocks.push(
       <div key="class-details-list-section">
         <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogClassSpecificsListHeading || "Class Specifics"}</h3>
-        <div className="mt-0" key="details-list-content"> {/* Ensure no extra top margin */}
-          <div className="space-y-0.5 text-sm mb-0"> {/* Ensure no extra bottom margin */}
+        <div className="mt-0" key="details-list-content"> 
+          <div className="space-y-0.5 text-sm mb-0"> 
             {detailsList.map((detail, index) => (
               <div key={index} className="flex justify-between">
                 <span className="text-sm text-foreground">{detail.label}</span>
@@ -98,7 +98,7 @@ export const ClassContentDisplay = ({
     outputBlocks.push(
       <div key="class-granted-feats-section">
         <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h3>
-        <ul className="list-none space-y-0.5 text-sm mt-0" key="granted-feats-list"> {/* Ensure no extra top margin */}
+        <ul className="list-none space-y-0.5 text-sm mt-0 mb-0" key="granted-feats-list"> 
           {grantedFeats.map(feat => {
             const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
             return (
@@ -153,7 +153,7 @@ export const ClassContentDisplay = ({
     );
   }
   
-  return outputBlocks.length > 0 ? <div className="space-y-0">{outputBlocks.map((block, index, arr) => (
+  return outputBlocks.length > 0 ? <div>{outputBlocks.map((block, index, arr) => (
         <React.Fragment key={`class-display-root-block-${index}`}>
           {block}
           {index < arr.length - 1 && <Separator className="mt-3 mb-2" />}

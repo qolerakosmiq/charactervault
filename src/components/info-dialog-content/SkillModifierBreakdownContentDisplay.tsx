@@ -188,7 +188,7 @@ export const SkillModifierBreakdownContentDisplay = ({
   }
 
   return (
-    <>
+    <div>
       {contentBlocksToRender.map((block, index, arr) => (
         <React.Fragment key={`content-block-${index}`}>
           {block}
@@ -197,6 +197,6 @@ export const SkillModifierBreakdownContentDisplay = ({
           )}
         </React.Fragment>
       ))}
-    </>
+    </div>
   );
 };
