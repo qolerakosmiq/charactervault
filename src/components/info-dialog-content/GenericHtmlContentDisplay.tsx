@@ -14,7 +14,7 @@ export const GenericHtmlContentDisplay = ({
 
   return (
     <div
-      className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+      className="text-sm prose prose-sm dark:prose-invert max-w-none"
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   );

@@ -10,7 +10,7 @@ import type {
   DndClassOption,
   DndRaceOption,
   SpeedType,
-} from '@/types/character';
+} from '@/types/character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { renderModifierValue, ExpandableDetailWrapper, sectionHeadingClass } from './dialog-utils';
 import { FeatDetailsDisplay } from './FeatDetailsDisplay';
@@ -62,7 +62,7 @@ export const RaceContentDisplay = ({
     outputBlocks.push(
       <div
         key="race-html-content-block"
-        className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+        className="text-sm prose prose-sm dark:prose-invert max-w-none"
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
     );
@@ -72,7 +72,7 @@ export const RaceContentDisplay = ({
   if (abilityModifiers && abilityModifiers.length > 0) {
     generalTraitsSubSections.push(
       <div key="ability-modifiers-section">
-        <h4 className="text-sm font-bold text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments || "Ability Score Adjustments"}</h4>
+        <h4 className="text-sm font-bold text-muted-foreground mb-0">{UI_STRINGS.infoDialogAbilityScoreAdjustments || "Ability Score Adjustments"}</h4>
         <div className="space-y-0.5 text-sm mb-0 ml-3">
           {abilityModifiers.map(mod => (
             <div key={mod.ability} className="flex justify-between">
@@ -87,7 +87,7 @@ export const RaceContentDisplay = ({
   if (skillBonuses && skillBonuses.length > 0) {
     generalTraitsSubSections.push(
       <div key="skill-bonuses-section">
-        <h4 className="text-sm font-bold text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses || "Racial Skill Bonuses"}</h4>
+        <h4 className="text-sm font-bold text-muted-foreground mb-0">{UI_STRINGS.infoDialogRacialSkillBonuses || "Racial Skill Bonuses"}</h4>
         <div className="space-y-0.5 text-sm mb-0 ml-3">
           {skillBonuses.map(bonus => (
             <div key={bonus.skillId} className="flex justify-between">
@@ -102,7 +102,7 @@ export const RaceContentDisplay = ({
   if (speeds && Object.keys(speeds).filter(k => (speeds as any)[k] !== undefined && (speeds as any)[k] > 0).length > 0) {
     generalTraitsSubSections.push(
        <div key="base-speeds-section">
-        <h4 className="text-sm font-bold text-muted-foreground mb-1">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</h4>
+        <h4 className="text-sm font-bold text-muted-foreground mb-0">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</h4>
          <div className="space-y-0.5 text-sm mb-0 ml-3">
           {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
             .map(([type, speedVal]) => {

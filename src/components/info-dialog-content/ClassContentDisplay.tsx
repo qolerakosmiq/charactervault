@@ -10,7 +10,7 @@ import type {
   DndClassOption,
   DndRaceOption,
   ClassAttribute
-} from '@/types/character';
+} from '@/types/character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { ExpandableDetailWrapper, sectionHeadingClass } from './dialog-utils';
 import { FeatDetailsDisplay } from './FeatDetailsDisplay';
@@ -57,7 +57,7 @@ export const ClassContentDisplay = ({
     outputBlocks.push(
       <div
         key="class-general-description-block"
-        className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+        className="text-sm prose prose-sm dark:prose-invert max-w-none"
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
     );

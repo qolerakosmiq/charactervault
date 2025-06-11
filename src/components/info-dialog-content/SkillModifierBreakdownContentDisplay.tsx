@@ -27,7 +27,7 @@ export const SkillModifierBreakdownContentDisplay = ({
   const htmlContentBlock = (htmlContent && htmlContent.trim() !== '' && htmlContent.trim() !== '<p></p>') ? (
     <div
       key="skill-html-content-block"
-      className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+      className="text-sm prose prose-sm dark:prose-invert max-w-none"
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   ) : null;
@@ -39,9 +39,9 @@ export const SkillModifierBreakdownContentDisplay = ({
   const activeFeatSkillEffects = allSkillEffectDetails?.filter(eff => eff.isActive && eff.skillId === skillModifierBreakdown?.skillName && typeof eff.value === 'number' && eff.value !== 0) || [];
 
   const synergyBlock = (synergyInfoList && synergyInfoList.length > 0) ? (
-    <div key="skill-synergies-block" className={cn((htmlContentBlock) && "mt-0 mb-0")}>
+    <div key="skill-synergies-block" className="mt-0 mb-0">
       <h4 className="text-sm font-bold text-muted-foreground mb-0">{uiStrings.infoDialogSynergiesSectionTitle || "Synergies"}</h4>
-      <ul className={cn("space-y-0.5 mt-0 mb-0", hasCalculationBlock ? "" : "")}>
+      <ul className={cn("space-y-0.5 mt-0 mb-0 ml-3", hasCalculationBlock ? "" : "")}>
         {synergyInfoList.map((synergyItem) => {
           const IconComponent = synergyItem.isActive ? CheckSquare : Square;
           const parts = typeof synergyItem.text === 'string' ? synergyItem.text.split(/({value}|{typeLabel})/g) : [];
@@ -85,7 +85,7 @@ export const SkillModifierBreakdownContentDisplay = ({
           }
 
           return (
-            <li key={synergyItem.id} className="flex ml-3">
+            <li key={synergyItem.id} className="flex">
               <IconComponent
                 className={cn("h-5 w-5 mr-2 shrink-0", synergyItem.isActive ? "text-emerald-500" : "text-muted-foreground")}
                 style={{ marginTop: '0.1rem' }}
@@ -100,8 +100,27 @@ export const SkillModifierBreakdownContentDisplay = ({
     </div>
   ) : null;
 
+  const featBonusBlock = (activeFeatSkillEffects.length > 0) ? (
+    <div key="skill-feat-bonus-block" className="mt-0 mb-0">
+        <h4 className="text-sm font-bold text-muted-foreground mb-0">
+            {uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}
+        </h4>
+        <div className="space-y-0.5 ml-3 mt-0 mb-0">
+            {activeFeatSkillEffects.map((eff, idx) => (
+                <div key={`feat-skill-bonus-${idx}`} className="flex justify-between items-baseline text-sm">
+                    <span className="text-foreground flex-shrink-0 mr-2">
+                        {eff.sourceFeat || (uiStrings.infoDialogFeatBonusLabel || "Feat Bonus")}
+                    </span>
+                    {renderModifierValue(eff.value)}
+                </div>
+            ))}
+        </div>
+    </div>
+  ) : null;
+
+
   const calculationBlock = hasCalculationBlock ? (
-    <div key="skill-calculation-block" className={cn(((htmlContentBlock && !synergyBlock) || synergyBlock) && "mt-0 mb-0")}>
+    <div key="skill-calculation-block" className="mt-0 mb-0">
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
       <div className="space-y-1 mt-0 mb-0">
         {skillModifierBreakdown!.keyAbilityName && (
@@ -125,31 +144,18 @@ export const SkillModifierBreakdownContentDisplay = ({
             {renderModifierValue(skillModifierBreakdown!.sizeSpecificBonus)}
           </div>
         )}
-        {skillModifierBreakdown!.synergyBonus !== 0 && (
+        {skillModifierBreakdown!.synergyBonus !== 0 && !synergyBlock && ( // Only show here if synergyBlock isn't separate
           <div className="flex justify-between text-sm">
             <span className="text-foreground">{uiStrings.infoDialogSynergyBonusLabel || "Synergy Bonus"}</span>
             {renderModifierValue(skillModifierBreakdown!.synergyBonus)}
           </div>
         )}
-
-        {activeFeatSkillEffects.length > 0 && (
-            <>
-                <h4 className="text-sm font-bold text-muted-foreground mb-0">
-                    {uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}
-                </h4>
-                <div className="space-y-0.5 ml-3 mt-0 mb-0">
-                    {activeFeatSkillEffects.map((eff, idx) => (
-                        <div key={`feat-skill-bonus-${idx}`} className="flex justify-between items-baseline text-sm">
-                            <span className="text-foreground flex-shrink-0 mr-2">
-                                {eff.sourceFeat || (uiStrings.infoDialogFeatBonusLabel || "Feat Bonus")}
-                            </span>
-                            {renderModifierValue(eff.value)}
-                        </div>
-                    ))}
-                </div>
-            </>
+         {skillModifierBreakdown!.featBonus !== 0 && !featBonusBlock && ( // Only show here if featBonusBlock isn't separate
+          <div className="flex justify-between text-sm">
+            <span className="text-foreground">{uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}</span>
+            {renderModifierValue(skillModifierBreakdown!.featBonus)}
+          </div>
         )}
-
         {skillModifierBreakdown!.racialBonus !== 0 && (
           <div className="flex justify-between text-sm">
             <span className="text-foreground">{uiStrings.infoDialogRacialBonusLabel || "Racial Bonus"}</span>
@@ -174,6 +180,7 @@ export const SkillModifierBreakdownContentDisplay = ({
   const contentBlocksToRender: React.ReactNode[] = [];
   if (htmlContentBlock) contentBlocksToRender.push(htmlContentBlock);
   if (synergyBlock) contentBlocksToRender.push(synergyBlock);
+  if (featBonusBlock) contentBlocksToRender.push(featBonusBlock); // Add feat bonus block
   if (calculationBlock) contentBlocksToRender.push(calculationBlock);
 
   if (contentBlocksToRender.length === 0) {
@@ -193,4 +200,3 @@ export const SkillModifierBreakdownContentDisplay = ({
     </>
   );
 };
-

@@ -39,7 +39,7 @@ export const DeityContentDisplay = ({
               {/* No separator here */}
               <div className={cn(index > 0 && "mt-3")}> {/* Add top margin to subsequent attribute blocks */}
                 <h4 className="text-sm font-medium text-muted-foreground mb-0.5">{attr.key}</h4>
-                <p className="text-sm text-foreground leading-snug">{attr.value}</p>
+                <p className="text-sm text-foreground">{attr.value}</p>
               </div>
             </React.Fragment>
           ))}

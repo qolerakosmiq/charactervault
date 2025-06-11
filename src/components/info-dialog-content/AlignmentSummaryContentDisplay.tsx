@@ -4,7 +4,7 @@
 import React from 'react';
 import { Separator } from '@/components/ui/separator';
 import { sectionHeadingClass } from './dialog-utils';
-import type { CharacterAlignmentObject } from '@/types/character';
+import type { CharacterAlignmentObject } from '@/types/character-core';
 
 interface AlignmentSummaryContentDisplayProps {
   alignments?: readonly CharacterAlignmentObject[];
@@ -26,7 +26,7 @@ export const AlignmentSummaryContentDisplay = ({
               {alignment.label}
             </h3>
             <div
-              className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+              className="text-sm prose prose-sm dark:prose-invert max-w-none"
               dangerouslySetInnerHTML={{ __html: alignment.description }}
             />
           </div>
