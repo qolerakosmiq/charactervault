@@ -7,7 +7,7 @@ import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge'; // Added Badge
+import { Badge } from '@/components/ui/badge';
 
 interface AbilityScoreBreakdownContentDisplayProps {
   abilityScoreBreakdown?: AbilityScoreBreakdown;
@@ -36,7 +36,7 @@ export const AbilityScoreBreakdownContentDisplay = ({
     }
   });
 
-  const renderComponent = (comp: AbilityScoreComponentValue, isConditional: boolean = false, conditionName?: string) => {
+  const renderComponent = (comp: AbilityScoreComponentValue, isConditional: boolean = false) => {
     let displaySourceLabel = comp.sourceLabel;
     if (comp.sourceLabel === "Race" && uiStrings.abilityScoreSourceRace && comp.sourceDetail) {
       displaySourceLabel = (uiStrings.abilityScoreSourceRace).replace("{raceLabel}", comp.sourceDetail);
@@ -44,9 +44,6 @@ export const AbilityScoreBreakdownContentDisplay = ({
       displaySourceLabel = (uiStrings.abilityScoreSourceAging).replace("{categoryName}", comp.sourceDetail);
     } else if (comp.sourceLabel === "Feat" && comp.sourceDetail) {
       displaySourceLabel = comp.sourceDetail; // Feat name is the primary source
-      if (isConditional && conditionName) {
-        // For conditional feats, the condition is now part of the sub-heading or a badge
-      }
     } else if (comp.sourceLabel === "Temporary Modifier" && uiStrings.abilityScoreSourceTempMod) {
       displaySourceLabel = uiStrings.abilityScoreSourceTempMod;
     }
@@ -55,11 +52,6 @@ export const AbilityScoreBreakdownContentDisplay = ({
       <div key={`${comp.sourceLabel}-${comp.sourceDetail || ''}-${comp.value}-${comp.condition || 'unconditional'}`} className={cn("flex justify-between items-baseline text-sm", isConditional && "ml-3")}>
         <span className="text-muted-foreground flex-shrink-0 mr-2">
           {displaySourceLabel}
-          {isConditional && conditionName && (
-            <Badge variant="outline" className="ml-1.5 text-xs font-normal px-1 py-0.5 whitespace-nowrap border-muted-foreground/30 text-muted-foreground">
-              {conditionName}
-            </Badge>
-          )}
         </span>
         {renderModifierValue(comp.value)}
       </div>
@@ -82,7 +74,7 @@ export const AbilityScoreBreakdownContentDisplay = ({
             <h4 className="text-sm font-medium text-muted-foreground pt-1.5 pb-0.5">
               {uiStrings.infoDialogConditionalBonusesHeading || "Conditional Bonuses"}
             </h4>
-            {conditionalActiveComponents.map(comp => renderComponent(comp, true, comp.conditionName))}
+            {conditionalActiveComponents.map(comp => renderComponent(comp, true))}
           </>
         )}
 
