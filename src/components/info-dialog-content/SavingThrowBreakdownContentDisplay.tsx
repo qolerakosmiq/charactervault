@@ -64,7 +64,7 @@ export const SavingThrowBreakdownContentDisplay = ({
 
         {activeFeatComponents.length > 0 && (
           <>
-            <h4 className="text-sm font-bold text-muted-foreground pb-0.5">
+            <h4 className="text-sm font-bold text-muted-foreground">
                 {uiStrings.savingThrowsFeatsModifierLabel || "Feats Modifier"}
             </h4>
             <div className="space-y-0.5">

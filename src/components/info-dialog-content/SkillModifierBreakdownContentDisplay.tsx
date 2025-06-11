@@ -134,7 +134,7 @@ export const SkillModifierBreakdownContentDisplay = ({
 
         {activeFeatSkillEffects.length > 0 && (
             <>
-                <h4 className="text-sm font-bold text-muted-foreground pb-0.5">
+                <h4 className="text-sm font-bold text-muted-foreground">
                     {uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}
                 </h4>
                 <div className="space-y-0.5">
