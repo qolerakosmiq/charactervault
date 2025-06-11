@@ -6,6 +6,7 @@ import type { AbilityName, AggregatedFeatEffects } from '@/types/character';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
+import { Badge } from '@/components/ui/badge'; // Added Badge import
 
 export interface AcBreakdownDetailItem {
   mainLabel: string | React.ReactNode;
@@ -38,42 +39,44 @@ export const AcBreakdownContentDisplay = ({
     <div>
       <h3 className={sectionHeadingClass}>{detailsListHeading}</h3>
       {detailsList.map((detail, index) => {
-        const valueToRender = (typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string)))) && !String(detail.mainLabel).toLowerCase().includes('base attack bonus')
-            ? renderModifierValue(detail.value as number | string)
-            : detail.value;
+        let valueToRender = detail.value;
+        if (String(detail.mainLabel).toLowerCase() === (uiStrings.acBreakdownBaseLabel || "Base").toLowerCase()) {
+          valueToRender = <span className="font-bold">{detail.value}</span>; // Display Base AC as normal number
+        } else if ((typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string)))) && !String(detail.mainLabel).toLowerCase().includes('base attack bonus')) {
+          valueToRender = renderModifierValue(detail.value as number | string);
+        }
         
         let mainText = detail.mainLabel;
-        let suffixText = detail.suffixDetails && detail.suffixDetails.length > 0 ? `(${detail.suffixDetails.join(", ")})` : null;
+        let suffixBadge: React.ReactNode = null;
 
-        if (!suffixText) {
-          if (detail.type === 'acAbilityMod' && detail.abilityAbbr) {
-            mainText = detail.mainLabel; 
-            suffixText = `(${detail.abilityAbbr})`;
-          } else if (detail.type === 'acSizeMod' && detail.sizeName) {
-            mainText = detail.mainLabel; 
-            suffixText = `(${detail.sizeName})`;
-          }
+        if (detail.type === 'acAbilityMod' && detail.abilityAbbr) {
+          mainText = detail.mainLabel; 
+          suffixBadge = <Badge variant="outline" className="ml-1.5 text-sm font-normal">{detail.abilityAbbr}</Badge>;
+        } else if (detail.type === 'acSizeMod' && detail.sizeName) {
+          mainText = detail.mainLabel; 
+          suffixBadge = <Badge variant="outline" className="ml-1.5 text-sm font-normal">{detail.sizeName}</Badge>;
+        } else if (detail.suffixDetails && detail.suffixDetails.length > 0) {
+          // Fallback for other suffix details if not ability/size for badge
+          suffixBadge = <span className="text-muted-foreground/80 ml-1">({detail.suffixDetails.join(", ")})</span>;
         }
         
-        if (typeof mainText === 'string') {
+        // If suffix was already part of mainLabel and not handled by badge logic
+        if (typeof mainText === 'string' && !suffixBadge) {
           const suffixMatch = mainText.match(/\s(\([^)]+\))$/);
-          if (suffixMatch && !suffixText) { 
+          if (suffixMatch) { 
             mainText = mainText.substring(0, mainText.length - suffixMatch[0].length);
-            suffixText = suffixMatch[1];
+            suffixBadge = <span className="text-muted-foreground/80 ml-1">{suffixMatch[1]}</span>;
           }
         }
 
+
         return (
-          <div key={index} className="flex justify-between text-sm mb-0.5">
-            <span className="text-muted-foreground">
+          <div key={index} className="flex justify-between text-sm mb-0.5 items-baseline">
+            <span className="text-muted-foreground inline-flex items-baseline">
               {mainText}
-              {suffixText && (
-                <span className="text-muted-foreground/80 ml-1">
-                  {suffixText}
-                </span>
-              )}
+              {suffixBadge}
               {detail.condition && (
-                <span className="text-muted-foreground/80 italic ml-1">
+                <span className="text-muted-foreground/80 italic ml-1 text-xs"> 
                   ({uiStrings[`condition_${detail.condition}`] || detail.condition} - {detail.isActive 
                     ? (uiStrings.conditionalEffectActiveSuffix || "(Active)")
                     : (uiStrings.conditionalEffectInactiveSuffix || "(Inactive)")
@@ -99,3 +102,4 @@ export const AcBreakdownContentDisplay = ({
   );
 };
 
+    
