@@ -26,7 +26,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollText, Info, Loader2, Users, Activity, BookOpen, Wand2 } from 'lucide-react'; // Changed Swords to Activity
+import { ScrollText, Info, Loader2, Users, Activity, BookOpen, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -156,7 +156,6 @@ const CharacterFormCoreInfoSectionComponent = ({
   const handleProhibitedSchoolChange = (index: 0 | 1, newSchoolId: MagicSchoolId | undefined) => {
     const currentProhibited = characterData.prohibitedSchools ? [...characterData.prohibitedSchools] : [undefined, undefined];
     currentProhibited[index] = newSchoolId === PROHIBITED_SCHOOL_NONE_VALUE ? undefined : newSchoolId;
-    // Ensure no duplicates and filter out undefined before saving
     onFieldChange('prohibitedSchools', currentProhibited.filter((s, i, arr) => s && arr.indexOf(s) === i) as MagicSchoolId[]);
   };
 
@@ -384,17 +383,20 @@ const CharacterFormCoreInfoSectionComponent = ({
                 <Info className="h-5 w-5" />
               </Button>
             </div>
-            {selectedClassInfo?.hitDice && (
-              <div className="flex items-baseline gap-1 pt-[6px] ml-1"> <Badge variant="secondary" className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground whitespace-nowrap"> {UI_STRINGS.hitDiceLabel || "Hit Dice"}:{'\u00A0'} <strong className="font-bold">{selectedClassInfo.hitDice}</strong> </Badge> </div>
-            )}
-            {isBarbarian && rageUsesPerDay > 0 && (
-              <div className="flex items-baseline gap-1 pt-[6px] ml-1">
-                <Badge variant="destructive" className="text-xs font-normal whitespace-nowrap">
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-[6px] ml-1">
+              {selectedClassInfo?.hitDice && (
+                <Badge variant="secondary" className="text-xs font-normal hover:bg-secondary hover:text-secondary-foreground whitespace-nowrap">
+                  {UI_STRINGS.hitDiceLabel || "Hit Dice"}:{'\u00A0'}
+                  <strong className="font-bold">{selectedClassInfo.hitDice}</strong>
+                </Badge>
+              )}
+              {isBarbarian && rageUsesPerDay > 0 && (
+                  <Badge className="text-xs font-normal whitespace-nowrap bg-accent text-accent-foreground">
                     <Activity className="inline h-3 w-3 mr-1" />
                     {(UI_STRINGS.barbarianRageUsesLabel || "Rage Uses Per Day")}: <strong className="font-bold ml-1">{rageUsesPerDay}</strong>
-                </Badge>
-              </div>
-            )}
+                  </Badge>
+              )}
+            </div>
           </div>
         </div>
 
@@ -606,7 +608,6 @@ const CharacterFormCoreInfoSectionComponent = ({
                 placeholder={UI_STRINGS.selectGenderPlaceholder || "Select or type gender..."}
                 searchPlaceholder="Search genders..."
                 emptyPlaceholder="No gender found."
-                isEditable={true}
             />
           </div>
           <div className="space-y-1.5">
@@ -637,4 +638,3 @@ const CharacterFormCoreInfoSectionComponent = ({
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
 
-    
