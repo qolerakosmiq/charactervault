@@ -68,11 +68,11 @@ export const AbilityScoreBreakdownContentDisplay = ({
         })}
 
         <Separator className="my-2" />
-        <div className="flex justify-between text-xl">
+        <div className="flex justify-between text-lg">
           <span className="font-semibold">{uiStrings.infoDialogFinalScoreLabel || "Final Score"}</span>
           <span className="font-bold text-accent">{dialogDisplayScore}</span>
         </div>
-        <div className="flex justify-between text-xl">
+        <div className="flex justify-between text-lg">
           <span className="font-semibold">{uiStrings.infoDialogFinalModifierLabel || "Final Modifier"}</span>
           <span className="font-bold text-accent">{renderModifierValue(dialogDisplayModifier)}</span>
         </div>

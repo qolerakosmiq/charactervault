@@ -47,7 +47,7 @@ export const InitiativeBreakdownContentDisplay = ({
           </div>
         )}
         <Separator className="my-2" />
-        <div className="flex justify-between text-xl">
+        <div className="flex justify-between text-lg">
           <span className="font-semibold">{uiStrings.infoDialogInitiativeTotalLabel || "Total Initiative"}</span>
           <span className="font-bold text-accent">{renderModifierValue(initiativeBreakdown.totalInitiative)}</span>
         </div>

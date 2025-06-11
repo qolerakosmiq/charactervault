@@ -95,7 +95,7 @@ export const SavingThrowBreakdownContentDisplay = ({
         )}
 
         <Separator className="my-2" />
-        <div className="flex justify-between text-xl">
+        <div className="flex justify-between text-lg">
           <span className="font-semibold">{uiStrings.savingThrowsRowLabelTotal || "Total"} {breakdown.saveTypeLabel}</span>
           <span className="font-bold text-accent">{renderModifierValue(breakdown.totalSave)}</span>
         </div>
@@ -104,4 +104,3 @@ export const SavingThrowBreakdownContentDisplay = ({
   );
 };
 
-    

@@ -46,7 +46,7 @@ export const SpeedBreakdownContentDisplay = ({
           );
         })}
         <Separator className="my-2" />
-        <div className="flex justify-between text-xl">
+        <div className="flex justify-between text-lg">
           <span className="font-semibold">{(uiStrings.infoDialogSpeedTotalPrefixLabel || "Total")} {speedBreakdown.name}</span>
           <span className="font-bold text-accent">{speedBreakdown.total} {speedUnit}</span>
         </div>

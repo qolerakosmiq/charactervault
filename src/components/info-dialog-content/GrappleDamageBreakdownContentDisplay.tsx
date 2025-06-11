@@ -63,7 +63,7 @@ export const GrappleDamageBreakdownContentDisplay = ({
           </div>
         )}
         <Separator className="my-2" />
-        <div className="flex justify-between text-xl">
+        <div className="flex justify-between text-lg">
           <span className="font-semibold">{uiStrings.infoDialogGrappleDmgTotalLabel || "Total"}</span>
           <span className="font-bold text-accent">
             {displayedTotal}

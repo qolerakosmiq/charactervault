@@ -162,7 +162,7 @@ export const SkillModifierBreakdownContentDisplay = ({
           </div>
         )}
         <Separator className="my-2" />
-        <div className="flex justify-between text-xl">
+        <div className="flex justify-between text-lg">
           <span className="font-semibold">{uiStrings.infoDialogTotalBonusLabel || "Total Bonus"}</span>
           <span className="font-bold text-accent">{renderModifierValue(skillModifierBreakdown!.totalBonus)}</span>
         </div>
@@ -193,4 +193,3 @@ export const SkillModifierBreakdownContentDisplay = ({
   );
 };
 
-    

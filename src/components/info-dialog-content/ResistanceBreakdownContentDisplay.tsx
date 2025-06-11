@@ -30,7 +30,7 @@ export const ResistanceBreakdownContentDisplay = ({
           {renderModifierValue(resistanceBreakdown.customMod)}
         </div>
         <Separator className="my-2" />
-        <div className="flex justify-between text-xl">
+        <div className="flex justify-between text-lg">
           <span className="font-semibold">{uiStrings.infoDialogTotalResistanceLabel || "Total Resistance"}</span>
           <span className="font-bold text-accent">{resistanceBreakdown.total}</span>
         </div>

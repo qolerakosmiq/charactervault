@@ -147,7 +147,7 @@ export function RollDialog({
                   </p>
                   <Separator className="my-1 bg-accent/30"/>
                   <p className="text-lg font-semibold">
-                    {UI_STRINGS.rollDialogFinalDamageStringLabel || "Total Damage:"} <span className="font-bold text-2xl text-primary">{finalResult}</span>
+                    {UI_STRINGS.rollDialogFinalDamageStringLabel || "Total Damage:"} <span className="font-bold text-lg text-primary">{finalResult}</span>
                   </p>
                 </>
               ) : (
@@ -160,7 +160,7 @@ export function RollDialog({
                   </p>
                   <Separator className="my-1 bg-accent/30"/>
                   <p className="text-lg font-semibold">
-                    {UI_STRINGS.rollDialogFinalResultLabel || "Final Result:"} <span className="font-bold text-2xl text-primary">{finalResult}</span>
+                    {UI_STRINGS.rollDialogFinalResultLabel || "Final Result:"} <span className="font-bold text-lg text-primary">{finalResult}</span>
                   </p>
                 </>
               )}
