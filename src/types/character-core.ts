@@ -76,16 +76,16 @@ export interface SkillEffectDetail {
   skillId: string | null; // null for specialization (e.g. Skill Focus (SPEC))
   value: number;
   bonusType?: "competence" | "circumstance" | "racial" | "untyped" | "insight";
-  condition?: string;
-  sourceFeat?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface NoteEffectDetail { // This will be used for descriptive notes
   type: "note";
   text: string;
-  condition?: string;
-  sourceFeat?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
 }
 
 export interface AbilityScoreEffect {
@@ -93,8 +93,8 @@ export interface AbilityScoreEffect {
   ability: Exclude<AbilityName, 'none'>;
   value: number | string;
   bonusType?: "enhancement" | "inherent" | "morale" | "competence" | "circumstance" | "size" | "untyped";
-  condition?: string;
-  sourceFeat?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
@@ -103,8 +103,8 @@ export interface SavingThrowEffect {
   save: SavingThrowType | "all";
   value: number;
   bonusType?: "resistance" | "luck" | "morale" | "competence" | "circumstance" | "racial" | "insight" | "untyped";
-  condition?: string;
-  sourceFeat?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
@@ -114,9 +114,9 @@ export interface AttackRollEffect {
   bonusType?: "untyped" | "enhancement" | "competence" | "luck" | "insight" | "circumstance" | "focus";
   appliesTo: "all" | "melee" | "ranged" | "unarmed" | "grapple" | "SPEC" | `weaponCategory:${string}` | `weaponName:${string}`;
   weaponId?: string; // Use for specific weapon definition ID (e.g. "longsword")
-  condition?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
   rangeLimit?: number;
-  sourceFeat?: string;
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
@@ -126,9 +126,9 @@ export interface DamageRollEffect {
   bonusType?: "untyped" | "enhancement" | "competence" | "luck" | "precision" | "circumstance" | "specialization";
   appliesTo?: "all" | "melee" | "ranged" | "unarmed" | "grapple" | "SPEC" | `weaponCategory:${string}` | `weaponName:${string}`;
   weaponId?: string; // Use for specific weapon definition ID
-  condition?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
   rangeLimit?: number;
-  sourceFeat?: string;
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
@@ -137,9 +137,9 @@ export interface ArmorClassEffect {
   value: number | "WIS" | "INT" | "CHA";
   acType: "dodge" | "armor" | "shield" | "natural" | "deflection" | "insight" | "circumstance" | "untyped" | "monk_wisdom" | "monkScaling" | "other_feat_bonus";
   bonusType?: "untyped" | "dodge" | "armor" | "shield" | "natural" | "deflection" | "insight" | "sacred" | "profane" | "competence" | "circumstance";
-  condition?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
   appliesToScope?: ("normal" | "touch" | "flatFooted")[];
-  sourceFeat?: string;
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
@@ -148,8 +148,8 @@ export interface HitPointsEffect {
   value: number;
   perLevel?: boolean;
   bonusType?: "untyped";
-  condition?: string;
-  sourceFeat?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
@@ -157,8 +157,8 @@ export interface InitiativeEffect {
   type: "initiative";
   value: number;
   bonusType?: "competence" | "insight" | "untyped";
-  condition?: string;
-  sourceFeat?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
@@ -168,8 +168,8 @@ export interface SpeedEffect {
   modification: "bonus" | "setAbsolute" | "penalty";
   value: number;
   bonusType?: "enhancement" | "untyped";
-  condition?: string;
-  sourceFeat?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
@@ -180,8 +180,8 @@ export interface ResistanceEffect {
   isDamageReduction?: boolean; // True if this is a DR X/- or DR X/magic effect
   bypassedBy?: string[]; // e.g., ["magic", "adamantine"] for DR
   bonusType?: "resistance" | "untyped";
-  condition?: string;
-  sourceFeat?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
@@ -190,8 +190,8 @@ export interface CasterLevelCheckEffect {
   value: number;
   forEvent?: "spellResistance" | "dispel" | "all";
   bonusType?: "untyped" | "competence";
-  condition?: string;
-  sourceFeat?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
@@ -200,8 +200,8 @@ export interface SpellSaveDcEffect {
   school?: string | "all" | "SPEC";
   value: number;
   bonusType?: "untyped";
-  condition?: string;
-  sourceFeat?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
@@ -210,8 +210,8 @@ export interface TurnUndeadEffect {
   property: "attempts" | "effectiveLevel" | "damage" | "checkBonus";
   value: number;
   bonusType?: "untyped";
-  condition?: string;
-  sourceFeat?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
@@ -230,8 +230,8 @@ export interface GrantsAbilityEffect {
   details?: string; // Description
   uses?: GrantsAbilityEffectUses;
   actionType?: "standard" | "move" | "fullRound" | "free" | "swift" | "immediate" | "reaction" | "passive";
-  condition?: string;
-  sourceFeat?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
   scaleWithClassLevel?: FeatEffectScaling; // For abilities whose own properties might scale
 }
 
@@ -240,8 +240,8 @@ export interface ModifiesMechanicEffect {
   mechanicKey: string;
   change?: "adds" | "sets" | "removes";
   value?: any;
-  condition?: string;
-  sourceFeat?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
@@ -251,8 +251,8 @@ export interface GrantsProficiencyEffect {
   itemCategory?: "simple" | "martial" | "exotic" | "light" | "medium" | "heavy" | "tower";
   specificItem?: string;
   note?: string;
-  condition?: string;
-  sourceFeat?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
 }
 
 export interface BonusFeatSlotEffect {
@@ -260,8 +260,8 @@ export interface BonusFeatSlotEffect {
   category: string;
   count: number;
   note?: string;
-  condition?: string;
-  sourceFeat?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
 }
 
 export interface LanguageEffect {
@@ -269,13 +269,13 @@ export interface LanguageEffect {
   count?: number;
   specific?: LanguageId;
   note?: string;
-  condition?: string;
-  sourceFeat?: string;
+  // condition?: string; // Inherited from AggregatedFeatEffectBase
+  // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
 }
 
-export type FeatEffectDetail =
+export type FeatEffectDetail = (
   | SkillEffectDetail
-  | NoteEffectDetail // This will be used for descriptive notes
+  | NoteEffectDetail
   | AbilityScoreEffect
   | SavingThrowEffect
   | AttackRollEffect
@@ -292,7 +292,8 @@ export type FeatEffectDetail =
   | ModifiesMechanicEffect
   | GrantsProficiencyEffect
   | BonusFeatSlotEffect
-  | LanguageEffect;
+  | LanguageEffect
+) & Pick<AggregatedFeatEffectBase, 'condition' | 'sourceFeat'>; // Add condition and sourceFeat to all effect types directly
 
 
 export type FeatTypeString = string;
@@ -310,7 +311,7 @@ export interface FeatDefinitionJsonData {
   isClassFeature?: boolean;
   isCustom?: boolean;
   category?: string;
-  permanentEffect?: boolean; // Added to indicate if a feat's conditional effects are permanent
+  permanentEffect?: boolean;
 }
 
 
@@ -654,6 +655,7 @@ export interface AbilityScoreComponentValue extends AggregatedFeatEffectBase {
   sourceLabel: string;
   sourceDetail?: string;
   value: number;
+  // isActive is inherited
 }
 export interface AbilityScoreBreakdown {
   ability: Exclude<AbilityName, 'none'>;
@@ -672,8 +674,8 @@ export interface AvailableFeatSlotsBreakdown {
 }
 
 export interface AggregatedFeatEffects {
-  skillBonuses: Record<string, number>;
-  allSkillEffectDetails: Array<SkillEffectDetail & AggregatedFeatEffectBase>;
+  skillBonuses: Record<string, number>; // Stores the sum of *active, numerical* skill bonuses per skillId
+  allSkillEffectDetails: Array<SkillEffectDetail & AggregatedFeatEffectBase>; // Stores all skill effects (active or not)
   favoredEnemyBonuses?: { skillBonus: number; damageBonus: number; };
   favoredEnemySlots?: number;
   abilityScoreBonuses: Array<AbilityScoreEffect & AggregatedFeatEffectBase>;
@@ -681,9 +683,9 @@ export interface AggregatedFeatEffects {
   attackRollBonuses: Array<AttackRollEffect & AggregatedFeatEffectBase>;
   damageRollBonuses: Array<DamageRollEffect & AggregatedFeatEffectBase>;
   acBonuses: Array<ArmorClassEffect & AggregatedFeatEffectBase>;
-  hpBonus: number;
-  hpBonusSources: Array<{ sourceFeatName: string; value: number; condition?: string; isActive?: boolean; }>;
-  initiativeBonus: number;
+  hpBonus: number; // Sum of *active, unconditional* HP bonuses
+  hpBonusSources: Array<{ sourceFeatName: string; value: number; condition?: string; isActive?: boolean; }>; // All sources for breakdown
+  initiativeBonus: number; // Sum of *active, unconditional* initiative bonuses
   speedBonuses: Array<SpeedEffect & AggregatedFeatEffectBase>;
   resistanceBonuses: Array<ResistanceEffect & AggregatedFeatEffectBase>;
   casterLevelCheckBonuses: Array<CasterLevelCheckEffect & AggregatedFeatEffectBase>;
@@ -694,10 +696,10 @@ export interface AggregatedFeatEffects {
   proficienciesGranted: Array<GrantsProficiencyEffect & AggregatedFeatEffectBase>;
   bonusFeatSlots: Array<BonusFeatSlotEffect & AggregatedFeatEffectBase>;
   languagesGranted: {
-      count: number;
-      specific: Array<{ languageId: LanguageId; note?: string; sourceFeat?: string; condition?: string; isActive?: boolean; }>;
+      count: number; // Number of bonus languages to choose
+      specific: Array<{ languageId: LanguageId; note?: string; sourceFeat?: string; condition?: string; isActive?: boolean; }>; // Specific languages granted
   };
-  descriptiveNotes: Array<(NoteEffectDetail) & AggregatedFeatEffectBase>; // Combined NoteEffectDetail with base
+  descriptiveNotes: Array<(NoteEffectDetail) & AggregatedFeatEffectBase>;
   classLevels: Record<DndClassId, number>;
 }
 
@@ -761,6 +763,8 @@ export interface AcBreakdownDetailItem {
 export interface SavingThrowFeatComponent extends AggregatedFeatEffectBase {
   sourceFeat: string;
   value: number;
+  // isActive is inherited from AggregatedFeatEffectBase
+  // condition is inherited from AggregatedFeatEffectBase
 }
 
 export interface SavingThrowBreakdownDetails {
@@ -817,7 +821,3 @@ export type FeatDefinitionWithEffects = FeatDefinitionJsonData & { effects: Feat
 export const isFeatWithEffects = (feat: FeatDefinitionJsonData): feat is FeatDefinitionWithEffects => {
   return Array.isArray(feat.effects) && feat.effects.length > 0;
 };
-
-```
-
-    
