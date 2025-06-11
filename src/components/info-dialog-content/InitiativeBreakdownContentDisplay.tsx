@@ -30,9 +30,7 @@ export const InitiativeBreakdownContentDisplay = ({
         <div className="flex justify-between text-sm items-baseline">
           <span className="text-foreground inline-flex items-baseline">
             {uiStrings.infoDialogInitiativeAbilityModLabel || "Ability Modifier"}
-            {dexterityAbilityInfo && (
-              <Badge variant="outline">{dexterityAbilityInfo.abbr}</Badge>
-            )}
+            {dexterityAbilityInfo && <>{' '}<Badge variant="outline">{dexterityAbilityInfo.abbr}</Badge></>}
           </span>
           {renderModifierValue(initiativeBreakdown.dexModifier)}
         </div>

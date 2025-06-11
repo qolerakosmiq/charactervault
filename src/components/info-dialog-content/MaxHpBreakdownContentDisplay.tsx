@@ -37,7 +37,7 @@ export const MaxHpBreakdownContentDisplay = ({
   let miscModifierSubLabel = "";
   if (miscModifierValue !== 0 && aggregatedFeatEffects.hpBonusSources && aggregatedFeatEffects.hpBonusSources.length > 0) {
     const activeFeatSources = aggregatedFeatEffects.hpBonusSources
-      .filter(source => source.isActive && !source.condition) 
+      .filter(source => source.isActive && !source.condition)
       .map(source => source.sourceFeatName)
       .filter(name => !!name);
     if (activeFeatSources.length > 0) {
@@ -59,7 +59,7 @@ export const MaxHpBreakdownContentDisplay = ({
         </div>
         <div className="flex justify-between text-sm items-baseline">
           <span className="text-foreground inline-flex items-baseline">
-            {uiStrings.maxHpDialogAbilityModLabel || "Ability Modifier"}
+            {uiStrings.maxHpDialogAbilityModLabel || "Ability Modifier"}{' '}
             <Badge variant="outline">{conAbbr}</Badge>
           </span>
           {renderModifierValue(finalConstitutionModifier)}

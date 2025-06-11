@@ -13,7 +13,7 @@ interface SkillModifierBreakdownContentDisplayProps {
   htmlContent?: string;
   synergyInfoList?: SynergyInfoItem[];
   skillModifierBreakdown?: SkillModifierBreakdownDetails;
-  allSkillEffectDetails?: Array<SkillEffectDetail & AggregatedFeatEffectBase>; 
+  allSkillEffectDetails?: Array<SkillEffectDetail & AggregatedFeatEffectBase>;
   uiStrings: Record<string, string>;
 }
 
@@ -21,7 +21,7 @@ export const SkillModifierBreakdownContentDisplay = ({
   htmlContent,
   synergyInfoList,
   skillModifierBreakdown,
-  allSkillEffectDetails, 
+  allSkillEffectDetails,
   uiStrings,
 }: SkillModifierBreakdownContentDisplayProps) => {
   const htmlContentBlock = (htmlContent && htmlContent.trim() !== '' && htmlContent.trim() !== '<p></p>') ? (
@@ -122,12 +122,12 @@ export const SkillModifierBreakdownContentDisplay = ({
   const calculationBlock = hasCalculationBlock ? (
     <div key="skill-calculation-block" className="mt-0 mb-0">
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div className="mt-0 mb-0">
+      <div>
         {skillModifierBreakdown!.keyAbilityName && (
           <div className="flex justify-between text-sm">
             <span className="text-foreground inline-flex items-baseline">
-              {uiStrings.infoDialogKeyAbilityLabel || "Key Ability"}
-              <Badge variant="outline" className="ml-1.5">
+              {uiStrings.infoDialogKeyAbilityLabel || "Key Ability"}{' '}
+              <Badge variant="outline">
                 {skillModifierBreakdown!.keyAbilityName}
               </Badge>
             </span>
@@ -188,7 +188,7 @@ export const SkillModifierBreakdownContentDisplay = ({
   }
 
   return (
-    <div>
+    <div className="space-y-0">
       {contentBlocksToRender.map((block, index, arr) => (
         <React.Fragment key={`content-block-${index}`}>
           {block}

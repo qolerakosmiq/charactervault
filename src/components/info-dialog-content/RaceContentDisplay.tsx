@@ -111,7 +111,7 @@ export const RaceContentDisplay = ({
             return (
               <div key={type} className="flex justify-between">
                 <span className="text-sm text-foreground">{speedName}</span>
-                <span className="text-sm font-semibold text-foreground">{speedVal} {speedUnit}</span>
+                <span className="text-sm font-semibold text-foreground">{speedVal}{' '}{speedUnit}</span>
               </div>
             );
           })}
@@ -140,12 +140,12 @@ export const RaceContentDisplay = ({
       </div>
     );
   }
-  
+
   if (grantedFeats && grantedFeats.length > 0) {
     outputBlocks.push(
       <div key="race-granted-feats-section">
         <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h3>
-        <ul className="list-none space-y-0.5 text-sm mt-0 mb-0" key="race-granted-feats-list"> 
+        <ul className="list-none space-y-0.5 text-sm mt-0 mb-0" key="race-granted-feats-list">
           {grantedFeats.map(feat => {
             const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
             return (
@@ -160,9 +160,9 @@ export const RaceContentDisplay = ({
                     {feat.levelAcquired !== undefined && (
                       <Badge variant="outline" className={cn(
                         "whitespace-nowrap shrink-0 justify-center",
-                        "min-w-[5rem]" 
+                        "min-w-[5rem]"
                       )}>
-                        {(UI_STRINGS.levelLabel || "Level")} {feat.levelAcquired}
+                        {(UI_STRINGS.levelLabel || "Level")}{' '}{feat.levelAcquired}
                       </Badge>
                     )}
                      <div className="flex-grow">
@@ -199,12 +199,11 @@ export const RaceContentDisplay = ({
       </div>
     );
   }
-  
-  return outputBlocks.length > 0 ? <div>{outputBlocks.map((block, index, arr) => (
+
+  return outputBlocks.length > 0 ? <div className="space-y-0">{outputBlocks.map((block, index, arr) => (
         <React.Fragment key={`race-display-root-block-${index}`}>
           {block}
           {index < arr.length - 1 && <Separator className="mt-3 mb-2" />}
         </React.Fragment>
       ))}</div> : null;
 };
-    

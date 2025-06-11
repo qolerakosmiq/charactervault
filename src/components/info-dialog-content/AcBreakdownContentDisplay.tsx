@@ -18,7 +18,7 @@ export interface AcBreakdownDetailItem {
   sizeName?: string;
   condition?: string;
   isActive?: boolean;
-  isSubItem?: boolean; 
+  isSubItem?: boolean;
 }
 
 interface AcBreakdownContentDisplayProps {
@@ -40,11 +40,11 @@ export const AcBreakdownContentDisplay = ({
   const conditionalFeatComponents: AcBreakdownDetailItem[] = [];
 
   detailsList.forEach(detail => {
-    if (detail.isActive === false) return; 
+    if (detail.isActive === false) return;
 
-    if (detail.isSubItem) { 
+    if (detail.isSubItem) {
       conditionalFeatComponents.push(detail);
-    } else { 
+    } else {
       staticComponents.push(detail);
     }
   });
@@ -63,7 +63,7 @@ export const AcBreakdownContentDisplay = ({
       mainTextDisplay = detail.mainLabel;
       suffixBadgeDisplay = <span className="text-muted-foreground/80 ml-1">({detail.suffixDetails.join(", ")})</span>;
     } else if (isConditionalSubItem) {
-        mainTextDisplay = detail.mainLabel; 
+        mainTextDisplay = detail.mainLabel;
     }
 
     let valueToRender = detail.value;
@@ -76,8 +76,7 @@ export const AcBreakdownContentDisplay = ({
     return (
       <div key={`${String(detail.mainLabel)}-${index}`} className={cn("flex justify-between items-baseline text-sm mb-0.5", isConditionalSubItem && "ml-3")}>
         <span className="text-foreground inline-flex items-baseline">
-          {mainTextDisplay}
-          {suffixBadgeDisplay}
+          {mainTextDisplay}{suffixBadgeDisplay && <>{' '}{suffixBadgeDisplay}</>}
         </span>
         <span className={cn(detail.isBold && "font-bold", "text-foreground")}>{valueToRender as React.ReactNode}</span>
       </div>

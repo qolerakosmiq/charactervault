@@ -156,7 +156,7 @@ export function RollDialog({
         <div className="space-y-3 py-3 max-h-[60vh] overflow-y-auto pr-2">
           {calculationBreakdown.length > 0 && (
             <div>
-              <h4 className={cn(sectionHeadingClass, "mb-1")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle || "Calculation Breakdown"}</h4>
+              <h3 className={cn(sectionHeadingClass, "mb-2")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle || "Calculation Breakdown"}</h3>
               <div>
                 {calculationBreakdown.map((item, index) => {
                   if (item.label === (UI_STRINGS.infoDialogTotalLabel || "Total") && item.isBold) {
@@ -205,9 +205,7 @@ export function RollDialog({
                     <div key={`breakdown-${index}`} className="flex justify-between text-sm">
                       <span className="text-foreground inline-flex items-baseline">
                         {labelText}
-                        {abilityAbbr && (
-                           <Badge variant="outline">{abilityAbbr}</Badge>
-                        )}
+                        {abilityAbbr && <>{' '}<Badge variant="outline">{abilityAbbr}</Badge></>}
                       </span>
                       {item.isRawValue ? (
                         <span className={cn("font-bold text-foreground", item.isBold && "font-bold")}>
@@ -261,8 +259,7 @@ export function RollDialog({
                   {initialD20Roll !== null && (
                     <div className="flex justify-between items-center">
                       <div className="flex items-center">
-                        <span className="text-sm text-foreground">{UI_STRINGS.rollDialogDiceRollLabel || "Dice Roll"}</span>
-                        <Badge variant="outline">1d20</Badge>
+                        <span className="text-sm text-foreground">{UI_STRINGS.rollDialogDiceRollLabel || "Dice Roll"}{' '}</span><Badge variant="outline">1d20</Badge>
                       </div>
                       <span className={diceResultColor}>{initialD20Roll}</span>
                     </div>
