@@ -287,6 +287,45 @@
       "effects": [{ "type": "note", "text": "Conserve son bonus de Dextérité à la CA (le cas échéant) même s'il est pris au dépourvu ou frappé par un attaquant invisible. Ne peut être pris en tenaille que par un roublard ayant au moins quatre niveaux de plus que le personnage." }]
     },
     {
+      "value": "class-barbarian-trap-sense",
+      "label": "Sens des pièges",
+      "description": "<b>Avantage :</b> Au niveau 3, un barbare gagne un bonus de +1 aux jets de Réflexes effectués pour éviter les pièges et un bonus d'esquive de +1 à la CA contre les attaques faites par les pièges. Ces bonus augmentent de +1 tous les trois niveaux de barbare par la suite (6e, 9e, 12e, 15e et 18e niveau).",
+      "effectsText": "Bonus évolutif aux jets de Réflexes contre les pièges (+1/3 niveaux, commençant au N3) et bonus d'esquive à la CA contre les attaques de pièges.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        {
+          "type": "savingThrow",
+          "save": "reflex",
+          "value": 0,
+          "bonusType": "untyped",
+          "condition": "vs_traps",
+          "scaleWithClassLevel": {
+            "classId": "barbarian",
+            "specificLevels": [
+              { "level": 3, "value": 1 }, { "level": 6, "value": 2 }, { "level": 9, "value": 3 },
+              { "level": 12, "value": 4 }, { "level": 15, "value": 5 }, { "level": 18, "value": 6 }
+            ]
+          }
+        },
+        {
+          "type": "armorClass",
+          "acType": "dodge",
+          "value": 0,
+          "bonusType": "dodge",
+          "condition": "vs_trap_attacks",
+          "appliesToScope": ["normal", "touch"],
+          "scaleWithClassLevel": {
+            "classId": "barbarian",
+            "specificLevels": [
+              { "level": 3, "value": 1 }, { "level": 6, "value": 2 }, { "level": 9, "value": 3 },
+              { "level": 12, "value": 4 }, { "level": 15, "value": 5 }, { "level": 18, "value": 6 }
+            ]
+          }
+        }
+      ]
+    },
+    {
       "value": "class-barbarian-improved-uncanny-dodge",
       "label": "Esquive instinctive améliorée",
       "description": "<b>Avantage :</b> Au niveau 5 et supérieur, un barbare ne peut plus être pris en tenaille. Cette défense empêche un roublard de lui infliger une attaque sournoise en le prenant en tenaille, à moins que l'attaquant n'ait au moins quatre niveaux de roublard de plus que les niveaux de barbare de la cible.",
@@ -294,6 +333,62 @@
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [{ "type": "note", "text": "Ne peut plus être pris en tenaille." }]
+    },
+    {
+      "value": "class-barbarian-damage-reduction",
+      "label": "Réduction des dégâts",
+      "description": "<b>Avantage :</b> Au niveau 7, un barbare gagne une Réduction des Dégâts. Soustrayez 1 aux dégâts que le barbare subit chaque fois qu'il est touché par une arme ou une attaque naturelle. Au niveau 10, et tous les trois niveaux de barbare par la suite (13e, 16e et 19e niveau), cette réduction des dégâts augmente de 1 point. La réduction des dégâts peut réduire les dégâts à 0 mais pas en dessous de 0.",
+      "effectsText": "Gagne RD X/-. Commence à RD 1/- au N7, augmente de 1 tous les 3 niveaux.",
+      "isClassFeature": true,
+      "type": "special-ex"
+    },
+    {
+      "value": "class-barbarian-greater-rage",
+      "label": "Rage supérieure",
+      "permanentEffect": false,
+      "description": "<b>Avantage :</b> Au niveau 11, les bonus de Force et de Constitution d'un barbare pendant sa rage augmentent chacun à +6, et son bonus de moral aux jets de Volonté augmente à +3. La pénalité à la CA reste de –2.",
+      "effectsText": "Les bonus de rage deviennent +6 FOR, +6 CON, +3 Vol.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "abilityScore", "ability": "strength", "value": 2, "bonusType": "morale", "condition": "raging" },
+        { "type": "abilityScore", "ability": "constitution", "value": 2, "bonusType": "morale", "condition": "raging" },
+        { "type": "savingThrow", "save": "will", "value": 1, "bonusType": "morale", "condition": "raging" }
+      ]
+    },
+    {
+      "value": "class-barbarian-indomitable-will",
+      "label": "Volonté indomptable",
+      "description": "<b>Avantage :</b> En rage, un barbare de niveau 14 ou plus gagne un bonus de +4 aux jets de Volonté pour résister aux sorts d'enchantement. Ce bonus se cumule avec tous les autres modificateurs, y compris le bonus de moral aux jets de Volonté qu'il reçoit également pendant sa rage.",
+      "effectsText": "+4 bonus aux jets de Volonté contre les sorts d'enchantement en rage.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "savingThrow", "save": "will", "value": 4, "bonusType": "untyped", "condition": "vs_enchantment_spells_when_raging" }
+      ]
+    },
+    {
+      "value": "class-barbarian-tireless-rage",
+      "label": "Rage infatigable",
+      "description": "<b>Avantage :</b> Au niveau 17 et supérieur, un barbare ne devient plus fatigué à la fin de sa rage.",
+      "effectsText": "Ne devient plus fatigué après la rage.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "note", "text": "Ne devient plus fatigué à la fin de sa rage." }]
+    },
+    {
+      "value": "class-barbarian-mighty-rage",
+      "label": "Rage puissante",
+      "permanentEffect": false,
+      "description": "<b>Avantage :</b> Au niveau 20, les bonus de Force et de Constitution d'un barbare pendant sa rage augmentent chacun à +8, et son bonus de moral aux jets de Volonté augmente à +4. La pénalité à la CA reste de –2.",
+      "effectsText": "Les bonus de rage deviennent +8 FOR, +8 CON, +4 Vol.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "abilityScore", "ability": "strength", "value": 2, "bonusType": "morale", "condition": "raging" },
+        { "type": "abilityScore", "ability": "constitution", "value": 2, "bonusType": "morale", "condition": "raging" },
+        { "type": "savingThrow", "save": "will", "value": 1, "bonusType": "morale", "condition": "raging" }
+      ]
     },
     {
       "value": "simple-weapon-proficiency",
