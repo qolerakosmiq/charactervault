@@ -2,11 +2,12 @@
 'use client';
 
 import React from 'react';
-import type { AbilityScoreBreakdown, AbilityScoreComponentValue, AbilityName } from '@/types/character'; // Updated AbilityScoreComponentValue import
+import type { AbilityScoreBreakdown, AbilityScoreComponentValue, AbilityName } from '@/types/character';
 import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge'; // Added Badge
 
 interface AbilityScoreBreakdownContentDisplayProps {
   abilityScoreBreakdown?: AbilityScoreBreakdown;
@@ -19,8 +20,51 @@ export const AbilityScoreBreakdownContentDisplay = ({
 }: AbilityScoreBreakdownContentDisplayProps) => {
   if (!abilityScoreBreakdown) return null;
 
-  const dialogDisplayScore = abilityScoreBreakdown.finalScore; // Use finalScore directly
+  const dialogDisplayScore = abilityScoreBreakdown.finalScore;
   const dialogDisplayModifier = calculateAbilityModifier(dialogDisplayScore);
+
+  const nonConditionalComponents: AbilityScoreComponentValue[] = [];
+  const conditionalActiveComponents: Array<AbilityScoreComponentValue & { conditionName?: string }> = [];
+
+  abilityScoreBreakdown.components.forEach(comp => {
+    if (comp.condition && comp.isActive) {
+      const conditionTextKey = `condition_${comp.condition.toLowerCase().replace(/\s+/g, '_')}` as keyof typeof uiStrings;
+      const conditionName = uiStrings[conditionTextKey] || comp.condition;
+      conditionalActiveComponents.push({ ...comp, conditionName });
+    } else if (!comp.condition) {
+      nonConditionalComponents.push(comp);
+    }
+  });
+
+  const renderComponent = (comp: AbilityScoreComponentValue, isConditional: boolean = false, conditionName?: string) => {
+    let displaySourceLabel = comp.sourceLabel;
+    if (comp.sourceLabel === "Race" && uiStrings.abilityScoreSourceRace && comp.sourceDetail) {
+      displaySourceLabel = (uiStrings.abilityScoreSourceRace).replace("{raceLabel}", comp.sourceDetail);
+    } else if (comp.sourceLabel === "Aging" && uiStrings.abilityScoreSourceAging && comp.sourceDetail) {
+      displaySourceLabel = (uiStrings.abilityScoreSourceAging).replace("{categoryName}", comp.sourceDetail);
+    } else if (comp.sourceLabel === "Feat" && comp.sourceDetail) {
+      displaySourceLabel = comp.sourceDetail; // Feat name is the primary source
+      if (isConditional && conditionName) {
+        // For conditional feats, the condition is now part of the sub-heading or a badge
+      }
+    } else if (comp.sourceLabel === "Temporary Modifier" && uiStrings.abilityScoreSourceTempMod) {
+      displaySourceLabel = uiStrings.abilityScoreSourceTempMod;
+    }
+
+    return (
+      <div key={`${comp.sourceLabel}-${comp.sourceDetail || ''}-${comp.value}-${comp.condition || 'unconditional'}`} className={cn("flex justify-between items-baseline text-sm", isConditional && "ml-3")}>
+        <span className="text-muted-foreground flex-shrink-0 mr-2">
+          {displaySourceLabel}
+          {isConditional && conditionName && (
+            <Badge variant="outline" className="ml-1.5 text-xs font-normal px-1 py-0.5 whitespace-nowrap border-muted-foreground/30 text-muted-foreground">
+              {conditionName}
+            </Badge>
+          )}
+        </span>
+        {renderModifierValue(comp.value)}
+      </div>
+    );
+  };
 
   return (
     <div>
@@ -31,41 +75,16 @@ export const AbilityScoreBreakdownContentDisplay = ({
           <span className="font-bold">{abilityScoreBreakdown.base}</span>
         </div>
 
-        {abilityScoreBreakdown.components.map((comp, index) => {
-          let displaySourceLabel = comp.sourceLabel; 
-          if (comp.sourceLabel === "Race" && uiStrings.abilityScoreSourceRace && comp.sourceDetail) { 
-            displaySourceLabel = (uiStrings.abilityScoreSourceRace).replace("{raceLabel}", comp.sourceDetail);
-          } else if (comp.sourceLabel === "Aging" && uiStrings.abilityScoreSourceAging && comp.sourceDetail) {
-            displaySourceLabel = (uiStrings.abilityScoreSourceAging).replace("{categoryName}", comp.sourceDetail);
-          } else if (comp.sourceLabel === "Feat" && comp.sourceDetail && comp.condition && uiStrings.abilityScoreBreakdownConditionalSourceFormat && uiStrings[`condition_${comp.condition}`]) {
-            displaySourceLabel = uiStrings.abilityScoreBreakdownConditionalSourceFormat
-              .replace("{sourceLabel}", comp.sourceDetail)
-              .replace("{conditionName}", uiStrings[`condition_${comp.condition}`]);
-          } else if (comp.sourceLabel === "Feat" && comp.sourceDetail) { 
-             displaySourceLabel = comp.sourceDetail;
-          } else if (comp.sourceLabel === "Temporary Modifier" && uiStrings.abilityScoreSourceTempMod) {
-            displaySourceLabel = uiStrings.abilityScoreSourceTempMod;
-          }
-          
-          return (comp.value !== 0 || comp.condition) && (
-            <div key={`comp-${index}-${comp.sourceLabel}-${comp.sourceDetail || ''}`} className="flex justify-between items-baseline text-sm">
-              <span className="text-muted-foreground flex-shrink-0 mr-2">
-                {displaySourceLabel}
-              </span>
-              <div className="flex items-baseline">
-                {renderModifierValue(comp.value)}
-                {comp.condition && (
-                  <span className="ml-1 text-xs text-muted-foreground/80 italic">
-                    {comp.isActive 
-                      ? (uiStrings.conditionalEffectActiveSuffix || "(Active)")
-                      : (uiStrings.conditionalEffectInactiveSuffix || "(Inactive)")
-                    }
-                  </span>
-                )}
-              </div>
-            </div>
-          );
-        })}
+        {nonConditionalComponents.map(comp => renderComponent(comp))}
+
+        {conditionalActiveComponents.length > 0 && (
+          <>
+            <h4 className="text-sm font-medium text-muted-foreground pt-1.5 pb-0.5">
+              {uiStrings.infoDialogConditionalBonusesHeading || "Conditional Bonuses"}
+            </h4>
+            {conditionalActiveComponents.map(comp => renderComponent(comp, true, comp.conditionName))}
+          </>
+        )}
 
         <Separator className="my-2" />
         <div className="flex justify-between text-lg">
@@ -80,4 +99,3 @@ export const AbilityScoreBreakdownContentDisplay = ({
     </div>
   );
 };
-

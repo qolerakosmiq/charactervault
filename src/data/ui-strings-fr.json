@@ -632,7 +632,8 @@
     "favoredEnemyDescription": "Sélectionnez les types de créatures contre lesquelles votre Rôdeur se spécialise. Les bonus s'appliquent automatiquement lorsque c'est pertinent.",
     "favoredEnemySlotLabel": "Emplacement d'Ennemi Juré {slotNum}",
     "favoredEnemyPlaceholder": "Ex : Orque, Gobelin, Mort-vivant",
-    "favoredEnemyBonusDisplayInfo": "Bonus d'Ennemi Juré : +{skillBonus} aux tests de Bluff, Perception auditive, Psychologie, Détection, Survie et +{damageBonus} aux dégâts contre les ennemis jurés choisis. (Emplacements disponibles : {slots})"
+    "favoredEnemyBonusDisplayInfo": "Bonus d'Ennemi Juré : +{skillBonus} aux tests de Bluff, Perception auditive, Psychologie, Détection, Survie et +{damageBonus} aux dégâts contre les ennemis jurés choisis. (Emplacements disponibles : {slots})",
+    "infoDialogConditionalBonusesHeading": "Bonus Conditionnels"
   }
 }
     
