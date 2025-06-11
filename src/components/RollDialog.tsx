@@ -15,7 +15,7 @@ import { Dices, Loader2 } from 'lucide-react';
 import type { GenericBreakdownItem } from '@/types/character-core';
 import { useI18n } from '@/context/I18nProvider';
 import { Separator } from '@/components/ui/separator';
-import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils'; // Assuming this utility is suitable
+import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
 import { cn } from '@/lib/utils';
 import { parseAndRollDice } from '@/lib/dnd-utils';
 
@@ -101,12 +101,12 @@ export function RollDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-serif flex items-center">
+          <DialogTitle className="font-serif flex items-center text-left">
             <Dices className="mr-2 h-5 w-5 text-primary" />
             {dialogTitle}
           </DialogTitle>
           {!isDamageRoll && (
-            <DialogDescription>
+            <DialogDescription className="text-left">
               {UI_STRINGS.rollDialogDescriptionFormat?.replace("{rollType}", rollType) || `Performing a ${rollType}.`}
             </DialogDescription>
           )}
@@ -115,21 +115,19 @@ export function RollDialog({
         <div className="space-y-3 py-3 max-h-[60vh] overflow-y-auto pr-2">
           {calculationBreakdown.length > 0 && (
             <div>
-              <h4 className={cn(sectionHeadingClass, "text-base mb-1")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle || "Calculation Breakdown:"}</h4>
-              <div className="space-y-0.5 text-sm bg-muted/30 p-2 rounded-md">
-                {calculationBreakdown.map((item, index) => (
-                  <div key={`breakdown-${index}`} className="flex justify-between">
-                    <span className="text-muted-foreground">{item.label}:</span>
-                    <span className={cn("font-semibold", item.isBold && "font-bold")}>
-                      {typeof item.value === 'number' || !isNaN(Number(item.value)) ? renderModifierValue(item.value) : item.value}
-                    </span>
-                  </div>
-                ))}
-                {!isDamageRoll && <Separator className="my-1" />}
-                <div className="flex justify-between font-semibold">
-                  <span className="text-muted-foreground">{isDamageRoll ? (UI_STRINGS.rollDialogTotalNumericBonusLabel || "Total Numeric Bonus") : (UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus")}:</span>
-                  <span>{renderModifierValue(baseModifier)}</span>
-                </div>
+              <h4 className={cn(sectionHeadingClass, "mb-1")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle || "Calculation Breakdown:"}</h4>
+              <div className="space-y-0.5 text-sm bg-muted/30 p-3 rounded-md border">
+                {calculationBreakdown.map((item, index) => {
+                  const isTotalLine = item.label === (UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus") || item.label === (UI_STRINGS.rollDialogTotalNumericBonusLabel || "Total Numeric Bonus");
+                  return (
+                    <div key={`breakdown-${index}`} className={cn("flex justify-between", isTotalLine && "mt-1 pt-1 border-t")}>
+                      <span className={cn("text-muted-foreground", isTotalLine && "font-semibold")}>{item.label}:</span>
+                      <span className={cn("font-semibold", item.isBold && "font-bold", isTotalLine && "text-accent font-bold")}>
+                        {typeof item.value === 'number' || !isNaN(Number(item.value)) ? renderModifierValue(item.value) : item.value}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -184,3 +182,4 @@ export function RollDialog({
     </Dialog>
   );
 }
+
