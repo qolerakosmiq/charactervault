@@ -18,7 +18,7 @@ import { Separator } from '@/components/ui/separator';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
 import { cn } from '@/lib/utils';
 import { parseAndRollDice } from '@/lib/dnd-utils';
-import { Badge } from '@/components/ui/badge'; // Added import
+import { Badge } from '@/components/ui/badge';
 
 export interface RollDialogProps {
   isOpen: boolean;
@@ -152,7 +152,7 @@ export function RollDialog({
           </DialogTitle>
           {!isDamageRoll && (
             <DialogDescription className="text-left">
-              {UI_STRINGS.rollDialogDescriptionFormat?.replace("{rollType}", rollType) || `Performing a ${rollType}`}
+              {(UI_STRINGS.rollDialogDescriptionFormat || "{rollType}").replace("{rollType}", rollType)}
             </DialogDescription>
           )}
         </DialogHeader>
@@ -161,20 +161,41 @@ export function RollDialog({
           {calculationBreakdown.length > 0 && (
             <div className="space-y-1">
               <h4 className={cn(sectionHeadingClass, "mb-1")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle}</h4>
-                {calculationBreakdown.map((item, index) => (
-                  <div key={`breakdown-${index}`} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">{item.label}</span>
-                    {item.isRawValue ? (
-                      <span className={cn("font-bold text-foreground", item.isBold && "font-bold")}>
-                        {item.value}
+                {calculationBreakdown.map((item, index) => {
+                  // Skip rendering 'Ability Score' row for ability, skill, and save checks
+                  if (item.label === UI_STRINGS.abilityScoreLabel && (rollType.startsWith('ability_check_') || rollType.startsWith('skill_check_') || rollType.startsWith('saving_throw_'))) {
+                    return null;
+                  }
+                  
+                  const isAbilityModifierRow = item.label?.includes(UI_STRINGS.abilityModifierLabel || "Ability Modifier") && (rollType.startsWith('ability_check_') || rollType.startsWith('skill_check_') || rollType.startsWith('saving_throw_'));
+                  let abilityAbbr: string | undefined;
+                  if (isAbilityModifierRow) {
+                     const match = item.label.match(/\(([^)]+)\)/); // Extract content within parentheses
+                     if (match && match[1]) {
+                        abilityAbbr = match[1];
+                     }
+                  }
+                  
+                  return (
+                    <div key={`breakdown-${index}`} className="flex justify-between text-sm">
+                      <span className="text-muted-foreground inline-flex items-baseline">
+                        {item.label?.replace(/\s*\([A-Z]{3}\)/, '')} {/* Remove abbreviation from label text */}
+                        {isAbilityModifierRow && abilityAbbr && (
+                           <Badge variant="outline" className="ml-1.5 text-xs font-normal px-1 py-0 whitespace-nowrap">{abilityAbbr}</Badge>
+                        )}
                       </span>
-                    ) : (
-                       <span className={cn("font-semibold text-foreground", item.isBold && "font-bold")}>
-                        {renderModifierValue(item.value as number | string)}
-                      </span>
-                    )}
-                  </div>
-                ))}
+                      {item.isRawValue ? (
+                        <span className={cn("font-bold text-foreground", item.isBold && "font-bold")}>
+                          {item.value}
+                        </span>
+                      ) : (
+                        <span className={cn("font-semibold text-foreground", item.isBold && "font-bold")}>
+                          {renderModifierValue(item.value as number | string)}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
                 <Separator className="my-2" />
                 <div className="flex justify-between text-lg">
                   <span className="font-semibold">

@@ -144,7 +144,7 @@
     "abilityScoreSourceAging": "Vieillissement ({categoryName})",
     "abilityScoreSourceMonkWisdom": "Sagesse du Moine",
     "abilityScoreLabel": "Score de Caractéristique",
-    "abilityModifierLabel": "Modificateur",
+    "abilityModifierLabel": "Modificateur de Caractéristique",
     "infoDialogAbilityBreakdownAriaLabel": "Infos pour le détail du score de {abilityName}",
     "rollerDialogTitle": "Lancer les caractéristiques initiales",
     "rollerDialogTitleLoading": "Lancer les caractéristiques initiales",
@@ -455,6 +455,7 @@
     "conditionsPanelTooltipSourcesLabel": "Sources",
     "conditionsPanelPermanentLabel": "Permanent",
     "infoDialogUnknownFeatSource": "Don inconnu",
+    "infoDialogConditionalBonusesHeading": "Bonus Conditionnels",
     "experiencePanelTitle": "Expérience",
     "experiencePanelDescription": "Suivez la progression et les points d'expérience actuels de votre personnage.",
     "experiencePanelCurrentXpMainLabel": "XP Actuels",
@@ -583,7 +584,7 @@
     "rollDialogTitleAbilityCheck": "Test de {abilityName}",
     "rollDialogTitleSavingThrow": "Jet de {saveTypeLabel}",
     "rollDialogTitleSkillCheck": "Test de {skillName}",
-    "rollDialogDescriptionFormat": "Effectuer un {rollType}.",
+    "rollDialogDescriptionFormat": "{rollType}",
     "rollDialogCalculationBreakdownTitle": "Détail du Calcul",
     "rollDialogTotalBonusLabel": "Bonus Total",
     "rollDialogDiceRollLabel": "Résultat du Dé",
@@ -621,19 +622,7 @@
     "rollDialogGrappleCheckAriaLabel": "Lancer un Test de Lutte",
     "rollDialogCritFailureLabel": "Échec Critique !",
     "barbarianRageUsesLabel": "Utilisations de Rage par Jour",
-    "condition_raging": "Enragé",
-    "rangerCombatStyleLabel": "Style de Combat du Rôdeur",
-    "selectRangerCombatStylePlaceholder": "Choisir un Style de Combat...",
-    "rangerCombatStyleArchery": "Tir à l'arc",
-    "rangerCombatStyleTwoWeapon": "Combat à Deux Armes",
-    "rangerCombatStyleDescription": "Choisissez votre style de combat au niveau 2 de Rôdeur. Cela accorde des dons bonus à mesure que vous montez de niveau.",
-    "favoredEnemyTitle": "Ennemis Jurés",
-    "favoredEnemySlotsAvailableShort": "Emplacement(s)",
-    "favoredEnemyDescription": "Sélectionnez les types de créatures contre lesquelles votre Rôdeur se spécialise. Les bonus s'appliquent automatiquement lorsque c'est pertinent.",
-    "favoredEnemySlotLabel": "Emplacement d'Ennemi Juré {slotNum}",
-    "favoredEnemyPlaceholder": "Ex : Orque, Gobelin, Mort-vivant",
-    "favoredEnemyBonusDisplayInfo": "Bonus d'Ennemi Juré : +{skillBonus} aux tests de Bluff, Perception auditive, Psychologie, Détection, Survie et +{damageBonus} aux dégâts contre les ennemis jurés choisis. (Emplacements disponibles : {slots})",
-    "infoDialogConditionalBonusesHeading": "Bonus Conditionnels"
+    "condition_raging": "Enragé"
   }
 }
     
