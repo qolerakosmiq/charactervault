@@ -134,7 +134,7 @@ export function RollDialog({
         <div className="space-y-3 py-3 max-h-[60vh] overflow-y-auto pr-2">
           {calculationBreakdown.length > 0 && (
             <div className="space-y-1">
-              <h4 className={cn(sectionHeadingClass, "mb-1")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle || "Calculation Breakdown"}</h4>
+              <h4 className={cn(sectionHeadingClass, "mb-1")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle}</h4>
                 {calculationBreakdown.map((item, index) => (
                   <div key={`breakdown-${index}`} className="flex justify-between text-sm">
                     <span className="text-muted-foreground">{item.label}</span>
@@ -175,29 +175,33 @@ export function RollDialog({
                     <span className="font-bold text-lg text-primary">{diceResult}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">{(UI_STRINGS.rollDialogDamageOtherBonusesLabel || "Other Bonuses")}</span>
+                    <span className="text-sm">{UI_STRINGS.rollDialogDamageOtherBonusesLabel}</span>
                     <span className="font-bold text-sm text-primary">{renderModifierValue(baseModifier)}</span>
                   </div>
                   <Separator className="my-1 bg-border/50"/>
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalDamageStringLabel || "Total Damage"}</span>
+                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalDamageStringLabel}</span>
                     <span className="font-bold text-lg text-primary">{finalResult}</span>
                   </div>
                 </>
               ) : (
                 <>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">{UI_STRINGS.rollDialogDiceRollLabel || "Dice Roll (1d20)"}</span>
+                    <span className="text-sm">{UI_STRINGS.rollDialogDiceRollLabel}</span>
                     <span className={diceResultColor}>{diceResult}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">{UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus"}</span>
+                    <span className="text-sm">{UI_STRINGS.rollDialogTotalBonusLabel}</span>
                     <span className="font-bold text-sm text-primary">{renderModifierValue(baseModifier)}</span>
                   </div>
                   <Separator className="my-1 bg-border/50"/>
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalResultLabel || "Final Result"}</span>
-                    <span className="font-bold text-lg text-primary">{finalResult}</span>
+                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalResultLabel}</span>
+                    {isCritFailure ? (
+                      <span className="font-bold text-lg text-destructive">{UI_STRINGS.rollDialogCritFailureLabel || "Critical Failure!"}</span>
+                    ) : (
+                      <span className="font-bold text-lg text-primary">{finalResult}</span>
+                    )}
                   </div>
                 </>
               )}
@@ -219,4 +223,5 @@ export function RollDialog({
     </Dialog>
   );
 }
+
 
