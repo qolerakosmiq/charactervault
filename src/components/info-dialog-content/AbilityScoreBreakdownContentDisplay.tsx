@@ -74,11 +74,13 @@ export const AbilityScoreBreakdownContentDisplay = ({
             <h4 className="text-sm font-bold text-muted-foreground pb-0.5">
               {uiStrings.infoDialogConditionalBonusesHeading || "Conditional Bonuses"}
             </h4>
-            {conditionalActiveComponents.map(comp => renderComponent(comp, true))}
+            <div className="space-y-0.5">
+              {conditionalActiveComponents.map(comp => renderComponent(comp, true))}
+            </div>
           </>
         )}
 
-        <Separator className="my-2" />
+        <Separator className="my-1" />
         <div className="flex justify-between text-lg">
           <span className="font-semibold">{uiStrings.infoDialogFinalScoreLabel || "Final Score"}</span>
           <span className="font-bold text-accent">{dialogDisplayScore}</span>
@@ -91,4 +93,3 @@ export const AbilityScoreBreakdownContentDisplay = ({
     </div>
   );
 };
-

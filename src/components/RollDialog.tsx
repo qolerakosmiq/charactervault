@@ -220,7 +220,7 @@ export function RollDialog({
                     </div>
                   );
                 })}
-                <Separator className="my-2" />
+                <Separator className="my-1" />
                 <div className="flex justify-between text-lg">
                   <span className="font-semibold">
                     {isDamageRoll ? (UI_STRINGS.rollDialogTotalNumericBonusLabel || "Total Numeric Bonus") : (UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus")}

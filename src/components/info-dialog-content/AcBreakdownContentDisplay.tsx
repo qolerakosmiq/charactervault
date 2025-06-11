@@ -18,7 +18,7 @@ export interface AcBreakdownDetailItem {
   sizeName?: string;
   condition?: string;
   isActive?: boolean;
-  isSubItem?: boolean; // Indicates if this is a conditional feat effect, for separate rendering
+  isSubItem?: boolean; 
 }
 
 interface AcBreakdownContentDisplayProps {
@@ -36,17 +36,15 @@ export const AcBreakdownContentDisplay = ({
 }: AcBreakdownContentDisplayProps) => {
   if (!detailsList || detailsList.length === 0) return null;
 
-  // Filter out inactive items first, except for the base AC which doesn't have isActive
   const activeDetailsList = detailsList.filter(detail => detail.isActive !== false || String(detail.mainLabel).toLowerCase() === (uiStrings.acBreakdownBaseLabel || "Base").toLowerCase());
-
 
   const staticComponents: AcBreakdownDetailItem[] = [];
   const conditionalFeatComponents: AcBreakdownDetailItem[] = [];
 
   activeDetailsList.forEach(detail => {
-    if (detail.isSubItem && detail.isActive) { // These are the individual conditional feat effects
+    if (detail.isSubItem && detail.isActive) { 
       conditionalFeatComponents.push(detail);
-    } else if (!detail.isSubItem) { // Only push non-sub-items (main categories)
+    } else if (!detail.isSubItem) { 
       staticComponents.push(detail);
     }
   });
@@ -57,17 +55,16 @@ export const AcBreakdownContentDisplay = ({
 
     if (detail.type === 'acAbilityMod' && detail.abilityAbbr) {
       mainTextDisplay = detail.mainLabel;
-      suffixBadgeDisplay = <Badge variant="outline" className="ml-1.5">{detail.abilityAbbr}</Badge>;
+      suffixBadgeDisplay = <Badge variant="outline">{detail.abilityAbbr}</Badge>;
     } else if (detail.type === 'acSizeMod' && detail.sizeName) {
       mainTextDisplay = detail.mainLabel;
-      suffixBadgeDisplay = <Badge variant="outline" className="ml-1.5">{detail.sizeName}</Badge>;
+      suffixBadgeDisplay = <Badge variant="outline">{detail.sizeName}</Badge>;
     } else if (detail.suffixDetails && detail.suffixDetails.length > 0 && !isConditionalSubItem) {
       mainTextDisplay = detail.mainLabel;
       suffixBadgeDisplay = <span className="text-muted-foreground/80 ml-1">({detail.suffixDetails.join(", ")})</span>;
     } else if (isConditionalSubItem) {
-        mainTextDisplay = detail.mainLabel; // For conditional items, mainLabel is usually the feat name
+        mainTextDisplay = detail.mainLabel; 
     }
-
 
     let valueToRender = detail.value;
     if (String(detail.mainLabel).toLowerCase() === (uiStrings.acBreakdownBaseLabel || "Base").toLowerCase() && typeof detail.value === 'number') {
@@ -75,7 +72,6 @@ export const AcBreakdownContentDisplay = ({
     } else if ((typeof detail.value === 'number' || (typeof detail.value === 'string' && !isNaN(parseFloat(detail.value as string))))) {
       valueToRender = renderModifierValue(detail.value as number | string);
     }
-
 
     return (
       <div key={`${String(detail.mainLabel)}-${index}`} className={cn("flex justify-between items-baseline text-sm mb-0.5", isConditionalSubItem && "ml-3")}>
@@ -91,7 +87,9 @@ export const AcBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{detailsListHeading}</h3>
-      {staticComponents.map((detail, index) => renderItem(detail, `static-${index}`))}
+      <div className="space-y-0.5">
+        {staticComponents.map((detail, index) => renderItem(detail, `static-${index}`))}
+      </div>
 
       {conditionalFeatComponents.length > 0 && (
         <>
@@ -106,7 +104,7 @@ export const AcBreakdownContentDisplay = ({
 
       {totalACValue !== undefined && (
         <>
-          <Separator className="my-2" />
+          <Separator className="my-1" />
           <div className="flex justify-between text-lg">
             <span className="font-semibold">{uiStrings.infoDialogTotalLabel || 'Total'}</span>
             <span className="font-bold text-accent">{renderModifierValue(totalACValue)}</span>
@@ -116,4 +114,3 @@ export const AcBreakdownContentDisplay = ({
     </div>
   );
 };
-

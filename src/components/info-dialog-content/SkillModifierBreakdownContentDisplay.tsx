@@ -13,7 +13,7 @@ interface SkillModifierBreakdownContentDisplayProps {
   htmlContent?: string;
   synergyInfoList?: SynergyInfoItem[];
   skillModifierBreakdown?: SkillModifierBreakdownDetails;
-  allSkillEffectDetails?: Array<SkillEffectDetail & AggregatedFeatEffectBase>; // Added
+  allSkillEffectDetails?: Array<SkillEffectDetail & AggregatedFeatEffectBase>; 
   uiStrings: Record<string, string>;
 }
 
@@ -21,7 +21,7 @@ export const SkillModifierBreakdownContentDisplay = ({
   htmlContent,
   synergyInfoList,
   skillModifierBreakdown,
-  allSkillEffectDetails, // Added
+  allSkillEffectDetails, 
   uiStrings,
 }: SkillModifierBreakdownContentDisplayProps) => {
   const htmlContentBlock = (htmlContent && htmlContent.trim() !== '' && htmlContent.trim() !== '<p></p>') ? (
@@ -137,14 +137,16 @@ export const SkillModifierBreakdownContentDisplay = ({
                 <h4 className="text-sm font-bold text-muted-foreground pb-0.5">
                     {uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}
                 </h4>
-                {activeFeatSkillEffects.map((eff, idx) => (
-                    <div key={`feat-skill-bonus-${idx}`} className="flex justify-between items-baseline text-sm ml-3">
-                        <span className="text-foreground flex-shrink-0 mr-2">
-                            {eff.sourceFeat || (uiStrings.infoDialogFeatBonusLabel || "Feat Bonus")}
-                        </span>
-                        {renderModifierValue(eff.value)}
-                    </div>
-                ))}
+                <div className="space-y-0.5">
+                    {activeFeatSkillEffects.map((eff, idx) => (
+                        <div key={`feat-skill-bonus-${idx}`} className="flex justify-between items-baseline text-sm ml-3">
+                            <span className="text-foreground flex-shrink-0 mr-2">
+                                {eff.sourceFeat || (uiStrings.infoDialogFeatBonusLabel || "Feat Bonus")}
+                            </span>
+                            {renderModifierValue(eff.value)}
+                        </div>
+                    ))}
+                </div>
             </>
         )}
 
@@ -160,7 +162,7 @@ export const SkillModifierBreakdownContentDisplay = ({
             {renderModifierValue(skillModifierBreakdown!.miscModifier)}
           </div>
         )}
-        <Separator className="my-2" />
+        <Separator className="my-1" />
         <div className="flex justify-between text-lg">
           <span className="font-semibold">{uiStrings.infoDialogTotalBonusLabel || "Total Bonus"}</span>
           <span className="font-bold text-accent">{renderModifierValue(skillModifierBreakdown!.totalBonus)}</span>
@@ -191,4 +193,3 @@ export const SkillModifierBreakdownContentDisplay = ({
     </>
   );
 };
-

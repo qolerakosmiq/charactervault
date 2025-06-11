@@ -31,7 +31,7 @@ export const BabBreakdownContentDisplay = ({
               {renderModifierValue(babBreakdown.miscModifier)}
           </div>
         )}
-        <Separator className="my-2" />
+        <Separator className="my-1" />
         <div className="flex justify-between text-lg">
           <span className="font-semibold">{uiStrings.infoDialogBabTotalLabel || "Total Base Attack Bonus"}</span>
           <span className="font-bold text-accent">{babBreakdown.totalBab.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</span>
