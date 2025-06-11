@@ -196,10 +196,12 @@ export const RaceContentDisplay = ({
     );
   }
 
-  return outputBlocks.length > 0 ? <div className="space-y-3">{outputBlocks.map((block, index, arr) => (
+  return outputBlocks.length > 0 ? <div className="space-y-2">{outputBlocks.map((block, index, arr) => (
         <React.Fragment key={`race-display-block-${index}`}>
           {block}
-          {index < arr.length - 1 && <Separator className="my-3" />}
+          {index < arr.length - 1 && <Separator className="my-2" />}
         </React.Fragment>
       ))}</div> : null;
 };
+
+    
