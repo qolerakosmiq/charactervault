@@ -598,7 +598,7 @@ export function calculateDetailedAbilityScores(
   ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[]
 ): DetailedAbilityScores {
   const result: Partial<DetailedAbilityScores> = {};
-  const racialQualities = getRaceSpecialQualities(character.race, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, [], [], ABILITY_LABELS); // Pass empty skills/feats defs as not needed here
+  const racialQualities = getRaceSpecialQualities(character.race, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, [], [], ABILITY_LABELS);
   const agingDetails = getNetAgingEffects(character.race, character.age, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, ABILITY_LABELS);
   const tempCustomModifiers = character.abilityScoreTempCustomModifiers ||
     ABILITY_ORDER_INTERNAL.reduce((acc, key) => { acc[key] = 0; return acc; }, {} as AbilityScores);
@@ -611,31 +611,33 @@ export function calculateDetailedAbilityScores(
     const racialModObj = racialQualities.abilityEffects.find(eff => eff.ability === ability);
     if (racialModObj && racialModObj.change !== 0) {
       const raceLabel = DND_RACES.find(r => r.value === character.race)?.label || character.race || 'Unknown Race';
-      components.push({ sourceLabel: "Race", sourceDetail: raceLabel, value: racialModObj.change });
+      components.push({ sourceLabel: "Race", sourceDetail: raceLabel, value: racialModObj.change, isActive: true });
       currentScore += racialModObj.change;
     }
 
     const agingModObj = agingDetails.effects.find(eff => eff.ability === ability);
     if (agingModObj && agingModObj.change !== 0) {
-      components.push({ sourceLabel: "Aging", sourceDetail: agingDetails.categoryName, value: agingModObj.change });
+      components.push({ sourceLabel: "Aging", sourceDetail: agingDetails.categoryName, value: agingModObj.change, isActive: true });
       currentScore += agingModObj.change;
     }
 
     if (aggregatedFeatEffects.abilityScoreBonuses) {
       for (const featEffect of aggregatedFeatEffects.abilityScoreBonuses) {
-        if (featEffect.ability === ability) {
+        if (featEffect.ability === ability && typeof featEffect.value === 'number') {
           let effectIsActive = true;
           if (featEffect.condition && featEffect.condition.trim() !== "") {
-            const featInstance = character.feats.find(fi => fi.definitionId === featEffect.sourceFeat?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')); // Approximation
+            const featInstance = character.feats.find(fi => fi.definitionId === featEffect.sourceFeat?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''));
             effectIsActive = !!featInstance?.conditionalEffectStates?.[featEffect.condition];
           }
-          if(effectIsActive && typeof featEffect.value === 'number') {
-            components.push({
-              sourceLabel: "Feat",
-              sourceDetail: featEffect.sourceFeat || 'Unknown Feat',
-              value: featEffect.value,
-              condition: featEffect.condition,
-            });
+          
+          components.push({
+            sourceLabel: "Feat",
+            sourceDetail: featEffect.sourceFeat || 'Unknown Feat',
+            value: featEffect.value,
+            condition: featEffect.condition,
+            isActive: effectIsActive,
+          });
+          if(effectIsActive) {
             currentScore += featEffect.value;
           }
         }
@@ -644,7 +646,7 @@ export function calculateDetailedAbilityScores(
 
     const tempCustomModValue = tempCustomModifiers[ability];
     if (tempCustomModValue !== 0 && tempCustomModValue !== undefined) {
-      components.push({ sourceLabel: "Temporary Modifier", value: tempCustomModValue });
+      components.push({ sourceLabel: "Temporary Modifier", value: tempCustomModValue, isActive: true });
       currentScore += tempCustomModValue;
     }
 
@@ -693,8 +695,6 @@ export function calculateFeatEffects(
     newAggregatedEffects.attackRollBonuses.push({
       type: "attackRoll", value: -character.powerAttackValue, appliesTo: "melee", sourceFeat: "Power Attack Effect"
     });
-    // TODO: Add logic for 1.5x or 2x damage bonus for two-handed weapons if applicable
-    // For now, 1:1 damage bonus. This might require knowing the equipped weapon.
     newAggregatedEffects.damageRollBonuses.push({
       type: "damageRoll", value: character.powerAttackValue, appliesTo: "melee", sourceFeat: "Power Attack Effect"
     });
@@ -704,7 +704,7 @@ export function calculateFeatEffects(
       type: "attackRoll", value: -character.combatExpertiseValue, appliesTo: "melee", sourceFeat: "Combat Expertise Effect"
     });
     newAggregatedEffects.acBonuses.push({
-      type: "armorClass", value: character.combatExpertiseValue, acType: "dodge", bonusType: "dodge", sourceFeat: "Combat Expertise Effect" // Using dodge type for AC, might need specific handling
+      type: "armorClass", value: character.combatExpertiseValue, acType: "dodge", bonusType: "dodge", sourceFeat: "Combat Expertise Effect"
     });
   }
 

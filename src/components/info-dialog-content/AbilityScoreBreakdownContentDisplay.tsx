@@ -32,14 +32,18 @@ export const AbilityScoreBreakdownContentDisplay = ({
         </div>
 
         {abilityScoreBreakdown.components.map((comp, index) => {
-          let displaySourceLabel = comp.sourceLabel; // Already structured
+          let displaySourceLabel = comp.sourceLabel; 
           if (comp.sourceLabel === "Race" && uiStrings.abilityScoreSourceRace && comp.sourceDetail) { 
             displaySourceLabel = (uiStrings.abilityScoreSourceRace).replace("{raceLabel}", comp.sourceDetail);
           } else if (comp.sourceLabel === "Aging" && uiStrings.abilityScoreSourceAging && comp.sourceDetail) {
             displaySourceLabel = (uiStrings.abilityScoreSourceAging).replace("{categoryName}", comp.sourceDetail);
-          } else if (comp.sourceLabel === "Feat" && comp.sourceDetail) { // Display feat name if available
-            displaySourceLabel = uiStrings.abilityScoreSourceFeatsGroupLabel || "Feats";
-          } else if (comp.sourceLabel === "tempMod" && uiStrings.abilityScoreSourceTempMod) {
+          } else if (comp.sourceLabel === "Feat" && comp.sourceDetail && comp.condition && uiStrings.abilityScoreBreakdownConditionalSourceFormat && uiStrings[`condition_${comp.condition}`]) {
+            displaySourceLabel = uiStrings.abilityScoreBreakdownConditionalSourceFormat
+              .replace("{sourceLabel}", comp.sourceDetail)
+              .replace("{conditionName}", uiStrings[`condition_${comp.condition}`]);
+          } else if (comp.sourceLabel === "Feat" && comp.sourceDetail) { 
+             displaySourceLabel = comp.sourceDetail;
+          } else if (comp.sourceLabel === "Temporary Modifier" && uiStrings.abilityScoreSourceTempMod) {
             displaySourceLabel = uiStrings.abilityScoreSourceTempMod;
           }
           
@@ -47,13 +51,17 @@ export const AbilityScoreBreakdownContentDisplay = ({
             <div key={`comp-${index}-${comp.sourceLabel}-${comp.sourceDetail || ''}`} className="flex justify-between items-baseline text-sm">
               <span className="text-muted-foreground flex-shrink-0 mr-2">
                 {displaySourceLabel}
-                {comp.sourceLabel === "Feat" && comp.sourceDetail && (
-                     <span className="text-muted-foreground/80 ml-1">({comp.sourceDetail})</span>
-                )}
               </span>
               <div className="flex items-baseline">
                 {renderModifierValue(comp.value)}
-                {comp.condition && <span className="ml-1 text-xs text-muted-foreground/80 italic">({comp.condition})</span>}
+                {comp.condition && (
+                  <span className="ml-1 text-xs text-muted-foreground/80 italic">
+                    {comp.isActive 
+                      ? (uiStrings.conditionalEffectActiveSuffix || "(Active)")
+                      : (uiStrings.conditionalEffectInactiveSuffix || "(Inactive)")
+                    }
+                  </span>
+                )}
               </div>
             </div>
           );

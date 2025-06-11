@@ -460,6 +460,11 @@
     "experiencePanelNextLevelLabel": "Next Level At",
     "experiencePanelXpToLevelUpFormat": "{currentXp} / {xpForNextLevel} XP",
     "experiencePanelMaxLevel": "Max Level Reached",
+    "condition_vs_flat_footed_or_flanked_target": "vs. Flat-Footed or Flanked Target",
+    "condition_raging": "Raging",
+    "conditionalEffectActiveSuffix": "(Active)",
+    "conditionalEffectInactiveSuffix": "(Inactive)",
+    "abilityScoreBreakdownConditionalSourceFormat": "{sourceLabel} ({conditionName})",
     "conditionWieldingTwoWeaponsOrDouble": "Wielding Two Weapons or Double Weapon",
     "conditionFightingDefensivelyOrTotalDefenseWithTwoWeapons": "Fighting Defensively or Total Defense (with Two Weapons)",
     "conditionVsDesignatedOpponent": "vs. Designated Opponent",
@@ -615,6 +620,7 @@
     
     
     
+
 
 
 
