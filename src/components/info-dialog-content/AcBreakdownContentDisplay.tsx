@@ -18,6 +18,7 @@ export interface AcBreakdownDetailItem {
   sizeName?: string;
   condition?: string;
   isActive?: boolean; // Added for conditional effects
+  isSubItem?: boolean;
 }
 
 interface AcBreakdownContentDisplayProps {
@@ -35,10 +36,12 @@ export const AcBreakdownContentDisplay = ({
 }: AcBreakdownContentDisplayProps) => {
   if (!detailsList || detailsList.length === 0) return null;
 
+  const activeDetailsList = detailsList.filter(detail => detail.isActive !== false);
+
   return (
     <div>
       <h3 className={sectionHeadingClass}>{detailsListHeading}</h3>
-      {detailsList.map((detail, index) => {
+      {activeDetailsList.map((detail, index) => {
         let valueToRender = detail.value;
         if (String(detail.mainLabel).toLowerCase() === (uiStrings.acBreakdownBaseLabel || "Base").toLowerCase()) {
           valueToRender = <span className="font-bold">{detail.value}</span>; 
@@ -51,13 +54,13 @@ export const AcBreakdownContentDisplay = ({
 
         if (detail.type === 'acAbilityMod' && detail.abilityAbbr) {
           mainText = detail.mainLabel; 
-          suffixBadge = <Badge variant="outline" className="ml-1.5">{detail.abilityAbbr}</Badge>;
+          suffixBadge = <Badge variant="outline" className="ml-1.5 text-xs font-normal">{detail.abilityAbbr}</Badge>;
         } else if (detail.type === 'acSizeMod' && detail.sizeName) {
           mainText = detail.mainLabel; 
-          suffixBadge = <Badge variant="outline" className="ml-1.5">{detail.sizeName}</Badge>;
+          suffixBadge = <Badge variant="outline" className="ml-1.5 text-xs font-normal">{detail.sizeName}</Badge>;
         } else if (detail.suffixDetails && detail.suffixDetails.length > 0) {
           
-          suffixBadge = <span className="text-muted-foreground/80 ml-1">({detail.suffixDetails.join(", ")})</span>;
+          suffixBadge = <span className="text-muted-foreground/80 ml-1 text-xs">({detail.suffixDetails.join(", ")})</span>;
         }
         
         
@@ -65,7 +68,7 @@ export const AcBreakdownContentDisplay = ({
           const suffixMatch = mainText.match(/\s(\([^)]+\))$/);
           if (suffixMatch) { 
             mainText = mainText.substring(0, mainText.length - suffixMatch[0].length);
-            suffixBadge = <span className="text-muted-foreground/80 ml-1">{suffixMatch[1]}</span>;
+            suffixBadge = <span className="text-muted-foreground/80 ml-1 text-xs">{suffixMatch[1]}</span>;
           }
         }
 
