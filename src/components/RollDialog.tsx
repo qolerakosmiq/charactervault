@@ -142,7 +142,7 @@ export function RollDialog({
     isInitialRollNat20 ? "text-emerald-500" :
     "text-primary"
   );
-  
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -194,18 +194,18 @@ export function RollDialog({
                           const foundLabel = translations.ABILITY_LABELS.find(al => al.abbr === extractedAbility.toUpperCase() || al.label === extractedAbility);
                           if (foundLabel) abilityKey = foundLabel.value;
                       }
-                      
+
                       if(abilityKey){
                           abilityAbbr = translations.ABILITY_LABELS.find(al => al.value === abilityKey)?.abbr;
                       }
                   }
-                  
+
                   return (
                     <div key={`breakdown-${index}`} className="flex justify-between text-sm">
-                      <span className="text-muted-foreground inline-flex items-center">
+                      <span className="text-foreground inline-flex items-baseline">
                         {labelText}
                         {abilityAbbr && (
-                           <Badge variant="outline" className="ml-1.5">{abilityAbbr}</Badge>
+                           <Badge variant="outline">{abilityAbbr}</Badge>
                         )}
                       </span>
                       {item.isRawValue ? (
@@ -237,7 +237,7 @@ export function RollDialog({
               {isDamageRoll ? (
                 <>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">
+                    <span className="text-sm text-foreground">
                       {(UI_STRINGS.rollDialogDamageWeaponDiceRolledLabel || "Weapon Dice ({diceString}) Rolled {diceSum}")
                           .replace("{diceString}", actualWeaponDicePart || 'N/A')
                           .replace("{diceSum}", String(totalDiceValue))}
@@ -245,7 +245,7 @@ export function RollDialog({
                     <span className="font-bold text-lg text-primary">{totalDiceValue}</span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-muted-foreground">{UI_STRINGS.rollDialogDamageOtherBonusesLabel || "Other Bonuses"}</span>
+                    <span className="text-foreground">{UI_STRINGS.rollDialogDamageOtherBonusesLabel || "Other Bonuses"}</span>
                     <span className="font-bold text-primary">{renderModifierValue(baseModifier)}</span>
                   </div>
                   <Separator className="my-1 bg-border/50"/>
@@ -259,20 +259,20 @@ export function RollDialog({
                   {initialD20Roll !== null && (
                     <div className="flex justify-between items-center">
                       <div className="flex items-center">
-                        <span className="text-sm text-muted-foreground">{UI_STRINGS.rollDialogDiceRollLabel || "Dice Roll"}</span>
-                        <Badge variant="outline" className="ml-1.5">1d20</Badge>
+                        <span className="text-sm text-foreground">{UI_STRINGS.rollDialogDiceRollLabel || "Dice Roll"}</span>
+                        <Badge variant="outline">1d20</Badge>
                       </div>
                       <span className={diceResultColor}>{initialD20Roll}</span>
                     </div>
                   )}
                   {bonusRolls.length > 0 && (
                      <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">{UI_STRINGS.rollDialogBonusDiceRollLabel || "Bonus Dice Roll"}</span>
+                      <span className="text-sm text-foreground">{UI_STRINGS.rollDialogBonusDiceRollLabel || "Bonus Dice Roll"}</span>
                       <span className="font-bold text-lg text-primary">{bonusRolls.join(', ')}</span>
                     </div>
                   )}
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-muted-foreground">{UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus"}</span>
+                    <span className="text-foreground">{UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus"}</span>
                     <span className="font-bold text-primary">{renderModifierValue(baseModifier)}</span>
                   </div>
                   <Separator className="my-1 bg-border/50"/>

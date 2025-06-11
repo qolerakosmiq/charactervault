@@ -32,9 +32,11 @@ export const SkillModifierBreakdownContentDisplay = ({
     />
   ) : null;
 
-  const badgeClass = "align-baseline whitespace-nowrap"; 
+  const badgeClass = "align-baseline whitespace-nowrap";
 
   const hasCalculationBlock = !!skillModifierBreakdown;
+
+  const activeFeatSkillEffects = allSkillEffectDetails?.filter(eff => eff.isActive && eff.skillId === skillModifierBreakdown?.skillName && typeof eff.value === 'number' && eff.value !== 0) || [];
 
   const synergyBlock = (synergyInfoList && synergyInfoList.length > 0) ? (
     <div key="skill-synergies-block" className={cn((htmlContentBlock) && "mt-3")}>
@@ -104,9 +106,9 @@ export const SkillModifierBreakdownContentDisplay = ({
       <div className="space-y-1 mt-2">
         {skillModifierBreakdown!.keyAbilityName && (
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground inline-flex items-baseline">
+            <span className="text-foreground inline-flex items-baseline">
               {uiStrings.infoDialogKeyAbilityLabel || "Key Ability"}
-              <Badge variant="outline" className="ml-1.5">
+              <Badge variant="outline">
                 {skillModifierBreakdown!.keyAbilityName}
               </Badge>
             </span>
@@ -114,48 +116,47 @@ export const SkillModifierBreakdownContentDisplay = ({
           </div>
         )}
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">{uiStrings.infoDialogRanksLabel || "Ranks"}</span>
+          <span className="text-foreground">{uiStrings.infoDialogRanksLabel || "Ranks"}</span>
           {renderModifierValue(skillModifierBreakdown!.ranks)}
         </div>
         {skillModifierBreakdown!.sizeSpecificBonus !== 0 && (
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{uiStrings.infoDialogSizeModifierLabel || "Size Modifier"}</span>
+            <span className="text-foreground">{uiStrings.infoDialogSizeModifierLabel || "Size Modifier"}</span>
             {renderModifierValue(skillModifierBreakdown!.sizeSpecificBonus)}
           </div>
         )}
         {skillModifierBreakdown!.synergyBonus !== 0 && (
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{uiStrings.infoDialogSynergyBonusLabel || "Synergy Bonus"}</span>
+            <span className="text-foreground">{uiStrings.infoDialogSynergyBonusLabel || "Synergy Bonus"}</span>
             {renderModifierValue(skillModifierBreakdown!.synergyBonus)}
           </div>
         )}
-        {/* Iterate through allSkillEffectDetails for feat bonuses */}
-        {allSkillEffectDetails?.filter(eff => eff.isActive && eff.skillId === skillModifierBreakdown!.skillName && typeof eff.value === 'number' && eff.value !== 0).map((eff, idx) => (
-          <div key={`feat-skill-bonus-${idx}`} className="flex justify-between items-baseline text-sm">
-            <span className="text-muted-foreground flex-shrink-0 mr-2">
-              {eff.sourceFeat || (uiStrings.infoDialogFeatBonusLabel || "Feat Bonus")}
-              {eff.condition && (
-                <span className="text-muted-foreground/80 italic ml-1">
-                    ({uiStrings[`condition_${eff.condition}`] || eff.condition} - {eff.isActive
-                    ? (uiStrings.conditionalEffectActiveSuffix || "(Active)")
-                    : (uiStrings.conditionalEffectInactiveSuffix || "(Inactive)")
-                    })
-                </span>
-              )}
-            </span>
-            {renderModifierValue(eff.value)}
-          </div>
-        ))}
-        {/* End feat bonuses */}
+
+        {activeFeatSkillEffects.length > 0 && (
+            <>
+                <h4 className="text-lg font-bold text-muted-foreground pb-0.5">
+                    {uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}
+                </h4>
+                {activeFeatSkillEffects.map((eff, idx) => (
+                    <div key={`feat-skill-bonus-${idx}`} className="flex justify-between items-baseline text-sm ml-3">
+                        <span className="text-foreground flex-shrink-0 mr-2">
+                            {eff.sourceFeat || (uiStrings.infoDialogFeatBonusLabel || "Feat Bonus")}
+                        </span>
+                        {renderModifierValue(eff.value)}
+                    </div>
+                ))}
+            </>
+        )}
+
         {skillModifierBreakdown!.racialBonus !== 0 && (
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{uiStrings.infoDialogRacialBonusLabel || "Racial Bonus"}</span>
+            <span className="text-foreground">{uiStrings.infoDialogRacialBonusLabel || "Racial Bonus"}</span>
             {renderModifierValue(skillModifierBreakdown!.racialBonus)}
           </div>
         )}
         {skillModifierBreakdown!.miscModifier !== 0 && (
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{uiStrings.infoDialogCustomModifierLabel || "Misc Modifier"}</span>
+            <span className="text-foreground">{uiStrings.infoDialogCustomModifierLabel || "Misc Modifier"}</span>
             {renderModifierValue(skillModifierBreakdown!.miscModifier)}
           </div>
         )}

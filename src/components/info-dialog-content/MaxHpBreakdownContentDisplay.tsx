@@ -37,13 +37,17 @@ export const MaxHpBreakdownContentDisplay = ({
   let miscModifierSubLabel = "";
   if (miscModifierValue !== 0 && aggregatedFeatEffects.hpBonusSources && aggregatedFeatEffects.hpBonusSources.length > 0) {
     const activeFeatSources = aggregatedFeatEffects.hpBonusSources
-      .filter(source => !source.condition) 
+      .filter(source => source.isActive && !source.condition) // Only show active, unconditional sources here
       .map(source => source.sourceFeatName)
-      .filter(name => !!name); 
+      .filter(name => !!name);
     if (activeFeatSources.length > 0) {
       miscModifierSubLabel = `(${activeFeatSources.join(', ')})`;
     }
   }
+
+  const conditionalHpBonuses = aggregatedFeatEffects.hpBonusSources.filter(
+    source => source.condition && source.isActive && typeof source.value === 'number' && source.value !== 0
+  );
 
 
   return (
@@ -51,22 +55,22 @@ export const MaxHpBreakdownContentDisplay = ({
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
       <div className="space-y-1">
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">{uiStrings.maxHpDialogBaseHpLabel || "Base Hit Points"}</span>
+          <span className="text-foreground">{uiStrings.maxHpDialogBaseHpLabel || "Base Hit Points"}</span>
           <span className="font-bold">{baseHp}</span>
         </div>
         <div className="flex justify-between text-sm items-baseline">
-          <span className="text-muted-foreground inline-flex items-baseline">
+          <span className="text-foreground inline-flex items-baseline">
             {uiStrings.maxHpDialogAbilityModLabel || "Ability Modifier"}
-            <Badge variant="outline" className="ml-1.5">{conAbbr}</Badge>
+            <Badge variant="outline">{conAbbr}</Badge>
           </span>
           {renderModifierValue(finalConstitutionModifier)}
         </div>
         {miscModifierValue !== 0 && (
             <div className="flex justify-between items-baseline text-sm">
-                <span className="text-muted-foreground flex-shrink-0 mr-2">
+                <span className="text-foreground flex-shrink-0 mr-2">
                     {uiStrings.maxHpDialogMiscModLabel || "Misc Modifier"}
                     {miscModifierSubLabel && (
-                        <span className="ml-1 text-muted-foreground/80">{miscModifierSubLabel}</span>
+                        <span className="text-muted-foreground/80 ml-1">{miscModifierSubLabel}</span>
                     )}
                 </span>
                 {renderModifierValue(miscModifierValue)}
@@ -74,10 +78,25 @@ export const MaxHpBreakdownContentDisplay = ({
         )}
         {customModifier !== 0 && (
             <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{uiStrings.maxHpDialogCustomModLabel || "Custom Modifier"}</span>
+            <span className="text-foreground">{uiStrings.maxHpDialogCustomModLabel || "Custom Modifier"}</span>
             {renderModifierValue(customModifier)}
             </div>
         )}
+
+        {conditionalHpBonuses.length > 0 && (
+            <>
+                <h4 className="text-lg font-bold text-muted-foreground pb-0.5">
+                    {uiStrings.infoDialogConditionalBonusesHeading || "Conditional Bonuses"}
+                </h4>
+                {conditionalHpBonuses.map((bonus, index) => (
+                    <div key={`conditional-hp-${index}`} className="flex justify-between items-baseline text-sm ml-3">
+                        <span className="text-foreground flex-shrink-0 mr-2">{bonus.sourceFeatName}</span>
+                        {renderModifierValue(bonus.value || 0)}
+                    </div>
+                ))}
+            </>
+        )}
+
         <Separator className="my-2" />
         <div className="flex justify-between text-lg">
           <span className="font-semibold">{uiStrings.maxHpDialogTotalLabel || "Maximum Hit Points"}</span>

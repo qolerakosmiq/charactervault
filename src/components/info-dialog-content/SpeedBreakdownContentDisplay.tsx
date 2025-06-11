@@ -25,20 +25,19 @@ export const SpeedBreakdownContentDisplay = ({
     if (match) {
       const mainText = match[1].trim();
       const detailText = match[2].trim();
-      
+
       const baseRaceLabelKey = uiStrings.infoDialogSpeedBaseRaceLabel || "Base ({raceName})";
-      
       const baseTextPart = baseRaceLabelKey.substring(0, baseRaceLabelKey.indexOf(" (") > -1 ? baseRaceLabelKey.indexOf(" (") : baseRaceLabelKey.length);
 
       if (mainText === baseTextPart) {
         return (
           <>
             {mainText}
-            <Badge variant="outline" className="ml-1.5">{detailText}</Badge>
+            <Badge variant="outline">{detailText}</Badge>
           </>
         );
       }
-      
+
       return (
         <>
           {mainText}
@@ -56,7 +55,7 @@ export const SpeedBreakdownContentDisplay = ({
         {speedBreakdown.components.map((comp, index) => {
           return (
             <div key={index} className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{renderSource(comp.source)}</span>
+              <span className="text-foreground">{renderSource(comp.source)}</span>
               <span className="font-bold">{renderModifierValue(comp.value)}</span>
             </div>
           );

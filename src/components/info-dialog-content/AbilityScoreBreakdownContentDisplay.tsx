@@ -43,14 +43,14 @@ export const AbilityScoreBreakdownContentDisplay = ({
     } else if (comp.sourceLabel === "Aging" && uiStrings.abilityScoreSourceAging && comp.sourceDetail) {
       displaySourceLabel = (uiStrings.abilityScoreSourceAging).replace("{categoryName}", comp.sourceDetail);
     } else if (comp.sourceLabel === "Feat" && comp.sourceDetail) {
-      displaySourceLabel = comp.sourceDetail; // Feat name is the primary source
+      displaySourceLabel = comp.sourceDetail;
     } else if (comp.sourceLabel === "Temporary Modifier" && uiStrings.abilityScoreSourceTempMod) {
       displaySourceLabel = uiStrings.abilityScoreSourceTempMod;
     }
 
     return (
       <div key={`${comp.sourceLabel}-${comp.sourceDetail || ''}-${comp.value}-${comp.condition || 'unconditional'}`} className={cn("flex justify-between items-baseline text-sm", isConditional && "ml-3")}>
-        <span className="text-muted-foreground flex-shrink-0 mr-2">
+        <span className="text-foreground flex-shrink-0 mr-2">
           {displaySourceLabel}
         </span>
         {renderModifierValue(comp.value)}
@@ -63,7 +63,7 @@ export const AbilityScoreBreakdownContentDisplay = ({
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
       <div className="space-y-1">
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">{uiStrings.infoDialogBaseScoreLabel || "Base Score"}</span>
+          <span className="text-foreground">{uiStrings.infoDialogBaseScoreLabel || "Base Score"}</span>
           <span className="font-bold">{abilityScoreBreakdown.base}</span>
         </div>
 
@@ -71,7 +71,7 @@ export const AbilityScoreBreakdownContentDisplay = ({
 
         {conditionalActiveComponents.length > 0 && (
           <>
-            <h4 className="text-sm font-medium text-muted-foreground pt-1.5 pb-0.5">
+            <h4 className="text-lg font-bold text-muted-foreground pb-0.5">
               {uiStrings.infoDialogConditionalBonusesHeading || "Conditional Bonuses"}
             </h4>
             {conditionalActiveComponents.map(comp => renderComponent(comp, true))}

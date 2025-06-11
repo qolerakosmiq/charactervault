@@ -22,11 +22,11 @@ export const ResistanceBreakdownContentDisplay = ({
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
       <div className="space-y-1">
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">{uiStrings.infoDialogBaseValueLabel || "Base Value"}</span>
+          <span className="text-foreground">{uiStrings.infoDialogBaseValueLabel || "Base Value"}</span>
           <span className="font-bold">{resistanceBreakdown.base}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">{uiStrings.infoDialogCustomModifierLabel || "Custom Modifier"}</span>
+          <span className="text-foreground">{uiStrings.infoDialogCustomModifierLabel || "Custom Modifier"}</span>
           {renderModifierValue(resistanceBreakdown.customMod)}
         </div>
         <Separator className="my-2" />
@@ -38,4 +38,3 @@ export const ResistanceBreakdownContentDisplay = ({
     </div>
   );
 };
-

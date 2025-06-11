@@ -28,23 +28,23 @@ export const InitiativeBreakdownContentDisplay = ({
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
       <div className="space-y-1">
         <div className="flex justify-between text-sm items-baseline">
-          <span className="text-muted-foreground inline-flex items-baseline">
+          <span className="text-foreground inline-flex items-baseline">
             {uiStrings.infoDialogInitiativeAbilityModLabel || "Ability Modifier"}
             {dexterityAbilityInfo && (
-              <Badge variant="outline" className="ml-1.5">{dexterityAbilityInfo.abbr}</Badge>
+              <Badge variant="outline">{dexterityAbilityInfo.abbr}</Badge>
             )}
           </span>
           {renderModifierValue(initiativeBreakdown.dexModifier)}
         </div>
         {initiativeBreakdown.featBonus !== 0 && initiativeBreakdown.featBonus !== undefined && (
            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}</span>
+              <span className="text-foreground">{uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}</span>
               {renderModifierValue(initiativeBreakdown.featBonus)}
           </div>
         )}
         {initiativeBreakdown.miscModifier !== 0 && (
           <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{uiStrings.infoDialogCustomModifierLabel || "Custom Modifier"}</span>
+              <span className="text-foreground">{uiStrings.infoDialogCustomModifierLabel || "Custom Modifier"}</span>
               {renderModifierValue(initiativeBreakdown.miscModifier)}
           </div>
         )}

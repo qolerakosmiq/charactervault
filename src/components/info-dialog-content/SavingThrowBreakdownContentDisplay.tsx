@@ -45,51 +45,50 @@ export const SavingThrowBreakdownContentDisplay = ({
     ? (abilityLabels.find(al => al.value === breakdown.abilityKey)?.abbr || String(breakdown.abilityKey).substring(0,3).toUpperCase())
     : 'N/A';
 
+  const activeFeatComponents = breakdown.featComponents?.filter(fc => fc.isActive && fc.value !== 0) || [];
+
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
       <div className="space-y-1">
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">{uiStrings.savingThrowsRowLabelBase || "Base"}</span>
+          <span className="text-foreground">{uiStrings.savingThrowsRowLabelBase || "Base"}</span>
           <span className="font-bold">{breakdown.baseSave}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground inline-flex items-baseline">
+          <span className="text-foreground inline-flex items-baseline">
             {uiStrings.savingThrowsRowLabelAbilityModifier || "Ability Modifier"}
-            <Badge variant="outline" className="ml-1.5">{abilityAbbr}</Badge>
+            <Badge variant="outline">{abilityAbbr}</Badge>
           </span>
           {renderModifierValue(breakdown.abilityMod)}
         </div>
 
-        {breakdown.featComponents && breakdown.featComponents.length > 0 && breakdown.featBonusTotal !== 0 && (
-          breakdown.featComponents.filter(fc => fc.value !== 0).map((fc, index) => (
-            <div key={`feat-comp-${index}-${fc.sourceFeat}`} className="flex justify-between items-baseline text-sm">
-              <span className="text-muted-foreground flex-shrink-0 mr-2">
-                {fc.sourceFeat}
-                {fc.condition && (
-                  <span className="text-muted-foreground/80 italic ml-1">
-                     ({uiStrings[`condition_${fc.condition}`] || fc.condition} - {fc.isActive
-                       ? (uiStrings.conditionalEffectActiveSuffix || "(Active)")
-                       : (uiStrings.conditionalEffectInactiveSuffix || "(Inactive)")
-                     })
-                  </span>
-                )}
-              </span>
-              {renderModifierValue(fc.value)}
-            </div>
-          ))
+        {activeFeatComponents.length > 0 && (
+          <>
+            <h4 className="text-lg font-bold text-muted-foreground pb-0.5">
+                {uiStrings.savingThrowsFeatsModifierLabel || "Feats Modifier"}
+            </h4>
+            {activeFeatComponents.map((fc, index) => (
+              <div key={`feat-comp-${index}-${fc.sourceFeat}`} className="flex justify-between items-baseline text-sm ml-3">
+                <span className="text-foreground flex-shrink-0 mr-2">
+                  {fc.sourceFeat}
+                </span>
+                {renderModifierValue(fc.value)}
+              </div>
+            ))}
+          </>
         )}
 
         {breakdown.magicMod !== 0 && (
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{uiStrings.savingThrowsRowLabelMagicModifier || "Magic Modifier"}</span>
+            <span className="text-foreground">{uiStrings.savingThrowsRowLabelMagicModifier || "Magic Modifier"}</span>
             {renderModifierValue(breakdown.magicMod)}
           </div>
         )}
 
         {breakdown.userTemporaryModifier !== 0 && (
             <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{uiStrings.savingThrowsRowLabelTemporaryModifier || "Temporary Modifier"}</span>
+                <span className="text-foreground">{uiStrings.savingThrowsRowLabelTemporaryModifier || "Temporary Modifier"}</span>
                 {renderModifierValue(breakdown.userTemporaryModifier)}
             </div>
         )}

@@ -18,7 +18,7 @@ export interface AcBreakdownDetailItem {
   sizeName?: string;
   condition?: string;
   isActive?: boolean;
-  isSubItem?: boolean;
+  isSubItem?: boolean; // Indicates if this is a conditional feat effect, for separate rendering
 }
 
 interface AcBreakdownContentDisplayProps {
@@ -36,50 +36,35 @@ export const AcBreakdownContentDisplay = ({
 }: AcBreakdownContentDisplayProps) => {
   if (!detailsList || detailsList.length === 0) return null;
 
+  // Filter out inactive items first
   const activeDetailsList = detailsList.filter(detail => detail.isActive !== false);
 
   const staticComponents: AcBreakdownDetailItem[] = [];
   const conditionalFeatComponents: AcBreakdownDetailItem[] = [];
 
   activeDetailsList.forEach(detail => {
-    if (detail.isSubItem) {
+    if (detail.isSubItem) { // These are the individual conditional feat effects
       conditionalFeatComponents.push(detail);
     } else {
       staticComponents.push(detail);
     }
   });
 
-  const renderItem = (detail: AcBreakdownDetailItem, index: string | number) => {
+  const renderItem = (detail: AcBreakdownDetailItem, index: string | number, isConditionalSubItem: boolean = false) => {
     let mainTextDisplay: React.ReactNode = detail.mainLabel;
     let suffixBadgeDisplay: React.ReactNode = null;
 
-    if (detail.isSubItem) {
-      // For conditional bonuses (sub-items), mainLabel is the feat name. No suffix badge.
+    if (detail.type === 'acAbilityMod' && detail.abilityAbbr) {
       mainTextDisplay = detail.mainLabel;
-      suffixBadgeDisplay = null;
+      suffixBadgeDisplay = <Badge variant="outline" className="ml-1.5">{detail.abilityAbbr}</Badge>;
+    } else if (detail.type === 'acSizeMod' && detail.sizeName) {
+      mainTextDisplay = detail.mainLabel;
+      suffixBadgeDisplay = <Badge variant="outline" className="ml-1.5">{detail.sizeName}</Badge>;
+    } else if (detail.suffixDetails && detail.suffixDetails.length > 0 && !isConditionalSubItem) {
+      mainTextDisplay = detail.mainLabel;
+      suffixBadgeDisplay = <span className="text-muted-foreground/80 ml-1 text-xs">({detail.suffixDetails.join(", ")})</span>;
     } else {
-      // Logic for static components like Ability Mod, Size Mod
-      if (detail.type === 'acAbilityMod' && detail.abilityAbbr) {
-        mainTextDisplay = detail.mainLabel;
-        suffixBadgeDisplay = <Badge variant="outline" className="ml-1.5">{detail.abilityAbbr}</Badge>;
-      } else if (detail.type === 'acSizeMod' && detail.sizeName) {
-        mainTextDisplay = detail.mainLabel;
-        suffixBadgeDisplay = <Badge variant="outline" className="ml-1.5">{detail.sizeName}</Badge>;
-      } else if (detail.suffixDetails && detail.suffixDetails.length > 0) {
-        mainTextDisplay = detail.mainLabel;
-        suffixBadgeDisplay = <span className="text-muted-foreground/80 ml-1 text-xs">({detail.suffixDetails.join(", ")})</span>;
-      } else if (typeof detail.mainLabel === 'string') {
-        // Generic suffix parsing for other static items if needed - this might be too broad.
-        // For AC breakdown, specific types (ability, size) should handle their suffixes.
-        // This part is less likely to be hit if specific types are handled above.
-        // const suffixMatch = detail.mainLabel.match(/\s(\([^)]+\))$/);
-        // if (suffixMatch) {
-        //   mainTextDisplay = detail.mainLabel.substring(0, detail.mainLabel.length - suffixMatch[0].length);
-        //   suffixBadgeDisplay = <span className="text-muted-foreground/80 ml-1 text-xs">{suffixMatch[1]}</span>;
-        // }
-        // Keep mainTextDisplay as is for simpler cases
-        mainTextDisplay = detail.mainLabel;
-      }
+      mainTextDisplay = detail.mainLabel; // For conditional items, mainLabel is usually the feat name
     }
 
     let valueToRender = detail.value;
@@ -91,8 +76,8 @@ export const AcBreakdownContentDisplay = ({
 
 
     return (
-      <div key={`${String(detail.mainLabel)}-${index}`} className={cn("flex justify-between items-baseline text-sm mb-0.5", detail.isSubItem && "ml-3")}>
-        <span className="text-muted-foreground inline-flex items-baseline">
+      <div key={`${String(detail.mainLabel)}-${index}`} className={cn("flex justify-between items-baseline text-sm mb-0.5", isConditionalSubItem && "ml-3")}>
+        <span className="text-foreground inline-flex items-baseline">
           {mainTextDisplay}
           {suffixBadgeDisplay}
         </span>
@@ -108,11 +93,11 @@ export const AcBreakdownContentDisplay = ({
 
       {conditionalFeatComponents.length > 0 && (
         <>
-          <h4 className="text-sm font-medium text-muted-foreground pt-1.5 pb-0.5 mt-1.5">
+          <h4 className="text-lg font-bold text-muted-foreground pb-0.5">
             {uiStrings.infoDialogConditionalBonusesHeading || "Conditional Bonuses"}
           </h4>
-          <div className="space-y-0.5"> 
-            {conditionalFeatComponents.map((detail, index) => renderItem(detail, `conditional-${index}`))}
+          <div className="space-y-0.5">
+            {conditionalFeatComponents.map((detail, index) => renderItem(detail, `conditional-${index}`, true))}
           </div>
         </>
       )}
