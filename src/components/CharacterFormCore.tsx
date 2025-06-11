@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import *as React from 'react';
@@ -55,7 +56,6 @@ import { ArmorClassPanel, type ArmorClassPanelProps } from '@/components/form-se
 import { HealthPanel, type HealthPanelProps } from '@/components/form-sections/HealthPanel';
 import { SpeedPanel, type SpeedPanelProps } from '@/components/form-sections/SpeedPanel';
 import { CombatPanel, type CombatPanelProps } from '@/components/form-sections/CombatPanel';
-import { AttacksPanel, type AttacksPanelCharacterData } from '@/components/form-sections/AttacksPanel';
 import { ResistancesPanel, type ResistancesPanelProps } from '@/components/form-sections/ResistancesPanel';
 import { LanguagesPanel, type LanguagesPanelProps } from '@/components/form-sections/LanguagesPanel';
 import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
@@ -446,7 +446,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
 
   const handleCharacterFieldUpdate = React.useCallback((
-    field: keyof Character | `${SpeedType}Speed.miscModifier` | `armorSpeedPenalty_miscModifier` | `loadSpeedPenalty_miscModifier` | `babMiscModifier` | `powerAttackValue` | `combatExpertiseValue`,
+    field: keyof Character | `${SpeedType}Speed.miscModifier` | `armorSpeedPenalty_miscModifier` | `loadSpeedPenalty_miscModifier` | `babMiscModifier` | `powerAttackValue` | `combatExpertiseValue` | `initiativeMiscModifier` | `grappleMiscModifier` | `grappleDamage_bonus` | `grappleWeaponChoice`,
     value: any
   ) => {
      setCharacter(prev => {
@@ -461,8 +461,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
                     miscModifier: value,
                 }
             };
-        } else if (field === 'armorSpeedPenalty_miscModifier' || field === 'loadSpeedPenalty_miscModifier' || field === 'babMiscModifier' || field === 'powerAttackValue' || field === 'combatExpertiseValue') {
-          return { ...prev, [field]: value };
+        } else if (['armorSpeedPenalty_miscModifier', 'loadSpeedPenalty_miscModifier', 'babMiscModifier', 'powerAttackValue', 'combatExpertiseValue', 'initiativeMiscModifier', 'grappleMiscModifier', 'grappleDamage_bonus', 'grappleWeaponChoice'].includes(field as string)) {
+          return { ...prev, [field as string]: value };
         }
         return { ...prev, [field as keyof Character]: value };
      });
@@ -698,7 +698,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     setIsRollDialogOpen(true);
   }, []);
 
-  const handleRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number, weaponDamageDice?: string) => {
+  const handleRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString?: string) => {
     // No toast notification here
   }, []);
 
@@ -719,7 +719,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     ];
     handleOpenRollDialog({ 
       dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck || "{abilityName} Check").replace("{abilityName}", abilityName),
-      rollType: `${abilityName} Check`,
+      rollType: `ability_check_${ability}`,
       baseModifier: finalModifier,
       calculationBreakdown: breakdown,
     });
@@ -734,14 +734,6 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const handleOpenSpeedInfoDialog = React.useCallback((speedType: SpeedType) => { openInfoDialog({ type: 'speedBreakdown', speedType }); }, [openInfoDialog]);
   const handleOpenArmorSpeedPenaltyInfoDialog = React.useCallback(() => openInfoDialog({ type: 'armorSpeedPenaltyBreakdown' }), [openInfoDialog]);
   const handleOpenLoadSpeedPenaltyInfoDialog = React.useCallback(() => openInfoDialog({ type: 'loadSpeedPenaltyBreakdown' }), [openInfoDialog]);
-
-  const handleOpenAttackBonusInfoDialog = React.useCallback((contentType: InfoDialogContentType) => {
-    openInfoDialog(contentType);
-  }, [openInfoDialog]);
-
-  const handleOpenDamageBonusInfoDialog = React.useCallback((contentType: InfoDialogContentType) => {
-    openInfoDialog(contentType);
-  }, [openInfoDialog]);
 
   const handleOpenSavingThrowInfoDialog = React.useCallback((contentType: InfoDialogContentType) => {
     openInfoDialog(contentType);
@@ -910,17 +902,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     };
   }, [character]);
 
-  const combatData = React.useMemo<CombatPanelProps['combatData'] | undefined>(() => {
-    if(!character) return undefined;
-    return {
-      abilityScores: character.abilityScores, classes: character.classes, size: character.size, babMiscModifier: character.babMiscModifier,
-      initiativeMiscModifier: character.initiativeMiscModifier, grappleMiscModifier: character.grappleMiscModifier,
-      grappleDamage_baseNotes: character.grappleDamage_baseNotes, grappleDamage_bonus: character.grappleDamage_bonus,
-      grappleWeaponChoice: character.grappleWeaponChoice,
-    };
-  }, [character]);
-
-  const attacksPanelData = React.useMemo<AttacksPanelCharacterData | undefined>(() => {
+  const combatDataForPanel = React.useMemo<CombatPanelCharacterData | undefined>(() => {
     if(!character) return undefined;
     return {
         abilityScores: character.abilityScores,
@@ -929,6 +911,11 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         inventory: character.inventory,
         feats: character.feats,
         babMiscModifier: character.babMiscModifier,
+        initiativeMiscModifier: character.initiativeMiscModifier,
+        grappleMiscModifier: character.grappleMiscModifier,
+        grappleDamage_baseNotes: character.grappleDamage_baseNotes,
+        grappleDamage_bonus: character.grappleDamage_bonus,
+        grappleWeaponChoice: character.grappleWeaponChoice,
         sizeModifierAttack: character.sizeModifierAttack,
         powerAttackValue: character.powerAttackValue,
         combatExpertiseValue: character.combatExpertiseValue,
@@ -1059,27 +1046,15 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           />
         )}
 
-        {combatData && aggregatedFeatEffects && (
+        {combatDataForPanel && aggregatedFeatEffects && (
           <CombatPanel
-              combatData={combatData}
+              combatData={combatDataForPanel}
               aggregatedFeatEffects={aggregatedFeatEffects}
+              allFeatDefinitions={allAvailableFeatDefinitions}
               onCharacterUpdate={handleCharacterFieldUpdate as any}
               onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog}
-              onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog as any}
               onOpenRollDialog={handleOpenRollDialog}
           />
-        )}
-
-        {attacksPanelData && aggregatedFeatEffects && (
-            <AttacksPanel
-                attacksPanelData={attacksPanelData}
-                aggregatedFeatEffects={aggregatedFeatEffects}
-                allFeatDefinitions={allAvailableFeatDefinitions}
-                onCharacterUpdate={handleCharacterFieldUpdate as any}
-                onOpenAttackBonusInfoDialog={handleOpenAttackBonusInfoDialog}
-                onOpenDamageBonusInfoDialog={handleOpenDamageBonusInfoDialog}
-                onOpenRollDialog={handleOpenRollDialog}
-            />
         )}
 
 
@@ -1210,3 +1185,4 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
+

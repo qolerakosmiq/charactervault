@@ -1,19 +1,19 @@
 
+
 'use client';
 
-import type { Character, Skill, Item, CharacterClass, AbilityName, SavingThrows, ResistanceValue, InfoDialogContentType, AggregatedFeatEffects, DetailedAbilityScores } from '@/types/character'; // Added AggregatedFeatEffects, DetailedAbilityScores
-import { DND_CLASSES } from '@/types/character'; // This might be better sourced from context if translations are needed
+import type { Character, Skill, Item, CharacterClass, AbilityName, SavingThrows, ResistanceValue, InfoDialogContentType, AggregatedFeatEffects, DetailedAbilityScores, CombatPanelCharacterData } from '@/types/character'; // Added AggregatedFeatEffects, DetailedAbilityScores
 import { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { CoreInfoSection } from './CoreInfoSection';
 import { AbilityScoresSection } from './AbilityScoresSection';
-import { CombatPanel } from '../form-sections/CombatPanel'; // Replaced CombatStatsSection
+import { CombatPanel } from '../form-sections/CombatPanel';
 import { SkillsListing } from './SkillsListing';
 import { FeatsListing } from './FeatsListing';
 import { InventoryListing } from './InventoryListing';
 import { SpellsListing } from './SpellsListing';
-import { Save, Trash2, Users, Shield, Brain, Award, Backpack, Sparkles, Dices } from 'lucide-react';
+import { Save, Trash2, Users, Shield, Brain, Award, Backpack, Sparkles, Dices, Swords } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -30,6 +30,7 @@ import {
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog'; 
 import { calculateDetailedAbilityScores, calculateFeatEffects, calculateLevelFromXp } from '@/types/character';
 import { useI18n } from '@/context/I18nProvider';
+import { useDefinitionsStore } from '@/lib/definitions-store';
 
 
 type ResistanceFieldKeySheet = Exclude<keyof Pick<Character,
@@ -49,12 +50,21 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
   const { toast } = useToast();
   const router = useRouter();
   const { translations, isLoading: translationsLoading } = useI18n();
+  const { customFeatDefinitions } = useDefinitionsStore(state => ({ customFeatDefinitions: state.customFeatDefinitions }));
+
 
   const [activeInfoDialogType, setActiveInfoDialogType] = useState<InfoDialogContentType | null>(null);
   const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false);
   
   const [aggregatedFeatEffects, setAggregatedFeatEffects] = useState<AggregatedFeatEffects | null>(null);
   const [detailedAbilityScores, setDetailedAbilityScores] = useState<DetailedAbilityScores | null>(null);
+
+  const allAvailableFeatDefinitions = React.useMemo(() => {
+    if (translationsLoading || !translations) return [];
+    const predefined = translations.DND_FEATS_DEFINITIONS.map(def => ({ ...def, isCustom: false as const }));
+    return [...predefined, ...customFeatDefinitions];
+  }, [translationsLoading, translations, customFeatDefinitions]);
+
 
   const characterLevelFromXP = React.useMemo(() => {
     if (!character || translationsLoading || !translations) return 1;
@@ -71,8 +81,8 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
   }, [initialCharacter]);
   
   useEffect(() => {
-    if (character && translations && !translationsLoading) {
-      const aggFeats = calculateFeatEffects(character.feats, translations.DND_FEATS_DEFINITIONS);
+    if (character && translations && !translationsLoading && allAvailableFeatDefinitions) {
+      const aggFeats = calculateFeatEffects(character, allAvailableFeatDefinitions);
       setAggregatedFeatEffects(aggFeats);
       const detailedScores = calculateDetailedAbilityScores(
         character,
@@ -86,7 +96,7 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
       );
       setDetailedAbilityScores(detailedScores);
     }
-  }, [character, translations, translationsLoading]);
+  }, [character, translations, translationsLoading, allAvailableFeatDefinitions]);
 
 
   const handleSaveCharacter = () => {
@@ -138,7 +148,8 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
     field: keyof Character | 
            `savingThrows.${keyof SavingThrows}.${'base'|'magicMod'|'miscMod'}` |
            `${ResistanceFieldKeySheet}.customMod` |
-           'damageReduction', 
+           'damageReduction' |
+           'powerAttackValue' | 'combatExpertiseValue',
     value: any
   ) => {
     setCharacter(prev => {
@@ -225,12 +236,8 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
     openInfoDialog(contentType);
   };
   
-  const handleOpenAcBreakdownDialog = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
-    openInfoDialog({ type: 'acBreakdown', acType });
-  };
 
-
-  if (!character || translationsLoading || !detailedAbilityScores || !aggregatedFeatEffects) {
+  if (!character || translationsLoading || !detailedAbilityScores || !aggregatedFeatEffects || !allAvailableFeatDefinitions) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-center items-center py-10 min-h-[300px]">
@@ -244,18 +251,23 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
   }
 
 
-  // Prepare props for CombatPanel as it expects a specific structure
-  const combatPanelData = {
+  const combatPanelDataForDisplay: CombatPanelCharacterData = {
     abilityScores: character.abilityScores,
     classes: character.classes,
     size: character.size,
+    inventory: character.inventory,
+    feats: character.feats,
     babMiscModifier: character.babMiscModifier,
     initiativeMiscModifier: character.initiativeMiscModifier,
     grappleMiscModifier: character.grappleMiscModifier,
     grappleDamage_baseNotes: character.grappleDamage_baseNotes,
     grappleDamage_bonus: character.grappleDamage_bonus,
     grappleWeaponChoice: character.grappleWeaponChoice,
+    sizeModifierAttack: character.sizeModifierAttack,
+    powerAttackValue: character.powerAttackValue,
+    combatExpertiseValue: character.combatExpertiseValue,
   };
+
 
   return (
     <div className="space-y-6">
@@ -293,7 +305,7 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
         <TabsList className="grid w-full grid-cols-3 sm:grid-cols-4 md:grid-cols-7">
           <TabsTrigger value="core"><Users className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Core</span></TabsTrigger>
           <TabsTrigger value="abilities"><Dices className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Abilities</span></TabsTrigger>
-          <TabsTrigger value="combat"><Shield className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Combat</span></TabsTrigger>
+          <TabsTrigger value="combat"><Swords className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Combat</span></TabsTrigger>
           <TabsTrigger value="skills"><Brain className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Skills</span></TabsTrigger>
           <TabsTrigger value="feats"><Award className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Feats</span></TabsTrigger>
           <TabsTrigger value="inventory"><Backpack className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Inventory</span></TabsTrigger>
@@ -314,11 +326,13 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
           />
         </TabsContent>
         <TabsContent value="combat" className="mt-4">
-          <CombatPanel 
-            combatData={combatPanelData} 
-            onCharacterUpdate={handleCharacterUpdate as any} // Cast as any because field type is complex union
-            onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog} 
-            onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog}
+          <CombatPanel
+            combatData={combatPanelDataForDisplay}
+            aggregatedFeatEffects={aggregatedFeatEffects}
+            allFeatDefinitions={allAvailableFeatDefinitions}
+            onCharacterUpdate={handleCharacterUpdate as any}
+            onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog}
+            onOpenRollDialog={openInfoDialog as any} // TODO: Fix proper roll dialog handler
           />
         </TabsContent>
         <TabsContent value="skills" className="mt-4">
@@ -364,3 +378,4 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
     </div>
   );
 }
+
