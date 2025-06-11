@@ -229,7 +229,7 @@
       "value": "class-barbarian-fast-movement",
       "label": "Déplacement rapide",
       "description": "<b>Avantage :</b> La vitesse terrestre d'un barbare est supérieure de +3 mètres à la normale pour sa race. Cet avantage ne s'applique que s'il ne porte pas d'armure, une armure légère ou intermédiaire et qu'il n'est pas lourdement chargé. Appliquez ce bonus avant de modifier la vitesse du barbare en fonction de la charge transportée ou de l'armure portée. Par exemple, un barbare humain a une vitesse de 12 mètres, au lieu de 9 mètres, lorsqu'il porte une armure légère ou aucune armure. Lorsqu'il porte une armure intermédiaire ou une charge moyenne, sa vitesse tombe à 9 mètres. Un barbare halfelin a une vitesse de 9 mètres, au lieu de 6 mètres, en armure légère ou sans armure. Lorsqu'il porte une armure intermédiaire ou une charge moyenne, sa vitesse tombe à 6 mètres.",
-      "effectsText": "+3m à la vitesse terrestre (conditionnel).",
+      "effectsText": "+3m à la vitesse terrestre (si armure légère/moyenne/aucune, pas de charge lourde).",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [
@@ -332,12 +332,12 @@
     },
     {
       "value": "class-barbarian-damage-reduction",
-      "label": "Réduction des dégâts",
+      "label": "Réduction des dégâts (Barbare)",
       "description": "<b>Avantage :</b> Au niveau 7, un barbare gagne une Réduction des Dégâts. Soustrayez 1 aux dégâts que le barbare subit chaque fois qu'il est touché par une arme ou une attaque naturelle. Au niveau 10, et tous les trois niveaux de barbare par la suite (13e, 16e et 19e niveau), cette réduction des dégâts augmente de 1 point. La réduction des dégâts peut réduire les dégâts à 0 mais pas en dessous de 0.",
-      "effectsText": "RD 1/- au N7, augmentant à RD 5/- au N19.",
+      "effectsText": "RD X/-. (1 au N7, 2 au N10, 3 au N13, 4 au N16, 5 au N19).",
       "isClassFeature": true,
       "type": "special-ex",
-      "effects": [{ "type": "note", "text": "Gagne RD X/-. Commence à RD 1/- au N7, augmente de 1 tous les 3 niveaux (10e, 13e, 16e, 19e)." }]
+      "effects": [{ "type": "note", "text": "Gagne RD X/-. (RD 1/- au N7, RD 2/- au N10, RD 3/- au N13, RD 4/- au N16, RD 5/- au N19). Ceci est appliqué programmatiquement." }]
     },
     {
       "value": "class-barbarian-greater-rage",
@@ -357,11 +357,11 @@
       "value": "class-barbarian-indomitable-will",
       "label": "Volonté indomptable",
       "description": "<b>Avantage :</b> En rage, un barbare de niveau 14 ou plus gagne un bonus de +4 aux jets de Volonté pour résister aux sorts d'enchantement. Ce bonus se cumule avec tous les autres modificateurs, y compris le bonus de moral aux jets de Volonté qu'il reçoit également pendant sa rage.",
-      "effectsText": "+4 aux jets de Volonté contre les enchantements en rage.",
+      "effectsText": "+4 aux jets de Volonté contre les enchantements, en rage.",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [
-        { "type": "savingThrow", "save": "will", "value": 4, "bonusType": "untyped", "condition": "vs_enchantment_spells_when_raging" }
+        { "type": "savingThrow", "save": "will", "value": 4, "bonusType": "untyped", "condition": "raging", "note": "contre les sorts d'enchantement" }
       ]
     },
     {
@@ -1032,4 +1032,5 @@
     { "value": "special-sp", "label": "Aptitude Spéciale (Mag)" }
   ]
 }
+
     

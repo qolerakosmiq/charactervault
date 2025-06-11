@@ -229,7 +229,7 @@
       "value": "class-barbarian-fast-movement",
       "label": "Fast Movement",
       "description": "<b>Benefit:</b> A barbarian’s land speed is faster than the norm for her race by +10 feet. This benefit applies only when she is wearing no armor, light armor, or medium armor and not carrying a heavy load. Apply this bonus before modifying the barbarian’s speed because of any load carried or armor worn. For example, a human barbarian has a speed of 40 feet, rather than 30 feet, when wearing light or no armor. When wearing medium armor or carrying a medium load, her speed drops to 30 feet. A halfling barbarian has a speed of 30 feet, rather than 20 feet, in light or no armor. When wearing medium armor or carrying a medium load, her speed drops to 20 feet.",
-      "effectsText": "+10 ft. to land speed (conditional).",
+      "effectsText": "+10 ft. to land speed (if unarmored/light/medium armor, not heavy load).",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [
@@ -277,10 +277,10 @@
       "value": "class-barbarian-uncanny-dodge",
       "label": "Uncanny Dodge",
       "description": "<b>Benefit:</b> At 2nd level, a barbarian retains her Dexterity bonus to AC (if any) even if she is caught flat-footed or struck by an invisible attacker. However, she still loses her Dexterity bonus to AC if immobilized. If a character already has uncanny dodge from a different class, a barbarian automatically gains improved uncanny dodge (see below) instead.",
-      "effectsText": "Retains Dex bonus to AC if flat-footed or vs. invisible attacker. Cannot be flanked by Rogues of equal or lower level (unless Rogue has 4+ more levels).",
+      "effectsText": "Retains Dex bonus to AC if flat-footed or vs. invisible attacker. Cannot be flanked except by a rogue of at least 4 levels higher.",
       "isClassFeature": true,
       "type": "special-ex",
-      "effects": [{ "type": "note", "text": "Retains Dexterity bonus to AC (if any) even if caught flat-footed or struck by an invisible attacker. Cannot be flanked except by a rogue of at least four levels higher than the character." }]
+      "effects": [{ "type": "note", "text": "Retain Dexterity bonus to AC (if any) even if caught flat-footed or struck by an invisible attacker. Cannot be flanked except by a rogue of at least four levels higher than the character." }]
     },
     {
       "value": "class-barbarian-trap-sense",
@@ -332,12 +332,12 @@
     },
     {
       "value": "class-barbarian-damage-reduction",
-      "label": "Damage Reduction",
+      "label": "Damage Reduction (Barbarian)",
       "description": "<b>Benefit:</b> At 7th level, a barbarian gains Damage Reduction. Subtract 1 from the damage the barbarian takes each time she is dealt damage from a weapon or a natural attack. At 10th level, and every three barbarian levels thereafter (13th, 16th, and 19th level), this damage reduction rises by 1 point. Damage reduction can reduce damage to 0 but not below 0.",
-      "effectsText": "Gains DR X/-. Starts at DR 1/- at 7th, increases by 1 every 3 levels (10th, 13th, 16th, 19th).",
+      "effectsText": "DR X/-. (1 at L7, 2 at L10, 3 at L13, 4 at L16, 5 at L19).",
       "isClassFeature": true,
       "type": "special-ex",
-      "effects": [{ "type": "note", "text": "Gains DR X/-. Starts at DR 1/- at 7th, increases by 1 every 3 levels (10th, 13th, 16th, 19th)." }]
+      "effects": [{ "type": "note", "text": "Gains DR X/-. (DR 1/- at 7th, DR 2/- at 10th, DR 3/- at 13th, DR 4/- at 16th, DR 5/- at 19th). This is applied programmatically." }]
     },
     {
       "value": "class-barbarian-greater-rage",
@@ -357,11 +357,11 @@
       "value": "class-barbarian-indomitable-will",
       "label": "Indomitable Will",
       "description": "<b>Benefit:</b> While in a rage, a barbarian of 14th level or higher gains a +4 bonus on Will saves to resist enchantment spells. This bonus stacks with all other modifiers, including the morale bonus on Will saves she also receives during her rage.",
-      "effectsText": "+4 bonus on Will saves vs. enchantment spells while raging.",
+      "effectsText": "+4 to Will saves vs. enchantment spells, while raging.",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [
-        { "type": "savingThrow", "save": "will", "value": 4, "bonusType": "untyped", "condition": "vs_enchantment_spells_when_raging" }
+        { "type": "savingThrow", "save": "will", "value": 4, "bonusType": "untyped", "condition": "raging", "note": "vs. enchantment spells" }
       ]
     },
     {
@@ -1032,4 +1032,5 @@
     { "value": "special-sp", "label": "Special Ability (Sp)" }
   ]
 }
+
     
