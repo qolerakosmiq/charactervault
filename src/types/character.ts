@@ -791,21 +791,21 @@ export function calculateFeatEffects(
                 if (foundUsesValue !== undefined) {
                     grantsAbilityEffect.uses.value = foundUsesValue;
                 } else if (grantsAbilityEffect.uses.scaleWithClassLevel.specificLevels.length > 0) {
-                    // Default to the lowest level's uses if current level is below all defined scaled levels
                     grantsAbilityEffect.uses.value = [...grantsAbilityEffect.uses.scaleWithClassLevel.specificLevels].sort((a, b) => a.level - b.level)[0].value as number;
                 } else {
-                    // Fallback if no levels are defined in scaleWithClassLevel
                     grantsAbilityEffect.uses.value = 0; 
                 }
             }
           }
       }
 
-      // Resolve "SPEC" for attack/damage rolls
       if ((effectToPush.type === "attackRoll" || effectToPush.type === "damageRoll") &&
           (effectToPush as AttackRollEffect | DamageRollEffect).appliesTo === "SPEC" &&
           featInstance.specializationDetail && definition.requiresSpecialization === "weapon") {
         (effectToPush as AttackRollEffect | DamageRollEffect).appliesTo = `weaponName:${featInstance.specializationDetail}`;
+      } else if (effectToPush.type === "skill" && (effectToPush as SkillEffectDetail).skillId === "SPEC" &&
+                 featInstance.specializationDetail && definition.requiresSpecialization === "skill") {
+        (effectToPush as SkillEffectDetail).skillId = featInstance.specializationDetail;
       }
 
 
@@ -815,8 +815,8 @@ export function calculateFeatEffects(
           break;
         case "skill":
           const skillEffect = effectToPush as SkillEffectDetail & AggregatedFeatEffectBase;
-          newAggregatedEffects.allSkillEffectDetails.push(skillEffect); // Store all, active or not
-          if (skillEffect.isActive && typeof skillEffect.value === 'number' && skillEffect.skillId) {
+          newAggregatedEffects.allSkillEffectDetails.push(skillEffect); 
+          if (skillEffect.isActive && typeof skillEffect.value === 'number' && skillEffect.skillId && skillEffect.skillId !== "SPEC") {
             newAggregatedEffects.skillBonuses[skillEffect.skillId] = (newAggregatedEffects.skillBonuses[skillEffect.skillId] || 0) + skillEffect.value;
           }
           break;
@@ -852,8 +852,6 @@ export function calculateFeatEffects(
           if (effectIsActive && typeof initEffect.value === 'number') {
               newAggregatedEffects.initiativeBonus += initEffect.value;
           }
-          // Store the full effect if breakdowns are needed later
-          // newAggregatedEffects.allInitiativeEffects.push(initEffect);
           break;
         case "speed":
           newAggregatedEffects.speedBonuses.push(effectToPush as SpeedEffect & AggregatedFeatEffectBase);
@@ -913,11 +911,9 @@ export function calculateSpeedBreakdown(
     components.push({ source: (UI_STRINGS.infoDialogSpeedBaseRaceLabel || "Base ({raceName})").replace("{raceName}", raceLabel), value: racialSpeed });
     currentSpeed = racialSpeed;
   } else if (speedType === 'land' && racialSpeed === undefined) {
-    // Default land speed logic based on size (e.g., Small races might be 20ft, Medium 30ft)
-    // This requires SIZES data. For simplicity, using a common default or a lookup.
     const sizeData = SIZES.find(s => s.value === character.size);
-    let defaultLandSpeed = 30; // Default for Medium
-    if (sizeData?.label === 'Small' || (charRaceData?.label && (charRaceData.label.toLowerCase().includes('gnome') || charRaceData.label.toLowerCase().includes('halfling')))) {
+    let defaultLandSpeed = 30; 
+    if (sizeData?.label === 'Small' || (charRaceData?.label && (charRaceData.label.toLowerCase().includes('gnome') || charRaceData.label.toLowerCase().includes('halfling') || charRaceData.label.toLowerCase().includes('nain')))) { // Added nain for French dwarf
         defaultLandSpeed = 20;
     }
     components.push({ source: (UI_STRINGS.infoDialogSpeedBaseRaceLabel || "Base ({raceName})").replace("{raceName}", raceLabel), value: defaultLandSpeed });
@@ -931,7 +927,6 @@ export function calculateSpeedBreakdown(
           components.push({ source: effect.sourceFeat || (UI_STRINGS.infoDialogFeatBonusLabel || "Feat Bonus"), value: effect.value });
           currentSpeed += effect.value;
         } else if (effect.modification === 'setAbsolute' && typeof effect.value === 'number') {
-          // For "setAbsolute", the value is the difference needed to reach the target value from current.
           components.push({ source: `${effect.sourceFeat || 'Feat'} (Set to)`, value: effect.value - currentSpeed });
           currentSpeed = effect.value;
         } else if (effect.modification === 'penalty' && typeof effect.value === 'number') {
@@ -950,12 +945,11 @@ export function calculateSpeedBreakdown(
     currentSpeed += miscModForThisSpeed;
   }
 
-  // Apply armor and load penalties only to land speed if it's currently positive.
   if (currentSpeed > 0 && speedType === 'land') {
     const armorPenaltyVal = (character.armorSpeedPenalty_miscModifier || 0) - (character.armorSpeedPenalty_base || 0);
     if (armorPenaltyVal !== 0) {
       components.push({ source: UI_STRINGS.infoDialogSpeedArmorPenaltyLabel || "Armor Penalty", value: armorPenaltyVal });
-      currentSpeed = Math.max(0, currentSpeed + armorPenaltyVal); // Ensure speed doesn't go below 0 due to penalties
+      currentSpeed = Math.max(0, currentSpeed + armorPenaltyVal); 
     }
 
     const loadPenaltyVal = (character.loadSpeedPenalty_miscModifier || 0) - (character.loadSpeedPenalty_base || 0);
@@ -971,7 +965,7 @@ export function calculateSpeedBreakdown(
   return {
     name: speedName,
     components,
-    total: Math.max(0, currentSpeed), // Final speed cannot be negative
+    total: Math.max(0, currentSpeed), 
   };
 }
 
@@ -980,16 +974,14 @@ export function isAlignmentCompatible(
   itemAlignment: CharacterAlignment | '' | 'any' | 'any-good' | 'any-evil' | 'any-lawful' | 'any-chaotic' | 'any-neutral'
 ): boolean {
   if (itemAlignment === 'any' || !itemAlignment) return true;
-  if (!characterAlignment) return false; // If character alignment is not set, it cannot be compatible with a specific requirement
+  if (!characterAlignment) return false; 
 
-  const charParts = characterAlignment.split('-'); // e.g., "lawful-good" -> ["lawful", "good"]
+  const charParts = characterAlignment.split('-'); 
 
-  // Handle specific alignments first
-  if (itemAlignment.includes('-')) { // e.g., "lawful-good"
+  if (itemAlignment.includes('-')) { 
     return characterAlignment === itemAlignment;
   }
 
-  // Handle generic "any-" alignments
   if (itemAlignment.startsWith('any-')) {
     const requiredGeneric = itemAlignment.split('-')[1];
     if (requiredGeneric === 'good' && charParts.includes('good')) return true;
@@ -997,14 +989,11 @@ export function isAlignmentCompatible(
     if (requiredGeneric === 'lawful' && charParts.includes('lawful')) return true;
     if (requiredGeneric === 'chaotic' && charParts.includes('chaotic')) return true;
     if (requiredGeneric === 'neutral') {
-      // Character is neutral on Law/Chaos axis OR Good/Evil axis OR is True Neutral
       if (charParts.includes('neutral') || characterAlignment === 'true-neutral') return true;
     }
     return false;
   }
-
-  // Handle single-word generic alignments (e.g., "lawful", "good", "neutral-lc", "neutral-ge")
-  // These are often used in feat prerequisites
+  
   const itemAlignLower = itemAlignment.toLowerCase();
 
   if (itemAlignLower === 'lawful' && charParts[0] === 'lawful') return true;
@@ -1012,9 +1001,8 @@ export function isAlignmentCompatible(
   if (itemAlignLower === 'good' && charParts.length > 1 && charParts[1] === 'good') return true;
   if (itemAlignLower === 'evil' && charParts.length > 1 && charParts[1] === 'evil') return true;
 
-  // Handle neutral along a specific axis
-  if (itemAlignLower === 'neutral-lc' && (charParts[0] === 'neutral' || characterAlignment === 'true-neutral')) return true; // Neutral on Law/Chaos
-  if (itemAlignLower === 'neutral-ge' && ((charParts.length > 1 && charParts[1] === 'neutral') || characterAlignment === 'true-neutral')) return true; // Neutral on Good/Evil
+  if (itemAlignLower === 'neutral-lc' && (charParts[0] === 'neutral' || characterAlignment === 'true-neutral')) return true; 
+  if (itemAlignLower === 'neutral-ge' && ((charParts.length > 1 && charParts[1] === 'neutral') || characterAlignment === 'true-neutral')) return true; 
 
   return false;
 }
