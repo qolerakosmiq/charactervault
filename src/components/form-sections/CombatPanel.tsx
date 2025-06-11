@@ -2,17 +2,18 @@
 'use client';
 
 import *as React from 'react';
-import type { Character, BabBreakdownDetails, InitiativeBreakdownDetails, GrappleModifierBreakdownDetails, GrappleDamageBreakdownDetails, CharacterSize, InfoDialogContentType } from '@/types/character';
+import type { Character, BabBreakdownDetails, InitiativeBreakdownDetails, GrappleModifierBreakdownDetails, GrappleDamageBreakdownDetails, CharacterSize, InfoDialogContentType, AggregatedFeatEffects, GenericBreakdownItem, AbilityName } from '@/types/character';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Swords, Info, Loader2 } from 'lucide-react';
+import { Swords, Info, Loader2, Dices } from 'lucide-react'; // Added Dices
 import { getAbilityModifierByName, getBab, calculateInitiative, calculateGrapple, getSizeModifierGrapple, getUnarmedGrappleDamage } from '@/lib/dnd-utils';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
+import type { RollDialogProps } from '@/components/RollDialog';
 
 const DEBOUNCE_DELAY = 400;
 
@@ -30,15 +31,23 @@ export type CombatFieldKey = keyof Pick<Character,
 
 export interface CombatPanelProps {
   combatData: CombatPanelCharacterData;
+  aggregatedFeatEffects: AggregatedFeatEffects | null; // Added
   onCharacterUpdate: (field: CombatFieldKey, value: any) => void;
   onOpenCombatStatInfoDialog: (contentType: InfoDialogContentType) => void;
   onOpenAcBreakdownDialog?: (acType: 'Normal' | 'Touch' | 'Flat-Footed') => void;
+  onOpenRollDialog: (data: Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'>) => void; // Added
 }
 
-const CombatPanelComponent = ({ combatData, onCharacterUpdate, onOpenCombatStatInfoDialog }: CombatPanelProps) => {
+const CombatPanelComponent = ({ 
+  combatData, 
+  aggregatedFeatEffects, 
+  onCharacterUpdate, 
+  onOpenCombatStatInfoDialog,
+  onOpenRollDialog 
+}: CombatPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
-  if (!combatData || translationsLoading || !translations) {
+  if (!combatData || translationsLoading || !translations || !aggregatedFeatEffects) {
     return (
       <Card>
         <CardHeader>
@@ -79,7 +88,7 @@ const CombatPanelComponent = ({ combatData, onCharacterUpdate, onOpenCombatStatI
   );
 
 
-  const { DND_CLASSES, SIZES, UI_STRINGS } = translations;
+  const { DND_CLASSES, SIZES, UI_STRINGS, ABILITY_LABELS } = translations;
 
   const abilityScores = combatData.abilityScores || {};
   const classes = combatData.classes || [];
@@ -90,10 +99,12 @@ const CombatPanelComponent = ({ combatData, onCharacterUpdate, onOpenCombatStatI
   const baseBabArray = getBab(classes, DND_CLASSES);
   const totalBabWithModifier = baseBabArray.map(bab => bab + (combatData.babMiscModifier || 0));
 
-  const baseInitiative = calculateInitiative(dexModifier, combatData.initiativeMiscModifier || 0);
+  const featInitiativeBonus = aggregatedFeatEffects?.initiativeBonus || 0;
+  const baseInitiative = calculateInitiative(dexModifier, combatData.initiativeMiscModifier || 0) + featInitiativeBonus;
 
+  const featGrappleBonus = aggregatedFeatEffects?.attackRollBonuses?.filter(b => b.appliesTo === 'grapple').reduce((sum, b) => sum + (typeof b.value === 'number' ? b.value : 0), 0) || 0;
   const baseGrappleModifier = calculateGrapple(classes, strModifier, sizeModGrapple, DND_CLASSES);
-  const totalGrappleModifier = baseGrappleModifier + (combatData.grappleMiscModifier || 0);
+  const totalGrappleModifier = baseGrappleModifier + (combatData.grappleMiscModifier || 0) + featGrappleBonus;
 
   const grappleDamageBaseNotes = combatData.grappleDamage_baseNotes || getUnarmedGrappleDamage(combatData.size, SIZES);
   const grappleDamageBaseDice = grappleDamageBaseNotes.split(' ')[0] || '0';
@@ -116,6 +127,49 @@ const CombatPanelComponent = ({ combatData, onCharacterUpdate, onOpenCombatStatI
   const handleGrappleDamageInfo = () => {
     onOpenCombatStatInfoDialog({ type: 'grappleDamageBreakdown' });
   };
+
+  const handleOpenInitiativeRoll = () => {
+    const breakdown: GenericBreakdownItem[] = [
+      { label: (UI_STRINGS.attacksPanelAbilityModLabel || "Ability Mod ({abilityAbbr})").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX'), value: dexModifier },
+    ];
+    if (featInitiativeBonus !== 0) {
+      breakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel || "Feat Bonus", value: featInitiativeBonus });
+    }
+    if ((combatData.initiativeMiscModifier || 0) !== 0) {
+      breakdown.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier", value: combatData.initiativeMiscModifier || 0 });
+    }
+    breakdown.push({label: UI_STRINGS.infoDialogTotalLabel || "Total", value: baseInitiative, isBold: true});
+
+    onOpenRollDialog({
+      dialogTitle: UI_STRINGS.rollDialogTitleInitiative || "Roll Initiative",
+      rollType: "Initiative",
+      baseModifier: baseInitiative,
+      calculationBreakdown: breakdown,
+    });
+  };
+
+  const handleOpenGrappleCheckRoll = () => {
+    const breakdown: GenericBreakdownItem[] = [
+      { label: UI_STRINGS.attacksPanelBabLabel || "Base Attack Bonus", value: baseBabArray[0] || 0 },
+      { label: (UI_STRINGS.attacksPanelAbilityModLabel || "Ability Mod ({abilityAbbr})").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.value === 'strength')?.abbr || 'STR'), value: strModifier },
+      { label: (UI_STRINGS.attacksPanelSizeModLabel || "Size Mod (Attack)").replace("Attack", "Grapple"), value: sizeModGrapple },
+    ];
+    if (featGrappleBonus !== 0) {
+      breakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel || "Feat Bonus", value: featGrappleBonus });
+    }
+    if ((combatData.grappleMiscModifier || 0) !== 0) {
+      breakdown.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier", value: combatData.grappleMiscModifier || 0 });
+    }
+    breakdown.push({label: UI_STRINGS.infoDialogTotalLabel || "Total", value: totalGrappleModifier, isBold: true});
+    
+    onOpenRollDialog({
+      dialogTitle: UI_STRINGS.rollDialogTitleGrappleCheck || "Roll Grapple Check",
+      rollType: "Grapple Check",
+      baseModifier: totalGrappleModifier,
+      calculationBreakdown: breakdown,
+    });
+  };
+
 
   return (
     <>
@@ -159,8 +213,11 @@ const CombatPanelComponent = ({ combatData, onCharacterUpdate, onOpenCombatStatI
             <p id="initiative-display" className="text-xl font-bold text-accent">
               {baseInitiative >= 0 ? '+' : ''}{baseInitiative}
             </p>
-            <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleInitiativeInfo}>
+            <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-muted-foreground hover:text-foreground" onClick={handleInitiativeInfo}>
               <Info className="h-4 w-4" />
+            </Button>
+            <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenInitiativeRoll} aria-label={UI_STRINGS.rollDialogInitiativeAriaLabel || "Roll Initiative"}>
+              <Dices className="h-4 w-4" />
             </Button>
           </div>
           <div className="mt-auto space-y-1">
@@ -184,8 +241,11 @@ const CombatPanelComponent = ({ combatData, onCharacterUpdate, onOpenCombatStatI
             <p id="grapple-mod-display" className="text-xl font-bold text-accent">
               {totalGrappleModifier >= 0 ? '+' : ''}{totalGrappleModifier}
             </p>
-            <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleGrappleModifierInfo}>
+            <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-muted-foreground hover:text-foreground" onClick={handleGrappleModifierInfo}>
               <Info className="h-4 w-4" />
+            </Button>
+            <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenGrappleCheckRoll} aria-label={UI_STRINGS.rollDialogGrappleCheckAriaLabel || "Roll Grapple Check"}>
+              <Dices className="h-4 w-4" />
             </Button>
           </div>
           <div className="mt-auto space-y-1">

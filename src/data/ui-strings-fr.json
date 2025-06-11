@@ -603,12 +603,17 @@
     "rollDialogDamageAriaLabel": "Lancer les Dégâts pour {weaponName}",
     "rollDialogConfirmDamageButton": "Confirmer les Dégâts",
     "rollDialogFinalDamageStringLabel": "Dégâts Totaux :",
-    "rollDialogTotalNumericBonusLabel": "Bonus Numérique Total"
+    "rollDialogTotalNumericBonusLabel": "Bonus Numérique Total",
+    "rollDialogTitleInitiative": "Lancer l'Initiative",
+    "rollDialogTitleGrappleCheck": "Lancer un Test de Lutte",
+    "rollDialogInitiativeAriaLabel": "Lancer l'Initiative",
+    "rollDialogGrappleCheckAriaLabel": "Lancer un Test de Lutte"
   }
 }
     
     
     
+
 
 
 

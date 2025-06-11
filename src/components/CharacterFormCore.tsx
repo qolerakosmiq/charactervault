@@ -738,7 +738,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     ];
     handleOpenRollDialog({ 
       dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck || "{abilityName} Check").replace("{abilityName}", abilityName),
-      rollType: `ability_check_${ability}`,
+      rollType: `${abilityName} Check`, // For potential future filtering/specific logic
       baseModifier: finalModifier,
       calculationBreakdown: breakdown,
     });
@@ -914,7 +914,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     return {
       abilityScores: character.abilityScores, size: character.size, armorBonus: character.armorBonus, shieldBonus: character.shieldBonus,
       naturalArmor: character.naturalArmor, deflectionBonus: character.deflectionBonus, dodgeBonus: character.dodgeBonus, acMiscModifier: character.acMiscModifier,
-      feats: character.feats,
+      feats: character.feats, // Pass feats to AC Panel for conditional Monk AC
     };
   }, [character]);
 
@@ -1028,7 +1028,6 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             onMultipleBaseAbilityScoresChange={handleMultipleBaseAbilityScoresChange}
             onAbilityScoreTempCustomModifierChange={handleAbilityScoreTempCustomModifierChange}
             onOpenAbilityScoreBreakdownDialog={handleOpenAbilityScoreBreakdownDialog}
-            onOpenRollDialog={handleOpenAbilityCheckRollDialog}
           />
         )}
 
@@ -1039,7 +1038,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
               aggregatedFeatEffects={aggregatedFeatEffects}
               onSavingThrowTemporaryModChange={handleSavingThrowTemporaryModChange}
               onOpenInfoDialog={handleOpenSavingThrowInfoDialog}
-              onOpenRollDialog={handleOpenRollDialog}
+              onOpenRollDialog={handleOpenRollDialog} 
           />
         )}
 
@@ -1079,12 +1078,14 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           />
         )}
 
-        {combatData && (
+        {combatData && aggregatedFeatEffects && (
           <CombatPanel
               combatData={combatData}
+              aggregatedFeatEffects={aggregatedFeatEffects}
               onCharacterUpdate={handleCharacterFieldUpdate as any}
               onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog}
               onOpenAcBreakdownDialog={handleOpenAcBreakdownDialog as any}
+              onOpenRollDialog={handleOpenRollDialog}
           />
         )}
 
@@ -1226,6 +1227,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
+
 
 
 

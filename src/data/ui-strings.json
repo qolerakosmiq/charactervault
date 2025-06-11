@@ -603,12 +603,17 @@
     "rollDialogDamageAriaLabel": "Roll Damage for {weaponName}",
     "rollDialogConfirmDamageButton": "Confirm Damage",
     "rollDialogFinalDamageStringLabel": "Total Damage:",
-    "rollDialogTotalNumericBonusLabel": "Total Numeric Bonus"
+    "rollDialogTotalNumericBonusLabel": "Total Numeric Bonus",
+    "rollDialogTitleInitiative": "Roll Initiative",
+    "rollDialogTitleGrappleCheck": "Roll Grapple Check",
+    "rollDialogInitiativeAriaLabel": "Roll Initiative",
+    "rollDialogGrappleCheckAriaLabel": "Roll Grapple Check"
   }
 }
     
     
     
+
 
 
 
