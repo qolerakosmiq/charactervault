@@ -1,3 +1,4 @@
+
 {
   "DND_FEATS_DATA": [
     {
@@ -650,9 +651,38 @@
         }
       ],
       "type": "special"
+    },
+    {
+      "value": "test-descriptive-feat",
+      "label": "Test Descriptive Feat",
+      "description": "<b>Benefit:</b> This feat has a descriptive effect.",
+      "effectsText": "Grants a special understanding.",
+      "effects": [
+        {
+          "type": "note",
+          "text": "The character gains a special understanding of ancient lore."
+        }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "test-conditional-descriptive-feat",
+      "label": "Test Conditional Descriptive Feat",
+      "description": "<b>Benefit:</b> This feat has a conditional descriptive effect.",
+      "effectsText": "Grants a special insight when a condition is met.",
+      "effects": [
+        {
+          "type": "note",
+          "text": "The character feels a surge of insight regarding their current foe.",
+          "condition": "studying_opponent"
+        }
+      ],
+      "type": "special"
     }
   ],
   "FEAT_TYPES_DATA": []
 }
     
 ```
+
+    

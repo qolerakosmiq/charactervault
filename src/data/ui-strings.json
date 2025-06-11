@@ -461,9 +461,8 @@
     "experiencePanelNextLevelLabel": "Next Level At",
     "experiencePanelXpToLevelUpFormat": "{currentXp} / {xpForNextLevel} XP",
     "experiencePanelMaxLevel": "Max Level Reached",
-    "condition_vs_flat_footed_or_flanked_target": "vs. Flat-Footed or Flanked Target",
-    "condition_raging": "Raging",
     "condition_always_active_alertness": "Always Active (Alertness)",
+    "condition_studying_opponent": "Studying Opponent",
     "conditionalEffectActiveSuffix": "(Active)",
     "conditionalEffectInactiveSuffix": "(Inactive)",
     "abilityScoreBreakdownConditionalSourceFormat": "{sourceLabel} ({conditionName})",
@@ -639,3 +638,7 @@
 
     
 
+
+```
+
+    

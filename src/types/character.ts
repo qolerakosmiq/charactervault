@@ -49,14 +49,11 @@ import type {
   LanguageEffect,
   LanguageId,
   LanguageOption,
-  DescriptiveEffectDetail,
-  FeatEffectScalingSpecificLevel,
-  AvailableFeatSlotsBreakdown,
-  CharacterFavoredEnemy,
   DomainDefinition,
   Character, // Import full Character type
   AggregatedFeatEffectBase,
-  GrantsAbilityEffectUses // Import this type
+  GrantsAbilityEffectUses,
+  MagicSchoolId
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 // Import calculateLevelFromXp and other used utilities directly
@@ -250,6 +247,7 @@ export function calculateRacialSkillBonus(
   skillId_kebab: string,
   raceId: DndRaceId | string,
   DND_RACES: readonly DndRaceOption[],
+  SKILL_DEFINITIONS_UNUSED?: readonly SkillDefinitionJsonData[], // Parameter kept for signature consistency if other types need it
 ): number {
   if (!raceId) return 0;
   const raceData = DND_RACES.find(r => r.value === raceId);
@@ -344,11 +342,11 @@ export function calculateAvailableFeats(
 }
 
 export function getGrantedFeatsForCharacter(
-  character: Pick<Character, 'race' | 'classes' | 'experiencePoints' | 'chosenCombatStyle' | 'chosenDomains'>, // Added chosenDomains
+  character: Pick<Character, 'race' | 'classes' | 'experiencePoints' | 'chosenCombatStyle' | 'chosenDomains'>,
   allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[],
   DND_RACES: readonly DndRaceOption[],
   DND_CLASSES: readonly DndClassOption[],
-  DND_DOMAINS: readonly DomainDefinition[], // Added DND_DOMAINS
+  DND_DOMAINS: readonly DomainDefinition[],
   XP_TABLE: readonly { level: number; xpRequired: number }[],
   EPIC_LEVEL_XP_INCREASE: number
 ): CharacterFeatInstance[] {
@@ -368,10 +366,10 @@ export function getGrantedFeatsForCharacter(
     }
     const featDef = allFeatDefinitions.find(f => f.value === featDefId);
     if (featDef) {
-      const instanceId = featDef.value; // Base instance ID is the feat definition value
+      const instanceId = featDef.value;
       if (addedDefinitionIds.has(instanceId) && !featDef.canTakeMultipleTimes) return;
 
-      grantedInstances.push({
+      const newInstance: CharacterFeatInstance = {
         definitionId: featDef.value,
         instanceId: featDef.canTakeMultipleTimes ? `${featDef.value}-GRANTED-${crypto.randomUUID()}` : instanceId,
         isGranted: true,
@@ -379,7 +377,19 @@ export function getGrantedFeatsForCharacter(
         specializationDetail: specializationDetail,
         chosenSpecializationCategory: chosenSpecializationCategory,
         conditionalEffectStates: {},
-      });
+      };
+
+      // If the feat definition has permanentEffect: true, pre-activate all its conditions
+      if (featDef.permanentEffect && featDef.effects) {
+        newInstance.conditionalEffectStates = newInstance.conditionalEffectStates || {};
+        featDef.effects.forEach(eff => {
+          if (eff.condition) {
+            newInstance.conditionalEffectStates![eff.condition] = true;
+          }
+        });
+      }
+
+      grantedInstances.push(newInstance);
       if (!featDef.canTakeMultipleTimes) {
         addedDefinitionIds.add(instanceId);
       }
@@ -760,7 +770,6 @@ export function calculateFeatEffects(
         (effectToPush as any).value = resolvedValue;
       }
       
-      // Handle scaling for GrantsAbilityEffect uses
       if (effectToPush.type === 'grantsAbility') {
           const grantsAbilityEffect = effectToPush as GrantsAbilityEffect & AggregatedFeatEffectBase;
           if (grantsAbilityEffect.uses) {
@@ -798,6 +807,9 @@ export function calculateFeatEffects(
             newAggregatedEffects.skillBonuses[skillEffect.skillId] = (newAggregatedEffects.skillBonuses[skillEffect.skillId] || 0) + skillEffect.value;
           }
           break;
+        case "note":
+          newAggregatedEffects.descriptiveNotes.push(effectToPush as NoteEffectDetail & AggregatedFeatEffectBase);
+          break;
         case "abilityScore": newAggregatedEffects.abilityScoreBonuses.push(effectToPush as AbilityScoreEffect & AggregatedFeatEffectBase); break;
         case "savingThrow": newAggregatedEffects.savingThrowBonuses.push(effectToPush as SavingThrowEffect & AggregatedFeatEffectBase); break;
         case "attackRoll": newAggregatedEffects.attackRollBonuses.push(effectToPush as AttackRollEffect & AggregatedFeatEffectBase); break;
@@ -834,10 +846,6 @@ export function calculateFeatEffects(
           const langEffect = effectToPush as LanguageEffect & AggregatedFeatEffectBase;
           if(effectIsActive && langEffect.count && typeof langEffect.count === 'number') newAggregatedEffects.languagesGranted.count += langEffect.count;
           if(langEffect.specific) newAggregatedEffects.languagesGranted.specific.push({languageId: langEffect.specific, note: langEffect.note, sourceFeat: sourceFeatName, condition: langEffect.condition, isActive: langEffect.isActive});
-          break;
-        case "note":
-        case "descriptive":
-          newAggregatedEffects.descriptiveNotes.push(effectToPush as (NoteEffectDetail | DescriptiveEffectDetail) & AggregatedFeatEffectBase);
           break;
       }
     }
@@ -972,3 +980,6 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
+```
+
+    

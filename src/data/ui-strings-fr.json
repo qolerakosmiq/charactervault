@@ -461,9 +461,8 @@
     "experiencePanelNextLevelLabel": "Niveau Suivant à",
     "experiencePanelXpToLevelUpFormat": "{currentXp} / {xpForNextLevel} XP",
     "experiencePanelMaxLevel": "Niveau Max Atteint",
-    "condition_vs_flat_footed_or_flanked_target": "contre une cible prise au dépourvu ou prise en tenaille",
-    "condition_raging": "Enragé",
     "condition_always_active_alertness": "Toujours Actif (Vigilance)",
+    "condition_studying_opponent": "Étude de l'adversaire",
     "conditionalEffectActiveSuffix": "(Actif)",
     "conditionalEffectInactiveSuffix": "(Inactif)",
     "abilityScoreBreakdownConditionalSourceFormat": "{sourceLabel} ({conditionName})",
@@ -639,3 +638,7 @@
 
     
 
+
+```
+
+    

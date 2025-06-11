@@ -1,3 +1,4 @@
+
 {
   "DND_FEATS_DATA": [
     {
@@ -182,7 +183,7 @@
     },
     {
       "value": "exotic-weapon-proficiency",
-      "label": "Maîtrise des armes exotiques",
+      "label": "Maniement des armes exotiques",
       "description": "<b>Avantage :</b> Choisissez une arme exotique, comme une épée bâtarde ou un fouet.<br />Vous comprenez comment utiliser cette arme au combat, et vous pouvez attaquer avec elle sans encourir de pénalité.<br />Vous maîtrisez cette arme.<br /><b>Normal :</b> Un personnage qui utilise une arme avec laquelle il n'est pas compétent subit une pénalité de –4 aux jets d'attaque.<br /><b>Spécial :</b> Vous pouvez acquérir ce don plusieurs fois.<br />Chaque fois que vous prenez le don, il s'applique à une nouvelle arme exotique.",
       "prerequisites": { "bab": 1 },
       "effectsText": "Obtenez la maîtrise d'une arme exotique. (Choisir le type via spécialisation)",
@@ -650,6 +651,33 @@
         }
       ],
       "type": "special"
+    },
+    {
+      "value": "test-descriptive-feat",
+      "label": "Don Descriptif de Test",
+      "description": "<b>Avantage :</b> Ce don a un effet descriptif.",
+      "effectsText": "Confère une compréhension spéciale.",
+      "effects": [
+        {
+          "type": "note",
+          "text": "Le personnage acquiert une compréhension spéciale des traditions anciennes."
+        }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "test-conditional-descriptive-feat",
+      "label": "Don Descriptif Conditionnel de Test",
+      "description": "<b>Avantage :</b> Ce don a un effet descriptif conditionnel.",
+      "effectsText": "Confère une intuition spéciale lorsqu'une condition est remplie.",
+      "effects": [
+        {
+          "type": "note",
+          "text": "Le personnage ressent une vague d'intuition concernant son ennemi actuel.",
+          "condition": "studying_opponent"
+        }
+      ],
+      "type": "special"
     }
   ],
   "FEAT_TYPES_DATA": []
@@ -657,3 +685,5 @@
 
     
 ```
+
+    
