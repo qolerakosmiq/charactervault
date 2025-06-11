@@ -102,6 +102,22 @@ export function RollDialog({
     }, 300);
   };
 
+  const getRollDialogSubtitle = () => {
+    if (!translations) return rollType;
+    const { UI_STRINGS } = translations;
+    if (rollType.startsWith('ability_check_')) return UI_STRINGS.rollDialogSubtitleAbilityCheck || "Ability Check";
+    if (rollType.startsWith('skill_check_')) return UI_STRINGS.rollDialogSubtitleSkillCheck || "Skill Check";
+    if (rollType.startsWith('saving_throw_')) return UI_STRINGS.rollDialogSubtitleSavingThrow || "Saving Throw";
+    if (rollType === 'initiative_check') return UI_STRINGS.rollDialogSubtitleInitiativeCheck || "Initiative Roll";
+    if (rollType.startsWith('melee_attack_')) return UI_STRINGS.rollDialogSubtitleMeleeAttack || "Melee Attack";
+    if (rollType.startsWith('ranged_attack_')) return UI_STRINGS.rollDialogSubtitleRangedAttack || "Ranged Attack";
+    if (rollType.startsWith('damage_roll_melee_')) return UI_STRINGS.rollDialogSubtitleMeleeDamage || "Melee Damage";
+    if (rollType.startsWith('damage_roll_ranged_')) return UI_STRINGS.rollDialogSubtitleRangedDamage || "Ranged Damage";
+    if (rollType === 'grapple_check') return UI_STRINGS.rollDialogSubtitleGrappleCheck || "Grapple Check";
+    return rollType;
+  };
+
+
   if (translationsLoading || !translations) {
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -141,6 +157,8 @@ export function RollDialog({
     isInitialRollNat20 ? "text-emerald-500" :
     "text-primary"
   );
+  
+  const dialogSubtitle = getRollDialogSubtitle();
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -150,11 +168,9 @@ export function RollDialog({
             <Dices className="mr-2 h-5 w-5 text-primary" />
             {dialogTitle}
           </DialogTitle>
-          {!isDamageRoll && (
-            <DialogDescription className="text-left">
-              {(UI_STRINGS.rollDialogDescriptionFormat || "{rollType}").replace("{rollType}", rollType)}
-            </DialogDescription>
-          )}
+          <DialogDescription className="text-left">
+            {dialogSubtitle}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3 py-3 max-h-[60vh] overflow-y-auto pr-2">
@@ -162,25 +178,24 @@ export function RollDialog({
             <div className="space-y-1">
               <h4 className={cn(sectionHeadingClass, "mb-1")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle}</h4>
                 {calculationBreakdown.map((item, index) => {
-                  // Skip rendering 'Ability Score' row for ability, skill, and save checks
-                  if (item.label === UI_STRINGS.abilityScoreLabel && (rollType.startsWith('ability_check_') || rollType.startsWith('skill_check_') || rollType.startsWith('saving_throw_'))) {
-                    return null;
-                  }
-                  
-                  const isAbilityModifierRow = item.label?.includes(UI_STRINGS.abilityModifierLabel || "Ability Modifier") && (rollType.startsWith('ability_check_') || rollType.startsWith('skill_check_') || rollType.startsWith('saving_throw_'));
                   let abilityAbbr: string | undefined;
-                  if (isAbilityModifierRow) {
-                     const match = item.label.match(/\(([^)]+)\)/); // Extract content within parentheses
+                  let labelText = item.label;
+
+                  if (item.label === (UI_STRINGS.abilityModifierLabel || "Ability Modifier")) {
+                     const match = dialogTitle.match(/\(([^)]+)\)/) || rollType.match(/ability_check_(\w+)/);
                      if (match && match[1]) {
-                        abilityAbbr = match[1];
+                        const abilityKey = rollType.startsWith('ability_check_') ? rollType.substring('ability_check_'.length) : (translations.ABILITY_LABELS.find(al => al.label === match[1])?.value);
+                        if(abilityKey){
+                            abilityAbbr = translations.ABILITY_LABELS.find(al => al.value === abilityKey)?.abbr;
+                        }
                      }
                   }
                   
                   return (
                     <div key={`breakdown-${index}`} className="flex justify-between text-sm">
                       <span className="text-muted-foreground inline-flex items-baseline">
-                        {item.label?.replace(/\s*\([A-Z]{3}\)/, '')} {/* Remove abbreviation from label text */}
-                        {isAbilityModifierRow && abilityAbbr && (
+                        {labelText}
+                        {abilityAbbr && (
                            <Badge variant="outline" className="ml-1.5 text-xs font-normal px-1 py-0 whitespace-nowrap">{abilityAbbr}</Badge>
                         )}
                       </span>
