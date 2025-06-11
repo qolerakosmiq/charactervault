@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -16,7 +17,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Separator } from '@/components/ui/separator';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
 import { cn } from '@/lib/utils';
-import { parseAndRollDice } from '@/lib/dnd-utils';
+import { parseAndRollDice, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 import { Badge } from '@/components/ui/badge';
 
 export interface RollDialogProps {
@@ -30,6 +31,21 @@ export interface RollDialogProps {
   onRoll: (diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString?: string) => void;
   rerollTwentiesForChecks?: boolean;
 }
+
+const getRollDialogSubtitle = (rollType: string, UI_STRINGS: Record<string, string>): string => {
+  if (!UI_STRINGS) return rollType; // Fallback
+  if (rollType.startsWith('ability_check_')) return UI_STRINGS.rollDialogSubtitleAbilityCheck || "Ability Check";
+  if (rollType.startsWith('skill_check_')) return UI_STRINGS.rollDialogSubtitleSkillCheck || "Skill Check";
+  if (rollType.startsWith('saving_throw_')) return UI_STRINGS.rollDialogSubtitleSavingThrow || "Saving Throw";
+  if (rollType === 'initiative_check') return UI_STRINGS.rollDialogSubtitleInitiativeCheck || "Initiative Roll";
+  if (rollType.startsWith('melee_attack_')) return UI_STRINGS.rollDialogSubtitleMeleeAttack || "Melee Attack";
+  if (rollType.startsWith('ranged_attack_')) return UI_STRINGS.rollDialogSubtitleRangedAttack || "Ranged Attack";
+  if (rollType.startsWith('damage_roll_melee_')) return UI_STRINGS.rollDialogSubtitleMeleeDamage || "Melee Damage";
+  if (rollType.startsWith('damage_roll_ranged_')) return UI_STRINGS.rollDialogSubtitleRangedDamage || "Ranged Damage";
+  if (rollType === 'grapple_check') return UI_STRINGS.rollDialogSubtitleGrappleCheck || "Grapple Check";
+  return rollType; // Fallback if no specific match
+};
+
 
 export function RollDialog({
   isOpen,
@@ -149,7 +165,6 @@ export function RollDialog({
             <Dices className="mr-2 h-5 w-5 text-primary" />
             {dialogTitle}
           </DialogTitle>
-          {/* DialogDescription removed */}
         </DialogHeader>
 
         <div className="space-y-3 py-3 max-h-[60vh] overflow-y-auto pr-2">
@@ -169,10 +184,11 @@ export function RollDialog({
                            const saveType = rollType.substring('saving_throw_'.length) as keyof typeof SAVING_THROW_ABILITIES;
                            abilityKey = SAVING_THROW_ABILITIES[saveType];
                         } else if (rollType.startsWith('skill_check_')) {
-                            const skillId = rollType.substring('skill_check_'.length);
+                            const skillIdParts = rollType.split('_');
+                            const skillId = skillIdParts.slice(2).join('_'); // Handles skill IDs with underscores
                             const skillDef = translations.SKILL_DEFINITIONS.find(sd => sd.value === skillId);
                             if (skillDef) abilityKey = skillDef.keyAbility;
-                        } else if (dialogTitle.includes('(') && dialogTitle.includes(')')) { // Fallback for other titles like Melee Attack (STR)
+                        } else if (dialogTitle.includes('(') && dialogTitle.includes(')')) { 
                             const extractedAbility = dialogTitle.substring(dialogTitle.indexOf('(') + 1, dialogTitle.indexOf(')'));
                              const foundLabel = translations.ABILITY_LABELS.find(al => al.abbr === extractedAbility.toUpperCase() || al.label === extractedAbility);
                              if (foundLabel) abilityKey = foundLabel.value;
@@ -189,7 +205,7 @@ export function RollDialog({
                       <span className="text-muted-foreground inline-flex items-baseline">
                         {labelText}
                         {abilityAbbr && (
-                           <Badge variant="outline" className="ml-1.5 text-xs font-normal px-1 py-0 whitespace-nowrap">{abilityAbbr}</Badge>
+                           <Badge variant="outline" className="ml-1.5 text-sm font-normal px-1 py-0 whitespace-nowrap">{abilityAbbr}</Badge>
                         )}
                       </span>
                       {item.isRawValue ? (
@@ -303,3 +319,4 @@ export function RollDialog({
 //   if (rollType === 'grapple_check') return UI_STRINGS.rollDialogSubtitleGrappleCheck || "Grapple Check";
 //   return rollType;
 // };
+
