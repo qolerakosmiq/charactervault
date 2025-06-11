@@ -28,7 +28,7 @@ export const GrappleDamageBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div> {/* Removed space-y-1 */}
+      <div>
         <div className="flex justify-between text-sm">
           <span className="text-foreground">{uiStrings.infoDialogGrappleDmgBaseLabel || "Base Damage"}</span>
           <span className="font-bold">
@@ -64,7 +64,7 @@ export const GrappleDamageBreakdownContentDisplay = ({
               {renderModifierValue(grappleDamageBreakdown.bonus)}
           </div>
         )}
-        <Separator className="my-1" />
+        <Separator className="mt-2 mb-1" />
         <div className="flex justify-between text-lg">
           <span className="font-semibold">{uiStrings.infoDialogGrappleDmgTotalLabel || "Total"}</span>
           <span className="font-bold text-accent">
@@ -75,4 +75,3 @@ export const GrappleDamageBreakdownContentDisplay = ({
     </div>
   );
 };
-

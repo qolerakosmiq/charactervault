@@ -104,7 +104,7 @@ export const AcBreakdownContentDisplay = ({
 
       {totalACValue !== undefined && (
         <>
-          <Separator className="my-1" />
+          <Separator className="mt-2 mb-1" />
           <div className="flex justify-between text-lg">
             <span className="font-semibold">{uiStrings.infoDialogTotalLabel || 'Total'}</span>
             <span className="font-bold text-accent">{renderModifierValue(totalACValue)}</span>

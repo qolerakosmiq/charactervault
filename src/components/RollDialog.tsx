@@ -155,8 +155,9 @@ export function RollDialog({
 
         <div className="space-y-3 py-3 max-h-[60vh] overflow-y-auto pr-2">
           {calculationBreakdown.length > 0 && (
-            <div> {/* Removed space-y-1 */}
+            <div>
               <h4 className={cn(sectionHeadingClass, "mb-1")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle || "Calculation Breakdown"}</h4>
+              <div>
                 {calculationBreakdown.map((item, index) => {
                   if (item.label === (UI_STRINGS.infoDialogTotalLabel || "Total") && item.isBold) {
                     return null;
@@ -220,7 +221,7 @@ export function RollDialog({
                     </div>
                   );
                 })}
-                <Separator className="my-1" />
+                <Separator className="mt-2 mb-1" />
                 <div className="flex justify-between text-lg">
                   <span className="font-semibold">
                     {isDamageRoll ? (UI_STRINGS.rollDialogTotalNumericBonusLabel || "Total Numeric Bonus") : (UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus")}
@@ -230,6 +231,7 @@ export function RollDialog({
                   </span>
                 </div>
               </div>
+            </div>
           )}
 
           {totalDiceValue !== null && finalResult !== null && (
@@ -275,7 +277,7 @@ export function RollDialog({
                     <span className="text-foreground">{UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus"}</span>
                     <span className="font-bold text-primary">{renderModifierValue(baseModifier)}</span>
                   </div>
-                  <Separator className="my-1 bg-border/50"/>
+                  <Separator className="mt-2 mb-1" />
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalResultLabel || "Final Result"}</span>
                     {isCritFailure ? (
@@ -304,4 +306,3 @@ export function RollDialog({
     </Dialog>
   );
 }
-

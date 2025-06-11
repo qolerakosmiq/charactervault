@@ -122,7 +122,7 @@ export const SkillModifierBreakdownContentDisplay = ({
   const calculationBlock = hasCalculationBlock ? (
     <div key="skill-calculation-block" className="mt-0 mb-0">
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div className="mt-0 mb-0"> {/* Removed space-y-1 */}
+      <div className="mt-0 mb-0">
         {skillModifierBreakdown!.keyAbilityName && (
           <div className="flex justify-between text-sm">
             <span className="text-foreground inline-flex items-baseline">
@@ -168,7 +168,7 @@ export const SkillModifierBreakdownContentDisplay = ({
             {renderModifierValue(skillModifierBreakdown!.miscModifier)}
           </div>
         )}
-        <Separator className="my-1" />
+        <Separator className="mt-2 mb-1" />
         <div className="flex justify-between text-lg">
           <span className="font-semibold">{uiStrings.infoDialogTotalBonusLabel || "Total Bonus"}</span>
           <span className="font-bold text-accent">{renderModifierValue(skillModifierBreakdown!.totalBonus)}</span>
@@ -200,4 +200,3 @@ export const SkillModifierBreakdownContentDisplay = ({
     </div>
   );
 };
-

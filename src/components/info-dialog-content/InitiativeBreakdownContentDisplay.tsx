@@ -26,7 +26,7 @@ export const InitiativeBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div> {/* Removed space-y-1 */}
+      <div>
         <div className="flex justify-between text-sm items-baseline">
           <span className="text-foreground inline-flex items-baseline">
             {uiStrings.infoDialogInitiativeAbilityModLabel || "Ability Modifier"}
@@ -48,7 +48,7 @@ export const InitiativeBreakdownContentDisplay = ({
               {renderModifierValue(initiativeBreakdown.miscModifier)}
           </div>
         )}
-        <Separator className="my-1" />
+        <Separator className="mt-2 mb-1" />
         <div className="flex justify-between text-lg">
           <span className="font-semibold">{uiStrings.infoDialogInitiativeTotalLabel || "Total Initiative"}</span>
           <span className="font-bold text-accent">{renderModifierValue(initiativeBreakdown.totalInitiative)}</span>
@@ -57,4 +57,3 @@ export const InitiativeBreakdownContentDisplay = ({
     </div>
   );
 };
-

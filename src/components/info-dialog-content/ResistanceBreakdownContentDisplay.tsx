@@ -20,7 +20,7 @@ export const ResistanceBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div> {/* Removed space-y-1 */}
+      <div>
         <div className="flex justify-between text-sm">
           <span className="text-foreground">{uiStrings.infoDialogBaseValueLabel || "Base Value"}</span>
           <span className="font-bold">{resistanceBreakdown.base}</span>
@@ -29,7 +29,7 @@ export const ResistanceBreakdownContentDisplay = ({
           <span className="text-foreground">{uiStrings.infoDialogCustomModifierLabel || "Custom Modifier"}</span>
           {renderModifierValue(resistanceBreakdown.customMod)}
         </div>
-        <Separator className="my-1" />
+        <Separator className="mt-2 mb-1" />
         <div className="flex justify-between text-lg">
           <span className="font-semibold">{uiStrings.infoDialogTotalResistanceLabel || "Total Resistance"}</span>
           <span className="font-bold text-accent">{resistanceBreakdown.total}</span>
@@ -38,4 +38,3 @@ export const ResistanceBreakdownContentDisplay = ({
     </div>
   );
 };
-

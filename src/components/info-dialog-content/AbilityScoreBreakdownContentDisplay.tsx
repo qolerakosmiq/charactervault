@@ -49,7 +49,7 @@ export const AbilityScoreBreakdownContentDisplay = ({
     }
 
     return (
-      <div key={`${comp.sourceLabel}-${comp.sourceDetail || ''}-${comp.value}-${comp.condition || 'unconditional'}`} className={cn("flex justify-between items-baseline text-sm", isConditional && "ml-3")}>
+      <div key={`${comp.sourceLabel}-${comp.sourceDetail || ''}-${comp.value}-${comp.condition || 'unconditional'}`} className={cn("flex justify-between items-baseline text-sm mb-0.5", isConditional && "ml-3")}>
         <span className="text-foreground flex-shrink-0 mr-2">
           {displaySourceLabel}
         </span>
@@ -61,7 +61,7 @@ export const AbilityScoreBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div> {/* Removed space-y-1 */}
+      <div>
         <div className="flex justify-between text-sm">
           <span className="text-foreground">{uiStrings.infoDialogBaseScoreLabel || "Base Score"}</span>
           <span className="font-bold">{abilityScoreBreakdown.base}</span>
@@ -80,7 +80,7 @@ export const AbilityScoreBreakdownContentDisplay = ({
           </>
         )}
 
-        <Separator className="my-1" />
+        <Separator className="mt-2 mb-1" />
         <div className="flex justify-between text-lg">
           <span className="font-semibold">{uiStrings.infoDialogFinalScoreLabel || "Final Score"}</span>
           <span className="font-bold text-accent">{dialogDisplayScore}</span>
@@ -93,4 +93,3 @@ export const AbilityScoreBreakdownContentDisplay = ({
     </div>
   );
 };
-

@@ -51,7 +51,7 @@ export const SpeedBreakdownContentDisplay = ({
   return (
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
-      <div> {/* Removed space-y-1 */}
+      <div>
         {speedBreakdown.components.map((comp, index) => {
           return (
             <div key={index} className="flex justify-between text-sm">
@@ -60,7 +60,7 @@ export const SpeedBreakdownContentDisplay = ({
             </div>
           );
         })}
-        <Separator className="my-1" />
+        <Separator className="mt-2 mb-1" />
         <div className="flex justify-between text-lg">
           <span className="font-semibold">{(uiStrings.infoDialogSpeedTotalPrefixLabel || "Total")} {speedBreakdown.name}</span>
           <span className="font-bold text-accent">{speedBreakdown.total} {speedUnit}</span>
@@ -71,4 +71,3 @@ export const SpeedBreakdownContentDisplay = ({
 };
 
 SpeedBreakdownContentDisplay.displayName = "SpeedBreakdownContentDisplayComponent";
-
