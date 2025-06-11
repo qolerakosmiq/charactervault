@@ -293,29 +293,20 @@
       "grantedFeats": [
         { "featId": "rogue-weapon-proficiencies", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": "Class Proficiency" },
-        { "featId": "class-rogue-sneak-attack", "note": "+1d6 Damage", "levelAcquired": 1 },
+        { "featId": "class-rogue-sneak-attack", "levelAcquired": 1 },
         { "featId": "class-rogue-trapfinding", "levelAcquired": 1 },
         { "featId": "class-rogue-evasion", "levelAcquired": 2 },
-        { "featId": "class-rogue-sneak-attack", "note": "+2d6 Damage", "levelAcquired": 3 },
         { "featId": "class-rogue-trap-sense", "note": "+1 Bonus", "levelAcquired": 3 },
         { "featId": "class-rogue-uncanny-dodge", "levelAcquired": 4 },
-        { "featId": "class-rogue-sneak-attack", "note": "+3d6 Damage", "levelAcquired": 5 },
         { "featId": "class-rogue-trap-sense", "note": "+2 Bonus", "levelAcquired": 6 },
-        { "featId": "class-rogue-sneak-attack", "note": "+4d6 Damage", "levelAcquired": 7 },
         { "featId": "class-rogue-improved-uncanny-dodge", "levelAcquired": 8 },
-        { "featId": "class-rogue-sneak-attack", "note": "+5d6 Damage", "levelAcquired": 9 },
         { "featId": "class-rogue-trap-sense", "note": "+3 Bonus", "levelAcquired": 9 },
         { "featId": "class-rogue-special-ability-slot", "note": "1st Special Ability", "levelAcquired": 10 },
-        { "featId": "class-rogue-sneak-attack", "note": "+6d6 Damage", "levelAcquired": 11 },
         { "featId": "class-rogue-trap-sense", "note": "+4 Bonus", "levelAcquired": 12 },
-        { "featId": "class-rogue-sneak-attack", "note": "+7d6 Damage", "levelAcquired": 13 },
         { "featId": "class-rogue-special-ability-slot", "note": "2nd Special Ability", "levelAcquired": 13 },
-        { "featId": "class-rogue-sneak-attack", "note": "+8d6 Damage", "levelAcquired": 15 },
         { "featId": "class-rogue-trap-sense", "note": "+5 Bonus", "levelAcquired": 15 },
         { "featId": "class-rogue-special-ability-slot", "note": "3rd Special Ability", "levelAcquired": 16 },
-        { "featId": "class-rogue-sneak-attack", "note": "+9d6 Damage", "levelAcquired": 17 },
         { "featId": "class-rogue-trap-sense", "note": "+6 Bonus", "levelAcquired": 18 },
-        { "featId": "class-rogue-sneak-attack", "note": "+10d6 Damage", "levelAcquired": 19 },
         { "featId": "class-rogue-special-ability-slot", "note": "4th Special Ability", "levelAcquired": 19 }
       ]
     },
@@ -406,5 +397,4 @@
     }
   ]
 }
-
-
+    
