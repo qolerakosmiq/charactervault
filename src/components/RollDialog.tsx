@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -31,6 +32,20 @@ export interface RollDialogProps {
   rerollTwentiesForChecks?: boolean;
 }
 
+function getRollDialogSubtitle(rollType: string, uiStrings: Record<string, string>): string {
+    if (rollType.startsWith('ability_check_')) return uiStrings.rollDialogSubtitleAbilityCheck || "Ability Check";
+    if (rollType.startsWith('skill_check_')) return uiStrings.rollDialogSubtitleSkillCheck || "Skill Check";
+    if (rollType.startsWith('saving_throw_')) return uiStrings.rollDialogSubtitleSavingThrow || "Saving Throw";
+    if (rollType === 'initiative_check') return uiStrings.rollDialogSubtitleInitiativeCheck || "Initiative Roll";
+    if (rollType.startsWith('melee_attack_')) return uiStrings.rollDialogSubtitleMeleeAttack || "Melee Attack";
+    if (rollType.startsWith('ranged_attack_')) return uiStrings.rollDialogSubtitleRangedAttack || "Ranged Attack";
+    if (rollType.startsWith('damage_roll_melee_')) return uiStrings.rollDialogSubtitleMeleeDamage || "Melee Damage";
+    if (rollType.startsWith('damage_roll_ranged_')) return uiStrings.rollDialogSubtitleRangedDamage || "Ranged Damage";
+    if (rollType === 'grapple_check') return uiStrings.rollDialogSubtitleGrappleCheck || "Grapple Check";
+    return uiStrings.rollDialogSubtitleGeneric || "Roll";
+}
+
+
 export function RollDialog({
   isOpen,
   onOpenChange,
@@ -51,7 +66,7 @@ export function RollDialog({
 
   const isDamageRoll = rollType.toLowerCase().includes('damage');
   const isAttackRoll = rollType.toLowerCase().includes('attack');
-  const isCheckRoll = !isDamageRoll && !isAttackRoll;
+  const isCheckRoll = !isDamageRoll && !isAttackRoll && !rollType.startsWith('grapple_check') && !rollType.startsWith('initiative_check');
 
 
   React.useEffect(() => {
@@ -69,22 +84,24 @@ export function RollDialog({
       if (isDamageRoll && weaponDamageDice) {
         const weaponDiceRollResult = parseAndRollDice(weaponDamageDice);
         const totalDamage = weaponDiceRollResult + baseModifier;
-        setInitialD20Roll(null); 
+        setInitialD20Roll(null);
         setBonusRolls([]);
         setTotalDiceValue(weaponDiceRollResult);
         setFinalResult(totalDamage);
         onRoll(weaponDiceRollResult, baseModifier, totalDamage, weaponDamageDice);
-      } else { 
+      } else {
         const firstRoll = Math.floor(Math.random() * 20) + 1;
         setInitialD20Roll(firstRoll);
 
         let currentTotalDiceValue = firstRoll;
         const currentBonusRolls: number[] = [];
+        const isRelevantCheckRoll = isCheckRoll || rollType.startsWith('grapple_check') || rollType.startsWith('initiative_check');
 
-        if (isCheckRoll && rerollTwentiesForChecks && firstRoll === 20) {
+
+        if (isRelevantCheckRoll && rerollTwentiesForChecks && firstRoll === 20) {
           let latestBonusRoll = 20;
-          let safetyBreak = 0; // To prevent infinite loops in extreme cases
-          while (latestBonusRoll === 20 && safetyBreak < 10) { // Max 10 bonus rolls
+          let safetyBreak = 0;
+          while (latestBonusRoll === 20 && safetyBreak < 10) {
             latestBonusRoll = Math.floor(Math.random() * 20) + 1;
             currentBonusRolls.push(latestBonusRoll);
             currentTotalDiceValue += latestBonusRoll;
@@ -156,7 +173,6 @@ export function RollDialog({
             <div className="space-y-1">
               <h4 className={cn(sectionHeadingClass, "mb-1")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle || "Calculation Breakdown"}</h4>
                 {calculationBreakdown.map((item, index) => {
-                  // Skip the "Total" row as "Total Bonus" serves this purpose
                   if (item.label === (UI_STRINGS.infoDialogTotalLabel || "Total") && item.isBold) {
                     return null;
                   }
@@ -164,37 +180,47 @@ export function RollDialog({
                   let abilityAbbr: string | undefined;
                   let labelText = item.label;
 
-                  if (item.label === (UI_STRINGS.abilityModifierLabel || "Ability Modifier")) {
-                     const match = dialogTitle.match(/\(([^)]+)\)/) || rollType.match(/ability_check_(\w+)/) || rollType.match(/saving_throw_(\w+)/) || rollType.match(/skill_check_([a-zA-Z-]+)_(\w+)/);
-                     if (match) {
-                        let abilityKey: string | undefined;
-                        if (rollType.startsWith('ability_check_')) abilityKey = rollType.substring('ability_check_'.length);
-                        else if (rollType.startsWith('saving_throw_')) {
-                           const saveType = rollType.substring('saving_throw_'.length) as keyof typeof SAVING_THROW_ABILITIES;
-                           abilityKey = SAVING_THROW_ABILITIES[saveType];
-                        } else if (rollType.startsWith('skill_check_')) {
-                            const skillIdParts = rollType.split('_');
-                            const skillId = skillIdParts.slice(2).join('_'); 
-                            const skillDef = translations.SKILL_DEFINITIONS.find(sd => sd.value === skillId);
-                            if (skillDef) abilityKey = skillDef.keyAbility;
-                        } else if (dialogTitle.includes('(') && dialogTitle.includes(')')) { 
-                            const extractedAbility = dialogTitle.substring(dialogTitle.indexOf('(') + 1, dialogTitle.indexOf(')'));
-                             const foundLabel = translations.ABILITY_LABELS.find(al => al.abbr === extractedAbility.toUpperCase() || al.label === extractedAbility);
-                             if (foundLabel) abilityKey = foundLabel.value;
-                        }
-                        
-                        if(abilityKey){
-                            abilityAbbr = translations.ABILITY_LABELS.find(al => al.value === abilityKey)?.abbr;
-                        }
-                     }
+                  const labelMatch = item.label.match(/^(.*)\s+\(([^)]+)\)$/);
+                  if (labelMatch) {
+                      labelText = labelMatch[1];
+                      const potentialAbbr = labelMatch[2].toUpperCase();
+                      if (translations.ABILITY_LABELS.some(al => al.abbr === potentialAbbr)) {
+                          abilityAbbr = potentialAbbr;
+                      }
+                  } else if (item.label === (UI_STRINGS.abilityModifierLabel || "Ability Modifier")) {
+                      const matchFromTitle = dialogTitle.match(/\(([^)]+)\)/);
+                      const matchFromRollTypeAbility = rollType.match(/ability_check_(\w+)/);
+                      const matchFromRollTypeSave = rollType.match(/saving_throw_(\w+)/);
+                      const matchFromRollTypeSkill = rollType.match(/skill_check_([a-zA-Z-]+)_(\w+)/);
+
+                      let abilityKey: string | undefined;
+
+                      if (matchFromRollTypeAbility) abilityKey = matchFromRollTypeAbility[1];
+                      else if (matchFromRollTypeSave) {
+                          const saveType = matchFromRollTypeSave[1] as keyof typeof SAVING_THROW_ABILITIES;
+                          abilityKey = SAVING_THROW_ABILITIES[saveType];
+                      } else if (matchFromRollTypeSkill) {
+                          const skillIdParts = rollType.split('_');
+                          const skillId = skillIdParts.length > 2 ? skillIdParts.slice(2).join('_') : skillIdParts[1];
+                          const skillDef = translations.SKILL_DEFINITIONS.find(sd => sd.value === skillId);
+                          if (skillDef) abilityKey = skillDef.keyAbility;
+                      } else if (matchFromTitle) {
+                          const extractedAbility = matchFromTitle[1];
+                          const foundLabel = translations.ABILITY_LABELS.find(al => al.abbr === extractedAbility.toUpperCase() || al.label === extractedAbility);
+                          if (foundLabel) abilityKey = foundLabel.value;
+                      }
+                      
+                      if(abilityKey){
+                          abilityAbbr = translations.ABILITY_LABELS.find(al => al.value === abilityKey)?.abbr;
+                      }
                   }
                   
                   return (
                     <div key={`breakdown-${index}`} className="flex justify-between text-sm">
-                      <span className="text-muted-foreground inline-flex items-baseline">
+                      <span className="text-muted-foreground inline-flex items-center">
                         {labelText}
                         {abilityAbbr && (
-                           <Badge variant="outline" className="ml-1.5 text-sm font-normal px-1 py-0 whitespace-nowrap">{abilityAbbr}</Badge>
+                           <Badge variant="outline" className="ml-1.5 text-sm font-normal">{abilityAbbr}</Badge>
                         )}
                       </span>
                       {item.isRawValue ? (
