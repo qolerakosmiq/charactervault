@@ -699,35 +699,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   }, []);
 
   const handleRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number, weaponDamageDice?: string) => {
-    if (!translations || !rollDialogProps) return;
-    const UI_STRINGS = translations.UI_STRINGS;
-    
-    let description = "";
-    const weaponName = rollDialogProps.rollType.includes('melee') || rollDialogProps.rollType.includes('ranged')
-                       ? rollDialogProps.dialogTitle.match(/\(([^:]+):/)?.[1] || '' 
-                       : '';
-
-
-    if (weaponDamageDice && rollDialogProps?.rollType.startsWith('damage_roll')) {
-        const actualDicePart = weaponDamageDice.match(/^(\d*d\d+)/)?.[0] || weaponDamageDice;
-        description = (UI_STRINGS.rollDialogResultDamageFormat || "Damage ({weaponName}): Rolled {diceSum} (from {diceString}) + {otherBonus} = {totalDamage}")
-          .replace("{weaponName}", weaponName)
-          .replace("{diceSum}", String(diceResult))
-          .replace("{diceString}", actualDicePart)
-          .replace("{otherBonus}", String(totalBonus >=0 ? `+${totalBonus}` : totalBonus))
-          .replace("{totalDamage}", String(finalResult));
-    } else {
-        description = (UI_STRINGS.rollDialogResultDescription || "Rolled {diceResult} + {totalBonus} = {finalResult}")
-          .replace("{diceResult}", String(diceResult))
-          .replace("{totalBonus}", String(totalBonus >=0 ? `+${totalBonus}` : totalBonus))
-          .replace("{finalResult}", String(finalResult));
-    }
-
-    toast({
-      title: UI_STRINGS.rollDialogResultTitle || "Roll Result",
-      description: description,
-    });
-  }, [toast, translations, rollDialogProps]);
+    // No toast notification here
+  }, []);
 
 
   const handleOpenRaceInfoDialog = React.useCallback(() => { if (character?.race) { openInfoDialog({ type: 'race' }); } }, [character?.race, openInfoDialog]);
@@ -741,7 +714,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     const abilityName = abilityLabelInfo?.label || ability;
     const finalModifier = calculateAbilityModifier(detailedAbilityScores[ability].finalScore);
     const breakdown: GenericBreakdownItem[] = [
-      { label: translations.UI_STRINGS.abilityScoreLabel || "Ability Score", value: detailedAbilityScores[ability].finalScore },
+      { label: translations.UI_STRINGS.abilityScoreLabel || "Ability Score", value: detailedAbilityScores[ability].finalScore, isRawValue: true },
       { label: translations.UI_STRINGS.abilityModifierLabel || "Modifier", value: finalModifier, isBold: true }
     ];
     handleOpenRollDialog({ 
@@ -1148,6 +1121,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             onOpenSkillInfoDialog={handleOpenSkillInfoDialog}
             onOpenRollDialog={handleOpenRollDialog}
             characterLevel={characterLevelFromXP}
+            aggregatedFeatEffects={aggregatedFeatEffects}
           />
         )}
 
@@ -1211,6 +1185,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           calculationBreakdown={rollDialogProps.calculationBreakdown}
           weaponDamageDice={rollDialogProps.weaponDamageDice}
           onRoll={handleRollResult}
+          rerollTwentiesForChecks={rollDialogProps.rerollTwentiesForChecks}
         />
       )}
       <AddCustomSkillDialog
@@ -1235,5 +1210,3 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
-
-    
