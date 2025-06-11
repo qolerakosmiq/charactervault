@@ -28,7 +28,7 @@ export interface RollDialogProps {
   calculationBreakdown: GenericBreakdownItem[];
   weaponDamageDice?: string;
   onRoll: (diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString?: string) => void;
-  rerollTwentiesForChecks?: boolean; // New prop
+  rerollTwentiesForChecks?: boolean;
 }
 
 export function RollDialog({
@@ -40,12 +40,12 @@ export function RollDialog({
   calculationBreakdown,
   weaponDamageDice,
   onRoll,
-  rerollTwentiesForChecks = false, // Default to false
+  rerollTwentiesForChecks = false,
 }: RollDialogProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
   const [initialD20Roll, setInitialD20Roll] = React.useState<number | null>(null);
   const [bonusRolls, setBonusRolls] = React.useState<number[]>([]);
-  const [totalDiceValue, setTotalDiceValue] = React.useState<number | null>(null); // Sum of initial + bonus rolls
+  const [totalDiceValue, setTotalDiceValue] = React.useState<number | null>(null);
   const [finalResult, setFinalResult] = React.useState<number | null>(null);
   const [isRolling, setIsRolling] = React.useState(false);
 
@@ -69,16 +69,16 @@ export function RollDialog({
       if (isDamageRoll && weaponDamageDice) {
         const weaponDiceRollResult = parseAndRollDice(weaponDamageDice);
         const totalDamage = weaponDiceRollResult + baseModifier;
-        setInitialD20Roll(null); // Not a d20 roll
+        setInitialD20Roll(null); 
         setBonusRolls([]);
-        setTotalDiceValue(weaponDiceRollResult); // For damage, this is the sum of weapon dice
+        setTotalDiceValue(weaponDiceRollResult);
         setFinalResult(totalDamage);
         onRoll(weaponDiceRollResult, baseModifier, totalDamage, weaponDamageDice);
-      } else { // Check or Attack roll (d20 based)
+      } else { 
         const firstRoll = Math.floor(Math.random() * 20) + 1;
         setInitialD20Roll(firstRoll);
 
-        let currentTotalDice = firstRoll;
+        let currentTotalDiceValue = firstRoll;
         const currentBonusRolls: number[] = [];
 
         if (isCheckRoll && rerollTwentiesForChecks && firstRoll === 20) {
@@ -86,15 +86,15 @@ export function RollDialog({
           while (latestBonusRoll === 20) {
             latestBonusRoll = Math.floor(Math.random() * 20) + 1;
             currentBonusRolls.push(latestBonusRoll);
-            currentTotalDice += latestBonusRoll;
-            if (currentBonusRolls.length > 10) break; // Safety break for extreme luck
+            currentTotalDiceValue += latestBonusRoll;
+            if (currentBonusRolls.length > 10) break; 
           }
         }
         setBonusRolls(currentBonusRolls);
-        setTotalDiceValue(currentTotalDice);
-        const calculatedFinalResult = currentTotalDice + baseModifier;
+        setTotalDiceValue(currentTotalDiceValue);
+        const calculatedFinalResult = currentTotalDiceValue + baseModifier;
         setFinalResult(calculatedFinalResult);
-        onRoll(currentTotalDice, baseModifier, calculatedFinalResult);
+        onRoll(currentTotalDiceValue, baseModifier, calculatedFinalResult);
       }
       setIsRolling(false);
     }, 300);
@@ -123,21 +123,20 @@ export function RollDialog({
   const actualWeaponDicePart = weaponDamageDice?.match(/^(\d*d\d+)/)?.[0] || weaponDamageDice;
 
   const isCritFailure = !isDamageRoll && initialD20Roll === 1;
-  // A natural 20 is still a critical success for attack rolls or if rerollTwenties is off for checks
-  const isCritSuccess = !isDamageRoll && initialD20Roll === 20 && (!isCheckRoll || !rerollTwentiesForChecks || bonusRolls.length === 0);
+  const isVisualCritSuccess = !isDamageRoll && initialD20Roll === 20;
 
 
   const resultCardBackground = cn(
     "p-3 border rounded-md space-y-1",
     isCritFailure ? "bg-destructive/20 border-destructive/50" :
-    isCritSuccess ? "bg-emerald-600/20 border-emerald-600/50" :
+    isVisualCritSuccess ? "bg-emerald-600/20 border-emerald-600/50" :
     "bg-card border-border"
   );
 
   const diceResultColor = cn(
     "font-bold text-lg",
     isCritFailure ? "text-destructive" :
-    isCritSuccess ? "text-emerald-500" :
+    isVisualCritSuccess ? "text-emerald-500" :
     "text-primary"
   );
 
@@ -177,7 +176,7 @@ export function RollDialog({
                 <Separator className="my-2" />
                 <div className="flex justify-between text-lg">
                   <span className="font-semibold">
-                    {isDamageRoll ? (UI_STRINGS.rollDialogTotalNumericBonusLabel || "Total Numeric Bonus") : (UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus")}
+                    {isDamageRoll ? (UI_STRINGS.rollDialogTotalNumericBonusLabel) : (UI_STRINGS.rollDialogTotalBonusLabel)}
                   </span>
                   <span className="font-bold text-accent">
                     {renderModifierValue(baseModifier)}
@@ -192,7 +191,7 @@ export function RollDialog({
                 <>
                   <div className="flex justify-between items-center">
                     <span className="text-sm">
-                      {(UI_STRINGS.rollDialogDamageWeaponDiceRolledLabel || "Weapon Dice ({diceString}): Rolled {diceSum}")
+                      {(UI_STRINGS.rollDialogDamageWeaponDiceRolledLabel || "Weapon Dice ({diceString}) Rolled {diceSum}")
                           .replace("{diceString}", actualWeaponDicePart || 'N/A')
                           .replace("{diceSum}", String(totalDiceValue))}
                     </span>
@@ -255,3 +254,4 @@ export function RollDialog({
     </Dialog>
   );
 }
+
