@@ -229,7 +229,7 @@
       "value": "class-barbarian-fast-movement",
       "label": "Fast Movement",
       "description": "<b>Benefit:</b> A barbarian’s land speed is faster than the norm for her race by +10 feet. This benefit applies only when she is wearing no armor, light armor, or medium armor and not carrying a heavy load. Apply this bonus before modifying the barbarian’s speed because of any load carried or armor worn. For example, a human barbarian has a speed of 40 feet, rather than 30 feet, when wearing light or no armor. When wearing medium armor or carrying a medium load, her speed drops to 30 feet. A halfling barbarian has a speed of 30 feet, rather than 20 feet, in light or no armor. When wearing medium armor or carrying a medium load, her speed drops to 20 feet.",
-      "effectsText": "+10 ft. to land speed (if not in heavy armor & not heavy load).",
+      "effectsText": "+10 ft. to land speed (conditional).",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [
@@ -247,7 +247,7 @@
       "label": "Rage",
       "permanentEffect": false,
       "description": "<b>Benefit:</b> A barbarian can fly into a rage a certain number of times per day. In a rage, a barbarian temporarily gains a +4 bonus to Strength, a +4 bonus to Constitution, and a +2 morale bonus on Will saves, but he takes a –2 penalty to Armor Class. The increase in Constitution increases the barbarian’s hit points by 2 points per level, but these hit points go away at the end of the rage when his Constitution score returns to normal. (These hit points are not lost first the way temporary hit points are.) While raging, a barbarian cannot use any Charisma-, Dexterity-, or Intelligence-based skills (except for Balance, Escape Artist, Intimidate, and Ride), the Concentration skill, or any abilities that require patience or concentration, nor can he cast spells or activate magic items that require a command word, a spell trigger (such as a wand), or spell completion (such as a scroll) to function. He can use any feat he has except Combat Expertise, item creation feats, and metamagic feats. A fit of rage lasts for a number of rounds equal to 3 + the character’s (newly improved) Constitution modifier. A barbarian may prematurely end his rage. At the end of the rage, the barbarian loses the rage modifiers and restrictions and becomes fatigued (–2 penalty to Strength, –2 penalty to Dexterity, can’t charge or run) for the duration of the encounter. A barbarian can fly into a rage only once per encounter. At 1st level he can use his rage ability once per day. At 4th level and every four levels thereafter, he can use it one additional time per day (up to a maximum of six times per day at 20th level). Entering a rage takes no time itself, but a barbarian can do it only during his action, not in response to someone else’s action.",
-      "effectsText": "When raging: +4 STR, +4 CON, +2 Will, -2 AC. Fatigued after.",
+      "effectsText": "When raging: +4 STR, +4 CON, +2 Will, -2 AC. Grants rage uses/day. Fatigued after.",
       "type": "special-ex",
       "isClassFeature": true,
       "effects": [
@@ -265,12 +265,8 @@
             "scaleWithClassLevel": {
               "classId": "barbarian",
               "specificLevels": [
-                { "level": 1, "value": 1 },
-                { "level": 4, "value": 2 },
-                { "level": 8, "value": 3 },
-                { "level": 12, "value": 4 },
-                { "level": 16, "value": 5 },
-                { "level": 20, "value": 6 }
+                { "level": 1, "value": 1 }, { "level": 4, "value": 2 }, { "level": 8, "value": 3 },
+                { "level": 12, "value": 4 }, { "level": 16, "value": 5 }, { "level": 20, "value": 6 }
               ]
             }
           }
@@ -281,7 +277,7 @@
       "value": "class-barbarian-uncanny-dodge",
       "label": "Uncanny Dodge",
       "description": "<b>Benefit:</b> At 2nd level, a barbarian retains her Dexterity bonus to AC (if any) even if she is caught flat-footed or struck by an invisible attacker. However, she still loses her Dexterity bonus to AC if immobilized. If a character already has uncanny dodge from a different class, a barbarian automatically gains improved uncanny dodge (see below) instead.",
-      "effectsText": "Retains Dex bonus to AC if flat-footed/vs invisible. Cannot be flanked by characters of equal or lower level unless flanker has 4+ more Rogue levels.",
+      "effectsText": "Retains Dex bonus to AC if flat-footed or vs. invisible attacker. Cannot be flanked by Rogues of equal or lower level (unless Rogue has 4+ more levels).",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [{ "type": "note", "text": "Retains Dexterity bonus to AC (if any) even if caught flat-footed or struck by an invisible attacker. Cannot be flanked except by a rogue of at least four levels higher than the character." }]
@@ -290,7 +286,7 @@
       "value": "class-barbarian-trap-sense",
       "label": "Trap Sense",
       "description": "<b>Benefit:</b> At 3rd level, a barbarian gains a +1 bonus on Reflex saves made to avoid traps and a +1 dodge bonus to AC against attacks made by traps. These bonuses increase by +1 for every three barbarian levels thereafter (6th, 9th, 12th, 15th, and 18th level).",
-      "effectsText": "Scaling bonus to Reflex saves vs. traps (+1/3 levels, starting at 3rd) and dodge bonus to AC vs. trap attacks.",
+      "effectsText": "Scaling bonus to Reflex saves vs. traps and dodge AC vs. trap attacks (+1 at L3, +1/3 levels after).",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [
@@ -314,7 +310,7 @@
           "value": 0,
           "bonusType": "dodge",
           "condition": "vs_trap_attacks",
-          "appliesToScope": ["normal","touch"],
+          "appliesToScope": ["normal", "touch"],
           "scaleWithClassLevel": {
             "classId": "barbarian",
             "specificLevels": [
@@ -329,25 +325,26 @@
       "value": "class-barbarian-improved-uncanny-dodge",
       "label": "Improved Uncanny Dodge",
       "description": "<b>Benefit:</b> At 5th level and higher, a barbarian can no longer be flanked. This defense denies a rogue the ability to sneak attack the character by flanking her, unless the attacker has at least four more rogue levels than the target has barbarian levels.",
-      "effectsText": "Cannot be flanked.",
+      "effectsText": "Cannot be flanked (denies sneak attack from flanking unless Rogue attacker is 4+ levels higher).",
       "isClassFeature": true,
       "type": "special-ex",
-      "effects": [{ "type": "note", "text": "Cannot be flanked." }]
+      "effects": [{ "type": "note", "text": "Cannot be flanked. Denies sneak attack from flanking unless Rogue attacker is 4+ levels higher." }]
     },
     {
       "value": "class-barbarian-damage-reduction",
       "label": "Damage Reduction",
       "description": "<b>Benefit:</b> At 7th level, a barbarian gains Damage Reduction. Subtract 1 from the damage the barbarian takes each time she is dealt damage from a weapon or a natural attack. At 10th level, and every three barbarian levels thereafter (13th, 16th, and 19th level), this damage reduction rises by 1 point. Damage reduction can reduce damage to 0 but not below 0.",
-      "effectsText": "Gains DR X/-. Starts at DR 1/- at 7th, increases by 1 every 3 levels.",
+      "effectsText": "Gains DR X/-. Starts at DR 1/- at 7th, increases by 1 every 3 levels (10th, 13th, 16th, 19th).",
       "isClassFeature": true,
-      "type": "special-ex"
+      "type": "special-ex",
+      "effects": [{ "type": "note", "text": "Gains DR X/-. Starts at DR 1/- at 7th, increases by 1 every 3 levels (10th, 13th, 16th, 19th)." }]
     },
     {
       "value": "class-barbarian-greater-rage",
       "label": "Greater Rage",
       "permanentEffect": false,
       "description": "<b>Benefit:</b> At 11th level, a barbarian’s bonuses to Strength and Constitution during her rage each increase to +6, and her morale bonus on Will saves increases to +3. The penalty to AC remains at –2.",
-      "effectsText": "Rage bonuses become +6 STR, +6 CON, +3 Will.",
+      "effectsText": "Rage bonuses become +6 STR, +6 CON, +3 Will (conditional on raging).",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [
@@ -381,7 +378,7 @@
       "label": "Mighty Rage",
       "permanentEffect": false,
       "description": "<b>Benefit:</b> At 20th level, a barbarian’s bonuses to Strength and Constitution during her rage each increase to +8, and her morale bonus on Will saves increases to +4. The penalty to AC remains at –2.",
-      "effectsText": "Rage bonuses become +8 STR, +8 CON, +4 Will.",
+      "effectsText": "Rage bonuses become +8 STR, +8 CON, +4 Will (conditional on raging).",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [

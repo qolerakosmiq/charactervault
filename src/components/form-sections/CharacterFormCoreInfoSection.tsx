@@ -26,7 +26,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollText, Info, Loader2, Users, Swords as BarbarianRageIcon, BookOpen, Wand2 } from 'lucide-react';
+import { ScrollText, Info, Loader2, Users, Activity, BookOpen, Wand2 } from 'lucide-react'; // Changed Swords to Activity
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -390,7 +390,7 @@ const CharacterFormCoreInfoSectionComponent = ({
             {isBarbarian && rageUsesPerDay > 0 && (
               <div className="flex items-baseline gap-1 pt-[6px] ml-1">
                 <Badge variant="destructive" className="text-xs font-normal whitespace-nowrap">
-                    <BarbarianRageIcon className="inline h-3 w-3 mr-1" />
+                    <Activity className="inline h-3 w-3 mr-1" />
                     {(UI_STRINGS.barbarianRageUsesLabel || "Rage Uses Per Day")}: <strong className="font-bold ml-1">{rageUsesPerDay}</strong>
                 </Badge>
               </div>
@@ -491,18 +491,7 @@ const CharacterFormCoreInfoSectionComponent = ({
         )}
 
 
-        {isBarbarian && rageUsesPerDay > 0 && (
-            <div className="p-3 border rounded-md bg-muted/20 space-y-1">
-                <Label className="text-sm font-medium flex items-center">
-                    <BarbarianRageIcon className="mr-2 h-4 w-4 text-destructive" />
-                    {UI_STRINGS.barbarianRageUsesLabel || "Rage Uses Per Day"}
-                </Label>
-                <p className="text-2xl font-bold text-destructive">{rageUsesPerDay}</p>
-            </div>
-        )}
-
-
-        {canChooseCombatStyle && (
+        {isRanger && canChooseCombatStyle && (
           <div className="space-y-1.5">
             <Label htmlFor="rangerCombatStyle">{UI_STRINGS.rangerCombatStyleLabel || "Ranger Combat Style"}</Label>
             <Select

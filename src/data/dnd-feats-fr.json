@@ -229,7 +229,7 @@
       "value": "class-barbarian-fast-movement",
       "label": "Déplacement rapide",
       "description": "<b>Avantage :</b> La vitesse terrestre d'un barbare est supérieure de +3 mètres à la normale pour sa race. Cet avantage ne s'applique que s'il ne porte pas d'armure, une armure légère ou intermédiaire et qu'il n'est pas lourdement chargé. Appliquez ce bonus avant de modifier la vitesse du barbare en fonction de la charge transportée ou de l'armure portée. Par exemple, un barbare humain a une vitesse de 12 mètres, au lieu de 9 mètres, lorsqu'il porte une armure légère ou aucune armure. Lorsqu'il porte une armure intermédiaire ou une charge moyenne, sa vitesse tombe à 9 mètres. Un barbare halfelin a une vitesse de 9 mètres, au lieu de 6 mètres, en armure légère ou sans armure. Lorsqu'il porte une armure intermédiaire ou une charge moyenne, sa vitesse tombe à 6 mètres.",
-      "effectsText": "+3m à la vitesse terrestre (si pas en armure lourde & pas lourdement chargé).",
+      "effectsText": "+3m à la vitesse terrestre (conditionnel).",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [
@@ -247,7 +247,7 @@
       "label": "Rage",
       "permanentEffect": false,
       "description": "<b>Avantage :</b> Un barbare peut entrer en rage un certain nombre de fois par jour. En rage, un barbare gagne temporairement un bonus de +4 en Force, un bonus de +4 en Constitution et un bonus de moral de +2 aux jets de Volonté, mais il subit une pénalité de –2 à la Classe d'Armure. L'augmentation de la Constitution augmente les points de vie du barbare de 2 points par niveau, mais ces points de vie disparaissent à la fin de la rage lorsque son score de Constitution revient à la normale. (Ces points de vie ne sont pas perdus en premier comme le sont les points de vie temporaires.) En rage, un barbare ne peut utiliser aucune compétence basée sur le Charisme, la Dextérité ou l'Intelligence (sauf Équilibre, Art de la Fugue, Intimidation et Équitation), la compétence Concentration, ou toute capacité qui nécessite de la patience ou de la concentration, ni lancer de sorts ou activer des objets magiques qui nécessitent un mot de commande, un déclencheur de sort (comme une baguette) ou l'achèvement d'un sort (comme un parchemin) pour fonctionner. Il peut utiliser n'importe quel don qu'il possède sauf Expertise du combat, les dons de création d'objets et les dons de métamagie. Un accès de rage dure un nombre de rounds égal à 3 + le modificateur de Constitution (nouvellement amélioré) du personnage. Un barbare peut mettre fin prématurément à sa rage. À la fin de la rage, le barbare perd les modificateurs et les restrictions de la rage et devient fatigué (pénalité de –2 en Force, pénalité de –2 en Dextérité, ne peut ni charger ni courir) pendant toute la durée de la rencontre. Un barbare ne peut entrer en rage qu'une seule fois par rencontre. Au niveau 1, il peut utiliser sa capacité de rage une fois par jour. Au niveau 4 et tous les quatre niveaux par la suite, il peut l'utiliser une fois de plus par jour (jusqu'à un maximum de six fois par jour au niveau 20). Entrer en rage ne prend pas de temps en soi, mais un barbare ne peut le faire que pendant son action, pas en réponse à l'action de quelqu'un d'autre.",
-      "effectsText": "En rage : +4 FOR, +4 CON, +2 Vol, -2 CA. Fatigué après.",
+      "effectsText": "Enragé : +4 FOR, +4 CON, +2 Vol, -2 CA. Octroie des utilisations de rage/jour. Fatigué après.",
       "type": "special-ex",
       "isClassFeature": true,
       "effects": [
@@ -265,12 +265,8 @@
             "scaleWithClassLevel": {
               "classId": "barbarian",
               "specificLevels": [
-                { "level": 1, "value": 1 },
-                { "level": 4, "value": 2 },
-                { "level": 8, "value": 3 },
-                { "level": 12, "value": 4 },
-                { "level": 16, "value": 5 },
-                { "level": 20, "value": 6 }
+                { "level": 1, "value": 1 }, { "level": 4, "value": 2 }, { "level": 8, "value": 3 },
+                { "level": 12, "value": 4 }, { "level": 16, "value": 5 }, { "level": 20, "value": 6 }
               ]
             }
           }
@@ -281,7 +277,7 @@
       "value": "class-barbarian-uncanny-dodge",
       "label": "Esquive instinctive",
       "description": "<b>Avantage :</b> Au niveau 2, un barbare conserve son bonus de Dextérité à la CA (le cas échéant) même s'il est pris au dépourvu ou frappé par un attaquant invisible. Cependant, il perd toujours son bonus de Dextérité à la CA s'il est immobilisé. Si un personnage possède déjà l'esquive instinctive d'une autre classe, un barbare gagne automatiquement l'esquive instinctive améliorée (voir ci-dessous) à la place.",
-      "effectsText": "Conserve le bonus de Dex à la CA si pris au dépourvu/vs invisible. Ne peut pas être pris en tenaille par des personnages de niveau égal ou inférieur, sauf si le preneur en tenaille a 4+ niveaux de Roublard de plus.",
+      "effectsText": "Conserve le bonus de Dex à la CA si pris au dépourvu/vs invisible. Ne peut être pris en tenaille que par un roublard ayant au moins quatre niveaux de plus.",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [{ "type": "note", "text": "Conserve son bonus de Dextérité à la CA (le cas échéant) même s'il est pris au dépourvu ou frappé par un attaquant invisible. Ne peut être pris en tenaille que par un roublard ayant au moins quatre niveaux de plus que le personnage." }]
@@ -290,7 +286,7 @@
       "value": "class-barbarian-trap-sense",
       "label": "Sens des pièges",
       "description": "<b>Avantage :</b> Au niveau 3, un barbare gagne un bonus de +1 aux jets de Réflexes effectués pour éviter les pièges et un bonus d'esquive de +1 à la CA contre les attaques faites par les pièges. Ces bonus augmentent de +1 tous les trois niveaux de barbare par la suite (6e, 9e, 12e, 15e et 18e niveau).",
-      "effectsText": "Bonus évolutif aux jets de Réflexes contre les pièges (+1/3 niveaux, commençant au N3) et bonus d'esquive à la CA contre les attaques de pièges.",
+      "effectsText": "Bonus évolutif aux jets de Réflexes contre les pièges (+1 au N3, +1/3 niveaux après) et bonus d'esquive à la CA contre les attaques de pièges.",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [
@@ -329,25 +325,26 @@
       "value": "class-barbarian-improved-uncanny-dodge",
       "label": "Esquive instinctive améliorée",
       "description": "<b>Avantage :</b> Au niveau 5 et supérieur, un barbare ne peut plus être pris en tenaille. Cette défense empêche un roublard de lui infliger une attaque sournoise en le prenant en tenaille, à moins que l'attaquant n'ait au moins quatre niveaux de roublard de plus que les niveaux de barbare de la cible.",
-      "effectsText": "Ne peut plus être pris en tenaille.",
+      "effectsText": "Ne peut plus être pris en tenaille (empêche l'attaque sournoise par prise en tenaille sauf si le roublard a 4 niveaux de plus).",
       "isClassFeature": true,
       "type": "special-ex",
-      "effects": [{ "type": "note", "text": "Ne peut plus être pris en tenaille." }]
+      "effects": [{ "type": "note", "text": "Ne peut plus être pris en tenaille. Empêche l'attaque sournoise par prise en tenaille sauf si l'attaquant roublard a au moins quatre niveaux de plus que les niveaux de barbare de la cible." }]
     },
     {
       "value": "class-barbarian-damage-reduction",
       "label": "Réduction des dégâts",
       "description": "<b>Avantage :</b> Au niveau 7, un barbare gagne une Réduction des Dégâts. Soustrayez 1 aux dégâts que le barbare subit chaque fois qu'il est touché par une arme ou une attaque naturelle. Au niveau 10, et tous les trois niveaux de barbare par la suite (13e, 16e et 19e niveau), cette réduction des dégâts augmente de 1 point. La réduction des dégâts peut réduire les dégâts à 0 mais pas en dessous de 0.",
-      "effectsText": "Gagne RD X/-. Commence à RD 1/- au N7, augmente de 1 tous les 3 niveaux.",
+      "effectsText": "RD 1/- au N7, augmentant à RD 5/- au N19.",
       "isClassFeature": true,
-      "type": "special-ex"
+      "type": "special-ex",
+      "effects": [{ "type": "note", "text": "Gagne RD X/-. Commence à RD 1/- au N7, augmente de 1 tous les 3 niveaux (10e, 13e, 16e, 19e)." }]
     },
     {
       "value": "class-barbarian-greater-rage",
       "label": "Rage supérieure",
       "permanentEffect": false,
       "description": "<b>Avantage :</b> Au niveau 11, les bonus de Force et de Constitution d'un barbare pendant sa rage augmentent chacun à +6, et son bonus de moral aux jets de Volonté augmente à +3. La pénalité à la CA reste de –2.",
-      "effectsText": "Les bonus de rage deviennent +6 FOR, +6 CON, +3 Vol.",
+      "effectsText": "Les bonus de rage deviennent +6 FOR, +6 CON, +3 Vol (conditionnel à la rage).",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [
@@ -360,7 +357,7 @@
       "value": "class-barbarian-indomitable-will",
       "label": "Volonté indomptable",
       "description": "<b>Avantage :</b> En rage, un barbare de niveau 14 ou plus gagne un bonus de +4 aux jets de Volonté pour résister aux sorts d'enchantement. Ce bonus se cumule avec tous les autres modificateurs, y compris le bonus de moral aux jets de Volonté qu'il reçoit également pendant sa rage.",
-      "effectsText": "+4 bonus aux jets de Volonté contre les sorts d'enchantement en rage.",
+      "effectsText": "+4 aux jets de Volonté contre les enchantements en rage.",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [
@@ -381,7 +378,7 @@
       "label": "Rage puissante",
       "permanentEffect": false,
       "description": "<b>Avantage :</b> Au niveau 20, les bonus de Force et de Constitution d'un barbare pendant sa rage augmentent chacun à +8, et son bonus de moral aux jets de Volonté augmente à +4. La pénalité à la CA reste de –2.",
-      "effectsText": "Les bonus de rage deviennent +8 FOR, +8 CON, +4 Vol.",
+      "effectsText": "Les bonus de rage deviennent +8 FOR, +8 CON, +4 Vol (conditionnel à la rage).",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [
