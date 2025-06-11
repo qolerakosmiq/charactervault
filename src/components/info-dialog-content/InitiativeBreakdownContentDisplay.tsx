@@ -5,6 +5,8 @@ import React from 'react';
 import type { InitiativeBreakdownDetails, AbilityName } from '@/types/character';
 import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge'; // Added Badge import
+import { cn } from '@/lib/utils'; // Added cn import
 
 interface InitiativeBreakdownContentDisplayProps {
   initiativeBreakdown?: InitiativeBreakdownDetails;
@@ -25,11 +27,13 @@ export const InitiativeBreakdownContentDisplay = ({
     <div>
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
       <div className="space-y-1">
-        <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">
+        <div className="flex justify-between text-sm items-baseline"> {/* Ensure items-baseline */}
+          <span className="text-muted-foreground inline-flex items-baseline"> {/* Ensure items-baseline */}
             {uiStrings.infoDialogInitiativeAbilityModLabel || "Ability Modifier"}
             {dexterityAbilityInfo && (
-              <span className="text-muted-foreground/80 ml-1"> ({dexterityAbilityInfo.abbr})</span>
+              <Badge variant="outline" className={cn("ml-1.5 text-sm font-normal px-1.5 py-0.5 whitespace-nowrap")}>
+                {dexterityAbilityInfo.abbr}
+              </Badge>
             )}
           </span>
           {renderModifierValue(initiativeBreakdown.dexModifier)}
