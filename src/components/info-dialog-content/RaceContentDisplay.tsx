@@ -71,9 +71,9 @@ export const RaceContentDisplay = ({
   const generalTraitsSubSections: React.ReactNode[] = [];
   if (abilityModifiers && abilityModifiers.length > 0) {
     generalTraitsSubSections.push(
-      <div className="mt-2" key="ability-modifiers-section">
-        <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments || "Ability Score Adjustments"}</h4>
-        <div className="space-y-0.5 text-sm mb-2 ml-4">
+      <div key="ability-modifiers-section">
+        <h4 className="text-sm font-bold text-muted-foreground mb-1">{UI_STRINGS.infoDialogAbilityScoreAdjustments || "Ability Score Adjustments"}</h4>
+        <div className="space-y-0.5 text-sm mb-0 ml-3">
           {abilityModifiers.map(mod => (
             <div key={mod.ability} className="flex justify-between">
               <span className="text-sm text-foreground">{ABILITY_LABELS.find(al => al.value === mod.ability)?.label || mod.ability}</span>
@@ -86,9 +86,9 @@ export const RaceContentDisplay = ({
   }
   if (skillBonuses && skillBonuses.length > 0) {
     generalTraitsSubSections.push(
-      <div className="mt-2" key="skill-bonuses-section">
-        <h4 className="text-sm font-medium text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses || "Racial Skill Bonuses"}</h4>
-        <div className="space-y-0.5 text-sm mb-2 ml-4">
+      <div key="skill-bonuses-section">
+        <h4 className="text-sm font-bold text-muted-foreground mb-1">{UI_STRINGS.infoDialogRacialSkillBonuses || "Racial Skill Bonuses"}</h4>
+        <div className="space-y-0.5 text-sm mb-0 ml-3">
           {skillBonuses.map(bonus => (
             <div key={bonus.skillId} className="flex justify-between">
               <span className="text-sm text-foreground">{bonus.skillName}</span>
@@ -101,9 +101,9 @@ export const RaceContentDisplay = ({
   }
   if (speeds && Object.keys(speeds).filter(k => (speeds as any)[k] !== undefined && (speeds as any)[k] > 0).length > 0) {
     generalTraitsSubSections.push(
-       <div className="mt-2" key="base-speeds-section">
-        <h4 className="text-sm text-muted-foreground font-medium mb-1">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</h4>
-         <div className="space-y-0.5 text-sm mb-2 ml-4">
+       <div key="base-speeds-section">
+        <h4 className="text-sm font-bold text-muted-foreground mb-1">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</h4>
+         <div className="space-y-0.5 text-sm mb-0 ml-3">
           {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
             .map(([type, speedVal]) => {
             const speedTypeKey = `speedLabel${type.charAt(0).toUpperCase() + type.slice(1)}` as keyof typeof UI_STRINGS;
@@ -121,7 +121,7 @@ export const RaceContentDisplay = ({
   }
   if (bonusFeatSlots !== undefined && bonusFeatSlots > 0) {
     generalTraitsSubSections.push(
-      <div key="bonus-feat-slots-item" className="flex justify-between text-sm mt-2">
+      <div key="bonus-feat-slots-item" className="flex justify-between text-sm mt-0">
         <span className="text-sm text-foreground">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</span>
         <span className="text-sm font-semibold text-foreground">{renderModifierValue(bonusFeatSlots)}</span>
       </div>
