@@ -278,6 +278,24 @@
       ]
     },
     {
+      "value": "class-barbarian-uncanny-dodge",
+      "label": "Esquive instinctive",
+      "description": "<b>Avantage :</b> Au niveau 2, un barbare conserve son bonus de Dextérité à la CA (le cas échéant) même s'il est pris au dépourvu ou frappé par un attaquant invisible. Cependant, il perd toujours son bonus de Dextérité à la CA s'il est immobilisé. Si un personnage possède déjà l'esquive instinctive d'une autre classe, un barbare gagne automatiquement l'esquive instinctive améliorée (voir ci-dessous) à la place.",
+      "effectsText": "Conserve le bonus de Dex à la CA si pris au dépourvu/vs invisible. Ne peut pas être pris en tenaille par des personnages de niveau égal ou inférieur, sauf si le preneur en tenaille a 4+ niveaux de Roublard de plus.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "note", "text": "Conserve son bonus de Dextérité à la CA (le cas échéant) même s'il est pris au dépourvu ou frappé par un attaquant invisible. Ne peut être pris en tenaille que par un roublard ayant au moins quatre niveaux de plus que le personnage." }]
+    },
+    {
+      "value": "class-barbarian-improved-uncanny-dodge",
+      "label": "Esquive instinctive améliorée",
+      "description": "<b>Avantage :</b> Au niveau 5 et supérieur, un barbare ne peut plus être pris en tenaille. Cette défense empêche un roublard de lui infliger une attaque sournoise en le prenant en tenaille, à moins que l'attaquant n'ait au moins quatre niveaux de roublard de plus que les niveaux de barbare de la cible.",
+      "effectsText": "Ne peut plus être pris en tenaille.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "note", "text": "Ne peut plus être pris en tenaille." }]
+    },
+    {
       "value": "simple-weapon-proficiency",
       "label": "Maniement des armes courantes",
       "description": "<b>Avantage :</b> Vous effectuez les jets d'attaque avec les armes courantes normalement.",

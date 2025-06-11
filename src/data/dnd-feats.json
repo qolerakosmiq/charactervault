@@ -278,6 +278,24 @@
       ]
     },
     {
+      "value": "class-barbarian-uncanny-dodge",
+      "label": "Uncanny Dodge",
+      "description": "<b>Benefit:</b> At 2nd level, a barbarian retains her Dexterity bonus to AC (if any) even if she is caught flat-footed or struck by an invisible attacker. However, she still loses her Dexterity bonus to AC if immobilized. If a character already has uncanny dodge from a different class, a barbarian automatically gains improved uncanny dodge (see below) instead.",
+      "effectsText": "Retains Dex bonus to AC if flat-footed/vs invisible. Cannot be flanked by characters of equal or lower level unless flanker has 4+ more Rogue levels.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "note", "text": "Retains Dexterity bonus to AC (if any) even if caught flat-footed or struck by an invisible attacker. Cannot be flanked except by a rogue of at least four levels higher than the character." }]
+    },
+    {
+      "value": "class-barbarian-improved-uncanny-dodge",
+      "label": "Improved Uncanny Dodge",
+      "description": "<b>Benefit:</b> At 5th level and higher, a barbarian can no longer be flanked. This defense denies a rogue the ability to sneak attack the character by flanking her, unless the attacker has at least four more rogue levels than the target has barbarian levels.",
+      "effectsText": "Cannot be flanked.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "note", "text": "Cannot be flanked." }]
+    },
+    {
       "value": "simple-weapon-proficiency",
       "label": "Simple Weapon Proficiency",
       "description": "<b>Benefit:</b> You make attack rolls with simple weapons normally.",
