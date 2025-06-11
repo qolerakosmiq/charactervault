@@ -451,6 +451,7 @@
     "conditionsPanelTitle": "Conditions Actives",
     "conditionsPanelDescription": "Activez ou désactivez les effets conditionnels des dons et capacités de votre personnage.",
     "conditionsPanelTooltipSourcesLabel": "Sources :",
+    "conditionsPanelPermanentLabel": "Permanent",
     "infoDialogUnknownFeatSource": "Don inconnu",
     "experiencePanelTitle": "Expérience",
     "experiencePanelDescription": "Suivez la progression et les points d'expérience actuels de votre personnage.",
@@ -462,6 +463,7 @@
     "experiencePanelMaxLevel": "Niveau Max Atteint",
     "condition_vs_flat_footed_or_flanked_target": "contre une cible prise au dépourvu ou prise en tenaille",
     "condition_raging": "Enragé",
+    "condition_always_active_alertness": "Toujours Actif (Vigilance)",
     "conditionalEffectActiveSuffix": "(Actif)",
     "conditionalEffectInactiveSuffix": "(Inactif)",
     "abilityScoreBreakdownConditionalSourceFormat": "{sourceLabel} ({conditionName})",
@@ -636,3 +638,4 @@
 
 
     
+

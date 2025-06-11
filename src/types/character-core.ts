@@ -211,6 +211,7 @@ export interface GrantsAbilityEffectUses {
   value?: number | "levelBased" | "abilityModBased" | "scaled"; // 'scaled' indicates using scaleWithClassLevel
   basedOnAbility?: Exclude<AbilityName, 'none'>;
   scaleWithClassLevel?: FeatEffectScaling; // For uses.value if it's "scaled"
+  isActive?: boolean; // Added to track if the ability grant itself is active
 }
 export interface GrantsAbilityEffect {
   type: "grantsAbility";
@@ -305,6 +306,7 @@ export interface FeatDefinitionJsonData { // Base structure for feat definitions
   isClassFeature?: boolean;
   isCustom?: boolean;
   category?: string; // e.g., "fighterBonusFeat", "monkBonusFeat", "wizardBonusFeat", "rogueSpecialAbility"
+  permanentEffect?: boolean; // New: If true, any conditions from this feat's effects are treated as always active in ConditionsPanel
 }
 
 
@@ -648,6 +650,7 @@ export interface AbilityScoreComponentValue {
   sourceDetail?: string;
   value: number;
   condition?: string;
+  isActive?: boolean; // Added for conditional effects
 }
 export interface AbilityScoreBreakdown {
   ability: Exclude<AbilityName, 'none'>;
@@ -665,32 +668,38 @@ export interface AvailableFeatSlotsBreakdown {
   classBonusDetails: Array<{ category: string; count: number; sourceFeatLabel?: string }>;
 }
 
+export interface AggregatedFeatEffectBase { // Base for all aggregated effects to include isActive
+  sourceFeat?: string;
+  condition?: string;
+  isActive?: boolean;
+}
+
 export interface AggregatedFeatEffects {
-  skillBonuses: Record<string, number>;
+  skillBonuses: Record<string, number>; // This is a sum of active, unconditional skill bonuses
   favoredEnemyBonuses?: { skillBonus: number; damageBonus: number; };
   favoredEnemySlots?: number;
-  abilityScoreBonuses: Array<AbilityScoreEffect & { sourceFeat?: string }>;
-  savingThrowBonuses: Array<SavingThrowEffect & { sourceFeat?: string }>;
-  attackRollBonuses: Array<AttackRollEffect & { sourceFeat?: string }>;
-  damageRollBonuses: Array<DamageRollEffect & { sourceFeat?: string }>;
-  acBonuses: Array<ArmorClassEffect & { sourceFeat?: string }>;
-  hpBonus: number;
-  hpBonusSources: Array<{ sourceFeatName: string; value: number; condition?: string }>;
-  initiativeBonus: number;
-  speedBonuses: Array<SpeedEffect & { sourceFeat?: string }>;
-  resistanceBonuses: Array<ResistanceEffect & { sourceFeat?: string }>;
-  casterLevelCheckBonuses: Array<CasterLevelCheckEffect & { sourceFeat?: string }>;
-  spellSaveDcBonuses: Array<SpellSaveDcEffect & { sourceFeat?: string }>;
-  turnUndeadBonuses: Array<TurnUndeadEffect & { sourceFeat?: string }>;
-  grantedAbilities: Array<GrantsAbilityEffect & { sourceFeat?: string }>;
-  modifiedMechanics: Array<ModifiesMechanicEffect & { sourceFeat?: string }>;
-  proficienciesGranted: Array<GrantsProficiencyEffect & { sourceFeat?: string }>;
-  bonusFeatSlots: Array<BonusFeatSlotEffect & { sourceFeat?: string }>;
+  abilityScoreBonuses: Array<AbilityScoreEffect & AggregatedFeatEffectBase>;
+  savingThrowBonuses: Array<SavingThrowEffect & AggregatedFeatEffectBase>;
+  attackRollBonuses: Array<AttackRollEffect & AggregatedFeatEffectBase>;
+  damageRollBonuses: Array<DamageRollEffect & AggregatedFeatEffectBase>;
+  acBonuses: Array<ArmorClassEffect & AggregatedFeatEffectBase>;
+  hpBonus: number; // Sum of active, unconditional HP bonuses
+  hpBonusSources: Array<{ sourceFeatName: string; value: number; condition?: string; isActive?: boolean; }>; // Store all sources for breakdown
+  initiativeBonus: number; // Sum of active, unconditional initiative bonuses
+  speedBonuses: Array<SpeedEffect & AggregatedFeatEffectBase>;
+  resistanceBonuses: Array<ResistanceEffect & AggregatedFeatEffectBase>;
+  casterLevelCheckBonuses: Array<CasterLevelCheckEffect & AggregatedFeatEffectBase>;
+  spellSaveDcBonuses: Array<SpellSaveDcEffect & AggregatedFeatEffectBase>;
+  turnUndeadBonuses: Array<TurnUndeadEffect & AggregatedFeatEffectBase>;
+  grantedAbilities: Array<GrantsAbilityEffect & AggregatedFeatEffectBase & { uses?: GrantsAbilityEffectUses & { isActive?: boolean } }>;
+  modifiedMechanics: Array<ModifiesMechanicEffect & AggregatedFeatEffectBase>;
+  proficienciesGranted: Array<GrantsProficiencyEffect & AggregatedFeatEffectBase>;
+  bonusFeatSlots: Array<BonusFeatSlotEffect & AggregatedFeatEffectBase>;
   languagesGranted: {
       count: number;
-      specific: Array<{ languageId: LanguageId; note?: string; sourceFeat?: string }>;
+      specific: Array<{ languageId: LanguageId; note?: string; sourceFeat?: string; condition?: string; isActive?: boolean; }>;
   };
-  descriptiveNotes: Array<(NoteEffectDetail | DescriptiveEffectDetail) & { sourceFeat?: string }>;
+  descriptiveNotes: Array<(NoteEffectDetail | DescriptiveEffectDetail) & AggregatedFeatEffectBase>;
   classLevels: Record<DndClassId, number>;
 }
 
@@ -736,4 +745,75 @@ export interface PrerequisiteMessage {
   isMet: boolean;
   orderKey: string;
   originalText?: string;
+}
+
+// For components/info-dialog-content/AcBreakdownContentDisplay.tsx
+export interface AcBreakdownDetailItem {
+  mainLabel: string | React.ReactNode;
+  value: string | number | React.ReactNode;
+  isBold?: boolean;
+  suffixDetails?: string[];
+  type?: 'acAbilityMod' | 'acSizeMod' | 'acFeatBonus';
+  abilityAbbr?: string;
+  sizeName?: string;
+  condition?: string; // For conditional effects
+  isActive?: boolean;  // To show if the condition is active
+}
+
+// For components/info-dialog-content/SavingThrowBreakdownContentDisplay.tsx
+export interface SavingThrowFeatComponent {
+  sourceFeat: string;
+  value: number;
+  condition?: string;
+  isActive?: boolean; // Added to indicate if the condition is met
+}
+
+export interface SavingThrowBreakdownDetails {
+  saveType: SavingThrowType;
+  saveTypeLabel: string;
+  baseSave: number;
+  abilityKey: Exclude<AbilityName, 'none'> | undefined;
+  abilityMod: number;
+  magicMod: number;
+  userTemporaryModifier: number;
+  featBonusTotal: number;
+  featComponents: SavingThrowFeatComponent[];
+  totalSave: number;
+}
+
+export interface ProcessedSiteData {
+  ALIGNMENTS: readonly CharacterAlignmentObject[];
+  LANGUAGES: readonly LanguageOption[];
+  XP_TABLE: readonly { level: number; xpRequired: number }[];
+  EPIC_LEVEL_XP_INCREASE: number;
+  SIZES: readonly CharacterSizeObject[];
+  GENDERS: readonly { value: GenderId | string; label: string }[];
+  DND_RACES: readonly DndRaceOption[];
+  DND_CLASSES: readonly DndClassOption[];
+  DND_DEITIES: readonly DndDeityOption[];
+  DND_DOMAINS: readonly DomainDefinition[];
+  DND_MAGIC_SCHOOLS: readonly MagicSchoolDefinition[];
+  SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[];
+  DND_FEATS_DEFINITIONS: readonly FeatDefinitionJsonData[];
+  FEAT_TYPES: readonly { value: FeatTypeString; label: string }[];
+  ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
+  SAVING_THROW_LABELS: readonly { value: SavingThrowType; label: string }[];
+  DAMAGE_REDUCTION_TYPES: readonly { value: DamageReductionTypeValue; label: string }[];
+  DAMAGE_REDUCTION_RULES_OPTIONS: readonly { value: DamageReductionRuleValue; label: string }[];
+  ALIGNMENT_PREREQUISITE_OPTIONS: readonly { value: string; label: string }[];
+  DEFAULT_ABILITIES: AbilityScores;
+  DEFAULT_SAVING_THROWS: SavingThrows;
+  DEFAULT_RESISTANCE_VALUE: ResistanceValue;
+  DEFAULT_SPEED_DETAILS: SpeedDetails;
+  DEFAULT_SPEED_PENALTIES: { armorSpeedPenalty_base: number; armorSpeedPenalty_miscModifier: number; loadSpeedPenalty_base: number; loadSpeedPenalty_miscModifier: number };
+  DND_RACE_MIN_ADULT_AGE_DATA: Record<string, number>;
+  DND_RACE_BASE_MAX_AGE_DATA: Record<string, number>;
+  RACE_TO_AGING_CATEGORY_MAP_DATA: Record<string, string>;
+  DND_RACE_AGING_EFFECTS_DATA: Record<string, { categories: Array<{ categoryName: string; ageFactor: number; effects: Record<string, number> }> }>;
+  DND_RACE_ABILITY_MODIFIERS_DATA: Record<string, Partial<Record<Exclude<AbilityName, 'none'>, number>>>;
+  DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA: Record<string, number>;
+  CLASS_SKILLS: Record<string, string[]>;
+  CLASS_SKILL_POINTS_BASE: Record<string, number>;
+  SKILL_SYNERGIES: Record<string, SynergyEffectJsonData[]>;
+  UI_STRINGS: Record<string, string>;
 }
