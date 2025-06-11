@@ -40,7 +40,7 @@ export const AcBreakdownContentDisplay = ({
   const conditionalFeatComponents: AcBreakdownDetailItem[] = [];
 
   detailsList.forEach(detail => {
-    if (detail.isActive === false) return; // Skip inactive items
+    if (detail.isActive === false) return; 
 
     if (detail.isSubItem) { 
       conditionalFeatComponents.push(detail);
@@ -114,4 +114,3 @@ export const AcBreakdownContentDisplay = ({
     </div>
   );
 };
-

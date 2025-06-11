@@ -193,7 +193,7 @@ export const SkillModifierBreakdownContentDisplay = ({
         <React.Fragment key={`content-block-${index}`}>
           {block}
           {index < arr.length - 1 && (block || arr[index+1]) && (
-            <Separator className="my-1" />
+            <Separator className="mt-3 mb-2" />
           )}
         </React.Fragment>
       ))}

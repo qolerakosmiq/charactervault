@@ -71,9 +71,9 @@ export const RaceContentDisplay = ({
   const generalTraitsSubSections: React.ReactNode[] = [];
   if (abilityModifiers && abilityModifiers.length > 0) {
     generalTraitsSubSections.push(
-      <div key="ability-modifiers-section">
+      <div key="ability-modifiers-section" className="mt-0 mb-0">
         <h4 className="text-sm font-bold text-muted-foreground mb-0">{UI_STRINGS.infoDialogAbilityScoreAdjustments || "Ability Score Adjustments"}</h4>
-        <div className="space-y-0.5 text-sm mb-0 ml-3">
+        <div className="space-y-0.5 text-sm mb-0 ml-3 mt-0">
           {abilityModifiers.map(mod => (
             <div key={mod.ability} className="flex justify-between">
               <span className="text-sm text-foreground">{ABILITY_LABELS.find(al => al.value === mod.ability)?.label || mod.ability}</span>
@@ -86,9 +86,9 @@ export const RaceContentDisplay = ({
   }
   if (skillBonuses && skillBonuses.length > 0) {
     generalTraitsSubSections.push(
-      <div key="skill-bonuses-section">
+      <div key="skill-bonuses-section" className="mt-0 mb-0">
         <h4 className="text-sm font-bold text-muted-foreground mb-0">{UI_STRINGS.infoDialogRacialSkillBonuses || "Racial Skill Bonuses"}</h4>
-        <div className="space-y-0.5 text-sm mb-0 ml-3">
+        <div className="space-y-0.5 text-sm mb-0 ml-3 mt-0">
           {skillBonuses.map(bonus => (
             <div key={bonus.skillId} className="flex justify-between">
               <span className="text-sm text-foreground">{bonus.skillName}</span>
@@ -101,9 +101,9 @@ export const RaceContentDisplay = ({
   }
   if (speeds && Object.keys(speeds).filter(k => (speeds as any)[k] !== undefined && (speeds as any)[k] > 0).length > 0) {
     generalTraitsSubSections.push(
-       <div key="base-speeds-section">
+       <div key="base-speeds-section" className="mt-0 mb-0">
         <h4 className="text-sm font-bold text-muted-foreground mb-0">{UI_STRINGS.infoDialogBaseSpeeds || "Base Speeds"}</h4>
-         <div className="space-y-0.5 text-sm mb-0 ml-3">
+         <div className="space-y-0.5 text-sm mb-0 ml-3 mt-0">
           {Object.entries(speeds).filter(([, speedVal]) => speedVal !== undefined && speedVal > 0)
             .map(([type, speedVal]) => {
             const speedTypeKey = `speedLabel${type.charAt(0).toUpperCase() + type.slice(1)}` as keyof typeof UI_STRINGS;
@@ -133,7 +133,7 @@ export const RaceContentDisplay = ({
       <div key="race-general-traits-section">
         <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading || "General Traits"}</h3>
         {generalTraitsSubSections.map((subSection, index) => (
-          <div key={`gen-trait-sub-${index}`} className={cn(index > 0 && "mt-0")}> {/* Ensures no extra top margin for subsequent sub-sections within general traits */}
+          <div key={`gen-trait-sub-${index}`} className={cn(index > 0 && "mt-0")}>
             {subSection}
           </div>
         ))}
@@ -145,7 +145,7 @@ export const RaceContentDisplay = ({
     outputBlocks.push(
       <div key="race-granted-feats-section">
         <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h3>
-        <ul className="list-none space-y-0.5 text-sm mt-0" key="race-granted-feats-list">
+        <ul className="list-none space-y-0.5 text-sm mt-0" key="race-granted-feats-list"> {/* Ensure no extra top margin */}
           {grantedFeats.map(feat => {
             const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
             return (
@@ -200,7 +200,7 @@ export const RaceContentDisplay = ({
     );
   }
 
-  return outputBlocks.length > 0 ? <div>{outputBlocks.map((block, index, arr) => (
+  return outputBlocks.length > 0 ? <div className="space-y-0">{outputBlocks.map((block, index, arr) => (
         <React.Fragment key={`race-display-block-${index}`}>
           {block}
           {index < arr.length - 1 && <Separator className="mt-3 mb-2" />}

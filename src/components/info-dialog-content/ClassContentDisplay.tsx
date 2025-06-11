@@ -64,14 +64,11 @@ export const ClassContentDisplay = ({
   }
 
   if (loreAttributes && loreAttributes.length > 0) {
-     if (outputBlocks.length > 0) {
-      outputBlocks.push(<Separator key="sep-after-general-desc" className="my-3" />);
-    }
     outputBlocks.push(
       <div key="class-lore-attributes-section" className="space-y-2">
         {loreAttributes.map((attr, index) => (
           <div key={`lore-attr-${index}`}>
-            <h4 className="text-sm font-medium text-muted-foreground mt-2 mb-0.5">{attr.key}</h4>
+            <h4 className="text-sm font-medium text-muted-foreground mb-0">{attr.key}</h4>
             <p className="text-sm text-foreground">{attr.value}</p>
           </div>
         ))}
@@ -79,21 +76,12 @@ export const ClassContentDisplay = ({
     );
   }
 
-
-  const classSpecificsAndFeatsExist = (detailsList && detailsList.length > 0) || (grantedFeats && grantedFeats.length > 0);
-
-  if (classSpecificsAndFeatsExist && outputBlocks.length > 0) {
-    // Add separator if there was general description or lore attributes before class specifics/feats
-    outputBlocks.push(<Separator key="sep-before-specifics-feats" className="my-3" />);
-  }
-
-
   if (detailsList && detailsList.length > 0) {
     outputBlocks.push(
       <div key="class-details-list-section">
         <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogClassSpecificsListHeading || "Class Specifics"}</h3>
-        <div className="mt-2" key="details-list-content">
-          <div className="space-y-0.5 text-sm mb-2">
+        <div className="mt-0" key="details-list-content"> {/* Ensure no extra top margin */}
+          <div className="space-y-0.5 text-sm mb-0"> {/* Ensure no extra bottom margin */}
             {detailsList.map((detail, index) => (
               <div key={index} className="flex justify-between">
                 <span className="text-sm text-foreground">{detail.label}</span>
@@ -107,13 +95,10 @@ export const ClassContentDisplay = ({
   }
 
   if (grantedFeats && grantedFeats.length > 0) {
-    if (detailsList && detailsList.length > 0) {
-         outputBlocks.push(<Separator key="sep-between-specifics-feats" className="my-3" />);
-    }
     outputBlocks.push(
       <div key="class-granted-feats-section">
         <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h3>
-        <ul className="list-none space-y-0.5 text-sm mt-2" key="granted-feats-list">
+        <ul className="list-none space-y-0.5 text-sm mt-0" key="granted-feats-list"> {/* Ensure no extra top margin */}
           {grantedFeats.map(feat => {
             const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
             return (
@@ -168,12 +153,10 @@ export const ClassContentDisplay = ({
     );
   }
   
-  return outputBlocks.length > 0 ? <div className="space-y-3">{outputBlocks.map((block, index, arr) => (
-        // This mapping is to avoid double separators if some blocks are empty.
-        // A separator is added before a block if the block is not the first one AND the previous block was also rendered.
+  return outputBlocks.length > 0 ? <div className="space-y-0">{outputBlocks.map((block, index, arr) => (
         <React.Fragment key={`class-display-root-block-${index}`}>
-          {/* Separator logic is now handled by pushing Separator components directly into outputBlocks */}
           {block}
+          {index < arr.length - 1 && <Separator className="mt-3 mb-2" />}
         </React.Fragment>
       ))}</div> : null;
 };
