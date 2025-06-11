@@ -244,7 +244,7 @@
           "name": "Rage Uses",
           "uses": {
             "per": "day",
-            "value": "scaled", 
+            "value": "scaled",
             "scaleWithClassLevel": {
               "classId": "barbarian",
               "specificLevels": [
@@ -257,7 +257,7 @@
               ]
             }
           },
-          "sourceFeat": "class-barbarian-rage" 
+          "sourceFeat": "class-barbarian-rage"
         }
       ]
     },
@@ -494,6 +494,118 @@
       "effects": [
         { "type": "bonusFeatSlot", "category": "fighterBonusFeat", "count": 1 }
       ]
+    },
+    {
+      "value": "iron-will",
+      "label": "Iron Will",
+      "description": "<b>Benefit:</b> You get a +2 bonus on all Will saving throws.",
+      "effectsText": "+2 on Will saves.",
+      "effects": [{ "type": "savingThrow", "save": "will", "value": 2, "bonusType": "untyped" }],
+      "type": "general"
+    },
+    {
+      "value": "great-fortitude",
+      "label": "Great Fortitude",
+      "description": "<b>Benefit:</b> You get a +2 bonus on all Fortitude saving throws.",
+      "effectsText": "+2 on Fortitude saves.",
+      "effects": [{ "type": "savingThrow", "save": "fortitude", "value": 2, "bonusType": "untyped" }],
+      "type": "general"
+    },
+    {
+      "value": "lightning-reflexes",
+      "label": "Lightning Reflexes",
+      "description": "<b>Benefit:</b> You get a +2 bonus on all Reflex saving throws.",
+      "effectsText": "+2 on Reflex saves.",
+      "effects": [{ "type": "savingThrow", "save": "reflex", "value": 2, "bonusType": "untyped" }],
+      "type": "general"
+    },
+    {
+      "value": "investigator",
+      "label": "Investigator",
+      "description": "<b>Benefit:</b> You get a +2 bonus on all Gather Information and Search checks.",
+      "effectsText": "+2 Gather Information, +2 Search.",
+      "effects": [
+        { "type": "skill", "skillId": "gather-information", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "search", "value": 2, "bonusType": "untyped" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "magical-aptitude",
+      "label": "Magical Aptitude",
+      "description": "<b>Benefit:</b> You get a +2 bonus on all Spellcraft and Use Magic Device checks.",
+      "effectsText": "+2 Spellcraft, +2 Use Magic Device.",
+      "effects": [
+        { "type": "skill", "skillId": "spellcraft", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "use-magic-device", "value": 2, "bonusType": "untyped" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "negotiator",
+      "label": "Negotiator",
+      "description": "<b>Benefit:</b> You get a +2 bonus on all Diplomacy and Sense Motive checks.",
+      "effectsText": "+2 Diplomacy, +2 Sense Motive.",
+      "effects": [
+        { "type": "skill", "skillId": "diplomacy", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "sense-motive", "value": 2, "bonusType": "untyped" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "nimble-fingers",
+      "label": "Nimble Fingers",
+      "description": "<b>Benefit:</b> You get a +2 bonus on all Disable Device and Open Lock checks.",
+      "effectsText": "+2 Disable Device, +2 Open Lock.",
+      "effects": [
+        { "type": "skill", "skillId": "disable-device", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "open-lock", "value": 2, "bonusType": "untyped" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "persuasive",
+      "label": "Persuasive",
+      "description": "<b>Benefit:</b> You get a +2 bonus on all Bluff and Intimidate checks.",
+      "effectsText": "+2 Bluff, +2 Intimidate.",
+      "effects": [
+        { "type": "skill", "skillId": "bluff", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "intimidate", "value": 2, "bonusType": "untyped" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "self-sufficient",
+      "label": "Self-Sufficient",
+      "description": "<b>Benefit:</b> You get a +2 bonus on all Heal and Survival checks.",
+      "effectsText": "+2 Heal, +2 Survival.",
+      "effects": [
+        { "type": "skill", "skillId": "heal", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "survival", "value": 2, "bonusType": "untyped" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "stealthy",
+      "label": "Stealthy",
+      "description": "<b>Benefit:</b> You get a +2 bonus on all Hide and Move Silently checks.",
+      "effectsText": "+2 Hide, +2 Move Silently.",
+      "effects": [
+        { "type": "skill", "skillId": "hide", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "move-silently", "value": 2, "bonusType": "untyped" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "skill-focus",
+      "label": "Skill Focus",
+      "description": "<b>Benefit:</b> Choose a skill. You get a +3 bonus on all checks involving that skill.",
+      "requiresSpecialization": "skill",
+      "effectsText": "+3 to chosen skill.",
+      "effects": [
+        { "type": "skill", "skillId": "SPEC", "value": 3, "bonusType": "untyped" }
+      ],
+      "type": "general"
     }
   ],
   "FEAT_TYPES_DATA": []

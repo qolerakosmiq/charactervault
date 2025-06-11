@@ -244,7 +244,7 @@
           "name": "Utilisations de Rage",
           "uses": {
             "per": "day",
-            "value": "scaled", 
+            "value": "scaled",
             "scaleWithClassLevel": {
               "classId": "barbarian",
               "specificLevels": [
@@ -257,7 +257,7 @@
               ]
             }
           },
-          "sourceFeat": "class-barbarian-rage" 
+          "sourceFeat": "class-barbarian-rage"
         }
       ]
     },
@@ -494,6 +494,118 @@
       "effects": [
         { "type": "bonusFeatSlot", "category": "fighterBonusFeat", "count": 1 }
       ]
+    },
+    {
+      "value": "iron-will",
+      "label": "Volonté de fer",
+      "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de Volonté.",
+      "effectsText": "+2 aux jets de Volonté.",
+      "effects": [{ "type": "savingThrow", "save": "will", "value": 2, "bonusType": "untyped" }],
+      "type": "general"
+    },
+    {
+      "value": "great-fortitude",
+      "label": "Vigueur surhumaine",
+      "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de Vigueur.",
+      "effectsText": "+2 aux jets de Vigueur.",
+      "effects": [{ "type": "savingThrow", "save": "fortitude", "value": 2, "bonusType": "untyped" }],
+      "type": "general"
+    },
+    {
+      "value": "lightning-reflexes",
+      "label": "Réflexes surhumains",
+      "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de Réflexes.",
+      "effectsText": "+2 aux jets de Réflexes.",
+      "effects": [{ "type": "savingThrow", "save": "reflex", "value": 2, "bonusType": "untyped" }],
+      "type": "general"
+    },
+    {
+      "value": "investigator",
+      "label": "Investigateur",
+      "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Renseignement et de Fouille.",
+      "effectsText": "+2 Renseignement, +2 Fouille.",
+      "effects": [
+        { "type": "skill", "skillId": "gather-information", "value": 2, "bonusType": "non_typé" },
+        { "type": "skill", "skillId": "search", "value": 2, "bonusType": "non_typé" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "magical-aptitude",
+      "label": "Aptitude magique",
+      "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests d'Art de la magie et d'Utilisation d'objets magiques.",
+      "effectsText": "+2 Art de la magie, +2 Utilisation d'objets magiques.",
+      "effects": [
+        { "type": "skill", "skillId": "spellcraft", "value": 2, "bonusType": "non_typé" },
+        { "type": "skill", "skillId": "use-magic-device", "value": 2, "bonusType": "non_typé" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "negotiator",
+      "label": "Négociateur",
+      "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Diplomatie et de Psychologie.",
+      "effectsText": "+2 Diplomatie, +2 Psychologie.",
+      "effects": [
+        { "type": "skill", "skillId": "diplomacy", "value": 2, "bonusType": "non_typé" },
+        { "type": "skill", "skillId": "sense-motive", "value": 2, "bonusType": "non_typé" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "nimble-fingers",
+      "label": "Doigts agiles",
+      "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Désamorçage/Sabotage et de Crochetage.",
+      "effectsText": "+2 Désamorçage/Sabotage, +2 Crochetage.",
+      "effects": [
+        { "type": "skill", "skillId": "disable-device", "value": 2, "bonusType": "non_typé" },
+        { "type": "skill", "skillId": "open-lock", "value": 2, "bonusType": "non_typé" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "persuasive",
+      "label": "Persuasion",
+      "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Bluff et d'Intimidation.",
+      "effectsText": "+2 Bluff, +2 Intimidation.",
+      "effects": [
+        { "type": "skill", "skillId": "bluff", "value": 2, "bonusType": "non_typé" },
+        { "type": "skill", "skillId": "intimidate", "value": 2, "bonusType": "non_typé" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "self-sufficient",
+      "label": "Autosuffisance",
+      "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Premiers secours et de Survie.",
+      "effectsText": "+2 Premiers secours, +2 Survie.",
+      "effects": [
+        { "type": "skill", "skillId": "heal", "value": 2, "bonusType": "non_typé" },
+        { "type": "skill", "skillId": "survival", "value": 2, "bonusType": "non_typé" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "stealthy",
+      "label": "Discret",
+      "description": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Discrétion et de Déplacement silencieux.",
+      "effectsText": "+2 Discrétion, +2 Déplacement silencieux.",
+      "effects": [
+        { "type": "skill", "skillId": "hide", "value": 2, "bonusType": "non_typé" },
+        { "type": "skill", "skillId": "move-silently", "value": 2, "bonusType": "non_typé" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "skill-focus",
+      "label": "Compétence de prédilection",
+      "description": "<b>Avantage :</b> Choisissez une compétence. Vous obtenez un bonus de +3 à tous les tests impliquant cette compétence.",
+      "requiresSpecialization": "skill",
+      "effectsText": "+3 à la compétence choisie.",
+      "effects": [
+        { "type": "skill", "skillId": "SPEC", "value": 3, "bonusType": "non_typé" }
+      ],
+      "type": "general"
     }
   ],
   "FEAT_TYPES_DATA": []

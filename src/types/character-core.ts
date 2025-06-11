@@ -65,24 +65,24 @@ export interface FeatEffectScaling {
 // Structured feat effect types
 export interface SkillEffectDetail {
   type: "skill";
-  skillId: string | null; // null for specialization
+  skillId: string | null; // null for specialization (e.g. Skill Focus (SPEC))
   value: number;
   bonusType?: "competence" | "circumstance" | "racial" | "untyped" | "insight";
-  condition?: string; 
+  condition?: string;
   sourceFeat?: string;
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface NoteEffectDetail {
   type: "note";
-  text: string; 
+  text: string;
   sourceFeat?: string;
 }
 
 export interface AbilityScoreEffect {
   type: "abilityScore";
   ability: Exclude<AbilityName, 'none'>;
-  value: number | string; 
+  value: number | string;
   bonusType?: "enhancement" | "inherent" | "morale" | "competence" | "circumstance" | "size" | "untyped";
   condition?: string;
   sourceFeat?: string;
@@ -106,38 +106,38 @@ export interface AttackRollEffect {
   appliesTo: "all" | "melee" | "ranged" | "unarmed" | "grapple" | "SPEC" | `weaponCategory:${string}` | `weaponName:${string}`;
   weaponId?: string; // Use for specific weapon definition ID (e.g. "longsword")
   condition?: string;
-  rangeLimit?: number; 
+  rangeLimit?: number;
   sourceFeat?: string;
   scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface DamageRollEffect {
   type: "damageRoll";
-  value: number | string; 
+  value: number | string;
   bonusType?: "untyped" | "enhancement" | "competence" | "luck" | "precision" | "circumstance" | "specialization";
   appliesTo?: "all" | "melee" | "ranged" | "unarmed" | "grapple" | "SPEC" | `weaponCategory:${string}` | `weaponName:${string}`;
   weaponId?: string; // Use for specific weapon definition ID
   condition?: string;
-  rangeLimit?: number; 
+  rangeLimit?: number;
   sourceFeat?: string;
-  scaleWithClassLevel?: FeatEffectScaling; 
+  scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface ArmorClassEffect {
   type: "armorClass";
-  value: number | "WIS" | "INT" | "CHA"; 
+  value: number | "WIS" | "INT" | "CHA";
   acType: "dodge" | "armor" | "shield" | "natural" | "deflection" | "insight" | "circumstance" | "untyped" | "monk_wisdom" | "monkScaling" | "other_feat_bonus";
-  bonusType?: "untyped" | "dodge" | "armor" | "shield" | "natural" | "deflection" | "insight" | "sacred" | "profane" | "competence" | "circumstance"; 
+  bonusType?: "untyped" | "dodge" | "armor" | "shield" | "natural" | "deflection" | "insight" | "sacred" | "profane" | "competence" | "circumstance";
   condition?: string;
   appliesToScope?: ("normal" | "touch" | "flatFooted")[];
   sourceFeat?: string;
-  scaleWithClassLevel?: FeatEffectScaling; 
+  scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface HitPointsEffect {
   type: "hitPoints";
   value: number;
-  perLevel?: boolean; 
+  perLevel?: boolean;
   bonusType?: "untyped";
   condition?: string;
   sourceFeat?: string;
@@ -157,7 +157,7 @@ export interface SpeedEffect {
   type: "speed";
   speedType: SpeedType | "all";
   modification: "bonus" | "setAbsolute" | "penalty";
-  value: number; 
+  value: number;
   bonusType?: "enhancement" | "untyped";
   condition?: string;
   sourceFeat?: string;
@@ -166,14 +166,14 @@ export interface SpeedEffect {
 
 export interface ResistanceEffect {
   type: "resistance";
-  resistanceTo: string; 
+  resistanceTo: string;
   value: number;
   isDamageReduction?: boolean;
-  bypassedBy?: string[]; 
+  bypassedBy?: string[];
   bonusType?: "resistance" | "untyped";
   condition?: string;
   sourceFeat?: string;
-  scaleWithClassLevel?: FeatEffectScaling; 
+  scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface CasterLevelCheckEffect {
@@ -188,7 +188,7 @@ export interface CasterLevelCheckEffect {
 
 export interface SpellSaveDcEffect {
   type: "spellSaveDc";
-  school?: string | "all" | "SPEC"; 
+  school?: string | "all" | "SPEC";
   value: number;
   bonusType?: "untyped";
   condition?: string;
@@ -208,10 +208,10 @@ export interface TurnUndeadEffect {
 
 export interface GrantsAbilityEffectUses {
   per: "day" | "encounter";
-  value?: number | "levelBased" | "abilityModBased" | "scaled"; 
+  value?: number | "levelBased" | "abilityModBased" | "scaled";
   basedOnAbility?: Exclude<AbilityName, 'none'>;
-  scaleWithClassLevel?: FeatEffectScaling; 
-  isActive?: boolean; 
+  scaleWithClassLevel?: FeatEffectScaling;
+  isActive?: boolean;
 }
 export interface GrantsAbilityEffect {
   type: "grantsAbility";
@@ -222,17 +222,17 @@ export interface GrantsAbilityEffect {
   actionType?: "standard" | "move" | "fullRound" | "free" | "swift" | "immediate" | "reaction" | "passive";
   condition?: string;
   sourceFeat?: string;
-  scaleWithClassLevel?: FeatEffectScaling; 
+  scaleWithClassLevel?: FeatEffectScaling;
 }
 
 export interface ModifiesMechanicEffect {
   type: "modifiesMechanic";
-  mechanicKey: string; 
-  change?: string; 
-  value?: number | string | boolean; 
+  mechanicKey: string;
+  change?: string;
+  value?: number | string | boolean;
   condition?: string;
   sourceFeat?: string;
-  scaleWithClassLevel?: FeatEffectScaling; 
+  scaleWithClassLevel?: FeatEffectScaling;
 }
 
 
@@ -240,7 +240,7 @@ export interface GrantsProficiencyEffect {
   type: "grantsProficiency";
   proficiencyType: "weapon" | "armor" | "shield";
   itemCategory?: "simple" | "martial" | "exotic" | "light" | "medium" | "heavy" | "tower";
-  specificItem?: string; 
+  specificItem?: string;
   condition?: string;
   sourceFeat?: string;
 }
@@ -248,7 +248,7 @@ export interface GrantsProficiencyEffect {
 
 export interface BonusFeatSlotEffect {
   type: "bonusFeatSlot";
-  category: string; 
+  category: string;
   count: number;
   note?: string;
   condition?: string;
@@ -257,8 +257,8 @@ export interface BonusFeatSlotEffect {
 
 export interface LanguageEffect {
   type: "language";
-  count?: number; 
-  specific?: LanguageId; 
+  count?: number;
+  specific?: LanguageId;
   note?: string;
   condition?: string;
   sourceFeat?: string;
@@ -293,21 +293,21 @@ export type FeatEffectDetail =
   | LanguageEffect
   | DescriptiveEffectDetail;
 
-export type FeatTypeString = string; 
+export type FeatTypeString = string;
 
-export interface FeatDefinitionJsonData { 
+export interface FeatDefinitionJsonData {
   value: string;
   label: string;
   description?: string;
   prerequisites?: FeatPrerequisiteDetails;
-  effectsText?: string; 
-  effects?: FeatEffectDetail[]; 
+  effectsText?: string;
+  effects?: FeatEffectDetail[];
   canTakeMultipleTimes?: boolean;
-  requiresSpecialization?: string; 
-  requiresSpecializationCategory?: string; 
+  requiresSpecialization?: string;
+  requiresSpecializationCategory?: string;
   isClassFeature?: boolean;
   isCustom?: boolean;
-  category?: string; 
+  category?: string;
   permanentEffect?: boolean;
 }
 
@@ -316,10 +316,10 @@ export interface CharacterFeatInstance {
   definitionId: string;
   instanceId: string;
   specializationDetail?: string;
-  chosenSpecializationCategory?: string; 
+  chosenSpecializationCategory?: string;
   isGranted?: boolean;
   grantedNote?: string;
-  conditionalEffectStates?: Record<string, boolean>; 
+  conditionalEffectStates?: Record<string, boolean>;
 }
 
 export type ItemBaseType = 'weapon' | 'armor' | 'shield' | 'potion' | 'scroll' | 'wand' | 'ring' | 'amulet' | 'boots' | 'belt' | 'bracers' | 'cloak' | 'gloves' | 'headband' | 'robe' | 'rod' | 'staff' | 'wondrous' | 'other';
@@ -331,28 +331,28 @@ export interface Item {
   name: string;
   quantity: number;
   description?: string;
-  weight?: number; 
+  weight?: number;
   itemType?: ItemBaseType;
   // Weapon-specific properties
-  weaponType?: WeaponStyleType; 
-  damage?: string; 
-  criticalRange?: string; 
-  criticalMultiplier?: string; 
-  rangeIncrement?: number; 
-  damageType?: string; 
+  weaponType?: WeaponStyleType;
+  damage?: string;
+  criticalRange?: string;
+  criticalMultiplier?: string;
+  rangeIncrement?: number;
+  damageType?: string;
   isFinesseWeapon?: boolean;
   isLightWeapon?: boolean;
   isTwoHandedWeapon?: boolean;
   proficiencyCategory?: WeaponProficiencyCategory;
-  specialProperties?: string; 
+  specialProperties?: string;
   // Armor/Shield specific properties
   armorBonus?: number;
   shieldBonus?: number;
   maxDexBonus?: number;
   armorCheckPenalty?: number;
-  spellFailureChance?: number; 
-  speedWhenWorn?: number; 
-  armorType?: 'light' | 'medium' | 'heavy' | 'shield'; 
+  spellFailureChance?: number;
+  speedWhenWorn?: number;
+  armorType?: 'light' | 'medium' | 'heavy' | 'shield';
 }
 
 
@@ -374,8 +374,8 @@ export interface ResistanceValue {
   customMod: number;
 }
 
-export type DamageReductionTypeValue = string; 
-export type DamageReductionRuleValue = string; 
+export type DamageReductionTypeValue = string;
+export type DamageReductionRuleValue = string;
 
 export interface DamageReductionInstance {
   id: string;
@@ -429,9 +429,9 @@ export interface CharacterAlignmentObject {
 
 export interface ClassCastingDetails {
   type: 'full' | 'partial' | 'none';
-  casterAbility?: Exclude<AbilityName, 'none' | 'strength' | 'dexterity' | 'constitution'>; 
-  startsAtLevel?: number; 
-  levelOffset?: number; 
+  casterAbility?: Exclude<AbilityName, 'none' | 'strength' | 'dexterity' | 'constitution'>;
+  startsAtLevel?: number;
+  levelOffset?: number;
 }
 
 export interface ClassAttribute {
@@ -442,10 +442,10 @@ export interface ClassAttribute {
 export interface DndRaceOption {
   value: DndRaceId;
   label: string;
-  generalDescription?: string; 
+  generalDescription?: string;
   loreAttributes?: ClassAttribute[];
   bonusFeatSlots?: number;
-  racialSkillBonuses?: Record<string, number>; 
+  racialSkillBonuses?: Record<string, number>;
   grantedFeats?: Array<{ featId: string; note?: string; name?: string; levelAcquired?: number }>;
   speeds?: Partial<Record<SpeedType, number>>;
   automaticLanguages?: LanguageId[];
@@ -455,7 +455,7 @@ export interface DndClassOption {
   label: string;
   hitDice: string;
   babProgression: "good" | "average" | "poor";
-  spellcasting?: ClassCastingDetails; 
+  spellcasting?: ClassCastingDetails;
   generalDescription: string;
   loreAttributes?: ClassAttribute[];
   casting?: ClassCastingDetails;
@@ -473,9 +473,9 @@ export interface DeityAttribute {
 }
 export interface DndDeityOption {
   value: DndDeityId | string;
-  label: string; 
+  label: string;
   alignment: CharacterAlignment | '';
-  fullName: string; 
+  fullName: string;
   attributes: DeityAttribute[];
 }
 
@@ -492,25 +492,25 @@ export type SynergyEffectJsonData = { targetSkill: string; ranksRequired: number
 export type SkillSynergiesJsonData = Record<string, SynergyEffectJsonData[]>;
 
 export interface CharacterFavoredEnemy {
-  id: string; 
-  type: string; 
-  note?: string; 
+  id: string;
+  type: string;
+  note?: string;
 }
 
 export interface DomainSpell {
   level: number;
-  spellId: string; 
-  spellName?: string; 
+  spellId: string;
+  spellName?: string;
 }
 
 export interface DomainDefinition {
   value: DomainId;
   label: string;
   description: string;
-  grantedPowerDescription: string; 
-  grantedPowerFeatId?: string;    
-  domainSpells: DomainSpell[];     
-  deityAlignmentRestrictions?: CharacterAlignment[]; 
+  grantedPowerDescription: string;
+  grantedPowerFeatId?: string;
+  domainSpells: DomainSpell[];
+  deityAlignmentRestrictions?: CharacterAlignment[];
 }
 
 export interface MagicSchoolDefinition {
@@ -530,7 +530,7 @@ export interface Character {
   alignment: CharacterAlignment;
   deity?: DndDeityId | string;
   size: CharacterSize;
-  sizeModifierAttack?: number; 
+  sizeModifierAttack?: number;
   age: number;
   gender: GenderId | string | '';
   height?: string;
@@ -604,7 +604,7 @@ export type ResistanceFieldKeySheet = Exclude<keyof Pick<Character,
 
 export type SpeedType = 'land' | 'burrow' | 'climb' | 'fly' | 'swim';
 
-export interface ComboboxOption { 
+export interface ComboboxOption {
   value: string;
   label: string;
 }
@@ -647,7 +647,7 @@ export interface SkillDefinitionForDisplay {
   providesSynergies?: CustomSynergyRule[];
 }
 
-export interface AggregatedFeatEffectBase { 
+export interface AggregatedFeatEffectBase {
   sourceFeat?: string;
   condition?: string;
   isActive?: boolean;
@@ -674,7 +674,8 @@ export interface AvailableFeatSlotsBreakdown {
 }
 
 export interface AggregatedFeatEffects {
-  skillBonuses: Record<string, number>; 
+  skillBonuses: Record<string, number>; // Sum of active, numerical skill bonuses
+  allSkillEffectDetails: Array<SkillEffectDetail & AggregatedFeatEffectBase>; // All skill effects, active or not
   favoredEnemyBonuses?: { skillBonus: number; damageBonus: number; };
   favoredEnemySlots?: number;
   abilityScoreBonuses: Array<AbilityScoreEffect & AggregatedFeatEffectBase>;
@@ -682,9 +683,9 @@ export interface AggregatedFeatEffects {
   attackRollBonuses: Array<AttackRollEffect & AggregatedFeatEffectBase>;
   damageRollBonuses: Array<DamageRollEffect & AggregatedFeatEffectBase>;
   acBonuses: Array<ArmorClassEffect & AggregatedFeatEffectBase>;
-  hpBonus: number; 
+  hpBonus: number; // Sum of active, unconditional HP bonuses
   hpBonusSources: Array<{ sourceFeatName: string; value: number; condition?: string; isActive?: boolean; }>;
-  initiativeBonus: number; 
+  initiativeBonus: number; // Sum of active, unconditional initiative bonuses
   speedBonuses: Array<SpeedEffect & AggregatedFeatEffectBase>;
   resistanceBonuses: Array<ResistanceEffect & AggregatedFeatEffectBase>;
   casterLevelCheckBonuses: Array<CasterLevelCheckEffect & AggregatedFeatEffectBase>;
@@ -754,12 +755,12 @@ export interface AcBreakdownDetailItem {
   type?: 'acAbilityMod' | 'acSizeMod' | 'acFeatBonus';
   abilityAbbr?: string;
   sizeName?: string;
-  condition?: string; 
-  isActive?: boolean;  
+  condition?: string;
+  isActive?: boolean;
 }
 
 export interface SavingThrowFeatComponent extends AggregatedFeatEffectBase {
-  sourceFeat: string; // Non-optional here as it's a feat component
+  sourceFeat: string;
   value: number;
 }
 

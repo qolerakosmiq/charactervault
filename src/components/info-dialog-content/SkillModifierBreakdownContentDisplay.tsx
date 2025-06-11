@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import type { SkillModifierBreakdownDetails, SynergyInfoItem } from '@/components/InfoDisplayDialog';
+import type { SkillModifierBreakdownDetails, SynergyInfoItem, AggregatedFeatEffectBase, SkillEffectDetail } from '@/components/InfoDisplayDialog'; // Added AggregatedFeatEffectBase, SkillEffectDetail
 import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +13,7 @@ interface SkillModifierBreakdownContentDisplayProps {
   htmlContent?: string;
   synergyInfoList?: SynergyInfoItem[];
   skillModifierBreakdown?: SkillModifierBreakdownDetails;
+  allSkillEffectDetails?: Array<SkillEffectDetail & AggregatedFeatEffectBase>; // Added
   uiStrings: Record<string, string>;
 }
 
@@ -20,6 +21,7 @@ export const SkillModifierBreakdownContentDisplay = ({
   htmlContent,
   synergyInfoList,
   skillModifierBreakdown,
+  allSkillEffectDetails, // Added
   uiStrings,
 }: SkillModifierBreakdownContentDisplayProps) => {
   const htmlContentBlock = (htmlContent && htmlContent.trim() !== '' && htmlContent.trim() !== '<p></p>') ? (
@@ -32,7 +34,7 @@ export const SkillModifierBreakdownContentDisplay = ({
 
   const badgeClass = "font-normal h-5 px-1.5 py-0.5 align-baseline whitespace-nowrap text-sm";
 
-  const hasCalculationBlock = !!skillModifierBreakdown; // Used to determine if synergyBlock needs mb-3
+  const hasCalculationBlock = !!skillModifierBreakdown;
 
   const synergyBlock = (synergyInfoList && synergyInfoList.length > 0) ? (
     <div key="skill-synergies-block" className={cn((htmlContentBlock) && "mt-3")}>
@@ -129,12 +131,24 @@ export const SkillModifierBreakdownContentDisplay = ({
             {renderModifierValue(skillModifierBreakdown!.synergyBonus)}
           </div>
         )}
-        {skillModifierBreakdown!.featBonus !== 0 && (
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}</span>
-            {renderModifierValue(skillModifierBreakdown!.featBonus)}
+        {/* Iterate through allSkillEffectDetails for feat bonuses */}
+        {allSkillEffectDetails?.filter(eff => eff.isActive && eff.skillId === skillModifierBreakdown!.skillName && typeof eff.value === 'number' && eff.value !== 0).map((eff, idx) => (
+          <div key={`feat-skill-bonus-${idx}`} className="flex justify-between items-baseline text-sm">
+            <span className="text-muted-foreground flex-shrink-0 mr-2">
+              {eff.sourceFeat || (uiStrings.infoDialogFeatBonusLabel || "Feat Bonus")}
+              {eff.condition && (
+                <span className="text-muted-foreground/80 italic ml-1">
+                    ({uiStrings[`condition_${eff.condition}`] || eff.condition} - {eff.isActive
+                    ? (uiStrings.conditionalEffectActiveSuffix || "(Active)")
+                    : (uiStrings.conditionalEffectInactiveSuffix || "(Inactive)")
+                    })
+                </span>
+              )}
+            </span>
+            {renderModifierValue(eff.value)}
           </div>
-        )}
+        ))}
+        {/* End feat bonuses */}
         {skillModifierBreakdown!.racialBonus !== 0 && (
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">{uiStrings.infoDialogRacialBonusLabel || "Racial Bonus"}</span>
@@ -179,3 +193,4 @@ export const SkillModifierBreakdownContentDisplay = ({
   );
 };
 
+    

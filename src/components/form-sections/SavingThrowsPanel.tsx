@@ -51,25 +51,18 @@ const SavingThrowsPanelComponent = ({
     );
   });
 
-  const calculateCalculatedTotalBonusForSave = React.useCallback((saveType: SavingThrowType): number => {
+  const calculateCalculatedTotalFeatBonusForSave = React.useCallback((saveType: SavingThrowType): number => {
     if (!aggregatedFeatEffects?.savingThrowBonuses) return 0;
     let totalFeatBonus = 0;
     aggregatedFeatEffects.savingThrowBonuses.forEach(effect => {
-      if (effect.save === saveType || effect.save === 'all') {
+      if (effect.isActive && (effect.save === saveType || effect.save === 'all')) {
         if (typeof effect.value === 'number') {
-          let isActive = true;
-          if (effect.condition && effect.sourceFeat) {
-            const featInstance = savingThrowsData.feats.find(f => f.definitionId === effect.sourceFeat);
-            isActive = !!featInstance?.conditionalEffectStates?.[effect.condition];
-          }
-          if (isActive) {
-            totalFeatBonus += effect.value;
-          }
+          totalFeatBonus += effect.value;
         }
       }
     });
     return totalFeatBonus;
-  }, [aggregatedFeatEffects, savingThrowsData.feats]);
+  }, [aggregatedFeatEffects]);
 
 
   const handleOpenSavingThrowRollDialog = (saveType: SavingThrowType) => {
@@ -80,7 +73,7 @@ const SavingThrowsPanelComponent = ({
     const baseSaveValue = calculatedBaseSaves[saveType];
     const abilityKey = SAVING_THROW_ABILITIES[saveType];
     const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
-    const calculatedFeatBonusForThisSave = calculateCalculatedTotalBonusForSave(saveType); // Use the refined function
+    const calculatedFeatBonusForThisSave = calculateCalculatedTotalFeatBonusForSave(saveType);
     const [localTemporaryMod] = debouncedTemporaryMods[saveType];
     const magicModifier = currentSaveDataFromProp.magicMod || 0;
 
@@ -146,7 +139,7 @@ const SavingThrowsPanelComponent = ({
         localTemporaryModValue: number,
         baseSave: number,
         abilityMod: number,
-        calculatedTotalFeatBonus: number, // Changed from calculatedMiscBonus
+        calculatedTotalFeatBonus: number,
         totalCalculatedFromProp: number,
         saveType?: SavingThrowType,
         setLocalTemporaryMod?: (val: number) => void
@@ -214,7 +207,7 @@ const SavingThrowsPanelComponent = ({
       rowKey: 'magicMod',
     },
     {
-      labelKey: "savingThrowsFeatsModifierLabel", // Changed from Misc to Feats
+      labelKey: "savingThrowsFeatsModifierLabel",
       getValue: (saveDataProp, localTemporaryMod, baseSave, abilityMod, calculatedTotalFeatBonus) => renderModifierValue(calculatedTotalFeatBonus),
       rowKey: 'calculatedTotalFeatBonusDisplay',
     },
@@ -273,7 +266,7 @@ const SavingThrowsPanelComponent = ({
                       const baseSaveValue = calculatedBaseSaves[saveType];
                       const abilityKey = SAVING_THROW_ABILITIES[saveType];
                       const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
-                      const calculatedTotalFeatBonusForThisSave = calculateCalculatedTotalBonusForSave(saveType);
+                      const calculatedTotalFeatBonusForThisSave = calculateCalculatedTotalFeatBonusForSave(saveType);
 
                       const totalSaveCalculatedFromProp = baseSaveValue + abilityModifier + (currentSaveDataFromProp.magicMod || 0) + calculatedTotalFeatBonusForThisSave + localTemporaryMod;
 

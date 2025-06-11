@@ -2,29 +2,29 @@
 'use client';
 
 import React from 'react';
-import type { SavingThrowType, AbilityName, SingleSavingThrow } from '@/types/character';
+import type { SavingThrowType, AbilityName, SingleSavingThrow, AggregatedFeatEffectBase } from '@/types/character'; // Added AggregatedFeatEffectBase
 import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-export interface SavingThrowFeatComponent {
+export interface SavingThrowFeatComponent extends AggregatedFeatEffectBase { // Now extends base for isActive
   sourceFeat: string;
   value: number;
   condition?: string;
-  isActive?: boolean; // Added to indicate if the condition is met
+  // isActive is inherited
 }
 
 export interface SavingThrowBreakdownDetails {
   saveType: SavingThrowType;
   saveTypeLabel: string;
   baseSave: number;
-  abilityKey: Exclude<AbilityName, 'none'> | undefined; 
+  abilityKey: Exclude<AbilityName, 'none'> | undefined;
   abilityMod: number;
   magicMod: number;
   userTemporaryModifier: number;
-  featBonusTotal: number; 
-  featComponents: SavingThrowFeatComponent[]; 
+  featBonusTotal: number;
+  featComponents: SavingThrowFeatComponent[];
   totalSave: number;
 }
 
@@ -60,7 +60,7 @@ export const SavingThrowBreakdownContentDisplay = ({
           </span>
           {renderModifierValue(breakdown.abilityMod)}
         </div>
-        
+
         {breakdown.featComponents && breakdown.featComponents.length > 0 && breakdown.featBonusTotal !== 0 && (
           breakdown.featComponents.filter(fc => fc.value !== 0).map((fc, index) => (
             <div key={`feat-comp-${index}-${fc.sourceFeat}`} className="flex justify-between items-baseline text-sm">
@@ -68,7 +68,7 @@ export const SavingThrowBreakdownContentDisplay = ({
                 {fc.sourceFeat}
                 {fc.condition && (
                   <span className="text-muted-foreground/80 italic ml-1">
-                     ({uiStrings[`condition_${fc.condition}`] || fc.condition} - {fc.isActive 
+                     ({uiStrings[`condition_${fc.condition}`] || fc.condition} - {fc.isActive
                        ? (uiStrings.conditionalEffectActiveSuffix || "(Active)")
                        : (uiStrings.conditionalEffectInactiveSuffix || "(Inactive)")
                      })
@@ -103,5 +103,5 @@ export const SavingThrowBreakdownContentDisplay = ({
     </div>
   );
 };
-    
+
     
