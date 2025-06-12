@@ -875,11 +875,29 @@
     },
     {
       "value": "class-monk-unarmed-strike-damage",
-      "label": "Unarmed Strike Damage",
-      "description": "Monk's unarmed strikes deal more damage than usual.",
+      "label": "Unarmed Strike Damage (Monk)",
+      "description": "<b>Benefit:</b> A monk’s unarmed strike is treated as both a manufactured weapon and a natural weapon for the purpose of spells and effects that enhance or improve either manufactured weapons or natural weapons. A monk also deals more damage with her unarmed strikes than a normal person does, as shown on Table: Monk. The unarmed damage on Table: Monk is for Medium monks. A Small monk deals less damage than the amount given there with her unarmed attacks, while a Large monk deals more damage; see Table: Small or Large Monk Unarmed Damage.",
+      "effectsText": "Unarmed damage increases with Monk level: 1d6 (L1-3), 1d8 (L4-7), 1d10 (L8-11), 2d6 (L12-15), 2d8 (L16-19), 2d10 (L20).",
       "isClassFeature": true,
+      "permanentEffect": true,
       "type": "special-ex",
-      "effectsText": "Unarmed damage increases with Monk level (e.g., 1d6 at L1, 1d8 at L4)."
+      "effects": [
+        {
+          "type": "modifiesMechanic",
+          "mechanicKey": "unarmedDamage",
+          "scaleWithClassLevel": {
+            "classId": "monk",
+            "specificLevels": [
+              { "level": 1, "value": "1d6" },
+              { "level": 4, "value": "1d8" },
+              { "level": 8, "value": "1d10" },
+              { "level": 12, "value": "2d6" },
+              { "level": 16, "value": "2d8" },
+              { "level": 20, "value": "2d10" }
+            ]
+          }
+        }
+      ]
     },
     {
       "value": "class-monk-ac-bonus",
@@ -1046,3 +1064,5 @@
     { "value": "special-sp", "label": "Special Ability (Sp)" }
   ]
 }
+
+    

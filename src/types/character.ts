@@ -1,5 +1,4 @@
 
-
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -696,7 +695,7 @@ export function calculateFeatEffects(
     spellSaveDcBonuses: [],
     turnUndeadBonuses: [],
     grantedAbilities: [],
-    modifiedMechanics: [],
+    modifiedMechanics: {},
     proficienciesGranted: [],
     bonusFeatSlots: [],
     languagesGranted: { count: 0, specific: [] },
@@ -743,8 +742,6 @@ export function calculateFeatEffects(
       if (definition.permanentEffect) {
         effectIsActive = true; // Permanent effects are always active
         if (effectToPush.condition && featInstance.conditionalEffectStates) {
-           // For permanent effects, we can consider their conditions as 'always met' for calculation
-           // but store the actual toggled state if relevant for UI later (though permanent ones usually won't be toggled)
            featInstance.conditionalEffectStates[effectToPush.condition] = true;
         }
       } else if (effectToPush.condition && effectToPush.condition.trim() !== "") {
@@ -779,7 +776,7 @@ export function calculateFeatEffects(
       if (effectToPush.type === 'grantsAbility') {
           const grantsAbilityEffect = effectToPush as GrantsAbilityEffect & AggregatedFeatEffectBase;
           if (grantsAbilityEffect.uses) {
-            grantsAbilityEffect.uses.isActive = effectIsActive; // Set isActive on the uses object based on parent effect
+            grantsAbilityEffect.uses.isActive = effectIsActive; 
             if (grantsAbilityEffect.uses.value === "scaled" && grantsAbilityEffect.uses.scaleWithClassLevel?.specificLevels) {
                 const classIdForScaling = grantsAbilityEffect.uses.scaleWithClassLevel.classId;
                 const classLevel = newAggregatedEffects.classLevels[classIdForScaling] || 0;
@@ -880,7 +877,14 @@ export function calculateFeatEffects(
           newAggregatedEffects.grantedAbilities.push(effectToPush as GrantsAbilityEffect & AggregatedFeatEffectBase & { uses?: GrantsAbilityEffectUses });
           break;
         case "modifiesMechanic":
-          newAggregatedEffects.modifiedMechanics.push(effectToPush as ModifiesMechanicEffect & AggregatedFeatEffectBase);
+           const mechEffect = effectToPush as ModifiesMechanicEffect & AggregatedFeatEffectBase;
+           if (mechEffect.isActive && mechEffect.mechanicKey) {
+             newAggregatedEffects.modifiedMechanics[mechEffect.mechanicKey] = {
+               value: (mechEffect as any).value, // This will be the resolved scaled value
+               sourceFeat: mechEffect.sourceFeat,
+               isActive: mechEffect.isActive,
+             };
+           }
           break;
         case "grantsProficiency":
           newAggregatedEffects.proficienciesGranted.push(effectToPush as GrantsProficiencyEffect & AggregatedFeatEffectBase);

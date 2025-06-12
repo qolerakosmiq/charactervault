@@ -198,7 +198,14 @@ const CombatPanelComponent = ({
   const totalBabWithModifier = baseBabArray.map(bab => bab + (localBabMiscModifier || 0));
   const maxBabForSpinners = totalBabWithModifier[0] || 0;
 
-  const meleeWeapons: Item[] = [{id: 'unarmed', name: UI_STRINGS.attacksPanelUnarmedOption || 'Unarmed', itemType: 'weapon' as const, weaponType: 'melee' as const, damage: UI_STRINGS.unarmedDamageDefault || '1d3', criticalRange: '20', criticalMultiplier: 'x2', quantity: 1},
+  let unarmedBaseDamageFromFeat = UI_STRINGS.unarmedDamageDefault || '1d3';
+  const monkUnarmedDamageEffect = aggregatedFeatEffects?.modifiedMechanics?.unarmedDamage;
+  if (monkUnarmedDamageEffect?.isActive && typeof monkUnarmedDamageEffect.value === 'string') {
+      unarmedBaseDamageFromFeat = monkUnarmedDamageEffect.value;
+  }
+
+
+  const meleeWeapons: Item[] = [{id: 'unarmed', name: UI_STRINGS.attacksPanelUnarmedOption || 'Unarmed', itemType: 'weapon' as const, weaponType: 'melee' as const, damage: unarmedBaseDamageFromFeat, criticalRange: '20', criticalMultiplier: 'x2', quantity: 1},
                         ...(combatData.inventory?.filter(item => item.itemType === 'weapon' && (item.weaponType === 'melee' || item.weaponType === 'melee-or-ranged')) || [])];
   const rangedWeapons: Item[] = combatData.inventory?.filter(item => item.itemType === 'weapon' && (item.weaponType === 'ranged' || item.weaponType === 'melee-or-ranged')) || [];
 
@@ -269,7 +276,8 @@ const CombatPanelComponent = ({
 
   const getMeleeDamageBonusBreakdownComponentsInternal = React.useCallback((): GenericBreakdownItem[] => {
     const components: GenericBreakdownItem[] = [];
-    const baseDmg = selectedMeleeWeapon?.damage || (selectedMeleeWeaponId === 'unarmed' ? (UI_STRINGS.unarmedDamageDefault || '1d3') : 'N/A');
+    
+    let baseDmg = selectedMeleeWeapon?.damage || (selectedMeleeWeaponId === 'unarmed' ? unarmedBaseDamageFromFeat : 'N/A');
     components.push({ label: UI_STRINGS.attacksPanelBaseWeaponDamageLabel || "Base Weapon Damage", value: baseDmg, isRawValue: true });
 
     if (strModifier !== 0 && (selectedMeleeWeaponId === 'unarmed' || selectedMeleeWeapon?.weaponType === 'melee' || selectedMeleeWeapon?.weaponType === 'melee-or-ranged')) {
@@ -295,7 +303,7 @@ const CombatPanelComponent = ({
     const totalNumericBonus = calculateFinalNumericalDamageBonus(strModifier, selectedMeleeWeaponId === 'unarmed' ? 'unarmed' : 'melee', selectedMeleeWeapon, localPowerAttackValue);
     components.push({ label: UI_STRINGS.infoDialogTotalNumericBonusLabel || "Total Numeric Bonus", value: totalNumericBonus, isBold: true });
     return components;
-  }, [UI_STRINGS, selectedMeleeWeaponId, selectedMeleeWeapon, getActiveDamageBonuses, localPowerAttackValue, strModifier, ABILITY_LABELS, calculateFinalNumericalDamageBonus]);
+  }, [UI_STRINGS, selectedMeleeWeaponId, selectedMeleeWeapon, getActiveDamageBonuses, localPowerAttackValue, strModifier, ABILITY_LABELS, calculateFinalNumericalDamageBonus, unarmedBaseDamageFromFeat]);
 
   const handleOpenMeleeDamageInfo = () => {
     const components = getMeleeDamageBonusBreakdownComponentsInternal();
@@ -429,7 +437,7 @@ const CombatPanelComponent = ({
   const handleOpenMeleeDamageRollDialog = () => {
     if (!selectedMeleeWeapon) return;
     const weaponName = selectedMeleeWeapon.name;
-    const weaponDamageDiceString = selectedMeleeWeapon.damage || (selectedMeleeWeapon.id === 'unarmed' ? (UI_STRINGS.unarmedDamageDefault || '1d3') : 'N/A');
+    const weaponDamageDiceString = selectedMeleeWeapon.id === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMeleeWeapon.damage || 'N/A';
     const breakdown = getMeleeDamageBonusBreakdownComponentsInternal().filter(item => item.label !== (UI_STRINGS.infoDialogTotalNumericBonusLabel || "Total Numeric Bonus"));
     onOpenRollDialog({
       dialogTitle: (UI_STRINGS.rollDialogTitleMeleeDamageFormat || "Melee Damage ({weaponName}: {dice})")
@@ -661,7 +669,7 @@ const CombatPanelComponent = ({
             </div>
             {selectedMeleeWeapon && (
               <div className="p-2 border rounded-md bg-background text-xs space-y-0.5">
-                <p><strong>{UI_STRINGS.attacksPanelWeaponDamageLabel || "Damage"}:</strong> {selectedMeleeWeapon.damage || 'N/A'}</p>
+                <p><strong>{UI_STRINGS.attacksPanelWeaponDamageLabel || "Damage"}:</strong> {selectedMeleeWeapon.id === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMeleeWeapon.damage || 'N/A'}</p>
                 <p><strong>{UI_STRINGS.attacksPanelWeaponCriticalLabel || "Critical"}:</strong> {selectedMeleeWeapon.criticalRange || 'N/A'} {selectedMeleeWeapon.criticalMultiplier || ''}</p>
                 {selectedMeleeWeapon.damageType && <p><strong>{UI_STRINGS.attacksPanelWeaponDamageTypeLabel || "Type"}:</strong> {selectedMeleeWeapon.damageType}</p>}
               </div>

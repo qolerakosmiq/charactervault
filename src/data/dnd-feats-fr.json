@@ -876,10 +876,28 @@
     {
       "value": "class-monk-unarmed-strike-damage",
       "label": "Dégâts à mains nues (Moine)",
-      "description": "Les frappes à mains nues du moine infligent plus de dégâts que la normale.",
+      "description": "<b>Avantage :</b> Une frappe à mains nues d'un moine est traitée à la fois comme une arme manufacturée et une arme naturelle pour les sorts et effets qui améliorent ou améliorent soit les armes manufacturées, soit les armes naturelles. Un moine inflige également plus de dégâts avec ses frappes à mains nues qu'une personne normale, comme indiqué dans le Tableau : Moine. Les dégâts à mains nues du Tableau : Moine sont pour les moines de taille Moyenne. Un moine de taille Petite inflige moins de dégâts que le montant indiqué avec ses attaques à mains nues, tandis qu'un moine de taille Grande inflige plus de dégâts ; voir le Tableau : Dégâts à mains nues d'un moine de taille Petite ou Grande.",
+      "effectsText": "Les dégâts à mains nues augmentent avec le niveau de Moine : 1d6 (N1-3), 1d8 (N4-7), 1d10 (N8-11), 2d6 (N12-15), 2d8 (N16-19), 2d10 (N20).",
       "isClassFeature": true,
+      "permanentEffect": true,
       "type": "special-ex",
-      "effectsText": "Les dégâts à mains nues augmentent avec le niveau de Moine (ex: 1d6 au N1, 1d8 au N4)."
+      "effects": [
+        {
+          "type": "modifiesMechanic",
+          "mechanicKey": "unarmedDamage",
+          "scaleWithClassLevel": {
+            "classId": "monk",
+            "specificLevels": [
+              { "level": 1, "value": "1d6" },
+              { "level": 4, "value": "1d8" },
+              { "level": 8, "value": "1d10" },
+              { "level": 12, "value": "2d6" },
+              { "level": 16, "value": "2d8" },
+              { "level": 20, "value": "2d10" }
+            ]
+          }
+        }
+      ]
     },
     {
       "value": "class-monk-ac-bonus",
@@ -1046,3 +1064,5 @@
     { "value": "special-sp", "label": "Aptitude Spéciale (Mag)" }
   ]
 }
+
+    
