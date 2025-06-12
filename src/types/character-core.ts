@@ -274,6 +274,13 @@ export interface LanguageEffect {
   // sourceFeat?: string; // Inherited from AggregatedFeatEffectBase
 }
 
+export interface DamageReductionFeatEffect {
+  type: "damageReduction";
+  drType: DamageReductionTypeValue | string; // e.g., 'none', 'magic', 'adamantine', etc. 'none' for DR X/-
+  value: number; // The amount of DR
+  scaleWithClassLevel?: FeatEffectScaling;
+}
+
 export type FeatEffectDetail = (
   | SkillEffectDetail
   | NoteEffectDetail
@@ -294,6 +301,7 @@ export type FeatEffectDetail = (
   | GrantsProficiencyEffect
   | BonusFeatSlotEffect
   | LanguageEffect
+  | DamageReductionFeatEffect // Added here
 ) & Pick<AggregatedFeatEffectBase, 'condition' | 'sourceFeat'>; // Add condition and sourceFeat to all effect types directly
 
 
@@ -690,6 +698,7 @@ export interface AggregatedFeatEffects {
   initiativeBonus: number; // Sum of *active, unconditional* initiative bonuses
   speedBonuses: Array<SpeedEffect & AggregatedFeatEffectBase>;
   resistanceBonuses: Array<ResistanceEffect & AggregatedFeatEffectBase>;
+  damageReductions: Array<DamageReductionFeatEffect & AggregatedFeatEffectBase>;
   casterLevelCheckBonuses: Array<CasterLevelCheckEffect & AggregatedFeatEffectBase>;
   spellSaveDcBonuses: Array<SpellSaveDcEffect & AggregatedFeatEffectBase>;
   turnUndeadBonuses: Array<TurnUndeadEffect & AggregatedFeatEffectBase>;
@@ -831,4 +840,3 @@ export type FeatDefinitionWithEffects = FeatDefinitionJsonData & { effects: Feat
 export const isFeatWithEffects = (feat: FeatDefinitionJsonData): feat is FeatDefinitionWithEffects => {
   return Array.isArray(feat.effects) && feat.effects.length > 0;
 };
-

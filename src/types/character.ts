@@ -1,4 +1,5 @@
 
+
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -53,7 +54,8 @@ import type {
   Character, // Import full Character type
   AggregatedFeatEffectBase,
   GrantsAbilityEffectUses,
-  MagicSchoolId
+  MagicSchoolId,
+  DamageReductionFeatEffect
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 // Import calculateLevelFromXp and other used utilities directly
@@ -689,6 +691,7 @@ export function calculateFeatEffects(
     initiativeBonus: 0,
     speedBonuses: [],
     resistanceBonuses: [],
+    damageReductions: [],
     casterLevelCheckBonuses: [],
     spellSaveDcBonuses: [],
     turnUndeadBonuses: [],
@@ -860,6 +863,9 @@ export function calculateFeatEffects(
           break;
         case "resistance":
           newAggregatedEffects.resistanceBonuses.push(effectToPush as ResistanceEffect & AggregatedFeatEffectBase);
+          break;
+        case "damageReduction":
+          newAggregatedEffects.damageReductions.push(effectToPush as DamageReductionFeatEffect & AggregatedFeatEffectBase);
           break;
         case "casterLevelCheck":
           newAggregatedEffects.casterLevelCheckBonuses.push(effectToPush as CasterLevelCheckEffect & AggregatedFeatEffectBase);

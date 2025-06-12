@@ -333,11 +333,28 @@
     {
       "value": "class-barbarian-damage-reduction",
       "label": "Damage Reduction (Barbarian)",
-      "description": "<b>Benefit:</b> At 7th level, a barbarian gains Damage Reduction. Subtract 1 from the damage the barbarian takes each time she is dealt damage from a weapon or a natural attack. At 10th level, and every three barbarian levels thereafter (13th, 16th, and 19th level), this damage reduction rises by 1 point. Damage reduction can reduce damage to 0 but not below 0.",
+      "description": "<b>Benefit:</b> Gains Damage Reduction X/-. This DR increases with level.",
       "effectsText": "DR X/-. (1 at L7, 2 at L10, 3 at L13, 4 at L16, 5 at L19).",
       "isClassFeature": true,
+      "permanentEffect": true,
       "type": "special-ex",
-      "effects": [{ "type": "note", "text": "Gains DR X/-. (DR 1/- at 7th, DR 2/- at 10th, DR 3/- at 13th, DR 4/- at 16th, DR 5/- at 19th). This is applied programmatically." }]
+      "effects": [
+        {
+          "type": "damageReduction",
+          "drType": "none",
+          "value": 0,
+          "scaleWithClassLevel": {
+            "classId": "barbarian",
+            "specificLevels": [
+              { "level": 7, "value": 1 },
+              { "level": 10, "value": 2 },
+              { "level": 13, "value": 3 },
+              { "level": 16, "value": 4 },
+              { "level": 19, "value": 5 }
+            ]
+          }
+        }
+      ]
     },
     {
       "value": "class-barbarian-greater-rage",

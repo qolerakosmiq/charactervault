@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import *as React from 'react';
@@ -11,7 +12,7 @@ import type {
   FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData, CharacterSize,
   ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType, ResistanceFieldKeySheet,
   SpeedDetails, SpeedType, CharacterAlignment, ProcessedSiteData, SpeedPanelCharacterData, CombatPanelCharacterData, LanguageId,
-  AggregatedFeatEffects, ExperiencePanelData, ComboboxOption, MagicSchoolId, Item, GenericBreakdownItem
+  AggregatedFeatEffects, ExperiencePanelData, ComboboxOption, MagicSchoolId, Item, GenericBreakdownItem, DamageReductionFeatEffect
 } from '@/types/character';
 import {
   getNetAgingEffects,
@@ -259,21 +260,32 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
     finalCharacter.sizeModifierAttack = getSizeModifierAttack(finalCharacter.size, SIZES);
 
-    const barbarianClass = finalCharacter.classes.find(c => c.className === 'barbarian');
-    const barbarianLevel = barbarianClass?.level || 0;
-    let grantedDrValue = 0;
-    if (barbarianLevel >= 19) grantedDrValue = 5; else if (barbarianLevel >= 16) grantedDrValue = 4; else if (barbarianLevel >= 13) grantedDrValue = 3; else if (barbarianLevel >= 10) grantedDrValue = 2; else if (barbarianLevel >= 7) grantedDrValue = 1;
-
+    // Recalculate DR based on aggregated feat effects
+    const tempAggFeats = calculateFeatEffects(finalCharacter, allAvailableFeatDefinitions);
     const existingUserDrInstances = finalCharacter.damageReduction?.filter(dr => !dr.isGranted) || [];
-    let finalDrArray = [...existingUserDrInstances];
-    if (grantedDrValue > 0) {
-        const existingGrantedBarbDrDefinition = finalCharacter.damageReduction?.find(dr => dr.isGranted && dr.source === 'Barbarian Class');
-        finalDrArray.unshift({
-            id: existingGrantedBarbDrDefinition?.id || `granted-barb-dr-${crypto.randomUUID()}`,
-            value: grantedDrValue, type: 'none', rule: 'bypassed-by-type', isGranted: true, source: 'Barbarian Class'
+    let finalDrArray: DamageReductionInstance[] = [...existingUserDrInstances];
+
+    if (tempAggFeats.damageReductions) {
+        tempAggFeats.damageReductions.forEach(drEffect => {
+            if (drEffect.isActive) {
+                const drValue = typeof drEffect.value === 'number' ? drEffect.value : 0;
+                if (drValue > 0) {
+                    finalDrArray.unshift({
+                        id: `granted-dr-${drEffect.sourceFeat?.toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID().substring(0,4)}`,
+                        value: drValue,
+                        type: drEffect.drType,
+                        rule: 'bypassed-by-type', // Assuming this rule for simplicity from feat, can be expanded
+                        isGranted: true,
+                        source: drEffect.sourceFeat || 'Granted Feat'
+                    });
+                }
+            }
         });
     }
+    // Ensure DR is sorted or handled if multiple granted sources of same type (e.g. barbarian + item)
+    // For now, simple unshift is used. A more complex merging logic might be needed if overlapping DR types are common.
     finalCharacter.damageReduction = finalDrArray;
+
 
     setCharacter(finalCharacter);
 
@@ -333,12 +345,44 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       const featHpBonus = aggFeats.hpBonus || 0;
       const newMaxHp = (character.baseMaxHp || 0) + conMod + (character.customMaxHpModifier || 0) + featHpBonus;
 
-      if(character.maxHp !== newMaxHp || character.hp > newMaxHp) {
+      // Update DR from feat effects
+      const existingUserDrInstances = character.damageReduction?.filter(dr => !dr.isGranted) || [];
+      let finalDrArray: DamageReductionInstance[] = [...existingUserDrInstances];
+
+      if (aggFeats.damageReductions) {
+          aggFeats.damageReductions.forEach(drEffect => {
+              if (drEffect.isActive) {
+                  const drValue = typeof drEffect.value === 'number' ? drEffect.value : 0;
+                  if (drValue > 0) {
+                      finalDrArray.unshift({
+                          id: `granted-dr-${drEffect.sourceFeat?.toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID().substring(0,4)}`,
+                          value: drValue,
+                          type: drEffect.drType,
+                          rule: 'bypassed-by-type', 
+                          isGranted: true,
+                          source: drEffect.sourceFeat || 'Granted Feat'
+                      });
+                  }
+              }
+          });
+      }
+      // Remove duplicate DR instances that might arise from multiple calculations, prioritizing granted ones by source if needed
+      const uniqueDrMap = new Map<string, DamageReductionInstance>();
+      finalDrArray.forEach(dr => {
+          const key = `${dr.source}-${dr.value}-${dr.type}-${dr.rule}`; // A simple key for uniqueness
+          if (!uniqueDrMap.has(key) || dr.isGranted) { // Prioritize granted or first occurrence
+              uniqueDrMap.set(key, dr);
+          }
+      });
+      const trulyFinalDrArray = Array.from(uniqueDrMap.values());
+
+
+      if(character.maxHp !== newMaxHp || character.hp > newMaxHp || JSON.stringify(character.damageReduction) !== JSON.stringify(trulyFinalDrArray)) {
         setCharacter(prev => {
           if (!prev) return null;
           const currentHp = prev.hp > newMaxHp ? newMaxHp : prev.hp;
-          if (prev.maxHp === newMaxHp && prev.hp === currentHp) return prev;
-          return {...prev, maxHp: newMaxHp, hp: currentHp };
+          if (prev.maxHp === newMaxHp && prev.hp === currentHp && JSON.stringify(prev.damageReduction) === JSON.stringify(trulyFinalDrArray)) return prev;
+          return {...prev, maxHp: newMaxHp, hp: currentHp, damageReduction: trulyFinalDrArray };
         });
       }
     }
@@ -724,7 +768,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       baseModifier: finalModifier,
       calculationBreakdown: breakdown,
     });
-    setIsRollDialogOpen(true); 
+    setIsRollAbilityDialogOpen(true); 
   }, [detailedAbilityScores, translations]);
 
   const handleOpenAbilityScoreBreakdownDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => { openInfoDialog({ type: 'abilityScoreBreakdown', abilityName: ability }); }, [openInfoDialog]);
@@ -1187,4 +1231,5 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
+
 

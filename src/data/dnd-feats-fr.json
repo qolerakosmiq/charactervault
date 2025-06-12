@@ -333,11 +333,28 @@
     {
       "value": "class-barbarian-damage-reduction",
       "label": "Réduction des dégâts (Barbare)",
-      "description": "<b>Avantage :</b> Au niveau 7, un barbare gagne une Réduction des Dégâts. Soustrayez 1 aux dégâts que le barbare subit chaque fois qu'il est touché par une arme ou une attaque naturelle. Au niveau 10, et tous les trois niveaux de barbare par la suite (13e, 16e et 19e niveau), cette réduction des dégâts augmente de 1 point. La réduction des dégâts peut réduire les dégâts à 0 mais pas en dessous de 0.",
+      "description": "<b>Avantage :</b> Gagne une Réduction des Dégâts X/-. Cette RD augmente avec le niveau.",
       "effectsText": "RD X/-. (1 au N7, 2 au N10, 3 au N13, 4 au N16, 5 au N19).",
       "isClassFeature": true,
+      "permanentEffect": true,
       "type": "special-ex",
-      "effects": [{ "type": "note", "text": "Gagne RD X/-. (RD 1/- au N7, RD 2/- au N10, RD 3/- au N13, RD 4/- au N16, RD 5/- au N19). Ceci est appliqué programmatiquement." }]
+      "effects": [
+        {
+          "type": "damageReduction",
+          "drType": "none",
+          "value": 0,
+          "scaleWithClassLevel": {
+            "classId": "barbarian",
+            "specificLevels": [
+              { "level": 7, "value": 1 },
+              { "level": 10, "value": 2 },
+              { "level": 13, "value": 3 },
+              { "level": 16, "value": 4 },
+              { "level": 19, "value": 5 }
+            ]
+          }
+        }
+      ]
     },
     {
       "value": "class-barbarian-greater-rage",
