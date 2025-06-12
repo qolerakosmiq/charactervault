@@ -454,8 +454,8 @@
     "conditionsPanelDescription": "Toggle conditional effects from your character's feats and abilities.",
     "conditionsPanelTooltipSourcesLabel": "Sources",
     "conditionsPanelPermanentLabel": "Permanent",
-    "conditionsPanelSourceFeatLabel": "Source:",
-    "conditionsPanelEffectLabel": "Effect:",
+    "conditionsPanelSourceFeatLabel": "Source",
+    "conditionsPanelEffectLabel": "Effects",
     "conditionsPanelNoEffectDetails": "No specific effects listed.",
     "infoDialogUnknownFeatSource": "Unknown Feat",
     "infoDialogConditionalBonusesHeading": "Conditional Bonuses",
@@ -668,10 +668,23 @@
     "bonusTypePrecision": "Precision",
     "bonusTypeSpecialization": "Specialization",
     "bonusTypeSacred": "Sacred",
-    "bonusTypeProfane": "Profane"
+    "bonusTypeProfane": "Profane",
+    "acTypeDodge": "Dodge",
+    "acTypeArmor": "Armor",
+    "acTypeShield": "Shield",
+    "acTypeNatural": "Natural",
+    "acTypeDeflection": "Deflection",
+    "acTypeInsight": "Insight",
+    "acTypeCircumstance": "Circumstance",
+    "acTypeUntyped": "Untyped",
+    "acTypeMonk_wisdom": "Monk Wisdom",
+    "acTypeMonkwisdom": "Monk Wisdom",
+    "acTypeMonkScaling": "Monk Scaling",
+    "acTypeOther_feat_bonus": "Other Feat"
   }
 }
     
     
     
+
 

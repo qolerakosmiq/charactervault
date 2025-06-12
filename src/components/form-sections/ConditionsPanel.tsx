@@ -38,7 +38,6 @@ const capitalizeFirstLetter = (string: string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-// Helper function defined outside the component
 const formatEffectSummary = (
   effects: FeatEffectDetail[] | undefined,
   uiStrings: Record<string, string>,
@@ -56,10 +55,9 @@ const formatEffectSummary = (
   effects.forEach((effect, index) => {
     let effectText = "";
     const val = (effect as any).value;
-    const bonusType = (effect as any).bonusType ? capitalizeFirstLetter((effect as any).bonusType) : (uiStrings.bonusTypeUntyped || "Untyped");
-    const translatedBonusTypeKey = `bonusType${bonusType}` as keyof typeof uiStrings;
-    const translatedBonusType = uiStrings[translatedBonusTypeKey] || bonusType;
-
+    const originalBonusType = (effect as any).bonusType || "untyped";
+    const translatedBonusTypeKey = `bonusType${capitalizeFirstLetter(originalBonusType)}` as keyof typeof uiStrings;
+    const translatedBonusType = uiStrings[translatedBonusTypeKey] || capitalizeFirstLetter(originalBonusType);
 
     switch (effect.type) {
       case "abilityScore":
@@ -85,11 +83,23 @@ const formatEffectSummary = (
         const acEffect = effect as ArmorClassEffect;
         let acValStr = String(val);
         if (val === "WIS" || val === "INT" || val === "CHA") {
-            acValStr = abilityLabels.find(al => al.value === String(val).toLowerCase())?.abbr || String(val);
+          acValStr = abilityLabels.find(al => al.value === String(val).toLowerCase())?.abbr || String(val);
         } else if (typeof val === 'number') {
-            acValStr = `${val > 0 ? '+' : ''}${val}`;
+          acValStr = `${val > 0 ? '+' : ''}${val}`;
         }
-        effectText = `${acValStr} AC (${capitalizeFirstLetter(acEffect.acType)})`;
+
+        const specificAcTypesOmitUntyped = ["dodge", "armor", "shield", "natural", "deflection"];
+        const rawAcType = acEffect.acType.replace(/_/g, ''); // e.g. monk_wisdom -> monkwisdom
+        const translatedAcTypeKey = `acType${rawAcType.charAt(0).toUpperCase() + rawAcType.slice(1)}` as keyof typeof uiStrings;
+        const translatedAcType = uiStrings[translatedAcTypeKey] || capitalizeFirstLetter(acEffect.acType);
+
+        effectText = `${acValStr} ${translatedAcType}`;
+
+        if (translatedBonusType && translatedBonusType.toLowerCase() !== (uiStrings.bonusTypeUntyped || "Untyped").toLowerCase()) {
+          effectText += ` | ${translatedBonusType}`;
+        } else if (translatedBonusType && translatedBonusType.toLowerCase() === (uiStrings.bonusTypeUntyped || "Untyped").toLowerCase() && !specificAcTypesOmitUntyped.includes(acEffect.acType)) {
+          effectText += ` | ${translatedBonusType}`;
+        }
         break;
       case "hitPoints":
         const hpEffect = effect as HitPointsEffect;
@@ -106,12 +116,20 @@ const formatEffectSummary = (
       default:
         break;
     }
+
     if (effectText) {
+      let badgeContent = effectText;
+      if (effect.type !== "armorClass" && // AC handles its bonus type internally now
+          translatedBonusType &&
+          (translatedBonusType.toLowerCase() !== (uiStrings.bonusTypeUntyped || "Untyped").toLowerCase() ||
+           (effect.type === 'abilityScore' && originalBonusType !== 'untyped') // Show untyped for ability if it was explicitly set, otherwise it's often implied
+          )
+      ) {
+        badgeContent += ` | ${translatedBonusType}`;
+      }
       effectBadges.push(
-        <Badge key={`effect-${index}-${effect.type}`} variant="outline" className="text-xs px-1.5 py-0">
-          {effectText}
-          <span className="mx-1 text-muted-foreground/50">|</span>
-          {translatedBonusType}
+        <Badge key={`effect-${index}-${effect.type}`} variant="outline" className="text-xs px-1.5 py-0.5">
+          {badgeContent}
         </Badge>
       );
     }
@@ -148,7 +166,7 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
             if (!conditionsMap.has(conditionKey)) {
               conditionsMap.set(conditionKey, {
                 conditionKey,
-                displayText: conditionKey, 
+                displayText: conditionKey,
                 sources: [],
                 isGloballyActive: false,
                 canBeToggled: false,
@@ -173,7 +191,6 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
 
     conditionsMap.forEach(entry => {
       entry.isGloballyActive = entry.sources.some(s => s.isCurrentlyActiveOnThisInstance);
-
       const forcedActiveByPermanent = entry.sources.some(s => s.isSourceFeatPermanentEffect && s.isCurrentlyActiveOnThisInstance);
       const allSourcesPermanent = entry.sources.length > 0 && entry.sources.every(s => s.isSourceFeatPermanentEffect);
       const permanentlyOff = allSourcesPermanent && !entry.isGloballyActive;
@@ -198,7 +215,7 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
   const handleToggle = (conditionKey: string, checked: boolean) => {
     onConditionToggle(conditionKey, !!checked);
   };
-  
+
   if (translationsLoading || !translations) {
     return (
       <Card className="mt-8">
@@ -211,7 +228,7 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
         </CardHeader>
         <CardContent className="space-y-3 pt-4">
           {[1, 2, 3].map(i => (
-            <div key={i} className="flex items-center space-x-2 p-2 border rounded-md bg-muted/30">
+            <div key={i} className="flex items-center space-x-2 py-1.5">
               <Skeleton className="h-5 w-5 rounded" />
               <Skeleton className="h-5 w-4/5" />
             </div>
@@ -222,9 +239,9 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
   }
 
   if (uniqueConditionsForDisplay.length === 0) {
-    return null; 
+    return null;
   }
-  
+
   const { UI_STRINGS } = translations;
 
   return (
@@ -236,15 +253,15 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
         </div>
         <CardDescription>{UI_STRINGS.conditionsPanelDescription || "Toggle conditional effects from your character's feats and abilities."}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-1 pt-4">
+      <CardContent className="space-y-3 pt-4">
         {uniqueConditionsForDisplay.map(({ conditionKey, displayText, sources, isGloballyActive, canBeToggled }) => {
            const translatedDisplayTextKey = `condition_${conditionKey.toLowerCase().replace(/\s+/g, '_')}` as keyof typeof UI_STRINGS;
            const translatedDisplayText = UI_STRINGS[translatedDisplayTextKey] || displayText;
            const isToggleDisabled = !canBeToggled;
-           const firstSource = sources[0]; 
+           const firstSource = sources[0];
 
           return (
-            <div key={conditionKey} className={cn("flex items-start space-x-2 py-1.5", sources.length > 1 && "mb-1")}>
+            <div key={conditionKey} className="flex items-start space-x-2 py-1.5">
               <Checkbox
                 id={`condition-toggle-${conditionKey.replace(/\W/g, '-')}`}
                 checked={isGloballyActive}
@@ -265,12 +282,15 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
                   <div className="text-xs text-muted-foreground mt-0.5 space-y-0.5">
                     {firstSource.featName && (
                       <div>
-                        <Badge variant="outline" className="text-xs px-1.5 py-0">{UI_STRINGS.conditionsPanelSourceFeatLabel || "Source:"}{'\u00A0'}{firstSource.featName}</Badge>
+                        <strong className="text-muted-foreground">{UI_STRINGS.conditionsPanelSourceFeatLabel || "Source"}:</strong>{'\u00A0'}
+                        <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                          {firstSource.featName}
+                        </Badge>
                       </div>
                     )}
                     {firstSource.effectsSummary && firstSource.effectsSummary.length > 0 && (
                        <div className="flex flex-wrap items-center gap-x-1">
-                          <span className="font-semibold text-muted-foreground/80">{UI_STRINGS.conditionsPanelEffectLabel || "Effect:"}{'\u00A0'}</span>
+                          <strong className="text-muted-foreground">{UI_STRINGS.conditionsPanelEffectLabel || "Effects"}:</strong>{'\u00A0'}
                           {firstSource.effectsSummary.map((badge, idx) => (
                             <React.Fragment key={idx}>
                               {badge}
@@ -292,4 +312,3 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
 ConditionsPanelComponent.displayName = "ConditionsPanelComponent";
 export const ConditionsPanel = React.memo(ConditionsPanelComponent);
 
-    

@@ -454,8 +454,8 @@
     "conditionsPanelDescription": "Activez ou désactivez les effets conditionnels des dons et capacités de votre personnage.",
     "conditionsPanelTooltipSourcesLabel": "Sources",
     "conditionsPanelPermanentLabel": "Permanent",
-    "conditionsPanelSourceFeatLabel": "Source:",
-    "conditionsPanelEffectLabel": "Effet:",
+    "conditionsPanelSourceFeatLabel": "Source",
+    "conditionsPanelEffectLabel": "Effets",
     "conditionsPanelNoEffectDetails": "Aucun effet spécifique listé.",
     "infoDialogUnknownFeatSource": "Don inconnu",
     "infoDialogConditionalBonusesHeading": "Bonus Conditionnels",
@@ -668,10 +668,23 @@
     "bonusTypePrecision": "Précision",
     "bonusTypeSpecialization": "Spécialisation",
     "bonusTypeSacred": "Sacré",
-    "bonusTypeProfane": "Profane"
+    "bonusTypeProfane": "Profane",
+    "acTypeDodge": "Esquive",
+    "acTypeArmor": "Armure",
+    "acTypeShield": "Bouclier",
+    "acTypeNatural": "Naturelle",
+    "acTypeDeflection": "Déflexion",
+    "acTypeInsight": "Intuition",
+    "acTypeCircumstance": "Circonstance",
+    "acTypeUntyped": "Non typé",
+    "acTypeMonk_wisdom": "Sagesse du Moine",
+    "acTypeMonkwisdom": "Sagesse du Moine",
+    "acTypeMonkScaling": "CA Évolutive du Moine",
+    "acTypeOther_feat_bonus": "Autre Don"
   }
 }
     
     
     
+
 
