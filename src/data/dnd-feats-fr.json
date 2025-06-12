@@ -1207,7 +1207,7 @@
       "description": "Au niveau 19, un moine peut prendre une forme éthérée pendant 1 round par niveau de moine par jour. Cette capacité fonctionne comme le sort état éthéré (niveau de lanceur de sorts égal au niveau de moine du personnage).",
       "isClassFeature": true,
       "type": "special-su",
-      "effectsText": "Devient éthéré 1 round/niveau/jour (comme État éthéré).",
+      "effectsText": "Devient éthéré (Niveau de Moine) rounds/jour (comme État éthéré).",
       "effects": [
         {
           "type": "grantsAbility",
@@ -1295,6 +1295,96 @@
           ]}
         }
       ]
+    },
+    {
+      "value": "class-ranger-combat-style-choice",
+      "label": "Choix du style de combat du Rôdeur",
+      "description": "Au niveau 2, un rôdeur doit choisir un style de combat à poursuivre : tir à l'arc ou combat à deux armes. Ce choix affecte les dons supplémentaires qu'il gagne aux niveaux suivants.",
+      "effectsText": "Permet de choisir le style de Tir à l'arc ou de Combat à deux armes.",
+      "isClassFeature": true,
+      "type": "special-ex"
+    },
+    {
+      "value": "point-blank-shot",
+      "label": "Tir à bout portant",
+      "description": "<b>Avantage :</b> Vous obtenez un bonus de +1 aux jets d'attaque et de dégâts avec les armes à distance à des portées allant jusqu'à 9 mètres.",
+      "effectsText": "+1 attaque et dégâts aux attaques à distance jusqu'à 9m.",
+      "type": "special",
+      "category": "fighterBonusFeat archeryStyleFeat",
+      "effects": [
+        { "type": "attackRoll", "value": 1, "bonusType": "untyped", "appliesTo": "ranged", "rangeLimit": 30 },
+        { "type": "damageRoll", "value": 1, "bonusType": "untyped", "appliesTo": "ranged", "rangeLimit": 30 }
+      ]
+    },
+    {
+      "value": "precise-shot",
+      "label": "Tir de précision",
+      "description": "<b>Avantage :</b> Vous pouvez tirer ou lancer des armes à distance sur un adversaire engagé en mêlée sans subir la pénalité standard de –4 à votre jet d'attaque.",
+      "prerequisites": { "feats": ["point-blank-shot"] },
+      "effectsText": "Pas de pénalité pour tirer en mêlée.",
+      "type": "special",
+      "category": "fighterBonusFeat archeryStyleFeat",
+      "effects": [{ "type": "note", "text": "Pas de pénalité de -4 pour tirer ou lancer des armes à distance dans une mêlée." }]
+    },
+    {
+      "value": "rapid-shot",
+      "label": "Tir rapide",
+      "description": "<b>Avantage :</b> Vous pouvez obtenir une attaque supplémentaire par round avec une arme à distance. L'attaque se fait à votre bonus de base à l'attaque le plus élevé, mais chaque attaque que vous effectuez ce round (l'attaque supplémentaire et les attaques normales) subit une pénalité de –2. Vous devez utiliser l'action d'attaque à outrance pour utiliser ce don.",
+      "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["point-blank-shot"] },
+      "effectsText": "Une attaque à distance supplémentaire par round, toutes les attaques à -2. Nécessite une action d'attaque à outrance.",
+      "type": "special",
+      "category": "fighterBonusFeat archeryStyleFeat",
+      "effects": [{ "type": "note", "text": "Une attaque à distance supplémentaire/round, toutes les attaques à -2 (action d'attaque à outrance)." }]
+    },
+    {
+      "value": "manyshot",
+      "label": "Tir multiple",
+      "description": "<b>Avantage :</b> En tant qu'action simple, vous pouvez tirer deux flèches sur un seul adversaire à moins de 9 mètres. Les deux flèches utilisent le même jet d'attaque (avec une pénalité de –4) et visent le même emplacement corporel. Pour chaque flèche qui touche, lancez les dégâts séparément. Vos dégâts basés sur la Précision (tels que les dégâts d'attaque sournoise) ne s'appliquent qu'à la première flèche qui touche. Si le jet d'attaque est un coup critique, seule la première flèche inflige des dégâts critiques ; toutes les autres infligent des dégâts normaux.",
+      "prerequisites": { "abilities": { "dexterity": 17 }, "feats": ["point-blank-shot", "rapid-shot"], "bab": 6 },
+      "effectsText": "Action simple : tire deux flèches sur une cible à moins de 9m (un jet d'attaque à -4).",
+      "type": "special",
+      "category": "fighterBonusFeat archeryStyleFeat",
+      "effects": [{ "type": "note", "text": "Action simple : tire deux flèches sur une cible à moins de 9m (un jet d'attaque à -4)." }]
+    },
+    {
+      "value": "improved-precise-shot",
+      "label": "Tir de précision amélioré",
+      "description": "<b>Avantage :</b> Vos attaques à distance ignorent le bonus de CA accordé aux cibles par tout abri inférieur à un abri total, et le risque d'échec accordé aux cibles par toute dissimulation inférieure à une dissimulation totale.",
+      "prerequisites": { "abilities": { "dexterity": 19 }, "feats": ["point-blank-shot", "precise-shot"], "bab": 11 },
+      "effectsText": "Les attaques à distance ignorent l'abri (sauf total) et la dissimulation (sauf totale).",
+      "type": "special",
+      "category": "fighterBonusFeat archeryStyleFeat",
+      "effects": [{ "type": "note", "text": "Les attaques à distance ignorent l'abri (sauf total) et la dissimulation (sauf totale)." }]
+    },
+    {
+      "value": "two-weapon-fighting",
+      "label": "Combat à deux armes",
+      "description": "<b>Avantage :</b> Vos pénalités aux jets d'attaque pour le combat à deux armes sont réduites. La pénalité pour votre main principale diminue de 2 et celle pour votre main secondaire diminue de 6. Voir Tableau 8–10 : Pénalités de combat à deux armes.",
+      "prerequisites": { "abilities": { "dexterity": 15 } },
+      "effectsText": "Réduit les pénalités pour le combat à deux armes (-2 principale, -6 secondaire).",
+      "type": "special",
+      "category": "fighterBonusFeat twoWeaponStyleFeat",
+      "effects": [{ "type": "note", "text": "Pénalités pour le combat à deux armes réduites (ex : -4/-4 avec une arme légère en main secondaire)." }]
+    },
+    {
+      "value": "improved-two-weapon-fighting",
+      "label": "Combat à deux armes amélioré",
+      "description": "<b>Avantage :</b> Vous obtenez une deuxième attaque avec votre arme secondaire, bien qu'avec une pénalité de –5.",
+      "prerequisites": { "abilities": { "dexterity": 17 }, "feats": ["two-weapon-fighting"], "bab": 6 },
+      "effectsText": "Obtenez une deuxième attaque avec l'arme secondaire (-5 de pénalité).",
+      "type": "special",
+      "category": "fighterBonusFeat twoWeaponStyleFeat",
+      "effects": [{ "type": "note", "text": "Obtenez une deuxième attaque avec l'arme secondaire (-5 de pénalité)." }]
+    },
+    {
+      "value": "greater-two-weapon-fighting",
+      "label": "Combat à deux armes supérieur",
+      "description": "<b>Avantage :</b> Vous obtenez une troisième attaque avec votre arme secondaire, bien qu'avec une pénalité de –10.",
+      "prerequisites": { "abilities": { "dexterity": 19 }, "feats": ["two-weapon-fighting", "improved-two-weapon-fighting"], "bab": 11 },
+      "effectsText": "Obtenez une troisième attaque avec l'arme secondaire (-10 de pénalité).",
+      "type": "special",
+      "category": "fighterBonusFeat twoWeaponStyleFeat",
+      "effects": [{ "type": "note", "text": "Obtenez une troisième attaque avec l'arme secondaire (-10 de pénalité)." }]
     }
   ],
   "FEAT_TYPES_DATA": [

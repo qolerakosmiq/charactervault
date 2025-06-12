@@ -1,5 +1,6 @@
 
 
+
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -358,7 +359,7 @@ export function getGrantedFeatsForCharacter(
     return [];
   }
 
-  const grantedInstances: CharacterFeatInstance[] = [];
+  let grantedInstances: CharacterFeatInstance[] = [];
   const addedDefinitionIds = new Set<string>();
 
   const characterLevel = calculateLevelFromXp(character.experiencePoints || 0, XP_TABLE, EPIC_LEVEL_XP_INCREASE);
@@ -376,13 +377,12 @@ export function getGrantedFeatsForCharacter(
         definitionId: featDef.value,
         instanceId: featDef.canTakeMultipleTimes ? `${featDef.value}-GRANTED-${crypto.randomUUID()}` : instanceId,
         isGranted: true,
-        grantedNote: note ? `${note} (from ${source})` : `Granted by ${source}`,
+        grantedNote: note, // Store the original note from the class definition
         specializationDetail: specializationDetail,
         chosenSpecializationCategory: chosenSpecializationCategory,
         conditionalEffectStates: {},
       };
 
-      // If the feat definition has permanentEffect: true, pre-activate all its conditions
       if (featDef.permanentEffect && featDef.effects) {
         newInstance.conditionalEffectStates = newInstance.conditionalEffectStates || {};
         featDef.effects.forEach(eff => {
@@ -412,23 +412,10 @@ export function getGrantedFeatsForCharacter(
     if (classData?.grantedFeats) {
       classData.grantedFeats.forEach(gf => {
         if (gf.levelAcquired === undefined || gf.levelAcquired <= charClass.level) {
+          // Pass the note from the class definition directly
           addGrantedInstance(gf.featId, gf.note, classData.label, gf.levelAcquired);
         }
       });
-    }
-
-    if (classData?.value === 'ranger' && character.chosenCombatStyle) {
-      const rangerLevel = charClass.level;
-      const styleNotePrefix = character.chosenCombatStyle === 'archery' ? 'Ranger Archery Style' : 'Ranger Two-Weapon Fighting Style';
-      if (character.chosenCombatStyle === 'archery') {
-        if (rangerLevel >= 2) addGrantedInstance('rapid-shot', styleNotePrefix, 'Ranger', 2);
-        if (rangerLevel >= 6) addGrantedInstance('manyshot', styleNotePrefix, 'Ranger', 6);
-        if (rangerLevel >= 11) addGrantedInstance('improved-precise-shot', styleNotePrefix, 'Ranger', 11);
-      } else if (character.chosenCombatStyle === 'twoWeaponFighting') {
-        if (rangerLevel >= 2) addGrantedInstance('two-weapon-fighting', styleNotePrefix, 'Ranger', 2);
-        if (rangerLevel >= 6) addGrantedInstance('improved-two-weapon-fighting', styleNotePrefix, 'Ranger', 6);
-        if (rangerLevel >= 11) addGrantedInstance('greater-two-weapon-fighting', styleNotePrefix, 'Ranger', 11);
-      }
     }
 
     if (classData?.value === 'cleric' && character.chosenDomains) {
@@ -442,8 +429,29 @@ export function getGrantedFeatsForCharacter(
       });
     }
   });
+
+  // Filter Ranger combat style feats based on character's choice
+  if (character.classes.some(c => c.className === 'ranger') && character.chosenCombatStyle) {
+    grantedInstances = grantedInstances.filter(instance => {
+      const featDef = allFeatDefinitions.find(f => f.value === instance.definitionId);
+      if (!featDef) return false; // Should not happen if data is consistent
+
+      const isArcheryStyleFeat = instance.grantedNote?.toLowerCase().includes("archery style") || instance.grantedNote?.toLowerCase().includes("style de tir à l'arc");
+      const isTwoWeaponStyleFeat = instance.grantedNote?.toLowerCase().includes("two-weapon fighting style") || instance.grantedNote?.toLowerCase().includes("style de combat à deux armes");
+
+      if (character.chosenCombatStyle === "archery" && isTwoWeaponStyleFeat) {
+        return false; // Remove two-weapon style feats if archery is chosen
+      }
+      if (character.chosenCombatStyle === "twoWeaponFighting" && isArcheryStyleFeat) {
+        return false; // Remove archery style feats if two-weapon is chosen
+      }
+      return true; // Keep if it's not a style feat or matches the chosen style
+    });
+  }
+
   return grantedInstances;
 }
+
 
 export const PREREQ_ORDER_MAP: Record<string, number> = {
   race: 1, classLevel: 2, alignment: 3, bab: 4, casterLevel: 5,
@@ -843,7 +851,9 @@ export function calculateFeatEffects(
           const damageEffect = effectToPush as DamageRollEffect & AggregatedFeatEffectBase;
            if (damageEffect.isActive && typeof damageEffect.value === 'number') {
              if (damageEffect.condition === "vs_favored_enemy") { // Ranger Favored Enemy Damage Bonus
-                newAggregatedEffects.favoredEnemyBonuses!.damageBonus = (newAggregatedEffects.favoredEnemyBonuses?.damageBonus || 0) + damageEffect.value;
+                if (newAggregatedEffects.favoredEnemyBonuses && typeof damageEffect.value === 'number') {
+                    newAggregatedEffects.favoredEnemyBonuses.damageBonus = (newAggregatedEffects.favoredEnemyBonuses.damageBonus || 0) + damageEffect.value;
+                }
              } else {
                 newAggregatedEffects.damageRollBonuses.push(damageEffect);
              }
@@ -1064,5 +1074,6 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
+
 
 

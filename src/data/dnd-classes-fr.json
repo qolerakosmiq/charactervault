@@ -203,7 +203,7 @@
         { "featId": "class-monk-abundant-step", "levelAcquired": 12 },
         { "featId": "class-monk-diamond-soul", "levelAcquired": 13 },
         { "featId": "class-monk-quivering-palm", "levelAcquired": 15 },
-        { "featId": "class-druid-timeless-body", "levelAcquired": 17, "note": "Aptitude de Moine"},
+        { "featId": "class-druid-timeless-body", "note": "Aptitude de Moine", "levelAcquired": 17 },
         { "featId": "class-monk-tongue-sun-moon", "levelAcquired": 17 },
         { "featId": "class-monk-empty-body", "levelAcquired": 19 },
         { "featId": "class-monk-perfect-self", "levelAcquired": 20 }
@@ -275,11 +275,17 @@
         { "featId": "track", "note": "Don supplémentaire de Rôdeur", "levelAcquired": 1 },
         { "featId": "class-ranger-wild-empathy", "levelAcquired": 1 },
         { "featId": "class-ranger-combat-style-choice", "levelAcquired": 2 },
+        { "featId": "rapid-shot", "levelAcquired": 2, "note": "Style de tir à l'arc du Rôdeur" },
+        { "featId": "two-weapon-fighting", "levelAcquired": 2, "note": "Style de combat à deux armes du Rôdeur" },
         { "featId": "endurance", "note": "Don supplémentaire de Rôdeur", "levelAcquired": 3 },
         { "featId": "class-ranger-animal-companion", "levelAcquired": 4 },
+        { "featId": "manyshot", "levelAcquired": 6, "note": "Style de tir à l'arc du Rôdeur" },
+        { "featId": "improved-two-weapon-fighting", "levelAcquired": 6, "note": "Style de combat à deux armes du Rôdeur" },
         { "featId": "class-ranger-woodland-stride", "levelAcquired": 7 },
         { "featId": "class-ranger-swift-tracker", "levelAcquired": 8 },
         { "featId": "class-ranger-evasion", "levelAcquired": 9 },
+        { "featId": "improved-precise-shot", "levelAcquired": 11, "note": "Style de tir à l'arc du Rôdeur" },
+        { "featId": "greater-two-weapon-fighting", "levelAcquired": 11, "note": "Style de combat à deux armes du Rôdeur" },
         { "featId": "class-ranger-camouflage", "levelAcquired": 13 },
         { "featId": "class-ranger-hide-in-plain-sight", "levelAcquired": 17 }
       ]
@@ -407,3 +413,4 @@
     }
   ]
 }
+
