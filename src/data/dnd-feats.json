@@ -1505,6 +1505,66 @@
       "effects": [{ "type": "note", "text": "Can no longer be flanked. Denies another rogue the ability to sneak attack by flanking, unless the attacker has at least four more rogue levels than the target has rogue levels." }],
       "isClassFeature": true,
       "type": "special-ex"
+    },
+    {
+      "value": "class-rogue-special-ability-slot",
+      "label": "Rogue Special Ability Slot",
+      "description": "At 10th level, and at every three levels thereafter (13th, 16th, and 19th), a rogue gains a special ability of her choice from the Rogue Special Abilities list.",
+      "effectsText": "Grants a slot to choose a Rogue Special Ability.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "bonusFeatSlot", "category": "rogueSpecialAbility", "count": 1 }
+      ]
+    },
+    {
+      "value": "special-ability-crippling-strike",
+      "label": "Crippling Strike",
+      "category": "rogueSpecialAbility",
+      "type": "special-ex",
+      "isClassFeature": true,
+      "description": "<b>Benefit:</b> A rogue with this ability can sneak attack opponents with such precision that her blows weaken and hamper them. An opponent damaged by one of her sneak attacks also takes 2 points of Strength damage.",
+      "effectsText": "Opponent damaged by sneak attack also takes 2 Str damage.",
+      "prerequisites": { "classLevel": { "classId": "rogue", "level": 10 } },
+      "effects": [
+        { "type": "note", "text": "Opponent damaged by sneak attack also takes 2 Strength damage (temporary)." , "condition": "onSneakAttackHit" }
+      ]
+    },
+    {
+      "value": "special-ability-defensive-roll",
+      "label": "Defensive Roll",
+      "category": "rogueSpecialAbility",
+      "type": "special-ex",
+      "isClassFeature": true,
+      "description": "<b>Benefit:</b> The rogue can roll with a potentially lethal blow to take less damage from it than she otherwise would. Once per day, when she would be reduced to 0 or fewer hit points by damage in combat (from a weapon or other blow, not a spell or special ability), she can attempt to roll with the damage. To use this ability, she must attempt a Reflex saving throw (DC = damage dealt). If the save succeeds, she takes only half damage from the blow; if it fails, she takes full damage. She must be aware of the attack and able to react to it in order to execute her defensive roll—if she is denied her Dexterity bonus to AC, she can’t use this ability. Since this effect would not normally allow a character to make a Reflex save for half damage, the rogue’s evasion ability does not apply to the defensive roll.",
+      "effectsText": "Once per day, when reduced to 0 or fewer HP by combat damage, make Reflex save (DC=damage) to take half damage.",
+      "prerequisites": { "classLevel": { "classId": "rogue", "level": 10 } },
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "defensiveRoll",
+          "name": "Defensive Roll",
+          "details": "Once per day, when reduced to 0 or fewer HP by combat damage, make Reflex save (DC=damage dealt) to take half damage. Must be aware and able to react.",
+          "uses": { "per": "day", "value": 1 },
+          "condition": "whenHpReducedTo<10ByCombatDamage"
+        }
+      ]
+    },
+    {
+      "value": "special-ability-skill-mastery",
+      "label": "Skill Mastery",
+      "category": "rogueSpecialAbility",
+      "type": "special-ex",
+      "isClassFeature": true,
+      "description": "<b>Benefit:</b> The rogue becomes so certain in the use of certain skills that she can use them reliably even under adverse conditions. Upon gaining this ability, she selects a number of skills equal to 3 + her Intelligence modifier. When making a skill check with one of these skills, she may take 10 even if stress and distractions would normally prevent her from doing so.",
+      "effectsText": "Select (3 + Int mod) skills. Can take 10 on checks with these skills even under stress.",
+      "requiresSpecialization": "skills_multiple",
+      "specializationDetailPrompt": "Select (3 + Int mod) skills for Mastery",
+      "prerequisites": { "classLevel": { "classId": "rogue", "level": 10 } },
+      "effects": [
+        { "type": "note", "text": "Allows taking 10 on selected skills (3 + Int mod) even under stress/distraction." },
+        { "type": "modifiesMechanic", "mechanicKey": "skillMasteryActiveSkills", "value": "SPEC_ARRAY" }
+      ]
     }
   ],
   "FEAT_TYPES_DATA": [
@@ -1517,5 +1577,3 @@
     { "value": "special-sp", "label": "Special Ability (Sp)" }
   ]
 }
-
-    

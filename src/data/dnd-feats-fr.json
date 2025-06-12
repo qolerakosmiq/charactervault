@@ -407,7 +407,7 @@
     {
       "value": "simple-weapon-proficiency",
       "label": "Maniement des armes courantes",
-      "description": "<b>Avantage :</b> Vous effectuez les jets d'attaque avec les armes courantes normalement.",
+      "description": "<b>Avantage :</b> Vous effectuez les jets d'attaque avec les armes courantes normally.",
       "effectsText": "Maîtrise de toutes les armes courantes.",
       "effects": [{ "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "simple" }],
       "isClassFeature": true,
@@ -1505,6 +1505,66 @@
       "effects": [{ "type": "note", "text": "Ne peut plus être pris en tenaille. Empêche un autre roublard de lui infliger une attaque sournoise en le prenant en tenaille, à moins que l'attaquant n'ait au moins quatre niveaux de roublard de plus que les niveaux de roublard de la cible." }],
       "isClassFeature": true,
       "type": "special-ex"
+    },
+    {
+      "value": "class-rogue-special-ability-slot",
+      "label": "Emplacement de Capacité Spéciale de Roublard",
+      "description": "Au niveau 10, et tous les trois niveaux par la suite (13e, 16e et 19e), un roublard gagne une capacité spéciale de son choix dans la liste des Capacités Spéciales de Roublard.",
+      "effectsText": "Octroie un emplacement pour choisir une Capacité Spéciale de Roublard.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "bonusFeatSlot", "category": "rogueSpecialAbility", "count": 1 }
+      ]
+    },
+    {
+      "value": "special-ability-crippling-strike",
+      "label": "Coup incapacitant",
+      "category": "rogueSpecialAbility",
+      "type": "special-ex",
+      "isClassFeature": true,
+      "description": "<b>Avantage :</b> Un roublard doté de cette capacité peut attaquer sournoisement ses adversaires avec une telle précision que ses coups les affaiblissent et les entravent. Un adversaire endommagé par l'une de ses attaques sournoises subit également 2 points de dégâts de Force.",
+      "effectsText": "L'adversaire endommagé par une attaque sournoise subit également 2 points de dégâts de Force.",
+      "prerequisites": { "classLevel": { "classId": "rogue", "level": 10 } },
+      "effects": [
+        { "type": "note", "text": "Sur une attaque sournoise réussie, la cible subit également 2 points de dégâts de Force temporaires." , "condition": "onSneakAttackHit" }
+      ]
+    },
+    {
+      "value": "special-ability-defensive-roll",
+      "label": "Roulade défensive",
+      "category": "rogueSpecialAbility",
+      "type": "special-ex",
+      "isClassFeature": true,
+      "description": "<b>Avantage :</b> Le roublard peut encaisser un coup potentiellement mortel pour subir moins de dégâts qu'il n'en subirait autrement. Une fois par jour, lorsqu'il serait réduit à 0 point de vie ou moins par des dégâts en combat (d'une arme ou d'un autre coup, pas d'un sort ou d'une capacité spéciale), il peut tenter d'encaisser les dégâts. Pour utiliser cette capacité, il doit tenter un jet de sauvegarde de Réflexes (DD = dégâts infligés). S'il réussit le jet, il ne subit que la moitié des dégâts du coup ; s'il échoue, il subit la totalité des dégâts. Il doit être conscient de l'attaque et capable d'y réagir pour exécuter sa roulade défensive — s'il est privé de son bonus de Dextérité à la CA, il ne peut pas utiliser cette capacité. Comme cet effet ne permettrait normalement pas à un personnage de faire un jet de sauvegarde de Réflexes pour la moitié des dégâts, la capacité d'esquive du roublard ne s'applique pas à la roulade défensive.",
+      "effectsText": "Une fois par jour, lorsqu'il est réduit à 0 PV ou moins par des dégâts de combat, effectuez un jet de Réflexes (DD=dégâts) pour subir la moitié des dégâts.",
+      "prerequisites": { "classLevel": { "classId": "rogue", "level": 10 } },
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "defensiveRoll",
+          "name": "Roulade défensive",
+          "details": "Une fois par jour, lorsqu'il est réduit à 0 PV ou moins par des dégâts de combat, effectuez un jet de Réflexes (DD=dégâts infligés) pour subir la moitié des dégâts. Doit être conscient et capable de réagir.",
+          "uses": { "per": "day", "value": 1 },
+          "condition": "whenHpReducedTo<10ByCombatDamage"
+        }
+      ]
+    },
+    {
+      "value": "special-ability-skill-mastery",
+      "label": "Maîtrise des compétences",
+      "category": "rogueSpecialAbility",
+      "type": "special-ex",
+      "isClassFeature": true,
+      "description": "<b>Avantage :</b> Le roublard devient si sûr de lui dans l'utilisation de certaines compétences qu'il peut les utiliser de manière fiable même dans des conditions défavorables. En acquérant cette capacité, il choisit un nombre de compétences égal à 3 + son modificateur d'Intelligence. Lorsqu'il effectue un test avec l'une de ces compétences, il peut faire 10 même si le stress et les distractions l'en empêcheraient normalement.",
+      "effectsText": "Choisissez (3 + mod. Int) compétences. Peut faire 10 aux tests de ces compétences même sous stress.",
+      "requiresSpecialization": "skills_multiple",
+      "specializationDetailPrompt": "Choisissez (3 + mod. Int) compétences pour la Maîtrise",
+      "prerequisites": { "classLevel": { "classId": "rogue", "level": 10 } },
+      "effects": [
+        { "type": "note", "text": "Permet de faire 10 sur les compétences choisies (3 + mod. Int) même sous stress/distraction." },
+        { "type": "modifiesMechanic", "mechanicKey": "skillMasteryActiveSkills", "value": "SPEC_ARRAY" }
+      ]
     }
   ],
   "FEAT_TYPES_DATA": [
@@ -1517,5 +1577,3 @@
     { "value": "special-sp", "label": "Capacité spéciale (Mag)" }
   ]
 }
-
-    
