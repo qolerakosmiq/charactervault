@@ -41,13 +41,14 @@ const capitalizeFirstLetter = (string: string) => {
 const formatEffectSummary = (
   effects: FeatEffectDetail[] | undefined,
   uiStrings: Record<string, string>,
-  abilityLabels: readonly { value: string; label: string; abbr: string }[]
+  abilityLabels: readonly { value: string; label: string; abbr: string }[],
+  isConditionActive: boolean // Added to control badge variant
 ): React.ReactNode[] => {
   if (!uiStrings || !abilityLabels) {
     return [<span key="loading-effects">{uiStrings.loadingText || "Loading..."}</span>];
   }
   if (!effects || effects.length === 0) {
-    return [<Badge key="no-effects" variant="outline" className="text-xs italic px-1.5 py-0.5">{uiStrings.conditionsPanelNoEffectDetails || "No specific effects listed."}</Badge>];
+    return [<Badge key="no-effects" variant={isConditionActive ? "secondary" : "outline"} className="text-xs italic px-1.5 py-0.5">{uiStrings.conditionsPanelNoEffectDetails || "No specific effects listed."}</Badge>];
   }
 
   const effectBadges: React.ReactNode[] = [];
@@ -56,6 +57,7 @@ const formatEffectSummary = (
     let effectValueDisplay = "";
     let effectTargetDisplay = "";
     const val = (effect as any).value;
+
     const originalBonusType = (effect as any).bonusType || "untyped";
     const translatedBonusTypeKey = `bonusType${capitalizeFirstLetter(originalBonusType)}` as keyof typeof uiStrings;
     const bonusTypeDisplay = uiStrings[translatedBonusTypeKey] || capitalizeFirstLetter(originalBonusType);
@@ -91,6 +93,11 @@ const formatEffectSummary = (
         break;
       case "armorClass":
         const acEffect = effect as ArmorClassEffect;
+        const acTypeLabelKey = `acType${acEffect.acType.charAt(0).toUpperCase() + acEffect.acType.slice(1).replace(/_/g, '')}` as keyof typeof uiStrings;
+        let acTypeDisplay = uiStrings[acTypeLabelKey] || capitalizeFirstLetter(acEffect.acType);
+        if (acEffect.acType === "untyped") acTypeDisplay = uiStrings.acLabelGeneric || "AC";
+
+
         if (typeof val === 'number') {
           effectValueDisplay = `${val > 0 ? '+' : ''}${val}`;
         } else if (val === "WIS" || val === "INT" || val === "CHA") {
@@ -98,24 +105,7 @@ const formatEffectSummary = (
         } else {
            effectValueDisplay = String(val);
         }
-        
-        let primaryDisplayAcTypeKey: keyof typeof uiStrings;
-        if (acEffect.acType === "untyped") {
-          primaryDisplayAcTypeKey = 'acLabelGeneric' as keyof typeof uiStrings;
-        } else {
-          primaryDisplayAcTypeKey = `acType${capitalizeFirstLetter(acEffect.acType.replace(/_/g, ''))}` as keyof typeof uiStrings;
-        }
-        effectTargetDisplay = uiStrings[primaryDisplayAcTypeKey] || capitalizeFirstLetter(acEffect.acType);
-        
-        // Special handling for "Untyped" bonus type with generic AC types
-        if (acEffect.acType === "untyped" && originalBonusType === "untyped") {
-           // The target is already "AC" (from acLabelGeneric), so just the value. bonusTypeDisplay is already "Untyped".
-           // If the bonusType is "untyped", it might be redundant if acType is also generic like "AC" (from "untyped")
-           // The pipe will add "| Untyped" only if bonusTypeDisplay is not "Untyped" OR if acType is something specific where "Untyped" adds clarity.
-           // In this case, if acType is untyped (shown as "AC") and bonusType is untyped, we *do* want to show "| Untyped" to be clear it's an untyped bonus to general AC.
-        } else if (originalBonusType.toLowerCase() === "untyped" && ["dodge", "armor", "shield", "natural", "deflection"].includes(acEffect.acType.toLowerCase())) {
-          // If bonusType is "untyped" for a specific AC type like "Dodge", don't show "| Untyped" as it's implied.
-        }
+        effectTargetDisplay = acTypeDisplay;
         break;
       case "hitPoints":
         const hpEffect = effect as HitPointsEffect;
@@ -140,23 +130,20 @@ const formatEffectSummary = (
     let badgeContentString = `${effectValueDisplay} ${effectTargetDisplay}`;
     const untypedBonusTypeString = (uiStrings.bonusTypeUntyped || "Untyped");
 
-    // Logic for appending bonus type
+
     if (effect.type === "armorClass" && (effect as ArmorClassEffect).acType.toLowerCase() === "untyped" && bonusTypeDisplay.toLowerCase() === untypedBonusTypeString.toLowerCase()) {
-      // For "-2 AC | Untyped", we want exactly this
       badgeContentString += ` | ${bonusTypeDisplay}`;
     } else if (bonusTypeDisplay.toLowerCase() !== untypedBonusTypeString.toLowerCase()) {
       badgeContentString += ` | ${bonusTypeDisplay}`;
     } else if (effect.type !== "armorClass" || !["dodge", "armor", "shield", "natural", "deflection"].includes((effect as ArmorClassEffect).acType.toLowerCase())) {
-       // For non-AC types, or AC types that aren't inherently typed like dodge/armor, show "| Untyped" if it's the bonusType
       if (bonusTypeDisplay.toLowerCase() === untypedBonusTypeString.toLowerCase()) {
          badgeContentString += ` | ${bonusTypeDisplay}`;
       }
     }
 
-
     if (badgeContentString) {
       effectBadges.push(
-        <Badge key={`effect-${index}-${effect.type}`} variant="outline" className="text-xs px-1.5 py-0.5">
+        <Badge key={`effect-${index}-${effect.type}`} variant={isConditionActive ? "secondary" : "outline"} className="text-xs px-1.5 py-0.5">
           {badgeContentString}
         </Badge>
       );
@@ -164,7 +151,7 @@ const formatEffectSummary = (
   });
 
   if (effectBadges.length === 0) {
-    return [<Badge key="no-specifics" variant="outline" className="text-xs italic px-1.5 py-0.5">{uiStrings.conditionsPanelNoEffectDetails || "No specific effects listed."}</Badge>];
+    return [<Badge key="no-specifics" variant={isConditionActive ? "secondary" : "outline"} className="text-xs italic px-1.5 py-0.5">{uiStrings.conditionsPanelNoEffectDetails || "No specific effects listed."}</Badge>];
   }
   return effectBadges;
 };
@@ -195,7 +182,7 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
             if (!conditionsMap.has(conditionKey)) {
               conditionsMap.set(conditionKey, {
                 conditionKey,
-                displayText: conditionKey, // Will be replaced by translated or capitalized version
+                displayText: conditionKey,
                 sources: [],
                 isGloballyActive: false,
                 canBeToggled: false,
@@ -203,8 +190,14 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
             }
             const conditionEntry = conditionsMap.get(conditionKey)!;
 
-            const effectsForThisCondition = definition.effects?.filter(e => e.condition === conditionKey);
-            const summaryBadges = formatEffectSummary(effectsForThisCondition, translations.UI_STRINGS, translations.ABILITY_LABELS);
+            // Pass isGloballyActive which will be determined later for the entire conditionKey
+            // For now, pass a placeholder or determine based on this instance for summary generation
+            const summaryBadges = formatEffectSummary(
+              definition.effects?.filter(e => e.condition === conditionKey),
+              translations.UI_STRINGS,
+              translations.ABILITY_LABELS,
+              isCurrentlyActiveOnThisInstance // Temporarily use instance's activity for badge styling
+            );
 
             conditionEntry.sources.push({
               featInstanceId: featInstance.instanceId,
@@ -218,11 +211,12 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
       }
     });
 
+    // Second pass to update summaries and global state
     conditionsMap.forEach(entry => {
       entry.isGloballyActive = entry.sources.some(s => s.isCurrentlyActiveOnThisInstance);
       const forcedActiveByPermanent = entry.sources.some(s => s.isSourceFeatPermanentEffect && s.isCurrentlyActiveOnThisInstance);
       const allSourcesPermanent = entry.sources.length > 0 && entry.sources.every(s => s.isSourceFeatPermanentEffect);
-      const permanentlyOff = allSourcesPermanent && !entry.isGloballyActive; // All sources are permanent, and none are active
+      const permanentlyOff = allSourcesPermanent && !entry.isGloballyActive;
 
       if (forcedActiveByPermanent) {
         entry.isGloballyActive = true;
@@ -231,11 +225,21 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
         entry.isGloballyActive = false;
         entry.canBeToggled = false;
       } else {
-        // Can be toggled if at least one source is not permanent,
-        // OR if there are no permanent sources at all (implies all are toggleable)
         entry.canBeToggled = entry.sources.some(s => !s.isSourceFeatPermanentEffect) || entry.sources.length === 0 || !allSourcesPermanent;
       }
+      
+      // Re-generate summaries with the final isGloballyActive state for correct badge styling
+      entry.sources.forEach(source => {
+         const definition = allFeatDefinitions.find(def => def.label === source.featName || def.value === source.featName);
+         source.effectsSummary = formatEffectSummary(
+            definition?.effects?.filter(e => e.condition === entry.conditionKey),
+            translations.UI_STRINGS,
+            translations.ABILITY_LABELS,
+            entry.isGloballyActive // Use the final global state
+         );
+      });
     });
+
 
     return conditionsMap;
   }, [characterFeats, allFeatDefinitions, translations]);
@@ -290,7 +294,7 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
            let displayLabelText = UI_STRINGS[translatedDisplayTextKey] || capitalizeFirstLetter(conditionKey);
            
            const isToggleDisabled = !canBeToggled;
-           const firstSource = sources[0]; // For simplicity, show details from the first source
+           const firstSource = sources[0];
 
           return (
             <div key={conditionKey} className="flex items-start space-x-2">
