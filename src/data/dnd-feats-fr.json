@@ -93,7 +93,7 @@
       "effects": [{ "type": "note", "text": "Échange le bonus d'attaque contre un bonus de CA au corps à corps." }],
       "isClassFeature": false,
       "type": "special",
-      "category": "fighterBonusFeat"
+      "category": "fighterBonusFeat monkBonusFeat"
     },
     {
       "value": "combat-reflexes",
@@ -161,7 +161,7 @@
       "effects": [{ "type": "note", "text": "Une fois par round, annulez les dégâts d'une attaque d'arme à distance." }],
       "isClassFeature": false,
       "type": "special",
-      "category": "monkBonusFeat"
+      "category": "monkBonusFeat fighterBonusFeat"
     },
     {
       "value": "endurance",
@@ -839,7 +839,7 @@
       "prerequisites": { "abilities": { "dexterity": 13, "wisdom": 13 }, "bab": 8, "feats": ["improved-unarmed-strike"] },
       "effectsText": "Étourdit l'ennemi sur une frappe à mains nues (jet de Vigueur annule), utilisable 1/jour par 4 niveaux.",
       "type": "special",
-      "category": "monkBonusFeat"
+      "category": "monkBonusFeat fighterBonusFeat"
     },
     {
       "value": "power-attack",
@@ -860,10 +860,82 @@
     {
       "value": "class-monk-bonus-feat-slot",
       "label": "Emplacement de don supplémentaire de Moine",
-      "description": "Un moine peut choisir un don supplémentaire aux niveaux 1, 2 et 6 parmi une liste spécifique.",
+      "description": "<b>Avantage :</b> Octroie un emplacement de don supplémentaire pouvant être utilisé pour les dons de la catégorie 'monkBonusFeat'.",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [{ "type": "bonusFeatSlot", "category": "monkBonusFeat", "count": 1 }]
+    },
+    {
+      "value": "class-monk-unarmored-speed-bonus",
+      "label": "Bonus de vitesse sans armure (Moine)",
+      "description": "<b>Avantage :</b> La vitesse terrestre d'un moine est supérieure à la normale pour sa race de +3 mètres. Cet avantage ne s'applique que s'il ne porte pas d'armure et n'est pas encombré. Au niveau 3, ce bonus passe à +6 mètres. Ce bonus augmente de +3 mètres tous les trois niveaux de moine par la suite.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "+3m de vitesse au N1, augmente de +3m tous les 3 niveaux de Moine (sans armure, sans encombrement).",
+      "effects": [
+        {
+          "type": "speed",
+          "speedType": "land",
+          "modification": "bonus",
+          "value": 0,
+          "bonusType": "enhancement",
+          "scaleWithClassLevel": {
+            "classId": "monk",
+            "specificLevels": [
+              { "level": 1, "value": 3 }, { "level": 3, "value": 6 }, { "level": 6, "value": 9 },
+              { "level": 9, "value": 12 }, { "level": 12, "value": 15 }, { "level": 15, "value": 18 },
+              { "level": 18, "value": 21 }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "value": "improved-grapple",
+      "label": "Lutte améliorée",
+      "description": "<b>Avantage :</b> Vous ne provoquez pas d'attaque d'opportunité lorsque vous effectuez une attaque de contact pour commencer une lutte. Vous obtenez également un bonus de +4 à tous les tests de lutte.",
+      "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["improved-unarmed-strike"] },
+      "effectsText": "+4 aux tests de lutte, pas d'AoO pour commencer la lutte.",
+      "effects": [{ "type": "attackRoll", "value": 4, "bonusType": "untyped", "appliesTo": "grapple" }],
+      "type": "special",
+      "category": "fighterBonusFeat monkBonusFeat"
+    },
+    {
+      "value": "improved-disarm",
+      "label": "Désarmement amélioré",
+      "description": "<b>Avantage :</b> Vous ne provoquez pas d'attaque d'opportunité lorsque vous tentez de désarmer un adversaire, et l'adversaire n'a pas non plus la possibilité de vous désarmer. Vous obtenez également un bonus de +4 au jet opposé que vous effectuez pour désarmer votre adversaire.",
+      "prerequisites": { "abilities": { "intelligence": 13 }, "feats": ["combat-expertise"] },
+      "effectsText": "+4 aux tentatives de désarmement, pas d'AoO.",
+      "type": "special",
+      "category": "fighterBonusFeat monkBonusFeat"
+    },
+    {
+      "value": "improved-trip",
+      "label": "Croc-en-jambe amélioré",
+      "description": "<b>Avantage :</b> Vous ne provoquez pas d'attaque d'opportunité lorsque vous tentez de faire un croc-en-jambe à un adversaire alors que vous êtes à mains nues. Vous obtenez également un bonus de +4 à votre test de Force pour faire un croc-en-jambe à un adversaire. Si vous réussissez à faire un croc-en-jambe à un adversaire en combat au corps à corps, vous obtenez immédiatement une attaque de corps à corps contre cet adversaire comme si vous n'aviez pas utilisé votre attaque pour la tentative de croc-en-jambe.",
+      "prerequisites": { "abilities": { "intelligence": 13 }, "feats": ["combat-expertise"] },
+      "effectsText": "+4 aux tentatives de croc-en-jambe (pas d'AoO si à mains nues). Attaque gratuite sur croc-en-jambe réussi.",
+      "type": "special",
+      "category": "fighterBonusFeat monkBonusFeat"
+    },
+    {
+      "value": "mobility",
+      "label": "Souplesse du serpent",
+      "description": "<b>Avantage :</b> Vous obtenez un bonus d'esquive de +4 à la Classe d'Armure contre les attaques d'opportunité provoquées lorsque vous sortez ou traversez une zone menacée.",
+      "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge"] },
+      "effectsText": "+4 CA d'esquive contre les AoOs dues au mouvement.",
+      "effects": [{ "type": "armorClass", "acType": "dodge", "value": 4, "condition": "vs_aoo_from_movement", "appliesToScope": ["normal","touch"] }],
+      "type": "special",
+      "category": "fighterBonusFeat monkBonusFeat"
+    },
+    {
+      "value": "spring-attack",
+      "label": "Attaque éclair",
+      "description": "<b>Avantage :</b> Lorsque vous utilisez l'action d'attaque avec une arme de corps à corps, vous pouvez vous déplacer avant et après l'attaque, à condition que la distance totale parcourue ne soit pas supérieure à votre vitesse. Se déplacer de cette manière ne provoque pas d'attaque d'opportunité de la part du défenseur que vous attaquez (bien qu'elle puisse provoquer des attaques d'opportunité d'autres créatures, le cas échéant). Vous ne pouvez pas utiliser ce don si vous portez une charge lourde ou une armure lourde.",
+      "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge", "mobility"], "bab": 4 },
+      "effectsText": "Se déplacer, attaquer, puis se déplacer à nouveau (jusqu'à votre vitesse). Pas d'AoO de la cible.",
+      "type": "special",
+      "category": "fighterBonusFeat monkBonusFeat"
     },
     {
       "value": "class-monk-flurry-of-blows",
@@ -943,14 +1015,6 @@
         }
       ],
       "effectsText": "Ajoute le bonus de Sagesse à la CA sans armure et sans encombrement. Gagne +1 CA au N5 (+1/5 niveaux ensuite)."
-    },
-    {
-      "value": "class-monk-unarmored-speed-bonus",
-      "label": "Bonus de vitesse sans armure (Moine)",
-      "description": "Au niveau 1, un moine gagne un bonus d'altération à sa vitesse lorsqu'il n'est pas en armure et non encombré. Ce bonus commence à +3m et augmente de +3m tous les 3 niveaux.",
-      "isClassFeature": true,
-      "type": "special-ex",
-      "effectsText": "+3m de vitesse au N1, +3m tous les 3 niveaux par la suite (sans armure, sans encombrement)."
     },
     {
       "value": "class-monk-evasion",
@@ -1092,4 +1156,3 @@
     { "value": "special-sp", "label": "Aptitude Spéciale (Mag)" }
   ]
 }
-

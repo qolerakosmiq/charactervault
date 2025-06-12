@@ -93,7 +93,7 @@
       "effects": [{ "type": "note", "text": "Trade attack bonus for AC bonus in melee." }],
       "isClassFeature": false,
       "type": "special",
-      "category": "fighterBonusFeat"
+      "category": "fighterBonusFeat monkBonusFeat"
     },
     {
       "value": "combat-reflexes",
@@ -161,7 +161,7 @@
       "effects": [{ "type": "note", "text": "Once per round, negate damage from one ranged weapon attack." }],
       "isClassFeature": false,
       "type": "special",
-      "category": "monkBonusFeat"
+      "category": "monkBonusFeat fighterBonusFeat"
     },
     {
       "value": "endurance",
@@ -839,7 +839,7 @@
       "prerequisites": { "abilities": { "dexterity": 13, "wisdom": 13 }, "bab": 8, "feats": ["improved-unarmed-strike"] },
       "effectsText": "Stun foe on unarmed strike (Fort save negates), usable 1/day per 4 levels.",
       "type": "special",
-      "category": "monkBonusFeat"
+      "category": "monkBonusFeat fighterBonusFeat"
     },
     {
       "value": "power-attack",
@@ -860,10 +860,82 @@
     {
       "value": "class-monk-bonus-feat-slot",
       "label": "Monk Bonus Feat Slot",
-      "description": "A monk may select a bonus feat at 1st level, 2nd level, and 6th level from a specific list.",
+      "description": "<b>Benefit:</b> Grants a bonus feat slot that can be used for feats in the 'monkBonusFeat' category.",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [{ "type": "bonusFeatSlot", "category": "monkBonusFeat", "count": 1 }]
+    },
+    {
+      "value": "class-monk-unarmored-speed-bonus",
+      "label": "Monk Unarmored Speed Bonus",
+      "description": "<b>Benefit:</b> A monk’s land speed is faster than the norm for her race by +10 feet. This benefit applies only when she is wearing no armor and is unencumbered. At 3rd level, this bonus increases to +20 feet. This bonus increases by +10 feet for every three monk levels thereafter.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effectsText": "+10ft speed at L1, increases by +10ft every 3 Monk levels (unarmored, unencumbered).",
+      "effects": [
+        {
+          "type": "speed",
+          "speedType": "land",
+          "modification": "bonus",
+          "value": 0,
+          "bonusType": "enhancement",
+          "scaleWithClassLevel": {
+            "classId": "monk",
+            "specificLevels": [
+              { "level": 1, "value": 10 }, { "level": 3, "value": 20 }, { "level": 6, "value": 30 },
+              { "level": 9, "value": 40 }, { "level": 12, "value": 50 }, { "level": 15, "value": 60 },
+              { "level": 18, "value": 70 }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "value": "improved-grapple",
+      "label": "Improved Grapple",
+      "description": "<b>Benefit:</b> You do not provoke an attack of opportunity when you make a touch attack to start a grapple. You also gain a +4 bonus on all grapple checks.",
+      "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["improved-unarmed-strike"] },
+      "effectsText": "+4 on grapple checks, no AoO for starting grapple.",
+      "effects": [{ "type": "attackRoll", "value": 4, "bonusType": "untyped", "appliesTo": "grapple" }],
+      "type": "special",
+      "category": "fighterBonusFeat monkBonusFeat"
+    },
+    {
+      "value": "improved-disarm",
+      "label": "Improved Disarm",
+      "description": "<b>Benefit:</b> You do not provoke an attack of opportunity when you attempt to disarm an opponent, nor does the opponent get a chance to disarm you. You also gain a +4 bonus on the opposed roll you make to disarm your opponent.",
+      "prerequisites": { "abilities": { "intelligence": 13 }, "feats": ["combat-expertise"] },
+      "effectsText": "+4 on disarm attempts, no AoO.",
+      "type": "special",
+      "category": "fighterBonusFeat monkBonusFeat"
+    },
+    {
+      "value": "improved-trip",
+      "label": "Improved Trip",
+      "description": "<b>Benefit:</b> You do not provoke an attack of opportunity when you attempt to trip an opponent while you are unarmed. You also gain a +4 bonus on your Strength check to trip an opponent. If you trip an opponent in melee combat, you immediately get a melee attack against that opponent as if you hadn’t used your attack for the trip attempt.",
+      "prerequisites": { "abilities": { "intelligence": 13 }, "feats": ["combat-expertise"] },
+      "effectsText": "+4 on trip attempts (no AoO if unarmed). Free attack on successful trip.",
+      "type": "special",
+      "category": "fighterBonusFeat monkBonusFeat"
+    },
+    {
+      "value": "mobility",
+      "label": "Mobility",
+      "description": "<b>Benefit:</b> You get a +4 dodge bonus to Armor Class against attacks of opportunity caused when you move out of or within a threatened area.",
+      "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge"] },
+      "effectsText": "+4 dodge AC vs. AoOs from movement.",
+      "effects": [{ "type": "armorClass", "acType": "dodge", "value": 4, "condition": "vs_aoo_from_movement", "appliesToScope": ["normal","touch"] }],
+      "type": "special",
+      "category": "fighterBonusFeat monkBonusFeat"
+    },
+    {
+      "value": "spring-attack",
+      "label": "Spring Attack",
+      "description": "<b>Benefit:</b> When you use the attack action with a melee weapon, you can move bothbefore and after the attack, provided that your total distance moved is not greater than your speed. Moving in this way does not provoke an attack of opportunity from the defender you attack (though it might provoke attacks of opportunity from other creatures, if appropriate). You can’t use this feat if you are carrying a heavy load or wearing heavy armor.",
+      "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge", "mobility"], "bab": 4 },
+      "effectsText": "Move, attack, then move again (up to your speed). No AoO from target.",
+      "type": "special",
+      "category": "fighterBonusFeat monkBonusFeat"
     },
     {
       "value": "class-monk-flurry-of-blows",
@@ -943,14 +1015,6 @@
         }
       ],
       "effectsText": "Adds Wisdom bonus to AC when unarmored and unencumbered. Gains +1 AC at 5th level (+1/5 levels thereafter)."
-    },
-    {
-      "value": "class-monk-unarmored-speed-bonus",
-      "label": "Monk Unarmored Speed Bonus",
-      "description": "At 1st level, a monk gains an enhancement bonus to her speed when unarmored and unencumbered. This bonus starts at +10 feet and increases by +10 feet every 3 levels.",
-      "isClassFeature": true,
-      "type": "special-ex",
-      "effectsText": "+10ft speed at L1, +10ft every 3 levels thereafter (unarmored, unencumbered)."
     },
     {
       "value": "class-monk-evasion",
@@ -1092,4 +1156,3 @@
     { "value": "special-sp", "label": "Special Ability (Sp)" }
   ]
 }
-
