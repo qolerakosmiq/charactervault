@@ -868,11 +868,11 @@
     {
       "value": "class-monk-unarmored-speed-bonus",
       "label": "Monk Unarmored Speed Bonus",
-      "description": "<b>Benefit:</b> A monk’s land speed is faster than the norm for her race by +10 feet. This benefit applies only when she is wearing no armor and is unencumbered. At 3rd level, this bonus increases to +20 feet. This bonus increases by +10 feet for every three monk levels thereafter.",
+      "description": "<b>Benefit:</b> A monk’s land speed is faster than the norm for her race by +10 feet. This benefit applies only when she is wearing no armor and is unencumbered. At 3rd level, this bonus increases by another +10 feet (to +20 feet). This bonus increases by +10 feet for every three monk levels thereafter.",
       "isClassFeature": true,
       "type": "special-ex",
       "permanentEffect": true,
-      "effectsText": "+10ft speed at L1, increases by +10ft every 3 Monk levels (unarmored, unencumbered).",
+      "effectsText": "+10ft speed at L1, increases by +10ft every 3 Monk levels (unarmored, unencumbered). Total bonus: L1 +10ft, L3 +20ft, L6 +30ft, L9 +40ft, L12 +50ft, L15 +60ft, L18 +70ft.",
       "effects": [
         {
           "type": "speed",
@@ -1087,12 +1087,30 @@
       "effects": [{ "type": "note", "text": "Reduce falling damage when near a wall. Effective fall distance is reduced by 20ft (L4), 30ft (L6), 40ft (L8), 50ft (L10), 60ft (L12), 70ft (L14), 80ft (L16), 90ft (L18), and any distance at L20." }]
     },
     {
+      "value": "class-monk-wholeness-of-body",
+      "label": "Wholeness of Body",
+      "description": "At 7th level or higher, a monk can heal her own wounds. She can heal a number of hit points of damage equal to twice her current monk level each day, and she can spread this healing out among several uses.",
+      "isClassFeature": true,
+      "type": "special-su",
+      "effectsText": "Heal self (2x Monk level) HP/day.",
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "monkWholenessOfBody",
+          "name": "Wholeness of Body",
+          "details": "Heal (2 x Monk Level) HP per day.",
+          "uses": { "per": "day", "value": 1 }
+        }
+      ]
+    },
+    {
       "value": "class-monk-diamond-body",
       "label": "Diamond Body",
       "description": "At 11th level, a monk gains immunity to poisons of all kinds.",
       "isClassFeature": true,
       "type": "special-su",
-      "effectsText": "Immunity to all poisons."
+      "effectsText": "Immunity to all poisons.",
+      "effects": [{ "type": "note", "text": "Immunity to all poisons of all kinds." }]
     },
     {
       "value": "class-monk-greater-flurry",
@@ -1116,7 +1134,16 @@
       "description": "At 12th level or higher, a monk can slip magically between spaces, as if using the spell dimension door, once per day. Her caster level for this effect is one-half her monk level (rounded down).",
       "isClassFeature": true,
       "type": "special-su",
-      "effectsText": "Dimension door 1/day (CL 1/2 Monk level)."
+      "effectsText": "Dimension door 1/day (CL 1/2 Monk level).",
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "monkAbundantStep",
+          "name": "Abundant Step",
+          "details": "Use Dimension Door (CL 1/2 Monk Level).",
+          "uses": { "per": "day", "value": 1 }
+        }
+      ]
     },
     {
       "value": "class-monk-diamond-soul",
@@ -1124,7 +1151,20 @@
       "description": "At 13th level, a monk gains spell resistance equal to her current monk level + 10.",
       "isClassFeature": true,
       "type": "special-ex",
-      "effectsText": "Spell resistance = Monk level + 10."
+      "effectsText": "Spell resistance = Monk level + 10.",
+      "permanentEffect": true,
+      "effects": [
+        {
+          "type": "resistance",
+          "resistanceTo": "spell",
+          "value": 10,
+          "bonusType": "untyped",
+          "scaleWithClassLevel": {
+            "classId": "monk",
+            "valuePerLevel": 1
+          }
+        }
+      ]
     },
     {
       "value": "class-monk-quivering-palm",
@@ -1132,7 +1172,25 @@
       "description": "Starting at 15th level, a monk can set up vibrations within the body of another creature that can thereafter be fatal if the monk so wishes. She can use this quivering palm attack once per day, and she must announce her intent before making her attack roll. Constructs, oozes, plants, undead, incorporeal creatures, and creatures immune to critical hits can’t be affected. Otherwise, if the monk strikes successfully and the target takes damage from the blow, the quivering palm attack succeeds. Thereafter, the monk can try to slay the victim at any later time, as long as the attempt is made within a number of days equal to her monk level. To make such an attempt, the monk merely wills the target to die (a free action), and unless the target makes a Fortitude saving throw (DC 10 + 1/2 your monk level + your Wis modifier), it dies. If the saving throw is successful, the target is no longer in danger from that particular quivering palm attack, but it may still be affected by another one at a later time.",
       "isClassFeature": true,
       "type": "special-su",
-      "effectsText": "Kill target with a touch (Fort save negates), 1/day."
+      "effectsText": "Kill target with a touch (Fort save DC 10 + 1/2 Monk Lvl + Wis negates), 1/day.",
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "monkQuiveringPalm",
+          "name": "Quivering Palm",
+          "details": "Kill target with a touch (Fort save DC 10 + 1/2 Monk Level + Wis modifier negates).",
+          "uses": { "per": "day", "value": 1 }
+        }
+      ]
+    },
+    {
+      "value": "class-druid-timeless-body",
+      "label": "Timeless Body",
+      "description": "<b>Benefit:</b> After attaining 15th level, a druid no longer takes ability score penalties for aging and cannot be magically aged. Any penalties she may have already incurred, however, remain in place. Bonuses still accrue, and the druid still dies of old age when her time is up.",
+      "effectsText": "No ability penalties for aging, cannot be magically aged.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "note", "text": "No longer takes ability score penalties for aging and cannot be magically aged." }]
     },
     {
       "value": "class-monk-tongue-sun-moon",
@@ -1140,7 +1198,8 @@
       "description": "A monk of 17th level or higher can speak with any living creature.",
       "isClassFeature": true,
       "type": "special-ex",
-      "effectsText": "Speak with any living creature."
+      "effectsText": "Speak with any living creature.",
+      "effects": [{ "type": "note", "text": "Can speak with any living creature." }]
     },
     {
       "value": "class-monk-empty-body",
@@ -1148,7 +1207,16 @@
       "description": "At 19th level, a monk can assume an ethereal state for 1 round per monk level per day. This ability functions like the spell etherealness (caster level equals the character’s monk level).",
       "isClassFeature": true,
       "type": "special-su",
-      "effectsText": "Become ethereal 1 round/level/day."
+      "effectsText": "Become ethereal 1 round/level/day (as Etherealness spell).",
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "monkEmptyBody",
+          "name": "Empty Body",
+          "details": "Assume ethereal state (as Etherealness, CL = Monk Level).",
+          "uses": { "per": "day", "value": "Monk Level Rounds" }
+        }
+      ]
     },
     {
       "value": "class-monk-perfect-self",
@@ -1156,7 +1224,12 @@
       "description": "At 20th level, a monk becomes a magical creature. She is forevermore treated as an outsider rather than as a humanoid (or whatever the monk’s creature type was). Additionally, the monk gains damage reduction 10/magic.",
       "isClassFeature": true,
       "type": "special-ex",
-      "effectsText": "Becomes an outsider, DR 10/magic."
+      "effectsText": "Becomes an outsider, DR 10/magic.",
+      "permanentEffect": true,
+      "effects": [
+        { "type": "note", "text": "Becomes an Outsider type. Gains DR 10/magic." },
+        { "type": "damageReduction", "drType": "magic", "value": 10 }
+      ]
     }
   ],
   "FEAT_TYPES_DATA": [
@@ -1169,5 +1242,3 @@
     { "value": "special-sp", "label": "Special Ability (Sp)" }
   ]
 }
-
-    
