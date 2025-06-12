@@ -839,7 +839,7 @@
       "prerequisites": { "abilities": { "dexterity": 13, "wisdom": 13 }, "bab": 8, "feats": ["improved-unarmed-strike"] },
       "effectsText": "Étourdit l'ennemi sur une frappe à mains nues (jet de Vigueur annule), utilisable 1/jour par 4 niveaux.",
       "type": "special",
-      "category": "monkBonusFeat fighterBonusFeat"
+      "category": "fighterBonusFeat monkBonusFeat"
     },
     {
       "value": "power-attack",
@@ -1213,7 +1213,7 @@
           "type": "grantsAbility",
           "abilityKey": "monkEmptyBody",
           "name": "Corps intangible",
-          "details": "Prend une forme éthérée (comme État éthéré, NLS = Niveau de Moine).",
+          "details": "Prend une forme éthérée (comme État éthéré, NLS = Niveau de Moine). Durée : Niveau de Moine rounds par jour.",
           "uses": { "per": "day", "value": "Niveau de Moine Rounds" }
         }
       ]
@@ -1242,3 +1242,5 @@
     { "value": "special-sp", "label": "Aptitude Spéciale (Mag)" }
   ]
 }
+
+    

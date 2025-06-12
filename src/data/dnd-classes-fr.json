@@ -186,7 +186,7 @@
         { "featId": "improved-unarmed-strike", "levelAcquired": 1, "note": "Accordé par Moine"},
         { "featId": "class-monk-bonus-feat-slot", "note": "Niveau 1", "levelAcquired": 1 },
         { "featId": "class-monk-unarmored-speed-bonus", "levelAcquired": 1 },
-        { "featId": "class-monk-flurry-of-blows", "note": "Bonus d'attaque -2/-2 (Progression BBA complet)", "levelAcquired": 1 },
+        { "featId": "class-monk-flurry-of-blows", "levelAcquired": 1 },
         { "featId": "class-monk-unarmed-strike-damage", "levelAcquired": 1 },
         { "featId": "class-monk-ac-bonus", "levelAcquired": 1 },
         { "featId": "class-monk-bonus-feat-slot", "note": "Niveau 2", "levelAcquired": 2 },
@@ -407,3 +407,5 @@
     }
   ]
 }
+
+    

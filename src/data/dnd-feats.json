@@ -839,7 +839,7 @@
       "prerequisites": { "abilities": { "dexterity": 13, "wisdom": 13 }, "bab": 8, "feats": ["improved-unarmed-strike"] },
       "effectsText": "Stun foe on unarmed strike (Fort save negates), usable 1/day per 4 levels.",
       "type": "special",
-      "category": "monkBonusFeat fighterBonusFeat"
+      "category": "fighterBonusFeat monkBonusFeat"
     },
     {
       "value": "power-attack",
@@ -1213,7 +1213,7 @@
           "type": "grantsAbility",
           "abilityKey": "monkEmptyBody",
           "name": "Empty Body",
-          "details": "Assume ethereal state (as Etherealness, CL = Monk Level).",
+          "details": "Assume ethereal state (as Etherealness, CL = Monk Level). Duration: Monk Level rounds per day.",
           "uses": { "per": "day", "value": "Monk Level Rounds" }
         }
       ]
@@ -1242,3 +1242,5 @@
     { "value": "special-sp", "label": "Special Ability (Sp)" }
   ]
 }
+
+    
