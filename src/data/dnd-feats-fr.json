@@ -1298,17 +1298,17 @@
     },
     {
       "value": "class-ranger-combat-style-choice",
-      "label": "Choix du style de combat du Rôdeur",
-      "description": "Au niveau 2, un rôdeur doit choisir un style de combat à poursuivre : tir à l'arc ou combat à deux armes. Ce choix affecte les dons supplémentaires qu'il gagne aux niveaux suivants.",
-      "effectsText": "Permet de choisir le style de Tir à l'arc ou de Combat à deux armes.",
+      "label": "Ranger Combat Style Choice",
+      "description": "At 2nd level, a ranger must select a combat style to pursue: archery or two-weapon combat. This choice affects the bonus feats she gains at later levels.",
+      "effectsText": "Allows selection of Archery or Two-Weapon Combat style.",
       "isClassFeature": true,
       "type": "special-ex"
     },
     {
       "value": "point-blank-shot",
-      "label": "Tir à bout portant",
-      "description": "<b>Avantage :</b> Vous obtenez un bonus de +1 aux jets d'attaque et de dégâts avec les armes à distance à des portées allant jusqu'à 9 mètres.",
-      "effectsText": "+1 attaque et dégâts aux attaques à distance jusqu'à 9m.",
+      "label": "Point Blank Shot",
+      "description": "<b>Benefit:</b> You get a +1 bonus on attack and damage rolls with ranged weapons at ranges of up to 30 feet.",
+      "effectsText": "+1 attack and damage on ranged attacks within 30ft.",
       "type": "special",
       "category": "fighterBonusFeat archeryStyleFeat",
       "effects": [
@@ -1318,83 +1318,102 @@
     },
     {
       "value": "precise-shot",
-      "label": "Tir de précision",
-      "description": "<b>Avantage :</b> Vous pouvez tirer ou lancer des armes à distance sur un adversaire engagé en mêlée sans subir la pénalité standard de –4 à votre jet d'attaque.",
+      "label": "Precise Shot",
+      "description": "<b>Benefit:</b> You can shoot or throw ranged weapons at an opponent engaged in melee without taking the standard –4 penalty on your attack roll.",
       "prerequisites": { "feats": ["point-blank-shot"] },
-      "effectsText": "Pas de pénalité pour tirer en mêlée.",
+      "effectsText": "No penalty for shooting into melee.",
       "type": "special",
       "category": "fighterBonusFeat archeryStyleFeat",
-      "effects": [{ "type": "note", "text": "Pas de pénalité de -4 pour tirer ou lancer des armes à distance dans une mêlée." }]
+      "effects": [{ "type": "note", "text": "No -4 penalty for shooting or throwing ranged weapons into a melee." }]
     },
     {
       "value": "rapid-shot",
-      "label": "Tir rapide",
-      "description": "<b>Avantage :</b> Vous pouvez obtenir une attaque supplémentaire par round avec une arme à distance. L'attaque se fait à votre bonus de base à l'attaque le plus élevé, mais chaque attaque que vous effectuez ce round (l'attaque supplémentaire et les attaques normales) subit une pénalité de –2. Vous devez utiliser l'action d'attaque à outrance pour utiliser ce don.",
+      "label": "Rapid Shot",
+      "description": "<b>Benefit:</b> You can get one extra attack per round with a ranged weapon. The attack is at your highest base attack bonus, but each attack you make in that round (the extra one and the normal ones) takes a –2 penalty. You must use the full attack action to use this feat.",
       "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["point-blank-shot"] },
-      "effectsText": "Une attaque à distance supplémentaire par round, toutes les attaques à -2. Nécessite une action d'attaque à outrance.",
+      "effectsText": "One extra ranged attack per round, all attacks at -2. Requires full attack action.",
       "type": "special",
       "category": "fighterBonusFeat archeryStyleFeat",
-      "effects": [{ "type": "note", "text": "Une attaque à distance supplémentaire/round, toutes les attaques à -2 (action d'attaque à outrance)." }]
+      "effects": [{ "type": "note", "text": "One extra ranged attack/round, all attacks at -2 (full attack action)." }]
     },
     {
       "value": "manyshot",
-      "label": "Tir multiple",
-      "description": "<b>Avantage :</b> En tant qu'action simple, vous pouvez tirer deux flèches sur un seul adversaire à moins de 9 mètres. Les deux flèches utilisent le même jet d'attaque (avec une pénalité de –4) et visent le même emplacement corporel. Pour chaque flèche qui touche, lancez les dégâts séparément. Vos dégâts basés sur la Précision (tels que les dégâts d'attaque sournoise) ne s'appliquent qu'à la première flèche qui touche. Si le jet d'attaque est un coup critique, seule la première flèche inflige des dégâts critiques ; toutes les autres infligent des dégâts normaux.",
+      "label": "Manyshot",
+      "description": "<b>Benefit:</b> As a standard action, you may fire two arrows at a single opponent within 30 feet. Both arrows use the same attack roll (with a –4 penalty) and are aimed at the same body location. For each arrow that hits, roll damage separately. Your Precision-based damage (such as sneak attack damage) applies to only the first arrow that hits. If the attack roll is a critical hit, only the first arrow deals critical damage; all others deal normal damage.",
       "prerequisites": { "abilities": { "dexterity": 17 }, "feats": ["point-blank-shot", "rapid-shot"], "bab": 6 },
-      "effectsText": "Action simple : tire deux flèches sur une cible à moins de 9m (un jet d'attaque à -4).",
+      "effectsText": "Standard action: fire two arrows at one target within 30ft (one attack roll at -4).",
       "type": "special",
       "category": "fighterBonusFeat archeryStyleFeat",
-      "effects": [{ "type": "note", "text": "Action simple : tire deux flèches sur une cible à moins de 9m (un jet d'attaque à -4)." }]
+      "effects": [{ "type": "note", "text": "Standard action: fire two arrows at one target within 30ft (one attack roll at -4)." }]
     },
     {
       "value": "improved-precise-shot",
-      "label": "Tir de précision amélioré",
-      "description": "<b>Avantage :</b> Vos attaques à distance ignorent le bonus de CA accordé aux cibles par tout abri inférieur à un abri total, et le risque d'échec accordé aux cibles par toute dissimulation inférieure à une dissimulation totale.",
+      "label": "Improved Precise Shot",
+      "description": "<b>Benefit:</b> Your ranged attacks ignore the AC bonus granted to targets by anything less than total cover, and the miss chance granted to targets by anything less than total concealment.",
       "prerequisites": { "abilities": { "dexterity": 19 }, "feats": ["point-blank-shot", "precise-shot"], "bab": 11 },
-      "effectsText": "Les attaques à distance ignorent l'abri (sauf total) et la dissimulation (sauf totale).",
+      "effectsText": "Ranged attacks ignore cover (except total) and concealment (except total).",
       "type": "special",
       "category": "fighterBonusFeat archeryStyleFeat",
-      "effects": [{ "type": "note", "text": "Les attaques à distance ignorent l'abri (sauf total) et la dissimulation (sauf totale)." }]
+      "effects": [{ "type": "note", "text": "Ranged attacks ignore cover (except total) and concealment (except total)." }]
     },
     {
       "value": "two-weapon-fighting",
-      "label": "Combat à deux armes",
-      "description": "<b>Avantage :</b> Vos pénalités aux jets d'attaque pour le combat à deux armes sont réduites. La pénalité pour votre main principale diminue de 2 et celle pour votre main secondaire diminue de 6. Voir Tableau 8–10 : Pénalités de combat à deux armes.",
+      "label": "Two-Weapon Fighting",
+      "description": "<b>Benefit:</b> Your penalties on attack rolls for fighting with two weapons are reduced. The penalty for your primary hand lessens by 2 and the one for your off hand lessens by 6. See Table 8–10: Two-Weapon Fighting Penalties.",
       "prerequisites": { "abilities": { "dexterity": 15 } },
-      "effectsText": "Réduit les pénalités pour le combat à deux armes (-2 principale, -6 secondaire).",
+      "effectsText": "Reduces penalties for fighting with two weapons (-2 primary, -6 off-hand).",
       "type": "special",
       "category": "fighterBonusFeat twoWeaponStyleFeat",
-      "effects": [{ "type": "note", "text": "Pénalités pour le combat à deux armes réduites (ex : -4/-4 avec une arme légère en main secondaire)." }]
+      "effects": [{ "type": "note", "text": "Penalties for two-weapon fighting reduced (e.g., -4/-4 with light off-hand)." }]
     },
     {
       "value": "improved-two-weapon-fighting",
-      "label": "Combat à deux armes amélioré",
-      "description": "<b>Avantage :</b> Vous obtenez une deuxième attaque avec votre arme secondaire, bien qu'avec une pénalité de –5.",
+      "label": "Improved Two-Weapon Fighting",
+      "description": "<b>Benefit:</b> You get a second attack with your off-hand weapon, albeit at a –5 penalty.",
       "prerequisites": { "abilities": { "dexterity": 17 }, "feats": ["two-weapon-fighting"], "bab": 6 },
-      "effectsText": "Obtenez une deuxième attaque avec l'arme secondaire (-5 de pénalité).",
+      "effectsText": "Gain a second attack with off-hand weapon (-5 penalty).",
       "type": "special",
       "category": "fighterBonusFeat twoWeaponStyleFeat",
-      "effects": [{ "type": "note", "text": "Obtenez une deuxième attaque avec l'arme secondaire (-5 de pénalité)." }]
+      "effects": [{ "type": "note", "text": "Gain a second attack with off-hand weapon (-5 penalty)." }]
     },
     {
       "value": "greater-two-weapon-fighting",
-      "label": "Combat à deux armes supérieur",
-      "description": "<b>Avantage :</b> Vous obtenez une troisième attaque avec votre arme secondaire, bien qu'avec une pénalité de –10.",
+      "label": "Greater Two-Weapon Fighting",
+      "description": "<b>Benefit:</b> You get a third attack with your off-hand weapon, albeit at a –10 penalty.",
       "prerequisites": { "abilities": { "dexterity": 19 }, "feats": ["two-weapon-fighting", "improved-two-weapon-fighting"], "bab": 11 },
-      "effectsText": "Obtenez une troisième attaque avec l'arme secondaire (-10 de pénalité).",
+      "effectsText": "Gain a third attack with off-hand weapon (-10 penalty).",
       "type": "special",
       "category": "fighterBonusFeat twoWeaponStyleFeat",
-      "effects": [{ "type": "note", "text": "Obtenez une troisième attaque avec l'arme secondaire (-10 de pénalité)." }]
+      "effects": [{ "type": "note", "text": "Gain a third attack with off-hand weapon (-10 penalty)." }]
+    },
+    {
+      "value": "class-ranger-wild-empathy",
+      "label": "Wild Empathy",
+      "description": "<b>Benefit:</b> A ranger can improve the attitude of an animal. This ability functions just like a Diplomacy check made to improve the attitude of a person. The ranger rolls 1d20 and adds her ranger level and her Charisma modifier to determine the wild empathy check result. The typical domestic animal has a starting attitude of indifferent, while wild animals are usually unfriendly.",
+      "effectsText": "Improve animal attitude (1d20 + Ranger Lvl + Cha mod).",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "note", "text": "Can improve the attitude of an animal. Check: 1d20 + Ranger level + Cha modifier." }]
+    },
+    {
+      "value": "class-ranger-animal-companion",
+      "label": "Animal Companion (Ranger)",
+      "description": "<b>Benefit:</b> At 4th level, a ranger gains an animal companion selected from the PHB list (badger, camel, dire rat, dog, riding dog, eagle, hawk, horse (light or heavy), owl, pony, snake (Small or Medium viper), or wolf). This animal is a loyal companion that accompanies the ranger on her adventures.",
+      "effectsText": "Gains an animal companion at 4th level.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "note", "text": "Gains a loyal animal companion at 4th level." }]
     }
   ],
   "FEAT_TYPES_DATA": [
-    { "value": "general", "label": "Général" },
-    { "value": "special", "label": "Spécial" },
-    { "value": "itemCreation", "label": "Création d'objets" },
-    { "value": "metamagic", "label": "Métamagie" },
-    { "value": "special-ex", "label": "Aptitude Spéciale (Ext)" },
-    { "value": "special-su", "label": "Aptitude Spéciale (Sur)" },
-    { "value": "special-sp", "label": "Aptitude Spéciale (Mag)" }
+    { "value": "general", "label": "General" },
+    { "value": "special", "label": "Special" },
+    { "value": "itemCreation", "label": "Item Creation" },
+    { "value": "metamagic", "label": "Metamagic" },
+    { "value": "special-ex", "label": "Special Ability (Ex)" },
+    { "value": "special-su", "label": "Special Ability (Su)" },
+    { "value": "special-sp", "label": "Special Ability (Sp)" }
   ]
 }
 
+    

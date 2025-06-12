@@ -529,6 +529,12 @@ export interface MagicSchoolDefinition {
   description?: string;
 }
 
+export interface CharacterAnimalCompanion {
+  id: string;
+  name?: string;
+  type?: string;
+  notes?: string;
+}
 
 export interface Character {
   id: string;
@@ -604,6 +610,7 @@ export interface Character {
   prohibitedSchools?: MagicSchoolId[];
   powerAttackValue?: number;
   combatExpertiseValue?: number;
+  animalCompanion?: CharacterAnimalCompanion; // Added
 }
 
 // Informational/Breakdown types
@@ -844,3 +851,6 @@ export type CharacterUpdateField = keyof Character | `savingThrows.${keyof Savin
 export { type AbilityScoreComponentValue }; // Explicitly re-export if used by InfoDisplayDialog directly
 
 
+
+
+    

@@ -12,7 +12,7 @@ import type {
   ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType, ResistanceFieldKeySheet,
   SpeedDetails, SpeedType, CharacterAlignment, ProcessedSiteData, SpeedPanelCharacterData, CombatPanelCharacterData, LanguageId,
   AggregatedFeatEffects, ExperiencePanelData, ComboboxOption, MagicSchoolId, Item, GenericBreakdownItem, DamageReductionFeatEffect,
-  CharacterFavoredEnemy
+  CharacterFavoredEnemy, CharacterAnimalCompanion
 } from '@/types/character';
 import {
   getNetAgingEffects,
@@ -154,7 +154,8 @@ function createBaseCharacterData(
       loadSpeedPenalty_miscModifier: DEFAULT_SPEED_PENALTIES.loadSpeedPenalty_miscModifier || 0,
       powerAttackValue: 0,
       combatExpertiseValue: 0,
-      chosenFavoredEnemies: [], // Initialize new field
+      chosenFavoredEnemies: [],
+      animalCompanion: undefined, // Initialize new field
     };
 }
 
@@ -787,10 +788,6 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     openInfoDialog(contentType);
   }, [openInfoDialog]);
 
-  const handleOpenResistanceInfoDialog = React.useCallback((resistanceField: ResistanceFieldKeySheet) => {
-    openInfoDialog({ type: 'resistanceBreakdown', resistanceField });
-  }, [openInfoDialog]);
-
   const handleOpenHealthInfoDialog = React.useCallback((contentType: InfoDialogContentType) => {
     openInfoDialog(contentType);
   }, [openInfoDialog]);
@@ -1232,3 +1229,5 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
+
+    
