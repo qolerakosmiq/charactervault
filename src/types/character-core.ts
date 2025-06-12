@@ -465,6 +465,16 @@ export interface ClassSpecificUIBlock {
   conditionDependsOnUIStateValueNotIn?: Array<string | null | undefined>; // For wizard prohibited schools
 }
 
+export interface FeatChoiceFilterCase {
+  choiceValue: string;
+  noteMustContain: string;
+}
+
+export interface FeatChoiceFilter {
+  characterField: keyof Pick<Character, 'chosenCombatStyle'>; // Extend this union for other choice fields if needed
+  filterCases: FeatChoiceFilterCase[];
+}
+
 export interface DndRaceOption {
   value: DndRaceId;
   label: string;
@@ -491,7 +501,8 @@ export interface DndClassOption {
     reflex: "good" | "poor";
     will: "good" | "poor";
   };
-  uiSections?: ClassSpecificUIBlock[]; // Added for data-driven UI
+  uiSections?: ClassSpecificUIBlock[];
+  featChoiceFilters?: FeatChoiceFilter[]; // New field
 }
 
 export interface DeityAttribute {
@@ -548,8 +559,9 @@ export interface MagicSchoolDefinition {
 export interface CharacterAnimalCompanion {
   id: string;
   name?: string;
-  type?: string;
+  type?: string; // e.g., "Wolf", "Hawk"
   notes?: string;
+  // Basic stats might be added later
 }
 
 export interface Character {

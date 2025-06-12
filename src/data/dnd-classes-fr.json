@@ -312,6 +312,15 @@
             "value": 0
           }
         }
+      ],
+      "featChoiceFilters": [
+        {
+          "characterField": "chosenCombatStyle",
+          "filterCases": [
+            { "choiceValue": "archery", "noteMustContain": "Style de tir à l'arc du Rôdeur" },
+            { "choiceValue": "twoWeaponFighting", "noteMustContain": "Style de combat à deux armes du Rôdeur" }
+          ]
+        }
       ]
     },
     {

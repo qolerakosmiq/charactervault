@@ -312,6 +312,15 @@
             "value": 0
           }
         }
+      ],
+      "featChoiceFilters": [
+        {
+          "characterField": "chosenCombatStyle",
+          "filterCases": [
+            { "choiceValue": "archery", "noteMustContain": "Ranger Archery Style" },
+            { "choiceValue": "twoWeaponFighting", "noteMustContain": "Ranger Two-Weapon Fighting Style" }
+          ]
+        }
       ]
     },
     {

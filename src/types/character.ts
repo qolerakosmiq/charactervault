@@ -1,6 +1,4 @@
 
-
-
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -57,7 +55,8 @@ import type {
   GrantsAbilityEffectUses,
   MagicSchoolId,
   DamageReductionFeatEffect,
-  CharacterFavoredEnemy
+  CharacterFavoredEnemy,
+  FeatChoiceFilter // Added for data-driven feat choices
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 // Import calculateLevelFromXp and other used utilities directly
@@ -377,7 +376,7 @@ export function getGrantedFeatsForCharacter(
         definitionId: featDef.value,
         instanceId: featDef.canTakeMultipleTimes ? `${featDef.value}-GRANTED-${crypto.randomUUID()}` : instanceId,
         isGranted: true,
-        grantedNote: note, // Store the original note from the class definition
+        grantedNote: note,
         specializationDetail: specializationDetail,
         chosenSpecializationCategory: chosenSpecializationCategory,
         conditionalEffectStates: {},
@@ -409,16 +408,17 @@ export function getGrantedFeatsForCharacter(
   character.classes.forEach(charClass => {
     if (!charClass.className) return;
     const classData = DND_CLASSES.find(c => c.value === charClass.className);
-    if (classData?.grantedFeats) {
+    if (!classData) return;
+
+    if (classData.grantedFeats) {
       classData.grantedFeats.forEach(gf => {
         if (gf.levelAcquired === undefined || gf.levelAcquired <= charClass.level) {
-          // Pass the note from the class definition directly
           addGrantedInstance(gf.featId, gf.note, classData.label, gf.levelAcquired);
         }
       });
     }
 
-    if (classData?.value === 'cleric' && character.chosenDomains) {
+    if (classData.value === 'cleric' && character.chosenDomains) {
       character.chosenDomains.forEach(domainId => {
         if (domainId) {
           const domainDef = DND_DOMAINS.find(d => d.value === domainId);
@@ -428,26 +428,38 @@ export function getGrantedFeatsForCharacter(
         }
       });
     }
+
+    // Data-driven feat choice filtering
+    if (classData.featChoiceFilters) {
+      classData.featChoiceFilters.forEach(filterDef => {
+        const playerChoiceValue = character[filterDef.characterField as keyof typeof character] as string | undefined;
+
+        if (playerChoiceValue) {
+          const matchingCase = filterDef.filterCases.find(fCase => fCase.choiceValue === playerChoiceValue);
+          if (matchingCase) {
+            grantedInstances = grantedInstances.filter(instance => {
+              const isRelatedToThisFilterGroup = filterDef.filterCases.some(anyCase => instance.grantedNote?.includes(anyCase.noteMustContain));
+              if (!isRelatedToThisFilterGroup) return true; // Not part of this choice group, keep it.
+              return instance.grantedNote?.includes(matchingCase.noteMustContain); // It IS part of this choice group. Keep it ONLY if its note matches the chosen style.
+            });
+          } else {
+            // No valid choice made for this filter, remove all related feats
+            grantedInstances = grantedInstances.filter(instance => {
+              const isRelatedToThisFilterGroup = filterDef.filterCases.some(anyCase => instance.grantedNote?.includes(anyCase.noteMustContain));
+              return !isRelatedToThisFilterGroup;
+            });
+          }
+        } else {
+          // Player has not made a choice for this filterable characteristic (e.g. chosenCombatStyle is undefined)
+          // Remove all feats that *would* have been part of this choice group.
+          grantedInstances = grantedInstances.filter(instance => {
+            const isRelatedToThisFilterGroup = filterDef.filterCases.some(anyCase => instance.grantedNote?.includes(anyCase.noteMustContain));
+            return !isRelatedToThisFilterGroup;
+          });
+        }
+      });
+    }
   });
-
-  // Filter Ranger combat style feats based on character's choice
-  if (character.classes.some(c => c.className === 'ranger') && character.chosenCombatStyle) {
-    grantedInstances = grantedInstances.filter(instance => {
-      const featDef = allFeatDefinitions.find(f => f.value === instance.definitionId);
-      if (!featDef) return false; // Should not happen if data is consistent
-
-      const isArcheryStyleFeat = instance.grantedNote?.toLowerCase().includes("archery style") || instance.grantedNote?.toLowerCase().includes("style de tir à l'arc");
-      const isTwoWeaponStyleFeat = instance.grantedNote?.toLowerCase().includes("two-weapon fighting style") || instance.grantedNote?.toLowerCase().includes("style de combat à deux armes");
-
-      if (character.chosenCombatStyle === "archery" && isTwoWeaponStyleFeat) {
-        return false; // Remove two-weapon style feats if archery is chosen
-      }
-      if (character.chosenCombatStyle === "twoWeaponFighting" && isArcheryStyleFeat) {
-        return false; // Remove archery style feats if two-weapon is chosen
-      }
-      return true; // Keep if it's not a style feat or matches the chosen style
-    });
-  }
 
   return grantedInstances;
 }
@@ -961,7 +973,7 @@ export function calculateSpeedBreakdown(
   } else if (speedType === 'land' && racialSpeed === undefined) {
     const sizeData = SIZES.find(s => s.value === character.size);
     let defaultLandSpeed = 30; 
-    if (sizeData?.label === 'Small' || (charRaceData?.label && (charRaceData.label.toLowerCase().includes('gnome') || charRaceData.label.toLowerCase().includes('halfling') || charRaceData.label.toLowerCase().includes('nain')))) { // Added nain for French dwarf
+    if (sizeData?.label === 'Small' || (charRaceData?.label && (charRaceData.label.toLowerCase().includes('gnome') || charRaceData.label.toLowerCase().includes('halfling') || charRaceData.label.toLowerCase().includes('dwarf')))) {
         defaultLandSpeed = 20;
     }
     components.push({ source: (UI_STRINGS.infoDialogSpeedBaseRaceLabel || "Base ({raceName})").replace("{raceName}", raceLabel), value: defaultLandSpeed });
@@ -1074,6 +1086,7 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
+
 
 
 
