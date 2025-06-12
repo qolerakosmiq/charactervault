@@ -27,51 +27,59 @@ interface DisplayCondition {
     featName: string;
     isCurrentlyActiveOnThisInstance: boolean;
     isSourceFeatPermanentEffect: boolean;
-    effectsSummary?: string;
+    effectsSummary?: React.ReactNode[];
   }>;
   isGloballyActive: boolean;
   canBeToggled: boolean;
 }
+
+const capitalizeFirstLetter = (string: string) => {
+  if (!string) return '';
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
 
 // Helper function defined outside the component
 const formatEffectSummary = (
   effects: FeatEffectDetail[] | undefined,
   uiStrings: Record<string, string>,
   abilityLabels: readonly { value: string; label: string; abbr: string }[]
-): string => {
+): React.ReactNode[] => {
   if (!uiStrings || !abilityLabels) {
-    return "Loading effects...";
+    return [<span key="loading-effects">{uiStrings.loadingText || "Loading..."}</span>];
   }
   if (!effects || effects.length === 0) {
-    return uiStrings.conditionsPanelNoEffectDetails || "No specific effects listed.";
+    return [<span key="no-effects" className="text-xs italic">{uiStrings.conditionsPanelNoEffectDetails || "No specific effects listed."}</span>];
   }
 
-  const effectStrings: string[] = [];
+  const effectBadges: React.ReactNode[] = [];
 
-  effects.forEach(effect => {
-    let str = "";
+  effects.forEach((effect, index) => {
+    let effectText = "";
     const val = (effect as any).value;
-    const bonusType = (effect as any).bonusType ? ` (${(effect as any).bonusType})` : "";
+    const bonusType = (effect as any).bonusType ? capitalizeFirstLetter((effect as any).bonusType) : (uiStrings.bonusTypeUntyped || "Untyped");
+    const translatedBonusTypeKey = `bonusType${bonusType}` as keyof typeof uiStrings;
+    const translatedBonusType = uiStrings[translatedBonusTypeKey] || bonusType;
+
 
     switch (effect.type) {
       case "abilityScore":
         const asEffect = effect as AbilityScoreEffect;
-        const abilityLabel = abilityLabels.find(ab => ab.value === asEffect.ability)?.abbr || asEffect.ability;
-        str = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} ${abilityLabel}${bonusType}`;
+        const abilityLabel = abilityLabels.find(ab => ab.value === asEffect.ability)?.abbr || asEffect.ability.toUpperCase();
+        effectText = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} ${abilityLabel}`;
         break;
       case "savingThrow":
         const stEffect = effect as SavingThrowEffect;
         const saveAbbrKey = `saveTypeAbbr${stEffect.save.charAt(0).toUpperCase() + stEffect.save.slice(1)}` as keyof typeof uiStrings;
-        const saveAbbr = uiStrings[saveAbbrKey] || stEffect.save;
-        str = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} ${saveAbbr}${stEffect.save === "all" ? " (All)" : ""}${bonusType}`;
+        const saveAbbr = uiStrings[saveAbbrKey] || stEffect.save.toUpperCase();
+        effectText = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} ${saveAbbr}${stEffect.save === "all" ? " (All)" : ""}`;
         break;
       case "attackRoll":
         const arEffect = effect as AttackRollEffect;
-        str = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} Attack${arEffect.appliesTo && arEffect.appliesTo !== 'all' ? ` (${arEffect.appliesTo})` : ''}${bonusType}`;
+        effectText = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} Attack${arEffect.appliesTo && arEffect.appliesTo !== 'all' ? ` (${arEffect.appliesTo})` : ''}`;
         break;
       case "damageRoll":
         const drEffect = effect as DamageRollEffect;
-        str = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} Damage${drEffect.appliesTo && drEffect.appliesTo !== 'all' ? ` (${drEffect.appliesTo})` : ''}${bonusType}`;
+        effectText = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} Damage${drEffect.appliesTo && drEffect.appliesTo !== 'all' ? ` (${drEffect.appliesTo})` : ''}`;
         break;
       case "armorClass":
         const acEffect = effect as ArmorClassEffect;
@@ -81,31 +89,38 @@ const formatEffectSummary = (
         } else if (typeof val === 'number') {
             acValStr = `${val > 0 ? '+' : ''}${val}`;
         }
-        str = `${acValStr} AC (${acEffect.acType})${bonusType}`;
+        effectText = `${acValStr} AC (${capitalizeFirstLetter(acEffect.acType)})`;
         break;
       case "hitPoints":
         const hpEffect = effect as HitPointsEffect;
-        str = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} HP${bonusType}`;
+        effectText = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} HP`;
         break;
       case "initiative":
         const initEffect = effect as InitiativeEffect;
-        str = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} Initiative${bonusType}`;
+        effectText = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} Initiative`;
         break;
       case "speed":
         const speedEffect = effect as SpeedEffect;
-        str = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} Speed (${speedEffect.speedType})${bonusType}`;
+        effectText = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} Speed (${speedEffect.speedType})`;
         break;
       default:
-        // Non-mechanical effects or effects without a simple summary might not produce a string here.
         break;
     }
-    if (str) effectStrings.push(str);
+    if (effectText) {
+      effectBadges.push(
+        <Badge key={`effect-${index}-${effect.type}`} variant="outline" className="text-xs px-1.5 py-0">
+          {effectText}
+          <span className="mx-1 text-muted-foreground/50">|</span>
+          {translatedBonusType}
+        </Badge>
+      );
+    }
   });
 
-  if (effectStrings.length === 0) {
-    return uiStrings.conditionsPanelNoEffectDetails || "No specific effects listed.";
+  if (effectBadges.length === 0) {
+    return [<span key="no-specifics" className="text-xs italic">{uiStrings.conditionsPanelNoEffectDetails || "No specific effects listed."}</span>];
   }
-  return effectStrings.join(', ');
+  return effectBadges;
 };
 
 const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
@@ -133,7 +148,7 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
             if (!conditionsMap.has(conditionKey)) {
               conditionsMap.set(conditionKey, {
                 conditionKey,
-                displayText: conditionKey, // This will be translated later
+                displayText: conditionKey, 
                 sources: [],
                 isGloballyActive: false,
                 canBeToggled: false,
@@ -142,14 +157,14 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
             const conditionEntry = conditionsMap.get(conditionKey)!;
 
             const effectsForThisCondition = definition.effects?.filter(e => e.condition === conditionKey);
-            const summary = formatEffectSummary(effectsForThisCondition, translations.UI_STRINGS, translations.ABILITY_LABELS);
+            const summaryBadges = formatEffectSummary(effectsForThisCondition, translations.UI_STRINGS, translations.ABILITY_LABELS);
 
             conditionEntry.sources.push({
               featInstanceId: featInstance.instanceId,
               featName: definition.label || featInstance.definitionId,
               isCurrentlyActiveOnThisInstance,
               isSourceFeatPermanentEffect,
-              effectsSummary: summary,
+              effectsSummary: summaryBadges,
             });
           }
         });
@@ -221,15 +236,15 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
         </div>
         <CardDescription>{UI_STRINGS.conditionsPanelDescription || "Toggle conditional effects from your character's feats and abilities."}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3 pt-4">
+      <CardContent className="space-y-1 pt-4">
         {uniqueConditionsForDisplay.map(({ conditionKey, displayText, sources, isGloballyActive, canBeToggled }) => {
            const translatedDisplayTextKey = `condition_${conditionKey.toLowerCase().replace(/\s+/g, '_')}` as keyof typeof UI_STRINGS;
            const translatedDisplayText = UI_STRINGS[translatedDisplayTextKey] || displayText;
            const isToggleDisabled = !canBeToggled;
-           const firstSource = sources[0]; // For simplicity, show details from the first source. Could be expanded.
+           const firstSource = sources[0]; 
 
           return (
-            <div key={conditionKey} className="flex items-start space-x-2 p-2.5 border rounded-lg bg-card shadow-sm">
+            <div key={conditionKey} className={cn("flex items-start space-x-2 py-1.5", sources.length > 1 && "mb-1")}>
               <Checkbox
                 id={`condition-toggle-${conditionKey.replace(/\W/g, '-')}`}
                 checked={isGloballyActive}
@@ -241,25 +256,28 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
                 <Label htmlFor={`condition-toggle-${conditionKey.replace(/\W/g, '-')}`} className={cn("text-sm font-medium cursor-pointer", isToggleDisabled && "cursor-default opacity-70")}>
                   {translatedDisplayText}
                   {isToggleDisabled && isGloballyActive && (
-                      <Badge variant="outline" className="ml-2 text-muted-foreground border-muted-foreground/50">
+                      <Badge variant="outline" className="ml-2 text-xs text-muted-foreground border-muted-foreground/50">
                         {UI_STRINGS.conditionsPanelPermanentLabel || "Permanent"}
                       </Badge>
                   )}
                 </Label>
-                {firstSource && (firstSource.featName || firstSource.effectsSummary) && (
-                  <div className="text-xs text-muted-foreground mt-0.5">
+                {firstSource && (firstSource.featName || (firstSource.effectsSummary && firstSource.effectsSummary.length > 0)) && (
+                  <div className="text-xs text-muted-foreground mt-0.5 space-y-0.5">
                     {firstSource.featName && (
-                      <span>
-                        <strong>{UI_STRINGS.conditionsPanelSourceFeatLabel || "Source:"}{'\u00A0'}</strong>
-                        {firstSource.featName}
-                      </span>
+                      <div>
+                        <Badge variant="outline" className="text-xs px-1.5 py-0">{UI_STRINGS.conditionsPanelSourceFeatLabel || "Source:"}{'\u00A0'}{firstSource.featName}</Badge>
+                      </div>
                     )}
-                    {firstSource.featName && firstSource.effectsSummary && firstSource.effectsSummary !== (UI_STRINGS.conditionsPanelNoEffectDetails || "No specific effects listed.") && <br />}
-                    {firstSource.effectsSummary && firstSource.effectsSummary !== (UI_STRINGS.conditionsPanelNoEffectDetails || "No specific effects listed.") && (
-                       <span>
-                        <strong>{UI_STRINGS.conditionsPanelEffectLabel || "Effect:"}{'\u00A0'}</strong>
-                        {firstSource.effectsSummary}
-                       </span>
+                    {firstSource.effectsSummary && firstSource.effectsSummary.length > 0 && (
+                       <div className="flex flex-wrap items-center gap-x-1">
+                          <span className="font-semibold text-muted-foreground/80">{UI_STRINGS.conditionsPanelEffectLabel || "Effect:"}{'\u00A0'}</span>
+                          {firstSource.effectsSummary.map((badge, idx) => (
+                            <React.Fragment key={idx}>
+                              {badge}
+                              {idx < firstSource.effectsSummary!.length - 1 && <span>{'\u00A0'}</span>}
+                            </React.Fragment>
+                          ))}
+                       </div>
                     )}
                   </div>
                 )}

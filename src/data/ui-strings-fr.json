@@ -454,8 +454,8 @@
     "conditionsPanelDescription": "Activez ou désactivez les effets conditionnels des dons et capacités de votre personnage.",
     "conditionsPanelTooltipSourcesLabel": "Sources",
     "conditionsPanelPermanentLabel": "Permanent",
-    "conditionsPanelSourceFeatLabel": "Source :",
-    "conditionsPanelEffectLabel": "Effet :",
+    "conditionsPanelSourceFeatLabel": "Source:",
+    "conditionsPanelEffectLabel": "Effet:",
     "conditionsPanelNoEffectDetails": "Aucun effet spécifique listé.",
     "infoDialogUnknownFeatSource": "Don inconnu",
     "infoDialogConditionalBonusesHeading": "Bonus Conditionnels",
@@ -651,9 +651,27 @@
     "favoredEnemyBonusDisplayInfo": "Bonus d'Ennemi Juré : +{skillBonus} aux tests de Bluff, Perception auditive, Psychologie, Détection, Survie et +{damageBonus} aux dégâts contre les ennemis jurés choisis.",
     "saveTypeAbbrFortitude": "Vig",
     "saveTypeAbbrReflex": "Réf",
-    "saveTypeAbbrWill": "Vol"
+    "saveTypeAbbrWill": "Vol",
+    "bonusTypeMorale": "Moral",
+    "bonusTypeUntyped": "Non typé",
+    "bonusTypeEnhancement": "Altération",
+    "bonusTypeCompetence": "Compétence",
+    "bonusTypeCircumstance": "Circonstance",
+    "bonusTypeInsight": "Intuition",
+    "bonusTypeResistance": "Résistance",
+    "bonusTypeLuck": "Chance",
+    "bonusTypeDodge": "Esquive",
+    "bonusTypeArmor": "Armure",
+    "bonusTypeShield": "Bouclier",
+    "bonusTypeNatural": "Naturelle",
+    "bonusTypeDeflection": "Déflexion",
+    "bonusTypePrecision": "Précision",
+    "bonusTypeSpecialization": "Spécialisation",
+    "bonusTypeSacred": "Sacré",
+    "bonusTypeProfane": "Profane"
   }
 }
     
     
     
+

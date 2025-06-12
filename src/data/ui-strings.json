@@ -651,9 +651,27 @@
     "favoredEnemyBonusDisplayInfo": "Favored Enemy Bonus: +{skillBonus} to Bluff, Listen, Sense Motive, Spot, Survival checks and +{damageBonus} damage against chosen favored enemies.",
     "saveTypeAbbrFortitude": "Fort",
     "saveTypeAbbrReflex": "Ref",
-    "saveTypeAbbrWill": "Will"
+    "saveTypeAbbrWill": "Will",
+    "bonusTypeMorale": "Morale",
+    "bonusTypeUntyped": "Untyped",
+    "bonusTypeEnhancement": "Enhancement",
+    "bonusTypeCompetence": "Competence",
+    "bonusTypeCircumstance": "Circumstance",
+    "bonusTypeInsight": "Insight",
+    "bonusTypeResistance": "Resistance",
+    "bonusTypeLuck": "Luck",
+    "bonusTypeDodge": "Dodge",
+    "bonusTypeArmor": "Armor",
+    "bonusTypeShield": "Shield",
+    "bonusTypeNatural": "Natural",
+    "bonusTypeDeflection": "Deflection",
+    "bonusTypePrecision": "Precision",
+    "bonusTypeSpecialization": "Specialization",
+    "bonusTypeSacred": "Sacred",
+    "bonusTypeProfane": "Profane"
   }
 }
     
     
     
+
