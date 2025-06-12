@@ -468,6 +468,9 @@
     "experiencePanelNextLevelLabel": "Next Level At",
     "experiencePanelXpToLevelUpFormat": "{currentXp} / {xpForNextLevel} XP",
     "experiencePanelMaxLevel": "Max Level Reached",
+    "abilityUsesFormat": "{abilityName}: {usesValue}/{period}",
+    "periodDay": "day",
+    "periodEncounter": "encounter",
     "rollDialogCritFailureLabel": "Critical Failure!",
     "saveTypeAllAbbrSuffix": " (All)",
     "effectTypeAttack": "Attack",
@@ -522,6 +525,7 @@
     "rangerCombatStyleTwoWeapon": "Two-Weapon Fighting",
     "rangerCombatStyleDescription": "Choose your combat style at Ranger level 2. This grants bonus feats as you level.",
     "favoredEnemyBonusDisplayInfo": "Favored Enemy Bonus: +{skillBonus} to Bluff, Listen, Sense Motive, Spot, Survival checks and +{damageBonus} damage against chosen favored enemies.",
-    "wizardSpecializationSchoolLabel": "Specialization School"
+    "wizardSpecializationSchoolLabel": "Specialization School",
+    "condition_raging": "Raging"
   }
 }

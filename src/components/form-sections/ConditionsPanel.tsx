@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -82,7 +83,7 @@ const formatEffectSummary = (
         break;
       case "attackRoll":
         const arEffect = effect as AttackRollEffect;
-        effectText = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} ${uiStrings.effectTypeAttack || "Attack"}${arEffect.appliesTo && arEffect.appliesTo !== 'all' ? ` (${arEffect.appliesTo})` : ''}`;
+        effectText = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} ${uiStrings.effectTypeAttack || "Attack"}${arEffect.appliesTo && arEffect.appliesTo !== 'all' && arEffect.appliesTo !== 'SPEC' ? ` (${arEffect.appliesTo})` : ''}`;
         badgeContent = effectText;
         if (translatedBonusType && translatedBonusType.toLowerCase() !== untypedBonusTypeString) {
           badgeContent += ` | ${translatedBonusType}`;
@@ -90,7 +91,7 @@ const formatEffectSummary = (
         break;
       case "damageRoll":
         const drEffect = effect as DamageRollEffect;
-        effectText = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} ${uiStrings.effectTypeDamage || "Damage"}${drEffect.appliesTo && drEffect.appliesTo !== 'all' ? ` (${drEffect.appliesTo})` : ''}`;
+        effectText = `${typeof val === 'number' && val > 0 ? '+' : ''}${val} ${uiStrings.effectTypeDamage || "Damage"}${drEffect.appliesTo && drEffect.appliesTo !== 'all' && drEffect.appliesTo !== 'SPEC' ? ` (${drEffect.appliesTo})` : ''}`;
         badgeContent = effectText;
         if (translatedBonusType && translatedBonusType.toLowerCase() !== untypedBonusTypeString) {
           badgeContent += ` | ${translatedBonusType}`;
@@ -105,25 +106,28 @@ const formatEffectSummary = (
           acValStr = `${val > 0 ? '+' : ''}${val}`;
         }
 
-        let primaryDisplayAcType = uiStrings[`acType${capitalizeFirstLetter(acEffect.acType.replace(/_/g, ''))}`] || capitalizeFirstLetter(acEffect.acType);
+        let primaryDisplayAcTypeKey: keyof typeof uiStrings;
         if (acEffect.acType === "untyped") {
-            primaryDisplayAcType = uiStrings.acLabelGeneric || "AC";
+          primaryDisplayAcTypeKey = 'acLabelGeneric' as keyof typeof uiStrings;
+        } else {
+          primaryDisplayAcTypeKey = `acType${capitalizeFirstLetter(acEffect.acType.replace(/_/g, ''))}` as keyof typeof uiStrings;
         }
+        const primaryDisplayAcType = uiStrings[primaryDisplayAcTypeKey] || capitalizeFirstLetter(acEffect.acType);
+        
         effectText = `${acValStr} ${primaryDisplayAcType}`;
         badgeContent = effectText;
 
-        if (translatedBonusType) {
-            const specificAcTypesThatImplyBonusType = ["dodge", "armor", "shield", "natural", "deflection"];
-            const isBonusTypeSameAsAcTypeConcept = 
-                (specificAcTypesThatImplyBonusType.includes(acEffect.acType.toLowerCase())) &&
-                (acEffect.acType.toLowerCase() === translatedBonusType.toLowerCase());
-            
-            const isUntypedBonusForSpecificAcType = 
-                (translatedBonusType.toLowerCase() === untypedBonusTypeString) &&
-                specificAcTypesThatImplyBonusType.includes(acEffect.acType.toLowerCase());
+        const isAcTypeItselfUntyped = acEffect.acType.toLowerCase() === "untyped";
+        const isBonusTypeUntyped = translatedBonusType.toLowerCase() === untypedBonusTypeString;
 
-            if (!isBonusTypeSameAsAcTypeConcept && !isUntypedBonusForSpecificAcType) {
-                badgeContent += ` | ${translatedBonusType}`;
+        if (!isBonusTypeUntyped) { 
+            badgeContent += ` | ${translatedBonusType}`;
+        } else { 
+            if (!isAcTypeItselfUntyped) {
+                const specificAcTypesThatImplyNonGeneric = ["dodge", "armor", "shield", "natural", "deflection"];
+                if (!specificAcTypesThatImplyNonGeneric.includes(acEffect.acType.toLowerCase())) {
+                    badgeContent += ` | ${translatedBonusType}`;
+                }
             }
         }
         break;
@@ -286,7 +290,11 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
       <CardContent className="space-y-3 pt-4">
         {uniqueConditionsForDisplay.map(({ conditionKey, displayText, sources, isGloballyActive, canBeToggled }) => {
            const translatedDisplayTextKey = `condition_${conditionKey.toLowerCase().replace(/\s+/g, '_')}` as keyof typeof UI_STRINGS;
-           const translatedDisplayText = UI_STRINGS[translatedDisplayTextKey] || displayText;
+           let displayLabelText = UI_STRINGS[translatedDisplayTextKey] || displayText;
+           if (!UI_STRINGS[translatedDisplayTextKey]) { // Fallback capitalization if no UI string
+             displayLabelText = conditionKey.charAt(0).toUpperCase() + conditionKey.slice(1);
+           }
+
            const isToggleDisabled = !canBeToggled;
            const firstSource = sources[0];
 
@@ -301,7 +309,7 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
               />
               <div className="flex-grow">
                 <Label htmlFor={`condition-toggle-${conditionKey.replace(/\W/g, '-')}`} className={cn("text-sm font-medium cursor-pointer", isToggleDisabled && "cursor-default opacity-70")}>
-                  {translatedDisplayText}
+                  {displayLabelText}
                   {isToggleDisabled && isGloballyActive && (
                       <Badge variant="outline" className="ml-2 text-xs text-muted-foreground border-muted-foreground/50">
                         {UI_STRINGS.conditionsPanelPermanentLabel || "Permanent"}
@@ -317,13 +325,15 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
                       </div>
                     )}
                     {firstSource.effectsSummary && firstSource.effectsSummary.length > 0 && (
-                       <div className="flex items-baseline flex-wrap gap-x-1">
+                       <div className="flex items-baseline flex-wrap">
                           <strong className="text-muted-foreground">{UI_STRINGS.conditionsPanelEffectLabel || "Effects"}:</strong>{'\u00A0'}
-                          {firstSource.effectsSummary.map((badge, idx) => (
-                            <React.Fragment key={idx}>
-                              {badge}
-                            </React.Fragment>
-                          ))}
+                          <span className="flex flex-wrap items-center">
+                            {firstSource.effectsSummary.map((badge, idx) => (
+                              <React.Fragment key={idx}>
+                                {badge}
+                              </React.Fragment>
+                            ))}
+                          </span>
                        </div>
                     )}
                   </div>
@@ -338,3 +348,4 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
 };
 ConditionsPanelComponent.displayName = "ConditionsPanelComponent";
 export const ConditionsPanel = React.memo(ConditionsPanelComponent);
+

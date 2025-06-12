@@ -468,6 +468,10 @@
     "experiencePanelNextLevelLabel": "Niveau Suivant à",
     "experiencePanelXpToLevelUpFormat": "{currentXp} / {xpForNextLevel} XP",
     "experiencePanelMaxLevel": "Niveau Max Atteint",
+    "abilityUsesFormat": "{abilityName} : {usesValue}/{periode}",
+    "periodDay": "jour",
+    "periodEncounter": "rencontre",
+    "rollDialogCritFailureLabel": "Échec critique !",
     "saveTypeAllAbbrSuffix": " (Tous)",
     "effectTypeAttack": "Attaque",
     "effectTypeDamage": "Dégâts",
@@ -484,20 +488,44 @@
     "acTypeMonk_wisdom": "Sagesse du Moine",
     "acTypeMonkwisdom": "Sagesse du Moine",
     "acTypeMonkScaling": "CA Évolutive du Moine",
-    "acTypeOther_feat_bonus": "Autre Don"
+    "acTypeOther_feat_bonus": "Autre Don",
+    "bonusTypeUntyped": "Non typé",
+    "bonusTypeMorale": "Moral",
+    "bonusTypeCompetence": "Compétence",
+    "bonusTypeResistance": "Résistance",
+    "bonusTypeLuck": "Chance",
+    "bonusTypeEnhancement": "Altération",
+    "bonusTypeInherent": "Inhérent",
+    "bonusTypeSize": "Taille",
+    "bonusTypeDodge": "Esquive",
+    "bonusTypeArmor": "Armure",
+    "bonusTypeShield": "Bouclier",
+    "bonusTypeNatural": "Naturelle",
+    "bonusTypeDeflection": "Déflexion",
+    "bonusTypeInsight": "Intuition",
+    "bonusTypeSacred": "Sacré",
+    "bonusTypeProfane": "Profane",
+    "bonusTypeCircumstance": "Circonstance",
+    "bonusTypePrecision": "Précision",
+    "bonusTypeSpecialization": "Spécialisation",
+    "bonusTypeFocus": "Focus",
+    "bonusTypeRacial": "Racial",
+    "saveTypeAbbrFortitude": "Vig",
+    "saveTypeAbbrReflex": "Réf",
+    "saveTypeAbbrWill": "Vol",
+    "favoredEnemyTitle": "Ennemis jurés",
+    "favoredEnemyDescription": "Sélectionnez les types de créatures contre lesquels votre Rôdeur se spécialise. Les bonus s'appliquent automatiquement lorsqu'ils sont pertinents.",
+    "favoredEnemySlotsAvailable": "Emplacements disponibles : {slots}",
+    "favoredEnemySlotsAvailableShort": "Emplacement(s)",
+    "favoredEnemySlotLabel": "Emplacement d'ennemi juré {slotNum}",
+    "favoredEnemyPlaceholder": "Ex : Orque, Gobelin, Mort-vivant",
+    "rangerCombatStyleLabel": "Style de combat du Rôdeur",
+    "selectRangerCombatStylePlaceholder": "Choisir un style de combat...",
+    "rangerCombatStyleArchery": "Tir à l'arc",
+    "rangerCombatStyleTwoWeapon": "Combat à deux armes",
+    "rangerCombatStyleDescription": "Choisissez votre style de combat au niveau 2 de Rôdeur. Cela accorde des dons bonus au fur et à mesure de votre progression.",
+    "favoredEnemyBonusDisplayInfo": "Bonus d'Ennemi Juré : +{skillBonus} aux tests de Bluff, Perception auditive, Psychologie, Détection, Survie et +{damageBonus} de dégâts contre les ennemis jurés choisis.",
+    "wizardSpecializationSchoolLabel": "École de spécialisation",
+    "condition_raging": "Enragé"
   }
 }
-    
-    
-    
-```
-
-The files have been updated:
--   `ConditionsPanel.tsx`:
-    -   The labels "Source:" and "Effects:" are now bolded.
-    -   The source feat name is displayed as plain text after "Source:", not in a badge.
-    -   The AC badge formatting in `formatEffectSummary` is refined to prevent redundant "Untyped" displays and correctly show the AC penalty for Rage as "-2 AC | Untyped".
-    -   The non-breaking space between effect summary badges has been removed.
--   `ui-strings.json` & `ui-strings-fr.json`:
-    -   Updated `conditionsPanelSourceFeatLabel` and `conditionsPanelEffectLabel` to be just "Source" and "Effects" respectively.
-    -   Added/Ensured translations for various AC types (e.g., `acTypeDodge`, `acLabelGeneric`) to support the new badge formatting.
