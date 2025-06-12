@@ -1022,7 +1022,8 @@
       "description": "Au niveau 2 ou supérieur, s'il réussit un jet de sauvegarde de Réflexes contre une attaque qui inflige normalement la moitié des dégâts sur un jet réussi, il ne subit aucun dégât à la place.",
       "isClassFeature": true,
       "type": "special-ex",
-      "effectsText": "Ne subit aucun dégât sur un jet de Réflexes réussi contre les effets infligeant la moitié des dégâts."
+      "effectsText": "Ne subit aucun dégât sur un jet de Réflexes réussi contre les effets infligeant la moitié des dégâts.",
+      "effects": [{ "type": "note", "text": "Sur un jet de Réflexes réussi contre une attaque qui inflige normalement la moitié des dégâts, ne subit aucun dégât à la place." }]
     },
     {
       "value": "class-monk-still-mind",
@@ -1034,36 +1035,13 @@
       "effectsText": "+2 bonus aux jets de sauvegarde contre les sorts/effets d'enchantement."
     },
     {
-      "value": "class-monk-ki-strike",
-      "label": "Frappe ki",
-      "description": "Au niveau 4, les attaques à mains nues d'un moine sont renforcées par le ki. Ses attaques à mains nues sont considérées comme des armes magiques pour infliger des dégâts aux créatures avec réduction des dégâts. La frappe ki s'améliore avec le niveau de moine du personnage. Au niveau 10, ses attaques à mains nues sont également considérées comme des armes loyales pour infliger des dégâts aux créatures avec réduction des dégâts. Au niveau 16, ses attaques à mains nues sont considérées comme des armes en adamantium pour infliger des dégâts aux créatures avec réduction des dégâts et ignorer la solidité.",
-      "isClassFeature": true,
-      "type": "special-su",
-      "effectsText": "Les frappes à mains nues sont considérées comme magiques (N4), loyales (N10), adamantium (N16) pour la RD."
-    },
-    {
-      "value": "class-monk-slow-fall",
-      "label": "Chute ralentie",
-      "description": "Au niveau 4 ou supérieur, un moine à portée d'un mur peut l'utiliser pour ralentir sa descente. Lorsqu'il utilise cette capacité pour la première fois, il subit des dégâts comme si la chute était de 6 mètres de moins qu'elle ne l'est réellement. La capacité du moine à ralentir sa chute s'améliore avec son niveau de moine jusqu'à ce qu'au niveau 20, il puisse utiliser un mur pour ralentir sa descente et chuter de n'importe quelle distance sans subir de dégâts.",
-      "isClassFeature": true,
-      "type": "special-ex",
-      "effectsText": "Réduit la distance de chute effective près d'un mur (6m au N4, augmente avec le niveau)."
-    },
-    {
       "value": "class-monk-purity-of-body",
       "label": "Pureté physique",
       "description": "Au niveau 5, un moine gagne l'immunité à toutes les maladies, sauf les maladies surnaturelles et magiques.",
       "isClassFeature": true,
       "type": "special-ex",
-      "effectsText": "Immunité à toutes les maladies normales."
-    },
-    {
-      "value": "class-monk-wholeness-of-body",
-      "label": "Plénitude physique",
-      "description": "Au niveau 7 ou supérieur, un moine peut guérir ses propres blessures. Il peut guérir un nombre de points de vie égal à deux fois son niveau de moine actuel chaque jour, et il peut répartir cette guérison sur plusieurs utilisations.",
-      "isClassFeature": true,
-      "type": "special-su",
-      "effectsText": "Guérit (2 x Niveau de Moine) PV par jour."
+      "effectsText": "Immunité à toutes les maladies normales.",
+      "effects": [{ "type": "note", "text": "Immunisé à toutes les maladies sauf les maladies surnaturelles et magiques." }]
     },
     {
       "value": "class-monk-improved-evasion",
@@ -1071,7 +1049,8 @@
       "description": "Au niveau 9, la capacité d'esquive d'un moine s'améliore. Il ne subit toujours aucun dégât sur un jet de sauvegarde de Réflexes réussi contre les attaques, mais dorénavant il ne subit que la moitié des dégâts sur un jet raté.",
       "isClassFeature": true,
       "type": "special-ex",
-      "effectsText": "Ne subit aucun dégât sur un jet de Réflexes réussi, la moitié sur un jet raté, contre les effets infligeant la moitié des dégâts."
+      "effectsText": "Ne subit aucun dégât sur un jet de Réflexes réussi, la moitié sur un jet raté, contre les effets infligeant la moitié des dégâts.",
+      "effects": [{ "type": "note", "text": "Sur un jet de Réflexes réussi contre une attaque qui inflige normalement la moitié des dégâts, ne subit aucun dégât. Sur un jet raté, ne subit que la moitié des dégâts." }]
     },
     {
       "value": "class-monk-diamond-body",
@@ -1156,3 +1135,5 @@
     { "value": "special-sp", "label": "Aptitude Spéciale (Mag)" }
   ]
 }
+
+    

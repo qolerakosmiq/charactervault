@@ -1022,7 +1022,8 @@
       "description": "At 2nd level or higher, if she makes a successful Reflex saving throw against an attack that normally deals half damage on a successful save, she instead takes no damage.",
       "isClassFeature": true,
       "type": "special-ex",
-      "effectsText": "Take no damage on successful Reflex save vs. half-damage effects."
+      "effectsText": "Take no damage on successful Reflex save vs. half-damage effects.",
+      "effects": [{ "type": "note", "text": "On a successful Reflex save against an attack that normally deals half damage, take no damage instead." }]
     },
     {
       "value": "class-monk-still-mind",
@@ -1034,36 +1035,13 @@
       "effectsText": "+2 bonus on saves vs. enchantment spells/effects."
     },
     {
-      "value": "class-monk-ki-strike",
-      "label": "Ki Strike",
-      "description": "At 4th level, a monk’s unarmed attacks are empowered with ki. Her unarmed attacks are treated as magic weapons for the purpose of dealing damage to creatures with damage reduction. Ki strike improves with the character’s monk level. At 10th level, her unarmed attacks are also treated as lawful weapons for the purpose of dealing damage to creatures with damage reduction. At 16th level, her unarmed attacks are treated as adamantine weapons for the purposes of dealing damage to creatures with damage reduction and bypassing hardness.",
-      "isClassFeature": true,
-      "type": "special-su",
-      "effectsText": "Unarmed strikes treated as magic (L4), lawful (L10), adamantine (L16) for DR."
-    },
-    {
-      "value": "class-monk-slow-fall",
-      "label": "Slow Fall",
-      "description": "At 4th level or higher, a monk within arm’s reach of a wall can use it to slow her descent. When first using this ability, she takes damage as if the fall were 20 feet shorter than it actually is. The monk’s ability to slow her fall improves with her monk level until at 20th level she can use a wall to slow her descent and fall any distance without harm.",
-      "isClassFeature": true,
-      "type": "special-ex",
-      "effectsText": "Reduces effective falling distance when near a wall (20ft at L4, scaling up)."
-    },
-    {
       "value": "class-monk-purity-of-body",
       "label": "Purity of Body",
       "description": "At 5th level, a monk gains immunity to all diseases except for supernatural and magical diseases.",
       "isClassFeature": true,
       "type": "special-ex",
-      "effectsText": "Immunity to all normal diseases."
-    },
-    {
-      "value": "class-monk-wholeness-of-body",
-      "label": "Wholeness of Body",
-      "description": "At 7th level or higher, a monk can heal her own wounds. She can heal a number of hit points of damage equal to twice her current monk level each day, and she can spread this healing out among several uses.",
-      "isClassFeature": true,
-      "type": "special-su",
-      "effectsText": "Heal (2 x Monk level) HP per day."
+      "effectsText": "Immunity to all normal diseases.",
+      "effects": [{ "type": "note", "text": "Immune to all diseases except supernatural and magical ones." }]
     },
     {
       "value": "class-monk-improved-evasion",
@@ -1071,7 +1049,8 @@
       "description": "At 9th level, a monk’s evasion ability improves. She still takes no damage on a successful Reflex saving throw against attacks, but henceforth she takes only half damage on a failed save.",
       "isClassFeature": true,
       "type": "special-ex",
-      "effectsText": "Take no damage on successful Reflex save, half on failed save, vs. half-damage effects."
+      "effectsText": "Take no damage on successful Reflex save, half on failed save, vs. half-damage effects.",
+      "effects": [{ "type": "note", "text": "On a successful Reflex save against an attack that normally deals half damage, take no damage. On a failed save, take only half damage." }]
     },
     {
       "value": "class-monk-diamond-body",
@@ -1156,3 +1135,5 @@
     { "value": "special-sp", "label": "Special Ability (Sp)" }
   ]
 }
+
+    

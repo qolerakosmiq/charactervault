@@ -185,10 +185,10 @@
         { "featId": "monk-weapon-proficiencies", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "improved-unarmed-strike", "levelAcquired": 1, "note": "Granted by Monk"},
         { "featId": "class-monk-bonus-feat-slot", "note": "1st Level", "levelAcquired": 1 },
+        { "featId": "class-monk-unarmored-speed-bonus", "levelAcquired": 1 },
         { "featId": "class-monk-flurry-of-blows", "note": "-2/-2 (Full BAB progression)", "levelAcquired": 1 },
         { "featId": "class-monk-unarmed-strike-damage", "levelAcquired": 1 },
         { "featId": "class-monk-ac-bonus", "levelAcquired": 1 },
-        { "featId": "class-monk-unarmored-speed-bonus", "levelAcquired": 1 },
         { "featId": "class-monk-bonus-feat-slot", "note": "2nd Level", "levelAcquired": 2 },
         { "featId": "class-monk-evasion", "levelAcquired": 2 },
         { "featId": "class-monk-still-mind", "levelAcquired": 3 },
@@ -407,3 +407,5 @@
     }
   ]
 }
+
+    

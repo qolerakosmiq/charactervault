@@ -179,7 +179,7 @@
         { "key": "Religion", "value": "Les moines suivent souvent des philosophies de discipline et de perfection de soi, parfois liées à des divinités spécifiques de la loi ou de l'illumination." },
         { "key": "Antécédents", "value": "Typiquement formés dans des monastères éloignés." },
         { "key": "Races", "value": "Les humains sont les moines les plus courants, mais toute race disciplinée peut suivre cette voie." },
-        { "key": "Maîtrise des armes et armures", "value": "Les moines sont formés au maniement du gourdin, de l'arbalète (légère ou lourde), de la dague, de la hachette, du javelot, du kama, du nunchaku, du bâton, du shuriken, du siangham et de la fronde. Les moines ne sont formés au port d'aucune armure ni au maniement des boucliers." }
+        { "key": "Maîtrise des armes et armures", "value": "Les moines sont formés au maniement du gourdin, de l'arbalète (légère ou lourde), de la dague, de la hachette, du javelot, du kama, du nunchaku, du bâton, du shuriken, du siangham et de la fronde. Les moines ne sont formés à aucun type d'armure ni au maniement des boucliers." }
       ],
       "grantedFeats": [
         { "featId": "monk-weapon-proficiencies", "levelAcquired": 1, "note": "Formation de classe" },
@@ -407,3 +407,5 @@
     }
   ]
 }
+
+    
