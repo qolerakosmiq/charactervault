@@ -1527,7 +1527,14 @@
       "effectsText": "Opponent damaged by sneak attack also takes 2 Str damage.",
       "prerequisites": { "classLevel": { "classId": "rogue", "level": 10 } },
       "effects": [
-        { "type": "note", "text": "Opponent damaged by sneak attack also takes 2 Strength damage (temporary)." , "condition": "onSneakAttackHit" }
+        {
+          "type": "abilityScore",
+          "ability": "strength",
+          "value": -2,
+          "bonusType": "penalty",
+          "condition": "onSneakAttackHit",
+          "note": "Target takes 2 Strength damage on a successful sneak attack."
+        }
       ]
     },
     {
@@ -1577,3 +1584,5 @@
     { "value": "special-sp", "label": "Special Ability (Sp)" }
   ]
 }
+
+    

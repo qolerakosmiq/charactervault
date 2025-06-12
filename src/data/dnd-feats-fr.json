@@ -1527,7 +1527,14 @@
       "effectsText": "L'adversaire endommagé par une attaque sournoise subit également 2 points de dégâts de Force.",
       "prerequisites": { "classLevel": { "classId": "rogue", "level": 10 } },
       "effects": [
-        { "type": "note", "text": "Sur une attaque sournoise réussie, la cible subit également 2 points de dégâts de Force temporaires." , "condition": "onSneakAttackHit" }
+        {
+          "type": "abilityScore",
+          "ability": "strength",
+          "value": -2,
+          "bonusType": "penalty",
+          "condition": "onSneakAttackHit",
+          "note": "La cible subit 2 points de dégâts de Force sur une attaque sournoise réussie."
+        }
       ]
     },
     {
@@ -1577,3 +1584,5 @@
     { "value": "special-sp", "label": "Capacité spéciale (Mag)" }
   ]
 }
+
+    
