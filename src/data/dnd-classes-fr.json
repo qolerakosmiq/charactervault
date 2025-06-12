@@ -283,7 +283,7 @@
         { "featId": "improved-two-weapon-fighting", "levelAcquired": 6, "note": "Style de combat à deux armes du Rôdeur" },
         { "featId": "class-ranger-woodland-stride", "levelAcquired": 7 },
         { "featId": "class-ranger-swift-tracker", "levelAcquired": 8 },
-        { "featId": "class-ranger-evasion", "levelAcquired": 9 },
+        { "featId": "class-monk-evasion", "levelAcquired": 9, "note": "Aptitude de Rôdeur" },
         { "featId": "improved-precise-shot", "levelAcquired": 11, "note": "Style de tir à l'arc du Rôdeur" },
         { "featId": "greater-two-weapon-fighting", "levelAcquired": 11, "note": "Style de combat à deux armes du Rôdeur" },
         { "featId": "class-ranger-camouflage", "levelAcquired": 13 },
@@ -413,5 +413,3 @@
     }
   ]
 }
-
-    

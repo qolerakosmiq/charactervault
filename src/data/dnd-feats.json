@@ -1235,7 +1235,7 @@
       "value": "class-ranger-favored-enemy",
       "label": "Favored Enemy",
       "description": "<b>Benefit:</b> At 1st level, a ranger may select a type of creature from the Ranger Favored Enemies table. The ranger gains a +2 bonus on Bluff, Listen, Sense Motive, Spot, and Survival checks when using these skills against creatures of this type. Likewise, he gets a +2 bonus on weapon damage rolls against such creatures. At 5th level and every five levels thereafter (10th, 15th, and 20th level), the ranger may select an additional favored enemy. In addition, at each such interval, the bonus against any one favored enemy (including the one just selected, if so desired) increases by +2.",
-      "effectsText": "Select favored enemies, gaining scaling bonuses to certain skills and damage against them. Slots: 1 (L1), +1/5 levels. Bonus: +2 (L1), +2/5 levels thereafter.",
+      "effectsText": "Select favored enemies, gaining scaling bonuses (+2 at L1, +2/5 levels after) to Bluff, Listen, Sense Motive, Spot, Survival, and weapon damage against them. Slots: 1 (L1), +1/5 levels.",
       "isClassFeature": true,
       "type": "special-ex",
       "permanentEffect": true,
@@ -1403,6 +1403,42 @@
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [{ "type": "note", "text": "Gains a loyal animal companion at 4th level." }]
+    },
+    {
+      "value": "class-ranger-woodland-stride",
+      "label": "Woodland Stride",
+      "description": "<b>Benefit:</b> Starting at 7th level, a ranger may move through any sort of undergrowth (such as natural thorns, briars, overgrown areas, and similar terrain) at her normal speed and without taking damage or suffering any other impairment. However, thorns, briars, and overgrown areas that are enchanted or magically manipulated to impede motion still affect her.",
+      "effectsText": "Move through natural difficult terrain at normal speed.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "note", "text": "Can move through any sort of undergrowth (such as natural thorns, briars, overgrown areas, and similar terrain) at normal speed and without taking damage or suffering any other impairment. However, thorns, briars, and overgrown areas that are enchanted or magically manipulated to impede motion still affect her." }]
+    },
+    {
+      "value": "class-ranger-swift-tracker",
+      "label": "Swift Tracker",
+      "description": "<b>Benefit:</b> Beginning at 8th level, a ranger can move at her normal speed while following tracks without taking the normal –5 penalty. She takes only a –10 penalty (instead of the normal –20) when moving at up to twice normal speed while tracking.",
+      "effectsText": "Track at normal speed without -5 penalty, or at -10 penalty for double speed tracking (instead of -20).",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "note", "text": "Can move at normal speed while following tracks without taking the normal –5 penalty. Only takes a –10 penalty (instead of the normal –20) when moving at up to twice normal speed while tracking." }]
+    },
+    {
+      "value": "class-ranger-camouflage",
+      "label": "Camouflage (Ranger)",
+      "description": "<b>Benefit:</b> A ranger of 13th level or higher can use the Hide skill in any sort of natural terrain, even if the terrain doesn’t grant cover or concealment.",
+      "effectsText": "Use Hide in any natural terrain even without cover/concealment.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "note", "text": "Can use the Hide skill in any sort of natural terrain, even if the terrain doesn’t grant cover or concealment." }]
+    },
+    {
+      "value": "class-ranger-hide-in-plain-sight",
+      "label": "Hide in Plain Sight (Ranger)",
+      "description": "<b>Benefit:</b> While in any sort of natural terrain, a ranger of 17th level or higher can use the Hide skill even while being observed.",
+      "effectsText": "Use Hide in natural terrain even while observed.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "note", "text": "While in any sort of natural terrain, can use the Hide skill even while being observed." }]
     }
   ],
   "FEAT_TYPES_DATA": [
@@ -1415,5 +1451,3 @@
     { "value": "special-sp", "label": "Special Ability (Sp)" }
   ]
 }
-
-    
