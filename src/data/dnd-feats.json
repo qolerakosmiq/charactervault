@@ -884,30 +884,27 @@
     {
       "value": "class-monk-ac-bonus",
       "label": "Monk AC Bonus",
-      "description": "A monk is highly trained at dodging blows, and she has a sixth sense that lets her avoid even unanticipated attacks. When unarmored and unencumbered, the monk adds her Wisdom bonus (if any) to her AC. In addition, a monk gains a +1 bonus to AC at 5th level. This bonus increases by 1 for every five monk levels thereafter (+2 at 10th, +3 at 15th, and +4 at 20th level).",
+      "description": "When unarmored and unencumbered, the monk adds her Wisdom bonus (if any) to her AC. In addition, a monk gains a +1 bonus to AC at 5th level. This bonus increases by 1 for every five monk levels thereafter (+2 at 10th, +3 at 15th, and +4 at 20th level).",
       "isClassFeature": true,
       "type": "special-ex",
+      "permanentEffect": true,
       "effects": [
-        { "type": "armorClass", "value": "WIS", "acType": "monk_wisdom", "bonusType": "untyped", "condition": "unarmored_unencumbered" },
+        { "type": "armorClass", "value": "WIS", "acType": "monk_wisdom", "bonusType": "untyped" },
         {
           "type": "armorClass",
           "value": 0,
           "acType": "monkScaling",
           "bonusType": "untyped",
-          "condition": "unarmored_unencumbered",
           "scaleWithClassLevel": {
             "classId": "monk",
             "specificLevels": [
-              { "level": 1, "value": 0 },
-              { "level": 5, "value": 1 },
-              { "level": 10, "value": 2 },
-              { "level": 15, "value": 3 },
-              { "level": 20, "value": 4 }
+              { "level": 1, "value": 0 }, { "level": 5, "value": 1 }, { "level": 10, "value": 2 },
+              { "level": 15, "value": 3 }, { "level": 20, "value": 4 }
             ]
           }
         }
       ],
-      "effectsText": "Adds Wisdom bonus to AC when unarmored and unencumbered. Gains +1 AC at 5th level, +1 every 5 levels thereafter."
+      "effectsText": "Adds Wisdom bonus to AC when unarmored and unencumbered. Gains +1 AC at 5th level (+1/5 levels thereafter)."
     },
     {
       "value": "class-monk-unarmored-speed-bonus",
@@ -1049,5 +1046,3 @@
     { "value": "special-sp", "label": "Special Ability (Sp)" }
   ]
 }
-
-    

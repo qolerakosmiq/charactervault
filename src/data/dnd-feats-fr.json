@@ -884,30 +884,27 @@
     {
       "value": "class-monk-ac-bonus",
       "label": "Bonus à la CA (Moine)",
-      "description": "Un moine est hautement entraîné à esquiver les coups, et il possède un sixième sens qui lui permet d'éviter même les attaques imprévues. Lorsqu'il n'est pas en armure et non encombré, le moine ajoute son bonus de Sagesse (le cas échéant) à sa CA. De plus, un moine gagne un bonus de +1 à la CA au niveau 5. Ce bonus augmente de 1 tous les cinq niveaux de moine par la suite (+2 au niveau 10, +3 au niveau 15 et +4 au niveau 20).",
+      "description": "Lorsqu'il n'est pas en armure et non encombré, le moine ajoute son bonus de Sagesse (le cas échéant) à sa CA. De plus, un moine gagne un bonus de +1 à la CA au niveau 5. Ce bonus augmente de 1 tous les cinq niveaux de moine par la suite (+2 au niveau 10, +3 au niveau 15 et +4 au niveau 20).",
       "isClassFeature": true,
       "type": "special-ex",
+      "permanentEffect": true,
       "effects": [
-        { "type": "armorClass", "value": "WIS", "acType": "monk_wisdom", "bonusType": "untyped", "condition": "unarmored_unencumbered" },
+        { "type": "armorClass", "value": "WIS", "acType": "monk_wisdom", "bonusType": "untyped" },
         {
           "type": "armorClass",
           "value": 0,
           "acType": "monkScaling",
           "bonusType": "untyped",
-          "condition": "unarmored_unencumbered",
           "scaleWithClassLevel": {
             "classId": "monk",
             "specificLevels": [
-              { "level": 1, "value": 0 },
-              { "level": 5, "value": 1 },
-              { "level": 10, "value": 2 },
-              { "level": 15, "value": 3 },
-              { "level": 20, "value": 4 }
+              { "level": 1, "value": 0 }, { "level": 5, "value": 1 }, { "level": 10, "value": 2 },
+              { "level": 15, "value": 3 }, { "level": 20, "value": 4 }
             ]
           }
         }
       ],
-      "effectsText": "Ajoute le bonus de Sagesse à la CA sans armure et sans encombrement. Gagne +1 CA au niveau 5, +1 tous les 5 niveaux par la suite."
+      "effectsText": "Ajoute le bonus de Sagesse à la CA sans armure et sans encombrement. Gagne +1 CA au N5 (+1/5 niveaux ensuite)."
     },
     {
       "value": "class-monk-unarmored-speed-bonus",
@@ -1049,5 +1046,3 @@
     { "value": "special-sp", "label": "Aptitude Spéciale (Mag)" }
   ]
 }
-
-    
