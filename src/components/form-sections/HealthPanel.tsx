@@ -36,7 +36,7 @@ export interface HealthPanelProps {
   onOpenHealthInfoDialog: (contentType: InfoDialogContentType) => void;
 }
 
-const HealthPanelComponent = React.memo(({ 
+const HealthPanelComponent = ({ 
   healthData, 
   calculatedMaxHp, 
   finalConstitutionModifier,
@@ -48,32 +48,32 @@ const HealthPanelComponent = React.memo(({
 
   const [localHp, setLocalHp] = useDebouncedFormField(
     healthData.hp,
-    (value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp > 0 ? calculatedMaxHp : value)),
+    React.useCallback((value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp > 0 ? calculatedMaxHp : value)), [onCharacterUpdate, calculatedMaxHp]),
     DEBOUNCE_DELAY_HEALTH
   );
   const [localBaseMaxHp, setLocalBaseMaxHp] = useDebouncedFormField(
     healthData.baseMaxHp,
-    (value) => onCharacterUpdate('baseMaxHp', value),
+    React.useCallback((value) => onCharacterUpdate('baseMaxHp', value), [onCharacterUpdate]),
     DEBOUNCE_DELAY_HEALTH
   );
   const [localCustomMaxHpModifier, setLocalCustomMaxHpModifier] = useDebouncedFormField(
     healthData.customMaxHpModifier,
-    (value) => onCharacterUpdate('customMaxHpModifier', value),
+    React.useCallback((value) => onCharacterUpdate('customMaxHpModifier', value), [onCharacterUpdate]),
     DEBOUNCE_DELAY_HEALTH
   );
   const [localNonlethalDamage, setLocalNonlethalDamage] = useDebouncedFormField(
     healthData.nonlethalDamage,
-    (value) => onCharacterUpdate('nonlethalDamage', value),
+    React.useCallback((value) => onCharacterUpdate('nonlethalDamage', value), [onCharacterUpdate]),
     DEBOUNCE_DELAY_HEALTH
   );
   const [localTemporaryHp, setLocalTemporaryHp] = useDebouncedFormField(
     healthData.temporaryHp,
-    (value) => onCharacterUpdate('temporaryHp', value),
+    React.useCallback((value) => onCharacterUpdate('temporaryHp', value), [onCharacterUpdate]),
     DEBOUNCE_DELAY_HEALTH
   );
   const [localNumberOfWounds, setLocalNumberOfWounds] = useDebouncedFormField(
     healthData.numberOfWounds || 0,
-    (value) => onCharacterUpdate('numberOfWounds', value),
+    React.useCallback((value) => onCharacterUpdate('numberOfWounds', value), [onCharacterUpdate]),
     DEBOUNCE_DELAY_HEALTH
   );
 
@@ -367,4 +367,3 @@ const HealthPanelComponent = React.memo(({
 });
 HealthPanelComponent.displayName = 'HealthPanelComponent';
 export const HealthPanel = React.memo(HealthPanelComponent);
-

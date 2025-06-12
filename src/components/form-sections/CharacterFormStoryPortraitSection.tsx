@@ -29,28 +29,28 @@ const CharacterFormStoryPortraitSectionComponent = ({
   const { translations, isLoading: translationsLoading } = useI18n();
 
   const [localCampaign, setLocalCampaign] = useDebouncedFormField(
-    storyAndAppearanceData.campaign || '', (value) => onFieldChange('campaign', value), DEBOUNCE_DELAY
+    storyAndAppearanceData.campaign || '', React.useCallback((value) => onFieldChange('campaign', value), [onFieldChange]), DEBOUNCE_DELAY
   );
   const [localPersonalStory, setLocalPersonalStory] = useDebouncedFormField(
-    storyAndAppearanceData.personalStory || '', (value) => onFieldChange('personalStory', value), DEBOUNCE_DELAY
+    storyAndAppearanceData.personalStory || '', React.useCallback((value) => onFieldChange('personalStory', value), [onFieldChange]), DEBOUNCE_DELAY
   );
   const [localHomeland, setLocalHomeland] = useDebouncedFormField(
-    storyAndAppearanceData.homeland || '', (value) => onFieldChange('homeland', value), DEBOUNCE_DELAY
+    storyAndAppearanceData.homeland || '', React.useCallback((value) => onFieldChange('homeland', value), [onFieldChange]), DEBOUNCE_DELAY
   );
   const [localHeight, setLocalHeight] = useDebouncedFormField(
-    storyAndAppearanceData.height || '', (value) => onFieldChange('height', value), DEBOUNCE_DELAY
+    storyAndAppearanceData.height || '', React.useCallback((value) => onFieldChange('height', value), [onFieldChange]), DEBOUNCE_DELAY
   );
   const [localWeight, setLocalWeight] = useDebouncedFormField(
-    storyAndAppearanceData.weight || '', (value) => onFieldChange('weight', value), DEBOUNCE_DELAY
+    storyAndAppearanceData.weight || '', React.useCallback((value) => onFieldChange('weight', value), [onFieldChange]), DEBOUNCE_DELAY
   );
   const [localEyes, setLocalEyes] = useDebouncedFormField(
-    storyAndAppearanceData.eyes || '', (value) => onFieldChange('eyes', value), DEBOUNCE_DELAY
+    storyAndAppearanceData.eyes || '', React.useCallback((value) => onFieldChange('eyes', value), [onFieldChange]), DEBOUNCE_DELAY
   );
   const [localHair, setLocalHair] = useDebouncedFormField(
-    storyAndAppearanceData.hair || '', (value) => onFieldChange('hair', value), DEBOUNCE_DELAY
+    storyAndAppearanceData.hair || '', React.useCallback((value) => onFieldChange('hair', value), [onFieldChange]), DEBOUNCE_DELAY
   );
   const [localSkin, setLocalSkin] = useDebouncedFormField(
-    storyAndAppearanceData.skin || '', (value) => onFieldChange('skin', value), DEBOUNCE_DELAY
+    storyAndAppearanceData.skin || '', React.useCallback((value) => onFieldChange('skin', value), [onFieldChange]), DEBOUNCE_DELAY
   );
 
   if (translationsLoading || !translations) {

@@ -84,17 +84,17 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
     lang => !allKnownLanguageIds.includes(lang.value) && lang.value !== 'druidic' 
   ).sort((a,b) => a.label.localeCompare(b.label));
 
-  const handleAddLanguage = () => {
+  const handleAddLanguage = React.useCallback(() => {
     if (selectedLanguageToAdd && !allKnownLanguageIds.includes(selectedLanguageToAdd)) {
       onLanguagesChange([...characterLanguages, selectedLanguageToAdd]);
       setSelectedLanguageToAdd('');
     }
-  };
+  }, [selectedLanguageToAdd, allKnownLanguageIds, characterLanguages, onLanguagesChange]);
 
-  const handleRemoveLanguage = (languageIdToRemove: LanguageId) => {
+  const handleRemoveLanguage = React.useCallback((languageIdToRemove: LanguageId) => {
     if (automaticLanguages.includes(languageIdToRemove)) return; 
     onLanguagesChange(characterLanguages.filter(langId => langId !== languageIdToRemove));
-  };
+  }, [automaticLanguages, characterLanguages, onLanguagesChange]);
 
   return (
     <Card>

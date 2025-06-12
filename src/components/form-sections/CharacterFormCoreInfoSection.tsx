@@ -20,8 +20,8 @@ import type {
   DomainDefinition,
   DomainId,
   MagicSchoolId,
-  GrantsAbilityEffect, // Added
-  GrantsAbilityEffectUses // Added
+  GrantsAbilityEffect, 
+  GrantsAbilityEffectUses
 } from '@/types/character-core';
 import { isAlignmentCompatible } from '@/types/character';
 import { Input } from '@/components/ui/input';
@@ -80,86 +80,86 @@ const CharacterFormCoreInfoSectionComponent = ({
 
   const [localName, setLocalName] = useDebouncedFormField(
     characterData.name || '',
-    (value) => onFieldChange('name', value),
+    React.useCallback((value) => onFieldChange('name', value), [onFieldChange]),
     DEBOUNCE_DELAY
   );
   const [localPlayerName, setLocalPlayerName] = useDebouncedFormField(
     characterData.playerName || '',
-    (value) => onFieldChange('playerName', value),
+    React.useCallback((value) => onFieldChange('playerName', value), [onFieldChange]),
     DEBOUNCE_DELAY
   );
   const [localRace, setLocalRace] = useDebouncedFormField(
     characterData.race || '',
-    (value) => onFieldChange('race', value as DndRaceId),
+    React.useCallback((value) => onFieldChange('race', value as DndRaceId), [onFieldChange]),
     DEBOUNCE_DELAY
   );
   const [localClassName, setLocalClassName] = useDebouncedFormField(
     characterData.classes[0]?.className || '',
-    (value) => onClassChange(value as DndClassId | string),
+    React.useCallback((value) => onClassChange(value as DndClassId | string), [onClassChange]),
     DEBOUNCE_DELAY
   );
   const [localAlignment, setLocalAlignment] = useDebouncedFormField(
     characterData.alignment || 'true-neutral',
-    (value) => onFieldChange('alignment', value as CharacterAlignment),
+    React.useCallback((value) => onFieldChange('alignment', value as CharacterAlignment), [onFieldChange]),
     DEBOUNCE_DELAY
   );
   const [localDeity, setLocalDeity] = useDebouncedFormField(
     (characterData.deity || '') === '' ? DEITY_NONE_OPTION_VALUE : (characterData.deity || DEITY_NONE_OPTION_VALUE),
-    (value) => onFieldChange('deity', value === DEITY_NONE_OPTION_VALUE ? '' : value as DndDeityId | string),
+    React.useCallback((value) => onFieldChange('deity', value === DEITY_NONE_OPTION_VALUE ? '' : value as DndDeityId | string), [onFieldChange]),
     DEBOUNCE_DELAY
   );
   const [localAge, setLocalAge] = useDebouncedFormField(
     characterData.age,
-    (value) => onFieldChange('age', Math.max(value, currentMinAgeForInput)),
+    React.useCallback((value) => onFieldChange('age', Math.max(value, currentMinAgeForInput)), [onFieldChange, currentMinAgeForInput]),
     DEBOUNCE_DELAY
   );
   const [localGender, setLocalGender] = useDebouncedFormField(
     characterData.gender || '',
-    (value) => onFieldChange('gender', value as GenderId | string),
+    React.useCallback((value) => onFieldChange('gender', value as GenderId | string), [onFieldChange]),
     DEBOUNCE_DELAY
   );
   const [localSize, setLocalSize] = useDebouncedFormField(
     characterData.size || 'medium',
-    (value) => onFieldChange('size', value as CharacterSize),
+    React.useCallback((value) => onFieldChange('size', value as CharacterSize), [onFieldChange]),
     DEBOUNCE_DELAY
   );
   const [localChosenCombatStyle, setLocalChosenCombatStyle] = useDebouncedFormField(
     characterData.chosenCombatStyle || '',
-    (value) => onFieldChange('chosenCombatStyle', value as "archery" | "twoWeaponFighting" | undefined),
+    React.useCallback((value) => onFieldChange('chosenCombatStyle', value as "archery" | "twoWeaponFighting" | undefined), [onFieldChange]),
     DEBOUNCE_DELAY
   );
   const [localSpecializationSchool, setLocalSpecializationSchool] = useDebouncedFormField(
     characterData.chosenSpecializationSchool || MAGIC_SCHOOL_NONE_OPTION_VALUE,
-    (value) => {
+    React.useCallback((value) => {
       onFieldChange('chosenSpecializationSchool', value === MAGIC_SCHOOL_NONE_OPTION_VALUE ? undefined : value as MagicSchoolId);
       if (value === MAGIC_SCHOOL_NONE_OPTION_VALUE || value === 'universal') {
-        onFieldChange('prohibitedSchools', []); // Clear prohibited schools if generalist
+        onFieldChange('prohibitedSchools', []); 
       }
-    },
+    }, [onFieldChange]),
     DEBOUNCE_DELAY
   );
 
-  const handleFavoredEnemyChange = (index: number, newType: string) => {
+  const handleFavoredEnemyChange = React.useCallback((index: number, newType: string) => {
     const updatedEnemies = [...(characterData.chosenFavoredEnemies || [])];
     while (updatedEnemies.length <= index) {
         updatedEnemies.push({ id: crypto.randomUUID(), type: '' });
     }
     updatedEnemies[index] = { ...(updatedEnemies[index] || { id: crypto.randomUUID() }), type: newType };
     onFieldChange('chosenFavoredEnemies', updatedEnemies);
-  };
+  }, [characterData.chosenFavoredEnemies, onFieldChange]);
 
 
-  const handleDomainChange = (index: 0 | 1, newDomainId: DomainId | undefined) => {
+  const handleDomainChange = React.useCallback((index: 0 | 1, newDomainId: DomainId | undefined) => {
     const currentDomains = characterData.chosenDomains ? [...characterData.chosenDomains] : [undefined, undefined];
     currentDomains[index] = newDomainId === DOMAIN_NONE_OPTION_VALUE ? undefined : newDomainId;
     onFieldChange('chosenDomains', currentDomains as [DomainId | undefined, DomainId | undefined]);
-  };
+  }, [characterData.chosenDomains, onFieldChange]);
 
-  const handleProhibitedSchoolChange = (index: 0 | 1, newSchoolId: MagicSchoolId | undefined) => {
+  const handleProhibitedSchoolChange = React.useCallback((index: 0 | 1, newSchoolId: MagicSchoolId | undefined) => {
     const currentProhibited = characterData.prohibitedSchools ? [...characterData.prohibitedSchools] : [undefined, undefined];
     currentProhibited[index] = newSchoolId === PROHIBITED_SCHOOL_NONE_VALUE ? undefined : newSchoolId;
     onFieldChange('prohibitedSchools', currentProhibited.filter((s, i, arr) => s && arr.indexOf(s) === i) as MagicSchoolId[]);
-  };
+  }, [characterData.prohibitedSchools, onFieldChange]);
 
 
   React.useEffect(() => {
@@ -274,10 +274,6 @@ const CharacterFormCoreInfoSectionComponent = ({
   const rangerLevel = isRanger ? (characterData.classes[0]?.level || 0) : 0;
   const canChooseCombatStyle = isRanger && rangerLevel >= 2;
   const favoredEnemySlots = aggregatedFeatEffects?.favoredEnemySlots || 0;
-
-  // const isBarbarian = selectedClassInfo?.value === 'barbarian';
-  // const rageUsesAbility = aggregatedFeatEffects?.grantedAbilities.find(ab => ab.abilityKey === 'barbarianRageUses');
-  // const rageUsesPerDay = rageUsesAbility?.uses?.value || 0;
 
   const isCleric = selectedClassInfo?.value === 'cleric';
   const isWizard = selectedClassInfo?.value === 'wizard';
@@ -486,7 +482,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                       triggerClassName="h-9 text-sm"
                     />
                   </div>
-                   <div className="space-y-1 md:col-start-2"> {/* Ensures second prohibited school is below the first on md+ screens */}
+                   <div className="space-y-1 md:col-start-2"> 
                     <Label htmlFor="wizard-prohibited-2" className="text-sm">{UI_STRINGS.wizardProhibitedSchool2Label || "Second Prohibited School"}</Label>
                     <ComboboxPrimitive
                       id="wizard-prohibited-2"
@@ -652,5 +648,3 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
-
-

@@ -16,7 +16,7 @@ import { renderModifierValue } from '@/components/info-dialog-content/dialog-uti
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Badge } from '@/components/ui/badge';
 import type { RollDialogProps } from '@/components/RollDialog';
-import { useDefinitionsStore } from '@/lib/definitions-store'; // Import definitions store
+import { useDefinitionsStore } from '@/lib/definitions-store'; 
 
 const DEBOUNCE_DELAY = 400;
 
@@ -40,7 +40,7 @@ const SavingThrowsPanelComponent = ({
   onOpenRollDialog,
 }: SavingThrowsPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
-  const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({ // Get the DM setting
+  const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({ 
     rerollTwentiesForChecks: state.rerollTwentiesForChecks,
   }));
 
@@ -50,7 +50,7 @@ const SavingThrowsPanelComponent = ({
     // eslint-disable-next-line react-hooks/rules-of-hooks
     debouncedTemporaryMods[saveType] = useDebouncedFormField(
       savingThrowsData.savingThrows[saveType].miscMod || 0,
-      (value) => onSavingThrowTemporaryModChange(saveType, value),
+      React.useCallback((value) => onSavingThrowTemporaryModChange(saveType, value), [onSavingThrowTemporaryModChange, saveType]),
       DEBOUNCE_DELAY
     );
   });
@@ -69,7 +69,7 @@ const SavingThrowsPanelComponent = ({
   }, [aggregatedFeatEffects]);
 
 
-  const handleOpenSavingThrowRollDialog = (saveType: SavingThrowType) => {
+  const handleOpenSavingThrowRollDialog = React.useCallback((saveType: SavingThrowType) => {
     if (!translations || !abilityScores) return;
     const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations;
     const currentSaveDataFromProp = savingThrowsData.savingThrows[saveType];
@@ -102,12 +102,12 @@ const SavingThrowsPanelComponent = ({
 
     onOpenRollDialog({
       dialogTitle: (UI_STRINGS.rollDialogTitleSavingThrow || "{saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel),
-      rollType: `saving_throw_${saveType}`, // Specific rollType
+      rollType: `saving_throw_${saveType}`, 
       baseModifier: totalSaveModifier,
       calculationBreakdown: breakdown,
-      rerollTwentiesForChecks: rerollTwentiesForChecks, // Pass DM setting
+      rerollTwentiesForChecks: rerollTwentiesForChecks, 
     });
-  };
+  }, [translations, abilityScores, savingThrowsData, aggregatedFeatEffects, onOpenRollDialog, calculateCalculatedTotalFeatBonusForSave, debouncedTemporaryMods, rerollTwentiesForChecks]);
 
 
   if (translationsLoading || !translations) {

@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import *as React from 'react';
@@ -260,7 +259,6 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
     finalCharacter.sizeModifierAttack = getSizeModifierAttack(finalCharacter.size, SIZES);
 
-    // Recalculate DR based on aggregated feat effects
     const tempAggFeats = calculateFeatEffects(finalCharacter, allAvailableFeatDefinitions);
     const existingUserDrInstances = finalCharacter.damageReduction?.filter(dr => !dr.isGranted) || [];
     let finalDrArray: DamageReductionInstance[] = [...existingUserDrInstances];
@@ -274,7 +272,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
                         id: `granted-dr-${drEffect.sourceFeat?.toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID().substring(0,4)}`,
                         value: drValue,
                         type: drEffect.drType,
-                        rule: 'bypassed-by-type', // Assuming this rule for simplicity from feat, can be expanded
+                        rule: 'bypassed-by-type', 
                         isGranted: true,
                         source: drEffect.sourceFeat || 'Granted Feat'
                     });
@@ -282,16 +280,21 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             }
         });
     }
-    // Ensure DR is sorted or handled if multiple granted sources of same type (e.g. barbarian + item)
-    // For now, simple unshift is used. A more complex merging logic might be needed if overlapping DR types are common.
-    finalCharacter.damageReduction = finalDrArray;
+    const uniqueDrMap = new Map<string, DamageReductionInstance>();
+    finalDrArray.forEach(dr => {
+        const key = `${dr.source}-${dr.value}-${dr.type}-${dr.rule}`; 
+        if (!uniqueDrMap.has(key) || dr.isGranted) { 
+            uniqueDrMap.set(key, dr);
+        }
+    });
+    finalCharacter.damageReduction = Array.from(uniqueDrMap.values());
 
 
     setCharacter(finalCharacter);
 
   }, [
     isClient, translationsLoading, translations,
-    globalCustomFeatDefinitionsFromStore, globalCustomSkillDefinitionsFromStore,
+    globalCustomFeatDefinitionsFromStore, globalCustomSkillDefinitionsFromStore, // Ensure these are stable or memoized if they come from context directly
     allAvailableFeatDefinitions, allAvailableSkillDefinitionsForDisplay, globalCustomSkillDefinitions
   ]);
 
@@ -345,7 +348,6 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       const featHpBonus = aggFeats.hpBonus || 0;
       const newMaxHp = (character.baseMaxHp || 0) + conMod + (character.customMaxHpModifier || 0) + featHpBonus;
 
-      // Update DR from feat effects
       const existingUserDrInstances = character.damageReduction?.filter(dr => !dr.isGranted) || [];
       let finalDrArray: DamageReductionInstance[] = [...existingUserDrInstances];
 
@@ -366,11 +368,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
               }
           });
       }
-      // Remove duplicate DR instances that might arise from multiple calculations, prioritizing granted ones by source if needed
       const uniqueDrMap = new Map<string, DamageReductionInstance>();
       finalDrArray.forEach(dr => {
-          const key = `${dr.source}-${dr.value}-${dr.type}-${dr.rule}`; // A simple key for uniqueness
-          if (!uniqueDrMap.has(key) || dr.isGranted) { // Prioritize granted or first occurrence
+          const key = `${dr.source}-${dr.value}-${dr.type}-${dr.rule}`; 
+          if (!uniqueDrMap.has(key) || dr.isGranted) { 
               uniqueDrMap.set(key, dr);
           }
       });
@@ -715,7 +716,6 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         ...prevCharacter,
         feats: prevCharacter.feats.map(featInstance => {
           const definition = allAvailableFeatDefinitions.find(def => def.value === featInstance.definitionId);
-          // Only toggle if the feat is NOT a permanent effect source
           if (definition && !definition.permanentEffect) {
             const hasThisConditionInEffects = definition.effects?.some(eff => eff.condition === conditionKey);
             if (hasThisConditionInEffects) {
@@ -744,7 +744,6 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   }, []);
 
   const handleRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString?: string) => {
-    // No toast notification here
   }, []);
 
 
@@ -908,12 +907,13 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     };
   }, [character]);
 
-  const skillsData = React.useMemo<Omit<SkillsFormSectionProps, 'characterLevel' | 'onSkillChange' | 'onEditCustomSkillDefinition' | 'onOpenSkillInfoDialog' | 'onOpenRollDialog' | 'allFeatDefinitions' | 'allPredefinedSkillDefinitions' | 'allCustomSkillDefinitions' | 'actualAbilityScores'>['skillsData'] | undefined>(() => {
+  const skillsData = React.useMemo<Omit<SkillsFormSectionProps, 'characterLevel' | 'onSkillChange' | 'onEditCustomSkillDefinition' | 'onOpenSkillInfoDialog' | 'onOpenRollDialog' | 'allFeatDefinitions' | 'allPredefinedSkillDefinitions' | 'allCustomSkillDefinitions' | 'actualAbilityScores' | 'aggregatedFeatEffects'>['skillsData'] | undefined>(() => {
     if (!character) return undefined;
     return {
       skills: character.skills, classes: character.classes, race: character.race, size: character.size, feats: character.feats,
     };
   }, [character]);
+
 
   const featSectionData = React.useMemo<Omit<FeatsFormSectionProps, 'characterLevel' | 'allAvailableFeatDefinitions' | 'chosenFeatInstances' | 'onFeatInstancesChange' | 'onEditCustomFeatDefinition' | 'abilityScores' | 'skills' | 'allPredefinedSkillDefinitions' | 'allCustomSkillDefinitions' | 'allSkillOptionsForDialog' | 'allMagicSchoolOptionsForDialog' | 'aggregatedFeatEffects'>['featSectionData'] | undefined>(() => {
     if (!character) return undefined;
@@ -944,7 +944,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       climbSpeed: character.climbSpeed, flySpeed: character.flySpeed, swimSpeed: character.swimSpeed,
       armorSpeedPenalty_base: character.armorSpeedPenalty_base, armorSpeedPenalty_miscModifier: character.armorSpeedPenalty_miscModifier,
       loadSpeedPenalty_base: character.loadSpeedPenalty_base, loadSpeedPenalty_miscModifier: character.loadSpeedPenalty_miscModifier,
-      feats: character.feats, // Pass feats to SpeedPanel
+      feats: character.feats, 
     };
   }, [character]);
 
@@ -979,25 +979,23 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     };
   }, [character]);
 
-  const languagesPanelData = React.useMemo<LanguagesPanelProps | undefined>(() => {
+  const languagesPanelData = React.useMemo<Omit<LanguagesPanelProps, 'onLanguagesChange'> | undefined>(() => {
     if (!character || !detailedAbilityScores) return undefined;
     return {
       characterLanguages: character.languages || [],
-      onLanguagesChange: handleLanguagesChange,
       characterRaceId: character.race,
       characterIntelligenceScore: detailedAbilityScores.intelligence.finalScore,
       speakLanguageSkillRanks: character.skills.find(s => s.id === 'speak-language')?.ranks || 0,
     };
-  }, [character, detailedAbilityScores, handleLanguagesChange]);
+  }, [character, detailedAbilityScores]);
 
-  const conditionsPanelData = React.useMemo<ConditionsPanelProps | undefined>(() => {
+  const conditionsPanelData = React.useMemo<Omit<ConditionsPanelProps, 'onConditionToggle'> | undefined>(() => {
     if (!character || !allAvailableFeatDefinitions) return undefined;
     return {
         characterFeats: character.feats,
         allFeatDefinitions: allAvailableFeatDefinitions,
-        onConditionToggle: handleConditionToggle,
     };
-  }, [character, allAvailableFeatDefinitions, handleConditionToggle]);
+  }, [character, allAvailableFeatDefinitions]);
 
 
   if (translationsLoading || !character || !translations || !detailedAbilityScores || !aggregatedFeatEffects || !coreInfoData) {
@@ -1108,7 +1106,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           <ConditionsPanel
             characterFeats={conditionsPanelData.characterFeats}
             allFeatDefinitions={conditionsPanelData.allFeatDefinitions}
-            onConditionToggle={conditionsPanelData.onConditionToggle}
+            onConditionToggle={handleConditionToggle}
           />
         )}
 
@@ -1231,5 +1229,3 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
-
-

@@ -62,13 +62,13 @@ const CharacterFormAbilityScoresSectionComponent = ({
     // eslint-disable-next-line react-hooks/rules-of-hooks
     debouncedStates[key] = useDebouncedFormField(
       abilityScoresData.abilityScores[key] || 0,
-      (value) => onBaseAbilityScoreChange(key, value),
+      React.useCallback((value) => onBaseAbilityScoreChange(key, value), [onBaseAbilityScoreChange, key]),
       DEBOUNCE_DELAY
     );
     // eslint-disable-next-line react-hooks/rules-of-hooks
     debouncedStates[`${key}TempMod`] = useDebouncedFormField(
       abilityScoresData.abilityScoreTempCustomModifiers?.[key] || 0,
-      (value) => onAbilityScoreTempCustomModifierChange(key, value),
+      React.useCallback((value) => onAbilityScoreTempCustomModifierChange(key, value), [onAbilityScoreTempCustomModifierChange, key]),
       DEBOUNCE_DELAY
     );
   });
@@ -86,23 +86,23 @@ const CharacterFormAbilityScoresSectionComponent = ({
   const pointBuyBudget = numericPointBuyBudget;
 
 
-  const handleApplyRolledScores = (newScores: AbilityScores) => {
+  const handleApplyRolledScores = React.useCallback((newScores: AbilityScores) => {
     onMultipleBaseAbilityScoresChange(newScores);
     abilityKeys.forEach(key => {
       debouncedStates[key][1](newScores[key]); 
     });
     setIsRollerDialogOpen(false);
-  };
+  }, [onMultipleBaseAbilityScoresChange, debouncedStates]);
 
-  const handleApplyPointBuyScores = (newScores: AbilityScores) => {
+  const handleApplyPointBuyScores = React.useCallback((newScores: AbilityScores) => {
     onMultipleBaseAbilityScoresChange(newScores);
     abilityKeys.forEach(key => {
       debouncedStates[key][1](newScores[key]);
     });
     setIsPointBuyDialogOpen(false);
-  };
+  }, [onMultipleBaseAbilityScoresChange, debouncedStates]);
 
-  const handleOpenRollDialog = (ability: Exclude<AbilityName, 'none'>) => {
+  const handleOpenRollDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => {
     if (!detailedAbilityScores || !translations) return;
     const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.value === ability);
     const abilityName = abilityLabelInfo?.label || ability;
@@ -120,11 +120,10 @@ const CharacterFormAbilityScoresSectionComponent = ({
       rerollTwentiesForChecks: rerollTwentiesForChecks, 
     });
     setIsRollAbilityDialogOpen(true);
-  };
+  }, [detailedAbilityScores, translations, rerollTwentiesForChecks]);
 
-  const handleAbilityRollResult = (diceResult: number, totalBonus: number, finalResult: number) => {
-    // Toast notification removed from here
-  };
+  const handleAbilityRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number) => {
+  }, []);
   
   if (translationsLoading || !translations) {
     return (

@@ -42,13 +42,13 @@ const formatEffectSummary = (
   effects: FeatEffectDetail[] | undefined,
   uiStrings: Record<string, string>,
   abilityLabels: readonly { value: string; label: string; abbr: string }[],
-  isConditionActive: boolean // Added to control badge variant
+  isGloballyActive: boolean
 ): React.ReactNode[] => {
   if (!uiStrings || !abilityLabels) {
     return [<span key="loading-effects">{uiStrings.loadingText || "Loading..."}</span>];
   }
   if (!effects || effects.length === 0) {
-    return [<Badge key="no-effects" variant={isConditionActive ? "secondary" : "outline"} className="text-xs italic px-1.5 py-0.5">{uiStrings.conditionsPanelNoEffectDetails || "No specific effects listed."}</Badge>];
+    return [<Badge key="no-effects" variant={isGloballyActive ? "secondary" : "outline"} className="text-xs italic px-1.5 py-0.5">{uiStrings.conditionsPanelNoEffectDetails || "No specific effects listed."}</Badge>];
   }
 
   const effectBadges: React.ReactNode[] = [];
@@ -94,9 +94,10 @@ const formatEffectSummary = (
       case "armorClass":
         const acEffect = effect as ArmorClassEffect;
         const acTypeLabelKey = `acType${acEffect.acType.charAt(0).toUpperCase() + acEffect.acType.slice(1).replace(/_/g, '')}` as keyof typeof uiStrings;
-        let acTypeDisplay = uiStrings[acTypeLabelKey] || capitalizeFirstLetter(acEffect.acType);
-        if (acEffect.acType === "untyped") acTypeDisplay = uiStrings.acLabelGeneric || "AC";
-
+        effectTargetDisplay = uiStrings[acTypeLabelKey] || uiStrings.acLabelGeneric || "AC";
+        if (acEffect.acType === "untyped") {
+          effectTargetDisplay = uiStrings.acLabelGeneric || "AC";
+        }
 
         if (typeof val === 'number') {
           effectValueDisplay = `${val > 0 ? '+' : ''}${val}`;
@@ -105,7 +106,6 @@ const formatEffectSummary = (
         } else {
            effectValueDisplay = String(val);
         }
-        effectTargetDisplay = acTypeDisplay;
         break;
       case "hitPoints":
         const hpEffect = effect as HitPointsEffect;
@@ -129,21 +129,22 @@ const formatEffectSummary = (
 
     let badgeContentString = `${effectValueDisplay} ${effectTargetDisplay}`;
     const untypedBonusTypeString = (uiStrings.bonusTypeUntyped || "Untyped");
+    const isEffectTypeUntyped = bonusTypeDisplay.toLowerCase() === untypedBonusTypeString.toLowerCase();
 
-
-    if (effect.type === "armorClass" && (effect as ArmorClassEffect).acType.toLowerCase() === "untyped" && bonusTypeDisplay.toLowerCase() === untypedBonusTypeString.toLowerCase()) {
-      badgeContentString += ` | ${bonusTypeDisplay}`;
-    } else if (bonusTypeDisplay.toLowerCase() !== untypedBonusTypeString.toLowerCase()) {
-      badgeContentString += ` | ${bonusTypeDisplay}`;
-    } else if (effect.type !== "armorClass" || !["dodge", "armor", "shield", "natural", "deflection"].includes((effect as ArmorClassEffect).acType.toLowerCase())) {
-      if (bonusTypeDisplay.toLowerCase() === untypedBonusTypeString.toLowerCase()) {
-         badgeContentString += ` | ${bonusTypeDisplay}`;
+    if (effect.type === "armorClass") {
+      const acEffect = effect as ArmorClassEffect;
+      const isSpecificAcType = ["dodge", "armor", "shield", "natural", "deflection"].includes(acEffect.acType.toLowerCase());
+      if (!isSpecificAcType || !isEffectTypeUntyped) {
+        badgeContentString += ` | ${bonusTypeDisplay}`;
       }
+    } else if (!isEffectTypeUntyped) {
+      badgeContentString += ` | ${bonusTypeDisplay}`;
     }
+
 
     if (badgeContentString) {
       effectBadges.push(
-        <Badge key={`effect-${index}-${effect.type}`} variant={isConditionActive ? "secondary" : "outline"} className="text-xs px-1.5 py-0.5">
+        <Badge key={`effect-${index}-${effect.type}`} variant={isGloballyActive ? "secondary" : "outline"} className="text-xs px-1.5 py-0.5">
           {badgeContentString}
         </Badge>
       );
@@ -151,7 +152,7 @@ const formatEffectSummary = (
   });
 
   if (effectBadges.length === 0) {
-    return [<Badge key="no-specifics" variant={isConditionActive ? "secondary" : "outline"} className="text-xs italic px-1.5 py-0.5">{uiStrings.conditionsPanelNoEffectDetails || "No specific effects listed."}</Badge>];
+    return [<Badge key="no-specifics" variant={isGloballyActive ? "secondary" : "outline"} className="text-xs italic px-1.5 py-0.5">{uiStrings.conditionsPanelNoEffectDetails || "No specific effects listed."}</Badge>];
   }
   return effectBadges;
 };
@@ -182,36 +183,26 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
             if (!conditionsMap.has(conditionKey)) {
               conditionsMap.set(conditionKey, {
                 conditionKey,
-                displayText: conditionKey,
+                displayText: conditionKey, // Will be updated later
                 sources: [],
-                isGloballyActive: false,
-                canBeToggled: false,
+                isGloballyActive: false, // Will be updated later
+                canBeToggled: false,   // Will be updated later
               });
             }
             const conditionEntry = conditionsMap.get(conditionKey)!;
-
-            // Pass isGloballyActive which will be determined later for the entire conditionKey
-            // For now, pass a placeholder or determine based on this instance for summary generation
-            const summaryBadges = formatEffectSummary(
-              definition.effects?.filter(e => e.condition === conditionKey),
-              translations.UI_STRINGS,
-              translations.ABILITY_LABELS,
-              isCurrentlyActiveOnThisInstance // Temporarily use instance's activity for badge styling
-            );
-
+            
             conditionEntry.sources.push({
               featInstanceId: featInstance.instanceId,
               featName: definition.label || featInstance.definitionId,
               isCurrentlyActiveOnThisInstance,
               isSourceFeatPermanentEffect,
-              effectsSummary: summaryBadges,
+              effectsSummary: [], // Placeholder, will be filled in second pass
             });
           }
         });
       }
     });
 
-    // Second pass to update summaries and global state
     conditionsMap.forEach(entry => {
       entry.isGloballyActive = entry.sources.some(s => s.isCurrentlyActiveOnThisInstance);
       const forcedActiveByPermanent = entry.sources.some(s => s.isSourceFeatPermanentEffect && s.isCurrentlyActiveOnThisInstance);
@@ -228,14 +219,16 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
         entry.canBeToggled = entry.sources.some(s => !s.isSourceFeatPermanentEffect) || entry.sources.length === 0 || !allSourcesPermanent;
       }
       
-      // Re-generate summaries with the final isGloballyActive state for correct badge styling
+      const translatedDisplayTextKey = `condition_${entry.conditionKey.toLowerCase().replace(/\s+/g, '_')}` as keyof typeof translations.UI_STRINGS;
+      entry.displayText = translations.UI_STRINGS[translatedDisplayTextKey] || capitalizeFirstLetter(entry.conditionKey);
+
       entry.sources.forEach(source => {
          const definition = allFeatDefinitions.find(def => def.label === source.featName || def.value === source.featName);
          source.effectsSummary = formatEffectSummary(
             definition?.effects?.filter(e => e.condition === entry.conditionKey),
             translations.UI_STRINGS,
             translations.ABILITY_LABELS,
-            entry.isGloballyActive // Use the final global state
+            entry.isGloballyActive 
          );
       });
     });
@@ -247,9 +240,9 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
   const uniqueConditionsForDisplay = Array.from(uniqueConditionsMap.values())
     .sort((a,b) => a.displayText.localeCompare(b.displayText));
 
-  const handleToggle = (conditionKey: string, checked: boolean) => {
+  const handleToggle = React.useCallback((conditionKey: string, checked: boolean) => {
     onConditionToggle(conditionKey, !!checked);
-  };
+  }, [onConditionToggle]);
 
   if (translationsLoading || !translations) {
     return (
@@ -289,10 +282,7 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
         <CardDescription>{UI_STRINGS.conditionsPanelDescription || "Toggle conditional effects from your character's feats and abilities."}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3 pt-4">
-        {uniqueConditionsForDisplay.map(({ conditionKey, sources, isGloballyActive, canBeToggled }) => {
-           const translatedDisplayTextKey = `condition_${conditionKey.toLowerCase().replace(/\s+/g, '_')}` as keyof typeof UI_STRINGS;
-           let displayLabelText = UI_STRINGS[translatedDisplayTextKey] || capitalizeFirstLetter(conditionKey);
-           
+        {uniqueConditionsForDisplay.map(({ conditionKey, displayText, sources, isGloballyActive, canBeToggled }) => {
            const isToggleDisabled = !canBeToggled;
            const firstSource = sources[0];
 
@@ -307,7 +297,7 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
               />
               <div className="flex-grow">
                 <Label htmlFor={`condition-toggle-${conditionKey.replace(/\W/g, '-')}`} className={cn("text-sm font-medium cursor-pointer", isToggleDisabled && "cursor-default opacity-70")}>
-                  {displayLabelText}
+                  {displayText}
                   {isToggleDisabled && isGloballyActive && (
                       <Badge variant="outline" className="ml-2 text-xs text-muted-foreground border-muted-foreground/50">
                         {UI_STRINGS.conditionsPanelPermanentLabel || "Permanent"}
@@ -346,4 +336,3 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
 };
 ConditionsPanelComponent.displayName = "ConditionsPanelComponent";
 export const ConditionsPanel = React.memo(ConditionsPanelComponent);
-

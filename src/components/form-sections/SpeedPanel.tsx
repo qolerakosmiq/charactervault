@@ -2,7 +2,7 @@
 'use client';
 
 import *as React from 'react';
-import type { Character, SpeedType, SpeedDetails, InfoDialogContentType, DndRaceOption, DndClassOption, AggregatedFeatEffects } from '@/types/character'; // Added AggregatedFeatEffects
+import type { Character, SpeedType, SpeedDetails, InfoDialogContentType, DndRaceOption, DndClassOption, AggregatedFeatEffects } from '@/types/character'; 
 import { calculateSpeedBreakdown } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -21,7 +21,7 @@ export type SpeedPanelCharacterData = Pick<Character,
   'race' | 'size' | 'classes' |
   'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed' |
   'armorSpeedPenalty_base' | 'armorSpeedPenalty_miscModifier' |
-  'loadSpeedPenalty_base' | 'loadSpeedPenalty_miscModifier'
+  'loadSpeedPenalty_base' | 'loadSpeedPenalty_miscModifier' | 'feats'
 >;
 
 export type SpeedFieldKey =
@@ -35,7 +35,7 @@ export type SpeedFieldKey =
 
 export interface SpeedPanelProps {
   speedData: SpeedPanelCharacterData;
-  aggregatedFeatEffects: AggregatedFeatEffects | null; // Added
+  aggregatedFeatEffects: AggregatedFeatEffects | null; 
   onCharacterUpdate: (
     field: SpeedFieldKey,
     value: any
@@ -47,7 +47,7 @@ export interface SpeedPanelProps {
 
 const SpeedPanelComponent = ({
   speedData,
-  aggregatedFeatEffects, // Added
+  aggregatedFeatEffects, 
   onCharacterUpdate,
   onOpenSpeedInfoDialog,
   onOpenArmorSpeedPenaltyInfoDialog,
@@ -60,38 +60,43 @@ const SpeedPanelComponent = ({
     labelKey: keyof NonNullable<NonNullable<typeof translations>['UI_STRINGS']>;
     Icon: React.ElementType;
     fieldKey: keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>;
-  }> = [
+  }> = React.useMemo(() => [
     { type: 'land', labelKey: 'speedLabelLand', Icon: Wind, fieldKey: 'landSpeed' },
     { type: 'burrow', labelKey: 'speedLabelBurrow', Icon: Shell, fieldKey: 'burrowSpeed' },
     { type: 'climb', labelKey: 'speedLabelClimb', Icon: MoveVertical, fieldKey: 'climbSpeed' },
     { type: 'fly', labelKey: 'speedLabelFly', Icon: Feather, fieldKey: 'flySpeed' },
     { type: 'swim', labelKey: 'speedLabelSwim', Icon: Waves, fieldKey: 'swimSpeed' },
-  ];
+  ], []);
 
   const debouncedSpeedMods = {} as Record<SpeedType, [number, (val: number) => void]>;
   speedTypesConfig.forEach(config => {
     const fieldKeyToUpdate = `${config.type}Speed.miscModifier` as SpeedFieldKey;
     // eslint-disable-next-line react-hooks/rules-of-hooks
+    const onUpdateCallback = React.useCallback((value: number) => onCharacterUpdate(fieldKeyToUpdate, value), [onCharacterUpdate, fieldKeyToUpdate]);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     debouncedSpeedMods[config.type] = useDebouncedFormField(
       speedData[config.fieldKey]?.miscModifier || 0,
-      (value) => onCharacterUpdate(fieldKeyToUpdate, value),
+      onUpdateCallback,
       DEBOUNCE_DELAY
     );
   });
 
+  const armorPenaltyCallback = React.useCallback((value: number) => onCharacterUpdate('armorSpeedPenalty_miscModifier', value), [onCharacterUpdate]);
   const [localArmorPenaltyMiscMod, setLocalArmorPenaltyMiscMod] = useDebouncedFormField(
     speedData.armorSpeedPenalty_miscModifier || 0,
-    (value) => onCharacterUpdate('armorSpeedPenalty_miscModifier', value),
+    armorPenaltyCallback,
     DEBOUNCE_DELAY
   );
+
+  const loadPenaltyCallback = React.useCallback((value: number) => onCharacterUpdate('loadSpeedPenalty_miscModifier', value), [onCharacterUpdate]);
   const [localLoadPenaltyMiscMod, setLocalLoadPenaltyMiscMod] = useDebouncedFormField(
     speedData.loadSpeedPenalty_miscModifier || 0,
-    (value) => onCharacterUpdate('loadSpeedPenalty_miscModifier', value),
+    loadPenaltyCallback,
     DEBOUNCE_DELAY
   );
 
 
-  if (translationsLoading || !translations || !aggregatedFeatEffects) { // Added aggregatedFeatEffects check
+  if (translationsLoading || !translations || !aggregatedFeatEffects) { 
     return (
       <Card>
         <CardHeader>
@@ -157,7 +162,7 @@ const SpeedPanelComponent = ({
       <CardContent className="space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {speedTypesConfig.map(({ type, labelKey, Icon, fieldKey }) => {
-            const speedDataForBreakdown = calculateSpeedBreakdown(type, speedData, aggregatedFeatEffects, DND_RACES, DND_CLASSES, SIZES, UI_STRINGS); // Pass aggregatedFeatEffects
+            const speedDataForBreakdown = calculateSpeedBreakdown(type, speedData, aggregatedFeatEffects, DND_RACES, DND_CLASSES, SIZES, UI_STRINGS); 
             const [localMiscMod, setLocalMiscMod] = debouncedSpeedMods[type];
             const label = UI_STRINGS[labelKey] || type;
 

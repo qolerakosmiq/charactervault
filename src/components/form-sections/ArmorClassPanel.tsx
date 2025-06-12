@@ -17,37 +17,41 @@ import { cn } from '@/lib/utils';
 
 const DEBOUNCE_DELAY = 400;
 
-// Ensure acData includes feats if needed for conditional checks, or pass feats separately
 export type ArmorClassPanelData = Pick<Character, 'abilityScores' | 'size' | 'armorBonus' | 'shieldBonus' | 'naturalArmor' | 'deflectionBonus' | 'dodgeBonus' | 'acMiscModifier' | 'feats'>;
 
 export interface ArmorClassPanelProps {
   acData?: ArmorClassPanelData;
   aggregatedFeatEffects?: AggregatedFeatEffects | null;
-  onCharacterUpdate?: (field: keyof Omit<ArmorClassPanelData, 'feats'>, value: any) => void; // Exclude feats from onCharacterUpdate field type
+  onCharacterUpdate?: (field: keyof Omit<ArmorClassPanelData, 'feats'>, value: any) => void; 
   onOpenAcBreakdownDialog?: (contentType: InfoDialogContentType) => void;
 }
 
 const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
+  const handleUpdateCallback = React.useCallback((value: number) => {
+    if (onCharacterUpdate) {
+      onCharacterUpdate('acMiscModifier', value);
+    }
+  }, [onCharacterUpdate]);
+
   const [localTemporaryAcModifier, setLocalTemporaryAcModifier] = useDebouncedFormField(
     acData?.acMiscModifier || 0,
-    (value) => { if (onCharacterUpdate) onCharacterUpdate('acMiscModifier', value); },
+    handleUpdateCallback,
     DEBOUNCE_DELAY
   );
 
   const calculateTotalAcComponent = React.useCallback((
     baseValue: number | undefined,
     featAcType: "dodge" | "armor" | "shield" | "natural" | "deflection" | "insight" | "circumstance" | "untyped" | "monk_wisdom" | "monkScaling" | "other_feat_bonus",
-    acTypeForScope?: 'Normal' | 'Touch' | 'Flat-Footed' // For checking appliesToScope
+    acTypeForScope?: 'Normal' | 'Touch' | 'Flat-Footed' 
   ): number => {
     let total = baseValue || 0;
     if (aggregatedFeatEffects?.acBonuses) {
       aggregatedFeatEffects.acBonuses.forEach(effect => {
-        // Determine if the effect applies to the current AC type (Normal, Touch, Flat-Footed)
         let effectAppliesToCurrentAcScope = false;
         if (!effect.appliesToScope || effect.appliesToScope.length === 0) {
-            effectAppliesToCurrentAcScope = true; // Applies to all if scope is undefined/empty
+            effectAppliesToCurrentAcScope = true; 
         } else if (acTypeForScope) {
             if (acTypeForScope === 'Normal' && effect.appliesToScope.includes('normal')) effectAppliesToCurrentAcScope = true;
             if (acTypeForScope === 'Touch' && effect.appliesToScope.includes('touch')) effectAppliesToCurrentAcScope = true;
@@ -56,7 +60,6 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
             effectAppliesToCurrentAcScope = true;
         }
 
-        // Check if the effect is active (relying on pre-calculated isActive) AND applies to the current scope
         if (effect.isActive && effectAppliesToCurrentAcScope) {
           let valueToAdd = 0;
           if (effect.acType === featAcType) {
@@ -67,7 +70,7 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
               const abilityMod = getAbilityModifierByName(acData.abilityScores, abilityKey);
               if (featAcType === "monk_wisdom" && abilityMod > 0) {
                 valueToAdd = abilityMod;
-              } else if (featAcType !== "monk_wisdom") { // For other potential ability-to-AC types
+              } else if (featAcType !== "monk_wisdom") { 
                  valueToAdd = abilityMod;
               }
             }
@@ -76,7 +79,6 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
                      effect.acType !== "shield" && effect.acType !== "natural" &&
                      effect.acType !== "deflection" && effect.acType !== "monk_wisdom" &&
                      effect.acType !== "monkScaling") {
-            // This handles "untyped" bonuses or other specific named bonuses not covered above
             if (typeof effect.value === 'number') {
               valueToAdd = effect.value;
             }
@@ -160,7 +162,6 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
   const dexModifier = getAbilityModifierByName(currentAbilityScores, 'dexterity');
   const sizeModAC = getSizeModifierAC(currentSize, SIZES);
 
-  // Calculate total contributions for each AC component, considering current AC type scope
   const totalArmorBonusNormal = calculateTotalAcComponent(acData.armorBonus, "armor", "Normal");
   const totalShieldBonusNormal = calculateTotalAcComponent(acData.shieldBonus, "shield", "Normal");
   const totalNaturalArmorNormal = calculateTotalAcComponent(acData.naturalArmor, "natural", "Normal");
@@ -183,11 +184,11 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
   const flatFootedAC = 10 + totalArmorBonusFlat + totalShieldBonusFlat + sizeModAC + totalNaturalArmorFlat + totalDeflectionBonusFlat + calculatedFeatMiscAcBonusFlat + (acData.acMiscModifier || 0);
 
 
-  const handleShowAcBreakdown = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
+  const handleShowAcBreakdown = React.useCallback((acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
     if (onOpenAcBreakdownDialog) {
       onOpenAcBreakdownDialog({ type: 'acBreakdown', acType });
     }
-  };
+  }, [onOpenAcBreakdownDialog]);
 
   const isEditable = !!onCharacterUpdate;
 
@@ -251,5 +252,3 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
 };
 ArmorClassPanelComponent.displayName = 'ArmorClassPanelComponent';
 export const ArmorClassPanel = React.memo(ArmorClassPanelComponent);
-
-    

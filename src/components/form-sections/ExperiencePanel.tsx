@@ -11,7 +11,7 @@ import { useI18n } from '@/context/I18nProvider';
 import type { XpDataEntry } from '@/i18n/i18n-data';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getXpRequiredForLevel } from '@/lib/dnd-utils'; // Corrected import path
+import { getXpRequiredForLevel } from '@/lib/dnd-utils'; 
 import { cn } from '@/lib/utils';
 
 const DEBOUNCE_DELAY_XP = 500;
@@ -37,9 +37,10 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
   const { translations, isLoading: translationsLoading } = useI18n();
   const { currentXp, currentLevel } = experienceData;
 
+  const debouncedXpChange = React.useCallback(onXpChange, [onXpChange]);
   const [localCurrentXp, setLocalCurrentXp] = useDebouncedFormField(
     currentXp,
-    onXpChange,
+    debouncedXpChange,
     DEBOUNCE_DELAY_XP
   );
 
@@ -142,4 +143,3 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
 };
 ExperiencePanelComponent.displayName = "ExperiencePanelComponent";
 export const ExperiencePanel = React.memo(ExperiencePanelComponent);
-
