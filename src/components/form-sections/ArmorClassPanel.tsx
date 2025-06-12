@@ -44,46 +44,49 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
     let total = baseValue || 0;
     if (aggregatedFeatEffects?.acBonuses) {
       aggregatedFeatEffects.acBonuses.forEach(effect => {
-        let effectAppliesToThisAcType = false;
+        // Determine if the effect applies to the current AC type (Normal, Touch, Flat-Footed)
+        let effectAppliesToCurrentAcScope = false;
         if (!effect.appliesToScope || effect.appliesToScope.length === 0) {
-            effectAppliesToThisAcType = true; // Applies to all if scope is undefined/empty
+            effectAppliesToCurrentAcScope = true; // Applies to all if scope is undefined/empty
         } else if (acTypeForScope) {
-            if (acTypeForScope === 'Normal' && effect.appliesToScope.includes('normal')) effectAppliesToThisAcType = true;
-            if (acTypeForScope === 'Touch' && effect.appliesToScope.includes('touch')) effectAppliesToThisAcType = true;
-            if (acTypeForScope === 'Flat-Footed' && effect.appliesToScope.includes('flatFooted')) effectAppliesToThisAcType = true;
+            if (acTypeForScope === 'Normal' && effect.appliesToScope.includes('normal')) effectAppliesToCurrentAcScope = true;
+            if (acTypeForScope === 'Touch' && effect.appliesToScope.includes('touch')) effectAppliesToCurrentAcScope = true;
+            if (acTypeForScope === 'Flat-Footed' && effect.appliesToScope.includes('flatFooted')) effectAppliesToCurrentAcScope = true;
         } else {
-            effectAppliesToThisAcType = true; // If acTypeForScope isn't provided, assume it applies for general calculation
+            effectAppliesToCurrentAcScope = true;
         }
 
-
-        if (effectAppliesToThisAcType && effect.acType === featAcType) {
-          let isEffectActive = true;
-          if (effect.condition && effect.sourceFeat && acData?.feats) {
-            const featInstance = acData.feats.find(f => f.definitionId === effect.sourceFeat);
-            isEffectActive = !!featInstance?.conditionalEffectStates?.[effect.condition];
-          }
-          if (isEffectActive) {
+        // Check if the effect is active (relying on pre-calculated isActive) AND applies to the current scope
+        if (effect.isActive && effectAppliesToCurrentAcScope) {
+          let valueToAdd = 0;
+          if (effect.acType === featAcType) {
             if (typeof effect.value === 'number') {
-              total += effect.value;
-            } else if (effect.value === "WIS" && acData?.abilityScores) { // Handle Monk Wisdom to AC
-              const wisMod = getAbilityModifierByName(acData.abilityScores, 'wisdom');
-              if (wisMod > 0) total += wisMod; // Monk AC bonus doesn't apply if Wis mod is negative
+              valueToAdd = effect.value;
+            } else if ((effect.value === "WIS" || effect.value === "INT" || effect.value === "CHA") && acData?.abilityScores) {
+              const abilityKey = effect.value.toLowerCase() as 'wisdom' | 'intelligence' | 'charisma';
+              const abilityMod = getAbilityModifierByName(acData.abilityScores, abilityKey);
+              if (featAcType === "monk_wisdom" && abilityMod > 0) {
+                valueToAdd = abilityMod;
+              } else if (featAcType !== "monk_wisdom") { // For other potential ability-to-AC types
+                 valueToAdd = abilityMod;
+              }
+            }
+          } else if (featAcType === "other_feat_bonus" &&
+                     effect.acType !== "dodge" && effect.acType !== "armor" &&
+                     effect.acType !== "shield" && effect.acType !== "natural" &&
+                     effect.acType !== "deflection" && effect.acType !== "monk_wisdom" &&
+                     effect.acType !== "monkScaling") {
+            // This handles "untyped" bonuses or other specific named bonuses not covered above
+            if (typeof effect.value === 'number') {
+              valueToAdd = effect.value;
             }
           }
-        } else if (featAcType === "other_feat_bonus" && effectAppliesToThisAcType && effect.acType !== "dodge" && effect.acType !== "armor" && effect.acType !== "shield" && effect.acType !== "natural" && effect.acType !== "deflection" && effect.acType !== "monk_wisdom" && effect.acType !== "monkScaling") {
-            let isEffectActive = true;
-            if (effect.condition && effect.sourceFeat && acData?.feats) {
-              const featInstance = acData.feats.find(f => f.definitionId === effect.sourceFeat);
-              isEffectActive = !!featInstance?.conditionalEffectStates?.[effect.condition];
-            }
-            if (isEffectActive && typeof effect.value === 'number') {
-              total += effect.value;
-            }
+          total += valueToAdd;
         }
       });
     }
     return total;
-  }, [aggregatedFeatEffects, acData?.feats, acData?.abilityScores]);
+  }, [aggregatedFeatEffects, acData?.abilityScores]);
 
 
   if (translationsLoading || !translations || !acData || !aggregatedFeatEffects) {
