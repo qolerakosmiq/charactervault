@@ -155,7 +155,7 @@ function createBaseCharacterData(
       powerAttackValue: 0,
       combatExpertiseValue: 0,
       chosenFavoredEnemies: [],
-      animalCompanion: undefined, // Initialize new field
+      animalCompanion: undefined,
     };
 }
 
@@ -297,7 +297,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
   }, [
     isClient, translationsLoading, translations,
-    globalCustomFeatDefinitionsFromStore, globalCustomSkillDefinitionsFromStore, // Ensure these are stable or memoized if they come from context directly
+    globalCustomFeatDefinitionsFromStore, globalCustomSkillDefinitionsFromStore,
     allAvailableFeatDefinitions, allAvailableSkillDefinitionsForDisplay, globalCustomSkillDefinitions
   ]);
 
@@ -769,10 +769,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       rollType: `ability_check_${ability}`,
       baseModifier: finalModifier,
       calculationBreakdown: breakdown,
+      rerollTwentiesForChecks: rollDialogProps?.rerollTwentiesForChecks, // Maintain current setting
     });
-    // setIsRollAbilityDialogOpen(true); // Re-enable if a separate dialog for ability checks is needed
-    setIsRollDialogOpen(true); // Use general roll dialog
-  }, [detailedAbilityScores, translations]);
+    setIsRollDialogOpen(true);
+  }, [detailedAbilityScores, translations, rollDialogProps?.rerollTwentiesForChecks]);
 
   const handleOpenAbilityScoreBreakdownDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => { openInfoDialog({ type: 'abilityScoreBreakdown', abilityName: ability }); }, [openInfoDialog]);
   const handleOpenCombatStatInfoDialog = React.useCallback((contentType: InfoDialogContentType) => { openInfoDialog(contentType); }, [openInfoDialog]);
@@ -993,7 +993,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     };
   }, [character, detailedAbilityScores]);
 
-  const conditionsPanelData = React.useMemo<Omit<ConditionsPanelProps, 'onConditionToggle'> | undefined>(() => {
+  const conditionsPanelData = React.useMemo<Omit<ConditionsPanelProps, 'onConditionToggle' | 'aggregatedFeatEffects'> | undefined>(() => {
     if (!character || !allAvailableFeatDefinitions) return undefined;
     return {
         characterFeats: character.feats,
@@ -1106,11 +1106,12 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         )}
 
 
-        {conditionsPanelData && (character?.feats?.length ?? 0) > 0 && (
+        {conditionsPanelData && aggregatedFeatEffects && (character?.feats?.length ?? 0) > 0 && (
           <ConditionsPanel
             characterFeats={conditionsPanelData.characterFeats}
             allFeatDefinitions={conditionsPanelData.allFeatDefinitions}
             onConditionToggle={handleConditionToggle}
+            aggregatedFeatEffects={aggregatedFeatEffects} 
           />
         )}
 
@@ -1234,3 +1235,5 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
 
+
+    

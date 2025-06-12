@@ -571,7 +571,10 @@
     "noOptionFoundPlaceholder": "No option found.",
     "specializationSelectPlaceholderSkill": "Select skill...",
     "specializationSelectPlaceholderSchool": "Select school of magic...",
-    "specializationInputPlaceholderWeapon": "Enter weapon name (e.g., Longsword)"
+    "specializationInputPlaceholderWeapon": "Enter weapon name (e.g., Longsword)",
+    "condition_vs_favored_enemy": "Against Favored Enemy",
+    "favoredEnemySkillsEffectSummaryBadge": "+{bonus} to Favored Enemy Skills",
+    "favoredEnemyDamageEffectSummaryBadge": "+{bonus} Damage vs Favored Enemy"
   }
 }
 

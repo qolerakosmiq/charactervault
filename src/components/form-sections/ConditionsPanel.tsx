@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { type CharacterFeatInstance } from '@/types/character-core';
-import { type FeatDefinitionJsonData, type FeatEffectDetail, type AbilityScoreEffect, type SavingThrowEffect, type AttackRollEffect, type DamageRollEffect, type ArmorClassEffect, type HitPointsEffect, type InitiativeEffect, type SpeedEffect, type AggregatedFeatEffectBase } from '@/types/character-core';
+import { type FeatDefinitionJsonData, type FeatEffectDetail, type AbilityScoreEffect, type SavingThrowEffect, type AttackRollEffect, type DamageRollEffect, type ArmorClassEffect, type HitPointsEffect, type InitiativeEffect, type SpeedEffect, type AggregatedFeatEffectBase, type AggregatedFeatEffects } from '@/types/character-core';
 import { ShieldQuestion, Loader2 } from 'lucide-react';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -17,6 +17,7 @@ export interface ConditionsPanelProps {
   characterFeats: CharacterFeatInstance[];
   allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
   onConditionToggle: (conditionKey: string, isActive: boolean) => void;
+  aggregatedFeatEffects: AggregatedFeatEffects | null; // Added prop
 }
 
 interface DisplayCondition {
@@ -162,6 +163,7 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
   characterFeats,
   allFeatDefinitions,
   onConditionToggle,
+  aggregatedFeatEffects, // Use the prop
 }) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
@@ -183,10 +185,10 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
             if (!conditionsMap.has(conditionKey)) {
               conditionsMap.set(conditionKey, {
                 conditionKey,
-                displayText: conditionKey, // Will be updated later
+                displayText: conditionKey,
                 sources: [],
-                isGloballyActive: false, // Will be updated later
-                canBeToggled: false,   // Will be updated later
+                isGloballyActive: false,
+                canBeToggled: false,
               });
             }
             const conditionEntry = conditionsMap.get(conditionKey)!;
@@ -196,7 +198,7 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
               featName: definition.label || featInstance.definitionId,
               isCurrentlyActiveOnThisInstance,
               isSourceFeatPermanentEffect,
-              effectsSummary: [], // Placeholder, will be filled in second pass
+              effectsSummary: [],
             });
           }
         });
@@ -224,18 +226,36 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
 
       entry.sources.forEach(source => {
          const definition = allFeatDefinitions.find(def => def.label === source.featName || def.value === source.featName);
-         source.effectsSummary = formatEffectSummary(
-            definition?.effects?.filter(e => e.condition === entry.conditionKey),
-            translations.UI_STRINGS,
-            translations.ABILITY_LABELS,
-            entry.isGloballyActive 
-         );
+         
+         if (entry.conditionKey === "vs_favored_enemy" && aggregatedFeatEffects?.favoredEnemyBonuses) {
+            const skillBonus = aggregatedFeatEffects.favoredEnemyBonuses.skillBonus;
+            const damageBonus = aggregatedFeatEffects.favoredEnemyBonuses.damageBonus;
+            const effectBadges: React.ReactNode[] = [];
+            if (skillBonus > 0) {
+                const skillBonusLabel = (translations.UI_STRINGS.favoredEnemySkillsEffectSummaryBadge || "+{bonus} Favored Enemy Skills")
+                .replace("{bonus}", String(skillBonus));
+                effectBadges.push(<Badge key="fe-skill-bonus" variant={entry.isGloballyActive ? "secondary" : "outline"} className="text-xs px-1.5 py-0.5">{skillBonusLabel}</Badge>);
+            }
+            if (damageBonus > 0) {
+                const damageBonusLabel = (translations.UI_STRINGS.favoredEnemyDamageEffectSummaryBadge || "+{bonus} Damage vs Favored Enemy")
+                .replace("{bonus}", String(damageBonus));
+                effectBadges.push(<Badge key="fe-damage-bonus" variant={entry.isGloballyActive ? "secondary" : "outline"} className="text-xs px-1.5 py-0.5">{damageBonusLabel}</Badge>);
+            }
+            source.effectsSummary = effectBadges.length > 0 ? effectBadges : [<Badge key="no-fe-effects" variant={entry.isGloballyActive ? "secondary" : "outline"} className="text-xs italic px-1.5 py-0.5">{translations.UI_STRINGS.conditionsPanelNoEffectDetails || "No specific effects listed."}</Badge>];
+         } else {
+            source.effectsSummary = formatEffectSummary(
+                definition?.effects?.filter(e => e.condition === entry.conditionKey),
+                translations.UI_STRINGS,
+                translations.ABILITY_LABELS,
+                entry.isGloballyActive 
+            );
+         }
       });
     });
 
 
     return conditionsMap;
-  }, [characterFeats, allFeatDefinitions, translations]);
+  }, [characterFeats, allFeatDefinitions, translations, aggregatedFeatEffects]); // Added aggregatedFeatEffects
 
   const uniqueConditionsForDisplay = Array.from(uniqueConditionsMap.values())
     .sort((a,b) => a.displayText.localeCompare(b.displayText));
@@ -336,3 +356,5 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
 };
 ConditionsPanelComponent.displayName = "ConditionsPanelComponent";
 export const ConditionsPanel = React.memo(ConditionsPanelComponent);
+
+    

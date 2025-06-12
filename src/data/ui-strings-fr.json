@@ -571,7 +571,10 @@
     "noOptionFoundPlaceholder": "Aucune option trouvée.",
     "specializationSelectPlaceholderSkill": "Choisir une compétence...",
     "specializationSelectPlaceholderSchool": "Choisir une école de magie...",
-    "specializationInputPlaceholderWeapon": "Entrer le nom de l'arme (ex : Épée longue)"
+    "specializationInputPlaceholderWeapon": "Entrer le nom de l'arme (ex : Épée longue)",
+    "condition_vs_favored_enemy": "Contre Ennemi Juré",
+    "favoredEnemySkillsEffectSummaryBadge": "+{bonus} aux Compétences (Ennemi Juré)",
+    "favoredEnemyDamageEffectSummaryBadge": "+{bonus} Dégâts contre Ennemi Juré"
   }
 }
 
