@@ -126,7 +126,7 @@ export const SkillModifierBreakdownContentDisplay = ({
         {skillModifierBreakdown!.keyAbilityName && (
           <div className="flex justify-between text-sm">
             <span className="text-foreground inline-flex items-baseline">
-              {uiStrings.infoDialogKeyAbilityLabel || "Key Ability"}{'\u00A0'}
+              {uiStrings.infoDialogKeyAbilityLabel || "Key Ability"}{\u00A0}
               <Badge variant="outline">
                 {skillModifierBreakdown!.keyAbilityName}
               </Badge>
@@ -180,7 +180,7 @@ export const SkillModifierBreakdownContentDisplay = ({
   const contentBlocksToRender: React.ReactNode[] = [];
   if (htmlContentBlock) contentBlocksToRender.push(htmlContentBlock);
   if (synergyBlock) contentBlocksToRender.push(synergyBlock);
-  if (featBonusBlock) contentBlocksToRender.push(featBonusBlock); // Add feat bonus block
+  if (featBonusBlock) contentBlocksToRender.push(featBonusBlock);
   if (calculationBlock) contentBlocksToRender.push(calculationBlock);
 
   if (contentBlocksToRender.length === 0) {
@@ -188,12 +188,18 @@ export const SkillModifierBreakdownContentDisplay = ({
   }
 
   return (
-    <div className="space-y-0">
+    <div>
       {contentBlocksToRender.map((block, index, arr) => (
         <React.Fragment key={`content-block-${index}`}>
           {block}
-          {index < arr.length - 1 && (block || arr[index+1]) && (
-            <Separator className="mt-3 mb-2" />
+          {index < arr.length - 1 && (block || arr[index + 1]) && (
+            <Separator
+              className={
+                arr[index + 1] === calculationBlock
+                  ? "mt-2 mb-1" // Separator *before* calculation block
+                  : "mt-3 mb-2" // All other separators
+              }
+            />
           )}
         </React.Fragment>
       ))}
