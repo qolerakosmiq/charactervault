@@ -1230,6 +1230,32 @@
         { "type": "note", "text": "Devient un type Extérieur. Gagne RD 10/magie." },
         { "type": "damageReduction", "drType": "magic", "value": 10 }
       ]
+    },
+    {
+      "value": "class-ranger-favored-enemy",
+      "label": "Ennemi juré",
+      "description": "<b>Avantage :</b> Au niveau 1, un rôdeur peut sélectionner un type de créature dans le tableau des ennemis jurés du Rôdeur. Le rôdeur gagne un bonus de +2 aux tests de Bluff, Perception auditive, Psychologie, Détection et Survie lorsqu'il utilise ces compétences contre des créatures de ce type. De même, il obtient un bonus de +2 aux jets de dégâts des armes contre de telles créatures. Au niveau 5 et tous les cinq niveaux par la suite (10e, 15e et 20e niveau), le rôdeur peut sélectionner un ennemi juré supplémentaire. De plus, à chaque intervalle de ce type, le bonus contre tout ennemi juré (y compris celui qui vient d'être sélectionné, s'il le souhaite) augmente de +2.",
+      "effectsText": "Sélectionne des ennemis jurés, gagnant des bonus évolutifs à certaines compétences et aux dégâts contre eux. Emplacements : 1 (N1), 2 (N5), 3 (N10), 4 (N15), 5 (N20).",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "permanentEffect": true,
+      "effects": [
+        {
+          "type": "modifiesMechanic",
+          "mechanicKey": "favoredEnemySlots",
+          "value": 0,
+          "scaleWithClassLevel": {
+            "classId": "ranger",
+            "specificLevels": [
+              { "level": 1, "value": 1 },
+              { "level": 5, "value": 2 },
+              { "level": 10, "value": 3 },
+              { "level": 15, "value": 4 },
+              { "level": 20, "value": 5 }
+            ]
+          }
+        }
+      ]
     }
   ],
   "FEAT_TYPES_DATA": [
@@ -1242,5 +1268,3 @@
     { "value": "special-sp", "label": "Aptitude Spéciale (Mag)" }
   ]
 }
-
-    

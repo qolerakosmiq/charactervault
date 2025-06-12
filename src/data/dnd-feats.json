@@ -1230,6 +1230,32 @@
         { "type": "note", "text": "Becomes an Outsider type. Gains DR 10/magic." },
         { "type": "damageReduction", "drType": "magic", "value": 10 }
       ]
+    },
+    {
+      "value": "class-ranger-favored-enemy",
+      "label": "Favored Enemy",
+      "description": "<b>Benefit:</b> At 1st level, a ranger may select a type of creature from the Ranger Favored Enemies table. The ranger gains a +2 bonus on Bluff, Listen, Sense Motive, Spot, and Survival checks when using these skills against creatures of this type. Likewise, he gets a +2 bonus on weapon damage rolls against such creatures. At 5th level and every five levels thereafter (10th, 15th, and 20th level), the ranger may select an additional favored enemy. In addition, at each such interval, the bonus against any one favored enemy (including the one just selected, if so desired) increases by +2.",
+      "effectsText": "Select favored enemies, gaining scaling bonuses to certain skills and damage against them. Slots: 1 (L1), 2 (L5), 3 (L10), 4 (L15), 5 (L20).",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "permanentEffect": true,
+      "effects": [
+        {
+          "type": "modifiesMechanic",
+          "mechanicKey": "favoredEnemySlots",
+          "value": 0,
+          "scaleWithClassLevel": {
+            "classId": "ranger",
+            "specificLevels": [
+              { "level": 1, "value": 1 },
+              { "level": 5, "value": 2 },
+              { "level": 10, "value": 3 },
+              { "level": 15, "value": 4 },
+              { "level": 20, "value": 5 }
+            ]
+          }
+        }
+      ]
     }
   ],
   "FEAT_TYPES_DATA": [
@@ -1242,5 +1268,3 @@
     { "value": "special-sp", "label": "Special Ability (Sp)" }
   ]
 }
-
-    

@@ -11,7 +11,8 @@ import type {
   FeatDefinitionJsonData, CharacterFeatInstance, SkillDefinitionJsonData, CharacterSize,
   ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType, ResistanceFieldKeySheet,
   SpeedDetails, SpeedType, CharacterAlignment, ProcessedSiteData, SpeedPanelCharacterData, CombatPanelCharacterData, LanguageId,
-  AggregatedFeatEffects, ExperiencePanelData, ComboboxOption, MagicSchoolId, Item, GenericBreakdownItem, DamageReductionFeatEffect
+  AggregatedFeatEffects, ExperiencePanelData, ComboboxOption, MagicSchoolId, Item, GenericBreakdownItem, DamageReductionFeatEffect,
+  CharacterFavoredEnemy
 } from '@/types/character';
 import {
   getNetAgingEffects,
@@ -153,6 +154,7 @@ function createBaseCharacterData(
       loadSpeedPenalty_miscModifier: DEFAULT_SPEED_PENALTIES.loadSpeedPenalty_miscModifier || 0,
       powerAttackValue: 0,
       combatExpertiseValue: 0,
+      chosenFavoredEnemies: [], // Initialize new field
     };
 }
 
@@ -767,7 +769,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       baseModifier: finalModifier,
       calculationBreakdown: breakdown,
     });
-    setIsRollAbilityDialogOpen(true); 
+    // setIsRollAbilityDialogOpen(true); // Re-enable if a separate dialog for ability checks is needed
+    setIsRollDialogOpen(true); // Use general roll dialog
   }, [detailedAbilityScores, translations]);
 
   const handleOpenAbilityScoreBreakdownDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => { openInfoDialog({ type: 'abilityScoreBreakdown', abilityName: ability }); }, [openInfoDialog]);

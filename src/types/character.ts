@@ -1,4 +1,5 @@
 
+
 // This file now delegates data processing and constant definitions to the i18n system.
 // It retains core type definitions and utility functions that operate on those types,
 // assuming the data (like DND_RACES, DND_CLASSES from context) is passed to them.
@@ -54,7 +55,8 @@ import type {
   AggregatedFeatEffectBase,
   GrantsAbilityEffectUses,
   MagicSchoolId,
-  DamageReductionFeatEffect
+  DamageReductionFeatEffect,
+  CharacterFavoredEnemy
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 // Import calculateLevelFromXp and other used utilities directly
@@ -879,11 +881,20 @@ export function calculateFeatEffects(
         case "modifiesMechanic":
            const mechEffect = effectToPush as ModifiesMechanicEffect & AggregatedFeatEffectBase;
            if (mechEffect.isActive && mechEffect.mechanicKey) {
-             newAggregatedEffects.modifiedMechanics[mechEffect.mechanicKey] = {
-               value: (mechEffect as any).value, // This will be the resolved scaled value
-               sourceFeat: mechEffect.sourceFeat,
-               isActive: mechEffect.isActive,
-             };
+             const existingMechanic = newAggregatedEffects.modifiedMechanics[mechEffect.mechanicKey];
+             if (mechEffect.mechanicKey === "favoredEnemySlots" && typeof mechEffect.value === "number") {
+                newAggregatedEffects.favoredEnemySlots = (newAggregatedEffects.favoredEnemySlots || 0) + mechEffect.value;
+             } else if (existingMechanic && typeof existingMechanic.value === 'number' && typeof mechEffect.value === 'number' && mechEffect.change === 'adds') {
+                newAggregatedEffects.modifiedMechanics[mechEffect.mechanicKey] = {
+                    ...mechEffect,
+                    value: existingMechanic.value + mechEffect.value,
+                };
+             } else {
+                newAggregatedEffects.modifiedMechanics[mechEffect.mechanicKey] = {
+                    ...mechEffect,
+                    value: (mechEffect as any).value, 
+                };
+             }
            }
           break;
         case "grantsProficiency":
