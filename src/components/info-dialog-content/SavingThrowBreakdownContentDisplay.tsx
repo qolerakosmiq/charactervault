@@ -11,7 +11,8 @@ import { cn } from '@/lib/utils';
 export interface SavingThrowFeatComponent extends AggregatedFeatEffectBase {
   sourceFeat: string;
   value: number;
-  condition?: string;
+  // isActive is inherited from AggregatedFeatEffectBase
+  // condition is inherited from AggregatedFeatEffectBase
 }
 
 export interface SavingThrowBreakdownDetails {

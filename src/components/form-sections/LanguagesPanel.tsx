@@ -136,7 +136,7 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
                   <div key={`known-${langObj.value}`} className="flex items-center justify-between py-1 px-1.5 rounded-md text-sm"> 
                     <span>
                       {langObj.label}
-                      {isAutomatic && <Badge variant="outline" className="ml-2 text-muted-foreground border-muted-foreground/50">{UI_STRINGS.languagesPanelAutomaticBadgeLabel || "Automatic"}</Badge>}
+                      {isAutomatic && <>{'\u00A0'}<Badge variant="outline" className="text-muted-foreground border-muted-foreground/50">{UI_STRINGS.languagesPanelAutomaticBadgeLabel || "Automatic"}</Badge></>}
                     </span>
                     {!isAutomatic && (
                       <Button
@@ -182,6 +182,3 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
 };
 LanguagesPanelComponent.displayName = "LanguagesPanelComponent";
 export const LanguagesPanel = React.memo(LanguagesPanelComponent);
-
-    
-    

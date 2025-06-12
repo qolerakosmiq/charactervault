@@ -110,8 +110,8 @@ export const RaceContentDisplay = ({
             const speedName = UI_STRINGS[speedTypeKey] || type;
             return (
               <div key={type} className="flex justify-between">
-                <span className="text-sm text-foreground">{speedName}{\u00A0}</span>
-                <span className="text-sm font-semibold text-foreground">{speedVal}{\u00A0}{speedUnit}</span>
+                <span className="text-sm text-foreground">{speedName}{'\u00A0'}</span>
+                <span className="text-sm font-semibold text-foreground">{speedVal}{'\u00A0'}{speedUnit}</span>
               </div>
             );
           })}
@@ -122,7 +122,7 @@ export const RaceContentDisplay = ({
   if (bonusFeatSlots !== undefined && bonusFeatSlots > 0) {
     generalTraitsSubSections.push(
       <div key="bonus-feat-slots-item" className="flex justify-between text-sm mt-0 mb-0">
-        <span className="text-sm text-foreground">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}{\u00A0}</span>
+        <span className="text-sm text-foreground">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}{'\u00A0'}</span>
         <span className="text-sm font-semibold text-foreground">{renderModifierValue(bonusFeatSlots)}</span>
       </div>
     );
@@ -162,7 +162,7 @@ export const RaceContentDisplay = ({
                         "whitespace-nowrap shrink-0 justify-center",
                         "min-w-[5rem]" 
                       )}>
-                        {(UI_STRINGS.levelLabel || "Level")}{\u00A0}{feat.levelAcquired}
+                        {(UI_STRINGS.levelLabel || "Level")}{'\u00A0'}{feat.levelAcquired}
                       </Badge>
                     )}
                      <div className="flex-grow">
@@ -201,7 +201,7 @@ export const RaceContentDisplay = ({
   }
 
   return outputBlocks.length > 0 ? (
-    <div> {/* Removed space-y-0 from here */}
+    <div>
       {outputBlocks.map((block, index, arr) => {
         let separatorClass = "mt-3 mb-2"; // Default for separators between major blocks
         if (index < arr.length - 1) {

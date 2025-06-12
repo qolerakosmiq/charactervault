@@ -124,9 +124,9 @@ export const SkillModifierBreakdownContentDisplay = ({
       <h3 className={sectionHeadingClass}>{uiStrings.infoDialogSectionHeadingCalculation || "Calculation"}</h3>
       <div>
         {skillModifierBreakdown!.keyAbilityName && (
-          <div className="flex justify-between text-sm">
+          <div className="flex justify-between text-sm items-baseline">
             <span className="text-foreground inline-flex items-baseline">
-              {uiStrings.infoDialogKeyAbilityLabel || "Key Ability"}{\u00A0}
+              {uiStrings.infoDialogKeyAbilityLabel || "Key Ability"}{'\u00A0'}
               <Badge variant="outline">
                 {skillModifierBreakdown!.keyAbilityName}
               </Badge>
