@@ -450,6 +450,21 @@ export interface ClassAttribute {
   value: string;
 }
 
+export interface ClassSpecificUIBlockConditionAggregatedEffect {
+  property: keyof AggregatedFeatEffects;
+  comparison: 'exists' | 'greaterThan' | 'equals' | 'lessThan' | 'notEquals';
+  value?: any;
+}
+
+export interface ClassSpecificUIBlock {
+  key: string; // Unique key to identify the UI block, e.g., "rangerCombatStyle"
+  labelKey: string; // Key for UI_STRINGS to get the display label/title
+  requiredLevel?: number;
+  conditionAggregatedEffect?: ClassSpecificUIBlockConditionAggregatedEffect;
+  conditionDependsOnUIStateKey?: keyof Pick<Character, 'chosenSpecializationSchool'>; // For wizard prohibited schools
+  conditionDependsOnUIStateValueNotIn?: Array<string | null | undefined>; // For wizard prohibited schools
+}
+
 export interface DndRaceOption {
   value: DndRaceId;
   label: string;
@@ -476,6 +491,7 @@ export interface DndClassOption {
     reflex: "good" | "poor";
     will: "good" | "poor";
   };
+  uiSections?: ClassSpecificUIBlock[]; // Added for data-driven UI
 }
 
 export interface DeityAttribute {
@@ -849,8 +865,5 @@ export const isFeatWithEffects = (feat: FeatDefinitionJsonData): feat is FeatDef
 export type CharacterUpdateField = keyof Character | `savingThrows.${keyof SavingThrows}.${'base'|'magicMod'|'miscMod'}` | `${ResistanceFieldKeySheet}.customMod` | 'damageReduction' | 'powerAttackValue' | 'combatExpertiseValue';
 
 export { type AbilityScoreComponentValue }; // Explicitly re-export if used by InfoDisplayDialog directly
-
-
-
 
     

@@ -21,7 +21,8 @@ import type {
   DomainId,
   MagicSchoolId,
   GrantsAbilityEffect, 
-  GrantsAbilityEffectUses
+  GrantsAbilityEffectUses,
+  ClassSpecificUIBlock // Imported
 } from '@/types/character-core';
 import { isAlignmentCompatible } from '@/types/character';
 import { Input } from '@/components/ui/input';
@@ -270,16 +271,6 @@ const CharacterFormCoreInfoSectionComponent = ({
   }, [prohibitedSchoolOptions, selectedProhibitedSchool1]);
 
 
-  const isRanger = selectedClassInfo?.value === 'ranger';
-  const rangerLevel = isRanger ? (characterData.classes[0]?.level || 0) : 0;
-  const canChooseCombatStyle = isRanger && rangerLevel >= 2;
-  const favoredEnemySlots = aggregatedFeatEffects?.favoredEnemySlots || 0;
-
-  const isCleric = selectedClassInfo?.value === 'cleric';
-  const isWizard = selectedClassInfo?.value === 'wizard';
-  const isSpecialistWizard = isWizard && localSpecializationSchool !== MAGIC_SCHOOL_NONE_OPTION_VALUE && localSpecializationSchool !== 'universal';
-
-
   if (translationsLoading || !translations) {
     return (
       <Card>
@@ -303,6 +294,181 @@ const CharacterFormCoreInfoSectionComponent = ({
   }
 
   const { GENDERS, UI_STRINGS } = translations;
+
+  const renderClassSpecificUI = (uiBlock: ClassSpecificUIBlock) => {
+    const currentCharacterClassLevel = characterData.classes[0]?.level || 0;
+    if (uiBlock.requiredLevel && currentCharacterClassLevel < uiBlock.requiredLevel) {
+      return null;
+    }
+
+    if (uiBlock.conditionAggregatedEffect && aggregatedFeatEffects) {
+      const propValue = aggregatedFeatEffects[uiBlock.conditionAggregatedEffect.property as keyof AggregatedFeatEffects] as any;
+      let conditionMet = false;
+      switch (uiBlock.conditionAggregatedEffect.comparison) {
+        case 'exists': conditionMet = propValue !== undefined && propValue !== null; break;
+        case 'greaterThan': conditionMet = typeof propValue === 'number' && propValue > (uiBlock.conditionAggregatedEffect.value as number); break;
+        case 'equals': conditionMet = propValue === uiBlock.conditionAggregatedEffect.value; break;
+        case 'lessThan': conditionMet = typeof propValue === 'number' && propValue < (uiBlock.conditionAggregatedEffect.value as number); break;
+        case 'notEquals': conditionMet = propValue !== uiBlock.conditionAggregatedEffect.value; break;
+      }
+      if (!conditionMet) return null;
+    }
+    
+    if (uiBlock.conditionDependsOnUIStateKey) {
+      const stateValue = characterData[uiBlock.conditionDependsOnUIStateKey];
+      if (uiBlock.conditionDependsOnUIStateValueNotIn && uiBlock.conditionDependsOnUIStateValueNotIn.includes(stateValue)) {
+        return null;
+      }
+    }
+
+    switch (uiBlock.key) {
+      case "rangerCombatStyle":
+        return (
+          <div key={uiBlock.key} className="space-y-1.5">
+            <Label htmlFor="rangerCombatStyle">{UI_STRINGS[uiBlock.labelKey] || uiBlock.key}</Label>
+            <Select
+              name="chosenCombatStyle"
+              value={localChosenCombatStyle || ""}
+              onValueChange={(value) => setLocalChosenCombatStyle(value as "archery" | "twoWeaponFighting")}
+            >
+              <SelectTrigger id="rangerCombatStyle">
+                <SelectValue placeholder={UI_STRINGS.selectRangerCombatStylePlaceholder || "Select Combat Style..."} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="archery">{UI_STRINGS.rangerCombatStyleArchery || "Archery"}</SelectItem>
+                <SelectItem value="twoWeaponFighting">{UI_STRINGS.rangerCombatStyleTwoWeapon || "Two-Weapon Fighting"}</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              {UI_STRINGS.rangerCombatStyleDescription || "Choose your combat style at Ranger level 2. This grants bonus feats as you level."}
+            </p>
+          </div>
+        );
+      case "rangerFavoredEnemies":
+        const favoredEnemySlots = aggregatedFeatEffects?.favoredEnemySlots || 0;
+        return (
+          <div key={uiBlock.key} className="space-y-3 p-3 border rounded-md bg-muted/20">
+            <Label className="flex items-center text-md font-medium">
+              <Users className="mr-2 h-5 w-5 text-primary/70" />
+              {UI_STRINGS[uiBlock.labelKey] || uiBlock.key}
+              <Badge variant="outline" className="ml-2">{favoredEnemySlots} {UI_STRINGS.favoredEnemySlotsAvailableShort || "Slot(s)"}</Badge>
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              {UI_STRINGS.favoredEnemyDescription || "Select creature types your Ranger specializes against. Bonuses apply automatically when relevant."}
+            </p>
+            {aggregatedFeatEffects?.favoredEnemyBonuses && (aggregatedFeatEffects.favoredEnemyBonuses.skillBonus > 0 || aggregatedFeatEffects.favoredEnemyBonuses.damageBonus > 0) && (
+              <div className="mt-1 mb-1 p-2 border border-dashed border-primary/50 rounded-md bg-primary/5 text-sm text-primary">
+                <Info className="inline h-4 w-4 mr-1.5 mb-0.5" />
+                {(UI_STRINGS.favoredEnemyBonusDisplayInfo || "Favored Enemy Bonus: +{skillBonus} to skills and +{damageBonus} damage.")
+                  .replace('{skillBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.skillBonus))
+                  .replace('{damageBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.damageBonus))}
+              </div>
+            )}
+            {Array.from({ length: favoredEnemySlots }).map((_, index) => (
+              <div key={`favored-enemy-${index}`} className="space-y-1">
+                <Label htmlFor={`favored-enemy-input-${index}`} className="text-xs">
+                  {(UI_STRINGS.favoredEnemySlotLabel || "Favored Enemy Slot {slotNum}").replace("{slotNum}", String(index + 1))}
+                </Label>
+                <Input
+                  id={`favored-enemy-input-${index}`}
+                  value={characterData.chosenFavoredEnemies?.[index]?.type || ''}
+                  onChange={(e) => handleFavoredEnemyChange(index, e.target.value)}
+                  placeholder={UI_STRINGS.favoredEnemyPlaceholder || "e.g., Orc, Goblin, Undead"}
+                  className="h-9 text-sm"
+                />
+              </div>
+            ))}
+          </div>
+        );
+      case "clericDomains":
+        return (
+           <div key={uiBlock.key} className="space-y-4 p-3 border rounded-md bg-muted/20">
+            <Label className="flex items-center text-md font-medium">
+              <BookOpen className="mr-2 h-5 w-5 text-primary/70" />
+              {UI_STRINGS[uiBlock.labelKey] || uiBlock.key}
+            </Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <Label htmlFor="cleric-domain-1" className="text-sm">{UI_STRINGS.clericDomain1Label || "First Domain"}</Label>
+                <ComboboxPrimitive
+                  id="cleric-domain-1"
+                  options={domainOptions}
+                  value={selectedDomain1 || DOMAIN_NONE_OPTION_VALUE}
+                  onChange={(val) => handleDomainChange(0, val as DomainId)}
+                  placeholder={UI_STRINGS.selectDomainPlaceholder || "Select Domain..."}
+                  triggerClassName="h-9 text-sm"
+                />
+                {selectedDomain1 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.value === selectedDomain1)?.grantedPowerDescription}</p>}
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="cleric-domain-2" className="text-sm">{UI_STRINGS.clericDomain2Label || "Second Domain"}</Label>
+                <ComboboxPrimitive
+                  id="cleric-domain-2"
+                  options={domainOptionsForSecondPicker}
+                  value={selectedDomain2 || DOMAIN_NONE_OPTION_VALUE}
+                  onChange={(val) => handleDomainChange(1, val as DomainId)}
+                  placeholder={UI_STRINGS.selectDomainPlaceholder || "Select Domain..."}
+                  triggerClassName="h-9 text-sm"
+                />
+                 {selectedDomain2 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.value === selectedDomain2)?.grantedPowerDescription}</p>}
+              </div>
+            </div>
+          </div>
+        );
+        case "wizardSpecialization":
+          return (
+             <div key={uiBlock.key} className="space-y-1">
+              <Label htmlFor="wizard-specialization" className="text-sm">{UI_STRINGS[uiBlock.labelKey] || uiBlock.key}</Label>
+              <ComboboxPrimitive
+                id="wizard-specialization"
+                options={magicSchoolOptions}
+                value={localSpecializationSchool}
+                onChange={(val) => setLocalSpecializationSchool(val as MagicSchoolId)}
+                placeholder={UI_STRINGS.selectMagicSchoolPlaceholder || "Select School..."}
+                triggerClassName="h-9 text-sm"
+              />
+              {localSpecializationSchool !== MAGIC_SCHOOL_NONE_OPTION_VALUE && localSpecializationSchool !== 'universal' && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {UI_STRINGS.wizardSpecialistBonusSpellInfo || "Grants one bonus spell of the chosen school per spell level per day."}
+                </p>
+              )}
+            </div>
+          );
+        case "wizardProhibitedSchools":
+          return (
+             <React.Fragment key={uiBlock.key}>
+                <div className="space-y-1">
+                  <Label htmlFor="wizard-prohibited-1" className="text-sm">{UI_STRINGS.wizardProhibitedSchool1Label || "First Prohibited School"}</Label>
+                  <ComboboxPrimitive
+                    id="wizard-prohibited-1"
+                    options={prohibitedSchoolOptions}
+                    value={selectedProhibitedSchool1 || PROHIBITED_SCHOOL_NONE_VALUE}
+                    onChange={(val) => handleProhibitedSchoolChange(0, val as MagicSchoolId)}
+                    placeholder={UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School..."}
+                    triggerClassName="h-9 text-sm"
+                  />
+                </div>
+                  <div className="space-y-1 md:col-start-2"> 
+                  <Label htmlFor="wizard-prohibited-2" className="text-sm">{UI_STRINGS.wizardProhibitedSchool2Label || "Second Prohibited School"}</Label>
+                  <ComboboxPrimitive
+                    id="wizard-prohibited-2"
+                    options={prohibitedSchoolOptionsForSecondPicker}
+                    value={selectedProhibitedSchool2 || PROHIBITED_SCHOOL_NONE_VALUE}
+                    onChange={(val) => handleProhibitedSchoolChange(1, val as MagicSchoolId)}
+                    placeholder={UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School..."}
+                    triggerClassName="h-9 text-sm"
+                    disabled={!selectedProhibitedSchool1 || selectedProhibitedSchool1 === PROHIBITED_SCHOOL_NONE_VALUE}
+                  />
+                </div>
+                  <p className="text-xs text-muted-foreground mt-1 md:col-span-2">
+                    {UI_STRINGS.wizardProhibitedSchoolInfo || "Spells from prohibited schools cannot be learned or cast. Divination cannot be prohibited."}
+                  </p>
+             </React.Fragment>
+          );
+      default:
+        return <div key={uiBlock.key} className="text-destructive">Unknown UI Block: {uiBlock.key}</div>;
+    }
+  };
 
   return (
     <Card>
@@ -410,157 +576,12 @@ const CharacterFormCoreInfoSectionComponent = ({
             </div>
           </div>
         </div>
-
-        {isCleric && (
-          <div className="space-y-4 p-3 border rounded-md bg-muted/20">
-            <Label className="flex items-center text-md font-medium">
-              <BookOpen className="mr-2 h-5 w-5 text-primary/70" />
-              {UI_STRINGS.clericDomainsTitle || "Cleric Domains"}
-            </Label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <Label htmlFor="cleric-domain-1" className="text-sm">{UI_STRINGS.clericDomain1Label || "First Domain"}</Label>
-                <ComboboxPrimitive
-                  id="cleric-domain-1"
-                  options={domainOptions}
-                  value={selectedDomain1 || DOMAIN_NONE_OPTION_VALUE}
-                  onChange={(val) => handleDomainChange(0, val as DomainId)}
-                  placeholder={UI_STRINGS.selectDomainPlaceholder || "Select Domain..."}
-                  triggerClassName="h-9 text-sm"
-                />
-                {selectedDomain1 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.value === selectedDomain1)?.grantedPowerDescription}</p>}
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="cleric-domain-2" className="text-sm">{UI_STRINGS.clericDomain2Label || "Second Domain"}</Label>
-                <ComboboxPrimitive
-                  id="cleric-domain-2"
-                  options={domainOptionsForSecondPicker}
-                  value={selectedDomain2 || DOMAIN_NONE_OPTION_VALUE}
-                  onChange={(val) => handleDomainChange(1, val as DomainId)}
-                  placeholder={UI_STRINGS.selectDomainPlaceholder || "Select Domain..."}
-                  triggerClassName="h-9 text-sm"
-                />
-                 {selectedDomain2 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.value === selectedDomain2)?.grantedPowerDescription}</p>}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {isWizard && (
-          <div className="space-y-4 p-3 border rounded-md bg-muted/20">
-            <Label className="flex items-center text-md font-medium">
-              <Wand2 className="mr-2 h-5 w-5 text-primary/70" />
-              {UI_STRINGS.wizardSpecializationTitle || "Wizard Specialization"}
-            </Label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <Label htmlFor="wizard-specialization" className="text-sm">{UI_STRINGS.wizardSpecializationSchoolLabel || "Specialization School"}</Label>
-                <ComboboxPrimitive
-                  id="wizard-specialization"
-                  options={magicSchoolOptions}
-                  value={localSpecializationSchool}
-                  onChange={(val) => setLocalSpecializationSchool(val as MagicSchoolId)}
-                  placeholder={UI_STRINGS.selectMagicSchoolPlaceholder || "Select School..."}
-                  triggerClassName="h-9 text-sm"
-                />
-                {localSpecializationSchool !== MAGIC_SCHOOL_NONE_OPTION_VALUE && localSpecializationSchool !== 'universal' && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {UI_STRINGS.wizardSpecialistBonusSpellInfo || "Grants one bonus spell of the chosen school per spell level per day."}
-                  </p>
-                )}
-              </div>
-              {isSpecialistWizard && (
-                <>
-                  <div className="space-y-1">
-                    <Label htmlFor="wizard-prohibited-1" className="text-sm">{UI_STRINGS.wizardProhibitedSchool1Label || "First Prohibited School"}</Label>
-                    <ComboboxPrimitive
-                      id="wizard-prohibited-1"
-                      options={prohibitedSchoolOptions}
-                      value={selectedProhibitedSchool1 || PROHIBITED_SCHOOL_NONE_VALUE}
-                      onChange={(val) => handleProhibitedSchoolChange(0, val as MagicSchoolId)}
-                      placeholder={UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School..."}
-                      triggerClassName="h-9 text-sm"
-                    />
-                  </div>
-                   <div className="space-y-1 md:col-start-2"> 
-                    <Label htmlFor="wizard-prohibited-2" className="text-sm">{UI_STRINGS.wizardProhibitedSchool2Label || "Second Prohibited School"}</Label>
-                    <ComboboxPrimitive
-                      id="wizard-prohibited-2"
-                      options={prohibitedSchoolOptionsForSecondPicker}
-                      value={selectedProhibitedSchool2 || PROHIBITED_SCHOOL_NONE_VALUE}
-                      onChange={(val) => handleProhibitedSchoolChange(1, val as MagicSchoolId)}
-                      placeholder={UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School..."}
-                      triggerClassName="h-9 text-sm"
-                      disabled={!selectedProhibitedSchool1 || selectedProhibitedSchool1 === PROHIBITED_SCHOOL_NONE_VALUE}
-                    />
-                  </div>
-                   <p className="text-xs text-muted-foreground mt-1 md:col-span-2">
-                     {UI_STRINGS.wizardProhibitedSchoolInfo || "Spells from prohibited schools cannot be learned or cast. Divination cannot be prohibited."}
-                   </p>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-
-
-        {isRanger && canChooseCombatStyle && (
-          <div className="space-y-1.5">
-            <Label htmlFor="rangerCombatStyle">{UI_STRINGS.rangerCombatStyleLabel || "Ranger Combat Style"}</Label>
-            <Select
-              name="chosenCombatStyle"
-              value={localChosenCombatStyle || ""}
-              onValueChange={(value) => setLocalChosenCombatStyle(value as "archery" | "twoWeaponFighting")}
-            >
-              <SelectTrigger id="rangerCombatStyle">
-                <SelectValue placeholder={UI_STRINGS.selectRangerCombatStylePlaceholder || "Select Combat Style..."} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="archery">{UI_STRINGS.rangerCombatStyleArchery || "Archery"}</SelectItem>
-                <SelectItem value="twoWeaponFighting">{UI_STRINGS.rangerCombatStyleTwoWeapon || "Two-Weapon Fighting"}</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
-              {UI_STRINGS.rangerCombatStyleDescription || "Choose your combat style at Ranger level 2. This grants bonus feats as you level."}
-            </p>
-          </div>
-        )}
-
-        {isRanger && favoredEnemySlots > 0 && (
-          <div className="space-y-3 p-3 border rounded-md bg-muted/20">
-            <Label className="flex items-center text-md font-medium">
-              <Users className="mr-2 h-5 w-5 text-primary/70" />
-              {UI_STRINGS.favoredEnemyTitle || "Favored Enemies"}
-              <Badge variant="outline" className="ml-2">{favoredEnemySlots} {UI_STRINGS.favoredEnemySlotsAvailableShort || "Slot(s)"}</Badge>
-            </Label>
-            <p className="text-xs text-muted-foreground">
-                {UI_STRINGS.favoredEnemyDescription || "Select creature types your Ranger specializes against. Bonuses apply automatically when relevant."}
-            </p>
-            {aggregatedFeatEffects?.favoredEnemyBonuses && (aggregatedFeatEffects.favoredEnemyBonuses.skillBonus > 0 || aggregatedFeatEffects.favoredEnemyBonuses.damageBonus > 0) && (
-              <div className="mt-1 mb-1 p-2 border border-dashed border-primary/50 rounded-md bg-primary/5 text-sm text-primary">
-                <Info className="inline h-4 w-4 mr-1.5 mb-0.5" />
-                {(UI_STRINGS.favoredEnemyBonusDisplayInfo || "Favored Enemy Bonus: +{skillBonus} to Bluff, Listen, Sense Motive, Spot, Survival checks and +{damageBonus} damage against chosen favored enemies.")
-                  .replace('{skillBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.skillBonus))
-                  .replace('{damageBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.damageBonus))}
-              </div>
-            )}
-            {Array.from({ length: favoredEnemySlots }).map((_, index) => (
-              <div key={`favored-enemy-${index}`} className="space-y-1">
-                <Label htmlFor={`favored-enemy-input-${index}`} className="text-xs">
-                  {(UI_STRINGS.favoredEnemySlotLabel || "Favored Enemy Slot {slotNum}").replace("{slotNum}", String(index + 1))}
-                </Label>
-                <Input
-                  id={`favored-enemy-input-${index}`}
-                  value={characterData.chosenFavoredEnemies?.[index]?.type || ''}
-                  onChange={(e) => handleFavoredEnemyChange(index, e.target.value)}
-                  placeholder={UI_STRINGS.favoredEnemyPlaceholder || "e.g., Orc, Goblin, Undead"}
-                  className="h-9 text-sm"
-                />
-              </div>
-            ))}
-          </div>
-        )}
-
+        
+        {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.map(uiBlock => (
+          <React.Fragment key={`ui-section-wrapper-${uiBlock.key}`}>
+            {renderClassSpecificUI(uiBlock)}
+          </React.Fragment>
+        ))}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           <div className="space-y-1.5">
@@ -657,3 +678,4 @@ const CharacterFormCoreInfoSectionComponent = ({
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
 
+    

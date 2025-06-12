@@ -87,6 +87,13 @@
         { "featId": "armor-proficiency-heavy", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "shield-proficiency", "levelAcquired": 1, "note": "Class Proficiency" },
         { "featId": "class-cleric-turn-rebuke-undead", "levelAcquired": 1 }
+      ],
+      "uiSections": [
+        {
+          "key": "clericDomains",
+          "labelKey": "clericDomainsTitle",
+          "requiredLevel": 1
+        }
       ]
     },
     {
@@ -288,6 +295,23 @@
         { "featId": "greater-two-weapon-fighting", "levelAcquired": 11, "note": "Ranger Two-Weapon Fighting Style" },
         { "featId": "class-ranger-camouflage", "levelAcquired": 13 },
         { "featId": "class-ranger-hide-in-plain-sight", "levelAcquired": 17 }
+      ],
+      "uiSections": [
+        {
+          "key": "rangerCombatStyle",
+          "labelKey": "rangerCombatStyleLabel",
+          "requiredLevel": 2
+        },
+        {
+          "key": "rangerFavoredEnemies",
+          "labelKey": "favoredEnemyTitle",
+          "requiredLevel": 1,
+          "conditionAggregatedEffect": {
+            "property": "favoredEnemySlots",
+            "comparison": "greaterThan",
+            "value": 0
+          }
+        }
       ]
     },
     {
@@ -367,6 +391,20 @@
         { "featId": "class-wizard-bonus-feat-slot", "levelAcquired": 10, "note": "10th Level - Metamagic, Item Creation, or Spell Mastery" },
         { "featId": "class-wizard-bonus-feat-slot", "levelAcquired": 15, "note": "15th Level - Metamagic, Item Creation, or Spell Mastery" },
         { "featId": "class-wizard-bonus-feat-slot", "levelAcquired": 20, "note": "20th Level - Metamagic, Item Creation, or Spell Mastery" }
+      ],
+      "uiSections": [
+        {
+          "key": "wizardSpecialization",
+          "labelKey": "wizardSpecializationTitle",
+          "requiredLevel": 1
+        },
+        {
+          "key": "wizardProhibitedSchools",
+          "labelKey": "wizardProhibitedSchoolsTitle",
+          "requiredLevel": 1,
+          "conditionDependsOnUIStateKey": "chosenSpecializationSchool",
+          "conditionDependsOnUIStateValueNotIn": ["universal", null, ""]
+        }
       ]
     },
     {
