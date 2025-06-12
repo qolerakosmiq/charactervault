@@ -110,8 +110,8 @@ export const RaceContentDisplay = ({
             const speedName = UI_STRINGS[speedTypeKey] || type;
             return (
               <div key={type} className="flex justify-between">
-                <span className="text-sm text-foreground">{speedName}</span>
-                <span className="text-sm font-semibold text-foreground">{speedVal}{'\u00A0'}{speedUnit}</span>
+                <span className="text-sm text-foreground">{speedName}{\u00A0}</span>
+                <span className="text-sm font-semibold text-foreground">{speedVal}{\u00A0}{speedUnit}</span>
               </div>
             );
           })}
@@ -122,7 +122,7 @@ export const RaceContentDisplay = ({
   if (bonusFeatSlots !== undefined && bonusFeatSlots > 0) {
     generalTraitsSubSections.push(
       <div key="bonus-feat-slots-item" className="flex justify-between text-sm mt-0 mb-0">
-        <span className="text-sm text-foreground">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}</span>
+        <span className="text-sm text-foreground">{UI_STRINGS.infoDialogBonusFeatSlots || "Bonus Feat Slots"}{\u00A0}</span>
         <span className="text-sm font-semibold text-foreground">{renderModifierValue(bonusFeatSlots)}</span>
       </div>
     );
@@ -162,7 +162,7 @@ export const RaceContentDisplay = ({
                         "whitespace-nowrap shrink-0 justify-center",
                         "min-w-[5rem]" 
                       )}>
-                        {(UI_STRINGS.levelLabel || "Level")}{'\u00A0'}{feat.levelAcquired}
+                        {(UI_STRINGS.levelLabel || "Level")}{\u00A0}{feat.levelAcquired}
                       </Badge>
                     )}
                      <div className="flex-grow">
@@ -200,10 +200,26 @@ export const RaceContentDisplay = ({
     );
   }
 
-  return outputBlocks.length > 0 ? <div className="space-y-0">{outputBlocks.map((block, index, arr) => (
-        <React.Fragment key={`race-display-root-block-${index}`}>
-          {block}
-          {index < arr.length - 1 && <Separator className="mt-3 mb-2" />}
-        </React.Fragment>
-      ))}</div> : null;
+  return outputBlocks.length > 0 ? (
+    <div> {/* Removed space-y-0 from here */}
+      {outputBlocks.map((block, index, arr) => {
+        let separatorClass = "mt-3 mb-2"; // Default for separators between major blocks
+        if (index < arr.length - 1) {
+          const currentBlockKey = (block as React.ReactElement)?.key;
+          const nextBlockKey = (arr[index + 1] as React.ReactElement)?.key;
+
+          if (currentBlockKey === "race-html-content-block" &&
+              (nextBlockKey === "race-general-traits-section" || nextBlockKey === "race-granted-feats-section")) {
+            separatorClass = "mt-2 mb-1";
+          }
+        }
+        return (
+          <React.Fragment key={`race-display-root-block-${index}`}>
+            {block}
+            {index < arr.length - 1 && <Separator className={separatorClass} />}
+          </React.Fragment>
+        );
+      })}
+    </div>
+  ) : null;
 };
