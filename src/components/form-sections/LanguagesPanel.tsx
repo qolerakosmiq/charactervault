@@ -109,10 +109,10 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
         <div className="mb-4 p-3 border rounded-md bg-muted/30">
           <div className="flex justify-between items-center">
             <p className="text-sm font-medium">
-              {UI_STRINGS.languagesPanelSlotsAvailableLabel || "Languages Available:"}{\u00A0}<span className="text-xl font-bold text-primary">{totalBonusLanguageSlots}</span>
+              {UI_STRINGS.languagesPanelSlotsAvailableLabel || "Languages Available: "}<span className="text-xl font-bold text-primary">{totalBonusLanguageSlots}</span>
             </p>
             <p className="text-sm font-medium">
-              {UI_STRINGS.languagesPanelSlotsLeftLabel || "Languages Left:"}{\u00A0}<span className={cn(
+              {UI_STRINGS.languagesPanelSlotsLeftLabel || "Languages Left: "}<span className={cn(
                 "text-xl font-bold",
                 slotsRemaining > 0 && "text-emerald-500",
                 slotsRemaining < 0 && "text-destructive",
@@ -121,8 +121,8 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
             </p>
           </div>
            <p className="text-xs text-muted-foreground mt-1">
-              {UI_STRINGS.languagesPanelFormulaIntModLabel || "Intelligence Modifier"}{\u00A0}<Badge variant="outline" className={badgeClassName}>{intBonusLanguages}</Badge>
-              {' + '}{UI_STRINGS.languagesPanelFormulaSkillRanksLabel || "Speak Language Ranks"}{\u00A0}<Badge variant="outline" className={badgeClassName}>{skillBonusLanguages}</Badge>
+              {UI_STRINGS.languagesPanelFormulaIntModLabel || "Intelligence Modifier"}{'\u00A0'}<Badge variant="outline" className={badgeClassName}>{intBonusLanguages}</Badge>
+              {' + '}{UI_STRINGS.languagesPanelFormulaSkillRanksLabel || "Speak Language Ranks"}{'\u00A0'}<Badge variant="outline" className={badgeClassName}>{skillBonusLanguages}</Badge>
               {' = '}<span className="font-bold text-primary">{totalBonusLanguageSlots}</span>
             </p>
         </div>
