@@ -868,10 +868,30 @@
     {
       "value": "class-monk-flurry-of-blows",
       "label": "Flurry of Blows",
-      "description": "When unarmored, a monk may strike with a flurry of blows at the expense of accuracy. When doing so, she may make one extra attack in a round at her highest base attack bonus, but this attack takes a –2 penalty, as does each other attack made that round. The monk must use a full attack action to strike with a flurry of blows.",
+      "description": "When unarmored, a monk may strike with a flurry of blows at the expense of accuracy. When doing so, she may make one extra attack in a round at her highest base attack bonus, but this attack takes a penalty, as does each other attack made that round. This penalty applies for 1 round. The monk must use a full attack action to strike with a flurry of blows. Penalty: -2 (Levels 1-4), -1 (Levels 5-8), +0 (Levels 9+).",
       "isClassFeature": true,
+      "permanentEffect": true,
       "type": "special-ex",
-      "effectsText": "One extra attack at highest BAB, all attacks at -2 for the round. Scales with level."
+      "effectsText": "One extra attack at highest BAB, all attacks at scaling penalty for the round. Scales with level.",
+      "effects": [
+        {
+          "type": "modifiesMechanic",
+          "mechanicKey": "flurryOfBlowsAttackPenalty",
+          "scaleWithClassLevel": {
+            "classId": "monk",
+            "specificLevels": [
+              { "level": 1, "value": -2 },
+              { "level": 5, "value": -1 },
+              { "level": 9, "value": 0 }
+            ]
+          }
+        },
+        {
+          "type": "modifiesMechanic",
+          "mechanicKey": "flurryOfBlowsNumExtraAttacks",
+          "value": 1
+        }
+      ]
     },
     {
       "value": "class-monk-unarmed-strike-damage",
@@ -1002,8 +1022,16 @@
       "label": "Greater Flurry",
       "description": "At 11th level, a monk’s flurry of blows ability improves. In addition to the standard single extra attack she gets from flurry of blows, she gets a second extra attack at her full base attack bonus.",
       "isClassFeature": true,
+      "permanentEffect": true,
       "type": "special-ex",
-      "effectsText": "Flurry of blows grants a second extra attack at full BAB."
+      "effectsText": "Flurry of blows grants a second extra attack at full BAB.",
+      "effects": [
+         {
+          "type": "modifiesMechanic",
+          "mechanicKey": "flurryOfBlowsNumExtraAttacks",
+          "value": 2
+        }
+      ]
     },
     {
       "value": "class-monk-abundant-step",
@@ -1065,4 +1093,3 @@
   ]
 }
 
-    

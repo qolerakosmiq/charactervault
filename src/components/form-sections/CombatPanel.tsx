@@ -203,6 +203,27 @@ const CombatPanelComponent = ({
   if (monkUnarmedDamageEffect?.isActive && typeof monkUnarmedDamageEffect.value === 'string') {
       unarmedBaseDamageFromFeat = monkUnarmedDamageEffect.value;
   }
+  
+  // Flurry of Blows
+  const flurryPenalty = aggregatedFeatEffects.modifiedMechanics?.flurryOfBlowsAttackPenalty?.isActive
+    ? (aggregatedFeatEffects.modifiedMechanics.flurryOfBlowsAttackPenalty.value as number ?? 0)
+    : 0;
+  const numFlurryExtraAttacks = aggregatedFeatEffects.modifiedMechanics?.flurryOfBlowsNumExtraAttacks?.isActive
+    ? (aggregatedFeatEffects.modifiedMechanics.flurryOfBlowsNumExtraAttacks.value as number ?? 0)
+    : 0;
+
+  let flurryAttackSequence: number[] = [];
+  if (numFlurryExtraAttacks > 0) {
+    const flurryBabBase = totalBabWithModifier.map(bab => bab + flurryPenalty);
+    flurryAttackSequence.push(flurryBabBase[0]); // First attack
+    for(let i=0; i < numFlurryExtraAttacks; i++) {
+      flurryAttackSequence.push(flurryBabBase[0]); // Extra attacks at highest BAB (with penalty)
+    }
+    // Add remaining standard iterative attacks (with penalty)
+    for(let i=1; i < flurryBabBase.length; i++) {
+      flurryAttackSequence.push(flurryBabBase[i]);
+    }
+  }
 
 
   const meleeWeapons: Item[] = [{id: 'unarmed', name: UI_STRINGS.attacksPanelUnarmedOption || 'Unarmed', itemType: 'weapon' as const, weaponType: 'melee' as const, damage: unarmedBaseDamageFromFeat, criticalRange: '20', criticalMultiplier: 'x2', quantity: 1},
@@ -490,6 +511,14 @@ const CombatPanelComponent = ({
                 <Info className="h-4 w-4" />
               </Button>
             </div>
+            {numFlurryExtraAttacks > 0 && (
+               <div className="flex items-center justify-center">
+                <span className="text-xs font-medium text-muted-foreground mr-1">{UI_STRINGS.combatPanelFlurryOfBlowsLabel || "Flurry of Blows"}:</span>
+                <p id="flurry-display" className="text-base font-bold text-accent/80">
+                  {flurryAttackSequence.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}
+                </p>
+              </div>
+            )}
             <div className="mt-auto space-y-1">
               <Label htmlFor="bab-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
               <div className="flex justify-center">
@@ -746,4 +775,3 @@ const CombatPanelComponent = ({
 CombatPanelComponent.displayName = 'CombatPanelComponent';
 export const CombatPanel = React.memo(CombatPanelComponent);
 
-    

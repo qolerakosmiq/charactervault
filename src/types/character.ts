@@ -695,7 +695,7 @@ export function calculateFeatEffects(
     spellSaveDcBonuses: [],
     turnUndeadBonuses: [],
     grantedAbilities: [],
-    modifiedMechanics: {},
+    modifiedMechanics: {}, // Initialize as empty object
     proficienciesGranted: [],
     bonusFeatSlots: [],
     languagesGranted: { count: 0, specific: [] },
@@ -1039,4 +1039,3 @@ export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
 
-    

@@ -868,10 +868,30 @@
     {
       "value": "class-monk-flurry-of-blows",
       "label": "Déluge de coups",
-      "description": "Lorsqu'il n'est pas en armure, un moine peut frapper avec un déluge de coups au détriment de sa précision. Ce faisant, il peut effectuer une attaque supplémentaire par round à son bonus de base à l'attaque le plus élevé, mais cette attaque subit une pénalité de –2, tout comme chaque autre attaque effectuée ce round. Le moine doit utiliser une action d'attaque à outrance pour frapper avec un déluge de coups.",
+      "description": "Lorsqu'il n'est pas en armure, un moine peut frapper avec un déluge de coups au détriment de sa précision. Ce faisant, il peut effectuer une attaque supplémentaire par round à son bonus de base à l'attaque le plus élevé, mais cette attaque subit une pénalité, tout comme chaque autre attaque effectuée ce round. Cette pénalité s'applique pendant 1 round. Le moine doit utiliser une action d'attaque à outrance pour frapper avec un déluge de coups. Pénalité : -2 (Niveaux 1-4), -1 (Niveaux 5-8), +0 (Niveaux 9+).",
       "isClassFeature": true,
+      "permanentEffect": true,
       "type": "special-ex",
-      "effectsText": "Une attaque supplémentaire au BBA le plus élevé, toutes les attaques à -2 pour le round. Évolue avec le niveau."
+      "effectsText": "Une attaque supplémentaire au BBA le plus élevé, toutes les attaques avec une pénalité évolutive pour le round. Évolue avec le niveau.",
+      "effects": [
+        {
+          "type": "modifiesMechanic",
+          "mechanicKey": "flurryOfBlowsAttackPenalty",
+          "scaleWithClassLevel": {
+            "classId": "monk",
+            "specificLevels": [
+              { "level": 1, "value": -2 },
+              { "level": 5, "value": -1 },
+              { "level": 9, "value": 0 }
+            ]
+          }
+        },
+        {
+          "type": "modifiesMechanic",
+          "mechanicKey": "flurryOfBlowsNumExtraAttacks",
+          "value": 1
+        }
+      ]
     },
     {
       "value": "class-monk-unarmed-strike-damage",
@@ -1002,8 +1022,16 @@
       "label": "Déluge de coups supérieur",
       "description": "Au niveau 11, la capacité de déluge de coups d'un moine s'améliore. En plus de l'attaque supplémentaire standard qu'il obtient grâce au déluge de coups, il obtient une deuxième attaque supplémentaire à son bonus de base à l'attaque complet.",
       "isClassFeature": true,
+      "permanentEffect": true,
       "type": "special-ex",
-      "effectsText": "Le déluge de coups accorde une deuxième attaque supplémentaire au BBA complet."
+      "effectsText": "Le déluge de coups accorde une deuxième attaque supplémentaire au BBA complet.",
+      "effects": [
+         {
+          "type": "modifiesMechanic",
+          "mechanicKey": "flurryOfBlowsNumExtraAttacks",
+          "value": 2
+        }
+      ]
     },
     {
       "value": "class-monk-abundant-step",
@@ -1065,4 +1093,3 @@
   ]
 }
 
-    
