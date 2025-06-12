@@ -792,6 +792,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     openInfoDialog(contentType);
   }, [openInfoDialog]);
 
+  const handleOpenResistanceInfoDialog = React.useCallback((resistanceField: ResistanceFieldKeySheet) => {
+    openInfoDialog({ type: 'resistanceBreakdown', resistanceField });
+  }, [openInfoDialog]);
+
 
   const handleSubmit = React.useCallback((e: FormEvent) => {
     e.preventDefault();
@@ -1230,4 +1234,3 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
 
-    
