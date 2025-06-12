@@ -1439,6 +1439,45 @@
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [{ "type": "note", "text": "Dans n'importe quel type de terrain naturel, peut utiliser la compétence Discrétion même en étant observé." }]
+    },
+    {
+      "value": "class-rogue-trapfinding",
+      "label": "Découverte des pièges",
+      "description": "Les roublards (et seulement les roublards) peuvent utiliser la compétence Fouille pour localiser les pièges lorsque la tâche a un Degré de Difficulté supérieur à 20. Trouver un piège non magique a un DD d'au moins 20, ou plus s'il est bien caché. Trouver un piège magique a un DD de 25 + niveau de sort du sort utilisé pour le créer. Les roublards (et seulement les roublards) peuvent utiliser la compétence Désamorçage/Sabotage pour désarmer les pièges magiques. Un piège magique a généralement un DD de 25 + niveau de sort du sort utilisé pour le créer.",
+      "effectsText": "Peut utiliser Fouille pour les pièges (DD > 20) et Désamorçage/Sabotage pour les pièges magiques.",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [{ "type": "note", "text": "Peut utiliser la compétence Fouille pour localiser les pièges (DD > 20) et la compétence Désamorçage/Sabotage pour désarmer les pièges magiques." }]
+    },
+    {
+      "value": "class-rogue-trap-sense",
+      "label": "Sens des pièges (Roublard)",
+      "description": "Au niveau 3, un roublard gagne un sens intuitif qui l'alerte du danger des pièges, lui donnant un bonus de +1 aux jets de Réflexes effectués pour éviter les pièges et un bonus d'esquive de +1 à la CA contre les attaques faites par les pièges. Ces bonus augmentent à +2 au niveau 6, +3 au niveau 9, +4 au niveau 12, +5 au niveau 15 et +6 au niveau 18.",
+      "effectsText": "Bonus aux jets de Réflexes et CA d'Esquive contre les pièges (+1/3 niveaux à partir du N3).",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        {
+          "type": "savingThrow", "save": "reflex", "value": 0, "bonusType": "untyped", "condition": "vs_traps",
+          "scaleWithClassLevel": {
+            "classId": "rogue",
+            "specificLevels": [
+              { "level": 3, "value": 1 }, { "level": 6, "value": 2 }, { "level": 9, "value": 3 },
+              { "level": 12, "value": 4 }, { "level": 15, "value": 5 }, { "level": 18, "value": 6 }
+            ]
+          }
+        },
+        {
+          "type": "armorClass", "acType": "dodge", "value": 0, "bonusType": "dodge", "condition": "vs_trap_attacks", "appliesToScope": ["normal", "touch"],
+          "scaleWithClassLevel": {
+            "classId": "rogue",
+            "specificLevels": [
+              { "level": 3, "value": 1 }, { "level": 6, "value": 2 }, { "level": 9, "value": 3 },
+              { "level": 12, "value": 4 }, { "level": 15, "value": 5 }, { "level": 18, "value": 6 }
+            ]
+          }
+        }
+      ]
     }
   ],
   "FEAT_TYPES_DATA": [

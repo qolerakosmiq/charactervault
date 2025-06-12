@@ -343,17 +343,12 @@
         { "featId": "class-rogue-sneak-attack", "levelAcquired": 1 },
         { "featId": "class-rogue-trapfinding", "levelAcquired": 1 },
         { "featId": "class-rogue-evasion", "levelAcquired": 2 },
-        { "featId": "class-rogue-trap-sense", "note": "Bonus +1", "levelAcquired": 3 },
+        { "featId": "class-rogue-trap-sense", "levelAcquired": 3 },
         { "featId": "class-rogue-uncanny-dodge", "levelAcquired": 4 },
-        { "featId": "class-rogue-trap-sense", "note": "Bonus +2", "levelAcquired": 6 },
         { "featId": "class-rogue-improved-uncanny-dodge", "levelAcquired": 8 },
-        { "featId": "class-rogue-trap-sense", "note": "Bonus +3", "levelAcquired": 9 },
         { "featId": "class-rogue-special-ability-slot", "note": "1ère Capacité spéciale", "levelAcquired": 10 },
-        { "featId": "class-rogue-trap-sense", "note": "Bonus +4", "levelAcquired": 12 },
         { "featId": "class-rogue-special-ability-slot", "note": "2ème Capacité spéciale", "levelAcquired": 13 },
-        { "featId": "class-rogue-trap-sense", "note": "Bonus +5", "levelAcquired": 15 },
         { "featId": "class-rogue-special-ability-slot", "note": "3ème Capacité spéciale", "levelAcquired": 16 },
-        { "featId": "class-rogue-trap-sense", "note": "Bonus +6", "levelAcquired": 18 },
         { "featId": "class-rogue-special-ability-slot", "note": "4ème Capacité spéciale", "levelAcquired": 19 }
       ]
     },
