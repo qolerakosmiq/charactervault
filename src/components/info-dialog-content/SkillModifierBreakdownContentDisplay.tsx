@@ -40,7 +40,7 @@ export const SkillModifierBreakdownContentDisplay = ({
 
   const synergyBlock = (synergyInfoList && synergyInfoList.length > 0) ? (
     <div key="skill-synergies-block" className="mt-0 mb-0">
-      <h4 className="text-sm font-bold text-muted-foreground mb-0">{uiStrings.infoDialogSynergiesSectionTitle || "Synergies"}</h4>
+      <h4 className="text-sm font-bold text-muted-foreground mb-1">{uiStrings.infoDialogSynergiesSectionTitle || "Synergies"}</h4>
       <ul className={cn("space-y-0.5 mt-0 mb-0 ml-3", hasCalculationBlock ? "" : "")}>
         {synergyInfoList.map((synergyItem) => {
           const IconComponent = synergyItem.isActive ? CheckSquare : Square;
