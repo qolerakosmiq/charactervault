@@ -19,7 +19,9 @@ import type {
   CharacterFavoredEnemy,
   DomainDefinition,
   DomainId,
-  MagicSchoolId
+  MagicSchoolId,
+  GrantsAbilityEffect, // Added
+  GrantsAbilityEffectUses // Added
 } from '@/types/character-core';
 import { isAlignmentCompatible } from '@/types/character';
 import { Input } from '@/components/ui/input';
@@ -273,9 +275,9 @@ const CharacterFormCoreInfoSectionComponent = ({
   const canChooseCombatStyle = isRanger && rangerLevel >= 2;
   const favoredEnemySlots = aggregatedFeatEffects?.favoredEnemySlots || 0;
 
-  const isBarbarian = selectedClassInfo?.value === 'barbarian';
-  const rageUsesAbility = aggregatedFeatEffects?.grantedAbilities.find(ab => ab.abilityKey === 'barbarianRageUses');
-  const rageUsesPerDay = rageUsesAbility?.uses?.value || 0;
+  // const isBarbarian = selectedClassInfo?.value === 'barbarian';
+  // const rageUsesAbility = aggregatedFeatEffects?.grantedAbilities.find(ab => ab.abilityKey === 'barbarianRageUses');
+  // const rageUsesPerDay = rageUsesAbility?.uses?.value || 0;
 
   const isCleric = selectedClassInfo?.value === 'cleric';
   const isWizard = selectedClassInfo?.value === 'wizard';
@@ -362,7 +364,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   if (effect.change > 0) badgeClassName = cn(badgeClassName, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                   else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassName = cn(badgeClassName, "hover:bg-destructive"); }
                   else badgeClassName = cn(badgeClassName, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
-                  return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassName}> {effect.ability.substring(0, 3).toUpperCase()}{effect.change !== 0 ? ' ' : ''} {effect.change > 0 ? '+' : ''} {effect.change !==0 ? effect.change : ''} </Badge> );
+                  return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassName}> {effect.ability.substring(0, 3).toUpperCase()}{effect.change !== 0 ? '\u00A0' : ''} {effect.change > 0 ? '+' : ''} {effect.change !==0 ? effect.change : ''} </Badge> );
                 })}
               </div>
             )}
@@ -391,12 +393,24 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <strong className="font-bold">{selectedClassInfo.hitDice}</strong>
                 </Badge>
               )}
-              {isBarbarian && rageUsesPerDay > 0 && (
-                  <Badge className="whitespace-nowrap bg-accent text-accent-foreground">
-                    <Activity className="inline h-3 w-3 mr-1" />
-                    {(UI_STRINGS.barbarianRageUsesLabel || "Rage Uses Per Day")}: <strong className="font-bold ml-1">{rageUsesPerDay}</strong>
-                  </Badge>
-              )}
+              {aggregatedFeatEffects?.grantedAbilities && aggregatedFeatEffects.grantedAbilities.map(ability => {
+                if (ability.uses && typeof ability.uses.value === 'number' && ability.uses.per) {
+                  const periodStrKey = `period${ability.uses.per.charAt(0).toUpperCase() + ability.uses.per.slice(1)}` as keyof typeof UI_STRINGS;
+                  const periodStr = UI_STRINGS[periodStrKey] || ability.uses.per;
+                  const displayString = (UI_STRINGS.abilityUsesFormat || "{abilityName}: {usesValue}/{period}")
+                    .replace("{abilityName}", ability.name)
+                    .replace("{usesValue}", String(ability.uses.value))
+                    .replace("{period}", periodStr);
+                  
+                  return (
+                    <Badge key={ability.abilityKey} className="whitespace-nowrap bg-accent text-accent-foreground">
+                      <Activity className="inline h-3 w-3 mr-1" />
+                      {displayString}
+                    </Badge>
+                  );
+                }
+                return null;
+              })}
             </div>
           </div>
         </div>
@@ -595,7 +609,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   let badgeClassNameInternal = "whitespace-nowrap";
                   if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                   else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
-                  return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {effect.ability.substring(0, 3).toUpperCase()}{effect.change !== 0 ? ' ' : ''} {effect.change > 0 ? '+' : ''} {effect.change} </Badge> );
+                  return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {effect.ability.substring(0, 3).toUpperCase()}{effect.change !== 0 ? '\u00A0' : ''} {effect.change > 0 ? '+' : ''} {effect.change} </Badge> );
                 })}
               </div>
             )}
@@ -638,3 +652,5 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
+
+

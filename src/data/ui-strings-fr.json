@@ -191,8 +191,8 @@
     "skinPlaceholder": "Ex : Claire, Hâlée",
     "skillsPanelTitle": "Compétences",
     "skillsPanelDescription": "Investissez des points dans les capacités de votre personnage.",
-    "skillPointsAvailableLabel": "Points de compétence disponibles:",
-    "skillPointsLeftLabel": "Points de compétence restants:",
+    "skillPointsAvailableLabel": "Points de compétence disponibles: ",
+    "skillPointsLeftLabel": "Points de compétence restants: ",
     "skillPointFormulaClassBaseLabel": "Base {classLabel}",
     "skillPointFormulaIntModLabel": "Modificateur d'intelligence",
     "skillPointFormulaRacialModLabel": "Modificateur racial",
@@ -631,6 +631,9 @@
     "rollDialogGrappleCheckAriaLabel": "Lancer un Test de Lutte",
     "rollDialogCritFailureLabel": "Échec Critique !",
     "barbarianRageUsesLabel": "Utilisations de Rage par Jour",
+    "abilityUsesFormat": "{abilityName} : {usesValue}/{periode}",
+    "periodDay": "jour",
+    "periodEncounter": "rencontre",
     "condition_raging": "Enragé",
     "favoredEnemyTitle": "Ennemis jurés",
     "favoredEnemyDescription": "Sélectionnez les types de créatures contre lesquels votre Rôdeur se spécialise. Les bonus s'appliquent automatiquement lorsque cela est pertinent.",
@@ -649,3 +652,4 @@
     
     
     
+

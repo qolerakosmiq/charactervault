@@ -191,8 +191,8 @@
     "skinPlaceholder": "e.g., Fair, Tanned",
     "skillsPanelTitle": "Skills",
     "skillsPanelDescription": "Invest points in your character's abilities.",
-    "skillPointsAvailableLabel": "Skill Points Available:",
-    "skillPointsLeftLabel": "Skill Points Left:",
+    "skillPointsAvailableLabel": "Skill Points Available: ",
+    "skillPointsLeftLabel": "Skill Points Left: ",
     "skillPointFormulaClassBaseLabel": "{classLabel} Base",
     "skillPointFormulaIntModLabel": "Intelligence Modifier",
     "skillPointFormulaRacialModLabel": "Racial Modifier",
@@ -631,6 +631,9 @@
     "rollDialogGrappleCheckAriaLabel": "Roll Grapple Check",
     "rollDialogCritFailureLabel": "Critical Failure!",
     "barbarianRageUsesLabel": "Rage Uses Per Day",
+    "abilityUsesFormat": "{abilityName}: {usesValue}/{period}",
+    "periodDay": "day",
+    "periodEncounter": "encounter",
     "condition_raging": "Raging",
     "favoredEnemyTitle": "Favored Enemies",
     "favoredEnemyDescription": "Select creature types your Ranger specializes against. Bonuses apply automatically when relevant.",
@@ -649,3 +652,4 @@
     
     
     
+
