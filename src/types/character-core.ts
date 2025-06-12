@@ -843,3 +843,4 @@ export type CharacterUpdateField = keyof Character | `savingThrows.${keyof Savin
 
 export { type AbilityScoreComponentValue }; // Explicitly re-export if used by InfoDisplayDialog directly
 
+

@@ -536,6 +536,14 @@ const CharacterFormCoreInfoSectionComponent = ({
             <p className="text-xs text-muted-foreground">
                 {UI_STRINGS.favoredEnemyDescription || "Select creature types your Ranger specializes against. Bonuses apply automatically when relevant."}
             </p>
+            {aggregatedFeatEffects?.favoredEnemyBonuses && (aggregatedFeatEffects.favoredEnemyBonuses.skillBonus > 0 || aggregatedFeatEffects.favoredEnemyBonuses.damageBonus > 0) && (
+              <div className="mt-1 mb-1 p-2 border border-dashed border-primary/50 rounded-md bg-primary/5 text-sm text-primary">
+                <Info className="inline h-4 w-4 mr-1.5 mb-0.5" />
+                {(UI_STRINGS.favoredEnemyBonusDisplayInfo || "Favored Enemy Bonus: +{skillBonus} to Bluff, Listen, Sense Motive, Spot, Survival checks and +{damageBonus} damage against chosen favored enemies.")
+                  .replace('{skillBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.skillBonus))
+                  .replace('{damageBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.damageBonus))}
+              </div>
+            )}
             {Array.from({ length: favoredEnemySlots }).map((_, index) => (
               <div key={`favored-enemy-${index}`} className="space-y-1">
                 <Label htmlFor={`favored-enemy-input-${index}`} className="text-xs">
@@ -648,3 +656,4 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
+

@@ -821,7 +821,13 @@ export function calculateFeatEffects(
           const skillEffect = effectToPush as SkillEffectDetail & AggregatedFeatEffectBase;
           newAggregatedEffects.allSkillEffectDetails.push(skillEffect); 
           if (skillEffect.isActive && typeof skillEffect.value === 'number' && skillEffect.skillId && skillEffect.skillId !== "SPEC") {
-            newAggregatedEffects.skillBonuses[skillEffect.skillId] = (newAggregatedEffects.skillBonuses[skillEffect.skillId] || 0) + skillEffect.value;
+            if (skillEffect.condition === "vs_favored_enemy") { // Ranger Favored Enemy Skill Bonus
+                if (skillEffect.value > (newAggregatedEffects.favoredEnemyBonuses?.skillBonus || 0)) {
+                    newAggregatedEffects.favoredEnemyBonuses!.skillBonus = skillEffect.value;
+                }
+            } else {
+                newAggregatedEffects.skillBonuses[skillEffect.skillId] = (newAggregatedEffects.skillBonuses[skillEffect.skillId] || 0) + skillEffect.value;
+            }
           }
           break;
         case "abilityScore":
@@ -834,7 +840,16 @@ export function calculateFeatEffects(
           newAggregatedEffects.attackRollBonuses.push(effectToPush as AttackRollEffect & AggregatedFeatEffectBase);
           break;
         case "damageRoll":
-          newAggregatedEffects.damageRollBonuses.push(effectToPush as DamageRollEffect & AggregatedFeatEffectBase);
+          const damageEffect = effectToPush as DamageRollEffect & AggregatedFeatEffectBase;
+           if (damageEffect.isActive && typeof damageEffect.value === 'number') {
+             if (damageEffect.condition === "vs_favored_enemy") { // Ranger Favored Enemy Damage Bonus
+                newAggregatedEffects.favoredEnemyBonuses!.damageBonus = (newAggregatedEffects.favoredEnemyBonuses?.damageBonus || 0) + damageEffect.value;
+             } else {
+                newAggregatedEffects.damageRollBonuses.push(damageEffect);
+             }
+           } else if (damageEffect.isActive && typeof damageEffect.value === 'string') { // Handle dice strings
+             newAggregatedEffects.damageRollBonuses.push(damageEffect);
+           }
           break;
         case "armorClass":
           newAggregatedEffects.acBonuses.push(effectToPush as ArmorClassEffect & AggregatedFeatEffectBase);
@@ -1049,4 +1064,5 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
+
 
