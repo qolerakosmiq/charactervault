@@ -162,10 +162,10 @@
     "pointBuyDialogTitleLoading": "Achat par points des caractéristiques",
     "pointBuyDialogDescription": "Répartissez les points pour définir les caractéristiques initiales de votre personnage. Les scores commencent à 8, et le score maximum est de 18.",
     "pointBuyDialogLoadingAbilities": "Chargement des noms de caractéristiques...",
-    "pointBuyDialogTotalPointsBudgetLabel": "Budget total de points",
-    "pointBuyDialogPointsSpentLabel": "Points dépensés",
-    "pointBuyDialogPointsRemainingLabel": "Points restants",
-    "pointBuyDialogCostLabel": "Coût",
+    "pointBuyDialogTotalPointsBudgetLabel": "Budget total de points:",
+    "pointBuyDialogPointsSpentLabel": "Points dépensés:",
+    "pointBuyDialogPointsRemainingLabel": "Points restants:",
+    "pointBuyDialogCostLabel": "Coût:",
     "pointBuyDialogErrorInvalidApplicationTitle": "Scores invalides",
     "pointBuyDialogErrorInvalidApplicationDesc": "Impossible d'appliquer les scores. Les points dépensés doivent correspondre exactement au budget total de points, ou le budget est invalide.",
     "storyPortraitPanelTitle": "Histoire personnelle & apparence",
@@ -191,8 +191,8 @@
     "skinPlaceholder": "Ex : Claire, Hâlée",
     "skillsPanelTitle": "Compétences",
     "skillsPanelDescription": "Investissez des points dans les capacités de votre personnage.",
-    "skillPointsAvailableLabel": "Points de compétence disponibles: ",
-    "skillPointsLeftLabel": "Points de compétence restants: ",
+    "skillPointsAvailableLabel": "Points de compétence disponibles:",
+    "skillPointsLeftLabel": "Points de compétence restants:",
     "skillPointFormulaClassBaseLabel": "Base {classLabel}",
     "skillPointFormulaIntModLabel": "Modificateur d'intelligence",
     "skillPointFormulaRacialModLabel": "Modificateur racial",
@@ -441,8 +441,8 @@
     "languagesPanelDescription": "Gérez les langues connues de votre personnage.",
     "languagesPanelAddButton": "Ajouter une langue",
     "languagesPanelNoLanguagesKnown": "Aucune langue connue pour l'instant.",
-    "languagesPanelSlotsAvailableLabel": "Langues disponibles: ",
-    "languagesPanelSlotsLeftLabel": "Langues restantes: ",
+    "languagesPanelSlotsAvailableLabel": "Langues disponibles :",
+    "languagesPanelSlotsLeftLabel": "Langues restantes :",
     "languagesPanelFormulaIntModLabel": "Modificateur d'intelligence",
     "languagesPanelFormulaSkillRanksLabel": "Rangs de Langue",
     "languagesPanelComboboxPlaceholder": "Choisir une langue...",
@@ -454,6 +454,9 @@
     "conditionsPanelDescription": "Activez ou désactivez les effets conditionnels des dons et capacités de votre personnage.",
     "conditionsPanelTooltipSourcesLabel": "Sources",
     "conditionsPanelPermanentLabel": "Permanent",
+    "conditionsPanelSourceFeatLabel": "Source :",
+    "conditionsPanelEffectLabel": "Effet :",
+    "conditionsPanelNoEffectDetails": "Aucun effet spécifique listé.",
     "infoDialogUnknownFeatSource": "Don inconnu",
     "infoDialogConditionalBonusesHeading": "Bonus Conditionnels",
     "experiencePanelTitle": "Expérience",
@@ -630,7 +633,6 @@
     "rollDialogInitiativeAriaLabel": "Lancer l'Initiative",
     "rollDialogGrappleCheckAriaLabel": "Lancer un Test de Lutte",
     "rollDialogCritFailureLabel": "Échec Critique !",
-    "barbarianRageUsesLabel": "Utilisations de Rage par Jour",
     "abilityUsesFormat": "{abilityName} : {usesValue}/{periode}",
     "periodDay": "jour",
     "periodEncounter": "rencontre",
@@ -646,10 +648,12 @@
     "rangerCombatStyleArchery": "Tir à l'arc",
     "rangerCombatStyleTwoWeapon": "Combat à deux armes",
     "rangerCombatStyleDescription": "Choisissez votre style de combat au niveau 2 de Rôdeur. Cela accorde des dons supplémentaires à mesure que vous progressez.",
-    "favoredEnemyBonusDisplayInfo": "Bonus d'Ennemi Juré : +{skillBonus} aux tests de Bluff, Perception auditive, Psychologie, Détection, Survie et +{damageBonus} aux dégâts contre les ennemis jurés choisis."
+    "favoredEnemyBonusDisplayInfo": "Bonus d'Ennemi Juré : +{skillBonus} aux tests de Bluff, Perception auditive, Psychologie, Détection, Survie et +{damageBonus} aux dégâts contre les ennemis jurés choisis.",
+    "saveTypeAbbrFortitude": "Vig",
+    "saveTypeAbbrReflex": "Réf",
+    "saveTypeAbbrWill": "Vol"
   }
 }
     
     
     
-

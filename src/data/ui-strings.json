@@ -162,10 +162,10 @@
     "pointBuyDialogTitleLoading": "Point Buy Ability Scores",
     "pointBuyDialogDescription": "Distribute points to set your character's initial ability scores. Scores start at 8, and the maximum score is 18.",
     "pointBuyDialogLoadingAbilities": "Loading ability names...",
-    "pointBuyDialogTotalPointsBudgetLabel": "Total Points Budget",
-    "pointBuyDialogPointsSpentLabel": "Points Spent",
-    "pointBuyDialogPointsRemainingLabel": "Points Remaining",
-    "pointBuyDialogCostLabel": "Cost",
+    "pointBuyDialogTotalPointsBudgetLabel": "Total Points Budget:",
+    "pointBuyDialogPointsSpentLabel": "Points Spent:",
+    "pointBuyDialogPointsRemainingLabel": "Points Remaining:",
+    "pointBuyDialogCostLabel": "Cost:",
     "pointBuyDialogErrorInvalidApplicationTitle": "Invalid Scores",
     "pointBuyDialogErrorInvalidApplicationDesc": "Cannot apply scores. Points spent must exactly match the total points budget, or the budget is invalid.",
     "storyPortraitPanelTitle": "Personal Story & Appearance",
@@ -191,8 +191,8 @@
     "skinPlaceholder": "e.g., Fair, Tanned",
     "skillsPanelTitle": "Skills",
     "skillsPanelDescription": "Invest points in your character's abilities.",
-    "skillPointsAvailableLabel": "Skill Points Available: ",
-    "skillPointsLeftLabel": "Skill Points Left: ",
+    "skillPointsAvailableLabel": "Skill Points Available:",
+    "skillPointsLeftLabel": "Skill Points Left:",
     "skillPointFormulaClassBaseLabel": "{classLabel} Base",
     "skillPointFormulaIntModLabel": "Intelligence Modifier",
     "skillPointFormulaRacialModLabel": "Racial Modifier",
@@ -441,8 +441,8 @@
     "languagesPanelDescription": "Manage your character's known languages.",
     "languagesPanelAddButton": "Add Language",
     "languagesPanelNoLanguagesKnown": "No languages currently known.",
-    "languagesPanelSlotsAvailableLabel": "Languages Available: ",
-    "languagesPanelSlotsLeftLabel": "Languages Left: ",
+    "languagesPanelSlotsAvailableLabel": "Languages Available:",
+    "languagesPanelSlotsLeftLabel": "Languages Left:",
     "languagesPanelFormulaIntModLabel": "Intelligence Modifier",
     "languagesPanelFormulaSkillRanksLabel": "Speak Language Ranks",
     "languagesPanelComboboxPlaceholder": "Select language...",
@@ -454,6 +454,9 @@
     "conditionsPanelDescription": "Toggle conditional effects from your character's feats and abilities.",
     "conditionsPanelTooltipSourcesLabel": "Sources",
     "conditionsPanelPermanentLabel": "Permanent",
+    "conditionsPanelSourceFeatLabel": "Source:",
+    "conditionsPanelEffectLabel": "Effect:",
+    "conditionsPanelNoEffectDetails": "No specific effects listed.",
     "infoDialogUnknownFeatSource": "Unknown Feat",
     "infoDialogConditionalBonusesHeading": "Conditional Bonuses",
     "experiencePanelTitle": "Experience",
@@ -630,7 +633,6 @@
     "rollDialogInitiativeAriaLabel": "Roll Initiative",
     "rollDialogGrappleCheckAriaLabel": "Roll Grapple Check",
     "rollDialogCritFailureLabel": "Critical Failure!",
-    "barbarianRageUsesLabel": "Rage Uses Per Day",
     "abilityUsesFormat": "{abilityName}: {usesValue}/{period}",
     "periodDay": "day",
     "periodEncounter": "encounter",
@@ -646,10 +648,12 @@
     "rangerCombatStyleArchery": "Archery",
     "rangerCombatStyleTwoWeapon": "Two-Weapon Fighting",
     "rangerCombatStyleDescription": "Choose your combat style at Ranger level 2. This grants bonus feats as you level.",
-    "favoredEnemyBonusDisplayInfo": "Favored Enemy Bonus: +{skillBonus} to Bluff, Listen, Sense Motive, Spot, Survival checks and +{damageBonus} damage against chosen favored enemies."
+    "favoredEnemyBonusDisplayInfo": "Favored Enemy Bonus: +{skillBonus} to Bluff, Listen, Sense Motive, Spot, Survival checks and +{damageBonus} damage against chosen favored enemies.",
+    "saveTypeAbbrFortitude": "Fort",
+    "saveTypeAbbrReflex": "Ref",
+    "saveTypeAbbrWill": "Will"
   }
 }
     
     
     
-
