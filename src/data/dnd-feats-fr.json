@@ -871,6 +871,7 @@
       "description": "<b>Avantage :</b> La vitesse terrestre d'un moine est supérieure à la normale pour sa race de +3 mètres. Cet avantage ne s'applique que s'il ne porte pas d'armure et n'est pas encombré. Au niveau 3, ce bonus passe à +6 mètres. Ce bonus augmente de +3 mètres tous les trois niveaux de moine par la suite.",
       "isClassFeature": true,
       "type": "special-ex",
+      "permanentEffect": true,
       "effectsText": "+3m de vitesse au N1, augmente de +3m tous les 3 niveaux de Moine (sans armure, sans encombrement).",
       "effects": [
         {
@@ -1051,6 +1052,39 @@
       "type": "special-ex",
       "effectsText": "Ne subit aucun dégât sur un jet de Réflexes réussi, la moitié sur un jet raté, contre les effets infligeant la moitié des dégâts.",
       "effects": [{ "type": "note", "text": "Sur un jet de Réflexes réussi contre une attaque qui inflige normalement la moitié des dégâts, ne subit aucun dégât. Sur un jet raté, ne subit que la moitié des dégâts." }]
+    },
+    {
+      "value": "class-monk-ki-strike",
+      "label": "Frappe ki",
+      "description": "Au niveau 4, les attaques à mains nues d'un moine sont renforcées par le ki. Ses attaques à mains nues sont traitées comme des armes magiques dans le but d'infliger des dégâts aux créatures avec réduction des dégâts. La frappe ki s'améliore avec le niveau de moine du personnage. Au niveau 10, ses attaques à mains nues sont également traitées comme des armes loyales dans le but d'infliger des dégâts aux créatures avec réduction des dégâts. Au niveau 16, ses attaques à mains nues sont traitées comme des armes en adamantium dans le but d'infliger des dégâts aux créatures avec réduction des dégâts et de contourner la solidité.",
+      "effectsText": "Les frappes à mains nues comptent comme magiques (N4+), loyales (N10+), en adamantium (N16+) pour la RD/solidité.",
+      "isClassFeature": true,
+      "type": "special-su",
+      "permanentEffect": true,
+      "effects": [
+        {
+          "type": "modifiesMechanic",
+          "mechanicKey": "unarmedStrikeEnhancements",
+          "scaleWithClassLevel": {
+            "classId": "monk",
+            "specificLevels": [
+              { "level": 4, "value": ["magic"] },
+              { "level": 10, "value": ["magic", "lawful"] },
+              { "level": 16, "value": ["magic", "lawful", "adamantine"] }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "value": "class-monk-slow-fall",
+      "label": "Chute ralentie",
+      "description": "Au niveau 4 ou supérieur, un moine à portée de bras d'un mur peut l'utiliser pour ralentir sa descente. Lorsqu'il utilise cette capacité, il subit des dégâts comme si la chute était de 6 mètres (20 pieds) de moins qu'elle ne l'est réellement. La capacité du moine à ralentir sa chute (c'est-à-dire à réduire la distance effective de la chute lorsqu'il est près d'un mur) s'améliore avec son niveau de moine jusqu'à ce qu'au niveau 20, il puisse utiliser un mur pour ralentir sa descente et tomber de n'importe quelle distance sans subir de dégâts.",
+      "effectsText": "Réduit les dégâts de chute comme si la chute était plus courte (6m au N4, +3m/2 niveaux après ; toute distance au N20).",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "permanentEffect": true,
+      "effects": [{ "type": "note", "text": "Réduit les dégâts de chute près d'un mur. Distance de chute effective réduite de 6m (N4), 9m (N6), 12m (N8), 15m (N10), 18m (N12), 21m (N14), 24m (N16), 27m (N18), et toute distance au N20." }]
     },
     {
       "value": "class-monk-diamond-body",

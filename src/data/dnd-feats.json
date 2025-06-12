@@ -871,6 +871,7 @@
       "description": "<b>Benefit:</b> A monk’s land speed is faster than the norm for her race by +10 feet. This benefit applies only when she is wearing no armor and is unencumbered. At 3rd level, this bonus increases to +20 feet. This bonus increases by +10 feet for every three monk levels thereafter.",
       "isClassFeature": true,
       "type": "special-ex",
+      "permanentEffect": true,
       "effectsText": "+10ft speed at L1, increases by +10ft every 3 Monk levels (unarmored, unencumbered).",
       "effects": [
         {
@@ -1051,6 +1052,39 @@
       "type": "special-ex",
       "effectsText": "Take no damage on successful Reflex save, half on failed save, vs. half-damage effects.",
       "effects": [{ "type": "note", "text": "On a successful Reflex save against an attack that normally deals half damage, take no damage. On a failed save, take only half damage." }]
+    },
+    {
+      "value": "class-monk-ki-strike",
+      "label": "Ki Strike",
+      "description": "At 4th level, a monk’s unarmed attacks are empowered with ki. Her unarmed attacks are treated as magic weapons for the purpose of dealing damage to creatures with damage reduction. Ki strike improves with the character’s monk level. At 10th level, her unarmed attacks are also treated as lawful weapons for the purpose of dealing damage to creatures with damage reduction. At 16th level, her unarmed attacks are treated as adamantine weapons for the purpose of dealing damage to creatures with damage reduction and bypassing hardness.",
+      "effectsText": "Unarmed strikes count as magic (L4+), lawful (L10+), adamantine (L16+) for DR/hardness.",
+      "isClassFeature": true,
+      "type": "special-su",
+      "permanentEffect": true,
+      "effects": [
+        {
+          "type": "modifiesMechanic",
+          "mechanicKey": "unarmedStrikeEnhancements",
+          "scaleWithClassLevel": {
+            "classId": "monk",
+            "specificLevels": [
+              { "level": 4, "value": ["magic"] },
+              { "level": 10, "value": ["magic", "lawful"] },
+              { "level": 16, "value": ["magic", "lawful", "adamantine"] }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "value": "class-monk-slow-fall",
+      "label": "Slow Fall",
+      "description": "At 4th level or higher, a monk within arm’s reach of a wall can use it to slow her descent. When she uses this ability, she takes damage as if the fall were 20 feet shorter than it actually is. The monk’s ability to slow her fall (that is, to reduce the effective distance of the fall when next to a wall) improves with her monk level until at 20th level she can use a wall to slow her descent and fall any distance without harm.",
+      "effectsText": "Reduce falling damage as if fall were shorter (20ft at L4, +10ft/2 levels after; any distance at L20).",
+      "isClassFeature": true,
+      "type": "special-ex",
+      "permanentEffect": true,
+      "effects": [{ "type": "note", "text": "Reduce falling damage when near a wall. Effective fall distance is reduced by 20ft (L4), 30ft (L6), 40ft (L8), 50ft (L10), 60ft (L12), 70ft (L14), 80ft (L16), 90ft (L18), and any distance at L20." }]
     },
     {
       "value": "class-monk-diamond-body",
