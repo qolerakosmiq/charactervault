@@ -427,3 +427,5 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
 };
 ResistancesPanelComponent.displayName = 'ResistancesPanelComponent';
 export const ResistancesPanel = React.memo(ResistancesPanelComponent);
+
+    

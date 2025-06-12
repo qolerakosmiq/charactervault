@@ -459,3 +459,5 @@ const SkillsFormSectionComponent = ({
 SkillsFormSectionComponent.displayName = 'SkillsFormSectionComponent';
 
 export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
+
+    
