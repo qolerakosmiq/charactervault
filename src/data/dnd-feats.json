@@ -275,18 +275,18 @@
     },
     {
       "value": "class-barbarian-uncanny-dodge",
-      "label": "Uncanny Dodge",
+      "label": "Uncanny Dodge (Barbarian)",
       "description": "<b>Benefit:</b> At 2nd level, a barbarian retains her Dexterity bonus to AC (if any) even if she is caught flat-footed or struck by an invisible attacker. However, she still loses her Dexterity bonus to AC if immobilized. If a character already has uncanny dodge from a different class, a barbarian automatically gains improved uncanny dodge (see below) instead.",
-      "effectsText": "Retains Dex bonus to AC if flat-footed or vs. invisible attacker. Cannot be flanked except by a rogue of at least 4 levels higher.",
+      "effectsText": "Retains Dex bonus to AC if flat-footed or vs. invisible attacker (if not immobilized).",
       "isClassFeature": true,
       "type": "special-ex",
-      "effects": [{ "type": "note", "text": "Retain Dexterity bonus to AC (if any) even if caught flat-footed or struck by an invisible attacker. Cannot be flanked except by a rogue of at least four levels higher than the character." }]
+      "effects": [{ "type": "note", "text": "Retains her Dexterity bonus to AC (if any) even if she is caught flat-footed or struck by an invisible attacker. Still loses Dex bonus if immobilized." }]
     },
     {
       "value": "class-barbarian-trap-sense",
-      "label": "Trap Sense",
+      "label": "Trap Sense (Barbarian)",
       "description": "<b>Benefit:</b> At 3rd level, a barbarian gains a +1 bonus on Reflex saves made to avoid traps and a +1 dodge bonus to AC against attacks made by traps. These bonuses increase by +1 for every three barbarian levels thereafter (6th, 9th, 12th, 15th, and 18th level).",
-      "effectsText": "Scaling bonus to Reflex saves vs. traps and dodge AC vs. trap attacks (+1 at L3, +1/3 levels after).",
+      "effectsText": "Bonus to Reflex saves and Dodge AC vs. traps (+1/3 levels starting L3).",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [
@@ -323,9 +323,9 @@
     },
     {
       "value": "class-barbarian-improved-uncanny-dodge",
-      "label": "Improved Uncanny Dodge",
+      "label": "Improved Uncanny Dodge (Barbarian)",
       "description": "<b>Benefit:</b> At 5th level and higher, a barbarian can no longer be flanked. This defense denies a rogue the ability to sneak attack the character by flanking her, unless the attacker has at least four more rogue levels than the target has barbarian levels.",
-      "effectsText": "Cannot be flanked (denies sneak attack from flanking unless Rogue attacker is 4+ levels higher).",
+      "effectsText": "Cannot be flanked. Denies sneak attack from flanking unless Rogue attacker is 4+ levels higher.",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [{ "type": "note", "text": "Cannot be flanked. Denies sneak attack from flanking unless Rogue attacker is 4+ levels higher." }]
@@ -1023,7 +1023,7 @@
       "description": "At 2nd level or higher, if she makes a successful Reflex saving throw against an attack that normally deals half damage on a successful save, she instead takes no damage.",
       "isClassFeature": true,
       "type": "special-ex",
-      "effectsText": "Take no damage on successful Reflex save vs. half-damage effects.",
+      "effectsText": "Takes no damage on successful Reflex save vs. half-damage effects.",
       "effects": [{ "type": "note", "text": "On a successful Reflex save against an attack that normally deals half damage, take no damage instead." }]
     },
     {
@@ -1478,6 +1478,33 @@
           }
         }
       ]
+    },
+    {
+      "value": "class-rogue-evasion",
+      "label": "Evasion (Rogue)",
+      "description": "At 2nd level and higher, a rogue can avoid even magical and unusual attacks with great agility. If she makes a successful Reflex saving throw against an attack that normally deals half damage on a successful save, she instead takes no damage.",
+      "effectsText": "Takes no damage on a successful Reflex save vs. attacks that normally deal half damage.",
+      "effects": [{ "type": "note", "text": "If she makes a successful Reflex saving throw against an attack that normally deals half damage on a successful save, she instead takes no damage." }],
+      "isClassFeature": true,
+      "type": "special-ex"
+    },
+    {
+      "value": "class-rogue-uncanny-dodge",
+      "label": "Uncanny Dodge (Rogue)",
+      "description": "Starting at 4th level, a rogue can react to danger before her senses would normally allow her to do so. She retains her Dexterity bonus to AC (if any) even if she is caught flat-footed or struck by an invisible attacker. However, she still loses her Dexterity bonus to AC if immobilized.",
+      "effectsText": "Retains Dex bonus to AC if flat-footed or vs. invisible attacker (if not immobilized).",
+      "effects": [{ "type": "note", "text": "Retains her Dexterity bonus to AC (if any) even if she is caught flat-footed or struck by an invisible attacker. Still loses Dex bonus if immobilized." }],
+      "isClassFeature": true,
+      "type": "special-ex"
+    },
+    {
+      "value": "class-rogue-improved-uncanny-dodge",
+      "label": "Improved Uncanny Dodge (Rogue)",
+      "description": "At 8th level and higher, a rogue can no longer be flanked. This defense denies another rogue the ability to sneak attack the character by flanking her, unless the attacker has at least four more rogue levels than the target has rogue levels.",
+      "effectsText": "Cannot be flanked. Denies sneak attack from flanking unless attacker has 4+ more rogue levels.",
+      "effects": [{ "type": "note", "text": "Can no longer be flanked. Denies another rogue the ability to sneak attack by flanking, unless the attacker has at least four more rogue levels than the target has rogue levels." }],
+      "isClassFeature": true,
+      "type": "special-ex"
     }
   ],
   "FEAT_TYPES_DATA": [
@@ -1490,3 +1517,5 @@
     { "value": "special-sp", "label": "Special Ability (Sp)" }
   ]
 }
+
+    

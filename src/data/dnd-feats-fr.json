@@ -275,18 +275,18 @@
     },
     {
       "value": "class-barbarian-uncanny-dodge",
-      "label": "Esquive instinctive",
+      "label": "Esquive instinctive (Barbare)",
       "description": "<b>Avantage :</b> Au niveau 2, un barbare conserve son bonus de Dextérité à la CA (le cas échéant) même s'il est pris au dépourvu ou frappé par un attaquant invisible. Cependant, il perd toujours son bonus de Dextérité à la CA s'il est immobilisé. Si un personnage possède déjà l'esquive instinctive d'une autre classe, un barbare gagne automatiquement l'esquive instinctive améliorée (voir ci-dessous) à la place.",
-      "effectsText": "Conserve le bonus de Dex à la CA si pris au dépourvu/vs invisible. Ne peut être pris en tenaille que par un roublard ayant au moins quatre niveaux de plus.",
+      "effectsText": "Conserve le bonus de Dex à la CA si pris au dépourvu/vs invisible (si non immobilisé).",
       "isClassFeature": true,
       "type": "special-ex",
-      "effects": [{ "type": "note", "text": "Conserve son bonus de Dextérité à la CA (le cas échéant) même s'il est pris au dépourvu ou frappé par un attaquant invisible. Ne peut être pris en tenaille que par un roublard ayant au moins quatre niveaux de plus que le personnage." }]
+      "effects": [{ "type": "note", "text": "Conserve son bonus de Dextérité à la CA (le cas échéant) même s'il est pris au dépourvu ou frappé par un attaquant invisible. Perd toujours son bonus de Dex s'il est immobilisé." }]
     },
     {
       "value": "class-barbarian-trap-sense",
-      "label": "Sens des pièges",
+      "label": "Sens des pièges (Barbare)",
       "description": "<b>Avantage :</b> Au niveau 3, un barbare gagne un bonus de +1 aux jets de Réflexes effectués pour éviter les pièges et un bonus d'esquive de +1 à la CA contre les attaques faites par les pièges. Ces bonus augmentent de +1 tous les trois niveaux de barbare par la suite (6e, 9e, 12e, 15e et 18e niveau).",
-      "effectsText": "Bonus évolutif aux jets de Réflexes contre les pièges (+1 au N3, +1/3 niveaux après) et bonus d'esquive à la CA contre les attaques de pièges.",
+      "effectsText": "Bonus aux jets de Réflexes et CA d'Esquive contre les pièges (+1/3 niveaux à partir du N3).",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [
@@ -323,9 +323,9 @@
     },
     {
       "value": "class-barbarian-improved-uncanny-dodge",
-      "label": "Esquive instinctive améliorée",
+      "label": "Esquive instinctive améliorée (Barbare)",
       "description": "<b>Avantage :</b> Au niveau 5 et supérieur, un barbare ne peut plus être pris en tenaille. Cette défense empêche un roublard de lui infliger une attaque sournoise en le prenant en tenaille, à moins que l'attaquant n'ait au moins quatre niveaux de roublard de plus que les niveaux de barbare de la cible.",
-      "effectsText": "Ne peut plus être pris en tenaille (empêche l'attaque sournoise par prise en tenaille sauf si le roublard a 4 niveaux de plus).",
+      "effectsText": "Ne peut plus être pris en tenaille. Empêche l'attaque sournoise par prise en tenaille sauf si l'attaquant roublard a 4 niveaux de plus.",
       "isClassFeature": true,
       "type": "special-ex",
       "effects": [{ "type": "note", "text": "Ne peut plus être pris en tenaille. Empêche l'attaque sournoise par prise en tenaille sauf si l'attaquant roublard a au moins quatre niveaux de plus que les niveaux de barbare de la cible." }]
@@ -1478,15 +1478,44 @@
           }
         }
       ]
+    },
+    {
+      "value": "class-rogue-evasion",
+      "label": "Esquive (Roublard)",
+      "description": "Au niveau 2 ou supérieur, un roublard peut éviter même les attaques magiques et inhabituelles avec une grande agilité. S'il réussit un jet de sauvegarde de Réflexes contre une attaque qui inflige normalement la moitié des dégâts en cas de jet réussi, il ne subit aucun dégât à la place.",
+      "effectsText": "Ne subit aucun dégât en cas de jet de Réflexes réussi contre les attaques qui infligent normalement la moitié des dégâts.",
+      "effects": [{ "type": "note", "text": "S'il réussit un jet de sauvegarde de Réflexes contre une attaque qui inflige normalement la moitié des dégâts en cas de jet réussi, il ne subit aucun dégât à la place." }],
+      "isClassFeature": true,
+      "type": "special-ex"
+    },
+    {
+      "value": "class-rogue-uncanny-dodge",
+      "label": "Esquive instinctive (Roublard)",
+      "description": "À partir du niveau 4, un roublard peut réagir au danger avant que ses sens ne le lui permettent normalement. Il conserve son bonus de Dextérité à la CA (le cas échéant) même s'il est pris au dépourvu ou frappé par un attaquant invisible. Cependant, il perd toujours son bonus de Dextérité à la CA s'il est immobilisé.",
+      "effectsText": "Conserve le bonus de Dex à la CA si pris au dépourvu ou vs invisible (si non immobilisé).",
+      "effects": [{ "type": "note", "text": "Conserve son bonus de Dextérité à la CA (le cas échéant) même s'il est pris au dépourvu ou frappé par un attaquant invisible. Perd toujours son bonus de Dex s'il est immobilisé." }],
+      "isClassFeature": true,
+      "type": "special-ex"
+    },
+    {
+      "value": "class-rogue-improved-uncanny-dodge",
+      "label": "Esquive instinctive améliorée (Roublard)",
+      "description": "Au niveau 8 ou supérieur, un roublard ne peut plus être pris en tenaille. Cette défense empêche un autre roublard de lui infliger une attaque sournoise en le prenant en tenaille, à moins que l'attaquant n'ait au moins quatre niveaux de roublard de plus que les niveaux de roublard de la cible.",
+      "effectsText": "Ne peut plus être pris en tenaille. Empêche l'attaque sournoise par prise en tenaille, sauf si l'attaquant a 4 niveaux de roublard de plus.",
+      "effects": [{ "type": "note", "text": "Ne peut plus être pris en tenaille. Empêche un autre roublard de lui infliger une attaque sournoise en le prenant en tenaille, à moins que l'attaquant n'ait au moins quatre niveaux de roublard de plus que les niveaux de roublard de la cible." }],
+      "isClassFeature": true,
+      "type": "special-ex"
     }
   ],
   "FEAT_TYPES_DATA": [
-    { "value": "general", "label": "General" },
-    { "value": "special", "label": "Special" },
-    { "value": "itemCreation", "label": "Item Creation" },
-    { "value": "metamagic", "label": "Metamagic" },
-    { "value": "special-ex", "label": "Special Ability (Ex)" },
-    { "value": "special-su", "label": "Special Ability (Su)" },
-    { "value": "special-sp", "label": "Special Ability (Sp)" }
+    { "value": "general", "label": "Général" },
+    { "value": "special", "label": "Spécial" },
+    { "value": "itemCreation", "label": "Création d'objet" },
+    { "value": "metamagic", "label": "Métamagie" },
+    { "value": "special-ex", "label": "Capacité spéciale (Ext)" },
+    { "value": "special-su", "label": "Capacité spéciale (Sur)" },
+    { "value": "special-sp", "label": "Capacité spéciale (Mag)" }
   ]
 }
+
+    
