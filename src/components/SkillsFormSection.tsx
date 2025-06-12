@@ -300,10 +300,10 @@ const SkillsFormSectionComponent = ({
         <div className="mb-4 p-3 border rounded-md bg-muted/30">
           <div className="flex justify-between items-center">
             <p className="text-sm font-medium">
-              {UI_STRINGS.skillPointsAvailableLabel || "Skill Points Available:"} <span className="text-xl font-bold text-primary">{totalSkillPointsAvailable}</span>
+              {UI_STRINGS.skillPointsAvailableLabel || "Skill Points Available:"}{'\u00A0'}<span className="text-xl font-bold text-primary">{totalSkillPointsAvailable}</span>
             </p>
             <p className="text-sm font-medium">
-              {UI_STRINGS.skillPointsLeftLabel || "Skill Points Left:"} <span className={cn(
+              {UI_STRINGS.skillPointsLeftLabel || "Skill Points Left:"}{'\u00A0'}<span className={cn(
                 "text-xl font-bold",
                 skillPointsLeft > 0 && "text-emerald-500",
                 skillPointsLeft < 0 && "text-destructive",
@@ -315,26 +315,26 @@ const SkillsFormSectionComponent = ({
              {firstClass?.className && classLabel ? (
                 <>
                   <p>
-                    ({(UI_STRINGS.skillPointFormulaClassBaseLabel || "{classLabel} Base").replace("{classLabel}", classLabel)} <Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
-                    {' + '} {UI_STRINGS.skillPointFormulaIntModLabel || "Intelligence Modifier"} <Badge variant="outline" className={badgeClassName}>{intelligenceModifier}</Badge>
+                    ({(UI_STRINGS.skillPointFormulaClassBaseLabel || "{classLabel} Base").replace("{classLabel}", classLabel)}{'\u00A0'}<Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
+                    {' + '}{UI_STRINGS.skillPointFormulaIntModLabel || "Intelligence Modifier"}{'\u00A0'}<Badge variant="outline" className={badgeClassName}>{intelligenceModifier}</Badge>
                     {(racialBonusSkillPoints || 0) !== 0 && (
                         <>
-                        {' + '} {UI_STRINGS.skillPointFormulaRacialModLabel || "Racial Modifier"} <Badge variant="outline" className={badgeClassName}>{racialBonusSkillPoints || 0}</Badge>
+                        {' + '}{UI_STRINGS.skillPointFormulaRacialModLabel || "Racial Modifier"}{'\u00A0'}<Badge variant="outline" className={badgeClassName}>{racialBonusSkillPoints || 0}</Badge>
                         </>
                     )}
-                    {UI_STRINGS.skillPointFormulaMinOneLabel || ", Minimum 1"}) × <Badge variant="outline" className={badgeClassName}>4</Badge> {UI_STRINGS.skillPointFormulaFirstLevelFactor || "First Level"}
-                    {' = '} <span className="font-bold text-primary">{pointsForFirstLevel}</span>
+                    {UI_STRINGS.skillPointFormulaMinOneLabel || ", Minimum 1"}) × <Badge variant="outline" className={badgeClassName}>4</Badge>{'\u00A0'}{UI_STRINGS.skillPointFormulaFirstLevelFactor || "First Level"}
+                    {' = '}{'\u00A0'}<span className="font-bold text-primary">{pointsForFirstLevel}</span>
                   </p>
                   <p>
-                    + ({(UI_STRINGS.skillPointFormulaClassBaseLabel || "{classLabel} Base").replace("{classLabel}", classLabel)} <Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
-                    {' + '} {UI_STRINGS.skillPointFormulaIntModLabel || "Intelligence Modifier"} <Badge variant="outline" className={badgeClassName}>{intelligenceModifier}</Badge>
+                    + ({(UI_STRINGS.skillPointFormulaClassBaseLabel || "{classLabel} Base").replace("{classLabel}", classLabel)}{'\u00A0'}<Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
+                    {' + '}{UI_STRINGS.skillPointFormulaIntModLabel || "Intelligence Modifier"}{'\u00A0'}<Badge variant="outline" className={badgeClassName}>{intelligenceModifier}</Badge>
                     {(racialBonusSkillPoints || 0) !== 0 && (
                         <>
-                        {' + '} {UI_STRINGS.skillPointFormulaRacialModLabel || "Racial Modifier"} <Badge variant="outline" className={badgeClassName}>{racialBonusSkillPoints || 0}</Badge>
+                        {' + '}{UI_STRINGS.skillPointFormulaRacialModLabel || "Racial Modifier"}{'\u00A0'}<Badge variant="outline" className={badgeClassName}>{racialBonusSkillPoints || 0}</Badge>
                         </>
                     )}
-                    {UI_STRINGS.skillPointFormulaMinOneLabel || ", Minimum 1"}) × <Badge variant="outline" className={badgeClassName}>{characterLevel > 1 ? (characterLevel -1) : 0}</Badge> {UI_STRINGS.skillPointFormulaLevelProgressionFactor || "Level Progression"}
-                    {' = '} <span className="font-bold text-primary">{pointsFromLevelProgression}</span>
+                    {UI_STRINGS.skillPointFormulaMinOneLabel || ", Minimum 1"}) × <Badge variant="outline" className={badgeClassName}>{characterLevel > 1 ? (characterLevel -1) : 0}</Badge>{'\u00A0'}{UI_STRINGS.skillPointFormulaLevelProgressionFactor || "Level Progression"}
+                    {' = '}{'\u00A0'}<span className="font-bold text-primary">{pointsFromLevelProgression}</span>
                   </p>
                 </>
               ) : (
@@ -402,9 +402,7 @@ const SkillsFormSectionComponent = ({
                   <div className="flex items-center">
                       <Label htmlFor={`skill_ranks_${skillInstanceProp.id}`} className="text-sm pr-1 leading-tight flex-grow flex items-center">
                           {skillDef.name}
-                          {skillDef.isCustom && (
-                              <Badge variant="outline" className="text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>
-                          )}
+                          {skillDef.isCustom && (<>{'\u00A0'}<Badge variant="outline" className="text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge></>)}
                       </Label>
                   </div>
                   <div className="flex items-center justify-end w-20 pr-1">
@@ -461,3 +459,4 @@ const SkillsFormSectionComponent = ({
 SkillsFormSectionComponent.displayName = 'SkillsFormSectionComponent';
 
 export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
+
