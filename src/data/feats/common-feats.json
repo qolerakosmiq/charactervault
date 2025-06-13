@@ -14,7 +14,7 @@
         { "type": "skill", "skillId": "jump", "value": 2, "bonusType": "untyped" }
       ],
       "isClassFeature": false,
-      "type": "special"
+      "type": "general"
     },
     {
       "value": "agile",
@@ -29,23 +29,23 @@
         { "type": "skill", "skillId": "escape-artist", "value": 2, "bonusType": "untyped" }
       ],
       "isClassFeature": false,
-      "type": "special"
+      "type": "general"
     },
     {
       "value": "alertness",
       "label": { "en": "Alertness", "fr": "Vigilance" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Listen and Spot checks.",
-        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests d'Écoute et de Détection."
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Perception auditive et de Détection."
       },
-      "effectsText": { "en": "+2 Listen, +2 Spot.", "fr": "+2 Écoute, +2 Détection." },
+      "effectsText": { "en": "+2 Listen, +2 Spot.", "fr": "+2 Perception auditive, +2 Détection." },
       "permanentEffect": true,
       "effects": [
         { "type": "skill", "skillId": "listen", "value": 2, "bonusType": "untyped", "condition": "always_active_alertness" },
         { "type": "skill", "skillId": "spot", "value": 2, "bonusType": "untyped", "condition": "always_active_alertness" }
       ],
       "isClassFeature": false,
-      "type": "special"
+      "type": "general"
     },
     {
       "value": "animal-affinity",
@@ -60,7 +60,7 @@
         { "type": "skill", "skillId": "ride", "value": 2, "bonusType": "untyped" }
       ],
       "isClassFeature": false,
-      "type": "special"
+      "type": "general"
     },
     {
       "value": "athletic",
@@ -75,7 +75,22 @@
         { "type": "skill", "skillId": "swim", "value": 2, "bonusType": "untyped" }
       ],
       "isClassFeature": false,
-      "type": "special"
+      "type": "general"
+    },
+    {
+      "value": "augment-summoning",
+      "label": { "en": "Augment Summoning", "fr": "Convocation augmentée" },
+      "description": {
+        "en": "<b>Prerequisite:</b> Spell Focus (conjuration).<br/><b>Benefit:</b> Each creature you conjure with any summon spell gains a +4 enhancement bonus to Strength and Constitution for the duration of the spell that summoned it.",
+        "fr": "<b>Prérequis :</b> École renforcée (Invocation).<br/><b>Avantage :</b> Chaque créature que vous convoquez avec n'importe quel sort de convocation gagne un bonus d'altération de +4 en Force et en Constitution pendant la durée du sort qui l'a convoquée."
+      },
+      "prerequisites": { "feats": ["spell-focus-conjuration"] },
+      "effectsText": { "en": "Summoned creatures gain +4 STR, +4 CON.", "fr": "Les créatures convoquées gagnent +4 FOR, +4 CON." },
+      "effects": [
+        { "type": "note", "text": { "en": "Summoned creatures gain +4 enhancement bonus to Strength and Constitution.", "fr": "Les créatures convoquées gagnent un bonus d'altération de +4 en Force et en Constitution." } }
+      ],
+      "type": "general",
+      "category": "fighterBonusFeat"
     },
     {
       "value": "combat-casting",
@@ -86,25 +101,55 @@
       },
       "effectsText": { "en": "+4 Concentration when casting defensively, grappling, or pinned.", "fr": "+4 Concentration lorsque vous lancez en défensif, que vous êtes agrippé ou maîtrisé." },
       "effects": [
-        { "type": "skill", "skillId": "concentration", "value": 4, "bonusType": "untyped", "condition": "When casting defensively, grappling, or pinned" }
+        { "type": "skill", "skillId": "concentration", "value": 4, "bonusType": "untyped", "condition": "casting_defensively_or_grappled" }
       ],
       "isClassFeature": false,
-      "type": "special"
+      "type": "general"
+    },
+    {
+      "value": "combat-expertise",
+      "label": { "en": "Combat Expertise", "fr": "Expertise du combat" },
+      "description": {
+        "en": "<b>Prerequisite:</b> Intelligence 13.<br/><b>Benefit:</b> When you use the attack action or the full attack action in melee, you can take a penalty of as much as –5 on your attack roll and add the same number (up to +5) as a dodge bonus to your Armor Class. This number may not exceed your base attack bonus. The changes to attack rolls and Armor Class last until your next action.<br/><b>Normal:</b> A character without the Combat Expertise feat can fight defensively while using the attack or full attack action to take a –4 penalty on attacks and gain a +2 dodge bonus to AC.",
+        "fr": "<b>Prérequis :</b> Intelligence 13.<br/><b>Avantage :</b> Lorsque vous utilisez l'action d'attaque ou l'action d'attaque à outrance au corps à corps, vous pouvez subir une pénalité allant jusqu'à –5 à votre jet d'attaque et ajouter le même nombre (jusqu'à +5) comme bonus d'esquive à votre Classe d'Armure. Ce nombre ne peut pas dépasser votre bonus d'attaque de base. Les modifications aux jets d'attaque et à la Classe d'Armure durent jusqu'à votre prochaine action.<br/><b>Normal :</b> Un personnage sans le don Expertise du combat peut combattre défensivement en utilisant l'action d'attaque ou d'attaque à outrance pour subir une pénalité de –4 aux attaques et gagner un bonus d'esquive de +2 à la CA."
+      },
+      "prerequisites": { "abilities": { "intelligence": 13 } },
+      "effectsText": { "en": "Trade attack penalty for AC dodge bonus (up to -5 attack for +5 AC).", "fr": "Échangez une pénalité d'attaque contre un bonus d'esquive à la CA (jusqu'à -5 à l'attaque pour +5 à la CA)." },
+      "effects": [
+        { "type": "note", "text": { "en": "Allows trading attack penalty for AC dodge bonus.", "fr": "Permet d'échanger une pénalité d'attaque contre un bonus d'esquive à la CA." } }
+      ],
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "improved-trip",
+      "label": { "en": "Improved Trip", "fr": "Croc-en-jambe amélioré" },
+      "description": {
+        "en": "<b>Prerequisites:</b> Int 13, Combat Expertise.<br/><b>Benefit:</b> You do not provoke an attack of opportunity when you attempt to trip an opponent while you are unarmed. You also gain a +4 bonus on your Strength check to trip an opponent. If you trip an opponent in melee combat, you immediately get a melee attack against that opponent as if you hadn’t used your attack for the trip attempt.<br/><b>Normal:</b> You provoke an attack of opportunity when you attempt to trip an opponent while you are unarmed.",
+        "fr": "<b>Prérequis :</b> Int 13, Expertise du combat.<br/><b>Avantage :</b> Vous ne provoquez pas d'attaque d'opportunité lorsque vous tentez de faire un croc-en-jambe à un adversaire alors que vous êtes désarmé. Vous gagnez également un bonus de +4 à votre test de Force pour faire un croc-en-jambe à un adversaire. Si vous faites un croc-en-jambe à un adversaire en combat au corps à corps, vous obtenez immédiatement une attaque au corps à corps contre cet adversaire comme si vous n'aviez pas utilisé votre attaque pour la tentative de croc-en-jambe.<br/><b>Normal :</b> Vous provoquez une attaque d'opportunité lorsque vous tentez de faire un croc-en-jambe à un adversaire alors que vous êtes désarmé."
+      },
+      "prerequisites": { "abilities": { "intelligence": 13 }, "feats": ["combat-expertise"] },
+      "effectsText": { "en": "No AoO for unarmed trip. +4 on STR check to trip. Immediate attack on successful trip.", "fr": "Pas d'AdO pour croc-en-jambe à mains nues. +4 au test de FOR pour croc-en-jambe. Attaque immédiate sur croc-en-jambe réussi." },
+      "effects": [
+        { "type": "note", "text": { "en": "No AoO for unarmed trip. +4 bonus on Strength check to trip. Immediate melee attack after successful trip.", "fr": "Pas d'attaque d'opportunité pour un croc-en-jambe à mains nues. Bonus de +4 au test de Force pour le croc-en-jambe. Attaque au corps à corps immédiate après un croc-en-jambe réussi." } }
+      ],
+      "type": "general",
+      "category": "fighterBonusFeat"
     },
     {
       "value": "deceitful",
       "label": { "en": "Deceitful", "fr": "Subtil" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Disguise and Forgery checks.",
-        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Déguisement et de Falsification."
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Déguisement et de Contrefaçon."
       },
-      "effectsText": { "en": "+2 Disguise, +2 Forgery.", "fr": "+2 Déguisement, +2 Falsification." },
+      "effectsText": { "en": "+2 Disguise, +2 Forgery.", "fr": "+2 Déguisement, +2 Contrefaçon." },
       "effects": [
         { "type": "skill", "skillId": "disguise", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "forgery", "value": 2, "bonusType": "untyped" }
       ],
       "isClassFeature": false,
-      "type": "special"
+      "type": "general"
     },
     {
       "value": "deft-hands",
@@ -119,22 +164,95 @@
         { "type": "skill", "skillId": "use-rope", "value": 2, "bonusType": "untyped" }
       ],
       "isClassFeature": false,
-      "type": "special"
+      "type": "general"
     },
     {
       "value": "diligent",
       "label": { "en": "Diligent", "fr": "Application" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Appraise and Decipher Script checks.",
-        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests d'Estimation et de Déchiffrage d'écrits."
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests d'Estimation et de Déchiffrage."
       },
-      "effectsText": { "en": "+2 Appraise, +2 Decipher Script.", "fr": "+2 Estimation, +2 Déchiffrage d'écrits." },
+      "effectsText": { "en": "+2 Appraise, +2 Decipher Script.", "fr": "+2 Estimation, +2 Déchiffrage." },
       "effects": [
         { "type": "skill", "skillId": "appraise", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "decipher-script", "value": 2, "bonusType": "untyped" }
       ],
       "isClassFeature": false,
-      "type": "special"
+      "type": "general"
+    },
+    {
+      "value": "dodge",
+      "label": { "en": "Dodge", "fr": "Esquive" },
+      "description": {
+        "en": "<b>Prerequisite:</b> Dexterity 13.<br/><b>Benefit:</b> During your action, you designate an opponent and receive a +1 dodge bonus to Armor Class against attacks from that opponent. You can select a new opponent on any action.<br/>A condition that makes you lose your Dexterity bonus to Armor Class (if any) also makes you lose dodge bonuses. Also, dodge bonuses stack with each other, unlike most other types of bonuses.",
+        "fr": "<b>Prérequis :</b> Dextérité 13.<br/><b>Avantage :</b> Pendant votre action, vous désignez un adversaire et recevez un bonus d'esquive de +1 à la Classe d'Armure contre les attaques de cet adversaire. Vous pouvez sélectionner un nouvel adversaire à n'importe quelle action.<br/>Une condition qui vous fait perdre votre bonus de Dextérité à la Classe d'Armure (le cas échéant) vous fait également perdre les bonus d'esquive. De plus, les bonus d'esquive se cumulent entre eux, contrairement à la plupart des autres types de bonus."
+      },
+      "prerequisites": { "abilities": { "dexterity": 13 } },
+      "effectsText": { "en": "+1 dodge bonus to AC against one target.", "fr": "Bonus d'esquive de +1 à la CA contre une cible." },
+      "effects": [
+        { "type": "armorClass", "acType": "dodge", "value": 1, "bonusType": "dodge", "condition": "vs_designated_target" }
+      ],
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "mobility",
+      "label": { "en": "Mobility", "fr": "Souplesse du serpent" },
+      "description": {
+        "en": "<b>Prerequisites:</b> Dex 13, Dodge.<br/><b>Benefit:</b> You get a +4 dodge bonus to Armor Class against attacks of opportunity caused when you move out of or within a threatened area. A condition that makes you lose your Dexterity bonus to Armor Class (if any) also makes you lose dodge bonuses. Dodge bonuses stack with each other, unlike most other types of bonuses.",
+        "fr": "<b>Prérequis :</b> Dex 13, Esquive.<br/><b>Avantage :</b> Vous obtenez un bonus d'esquive de +4 à la Classe d'Armure contre les attaques d'opportunité provoquées lorsque vous sortez ou vous déplacez dans une zone menacée. Une condition qui vous fait perdre votre bonus de Dextérité à la Classe d'Armure (le cas échéant) vous fait également perdre les bonus d'esquive. Les bonus d'esquive se cumulent entre eux, contrairement à la plupart des autres types de bonus."
+      },
+      "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge"] },
+      "effectsText": { "en": "+4 dodge AC vs. AoOs from movement.", "fr": "+4 CA d'esquive contre les AdO dues au mouvement." },
+      "effects": [
+        { "type": "armorClass", "acType": "dodge", "value": 4, "bonusType": "dodge", "condition": "vs_aoo_from_movement" }
+      ],
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "spring-attack",
+      "label": { "en": "Spring Attack", "fr": "Attaque éclair" },
+      "description": {
+        "en": "<b>Prerequisites:</b> Dex 13, Dodge, Mobility, base attack bonus +4.<br/><b>Benefit:</b> When you use the attack action with a melee weapon, you can move both before and after the attack, provided that your total movement does not exceed your speed. Moving in this way does not provoke an attack of opportunity from the defender you attack (though it might provoke attacks of opportunity from other creatures, if appropriate). You can’t use this feat if you are wearing heavy armor.<br/>You must move at least 5 feet both before and after you make your attack in order to utilize the benefits of Spring Attack.",
+        "fr": "<b>Prérequis :</b> Dex 13, Esquive, Souplesse du serpent, bonus d'attaque de base +4.<br/><b>Avantage :</b> Lorsque vous utilisez l'action d'attaque avec une arme de corps à corps, vous pouvez vous déplacer avant et après l'attaque, à condition que votre mouvement total ne dépasse pas votre vitesse. Se déplacer de cette manière ne provoque pas d'attaque d'opportunité de la part du défenseur que vous attaquez (bien que cela puisse provoquer des attaques d'opportunité d'autres créatures, le cas échéant). Vous ne pouvez pas utiliser ce don si vous portez une armure lourde.<br/>Vous devez vous déplacer d'au moins 1,5 mètre avant et après avoir effectué votre attaque pour utiliser les avantages de l'Attaque éclair."
+      },
+      "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge", "mobility"], "bab": 4 },
+      "effectsText": { "en": "Move, attack, and move again (up to speed). No AoO from target.", "fr": "Bougez, attaquez, et bougez à nouveau (jusqu'à votre vitesse). Pas d'AdO de la cible." },
+      "effects": [
+        { "type": "note", "text": { "en": "When using attack action with melee weapon, can move before and after attack. Movement does not provoke AoO from attacked target.", "fr": "Lors d'une action d'attaque avec une arme de corps à corps, peut se déplacer avant et après l'attaque. Le mouvement ne provoque pas d'AdO de la cible attaquée." } }
+      ],
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "endurance",
+      "label": { "en": "Endurance", "fr": "Endurance" },
+      "description": {
+        "en": "<b>Benefit:</b> You gain a +4 bonus on the following checks and saves: Swim checks made to resist nonlethal damage, Constitution checks made to continue running, Constitution checks made to avoid nonlethal damage from a forced march, Constitution checks made to hold your breath, Constitution checks made to avoid nonlethal damage from starvation or thirst, Fortitude saves made to avoid nonlethal damage from hot or cold environments, and Fortitude saves made to resist damage from suffocation.<br/>Also, you may sleep in light or medium armor without becoming fatigued.",
+        "fr": "<b>Avantage :</b> Vous gagnez un bonus de +4 aux tests et jets de sauvegarde suivants : tests de Natation effectués pour résister aux dégâts non létaux, tests de Constitution effectués pour continuer à courir, tests de Constitution effectués pour éviter les dégâts non létaux d'une marche forcée, tests de Constitution effectués pour retenir votre souffle, tests de Constitution effectués pour éviter les dégâts non létaux de la faim ou de la soif, jets de Vigueur effectués pour éviter les dégâts non létaux des environnements chauds ou froids, et jets de Vigueur effectués pour résister aux dégâts de l'asphyxie.<br/>De plus, vous pouvez dormir en armure légère ou intermédiaire sans devenir fatigué."
+      },
+      "effectsText": { "en": "+4 on various Con checks and Fort saves related to endurance. Sleep in light/medium armor.", "fr": "+4 à divers tests de Con et jets de Vig liés à l'endurance. Dormir en armure légère/intermédiaire." },
+      "effects": [
+        { "type": "skill", "skillId": "swim", "value": 4, "bonusType": "untyped", "condition": "resist_nonlethal_damage" },
+        { "type": "note", "text": { "en": "+4 on specific Constitution checks (running, forced march, hold breath, starvation/thirst) and Fortitude saves (hot/cold environments, suffocation). Can sleep in light/medium armor without fatigue.", "fr": "+4 à des tests de Constitution spécifiques (course, marche forcée, retenir son souffle, faim/soif) et jets de Vigueur (environnements chauds/froids, asphyxie). Peut dormir en armure légère/intermédiaire sans fatigue." } }
+      ],
+      "type": "general"
+    },
+    {
+      "value": "diehard",
+      "label": { "en": "Diehard", "fr": "Dur à cuire" },
+      "description": {
+        "en": "<b>Prerequisite:</b> Endurance.<br/><b>Benefit:</b> When reduced to between –1 and –9 hit points, you automatically become stable. You don’t have to roll d% to see if you lose 1 hit point each round.<br/>When reduced to between –1 and –9 hit points, you can act as if you were disabled, rather than dying. You can take a single move action or standard action each round, but not both, nor can you take a full round action. You can take such an action without further loss of hit points. If you perform any standard action (or any other action deemed as strenuous, including some free actions, such as casting a quickened spell), you take 1 point of damage after completing the action. If you take 1 point of damage from any source, you are dying as normal.<br/><b>Normal:</b> A character without this feat who is reduced to between –1 and –9 hit points is unconscious and dying.",
+        "fr": "<b>Prérequis :</b> Endurance.<br/><b>Avantage :</b> Lorsque vous êtes réduit entre –1 et –9 points de vie, vous devenez automatiquement stable. Vous n'avez pas à lancer d% pour voir si vous perdez 1 point de vie chaque round.<br/>Lorsque vous êtes réduit entre –1 et –9 points de vie, vous pouvez agir comme si vous étiez handicapé, plutôt que mourant. Vous pouvez effectuer une seule action de mouvement ou une action simple chaque round, mais pas les deux, ni une action complexe. Vous pouvez effectuer une telle action sans perte supplémentaire de points de vie. Si vous effectuez une action simple (ou toute autre action jugée épuisante, y compris certaines actions libres, comme lancer un sort accéléré), vous subissez 1 point de dégât après avoir terminé l'action. Si vous subissez 1 point de dégât de n'importe quelle source, vous êtes mourant comme d'habitude.<br/><b>Normal :</b> Un personnage sans ce don qui est réduit entre –1 et –9 points de vie est inconscient et mourant."
+      },
+      "prerequisites": { "feats": ["endurance"] },
+      "effectsText": { "en": "Automatically stable at -1 to -9 hp. Can act as if disabled instead of dying.", "fr": "Automatiquement stable de -1 à -9 pv. Peut agir comme si handicapé au lieu de mourant." },
+      "effects": [
+        { "type": "note", "text": { "en": "Automatically stable when between -1 and -9 hp. Can take a single move or standard action each round (strenuous action deals 1 damage).", "fr": "Automatiquement stable entre -1 et -9 pv. Peut effectuer une action de mouvement ou une action simple par round (une action épuisante inflige 1 dégât)." } }
+      ],
+      "type": "general"
     },
     {
       "value": "eschew-materials",
@@ -144,19 +262,8 @@
         "fr": "<b>Avantage :</b> Vous pouvez lancer n'importe quel sort qui a une composante matérielle coûtant 1 po ou moins sans avoir besoin de cette composante.<br />Le lancement du sort provoque toujours des attaques d'opportunité comme d'habitude.<br />Si le sort nécessite une composante matérielle qui coûte plus de 1 po, vous devez avoir la composante matérielle à portée de main pour lancer le sort, comme d'habitude."
       },
       "effectsText": { "en": "Cast spells with material components <= 1gp without them.", "fr": "Lancez des sorts avec des composantes matérielles <= 1po sans elles." },
-      "effects": [{ "type": "note", "text": { "en": "Cast spells with material components <= 1gp without them.", "fr": "Lancez des sorts avec des composantes matérielles <= 1po sans elles." }}],
+      "effects": [{ "type": "note", "text": { "en": "Cast spells with material components costing 1 gp or less without needing them.", "fr": "Lancez des sorts avec des composantes matérielles coûtant 1 po ou moins sans avoir besoin d'elles." }}],
       "isClassFeature": false,
-      "type": "special"
-    },
-    {
-      "value": "iron-will",
-      "label": { "en": "Iron Will", "fr": "Volonté de fer" },
-      "description": {
-        "en": "<b>Benefit:</b> You get a +2 bonus on all Will saving throws.",
-        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de Volonté."
-      },
-      "effectsText": { "en": "+2 on Will saves.", "fr": "+2 aux jets de Volonté." },
-      "effects": [{ "type": "savingThrow", "save": "will", "value": 2, "bonusType": "untyped" }],
       "type": "general"
     },
     {
@@ -171,15 +278,18 @@
       "type": "general"
     },
     {
-      "value": "lightning-reflexes",
-      "label": { "en": "Lightning Reflexes", "fr": "Réflexes surhumains" },
+      "value": "improved-initiative",
+      "label": { "en": "Improved Initiative", "fr": "Initiative améliorée" },
       "description": {
-        "en": "<b>Benefit:</b> You get a +2 bonus on all Reflex saving throws.",
-        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de Réflexes."
+        "en": "<b>Benefit:</b> You get a +4 bonus on initiative checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +4 aux tests d'initiative."
       },
-      "effectsText": { "en": "+2 on Reflex saves.", "fr": "+2 aux jets de Réflexes." },
-      "effects": [{ "type": "savingThrow", "save": "reflex", "value": 2, "bonusType": "untyped" }],
-      "type": "general"
+      "effectsText": { "en": "+4 on initiative checks.", "fr": "+4 aux tests d'initiative." },
+      "effects": [
+        { "type": "initiative", "value": 4, "bonusType": "untyped" }
+      ],
+      "type": "general",
+      "category": "fighterBonusFeat"
     },
     {
       "value": "investigator",
@@ -193,7 +303,29 @@
         { "type": "skill", "skillId": "gather-information", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "search", "value": 2, "bonusType": "untyped" }
       ],
-      "type": "special"
+      "type": "general"
+    },
+    {
+      "value": "iron-will",
+      "label": { "en": "Iron Will", "fr": "Volonté de fer" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Will saving throws.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de Volonté."
+      },
+      "effectsText": { "en": "+2 on Will saves.", "fr": "+2 aux jets de Volonté." },
+      "effects": [{ "type": "savingThrow", "save": "will", "value": 2, "bonusType": "untyped" }],
+      "type": "general"
+    },
+    {
+      "value": "lightning-reflexes",
+      "label": { "en": "Lightning Reflexes", "fr": "Réflexes surhumains" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Reflex saving throws.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de Réflexes."
+      },
+      "effectsText": { "en": "+2 on Reflex saves.", "fr": "+2 aux jets de Réflexes." },
+      "effects": [{ "type": "savingThrow", "save": "reflex", "value": 2, "bonusType": "untyped" }],
+      "type": "general"
     },
     {
       "value": "magical-aptitude",
@@ -207,7 +339,7 @@
         { "type": "skill", "skillId": "spellcraft", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "use-magic-device", "value": 2, "bonusType": "untyped" }
       ],
-      "type": "special"
+      "type": "general"
     },
     {
       "value": "negotiator",
@@ -221,7 +353,7 @@
         { "type": "skill", "skillId": "diplomacy", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "sense-motive", "value": 2, "bonusType": "untyped" }
       ],
-      "type": "special"
+      "type": "general"
     },
     {
       "value": "nimble-fingers",
@@ -235,7 +367,7 @@
         { "type": "skill", "skillId": "disable-device", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "open-lock", "value": 2, "bonusType": "untyped" }
       ],
-      "type": "special"
+      "type": "general"
     },
     {
       "value": "persuasive",
@@ -249,7 +381,97 @@
         { "type": "skill", "skillId": "bluff", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "intimidate", "value": 2, "bonusType": "untyped" }
       ],
-      "type": "special"
+      "type": "general"
+    },
+    {
+      "value": "point-blank-shot",
+      "label": { "en": "Point Blank Shot", "fr": "Tir à bout portant" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +1 bonus on attack and damage rolls with ranged weapons at ranges of up to 30 feet.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +1 aux jets d'attaque et de dégâts avec les armes à distance à des portées allant jusqu'à 9 mètres."
+      },
+      "effectsText": { "en": "+1 attack and damage with ranged weapons within 30 ft.", "fr": "+1 attaque et dégâts avec armes à distance à moins de 9m." },
+      "effects": [
+        { "type": "attackRoll", "value": 1, "bonusType": "untyped", "appliesTo": "ranged", "rangeLimit": 30 },
+        { "type": "damageRoll", "value": 1, "bonusType": "untyped", "appliesTo": "ranged", "rangeLimit": 30 }
+      ],
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "far-shot",
+      "label": { "en": "Far Shot", "fr": "Tir de loin" },
+      "description": {
+        "en": "<b>Prerequisite:</b> Point Blank Shot.<br/><b>Benefit:</b> When you use a projectile weapon, its range increment is increased by one-half (multiply by 1.5). When you use a thrown weapon, its range increment is doubled.",
+        "fr": "<b>Prérequis :</b> Tir à bout portant.<br/><b>Avantage :</b> Lorsque vous utilisez une arme à projectiles, son facteur de portée est augmenté de moitié (multipliez par 1,5). Lorsque vous utilisez une arme de jet, son facteur de portée est doublé."
+      },
+      "prerequisites": { "feats": ["point-blank-shot"] },
+      "effectsText": { "en": "Projectile weapon range increment x1.5, thrown weapon range increment x2.", "fr": "Facteur de portée des armes à projectiles x1,5, facteur de portée des armes de jet x2." },
+      "effects": [
+        { "type": "note", "text": { "en": "Projectile weapon range increment x1.5. Thrown weapon range increment x2.", "fr": "Le facteur de portée des armes à projectiles est multiplié par 1,5. Le facteur de portée des armes de jet est doublé." } }
+      ],
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "precise-shot",
+      "label": { "en": "Precise Shot", "fr": "Tir de précision" },
+      "description": {
+        "en": "<b>Prerequisite:</b> Point Blank Shot.<br/><b>Benefit:</b> You can shoot or throw ranged weapons at an opponent engaged in melee without taking the standard –4 penalty on your attack roll.",
+        "fr": "<b>Prérequis :</b> Tir à bout portant.<br/><b>Avantage :</b> Vous pouvez tirer ou lancer des armes à distance sur un adversaire engagé au corps à corps sans subir la pénalité standard de –4 à votre jet d'attaque."
+      },
+      "prerequisites": { "feats": ["point-blank-shot"] },
+      "effectsText": { "en": "No -4 penalty for shooting/throwing into melee.", "fr": "Pas de pénalité de -4 pour tirer/lancer dans la mêlée." },
+      "effects": [
+        { "type": "note", "text": { "en": "No -4 penalty on attack rolls when shooting or throwing ranged weapons at an opponent engaged in melee.", "fr": "Pas de pénalité de -4 aux jets d'attaque lorsque vous tirez ou lancez des armes à distance sur un adversaire engagé au corps à corps." } }
+      ],
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "power-attack",
+      "label": { "en": "Power Attack", "fr": "Attaque en puissance" },
+      "description": {
+        "en": "<b>Prerequisite:</b> Strength 13.<br/><b>Benefit:</b> On your action, before making attack rolls for a round, you may choose to subtract a number from all melee attack rolls and add the same number to all melee damage rolls. This number may not exceed your base attack bonus. The penalty on attacks and bonus on damage apply until your next turn.",
+        "fr": "<b>Prérequis :</b> Force 13.<br/><b>Avantage :</b> Lors de votre action, avant d'effectuer des jets d'attaque pour un round, vous pouvez choisir de soustraire un nombre à tous les jets d'attaque au corps à corps et d'ajouter le même nombre à tous les jets de dégâts au corps à corps. Ce nombre ne peut pas dépasser votre bonus d'attaque de base. La pénalité aux attaques et le bonus aux dégâts s'appliquent jusqu'à votre prochain tour."
+      },
+      "prerequisites": { "abilities": { "strength": 13 } },
+      "effectsText": { "en": "Subtract from melee attack to add to melee damage (max is BAB).", "fr": "Soustraire à l'attaque en mêlée pour ajouter aux dégâts en mêlée (max est BBA)." },
+      "effects": [
+        { "type": "note", "text": { "en": "Allows trading melee attack penalty for melee damage bonus.", "fr": "Permet d'échanger une pénalité d'attaque au corps à corps contre un bonus de dégâts au corps à corps." } }
+      ],
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "cleave",
+      "label": { "en": "Cleave", "fr": "Enchaînement" },
+      "description": {
+        "en": "<b>Prerequisites:</b> Str 13, Power Attack.<br/><b>Benefit:</b> If you deal a creature enough damage to make it drop (typically by reducing it to below 0 hit points or killing it), you get an immediate, extra melee attack against another creature within reach. You cannot take a 5-foot step before making this extra attack. The extra attack is with the same weapon and at the same bonus as the attack that dropped the previous creature. You can use this ability once per round.",
+        "fr": "<b>Prérequis :</b> For 13, Attaque en puissance.<br/><b>Avantage :</b> Si vous infligez suffisamment de dégâts à une créature pour la faire tomber (généralement en la réduisant à moins de 0 point de vie ou en la tuant), vous obtenez une attaque au corps à corps supplémentaire et immédiate contre une autre créature à portée. Vous ne pouvez pas faire un pas de placement de 1,50 mètre avant d'effectuer cette attaque supplémentaire. L'attaque supplémentaire est effectuée avec la même arme et avec le même bonus que l'attaque qui a fait tomber la créature précédente. Vous pouvez utiliser cette capacité une fois par round."
+      },
+      "prerequisites": { "abilities": { "strength": 13 }, "feats": ["power-attack"] },
+      "effectsText": { "en": "Extra melee attack if you drop a creature (1/round).", "fr": "Attaque au corps à corps supplémentaire si vous mettez une créature hors de combat (1/round)." },
+      "effects": [
+        { "type": "note", "text": { "en": "If you drop a creature, get an immediate extra melee attack against another creature within reach (once per round).", "fr": "Si vous mettez une créature hors de combat, obtenez une attaque au corps à corps supplémentaire immédiate contre une autre créature à portée (une fois par round)." } }
+      ],
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "great-cleave",
+      "label": { "en": "Great Cleave", "fr": "Enchaînement supérieur" },
+      "description": {
+        "en": "<b>Prerequisites:</b> Str 13, Power Attack, Cleave, base attack bonus +4.<br/><b>Benefit:</b> This feat works like Cleave, except that you have no limit to the number of times you can use it per round.",
+        "fr": "<b>Prérequis :</b> For 13, Attaque en puissance, Enchaînement, bonus d'attaque de base +4.<br/><b>Avantage :</b> Ce don fonctionne comme Enchaînement, sauf que vous n'avez aucune limite au nombre de fois où vous pouvez l'utiliser par round."
+      },
+      "prerequisites": { "abilities": { "strength": 13 }, "feats": ["power-attack", "cleave"], "bab": 4 },
+      "effectsText": { "en": "No limit on extra attacks from Cleave per round.", "fr": "Aucune limite sur les attaques supplémentaires d'Enchaînement par round." },
+      "effects": [
+        { "type": "note", "text": { "en": "No limit on Cleave attacks per round.", "fr": "Aucune limite aux attaques d'Enchaînement par round." } }
+      ],
+      "type": "general",
+      "category": "fighterBonusFeat"
     },
     {
       "value": "self-sufficient",
@@ -263,21 +485,7 @@
         { "type": "skill", "skillId": "heal", "value": 2, "bonusType": "untyped" },
         { "type": "skill", "skillId": "survival", "value": 2, "bonusType": "untyped" }
       ],
-      "type": "special"
-    },
-    {
-      "value": "stealthy",
-      "label": { "en": "Stealthy", "fr": "Discret" },
-      "description": {
-        "en": "<b>Benefit:</b> You get a +2 bonus on all Hide and Move Silently checks.",
-        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Discrétion et de Déplacement silencieux."
-      },
-      "effectsText": { "en": "+2 Hide, +2 Move Silently.", "fr": "+2 Discrétion, +2 Déplacement silencieux." },
-      "effects": [
-        { "type": "skill", "skillId": "hide", "value": 2, "bonusType": "untyped" },
-        { "type": "skill", "skillId": "move-silently", "value": 2, "bonusType": "untyped" }
-      ],
-      "type": "special"
+      "type": "general"
     },
     {
       "value": "skill-focus",
@@ -294,23 +502,276 @@
       "type": "general"
     },
     {
+      "value": "spell-focus",
+      "label": { "en": "Spell Focus", "fr": "École renforcée" },
+      "description": {
+        "en": "<b>Benefit:</b> Choose a school of magic. Add +1 to the Difficulty Class for all saving throws against spells from the school of magic you select.",
+        "fr": "<b>Avantage :</b> Choisissez une école de magie. Ajoutez +1 au Degré de Difficulté pour tous les jets de sauvegarde contre les sorts de l'école de magie que vous sélectionnez."
+      },
+      "requiresSpecialization": "school of magic",
+      "effectsText": { "en": "+1 DC for chosen school of magic.", "fr": "+1 DD pour l'école de magie choisie." },
+      "effects": [
+        { "type": "spellSaveDc", "school": "SPEC", "value": 1 }
+      ],
+      "type": "general"
+    },
+    {
+      "value": "greater-spell-focus",
+      "label": { "en": "Greater Spell Focus", "fr": "École renforcée supérieure" },
+      "description": {
+        "en": "<b>Prerequisite:</b> Spell Focus in the same school.<br/><b>Benefit:</b> Add +1 to the Difficulty Class for all saving throws against spells from the school of magic you select. This bonus stacks with the bonus from Spell Focus.",
+        "fr": "<b>Prérequis :</b> École renforcée dans la même école.<br/><b>Avantage :</b> Ajoutez +1 au Degré de Difficulté pour tous les jets de sauvegarde contre les sorts de l'école de magie que vous sélectionnez. Ce bonus se cumule avec le bonus d'École renforcée."
+      },
+      "requiresSpecialization": "school of magic",
+      "prerequisites": { "special": { "en": "Spell Focus in the same school.", "fr": "École renforcée dans la même école." } },
+      "effectsText": { "en": "Additional +1 DC for chosen school (stacks with Spell Focus).", "fr": "+1 DD supplémentaire pour l'école choisie (se cumule avec École renforcée)." },
+      "effects": [
+        { "type": "spellSaveDc", "school": "SPEC", "value": 1 }
+      ],
+      "type": "general"
+    },
+    {
+      "value": "spell-penetration",
+      "label": { "en": "Spell Penetration", "fr": "Perforation de la résistance à la magie" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on caster level checks (1d20 + caster level) made to overcome a creature's spell resistance.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de niveau de lanceur de sorts (1d20 + niveau de lanceur de sorts) effectués pour surmonter la résistance à la magie d'une créature."
+      },
+      "effectsText": { "en": "+2 on caster level checks to overcome SR.", "fr": "+2 aux tests de niveau de lanceur pour surmonter la RM." },
+      "effects": [
+        { "type": "casterLevelCheck", "value": 2, "forEvent": "spellResistance" }
+      ],
+      "type": "general"
+    },
+    {
+      "value": "stealthy",
+      "label": { "en": "Stealthy", "fr": "Discret" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Hide and Move Silently checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Discrétion et de Déplacement silencieux."
+      },
+      "effectsText": { "en": "+2 Hide, +2 Move Silently.", "fr": "+2 Discrétion, +2 Déplacement silencieux." },
+      "effects": [
+        { "type": "skill", "skillId": "hide", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "move-silently", "value": 2, "bonusType": "untyped" }
+      ],
+      "type": "general"
+    },
+    {
+      "value": "toughness",
+      "label": { "en": "Toughness", "fr": "Robustesse" },
+      "description": {
+        "en": "<b>Benefit:</b> You gain +3 hit points.<br/><b>Special:</b> A character may gain this feat multiple times. Its effects stack.",
+        "fr": "<b>Avantage :</b> Vous gagnez +3 points de vie.<br/><b>Spécial :</b> Un personnage peut prendre ce don plusieurs fois. Ses effets se cumulent."
+      },
+      "effectsText": { "en": "+3 hit points.", "fr": "+3 points de vie." },
+      "effects": [
+        { "type": "hitPoints", "value": 3 }
+      ],
+      "canTakeMultipleTimes": true,
+      "type": "general"
+    },
+    {
+      "value": "two-weapon-fighting",
+      "label": { "en": "Two-Weapon Fighting", "fr": "Combat à deux armes" },
+      "description": {
+        "en": "<b>Prerequisite:</b> Dexterity 15.<br/><b>Benefit:</b> Your penalties on attack rolls for fighting with two weapons are reduced. The penalty for your primary hand lessens by 2 and the one for your off hand lessens by 6.<br/><b>Normal:</b> If you wield a second weapon in your off hand, you can get one extra attack per round with that weapon. When fighting in this way you suffer a –6 penalty with your regular attack or attacks with your primary hand and a –10 penalty to the attack with your off hand. If your off-hand weapon is light, the penalties are reduced by 2 each. (An unarmed strike is always considered light.)",
+        "fr": "<b>Prérequis :</b> Dextérité 15.<br/><b>Avantage :</b> Vos pénalités aux jets d'attaque pour combattre avec deux armes sont réduites. La pénalité pour votre main principale diminue de 2 et celle pour votre main non directrice diminue de 6.<br/><b>Normal :</b> Si vous maniez une seconde arme dans votre main non directrice, vous pouvez obtenir une attaque supplémentaire par round avec cette arme. En combattant de cette manière, vous subissez une pénalité de –6 avec votre attaque ou vos attaques régulières avec votre main principale et une pénalité de –10 à l'attaque avec votre main non directrice. Si votre arme de main non directrice est légère, les pénalités sont réduites de 2 chacune. (Une attaque à mains nues est toujours considérée comme légère.)"
+      },
+      "prerequisites": { "abilities": { "dexterity": 15 } },
+      "effectsText": { "en": "Reduces two-weapon fighting penalties (-4 main hand, -8 off hand; or -2/-6 if off-hand is light).", "fr": "Réduit les pénalités de combat à deux armes (-4 main principale, -8 main secondaire ; ou -2/-6 si main secondaire est légère)." },
+      "effects": [
+        { "type": "note", "text": { "en": "Reduces two-weapon fighting penalties. Primary hand penalty lessens by 2, off hand by 6.", "fr": "Réduit les pénalités de combat à deux armes. La pénalité de la main principale diminue de 2, celle de la main non directrice de 6." } }
+      ],
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "weapon-focus",
+      "label": { "en": "Weapon Focus", "fr": "Arme de prédilection" },
+      "description": {
+        "en": "<b>Prerequisites:</b> Proficiency with selected weapon, base attack bonus +1.<br/><b>Benefit:</b> You gain a +1 bonus on all attack rolls you make using the selected weapon.<br/><b>Special:</b> You can gain this feat multiple times. Each time you take the feat, you must select a different weapon.",
+        "fr": "<b>Prérequis :</b> Maîtrise de l'arme sélectionnée, bonus d'attaque de base +1.<br/><b>Avantage :</b> Vous gagnez un bonus de +1 à tous les jets d'attaque que vous effectuez avec l'arme sélectionnée.<br/><b>Spécial :</b> Vous pouvez prendre ce don plusieurs fois. Chaque fois que vous prenez le don, vous devez sélectionner une arme différente."
+      },
+      "prerequisites": { "special": { "en": "Proficiency with selected weapon", "fr": "Maîtrise de l'arme sélectionnée" }, "bab": 1 },
+      "requiresSpecialization": "weapon",
+      "requiresSpecializationCategory": "weaponFocusFeats",
+      "effectsText": { "en": "+1 attack with chosen weapon.", "fr": "+1 à l'attaque avec l'arme choisie." },
+      "effects": [
+        { "type": "attackRoll", "value": 1, "bonusType": "untyped", "appliesTo": "SPEC" }
+      ],
+      "canTakeMultipleTimes": true,
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
       "value": "scribe-scroll",
       "label": { "en": "Scribe Scroll", "fr": "Écriture de parchemins" },
       "description": {
-        "en": "<b>Benefit:</b> You can create a scroll of any spell that you know. Scribing a scroll takes 1 day for each 1,000 gp in its base price. The base price of a scroll is its spell level × its caster level × 25 gp. To scribe a scroll, you must spend 1/25 of this base price in XP and use up raw materials costing half of this base price.",
-        "fr": "<b>Avantage :</b> Vous pouvez créer un parchemin de n'importe quel sort que vous connaissez. Écrire un parchemin prend 1 jour pour chaque tranche de 1 000 po de son prix de base. Le prix de base d'un parchemin est son niveau de sort × son niveau de lanceur de sorts × 25 po. Pour écrire un parchemin, vous devez dépenser 1/25 de ce prix de base en XP et utiliser des matières premières coûtant la moitié de ce prix de base."
+        "en": "<b>Prerequisite:</b> Caster level 1st.<br/><b>Benefit:</b> You can create a scroll of any spell that you know. Scribing a scroll takes 1 day for each 1,000 gp in its base price. The base price of a scroll is its spell level × its caster level × 25 gp. To scribe a scroll, you must spend 1/25 of this base price in XP and use up raw materials costing half of this base price.",
+        "fr": "<b>Prérequis :</b> Niveau de lanceur de sorts 1er.<br/><b>Avantage :</b> Vous pouvez créer un parchemin de n'importe quel sort que vous connaissez. Écrire un parchemin prend 1 jour pour chaque tranche de 1 000 po de son prix de base. Le prix de base d'un parchemin est son niveau de sort × son niveau de lanceur de sorts × 25 po. Pour écrire un parchemin, vous devez dépenser 1/25 de ce prix de base en XP et utiliser des matières premières coûtant la moitié de ce prix de base."
       },
       "prerequisites": { "casterLevel": 1 },
       "type": "itemCreation"
+    },
+    {
+      "value": "brew-potion",
+      "label": { "en": "Brew Potion", "fr": "Préparation de potions" },
+      "description": {
+        "en": "<b>Prerequisite:</b> Caster level 3rd.<br/><b>Benefit:</b> You can create a potion of any 3rd-level or lower spell that you know and that targets one or more creatures. Brewing a potion takes 1 day. When you create a potion, you set the caster level, which must be sufficient for the spell in question and no higher than your own level. The base price of a potion is its spell level × its caster level × 50 gp. To brew a potion, you must spend 1/25 of this base price in XP and use up raw materials costing half of this base price.",
+        "fr": "<b>Prérequis :</b> Niveau de lanceur de sorts 3ème.<br/><b>Avantage :</b> Vous pouvez créer une potion de n'importe quel sort de 3ème niveau ou inférieur que vous connaissez et qui cible une ou plusieurs créatures. La préparation d'une potion prend 1 jour. Lorsque vous créez une potion, vous définissez le niveau de lanceur de sorts, qui doit être suffisant pour le sort en question et pas plus élevé que votre propre niveau. Le prix de base d'une potion est son niveau de sort × son niveau de lanceur de sorts × 50 po. Pour préparer une potion, vous devez dépenser 1/25 de ce prix de base en XP et utiliser des matières premières coûtant la moitié de ce prix de base."
+      },
+      "prerequisites": { "casterLevel": 3 },
+      "type": "itemCreation"
+    },
+    {
+      "value": "craft-magic-arms-and-armor",
+      "label": { "en": "Craft Magic Arms and Armor", "fr": "Création d'armes et armures magiques" },
+      "description": {
+        "en": "<b>Prerequisite:</b> Caster level 5th.<br/><b>Benefit:</b> You can create magic armor, shields, and weapons. Enhancing an item takes 1 day for each 1,000 gp in the features’ total price. To enhance an item, you must spend 1/25 of its features’ total price in XP and use up raw materials costing half of this total price.",
+        "fr": "<b>Prérequis :</b> Niveau de lanceur de sorts 5ème.<br/><b>Avantage :</b> Vous pouvez créer des armures, des boucliers et des armes magiques. L'amélioration d'un objet prend 1 jour pour chaque tranche de 1 000 po du prix total de ses caractéristiques. Pour améliorer un objet, vous devez dépenser 1/25 du prix total de ses caractéristiques en XP et utiliser des matières premières coûtant la moitié de ce prix total."
+      },
+      "prerequisites": { "casterLevel": 5 },
+      "type": "itemCreation"
+    },
+    {
+      "value": "craft-wondrous-item",
+      "label": { "en": "Craft Wondrous Item", "fr": "Création d'objets merveilleux" },
+      "description": {
+        "en": "<b>Prerequisite:</b> Caster level 3rd.<br/><b>Benefit:</b> You can create any wondrous item. Crafting a wondrous item takes 1 day for each 1,000 gp in its market price. To craft a wondrous item, you must spend 1/25 of the item’s market price in XP and use up raw materials costing half of this price.",
+        "fr": "<b>Prérequis :</b> Niveau de lanceur de sorts 3ème.<br/><b>Avantage :</b> Vous pouvez créer n'importe quel objet merveilleux. La création d'un objet merveilleux prend 1 jour pour chaque tranche de 1 000 po de son prix de marché. Pour créer un objet merveilleux, vous devez dépenser 1/25 du prix de marché de l'objet en XP et utiliser des matières premières coûtant la moitié de ce prix."
+      },
+      "prerequisites": { "casterLevel": 3 },
+      "type": "itemCreation"
+    },
+    {
+      "value": "empower-spell",
+      "label": { "en": "Empower Spell", "fr": "Incantation renforcée" },
+      "description": {
+        "en": "<b>Benefit:</b> All variable, numeric effects of an empowered spell are increased by one-half. An empowered spell deals half again as much damage as normal, cures half again as many hit points, affects half again as many targets, etc., as appropriate. Saving throws and opposed rolls are not affected, nor are spells without random variables. An empowered spell uses up a spell slot two levels higher than the spell’s actual level.",
+        "fr": "<b>Avantage :</b> Tous les effets numériques variables d'un sort renforcé sont augmentés de moitié. Un sort renforcé inflige une fois et demie les dégâts normaux, soigne une fois et demie plus de points de vie, affecte une fois et demie plus de cibles, etc., selon le cas. Les jets de sauvegarde et les jets opposés ne sont pas affectés, ni les sorts sans variables aléatoires. Un sort renforcé utilise un emplacement de sort de deux niveaux supérieurs au niveau réel du sort."
+      },
+      "type": "metamagic"
+    },
+    {
+      "value": "maximize-spell",
+      "label": { "en": "Maximize Spell", "fr": "Incantation maximisée" },
+      "description": {
+        "en": "<b>Benefit:</b> All variable, numeric effects of a spell modified by this feat are maximized. A maximized spell deals maximum damage, cures the maximum number of hit points, affects the maximum number of targets, etc., as appropriate. Saving throws and opposed rolls are not affected, nor are spells without random variables. A maximized spell uses up a spell slot three levels higher than the spell’s actual level.",
+        "fr": "<b>Avantage :</b> Tous les effets numériques variables d'un sort modifié par ce don sont maximisés. Un sort maximisé inflige le maximum de dégâts, soigne le maximum de points de vie, affecte le maximum de cibles, etc., selon le cas. Les jets de sauvegarde et les jets opposés ne sont pas affectés, ni les sorts sans variables aléatoires. Un sort maximisé utilise un emplacement de sort de trois niveaux supérieurs au niveau réel du sort."
+      },
+      "type": "metamagic"
+    },
+    {
+      "value": "quicken-spell",
+      "label": { "en": "Quicken Spell", "fr": "Incantation rapide" },
+      "description": {
+        "en": "<b>Benefit:</b> Casting a quickened spell is a free action. You can perform another action, even casting another spell, in the same round as you cast a quickened spell. You may only cast one quickened spell per round. A spell whose casting time is more than 1 full round action cannot be quickened. A quickened spell uses up a spell slot four levels higher than the spell’s actual level. Casting a quickened spell doesn’t provoke an attack of opportunity.",
+        "fr": "<b>Avantage :</b> Lancer un sort rapide est une action libre. Vous pouvez effectuer une autre action, même lancer un autre sort, dans le même round où vous lancez un sort rapide. Vous ne pouvez lancer qu'un seul sort rapide par round. Un sort dont le temps d'incantation est supérieur à 1 action complexe ne peut pas être accéléré. Un sort rapide utilise un emplacement de sort de quatre niveaux supérieurs au niveau réel du sort. Lancer un sort rapide ne provoque pas d'attaque d'opportunité."
+      },
+      "type": "metamagic"
+    },
+    {
+      "value": "silent-spell",
+      "label": { "en": "Silent Spell", "fr": "Incantation silencieuse" },
+      "description": {
+        "en": "<b>Benefit:</b> A silent spell can be cast with no verbal components. Spells without verbal components are not affected. A silent spell uses up a spell slot one level higher than the spell’s actual level.",
+        "fr": "<b>Avantage :</b> Un sort silencieux peut être lancé sans composantes verbales. Les sorts sans composantes verbales ne sont pas affectés. Un sort silencieux utilise un emplacement de sort d'un niveau supérieur au niveau réel du sort."
+      },
+      "type": "metamagic"
+    },
+    {
+      "value": "still-spell",
+      "label": { "en": "Still Spell", "fr": "Incantation statique" },
+      "description": {
+        "en": "<b>Benefit:</b> A stilled spell can be cast with no somatic components. Spells without somatic components are not affected. A stilled spell uses up a spell slot one level higher than the spell’s actual level.",
+        "fr": "<b>Avantage :</b> Un sort statique peut être lancé sans composantes somatiques. Les sorts sans composantes somatiques ne sont pas affectés. Un sort statique utilise un emplacement de sort d'un niveau supérieur au niveau réel du sort."
+      },
+      "type": "metamagic"
+    },
+    {
+      "value": "armor-proficiency-light",
+      "label": { "en": "Armor Proficiency (Light)", "fr": "Port des armures légères" },
+      "description": {
+        "en": "<b>Benefit:</b> When you wear a type of armor with which you are proficient, the armor check penalty applies only to Balance, Climb, Escape Artist, Hide, Jump, Move Silently, Sleight of Hand, and Tumble checks.",
+        "fr": "<b>Avantage :</b> Lorsque vous portez un type d'armure avec lequel vous êtes formé, le malus d'armure aux tests ne s'applique qu'aux tests d'Équilibre, d'Escalade, d'Art de la Fugue, de Discrétion, de Saut, de Déplacement silencieux, d'Escamotage et d'Acrobaties."
+      },
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "armor-proficiency-medium",
+      "label": { "en": "Armor Proficiency (Medium)", "fr": "Port des armures intermédiaires" },
+      "description": {
+        "en": "<b>Prerequisite:</b> Armor Proficiency (Light).<br/><b>Benefit:</b> See Armor Proficiency (Light).",
+        "fr": "<b>Prérequis :</b> Port des armures légères.<br/><b>Avantage :</b> Voir Port des armures légères."
+      },
+      "prerequisites": { "feats": ["armor-proficiency-light"] },
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "armor-proficiency-heavy",
+      "label": { "en": "Armor Proficiency (Heavy)", "fr": "Port des armures lourdes" },
+      "description": {
+        "en": "<b>Prerequisite:</b> Armor Proficiency (Medium).<br/><b>Benefit:</b> See Armor Proficiency (Light).",
+        "fr": "<b>Prérequis :</b> Port des armures intermédiaires.<br/><b>Avantage :</b> Voir Port des armures légères."
+      },
+      "prerequisites": { "feats": ["armor-proficiency-medium"] },
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "shield-proficiency",
+      "label": { "en": "Shield Proficiency", "fr": "Maniement des boucliers" },
+      "description": {
+        "en": "<b>Benefit:</b> You can use a shield and take only the standard armor check penalty.",
+        "fr": "<b>Avantage :</b> Vous pouvez utiliser un bouclier et ne subir que le malus d'armure aux tests standard."
+      },
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "tower-shield-proficiency",
+      "label": { "en": "Tower Shield Proficiency", "fr": "Maniement des pavois" },
+      "description": {
+        "en": "<b>Prerequisite:</b> Shield Proficiency.<br/><b>Benefit:</b> You can use a tower shield and take only the standard armor check penalty.",
+        "fr": "<b>Prérequis :</b> Maniement des boucliers.<br/><b>Avantage :</b> Vous pouvez utiliser un pavois et ne subir que le malus d'armure aux tests standard."
+      },
+      "prerequisites": { "feats": ["shield-proficiency"] },
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "simple-weapon-proficiency",
+      "label": { "en": "Simple Weapon Proficiency", "fr": "Maniement des armes courantes" },
+      "description": {
+        "en": "<b>Benefit:</b> You make attack rolls with simple weapons without penalty.",
+        "fr": "<b>Avantage :</b> Vous effectuez des jets d'attaque avec des armes courantes sans pénalité."
+      },
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "simple" }],
+      "type": "general"
+    },
+    {
+      "value": "martial-weapon-proficiency-all",
+      "label": { "en": "Martial Weapon Proficiency (All)", "fr": "Maniement des armes de guerre (Toutes)" },
+      "description": {
+        "en": "<b>Benefit:</b> You make attack rolls with all martial weapons without penalty.",
+        "fr": "<b>Avantage :</b> Vous effectuez des jets d'attaque avec toutes les armes de guerre sans pénalité."
+      },
+      "effects": [{ "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "martial" }],
+      "type": "general",
+      "category": "fighterBonusFeat"
     }
   ],
   "FEAT_TYPES_DATA": [
     { "value": "general", "label": { "en": "General", "fr": "Général" } },
-    { "value": "special", "label": { "en": "Special", "fr": "Spécial" } },
     { "value": "itemCreation", "label": { "en": "Item Creation", "fr": "Création d'objet" } },
     { "value": "metamagic", "label": { "en": "Metamagic", "fr": "Métamagie" } },
+    { "value": "special", "label": { "en": "Special", "fr": "Spécial" } },
     { "value": "special-ex", "label": { "en": "Special Ability (Ex)", "fr": "Capacité spéciale (Ext)" } },
     { "value": "special-su", "label": { "en": "Special Ability (Su)", "fr": "Capacité spéciale (Sur)" } },
-    { "value": "special-sp", "label": { "en": "Special Ability (Sp)", "fr": "Capacité spéciale (Mag)" } }
+    { "value": "special-sp", "label": { "en": "Special Ability (Sp)", "fr": "Capacité spéciale (Mag)" } },
+    { "value": "fighterBonusFeat", "label": { "en": "Fighter Bonus Feat", "fr": "Don supplémentaire de Guerrier" } }
   ]
 }
