@@ -95,13 +95,21 @@
       "value": "class-druid-woodland-stride",
       "label": { "en": "Woodland Stride", "fr": "Déplacement facilité en milieu naturel" },
       "description": { "en": "Starting at 2nd level, a druid may move through any sort of undergrowth (such as natural thorns, briars, overgrown areas, and similar terrain) at her normal speed and without taking damage or suffering any other impairment. However, thorns, briars, and overgrown areas that have been magically manipulated to impede motion still affect her.", "fr": "À partir du niveau 2, un druide peut se déplacer à travers n'importe quel type de sous-bois (comme les épines naturelles, les ronces, les zones envahies par la végétation et les terrains similaires) à sa vitesse normale et sans subir de dégâts ni aucune autre altération. Cependant, les épines, les ronces et les zones envahies par la végétation qui ont été manipulées par magie pour entraver le mouvement l'affectent toujours." },
-      "isClassFeature": true, "type": "special-ex"
+      "isClassFeature": true, "type": "special-ex",
+      "effectsText": { "en": "Move through natural undergrowth at normal speed without penalty.", "fr": "Se déplace dans les sous-bois naturels à vitesse normale sans pénalité." },
+      "effects": [
+        { "type": "note", "text": { "en": "Move through natural undergrowth (thorns, briars, etc.) at normal speed without damage/impairment. Magically manipulated terrain still affects.", "fr": "Se déplace dans les sous-bois naturels (épines, ronces, etc.) à vitesse normale sans dégâts/altération. Le terrain manipulé par magie affecte toujours." } }
+      ]
     },
     {
       "value": "class-druid-trackless-step",
       "label": { "en": "Trackless Step", "fr": "Déplacement sans trace" },
       "description": { "en": "Starting at 3rd level, a druid leaves no trail in natural surroundings and cannot be tracked. She may choose to leave a trail if so desired.", "fr": "À partir du niveau 3, un druide ne laisse aucune trace dans les environnements naturels et ne peut pas être pisté. Elle peut choisir de laisser une trace si elle le souhaite." },
-      "isClassFeature": true, "type": "special-ex"
+      "isClassFeature": true, "type": "special-ex",
+      "effectsText": { "en": "Leaves no trail in natural surroundings and cannot be tracked.", "fr": "Ne laisse aucune trace dans les environnements naturels et ne peut être pisté." },
+      "effects": [
+        { "type": "note", "text": { "en": "Leaves no trail in natural surroundings and cannot be tracked. Can choose to leave a trail.", "fr": "Ne laisse aucune trace dans les environnements naturels et ne peut pas être pisté. Peut choisir de laisser une trace." } }
+      ]
     },
     {
       "value": "class-druid-resist-natures-lure",
@@ -142,7 +150,9 @@
       "value": "class-druid-venom-immunity",
       "label": { "en": "Venom Immunity", "fr": "Immunité au venin" },
       "description": { "en": "At 9th level, a druid gains immunity to all poisons.", "fr": "Au niveau 9, un druide gagne l'immunité à tous les poisons." },
-      "isClassFeature": true, "type": "special-ex", "permanentEffect": true
+      "isClassFeature": true, "type": "special-ex", "permanentEffect": true,
+      "effectsText": { "en": "Immune to all poisons.", "fr": "Immunisé à tous les poisons." },
+      "effects": [{ "type": "modifiesMechanic", "mechanicKey": "immuneToPoisonsOfAllKinds", "value": true }]
     },
     {
       "value": "class-druid-a-thousand-faces",
@@ -158,3 +168,5 @@
     }
   ]
 }
+
+    
