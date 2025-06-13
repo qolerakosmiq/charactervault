@@ -1,4 +1,5 @@
 
+
 {
   "value": "paladin",
   "label": { "en": "Paladin", "fr": "Paladin" },
@@ -112,7 +113,10 @@
       "label": { "en": "Divine Health", "fr": "Santé divine" },
       "description": { "en": "At 3rd level, a paladin gains immunity to all diseases, including supernatural and magical diseases.", "fr": "Au niveau 3, un paladin gagne l'immunité à toutes les maladies, y compris les maladies surnaturelles et magiques." },
       "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
-      "effectsText": { "en": "Immune to all diseases.", "fr": "Immunisé contre toutes les maladies." }
+      "effectsText": { "en": "Immune to all diseases.", "fr": "Immunisé contre toutes les maladies." },
+      "effects": [
+        { "type": "modifiesMechanic", "mechanicKey": "immuneToAllDisease", "value": true }
+      ]
     },
     {
       "value": "class-paladin-turn-undead",
@@ -137,7 +141,30 @@
       "label": { "en": "Remove Disease", "fr": "Guérison des maladies" },
       "description": { "en": "At 6th level, a paladin can produce a remove disease effect, as the spell, once per week. She can use this ability one additional time per week for every three levels after 6th (twice per week at 9th, three times at 12th, and so forth).", "fr": "Au niveau 6, un paladin peut produire un effet de guérison des maladies, comme le sort, une fois par semaine. Elle peut utiliser cette capacité une fois de plus par semaine tous les trois niveaux après le 6e (deux fois par semaine au 9e, trois fois au 12e, etc.)." },
       "type": "special-sp", "isClassFeature": true,
-      "effectsText": { "en": "Remove disease (as spell) 1/week (+1/week per 3 levels after 6th).", "fr": "Guérison des maladies (comme sort) 1/semaine (+1/semaine tous les 3 niveaux après le 6e)." }
+      "effectsText": { "en": "Remove disease (as spell) 1/week (+1/week per 3 levels after 6th).", "fr": "Guérison des maladies (comme sort) 1/semaine (+1/semaine tous les 3 niveaux après le 6e)." },
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "removeDiseaseUses",
+          "name": { "en": "Remove Disease Uses", "fr": "Utilisations de Guérison des Maladies" },
+          "uses": {
+            "per": "week",
+            "value": "scaled",
+            "scaleWithClassLevel": {
+              "classId": "paladin",
+              "specificLevels": [
+                { "level": 6, "value": 1 },
+                { "level": 9, "value": 2 },
+                { "level": 12, "value": 3 },
+                { "level": 15, "value": 4 },
+                { "level": 18, "value": 5 }
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }
+
+    
