@@ -93,25 +93,29 @@
       "value": "class-rogue-special-ability-slot-10",
       "label": { "en": "Special Ability (Rogue, L10)", "fr": "Capacité spéciale (Roublard, N10)" },
       "description": { "en": "At 10th level, a rogue gains a special ability of her choice from a list (e.g., Crippling Strike, Defensive Roll, Improved Evasion, Skill Mastery, Slippery Mind).", "fr": "Au niveau 10, un roublard gagne une capacité spéciale de son choix parmi une liste (ex : Frappe incapacitante, Roulade défensive, Esquive totale améliorée, Maîtrise des compétences, Insaisissable)." },
-      "type": "special-ex", "isClassFeature": true
+      "type": "special-ex", "isClassFeature": true,
+      "effects": [{ "type": "bonusFeatSlot", "category": "rogueSpecialAbility", "count": 1 }]
     },
     {
       "value": "class-rogue-special-ability-slot-13",
       "label": { "en": "Special Ability (Rogue, L13)", "fr": "Capacité spéciale (Roublard, N13)" },
       "description": { "en": "At 13th level, a rogue gains another special ability of her choice.", "fr": "Au niveau 13, un roublard gagne une autre capacité spéciale de son choix." },
-      "type": "special-ex", "isClassFeature": true
+      "type": "special-ex", "isClassFeature": true,
+      "effects": [{ "type": "bonusFeatSlot", "category": "rogueSpecialAbility", "count": 1 }]
     },
     {
       "value": "class-rogue-special-ability-slot-16",
       "label": { "en": "Special Ability (Rogue, L16)", "fr": "Capacité spéciale (Roublard, N16)" },
       "description": { "en": "At 16th level, a rogue gains another special ability of her choice.", "fr": "Au niveau 16, un roublard gagne une autre capacité spéciale de son choix." },
-      "type": "special-ex", "isClassFeature": true
+      "type": "special-ex", "isClassFeature": true,
+      "effects": [{ "type": "bonusFeatSlot", "category": "rogueSpecialAbility", "count": 1 }]
     },
     {
       "value": "class-rogue-special-ability-slot-19",
       "label": { "en": "Special Ability (Rogue, L19)", "fr": "Capacité spéciale (Roublard, N19)" },
       "description": { "en": "At 19th level, a rogue gains another special ability of her choice.", "fr": "Au niveau 19, un roublard gagne une autre capacité spéciale de son choix." },
-      "type": "special-ex", "isClassFeature": true
+      "type": "special-ex", "isClassFeature": true,
+      "effects": [{ "type": "bonusFeatSlot", "category": "rogueSpecialAbility", "count": 1 }]
     }
   ]
 }

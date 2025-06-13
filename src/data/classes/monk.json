@@ -155,7 +155,8 @@
       "value": "class-monk-purity-of-body",
       "label": { "en": "Purity of Body", "fr": "Pureté du corps" },
       "description": { "en": "At 5th level, a monk gains immunity to all diseases except for supernatural and magical diseases.", "fr": "Au niveau 5, un moine gagne l'immunité à toutes les maladies, à l'exception des maladies surnaturelles et magiques." },
-      "type": "special-ex", "isClassFeature": true, "permanentEffect": true
+      "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
+      "effects": [{ "type": "modifiesMechanic", "mechanicKey": "immuneToAllDiseasesExceptSupernatural", "value": true }]
     },
     {
       "value": "class-monk-bonus-feat-6",
@@ -168,7 +169,16 @@
       "value": "class-monk-wholeness-of-body",
       "label": { "en": "Wholeness of Body", "fr": "Plénitude du corps" },
       "description": { "en": "At 7th level or higher, a monk can heal her own wounds. She can heal a number of hit points of damage equal to twice her current monk level each day and can spread this healing out among several uses.", "fr": "Au niveau 7 ou plus, un moine peut guérir ses propres blessures. Il peut guérir un nombre de points de vie de dégâts égal à deux fois son niveau de moine actuel chaque jour et peut répartir cette guérison sur plusieurs utilisations." },
-      "type": "special-su", "isClassFeature": true
+      "type": "special-su", "isClassFeature": true,
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "wholenessOfBody",
+          "name": { "en": "Wholeness of Body", "fr": "Plénitude du corps" },
+          "details": { "en": "Heal (Monk Level x 2) HP per day. Can be spread among several uses.", "fr": "Soigne (Niveau de Moine x 2) PV par jour. Peut être réparti sur plusieurs utilisations." },
+          "uses": { "per": "day", "value": "customPool" }
+        }
+      ]
     },
     {
       "value": "class-monk-improved-evasion",
@@ -187,13 +197,23 @@
       "value": "class-monk-diamond-body",
       "label": { "en": "Diamond Body", "fr": "Corps de diamant" },
       "description": { "en": "At 11th level, a monk gains immunity to poisons of all kinds.", "fr": "Au niveau 11, un moine gagne l'immunité aux poisons de toutes sortes." },
-      "type": "special-su", "isClassFeature": true, "permanentEffect": true
+      "type": "special-su", "isClassFeature": true, "permanentEffect": true,
+      "effects": [{ "type": "modifiesMechanic", "mechanicKey": "immuneToPoisonsOfAllKinds", "value": true }]
     },
     {
       "value": "class-monk-abundant-step",
       "label": { "en": "Abundant Step", "fr": "Foulée aérienne" },
       "description": { "en": "At 12th level or higher, a monk can slip magically between spaces, as if using the spell dimension door, once per day. Her caster level for this effect is one-half her monk level (rounded down).", "fr": "Au niveau 12 ou plus, un moine peut se glisser magiquement entre les espaces, comme s'il utilisait le sort porte dimensionnelle, une fois par jour. Son niveau de lanceur de sorts pour cet effet est la moitié de son niveau de moine (arrondi à l'inférieur)." },
-      "type": "special-su", "isClassFeature": true
+      "type": "special-su", "isClassFeature": true,
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "abundantStep",
+          "name": { "en": "Abundant Step", "fr": "Foulée aérienne" },
+          "details": { "en": "As dimension door, 1/day. Caster level = 1/2 monk level.", "fr": "Comme porte dimensionnelle, 1/jour. Niveau de lanceur = 1/2 niveau de moine." },
+          "uses": { "per": "day", "value": 1 }
+        }
+      ]
     },
     {
       "value": "class-monk-diamond-soul",
@@ -207,7 +227,16 @@
       "value": "class-monk-quivering-palm",
       "label": { "en": "Quivering Palm", "fr": "Paume vibratoire" },
       "description": { "en": "Starting at 15th level, a monk can set up vibrations within the body of another creature that can thereafter be fatal if the monk so chooses. The monk can use this quivering palm attack once a week. The save DC is 10 + 1/2 the monk’s level + the monk’s Wis modifier.", "fr": "À partir du niveau 15, un moine peut déclencher des vibrations dans le corps d'une autre créature qui peuvent ensuite être fatales si le moine le souhaite. Le moine peut utiliser cette attaque de paume vibratoire une fois par semaine. Le DD du jet de sauvegarde est de 10 + 1/2 niveau du moine + modificateur de Sag du moine." },
-      "type": "special-su", "isClassFeature": true
+      "type": "special-su", "isClassFeature": true,
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "quiveringPalm",
+          "name": { "en": "Quivering Palm", "fr": "Paume vibratoire" },
+          "details": { "en": "Set up fatal vibrations. 1/week. Save DC = 10 + 1/2 monk level + Wis modifier.", "fr": "Déclenche des vibrations fatales. 1/semaine. DD sauvegarde = 10 + 1/2 niveau de moine + modificateur de Sag." },
+          "uses": { "per": "week", "value": 1 }
+        }
+      ]
     },
     {
       "value": "class-monk-ki-strike-adamantine",
@@ -232,7 +261,16 @@
       "value": "class-monk-empty-body",
       "label": { "en": "Empty Body", "fr": "Corps vide" },
       "description": { "en": "At 19th level, a monk gains the ability to assume an ethereal state for 1 round per monk level per day. This ability functions as the spell etherealness cast by a wizard of the monk’s class level.", "fr": "Au niveau 19, un moine acquiert la capacité de prendre un état éthéré pendant 1 round par niveau de moine par jour. Cette capacité fonctionne comme le sort état éthéré lancé par un magicien du niveau de classe du moine." },
-      "type": "special-su", "isClassFeature": true
+      "type": "special-su", "isClassFeature": true,
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "emptyBody",
+          "name": { "en": "Empty Body", "fr": "Corps vide" },
+          "details": { "en": "Assume ethereal state 1 round/monk level per day. As etherealness spell, CL = monk level.", "fr": "Prendre un état éthéré 1 round/niveau de moine par jour. Comme le sort état éthéré, NL = niveau de moine." },
+          "uses": { "per": "day", "value": "levelBased", "scaleWithClassLevel": { "classId": "monk", "valuePerLevel": 1 } }
+        }
+      ]
     },
     {
       "value": "class-monk-perfect-self",
