@@ -24,9 +24,14 @@
     { "featId": "class-druid-trackless-step", "levelAcquired": 3 },
     { "featId": "class-druid-resist-natures-lure", "levelAcquired": 4 },
     { "featId": "class-druid-wild-shape", "levelAcquired": 5 },
+    { "featId": "class-druid-wild-shape-animal-small-medium", "levelAcquired": 5 },
+    { "featId": "class-druid-wild-shape-animal-large", "levelAcquired": 8 },
     { "featId": "class-druid-venom-immunity", "levelAcquired": 9 },
+    { "featId": "class-druid-wild-shape-animal-tiny", "levelAcquired": 11 },
+    { "featId": "class-druid-wild-shape-plant", "levelAcquired": 12 },
     { "featId": "class-druid-a-thousand-faces", "levelAcquired": 13 },
-    { "featId": "class-druid-timeless-body", "levelAcquired": 15 }
+    { "featId": "class-druid-timeless-body", "levelAcquired": 15 },
+    { "featId": "class-druid-wild-shape-elemental", "levelAcquired": 16 }
   ],
   "classSpecificFeats": [
     {
@@ -126,12 +131,13 @@
       "label": { "en": "Wild Shape", "fr": "Forme animale" },
       "description": { "en": "At 5th level, a druid gains the ability to turn herself into any Small or Medium animal and back again once per day. This ability functions like the alternate form special ability, except as noted here. The effect lasts for 1 hour per druid level, or until she changes back. Changing form (to animal or back) is a standard action and doesn’t provoke an attack of opportunity. The form chosen must be that of an animal the druid is familiar with. The druid can use this ability more times per day at 6th, 7th, 10th, 14th, and 18th level. In addition, she gains the ability to take the shape of a Large animal at 8th level, a Tiny animal at 11th level, and a Huge animal at 15th level. At 12th level, a druid becomes able to use wild shape to change into a plant creature with the same size restrictions as for animal forms. At 16th level, a druid becomes able to use wild shape to change into an elemental (Small, Medium, Large, or Huge). At 18th level, a druid may assume elemental form twice per day. At 20th level, a druid may assume elemental form three times per day.", "fr": "Au niveau 5, un druide acquiert la capacité de se transformer en n'importe quel animal de taille P ou M et de reprendre sa forme initiale une fois par jour. Cette capacité fonctionne comme la capacité spéciale de forme alternative, sauf indication contraire ici. L'effet dure 1 heure par niveau de druide, ou jusqu'à ce qu'elle reprenne sa forme initiale. Changer de forme (en animal ou inversement) est une action simple et ne provoque pas d'attaque d'opportunité. La forme choisie doit être celle d'un animal que le druide connaît bien. Le druide peut utiliser cette capacité plus de fois par jour aux niveaux 6, 7, 10, 14 et 18. De plus, il acquiert la capacité de prendre la forme d'un animal de taille G au niveau 8, d'un animal de taille TP au niveau 11 et d'un animal de taille TG au niveau 15. Au niveau 12, un druide devient capable d'utiliser la forme animale pour se transformer en une créature végétale avec les mêmes restrictions de taille que pour les formes animales. Au niveau 16, un druide devient capable d'utiliser la forme animale pour se transformer en un élémentaire (P, M, G ou TG). Au niveau 18, un druide peut prendre une forme élémentaire deux fois par jour. Au niveau 20, un druide peut prendre une forme élémentaire trois fois par jour." },
       "isClassFeature": true, "type": "special-su",
-      "effectsText": { "en": "Transform into animals (later plants/elementals). Uses/day scale with level.", "fr": "Se transforme en animaux (plus tard plantes/élémentaires). Utilisations/jour augmentent avec le niveau." },
+      "effectsText": { "en": "Transform into animals (later plants/elementals). Uses/day scale with level. Lasts 1 hour/level.", "fr": "Se transforme en animaux (plus tard plantes/élémentaires). Utilisations/jour augmentent avec le niveau. Dure 1 heure/niveau." },
       "effects": [
         {
           "type": "grantsAbility",
           "abilityKey": "wildShapeUses",
           "name": { "en": "Wild Shape Uses", "fr": "Utilisations de Forme Animale" },
+          "details": { "en": "Standard action to change form, lasts 1 hour/level or until changed back. Does not provoke AoO.", "fr": "Action simple pour changer de forme, dure 1 heure/niveau ou jusqu'à retour à la forme normale. Ne provoque pas d'AdO." },
           "uses": {
             "per": "day",
             "value": "scaled",
@@ -147,6 +153,49 @@
       ]
     },
     {
+      "value": "class-druid-wild-shape-animal-small-medium",
+      "label": { "en": "Wild Shape (Small/Medium Animal)", "fr": "Forme animale (Animal P/M)" },
+      "description": { "en": "Can assume the form of a Small or Medium animal.", "fr": "Peut prendre la forme d'un animal de taille P ou M." },
+      "effectsText": { "en": "Can assume Small or Medium animal forms.", "fr": "Peut prendre la forme d'animaux de taille P ou M." },
+      "isClassFeature": true, "type": "special-su", "permanentEffect": true,
+      "effects": [{ "type": "modifiesMechanic", "mechanicKey": "canWildShapeAnimalSmallMedium", "value": true }]
+    },
+    {
+      "value": "class-druid-wild-shape-animal-large",
+      "label": { "en": "Wild Shape (Large Animal)", "fr": "Forme animale (Animal G)" },
+      "description": { "en": "Can assume the form of a Large animal.", "fr": "Peut prendre la forme d'un animal de taille G." },
+      "effectsText": { "en": "Can assume Large animal forms.", "fr": "Peut prendre la forme d'animaux de taille G." },
+      "isClassFeature": true, "type": "special-su", "permanentEffect": true,
+      "effects": [{ "type": "modifiesMechanic", "mechanicKey": "canWildShapeAnimalLarge", "value": true }]
+    },
+    {
+      "value": "class-druid-wild-shape-animal-tiny",
+      "label": { "en": "Wild Shape (Tiny Animal)", "fr": "Forme animale (Animal TP)" },
+      "description": { "en": "Can assume the form of a Tiny animal.", "fr": "Peut prendre la forme d'un animal de taille TP." },
+      "effectsText": { "en": "Can assume Tiny animal forms.", "fr": "Peut prendre la forme d'animaux de taille TP." },
+      "isClassFeature": true, "type": "special-su", "permanentEffect": true,
+      "effects": [{ "type": "modifiesMechanic", "mechanicKey": "canWildShapeAnimalTiny", "value": true }]
+    },
+    {
+      "value": "class-druid-wild-shape-plant",
+      "label": { "en": "Wild Shape (Plant)", "fr": "Forme animale (Plante)" },
+      "description": { "en": "Can assume the form of a plant creature.", "fr": "Peut prendre la forme d'une créature végétale." },
+      "effectsText": { "en": "Can assume plant creature forms (same size restrictions as animals).", "fr": "Peut prendre la forme de créatures végétales (mêmes restrictions de taille que les animaux)." },
+      "isClassFeature": true, "type": "special-su", "permanentEffect": true,
+      "effects": [{ "type": "modifiesMechanic", "mechanicKey": "canWildShapePlant", "value": true }]
+    },
+    {
+      "value": "class-druid-wild-shape-elemental",
+      "label": { "en": "Wild Shape (Elemental)", "fr": "Forme animale (Élémentaire)" },
+      "description": { "en": "Can assume the form of a Small, Medium, Large, or Huge elemental. Elemental form can be used 2/day at 18th level, 3/day at 20th level; these uses are in addition to normal Wild Shape uses if transforming into an elemental.", "fr": "Peut prendre la forme d'un élémentaire de taille P, M, G ou TG. La forme élémentaire peut être utilisée 2/jour au niveau 18, 3/jour au niveau 20 ; ces utilisations s'ajoutent aux utilisations normales de Forme Animale si la transformation est en élémentaire." },
+      "effectsText": { "en": "Can assume elemental forms (S, M, L, H). Special use limits apply for elemental forms.", "fr": "Peut prendre la forme d'élémentaires (P, M, G, TG). Des limites d'utilisation spéciales s'appliquent aux formes élémentaires." },
+      "isClassFeature": true, "type": "special-su", "permanentEffect": true,
+      "effects": [
+        { "type": "modifiesMechanic", "mechanicKey": "canWildShapeElemental", "value": true },
+        { "type": "note", "text": { "en": "Elemental form uses: 2/day at L18, 3/day at L20 (these are specific to elemental forms and are in addition to general Wild Shape uses).", "fr": "Utilisations de forme élémentaire : 2/jour au N18, 3/jour au N20 (ces utilisations sont spécifiques aux formes élémentaires et s'ajoutent aux utilisations générales de Forme Animale)." } }
+      ]
+    },
+    {
       "value": "class-druid-venom-immunity",
       "label": { "en": "Venom Immunity", "fr": "Immunité au venin" },
       "description": { "en": "At 9th level, a druid gains immunity to all poisons.", "fr": "Au niveau 9, un druide gagne l'immunité à tous les poisons." },
@@ -158,13 +207,17 @@
       "value": "class-druid-a-thousand-faces",
       "label": { "en": "A Thousand Faces", "fr": "Mille visages" },
       "description": { "en": "At 13th level, a druid gains the ability to change her appearance at will, as if using the disguise self spell, but only while in her normal form. This affects the druid’s body but not her possessions. It is not an illusory effect, but a minor physical alteration of a druid’s appearance, within the limits of the spell.", "fr": "Au niveau 13, un druide acquiert la capacité de changer son apparence à volonté, comme s'il utilisait le sort déguisement, mais uniquement sous sa forme normale. Cela affecte le corps du druide mais pas ses possessions. Ce n'est pas un effet illusoire, mais une altération physique mineure de l'apparence d'un druide, dans les limites du sort." },
-      "isClassFeature": true, "type": "special-su"
+      "isClassFeature": true, "type": "special-su",
+      "effectsText": { "en": "Change appearance at will (as Disguise Self, normal form only).", "fr": "Change d'apparence à volonté (comme Déguisement, forme normale uniquement)." },
+      "effects": [{ "type": "note", "text": { "en": "Can change appearance at will (as Disguise Self spell, normal form only). This is a minor physical alteration, not an illusion.", "fr": "Peut changer d'apparence à volonté (comme le sort Déguisement, forme normale uniquement). C'est une altération physique mineure, pas une illusion." } }]
     },
     {
       "value": "class-druid-timeless-body",
       "label": { "en": "Timeless Body", "fr": "Corps intemporel" },
       "description": { "en": "After attaining 15th level, a druid no longer takes ability score penalties for aging and cannot be magically aged. Any penalties she may have already incurred, however, remain in place. Bonuses still accrue, and the druid still dies of old age when her time is up.", "fr": "Après avoir atteint le niveau 15, un druide ne subit plus de pénalités de score de caractéristique dues au vieillissement et ne peut pas être vieilli par magie. Cependant, les pénalités qu'il a déjà subies restent en place. Les bonus s'accumulent toujours, et le druide meurt toujours de vieillesse lorsque son heure est venue." },
-      "isClassFeature": true, "type": "special-ex", "permanentEffect": true
+      "isClassFeature": true, "type": "special-ex", "permanentEffect": true,
+      "effectsText": { "en": "No longer takes ability score penalties for aging; cannot be magically aged.", "fr": "Ne subit plus de pénalités de caractéristiques dues au vieillissement ; ne peut être vieilli magiquement." },
+      "effects": [{ "type": "note", "text": { "en": "No longer takes ability penalties for aging and cannot be magically aged. Existing penalties remain. Bonuses still accrue.", "fr": "Ne subit plus de pénalités de caractéristiques dues au vieillissement et ne peut pas être vieilli magiquement. Les pénalités existantes demeurent. Les bonus s'accumulent toujours." } }]
     }
   ]
 }
