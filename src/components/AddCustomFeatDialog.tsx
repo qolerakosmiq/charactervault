@@ -3,7 +3,6 @@
 
 import *as React from 'react';
 import type { FeatDefinitionJsonData, FeatPrerequisiteDetails, AbilityName, DndClassOption, DndClassId, DndRaceOption, CharacterAlignmentObject, DndRaceId, FeatTypeString } from '@/types/character';
-// ALIGNMENT_PREREQUISITE_OPTIONS, FEAT_TYPES, ABILITY_LABELS are now from context
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -24,7 +23,7 @@ import { ComboboxPrimitive, type ComboboxOption } from '@/components/ui/combobox
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { useI18n } from '@/context/I18nProvider'; // Import useI18n
+import { useI18n } from '@/context/I18nProvider';
 import { useToast } from "@/hooks/use-toast";
 
 interface AddCustomFeatDialogProps {
@@ -32,10 +31,10 @@ interface AddCustomFeatDialogProps {
   onOpenChange: (open: boolean) => void;
   onSave: (featDefData: FeatDefinitionJsonData & { isCustom: true }) => void;
   initialFeatData?: FeatDefinitionJsonData & { isCustom: true };
-  allFeats: readonly FeatDefinitionJsonData[];
-  allSkills: readonly ComboboxOption[];
-  allClasses: readonly DndClassOption[];
-  allRaces: readonly DndRaceOption[];
+  allFeats: readonly FeatDefinitionJsonData[]; // FeatDefinitionJsonData now uses 'id'
+  allSkills: readonly ComboboxOption[]; // ComboboxOption uses 'value' which maps to skill 'id'
+  allClasses: readonly DndClassOption[]; // DndClassOption now uses 'id'
+  allRaces: readonly DndRaceOption[];   // DndRaceOption now uses 'id'
 }
 
 const NONE_VALUE = "__NONE__";
@@ -47,8 +46,8 @@ const AddCustomFeatDialogComponent = ({
   initialFeatData,
   allFeats,
   allSkills,
-  allClasses: propAllClasses, 
-  allRaces: propAllRaces,     
+  allClasses: propAllClasses,
+  allRaces: propAllRaces,
 }: AddCustomFeatDialogProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
   const { toast } = useToast();
@@ -74,14 +73,14 @@ const AddCustomFeatDialogComponent = ({
 
   const abilityOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [];
-    return translations.ABILITY_LABELS.map(al => ({ value: al.value, label: `${al.label} (${al.abbr})` }));
+    return translations.ABILITY_LABELS.map(al => ({ value: al.id, label: `${al.label} (${al.abbr})` })); // Use id
   }, [translations, translationsLoading]);
 
   const classComboboxOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [{ value: NONE_VALUE, label: "Loading..." }];
     return [
       { value: NONE_VALUE, label: translations.UI_STRINGS.deityNoneOption || "None" },
-      ...propAllClasses.map(c => ({ value: c.value, label: c.label })) 
+      ...propAllClasses.map(c => ({ value: c.id, label: c.label })) // Use id
     ];
   }, [translations, translationsLoading, propAllClasses]);
 
@@ -89,7 +88,7 @@ const AddCustomFeatDialogComponent = ({
      if (translationsLoading || !translations) return [{ value: NONE_VALUE, label: "Loading..." }];
     return [
       { value: NONE_VALUE, label: translations.UI_STRINGS.deityNoneOption || "None" },
-      ...propAllRaces.map(r => ({ value: r.value, label: r.label })) 
+      ...propAllRaces.map(r => ({ value: r.id, label: r.label })) // Use id
     ];
   }, [translations, translationsLoading, propAllRaces]);
 
@@ -97,13 +96,13 @@ const AddCustomFeatDialogComponent = ({
     if (translationsLoading || !translations) return [{ value: NONE_VALUE, label: "Loading..." }];
     return [
       { value: NONE_VALUE, label: translations.UI_STRINGS.deityNoneOption || "None" },
-      ...translations.ALIGNMENT_PREREQUISITE_OPTIONS
+      ...translations.ALIGNMENT_PREREQUISITE_OPTIONS.map(opt => ({ value: opt.id, label: opt.label })) // Use id
     ];
   }, [translations, translationsLoading]);
   
   const featTypeOptions = React.useMemo(() => {
     if (translationsLoading || !translations || !Array.isArray(translations.FEAT_TYPES)) return [];
-    return translations.FEAT_TYPES;
+    return translations.FEAT_TYPES.map(ft => ({ value: ft.id, label: ft.label })); // Use id
   }, [translations, translationsLoading]);
 
 
@@ -134,13 +133,13 @@ const AddCustomFeatDialogComponent = ({
         }
         if (prereqs?.skills) {
           prereqs.skills.forEach(skillReq => {
-            const skillLabel = allSkills.find(s => s.value === skillReq.id)?.label || skillReq.id;
+            const skillLabel = allSkills.find(s => s.value === skillReq.id)?.label || skillReq.id; // allSkills uses 'value' for id
             loadedPrereqs.push({ tempId: crypto.randomUUID(), type: 'skill', itemId: skillReq.id, itemLabel: skillLabel, value: skillReq.ranks });
           });
         }
         if (prereqs?.feats) {
           prereqs.feats.forEach(featId => {
-            const featLabel = allFeats.find(f => f.value === featId)?.label || featId;
+            const featLabel = allFeats.find(f => f.id === featId)?.label || featId; // allFeats now uses 'id'
             loadedPrereqs.push({ tempId: crypto.randomUUID(), type: 'feat', itemId: featId, itemLabel: featLabel });
           });
         }
@@ -184,7 +183,7 @@ const AddCustomFeatDialogComponent = ({
         return;
       }
     } else if (newPrereqType === 'skill') {
-      const skillOpt = allSkills.find(opt => opt.value === newPrereqItemId);
+      const skillOpt = allSkills.find(opt => opt.value === newPrereqItemId); // allSkills uses 'value' for id
       itemLabel = skillOpt ? skillOpt.label : newPrereqItemId;
       value = newPrereqValue;
       if (value <= 0) {
@@ -192,7 +191,7 @@ const AddCustomFeatDialogComponent = ({
         return;
       }
     } else if (newPrereqType === 'feat') {
-      const featOpt = allFeats.find(opt => opt.value === newPrereqItemId);
+      const featOpt = allFeats.find(opt => opt.id === newPrereqItemId); // allFeats now uses 'id'
       itemLabel = featOpt ? featOpt.label : newPrereqItemId;
     }
 
@@ -243,7 +242,7 @@ const AddCustomFeatDialogComponent = ({
     });
 
     const featDefinition: FeatDefinitionJsonData & { isCustom: true } = {
-      value: initialFeatData?.value || crypto.randomUUID(),
+      id: initialFeatData?.id || crypto.randomUUID(), // Changed from value to id
       label: featName.trim(),
       type: featType,
       description: description.trim() || undefined,
@@ -484,7 +483,7 @@ const AddCustomFeatDialogComponent = ({
                   <div className="space-y-1 md:col-span-2">
                     <Label htmlFor="new-prereq-feat-item">Feat</Label>
                     <ComboboxPrimitive
-                      options={allFeats.map(f => ({ value: f.value, label: f.label }))}
+                      options={allFeats.map(f => ({ value: f.id, label: f.label }))} // Use id
                       value={newPrereqItemId}
                       onChange={setNewPrereqItemId}
                       placeholder="Select Prerequisite Feat..."
@@ -555,5 +554,3 @@ interface PrerequisiteListItem {
   itemLabel: string;
   value?: number;
 }
-
-    

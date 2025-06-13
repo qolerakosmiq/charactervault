@@ -44,7 +44,7 @@ export const useDefinitionsStore = create<DefinitionsStoreState>()(
       customSkillDefinitions: [],
       rerollOnesForAbilityScores: false,
       pointBuyBudget: 25,
-      rerollTwentiesForChecks: false, // Default value
+      rerollTwentiesForChecks: false, 
       actions: {
         addCustomFeatDefinition: (featDef) =>
           set((state) => ({
@@ -53,11 +53,11 @@ export const useDefinitionsStore = create<DefinitionsStoreState>()(
         updateCustomFeatDefinition: (updatedFeatDef) =>
           set((state) => ({
             customFeatDefinitions: state.customFeatDefinitions.map((def) =>
-              def.value === updatedFeatDef.value ? updatedFeatDef : def
+              def.id === updatedFeatDef.id ? updatedFeatDef : def // Changed from value to id
             ).sort((a, b) => a.label.localeCompare(b.label)),
           })),
         getCustomFeatDefinitionById: (featDefId) => {
-          return get().customFeatDefinitions.find(def => def.value === featDefId);
+          return get().customFeatDefinitions.find(def => def.id === featDefId); // Changed from value to id
         },
         addCustomSkillDefinition: (skillDef) =>
           set((state) => ({
@@ -78,7 +78,7 @@ export const useDefinitionsStore = create<DefinitionsStoreState>()(
           })),
         setPointBuyBudget: (budget) =>
           set({ pointBuyBudget: Math.max(0, budget) }),
-        toggleRerollTwentiesForChecks: () => // New action implementation
+        toggleRerollTwentiesForChecks: () => 
           set((state) => ({
             rerollTwentiesForChecks: !state.rerollTwentiesForChecks,
           })),
@@ -92,7 +92,7 @@ export const useDefinitionsStore = create<DefinitionsStoreState>()(
         customSkillDefinitions: state.customSkillDefinitions,
         rerollOnesForAbilityScores: state.rerollOnesForAbilityScores,
         pointBuyBudget: state.pointBuyBudget,
-        rerollTwentiesForChecks: state.rerollTwentiesForChecks, // Persist new setting
+        rerollTwentiesForChecks: state.rerollTwentiesForChecks,
       }),
     }
   )

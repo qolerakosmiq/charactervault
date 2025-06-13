@@ -35,15 +35,15 @@ interface FeatSelectionDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onFeatSelected: (featDefinitionId: string) => void;
-  allFeats: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
+  allFeats: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]; // FeatDefinitionJsonData uses 'id'
   character: Character;
-  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
-  allCustomSkillDefinitions: readonly CustomSkillDefinition[];
-  allClasses: readonly DndClassOption[];
-  allRaces: readonly DndRaceOption[];
-  abilityLabels: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
-  alignmentPrereqOptions: readonly { value: string; label: string }[];
-  filterByCategory?: string; // New prop for filtering
+  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[]; // Uses 'id'
+  allCustomSkillDefinitions: readonly CustomSkillDefinition[]; // Uses 'id'
+  allClasses: readonly DndClassOption[]; // Uses 'id'
+  allRaces: readonly DndRaceOption[]; // Uses 'id'
+  abilityLabels: readonly { id: Exclude<AbilityName, 'none'>; label: string; abbr: string }[]; // Uses 'id'
+  alignmentPrereqOptions: readonly { id: string; label: string }[]; // Uses 'id'
+  filterByCategory?: string;
   isLoadingTranslations?: boolean;
 }
 
@@ -68,7 +68,7 @@ export function FeatSelectionDialog({
   allRaces,
   abilityLabels,
   alignmentPrereqOptions,
-  filterByCategory, // Destructure new prop
+  filterByCategory,
   isLoadingTranslations: propIsLoadingTranslations = false,
 }: FeatSelectionDialogProps) {
   const { translations, isLoading: i18nIsLoading } = useI18n();
@@ -82,7 +82,7 @@ export function FeatSelectionDialog({
     let featsToProcess = [...allFeats].filter(featDef => featDef.isClassFeature !== true);
 
     if (filterByCategory) {
-      featsToProcess = featsToProcess.filter(featDef => 
+      featsToProcess = featsToProcess.filter(featDef =>
         !featDef.category || featDef.category === filterByCategory
       );
     }
@@ -116,9 +116,9 @@ export function FeatSelectionDialog({
       }
     }
     if (!isOpen) {
-      setSearchTerm(''); 
+      setSearchTerm('');
     }
-  }, [isOpen, searchTerm]); 
+  }, [isOpen]);
 
   if (isLoadingEffective || !translations) {
     return (
@@ -156,14 +156,14 @@ export function FeatSelectionDialog({
             {UI_STRINGS.featSelectionDialogTitle || "Select a Feat"}
           </DialogTitle>
           <DialogDescription>
-            {filterByCategory 
+            {filterByCategory
               ? `${UI_STRINGS.featSelectionDialogDescriptionCategoryFilter || "Choose a feat from the filtered list. Showing feats for category:"} ${filterByCategory}`
               : UI_STRINGS.featSelectionDialogDescription || "Search and choose a feat from the list. Descriptions and prerequisites are shown below each feat."
             }
           </DialogDescription>
         </DialogHeader>
         <Command
-          shouldFilter={false} 
+          shouldFilter={false}
           className="rounded-lg border shadow-md flex-grow min-h-0 flex flex-col"
         >
           <CommandInput
@@ -179,7 +179,7 @@ export function FeatSelectionDialog({
                   const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(
                     featDef,
                     character,
-                    allFeats, 
+                    allFeats,
                     allPredefinedSkillDefinitions,
                     allCustomSkillDefinitions,
                     allClasses,
@@ -190,10 +190,10 @@ export function FeatSelectionDialog({
                   );
                   return (
                     <CommandItem
-                      key={featDef.value}
-                      value={featDef.label} 
+                      key={featDef.id} // Use id
+                      value={featDef.label} // CMDK 'value' for filtering by label
                       onSelect={() => {
-                        onFeatSelected(featDef.value);
+                        onFeatSelected(featDef.id); // Pass id
                         onOpenChange(false);
                       }}
                       className="flex flex-col items-start p-3 hover:bg-accent/10 cursor-pointer data-[selected=true]:bg-accent/20"

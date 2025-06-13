@@ -5,7 +5,7 @@ import * as React from "react"
 import { Check, ChevronsUpDown, X as ClearIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button" // Import buttonVariants
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Command,
   CommandEmpty,
@@ -21,14 +21,14 @@ import {
 } from "@/components/ui/popover"
 
 export interface ComboboxOption {
-  value: string
+  value: string // This remains 'value' as it's the prop for the underlying CMDK CommandItem
   label: string
 }
 
 interface ComboboxProps {
   options: readonly ComboboxOption[]
-  value?: string
-  onChange: (value: string) => void
+  value?: string // This is the currently selected 'value' (which would correspond to an 'id' from our data)
+  onChange: (value: string) => void // Callback receives the 'id'
   placeholder?: string
   searchPlaceholder?: string
   emptyPlaceholder?: string
@@ -40,7 +40,7 @@ interface ComboboxProps {
 
 export function ComboboxPrimitive({
   options,
-  value,
+  value, // This 'value' is the ID of the selected item
   onChange,
   placeholder = "Select an option...",
   searchPlaceholder = "Search...",
@@ -50,58 +50,64 @@ export function ComboboxPrimitive({
   isEditable = false,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
+  const [inputValue, setInputValue] = React.useState("") // For CommandInput when not editable
 
   const handleSelect = (currentLabel: string) => {
+    // CommandItem's onSelect provides the label (its 'value' prop)
     const selectedOption = options.find(opt => opt.label.toLowerCase() === currentLabel.toLowerCase());
     if (selectedOption) {
-      onChange(selectedOption.value);
+      onChange(selectedOption.value); // Pass the actual ID back
+      if (!isEditable) setInputValue(""); // Clear search if not editable
     } else if (isEditable) {
-      onChange(currentLabel); // Allow setting custom typed value
+      onChange(currentLabel); // Pass typed value if editable
     }
     setOpen(false);
   };
 
-  const handleInputChange = (inputValue: string) => {
-    if (isEditable) {
-      onChange(inputValue);
-    }
-    // If not editable, CommandInput's value is not directly tied to form state,
-    // so this function might only be used for filtering by cmdk.
-    // For editable, this directly updates the form state.
-  };
+  // For editable combobox, we directly bind the CommandInput to the external 'value' (which is an ID)
+  // For non-editable, inputValue is used for search filtering within CommandInput.
+  const currentCommandInputValue = isEditable ? value : inputValue;
+  const onCommandInputChange = isEditable ? onChange : setInputValue;
+
 
   const foundOption = options.find((option) => option.value.toLowerCase() === (value ?? '').toLowerCase());
   const displayLabel = foundOption ? foundOption.label : (isEditable && value ? value : placeholder);
 
   const handleClear = (e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
-    e.stopPropagation(); // Prevent popover from opening/toggling due to click on trigger
+    e.stopPropagation();
     onChange('');
-    setOpen(false); // Close popover if it was open
+    if (!isEditable) setInputValue("");
+    setOpen(false);
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={(isOpen) => {
+      setOpen(isOpen);
+      if (!isOpen && !isEditable) {
+        setInputValue(""); // Clear search on close if not editable
+      }
+    }}>
       <PopoverTrigger
         className={cn(
-          buttonVariants({ variant: "outline" }), // Apply button styles
-          "w-full justify-between font-normal relative", // Existing styles from Button
+          buttonVariants({ variant: "outline" }),
+          "w-full justify-between font-normal relative",
           !value && "text-muted-foreground",
           triggerClassName
         )}
         role="combobox"
         aria-expanded={open}
-        // type="button" // PopoverTrigger renders a button by default
       >
         <span className="truncate pr-6">{displayLabel}</span>
         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
           {value && (
             <div
               role="button"
-              tabIndex={0} // Make it focusable
+              tabIndex={0}
               onClick={handleClear}
-              onKeyDown={(e) => { // Basic keyboard accessibility for the clear "button"
+              onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   handleClear(e);
+                  e.preventDefault(); // Prevent PopoverTrigger's default behavior
                 }
               }}
               className="h-6 w-6 p-0 mr-1 flex items-center justify-center rounded-sm text-muted-foreground hover:text-destructive focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
@@ -114,19 +120,19 @@ export function ComboboxPrimitive({
         </div>
       </PopoverTrigger>
       <PopoverContent className={cn("w-[--radix-popover-trigger-width] p-0", popoverContentClassName)}>
-        <Command>
+        <Command shouldFilter={!isEditable}> {/* CMDK handles filtering if not editable */}
           <CommandInput
             placeholder={searchPlaceholder}
-            value={isEditable && value !== undefined ? value : undefined} // Controlled if editable
-            onValueChange={isEditable ? handleInputChange : undefined} // Direct update if editable
+            value={currentCommandInputValue}
+            onValueChange={onCommandInputChange}
           />
           <CommandList>
             <CommandEmpty>{emptyPlaceholder}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem
-                  key={option.value}
-                  value={option.label}
+                  key={option.value} // Use the ID as key
+                  value={option.label} // CMDK filters based on this 'value' prop, so use label for search
                   onSelect={handleSelect}
                 >
                   <Check

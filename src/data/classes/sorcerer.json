@@ -1,6 +1,6 @@
 
 {
-  "value": "sorcerer",
+  "id": "sorcerer",
   "label": { "en": "Sorcerer", "fr": "Ensorceleur" },
   "hitDice": "d4",
   "babProgression": "poor",
@@ -21,7 +21,7 @@
   ],
   "classSpecificFeats": [
     {
-      "value": "class-sorcerer-familiar",
+      "id": "class-sorcerer-familiar",
       "label": { "en": "Summon Familiar", "fr": "Convocation de familier" },
       "description": {
         "en": "A sorcerer can obtain a familiar in exactly the same way as a wizard can. See the wizard class feature.",

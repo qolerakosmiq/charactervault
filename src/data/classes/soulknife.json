@@ -1,6 +1,6 @@
 
 {
-  "value": "soulknife",
+  "id": "soulknife",
   "label": { "en": "Soulknife", "fr": "PsychLame" },
   "hitDice": "d10",
   "babProgression": "good",
@@ -39,7 +39,7 @@
   ],
   "classSpecificFeats": [
     {
-      "value": "class-soulknife-mind-blade",
+      "id": "class-soulknife-mind-blade",
       "label": { "en": "Mind Blade", "fr": "Lame Mentale" },
       "description": {
         "en": "A soulknife’s mind blade is a semisolid blade composed of psychic energy distilled from the soulknife’s own mind. The soulknife can manifest her mind blade as a free action and dismiss it as a free action. A soulknife’s mind blade is the equivalent of a magic weapon with a +1 enhancement bonus for every four soulknife levels. The soulknife may choose to form her mind blade into a light weapon, a one-handed weapon, or a two-handed weapon. The soulknife chooses the type of her mind blade from the following: short sword, longsword, or bastard sword. A Small soulknife who chooses bastard sword as her mind blade form treats it as a two-handed weapon.",
@@ -49,20 +49,20 @@
       "effectsText": { "en": "Manifest psychic blade (+1/4 levels enhancement). Can be light, one-handed, or two-handed.", "fr": "Manifeste une lame psychique (amélioration +1/4 niveaux). Peut être légère, à une main ou à deux mains." }
     },
     {
-      "value": "class-soulknife-weapon-focus-mind-blade",
+      "id": "class-soulknife-weapon-focus-mind-blade",
       "label": { "en": "Weapon Focus (Mind Blade)", "fr": "Arme de prédilection (Lame Mentale)" },
       "description": { "en": "A soulknife gains Weapon Focus with her mind blade as a bonus feat.", "fr": "Un psychlame gagne Arme de prédilection avec sa lame mentale comme don supplémentaire." },
       "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
       "effects": [{ "type": "attackRoll", "value": 1, "bonusType": "untyped", "appliesTo": "weaponName:Mind Blade" }]
     },
     {
-      "value": "class-soulknife-throw-mind-blade",
+      "id": "class-soulknife-throw-mind-blade",
       "label": { "en": "Throw Mind Blade", "fr": "Lancer de Lame Mentale" },
       "description": { "en": "A soulknife of 2nd level or higher can throw her mind blade as a ranged weapon with a range increment of 30 feet.", "fr": "Un psychlame de niveau 2 ou plus peut lancer sa lame mentale comme une arme à distance avec un facteur de portée de 9 mètres." },
       "type": "special-ex", "isClassFeature": true
     },
     {
-      "value": "class-soulknife-psychic-strike",
+      "id": "class-soulknife-psychic-strike",
       "label": { "en": "Psychic Strike", "fr": "Frappe Psychique" },
       "description": { "en": "As a move action, a soulknife of 3rd level or higher can imbue her mind blade with destructive psychic energy. This effect deals an extra 1d8 points of damage to the next living creature she hits with her mind blade. This increases by +1d8 at every four soulknife levels thereafter. This additional damage is not multiplied on a critical hit.", "fr": "Par une action de mouvement, un psychlame de niveau 3 ou plus peut imprégner sa lame mentale d'énergie psychique destructrice. Cet effet inflige 1d8 points de dégâts supplémentaires à la prochaine créature vivante qu'il touche avec sa lame mentale. Cela augmente de +1d8 tous les quatre niveaux de psychlame par la suite. Ces dégâts supplémentaires ne sont pas multipliés en cas de coup critique." },
       "type": "special-su", "isClassFeature": true,
@@ -76,57 +76,57 @@
       ]
     },
     {
-      "value": "class-soulknife-free-draw",
+      "id": "class-soulknife-free-draw",
       "label": { "en": "Free Draw", "fr": "Dégainage Libre" },
       "description": { "en": "At 4th level, a soulknife can manifest her mind blade as a swift action.", "fr": "Au niveau 4, un psychlame peut manifester sa lame mentale par une action rapide." },
       "type": "special-ex", "isClassFeature": true
     },
     {
-      "value": "class-soulknife-shape-mind-blade",
+      "id": "class-soulknife-shape-mind-blade",
       "label": { "en": "Shape Mind Blade", "fr": "Modeler la Lame Mentale" },
       "description": { "en": "At 5th level, a soulknife gains the ability to change the form of her mind blade. As a full-round action, she can change her mind blade to replicate a light, one-handed, or two-handed weapon of her size.", "fr": "Au niveau 5, un psychlame acquiert la capacité de changer la forme de sa lame mentale. Par une action complexe, il peut changer sa lame mentale pour reproduire une arme légère, à une main ou à deux mains de sa taille." },
       "type": "special-su", "isClassFeature": true
     },
     {
-      "value": "class-soulknife-mind-blade-enhancement-plus-1",
+      "id": "class-soulknife-mind-blade-enhancement-plus-1",
       "label": { "en": "Mind Blade Enhancement +1", "fr": "Amélioration de Lame Mentale +1" },
       "description": {"en": "Mind blade gains a +1 enhancement bonus.", "fr": "La lame mentale gagne un bonus d'altération de +1."},
       "type": "special-su", "isClassFeature": true, "permanentEffect": true
     },
     {
-      "value": "class-soulknife-speed-of-thought",
+      "id": "class-soulknife-speed-of-thought",
       "label": { "en": "Speed of Thought", "fr": "Vitesse de la Pensée" },
       "description": { "en": "At 6th level, a soulknife gains a +10 foot enhancement bonus to her speed when she is wearing no armor or light armor.", "fr": "Au niveau 6, un psychlame gagne un bonus d'altération de +3 mètres à sa vitesse lorsqu'il ne porte pas d'armure ou une armure légère." },
       "type": "special-su", "isClassFeature": true, "permanentEffect": true,
       "effectsText": { "en": "+10ft speed (no/light armor).", "fr": "+3m vitesse (sans/armure légère)." },
       "effects": [{ "type": "speed", "speedType": "land", "modification": "bonus", "value": 10, "bonusType": "enhancement", "condition": "unarmored_or_light_armor"}]
     },
-    { "value": "class-soulknife-blade-skills-1", "label": { "en": "Blade Skills (1st)", "fr": "Compétences de Lame (1ère)" }, "description": {"en": "Choose a blade skill.", "fr": "Choisissez une compétence de lame."}, "type": "special-ex", "isClassFeature": true },
+    { "id": "class-soulknife-blade-skills-1", "label": { "en": "Blade Skills (1st)", "fr": "Compétences de Lame (1ère)" }, "description": {"en": "Choose a blade skill.", "fr": "Choisissez une compétence de lame."}, "type": "special-ex", "isClassFeature": true },
     {
-      "value": "class-soulknife-knife-to-the-soul",
+      "id": "class-soulknife-knife-to-the-soul",
       "label": { "en": "Knife to the Soul", "fr": "Couteau dans l'Âme" },
       "description": { "en": "At 8th level, a soulknife learns how to strike at a creature’s soul with her mind blade. When she uses her psychic strike, she can choose to substitute Wisdom damage for extra dice of damage. For each 1d8 of psychic strike damage she gives up, she deals 1 point of Wisdom damage.", "fr": "Au niveau 8, un psychlame apprend à frapper l'âme d'une créature avec sa lame mentale. Lorsqu'il utilise sa frappe psychique, il peut choisir de substituer des dégâts de Sagesse aux dés de dégâts supplémentaires. Pour chaque 1d8 de dégâts de frappe psychique qu'il abandonne, il inflige 1 point de dégâts de Sagesse." },
       "type": "special-su", "isClassFeature": true
     },
-    { "value": "class-soulknife-mind-blade-enhancement-plus-2", "label": { "en": "Mind Blade Enhancement +2", "fr": "Amélioration de Lame Mentale +2" }, "description": {"en": "Mind blade enhancement bonus increases to +2.", "fr": "Le bonus d'altération de la lame mentale passe à +2."}, "type": "special-su", "isClassFeature": true, "permanentEffect": true },
+    { "id": "class-soulknife-mind-blade-enhancement-plus-2", "label": { "en": "Mind Blade Enhancement +2", "fr": "Amélioration de Lame Mentale +2" }, "description": {"en": "Mind blade enhancement bonus increases to +2.", "fr": "Le bonus d'altération de la lame mentale passe à +2."}, "type": "special-su", "isClassFeature": true, "permanentEffect": true },
     {
-      "value": "class-soulknife-bladewind",
+      "id": "class-soulknife-bladewind",
       "label": { "en": "Bladewind", "fr": "Vent de Lames" },
       "description": { "en": "At 10th level, a soulknife gains the ability to make a bladewind attack. As a full attack, she can give up her regular attacks and instead manifest two mind blades, making one attack with each mind blade at her full base attack bonus against each opponent within reach. She can choose to use her psychic strike ability with her bladewind attack.", "fr": "Au niveau 10, un psychlame acquiert la capacité d'effectuer une attaque de vent de lames. Par une attaque à outrance, il peut renoncer à ses attaques régulières et manifester à la place deux lames mentales, effectuant une attaque avec chaque lame mentale à son bonus d'attaque de base complet contre chaque adversaire à portée. Il peut choisir d'utiliser sa capacité de frappe psychique avec son attaque de vent de lames." },
       "type": "special-su", "isClassFeature": true
     },
-    { "value": "class-soulknife-blade-skills-2", "label": { "en": "Blade Skills (2nd)", "fr": "Compétences de Lame (2e)" }, "description": {"en": "Choose a blade skill.", "fr": "Choisissez une compétence de lame."}, "type": "special-ex", "isClassFeature": true },
+    { "id": "class-soulknife-blade-skills-2", "label": { "en": "Blade Skills (2nd)", "fr": "Compétences de Lame (2e)" }, "description": {"en": "Choose a blade skill.", "fr": "Choisissez une compétence de lame."}, "type": "special-ex", "isClassFeature": true },
     {
-      "value": "class-soulknife-greater-weapon-focus-mind-blade",
+      "id": "class-soulknife-greater-weapon-focus-mind-blade",
       "label": { "en": "Greater Weapon Focus (Mind Blade)", "fr": "Arme de prédilection supérieure (Lame Mentale)" },
       "description": { "en": "A soulknife gains Greater Weapon Focus with her mind blade as a bonus feat.", "fr": "Un psychlame gagne Arme de prédilection supérieure avec sa lame mentale comme don supplémentaire." },
       "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
       "effects": [{ "type": "attackRoll", "value": 1, "bonusType": "untyped", "appliesTo": "weaponName:Mind Blade" }]
     },
-    { "value": "class-soulknife-mind-blade-enhancement-plus-3", "label": { "en": "Mind Blade Enhancement +3", "fr": "Amélioration de Lame Mentale +3" }, "description": {"en": "Mind blade enhancement bonus increases to +3.", "fr": "Le bonus d'altération de la lame mentale passe à +3."}, "type": "special-su", "isClassFeature": true, "permanentEffect": true },
-    { "value": "class-soulknife-blade-skills-3", "label": { "en": "Blade Skills (3rd)", "fr": "Compétences de Lame (3e)" }, "description": {"en": "Choose a blade skill.", "fr": "Choisissez une compétence de lame."}, "type": "special-ex", "isClassFeature": true },
-    { "value": "class-soulknife-mind-blade-enhancement-plus-4", "label": { "en": "Mind Blade Enhancement +4", "fr": "Amélioration de Lame Mentale +4" }, "description": {"en": "Mind blade enhancement bonus increases to +4.", "fr": "Le bonus d'altération de la lame mentale passe à +4."}, "type": "special-su", "isClassFeature": true, "permanentEffect": true },
-    { "value": "class-soulknife-blade-skills-4", "label": { "en": "Blade Skills (4th)", "fr": "Compétences de Lame (4e)" }, "description": {"en": "Choose a blade skill.", "fr": "Choisissez une compétence de lame."}, "type": "special-ex", "isClassFeature": true },
-    { "value": "class-soulknife-mind-blade-enhancement-plus-5", "label": { "en": "Mind Blade Enhancement +5", "fr": "Amélioration de Lame Mentale +5" }, "description": {"en": "Mind blade enhancement bonus increases to +5.", "fr": "Le bonus d'altération de la lame mentale passe à +5."}, "type": "special-su", "isClassFeature": true, "permanentEffect": true }
+    { "id": "class-soulknife-mind-blade-enhancement-plus-3", "label": { "en": "Mind Blade Enhancement +3", "fr": "Amélioration de Lame Mentale +3" }, "description": {"en": "Mind blade enhancement bonus increases to +3.", "fr": "Le bonus d'altération de la lame mentale passe à +3."}, "type": "special-su", "isClassFeature": true, "permanentEffect": true },
+    { "id": "class-soulknife-blade-skills-3", "label": { "en": "Blade Skills (3rd)", "fr": "Compétences de Lame (3e)" }, "description": {"en": "Choose a blade skill.", "fr": "Choisissez une compétence de lame."}, "type": "special-ex", "isClassFeature": true },
+    { "id": "class-soulknife-mind-blade-enhancement-plus-4", "label": { "en": "Mind Blade Enhancement +4", "fr": "Amélioration de Lame Mentale +4" }, "description": {"en": "Mind blade enhancement bonus increases to +4.", "fr": "Le bonus d'altération de la lame mentale passe à +4."}, "type": "special-su", "isClassFeature": true, "permanentEffect": true },
+    { "id": "class-soulknife-blade-skills-4", "label": { "en": "Blade Skills (4th)", "fr": "Compétences de Lame (4e)" }, "description": {"en": "Choose a blade skill.", "fr": "Choisissez une compétence de lame."}, "type": "special-ex", "isClassFeature": true },
+    { "id": "class-soulknife-mind-blade-enhancement-plus-5", "label": { "en": "Mind Blade Enhancement +5", "fr": "Amélioration de Lame Mentale +5" }, "description": {"en": "Mind blade enhancement bonus increases to +5.", "fr": "Le bonus d'altération de la lame mentale passe à +5."}, "type": "special-su", "isClassFeature": true, "permanentEffect": true }
   ]
 }

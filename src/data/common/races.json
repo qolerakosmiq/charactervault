@@ -2,7 +2,7 @@
 {
   "DND_RACES_DATA": [
     {
-      "value": "human",
+      "id": "human",
       "label": { "en": "Human", "fr": "Humain" },
       "generalDescription": {
         "en": "<p>Humans are the most adaptable and ambitious people among the common races. Whatever drives them, humans are the innovators, the achievers, and the pioneers of the worlds.</p>",
@@ -18,7 +18,7 @@
       "racialSkillBonuses": {}
     },
     {
-      "value": "elf",
+      "id": "elf",
       "label": { "en": "Elf", "fr": "Elfe" },
       "generalDescription": {
         "en": "<p>Elves are known for their poetry, song, and magical arts, but when danger threatens they are formidable warriors. Elves value their privacy and traditions, and while they are often slow to make friends, at both the personal and national levels, they are even slower to forget them. They are slow to anger, but also slow to forget a slight.</p>",
@@ -41,7 +41,7 @@
       ]
     },
     {
-      "value": "dwarf",
+      "id": "dwarf",
       "label": { "en": "Dwarf", "fr": "Nain" },
       "generalDescription": {
         "en": "<p>Dwarves are known for their skill in warfare, their ability to withstand physical and magical punishment, their knowledge of the earth’s secrets, their hard work, and their capacity for drinking ale. Their kingdoms are usually found in the depths of mountains where they mine the earth for its riches.</p>",
@@ -67,7 +67,7 @@
       ]
     },
     {
-      "value": "gnome",
+      "id": "gnome",
       "label": { "en": "Gnome", "fr": "Gnome" },
       "generalDescription": {
         "en": "<p>Gnomes are welcome everywhere as technicians, alchemists, and inventors. Despite the demand for their skills, most gnomes prefer to remain among their own kind, living in comfortable burrows beneath rolling, wooded hills where animals abound and the gnomes make few demands on the soil.</p>",
@@ -91,7 +91,7 @@
       ]
     },
     {
-      "value": "halfling",
+      "id": "halfling",
       "label": { "en": "Halfling", "fr": "Halfelin" },
       "generalDescription": {
         "en": "<p>Halflings are clever, capable opportunists. Halfling individuals and clans find room for themselves wherever they can. They are not possessive about their homes, and they are experts at blending into the society of other races.</p>",
@@ -110,7 +110,7 @@
       "racialSkillBonuses": { "climb": 2, "jump": 2, "listen": 2, "move-silently": 2 }
     },
     {
-      "value": "half-elf",
+      "id": "half-elf",
       "label": { "en": "Half-Elf", "fr": "Demi-Elfe" },
       "generalDescription": {
         "en": "<p>Half-elves are a mix of human and elven blood. They are versatile and adaptable, possessing some of the grace of elves and the drive of humans.</p>",
@@ -130,7 +130,7 @@
       "racialSkillBonuses": { "listen": 1, "search": 1, "spot": 1, "diplomacy": 2, "gather-information": 2 }
     },
     {
-      "value": "half-orc",
+      "id": "half-orc",
       "label": { "en": "Half-Orc", "fr": "Demi-Orque" },
       "generalDescription": {
         "en": "<p>Half-orcs are humanoids born of both human and orc ancestry. They are often shunned in human society and seen as brutish in elven or dwarven lands. They combine the adaptability of humans with the raw physical power of orcs.</p>",

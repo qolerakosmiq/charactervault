@@ -1,6 +1,6 @@
 
 {
-  "value": "barbarian",
+  "id": "barbarian",
   "label": { "en": "Barbarian", "fr": "Barbare" },
   "hitDice": "d12",
   "babProgression": "good",
@@ -35,7 +35,7 @@
   ],
   "classSpecificFeats": [
     {
-      "value": "class-barbarian-fast-movement",
+      "id": "class-barbarian-fast-movement",
       "label": { "en": "Fast Movement", "fr": "Déplacement rapide" },
       "description": {
         "en": "<b>Benefit:</b> A barbarian’s land speed is faster than the norm for her race by +10 feet. This benefit applies only when she is wearing no armor, light armor, or medium armor and not carrying a heavy load. Apply this bonus before modifying the barbarian’s speed because of any load carried or armor worn. For example, a human barbarian has a speed of 40 feet, rather than 30 feet, when wearing light or no armor. When wearing medium armor or carrying a medium load, her speed drops to 30 feet. A halfling barbarian has a speed of 30 feet, rather than 20 feet, in light or no armor. When wearing medium armor or carrying a medium load, her speed drops to 20 feet.",
@@ -57,7 +57,7 @@
       ]
     },
     {
-      "value": "class-barbarian-rage",
+      "id": "class-barbarian-rage",
       "label": { "en": "Rage", "fr": "Rage" },
       "permanentEffect": false,
       "description": {
@@ -91,7 +91,7 @@
       ]
     },
     {
-      "value": "class-barbarian-uncanny-dodge",
+      "id": "class-barbarian-uncanny-dodge",
       "label": { "en": "Uncanny Dodge", "fr": "Esquive instinctive" },
       "description": {
         "en": "<b>Benefit:</b> At 2nd level, a barbarian retains her Dexterity bonus to AC (if any) even if she is caught flat-footed or struck by an invisible attacker. However, she still loses her Dexterity bonus to AC if immobilized. If a character already has uncanny dodge from a different class, a barbarian automatically gains improved uncanny dodge (see below) instead.",
@@ -104,7 +104,7 @@
       "effects": [{ "type": "note", "text": { "en": "Retains her Dexterity bonus to AC (if any) even if she is caught flat-footed or struck by an invisible attacker. Still loses Dex bonus if immobilized.", "fr": "Conserve son bonus de Dextérité à la CA (le cas échéant) même s'il est pris au dépourvu ou frappé par un attaquant invisible. Perd toujours son bonus de Dex s'il est immobilisé." } }]
     },
     {
-      "value": "class-barbarian-trap-sense",
+      "id": "class-barbarian-trap-sense",
       "label": { "en": "Trap Sense", "fr": "Sens des pièges" },
       "description": {
         "en": "<b>Benefit:</b> At 3rd level, a barbarian gains a +1 bonus on Reflex saves made to avoid traps and a +1 dodge bonus to AC against attacks made by traps. These bonuses increase by +1 for every three barbarian levels thereafter (6th, 9th, 12th, 15th, and 18th level).",
@@ -147,7 +147,7 @@
       ]
     },
     {
-      "value": "class-barbarian-improved-uncanny-dodge",
+      "id": "class-barbarian-improved-uncanny-dodge",
       "label": { "en": "Improved Uncanny Dodge", "fr": "Esquive instinctive améliorée" },
       "description": {
         "en": "<b>Benefit:</b> At 5th level and higher, a barbarian can no longer be flanked. This defense denies a rogue the ability to sneak attack the character by flanking her, unless the attacker has at least four more rogue levels than the target has barbarian levels.",
@@ -160,7 +160,7 @@
       "effects": [{ "type": "note", "text": { "en": "Cannot be flanked. Denies sneak attack from flanking unless Rogue attacker is 4+ levels higher.", "fr": "Ne peut plus être pris en tenaille. Empêche l'attaque sournoise par prise en tenaille sauf si l'attaquant roublard a au moins quatre niveaux de plus que les niveaux de barbare de la cible." } }]
     },
     {
-      "value": "class-barbarian-damage-reduction",
+      "id": "class-barbarian-damage-reduction",
       "label": { "en": "Damage Reduction", "fr": "Réduction des dégâts" },
       "description": {
         "en": "<b>Benefit:</b> Gains Damage Reduction X/-. This DR increases with level.",
@@ -189,7 +189,7 @@
       ]
     },
     {
-      "value": "class-barbarian-greater-rage",
+      "id": "class-barbarian-greater-rage",
       "label": { "en": "Greater Rage", "fr": "Rage supérieure" },
       "permanentEffect": false,
       "description": {
@@ -206,7 +206,7 @@
       ]
     },
     {
-      "value": "class-barbarian-indomitable-will",
+      "id": "class-barbarian-indomitable-will",
       "label": { "en": "Indomitable Will", "fr": "Volonté indomptable" },
       "description": {
         "en": "<b>Benefit:</b> While in a rage, a barbarian of 14th level or higher gains a +4 bonus on Will saves to resist enchantment spells. This bonus stacks with all other modifiers, including the morale bonus on Will saves she also receives during her rage.",
@@ -220,7 +220,7 @@
       ]
     },
     {
-      "value": "class-barbarian-tireless-rage",
+      "id": "class-barbarian-tireless-rage",
       "label": { "en": "Tireless Rage", "fr": "Rage infatigable" },
       "description": {
         "en": "<b>Benefit:</b> At 17th level and higher, a barbarian no longer becomes fatigued at the end of her rage.",
@@ -232,7 +232,7 @@
       "effects": [{ "type": "note", "text": { "en": "No longer becomes fatigued at the end of her rage.", "fr": "Ne devient plus fatigué à la fin de sa rage." } }]
     },
     {
-      "value": "class-barbarian-mighty-rage",
+      "id": "class-barbarian-mighty-rage",
       "label": { "en": "Mighty Rage", "fr": "Rage puissante" },
       "permanentEffect": false,
       "description": {
@@ -250,5 +250,3 @@
     }
   ]
 }
-
-    

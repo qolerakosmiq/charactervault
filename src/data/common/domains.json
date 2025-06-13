@@ -2,7 +2,7 @@
 {
   "DND_DOMAINS_DATA": [
     {
-      "value": "air-domain",
+      "id": "air-domain",
       "label": { "en": "Air", "fr": "Air" },
       "description": { "en": "Masters of the sky and wind.", "fr": "Maîtres du ciel et du vent." },
       "grantedPowerDescription": { "en": "Turn or destroy earth creatures as a good cleric turns undead. Rebuke, command, or bolster air creatures as an evil cleric rebukes undead. Use these abilities a total number of times per day equal to 3 + your Charisma modifier.", "fr": "Renvoi ou destruction des créatures de la terre comme un prêtre bon renvoie les morts-vivants. Intimidation, contrôle ou animation des créatures de l'air comme un prêtre mauvais intimide les morts-vivants. Utilisez ces capacités un nombre total de fois par jour égal à 3 + votre modificateur de Charisme." },
@@ -19,7 +19,7 @@
       ]
     },
     {
-      "value": "animal-domain",
+      "id": "animal-domain",
       "label": { "en": "Animal", "fr": "Animal" },
       "description": { "en": "Connected to the wild creatures of the world.", "fr": "Connecté aux créatures sauvages du monde." },
       "grantedPowerDescription": { "en": "You can use speak with animals once per day as a spell-like ability. Add Handle Animal to your list of cleric class skills.", "fr": "Vous pouvez utiliser communication avec les animaux une fois par jour comme un pouvoir magique. Ajoutez Dressage à votre liste de compétences de classe de prêtre." },
@@ -36,7 +36,7 @@
       ]
     },
     {
-      "value": "chaos-domain",
+      "id": "chaos-domain",
       "label": { "en": "Chaos", "fr": "Chaos" },
       "description": { "en": "Embraces freedom and randomness.", "fr": "Embrasse la liberté et l'aléatoire." },
       "grantedPowerDescription": { "en": "You cast chaos spells at +1 caster level.", "fr": "Vous lancez les sorts du Chaos avec un niveau de lanceur de sorts +1." },
@@ -53,7 +53,7 @@
       ]
     },
     {
-      "value": "death-domain",
+      "id": "death-domain",
       "label": { "en": "Death", "fr": "Mort" },
       "description": { "en": "Focuses on mortality and the undead.", "fr": "Se concentre sur la mortalité et les morts-vivants." },
       "grantedPowerDescription": { "en": "You may use death touch once per day. Your death touch is a supernatural ability that produces a death effect. You must succeed on a melee touch attack against a living creature (using the rules for touch spells). When you touch, roll 1d6 per cleric level you possess. If the total at least equals the creature’s current hit points, it dies (no save).", "fr": "Vous pouvez utiliser le contact mortel une fois par jour. Votre contact mortel est un pouvoir surnaturel qui produit un effet de mort. Vous devez réussir une attaque de contact au corps à corps contre une créature vivante (en utilisant les règles pour les sorts de contact). Lorsque vous touchez, lancez 1d6 par niveau de prêtre que vous possédez. Si le total est au moins égal aux points de vie actuels de la créature, elle meurt (pas de jet de sauvegarde)." },
@@ -70,7 +70,7 @@
       ]
     },
     {
-      "value": "destruction-domain",
+      "id": "destruction-domain",
       "label": { "en": "Destruction", "fr": "Destruction" },
       "description": { "en": "Revels in ruin and entropy.", "fr": "Se délecte de la ruine et de l'entropie." },
       "grantedPowerDescription": { "en": "You gain the smite power, the supernatural ability to make a single melee attack with a +4 attack bonus and a +1 damage bonus per cleric level (if you hit). You must declare the smite before making the attack. This ability is usable once per day.", "fr": "Vous gagnez le pouvoir de châtiment, la capacité surnaturelle d'effectuer une seule attaque au corps à corps avec un bonus d'attaque de +4 et un bonus de dégâts de +1 par niveau de prêtre (si vous touchez). Vous devez déclarer le châtiment avant d'effectuer l'attaque. Cette capacité est utilisable une fois par jour." },
@@ -87,7 +87,7 @@
       ]
     },
     {
-      "value": "earth-domain",
+      "id": "earth-domain",
       "label": { "en": "Earth", "fr": "Terre" },
       "description": { "en": "Connected to stone and the deep places of the earth.", "fr": "Connecté à la pierre et aux profondeurs de la terre." },
       "grantedPowerDescription": { "en": "Turn or destroy air creatures as a good cleric turns undead. Rebuke, command, or bolster earth creatures as an evil cleric rebukes undead. Use these abilities a total number of times per day equal to 3 + your Charisma modifier.", "fr": "Renvoi ou destruction des créatures de l'air comme un prêtre bon renvoie les morts-vivants. Intimidation, contrôle ou animation des créatures de la terre comme un prêtre mauvais intimide les morts-vivants. Utilisez ces capacités un nombre total de fois par jour égal à 3 + votre modificateur de Charisme." },
@@ -104,7 +104,7 @@
       ]
     },
     {
-      "value": "evil-domain",
+      "id": "evil-domain",
       "label": { "en": "Evil", "fr": "Mal" },
       "description": { "en": "Empowered by dark forces and malevolence.", "fr": "Puisance tirée des forces obscures et de la malveillance." },
       "grantedPowerDescription": { "en": "You cast evil spells at +1 caster level.", "fr": "Vous lancez les sorts du Mal avec un niveau de lanceur de sorts +1." },
@@ -121,7 +121,7 @@
       ]
     },
     {
-      "value": "fire-domain",
+      "id": "fire-domain",
       "label": { "en": "Fire", "fr": "Feu" },
       "description": { "en": "Commands the searing power of flame.", "fr": "Commande le pouvoir brûlant de la flamme." },
       "grantedPowerDescription": { "en": "Turn or destroy water creatures as a good cleric turns undead. Rebuke, command, or bolster fire creatures as an evil cleric rebukes undead. Use these abilities a total number of times per day equal to 3 + your Charisma modifier.", "fr": "Renvoi ou destruction des créatures de l'eau comme un prêtre bon renvoie les morts-vivants. Intimidation, contrôle ou animation des créatures du feu comme un prêtre mauvais intimide les morts-vivants. Utilisez ces capacités un nombre total de fois par jour égal à 3 + votre modificateur de Charisme." },
@@ -138,7 +138,7 @@
       ]
     },
     {
-      "value": "good-domain",
+      "id": "good-domain",
       "label": { "en": "Good", "fr": "Bien" },
       "description": { "en": "Dedicated to righteousness and compassion.", "fr": "Dédié à la droiture et à la compassion." },
       "grantedPowerDescription": { "en": "You cast good spells at +1 caster level.", "fr": "Vous lancez les sorts du Bien avec un niveau de lanceur de sorts +1." },
@@ -155,7 +155,7 @@
       ]
     },
     {
-      "value": "healing-domain",
+      "id": "healing-domain",
       "label": { "en": "Healing", "fr": "Guérison" },
       "description": { "en": "Specializes in mending wounds and curing ailments.", "fr": "Spécialisé dans la réparation des blessures et la guérison des maladies." },
       "grantedPowerDescription": { "en": "You cast healing spells at +1 caster level.", "fr": "Vous lancez les sorts de guérison avec un niveau de lanceur de sorts +1." },
@@ -172,7 +172,7 @@
       ]
     },
     {
-      "value": "knowledge-domain",
+      "id": "knowledge-domain",
       "label": { "en": "Knowledge", "fr": "Connaissance" },
       "description": { "en": "Values learning and understanding above all.", "fr": "Valorise l'apprentissage et la compréhension par-dessus tout." },
       "grantedPowerDescription": { "en": "You cast divination spells at +1 caster level. Add all Knowledge skills to your list of cleric class skills.", "fr": "Vous lancez les sorts de divination avec un niveau de lanceur de sorts +1. Ajoutez toutes les compétences de Connaissances à votre liste de compétences de classe de prêtre." },
@@ -189,7 +189,7 @@
       ]
     },
     {
-      "value": "law-domain",
+      "id": "law-domain",
       "label": { "en": "Law", "fr": "Loi" },
       "description": { "en": "Upholds order and structure.", "fr": "Maintient l'ordre et la structure." },
       "grantedPowerDescription": { "en": "You cast law spells at +1 caster level.", "fr": "Vous lancez les sorts de la Loi avec un niveau de lanceur de sorts +1." },
@@ -206,7 +206,7 @@
       ]
     },
     {
-      "value": "luck-domain",
+      "id": "luck-domain",
       "label": { "en": "Luck", "fr": "Chance" },
       "description": { "en": "Influences fortune and probability.", "fr": "Influence la fortune et la probabilité." },
       "grantedPowerDescription": { "en": "You gain the power of good fortune, which is the supernatural ability to reroll one die roll that you have just made. You must take the result of the reroll, even if it’s worse than the original roll. This ability is usable once per day.", "fr": "Vous gagnez le pouvoir de la bonne fortune, qui est la capacité surnaturelle de relancer un jet de dé que vous venez de faire. Vous devez prendre le résultat du nouveau jet, même s'il est pire que le jet original. Cette capacité est utilisable une fois par jour." },
@@ -223,7 +223,7 @@
       ]
     },
     {
-      "value": "magic-domain",
+      "id": "magic-domain",
       "label": { "en": "Magic", "fr": "Magie" },
       "description": { "en": "Devoted to the study and use of arcane power.", "fr": "Dédié à l'étude et à l'utilisation du pouvoir arcanique." },
       "grantedPowerDescription": { "en": "Use scrolls, wands, and other devices with spell completion or spell trigger activation as a wizard of one-half your cleric level (at least 1st level). For the purpose of using a scroll or other magic device, if you are also a wizard, actual wizard levels and these effective wizard levels stack.", "fr": "Utilisez les parchemins, les baguettes et autres dispositifs à achèvement de sort ou à déclenchement de sort comme un magicien de la moitié de votre niveau de prêtre (au moins niveau 1). Aux fins d'utilisation d'un parchemin ou d'un autre dispositif magique, si vous êtes également un magicien, les niveaux réels de magicien et ces niveaux effectifs de magicien se cumulent." },
@@ -240,7 +240,7 @@
       ]
     },
     {
-      "value": "plant-domain",
+      "id": "plant-domain",
       "label": { "en": "Plant", "fr": "Végétal" },
       "description": { "en": "Governs growth, nature, and the cycle of life in flora.", "fr": "Gouverne la croissance, la nature et le cycle de vie de la flore." },
       "grantedPowerDescription": { "en": "Rebuke or command plant creatures as an evil cleric rebukes or commands undead. Use this ability a total number of times per day equal to 3 + your Charisma modifier. Add Knowledge (nature) to your list of cleric class skills.", "fr": "Intimidation ou contrôle des créatures végétales comme un prêtre mauvais intimide ou contrôle les morts-vivants. Utilisez cette capacité un nombre total de fois par jour égal à 3 + votre modificateur de Charisme. Ajoutez Connaissances (nature) à votre liste de compétences de classe de prêtre." },
@@ -257,7 +257,7 @@
       ]
     },
     {
-      "value": "protection-domain",
+      "id": "protection-domain",
       "label": { "en": "Protection", "fr": "Protection" },
       "description": { "en": "Offers defense and security against harm.", "fr": "Offre défense et sécurité contre le mal." },
       "grantedPowerDescription": { "en": "You can generate a protective ward as a supernatural ability. Grant someone you touch a resistance bonus equal to your cleric level on his or her next saving throw. Activating this power is a standard action. The protective ward is an abjuration effect with a duration of 1 hour that is usable once per day.", "fr": "Vous pouvez générer une protection magique comme un pouvoir surnaturel. Accordez à quelqu'un que vous touchez un bonus de résistance égal à votre niveau de prêtre à son prochain jet de sauvegarde. Activer ce pouvoir est une action simple. La protection magique est un effet d'abjuration d'une durée de 1 heure utilisable une fois par jour." },
@@ -274,7 +274,7 @@
       ]
     },
     {
-      "value": "strength-domain",
+      "id": "strength-domain",
       "label": { "en": "Strength", "fr": "Force" },
       "description": { "en": "Grants power and physical might.", "fr": "Accorde pouvoir et puissance physique." },
       "grantedPowerDescription": { "en": "You can perform a feat of strength as a supernatural ability. You gain an enhancement bonus to Strength equal to your cleric level. Activating the power is a free action, the power lasts 1 round, and it is usable once per day.", "fr": "Vous pouvez accomplir un exploit de force comme un pouvoir surnaturel. Vous gagnez un bonus d'altération à la Force égal à votre niveau de prêtre. Activer le pouvoir est une action libre, le pouvoir dure 1 round, et il est utilisable une fois par jour." },
@@ -291,7 +291,7 @@
       ]
     },
     {
-      "value": "sun-domain",
+      "id": "sun-domain",
       "label": { "en": "Sun", "fr": "Soleil" },
       "description": { "en": "Associated with light, warmth, and vision.", "fr": "Associé à la lumière, la chaleur et la vision." },
       "grantedPowerDescription": { "en": "Once per day, you can perform a greater turning against undead in place of a regular turning. The greater turning is like a normal turning except that the undead creatures that would be turned are destroyed instead.", "fr": "Une fois par jour, vous pouvez effectuer un renvoi majeur contre les morts-vivants à la place d'un renvoi normal. Le renvoi majeur est comme un renvoi normal, sauf que les créatures mortes-vivantes qui seraient renvoyées sont détruites à la place." },
@@ -308,7 +308,7 @@
       ]
     },
     {
-      "value": "travel-domain",
+      "id": "travel-domain",
       "label": { "en": "Travel", "fr": "Voyage" },
       "description": { "en": "Masters of movement and exploration.", "fr": "Maîtres du mouvement et de l'exploration." },
       "grantedPowerDescription": { "en": "For a total time per day of 1 round per cleric level you possess, you can act freely regardless of magical effects that impede movement as if you were affected by the spell freedom of movement. This effect occurs automatically as soon as it applies, lasts until it runs out or is no longer needed, and can operate multiple times per day (up to the total daily limit of rounds). This is a supernatural ability. Add Survival to your list of cleric class skills.", "fr": "Pendant un temps total par jour de 1 round par niveau de prêtre que vous possédez, vous pouvez agir librement quels que soient les effets magiques qui entravent le mouvement comme si vous étiez affecté par le sort liberté de mouvement. Cet effet se produit automatiquement dès qu'il s'applique, dure jusqu'à ce qu'il s'épuise ou ne soit plus nécessaire, et peut fonctionner plusieurs fois par jour (jusqu'à la limite quotidienne totale de rounds). C'est un pouvoir surnaturel. Ajoutez Survie à votre liste de compétences de classe de prêtre." },
@@ -325,7 +325,7 @@
       ]
     },
     {
-      "value": "trickery-domain",
+      "id": "trickery-domain",
       "label": { "en": "Trickery", "fr": "Ruse" },
       "description": { "en": "Experts in deception and misdirection.", "fr": "Experts en tromperie et en égarement." },
       "grantedPowerDescription": { "en": "Add Bluff, Disguise, and Hide to your list of cleric class skills.", "fr": "Ajoutez Bluff, Déguisement et Discrétion à votre liste de compétences de classe de prêtre." },
@@ -342,7 +342,7 @@
       ]
     },
     {
-      "value": "war-domain",
+      "id": "war-domain",
       "label": { "en": "War", "fr": "Guerre" },
       "description": { "en": "Devoted to conflict and martial prowess.", "fr": "Dédié au conflit et à la prouesse martiale." },
       "grantedPowerDescription": { "en": "Free Martial Weapon Proficiency with deity’s favored weapon (if necessary) and Weapon Focus with the deity’s favored weapon.", "fr": "Maîtrise gratuite de l'arme de prédilection de la divinité (si nécessaire) et Don Arme de prédilection avec l'arme de prédilection de la divinité." },
@@ -360,7 +360,7 @@
       ]
     },
     {
-      "value": "water-domain",
+      "id": "water-domain",
       "label": { "en": "Water", "fr": "Eau" },
       "description": { "en": "Connected to seas, lakes, rivers, and creatures of the deep.", "fr": "Connecté aux mers, lacs, rivières et créatures des profondeurs." },
       "grantedPowerDescription": { "en": "Turn or destroy fire creatures as a good cleric turns undead. Rebuke, command, or bolster water creatures as an evil cleric rebukes undead. Use these abilities a total number of times per day equal to 3 + your Charisma modifier.", "fr": "Renvoi ou destruction des créatures du feu comme un prêtre bon renvoie les morts-vivants. Intimidation, contrôle ou animation des créatures de l'eau comme un prêtre mauvais intimide les morts-vivants. Utilisez ces capacités un nombre total de fois par jour égal à 3 + votre modificateur de Charisme." },
@@ -378,5 +378,3 @@
     }
   ]
 }
-
-    

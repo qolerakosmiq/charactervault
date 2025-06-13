@@ -2,7 +2,7 @@
 {
   "SKILL_DEFINITIONS_DATA": [
     {
-      "value": "appraise",
+      "id": "appraise",
       "label": { "en": "Appraise", "fr": "Estimation" },
       "keyAbility": "intelligence",
       "description": {
@@ -11,7 +11,7 @@
       }
     },
     {
-      "value": "balance",
+      "id": "balance",
       "label": { "en": "Balance", "fr": "Équilibre" },
       "keyAbility": "dexterity",
       "description": {
@@ -20,7 +20,7 @@
       }
     },
     {
-      "value": "bluff",
+      "id": "bluff",
       "label": { "en": "Bluff", "fr": "Bluff" },
       "keyAbility": "charisma",
       "description": {
@@ -29,7 +29,7 @@
       }
     },
     {
-      "value": "climb",
+      "id": "climb",
       "label": { "en": "Climb", "fr": "Escalade" },
       "keyAbility": "strength",
       "description": {
@@ -38,7 +38,7 @@
       }
     },
     {
-      "value": "concentration",
+      "id": "concentration",
       "label": { "en": "Concentration", "fr": "Concentration" },
       "keyAbility": "constitution",
       "description": {
@@ -47,7 +47,7 @@
       }
     },
     {
-      "value": "craft",
+      "id": "craft",
       "label": { "en": "Craft", "fr": "Artisanat" },
       "keyAbility": "intelligence",
       "description": {
@@ -56,7 +56,7 @@
       }
     },
     {
-      "value": "decipher-script",
+      "id": "decipher-script",
       "label": { "en": "Decipher Script", "fr": "Déchiffrage" },
       "keyAbility": "intelligence",
       "description": {
@@ -65,7 +65,7 @@
       }
     },
     {
-      "value": "diplomacy",
+      "id": "diplomacy",
       "label": { "en": "Diplomacy", "fr": "Diplomatie" },
       "keyAbility": "charisma",
       "description": {
@@ -74,7 +74,7 @@
       }
     },
     {
-      "value": "disable-device",
+      "id": "disable-device",
       "label": { "en": "Disable Device", "fr": "Désamorçage/Sabotage" },
       "keyAbility": "intelligence",
       "description": {
@@ -83,7 +83,7 @@
       }
     },
     {
-      "value": "disguise",
+      "id": "disguise",
       "label": { "en": "Disguise", "fr": "Déguisement" },
       "keyAbility": "charisma",
       "description": {
@@ -92,7 +92,7 @@
       }
     },
     {
-      "value": "escape-artist",
+      "id": "escape-artist",
       "label": { "en": "Escape Artist", "fr": "Art de la کالعدم" },
       "keyAbility": "dexterity",
       "description": {
@@ -101,7 +101,7 @@
       }
     },
     {
-      "value": "forgery",
+      "id": "forgery",
       "label": { "en": "Forgery", "fr": "Contrefaçon" },
       "keyAbility": "intelligence",
       "description": {
@@ -110,7 +110,7 @@
       }
     },
     {
-      "value": "gather-information",
+      "id": "gather-information",
       "label": { "en": "Gather Information", "fr": "Renseignement" },
       "keyAbility": "charisma",
       "description": {
@@ -119,7 +119,7 @@
       }
     },
     {
-      "value": "handle-animal",
+      "id": "handle-animal",
       "label": { "en": "Handle Animal", "fr": "Dressage" },
       "keyAbility": "charisma",
       "description": {
@@ -128,7 +128,7 @@
       }
     },
     {
-      "value": "heal",
+      "id": "heal",
       "label": { "en": "Heal", "fr": "Premiers secours" },
       "keyAbility": "wisdom",
       "description": {
@@ -137,7 +137,7 @@
       }
     },
     {
-      "value": "hide",
+      "id": "hide",
       "label": { "en": "Hide", "fr": "Discrétion" },
       "keyAbility": "dexterity",
       "description": {
@@ -146,7 +146,7 @@
       }
     },
     {
-      "value": "intimidate",
+      "id": "intimidate",
       "label": { "en": "Intimidate", "fr": "Intimidation" },
       "keyAbility": "charisma",
       "description": {
@@ -155,7 +155,7 @@
       }
     },
     {
-      "value": "jump",
+      "id": "jump",
       "label": { "en": "Jump", "fr": "Saut" },
       "keyAbility": "strength",
       "description": {
@@ -164,7 +164,7 @@
       }
     },
     {
-      "value": "knowledge-arcana",
+      "id": "knowledge-arcana",
       "label": { "en": "Knowledge (Arcana)", "fr": "Connaissances (Arcanes)" },
       "keyAbility": "intelligence",
       "description": {
@@ -173,7 +173,7 @@
       }
     },
     {
-      "value": "knowledge-architecture",
+      "id": "knowledge-architecture",
       "label": { "en": "Knowledge (Architecture and Engineering)", "fr": "Connaissances (Architecture et Ingénierie)" },
       "keyAbility": "intelligence",
       "description": {
@@ -182,7 +182,7 @@
       }
     },
     {
-      "value": "knowledge-dungeoneering",
+      "id": "knowledge-dungeoneering",
       "label": { "en": "Knowledge (Dungeoneering)", "fr": "Connaissances (Exploration des donjons)" },
       "keyAbility": "intelligence",
       "description": {
@@ -191,7 +191,7 @@
       }
     },
     {
-      "value": "knowledge-geography",
+      "id": "knowledge-geography",
       "label": { "en": "Knowledge (Geography)", "fr": "Connaissances (Géographie)" },
       "keyAbility": "intelligence",
       "description": {
@@ -200,7 +200,7 @@
       }
     },
     {
-      "value": "knowledge-history",
+      "id": "knowledge-history",
       "label": { "en": "Knowledge (History)", "fr": "Connaissances (Histoire)" },
       "keyAbility": "intelligence",
       "description": {
@@ -209,7 +209,7 @@
       }
     },
     {
-      "value": "knowledge-local",
+      "id": "knowledge-local",
       "label": { "en": "Knowledge (Local)", "fr": "Connaissances (Local)" },
       "keyAbility": "intelligence",
       "description": {
@@ -218,7 +218,7 @@
       }
     },
     {
-      "value": "knowledge-nature",
+      "id": "knowledge-nature",
       "label": { "en": "Knowledge (Nature)", "fr": "Connaissances (Nature)" },
       "keyAbility": "intelligence",
       "description": {
@@ -227,7 +227,7 @@
       }
     },
     {
-      "value": "knowledge-nobility",
+      "id": "knowledge-nobility",
       "label": { "en": "Knowledge (Nobility and Royalty)", "fr": "Connaissances (Noblesse et Royauté)" },
       "keyAbility": "intelligence",
       "description": {
@@ -236,7 +236,7 @@
       }
     },
     {
-      "value": "knowledge-religion",
+      "id": "knowledge-religion",
       "label": { "en": "Knowledge (Religion)", "fr": "Connaissances (Religion)" },
       "keyAbility": "intelligence",
       "description": {
@@ -245,7 +245,7 @@
       }
     },
     {
-      "value": "knowledge-planes",
+      "id": "knowledge-planes",
       "label": { "en": "Knowledge (The Planes)", "fr": "Connaissances (Plans)" },
       "keyAbility": "intelligence",
       "description": {
@@ -254,7 +254,7 @@
       }
     },
     {
-      "value": "listen",
+      "id": "listen",
       "label": { "en": "Listen", "fr": "Perception auditive" },
       "keyAbility": "wisdom",
       "description": {
@@ -263,7 +263,7 @@
       }
     },
     {
-      "value": "move-silently",
+      "id": "move-silently",
       "label": { "en": "Move Silently", "fr": "Déplacement silencieux" },
       "keyAbility": "dexterity",
       "description": {
@@ -272,7 +272,7 @@
       }
     },
     {
-      "value": "open-lock",
+      "id": "open-lock",
       "label": { "en": "Open Lock", "fr": "Crochetage" },
       "keyAbility": "dexterity",
       "description": {
@@ -281,7 +281,7 @@
       }
     },
     {
-      "value": "perform",
+      "id": "perform",
       "label": { "en": "Perform", "fr": "Représentation" },
       "keyAbility": "charisma",
       "description": {
@@ -290,7 +290,7 @@
       }
     },
     {
-      "value": "profession",
+      "id": "profession",
       "label": { "en": "Profession", "fr": "Profession" },
       "keyAbility": "wisdom",
       "description": {
@@ -299,7 +299,7 @@
       }
     },
     {
-      "value": "ride",
+      "id": "ride",
       "label": { "en": "Ride", "fr": "Équitation" },
       "keyAbility": "dexterity",
       "description": {
@@ -308,7 +308,7 @@
       }
     },
     {
-      "value": "search",
+      "id": "search",
       "label": { "en": "Search", "fr": "Fouille" },
       "keyAbility": "intelligence",
       "description": {
@@ -317,7 +317,7 @@
       }
     },
     {
-      "value": "sense-motive",
+      "id": "sense-motive",
       "label": { "en": "Sense Motive", "fr": "Psychologie" },
       "keyAbility": "wisdom",
       "description": {
@@ -326,7 +326,7 @@
       }
     },
     {
-      "value": "sleight-of-hand",
+      "id": "sleight-of-hand",
       "label": { "en": "Sleight of Hand", "fr": "Escamotage" },
       "keyAbility": "dexterity",
       "description": {
@@ -335,7 +335,7 @@
       }
     },
     {
-      "value": "speak-language",
+      "id": "speak-language",
       "label": { "en": "Speak Language", "fr": "Langage" },
       "keyAbility": "none",
       "description": {
@@ -344,7 +344,7 @@
       }
     },
     {
-      "value": "spellcraft",
+      "id": "spellcraft",
       "label": { "en": "Spellcraft", "fr": "Art de la magie" },
       "keyAbility": "intelligence",
       "description": {
@@ -353,7 +353,7 @@
       }
     },
     {
-      "value": "spot",
+      "id": "spot",
       "label": { "en": "Spot", "fr": "Détection" },
       "keyAbility": "wisdom",
       "description": {
@@ -362,7 +362,7 @@
       }
     },
     {
-      "value": "survival",
+      "id": "survival",
       "label": { "en": "Survival", "fr": "Survie" },
       "keyAbility": "wisdom",
       "description": {
@@ -371,7 +371,7 @@
       }
     },
     {
-      "value": "swim",
+      "id": "swim",
       "label": { "en": "Swim", "fr": "Natation" },
       "keyAbility": "strength",
       "description": {
@@ -380,7 +380,7 @@
       }
     },
     {
-      "value": "tumble",
+      "id": "tumble",
       "label": { "en": "Tumble", "fr": "Acrobaties" },
       "keyAbility": "dexterity",
       "description": {
@@ -389,7 +389,7 @@
       }
     },
     {
-      "value": "use-magic-device",
+      "id": "use-magic-device",
       "label": { "en": "Use Magic Device", "fr": "Utilisation d'objets magiques" },
       "keyAbility": "charisma",
       "description": {
@@ -398,7 +398,7 @@
       }
     },
     {
-      "value": "use-rope",
+      "id": "use-rope",
       "label": { "en": "Use Rope", "fr": "Utilisation des cordes" },
       "keyAbility": "dexterity",
       "description": {

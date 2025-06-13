@@ -16,12 +16,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ComboboxPrimitive } from '@/components/ui/combobox';
+import { ComboboxPrimitive } from '@/components/ui/combobox'; // ComboboxOption uses 'value'
 import { PlusCircle, Pencil, Trash2, Sparkles, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
-import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput'; 
+import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { useI18n } from '@/context/I18nProvider';
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,9 +29,9 @@ import { useToast } from "@/hooks/use-toast";
 interface AddCustomSkillDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (skillDefData: CustomSkillDefinition) => void; 
-  initialSkillData?: CustomSkillDefinition; 
-  allSkills: Array<{value: string; label: string}>; 
+  onSave: (skillDefData: CustomSkillDefinition) => void;
+  initialSkillData?: CustomSkillDefinition;
+  allSkills: Array<{value: string; label: string}>; // ComboboxOption uses 'value' for the ID
 }
 
 const AddCustomSkillDialogComponent = ({
@@ -39,7 +39,7 @@ const AddCustomSkillDialogComponent = ({
   onOpenChange,
   onSave,
   initialSkillData,
-  allSkills, 
+  allSkills,
 }: AddCustomSkillDialogProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
   const { toast } = useToast();
@@ -49,7 +49,7 @@ const AddCustomSkillDialogComponent = ({
   const [synergyRules, setSynergyRules] = React.useState<CustomSynergyRule[]>([]);
   const [description, setDescription] = React.useState('');
 
-  const [newSynergyTargetSkillId, setNewSynergyTargetSkillId] = React.useState(''); 
+  const [newSynergyTargetSkillId, setNewSynergyTargetSkillId] = React.useState('');
   const [newSynergyRanksRequired, setNewSynergyRanksRequired] = React.useState(5);
   const [newSynergyBonus, setNewSynergyBonus] = React.useState(2);
 
@@ -57,7 +57,7 @@ const AddCustomSkillDialogComponent = ({
 
   const availableTargetSkillsOptions = React.useMemo(() => {
     return allSkills
-      .filter(skill => skill.value !== initialSkillData?.id) 
+      .filter(skill => skill.value !== initialSkillData?.id) // ComboboxOption uses 'value' for id
       .sort((a,b) => a.label.localeCompare(b.label));
   }, [allSkills, initialSkillData?.id]);
 
@@ -93,8 +93,8 @@ const AddCustomSkillDialogComponent = ({
     setSynergyRules(prev => [
       ...prev,
       {
-        id: crypto.randomUUID(), 
-        targetSkillName: newSynergyTargetSkillId, 
+        id: crypto.randomUUID(),
+        targetSkillName: newSynergyTargetSkillId, // This is already the ID from ComboboxPrimitive
         ranksInThisSkillRequired: newSynergyRanksRequired,
         bonusGranted: newSynergyBonus,
       }
@@ -125,14 +125,14 @@ const AddCustomSkillDialogComponent = ({
     onOpenChange(false);
   };
 
-  const getSkillLabelById = (id: string) => {
-    const skill = allSkills.find(s => s.value === id); 
+  const getSkillLabelById = (skillId: string) => { // skillId parameter
+    const skill = allSkills.find(s => s.value === skillId); // ComboboxOption uses 'value' for id
     return skill ? skill.label : 'Unknown Skill';
   }
   
   const keyAbilityOptionsFromContext = React.useMemo(() => {
     if (translationsLoading || !translations) return [];
-    return translations.ABILITY_LABELS.map(al => ({ value: al.value, label: `${al.label} (${al.abbr})` }));
+    return translations.ABILITY_LABELS.map(al => ({ value: al.id, label: `${al.label} (${al.abbr})` })); // Use id
   }, [translations, translationsLoading]);
 
 
@@ -229,9 +229,9 @@ const AddCustomSkillDialogComponent = ({
                 <div className="space-y-1">
                   <Label htmlFor="synergy-target-skill">Target Skill to Grant Bonus To</Label>
                   <ComboboxPrimitive
-                    options={availableTargetSkillsOptions} 
-                    value={newSynergyTargetSkillId} 
-                    onChange={(value) => setNewSynergyTargetSkillId(value)}
+                    options={availableTargetSkillsOptions}
+                    value={newSynergyTargetSkillId}
+                    onChange={(value) => setNewSynergyTargetSkillId(value)} // 'value' from Combobox is the ID
                     placeholder="Select target skill"
                     searchPlaceholder="Search skills..."
                     emptyPlaceholder="No skill found."
@@ -257,7 +257,7 @@ const AddCustomSkillDialogComponent = ({
                       id="synergy-bonus-granted"
                       value={newSynergyBonus}
                       onChange={setNewSynergyBonus}
-                      min={-10} max={10} 
+                      min={-10} max={10}
                       inputClassName="h-9 text-sm"
                       buttonClassName="h-9 w-9"
                       buttonSize="sm"
@@ -303,5 +303,3 @@ const AddCustomSkillDialogComponent = ({
 };
 
 export const AddCustomSkillDialog = React.memo(AddCustomSkillDialogComponent);
-
-    

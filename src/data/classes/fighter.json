@@ -1,6 +1,6 @@
 
 {
-  "value": "fighter",
+  "id": "fighter",
   "label": { "en": "Fighter", "fr": "Guerrier" },
   "hitDice": "d10",
   "babProgression": "good",
@@ -39,7 +39,7 @@
   ],
   "classSpecificFeats": [
     {
-      "value": "class-fighter-bonus-feat-slot",
+      "id": "class-fighter-bonus-feat-slot",
       "label": { "en": "Fighter Bonus Feat Slot", "fr": "Emplacement de Don Supplémentaire de Guerrier" },
       "description": {
         "en": "Grants a bonus feat slot that must be used for feats in the 'fighterBonusFeat' category.",
@@ -53,5 +53,3 @@
     }
   ]
 }
-
-    

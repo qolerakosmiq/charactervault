@@ -32,16 +32,15 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
     loadLocaleData(language)
       .then((bundle) => {
-        setTranslations(processRawDataBundle(bundle));
+        setTranslations(processRawDataBundle(bundle, language)); // Pass language to processRawDataBundle
         setIsLoading(false);
       })
       .catch(error => {
         console.error(`Failed to load translations for ${language}:`, error);
-        // Fallback to default language if loading fails
         if (language !== DEFAULT_LANGUAGE) {
-          setLanguageState(DEFAULT_LANGUAGE); // This will trigger another load
+          setLanguageState(DEFAULT_LANGUAGE);
         } else {
-          setIsLoading(false); // Avoid infinite loop if default fails
+          setIsLoading(false);
         }
       });
   }, [language]);

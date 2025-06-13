@@ -2,7 +2,7 @@
 {
   "DND_DEITIES_DATA": [
     {
-      "value": "boccob",
+      "id": "boccob",
       "label": { "en": "Boccob", "fr": "Boccob" },
       "alignment": "true-neutral",
       "fullName": { "en": "Boccob, the Uncaring", "fr": "Boccob, l'Indifférent" },
@@ -13,7 +13,7 @@
       ]
     },
     {
-      "value": "corellon-larethian",
+      "id": "corellon-larethian",
       "label": { "en": "Corellon Larethian", "fr": "Corellon Larethian" },
       "alignment": "chaotic-good",
       "fullName": { "en": "Corellon Larethian, Creator of the Elves", "fr": "Corellon Larethian, Créateur des Elfes" },
@@ -24,7 +24,7 @@
       ]
     },
     {
-      "value": "ehlonna",
+      "id": "ehlonna",
       "label": { "en": "Ehlonna", "fr": "Ehlonna" },
       "alignment": "neutral-good",
       "fullName": { "en": "Ehlonna of the Forests", "fr": "Ehlonna des Forêts" },
@@ -35,7 +35,7 @@
       ]
     },
     {
-      "value": "erythnul",
+      "id": "erythnul",
       "label": { "en": "Erythnul", "fr": "Erythnul" },
       "alignment": "chaotic-evil",
       "fullName": { "en": "Erythnul, the Many", "fr": "Erythnul, le Multiple" },
@@ -46,7 +46,7 @@
       ]
     },
     {
-      "value": "fharlanghn",
+      "id": "fharlanghn",
       "label": { "en": "Fharlanghn", "fr": "Fharlanghn" },
       "alignment": "true-neutral",
       "fullName": { "en": "Fharlanghn, Dweller on the Horizon", "fr": "Fharlanghn, Celui qui Demeure à l'Horizon" },
@@ -57,7 +57,7 @@
       ]
     },
     {
-      "value": "garl-glittergold",
+      "id": "garl-glittergold",
       "label": { "en": "Garl Glittergold", "fr": "Garl Brilledor" },
       "alignment": "neutral-good",
       "fullName": { "en": "Garl Glittergold, the Watchful Protector", "fr": "Garl Brilledor, le Protecteur Vigilant" },
@@ -68,7 +68,7 @@
       ]
     },
     {
-      "value": "gruumsh",
+      "id": "gruumsh",
       "label": { "en": "Gruumsh", "fr": "Gruumsh" },
       "alignment": "chaotic-evil",
       "fullName": { "en": "Gruumsh One-Eye", "fr": "Gruumsh le Borgne" },
@@ -79,7 +79,7 @@
       ]
     },
     {
-      "value": "heironeous",
+      "id": "heironeous",
       "label": { "en": "Heironeous", "fr": "Heironeous" },
       "alignment": "lawful-good",
       "fullName": { "en": "Heironeous the Invincible", "fr": "Heironeous l'Invincible" },
@@ -90,7 +90,7 @@
       ]
     },
     {
-      "value": "hextor",
+      "id": "hextor",
       "label": { "en": "Hextor", "fr": "Hextor" },
       "alignment": "lawful-evil",
       "fullName": { "en": "Hextor, Champion of Evil", "fr": "Hextor, Champion du Mal" },
@@ -101,7 +101,7 @@
       ]
     },
     {
-      "value": "kord",
+      "id": "kord",
       "label": { "en": "Kord", "fr": "Kord" },
       "alignment": "chaotic-good",
       "fullName": { "en": "Kord, the Brawler", "fr": "Kord, le Bagarreur" },
@@ -112,7 +112,7 @@
       ]
     },
     {
-      "value": "moradin",
+      "id": "moradin",
       "label": { "en": "Moradin", "fr": "Moradin" },
       "alignment": "lawful-good",
       "fullName": { "en": "Moradin, Soul Forger", "fr": "Moradin, le Forgeur d'Âmes" },
@@ -123,7 +123,7 @@
       ]
     },
     {
-      "value": "nerull",
+      "id": "nerull",
       "label": { "en": "Nerull", "fr": "Nerull" },
       "alignment": "neutral-evil",
       "fullName": { "en": "Nerull, the Reaper", "fr": "Nerull, le Faucheur" },
@@ -134,7 +134,7 @@
       ]
     },
     {
-      "value": "obad-hai",
+      "id": "obad-hai",
       "label": { "en": "Obad-Hai", "fr": "Obad-Hai" },
       "alignment": "true-neutral",
       "fullName": { "en": "Obad-Hai, the Shalm", "fr": "Obad-Hai, le Shalm" },
@@ -145,7 +145,7 @@
       ]
     },
     {
-      "value": "olidammara",
+      "id": "olidammara",
       "label": { "en": "Olidammara", "fr": "Olidammara" },
       "alignment": "chaotic-neutral",
       "fullName": { "en": "Olidammara, the Laughing Rogue", "fr": "Olidammara, le Filou Rieur" },
@@ -156,7 +156,7 @@
       ]
     },
     {
-      "value": "pelor",
+      "id": "pelor",
       "label": { "en": "Pelor", "fr": "Pelor" },
       "alignment": "neutral-good",
       "fullName": { "en": "Pelor, the Shining One", "fr": "Pelor, le Brillant" },
@@ -167,7 +167,7 @@
       ]
     },
     {
-      "value": "st-cuthbert",
+      "id": "st-cuthbert",
       "label": { "en": "St. Cuthbert", "fr": "Saint Cuthbert" },
       "alignment": "lawful-neutral",
       "fullName": { "en": "St. Cuthbert of the Cudgel", "fr": "Saint Cuthbert de la Matraque" },
@@ -178,7 +178,7 @@
       ]
     },
     {
-      "value": "vecna",
+      "id": "vecna",
       "label": { "en": "Vecna", "fr": "Vecna" },
       "alignment": "neutral-evil",
       "fullName": { "en": "Vecna, the Maimed Lord", "fr": "Vecna, le Seigneur Mutilé" },
@@ -189,7 +189,7 @@
       ]
     },
     {
-      "value": "wee-jas",
+      "id": "wee-jas",
       "label": { "en": "Wee Jas", "fr": "Wee Jas" },
       "alignment": "lawful-neutral",
       "fullName": { "en": "Wee Jas, the Ruby Sorceress", "fr": "Wee Jas, la Sorcière Rubis" },
@@ -200,7 +200,7 @@
       ]
     },
     {
-      "value": "yondalla",
+      "id": "yondalla",
       "label": { "en": "Yondalla", "fr": "Yondalla" },
       "alignment": "lawful-good",
       "fullName": { "en": "Yondalla, the Protector and Provider", "fr": "Yondalla, la Protectrice et Pourvoyeuse" },
@@ -212,5 +212,3 @@
     }
   ]
 }
-
-    

@@ -1,5 +1,6 @@
+
 {
-  "value": "wizard",
+  "id": "wizard",
   "label": { "en": "Wizard", "fr": "Magicien" },
   "hitDice": "d4",
   "babProgression": "poor",
@@ -37,7 +38,7 @@
   ],
   "classSpecificFeats": [
     {
-      "value": "wizard-weapon-proficiencies",
+      "id": "wizard-weapon-proficiencies",
       "label": { "en": "Wizard Weapon Proficiencies", "fr": "Maîtrise des armes (Magicien)" },
       "description": { "en": "Club, dagger, heavy crossbow, light crossbow, quarterstaff.", "fr": "Gourdin, dague, arbalète lourde, arbalète légère, bâton." },
       "isClassFeature": true, "type": "general",
@@ -50,7 +51,7 @@
       ]
     },
     {
-      "value": "class-wizard-familiar",
+      "id": "class-wizard-familiar",
       "label": { "en": "Summon Familiar", "fr": "Convocation de familier" },
       "description": {
         "en": "A wizard can obtain a familiar. Doing so takes 24 hours and uses up magical materials that cost 100 gp. A familiar is a magical beast that resembles a small animal and is unusually tough and intelligent. The creature serves as a companion and servant.",
@@ -72,28 +73,28 @@
       ]
     },
     {
-      "value": "class-wizard-bonus-feat-slot-5",
+      "id": "class-wizard-bonus-feat-slot-5",
       "label": { "en": "Wizard Bonus Feat (Level 5)", "fr": "Don supplémentaire de Magicien (Niveau 5)" },
       "description": { "en": "At 5th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat.", "fr": "Au niveau 5, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie." },
       "isClassFeature": true, "type": "special-ex",
       "effects": [{ "type": "bonusFeatSlot", "category": "wizardBonusFeat", "count": 1 }]
     },
     {
-      "value": "class-wizard-bonus-feat-slot-10",
+      "id": "class-wizard-bonus-feat-slot-10",
       "label": { "en": "Wizard Bonus Feat (Level 10)", "fr": "Don supplémentaire de Magicien (Niveau 10)" },
       "description": { "en": "At 10th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat.", "fr": "Au niveau 10, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie." },
       "isClassFeature": true, "type": "special-ex",
       "effects": [{ "type": "bonusFeatSlot", "category": "wizardBonusFeat", "count": 1 }]
     },
     {
-      "value": "class-wizard-bonus-feat-slot-15",
+      "id": "class-wizard-bonus-feat-slot-15",
       "label": { "en": "Wizard Bonus Feat (Level 15)", "fr": "Don supplémentaire de Magicien (Niveau 15)" },
       "description": { "en": "At 15th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat.", "fr": "Au niveau 15, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie." },
       "isClassFeature": true, "type": "special-ex",
       "effects": [{ "type": "bonusFeatSlot", "category": "wizardBonusFeat", "count": 1 }]
     },
     {
-      "value": "class-wizard-bonus-feat-slot-20",
+      "id": "class-wizard-bonus-feat-slot-20",
       "label": { "en": "Wizard Bonus Feat (Level 20)", "fr": "Don supplémentaire de Magicien (Niveau 20)" },
       "description": { "en": "At 20th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat.", "fr": "Au niveau 20, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie." },
       "isClassFeature": true, "type": "special-ex",

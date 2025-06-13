@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ComboboxPrimitive, type ComboboxOption } from '@/components/ui/combobox';
+import { ComboboxPrimitive, type ComboboxOption } from '@/components/ui/combobox'; // ComboboxOption uses 'value'
 import { Loader2, CheckCircle } from 'lucide-react';
 import type { FeatDefinitionJsonData } from '@/types/character-core';
 import { useI18n } from '@/context/I18nProvider';
@@ -22,11 +22,11 @@ import { useToast } from '@/hooks/use-toast';
 interface SpecializationInputDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  featDefinition: FeatDefinitionJsonData | null;
+  featDefinition: FeatDefinitionJsonData | null; // FeatDefinitionJsonData uses 'id'
   onSave: (specializationDetail: string) => void;
-  allSkills: ComboboxOption[];
-  allMagicSchools: ComboboxOption[];
-  initialSpecializationDetail?: string; // New prop
+  allSkills: ComboboxOption[]; // ComboboxOption uses 'value' for skill ID
+  allMagicSchools: ComboboxOption[]; // ComboboxOption uses 'value' for school ID
+  initialSpecializationDetail?: string;
 }
 
 export function SpecializationInputDialog({
@@ -36,7 +36,7 @@ export function SpecializationInputDialog({
   onSave,
   allSkills,
   allMagicSchools,
-  initialSpecializationDetail, // Destructure new prop
+  initialSpecializationDetail,
 }: SpecializationInputDialogProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
   const { toast } = useToast();
@@ -44,7 +44,7 @@ export function SpecializationInputDialog({
 
   React.useEffect(() => {
     if (isOpen) {
-      setSpecializationDetail(initialSpecializationDetail || ''); // Use initial value if provided
+      setSpecializationDetail(initialSpecializationDetail || '');
     }
   }, [isOpen, initialSpecializationDetail]);
 
@@ -94,7 +94,7 @@ export function SpecializationInputDialog({
         <ComboboxPrimitive
           options={allSkills}
           value={specializationDetail}
-          onChange={setSpecializationDetail}
+          onChange={setSpecializationDetail} // onChange will receive the skill ID (from ComboboxOption.value)
           placeholder={placeholderText}
           searchPlaceholder={UI_STRINGS.searchPlaceholder || "Search..."}
           emptyPlaceholder={UI_STRINGS.noOptionFoundPlaceholder || "No option found."}
@@ -108,7 +108,7 @@ export function SpecializationInputDialog({
         <ComboboxPrimitive
           options={allMagicSchools}
           value={specializationDetail}
-          onChange={setSpecializationDetail}
+          onChange={setSpecializationDetail} // onChange will receive the school ID
           placeholder={placeholderText}
           searchPlaceholder={UI_STRINGS.searchPlaceholder || "Search..."}
           emptyPlaceholder={UI_STRINGS.noOptionFoundPlaceholder || "No option found."}
@@ -117,7 +117,7 @@ export function SpecializationInputDialog({
       );
       break;
     case 'weapon':
-    default: // Default to text input for other types or if not specified
+    default:
       placeholderText = UI_STRINGS.specializationInputPlaceholderWeapon || "Enter weapon name (e.g., Longsword)";
       if (specializationType && specializationType !== 'weapon') {
         placeholderText = `Enter ${specializationType}`;

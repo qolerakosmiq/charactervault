@@ -1,5 +1,5 @@
 
-import type { LocaleDataBundle, RawClassDataEntry, RawUiStringsData } from './i18n-data';
+import type { LocaleDataBundle, RawClassDataEntry, RawUiStringsData, LocalizedString } from './i18n-data';
 import type { LanguageCode } from './config';
 
 // Helper for dynamic imports, assuming files are in 'src/data/'
@@ -13,24 +13,23 @@ async function loadJson(path: string, isArrayDataFile: boolean = false, expected
   } catch (e) {
     console.warn(`Could not load ${path}.json, returning fallback.`);
     if (isArrayDataFile && expectedKey) {
-        return { [expectedKey]: [] }; // e.g. { DND_CLASSES_DATA: [] }
+        return { [expectedKey]: [] }; 
     }
-    return {}; // Fallback for object files or when expectedKey is not provided
+    return {}; 
   }
 }
 
-// List of common data files (excluding class-specific files and UI string files)
 const commonDataFileConfigs = [
   { path: 'common/alignments', key: 'ALIGNMENTS_DATA', isArray: true },
-  { path: 'common/base', isArray: false }, // base.json is an object of various _DATA fields
+  { path: 'common/base', isArray: false },
   { path: 'common/deities', key: 'DND_DEITIES_DATA', isArray: true },
   { path: 'common/domains', key: 'DND_DOMAINS_DATA', isArray: true },
   { path: 'common/languages', key: 'LANGUAGES_DATA', isArray: true },
   { path: 'common/magic-schools', key: 'DND_MAGIC_SCHOOLS_DATA', isArray: true },
   { path: 'common/races', key: 'DND_RACES_DATA', isArray: true },
-  { path: 'common/skills', isArray: false }, // skills.json contains multiple _DATA fields
-  { path: 'common/xp', isArray: false }, // xp.json contains XP_TABLE_DATA and EPIC_LEVEL_XP_INCREASE
-  { path: 'feats/common-feats', isArray: false } // common-feats.json has DND_FEATS_DATA and FEAT_TYPES_DATA
+  { path: 'common/skills', isArray: false },
+  { path: 'common/xp', isArray: false },
+  { path: 'feats/common-feats', isArray: false }
 ];
 
 
@@ -39,7 +38,6 @@ const classFileNames = [
   'paladin', 'ranger', 'rogue', 'sorcerer', 'soulknife', 'wizard'
 ];
 
-// UI string files are now expected to be flat objects or objects with one level of nesting per file
 const uiStringFiles = [
   'ui/character-sheet', 'ui/dashboard', 'ui/dialogs', 'ui/forms', 'ui/general'
 ];
@@ -47,8 +45,8 @@ const uiStringFiles = [
 
 export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBundle> {
   const commonDataPromises = commonDataFileConfigs.map(config => loadJson(config.path, config.isArray, config.key));
-  const classPromises = classFileNames.map(className => loadJson(`classes/${className}`)); // Classes are expected to be objects
-  const uiStringPromises = uiStringFiles.map(fileKey => loadJson(fileKey)); // UI files are objects
+  const classPromises = classFileNames.map(className => loadJson(`classes/${className}`));
+  const uiStringPromises = uiStringFiles.map(fileKey => loadJson(fileKey));
 
   const commonDataResults = await Promise.all(commonDataPromises);
   const classDataResults = await Promise.all(classPromises);
@@ -56,7 +54,6 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
   
   const bundle: Partial<LocaleDataBundle> = {};
 
-  // Assign common data based on their config
   bundle.alignments = commonDataResults[0] as LocaleDataBundle['alignments'];
   bundle.base = commonDataResults[1] as LocaleDataBundle['base'];
   bundle.deities = commonDataResults[2] as LocaleDataBundle['deities'];
@@ -69,11 +66,10 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
   bundle.commonFeats = commonDataResults[9] as LocaleDataBundle['commonFeats'];
 
 
-  bundle.allClasses = classDataResults.filter(c => c && typeof c === 'object' && c.value) as RawClassDataEntry[];
+  bundle.allClasses = classDataResults.filter(c => c && typeof c === 'object' && c.id) as RawClassDataEntry[]; // Check for 'id' now
 
   const mergedUiStrings: RawUiStringsData = uiStringResults.reduce((acc, currentFileContent) => {
     if (currentFileContent && typeof currentFileContent === 'object' && !Array.isArray(currentFileContent)) {
-        // Directly merge properties from the file content to the accumulator
         for (const key in currentFileContent) {
             if (Object.prototype.hasOwnProperty.call(currentFileContent, key)) {
                  acc[key] = currentFileContent[key] as LocalizedString;
@@ -85,8 +81,6 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
 
   bundle.uiStrings = mergedUiStrings;
 
-  // Ensure all top-level keys of LocaleDataBundle exist, even if their sources failed.
-  // The processLocalizedArray function will handle undefined _DATA arrays gracefully.
   const finalBundle: LocaleDataBundle = {
     alignments: bundle.alignments || { ALIGNMENTS_DATA: [] },
     base: bundle.base || {

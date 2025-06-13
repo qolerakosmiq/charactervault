@@ -2,7 +2,7 @@
 {
   "DND_FEATS_DATA": [
     {
-      "value": "acrobatic",
+      "id": "acrobatic",
       "label": { "en": "Acrobatic", "fr": "Acrobatique" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Balance and Jump checks.",
@@ -17,7 +17,7 @@
       "type": "general"
     },
     {
-      "value": "agile",
+      "id": "agile",
       "label": { "en": "Agile", "fr": "Agile" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Balance and Escape Artist checks.",
@@ -32,7 +32,7 @@
       "type": "general"
     },
     {
-      "value": "alertness",
+      "id": "alertness",
       "label": { "en": "Alertness", "fr": "Vigilance" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Listen and Spot checks.",
@@ -48,7 +48,7 @@
       "type": "general"
     },
     {
-      "value": "animal-affinity",
+      "id": "animal-affinity",
       "label": { "en": "Animal Affinity", "fr": "Affinité Animale" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Handle Animal and Ride checks.",
@@ -63,7 +63,7 @@
       "type": "general"
     },
     {
-      "value": "athletic",
+      "id": "athletic",
       "label": { "en": "Athletic", "fr": "Athlétique" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Climb and Swim checks.",
@@ -78,7 +78,7 @@
       "type": "general"
     },
     {
-      "value": "augment-summoning",
+      "id": "augment-summoning",
       "label": { "en": "Augment Summoning", "fr": "Convocation augmentée" },
       "description": {
         "en": "<b>Prerequisite:</b> Spell Focus (conjuration).<br/><b>Benefit:</b> Each creature you conjure with any summon spell gains a +4 enhancement bonus to Strength and Constitution for the duration of the spell that summoned it.",
@@ -93,7 +93,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "combat-casting",
+      "id": "combat-casting",
       "label": { "en": "Combat Casting", "fr": "Incantation en combat" },
       "description": {
         "en": "<b>Benefit:</b> You get a +4 bonus on Concentration checks made to cast a spell or use a spell-like ability when casting on the defensive or while grappling or pinned.",
@@ -107,7 +107,7 @@
       "type": "general"
     },
     {
-      "value": "combat-expertise",
+      "id": "combat-expertise",
       "label": { "en": "Combat Expertise", "fr": "Expertise du combat" },
       "description": {
         "en": "<b>Prerequisite:</b> Intelligence 13.<br/><b>Benefit:</b> When you use the attack action or the full attack action in melee, you can take a penalty of as much as –5 on your attack roll and add the same number (up to +5) as a dodge bonus to your Armor Class. This number may not exceed your base attack bonus. The changes to attack rolls and Armor Class last until your next action.<br/><b>Normal:</b> A character without the Combat Expertise feat can fight defensively while using the attack or full attack action to take a –4 penalty on attacks and gain a +2 dodge bonus to AC.",
@@ -122,7 +122,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "improved-trip",
+      "id": "improved-trip",
       "label": { "en": "Improved Trip", "fr": "Croc-en-jambe amélioré" },
       "description": {
         "en": "<b>Prerequisites:</b> Int 13, Combat Expertise.<br/><b>Benefit:</b> You do not provoke an attack of opportunity when you attempt to trip an opponent while you are unarmed. You also gain a +4 bonus on your Strength check to trip an opponent. If you trip an opponent in melee combat, you immediately get a melee attack against that opponent as if you hadn’t used your attack for the trip attempt.<br/><b>Normal:</b> You provoke an attack of opportunity when you attempt to trip an opponent while you are unarmed.",
@@ -137,7 +137,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "deceitful",
+      "id": "deceitful",
       "label": { "en": "Deceitful", "fr": "Subtil" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Disguise and Forgery checks.",
@@ -152,7 +152,7 @@
       "type": "general"
     },
     {
-      "value": "deft-hands",
+      "id": "deft-hands",
       "label": { "en": "Deft Hands", "fr": "Mains Habiles" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Sleight of Hand and Use Rope checks.",
@@ -167,7 +167,7 @@
       "type": "general"
     },
     {
-      "value": "diligent",
+      "id": "diligent",
       "label": { "en": "Diligent", "fr": "Application" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Appraise and Decipher Script checks.",
@@ -182,7 +182,7 @@
       "type": "general"
     },
     {
-      "value": "dodge",
+      "id": "dodge",
       "label": { "en": "Dodge", "fr": "Esquive" },
       "description": {
         "en": "<b>Prerequisite:</b> Dexterity 13.<br/><b>Benefit:</b> During your action, you designate an opponent and receive a +1 dodge bonus to Armor Class against attacks from that opponent. You can select a new opponent on any action.<br/>A condition that makes you lose your Dexterity bonus to Armor Class (if any) also makes you lose dodge bonuses. Also, dodge bonuses stack with each other, unlike most other types of bonuses.",
@@ -197,7 +197,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "mobility",
+      "id": "mobility",
       "label": { "en": "Mobility", "fr": "Souplesse du serpent" },
       "description": {
         "en": "<b>Prerequisites:</b> Dex 13, Dodge.<br/><b>Benefit:</b> You get a +4 dodge bonus to Armor Class against attacks of opportunity caused when you move out of or within a threatened area. A condition that makes you lose your Dexterity bonus to Armor Class (if any) also makes you lose dodge bonuses. Dodge bonuses stack with each other, unlike most other types of bonuses.",
@@ -212,7 +212,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "spring-attack",
+      "id": "spring-attack",
       "label": { "en": "Spring Attack", "fr": "Attaque éclair" },
       "description": {
         "en": "<b>Prerequisites:</b> Dex 13, Dodge, Mobility, base attack bonus +4.<br/><b>Benefit:</b> When you use the attack action with a melee weapon, you can move both before and after the attack, provided that your total movement does not exceed your speed. Moving in this way does not provoke an attack of opportunity from the defender you attack (though it might provoke attacks of opportunity from other creatures, if appropriate). You can’t use this feat if you are wearing heavy armor.<br/>You must move at least 5 feet both before and after you make your attack in order to utilize the benefits of Spring Attack.",
@@ -227,7 +227,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "endurance",
+      "id": "endurance",
       "label": { "en": "Endurance", "fr": "Endurance" },
       "description": {
         "en": "<b>Benefit:</b> You gain a +4 bonus on the following checks and saves: Swim checks made to resist nonlethal damage, Constitution checks made to continue running, Constitution checks made to avoid nonlethal damage from a forced march, Constitution checks made to hold your breath, Constitution checks made to avoid nonlethal damage from starvation or thirst, Fortitude saves made to avoid nonlethal damage from hot or cold environments, and Fortitude saves made to resist damage from suffocation.<br/>Also, you may sleep in light or medium armor without becoming fatigued.",
@@ -241,7 +241,7 @@
       "type": "general"
     },
     {
-      "value": "diehard",
+      "id": "diehard",
       "label": { "en": "Diehard", "fr": "Dur à cuire" },
       "description": {
         "en": "<b>Prerequisite:</b> Endurance.<br/><b>Benefit:</b> When reduced to between –1 and –9 hit points, you automatically become stable. You don’t have to roll d% to see if you lose 1 hit point each round.<br/>When reduced to between –1 and –9 hit points, you can act as if you were disabled, rather than dying. You can take a single move action or standard action each round, but not both, nor can you take a full round action. You can take such an action without further loss of hit points. If you perform any standard action (or any other action deemed as strenuous, including some free actions, such as casting a quickened spell), you take 1 point of damage after completing the action. If you take 1 point of damage from any source, you are dying as normal.<br/><b>Normal:</b> A character without this feat who is reduced to between –1 and –9 hit points is unconscious and dying.",
@@ -255,7 +255,7 @@
       "type": "general"
     },
     {
-      "value": "eschew-materials",
+      "id": "eschew-materials",
       "label": { "en": "Eschew Materials", "fr": "Rejet des composantes matérielles" },
       "description": {
         "en": "<b>Benefit:</b> You can cast any spell that has a material component costing 1 gp or less without needing that component.<br />The casting of the spell still provokes attacks of opportunity as normal.<br />If the spell requires a material component that costs more than 1 gp, you must have the material component on hand to cast the spell, as normal.",
@@ -267,7 +267,7 @@
       "type": "general"
     },
     {
-      "value": "great-fortitude",
+      "id": "great-fortitude",
       "label": { "en": "Great Fortitude", "fr": "Vigueur surhumaine" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Fortitude saving throws.",
@@ -278,7 +278,7 @@
       "type": "general"
     },
     {
-      "value": "improved-initiative",
+      "id": "improved-initiative",
       "label": { "en": "Improved Initiative", "fr": "Initiative améliorée" },
       "description": {
         "en": "<b>Benefit:</b> You get a +4 bonus on initiative checks.",
@@ -292,7 +292,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "investigator",
+      "id": "investigator",
       "label": { "en": "Investigator", "fr": "Investigateur" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Gather Information and Search checks.",
@@ -306,7 +306,7 @@
       "type": "general"
     },
     {
-      "value": "iron-will",
+      "id": "iron-will",
       "label": { "en": "Iron Will", "fr": "Volonté de fer" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Will saving throws.",
@@ -317,7 +317,7 @@
       "type": "general"
     },
     {
-      "value": "lightning-reflexes",
+      "id": "lightning-reflexes",
       "label": { "en": "Lightning Reflexes", "fr": "Réflexes surhumains" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Reflex saving throws.",
@@ -328,7 +328,7 @@
       "type": "general"
     },
     {
-      "value": "magical-aptitude",
+      "id": "magical-aptitude",
       "label": { "en": "Magical Aptitude", "fr": "Aptitude magique" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Spellcraft and Use Magic Device checks.",
@@ -342,7 +342,7 @@
       "type": "general"
     },
     {
-      "value": "negotiator",
+      "id": "negotiator",
       "label": { "en": "Negotiator", "fr": "Négociateur" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Diplomacy and Sense Motive checks.",
@@ -356,7 +356,7 @@
       "type": "general"
     },
     {
-      "value": "nimble-fingers",
+      "id": "nimble-fingers",
       "label": { "en": "Nimble Fingers", "fr": "Doigts agiles" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Disable Device and Open Lock checks.",
@@ -370,7 +370,7 @@
       "type": "general"
     },
     {
-      "value": "persuasive",
+      "id": "persuasive",
       "label": { "en": "Persuasive", "fr": "Persuasion" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Bluff and Intimidate checks.",
@@ -384,7 +384,7 @@
       "type": "general"
     },
     {
-      "value": "point-blank-shot",
+      "id": "point-blank-shot",
       "label": { "en": "Point Blank Shot", "fr": "Tir à bout portant" },
       "description": {
         "en": "<b>Benefit:</b> You get a +1 bonus on attack and damage rolls with ranged weapons at ranges of up to 30 feet.",
@@ -399,7 +399,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "power-attack",
+      "id": "power-attack",
       "label": { "en": "Power Attack", "fr": "Attaque en puissance" },
       "description": {
         "en": "<b>Prerequisite:</b> Strength 13.<br/><b>Benefit:</b> On your action, before making attack rolls for a round, you may choose to subtract a number from all melee attack rolls and add the same number to all melee damage rolls. This number may not exceed your base attack bonus. The penalty on attacks and bonus on damage apply until your next turn.",
@@ -414,7 +414,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "self-sufficient",
+      "id": "self-sufficient",
       "label": { "en": "Self-Sufficient", "fr": "Autosuffisance" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Heal and Survival checks.",
@@ -428,7 +428,7 @@
       "type": "general"
     },
     {
-      "value": "skill-focus",
+      "id": "skill-focus",
       "label": { "en": "Skill Focus", "fr": "Compétence de prédilection" },
       "description": {
         "en": "<b>Benefit:</b> Choose a skill. You get a +3 bonus on all checks involving that skill.<br/><b>Special:</b> You can gain this feat multiple times. Its effects do not stack. Each time you take the feat, it applies to a new skill.",
@@ -443,7 +443,7 @@
       "type": "general"
     },
     {
-      "value": "spell-focus",
+      "id": "spell-focus",
       "label": { "en": "Spell Focus", "fr": "École renforcée" },
       "description": {
         "en": "<b>Benefit:</b> Choose a school of magic. Add +1 to the Difficulty Class for all saving throws against spells from the school of magic you select.",
@@ -457,7 +457,7 @@
       "type": "general"
     },
     {
-      "value": "greater-spell-focus",
+      "id": "greater-spell-focus",
       "label": { "en": "Greater Spell Focus", "fr": "École renforcée supérieure" },
       "description": {
         "en": "<b>Prerequisite:</b> Spell Focus in the same school.<br/><b>Benefit:</b> Add +1 to the Difficulty Class for all saving throws against spells from the school of magic you select. This bonus stacks with the bonus from Spell Focus.",
@@ -472,7 +472,7 @@
       "type": "general"
     },
     {
-      "value": "spell-penetration",
+      "id": "spell-penetration",
       "label": { "en": "Spell Penetration", "fr": "Perforation de la résistance à la magie" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on caster level checks (1d20 + caster level) made to overcome a creature's spell resistance.",
@@ -485,7 +485,7 @@
       "type": "general"
     },
     {
-      "value": "stealthy",
+      "id": "stealthy",
       "label": { "en": "Stealthy", "fr": "Discret" },
       "description": {
         "en": "<b>Benefit:</b> You get a +2 bonus on all Hide and Move Silently checks.",
@@ -499,7 +499,7 @@
       "type": "general"
     },
     {
-      "value": "toughness",
+      "id": "toughness",
       "label": { "en": "Toughness", "fr": "Robustesse" },
       "description": {
         "en": "<b>Benefit:</b> You gain +3 hit points.<br/><b>Special:</b> A character may gain this feat multiple times. Its effects stack.",
@@ -513,7 +513,7 @@
       "type": "general"
     },
     {
-      "value": "two-weapon-fighting",
+      "id": "two-weapon-fighting",
       "label": { "en": "Two-Weapon Fighting", "fr": "Combat à deux armes" },
       "description": {
         "en": "<b>Prerequisite:</b> Dexterity 15.<br/><b>Benefit:</b> Your penalties on attack rolls for fighting with two weapons are reduced. The penalty for your primary hand lessens by 2 and the one for your off hand lessens by 6.<br/><b>Normal:</b> If you wield a second weapon in your off hand, you can get one extra attack per round with that weapon. When fighting in this way you suffer a –6 penalty with your regular attack or attacks with your primary hand and a –10 penalty to the attack with your off hand. If your off-hand weapon is light, the penalties are reduced by 2 each. (An unarmed strike is always considered light.)",
@@ -528,7 +528,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "weapon-focus",
+      "id": "weapon-focus",
       "label": { "en": "Weapon Focus", "fr": "Arme de prédilection" },
       "description": {
         "en": "<b>Prerequisites:</b> Proficiency with selected weapon, base attack bonus +1.<br/><b>Benefit:</b> You gain a +1 bonus on all attack rolls you make using the selected weapon.<br/><b>Special:</b> You can gain this feat multiple times. Each time you take the feat, you must select a different weapon.",
@@ -546,7 +546,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "scribe-scroll",
+      "id": "scribe-scroll",
       "label": { "en": "Scribe Scroll", "fr": "Écriture de parchemins" },
       "description": {
         "en": "<b>Prerequisite:</b> Caster level 1st.<br/><b>Benefit:</b> You can create a scroll of any spell that you know. Scribing a scroll takes 1 day for each 1,000 gp in its base price. The base price of a scroll is its spell level × its caster level × 25 gp. To scribe a scroll, you must spend 1/25 of this base price in XP and use up raw materials costing half of this base price.",
@@ -557,7 +557,7 @@
       "category": "wizardBonusFeat"
     },
     {
-      "value": "brew-potion",
+      "id": "brew-potion",
       "label": { "en": "Brew Potion", "fr": "Préparation de potions" },
       "description": {
         "en": "<b>Prerequisite:</b> Caster level 3rd.<br/><b>Benefit:</b> You can create a potion of any 3rd-level or lower spell that you know and that targets one or more creatures. Brewing a potion takes 1 day. When you create a potion, you set the caster level, which must be sufficient for the spell in question and no higher than your own level. The base price of a potion is its spell level × its caster level × 50 gp. To brew a potion, you must spend 1/25 of this base price in XP and use up raw materials costing half of this base price.",
@@ -568,7 +568,7 @@
       "category": "wizardBonusFeat"
     },
     {
-      "value": "craft-magic-arms-and-armor",
+      "id": "craft-magic-arms-and-armor",
       "label": { "en": "Craft Magic Arms and Armor", "fr": "Création d'armes et armures magiques" },
       "description": {
         "en": "<b>Prerequisite:</b> Caster level 5th.<br/><b>Benefit:</b> You can create magic armor, shields, and weapons. Enhancing an item takes 1 day for each 1,000 gp in the features’ total price. To enhance an item, you must spend 1/25 of its features’ total price in XP and use up raw materials costing half of this total price.",
@@ -579,7 +579,7 @@
       "category": "wizardBonusFeat"
     },
     {
-      "value": "craft-wondrous-item",
+      "id": "craft-wondrous-item",
       "label": { "en": "Craft Wondrous Item", "fr": "Création d'objets merveilleux" },
       "description": {
         "en": "<b>Prerequisite:</b> Caster level 3rd.<br/><b>Benefit:</b> You can create any wondrous item. Crafting a wondrous item takes 1 day for each 1,000 gp in its market price. To craft a wondrous item, you must spend 1/25 of the item’s market price in XP and use up raw materials costing half of this price.",
@@ -590,7 +590,7 @@
       "category": "wizardBonusFeat"
     },
     {
-      "value": "empower-spell",
+      "id": "empower-spell",
       "label": { "en": "Empower Spell", "fr": "Incantation renforcée" },
       "description": {
         "en": "<b>Benefit:</b> All variable, numeric effects of an empowered spell are increased by one-half. An empowered spell deals half again as much damage as normal, cures half again as many hit points, affects half again as many targets, etc., as appropriate. Saving throws and opposed rolls are not affected, nor are spells without random variables. An empowered spell uses up a spell slot two levels higher than the spell’s actual level.",
@@ -600,7 +600,7 @@
       "category": "wizardBonusFeat"
     },
     {
-      "value": "maximize-spell",
+      "id": "maximize-spell",
       "label": { "en": "Maximize Spell", "fr": "Incantation maximisée" },
       "description": {
         "en": "<b>Benefit:</b> All variable, numeric effects of a spell modified by this feat are maximized. A maximized spell deals maximum damage, cures the maximum number of hit points, affects the maximum number of targets, etc., as appropriate. Saving throws and opposed rolls are not affected, nor are spells without random variables. A maximized spell uses up a spell slot three levels higher than the spell’s actual level.",
@@ -610,7 +610,7 @@
       "category": "wizardBonusFeat"
     },
     {
-      "value": "quicken-spell",
+      "id": "quicken-spell",
       "label": { "en": "Quicken Spell", "fr": "Incantation rapide" },
       "description": {
         "en": "<b>Benefit:</b> Casting a quickened spell is a free action. You can perform another action, even casting another spell, in the same round as you cast a quickened spell. You may only cast one quickened spell per round. A spell whose casting time is more than 1 full round action cannot be quickened. A quickened spell uses up a spell slot four levels higher than the spell’s actual level. Casting a quickened spell doesn’t provoke an attack of opportunity.",
@@ -620,7 +620,7 @@
       "category": "wizardBonusFeat"
     },
     {
-      "value": "silent-spell",
+      "id": "silent-spell",
       "label": { "en": "Silent Spell", "fr": "Incantation silencieuse" },
       "description": {
         "en": "<b>Benefit:</b> A silent spell can be cast with no verbal components. Spells without verbal components are not affected. A silent spell uses up a spell slot one level higher than the spell’s actual level.",
@@ -630,7 +630,7 @@
       "category": "wizardBonusFeat"
     },
     {
-      "value": "still-spell",
+      "id": "still-spell",
       "label": { "en": "Still Spell", "fr": "Incantation statique" },
       "description": {
         "en": "<b>Benefit:</b> A stilled spell can be cast with no somatic components. Spells without somatic components are not affected. A stilled spell uses up a spell slot one level higher than the spell’s actual level.",
@@ -640,7 +640,7 @@
       "category": "wizardBonusFeat"
     },
     {
-      "value": "armor-proficiency-light",
+      "id": "armor-proficiency-light",
       "label": { "en": "Armor Proficiency (Light)", "fr": "Port des armures légères" },
       "description": {
         "en": "<b>Benefit:</b> When you wear a type of armor with which you are proficient, the armor check penalty applies only to Balance, Climb, Escape Artist, Hide, Jump, Move Silently, Sleight of Hand, and Tumble checks.",
@@ -650,7 +650,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "armor-proficiency-medium",
+      "id": "armor-proficiency-medium",
       "label": { "en": "Armor Proficiency (Medium)", "fr": "Port des armures intermédiaires" },
       "description": {
         "en": "<b>Prerequisite:</b> Armor Proficiency (Light).<br/><b>Benefit:</b> See Armor Proficiency (Light).",
@@ -661,7 +661,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "armor-proficiency-heavy",
+      "id": "armor-proficiency-heavy",
       "label": { "en": "Armor Proficiency (Heavy)", "fr": "Port des armures lourdes" },
       "description": {
         "en": "<b>Prerequisite:</b> Armor Proficiency (Medium).<br/><b>Benefit:</b> See Armor Proficiency (Light).",
@@ -672,7 +672,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "shield-proficiency",
+      "id": "shield-proficiency",
       "label": { "en": "Shield Proficiency", "fr": "Maniement des boucliers" },
       "description": {
         "en": "<b>Benefit:</b> You can use a shield and take only the standard armor check penalty.",
@@ -682,7 +682,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "tower-shield-proficiency",
+      "id": "tower-shield-proficiency",
       "label": { "en": "Tower Shield Proficiency", "fr": "Maniement des pavois" },
       "description": {
         "en": "<b>Prerequisite:</b> Shield Proficiency.<br/><b>Benefit:</b> You can use a tower shield and take only the standard armor check penalty.",
@@ -693,7 +693,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "simple-weapon-proficiency",
+      "id": "simple-weapon-proficiency",
       "label": { "en": "Simple Weapon Proficiency", "fr": "Maniement des armes courantes" },
       "description": {
         "en": "<b>Benefit:</b> You make attack rolls with simple weapons without penalty.",
@@ -703,7 +703,7 @@
       "type": "general"
     },
     {
-      "value": "martial-weapon-proficiency-all",
+      "id": "martial-weapon-proficiency-all",
       "label": { "en": "Martial Weapon Proficiency (All)", "fr": "Maniement des armes de guerre (Toutes)" },
       "description": {
         "en": "<b>Benefit:</b> You make attack rolls with all martial weapons without penalty.",
@@ -714,7 +714,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "run",
+      "id": "run",
       "label": { "en": "Run", "fr": "Course" },
       "description": {
         "en": "<b>Benefit:</b> When running, you move five times your normal speed (if wearing medium, light, or no armor and carrying no more than a medium load) or four times your speed (if wearing heavy armor or carrying a heavy load). If you make a jump after a running start (see the Jump skill description), you gain a +4 bonus on your Jump check.<br/><b>Normal:</b> You move four times your speed when running (if wearing medium, light, or no armor and carrying no more than a medium load) or three times your speed (if wearing heavy armor or carrying a heavy load) and get no bonus on Jump checks for a running start.",
@@ -725,7 +725,7 @@
       "type": "general"
     },
     {
-      "value": "mounted-combat",
+      "id": "mounted-combat",
       "label": { "en": "Mounted Combat", "fr": "Combat monté" },
       "description": {
         "en": "<b>Benefit:</b> Once per round when your mount is hit in combat, you may attempt a Ride check (as a reaction) to negate the hit. The hit is negated if your Ride check result is greater than the opponent’s attack roll. (Essentially, the Ride check result becomes the mount’s Armor Class if it’s higher than the mount’s regular AC.)",
@@ -737,7 +737,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "improved-unarmed-strike",
+      "id": "improved-unarmed-strike",
       "label": { "en": "Improved Unarmed Strike", "fr": "Science du combat à mains nues" },
       "description": {
         "en": "<b>Benefit:</b> You are considered to be armed even when unarmed —you do not provoke attacks of opportunity when you attack foes while unarmed. Your unarmed strikes can deal lethal or nonlethal damage, as you choose.",
@@ -751,7 +751,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "combat-reflexes",
+      "id": "combat-reflexes",
       "label": { "en": "Combat Reflexes", "fr": "Réflexes de combat" },
       "description": {
         "en": "<b>Benefit:</b> You may make a number of additional attacks of opportunity equal to your Dexterity bonus. With this feat, you may also make attacks of opportunity while flat-footed.<br/><b>Normal:</b> A character without this feat can make only one attack of opportunity per round and can’t make attacks of opportunity while flat-footed.",
@@ -765,7 +765,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "quick-draw",
+      "id": "quick-draw",
       "label": { "en": "Quick Draw", "fr": "Dégainage rapide" },
       "description": {
         "en": "<b>Prerequisite:</b> Base attack bonus +1.<br/><b>Benefit:</b> You can draw a weapon as a free action instead of as a move action. You can draw a hidden weapon (see the Sleight of Hand skill) as a move action.<br/>A character who has selected this feat may throw weapons at his full normal rate of attacks (much like a character with a bow).",
@@ -780,7 +780,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "cleave",
+      "id": "cleave",
       "label": { "en": "Cleave", "fr": "Enchaînement" },
       "description": {
         "en": "<b>Prerequisites:</b> Str 13, Power Attack.<br/><b>Benefit:</b> If you deal a creature enough damage to make it drop (typically by reducing it to below 0 hit points or killing it), you get an immediate, extra melee attack against another creature within reach. You cannot take a 5-foot step before making this extra attack. The extra attack is with the same weapon and at the same bonus as the attack that dropped the previous creature. You can use this ability once per round.",
@@ -795,7 +795,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "great-cleave",
+      "id": "great-cleave",
       "label": { "en": "Great Cleave", "fr": "Enchaînement supérieur" },
       "description": {
         "en": "<b>Prerequisites:</b> Str 13, Power Attack, Cleave, base attack bonus +4.<br/><b>Benefit:</b> This feat works like Cleave, except that you have no limit to the number of times you can use it per round.",
@@ -810,7 +810,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "improved-precise-shot",
+      "id": "improved-precise-shot",
       "label": { "en": "Improved Precise Shot", "fr": "Tir de précision amélioré" },
       "description": {
         "en": "<b>Prerequisites:</b> Dex 19, Point Blank Shot, Precise Shot, base attack bonus +11.<br/><b>Benefit:</b> Your ranged attacks ignore the AC bonus granted to targets by anything less than total cover, and the miss chance granted to targets by anything less than total concealment. Total cover and total concealment provide their normal benefits against your ranged attacks.<br/><b>Normal:</b> See the normal rules for cover and concealment.",
@@ -825,7 +825,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "improved-two-weapon-fighting",
+      "id": "improved-two-weapon-fighting",
       "label": { "en": "Improved Two-Weapon Fighting", "fr": "Combat à deux armes amélioré" },
       "description": {
         "en": "<b>Prerequisites:</b> Dex 17, Two-Weapon Fighting, base attack bonus +6.<br/><b>Benefit:</b> You get a second attack with your off-hand weapon, albeit at a –5 penalty.<br/><b>Normal:</b> Without this feat, you can only get a single extra attack with an off-hand weapon.",
@@ -840,7 +840,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "greater-two-weapon-fighting",
+      "id": "greater-two-weapon-fighting",
       "label": { "en": "Greater Two-Weapon Fighting", "fr": "Combat à deux armes supérieur" },
       "description": {
         "en": "<b>Prerequisites:</b> Dex 19, Improved Two-Weapon Fighting, Two-Weapon Fighting, base attack bonus +11.<br/><b>Benefit:</b> You get a third attack with your off-hand weapon, albeit at a –10 penalty.",
@@ -855,7 +855,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "far-shot",
+      "id": "far-shot",
       "label": { "en": "Far Shot", "fr": "Tir de loin" },
       "description": {
         "en": "<b>Prerequisite:</b> Point Blank Shot.<br/><b>Benefit:</b> When you use a projectile weapon, its range increment is increased by one-half (multiply by 1.5). When you use a thrown weapon, its range increment is doubled.",
@@ -870,7 +870,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "precise-shot",
+      "id": "precise-shot",
       "label": { "en": "Precise Shot", "fr": "Tir de précision" },
       "description": {
         "en": "<b>Prerequisite:</b> Point Blank Shot.<br/><b>Benefit:</b> You can shoot or throw ranged weapons at an opponent engaged in melee without taking the standard –4 penalty on your attack roll.",
@@ -885,7 +885,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "rapid-shot",
+      "id": "rapid-shot",
       "label": { "en": "Rapid Shot", "fr": "Tir rapide" },
       "description": {
         "en": "<b>Prerequisites:</b> Dex 13, Point Blank Shot.<br/><b>Benefit:</b> You can get one extra attack per round with a ranged weapon. The attack is at your highest base attack bonus, but each attack you make in that round (the extra one and the normal ones) takes a –2 penalty. You must use the full attack action to use this feat.",
@@ -900,7 +900,7 @@
       "category": "fighterBonusFeat"
     },
     {
-      "value": "manyshot",
+      "id": "manyshot",
       "label": { "en": "Manyshot", "fr": "Tir multiple" },
       "description": {
         "en": "<b>Prerequisites:</b> Dex 17, Point Blank Shot, Rapid Shot, base attack bonus +6.<br/><b>Benefit:</b> As a standard action, you may fire two arrows at a single opponent within 30 feet. Both arrows use the same attack roll (with a –4 penalty) to determine success and deal damage normally (but see Special). For every five points of base attack bonus you have above +6, you may add one additional arrow to this attack, to a maximum of four arrows at a base attack bonus of +16. Each additional arrow incurs an additional –2 penalty on the attack roll (for example, three arrows are at a –6 penalty and four arrows are at a –8 penalty).<br/><b>Special:</b> Regardless of the number of arrows you fire, you apply precision-based damage (such as sneak attack) only once. If you score a critical hit, only the first arrow deals critical damage; all others deal normal damage.",
@@ -916,19 +916,17 @@
     }
   ],
   "FEAT_TYPES_DATA": [
-    { "value": "general", "label": { "en": "General", "fr": "Général" } },
-    { "value": "itemCreation", "label": { "en": "Item Creation", "fr": "Création d'objet" } },
-    { "value": "metamagic", "label": { "en": "Metamagic", "fr": "Métamagie" } },
-    { "value": "special", "label": { "en": "Special", "fr": "Spécial" } },
-    { "value": "special-ex", "label": { "en": "Special Ability (Ex)", "fr": "Capacité spéciale (Ext)" } },
-    { "value": "special-su", "label": { "en": "Special Ability (Su)", "fr": "Capacité spéciale (Sur)" } },
-    { "value": "special-sp", "label": { "en": "Special Ability (Sp)", "fr": "Capacité spéciale (Mag)" } },
-    { "value": "fighterBonusFeat", "label": { "en": "Fighter Bonus Feat", "fr": "Don supplémentaire de Guerrier" } },
-    { "value": "wizardBonusFeat", "label": { "en": "Wizard Bonus Feat", "fr": "Don supplémentaire de Magicien" } },
-    { "value": "monkBonusFeatL1", "label": { "en": "Monk Bonus Feat (L1)", "fr": "Don suppl. Moine (N1)" } },
-    { "value": "monkBonusFeatL2", "label": { "en": "Monk Bonus Feat (L2)", "fr": "Don suppl. Moine (N2)" } },
-    { "value": "monkBonusFeatL6", "label": { "en": "Monk Bonus Feat (L6)", "fr": "Don suppl. Moine (N6)" } }
+    { "id": "general", "label": { "en": "General", "fr": "Général" } },
+    { "id": "itemCreation", "label": { "en": "Item Creation", "fr": "Création d'objet" } },
+    { "id": "metamagic", "label": { "en": "Metamagic", "fr": "Métamagie" } },
+    { "id": "special", "label": { "en": "Special", "fr": "Spécial" } },
+    { "id": "special-ex", "label": { "en": "Special Ability (Ex)", "fr": "Capacité spéciale (Ext)" } },
+    { "id": "special-su", "label": { "en": "Special Ability (Su)", "fr": "Capacité spéciale (Sur)" } },
+    { "id": "special-sp", "label": { "en": "Special Ability (Sp)", "fr": "Capacité spéciale (Mag)" } },
+    { "id": "fighterBonusFeat", "label": { "en": "Fighter Bonus Feat", "fr": "Don supplémentaire de Guerrier" } },
+    { "id": "wizardBonusFeat", "label": { "en": "Wizard Bonus Feat", "fr": "Don supplémentaire de Magicien" } },
+    { "id": "monkBonusFeatL1", "label": { "en": "Monk Bonus Feat (L1)", "fr": "Don suppl. Moine (N1)" } },
+    { "id": "monkBonusFeatL2", "label": { "en": "Monk Bonus Feat (L2)", "fr": "Don suppl. Moine (N2)" } },
+    { "id": "monkBonusFeatL6", "label": { "en": "Monk Bonus Feat (L6)", "fr": "Don suppl. Moine (N6)" } }
   ]
 }
-
-    
