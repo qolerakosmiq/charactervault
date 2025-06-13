@@ -1,26 +1,6 @@
-
 {
-  "XP_TABLE_DATA": [
-    { "level": 1, "xpRequired": 0 },
-    { "level": 2, "xpRequired": 1000 },
-    { "level": 3, "xpRequired": 3000 },
-    { "level": 4, "xpRequired": 6000 },
-    { "level": 5, "xpRequired": 10000 },
-    { "level": 6, "xpRequired": 15000 },
-    { "level": 7, "xpRequired": 21000 },
-    { "level": 8, "xpRequired": 28000 },
-    { "level": 9, "xpRequired": 36000 },
-    { "level": 10, "xpRequired": 45000 },
-    { "level": 11, "xpRequired": 55000 },
-    { "level": 12, "xpRequired": 66000 },
-    { "level": 13, "xpRequired": 78000 },
-    { "level": 14, "xpRequired": 91000 },
-    { "level": 15, "xpRequired": 105000 },
-    { "level": 16, "xpRequired": 120000 },
-    { "level": 17, "xpRequired": 136000 },
-    { "level": 18, "xpRequired": 153000 },
-    { "level": 19, "xpRequired": 171000 },
-    { "level": 20, "xpRequired": 190000 }
-  ],
-  "EPIC_LEVEL_XP_INCREASE": 21000
+  "SKILL_DEFINITIONS_DATA": [],
+  "CLASS_SKILLS_DATA": {},
+  "CLASS_SKILL_POINTS_BASE_DATA": {},
+  "SKILL_SYNERGIES_DATA": {}
 }

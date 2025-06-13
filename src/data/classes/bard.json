@@ -1,0 +1,58 @@
+
+{
+  "value": "bard",
+  "label": { "en": "Bard", "fr": "Barde" },
+  "hitDice": "d6",
+  "babProgression": "average",
+  "spellcasting": { "type": "full", "casterAbility": "charisma" },
+  "saves": { "fortitude": "poor", "reflex": "good", "will": "good" },
+  "generalDescription": {
+    "en": "<p>Bards are versatile performers, weaving magic through music and words.<br />They are storytellers, diplomats, and adventurers, often charismatic and quick-witted.</p>",
+    "fr": "<p>Les bardes sont des artistes polyvalents, tissant la magie par la musique et les mots.<br />Ce sont des conteurs, des diplomates et des aventuriers, souvent charismatiques et vifs d'esprit.</p>"
+  },
+  "loreAttributes": [
+    { "key": { "en": "Alignment", "fr": "Alignement" }, "value": { "en": "Any nonlawful.", "fr": "Tout sauf loyal." } },
+    { "key": { "en": "Religion", "fr": "Religion" }, "value": { "en": "Bards may follow deities of art, travel, or trickery.", "fr": "Les bardes peuvent suivre des divinités de l'art, du voyage ou de la tromperie." } },
+    { "key": { "en": "Background", "fr": "Antécédents" }, "value": { "en": "Often from performing troupes, scholarly institutions, or simply wanderers.", "fr": "Souvent issus de troupes d'artistes, d'institutions savantes ou simplement des errants." } },
+    { "key": { "en": "Races", "fr": "Races" }, "value": { "en": "Humans, elves, and half-elves frequently become bards.", "fr": "Les humains, les elfes et les demi-elfes deviennent fréquemment des bardes." } },
+    { "key": { "en": "Weapon and Armor Proficiency", "fr": "Maîtrise des armes et armures" }, "value": { "en": "Bards are proficient with all simple weapons, plus the longsword, rapier, sap, short sword, shortbow, and whip. Bards are proficient with light armor and with shields (except tower shields).", "fr": "Les bardes sont formés au maniement de toutes les armes courantes, plus l'épée longue, la rapière, la matraque, l'épée courte, l'arc court et le fouet. Les bardes sont formés au port des armures légères et des boucliers (sauf les pavois)." } }
+  ],
+  "grantedFeats": [
+    { "featId": "bard-weapon-proficiencies", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "shield-proficiency", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "class-bard-bardic-music", "levelAcquired": 1 },
+    { "featId": "class-bard-bardic-knowledge", "levelAcquired": 1 },
+    { "featId": "class-bard-countersong", "levelAcquired": 1 },
+    { "featId": "class-bard-fascinate", "levelAcquired": 1 },
+    { "featId": "class-bard-inspire-courage", "levelAcquired": 1 },
+    { "featId": "class-bard-inspire-competence", "levelAcquired": 3 },
+    { "featId": "class-bard-suggestion", "levelAcquired": 6 },
+    { "featId": "class-bard-inspire-greatness", "levelAcquired": 9 },
+    { "featId": "class-bard-song-of-freedom", "levelAcquired": 12 },
+    { "featId": "class-bard-inspire-heroics", "levelAcquired": 15 },
+    { "featId": "class-bard-mass-suggestion", "levelAcquired": 18 }
+  ],
+  "classSpecificFeats": [
+    {
+      "value": "bard-weapon-proficiencies",
+      "label": { "en": "Bard Weapon Proficiencies", "fr": "Maniement des armes (Barde)" },
+      "description": {
+        "en": "<b>Benefit:</b> Bards are proficient with all simple weapons, plus the longsword, rapier, sap, short sword, shortbow, and whip.",
+        "fr": "<b>Avantage :</b> Les bardes sont formés au maniement de toutes les armes courantes, plus l'épée longue, la rapière, la matraque, l'épée courte, l'arc court et le fouet."
+      },
+      "effectsText": { "en": "Proficient with all simple weapons, longsword, rapier, sap, short sword, shortbow, whip.", "fr": "Maîtrise de toutes les armes courantes, épée longue, rapière, matraque, épée courte, arc court, fouet." },
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "simple" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "longsword" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "rapier" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "sap" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "short-sword" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "shortbow" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "whip" }
+      ],
+      "isClassFeature": true,
+      "type": "general"
+    }
+  ]
+}

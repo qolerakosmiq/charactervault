@@ -1,0 +1,9 @@
+
+{
+  "characterSheetLoadingCharacter": { "en": "Loading character sheet...", "fr": "Chargement de la fiche de personnage..." },
+  "characterSheetNotFoundTitle": { "en": "Character Not Found", "fr": "Personnage introuvable" },
+  "characterSheetNotFoundDescription": { "en": "The requested character does not exist or could not be loaded.", "fr": "Le personnage demandé n'existe pas ou n'a pas pu être chargé." },
+  "characterSheetNotFoundBackButton": { "en": "Back to Dashboard", "fr": "Retour au tableau de bord" },
+  "toastCharacterForgedTitle": { "en": "Character Forged!", "fr": "Personnage forgé !" },
+  "toastCharacterForgedDescription": { "en": "{characterName} has been successfully created.", "fr": "{characterName} a été créé avec succès." }
+}

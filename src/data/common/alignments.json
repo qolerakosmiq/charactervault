@@ -1,0 +1,104 @@
+
+{
+  "ALIGNMENTS_DATA": [
+    {
+      "value": "lawful-good",
+      "label": {
+        "en": "Lawful Good",
+        "fr": "Loyal Bon"
+      },
+      "description": {
+        "en": "<p>Characters of this alignment believe that an orderly, strong society with a well-organized government can work to make life better for the majority of the people. To ensure the quality of life, laws must be created and obeyed. When people respect the laws and try to help one another, society as a whole prospers. Therefore, lawful good characters strive for things that will bring the greatest benefit to the most people and cause the least harm. They are also concerned with issues of justice and fairness, and they value honesty and integrity.</p>",
+        "fr": "<p>Les personnages de cet alignement estiment qu'une société forte et ordonnée, dotée d'un gouvernement bien organisé, peut œuvrer à l'amélioration de la vie de la majorité de ses membres. Pour garantir la qualité de la vie, des lois doivent être créées et respectées. Lorsque les gens respectent les lois et essaient de s'entraider, la société dans son ensemble prospère. Par conséquent, les personnages loyaux bons recherchent ce qui apportera le plus grand bénéfice au plus grand nombre et causera le moins de tort. Ils se préoccupent également des questions de justice et d'équité, et ils accordent de l'importance à l'honnêteté et à l'intégrité.</p>"
+      }
+    },
+    {
+      "value": "neutral-good",
+      "label": {
+        "en": "Neutral Good",
+        "fr": "Neutre Bon"
+      },
+      "description": {
+        "en": "<p>Neutral good characters believe that a balance of forces is important, but that the concerns of law and chaos do not moderate the need for good. The universe is a big place, and while it is important to ensure that good is promoted, it is equally important that this good is not forced upon others. A neutral good character does what is good and right, without bias for or against order.</p>",
+        "fr": "<p>Les personnages neutres bons croient qu'un équilibre des forces est important, mais que les préoccupations de la loi et du chaos ne modèrent pas le besoin de bien. L'univers est vaste, et s'il est important de veiller à ce que le bien soit promu, il est tout aussi important que ce bien ne soit pas imposé aux autres. Un personnage neutre bon fait ce qui est bon et juste, sans parti pris pour ou contre l'ordre.</p>"
+      }
+    },
+    {
+      "value": "chaotic-good",
+      "label": {
+        "en": "Chaotic Good",
+        "fr": "Chaotique Bon"
+      },
+      "description": {
+        "en": "<p>Chaotic good characters are strong individualists marked by a streak of kindness and benevolence. They believe in all the virtues of goodness and right, but they have little use for laws and regulations. They have no use for people who 'try to push folk around and tell them what to do.' Their actions are guided by their own moral compass, which, although good, may not always be in perfect agreement with the rest of society.</p>",
+        "fr": "<p>Les personnages chaotiques bons sont de forts individualistes marqués par une tendance à la gentillesse et à la bienveillance. Ils croient en toutes les vertus de la bonté et du droit, mais ils ont peu d'utilité pour les lois et les règlements. Ils n'ont que faire des gens qui « essaient de bousculer les autres et de leur dire quoi faire ». Leurs actions sont guidées par leur propre boussole morale qui, bien que bonne, peut ne pas toujours être en parfait accord avec le reste de la société.</p>"
+      }
+    },
+    {
+      "value": "lawful-neutral",
+      "label": {
+        "en": "Lawful Neutral",
+        "fr": "Loyal Neutre"
+      },
+      "description": {
+        "en": "<p>Order and organization are of paramount importance to characters of this alignment. They believe in a strong, well-ordered government, whether that government is a tyranny or a benevolent democracy. The benefits of organization and regimentation outweigh any moral questions raised by their actions. An oath is an oath, and a promise is a promise. Honesty and reliability are key traits.</p>",
+        "fr": "<p>L'ordre et l'organisation sont d'une importance capitale pour les personnages de cet alignement. Ils croient en un gouvernement fort et bien ordonné, que ce gouvernement soit une tyrannie ou une démocratie bienveillante. Les avantages de l'organisation et de la régimentation l'emportent sur toutes les questions morales soulevées par leurs actions. Un serment est un serment, et une promesse est une promesse. L'honnêteté et la fiabilité sont des traits essentiels.</p>"
+      }
+    },
+    {
+      "value": "true-neutral",
+      "label": {
+        "en": "True Neutral",
+        "fr": "Neutre Strict"
+      },
+      "description": {
+        "en": "<p>True neutral characters believe in the ultimate balance of forces, and they refuse to see actions as either good or evil. Since the majority of people in the world make judgments, true neutral characters are extremely rare. True neutral characters do their best to avoid siding with the forces of either good or evil, law or chaos. It is their duty to see that all of these forces remain in balanced contention.</p>",
+        "fr": "<p>Les personnages neutres stricts croient en l'équilibre ultime des forces et refusent de voir les actions comme bonnes ou mauvaises. Étant donné que la majorité des gens dans le monde portent des jugements, les personnages neutres stricts sont extrêmement rares. Les personnages neutres stricts font de leur mieux pour éviter de se ranger du côté des forces du bien ou du mal, de la loi ou du chaos. Il est de leur devoir de veiller à ce que toutes ces forces restent en équilibre.</p>"
+      }
+    },
+    {
+      "value": "chaotic-neutral",
+      "label": {
+        "en": "Chaotic Neutral",
+        "fr": "Chaotique Neutre"
+      },
+      "description": {
+        "en": "<p>Chaotic neutral characters believe that there is no order to anything, including their own actions. With this as a guiding principle, they tend to follow whatever whim strikes them at the moment. Good, evil, law, and chaos are all irrelevant. Decency and honor are meaningless. Ultimately, chaotic neutral characters are out for themselves. They value their own freedom above all else, but they won't strive for the freedom of others. They avoid authority, resent restrictions, and challenge traditions.</p>",
+        "fr": "<p>Les personnages chaotiques neutres croient qu'il n'y a d'ordre à rien, y compris à leurs propres actions. Avec ce principe directeur, ils ont tendance à suivre le caprice qui les frappe sur le moment. Le bien, le mal, la loi et le chaos sont tous sans pertinence. La décence et l'honneur n'ont aucun sens. En fin de compte, les personnages chaotiques neutres ne pensent qu'à eux-mêmes. Ils apprécient leur propre liberté par-dessus tout, mais ils ne lutteront pas pour la liberté des autres. Ils évitent l'autorité, ressentent les restrictions et contestent les traditions.</p>"
+      }
+    },
+    {
+      "value": "lawful-evil",
+      "label": {
+        "en": "Lawful Evil",
+        "fr": "Loyal Mauvais"
+      },
+      "description": {
+        "en": "<p>Lawful evil characters believe in using society and its laws to benefit themselves. Structure and organization elevate those who deserve to rule as well as provide a clearly defined hierarchy between master and servant. To this end, lawful evil characters support laws and societies that protect their own concerns. If someone is hurt or suffers because of a law that benefits the lawful evil character, too bad. Lawful evil characters obey laws out of fear of punishment or because they can use the law to their own advantage.</p>",
+        "fr": "<p>Les personnages loyaux mauvais croient en l'utilisation de la société et de ses lois à leur propre avantage. La structure et l'organisation élèvent ceux qui méritent de gouverner et fournissent une hiérarchie clairement définie entre maître et serviteur. À cette fin, les personnages loyaux mauvais soutiennent les lois et les sociétés qui protègent leurs propres préoccupations. Si quelqu'un est blessé ou souffre à cause d'une loi qui profite au personnage loyal mauvais, tant pis. Les personnages loyaux mauvais obéissent aux lois par peur des punitions ou parce qu'ils peuvent utiliser la loi à leur avantage.</p>"
+      }
+    },
+    {
+      "value": "neutral-evil",
+      "label": {
+        "en": "Neutral Evil",
+        "fr": "Neutre Mauvais"
+      },
+      "description": {
+        "en": "<p>Neutral evil characters are primarily concerned with themselves and their own advancement. They have no particular objection to working with others or, for that matter, going it alone. Their only interest is in getting ahead. They may or may not be driven by greed, but they are always selfish. If there is a choice between doing right and doing wrong, they will choose the action that benefits them the most. Neutral evil characters do not have any particular love of order and have no special fondness for chaos, unless it can be used to advance their own ends.</p>",
+        "fr": "<p>Les personnages neutres mauvais se préoccupent principalement d'eux-mêmes et de leur propre avancement. Ils n'ont aucune objection particulière à travailler avec les autres ou, d'ailleurs, à agir seuls. Leur seul intérêt est de progresser. Ils peuvent être ou non motivés par la cupidité, mais ils sont toujours égoïstes. S'il y a un choix entre faire le bien et faire le mal, ils choisiront l'action qui leur profite le plus. Les personnages neutres mauvais n'ont aucun amour particulier pour l'ordre et n'ont aucune affection particulière pour le chaos, à moins qu'il ne puisse être utilisé pour faire avancer leurs propres fins.</p>"
+      }
+    },
+    {
+      "value": "chaotic-evil",
+      "label": {
+        "en": "Chaotic Evil",
+        "fr": "Chaotique Mauvais"
+      },
+      "description": {
+        "en": "<p>Chaotic evil characters are motivated by the desire for personal gain and pleasure. They see absolutely nothing wrong with taking whatever they want by whatever means possible. Laws and governments are tools of the weak, designed to steal from those who have a right to whatever they desire. Strong, powerful people take what they want, and the weak are there to be exploited. When a chaotic evil character is on a rampage, he is an engine of destruction and mayhem. They have no respect for rules, order, or the rights of others.</p>",
+        "fr": "<p>Les personnages chaotiques mauvais sont motivés par le désir de gain personnel et de plaisir. Ils ne voient absolument rien de mal à prendre tout ce qu'ils veulent par tous les moyens possibles. Les lois et les gouvernements sont les outils des faibles, conçus pour voler ceux qui ont droit à tout ce qu'ils désirent. Les gens forts et puissants prennent ce qu'ils veulent, et les faibles sont là pour être exploités. Lorsqu'un personnage chaotique mauvais se déchaîne, il est un moteur de destruction et de chaos. Ils n'ont aucun respect pour les règles, l'ordre ou les droits des autres.</p>"
+      }
+    }
+  ]
+}

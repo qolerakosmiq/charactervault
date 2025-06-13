@@ -1,0 +1,55 @@
+
+{
+  "value": "fighter",
+  "label": { "en": "Fighter", "fr": "Guerrier" },
+  "hitDice": "d10",
+  "babProgression": "good",
+  "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
+  "generalDescription": {
+    "en": "<p>Fighters are masters of martial combat, excelling with all forms of weapons and armor.<br />They are the backbone of armies, the sellswords in taverns, and the dedicated protectors of kingdoms.</p>",
+    "fr": "<p>Les guerriers sont maîtres du combat martial, excellant avec toutes les formes d'armes et d'armures.<br />Ils sont l'épine dorsale des armées, les mercenaires dans les tavernes et les protecteurs dévoués des royaumes.</p>"
+  },
+  "loreAttributes": [
+    { "key": { "en": "Alignment", "fr": "Alignement" }, "value": { "en": "Any.", "fr": "Tout." } },
+    { "key": { "en": "Religion", "fr": "Religion" }, "value": { "en": "Fighters may worship deities of war, strength, or protection, or none at all.", "fr": "Les guerriers peuvent vénérer des divinités de la guerre, de la force ou de la protection, ou aucune du tout." } },
+    { "key": { "en": "Background", "fr": "Antécédents" }, "value": { "en": "Varied, from noble knights to grizzled mercenaries or simple village guards.", "fr": "Variés, des nobles chevaliers aux mercenaires aguerris ou simples gardes de village." } },
+    { "key": { "en": "Races", "fr": "Races" }, "value": { "en": "All races produce skilled fighters, especially humans, dwarves, and half-orcs.", "fr": "Toutes les races produisent des guerriers compétents, en particulier les humains, les nains et les demi-orques." } },
+    { "key": { "en": "Weapon and Armor Proficiency", "fr": "Maîtrise des armes et armures" }, "value": { "en": "Fighters are proficient with all simple and martial weapons and with all armor (heavy, medium, and light) and shields (including tower shields).", "fr": "Les guerriers sont formés au maniement de toutes les armes courantes et de guerre, ainsi qu'à tous les types d'armures (lourdes, intermédiaires et légères) et de boucliers (y compris les pavois)." } },
+    { "key": { "en": "Bonus Feats", "fr": "Dons supplémentaires" }, "value": { "en": "A fighter gains a bonus combat-oriented feat at 1st level, at 2nd level, and at every two fighter levels thereafter (4th, 6th, 8th, 10th, 12th, 14th, 16th, 18th, and 20th). These bonus feats must be selected from those listed as fighter bonus feats in the Player's Handbook. These are in addition to the feat that any character gets at 1st level and every three levels thereafter, and the bonus feat for a human character.", "fr": "Un guerrier gagne un don supplémentaire orienté combat au niveau 1, au niveau 2, et tous les deux niveaux de guerrier par la suite (4e, 6e, 8e, 10e, 12e, 14e, 16e, 18e et 20e). Ces dons supplémentaires doivent être sélectionnés parmi ceux listés comme dons supplémentaires de guerrier dans le Manuel des Joueurs. Ils s'ajoutent au don que tout personnage reçoit au niveau 1 et tous les trois niveaux par la suite, ainsi qu'au don supplémentaire pour un personnage humain." } }
+  ],
+  "grantedFeats": [
+    { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "martial-weapon-proficiency-all", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "armor-proficiency-medium", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "armor-proficiency-heavy", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "shield-proficiency", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "tower-shield-proficiency", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "class-fighter-bonus-feat-slot", "note": { "en": "1st Level", "fr": "Niveau 1" }, "levelAcquired": 1 },
+    { "featId": "class-fighter-bonus-feat-slot", "note": { "en": "2nd Level", "fr": "Niveau 2" }, "levelAcquired": 2 },
+    { "featId": "class-fighter-bonus-feat-slot", "note": { "en": "4th Level", "fr": "Niveau 4" }, "levelAcquired": 4 },
+    { "featId": "class-fighter-bonus-feat-slot", "note": { "en": "6th Level", "fr": "Niveau 6" }, "levelAcquired": 6 },
+    { "featId": "class-fighter-bonus-feat-slot", "note": { "en": "8th Level", "fr": "Niveau 8" }, "levelAcquired": 8 },
+    { "featId": "class-fighter-bonus-feat-slot", "note": { "en": "10th Level", "fr": "Niveau 10" }, "levelAcquired": 10 },
+    { "featId": "class-fighter-bonus-feat-slot", "note": { "en": "12th Level", "fr": "Niveau 12" }, "levelAcquired": 12 },
+    { "featId": "class-fighter-bonus-feat-slot", "note": { "en": "14th Level", "fr": "Niveau 14" }, "levelAcquired": 14 },
+    { "featId": "class-fighter-bonus-feat-slot", "note": { "en": "16th Level", "fr": "Niveau 16" }, "levelAcquired": 16 },
+    { "featId": "class-fighter-bonus-feat-slot", "note": { "en": "18th Level", "fr": "Niveau 18" }, "levelAcquired": 18 },
+    { "featId": "class-fighter-bonus-feat-slot", "note": { "en": "20th Level", "fr": "Niveau 20" }, "levelAcquired": 20 }
+  ],
+  "classSpecificFeats": [
+    {
+      "value": "class-fighter-bonus-feat-slot",
+      "label": { "en": "Fighter Bonus Feat Slot", "fr": "Emplacement de Don Supplémentaire de Guerrier" },
+      "description": {
+        "en": "Grants a bonus feat slot that can be used for feats in the 'fighterBonusFeat' category.",
+        "fr": "Octroie un emplacement de don supplémentaire pouvant être utilisé pour les dons de la catégorie 'fighterBonusFeat'."
+      },
+      "isClassFeature": true,
+      "type": "special-ex",
+      "effects": [
+        { "type": "bonusFeatSlot", "category": "fighterBonusFeat", "count": 1 }
+      ]
+    }
+  ]
+}

@@ -1,50 +1,6 @@
-
 {
-  "DND_MAGIC_SCHOOLS_DATA": [
-    {
-      "value": "universal",
-      "label": "Universal",
-      "description": "A generalist wizard, not specializing in any one school, nor are they prohibited from any."
-    },
-    {
-      "value": "abjuration",
-      "label": "Abjuration",
-      "description": "Spells that protect, banish, or block. Abjurers are masters of defensive magic."
-    },
-    {
-      "value": "conjuration",
-      "label": "Conjuration",
-      "description": "Spells that bring creatures or materials to the caster. Conjurers are masters of summoning and creation."
-    },
-    {
-      "value": "divination",
-      "label": "Divination",
-      "description": "Spells that reveal information. Diviners are masters of remote viewing, prophecy, and scrying."
-    },
-    {
-      "value": "enchantment",
-      "label": "Enchantment",
-      "description": "Spells that imbue the recipient with some property or grant the caster power over another being. Enchanters are masters of charms and compulsions."
-    },
-    {
-      "value": "evocation",
-      "label": "Evocation",
-      "description": "Spells that manipulate energy or create something from nothing. Evokers are masters of destructive energy spells."
-    },
-    {
-      "value": "illusion",
-      "label": "Illusion",
-      "description": "Spells that alter perception or create false images. Illusionists are masters of deception and phantasms."
-    },
-    {
-      "value": "necromancy",
-      "label": "Necromancy",
-      "description": "Spells that manipulate the power of death, unlife, and the life force. Necromancers are masters of undead and life-draining effects."
-    },
-    {
-      "value": "transmutation",
-      "label": "Transmutation",
-      "description": "Spells that change the properties of some creature, thing, or condition. Transmuters are masters of alteration and physical enhancement."
-    }
-  ]
+  "SKILL_DEFINITIONS_DATA": [],
+  "CLASS_SKILLS_DATA": {},
+  "CLASS_SKILL_POINTS_BASE_DATA": {},
+  "SKILL_SYNERGIES_DATA": {}
 }

@@ -1,0 +1,23 @@
+
+{
+  "dashboardLoadingCharacters": { "en": "Loading characters...", "fr": "Chargement des personnages..." },
+  "dashboardTitle": { "en": "Your Adventurers", "fr": "Vos aventuriers" },
+  "dashboardButtonCreateNew": { "en": "Create New Character", "fr": "Créer un nouveau personnage" },
+  "dashboardImageAltEmptyScroll": { "en": "Empty scroll", "fr": "Parchemin vide" },
+  "dashboardEmptyStateTitle": { "en": "No adventurers yet!", "fr": "Aucun aventurier pour le moment !" },
+  "dashboardEmptyStateDescription": { "en": "Your saga awaits. Click \"Create New Character\" to begin an epic journey.", "fr": "Votre saga vous attend. Cliquez sur \"Créer un nouveau personnage\" pour commencer une épopée." },
+  "dashboardEmptyStateButtonStart": { "en": "Start Your First Adventure", "fr": "Commencez votre première aventure" },
+  "dmSettingsPanelTitle": { "en": "Dungeon Master Settings", "fr": "Paramètres du maître du donjon" },
+  "dmSettingsLanguageLabel": { "en": "Game Language", "fr": "Langue du jeu" },
+  "dmSettingsLanguageDescription": { "en": "Affects game data such as units, numerical increments, and default names.", "fr": "Affecte les données du jeu telles que les unités, les incréments numériques et les noms par défaut." },
+  "dmSettingsRerollOnesLabel": { "en": "Reroll 1s for Ability Score Rolls", "fr": "Relancer les 1 pour les lancers de caractéristiques" },
+  "dmSettingsRerollOnesDescription": { "en": "When using 4d6 drop lowest, reroll any die that shows a 1 until it is not a 1.", "fr": "Lors de l'utilisation de 4d6 (garder les 3 meilleurs), relancez tout dé affichant un 1 jusqu'à ce qu'il ne soit plus un 1." },
+  "dmSettingsPointBuyBudgetLabel": { "en": "Point Buy Budget for Ability Scores", "fr": "Budget d'achat par points pour les caractéristiques" },
+  "dmSettingsPointBuyBudgetDescription": { "en": "Default is 25 points for standard D&D 3.5 point buy.", "fr": "Par défaut, 25 points pour l'achat par points standard de D&D 3.5." },
+  "dmSettingsRerollTwentiesLabel": { "en": "Reroll 20s for Checks (Exploding Dice)", "fr": "Relancer les 20 pour les tests (Dés explosifs)" },
+  "dmSettingsRerollTwentiesDescription": { "en": "When rolling a 20 on a d20 for a check (not attack/damage), roll again and add. Repeat on subsequent 20s.", "fr": "Lors d'un 20 sur un d20 pour un test (pas une attaque/dégât), relancez et ajoutez. Répétez sur les 20 suivants." },
+  "dmSettingsAddCustomSkillButton": { "en": "Add New Custom Skill", "fr": "Ajouter une nouvelle compétence personnalisée" },
+  "dmSettingsEditCustomSkillButton": { "en": "Edit Custom Skill Definition", "fr": "Modifier la définition de compétence personnalisée" },
+  "dmSettingsAddCustomFeatButton": { "en": "Add New Custom Feat", "fr": "Ajouter un nouveau don personnalisé" },
+  "dmSettingsEditCustomFeatButton": { "en": "Edit Custom Feat Definition", "fr": "Modifier la définition de don personnalisé" }
+}

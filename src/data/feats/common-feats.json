@@ -1,0 +1,316 @@
+
+{
+  "DND_FEATS_DATA": [
+    {
+      "value": "acrobatic",
+      "label": { "en": "Acrobatic", "fr": "Acrobatique" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Balance and Jump checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests d'Équilibre et de Saut."
+      },
+      "effectsText": { "en": "+2 Balance, +2 Jump.", "fr": "+2 Équilibre, +2 Saut." },
+      "effects": [
+        { "type": "skill", "skillId": "balance", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "jump", "value": 2, "bonusType": "untyped" }
+      ],
+      "isClassFeature": false,
+      "type": "special"
+    },
+    {
+      "value": "agile",
+      "label": { "en": "Agile", "fr": "Agile" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Balance and Escape Artist checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests d'Équilibre et d'Art de la Fugue."
+      },
+      "effectsText": { "en": "+2 Balance, +2 Escape Artist.", "fr": "+2 Équilibre, +2 Art de la Fugue." },
+      "effects": [
+        { "type": "skill", "skillId": "balance", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "escape-artist", "value": 2, "bonusType": "untyped" }
+      ],
+      "isClassFeature": false,
+      "type": "special"
+    },
+    {
+      "value": "alertness",
+      "label": { "en": "Alertness", "fr": "Vigilance" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Listen and Spot checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests d'Écoute et de Détection."
+      },
+      "effectsText": { "en": "+2 Listen, +2 Spot.", "fr": "+2 Écoute, +2 Détection." },
+      "permanentEffect": true,
+      "effects": [
+        { "type": "skill", "skillId": "listen", "value": 2, "bonusType": "untyped", "condition": "always_active_alertness" },
+        { "type": "skill", "skillId": "spot", "value": 2, "bonusType": "untyped", "condition": "always_active_alertness" }
+      ],
+      "isClassFeature": false,
+      "type": "special"
+    },
+    {
+      "value": "animal-affinity",
+      "label": { "en": "Animal Affinity", "fr": "Affinité Animale" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Handle Animal and Ride checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Dressage et d'Équitation."
+      },
+      "effectsText": { "en": "+2 Handle Animal, +2 Ride.", "fr": "+2 Dressage, +2 Équitation." },
+      "effects": [
+        { "type": "skill", "skillId": "handle-animal", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "ride", "value": 2, "bonusType": "untyped" }
+      ],
+      "isClassFeature": false,
+      "type": "special"
+    },
+    {
+      "value": "athletic",
+      "label": { "en": "Athletic", "fr": "Athlétique" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Climb and Swim checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests d'Escalade et de Natation."
+      },
+      "effectsText": { "en": "+2 Climb, +2 Swim.", "fr": "+2 Escalade, +2 Natation." },
+      "effects": [
+        { "type": "skill", "skillId": "climb", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "swim", "value": 2, "bonusType": "untyped" }
+      ],
+      "isClassFeature": false,
+      "type": "special"
+    },
+    {
+      "value": "combat-casting",
+      "label": { "en": "Combat Casting", "fr": "Incantation en combat" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +4 bonus on Concentration checks made to cast a spell or use a spell-like ability when casting on the defensive or while grappling or pinned.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +4 aux tests de Concentration effectués pour lancer un sort ou utiliser une capacité de type sort lorsque vous lancez en défensif ou que vous êtes agrippé ou maîtrisé."
+      },
+      "effectsText": { "en": "+4 Concentration when casting defensively, grappling, or pinned.", "fr": "+4 Concentration lorsque vous lancez en défensif, que vous êtes agrippé ou maîtrisé." },
+      "effects": [
+        { "type": "skill", "skillId": "concentration", "value": 4, "bonusType": "untyped", "condition": "When casting defensively, grappling, or pinned" }
+      ],
+      "isClassFeature": false,
+      "type": "special"
+    },
+    {
+      "value": "deceitful",
+      "label": { "en": "Deceitful", "fr": "Subtil" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Disguise and Forgery checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Déguisement et de Falsification."
+      },
+      "effectsText": { "en": "+2 Disguise, +2 Forgery.", "fr": "+2 Déguisement, +2 Falsification." },
+      "effects": [
+        { "type": "skill", "skillId": "disguise", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "forgery", "value": 2, "bonusType": "untyped" }
+      ],
+      "isClassFeature": false,
+      "type": "special"
+    },
+    {
+      "value": "deft-hands",
+      "label": { "en": "Deft Hands", "fr": "Mains Habiles" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Sleight of Hand and Use Rope checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests d'Escamotage et d'Utilisation de corde."
+      },
+      "effectsText": { "en": "+2 Sleight of Hand, +2 Use Rope.", "fr": "+2 Escamotage, +2 Utilisation de corde." },
+      "effects": [
+        { "type": "skill", "skillId": "sleight-of-hand", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "use-rope", "value": 2, "bonusType": "untyped" }
+      ],
+      "isClassFeature": false,
+      "type": "special"
+    },
+    {
+      "value": "diligent",
+      "label": { "en": "Diligent", "fr": "Application" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Appraise and Decipher Script checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests d'Estimation et de Déchiffrage d'écrits."
+      },
+      "effectsText": { "en": "+2 Appraise, +2 Decipher Script.", "fr": "+2 Estimation, +2 Déchiffrage d'écrits." },
+      "effects": [
+        { "type": "skill", "skillId": "appraise", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "decipher-script", "value": 2, "bonusType": "untyped" }
+      ],
+      "isClassFeature": false,
+      "type": "special"
+    },
+    {
+      "value": "eschew-materials",
+      "label": { "en": "Eschew Materials", "fr": "Rejet des composantes matérielles" },
+      "description": {
+        "en": "<b>Benefit:</b> You can cast any spell that has a material component costing 1 gp or less without needing that component.<br />The casting of the spell still provokes attacks of opportunity as normal.<br />If the spell requires a material component that costs more than 1 gp, you must have the material component on hand to cast the spell, as normal.",
+        "fr": "<b>Avantage :</b> Vous pouvez lancer n'importe quel sort qui a une composante matérielle coûtant 1 po ou moins sans avoir besoin de cette composante.<br />Le lancement du sort provoque toujours des attaques d'opportunité comme d'habitude.<br />Si le sort nécessite une composante matérielle qui coûte plus de 1 po, vous devez avoir la composante matérielle à portée de main pour lancer le sort, comme d'habitude."
+      },
+      "effectsText": { "en": "Cast spells with material components <= 1gp without them.", "fr": "Lancez des sorts avec des composantes matérielles <= 1po sans elles." },
+      "effects": [{ "type": "note", "text": { "en": "Cast spells with material components <= 1gp without them.", "fr": "Lancez des sorts avec des composantes matérielles <= 1po sans elles." }}],
+      "isClassFeature": false,
+      "type": "special"
+    },
+    {
+      "value": "iron-will",
+      "label": { "en": "Iron Will", "fr": "Volonté de fer" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Will saving throws.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de Volonté."
+      },
+      "effectsText": { "en": "+2 on Will saves.", "fr": "+2 aux jets de Volonté." },
+      "effects": [{ "type": "savingThrow", "save": "will", "value": 2, "bonusType": "untyped" }],
+      "type": "general"
+    },
+    {
+      "value": "great-fortitude",
+      "label": { "en": "Great Fortitude", "fr": "Vigueur surhumaine" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Fortitude saving throws.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de Vigueur."
+      },
+      "effectsText": { "en": "+2 on Fortitude saves.", "fr": "+2 aux jets de Vigueur." },
+      "effects": [{ "type": "savingThrow", "save": "fortitude", "value": 2, "bonusType": "untyped" }],
+      "type": "general"
+    },
+    {
+      "value": "lightning-reflexes",
+      "label": { "en": "Lightning Reflexes", "fr": "Réflexes surhumains" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Reflex saving throws.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 à tous les jets de Réflexes."
+      },
+      "effectsText": { "en": "+2 on Reflex saves.", "fr": "+2 aux jets de Réflexes." },
+      "effects": [{ "type": "savingThrow", "save": "reflex", "value": 2, "bonusType": "untyped" }],
+      "type": "general"
+    },
+    {
+      "value": "investigator",
+      "label": { "en": "Investigator", "fr": "Investigateur" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Gather Information and Search checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Renseignement et de Fouille."
+      },
+      "effectsText": { "en": "+2 Gather Information, +2 Search.", "fr": "+2 Renseignement, +2 Fouille." },
+      "effects": [
+        { "type": "skill", "skillId": "gather-information", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "search", "value": 2, "bonusType": "untyped" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "magical-aptitude",
+      "label": { "en": "Magical Aptitude", "fr": "Aptitude magique" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Spellcraft and Use Magic Device checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests d'Art de la magie et d'Utilisation d'objets magiques."
+      },
+      "effectsText": { "en": "+2 Spellcraft, +2 Use Magic Device.", "fr": "+2 Art de la magie, +2 Utilisation d'objets magiques." },
+      "effects": [
+        { "type": "skill", "skillId": "spellcraft", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "use-magic-device", "value": 2, "bonusType": "untyped" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "negotiator",
+      "label": { "en": "Negotiator", "fr": "Négociateur" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Diplomacy and Sense Motive checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Diplomatie et de Psychologie."
+      },
+      "effectsText": { "en": "+2 Diplomacy, +2 Sense Motive.", "fr": "+2 Diplomatie, +2 Psychologie." },
+      "effects": [
+        { "type": "skill", "skillId": "diplomacy", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "sense-motive", "value": 2, "bonusType": "untyped" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "nimble-fingers",
+      "label": { "en": "Nimble Fingers", "fr": "Doigts agiles" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Disable Device and Open Lock checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Désamorçage/Sabotage et de Crochetage."
+      },
+      "effectsText": { "en": "+2 Disable Device, +2 Open Lock.", "fr": "+2 Désamorçage/Sabotage, +2 Crochetage." },
+      "effects": [
+        { "type": "skill", "skillId": "disable-device", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "open-lock", "value": 2, "bonusType": "untyped" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "persuasive",
+      "label": { "en": "Persuasive", "fr": "Persuasion" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Bluff and Intimidate checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Bluff et d'Intimidation."
+      },
+      "effectsText": { "en": "+2 Bluff, +2 Intimidate.", "fr": "+2 Bluff, +2 Intimidation." },
+      "effects": [
+        { "type": "skill", "skillId": "bluff", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "intimidate", "value": 2, "bonusType": "untyped" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "self-sufficient",
+      "label": { "en": "Self-Sufficient", "fr": "Autosuffisance" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Heal and Survival checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Premiers secours et de Survie."
+      },
+      "effectsText": { "en": "+2 Heal, +2 Survival.", "fr": "+2 Premiers secours, +2 Survie." },
+      "effects": [
+        { "type": "skill", "skillId": "heal", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "survival", "value": 2, "bonusType": "untyped" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "stealthy",
+      "label": { "en": "Stealthy", "fr": "Discret" },
+      "description": {
+        "en": "<b>Benefit:</b> You get a +2 bonus on all Hide and Move Silently checks.",
+        "fr": "<b>Avantage :</b> Vous obtenez un bonus de +2 aux tests de Discrétion et de Déplacement silencieux."
+      },
+      "effectsText": { "en": "+2 Hide, +2 Move Silently.", "fr": "+2 Discrétion, +2 Déplacement silencieux." },
+      "effects": [
+        { "type": "skill", "skillId": "hide", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "move-silently", "value": 2, "bonusType": "untyped" }
+      ],
+      "type": "special"
+    },
+    {
+      "value": "skill-focus",
+      "label": { "en": "Skill Focus", "fr": "Compétence de prédilection" },
+      "description": {
+        "en": "<b>Benefit:</b> Choose a skill. You get a +3 bonus on all checks involving that skill.",
+        "fr": "<b>Avantage :</b> Choisissez une compétence. Vous obtenez un bonus de +3 à tous les tests impliquant cette compétence."
+      },
+      "requiresSpecialization": "skill",
+      "effectsText": { "en": "+3 to chosen skill.", "fr": "+3 à la compétence choisie." },
+      "effects": [
+        { "type": "skill", "skillId": "SPEC", "value": 3, "bonusType": "untyped" }
+      ],
+      "type": "general"
+    },
+    {
+      "value": "scribe-scroll",
+      "label": { "en": "Scribe Scroll", "fr": "Écriture de parchemins" },
+      "description": {
+        "en": "<b>Benefit:</b> You can create a scroll of any spell that you know. Scribing a scroll takes 1 day for each 1,000 gp in its base price. The base price of a scroll is its spell level × its caster level × 25 gp. To scribe a scroll, you must spend 1/25 of this base price in XP and use up raw materials costing half of this base price.",
+        "fr": "<b>Avantage :</b> Vous pouvez créer un parchemin de n'importe quel sort que vous connaissez. Écrire un parchemin prend 1 jour pour chaque tranche de 1 000 po de son prix de base. Le prix de base d'un parchemin est son niveau de sort × son niveau de lanceur de sorts × 25 po. Pour écrire un parchemin, vous devez dépenser 1/25 de ce prix de base en XP et utiliser des matières premières coûtant la moitié de ce prix de base."
+      },
+      "prerequisites": { "casterLevel": 1 },
+      "type": "itemCreation"
+    }
+  ],
+  "FEAT_TYPES_DATA": [
+    { "value": "general", "label": { "en": "General", "fr": "Général" } },
+    { "value": "special", "label": { "en": "Special", "fr": "Spécial" } },
+    { "value": "itemCreation", "label": { "en": "Item Creation", "fr": "Création d'objet" } },
+    { "value": "metamagic", "label": { "en": "Metamagic", "fr": "Métamagie" } },
+    { "value": "special-ex", "label": { "en": "Special Ability (Ex)", "fr": "Capacité spéciale (Ext)" } },
+    { "value": "special-su", "label": { "en": "Special Ability (Su)", "fr": "Capacité spéciale (Sur)" } },
+    { "value": "special-sp", "label": { "en": "Special Ability (Sp)", "fr": "Capacité spéciale (Mag)" } }
+  ]
+}
