@@ -27,10 +27,10 @@ interface RaceContentDisplayProps {
   speeds?: Partial<Record<SpeedType, number>>;
   translations: {
     UI_STRINGS: Record<string, string>;
-    ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
+    ABILITY_LABELS: readonly { id: Exclude<AbilityName, 'none'>; label: string; abbr: string }[]; // Changed value to id
     DND_CLASSES: readonly DndClassOption[];
     DND_RACES: readonly DndRaceOption[];
-    ALIGNMENT_PREREQUISITE_OPTIONS: readonly { value: string; label: string }[];
+    ALIGNMENT_PREREQUISITE_OPTIONS: readonly { id: string; label: string }[]; // Changed value to id
     SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[];
   };
   allCombinedFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
@@ -74,12 +74,16 @@ export const RaceContentDisplay = ({
       <div key="ability-modifiers-section" className="mt-0 mb-0">
         <h4 className="text-sm font-bold text-muted-foreground mb-0">{UI_STRINGS.infoDialogAbilityScoreAdjustments || "Ability Score Adjustments"}</h4>
         <div className="space-y-0.5 text-sm ml-3 mt-0 mb-0">
-          {abilityModifiers.map(mod => (
-            <div key={mod.ability} className="flex justify-between">
-              <span className="text-sm text-foreground">{ABILITY_LABELS.find(al => al.value === mod.ability)?.label || mod.ability}</span>
-              <span className="text-sm font-semibold">{renderModifierValue(mod.change)}</span>
-            </div>
-          ))}
+          {abilityModifiers.map(mod => {
+            const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === mod.ability);
+            const displayName = abilityLabelInfo?.label || mod.ability.charAt(0).toUpperCase() + mod.ability.slice(1);
+            return (
+              <div key={mod.ability} className="flex justify-between">
+                <span className="text-sm text-foreground">{displayName}</span>
+                <span className="text-sm font-semibold">{renderModifierValue(mod.change)}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
     );
@@ -160,7 +164,7 @@ export const RaceContentDisplay = ({
                     {feat.levelAcquired !== undefined && (
                       <Badge variant="outline" className={cn(
                         "whitespace-nowrap shrink-0 justify-center",
-                        "min-w-[5rem]" 
+                        "min-w-[5rem]"
                       )}>
                         {(UI_STRINGS.levelLabel || "Level")}{'\u00A0'}{feat.levelAcquired}
                       </Badge>
@@ -223,3 +227,4 @@ export const RaceContentDisplay = ({
     </div>
   ) : null;
 };
+
