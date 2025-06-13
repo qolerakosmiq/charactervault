@@ -1,15 +1,15 @@
 
 {
   "SIZES_DATA": [
-    { "value": "fine", "label": { "en": "Fine", "fr": "Très Petite" }, "acModifier": 8, "skillModifiers": { "hide": 16 }, "grappleDamage": "0" },
-    { "value": "diminutive", "label": { "en": "Diminutive", "fr": "Minuscule" }, "acModifier": 4, "skillModifiers": { "hide": 12 }, "grappleDamage": "0" },
-    { "value": "tiny", "label": { "en": "Tiny", "fr": "Très Petite (TP)" }, "acModifier": 2, "skillModifiers": { "hide": 8 }, "grappleDamage": "1" },
-    { "value": "small", "label": { "en": "Small", "fr": "Petite (P)" }, "acModifier": 1, "skillModifiers": { "hide": 4 }, "grappleDamage": "1d2" },
-    { "value": "medium", "label": { "en": "Medium", "fr": "Moyenne (M)" }, "acModifier": 0, "skillModifiers": { "hide": 0 }, "grappleDamage": "1d3" },
-    { "value": "large", "label": { "en": "Large", "fr": "Grande (G)" }, "acModifier": -1, "skillModifiers": { "hide": -4 }, "grappleDamage": "1d4" },
-    { "value": "huge", "label": { "en": "Huge", "fr": "Très Grande (TG)" }, "acModifier": -2, "skillModifiers": { "hide": -8 }, "grappleDamage": "1d6" },
-    { "value": "gargantuan", "label": { "en": "Gargantuan", "fr": "Gigantesque (Gig)" }, "acModifier": -4, "skillModifiers": { "hide": -12 }, "grappleDamage": "1d8" },
-    { "value": "colossal", "label": { "en": "Colossal", "fr": "Colossale (Col)" }, "acModifier": -8, "skillModifiers": { "hide": -16 }, "grappleDamage": "2d6" }
+    { "value": "fine", "label": { "en": "Fine", "fr": "Très Petite" }, "acModifier": 8, "grappleModifier": -16, "skillModifiers": { "hide": 16 }, "grappleDamage": "0" },
+    { "value": "diminutive", "label": { "en": "Diminutive", "fr": "Minuscule" }, "acModifier": 4, "grappleModifier": -12, "skillModifiers": { "hide": 12 }, "grappleDamage": "0" },
+    { "value": "tiny", "label": { "en": "Tiny", "fr": "Très Petite (TP)" }, "acModifier": 2, "grappleModifier": -8, "skillModifiers": { "hide": 8 }, "grappleDamage": "1" },
+    { "value": "small", "label": { "en": "Small", "fr": "Petite (P)" }, "acModifier": 1, "grappleModifier": -4, "skillModifiers": { "hide": 4 }, "grappleDamage": "1d2" },
+    { "value": "medium", "label": { "en": "Medium", "fr": "Moyenne (M)" }, "acModifier": 0, "grappleModifier": 0, "skillModifiers": { "hide": 0 }, "grappleDamage": "1d3" },
+    { "value": "large", "label": { "en": "Large", "fr": "Grande (G)" }, "acModifier": -1, "grappleModifier": 4, "skillModifiers": { "hide": -4 }, "grappleDamage": "1d4" },
+    { "value": "huge", "label": { "en": "Huge", "fr": "Très Grande (TG)" }, "acModifier": -2, "grappleModifier": 8, "skillModifiers": { "hide": -8 }, "grappleDamage": "1d6" },
+    { "value": "gargantuan", "label": { "en": "Gargantuan", "fr": "Gigantesque (Gig)" }, "acModifier": -4, "grappleModifier": 12, "skillModifiers": { "hide": -12 }, "grappleDamage": "1d8" },
+    { "value": "colossal", "label": { "en": "Colossal", "fr": "Colossale (Col)" }, "acModifier": -8, "grappleModifier": 16, "skillModifiers": { "hide": -16 }, "grappleDamage": "2d6" }
   ],
   "GENDERS_DATA": [
     { "value": "male", "label": { "en": "Male", "fr": "Masculin" } },
@@ -32,11 +32,11 @@
   },
   "DEFAULT_RESISTANCE_VALUE_DATA": { "base": 0, "customMod": 0 },
   "DEFAULT_SPEED_DETAILS_DATA": { "base": 0, "miscModifier": 0 },
-  "DEFAULT_SPEED_PENALTIES_DATA": { 
-    "armorSpeedPenalty_base": 0, 
-    "armorSpeedPenalty_miscModifier": 0, 
-    "loadSpeedPenalty_base": 0, 
-    "loadSpeedPenalty_miscModifier": 0 
+  "DEFAULT_SPEED_PENALTIES_DATA": {
+    "armorSpeedPenalty_base": 0,
+    "armorSpeedPenalty_miscModifier": 0,
+    "loadSpeedPenalty_base": 0,
+    "loadSpeedPenalty_miscModifier": 0
   },
   "DND_RACE_MIN_ADULT_AGE_DATA": {
     "human": 15,
@@ -162,3 +162,5 @@
     { "value": "evil", "label": { "en": "Any Evil", "fr": "Tout Mauvais" } }
   ]
 }
+
+    
