@@ -27,8 +27,20 @@
         "en": "A sorcerer can obtain a familiar in exactly the same way as a wizard can. See the wizard class feature.",
         "fr": "Un ensorceleur peut obtenir un familier exactement de la même manière qu'un magicien. Voir la caractéristique de classe du magicien."
       },
+      "effectsText": { "en": "Can summon a familiar.", "fr": "Peut convoquer un familier." },
       "type": "special-ex",
-      "isClassFeature": true
+      "isClassFeature": true,
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "summonFamiliar",
+          "name": { "en": "Summon Familiar", "fr": "Convocation de familier" },
+          "details": {
+            "en": "A sorcerer can obtain a familiar. Doing so takes 24 hours and uses up magical materials that cost 100 gp. A familiar is a magical beast that resembles a small animal and is unusually tough and intelligent. The creature serves as a companion and servant.",
+            "fr": "Un ensorceleur peut obtenir un familier. Cela prend 24 heures et utilise des matériaux magiques qui coûtent 100 po. Un familier est une bête magique qui ressemble à un petit animal et est exceptionnellement résistante et intelligente. La créature sert de compagnon et de serviteur."
+          }
+        }
+      ]
     }
   ]
 }
