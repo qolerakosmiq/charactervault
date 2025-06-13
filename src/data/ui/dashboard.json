@@ -19,5 +19,11 @@
   "dmSettingsAddCustomSkillButton": { "en": "Add New Custom Skill", "fr": "Ajouter une nouvelle compétence personnalisée" },
   "dmSettingsEditCustomSkillButton": { "en": "Edit Custom Skill Definition", "fr": "Modifier la définition de compétence personnalisée" },
   "dmSettingsAddCustomFeatButton": { "en": "Add New Custom Feat", "fr": "Ajouter un nouveau don personnalisé" },
-  "dmSettingsEditCustomFeatButton": { "en": "Edit Custom Feat Definition", "fr": "Modifier la définition de don personnalisé" }
+  "dmSettingsEditCustomFeatButton": { "en": "Edit Custom Feat Definition", "fr": "Modifier la définition de don personnalisé" },
+  "alertDialogDeleteCharacterTitle": { "en": "Are you sure?", "fr": "Êtes-vous sûr ?" },
+  "alertDialogDeleteCharacterDescription": { "en": "This action cannot be undone. This will permanently delete the character \"{characterName}\".", "fr": "Cette action ne peut pas être annulée. Cela supprimera définitivement le personnage \"{characterName}\"." },
+  "alertDialogDeleteCharacterCancelButton": { "en": "Cancel", "fr": "Annuler" },
+  "alertDialogDeleteCharacterConfirmButton": { "en": "Delete", "fr": "Supprimer" },
+  "characterCardViewEditButton": { "en": "View/Edit", "fr": "Voir/Modifier" },
+  "characterCardDeleteButton": { "en": "Delete", "fr": "Supprimer" }
 }
