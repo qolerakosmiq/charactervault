@@ -346,7 +346,7 @@
       "label": { "en": "War", "fr": "Guerre" },
       "description": { "en": "Devoted to conflict and martial prowess.", "fr": "Dédié au conflit et à la prouesse martiale." },
       "grantedPowerDescription": { "en": "Free Martial Weapon Proficiency with deity’s favored weapon (if necessary) and Weapon Focus with the deity’s favored weapon.", "fr": "Maîtrise gratuite de l'arme de prédilection de la divinité (si nécessaire) et Don Arme de prédilection avec l'arme de prédilection de la divinité." },
-      "grantedPowerFeatId": "feat-weapon-focus-SPEC",
+      "grantedPowerFeatId": "weapon-focus",
       "domainSpells": [
         { "level": 1, "spellId": "magic-weapon", "spellName": { "en": "Magic Weapon", "fr": "Arme magique" } },
         { "level": 2, "spellId": "spiritual-weapon", "spellName": { "en": "Spiritual Weapon", "fr": "Arme spirituelle" } },

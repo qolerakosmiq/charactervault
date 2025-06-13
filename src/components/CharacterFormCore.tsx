@@ -12,7 +12,7 @@ import type {
   ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType, ResistanceFieldKeySheet,
   SpeedDetails, SpeedType, CharacterAlignment, ProcessedSiteData, SpeedPanelCharacterData, CombatPanelCharacterData, LanguageId,
   AggregatedFeatEffects, ExperiencePanelData, ComboboxOption, MagicSchoolId, Item, GenericBreakdownItem, DamageReductionFeatEffect,
-  CharacterFavoredEnemy, CharacterAnimalCompanion
+  CharacterFavoredEnemy, CharacterAnimalCompanion, DomainDefinition, DndDeityOption // Added DomainDefinition, DndDeityOption
 } from '@/types/character';
 import {
   getNetAgingEffects,
@@ -215,7 +215,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     setCharacterDataToProcess(initialCharData);
 
     const finalCharacter = { ...initialCharData };
-    const { CLASS_SKILLS, SIZES, DND_RACES, DND_CLASSES, DND_DOMAINS, XP_TABLE, EPIC_LEVEL_XP_INCREASE } = translations;
+    const { CLASS_SKILLS, SIZES, DND_RACES, DND_CLASSES, DND_DOMAINS, DND_DEITIES, XP_TABLE, EPIC_LEVEL_XP_INCREASE } = translations;
 
     let currentSkills = [...finalCharacter.skills];
     currentSkills = currentSkills.map(skillInstance => ({
@@ -240,7 +240,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     const characterLevelFromXP = calculateLevelFromXp(finalCharacter.experiencePoints || 0, XP_TABLE, EPIC_LEVEL_XP_INCREASE);
     const newGrantedFeats = getGrantedFeatsForCharacter(
       finalCharacter,
-      allAvailableFeatDefinitions, DND_RACES, DND_CLASSES, DND_DOMAINS, XP_TABLE, EPIC_LEVEL_XP_INCREASE
+      allAvailableFeatDefinitions, DND_RACES, DND_CLASSES, DND_DOMAINS, DND_DEITIES, XP_TABLE, EPIC_LEVEL_XP_INCREASE
     );
     const userChosenFeats = finalCharacter.feats?.filter(fi => !fi.isGranted) || [];
 
@@ -272,7 +272,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
                 const drValue = typeof drEffect.value === 'number' ? drEffect.value : 0;
                 if (drValue > 0) {
                     finalDrArray.unshift({
-                        id: `granted-dr-${drEffect.sourceFeat?.toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID().substring(0,4)}`,
+                        id: `granted-dr-${drEffect.sourceFeat?.toString().toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID().substring(0,4)}`,
                         value: drValue,
                         type: drEffect.drType,
                         rule: 'bypassed-by-type', 
@@ -360,7 +360,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
                   const drValue = typeof drEffect.value === 'number' ? drEffect.value : 0;
                   if (drValue > 0) {
                       finalDrArray.unshift({
-                          id: `granted-dr-${drEffect.sourceFeat?.toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID().substring(0,4)}`,
+                          id: `granted-dr-${drEffect.sourceFeat?.toString().toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID().substring(0,4)}`,
                           value: drValue,
                           type: drEffect.drType,
                           rule: 'bypassed-by-type', 
@@ -576,7 +576,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       const currentLevelFromXP = calculateLevelFromXp(prev.experiencePoints || 0, translations.XP_TABLE, translations.EPIC_LEVEL_XP_INCREASE);
       const newGrantedFeats = getGrantedFeatsForCharacter(
         { ...prev, classes: updatedClasses },
-        allAvailableFeatDefinitions, translations.DND_RACES, translations.DND_CLASSES, translations.DND_DOMAINS, translations.XP_TABLE, translations.EPIC_LEVEL_XP_INCREASE
+        allAvailableFeatDefinitions, translations.DND_RACES, translations.DND_CLASSES, translations.DND_DOMAINS, translations.DND_DEITIES, translations.XP_TABLE, translations.EPIC_LEVEL_XP_INCREASE
       );
       const userChosenFeats = prev.feats.filter(fi => !fi.isGranted);
 
@@ -771,7 +771,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       calculationBreakdown: breakdown,
       rerollTwentiesForChecks: rollDialogProps?.rerollTwentiesForChecks, // Maintain current setting
     });
-    setIsRollDialogOpen(true);
+    setIsRollAbilityDialogOpen(true);
   }, [detailedAbilityScores, translations, rollDialogProps?.rerollTwentiesForChecks]);
 
   const handleOpenAbilityScoreBreakdownDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => { openInfoDialog({ type: 'abilityScoreBreakdown', abilityName: ability }); }, [openInfoDialog]);
@@ -923,7 +923,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     if (!character) return undefined;
     return {
       race: character.race, classes: character.classes, feats: character.feats, age: character.age, alignment: character.alignment, experiencePoints: character.experiencePoints,
-      chosenCombatStyle: character.chosenCombatStyle, chosenFavoredEnemies: character.chosenFavoredEnemies
+      chosenCombatStyle: character.chosenCombatStyle, chosenFavoredEnemies: character.chosenFavoredEnemies, deity: character.deity, chosenDomains: character.chosenDomains
     };
   }, [character]);
 
