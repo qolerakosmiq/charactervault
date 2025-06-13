@@ -16,7 +16,10 @@
     { "key": { "en": "Weapon and Armor Proficiency", "fr": "Maîtrise des armes et armures" }, "value": { "en": "Wizards are proficient with the club, dagger, heavy crossbow, light crossbow, and quarterstaff, but not with any type of armor or shield. Armor of any type interferes with a wizard’s movements, which can cause his spells with somatic components to fail.", "fr": "Les magiciens sont compétents avec le gourdin, la dague, l'arbalète lourde, l'arbalète légère et le bâton, mais avec aucun type d'armure ou de bouclier. Les armures de tout type interfèrent avec les mouvements d'un magicien, ce qui peut faire échouer ses sorts avec des composantes somatiques." } }
   ],
   "uiSections": [
-    { "key": "wizardSpecialization", "labelKey": "wizardSpecializationTitle" },
+    { 
+      "key": "wizardSpecialization", 
+      "labelKey": "wizardSpecializationTitle"
+    },
     { 
       "key": "wizardProhibitedSchools", 
       "labelKey": "wizardProhibitedSchoolsTitle",
