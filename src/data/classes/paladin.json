@@ -73,7 +73,16 @@
       "label": { "en": "Lay on Hands", "fr": "Imposition des mains" },
       "description": { "en": "Beginning at 2nd level, a paladin can heal wounds (her own or those of others) by touch. Each day she can heal a total number of hit points of damage equal to her paladin level × her Charisma bonus (if any). A paladin may choose to divide her healing among multiple recipients, and she doesn’t have to use it all at once. Using lay on hands is a standard action. Alternatively, a paladin can use any or all of this healing power to deal damage to undead creatures. Using lay on hands in this way requires a successful melee touch attack and doesn’t provoke an attack of opportunity. The paladin decides how many of her daily allotment of points to use as damage after successfully touching an undead creature.", "fr": "À partir du niveau 2, un paladin peut guérir les blessures (les siennes ou celles des autres) par le toucher. Chaque jour, elle peut guérir un nombre total de points de vie de dégâts égal à son niveau de paladin × son bonus de Charisme (le cas échéant). Un paladin peut choisir de diviser sa guérison entre plusieurs bénéficiaires, et elle n'a pas à tout utiliser en une seule fois. Utiliser l'imposition des mains est une action simple. Alternativement, un paladin peut utiliser tout ou partie de ce pouvoir de guérison pour infliger des dégâts aux créatures mortes-vivantes. Utiliser l'imposition des mains de cette manière nécessite une attaque de contact au corps à corps réussie et ne provoque pas d'attaque d'opportunité. Le paladin décide combien de ses points quotidiens alloués utiliser comme dégâts après avoir touché avec succès une créature morte-vivante." },
       "type": "special-su", "isClassFeature": true,
-      "effectsText": { "en": "Heal (Paladin level x Cha bonus) HP per day. Can damage undead.", "fr": "Soigne (Niveau Paladin x bonus Cha) PV par jour. Peut blesser les morts-vivants." }
+      "effectsText": { "en": "Heal (Paladin level x Cha bonus) HP per day. Can damage undead.", "fr": "Soigne (Niveau Paladin x bonus Cha) PV par jour. Peut blesser les morts-vivants." },
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "layOnHandsHealingPool",
+          "name": { "en": "Lay on Hands Healing Pool", "fr": "Imposition des Mains (Réserve de Soins)" },
+          "details": { "en": "Healing pool: Paladin level x Charisma bonus per day. Can use to damage undead.", "fr": "Réserve de soins : Niveau de Paladin x bonus de Charisme par jour. Peut être utilisé pour blesser les morts-vivants." },
+          "uses": { "per": "day", "value": "customPool" }
+        }
+      ]
     },
     {
       "value": "class-paladin-aura-of-courage",
@@ -82,7 +91,20 @@
       "type": "special-su", "isClassFeature": true, "permanentEffect": true,
       "effectsText": { "en": "Immune to fear. Allies within 10 ft get +4 morale bonus on saves vs. fear.", "fr": "Immunisé contre la peur. Les alliés à moins de 3m obtiennent un bonus de moral de +4 aux jets de sauvegarde contre la peur." },
       "effects": [
-        { "type": "note", "text": { "en": "Immune to fear. Allies within 10 feet gain +4 morale bonus on saving throws against fear effects.", "fr": "Immunisé contre la peur. Les alliés à moins de 3 mètres gagnent un bonus de moral de +4 aux jets de sauvegarde contre les effets de peur." } }
+        {
+          "type": "resistance",
+          "resistanceTo": "fear",
+          "value": 999,
+          "bonusType": "untyped",
+          "note": { "en": "Paladin is immune to fear (magical or otherwise).", "fr": "Le paladin est immunisé contre la peur (magique ou autre)." }
+        },
+        {
+          "type": "note",
+          "text": {
+            "en": "Allies within 10 feet of the paladin gain a +4 morale bonus on saving throws against fear effects. This functions while the paladin is conscious.",
+            "fr": "Les alliés à moins de 3 mètres du paladin gagnent un bonus de moral de +4 aux jets de sauvegarde contre les effets de peur. Ceci fonctionne tant que le paladin est conscient."
+          }
+        }
       ]
     },
     {
@@ -119,5 +141,3 @@
     }
   ]
 }
-
-    
