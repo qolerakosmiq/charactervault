@@ -295,7 +295,7 @@ export interface CharacterFeatInstance {
   specializationDetail?: string;
   chosenSpecializationCategory?: string;
   isGranted?: boolean;
-  grantedNote?: LocalizedString;
+  grantedNote?: string; // Changed from LocalizedString to string
   conditionalEffectStates?: Record<string, boolean>;
 }
 
@@ -387,12 +387,12 @@ export type MagicSchoolId = string;
 
 export interface LanguageOption {
   value: LanguageId;
-  label: LocalizedString; // Changed to LocalizedString
+  label: string; 
 }
 
 export interface CharacterSizeObject {
   value: CharacterSize;
-  label: LocalizedString; // Changed
+  label: string; 
   acModifier: number;
   skillModifiers?: Record<string, number>;
   grappleDamage?: string;
@@ -400,8 +400,8 @@ export interface CharacterSizeObject {
 
 export interface CharacterAlignmentObject {
   value: CharacterAlignment;
-  label: LocalizedString; // Changed
-  description: LocalizedString; // Changed
+  label: string; 
+  description: string; 
 }
 
 export interface ClassCastingDetails {
@@ -412,8 +412,8 @@ export interface ClassCastingDetails {
 }
 
 export interface ClassAttribute {
-  key: LocalizedString; // Changed
-  value: LocalizedString; // Changed
+  key: string; 
+  value: string; 
 }
 
 export interface ClassSpecificUIBlockConditionAggregatedEffect {
@@ -433,7 +433,7 @@ export interface ClassSpecificUIBlock {
 
 export interface FeatChoiceFilterCase {
   choiceValue: string;
-  noteMustContain: LocalizedString; // Changed for notes which might be translated
+  noteMustContain: LocalizedString; 
 }
 
 export interface FeatChoiceFilter {
@@ -443,24 +443,24 @@ export interface FeatChoiceFilter {
 
 export interface DndRaceOption {
   value: DndRaceId;
-  label: LocalizedString; // Changed
-  generalDescription?: LocalizedString; // Changed
+  label: string; 
+  generalDescription?: string; 
   loreAttributes?: ClassAttribute[];
   bonusFeatSlots?: number;
   racialSkillBonuses?: Record<string, number>;
-  grantedFeats?: Array<{ featId: string; note?: LocalizedString; name?: LocalizedString; levelAcquired?: number }>; // Changed
+  grantedFeats?: Array<{ featId: string; note?: string; name?: string; levelAcquired?: number }>; 
   speeds?: Partial<Record<SpeedType, number>>;
   automaticLanguages?: LanguageId[];
 }
 export interface DndClassOption {
   value: DndClassId | string;
-  label: LocalizedString; // Changed
+  label: string; 
   hitDice: string;
   babProgression: "good" | "average" | "poor";
   spellcasting?: ClassCastingDetails;
-  generalDescription: LocalizedString; // Changed
+  generalDescription: string; 
   loreAttributes?: ClassAttribute[];
-  grantedFeats?: Array<{ featId: string; note?: LocalizedString; name?: LocalizedString; levelAcquired?: number }>; // Changed
+  grantedFeats?: Array<{ featId: string; note?: string; name?: string; levelAcquired?: number }>; 
   saves?: {
     fortitude: "good" | "poor";
     reflex: "good" | "poor";
@@ -472,22 +472,22 @@ export interface DndClassOption {
 }
 
 export interface DeityAttribute {
-  key: LocalizedString; // Changed
-  value: LocalizedString; // Changed
+  key: string; 
+  value: string; 
 }
 export interface DndDeityOption {
   value: DndDeityId | string;
-  label: LocalizedString; // Changed
+  label: string; 
   alignment: CharacterAlignment | '';
-  fullName: LocalizedString; // Changed
+  fullName: string; 
   attributes: DeityAttribute[];
 }
 
 export interface SkillDefinitionJsonData {
   value: string;
-  label: LocalizedString; // Changed
+  label: string; 
   keyAbility: AbilityName | string;
-  description?: LocalizedString; // Changed
+  description?: string; 
 }
 
 export type ClassSkillsJsonData = Record<string, string[]>;
@@ -497,20 +497,20 @@ export type SkillSynergiesJsonData = Record<string, SynergyEffectJsonData[]>;
 
 export interface CharacterFavoredEnemy {
   id: string;
-  type: LocalizedString; // Changed
-  note?: LocalizedString; // Changed
+  type: string; 
+  note?: string; 
 }
 export interface DomainSpell {
   level: number;
   spellId: string;
-  spellName?: LocalizedString; // Changed
+  spellName?: string; 
 }
 
 export interface DomainDefinition {
   value: DomainId;
-  label: LocalizedString; // Changed
-  description: LocalizedString; // Changed
-  grantedPowerDescription: LocalizedString; // Changed
+  label: string; 
+  description: string; 
+  grantedPowerDescription: string; 
   grantedPowerFeatId?: string;
   domainSpells: DomainSpell[];
   deityAlignmentRestrictions?: CharacterAlignment[];
@@ -518,15 +518,15 @@ export interface DomainDefinition {
 
 export interface MagicSchoolDefinition {
   value: MagicSchoolId;
-  label: LocalizedString; // Changed
-  description?: LocalizedString; // Changed
+  label: string; 
+  description?: string; 
 }
 
 export interface CharacterAnimalCompanion {
   id: string;
-  name?: LocalizedString; // Changed
-  type?: LocalizedString; // e.g., "Wolf", "Hawk"
-  notes?: LocalizedString; // Changed
+  name?: string; 
+  type?: string; 
+  notes?: string; 
   // Basic stats might be added later
 }
 
@@ -535,7 +535,7 @@ export interface Character {
   name: string;
   playerName?: string;
   campaign?: string;
-  homeland?: LocalizedString; // Changed
+  homeland?: string; 
   race: DndRaceId | '';
   alignment: CharacterAlignment;
   deity?: DndDeityId | string;
@@ -545,9 +545,9 @@ export interface Character {
   gender: GenderId | string | '';
   height?: string;
   weight?: string;
-  eyes?: LocalizedString; // Changed
-  hair?: LocalizedString; // Changed
-  skin?: LocalizedString; // Changed
+  eyes?: string; 
+  hair?: string; 
+  skin?: string; 
   languages?: LanguageId[];
   experiencePoints?: number;
   abilityScores: AbilityScores;
@@ -577,7 +577,7 @@ export interface Character {
   skills: Skill[];
   feats: CharacterFeatInstance[];
   inventory: Item[];
-  personalStory?: LocalizedString; // Changed
+  personalStory?: string; 
   portraitDataUrl?: string;
   fireResistance: ResistanceValue;
   coldResistance: ResistanceValue;
@@ -617,11 +617,11 @@ export type SpeedType = 'land' | 'burrow' | 'climb' | 'fly' | 'swim';
 
 export interface ComboboxOption {
   value: string;
-  label: LocalizedString; // Changed
+  label: string; 
 }
 
 export interface GenericBreakdownItem {
-  label: LocalizedString; // Changed
+  label: string; 
   value: string | number;
   isBold?: boolean;
   isSubItem?: boolean;
@@ -646,23 +646,23 @@ export type InfoDialogContentType =
   | { type: 'loadSpeedPenaltyBreakdown' }
   | { type: 'savingThrowBreakdown'; saveType: SavingThrowType }
   | { type: 'maxHpBreakdown' }
-  | { type: 'genericHtml'; title: LocalizedString; content: LocalizedString } // Changed
+  | { type: 'genericHtml'; title: string; content: string } 
   | { type: 'genericNumericalBreakdown'; titleKey: keyof ProcessedSiteData['UI_STRINGS']; components: GenericBreakdownItem[] };
 
 
 export interface SkillDefinitionForDisplay {
   id: string;
-  name: LocalizedString; // Changed
+  name: string; 
   keyAbility: AbilityName;
-  description?: LocalizedString; // Changed
+  description?: string; 
   isCustom: boolean;
   providesSynergies?: CustomSynergyRule[];
 }
 
 
 export interface AbilityScoreComponentValue extends AggregatedFeatEffectBase {
-  sourceLabel: LocalizedString; // Changed
-  sourceDetail?: LocalizedString; // Changed
+  sourceLabel: string; 
+  sourceDetail?: string; 
   value: number;
 }
 export interface AbilityScoreBreakdown {
@@ -678,7 +678,7 @@ export interface AvailableFeatSlotsBreakdown {
   base: number;
   racial: number;
   classBonus: number;
-  classBonusDetails: Array<{ category: string; count: number; sourceFeatLabel?: LocalizedString }>; // Changed
+  classBonusDetails: Array<{ category: string; count: number; sourceFeatLabel?: string }>; 
 }
 
 export interface AggregatedFeatEffects {
@@ -692,7 +692,7 @@ export interface AggregatedFeatEffects {
   damageRollBonuses: Array<DamageRollEffect & AggregatedFeatEffectBase>;
   acBonuses: Array<ArmorClassEffect & AggregatedFeatEffectBase>;
   hpBonus: number;
-  hpBonusSources: Array<{ sourceFeatName: LocalizedString; value: number; condition?: string; isActive?: boolean; }>; // Changed
+  hpBonusSources: Array<{ sourceFeatName: LocalizedString; value: number; condition?: string; isActive?: boolean; }>; 
   initiativeBonus: number;
   speedBonuses: Array<SpeedEffect & AggregatedFeatEffectBase>;
   resistanceBonuses: Array<ResistanceEffect & AggregatedFeatEffectBase>;
@@ -706,7 +706,7 @@ export interface AggregatedFeatEffects {
   bonusFeatSlots: Array<BonusFeatSlotEffect & AggregatedFeatEffectBase>;
   languagesGranted: {
       count: number;
-      specific: Array<{ languageId: LanguageId; note?: LocalizedString; sourceFeat?: LocalizedString; condition?: string; isActive?: boolean; }>; // Changed
+      specific: Array<{ languageId: LanguageId; note?: string; sourceFeat?: LocalizedString; condition?: string; isActive?: boolean; }>; 
   };
   descriptiveNotes: Array<(NoteEffectDetail) & AggregatedFeatEffectBase>;
   classLevels: Record<DndClassId, number>;
@@ -725,7 +725,7 @@ export interface BabBreakdownDetails {
   featAttackBonus: number;
   miscModifier: number;
   totalBab: number[];
-  characterClassLabel?: LocalizedString; // Changed
+  characterClassLabel?: string; 
 }
 export interface InitiativeBreakdownDetails {
   dexModifier: number;
@@ -748,43 +748,43 @@ export interface GrappleDamageBreakdownDetails {
   bonus: number;
 }
 export interface SpeedComponent {
-  source: LocalizedString; // Changed
+  source: string; 
   value: number | string;
 }
 export interface SpeedBreakdownDetails {
-  name: LocalizedString; // Changed
+  name: string; 
   components: SpeedComponent[];
   total: number;
 }
 
 export interface PrerequisiteMessage {
-  text: LocalizedString; // Changed
+  text: string; 
   isMet: boolean;
   orderKey: string;
-  originalText?: LocalizedString; // Changed
+  originalText?: string; 
 }
 
 export interface AcBreakdownDetailItem {
-  mainLabel: LocalizedString | React.ReactNode; // Changed
+  mainLabel: string | React.ReactNode; 
   value: string | number | React.ReactNode;
   isBold?: boolean;
-  suffixDetails?: LocalizedString[]; // Changed
+  suffixDetails?: string[]; 
   type?: 'acAbilityMod' | 'acSizeMod' | 'acFeatBonus';
   abilityAbbr?: string;
-  sizeName?: LocalizedString; // Changed
+  sizeName?: string; 
   condition?: string;
   isActive?: boolean;
   isSubItem?: boolean;
 }
 
 export interface SavingThrowFeatComponent extends AggregatedFeatEffectBase {
-  sourceFeat: LocalizedString; // Changed
+  sourceFeat: string; 
   value: number;
 }
 
 export interface SavingThrowBreakdownDetails {
   saveType: SavingThrowType;
-  saveTypeLabel: LocalizedString; // Changed
+  saveTypeLabel: string; 
   baseSave: number;
   abilityKey: Exclude<AbilityName, 'none'> | undefined;
   abilityMod: number;
@@ -801,7 +801,7 @@ export interface ProcessedSiteData {
   XP_TABLE: readonly { level: number; xpRequired: number }[];
   EPIC_LEVEL_XP_INCREASE: number;
   SIZES: readonly CharacterSizeObject[];
-  GENDERS: readonly { value: GenderId | string; label: LocalizedString }[]; // Changed
+  GENDERS: readonly { value: GenderId | string; label: string }[]; 
   DND_RACES: readonly DndRaceOption[];
   DND_CLASSES: readonly DndClassOption[];
   DND_DEITIES: readonly DndDeityOption[];
@@ -809,12 +809,12 @@ export interface ProcessedSiteData {
   DND_MAGIC_SCHOOLS: readonly MagicSchoolDefinition[];
   SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[];
   DND_FEATS_DEFINITIONS: readonly FeatDefinitionJsonData[];
-  FEAT_TYPES: readonly { value: FeatTypeString; label: LocalizedString }[]; // Changed
-  ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: LocalizedString; abbr: string }[]; // Changed
-  SAVING_THROW_LABELS: readonly { value: SavingThrowType; label: LocalizedString }[]; // Changed
-  DAMAGE_REDUCTION_TYPES: readonly { value: DamageReductionTypeValue; label: LocalizedString }[]; // Changed
-  DAMAGE_REDUCTION_RULES_OPTIONS: readonly { value: DamageReductionRuleValue; label: LocalizedString }[]; // Changed
-  ALIGNMENT_PREREQUISITE_OPTIONS: readonly { value: string; label: LocalizedString }[]; // Changed
+  FEAT_TYPES: readonly { value: FeatTypeString; label: string }[]; 
+  ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[]; 
+  SAVING_THROW_LABELS: readonly { value: SavingThrowType; label: string }[]; 
+  DAMAGE_REDUCTION_TYPES: readonly { value: DamageReductionTypeValue; label: string }[]; 
+  DAMAGE_REDUCTION_RULES_OPTIONS: readonly { value: string; label: string }[]; 
+  ALIGNMENT_PREREQUISITE_OPTIONS: readonly { value: string; label: string }[]; 
   DEFAULT_ABILITIES: AbilityScores;
   DEFAULT_SAVING_THROWS: SavingThrows;
   DEFAULT_RESISTANCE_VALUE: ResistanceValue;
@@ -823,7 +823,7 @@ export interface ProcessedSiteData {
   DND_RACE_MIN_ADULT_AGE_DATA: Record<string, number>;
   DND_RACE_BASE_MAX_AGE_DATA: Record<string, number>;
   RACE_TO_AGING_CATEGORY_MAP_DATA: Record<string, string>;
-  DND_RACE_AGING_EFFECTS_DATA: Record<string, { categories: Array<{ categoryName: LocalizedString; ageFactor: number; effects: Record<string, number> }> }>; // Changed categoryName
+  DND_RACE_AGING_EFFECTS_DATA: Record<string, { categories: Array<{ categoryName: string; ageFactor: number; effects: Record<string, number> }> }>; 
   DND_RACE_ABILITY_MODIFIERS_DATA: Record<string, Partial<Record<Exclude<AbilityName, 'none'>, number>>>;
   DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA: Record<string, number>;
   CLASS_SKILLS: Record<string, string[]>;
@@ -842,3 +842,4 @@ export type CharacterUpdateField = keyof Character | `savingThrows.${keyof Savin
 export { type AbilityScoreComponentValue };
 
 export * from './character-core'; // Re-export everything from itself for simplicity in other files, even though it causes a circular-like structure here, it's fine for type aggregation.
+

@@ -753,7 +753,7 @@
       "label": { "en": "Still Spell", "fr": "Incantation statique" },
       "description": {
         "en": "<b>Benefit:</b> A stilled spell can be cast with no somatic components. Spells without somatic components are not affected. A stilled spell uses up a spell slot one level higher than the spell’s actual level.",
-        "fr": "<b>Avantage :</b> Un sort statique peut être lancé sans composantes somatiques. Les sorts sans composantes somatiques ne sont pas affectés. Un sort statique utilise un emplacement de sort d'un niveau supérieur au niveau réel du sort."
+        "fr": "<b>Avantage :</b> Un sort statique peut être lancé sans composantes somatiques. Les sorts sans composantes verbales ne sont pas affectés. Un sort statique utilise un emplacement de sort d'un niveau supérieur au niveau réel du sort."
       },
       "type": "metamagic",
       "category": "wizardBonusFeat"
@@ -848,5 +848,3 @@
     { "value": "monkBonusFeatL6", "label": { "en": "Monk Bonus Feat (L6)", "fr": "Don suppl. Moine (N6)" } }
   ]
 }
-
-    
