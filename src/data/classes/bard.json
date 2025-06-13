@@ -4,7 +4,7 @@
   "label": { "en": "Bard", "fr": "Barde" },
   "hitDice": "d6",
   "babProgression": "average",
-  "spellcasting": { "type": "full", "casterAbility": "charisma" },
+  "spellcasting": { "type": "full", "casterAbility": "charisma", "knownSpells": true },
   "saves": { "fortitude": "poor", "reflex": "good", "will": "good" },
   "generalDescription": {
     "en": "<p>Bards are versatile performers, weaving magic through music and words.<br />They are storytellers, diplomats, and adventurers, often charismatic and quick-witted.</p>",
@@ -15,7 +15,7 @@
     { "key": { "en": "Religion", "fr": "Religion" }, "value": { "en": "Bards may follow deities of art, travel, or trickery.", "fr": "Les bardes peuvent suivre des divinités de l'art, du voyage ou de la tromperie." } },
     { "key": { "en": "Background", "fr": "Antécédents" }, "value": { "en": "Often from performing troupes, scholarly institutions, or simply wanderers.", "fr": "Souvent issus de troupes d'artistes, d'institutions savantes ou simplement des errants." } },
     { "key": { "en": "Races", "fr": "Races" }, "value": { "en": "Humans, elves, and half-elves frequently become bards.", "fr": "Les humains, les elfes et les demi-elfes deviennent fréquemment des bardes." } },
-    { "key": { "en": "Weapon and Armor Proficiency", "fr": "Maîtrise des armes et armures" }, "value": { "en": "Bards are proficient with all simple weapons, plus the longsword, rapier, sap, short sword, shortbow, and whip. Bards are proficient with light armor and with shields (except tower shields).", "fr": "Les bardes sont formés au maniement de toutes les armes courantes, plus l'épée longue, la rapière, la matraque, l'épée courte, l'arc court et le fouet. Les bardes sont formés au port des armures légères et des boucliers (sauf les pavois)." } }
+    { "key": { "en": "Weapon and Armor Proficiency", "fr": "Maîtrise des armes et armures" }, "value": { "en": "Bards are proficient with all simple weapons, plus the longsword, rapier, sap, short sword, shortbow, and whip. Bards are proficient with light armor and with shields (except tower shields). A bard can cast bard spells while wearing light armor and using a shield without incurring the normal arcane spell failure chance. However, like any other arcane spellcaster, a bard wearing medium or heavy armor or using a tower shield incurs a chance of arcane spell failure if the spell in question has a somatic component (most do). A multiclass bard still incurs the normal arcane spell failure chance for arcane spells received from other classes.", "fr": "Les bardes sont formés au maniement de toutes les armes courantes, plus l'épée longue, la rapière, la matraque, l'épée courte, l'arc court et le fouet. Les bardes sont formés au port des armures légères et des boucliers (sauf les pavois). Un barde peut lancer des sorts de barde en portant une armure légère et en utilisant un bouclier sans encourir le risque normal d'échec des sorts profanes. Cependant, comme tout autre lanceur de sorts profanes, un barde portant une armure intermédiaire ou lourde ou utilisant un pavois encourt un risque d'échec des sorts profanes si le sort en question a une composante somatique (la plupart en ont une). Un barde multiclassé encourt toujours le risque normal d'échec des sorts profanes pour les sorts profanes reçus d'autres classes." } }
   ],
   "grantedFeats": [
     { "featId": "bard-weapon-proficiencies", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
@@ -53,6 +53,140 @@
       ],
       "isClassFeature": true,
       "type": "general"
+    },
+    {
+      "value": "class-bard-bardic-music",
+      "label": { "en": "Bardic Music", "fr": "Musique de barde" },
+      "description": {
+        "en": "<b>Benefit:</b> Once per day per bard level, a bard can use his song or poetics to produce magical effects on those around him (usually including himself, if desired). While these abilities fall under the category of bardic music and the descriptions discuss singing or playing instruments, they can all be activated by reciting poetry, chanting, singing lyrical songs, singing melodies (fa-la-la), whistling, playing an instrument, or playing an instrument in combination with some vocal performance. Each ability requires both a minimum bard level and a minimum number of ranks in the Perform skill to qualify; if a bard does not have the required number of ranks in the Perform skill, he does not gain the bardic music ability until he acquires the needed ranks. Starting a bardic music effect is a standard action. Some bardic music abilities require concentration, which means the bard must take a standard action each round to maintain the ability. Even while using bardic music that doesn’t require concentration, a bard cannot cast spells, activate magic items by spell completion (such as scrolls), or activate magic items by command word (such as wands). Just as for casting a spell with a verbal component, a deaf bard has a 20% chance to fail when attempting to use bardic music. If he fails, the attempt still counts against his daily limit.",
+        "fr": "<b>Avantage :</b> Une fois par jour par niveau de barde, un barde peut utiliser son chant ou sa poésie pour produire des effets magiques sur ceux qui l'entourent (généralement y compris lui-même, s'il le souhaite). Bien que ces capacités relèvent de la catégorie de la musique de barde et que les descriptions parlent de chanter ou de jouer des instruments, elles peuvent toutes être activées en récitant de la poésie, en chantant, en chantant des chansons lyriques, en chantant des mélodies (fa-la-la), en sifflant, en jouant d'un instrument ou en jouant d'un instrument en combinaison avec une performance vocale. Chaque capacité nécessite à la fois un niveau de barde minimum et un nombre minimum de rangs dans la compétence Représentation pour être qualifié ; si un barde n'a pas le nombre requis de rangs dans la compétence Représentation, il ne gagne pas la capacité de musique de barde jusqu'à ce qu'il acquière les rangs nécessaires. Commencer un effet de musique de barde est une action simple. Certaines capacités de musique de barde nécessitent de la concentration, ce qui signifie que le barde doit effectuer une action simple à chaque round pour maintenir la capacité. Même en utilisant une musique de barde qui ne nécessite pas de concentration, un barde ne peut pas lancer de sorts, activer des objets magiques par achèvement de sort (comme des parchemins) ou activer des objets magiques par mot de commande (comme des baguettes). Tout comme pour lancer un sort avec une composante verbale, un barde sourd a 20% de chances d'échouer lorsqu'il tente d'utiliser la musique de barde. S'il échoue, la tentative compte toujours pour sa limite quotidienne."
+      },
+      "isClassFeature": true, "type": "special-su",
+      "effectsText": { "en": "Use song/poetics for magical effects (1/day/level). Requires Perform ranks.", "fr": "Utilise chant/poésie pour effets magiques (1/jour/niveau). Nécessite des rangs en Représentation." },
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "bardicMusicUses",
+          "name": { "en": "Bardic Music Uses", "fr": "Utilisations de Musique de Barde" },
+          "uses": { "per": "day", "value": "levelBased", "scaleWithClassLevel": { "classId": "bard", "valuePerLevel": 1 } }
+        }
+      ]
+    },
+    {
+      "value": "class-bard-bardic-knowledge",
+      "label": { "en": "Bardic Knowledge", "fr": "Savoir bardique" },
+      "description": {
+        "en": "<b>Benefit:</b> A bard picks up a lot of stray knowledge while wandering the land and learning stories from other bards. He may make a special bardic knowledge check with a bonus equal to his bard level + his Intelligence modifier to see whether he knows some relevant information about local notable people, legendary items, or noteworthy places. (If the bard has 5 or more ranks in Knowledge (history), he gains a +2 bonus on this check.)",
+        "fr": "<b>Avantage :</b> Un barde acquiert beaucoup de connaissances éparses en parcourant le pays et en apprenant des histoires d'autres bardes. Il peut effectuer un test de savoir bardique spécial avec un bonus égal à son niveau de barde + son modificateur d'Intelligence pour voir s'il connaît des informations pertinentes sur des personnalités locales, des objets légendaires ou des lieux remarquables. (Si le barde a 5 rangs ou plus en Connaissances (histoire), il gagne un bonus de +2 à ce test.)"
+      },
+      "isClassFeature": true, "type": "special-ex",
+      "effectsText": { "en": "Make special check (Bard level + Int mod) for lore.", "fr": "Test spécial (Niveau de barde + mod Int) pour le savoir." }
+    },
+    {
+      "value": "class-bard-countersong",
+      "label": { "en": "Countersong", "fr": "Contre-chant" },
+      "description": {
+        "en": "<b>Benefit:</b> A bard with 3 or more ranks in Perform can use his music or poetics to counter magical effects that depend on sound (but not spells that have verbal components). Each round of the countersong, he makes a Perform check. Any creature within 30 feet of the bard (including the bard himself) that is affected by a sonic or language-dependent magical attack may use the bard’s Perform check result in place of its saving throw if, after the saving throw is rolled, the Perform check result proves to be higher.",
+        "fr": "<b>Avantage :</b> Un barde avec 3 rangs ou plus en Représentation peut utiliser sa musique ou sa poésie pour contrer les effets magiques qui dépendent du son (mais pas les sorts qui ont des composantes verbales). Chaque round du contre-chant, il effectue un test de Représentation. Toute créature à moins de 9 mètres du barde (y compris le barde lui-même) qui est affectée par une attaque magique sonique ou dépendante du langage peut utiliser le résultat du test de Représentation du barde à la place de son jet de sauvegarde si, après le jet de sauvegarde, le résultat du test de Représentation s'avère plus élevé."
+      },
+      "prerequisites": { "skills": [{ "id": "perform", "ranks": 3 }] },
+      "isClassFeature": true, "type": "special-su",
+      "effectsText": { "en": "Use Perform check vs. sonic/language-dependent effects.", "fr": "Test de Représentation contre effets sonores/dépendants du langage." }
+    },
+    {
+      "value": "class-bard-fascinate",
+      "label": { "en": "Fascinate", "fr": "Fascination" },
+      "description": {
+        "en": "<b>Benefit:</b> A bard with 3 or more ranks in Perform can use his music or poetics to cause one or more creatures to become fascinated with him. Each creature to be fascinated must be within 90 feet, able to see and hear the bard, and able to pay attention to him. The bard must also be able to see the creature. The distraction of a nearby combat or other dangers prevents the ability from working. For every three levels a bard attains beyond 1st, he can target one additional creature with a single use of this ability. To use the ability, a bard makes a Perform check. His check result is the DC for each affected creature’s Will saving throw. If a creature’s saving throw succeeds, the bard cannot attempt to fascinate that creature again for 24 hours. If its saving throw fails, the creature sits quietly and listens to the song, taking no other actions, for as long as the bard continues to play and concentrate (up to a maximum of 1 round per bard level). While fascinated, a target takes a –4 penalty on skill checks made as reactions, such as Listen and Spot checks. Any potential threat requires the bard to make another Perform check and allows the creature a new saving throw against a DC equal to the new Perform check result. Any obvious threat, such as someone drawing a weapon, casting a spell, or aiming a ranged weapon at the target, automatically breaks the effect. Fascinate is an enchantment (compulsion), mind-affecting ability.",
+        "fr": "<b>Avantage :</b> Un barde avec 3 rangs ou plus en Représentation peut utiliser sa musique ou sa poésie pour fasciner une ou plusieurs créatures. Chaque créature à fasciner doit être à moins de 27 mètres, capable de voir et d'entendre le barde, et capable de lui prêter attention. Le barde doit également être capable de voir la créature. La distraction d'un combat proche ou d'autres dangers empêche la capacité de fonctionner. Tous les trois niveaux qu'un barde atteint au-delà du 1er, il peut cibler une créature supplémentaire avec une seule utilisation de cette capacité. Pour utiliser la capacité, un barde effectue un test de Représentation. Le résultat de son test est le DD du jet de Volonté de chaque créature affectée. Si le jet de sauvegarde d'une créature réussit, le barde ne peut pas tenter de fasciner cette créature à nouveau pendant 24 heures. Si son jet de sauvegarde échoue, la créature s'assoit tranquillement et écoute la chanson, ne prenant aucune autre action, aussi longtemps que le barde continue de jouer et de se concentrer (jusqu'à un maximum de 1 round par niveau de barde). Pendant qu'elle est fascinée, une cible subit une pénalité de –4 aux tests de compétence effectués en réaction, tels que les tests de Perception auditive et de Détection. Toute menace potentielle oblige le barde à effectuer un autre test de Représentation et permet à la créature un nouveau jet de sauvegarde contre un DD égal au nouveau résultat du test de Représentation. Toute menace évidente, telle que quelqu'un dégainant une arme, lançant un sort ou visant une arme à distance sur la cible, brise automatiquement l'effet. La fascination est une capacité d'enchantement (coercition), affectant l'esprit."
+      },
+      "prerequisites": { "skills": [{ "id": "perform", "ranks": 3 }] },
+      "isClassFeature": true, "type": "special-sp",
+      "effectsText": { "en": "Fascinate creatures (1 + 1/3 levels) with Perform check vs. Will.", "fr": "Fascine créatures (1 + 1/3 niveaux) avec test de Représentation vs Volonté." }
+    },
+    {
+      "value": "class-bard-inspire-courage",
+      "label": { "en": "Inspire Courage", "fr": "Inspiration vaillante" },
+      "description": {
+        "en": "<b>Benefit:</b> A bard with 3 or more ranks in Perform can use song or poetics to inspire courage in his allies (including himself), bolstering them against fear and improving their combat abilities. To be affected, an ally must be able to hear the bard sing. The effect lasts for as long as the ally hears the bard sing and for 5 rounds thereafter. An affected ally receives a +1 morale bonus on saving throws against charm and fear effects and a +1 morale bonus on attack and weapon damage rolls. At 8th level, and every six bard levels thereafter, this bonus increases by 1 (+2 at 8th, +3 at 14th, and +4 at 20th). Inspire courage is a mind-affecting ability.",
+        "fr": "<b>Avantage :</b> Un barde avec 3 rangs ou plus en Représentation peut utiliser son chant ou sa poésie pour inspirer du courage à ses alliés (y compris lui-même), les renforçant contre la peur et améliorant leurs capacités de combat. Pour être affecté, un allié doit pouvoir entendre le barde chanter. L'effet dure aussi longtemps que l'allié entend le barde chanter et pendant 5 rounds par la suite. Un allié affecté reçoit un bonus de moral de +1 aux jets de sauvegarde contre les effets de charme et de peur et un bonus de moral de +1 aux jets d'attaque et de dégâts d'arme. Au niveau 8, et tous les six niveaux de barde par la suite, ce bonus augmente de 1 (+2 au 8e, +3 au 14e et +4 au 20e). L'inspiration vaillante est une capacité affectant l'esprit."
+      },
+      "prerequisites": { "skills": [{ "id": "perform", "ranks": 3 }] },
+      "isClassFeature": true, "type": "special-su",
+      "effectsText": { "en": "Allies get morale bonus vs. charm/fear and on attack/damage (+1, +2 at L8, +3 at L14, +4 at L20).", "fr": "Alliés obtiennent bonus de moral vs charme/peur et sur attaque/dégâts (+1, +2 au N8, +3 au N14, +4 au N20)." },
+      "effects": [
+        { "type": "savingThrow", "save": "all", "value": 1, "bonusType": "morale", "condition": "affected_by_inspire_courage", "note": { "en": "vs. Charm and Fear", "fr": "contre Charme et Peur" }, "scaleWithClassLevel": { "classId": "bard", "specificLevels": [ {"level": 1, "value": 1}, {"level": 8, "value": 2}, {"level": 14, "value": 3}, {"level": 20, "value": 4} ] } },
+        { "type": "attackRoll", "value": 1, "bonusType": "morale", "appliesTo": "all", "condition": "affected_by_inspire_courage", "scaleWithClassLevel": { "classId": "bard", "specificLevels": [ {"level": 1, "value": 1}, {"level": 8, "value": 2}, {"level": 14, "value": 3}, {"level": 20, "value": 4} ] } },
+        { "type": "damageRoll", "value": 1, "bonusType": "morale", "appliesTo": "all", "condition": "affected_by_inspire_courage", "scaleWithClassLevel": { "classId": "bard", "specificLevels": [ {"level": 1, "value": 1}, {"level": 8, "value": 2}, {"level": 14, "value": 3}, {"level": 20, "value": 4} ] } }
+      ]
+    },
+    {
+      "value": "class-bard-inspire-competence",
+      "label": { "en": "Inspire Competence", "fr": "Inspiration talentueuse" },
+      "description": {
+        "en": "<b>Benefit:</b> A bard of 3rd level or higher with 6 or more ranks in Perform can use his music or poetics to help an ally succeed at a task. The ally must be within 30 feet and able to see and hear the bard. The bard must also be able to see the ally. The ally gets an +2 competence bonus on skill checks with a particular skill as long as he or she continues to hear the bard’s music. Certain uses of this ability are infeasible, such as using it on a Disable Device check. The effect lasts as long as the bard concentrates, up to a maximum of 2 minutes.",
+        "fr": "<b>Avantage :</b> Un barde de niveau 3 ou plus avec 6 rangs ou plus en Représentation peut utiliser sa musique ou sa poésie pour aider un allié à réussir une tâche. L'allié doit être à moins de 9 mètres et capable de voir et d'entendre le barde. Le barde doit également être capable de voir l'allié. L'allié obtient un bonus de compétence de +2 aux tests de compétence avec une compétence particulière tant qu'il continue d'entendre la musique du barde. Certaines utilisations de cette capacité sont irréalisables, comme l'utiliser sur un test de Désamorçage/Sabotage. L'effet dure aussi longtemps que le barde se concentre, jusqu'à un maximum de 2 minutes."
+      },
+      "prerequisites": { "skills": [{ "id": "perform", "ranks": 6 }] },
+      "isClassFeature": true, "type": "special-su",
+      "effectsText": { "en": "Ally gets +2 competence bonus on skill checks.", "fr": "Allié obtient +2 bonus de compétence aux tests de compétence." }
+    },
+    {
+      "value": "class-bard-suggestion",
+      "label": { "en": "Suggestion (Bard)", "fr": "Suggestion (Barde)" },
+      "description": {
+        "en": "<b>Benefit:</b> A bard of 6th level or higher with 9 or more ranks in Perform can make a suggestion (as the spell) to a creature that he has already fascinated. Using this ability does not break the bard’s concentration on the fascinate effect, nor does it allow a second saving throw against the fascinate effect. Making a suggestion is a standard action. A Will saving throw (DC 10 + 1/2 bard’s level + bard’s Cha modifier) negates the effect. It is an enchantment (compulsion), mind-affecting, language-dependent ability.",
+        "fr": "<b>Avantage :</b> Un barde de niveau 6 ou plus avec 9 rangs ou plus en Représentation peut faire une suggestion (comme le sort) à une créature qu'il a déjà fascinée. L'utilisation de cette capacité ne brise pas la concentration du barde sur l'effet de fascination, ni ne permet un second jet de sauvegarde contre l'effet de fascination. Faire une suggestion est une action simple. Un jet de Volonté (DD 10 + 1/2 niveau du barde + mod Cha du barde) annule l'effet. C'est une capacité d'enchantement (coercition), affectant l'esprit, dépendante du langage."
+      },
+      "prerequisites": { "skills": [{ "id": "perform", "ranks": 9 }] },
+      "isClassFeature": true, "type": "special-sp",
+      "effectsText": { "en": "Make suggestion (as spell) to fascinated creature.", "fr": "Faire une suggestion (comme sort) à une créature fascinée." }
+    },
+    {
+      "value": "class-bard-inspire-greatness",
+      "label": { "en": "Inspire Greatness", "fr": "Inspiration héroïque" },
+      "description": {
+        "en": "<b>Benefit:</b> A bard of 9th level or higher with 12 or more ranks in Perform can use his music or poetics to inspire greatness in himself or a single willing ally within 30 feet, granting him or her extra fighting capability. For every three levels a bard attains beyond 9th, he can target one additional ally with a single use of this ability (two at 12th level, three at 15th, four at 18th). To inspire greatness, a bard must sing and an ally must hear him sing. The effect lasts for as long as the ally hears the bard sing and for 5 rounds thereafter. A creature inspired with greatness gains 2 bonus Hit Dice (d10s), the commensurate number of temporary hit points (apply the target’s Constitution modifier, if any, to these bonus Hit Dice), a +2 competence bonus on attack rolls, and a +1 competence bonus on Fortitude saves. The bonus Hit Dice count as regular Hit Dice for determining the effect of spells such as sleep. Inspire greatness is a mind-affecting ability.",
+        "fr": "<b>Avantage :</b> Un barde de niveau 9 ou plus avec 12 rangs ou plus en Représentation peut utiliser sa musique ou sa poésie pour inspirer la grandeur en lui-même ou chez un seul allié consentant à moins de 9 mètres, lui accordant une capacité de combat supplémentaire. Tous les trois niveaux qu'un barde atteint au-delà du 9e, il peut cibler un allié supplémentaire avec une seule utilisation de cette capacité (deux au 12e niveau, trois au 15e, quatre au 18e). Pour inspirer la grandeur, un barde doit chanter et un allié doit l'entendre chanter. L'effet dure aussi longtemps que l'allié entend le barde chanter et pendant 5 rounds par la suite. Une créature inspirée de grandeur gagne 2 Dés de Vie bonus (d10), le nombre correspondant de points de vie temporaires (appliquez le modificateur de Constitution de la cible, le cas échéant, à ces Dés de Vie bonus), un bonus de compétence de +2 aux jets d'attaque et un bonus de compétence de +1 aux jets de Vigueur. Les Dés de Vie bonus comptent comme des Dés de Vie normaux pour déterminer l'effet de sorts tels que sommeil. L'inspiration héroïque est une capacité affectant l'esprit."
+      },
+      "prerequisites": { "skills": [{ "id": "perform", "ranks": 12 }] },
+      "isClassFeature": true, "type": "special-su",
+      "effectsText": { "en": "Target gets 2 bonus HD (d10s), +temp HP, +2 competence attack, +1 competence Fort saves.", "fr": "Cible obtient 2 DV bonus (d10), +PV temp, +2 comp. attaque, +1 comp. jets de Vigueur." }
+    },
+    {
+      "value": "class-bard-song-of-freedom",
+      "label": { "en": "Song of Freedom", "fr": "Chant de liberté" },
+      "description": {
+        "en": "<b>Benefit:</b> A bard of 12th level or higher with 15 or more ranks in Perform can use music or poetics to create an effect equivalent to the break enchantment spell (caster level equals the bard’s class level). Using this ability requires 1 minute of uninterrupted concentration and music, and it functions on a single target within 30 feet.",
+        "fr": "<b>Avantage :</b> Un barde de niveau 12 ou plus avec 15 rangs ou plus en Représentation peut utiliser sa musique ou sa poésie pour créer un effet équivalent au sort délivrance des enchantements (niveau de lanceur de sorts égal au niveau de classe du barde). L'utilisation de cette capacité nécessite 1 minute de concentration et de musique ininterrompues, et elle fonctionne sur une seule cible à moins de 9 mètres."
+      },
+      "prerequisites": { "skills": [{ "id": "perform", "ranks": 15 }] },
+      "isClassFeature": true, "type": "special-sp",
+      "effectsText": { "en": "Break enchantment effect on one target.", "fr": "Effet de délivrance des enchantements sur une cible." }
+    },
+    {
+      "value": "class-bard-inspire-heroics",
+      "label": { "en": "Inspire Heroics", "fr": "Inspiration du héros" },
+      "description": {
+        "en": "<b>Benefit:</b> A bard of 15th level or higher with 18 or more ranks in Perform can use his music or poetics to inspire tremendous heroism in himself or a single willing ally within 30 feet. For every three bard levels the character attains beyond 15th, he can target one additional ally with a single use of this ability (two at 18th level). To inspire heroics, a bard must sing and an ally must hear the bard sing. The effect lasts for as long as the ally hears the bard sing and for 5 rounds thereafter. An ally inspired with heroics gains a +4 morale bonus on saving throws and a +4 dodge bonus to AC. The ability is a mind-affecting ability.",
+        "fr": "<b>Avantage :</b> Un barde de niveau 15 ou plus avec 18 rangs ou plus en Représentation peut utiliser sa musique ou sa poésie pour inspirer un héroïsme considérable en lui-même ou chez un seul allié consentant à moins de 9 mètres. Tous les trois niveaux de barde que le personnage atteint au-delà du 15e, il peut cibler un allié supplémentaire avec une seule utilisation de cette capacité (deux au 18e niveau). Pour inspirer l'héroïsme, un barde doit chanter et un allié doit entendre le barde chanter. L'effet dure aussi longtemps que l'allié entend le barde chanter et pendant 5 rounds par la suite. Un allié inspiré d'héroïsme gagne un bonus de moral de +4 aux jets de sauvegarde et un bonus d'esquive de +4 à la CA. La capacité est une capacité affectant l'esprit."
+      },
+      "prerequisites": { "skills": [{ "id": "perform", "ranks": 18 }] },
+      "isClassFeature": true, "type": "special-su",
+      "effectsText": { "en": "Target gets +4 morale bonus on saves and +4 dodge bonus to AC.", "fr": "Cible obtient +4 bonus de moral aux jets de sauvegarde et +4 bonus d'esquive à la CA." }
+    },
+    {
+      "value": "class-bard-mass-suggestion",
+      "label": { "en": "Mass Suggestion (Bard)", "fr": "Suggestion de groupe (Barde)" },
+      "description": {
+        "en": "<b>Benefit:</b> This ability, gained by a bard of 18th level or higher with 21 or more ranks in Perform, is similar to suggestion, above, except that it allows a bard to make a suggestion (as the spell) simultaneously to any number of creatures that he has already fascinated. Mass suggestion is an enchantment (compulsion), mind-affecting, language-dependent ability.",
+        "fr": "<b>Avantage :</b> Cette capacité, acquise par un barde de niveau 18 ou plus avec 21 rangs ou plus en Représentation, est similaire à la suggestion ci-dessus, sauf qu'elle permet à un barde de faire une suggestion (comme le sort) simultanément à un nombre quelconque de créatures qu'il a déjà fascinées. La suggestion de groupe est une capacité d'enchantement (coercition), affectant l'esprit, dépendante du langage."
+      },
+      "prerequisites": { "skills": [{ "id": "perform", "ranks": 21 }] },
+      "isClassFeature": true, "type": "special-sp",
+      "effectsText": { "en": "Suggestion (as spell) to any number of fascinated creatures.", "fr": "Suggestion (comme sort) à un nombre quelconque de créatures fascinées." }
     }
   ]
 }
+
+    

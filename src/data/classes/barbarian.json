@@ -43,6 +43,7 @@
       },
       "effectsText": { "en": "+10 ft. to land speed (if unarmored/light/medium armor, not heavy load).", "fr": "+3m à la vitesse terrestre (si armure légère/moyenne/aucune, pas de charge lourde)." },
       "isClassFeature": true,
+      "permanentEffect": true,
       "type": "special-ex",
       "effects": [
         {
@@ -50,7 +51,8 @@
           "speedType": "land",
           "modification": "bonus",
           "value": 10,
-          "bonusType": "enhancement"
+          "bonusType": "enhancement",
+          "condition": "unarmored_or_light_medium_armor_and_not_heavy_load"
         }
       ]
     },
@@ -90,25 +92,27 @@
     },
     {
       "value": "class-barbarian-uncanny-dodge",
-      "label": { "en": "Uncanny Dodge (Barbarian)", "fr": "Esquive instinctive (Barbare)" },
+      "label": { "en": "Uncanny Dodge", "fr": "Esquive instinctive" },
       "description": {
         "en": "<b>Benefit:</b> At 2nd level, a barbarian retains her Dexterity bonus to AC (if any) even if she is caught flat-footed or struck by an invisible attacker. However, she still loses her Dexterity bonus to AC if immobilized. If a character already has uncanny dodge from a different class, a barbarian automatically gains improved uncanny dodge (see below) instead.",
         "fr": "<b>Avantage :</b> Au niveau 2, un barbare conserve son bonus de Dextérité à la CA (le cas échéant) même s'il est pris au dépourvu ou frappé par un attaquant invisible. Cependant, il perd toujours son bonus de Dextérité à la CA s'il est immobilisé. Si un personnage possède déjà l'esquive instinctive d'une autre classe, un barbare gagne automatiquement l'esquive instinctive améliorée (voir ci-dessous) à la place."
       },
       "effectsText": { "en": "Retains Dex bonus to AC if flat-footed or vs. invisible attacker (if not immobilized).", "fr": "Conserve le bonus de Dex à la CA si pris au dépourvu/vs invisible (si non immobilisé)." },
       "isClassFeature": true,
+      "permanentEffect": true,
       "type": "special-ex",
       "effects": [{ "type": "note", "text": { "en": "Retains her Dexterity bonus to AC (if any) even if she is caught flat-footed or struck by an invisible attacker. Still loses Dex bonus if immobilized.", "fr": "Conserve son bonus de Dextérité à la CA (le cas échéant) même s'il est pris au dépourvu ou frappé par un attaquant invisible. Perd toujours son bonus de Dex s'il est immobilisé." } }]
     },
     {
       "value": "class-barbarian-trap-sense",
-      "label": { "en": "Trap Sense (Barbarian)", "fr": "Sens des pièges (Barbare)" },
+      "label": { "en": "Trap Sense", "fr": "Sens des pièges" },
       "description": {
         "en": "<b>Benefit:</b> At 3rd level, a barbarian gains a +1 bonus on Reflex saves made to avoid traps and a +1 dodge bonus to AC against attacks made by traps. These bonuses increase by +1 for every three barbarian levels thereafter (6th, 9th, 12th, 15th, and 18th level).",
         "fr": "<b>Avantage :</b> Au niveau 3, un barbare gagne un bonus de +1 aux jets de Réflexes effectués pour éviter les pièges et un bonus d'esquive de +1 à la CA contre les attaques faites par les pièges. Ces bonus augmentent de +1 tous les trois niveaux de barbare par la suite (6e, 9e, 12e, 15e et 18e niveau)."
       },
       "effectsText": { "en": "Bonus to Reflex saves and Dodge AC vs. traps (+1/3 levels starting L3).", "fr": "Bonus aux jets de Réflexes et CA d'Esquive contre les pièges (+1/3 niveaux à partir du N3)." },
       "isClassFeature": true,
+      "permanentEffect": true,
       "type": "special-ex",
       "effects": [
         {
@@ -144,19 +148,20 @@
     },
     {
       "value": "class-barbarian-improved-uncanny-dodge",
-      "label": { "en": "Improved Uncanny Dodge (Barbarian)", "fr": "Esquive instinctive améliorée (Barbare)" },
+      "label": { "en": "Improved Uncanny Dodge", "fr": "Esquive instinctive améliorée" },
       "description": {
         "en": "<b>Benefit:</b> At 5th level and higher, a barbarian can no longer be flanked. This defense denies a rogue the ability to sneak attack the character by flanking her, unless the attacker has at least four more rogue levels than the target has barbarian levels.",
         "fr": "<b>Avantage :</b> Au niveau 5 et supérieur, un barbare ne peut plus être pris en tenaille. Cette défense empêche un roublard de lui infliger une attaque sournoise en le prenant en tenaille, à moins que l'attaquant n'ait au moins quatre niveaux de roublard de plus que les niveaux de barbare de la cible."
       },
       "effectsText": { "en": "Cannot be flanked. Denies sneak attack from flanking unless Rogue attacker is 4+ levels higher.", "fr": "Ne peut plus être pris en tenaille. Empêche l'attaque sournoise par prise en tenaille sauf si l'attaquant roublard a 4 niveaux de plus." },
       "isClassFeature": true,
+      "permanentEffect": true,
       "type": "special-ex",
       "effects": [{ "type": "note", "text": { "en": "Cannot be flanked. Denies sneak attack from flanking unless Rogue attacker is 4+ levels higher.", "fr": "Ne peut plus être pris en tenaille. Empêche l'attaque sournoise par prise en tenaille sauf si l'attaquant roublard a au moins quatre niveaux de plus que les niveaux de barbare de la cible." } }]
     },
     {
       "value": "class-barbarian-damage-reduction",
-      "label": { "en": "Damage Reduction (Barbarian)", "fr": "Réduction des dégâts (Barbare)" },
+      "label": { "en": "Damage Reduction", "fr": "Réduction des dégâts" },
       "description": {
         "en": "<b>Benefit:</b> Gains Damage Reduction X/-. This DR increases with level.",
         "fr": "<b>Avantage :</b> Gagne une Réduction des Dégâts X/-. Cette RD augmente avec le niveau."
@@ -245,3 +250,5 @@
     }
   ]
 }
+
+    

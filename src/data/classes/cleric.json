@@ -1,0 +1,52 @@
+
+{
+  "value": "cleric",
+  "label": { "en": "Cleric", "fr": "Prêtre" },
+  "hitDice": "d8",
+  "babProgression": "average",
+  "spellcasting": { "type": "full", "casterAbility": "wisdom", "preparedSpells": true },
+  "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
+  "generalDescription": {
+    "en": "<p>Clerics are intermediaries between the mortal world and the distant planes of the gods. As varied as the gods they serve, clerics strive to embody the handiwork of their deities. Answering the call to serve, clerics can be champions of good, agents of evil, or anything in between.</p>",
+    "fr": "<p>Les prêtres sont des intermédiaires entre le monde des mortels et les plans lointains des dieux. Aussi variés que les dieux qu'ils servent, les prêtres s'efforcent d'incarner l'œuvre de leurs divinités. Répondant à l'appel du service, les prêtres peuvent être des champions du bien, des agents du mal, ou n'importe quoi entre les deux.</p>"
+  },
+  "loreAttributes": [
+    { "key": { "en": "Alignment", "fr": "Alignement" }, "value": { "en": "Usually within one step of his deity’s (if any).", "fr": "Généralement à un pas de celui de sa divinité (le cas échéant)." } },
+    { "key": { "en": "Weapon and Armor Proficiency", "fr": "Maîtrise des armes et armures" }, "value": { "en": "Clerics are proficient with all simple weapons, with all types of armor (light, medium, and heavy), and with shields (except tower shields). A cleric who chooses the War domain receives the Martial Weapon Proficiency feat related to his deity’s favored weapon (if necessary) and Weapon Focus feat with that weapon.", "fr": "Les prêtres sont formés au maniement de toutes les armes courantes, de tous les types d'armures (légères, intermédiaires et lourdes) et des boucliers (sauf les pavois). Un prêtre qui choisit le domaine de la Guerre reçoit le don Maniement d'arme de guerre lié à l'arme de prédilection de sa divinité (si nécessaire) et le don Arme de prédilection avec cette arme." } }
+  ],
+  "grantedFeats": [
+    { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "armor-proficiency-medium", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "armor-proficiency-heavy", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "shield-proficiency", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "class-cleric-turn-or-rebuke-undead", "levelAcquired": 1 }
+  ],
+  "uiSections": [
+    { "key": "clericDomains", "labelKey": "clericDomainsTitle" }
+  ],
+  "classSpecificFeats": [
+    {
+      "value": "class-cleric-turn-or-rebuke-undead",
+      "label": { "en": "Turn or Rebuke Undead", "fr": "Renvoi ou intimidation des morts-vivants" },
+      "description": {
+        "en": "<b>Benefit:</b> Any cleric, regardless of alignment, has the power to affect undead creatures by channeling the power of his faith through his holy (or unholy) symbol. A good cleric (or a neutral cleric who worships a good deity) can turn or destroy undead creatures. An evil cleric (or a neutral cleric who worships an evil deity) can rebuke or command undead creatures. A neutral cleric of a neutral deity must choose whether his turning ability functions as that of a good cleric or an evil cleric. Once this choice is made, it cannot be reversed. This decision also determines whether the cleric can cast spontaneous cure or inflict spells. A cleric may attempt to turn undead a number of times per day equal to 3 + his Charisma modifier. A cleric with 5 or more ranks in Knowledge (religion) gets a +2 bonus on turning checks against undead.",
+        "fr": "<b>Avantage :</b> Tout prêtre, quel que soit son alignement, a le pouvoir d'affecter les créatures mortes-vivantes en canalisant la puissance de sa foi à travers son symbole sacré (ou impie). Un prêtre bon (ou un prêtre neutre qui vénère une divinité bonne) peut renvoyer ou détruire les créatures mortes-vivantes. Un prêtre mauvais (ou un prêtre neutre qui vénère une divinité mauvaise) peut intimider ou commander les créatures mortes-vivantes. Un prêtre neutre d'une divinité neutre doit choisir si sa capacité de renvoi fonctionne comme celle d'un prêtre bon ou d'un prêtre mauvais. Une fois ce choix fait, il ne peut être annulé. Cette décision détermine également si le prêtre peut lancer spontanément des sorts de soins ou d'infliction. Un prêtre peut tenter de renvoyer les morts-vivants un nombre de fois par jour égal à 3 + son modificateur de Charisme. Un prêtre avec 5 rangs ou plus en Connaissances (religion) obtient un bonus de +2 aux tests de renvoi contre les morts-vivants."
+      },
+      "effectsText": { "en": "Affect undead (turn/destroy or rebuke/command). Uses/day: 3 + Cha mod.", "fr": "Affecte les morts-vivants (renvoi/destruction ou intimidation/contrôle). Utilisations/jour : 3 + mod Cha." },
+      "isClassFeature": true,
+      "type": "special-su",
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "turnUndeadAttempts",
+          "name": { "en": "Turn/Rebuke Attempts", "fr": "Tentatives de Renvoi/Intimidation" },
+          "uses": { "per": "day", "value": 3, "basedOnAbility": "charisma" }
+        },
+        { "type": "turnUndead", "property": "checkBonus", "value": 2, "condition": "has_5_ranks_knowledge_religion" }
+      ]
+    }
+  ]
+}
+
+    
