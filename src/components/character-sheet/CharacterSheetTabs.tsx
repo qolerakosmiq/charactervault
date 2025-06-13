@@ -2,13 +2,12 @@
 'use client';
 
 import type { Character, Skill, Item, CharacterClass, AbilityName, SavingThrows, ResistanceValue, InfoDialogContentType, AggregatedFeatEffects, DetailedAbilityScores, CombatPanelCharacterData } from '@/types/character';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react'; // Added useMemo
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { CoreInfoSection } from './CoreInfoSection';
 import { AbilityScoresSection } from './AbilityScoresSection';
-import { CombatStatsSection } from './CombatStatsSection'; // Keeping for now, will be replaced by CombatPanel logic
-import { CombatPanel } from '../form-sections/CombatPanel';
+import { CombatStatsSection } from './CombatStatsSection';
 import { SkillsListing } from './SkillsListing';
 import { FeatsListing } from './FeatsListing';
 import { InventoryListing } from './InventoryListing';
@@ -31,7 +30,6 @@ import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 import { calculateDetailedAbilityScores, calculateFeatEffects, calculateLevelFromXp } from '@/types/character';
 import { useI18n } from '@/context/I18nProvider';
 import { useDefinitionsStore } from '@/lib/definitions-store';
-
 
 type ResistanceFieldKeySheet = Exclude<keyof Pick<Character,
   'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
@@ -56,51 +54,37 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
   const [activeInfoDialogType, setActiveInfoDialogType] = useState<InfoDialogContentType | null>(null);
   const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false);
   
-  const [aggregatedFeatEffects, setAggregatedFeatEffects] = useState<AggregatedFeatEffects | null>(null);
-  const [detailedAbilityScores, setDetailedAbilityScores] = useState<DetailedAbilityScores | null>(null);
-
-  const allAvailableFeatDefinitions = React.useMemo(() => {
+  const allAvailableFeatDefinitions = useMemo(() => {
     if (translationsLoading || !translations) return [];
     const predefined = translations.DND_FEATS_DEFINITIONS.map(def => ({ ...def, isCustom: false as const }));
     return [...predefined, ...customFeatDefinitions];
   }, [translationsLoading, translations, customFeatDefinitions]);
 
+  const aggregatedFeatEffects = useMemo(() => {
+    if (!character || translationsLoading || !translations || allAvailableFeatDefinitions.length === 0) return null;
+    return calculateFeatEffects(character, allAvailableFeatDefinitions);
+  }, [character, translations, translationsLoading, allAvailableFeatDefinitions]);
 
-  const characterLevelFromXP = React.useMemo(() => {
-    if (!character || translationsLoading || !translations) return 1;
-    return calculateLevelFromXp(
-      character.experiencePoints || 0,
-      translations.XP_TABLE,
-      translations.EPIC_LEVEL_XP_INCREASE
+  const detailedAbilityScores = useMemo(() => {
+    if (!character || !aggregatedFeatEffects || translationsLoading || !translations) return null;
+    return calculateDetailedAbilityScores(
+      character,
+      aggregatedFeatEffects,
+      translations.DND_RACES,
+      translations.DND_RACE_ABILITY_MODIFIERS_DATA,
+      translations.DND_RACE_BASE_MAX_AGE_DATA,
+      translations.RACE_TO_AGING_CATEGORY_MAP_DATA,
+      translations.DND_RACE_AGING_EFFECTS_DATA,
+      translations.ABILITY_LABELS
     );
-  }, [character, translations, translationsLoading]);
-
+  }, [character, aggregatedFeatEffects, translations, translationsLoading]);
 
   useEffect(() => {
     setCharacter(initialCharacter);
   }, [initialCharacter]);
   
-  useEffect(() => {
-    if (character && translations && !translationsLoading && allAvailableFeatDefinitions.length > 0) {
-      const aggFeats = calculateFeatEffects(character, allAvailableFeatDefinitions);
-      setAggregatedFeatEffects(aggFeats);
-      const detailedScores = calculateDetailedAbilityScores(
-        character,
-        aggFeats,
-        translations.DND_RACES,
-        translations.DND_RACE_ABILITY_MODIFIERS_DATA,
-        translations.DND_RACE_BASE_MAX_AGE_DATA,
-        translations.RACE_TO_AGING_CATEGORY_MAP_DATA,
-        translations.DND_RACE_AGING_EFFECTS_DATA,
-        translations.ABILITY_LABELS
-      );
-      setDetailedAbilityScores(detailedScores);
-    }
-  }, [character, translations, translationsLoading, allAvailableFeatDefinitions]);
-
-
   const handleSaveCharacter = () => {
-    if (!translations) return;
+    if (!translations?.UI_STRINGS) return;
     onSave(character);
     toast({
       title: translations.UI_STRINGS.toastCharacterSavedTitle || "Character Saved!",
@@ -109,7 +93,7 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
   };
 
   const handleDeleteCharacter = () => {
-    if (!translations) return;
+    if (!translations?.UI_STRINGS) return;
     onDelete(character.id);
     toast({
       title: translations.UI_STRINGS.toastCharacterDeletedTitle || "Character Deleted",
@@ -193,10 +177,11 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
     setCharacter(prev => ({
       ...prev,
       skills: prev.skills.map(s =>
-        s.id === skillId ? { ...s, ranks, miscModifier, isClassSkill: isClassSkill === undefined ? s.isClassSkill : s.isClassSkill } : s
+        s.id === skillId ? { ...s, ranks, miscModifier, isClassSkill: isClassSkill === undefined ? s.isClassSkill : s.isClassSkill } : s // Corrected logic to use s.isClassSkill
       ),
     }));
   }, []);
+
 
   const handleFeatAdd = useCallback((feat: Character['feats'][number]) => { 
     setCharacter(prev => ({ ...prev, feats: [...prev.feats, feat ] }));
@@ -232,44 +217,20 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
     setActiveInfoDialogType(contentType);
     setIsInfoDialogOpen(true);
   };
-
-  const handleOpenCombatStatInfoDialog = (contentType: InfoDialogContentType) => {
-    openInfoDialog(contentType);
-  };
   
-
-  if (!character || translationsLoading || !translations || !detailedAbilityScores || !aggregatedFeatEffects || allAvailableFeatDefinitions.length === 0) {
+  if (!character || translationsLoading || !translations?.UI_STRINGS || !detailedAbilityScores || !aggregatedFeatEffects || allAvailableFeatDefinitions.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-center items-center py-10 min-h-[300px]">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <p className="ml-3 text-muted-foreground">
-              {translations?.UI_STRINGS.characterSheetLoadingCharacter || "Loading character sheet..."}
+              {translations?.UI_STRINGS?.characterSheetLoadingCharacter || "Loading character sheet..."}
             </p>
         </div>
       </div>
     );
   }
   const UI_STRINGS = translations.UI_STRINGS;
-
-
-  const combatPanelDataForDisplay: CombatPanelCharacterData = {
-    abilityScores: character.abilityScores,
-    classes: character.classes,
-    size: character.size,
-    inventory: character.inventory,
-    feats: character.feats,
-    babMiscModifier: character.babMiscModifier,
-    initiativeMiscModifier: character.initiativeMiscModifier,
-    grappleMiscModifier: character.grappleMiscModifier,
-    grappleDamage_baseNotes: character.grappleDamage_baseNotes,
-    grappleDamage_bonus: character.grappleDamage_bonus,
-    grappleWeaponChoice: character.grappleWeaponChoice,
-    sizeModifierAttack: character.sizeModifierAttack,
-    powerAttackValue: character.powerAttackValue,
-    combatExpertiseValue: character.combatExpertiseValue,
-  };
-
 
   return (
     <div className="space-y-6">
@@ -323,22 +284,27 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
         </TabsContent>
         <TabsContent value="abilities" className="mt-4">
           <AbilityScoresSection 
-            abilityScores={character.abilityScores}
+            abilityScores={character.abilityScores} // Pass base scores for editing
             onAbilityScoreChange={handleAbilityScoreChange}
           />
         </TabsContent>
         <TabsContent value="combat" className="mt-4">
            <CombatStatsSection 
-            character={character}
+            character={character} // Full character for now, will refine props
+            detailedAbilityScores={detailedAbilityScores} // Pass detailed scores
+            aggregatedFeatEffects={aggregatedFeatEffects} // Pass feat effects
             onCharacterUpdate={handleCharacterUpdate}
+            onOpenCombatStatInfoDialog={openInfoDialog}
           />
         </TabsContent>
         <TabsContent value="skills" className="mt-4">
           <SkillsListing 
             skills={character.skills} 
-            abilityScores={character.abilityScores}
+            abilityScores={character.abilityScores} // Base scores for core display
             characterClasses={character.classes}
             characterExperiencePoints={character.experiencePoints || 0}
+            detailedAbilityScores={detailedAbilityScores} // For accurate modifier calculation
+            aggregatedFeatEffects={aggregatedFeatEffects} // For feat bonuses to skills
             onSkillChange={handleSkillChange} 
           />
         </TabsContent>
@@ -376,3 +342,5 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
     </div>
   );
 }
+
+    

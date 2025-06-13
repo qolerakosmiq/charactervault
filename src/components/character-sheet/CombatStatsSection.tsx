@@ -1,11 +1,11 @@
 
 'use client';
 
-import type { Character, AbilityScores, SavingThrows, CharacterClass, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue } from '@/types/character';
-import { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS, ABILITY_LABELS, SAVING_THROW_LABELS } from '@/types/character';
+import type { Character, AbilityScores, SavingThrows, CharacterClass, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, InfoDialogContentType, DetailedAbilityScores, AggregatedFeatEffects, SavingThrowType } from '@/types/character';
+import { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS, ABILITY_LABELS, SAVING_THROW_LABELS, SAVING_THROW_ABILITIES } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Swords, Heart, Zap as InitiativeIcon, ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, Info, Brain, ShieldCheck, PlusCircle, Trash2 } from 'lucide-react';
+import { Shield, Swords, Heart, Zap as InitiativeIcon, ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, Info, Brain, ShieldCheck, PlusCircle, Trash2, Loader2 } from 'lucide-react';
 import { 
   getAbilityModifierByName,
   getBab, 
@@ -13,19 +13,18 @@ import {
   calculateInitiative, 
   calculateGrapple, 
   getSizeModifierAC,
-  getSizeModifierGrapple,
-  SAVING_THROW_ABILITIES
+  getSizeModifierGrapple
 } from '@/lib/dnd-utils';
 import { Separator } from '../ui/separator';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { ArmorClassPanel } from '../form-sections/ArmorClassPanel'; 
+// ArmorClassPanel import removed as its display logic will be integrated or simplified
 import { Button } from '@/components/ui/button';
-import { InfoDisplayDialog, type ResistanceBreakdownDetails } from '@/components/InfoDisplayDialog';
 import *as React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-
+import { useI18n } from '@/context/I18nProvider'; // Added useI18n
+import { Skeleton } from '@/components/ui/skeleton'; // Added Skeleton
 
 type ResistanceFieldKey = Exclude<keyof Pick<Character,
   'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
@@ -34,6 +33,8 @@ type ResistanceFieldKey = Exclude<keyof Pick<Character,
 
 interface CombatStatsSectionProps {
   character: Character;
+  detailedAbilityScores: DetailedAbilityScores | null; // Added
+  aggregatedFeatEffects: AggregatedFeatEffects | null; // Added
   onCharacterUpdate: (
     field: keyof Character | 
            `savingThrows.${keyof SavingThrows}.${'base'|'magicMod'|'miscMod'}` |
@@ -41,96 +42,121 @@ interface CombatStatsSectionProps {
            'damageReduction', 
     value: any
   ) => void;
+  onOpenCombatStatInfoDialog: (contentType: InfoDialogContentType) => void; // For info dialogs
 }
 
-export function CombatStatsSection({ character, onCharacterUpdate }: CombatStatsSectionProps) {
-  const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
-  const [currentResistanceBreakdown, setCurrentResistanceBreakdown] = React.useState<ResistanceBreakdownDetails | undefined>(undefined);
+export function CombatStatsSection({ 
+  character, 
+  detailedAbilityScores, 
+  aggregatedFeatEffects, 
+  onCharacterUpdate,
+  onOpenCombatStatInfoDialog
+}: CombatStatsSectionProps) {
+  const { translations, isLoading: i18nLoading } = useI18n(); // Added useI18n
   const { toast } = useToast();
 
   const [newDrValue, setNewDrValue] = React.useState(1);
-  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>(DAMAGE_REDUCTION_TYPES[0]?.value || "none");
-  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.value);
-
+  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>(translations?.DAMAGE_REDUCTION_TYPES?.[0]?.value || "none");
+  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>(translations?.DAMAGE_REDUCTION_RULES_OPTIONS?.[0]?.value || 'bypassed-by-type');
 
   React.useEffect(() => {
-    if (newDrRule !== 'bypassed-by-type' && newDrType === 'none') {
-      const firstNonNoneType = DAMAGE_REDUCTION_TYPES.find(t => t.value !== 'none')?.value || 'magic';
+    if (translations && newDrRule !== 'bypassed-by-type' && newDrType === 'none') {
+      const firstNonNoneType = translations.DAMAGE_REDUCTION_TYPES.find(t => t.value !== 'none')?.value || 'magic';
       setNewDrType(firstNonNoneType);
     }
-  }, [newDrRule, newDrType]);
+  }, [newDrRule, newDrType, translations]);
+
+  if (i18nLoading || !translations || !detailedAbilityScores || !aggregatedFeatEffects) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardHeader><Skeleton className="h-8 w-1/2" /></CardHeader>
+          <CardContent><Loader2 className="h-6 w-6 animate-spin text-primary" /></CardContent>
+        </Card>
+         <Card>
+          <CardHeader><Skeleton className="h-8 w-1/2" /></CardHeader>
+          <CardContent><Loader2 className="h-6 w-6 animate-spin text-primary" /></CardContent>
+        </Card>
+      </div>
+    );
+  }
+  const { UI_STRINGS, DND_CLASSES, SIZES } = translations;
 
 
-  const abilityScores = character.abilityScores;
-  const classes = character.classes;
-
-  const dexModifier = getAbilityModifierByName(abilityScores, 'dexterity');
-  const strModifier = getAbilityModifierByName(abilityScores, 'strength');
-  const conModifier = getAbilityModifierByName(abilityScores, 'constitution');
-  const wisModifier = getAbilityModifierByName(abilityScores, 'wisdom');
+  // Use detailed ability scores for modifiers
+  const strModifier = detailedAbilityScores.strength.finalScore ? getAbilityModifierByName(detailedAbilityScores, 'strength') : 0;
+  const dexModifier = detailedAbilityScores.dexterity.finalScore ? getAbilityModifierByName(detailedAbilityScores, 'dexterity') : 0;
+  const conModifier = detailedAbilityScores.constitution.finalScore ? getAbilityModifierByName(detailedAbilityScores, 'constitution') : 0;
+  const wisModifier = detailedAbilityScores.wisdom.finalScore ? getAbilityModifierByName(detailedAbilityScores, 'wisdom') : 0;
   
-  const babArray = getBab(classes);
-  const baseSaves = getBaseSaves(classes);
+  const babArray = getBab(character.classes, DND_CLASSES); // BAB from class levels
+  const totalBabWithModifier = babArray.map(bab => bab + (character.babMiscModifier || 0)); // Add misc BAB mod
+
+  const sizeModAC = getSizeModifierAC(character.size, SIZES);
+  const sizeModGrapple = getSizeModifierGrapple(character.size, SIZES);
+
+  const initiativeFeatBonus = aggregatedFeatEffects.initiativeBonus || 0;
+  const initiative = calculateInitiative(dexModifier, character.initiativeMiscModifier || 0) + initiativeFeatBonus;
   
-  const sizeModAttackAC = getSizeModifierAC(character.size);
-  const sizeModGrapple = getSizeModifierGrapple(character.size);
+  const grappleFeatBonus = aggregatedFeatEffects.attackRollBonuses?.filter(b => b.appliesTo === 'grapple' && b.isActive).reduce((sum, b) => sum + (typeof b.value === 'number' ? b.value : 0), 0) || 0;
+  const grappleBase = calculateGrapple(character.classes, strModifier, sizeModGrapple, DND_CLASSES);
+  const grapple = grappleBase + (character.grappleMiscModifier || 0) + grappleFeatBonus;
 
-  const initiative = calculateInitiative(dexModifier, character.initiativeMiscModifier);
-  const grapple = calculateGrapple(babArray, strModifier, sizeModGrapple);
-
+  const baseSavesFromClass = getBaseSaves(character.classes, DND_CLASSES);
+  
   const calculatedSaves = {
-    fortitude: baseSaves.fortitude + conModifier + character.savingThrows.fortitude.magicMod + character.savingThrows.fortitude.miscMod,
-    reflex: baseSaves.reflex + dexModifier + character.savingThrows.reflex.magicMod + character.savingThrows.reflex.miscMod,
-    will: baseSaves.will + wisModifier + character.savingThrows.will.magicMod + character.savingThrows.will.miscMod,
+    fortitude: baseSavesFromClass.fortitude + conModifier + (character.savingThrows.fortitude.magicMod || 0) + (aggregatedFeatEffects.savingThrowBonuses.find(b => (b.save === 'fortitude' || b.save === 'all') && b.isActive)?.value || 0) + (character.savingThrows.fortitude.miscMod || 0),
+    reflex: baseSavesFromClass.reflex + dexModifier + (character.savingThrows.reflex.magicMod || 0) + (aggregatedFeatEffects.savingThrowBonuses.find(b => (b.save === 'reflex' || b.save === 'all') && b.isActive)?.value || 0) + (character.savingThrows.reflex.miscMod || 0),
+    will: baseSavesFromClass.will + wisModifier + (character.savingThrows.will.magicMod || 0) + (aggregatedFeatEffects.savingThrowBonuses.find(b => (b.save === 'will' || b.save === 'all') && b.isActive)?.value || 0) + (character.savingThrows.will.miscMod || 0),
   };
 
   const handleSavingThrowChange = (saveType: keyof SavingThrows, field: 'magicMod' | 'miscMod', value: number) => {
     onCharacterUpdate(`savingThrows.${saveType}.${field}`, value);
   };
 
-  const energyResistancesFields: Array<{ field: ResistanceFieldKey; label: string; Icon: React.ElementType; fieldPrefix?: string }> = [
-    { field: 'fireResistance', label: 'Fire', Icon: Flame, fieldPrefix: 'sheet-res' },
-    { field: 'coldResistance', label: 'Cold', Icon: Snowflake, fieldPrefix: 'sheet-res' },
-    { field: 'acidResistance', label: 'Acid', Icon: Atom, fieldPrefix: 'sheet-res' },
-    { field: 'electricityResistance', label: 'Electricity', Icon: ElectricityIcon, fieldPrefix: 'sheet-res' },
-    { field: 'sonicResistance', label: 'Sonic', Icon: Waves, fieldPrefix: 'sheet-res' },
+  const energyResistancesFields: Array<{ field: ResistanceFieldKey; labelKey: keyof typeof UI_STRINGS; Icon: React.ElementType; fieldPrefix?: string }> = [
+    { field: 'fireResistance', labelKey: 'resistanceLabelFire', Icon: Flame, fieldPrefix: 'sheet-res' },
+    { field: 'coldResistance', labelKey: 'resistanceLabelCold', Icon: Snowflake, fieldPrefix: 'sheet-res' },
+    { field: 'acidResistance', labelKey: 'resistanceLabelAcid', Icon: Atom, fieldPrefix: 'sheet-res' },
+    { field: 'electricityResistance', labelKey: 'resistanceLabelElectricity', Icon: ElectricityIcon, fieldPrefix: 'sheet-res' },
+    { field: 'sonicResistance', labelKey: 'resistanceLabelSonic', Icon: Waves, fieldPrefix: 'sheet-res' },
   ];
 
-  const otherNumericResistancesFields: Array<{ field: ResistanceFieldKey; label: string; Icon: React.ElementType; unit?: string; fieldPrefix?: string }> = [
-    { field: 'spellResistance', label: 'Spell Resistance', Icon: Sigma, fieldPrefix: 'sheet-res' },
-    { field: 'powerResistance', label: 'Power Resistance', Icon: Brain, fieldPrefix: 'sheet-res' },
-    { field: 'fortification', label: 'Fortification', Icon: ShieldCheck, unit: '%', fieldPrefix: 'sheet-res' },
+  const otherNumericResistancesFields: Array<{ field: ResistanceFieldKey; labelKey: keyof typeof UI_STRINGS; Icon: React.ElementType; unit?: string; fieldPrefix?: string }> = [
+    { field: 'spellResistance', labelKey: 'resistanceLabelSpellResistance', Icon: Sigma, fieldPrefix: 'sheet-res' },
+    { field: 'powerResistance', labelKey: 'resistanceLabelPowerResistance', Icon: Brain, fieldPrefix: 'sheet-res' },
+    { field: 'fortification', labelKey: 'resistanceLabelFortification', Icon: ShieldCheck, unit: '%', fieldPrefix: 'sheet-res' },
   ];
 
-  const handleOpenResistanceInfoDialog = (
-    name: string,
-    base: number,
-    customMod: number,
-    total: number
-  ) => {
-    setCurrentResistanceBreakdown({ name, base, customMod, total });
-    setIsInfoDialogOpen(true);
+  const handleOpenResistanceInfoDialog = (field: ResistanceFieldKey) => {
+    onOpenCombatStatInfoDialog({ type: 'resistanceBreakdown', resistanceField: field });
   };
+  
+  const handleOpenAcBreakdownDialog = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
+    onOpenCombatStatInfoDialog({ type: 'acBreakdown', acType });
+  };
+
 
   const handleAddDamageReduction = () => {
     if (newDrValue <= 0) {
-      toast({ title: "Invalid DR Value", description: "DR value must be > 0.", variant: "destructive"});
+      toast({ title: UI_STRINGS.toastInvalidDrValueTitle, description: UI_STRINGS.toastInvalidDrValueDesc, variant: "destructive"});
       return;
     }
      if (!newDrType) { 
-        toast({ title: "DR Type Missing", description: "Select DR type.", variant: "destructive"});
+        toast({ title: UI_STRINGS.toastDrTypeMissingTitle, description: UI_STRINGS.toastDrTypeMissingDesc, variant: "destructive"});
         return;
     }
-     if ((newDrRule === 'excepted-by-type' || newDrRule === 'versus-specific-type') && newDrType === 'none') {
-      toast({ title: "Invalid Combination", description: `The '${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === newDrRule)?.label}' rule requires a specific damage type (not 'None').`, variant: "destructive"});
+    const ruleLabelForToast = translations.DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === newDrRule)?.label || newDrRule;
+    if ((newDrRule === 'excepted-by-type' || newDrRule === 'versus-specific-type') && newDrType === 'none') {
+      toast({ title: UI_STRINGS.toastDrInvalidCombinationTitle, description: (UI_STRINGS.toastDrInvalidCombinationDesc || "The '{ruleLabel}' rule requires a specific damage type (not 'None').").replace("{ruleLabel}", ruleLabelForToast), variant: "destructive"});
       return;
     }
 
-    const existingUserDrOfTypeAndRule = character.damageReduction.find(
+    const existingUserDrOfTypeAndRule = character.damageReduction?.find(
       dr => !dr.isGranted && dr.type === newDrType && dr.rule === newDrRule
     );
     if (existingUserDrOfTypeAndRule) {
-      toast({ title: "Duplicate DR Entry", description: `Custom DR with this type and rule already exists.`, variant: "destructive"});
+      toast({ title: UI_STRINGS.toastDrDuplicateEntryTitle, description: UI_STRINGS.toastDrDuplicateEntryDesc, variant: "destructive"});
       return;
     }
 
@@ -141,18 +167,18 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
       rule: newDrRule,
       isGranted: false,
     };
-    onCharacterUpdate('damageReduction', [...character.damageReduction, newInstance]);
+    onCharacterUpdate('damageReduction', [...(character.damageReduction || []), newInstance]);
     setNewDrValue(1);
-    setNewDrType(DAMAGE_REDUCTION_TYPES[0]?.value || "none"); 
-    setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.value); 
+    setNewDrType(translations.DAMAGE_REDUCTION_TYPES[0]?.value || "none"); 
+    setNewDrRule(translations.DAMAGE_REDUCTION_RULES_OPTIONS[0]?.value || 'bypassed-by-type'); 
   };
 
   const handleRemoveDamageReduction = (idToRemove: string) => {
-    onCharacterUpdate('damageReduction', character.damageReduction.filter(dr => dr.id !== idToRemove));
+    onCharacterUpdate('damageReduction', (character.damageReduction || []).filter(dr => dr.id !== idToRemove));
   };
-
+  
   const getDrTypeUiLabel = (typeValue: DamageReductionTypeValue | string): string => {
-    return DAMAGE_REDUCTION_TYPES.find(t => t.value === typeValue)?.label || String(typeValue);
+    return translations.DAMAGE_REDUCTION_TYPES.find(t => t.value === typeValue)?.label || String(typeValue);
   };
   
  const getDrPrimaryNotation = (dr: DamageReductionInstance): string => {
@@ -161,31 +187,65 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
       return dr.type === "none" ? `${dr.value}/—` : `${dr.value}/${typeLabel}`;
     }
     if (dr.rule === 'versus-specific-type') {
-      return `${dr.value} vs ${typeLabel}`;
+      return `${dr.value} ${UI_STRINGS.drVsLabel || "vs"} ${typeLabel}`;
     }
     if (dr.rule === 'excepted-by-type') {
-       const displayType = typeLabel === "None" ? "—" : typeLabel;
-       return `${dr.value}/${displayType} (Immunity)`;
+       const displayType = typeLabel === (translations.DAMAGE_REDUCTION_TYPES.find(t => t.value === 'none')?.label || "None") ? "—" : typeLabel;
+       return `${dr.value}/${displayType} ${UI_STRINGS.drImmunitySuffixLabel || "(Immunity)"}`;
     }
-    return `${dr.value}/${typeLabel} (${DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule})`;
+    return `${dr.value}/${typeLabel} (${translations.DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule})`;
   };
   
   const getDrRuleDescription = (dr: DamageReductionInstance): string => {
     const typeLabel = getDrTypeUiLabel(dr.type);
-    const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
+    const ruleDef = translations.DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
+    const value = dr.value;
+    let descriptionKey: keyof typeof UI_STRINGS | undefined;
 
     if (dr.rule === 'bypassed-by-type') {
-      return dr.type === "none" ? `Reduces damage from most attacks by ${dr.value}.` : `Reduces damage by ${dr.value} unless attack is ${typeLabel}.`;
+        descriptionKey = dr.type === "none" ? 'drBypassedByNoneDesc' : 'drBypassedByTypeDesc';
+    } else if (dr.rule === 'versus-specific-type') {
+        descriptionKey = 'drVersusSpecificTypeDesc';
+    } else if (dr.rule === 'excepted-by-type') {
+        descriptionKey = 'drExceptedByTypeDesc';
     }
-    if (dr.rule === 'versus-specific-type') {
-      return `Specifically reduces damage from ${typeLabel} sources by ${dr.value}.`;
+
+    if (descriptionKey && UI_STRINGS[descriptionKey]) {
+        return UI_STRINGS[descriptionKey].replace("{value}", String(value)).replace("{typeLabel}", typeLabel);
     }
-    if (dr.rule === 'excepted-by-type') {
-        return `Immune to damage unless from ${typeLabel} sources. ${typeLabel} sources deal damage reduced by ${dr.value}.`;
-    }
-    return `Rule: ${ruleDef ? ruleDef.label : dr.rule}`; 
+    return `${UI_STRINGS.resistancesPanelDrRuleLabel || "Rule"}: ${ruleDef ? ruleDef.label : dr.rule}`;
   };
+
+  // AC Calculation for display
+  const totalArmorBonusNormal = (character.armorBonus || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'armor' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal')))?.value || 0);
+  const totalShieldBonusNormal = (character.shieldBonus || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'shield' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal')))?.value || 0);
+  const totalNaturalArmorNormal = (character.naturalArmor || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'natural' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal')))?.value || 0);
+  const totalDeflectionBonusNormal = (character.deflectionBonus || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'deflection' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal')))?.value || 0);
+  const totalDodgeBonusNormal = (character.dodgeBonus || 0) + (aggregatedFeatEffects.acBonuses.filter(b => b.acType === 'dodge' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal'))).reduce((sum, b) => sum + (b.value as number), 0) );
   
+  const monkWisAcBonus = aggregatedFeatEffects.acBonuses.find(b => b.acType === 'monk_wisdom' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal')))?.value === "WIS" ? Math.max(0, wisModifier) : 0;
+  const monkScalingAcBonus = aggregatedFeatEffects.acBonuses.find(b => b.acType === 'monkScaling' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal')))?.value || 0;
+  const otherFeatAcBonusesNormal = aggregatedFeatEffects.acBonuses.filter(b => !['armor','shield','natural','deflection','dodge','monk_wisdom','monkScaling'].includes(b.acType) && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal'))).reduce((sum,b) => sum + (b.value as number),0);
+
+  const normalAC = 10 + totalArmorBonusNormal + totalShieldBonusNormal + dexModifier + sizeModAC + totalNaturalArmorNormal + totalDeflectionBonusNormal + totalDodgeBonusNormal + monkWisAcBonus + (monkScalingAcBonus as number) + otherFeatAcBonusesNormal + (character.acMiscModifier || 0);
+  
+  const totalDeflectionBonusTouch = (character.deflectionBonus || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'deflection' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('touch')))?.value || 0);
+  const totalDodgeBonusTouch = (character.dodgeBonus || 0) + (aggregatedFeatEffects.acBonuses.filter(b => b.acType === 'dodge' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('touch'))).reduce((sum, b) => sum + (b.value as number), 0) );
+  const monkWisAcBonusTouch = aggregatedFeatEffects.acBonuses.find(b => b.acType === 'monk_wisdom' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('touch')))?.value === "WIS" ? Math.max(0, wisModifier) : 0;
+  const monkScalingAcBonusTouch = aggregatedFeatEffects.acBonuses.find(b => b.acType === 'monkScaling' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('touch')))?.value || 0;
+  const otherFeatAcBonusesTouch = aggregatedFeatEffects.acBonuses.filter(b => !['armor','shield','natural','deflection','dodge','monk_wisdom','monkScaling'].includes(b.acType) && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('touch'))).reduce((sum,b) => sum + (b.value as number),0);
+  const touchAC = 10 + dexModifier + sizeModAC + totalDeflectionBonusTouch + totalDodgeBonusTouch + monkWisAcBonusTouch + (monkScalingAcBonusTouch as number) + otherFeatAcBonusesTouch + (character.acMiscModifier || 0);
+  
+  const totalArmorBonusFlat = (character.armorBonus || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'armor' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('flatFooted')))?.value || 0);
+  const totalShieldBonusFlat = (character.shieldBonus || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'shield' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('flatFooted')))?.value || 0);
+  const totalNaturalArmorFlat = (character.naturalArmor || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'natural' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('flatFooted')))?.value || 0);
+  const totalDeflectionBonusFlat = (character.deflectionBonus || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'deflection' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('flatFooted')))?.value || 0);
+  const monkWisAcBonusFlat = aggregatedFeatEffects.acBonuses.find(b => b.acType === 'monk_wisdom' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('flatFooted')))?.value === "WIS" ? Math.max(0, wisModifier) : 0;
+  const monkScalingAcBonusFlat = aggregatedFeatEffects.acBonuses.find(b => b.acType === 'monkScaling' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('flatFooted')))?.value || 0;
+  const otherFeatAcBonusesFlat = aggregatedFeatEffects.acBonuses.filter(b => !['armor','shield','natural','deflection','dodge','monk_wisdom','monkScaling'].includes(b.acType) && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('flatFooted'))).reduce((sum,b) => sum + (b.value as number),0);
+  const flatFootedAC = 10 + totalArmorBonusFlat + totalShieldBonusFlat + sizeModAC + totalNaturalArmorFlat + totalDeflectionBonusFlat + monkWisAcBonusFlat + (monkScalingAcBonusFlat as number) + otherFeatAcBonusesFlat + (character.acMiscModifier || 0);
+
+
   return (
     <>
     <div className="space-y-6">
@@ -193,15 +253,15 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
         <CardHeader>
           <div className="flex items-center space-x-2">
             <Swords className="h-6 w-6 text-primary" />
-            <CardTitle className="font-serif">Combat Vitals & Offense</CardTitle>
+            <CardTitle className="font-serif">{UI_STRINGS.combatPanelCombatVitalsTitle || "Combat Vitals & Offense"}</CardTitle>
           </div>
-           <CardDescription>Key combat statistics including health, initiative, attack bonuses, and saving throws.</CardDescription>
+           <CardDescription>{UI_STRINGS.combatPanelCombatVitalsDescription || "Key combat statistics including health, initiative, attack bonuses, and saving throws."}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* HP and Initiative */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div>
-              <Label htmlFor="hp">Current HP</Label>
+              <Label htmlFor="hp">{UI_STRINGS.healthPanelCurrentHpLabel || "Current HP"}</Label>
               <NumberSpinnerInput
                 id="hp"
                 value={character.hp}
@@ -214,7 +274,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
               />
             </div>
             <div>
-              <Label htmlFor="maxHp">Max HP</Label>
+              <Label htmlFor="maxHp">{UI_STRINGS.healthPanelMaxHpLabel || "Max HP"}</Label>
                <NumberSpinnerInput
                 id="maxHp"
                 value={character.maxHp}
@@ -227,18 +287,21 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
               />
             </div>
             <div className="text-center md:text-left">
-              <Label>Initiative</Label>
+              <Label>{UI_STRINGS.combatPanelInitiativeLabel || "Initiative"}</Label>
               <p className="text-3xl font-bold text-accent">{initiative >= 0 ? '+' : ''}{initiative}</p>
               <div className="flex items-center justify-center md:justify-start gap-1 mt-1">
-                <span className="text-xs text-muted-foreground">Dex ({dexModifier >= 0 ? '+' : ''}{dexModifier}) + Misc:</span>
+                <span className="text-xs text-muted-foreground">
+                  {UI_STRINGS.abilityAbbreviationDexterity || "Dex"} ({dexModifier >= 0 ? '+' : ''}{dexModifier}) + {UI_STRINGS.miscLabelShort || "Misc"}:
+                </span>
                 <NumberSpinnerInput
-                  value={character.initiativeMiscModifier}
+                  value={character.initiativeMiscModifier || 0}
                   onChange={(newValue) => onCharacterUpdate('initiativeMiscModifier', newValue)}
                   min={-20} max={20}
                   inputClassName="w-12 h-6 text-xs"
                   buttonClassName="h-6 w-6"
                   buttonSize="icon"
                 />
+                 <Button type="button" variant="ghost" size="icon" className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground" onClick={() => onOpenCombatStatInfoDialog({ type: 'initiativeBreakdown' })}><Info className="h-3.5 w-3.5" /></Button>
               </div>
             </div>
           </div>
@@ -248,14 +311,22 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
           {/* BAB and Grapple */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label>Base Attack Bonus (BAB)</Label>
-              <p className="text-2xl font-bold text-accent">{babArray.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</p>
-              <span className="text-xs text-muted-foreground">Note: General attack rolls also include Str/Dex mod, Size mod ({sizeModAttackAC >= 0 ? '+' : ''}{sizeModAttackAC}), etc.</span>
+              <Label>{UI_STRINGS.combatPanelBabLabel || "Base Attack Bonus (BAB)"}</Label>
+              <div className="flex items-baseline">
+                <p className="text-2xl font-bold text-accent">{totalBabWithModifier.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</p>
+                <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={() => onOpenCombatStatInfoDialog({ type: 'babBreakdown' })}><Info className="h-4 w-4" /></Button>
+              </div>
+              <span className="text-xs text-muted-foreground">{UI_STRINGS.combatPanelBabNote || "Note: General attack rolls also include Str/Dex mod, Size mod, etc."}</span>
             </div>
             <div>
-              <Label>Grapple Modifier</Label>
-              <p className="text-2xl font-bold text-accent">{grapple >= 0 ? '+' : ''}{grapple}</p>
-              <span className="text-xs text-muted-foreground">BAB ({babArray[0] >= 0 ? '+' : ''}{babArray[0]}) + Str ({strModifier >= 0 ? '+' : ''}{strModifier}) + Size (Grapple) ({sizeModGrapple >= 0 ? '+' : ''}{sizeModGrapple})</span>
+              <Label>{UI_STRINGS.combatPanelGrappleModifierLabel || "Grapple Modifier"}</Label>
+              <div className="flex items-baseline">
+                <p className="text-2xl font-bold text-accent">{grapple >= 0 ? '+' : ''}{grapple}</p>
+                <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={() => onOpenCombatStatInfoDialog({ type: 'grappleModifierBreakdown' })}><Info className="h-4 w-4" /></Button>
+              </div>
+              <span className="text-xs text-muted-foreground">
+                {UI_STRINGS.combatPanelBabLabelShort || "BAB"} ({totalBabWithModifier[0] >= 0 ? '+' : ''}{totalBabWithModifier[0]}) + {UI_STRINGS.abilityAbbreviationStrength || "Str"} ({strModifier >= 0 ? '+' : ''}{strModifier}) + {UI_STRINGS.sizeLabel || "Size"} ({sizeModGrapple >= 0 ? '+' : ''}{sizeModGrapple})
+              </span>
             </div>
           </div>
 
@@ -263,57 +334,75 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
 
           {/* Saving Throws */}
           <div>
-            <h4 className="text-lg font-semibold mb-2 flex items-center"><InitiativeIcon className="h-5 w-5 mr-2 text-primary/80" />Saving Throws</h4>
+            <h4 className="text-lg font-semibold mb-2 flex items-center"><InitiativeIcon className="h-5 w-5 mr-2 text-primary/80" />{UI_STRINGS.savingThrowsPanelTitle || "Saving Throws"}</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {(['fortitude', 'reflex', 'will'] as const).map(saveType => (
-                <div key={saveType} className="p-3 border rounded-md bg-background/30">
-                  <Label className="capitalize font-medium">{SAVING_THROW_LABELS.find(stl => stl.value === saveType)?.label || saveType}</Label>
-                  <p className="text-3xl font-bold text-accent">{calculatedSaves[saveType] >= 0 ? '+' : ''}{calculatedSaves[saveType]}</p>
-                  <div className="text-xs space-y-1 mt-1">
-                    <p>Base: {baseSaves[saveType]}</p>
-                    <p>Ability Mod: {getAbilityModifierByName(abilityScores, SAVING_THROW_ABILITIES[saveType]) >= 0 ? '+' : ''}{getAbilityModifierByName(abilityScores, SAVING_THROW_ABILITIES[saveType])} ({(ABILITY_LABELS.find(al => al.value === SAVING_THROW_ABILITIES[saveType])?.abbr || SAVING_THROW_ABILITIES[saveType].substring(0,3).toUpperCase())})</p>
-                    <div className="flex items-center gap-1"><Label htmlFor={`st-magic-${saveType}`} className="shrink-0">Magic:</Label> 
-                      <NumberSpinnerInput 
-                        id={`st-magic-${saveType}`}
-                        value={character.savingThrows[saveType].magicMod} 
-                        onChange={(val) => handleSavingThrowChange(saveType, 'magicMod', val)} 
-                        min={-10} max={10}
-                        inputClassName="w-12 h-6 text-xs" buttonClassName="h-6 w-6" buttonSize="icon" />
+              {(['fortitude', 'reflex', 'will'] as const).map(saveType => {
+                const abilityKey = SAVING_THROW_ABILITIES[saveType];
+                const abilityMod = getAbilityModifierByName(detailedAbilityScores, abilityKey);
+                return (
+                  <div key={saveType} className="p-3 border rounded-md bg-background/30">
+                    <Label className="capitalize font-medium">{translations.SAVING_THROW_LABELS.find(stl => stl.value === saveType)?.label || saveType}</Label>
+                    <div className="flex items-baseline">
+                        <p className="text-3xl font-bold text-accent">{calculatedSaves[saveType] >= 0 ? '+' : ''}{calculatedSaves[saveType]}</p>
+                        <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={() => onOpenCombatStatInfoDialog({ type: 'savingThrowBreakdown', saveType })}><Info className="h-4 w-4" /></Button>
                     </div>
-                    <div className="flex items-center gap-1"><Label htmlFor={`st-misc-${saveType}`} className="shrink-0">Misc:</Label> 
-                      <NumberSpinnerInput
-                        id={`st-misc-${saveType}`}
-                        value={character.savingThrows[saveType].miscMod} 
-                        onChange={(val) => handleSavingThrowChange(saveType, 'miscMod', val)}
-                        min={-10} max={10}
-                        inputClassName="w-12 h-6 text-xs" buttonClassName="h-6 w-6" buttonSize="icon" />
+                    <div className="text-xs space-y-1 mt-1">
+                      <p>{UI_STRINGS.savingThrowsRowLabelBase || "Base"}: {baseSavesFromClass[saveType]}</p>
+                      <p>{UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability Mod"}: {abilityMod >= 0 ? '+' : ''}{abilityMod} ({(translations.ABILITY_LABELS.find(al => al.value === abilityKey)?.abbr || abilityKey.substring(0,3).toUpperCase())})</p>
+                      <div className="flex items-center gap-1"><Label htmlFor={`st-magic-${saveType}`} className="shrink-0">{UI_STRINGS.savingThrowsRowLabelMagicModifier || "Magic"}:</Label> 
+                        <NumberSpinnerInput 
+                          id={`st-magic-${saveType}`}
+                          value={character.savingThrows[saveType].magicMod || 0} 
+                          onChange={(val) => handleSavingThrowChange(saveType, 'magicMod', val)} 
+                          min={-10} max={10}
+                          inputClassName="w-12 h-6 text-xs" buttonClassName="h-6 w-6" buttonSize="icon" />
+                      </div>
+                      <div className="flex items-center gap-1"><Label htmlFor={`st-misc-${saveType}`} className="shrink-0">{UI_STRINGS.savingThrowsRowLabelTemporaryModifier || "Misc"}:</Label> 
+                        <NumberSpinnerInput
+                          id={`st-misc-${saveType}`}
+                          value={character.savingThrows[saveType].miscMod || 0} 
+                          onChange={(val) => handleSavingThrowChange(saveType, 'miscMod', val)}
+                          min={-10} max={10}
+                          inputClassName="w-12 h-6 text-xs" buttonClassName="h-6 w-6" buttonSize="icon" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </CardContent>
       </Card>
       
-      {/* ArmorClassPanel is now expected to be a sibling component in CharacterSheetTabs, not rendered here */}
-
-      <Card>
+       <Card>
         <CardHeader>
             <div className="flex items-center space-x-2">
                 <Shield className="h-6 w-6 text-primary" />
-                <CardTitle className="font-serif">AC Components</CardTitle>
+                <CardTitle className="font-serif">{UI_STRINGS.armorClassPanelTitle || "Armor Class"}</CardTitle>
             </div>
-            <CardDescription>Adjust individual bonuses contributing to Armor Class.</CardDescription>
+            <CardDescription>{UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}</CardDescription>
         </CardHeader>
-        <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3 text-sm items-center">
-                <div className="flex items-center gap-1"><Label htmlFor="ac-armor" className="shrink-0">Armor Bonus:</Label> <NumberSpinnerInput id="ac-armor" value={character.armorBonus} onChange={(val) => onCharacterUpdate('armorBonus', val)} min={0} max={30} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-shield" className="shrink-0">Shield Bonus:</Label> <NumberSpinnerInput id="ac-shield" value={character.shieldBonus} onChange={(val) => onCharacterUpdate('shieldBonus', val)} min={0} max={15} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-natural" className="shrink-0">Natural Armor:</Label> <NumberSpinnerInput id="ac-natural" value={character.naturalArmor} onChange={(val) => onCharacterUpdate('naturalArmor', val)} min={0} max={20} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-deflection" className="shrink-0">Deflection Bonus:</Label> <NumberSpinnerInput id="ac-deflection" value={character.deflectionBonus} onChange={(val) => onCharacterUpdate('deflectionBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-dodge" className="shrink-0">Dodge Bonus:</Label> <NumberSpinnerInput id="ac-dodge" value={character.dodgeBonus} onChange={(val) => onCharacterUpdate('dodgeBonus', val)} min={0} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
-                <div className="flex items-center gap-1"><Label htmlFor="ac-misc" className="shrink-0">Misc Modifier:</Label> <NumberSpinnerInput id="ac-misc" value={character.acMiscModifier} onChange={(val) => onCharacterUpdate('acMiscModifier', val)} min={-10} max={10} inputClassName="w-12 h-7 text-sm" buttonClassName="h-7 w-7" buttonSize="icon" /></div>
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <div>
+                <Label>{UI_STRINGS.armorClassNormalLabel || "Normal AC"}</Label>
+                <div className="flex items-center justify-center">
+                  <p className="text-3xl font-bold text-accent">{normalAC}</p>
+                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleOpenAcBreakdownDialog('Normal')}><Info className="h-4 w-4" /></Button>
+                </div>
+            </div>
+            <div>
+                <Label>{UI_STRINGS.armorClassTouchLabel || "Touch AC"}</Label>
+                 <div className="flex items-center justify-center">
+                  <p className="text-3xl font-bold text-accent">{touchAC}</p>
+                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleOpenAcBreakdownDialog('Touch')}><Info className="h-4 w-4" /></Button>
+                </div>
+            </div>
+            <div>
+                <Label>{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed AC"}</Label>
+                 <div className="flex items-center justify-center">
+                  <p className="text-3xl font-bold text-accent">{flatFootedAC}</p>
+                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleOpenAcBreakdownDialog('Flat-Footed')}><Info className="h-4 w-4" /></Button>
+                </div>
             </div>
         </CardContent>
       </Card>
@@ -322,17 +411,18 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
         <CardHeader>
           <div className="flex items-center space-x-2">
             <ShieldAlert className="h-6 w-6 text-primary" />
-            <CardTitle className="font-serif">Resistances &amp; Other Defenses</CardTitle>
+            <CardTitle className="font-serif">{UI_STRINGS.resistancesPanelTitle || "Resistances & Other Defenses"}</CardTitle>
           </div>
-          <CardDescription>Manage custom modifiers for resistances, damage reductions, and fortification. Base values are often 0 unless granted by race, class and items.</CardDescription>
+          <CardDescription>{UI_STRINGS.resistancesPanelDescription || "Manage custom modifiers for resistances, damage reductions, and fortification."}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <h4 className="text-md font-semibold mb-3 text-foreground/90">Energy Resistances</h4>
+            <h4 className="text-md font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelEnergyResistancesLabel || "Energy Resistances"}</h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {energyResistancesFields.map(({ field, label, Icon, fieldPrefix }) => {
+              {energyResistancesFields.map(({ field, labelKey, Icon, fieldPrefix }) => {
                 const resistance = character[field] as ResistanceValue;
-                const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0);
+                const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0) + (aggregatedFeatEffects.resistanceBonuses.find(b => b.resistanceTo === field.replace('Resistance','').toLowerCase() && b.isActive)?.value || 0);
+                const label = UI_STRINGS[labelKey] || field.replace('Resistance', '');
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
                     <div className="flex items-center justify-center">
@@ -350,12 +440,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         variant="ghost"
                         size="icon"
                         className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
-                        onClick={() => handleOpenResistanceInfoDialog(
-                          `${label} Resistance`,
-                          resistance.base || 0,
-                          resistance.customMod || 0,
-                          totalValue
-                        )}
+                        onClick={() => handleOpenResistanceInfoDialog(field)}
                       >
                         <Info className="h-4 w-4" />
                       </Button>
@@ -378,12 +463,14 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
           </div>
           <Separator />
           <div>
-            <h4 className="text-md font-semibold mb-3 text-foreground/90">Other Defenses</h4>
+            <h4 className="text-md font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelOtherDefensesLabel || "Other Defenses"}</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {otherNumericResistancesFields.map(({ field, label, Icon, unit, fieldPrefix }) => {
+              {otherNumericResistancesFields.map(({ field, labelKey, Icon, unit, fieldPrefix }) => {
                 const resistance = character[field] as ResistanceValue;
-                const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0);
+                const featBonus = aggregatedFeatEffects.resistanceBonuses.find(b => b.resistanceTo === field.toLowerCase().replace('resistance','').replace('fortification','fortification') && b.isActive)?.value || 0;
+                const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0) + featBonus;
                 const isFortification = field === 'fortification';
+                const label = UI_STRINGS[labelKey] || field.replace('Resistance', '').replace('Fortification', 'Fortification');
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
                      <div className="flex items-center justify-center">
@@ -401,12 +488,7 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         variant="ghost"
                         size="icon"
                         className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
-                        onClick={() => handleOpenResistanceInfoDialog(
-                          label,
-                          resistance.base || 0,
-                          resistance.customMod || 0,
-                          totalValue
-                        )}
+                        onClick={() => handleOpenResistanceInfoDialog(field)}
                       >
                         <Info className="h-4 w-4" />
                       </Button>
@@ -429,17 +511,17 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
             </div>
             <Separator className="my-6" />
             <div>
-                <h4 className="text-md font-semibold mb-3 text-foreground/90">Damage Reduction</h4>
+                <h4 className="text-md font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelDamageReductionLabel || "Damage Reduction"}</h4>
                 <div className="grid md:grid-cols-2 gap-x-6 gap-y-4">
                   <div className="space-y-3"> 
-                    {character.damageReduction.length > 0 ? (
-                      character.damageReduction.map(dr => {
-                        const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
+                    {(character.damageReduction || []).length > 0 ? (
+                      (character.damageReduction || []).map(dr => {
+                        const ruleDef = translations.DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
                         const ruleLabel = ruleDef?.label || dr.rule;
                         return (
                         <div key={dr.id} className="flex items-start justify-between p-2 border rounded-md bg-muted/5 text-sm">
                           <div>
-                            <p className="font-semibold">{getDrPrimaryNotation(dr)}</p>
+                            <p className="font-semibold text-lg">{getDrPrimaryNotation(dr)}</p>
                              <div className="mt-0.5 flex items-center">
                                 <Badge variant="outline" className="text-xs font-normal h-5 mr-1 whitespace-nowrap">
                                   {ruleLabel}
@@ -459,14 +541,14 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         );
                       })
                     ) : (
-                      <p className="text-sm text-muted-foreground">No Damage Reduction entries.</p>
+                      <p className="text-sm text-muted-foreground">{UI_STRINGS.resistancesPanelNoDrEntries || "No Damage Reduction entries."}</p>
                     )}
                   </div>
 
                   <div className="space-y-3 border md:border-l md:border-t-0 p-4 rounded-md md:pl-6"> 
-                    <Label className="text-md font-medium">Custom Damage Reduction</Label>
+                    <Label className="text-md font-medium">{UI_STRINGS.resistancesPanelAddCustomDrLabel || "Add Custom Damage Reduction"}</Label>
                     <div className="space-y-1">
-                        <Label htmlFor="sheet-dr-value" className="text-xs">Value</Label>
+                        <Label htmlFor="sheet-dr-value" className="text-xs">{UI_STRINGS.resistancesPanelDrValueLabel || "Value"}</Label>
                         <NumberSpinnerInput
                         id="sheet-dr-value"
                         value={newDrValue}
@@ -478,13 +560,13 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         />
                     </div>
                     <div className="space-y-1">
-                        <Label htmlFor="sheet-dr-rule" className="text-xs">Rule</Label>
+                        <Label htmlFor="sheet-dr-rule" className="text-xs">{UI_STRINGS.resistancesPanelDrRuleLabel || "Rule"}</Label>
                          <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
                             <SelectTrigger id="sheet-dr-rule" className="h-9 text-sm">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                {DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (
+                                {translations.DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (
                                     <SelectItem key={option.value} value={option.value}>
                                         {option.label}
                                     </SelectItem>
@@ -493,17 +575,17 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         </Select>
                     </div>
                     <div className="space-y-1">
-                        <Label htmlFor="sheet-dr-type" className="text-xs">Type</Label>
+                        <Label htmlFor="sheet-dr-type" className="text-xs">{UI_STRINGS.resistancesPanelDrTypeLabel || "Type (Bypassed by / Versus / Except)"}</Label>
                         <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
                             <SelectTrigger id="sheet-dr-type" className="h-9 text-sm">
-                               <SelectValue placeholder="Select type..." />
+                               <SelectValue placeholder={UI_STRINGS.resistancesPanelDrSelectTypePlaceholder || "Select type..."} />
                             </SelectTrigger>
                             <SelectContent>
-                                {DAMAGE_REDUCTION_TYPES.map(option => (
+                                {translations.DAMAGE_REDUCTION_TYPES.map(option => (
                                     <SelectItem 
-                                        key={option.value} 
-                                        value={option.value}
-                                        disabled={option.value === 'none' && newDrRule !== 'bypassed-by-type'}
+                                      key={option.value} 
+                                      value={option.value}
+                                      disabled={option.value === 'none' && newDrRule !== 'bypassed-by-type'}
                                     >
                                         {option.label}
                                     </SelectItem>
@@ -512,26 +594,17 @@ export function CombatStatsSection({ character, onCharacterUpdate }: CombatStats
                         </Select>
                     </div>
                     <Button type="button" onClick={handleAddDamageReduction} size="sm" className="mt-3">
-                        <PlusCircle className="mr-2 h-4 w-4" /> Add Damage Reduction
+                        <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.resistancesPanelAddDrButton || "Add DR"}
                     </Button>
                   </div>
                 </div>
               </div>
-
           </div>
         </CardContent>
       </Card>
-
     </div>
-    {isInfoDialogOpen && currentResistanceBreakdown && (
-        <InfoDisplayDialog
-          isOpen={isInfoDialogOpen}
-          onOpenChange={setIsInfoDialogOpen}
-          character={character} /* Pass the full character object */
-          contentType={{ type: 'resistanceBreakdown', resistanceField: 'fireResistance' }} /* Dummy, real value is in state or derived */
-        />
-      )}
     </>
   );
 }
 
+    
