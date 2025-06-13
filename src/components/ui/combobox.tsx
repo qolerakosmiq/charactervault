@@ -70,7 +70,7 @@ export function ComboboxPrimitive({
   const onCommandInputChange = isEditable ? onChange : setInputValue;
 
 
-  const foundOption = options.find((option) => option.value.toLowerCase() === (value ?? '').toLowerCase());
+  const foundOption = options.find((option) => (option.value ?? '').toLowerCase() === (value ?? '').toLowerCase());
   const displayLabel = foundOption ? foundOption.label : (isEditable && value ? value : placeholder);
 
   const handleClear = (e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
