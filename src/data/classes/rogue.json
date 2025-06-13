@@ -1,0 +1,119 @@
+
+{
+  "value": "rogue",
+  "label": { "en": "Rogue", "fr": "Roublard" },
+  "hitDice": "d6",
+  "babProgression": "average",
+  "saves": { "fortitude": "poor", "reflex": "good", "will": "poor" },
+  "generalDescription": {
+    "en": "<p>Rogues are masters of stealth, deception, and a wide array of skills. They excel at finding and disarming traps, picking locks, and dealing devastating sneak attacks.</p>",
+    "fr": "<p>Les roublards sont des maîtres de la furtivité, de la tromperie et d'un large éventail de compétences. Ils excellent à trouver et désarmer les pièges, crocheter les serrures et infliger des attaques sournoises dévastatrices.</p>"
+  },
+  "loreAttributes": [
+    { "key": { "en": "Alignment", "fr": "Alignement" }, "value": { "en": "Any.", "fr": "Tout." } },
+    { "key": { "en": "Weapon and Armor Proficiency", "fr": "Maîtrise des armes et armures" }, "value": { "en": "Rogues are proficient with all simple weapons, plus the hand crossbow, rapier, sap, shortbow, and short sword. Rogues are proficient with light armor, but not with shields.", "fr": "Les roublards sont compétents avec toutes les armes simples, plus l'arbalète de poing, la rapière, la matraque, l'arc court et l'épée courte. Les roublards sont compétents avec les armures légères, mais pas avec les boucliers." } }
+  ],
+  "grantedFeats": [
+    { "featId": "rogue-weapon-proficiencies", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Compétence de classe" } },
+    { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Compétence de classe" } },
+    { "featId": "class-rogue-sneak-attack", "levelAcquired": 1 },
+    { "featId": "class-rogue-trapfinding", "levelAcquired": 1 },
+    { "featId": "class-rogue-evasion", "levelAcquired": 2 },
+    { "featId": "class-rogue-trap-sense", "levelAcquired": 3 },
+    { "featId": "class-rogue-uncanny-dodge", "levelAcquired": 4 },
+    { "featId": "class-rogue-improved-uncanny-dodge", "levelAcquired": 8 },
+    { "featId": "class-rogue-special-ability-slot-10", "levelAcquired": 10 },
+    { "featId": "class-rogue-special-ability-slot-13", "levelAcquired": 13 },
+    { "featId": "class-rogue-special-ability-slot-16", "levelAcquired": 16 },
+    { "featId": "class-rogue-special-ability-slot-19", "levelAcquired": 19 }
+  ],
+  "classSpecificFeats": [
+    {
+      "value": "rogue-weapon-proficiencies",
+      "label": { "en": "Rogue Weapon Proficiencies", "fr": "Compétences d'armes (Roublard)" },
+      "description": { "en": "Proficient with all simple weapons, hand crossbow, rapier, sap, shortbow, short sword.", "fr": "Compétent avec toutes les armes simples, arbalète de poing, rapière, matraque, arc court, épée courte." },
+      "type": "general", "isClassFeature": true,
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "simple" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "hand-crossbow" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "rapier" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "sap" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "shortbow" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "short-sword" }
+      ]
+    },
+    {
+      "value": "class-rogue-sneak-attack",
+      "label": { "en": "Sneak Attack", "fr": "Attaque sournoise" },
+      "description": { "en": "If a rogue can catch an opponent when she is unable to defend herself effectively from his attack, he can strike a vital spot for extra damage. The rogue’s attack deals extra damage any time her target would be denied a Dexterity bonus to AC (whether the target actually has a Dexterity bonus or not), or when the rogue flanks her target. This extra damage is 1d6 at 1st level, and it increases by 1d6 every two rogue levels thereafter. Should the rogue score a critical hit with a sneak attack, this extra damage is not multiplied. Ranged attacks can count as sneak attacks only if the target is within 30 feet.", "fr": "Si un roublard peut surprendre un adversaire lorsqu'il est incapable de se défendre efficacement contre son attaque, il peut frapper un point vital pour infliger des dégâts supplémentaires. L'attaque du roublard inflige des dégâts supplémentaires chaque fois que sa cible se verrait refuser un bonus de Dextérité à la CA (que la cible ait réellement un bonus de Dextérité ou non), ou lorsque le roublard prend sa cible en tenaille. Ces dégâts supplémentaires sont de 1d6 au niveau 1, et ils augmentent de 1d6 tous les deux niveaux de roublard par la suite. Si le roublard réussit un coup critique avec une attaque sournoise, ces dégâts supplémentaires ne sont pas multipliés. Les attaques à distance ne peuvent compter comme des attaques sournoises que si la cible est à moins de 9 mètres." },
+      "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
+      "effectsText": { "en": "Extra damage (+1d6/2 levels) vs. flat-footed or flanked targets.", "fr": "Dégâts supplémentaires (+1d6/2 niveaux) contre cibles prises au dépourvu ou en tenaille." },
+      "effects": [
+        { "type": "damageRoll", "value": "1d6", "bonusType": "precision", "condition": "target_denied_dex_or_flanked",
+          "scaleWithClassLevel": { "classId": "rogue", "valuePerLevel": 0.5, "diceType": "d6" }
+        }
+      ]
+    },
+    {
+      "value": "class-rogue-trapfinding",
+      "label": { "en": "Trapfinding", "fr": "Découverte des pièges" },
+      "description": { "en": "Rogues (and only rogues) can use the Search skill to locate traps when the task has a Difficulty Class higher than 20. Finding a nonmagical trap has a DC of at least 20, or higher if it is well hidden. Finding a magic trap has a DC of 25 + the level of the spell used to create it. Rogues (and only rogues) can use the Disable Device skill to disarm magic traps. A magic trap generally has a DC of 25 + the level of the spell used to create it.", "fr": "Les roublards (et seulement les roublards) peuvent utiliser la compétence Fouille pour localiser les pièges lorsque la tâche a un Degré de Difficulté supérieur à 20. Trouver un piège non magique a un DD d'au moins 20, ou plus s'il est bien caché. Trouver un piège magique a un DD de 25 + le niveau du sort utilisé pour le créer. Les roublards (et seulement les roublards) peuvent utiliser la compétence Désamorçage/Sabotage pour désarmer les pièges magiques. Un piège magique a généralement un DD de 25 + le niveau du sort utilisé pour le créer." },
+      "type": "special-ex", "isClassFeature": true
+    },
+    {
+      "value": "class-rogue-evasion",
+      "label": { "en": "Evasion (Rogue)", "fr": "Esquive totale (Roublard)" },
+      "description": { "en": "At 2nd level and higher, a rogue can avoid even magical and unusual attacks with great agility. If she makes a successful Reflex saving throw against an attack that normally deals half damage on a successful save, she instead takes no damage. Evasion can be used only if a rogue is wearing light armor or no armor. A helpless rogue does not gain the benefit of evasion.", "fr": "Au niveau 2 et plus, un roublard peut éviter même les attaques magiques et inhabituelles avec une grande agilité. S'il réussit un jet de Réflexes contre une attaque qui inflige normalement la moitié des dégâts sur un jet de sauvegarde réussi, il ne subit aucun dégât à la place. L'esquive totale ne peut être utilisée que si un roublard porte une armure légère ou aucune armure. Un roublard sans défense ne bénéficie pas de l'avantage de l'esquive totale." },
+      "type": "special-ex", "isClassFeature": true
+    },
+    {
+      "value": "class-rogue-trap-sense",
+      "label": { "en": "Trap Sense (Rogue)", "fr": "Sens des pièges (Roublard)" },
+      "description": { "en": "At 3rd level, a rogue gains an intuitive sense that alerts her to danger from traps, giving her a +1 bonus on Reflex saves made to avoid traps and a +1 dodge bonus to AC against attacks made by traps. These bonuses rise to +2 when the rogue reaches 6th level, to +3 when she reaches 9th level, to +4 when she reaches 12th level, to +5 at 15th, and to +6 at 18th level.", "fr": "Au niveau 3, un roublard acquiert un sens intuitif qui l'alerte du danger des pièges, lui donnant un bonus de +1 aux jets de Réflexes effectués pour éviter les pièges et un bonus d'esquive de +1 à la CA contre les attaques faites par les pièges. Ces bonus passent à +2 lorsque le roublard atteint le niveau 6, à +3 lorsqu'il atteint le niveau 9, à +4 lorsqu'il atteint le niveau 12, à +5 au niveau 15 et à +6 au niveau 18." },
+      "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
+      "effectsText": { "en": "+1/3 levels Reflex save & Dodge AC vs traps.", "fr": "+1/3 niveaux aux jets de Réf et CA Esquive contre pièges." },
+      "effects": [
+        { "type": "savingThrow", "save": "reflex", "value": 0, "bonusType": "untyped", "condition": "vs_traps", "scaleWithClassLevel": { "classId": "rogue", "specificLevels": [{"level":3,"value":1},{"level":6,"value":2},{"level":9,"value":3},{"level":12,"value":4},{"level":15,"value":5},{"level":18,"value":6}]} },
+        { "type": "armorClass", "acType": "dodge", "value": 0, "bonusType": "dodge", "condition": "vs_trap_attacks", "appliesToScope": ["normal", "touch"], "scaleWithClassLevel": { "classId": "rogue", "specificLevels": [{"level":3,"value":1},{"level":6,"value":2},{"level":9,"value":3},{"level":12,"value":4},{"level":15,"value":5},{"level":18,"value":6}]} }
+      ]
+    },
+    {
+      "value": "class-rogue-uncanny-dodge",
+      "label": { "en": "Uncanny Dodge (Rogue)", "fr": "Esquive instinctive (Roublard)" },
+      "description": { "en": "Starting at 4th level, a rogue can react to danger before her senses would normally allow her to do so. She retains her Dexterity bonus to AC (if any) even if she is caught flat-footed or struck by an invisible attacker. However, she still loses her Dexterity bonus to AC if immobilized.", "fr": "À partir du niveau 4, un roublard peut réagir au danger avant que ses sens ne le lui permettent normalement. Il conserve son bonus de Dextérité à la CA (le cas échéant) même s'il est pris au dépourvu ou frappé par un attaquant invisible. Cependant, il perd toujours son bonus de Dextérité à la CA s'il est immobilisé." },
+      "type": "special-ex", "isClassFeature": true, "permanentEffect": true
+    },
+    {
+      "value": "class-rogue-improved-uncanny-dodge",
+      "label": { "en": "Improved Uncanny Dodge (Rogue)", "fr": "Esquive instinctive améliorée (Roublard)" },
+      "description": { "en": "A rogue of 8th level or higher can no longer be flanked. This defense denies another rogue the ability to sneak attack the character by flanking her, unless the attacker has at least four more rogue levels than the target has rogue levels.", "fr": "Un roublard de niveau 8 ou plus ne peut plus être pris en tenaille. Cette défense empêche un autre roublard de lui infliger une attaque sournoise en le prenant en tenaille, à moins que l'attaquant n'ait au moins quatre niveaux de roublard de plus que les niveaux de roublard de la cible." },
+      "type": "special-ex", "isClassFeature": true, "permanentEffect": true
+    },
+    {
+      "value": "class-rogue-special-ability-slot-10",
+      "label": { "en": "Special Ability (Rogue, L10)", "fr": "Capacité spéciale (Roublard, N10)" },
+      "description": { "en": "At 10th level, a rogue gains a special ability of her choice from a list (e.g., Crippling Strike, Defensive Roll, Improved Evasion, Skill Mastery, Slippery Mind).", "fr": "Au niveau 10, un roublard gagne une capacité spéciale de son choix parmi une liste (ex : Frappe incapacitante, Roulade défensive, Esquive totale améliorée, Maîtrise des compétences, Insaisissable)." },
+      "type": "special-ex", "isClassFeature": true
+    },
+    {
+      "value": "class-rogue-special-ability-slot-13",
+      "label": { "en": "Special Ability (Rogue, L13)", "fr": "Capacité spéciale (Roublard, N13)" },
+      "description": { "en": "At 13th level, a rogue gains another special ability of her choice.", "fr": "Au niveau 13, un roublard gagne une autre capacité spéciale de son choix." },
+      "type": "special-ex", "isClassFeature": true
+    },
+    {
+      "value": "class-rogue-special-ability-slot-16",
+      "label": { "en": "Special Ability (Rogue, L16)", "fr": "Capacité spéciale (Roublard, N16)" },
+      "description": { "en": "At 16th level, a rogue gains another special ability of her choice.", "fr": "Au niveau 16, un roublard gagne une autre capacité spéciale de son choix." },
+      "type": "special-ex", "isClassFeature": true
+    },
+    {
+      "value": "class-rogue-special-ability-slot-19",
+      "label": { "en": "Special Ability (Rogue, L19)", "fr": "Capacité spéciale (Roublard, N19)" },
+      "description": { "en": "At 19th level, a rogue gains another special ability of her choice.", "fr": "Au niveau 19, un roublard gagne une autre capacité spéciale de son choix." },
+      "type": "special-ex", "isClassFeature": true
+    }
+  ]
+}
+
+    

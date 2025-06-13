@@ -1,0 +1,122 @@
+
+{
+  "value": "paladin",
+  "label": { "en": "Paladin", "fr": "Paladin" },
+  "hitDice": "d10",
+  "babProgression": "good",
+  "spellcasting": { "type": "partial", "casterAbility": "wisdom", "preparedSpells": true, "startsAtLevel": 4, "levelOffset": -3 },
+  "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
+  "generalDescription": {
+    "en": "<p>Paladins are champions of righteousness, embodying honor, justice, and courage. They are devoted to their deity and their cause, wielding divine power to protect the innocent and vanquish evil.</p>",
+    "fr": "<p>Les paladins sont des champions de la droiture, incarnant l'honneur, la justice et le courage. Ils sont dévoués à leur divinité et à leur cause, maniant le pouvoir divin pour protéger les innocents et vaincre le mal.</p>"
+  },
+  "loreAttributes": [
+    { "key": { "en": "Alignment", "fr": "Alignement" }, "value": { "en": "Lawful Good.", "fr": "Loyal Bon." } },
+    { "key": { "en": "Religion", "fr": "Religion" }, "value": { "en": "Paladins are devoted to a lawful good deity.", "fr": "Les paladins sont dévoués à une divinité loyale bonne." } },
+    { "key": { "en": "Weapon and Armor Proficiency", "fr": "Maîtrise des armes et armures" }, "value": { "en": "Paladins are proficient with all simple and martial weapons, with all types of armor (heavy, medium, and light), and with shields (except tower shields).", "fr": "Les paladins sont compétents avec toutes les armes simples et martiales, avec tous les types d'armures (lourdes, intermédiaires et légères) et avec les boucliers (sauf les pavois)." } }
+  ],
+  "grantedFeats": [
+    { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Compétence de classe" } },
+    { "featId": "martial-weapon-proficiency-all", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Compétence de classe" } },
+    { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Compétence de classe" } },
+    { "featId": "armor-proficiency-medium", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Compétence de classe" } },
+    { "featId": "armor-proficiency-heavy", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Compétence de classe" } },
+    { "featId": "shield-proficiency", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Compétence de classe" } },
+    { "featId": "class-paladin-aura-of-good", "levelAcquired": 1 },
+    { "featId": "class-paladin-detect-evil", "levelAcquired": 1 },
+    { "featId": "class-paladin-smite-evil", "levelAcquired": 1 },
+    { "featId": "class-paladin-divine-grace", "levelAcquired": 2 },
+    { "featId": "class-paladin-lay-on-hands", "levelAcquired": 2 },
+    { "featId": "class-paladin-aura-of-courage", "levelAcquired": 3 },
+    { "featId": "class-paladin-divine-health", "levelAcquired": 3 },
+    { "featId": "class-paladin-turn-undead", "levelAcquired": 4 },
+    { "featId": "class-paladin-special-mount", "levelAcquired": 5 },
+    { "featId": "class-paladin-remove-disease", "levelAcquired": 6 }
+  ],
+  "classSpecificFeats": [
+    {
+      "value": "class-paladin-aura-of-good",
+      "label": { "en": "Aura of Good", "fr": "Aura de Bien" },
+      "description": { "en": "The power of a paladin’s aura of good (see the detect good spell) is equal to her paladin level.", "fr": "La puissance de l'aura de bien d'un paladin (voir le sort détection du bien) est égale à son niveau de paladin." },
+      "type": "special-su", "isClassFeature": true, "permanentEffect": true
+    },
+    {
+      "value": "class-paladin-detect-evil",
+      "label": { "en": "Detect Evil", "fr": "Détection du Mal" },
+      "description": { "en": "At will, a paladin can use detect evil, as the spell.", "fr": "À volonté, un paladin peut utiliser détection du mal, comme le sort." },
+      "type": "special-sp", "isClassFeature": true
+    },
+    {
+      "value": "class-paladin-smite-evil",
+      "label": { "en": "Smite Evil", "fr": "Châtiment du Mal" },
+      "description": { "en": "Once per day, a paladin may attempt to smite evil with one normal melee attack. She adds her Charisma bonus (if any) to her attack roll and deals 1 extra point of damage per paladin level. If the paladin accidentally smites a creature that is not evil, the smite has no effect, but the ability is still used up for that day. At 5th level, and at every five levels thereafter, the paladin may smite evil one additional time per day.", "fr": "Une fois par jour, un paladin peut tenter de châtier le mal avec une attaque au corps à corps normale. Elle ajoute son bonus de Charisme (le cas échéant) à son jet d'attaque et inflige 1 point de dégâts supplémentaire par niveau de paladin. Si le paladin châtie accidentellement une créature qui n'est pas mauvaise, le châtiment n'a aucun effet, mais la capacité est tout de même utilisée pour ce jour-là. Au niveau 5, et tous les cinq niveaux par la suite, le paladin peut châtier le mal une fois de plus par jour." },
+      "effectsText": { "en": "1/day (+1/5 levels): Add Cha to attack, +Paladin level to damage vs Evil.", "fr": "1/jour (+1/5 niveaux) : Ajoute Cha à l'attaque, +niveau de Paladin aux dégâts contre le Mal." },
+      "type": "special-su", "isClassFeature": true,
+      "effects": [
+        { "type": "grantsAbility", "abilityKey": "smiteEvilUses", "name": { "en": "Smite Evil Uses", "fr": "Utilisations de Châtiment du Mal" },
+          "uses": { "per": "day", "value": "scaled", "scaleWithClassLevel": { "classId": "paladin", "specificLevels": [{"level":1,"value":1},{"level":5,"value":2},{"level":10,"value":3},{"level":15,"value":4},{"level":20,"value":5}] } }
+        },
+        { "type": "note", "text": { "en": "When smiting: add Charisma bonus to attack roll and Paladin level to damage roll against an evil target.", "fr": "Lors du châtiment : ajoutez le bonus de Charisme au jet d'attaque et le niveau de Paladin au jet de dégâts contre une cible mauvaise."} }
+      ]
+    },
+    {
+      "value": "class-paladin-divine-grace",
+      "label": { "en": "Divine Grace", "fr": "Grâce divine" },
+      "description": { "en": "At 2nd level, a paladin gains a bonus equal to her Charisma bonus (if any) on all saving throws.", "fr": "Au niveau 2, un paladin gagne un bonus égal à son bonus de Charisme (le cas échéant) à tous les jets de sauvegarde." },
+      "effectsText": { "en": "Add Cha bonus to all saving throws.", "fr": "Ajoute le bonus de Cha à tous les jets de sauvegarde." },
+      "type": "special-su", "isClassFeature": true, "permanentEffect": true,
+      "effects": [{ "type": "savingThrow", "save": "all", "value": "CHA", "bonusType": "untyped" }]
+    },
+    {
+      "value": "class-paladin-lay-on-hands",
+      "label": { "en": "Lay on Hands", "fr": "Imposition des mains" },
+      "description": { "en": "Beginning at 2nd level, a paladin can heal wounds (her own or those of others) by touch. Each day she can heal a total number of hit points of damage equal to her paladin level × her Charisma bonus (if any). A paladin may choose to divide her healing among multiple recipients, and she doesn’t have to use it all at once. Using lay on hands is a standard action. Alternatively, a paladin can use any or all of this healing power to deal damage to undead creatures. Using lay on hands in this way requires a successful melee touch attack and doesn’t provoke an attack of opportunity. The paladin decides how many of her daily allotment of points to use as damage after successfully touching an undead creature.", "fr": "À partir du niveau 2, un paladin peut guérir les blessures (les siennes ou celles des autres) par le toucher. Chaque jour, elle peut guérir un nombre total de points de vie de dégâts égal à son niveau de paladin × son bonus de Charisme (le cas échéant). Un paladin peut choisir de diviser sa guérison entre plusieurs bénéficiaires, et elle n'a pas à tout utiliser en une seule fois. Utiliser l'imposition des mains est une action simple. Alternativement, un paladin peut utiliser tout ou partie de ce pouvoir de guérison pour infliger des dégâts aux créatures mortes-vivantes. Utiliser l'imposition des mains de cette manière nécessite une attaque de contact au corps à corps réussie et ne provoque pas d'attaque d'opportunité. Le paladin décide combien de ses points quotidiens alloués utiliser comme dégâts après avoir touché avec succès une créature morte-vivante." },
+      "type": "special-su", "isClassFeature": true,
+      "effectsText": { "en": "Heal (Paladin level x Cha bonus) HP per day. Can damage undead.", "fr": "Soigne (Niveau Paladin x bonus Cha) PV par jour. Peut blesser les morts-vivants." }
+    },
+    {
+      "value": "class-paladin-aura-of-courage",
+      "label": { "en": "Aura of Courage", "fr": "Aura de courage" },
+      "description": { "en": "Beginning at 3rd level, a paladin is immune to fear (magical or otherwise). Each ally within 10 feet of her gains a +4 morale bonus on saving throws against fear effects. This ability functions while the paladin is conscious, but not if she is unconscious or dead.", "fr": "À partir du niveau 3, un paladin est immunisé contre la peur (magique ou autre). Chaque allié à moins de 3 mètres d'elle gagne un bonus de moral de +4 aux jets de sauvegarde contre les effets de peur. Cette capacité fonctionne tant que le paladin est conscient, mais pas s'il est inconscient ou mort." },
+      "type": "special-su", "isClassFeature": true, "permanentEffect": true,
+      "effectsText": { "en": "Immune to fear. Allies within 10 ft get +4 morale bonus on saves vs. fear.", "fr": "Immunisé contre la peur. Les alliés à moins de 3m obtiennent un bonus de moral de +4 aux jets de sauvegarde contre la peur." },
+      "effects": [
+        { "type": "note", "text": { "en": "Immune to fear. Allies within 10 feet gain +4 morale bonus on saving throws against fear effects.", "fr": "Immunisé contre la peur. Les alliés à moins de 3 mètres gagnent un bonus de moral de +4 aux jets de sauvegarde contre les effets de peur." } }
+      ]
+    },
+    {
+      "value": "class-paladin-divine-health",
+      "label": { "en": "Divine Health", "fr": "Santé divine" },
+      "description": { "en": "At 3rd level, a paladin gains immunity to all diseases, including supernatural and magical diseases.", "fr": "Au niveau 3, un paladin gagne l'immunité à toutes les maladies, y compris les maladies surnaturelles et magiques." },
+      "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
+      "effectsText": { "en": "Immune to all diseases.", "fr": "Immunisé contre toutes les maladies." }
+    },
+    {
+      "value": "class-paladin-turn-undead",
+      "label": { "en": "Turn Undead (Paladin)", "fr": "Renvoi des morts-vivants (Paladin)" },
+      "description": { "en": "When a paladin reaches 4th level, she gains the supernatural ability to turn undead. She may use this ability a number of times per day equal to 3 + her Charisma modifier. She turns undead as a cleric of three levels lower would.", "fr": "Lorsqu'un paladin atteint le niveau 4, il acquiert la capacité surnaturelle de renvoyer les morts-vivants. Il peut utiliser cette capacité un nombre de fois par jour égal à 3 + son modificateur de Charisme. Il renvoie les morts-vivants comme un prêtre de trois niveaux inférieurs." },
+      "type": "special-su", "isClassFeature": true,
+      "effectsText": { "en": "Turn undead as Cleric (Paladin level -3). Uses/day: 3 + Cha mod.", "fr": "Renvoi des morts-vivants comme Prêtre (Niveau Paladin -3). Utilisations/jour : 3 + mod Cha." },
+      "effects": [
+        { "type": "grantsAbility", "abilityKey": "turnUndeadAttemptsPaladin", "name": { "en": "Turn Undead Attempts", "fr": "Tentatives de Renvoi des Morts-Vivants" },
+          "uses": { "per": "day", "value": 3, "basedOnAbility": "charisma" }
+        }
+      ]
+    },
+    {
+      "value": "class-paladin-special-mount",
+      "label": { "en": "Special Mount", "fr": "Monture spéciale" },
+      "description": { "en": "Upon reaching 5th level, a paladin gains the service of an unusually intelligent, strong, and loyal steed to serve her in her crusade against evil.", "fr": "En atteignant le niveau 5, un paladin obtient le service d'une monture exceptionnellement intelligente, forte et loyale pour la servir dans sa croisade contre le mal." },
+      "type": "special-sp", "isClassFeature": true
+    },
+    {
+      "value": "class-paladin-remove-disease",
+      "label": { "en": "Remove Disease", "fr": "Guérison des maladies" },
+      "description": { "en": "At 6th level, a paladin can produce a remove disease effect, as the spell, once per week. She can use this ability one additional time per week for every three levels after 6th (twice per week at 9th, three times at 12th, and so forth).", "fr": "Au niveau 6, un paladin peut produire un effet de guérison des maladies, comme le sort, une fois par semaine. Elle peut utiliser cette capacité une fois de plus par semaine tous les trois niveaux après le 6e (deux fois par semaine au 9e, trois fois au 12e, etc.)." },
+      "type": "special-sp", "isClassFeature": true,
+      "effectsText": { "en": "Remove disease (as spell) 1/week (+1/week per 3 levels after 6th).", "fr": "Guérison des maladies (comme sort) 1/semaine (+1/semaine tous les 3 niveaux après le 6e)." }
+    }
+  ]
+}
+
+    
