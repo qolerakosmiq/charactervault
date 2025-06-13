@@ -1,5 +1,4 @@
 
-
 {
   "value": "paladin",
   "label": { "en": "Paladin", "fr": "Paladin" },
@@ -134,7 +133,16 @@
       "value": "class-paladin-special-mount",
       "label": { "en": "Special Mount", "fr": "Monture spéciale" },
       "description": { "en": "Upon reaching 5th level, a paladin gains the service of an unusually intelligent, strong, and loyal steed to serve her in her crusade against evil.", "fr": "En atteignant le niveau 5, un paladin obtient le service d'une monture exceptionnellement intelligente, forte et loyale pour la servir dans sa croisade contre le mal." },
-      "type": "special-sp", "isClassFeature": true
+      "type": "special-sp", "isClassFeature": true,
+      "effectsText": { "en": "Grants Special Paladin Mount.", "fr": "Octroie une Monture Spéciale de Paladin." },
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "paladinSpecialMount",
+          "name": { "en": "Special Mount", "fr": "Monture Spéciale" },
+          "details": { "en": "Gains the service of an unusually intelligent, strong, and loyal steed. Refer to Paladin class description for full mount progression and abilities. (Stats not implemented yet)", "fr": "Obtient le service d'une monture exceptionnellement intelligente, forte et loyale. Se référer à la description de la classe Paladin pour la progression complète et les capacités de la monture. (Statistiques non encore implémentées)" }
+        }
+      ]
     },
     {
       "value": "class-paladin-remove-disease",
