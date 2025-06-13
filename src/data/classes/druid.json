@@ -54,7 +54,16 @@
       "value": "class-druid-animal-companion",
       "label": { "en": "Animal Companion", "fr": "Compagnon animal" },
       "description": { "en": "A druid begins play with an animal companion selected from a list. This companion is a loyal comrade who accompanies the druid on her adventures.", "fr": "Un druide commence le jeu avec un compagnon animal sélectionné dans une liste. Ce compagnon est un camarade loyal qui accompagne le druide dans ses aventures." },
-      "isClassFeature": true, "type": "special-ex"
+      "effectsText": { "en": "Grants an Animal Companion. (Full stats/mechanics for companion not yet implemented).", "fr": "Octroie un Compagnon Animal. (Statistiques/mécaniques complètes du compagnon non encore implémentées)." },
+      "isClassFeature": true, "type": "special-ex",
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "animalCompanionDruid",
+          "name": { "en": "Animal Companion", "fr": "Compagnon animal" },
+          "details": { "en": "Grants an animal companion. Refer to Druid class description for details. Full companion stats and progression are not yet implemented in this system.", "fr": "Octroie un compagnon animal. Se référer à la description de la classe Druide pour les détails. Les statistiques et la progression complètes du compagnon ne sont pas encore implémentées dans ce système." }
+        }
+      ]
     },
     {
       "value": "class-druid-nature-sense",
@@ -71,7 +80,16 @@
       "value": "class-druid-wild-empathy",
       "label": { "en": "Wild Empathy", "fr": "Empathie sauvage" },
       "description": { "en": "A druid can improve the attitude of an animal. This ability functions just like a Diplomacy check made to improve the attitude of a person. The druid rolls 1d20 and adds her druid level and her Charisma modifier to determine the wild empathy check result. The typical domestic animal has a starting attitude of indifferent, while wild animals are usually unfriendly.", "fr": "Un druide peut améliorer l'attitude d'un animal. Cette capacité fonctionne comme un test de Diplomatie effectué pour améliorer l'attitude d'une personne. Le druide lance 1d20 et ajoute son niveau de druide et son modificateur de Charisme pour déterminer le résultat du test d'empathie sauvage. L'animal domestique typique a une attitude de départ indifférente, tandis que les animaux sauvages sont généralement inamicaux." },
-      "isClassFeature": true, "type": "special-ex"
+      "effectsText": { "en": "Special check (1d20 + Druid level + Cha mod) to improve animal attitude.", "fr": "Test spécial (1d20 + Niveau Druide + mod Cha) pour améliorer l'attitude d'un animal." },
+      "isClassFeature": true, "type": "special-ex",
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "wildEmpathyCheck",
+          "name": { "en": "Wild Empathy Check", "fr": "Test d'Empathie Sauvage" },
+          "details": { "en": "Make a special check (1d20 + Druid level + Charisma modifier) to improve an animal's attitude, similar to a Diplomacy check.", "fr": "Effectuez un test spécial (1d20 + niveau de Druide + modificateur de Charisme) pour améliorer l'attitude d'un animal, similaire à un test de Diplomatie." }
+        }
+      ]
     },
     {
       "value": "class-druid-woodland-stride",
@@ -140,5 +158,3 @@
     }
   ]
 }
-
-    
