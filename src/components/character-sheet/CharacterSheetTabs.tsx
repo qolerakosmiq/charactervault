@@ -1,19 +1,19 @@
 
-
 'use client';
 
-import type { Character, Skill, Item, CharacterClass, AbilityName, SavingThrows, ResistanceValue, InfoDialogContentType, AggregatedFeatEffects, DetailedAbilityScores, CombatPanelCharacterData } from '@/types/character'; // Added AggregatedFeatEffects, DetailedAbilityScores
+import type { Character, Skill, Item, CharacterClass, AbilityName, SavingThrows, ResistanceValue, InfoDialogContentType, AggregatedFeatEffects, DetailedAbilityScores, CombatPanelCharacterData } from '@/types/character';
 import { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { CoreInfoSection } from './CoreInfoSection';
 import { AbilityScoresSection } from './AbilityScoresSection';
+import { CombatStatsSection } from './CombatStatsSection'; // Keeping for now, will be replaced by CombatPanel logic
 import { CombatPanel } from '../form-sections/CombatPanel';
 import { SkillsListing } from './SkillsListing';
 import { FeatsListing } from './FeatsListing';
 import { InventoryListing } from './InventoryListing';
 import { SpellsListing } from './SpellsListing';
-import { Save, Trash2, Users, Shield, Brain, Award, Backpack, Sparkles, Dices, Swords } from 'lucide-react';
+import { Save, Trash2, Users, Shield, Brain, Award, Backpack, Sparkles, Dices, Swords, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -27,7 +27,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { InfoDisplayDialog } from '@/components/InfoDisplayDialog'; 
+import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 import { calculateDetailedAbilityScores, calculateFeatEffects, calculateLevelFromXp } from '@/types/character';
 import { useI18n } from '@/context/I18nProvider';
 import { useDefinitionsStore } from '@/lib/definitions-store';
@@ -81,7 +81,7 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
   }, [initialCharacter]);
   
   useEffect(() => {
-    if (character && translations && !translationsLoading && allAvailableFeatDefinitions) {
+    if (character && translations && !translationsLoading && allAvailableFeatDefinitions.length > 0) {
       const aggFeats = calculateFeatEffects(character, allAvailableFeatDefinitions);
       setAggregatedFeatEffects(aggFeats);
       const detailedScores = calculateDetailedAbilityScores(
@@ -100,18 +100,20 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
 
 
   const handleSaveCharacter = () => {
+    if (!translations) return;
     onSave(character);
     toast({
-      title: "Character Saved!",
-      description: `${character.name}'s sheet has been updated.`,
+      title: translations.UI_STRINGS.toastCharacterSavedTitle || "Character Saved!",
+      description: (translations.UI_STRINGS.toastCharacterSavedDescription || "{characterName}'s sheet has been updated.").replace("{characterName}", character.name),
     });
   };
 
   const handleDeleteCharacter = () => {
+    if (!translations) return;
     onDelete(character.id);
     toast({
-      title: "Character Deleted",
-      description: `${character.name} has been removed.`,
+      title: translations.UI_STRINGS.toastCharacterDeletedTitle || "Character Deleted",
+      description: (translations.UI_STRINGS.toastCharacterDeletedDescription || "{characterName} has been removed.").replace("{characterName}", character.name),
       variant: "destructive",
     });
     router.push('/');
@@ -127,7 +129,6 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
       if (newClasses[index]) {
         (newClasses[index] as any)[field] = value;
       } else {
-        // This part might need adjustment if multiple classes are supported beyond simple first class editing
         newClasses[index] = { id: crypto.randomUUID(), className: '', level: 1, ...{[field]: value} };
       }
       return { ...prev, classes: newClasses };
@@ -237,7 +238,7 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
   };
   
 
-  if (!character || translationsLoading || !detailedAbilityScores || !aggregatedFeatEffects || !allAvailableFeatDefinitions) {
+  if (!character || translationsLoading || !translations || !detailedAbilityScores || !aggregatedFeatEffects || allAvailableFeatDefinitions.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-center items-center py-10 min-h-[300px]">
@@ -249,6 +250,7 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
       </div>
     );
   }
+  const UI_STRINGS = translations.UI_STRINGS;
 
 
   const combatPanelDataForDisplay: CombatPanelCharacterData = {
@@ -275,25 +277,25 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
         <h1 className="text-3xl md:text-4xl font-serif font-bold text-primary truncate max-w-md">{character.name}</h1>
         <div className="flex space-x-2">
           <Button onClick={handleSaveCharacter} size="lg" className="shadow-md">
-            <Save className="mr-2 h-5 w-5" /> Save Changes
+            <Save className="mr-2 h-5 w-5" /> {UI_STRINGS.formButtonSaveChanges || "Save Changes"}
           </Button>
            <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="destructive" size="lg" className="shadow-md">
-                <Trash2 className="mr-2 h-5 w-5" /> Delete Character
+                <Trash2 className="mr-2 h-5 w-5" /> {UI_STRINGS.deleteCharacterButton || "Delete Character"}
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+                <AlertDialogTitle>{UI_STRINGS.deleteCharacterConfirmTitle || "Confirm Deletion"}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure you want to delete {character.name}? This action cannot be undone.
+                  {(UI_STRINGS.deleteCharacterConfirmDescription || "Are you sure you want to delete {characterName}? This action cannot be undone.").replace("{characterName}", character.name)}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>{UI_STRINGS.formButtonCancel || "Cancel"}</AlertDialogCancel>
                 <AlertDialogAction onClick={handleDeleteCharacter}>
-                  Delete
+                  {UI_STRINGS.deleteButtonLabel || "Delete"}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -303,13 +305,13 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
 
       <Tabs defaultValue="core" className="w-full">
         <TabsList className="grid w-full grid-cols-3 sm:grid-cols-4 md:grid-cols-7">
-          <TabsTrigger value="core"><Users className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Core</span></TabsTrigger>
-          <TabsTrigger value="abilities"><Dices className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Abilities</span></TabsTrigger>
-          <TabsTrigger value="combat"><Swords className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Combat</span></TabsTrigger>
-          <TabsTrigger value="skills"><Brain className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Skills</span></TabsTrigger>
-          <TabsTrigger value="feats"><Award className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Feats</span></TabsTrigger>
-          <TabsTrigger value="inventory"><Backpack className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Inventory</span></TabsTrigger>
-          <TabsTrigger value="spells"><Sparkles className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Spells</span></TabsTrigger>
+          <TabsTrigger value="core"><Users className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">{UI_STRINGS.tabLabelCore || "Core"}</span></TabsTrigger>
+          <TabsTrigger value="abilities"><Dices className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">{UI_STRINGS.tabLabelAbilities || "Abilities"}</span></TabsTrigger>
+          <TabsTrigger value="combat"><Swords className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">{UI_STRINGS.tabLabelCombat || "Combat"}</span></TabsTrigger>
+          <TabsTrigger value="skills"><Brain className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">{UI_STRINGS.tabLabelSkills || "Skills"}</span></TabsTrigger>
+          <TabsTrigger value="feats"><Award className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">{UI_STRINGS.tabLabelFeats || "Feats"}</span></TabsTrigger>
+          <TabsTrigger value="inventory"><Backpack className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">{UI_STRINGS.tabLabelInventory || "Inventory"}</span></TabsTrigger>
+          <TabsTrigger value="spells"><Sparkles className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">{UI_STRINGS.tabLabelSpells || "Spells"}</span></TabsTrigger>
         </TabsList>
 
         <TabsContent value="core" className="mt-4">
@@ -326,13 +328,9 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
           />
         </TabsContent>
         <TabsContent value="combat" className="mt-4">
-          <CombatPanel
-            combatData={combatPanelDataForDisplay}
-            aggregatedFeatEffects={aggregatedFeatEffects}
-            allFeatDefinitions={allAvailableFeatDefinitions}
-            onCharacterUpdate={handleCharacterUpdate as any}
-            onOpenCombatStatInfoDialog={handleOpenCombatStatInfoDialog}
-            onOpenRollDialog={openInfoDialog as any} // TODO: Fix proper roll dialog handler
+           <CombatStatsSection 
+            character={character}
+            onCharacterUpdate={handleCharacterUpdate}
           />
         </TabsContent>
         <TabsContent value="skills" className="mt-4">
@@ -378,4 +376,3 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
     </div>
   );
 }
-

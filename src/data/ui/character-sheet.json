@@ -5,5 +5,16 @@
   "characterSheetNotFoundDescription": { "en": "The requested character does not exist or could not be loaded.", "fr": "Le personnage demandé n'existe pas ou n'a pas pu être chargé." },
   "characterSheetNotFoundBackButton": { "en": "Back to Dashboard", "fr": "Retour au tableau de bord" },
   "toastCharacterForgedTitle": { "en": "Character Forged!", "fr": "Personnage forgé !" },
-  "toastCharacterForgedDescription": { "en": "{characterName} has been successfully created.", "fr": "{characterName} a été créé avec succès." }
+  "toastCharacterForgedDescription": { "en": "{characterName} has been successfully created.", "fr": "{characterName} a été créé avec succès." },
+  "tabLabelCore": { "en": "Core", "fr": "Infos" },
+  "tabLabelAbilities": { "en": "Abilities", "fr": "Carac." },
+  "tabLabelCombat": { "en": "Combat", "fr": "Combat" },
+  "tabLabelSkills": { "en": "Skills", "fr": "Comp." },
+  "tabLabelFeats": { "en": "Feats", "fr": "Dons" },
+  "tabLabelInventory": { "en": "Inventory", "fr": "Invent." },
+  "tabLabelSpells": { "en": "Spells", "fr": "Sorts" },
+  "coreInfoSectionTitle": { "en": "Core Information", "fr": "Informations principales" },
+  "coreInfoSectionDescription": { "en": "Fundamental aspects of your character.", "fr": "Aspects fondamentaux de votre personnage." },
+  "abilityScoresSectionTitle": { "en": "Ability Scores", "fr": "Caractéristiques" }
 }
+
