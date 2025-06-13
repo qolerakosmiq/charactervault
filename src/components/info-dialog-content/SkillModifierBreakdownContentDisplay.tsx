@@ -27,7 +27,7 @@ export const SkillModifierBreakdownContentDisplay = ({
   const htmlContentBlock = (htmlContent && htmlContent.trim() !== '' && htmlContent.trim() !== '<p></p>') ? (
     <div
       key="skill-html-content-block"
-      className="text-sm prose prose-sm dark:prose-invert max-w-none"
+      className="text-sm prose prose-sm dark:prose-invert max-w-none" // Removed mb-3 here, separator will handle
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   ) : null;
@@ -144,13 +144,13 @@ export const SkillModifierBreakdownContentDisplay = ({
             {renderModifierValue(skillModifierBreakdown!.sizeSpecificBonus)}
           </div>
         )}
-        {skillModifierBreakdown!.synergyBonus !== 0 && !synergyBlock && ( // Only show here if synergyBlock isn't separate
+        {skillModifierBreakdown!.synergyBonus !== 0 && !synergyBlock && (
           <div className="flex justify-between text-sm">
             <span className="text-foreground">{uiStrings.infoDialogSynergyBonusLabel || "Synergy Bonus"}</span>
             {renderModifierValue(skillModifierBreakdown!.synergyBonus)}
           </div>
         )}
-         {skillModifierBreakdown!.featBonus !== 0 && !featBonusBlock && ( // Only show here if featBonusBlock isn't separate
+         {skillModifierBreakdown!.featBonus !== 0 && !featBonusBlock && (
           <div className="flex justify-between text-sm">
             <span className="text-foreground">{uiStrings.infoDialogFeatBonusLabel || "Feat Bonus"}</span>
             {renderModifierValue(skillModifierBreakdown!.featBonus)}
@@ -195,9 +195,9 @@ export const SkillModifierBreakdownContentDisplay = ({
           {index < arr.length - 1 && (block || arr[index + 1]) && (
             <Separator
               className={
-                arr[index + 1] === calculationBlock
-                  ? "mt-2 mb-1" // Separator *before* calculation block
-                  : "mt-3 mb-2" // All other separators
+                block === htmlContentBlock // If current block is the description
+                  ? "mt-3 mb-2" // Separator after description
+                  : (arr[index + 1] === calculationBlock ? "mt-2 mb-1" : "mt-3 mb-2") // Existing logic for other separators
               }
             />
           )}

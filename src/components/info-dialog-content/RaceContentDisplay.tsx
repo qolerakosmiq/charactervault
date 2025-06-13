@@ -60,7 +60,7 @@ export const RaceContentDisplay = ({
   const htmlContentBlock = (htmlContent && htmlContent.trim()) ? (
     <div
       key="race-html-content-block"
-      className="text-sm prose prose-sm dark:prose-invert max-w-none mb-3" // Added mb-3 for spacing
+      className="text-sm prose prose-sm dark:prose-invert max-w-none mb-0" // Changed mb-3 to mb-0 if separator handles it
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   ) : null;
@@ -133,7 +133,7 @@ export const RaceContentDisplay = ({
     <div key="race-general-traits-section">
       <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading || "General Traits"}</h3>
       {generalTraitsSubSections.map((subSection, index) => (
-        <div key={`gen-trait-sub-${index}`} className={cn(index > 0 && "mt-0")}> {/* Removed mt-2 for tighter packing */}
+        <div key={`gen-trait-sub-${index}`} className={cn(index > 0 && "mt-0")}>
           {subSection}
         </div>
       ))}
@@ -203,10 +203,12 @@ export const RaceContentDisplay = ({
 
   return (
     <div>
-      {renderedBlocks.map((block, index) => (
-        <React.Fragment key={`race-display-block-${index}`}>
+      {renderedBlocks.map((block, index, arr) => (
+        <React.Fragment key={`race-display-root-block-${index}`}>
           {block}
-          {index < renderedBlocks.length - 1 && <Separator className="my-3" />}
+          {index < arr.length - 1 && (
+            <Separator className={block === htmlContentBlock ? "mt-3 mb-2" : "my-3"} />
+          )}
         </React.Fragment>
       ))}
     </div>
