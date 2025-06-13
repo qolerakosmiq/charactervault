@@ -22,8 +22,8 @@ interface FeatDetailsDisplayProps {
   allCustomSkills: readonly CustomSkillDefinition[];
   allClasses: readonly DndClassOption[];
   allRaces: readonly DndRaceOption[];
-  abilityLabels: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
-  alignmentPrereqOptions: readonly { value: string; label: string }[];
+  abilityLabels: readonly { id: Exclude<AbilityName, 'none'>; label: string; abbr: string }[]; // Changed value to id
+  alignmentPrereqOptions: readonly { id: string; label: string }[]; // Changed value to id
   uiStrings: Record<string, string>;
 }
 
@@ -39,7 +39,7 @@ export const FeatDetailsDisplay: React.FC<FeatDetailsDisplayProps> = ({
   alignmentPrereqOptions,
   uiStrings,
 }) => {
-  const featDef = allFeats.find(f => f.value === featId);
+  const featDef = allFeats.find(f => f.id === featId); // Corrected from f.value to f.id
   if (!featDef) {
     return <p className="text-sm text-muted-foreground">{uiStrings.infoDialogFeatNotFound || "Feat details not found."}</p>;
   }
@@ -97,3 +97,4 @@ export const FeatDetailsDisplay: React.FC<FeatDetailsDisplayProps> = ({
     </div>
   );
 };
+
