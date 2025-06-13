@@ -1,0 +1,479 @@
+
+{
+  "SKILL_DEFINITIONS_DATA": [
+    {
+      "value": "appraise",
+      "label": { "en": "Appraise", "fr": "Estimation" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Use this skill to determine the monetary value of an object. Untrained: Yes, but DC increases. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour déterminer la valeur monétaire d'un objet. Non entraîné : Oui, mais le DD augmente. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "balance",
+      "label": { "en": "Balance", "fr": "Équilibre" },
+      "keyAbility": "dexterity",
+      "description": {
+        "en": "Use this skill to keep your balance when walking on narrow or treacherous surfaces. Untrained: Yes. Armor Check Penalty: Yes.",
+        "fr": "Utilisez cette compétence pour garder votre équilibre en marchant sur des surfaces étroites ou dangereuses. Non entraîné : Oui. Malus d'armure aux tests : Oui."
+      }
+    },
+    {
+      "value": "bluff",
+      "label": { "en": "Bluff", "fr": "Bluff" },
+      "keyAbility": "charisma",
+      "description": {
+        "en": "Use this skill to make a lie believable or to trick someone. Untrained: Yes. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour rendre un mensonge crédible ou pour tromper quelqu'un. Non entraîné : Oui. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "climb",
+      "label": { "en": "Climb", "fr": "Escalade" },
+      "keyAbility": "strength",
+      "description": {
+        "en": "Use this skill to scale walls or steep inclines. Untrained: Yes. Armor Check Penalty: Yes.",
+        "fr": "Utilisez cette compétence pour escalader des murs ou des pentes abruptes. Non entraîné : Oui. Malus d'armure aux tests : Oui."
+      }
+    },
+    {
+      "value": "concentration",
+      "label": { "en": "Concentration", "fr": "Concentration" },
+      "keyAbility": "constitution",
+      "description": {
+        "en": "Use this skill to maintain focus when casting spells or performing actions that require uninterrupted attention, especially when distracted or injured. Untrained: Yes. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour maintenir votre concentration lorsque vous lancez des sorts ou effectuez des actions qui nécessitent une attention ininterrompue, en particulier lorsque vous êtes distrait ou blessé. Non entraîné : Oui. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "craft",
+      "label": { "en": "Craft", "fr": "Artisanat" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Use this skill to create, repair, or modify objects. This skill covers a wide range of specific crafts such as Craft (alchemy), Craft (armorsmithing), Craft (bowmaking), Craft (weaponsmithing), Craft (trapmaking), etc. Each is a separate skill. Untrained: Yes, for simple tasks. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour créer, réparer ou modifier des objets. Cette compétence couvre un large éventail d'artisanats spécifiques tels que Artisanat (alchimie), Artisanat (fabrication d'armures), Artisanat (fabrication d'arcs), Artisanat (fabrication d'armes), Artisanat (fabrication de pièges), etc. Chacun est une compétence distincte. Non entraîné : Oui, pour les tâches simples. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "decipher-script",
+      "label": { "en": "Decipher Script", "fr": "Déchiffrage" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Use this skill to understand archaic languages, hidden messages, or incomplete writings. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour comprendre les langages archaïques, les messages cachés ou les écrits incomplets. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "diplomacy",
+      "label": { "en": "Diplomacy", "fr": "Diplomatie" },
+      "keyAbility": "charisma",
+      "description": {
+        "en": "Use this skill to influence others, negotiate, or make requests favorably. Untrained: Yes. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour influencer les autres, négocier ou faire des demandes favorablement. Non entraîné : Oui. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "disable-device",
+      "label": { "en": "Disable Device", "fr": "Désamorçage/Sabotage" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Use this skill to disable traps or other complex mechanisms. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour désactiver les pièges ou autres mécanismes complexes. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "disguise",
+      "label": { "en": "Disguise", "fr": "Déguisement" },
+      "keyAbility": "charisma",
+      "description": {
+        "en": "Use this skill to change your appearance. Untrained: Yes. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour changer votre apparence. Non entraîné : Oui. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "escape-artist",
+      "label": { "en": "Escape Artist", "fr": "Art de la کالعدم" },
+      "keyAbility": "dexterity",
+      "description": {
+        "en": "Use this skill to slip out of bonds, wriggle through tight spaces, or escape a grapple. Untrained: Yes. Armor Check Penalty: Yes.",
+        "fr": "Utilisez cette compétence pour vous défaire de liens, vous faufiler dans des espaces étroits ou échapper à une lutte. Non entraîné : Oui. Malus d'armure aux tests : Oui."
+      }
+    },
+    {
+      "value": "forgery",
+      "label": { "en": "Forgery", "fr": "Contrefaçon" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Use this skill to create false documents or detect them. Untrained: Yes. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour créer de faux documents ou les détecter. Non entraîné : Oui. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "gather-information",
+      "label": { "en": "Gather Information", "fr": "Renseignement" },
+      "keyAbility": "charisma",
+      "description": {
+        "en": "Use this skill to find out local news, rumors, and noteworthy events by talking to people. Untrained: Yes. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour découvrir les nouvelles locales, les rumeurs et les événements notables en parlant aux gens. Non entraîné : Oui. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "handle-animal",
+      "label": { "en": "Handle Animal", "fr": "Dressage" },
+      "keyAbility": "charisma",
+      "description": {
+        "en": "Use this skill to train, command, or calm animals. Untrained: Yes, for simple tasks with domestic animals. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour entraîner, commander ou calmer les animaux. Non entraîné : Oui, pour les tâches simples avec les animaux domestiques. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "heal",
+      "label": { "en": "Heal", "fr": "Premiers secours" },
+      "keyAbility": "wisdom",
+      "description": {
+        "en": "Use this skill to provide medical aid, treat wounds, or diagnose illnesses. Untrained: Yes, for simple first aid. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour fournir une aide médicale, soigner les blessures ou diagnostiquer les maladies. Non entraîné : Oui, pour les premiers secours simples. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "hide",
+      "label": { "en": "Hide", "fr": "Discrétion" },
+      "keyAbility": "dexterity",
+      "description": {
+        "en": "Use this skill to become unseen. Untrained: Yes. Armor Check Penalty: Yes.",
+        "fr": "Utilisez cette compétence pour devenir invisible. Non entraîné : Oui. Malus d'armure aux tests : Oui."
+      }
+    },
+    {
+      "value": "intimidate",
+      "label": { "en": "Intimidate", "fr": "Intimidation" },
+      "keyAbility": "charisma",
+      "description": {
+        "en": "Use this skill to coerce or frighten others. Untrained: Yes. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour contraindre ou effrayer les autres. Non entraîné : Oui. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "jump",
+      "label": { "en": "Jump", "fr": "Saut" },
+      "keyAbility": "strength",
+      "description": {
+        "en": "Use this skill to make long or high jumps. Untrained: Yes. Armor Check Penalty: Yes.",
+        "fr": "Utilisez cette compétence pour effectuer des sauts en longueur ou en hauteur. Non entraîné : Oui. Malus d'armure aux tests : Oui."
+      }
+    },
+    {
+      "value": "knowledge-arcana",
+      "label": { "en": "Knowledge (Arcana)", "fr": "Connaissances (Arcanes)" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Covers ancient mysteries, magic traditions, arcane symbols, cryptic phrases, constructs, dragons, and magical beasts. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Couvre les mystères anciens, les traditions magiques, les symboles arcaniques, les phrases cryptiques, les créatures artificielles, les dragons et les bêtes magiques. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "knowledge-architecture",
+      "label": { "en": "Knowledge (Architecture and Engineering)", "fr": "Connaissances (Architecture et Ingénierie)" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Covers buildings, aqueducts, bridges, and fortifications. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Couvre les bâtiments, les aqueducs, les ponts et les fortifications. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "knowledge-dungeoneering",
+      "label": { "en": "Knowledge (Dungeoneering)", "fr": "Connaissances (Exploration des donjons)" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Covers aberrations, caverns, oozes, and spelunking. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Couvre les aberrations, les cavernes, les vases et la spéléologie. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "knowledge-geography",
+      "label": { "en": "Knowledge (Geography)", "fr": "Connaissances (Géographie)" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Covers lands, terrain, climate, and people. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Couvre les terres, le terrain, le climat et les peuples. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "knowledge-history",
+      "label": { "en": "Knowledge (History)", "fr": "Connaissances (Histoire)" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Covers royalty, wars, colonies, migrations, and founding of cities. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Couvre la royauté, les guerres, les colonies, les migrations et la fondation des villes. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "knowledge-local",
+      "label": { "en": "Knowledge (Local)", "fr": "Connaissances (Local)" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Covers legends, personalities, inhabitants, laws, customs, traditions, and humanoids. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Couvre les légendes, les personnalités, les habitants, les lois, les coutumes, les traditions et les humanoïdes. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "knowledge-nature",
+      "label": { "en": "Knowledge (Nature)", "fr": "Connaissances (Nature)" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Covers animals, fey, giants, monstrous humanoids, plants, seasons and cycles, weather, and vermin. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Couvre les animaux, les fées, les géants, les humanoïdes monstrueux, les plantes, les saisons et les cycles, le temps et la vermine. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "knowledge-nobility",
+      "label": { "en": "Knowledge (Nobility and Royalty)", "fr": "Connaissances (Noblesse et Royauté)" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Covers lineages, heraldry, personalities, and proper forms of address. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Couvre les lignées, l'héraldique, les personnalités et les formes d'adresse appropriées. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "knowledge-religion",
+      "label": { "en": "Knowledge (Religion)", "fr": "Connaissances (Religion)" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Covers gods and goddesses, mythic history, ecclesiastic tradition, holy symbols, and undead. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Couvre les dieux et déesses, l'histoire mythique, la tradition ecclésiastique, les symboles sacrés et les morts-vivants. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "knowledge-planes",
+      "label": { "en": "Knowledge (The Planes)", "fr": "Connaissances (Plans)" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Covers the Inner Planes, the Outer Planes, the Astral Plane, the Ethereal Plane, outsiders, and planar magic. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Couvre les Plans Intérieurs, les Plans Extérieurs, le Plan Astral, le Plan Éthéré, les extérieurs et la magie planaire. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "listen",
+      "label": { "en": "Listen", "fr": "Perception auditive" },
+      "keyAbility": "wisdom",
+      "description": {
+        "en": "Use this skill to hear noises, including conversations through doors or eavesdropping. Untrained: Yes. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour entendre les bruits, y compris les conversations à travers les portes ou les écoutes clandestines. Non entraîné : Oui. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "move-silently",
+      "label": { "en": "Move Silently", "fr": "Déplacement silencieux" },
+      "keyAbility": "dexterity",
+      "description": {
+        "en": "Use this skill to sneak up on others or to avoid being heard. Untrained: Yes. Armor Check Penalty: Yes.",
+        "fr": "Utilisez cette compétence pour vous faufiler sur les autres ou pour éviter d'être entendu. Non entraîné : Oui. Malus d'armure aux tests : Oui."
+      }
+    },
+    {
+      "value": "open-lock",
+      "label": { "en": "Open Lock", "fr": "Crochetage" },
+      "keyAbility": "dexterity",
+      "description": {
+        "en": "Use this skill to open locks that require a key. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour ouvrir les serrures qui nécessitent une clé. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "perform",
+      "label": { "en": "Perform", "fr": "Représentation" },
+      "keyAbility": "charisma",
+      "description": {
+        "en": "Use this skill to entertain an audience with music, acting, poetry, or other forms of art. Each type of performance is a separate skill (e.g., Perform (dance), Perform (sing), Perform (string instruments)). Untrained: Yes. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour divertir un public avec de la musique, du théâtre, de la poésie ou d'autres formes d'art. Chaque type de représentation est une compétence distincte (par exemple, Représentation (danse), Représentation (chant), Représentation (instruments à cordes)). Non entraîné : Oui. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "profession",
+      "label": { "en": "Profession", "fr": "Profession" },
+      "keyAbility": "wisdom",
+      "description": {
+        "en": "Use this skill to make a living. Covers specific professions (e.g., Profession (sailor), Profession (herbalist)). Each is a separate skill. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour gagner votre vie. Couvre des professions spécifiques (par exemple, Profession (marin), Profession (herboriste)). Chacune est une compétence distincte. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "ride",
+      "label": { "en": "Ride", "fr": "Équitation" },
+      "keyAbility": "dexterity",
+      "description": {
+        "en": "Use this skill to ride a mount, including in combat. Untrained: Yes, for simple riding. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour monter une monture, y compris en combat. Non entraîné : Oui, pour une équitation simple. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "search",
+      "label": { "en": "Search", "fr": "Fouille" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Use this skill to find hidden objects or clues. Untrained: Yes. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour trouver des objets cachés ou des indices. Non entraîné : Oui. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "sense-motive",
+      "label": { "en": "Sense Motive", "fr": "Psychologie" },
+      "keyAbility": "wisdom",
+      "description": {
+        "en": "Use this skill to discern if someone is lying or to get a hunch about a social situation. Untrained: Yes. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour discerner si quelqu'un ment ou pour avoir une intuition sur une situation sociale. Non entraîné : Oui. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "sleight-of-hand",
+      "label": { "en": "Sleight of Hand", "fr": "Escamotage" },
+      "keyAbility": "dexterity",
+      "description": {
+        "en": "Use this skill to pick pockets, conceal objects, or perform acts of legerdemain. Untrained: No. Armor Check Penalty: Yes.",
+        "fr": "Utilisez cette compétence pour faire les poches, dissimuler des objets ou effectuer des tours de passe-passe. Non entraîné : Non. Malus d'armure aux tests : Oui."
+      }
+    },
+    {
+      "value": "speak-language",
+      "label": { "en": "Speak Language", "fr": "Langage" },
+      "keyAbility": "none",
+      "description": {
+        "en": "Allows learning additional languages beyond those known from race and intelligence. Each rank allows learning one additional language. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Permet d'apprendre des langues supplémentaires au-delà de celles connues par la race et l'intelligence. Chaque rang permet d'apprendre une langue supplémentaire. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "spellcraft",
+      "label": { "en": "Spellcraft", "fr": "Art de la magie" },
+      "keyAbility": "intelligence",
+      "description": {
+        "en": "Use this skill to identify spells as they are cast, identify magic items, or learn new spells. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour identifier les sorts lorsqu'ils sont lancés, identifier les objets magiques ou apprendre de nouveaux sorts. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "spot",
+      "label": { "en": "Spot", "fr": "Détection" },
+      "keyAbility": "wisdom",
+      "description": {
+        "en": "Use this skill to notice hidden or subtle things. Untrained: Yes. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour remarquer des choses cachées ou subtiles. Non entraîné : Oui. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "survival",
+      "label": { "en": "Survival", "fr": "Survie" },
+      "keyAbility": "wisdom",
+      "description": {
+        "en": "Use this skill to find food and water, navigate in the wilderness, or track creatures. Untrained: Yes. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour trouver de la nourriture et de l'eau, naviguer dans la nature ou pister des créatures. Non entraîné : Oui. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "swim",
+      "label": { "en": "Swim", "fr": "Natation" },
+      "keyAbility": "strength",
+      "description": {
+        "en": "Use this skill to move through water. Untrained: Yes. Armor Check Penalty: Yes (double normal penalty).",
+        "fr": "Utilisez cette compétence pour vous déplacer dans l'eau. Non entraîné : Oui. Malus d'armure aux tests : Oui (malus normal doublé)."
+      }
+    },
+    {
+      "value": "tumble",
+      "label": { "en": "Tumble", "fr": "Acrobaties" },
+      "keyAbility": "dexterity",
+      "description": {
+        "en": "Use this skill to avoid attacks of opportunity, reduce falling damage, or perform acrobatic maneuvers. Untrained: No. Armor Check Penalty: Yes.",
+        "fr": "Utilisez cette compétence pour éviter les attaques d'opportunité, réduire les dégâts de chute ou effectuer des manœuvres acrobatiques. Non entraîné : Non. Malus d'armure aux tests : Oui."
+      }
+    },
+    {
+      "value": "use-magic-device",
+      "label": { "en": "Use Magic Device", "fr": "Utilisation d'objets magiques" },
+      "keyAbility": "charisma",
+      "description": {
+        "en": "Use this skill to activate wands, scrolls, or other magic items that you normally couldn't use. Untrained: No. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour activer des baguettes, des parchemins ou d'autres objets magiques que vous ne pourriez normalement pas utiliser. Non entraîné : Non. Malus d'armure aux tests : Non."
+      }
+    },
+    {
+      "value": "use-rope",
+      "label": { "en": "Use Rope", "fr": "Utilisation des cordes" },
+      "keyAbility": "dexterity",
+      "description": {
+        "en": "Use this skill to tie knots, secure ropes, or bind prisoners. Untrained: Yes. Armor Check Penalty: No.",
+        "fr": "Utilisez cette compétence pour faire des nœuds, attacher des cordes ou ligoter des prisonniers. Non entraîné : Oui. Malus d'armure aux tests : Non."
+      }
+    }
+  ],
+  "CLASS_SKILLS_DATA": {
+    "barbarian": ["climb", "craft", "handle-animal", "intimidate", "jump", "listen", "ride", "survival", "swim"],
+    "bard": ["appraise", "balance", "bluff", "climb", "concentration", "craft", "decipher-script", "diplomacy", "disguise", "escape-artist", "gather-information", "hide", "jump", "knowledge-arcana", "knowledge-architecture", "knowledge-dungeoneering", "knowledge-geography", "knowledge-history", "knowledge-local", "knowledge-nature", "knowledge-nobility", "knowledge-religion", "knowledge-planes", "listen", "move-silently", "perform", "profession", "sense-motive", "sleight-of-hand", "speak-language", "spellcraft", "swim", "tumble", "use-magic-device"],
+    "cleric": ["concentration", "craft", "diplomacy", "heal", "knowledge-arcana", "knowledge-history", "knowledge-religion", "knowledge-planes", "profession", "spellcraft"],
+    "druid": ["concentration", "craft", "diplomacy", "handle-animal", "heal", "knowledge-nature", "listen", "profession", "ride", "spellcraft", "spot", "survival", "swim"],
+    "fighter": ["climb", "craft", "handle-animal", "intimidate", "jump", "ride", "swim"],
+    "monk": ["balance", "climb", "concentration", "craft", "diplomacy", "escape-artist", "hide", "jump", "knowledge-arcana", "knowledge-religion", "listen", "move-silently", "perform", "profession", "sense-motive", "spot", "tumble"],
+    "paladin": ["concentration", "craft", "diplomacy", "handle-animal", "heal", "knowledge-nobility", "knowledge-religion", "profession", "ride", "sense-motive"],
+    "ranger": ["climb", "concentration", "craft", "handle-animal", "heal", "hide", "jump", "knowledge-dungeoneering", "knowledge-geography", "knowledge-nature", "listen", "move-silently", "profession", "ride", "search", "spot", "survival", "swim", "use-rope"],
+    "rogue": ["appraise", "balance", "bluff", "climb", "craft", "decipher-script", "diplomacy", "disable-device", "disguise", "escape-artist", "forgery", "gather-information", "hide", "intimidate", "jump", "knowledge-local", "listen", "move-silently", "open-lock", "perform", "profession", "search", "sense-motive", "sleight-of-hand", "spot", "swim", "tumble", "use-magic-device", "use-rope"],
+    "sorcerer": ["bluff", "concentration", "craft", "knowledge-arcana", "profession", "spellcraft"],
+    "wizard": ["concentration", "craft", "decipher-script", "knowledge-arcana", "knowledge-architecture", "knowledge-dungeoneering", "knowledge-geography", "knowledge-history", "knowledge-local", "knowledge-nature", "knowledge-nobility", "knowledge-religion", "knowledge-planes", "profession", "spellcraft"],
+    "soulknife": ["autohypnosis", "balance", "climb", "concentration", "craft", "jump", "knowledge-psionics", "listen", "move-silently", "profession", "spot", "tumble"]
+  },
+  "CLASS_SKILL_POINTS_BASE_DATA": {
+    "barbarian": 4,
+    "bard": 6,
+    "cleric": 2,
+    "druid": 4,
+    "fighter": 2,
+    "monk": 4,
+    "paladin": 2,
+    "ranger": 6,
+    "rogue": 8,
+    "sorcerer": 2,
+    "wizard": 2,
+    "soulknife": 4
+  },
+  "SKILL_SYNERGIES_DATA": {
+    "bluff": [
+      { "targetSkill": "diplomacy", "ranksRequired": 5, "bonus": 2 },
+      { "targetSkill": "disguise", "ranksRequired": 5, "bonus": 2, "note": { "en": "when acting in character", "fr": "en jouant un rôle" } },
+      { "targetSkill": "intimidate", "ranksRequired": 5, "bonus": 2 },
+      { "targetSkill": "sleight-of-hand", "ranksRequired": 5, "bonus": 2 }
+    ],
+    "craft-alchemy": [
+      { "targetSkill": "appraise", "ranksRequired": 5, "bonus": 2, "note": { "en": "for appraising alchemical items", "fr": "pour estimer des objets alchimiques" } }
+    ],
+    "escape-artist": [
+      { "targetSkill": "use-rope", "ranksRequired": 5, "bonus": 2, "note": { "en": "for binding a character", "fr": "pour ligoter un personnage" } }
+    ],
+    "handle-animal": [
+      { "targetSkill": "ride", "ranksRequired": 5, "bonus": 2 },
+      { "targetSkill": "diplomacy", "ranksRequired": 5, "bonus": 2, "note": { "en": "to influence animals", "fr": "pour influencer les animaux" } }
+    ],
+    "jump": [
+      { "targetSkill": "tumble", "ranksRequired": 5, "bonus": 2 }
+    ],
+    "sense-motive": [
+      { "targetSkill": "diplomacy", "ranksRequired": 5, "bonus": 2 }
+    ],
+    "spellcraft": [
+      { "targetSkill": "use-magic-device", "ranksRequired": 5, "bonus": 2, "note": { "en": "when emulating a spell", "fr": "en émulant un sort" } }
+    ],
+    "survival": [
+      { "targetSkill": "knowledge-nature", "ranksRequired": 5, "bonus": 2 }
+    ],
+    "tumble": [
+      { "targetSkill": "balance", "ranksRequired": 5, "bonus": 2 },
+      { "targetSkill": "jump", "ranksRequired": 5, "bonus": 2 }
+    ],
+    "use-magic-device": [
+      { "targetSkill": "spellcraft", "ranksRequired": 5, "bonus": 2, "note": { "en": "for deciphering scrolls", "fr": "pour déchiffrer des parchemins" } }
+    ],
+    "use-rope": [
+      { "targetSkill": "climb", "ranksRequired": 5, "bonus": 2, "note": { "en": "when using a rope", "fr": "en utilisant une corde" } },
+      { "targetSkill": "escape-artist", "ranksRequired": 5, "bonus": 2, "note": { "en": "for escaping rope bonds", "fr": "pour échapper à des liens de corde" } }
+    ]
+  }
+}
