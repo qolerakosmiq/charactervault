@@ -133,7 +133,7 @@ const SkillsFormSectionComponent = ({
 
     const { CLASS_SKILL_POINTS_BASE, DND_CLASSES, DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA } = translations;
 
-    const currentClassLabel = firstClass?.className ? DND_CLASSES.find(c => c.value === firstClass.className)?.label || firstClass.className : "";
+    const currentClassLabel = firstClass?.className ? DND_CLASSES.find(c => c.id === firstClass.className)?.label || firstClass.className : "";
     const currentIntMod = (actualAbilityScores && actualAbilityScores.intelligence !== undefined)
       ? getAbilityModifierByName(actualAbilityScores, 'intelligence')
       : 0;
@@ -183,12 +183,12 @@ const SkillsFormSectionComponent = ({
     if (translationsLoading || !translations) return [];
     const { SKILL_SYNERGIES } = translations;
     const predefined = allPredefinedSkillDefinitions.map(sd => ({
-      id: sd.value,
+      id: sd.id,
       name: sd.label,
       keyAbility: sd.keyAbility as AbilityName,
       description: sd.description,
       isCustom: false,
-      providesSynergies: SKILL_SYNERGIES[sd.value as keyof typeof SKILL_SYNERGIES] || [],
+      providesSynergies: SKILL_SYNERGIES[sd.id as keyof typeof SKILL_SYNERGIES] || [],
     }));
     const custom = allCustomSkillDefinitions.map(csd => ({
       ...csd,
@@ -210,6 +210,10 @@ const SkillsFormSectionComponent = ({
       };
     }).sort((a,b) => a.name.localeCompare(b.name));
   }, [characterSkillInstances, allCombinedSkillDefinitions]);
+
+  const validSkillsForDisplay = React.useMemo(() => {
+    return skillsForDisplay.filter(skill => skill && typeof skill.id === 'string' && skill.id.trim() !== '');
+  }, [skillsForDisplay]);
 
 
   const handleTriggerSkillInfoDialog = (skillId: string) => {
@@ -233,7 +237,7 @@ const SkillsFormSectionComponent = ({
     const userMiscMod = skillInstance.miscModifier || 0;
 
     const totalBonus = (skillInstance.ranks || 0) + abilityMod + synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus + userMiscMod;
-    const keyAbilityName = keyAbility && keyAbility !== 'none' ? (ABILITY_LABELS.find(al => al.value === keyAbility)?.abbr || keyAbility.toUpperCase()) : 'N/A';
+    const keyAbilityName = keyAbility && keyAbility !== 'none' ? (ABILITY_LABELS.find(al => al.id === keyAbility)?.abbr || keyAbility.toUpperCase()) : 'N/A';
 
     const breakdown: GenericBreakdownItem[] = [
       { label: UI_STRINGS.rollDialogSkillRanksLabel || "Ranks", value: skillInstance.ranks || 0 },
@@ -358,12 +362,12 @@ const SkillsFormSectionComponent = ({
               <span className="text-center w-10">{UI_STRINGS.skillsTableHeaderMaxLabel || "Max"}</span>
             </div>
 
-            {skillsForDisplay.map(skillInstanceProp => {
+            {validSkillsForDisplay.map(skillInstanceProp => {
               const skillDef = allCombinedSkillDefinitions.find(def => def.id === skillInstanceProp.id);
-              if (!skillDef) return null;
+              if (!skillDef) return null; // Should not happen due to filtering
 
               const keyAbility = skillDef.keyAbility;
-              const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === keyAbility);
+              const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === keyAbility);
 
               let keyAbilityDisplay = 'N/A';
               if (keyAbility && keyAbility !== 'none' && abilityLabelInfo) {
@@ -461,3 +465,4 @@ SkillsFormSectionComponent.displayName = 'SkillsFormSectionComponent';
 export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
 
     
+
