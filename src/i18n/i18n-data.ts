@@ -9,7 +9,7 @@ import type {
   DomainDefinition, DomainId, MagicSchoolId, MagicSchoolDefinition, SpeedType, LocalizedString
 } from '@/types/character-core';
 import type { LanguageCode } from './config';
-import { DEFAULT_LANGUAGE } from './config';
+import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from './config';
 
 // Define types for the structure of each JSON file's data
 
@@ -262,7 +262,8 @@ export function getLocalizedString(
   if (entry.en !== undefined) return entry.en; // Default to 'en' if primary and fallback fail
 
   // As a last resort, take the first available language defined in the object
-  const firstKey = Object.keys(entry).find(k => k !== 'en' && SUPPORTED_LANGUAGES.some(supLang => supLang.code === k)) as LanguageCode | undefined;
+  // Ensure SUPPORTED_LANGUAGES is correctly imported or defined if used here for validation
+  const firstKey = Object.keys(entry).find(k => SUPPORTED_LANGUAGES.some(supLang => supLang.code === k)) as LanguageCode | undefined;
   if (firstKey && entry[firstKey] !== undefined) return entry[firstKey]!;
 
   return ''; // Or throw an error, or return a placeholder like '[no translation]'
@@ -271,10 +272,13 @@ export function getLocalizedString(
 
 // Helper to process arrays of items with LocalizedString fields
 function processLocalizedArray<T extends { label: LocalizedString, description?: LocalizedString, [key: string]: any }, R extends { label: string, description?: string, [key: string]: any }>(
-  items: T[],
+  items: T[] | undefined, // Make items potentially undefined
   lang: LanguageCode,
   otherFieldsToLocalize?: Array<keyof T>
 ): R[] {
+  if (!items || !Array.isArray(items)) { // Safeguard against undefined or non-array items
+    return [];
+  }
   return items.map(item => {
     const newItem: any = { ...item };
     newItem.label = getLocalizedString(item.label, lang);
@@ -294,16 +298,17 @@ function processLocalizedArray<T extends { label: LocalizedString, description?:
 
 
 export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCode): ProcessedSiteData {
-  const ALIGNMENTS = processLocalizedArray<AlignmentDataEntry, CharacterAlignmentObject>(bundle.alignments.ALIGNMENTS_DATA, lang);
-  const LANGUAGES = processLocalizedArray<LanguageDataEntry, LanguageOption>(bundle.languages.LANGUAGES_DATA, lang);
-  const XP_TABLE = bundle.xpTable.XP_TABLE_DATA.sort((a, b) => a.level - b.level);
-  const EPIC_LEVEL_XP_INCREASE = bundle.xpTable.EPIC_LEVEL_XP_INCREASE;
+  const ALIGNMENTS = processLocalizedArray<AlignmentDataEntry, CharacterAlignmentObject>(bundle.alignments?.ALIGNMENTS_DATA, lang);
+  const LANGUAGES = processLocalizedArray<LanguageDataEntry, LanguageOption>(bundle.languages?.LANGUAGES_DATA, lang);
+  const XP_TABLE = bundle.xpTable?.XP_TABLE_DATA?.sort((a, b) => a.level - b.level) || [];
+  const EPIC_LEVEL_XP_INCREASE = bundle.xpTable?.EPIC_LEVEL_XP_INCREASE || 0;
 
-  const SIZES = processLocalizedArray<SizeDataEntry, CharacterSizeObject>(bundle.base.SIZES_DATA, lang);
-  const GENDERS = processLocalizedArray<GenderDataEntry, { value: GenderId | string; label: string }>(bundle.base.GENDERS_DATA, lang);
+  const SIZES = processLocalizedArray<SizeDataEntry, CharacterSizeObject>(bundle.base?.SIZES_DATA, lang);
+  const GENDERS = processLocalizedArray<GenderDataEntry, { value: GenderId | string; label: string }>(bundle.base?.GENDERS_DATA, lang);
 
+  const DND_RACES_RAW = bundle.races?.DND_RACES_DATA || [];
   const DND_RACES = processLocalizedArray<RawRaceDataEntry, DndRaceOption>(
-    bundle.races.DND_RACES_DATA.map(r => ({...r, generalDescription: r.description || r.generalDescription })), // Ensure generalDescription
+    DND_RACES_RAW.map(r => ({...r, generalDescription: r.description || r.generalDescription })), // Ensure generalDescription
     lang,
     ['generalDescription']
   ).map(r => ({
@@ -312,7 +317,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       loreAttributes: r.loreAttributes?.map(la => ({key: getLocalizedString(la.key, lang), value: getLocalizedString(la.value, lang)}))
   }));
 
-  const DND_CLASSES_RAW = bundle.allClasses;
+  const DND_CLASSES_RAW = bundle.allClasses || [];
   const DND_CLASSES = processLocalizedArray<RawClassDataEntry, DndClassOption>(
     DND_CLASSES_RAW,
     lang,
@@ -325,8 +330,9 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   }));
 
 
+  const DND_DEITIES_RAW = bundle.deities?.DND_DEITIES_DATA || [];
   const DND_DEITIES = processLocalizedArray<RawDeityDataEntry, DndDeityOption>(
-    bundle.deities.DND_DEITIES_DATA,
+    DND_DEITIES_RAW,
     lang,
     ['fullName']
   ).map(d => ({
@@ -335,8 +341,9 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   }));
 
 
+  const DND_DOMAINS_RAW = bundle.domains?.DND_DOMAINS_DATA || [];
   const DND_DOMAINS = processLocalizedArray<DomainDefinitionJson, DomainDefinition>(
-      bundle.domains.DND_DOMAINS_DATA,
+      DND_DOMAINS_RAW,
       lang,
       ['description', 'grantedPowerDescription']
   ).map(d => ({
@@ -345,21 +352,23 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   }));
 
 
+  const DND_MAGIC_SCHOOLS_RAW = bundle.magicSchools?.DND_MAGIC_SCHOOLS_DATA || [];
   const DND_MAGIC_SCHOOLS = processLocalizedArray<{value: MagicSchoolId, label: LocalizedString, description?: LocalizedString}, MagicSchoolDefinition>(
-    bundle.magicSchools.DND_MAGIC_SCHOOLS_DATA,
+    DND_MAGIC_SCHOOLS_RAW,
     lang,
     ['description']
   );
 
+  const SKILL_DEFINITIONS_RAW = bundle.skills?.SKILL_DEFINITIONS_DATA || [];
   const SKILL_DEFINITIONS = processLocalizedArray<RawSkillDefinitionDataEntry, SkillDefinitionJsonData>(
-    bundle.skills.SKILL_DEFINITIONS_DATA,
+    SKILL_DEFINITIONS_RAW,
     lang,
     ['description']
   );
 
 
-  const commonFeats = bundle.commonFeats.DND_FEATS_DATA;
-  const classSpecificFeats = bundle.allClasses.reduce((acc, cls) => {
+  const commonFeats = bundle.commonFeats?.DND_FEATS_DATA || [];
+  const classSpecificFeats = (bundle.allClasses || []).reduce((acc, cls) => {
     if (cls.classSpecificFeats) {
       acc.push(...cls.classSpecificFeats);
     }
@@ -369,8 +378,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   const ALL_FEATS_RAW = [...commonFeats, ...classSpecificFeats];
   // Deduplicate feats by value, class-specific can override common
   const featMap = new Map<string, FeatDefinitionJsonData>();
-  commonFeats.forEach(f => featMap.set(f.value, f));
-  classSpecificFeats.forEach(f => featMap.set(f.value, f)); // Override if duplicate
+  ALL_FEATS_RAW.forEach(f => featMap.set(f.value, f)); // Using all_feats_raw
 
   const DND_FEATS_DEFINITIONS = processLocalizedArray<FeatDefinitionJsonData, FeatDefinitionJsonData>(
     Array.from(featMap.values()),
@@ -380,44 +388,56 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     ...feat,
     effects: feat.effects?.map(effect => {
       const localizedEffect = {...effect};
-      if ('text' in localizedEffect && typeof localizedEffect.text === 'object') {
+      if ('text' in localizedEffect && typeof localizedEffect.text === 'object' && localizedEffect.text !== null) {
         (localizedEffect as any).text = getLocalizedString(localizedEffect.text as LocalizedString, lang);
       }
-      if ('sourceFeat' in localizedEffect && typeof localizedEffect.sourceFeat === 'object') {
+      if ('sourceFeat' in localizedEffect && typeof localizedEffect.sourceFeat === 'object' && localizedEffect.sourceFeat !== null) {
         (localizedEffect as any).sourceFeat = getLocalizedString(localizedEffect.sourceFeat as LocalizedString, lang);
       }
-      if ('name' in localizedEffect && typeof localizedEffect.name === 'object') {
+      if ('name' in localizedEffect && typeof localizedEffect.name === 'object' && localizedEffect.name !== null) {
         (localizedEffect as any).name = getLocalizedString(localizedEffect.name as LocalizedString, lang);
       }
-      if ('details' in localizedEffect && typeof localizedEffect.details === 'object') {
+      if ('details' in localizedEffect && typeof localizedEffect.details === 'object' && localizedEffect.details !== null) {
         (localizedEffect as any).details = getLocalizedString(localizedEffect.details as LocalizedString, lang);
       }
-      if ('note' in localizedEffect && typeof localizedEffect.note === 'object') {
+      if ('note' in localizedEffect && typeof localizedEffect.note === 'object' && localizedEffect.note !== null) {
         (localizedEffect as any).note = getLocalizedString(localizedEffect.note as LocalizedString, lang);
       }
       return localizedEffect;
     })
   }));
 
-  const FEAT_TYPES = processLocalizedArray<RawFeatTypeDataEntry, { value: FeatTypeString; label: string }>(bundle.commonFeats.FEAT_TYPES_DATA, lang);
-  const ABILITY_LABELS = processLocalizedArray<AbilityLabelEntry, { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }>(bundle.base.ABILITY_LABELS_DATA, lang);
-  const SAVING_THROW_LABELS = processLocalizedArray<SavingThrowLabelEntry, { value: SavingThrowType; label: string }>(bundle.base.SAVING_THROW_LABELS_DATA, lang);
-  const DAMAGE_REDUCTION_TYPES = processLocalizedArray<DamageReductionTypeEntry, { value: DamageReductionTypeValue; label: string }>(bundle.base.DAMAGE_REDUCTION_TYPES_DATA, lang);
-  const DAMAGE_REDUCTION_RULES_OPTIONS = processLocalizedArray<DamageReductionRuleEntry, { value: DamageReductionRuleValue; label: string }>(bundle.base.DAMAGE_REDUCTION_RULES_OPTIONS_DATA, lang);
+  const FEAT_TYPES_RAW = bundle.commonFeats?.FEAT_TYPES_DATA || [];
+  const FEAT_TYPES = processLocalizedArray<RawFeatTypeDataEntry, { value: FeatTypeString; label: string }>(FEAT_TYPES_RAW, lang);
+  
+  const ABILITY_LABELS_RAW = bundle.base?.ABILITY_LABELS_DATA || [];
+  const ABILITY_LABELS = processLocalizedArray<AbilityLabelEntry, { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }>(ABILITY_LABELS_RAW, lang);
+  
+  const SAVING_THROW_LABELS_RAW = bundle.base?.SAVING_THROW_LABELS_DATA || [];
+  const SAVING_THROW_LABELS = processLocalizedArray<SavingThrowLabelEntry, { value: SavingThrowType; label: string }>(SAVING_THROW_LABELS_RAW, lang);
+  
+  const DAMAGE_REDUCTION_TYPES_RAW = bundle.base?.DAMAGE_REDUCTION_TYPES_DATA || [];
+  const DAMAGE_REDUCTION_TYPES = processLocalizedArray<DamageReductionTypeEntry, { value: DamageReductionTypeValue; label: string }>(DAMAGE_REDUCTION_TYPES_RAW, lang);
+  
+  const DAMAGE_REDUCTION_RULES_OPTIONS_RAW = bundle.base?.DAMAGE_REDUCTION_RULES_OPTIONS_DATA || [];
+  const DAMAGE_REDUCTION_RULES_OPTIONS = processLocalizedArray<DamageReductionRuleEntry, { value: DamageReductionRuleValue; label: string }>(DAMAGE_REDUCTION_RULES_OPTIONS_RAW, lang);
 
   const specificAlignmentOptions = ALIGNMENTS.map(a => ({ value: a.value, label: a.label }));
-  const genericAlignmentOptions = processLocalizedArray<AlignmentPrerequisiteGenericLabelEntry, { value: string; label: string }>(bundle.base.ALIGNMENT_PREREQUISITE_GENERIC_LABELS_DATA, lang);
+  const genericAlignmentOptions_RAW = bundle.base?.ALIGNMENT_PREREQUISITE_GENERIC_LABELS_DATA || [];
+  const genericAlignmentOptions = processLocalizedArray<AlignmentPrerequisiteGenericLabelEntry, { value: string; label: string }>(genericAlignmentOptions_RAW, lang);
   const ALIGNMENT_PREREQUISITE_OPTIONS = [...specificAlignmentOptions, ...genericAlignmentOptions].sort((a,b) => a.label.localeCompare(b.label));
 
   const UI_STRINGS: Record<string, string> = {};
-  for (const key in bundle.uiStrings) {
-    UI_STRINGS[key] = getLocalizedString(bundle.uiStrings[key], lang);
+  const uiStringsBundle = bundle.uiStrings || {};
+  for (const key in uiStringsBundle) {
+    UI_STRINGS[key] = getLocalizedString(uiStringsBundle[key], lang);
   }
   
   const DND_RACE_AGING_EFFECTS_DATA_PROCESSED: ProcessedSiteData['DND_RACE_AGING_EFFECTS_DATA'] = {};
-  for(const key in bundle.base.DND_RACE_AGING_EFFECTS_DATA) {
+  const rawAgingEffects = bundle.base?.DND_RACE_AGING_EFFECTS_DATA || {};
+  for(const key in rawAgingEffects) {
     DND_RACE_AGING_EFFECTS_DATA_PROCESSED[key] = {
-      categories: bundle.base.DND_RACE_AGING_EFFECTS_DATA[key].categories.map(cat => ({
+      categories: rawAgingEffects[key].categories.map(cat => ({
         ...cat,
         categoryName: getLocalizedString(cat.categoryName, lang)
       }))
@@ -444,20 +464,20 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     DAMAGE_REDUCTION_TYPES,
     DAMAGE_REDUCTION_RULES_OPTIONS,
     ALIGNMENT_PREREQUISITE_OPTIONS,
-    DEFAULT_ABILITIES: bundle.base.DEFAULT_ABILITIES_DATA,
-    DEFAULT_SAVING_THROWS: bundle.base.DEFAULT_SAVING_THROWS_DATA,
-    DEFAULT_RESISTANCE_VALUE: bundle.base.DEFAULT_RESISTANCE_VALUE_DATA,
-    DEFAULT_SPEED_DETAILS: bundle.base.DEFAULT_SPEED_DETAILS_DATA,
-    DEFAULT_SPEED_PENALTIES: bundle.base.DEFAULT_SPEED_PENALTIES_DATA,
-    DND_RACE_MIN_ADULT_AGE_DATA: bundle.base.DND_RACE_MIN_ADULT_AGE_DATA,
-    DND_RACE_BASE_MAX_AGE_DATA: bundle.base.DND_RACE_BASE_MAX_AGE_DATA,
-    RACE_TO_AGING_CATEGORY_MAP_DATA: bundle.base.RACE_TO_AGING_CATEGORY_MAP_DATA,
+    DEFAULT_ABILITIES: bundle.base?.DEFAULT_ABILITIES_DATA || {},
+    DEFAULT_SAVING_THROWS: bundle.base?.DEFAULT_SAVING_THROWS_DATA || { fortitude: {base:0,magicMod:0,miscMod:0}, reflex:{base:0,magicMod:0,miscMod:0}, will:{base:0,magicMod:0,miscMod:0}},
+    DEFAULT_RESISTANCE_VALUE: bundle.base?.DEFAULT_RESISTANCE_VALUE_DATA || {base:0, customMod:0},
+    DEFAULT_SPEED_DETAILS: bundle.base?.DEFAULT_SPEED_DETAILS_DATA || {base:0, miscModifier:0},
+    DEFAULT_SPEED_PENALTIES: bundle.base?.DEFAULT_SPEED_PENALTIES_DATA || {armorSpeedPenalty_base:0, armorSpeedPenalty_miscModifier:0, loadSpeedPenalty_base:0, loadSpeedPenalty_miscModifier:0},
+    DND_RACE_MIN_ADULT_AGE_DATA: bundle.base?.DND_RACE_MIN_ADULT_AGE_DATA || {},
+    DND_RACE_BASE_MAX_AGE_DATA: bundle.base?.DND_RACE_BASE_MAX_AGE_DATA || {},
+    RACE_TO_AGING_CATEGORY_MAP_DATA: bundle.base?.RACE_TO_AGING_CATEGORY_MAP_DATA || {},
     DND_RACE_AGING_EFFECTS_DATA: DND_RACE_AGING_EFFECTS_DATA_PROCESSED,
-    DND_RACE_ABILITY_MODIFIERS_DATA: bundle.base.DND_RACE_ABILITY_MODIFIERS_DATA,
-    DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA: bundle.base.DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA,
-    CLASS_SKILLS: bundle.skills.CLASS_SKILLS_DATA,
-    CLASS_SKILL_POINTS_BASE: bundle.skills.CLASS_SKILL_POINTS_BASE_DATA,
-    SKILL_SYNERGIES: bundle.skills.SKILL_SYNERGIES_DATA,
+    DND_RACE_ABILITY_MODIFIERS_DATA: bundle.base?.DND_RACE_ABILITY_MODIFIERS_DATA || {},
+    DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA: bundle.base?.DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA || {},
+    CLASS_SKILLS: bundle.skills?.CLASS_SKILLS_DATA || {},
+    CLASS_SKILL_POINTS_BASE: bundle.skills?.CLASS_SKILL_POINTS_BASE_DATA || {},
+    SKILL_SYNERGIES: bundle.skills?.SKILL_SYNERGIES_DATA || {},
     UI_STRINGS,
   };
 }
