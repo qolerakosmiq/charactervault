@@ -200,23 +200,23 @@ const CharacterFormCoreInfoSectionComponent = ({
   React.useEffect(() => {
     if (translationsLoading || !translations) return;
     if (!localRace && translations.DND_RACES.length > 0) {
-        const defaultRace = translations.DND_RACES.find(r => r.value === 'human')?.value || translations.DND_RACES[0]?.value || '';
+        const defaultRace = translations.DND_RACES.find(r => r.id === 'human')?.id || translations.DND_RACES[0]?.id || '';
         setLocalRace(defaultRace as DndRaceId);
     }
     if (!localClassName && translations.DND_CLASSES.length > 0) {
-        const defaultClass = translations.DND_CLASSES.find(c => c.value === 'fighter')?.value || translations.DND_CLASSES[0]?.value || '';
+        const defaultClass = translations.DND_CLASSES.find(c => c.id === 'fighter')?.id || translations.DND_CLASSES[0]?.id || '';
         setLocalClassName(defaultClass as DndClassId);
     }
   }, [translationsLoading, translations, localRace, setLocalRace, localClassName, setLocalClassName]);
 
   const selectedClassInfo = React.useMemo(() => {
     if (!translations || !localClassName) return undefined;
-    return translations.DND_CLASSES.find(c => c.value === localClassName);
+    return translations.DND_CLASSES.find(c => c.id === localClassName);
   }, [translations, localClassName]);
 
   const isPredefinedRace = React.useMemo(() => {
     if (!translations || !localRace) return false;
-    return !!translations.DND_RACES.find(r => r.value === localRace);
+    return !!translations.DND_RACES.find(r => r.id === localRace);
   }, [translations, localRace]);
 
   const filteredDeities = React.useMemo(() => {
@@ -231,13 +231,13 @@ const CharacterFormCoreInfoSectionComponent = ({
   const deitySelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [{ value: DEITY_NONE_OPTION_VALUE, label: "Loading..." }];
     const noneOptionLabel = translations.UI_STRINGS?.deityNoneOption || "None";
-    return [{ value: DEITY_NONE_OPTION_VALUE, label: noneOptionLabel }, ...filteredDeities.map(deity => ({value: deity.value, label: deity.label}))];
+    return [{ value: DEITY_NONE_OPTION_VALUE, label: noneOptionLabel }, ...filteredDeities.map(deity => ({value: deity.id, label: deity.label}))];
   }, [translationsLoading, translations, filteredDeities]);
 
   React.useEffect(() => {
     if (translationsLoading || !translations || !localAlignment || !localDeity) return;
     if (localDeity !== DEITY_NONE_OPTION_VALUE) {
-      const currentDeityInfo = translations.DND_DEITIES.find(d => d.value === localDeity);
+      const currentDeityInfo = translations.DND_DEITIES.find(d => d.id === localDeity);
       if (currentDeityInfo && !isAlignmentCompatible(localAlignment, currentDeityInfo.alignment)) {
         setLocalDeity(DEITY_NONE_OPTION_VALUE);
       }
@@ -246,28 +246,28 @@ const CharacterFormCoreInfoSectionComponent = ({
 
   const raceSelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return null;
-    return translations.DND_RACES.map(race => <SelectItem key={race.value} value={race.value}>{race.label}</SelectItem>);
+    return translations.DND_RACES.map(race => <SelectItem key={race.id} value={race.id}>{race.label}</SelectItem>);
   }, [translationsLoading, translations]);
 
   const classSelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return null;
-    return translations.DND_CLASSES.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>);
+    return translations.DND_CLASSES.map(c => <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>);
   }, [translationsLoading, translations]);
 
   const alignmentSelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return null;
-    return translations.ALIGNMENTS.map(align => <SelectItem key={align.value} value={align.value}>{align.label}</SelectItem>);
+    return translations.ALIGNMENTS.map(align => <SelectItem key={align.id} value={align.id}>{align.label}</SelectItem>);
   }, [translationsLoading, translations]);
 
   const sizeSelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return null;
-    return translations.SIZES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>);
+    return translations.SIZES.map(s => <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>);
   }, [translationsLoading, translations]);
 
   const domainOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [{ value: DOMAIN_NONE_OPTION_VALUE, label: "Loading..." }];
     const noneOptionLabel = translations.UI_STRINGS?.domainNoneOption || "None";
-    return [{ value: DOMAIN_NONE_OPTION_VALUE, label: noneOptionLabel }, ...translations.DND_DOMAINS.map(d => ({ value: d.value, label: d.label }))];
+    return [{ value: DOMAIN_NONE_OPTION_VALUE, label: noneOptionLabel }, ...translations.DND_DOMAINS.map(d => ({ value: d.id, label: d.label }))];
   }, [translations, translationsLoading]);
 
   const selectedDomain1 = characterData.chosenDomains?.[0];
@@ -280,10 +280,10 @@ const CharacterFormCoreInfoSectionComponent = ({
 
   const magicSchoolOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [{ value: MAGIC_SCHOOL_NONE_OPTION_VALUE, label: "Loading..." }];
-    const generalistLabel = translations.DND_MAGIC_SCHOOLS.find(s => s.value === 'universal')?.label || "Generalist";
+    const generalistLabel = translations.DND_MAGIC_SCHOOLS.find(s => s.id === 'universal')?.label || "Generalist";
     return [
       { value: MAGIC_SCHOOL_NONE_OPTION_VALUE, label: generalistLabel },
-      ...translations.DND_MAGIC_SCHOOLS.filter(s => s.value !== 'universal').map(s => ({ value: s.value, label: s.label }))
+      ...translations.DND_MAGIC_SCHOOLS.filter(s => s.id !== 'universal').map(s => ({ value: s.id, label: s.label }))
     ];
   }, [translations, translationsLoading]);
 
@@ -292,7 +292,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     const noneLabel = translations.UI_STRINGS?.prohibitedSchoolNoneOption || "None";
     return [
       {value: PROHIBITED_SCHOOL_NONE_VALUE, label: noneLabel},
-      ...translations.DND_MAGIC_SCHOOLS.filter(s => s.value !== 'universal' && s.value !== localSpecializationSchool).map(s => ({value: s.value, label: s.label}))
+      ...translations.DND_MAGIC_SCHOOLS.filter(s => s.id !== 'universal' && s.id !== localSpecializationSchool).map(s => ({value: s.id, label: s.label}))
     ];
   }, [translations, translationsLoading, localSpecializationSchool]);
 
@@ -433,7 +433,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   placeholder={UI_STRINGS.selectDomainPlaceholder || "Select Domain..."}
                   triggerClassName="h-9 text-sm"
                 />
-                {selectedDomain1 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.value === selectedDomain1)?.grantedPowerDescription}</p>}
+                {selectedDomain1 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.id === selectedDomain1)?.grantedPowerDescription}</p>}
               </div>
               <div className="space-y-1">
                 <Label htmlFor="cleric-domain-2" className="text-sm">{UI_STRINGS.clericDomain2Label || "Second Domain"}</Label>
@@ -445,7 +445,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   placeholder={UI_STRINGS.selectDomainPlaceholder || "Select Domain..."}
                   triggerClassName="h-9 text-sm"
                 />
-                 {selectedDomain2 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.value === selectedDomain2)?.grantedPowerDescription}</p>}
+                 {selectedDomain2 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.id === selectedDomain2)?.grantedPowerDescription}</p>}
               </div>
             </div>
           </div>
@@ -599,7 +599,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   const periodStrKey = `period${ability.uses.per.charAt(0).toUpperCase() + ability.uses.per.slice(1)}` as keyof typeof UI_STRINGS;
                   const periodStr = UI_STRINGS[periodStrKey] || ability.uses.per;
                   const displayString = (UI_STRINGS.abilityUsesFormat || "{abilityName}: {usesValue}/{period}")
-                    .replace("{abilityName}", ability.name)
+                    .replace("{abilityName}", ability.name as string) // name is already localized string
                     .replace("{usesValue}", String(ability.uses.value))
                     .replace("{period}", periodStr);
 
@@ -681,7 +681,7 @@ const CharacterFormCoreInfoSectionComponent = ({
           <div className="space-y-1.5">
             <Label htmlFor="gender">{UI_STRINGS.genderLabel || "Gender"}</Label>
              <ComboboxPrimitive
-                options={GENDERS}
+                options={GENDERS.map(g => ({ value: g.id, label: g.label }))}
                 value={localGender}
                 onChange={setLocalGender}
                 placeholder={UI_STRINGS.selectGenderPlaceholder || "Select or type gender..."}
@@ -698,7 +698,7 @@ const CharacterFormCoreInfoSectionComponent = ({
             </Select>
             <div className="flex items-baseline gap-1 pt-[6px] ml-1">
               {localSize && (() => {
-                const selectedSizeObject = translations.SIZES.find(s => s.value === localSize);
+                const selectedSizeObject = translations.SIZES.find(s => s.id === localSize);
                 if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
                   const acMod = selectedSizeObject.acModifier;
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
