@@ -54,7 +54,7 @@ export function ComboboxPrimitive({
 
   const handleSelect = (currentLabel: string) => {
     // CommandItem's onSelect provides the label (its 'value' prop)
-    const selectedOption = options.find(opt => opt.label.toLowerCase() === currentLabel.toLowerCase());
+    const selectedOption = options.find(opt => (opt.label ?? '').toLowerCase() === (currentLabel ?? '').toLowerCase());
     if (selectedOption) {
       onChange(selectedOption.value); // Pass the actual ID back
       if (!isEditable) setInputValue(""); // Clear search if not editable
@@ -66,7 +66,7 @@ export function ComboboxPrimitive({
 
   // For editable combobox, we directly bind the CommandInput to the external 'value' (which is an ID)
   // For non-editable, inputValue is used for search filtering within CommandInput.
-  const currentCommandInputValue = isEditable ? value : inputValue;
+  const currentCommandInputValue = isEditable ? (value || "") : inputValue; // Ensure value is string for editable input
   const onCommandInputChange = isEditable ? onChange : setInputValue;
 
 
@@ -138,7 +138,7 @@ export function ComboboxPrimitive({
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      (value || '').toLowerCase() === option.value.toLowerCase() ? "opacity-100" : "opacity-0"
+                      (value || '').toLowerCase() === (option.value ?? '').toLowerCase() ? "opacity-100" : "opacity-0"
                     )}
                   />
                   {option.label}
