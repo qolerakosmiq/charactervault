@@ -1,0 +1,25 @@
+
+{
+  "LANGUAGES_DATA": [
+    { "value": "common", "label": { "en": "Common", "fr": "Commun" } },
+    { "value": "dwarven", "label": { "en": "Dwarven", "fr": "Nain" } },
+    { "value": "elven", "label": { "en": "Elven", "fr": "Elfe" } },
+    { "value": "giant", "label": { "en": "Giant", "fr": "Géant" } },
+    { "value": "gnome", "label": { "en": "Gnome", "fr": "Gnome" } },
+    { "value": "goblin", "label": { "en": "Goblin", "fr": "Gobelin" } },
+    { "value": "orc", "label": { "en": "Orc", "fr": "Orque" } },
+    { "value": "halfling", "label": { "en": "Halfling", "fr": "Halfelin" } },
+    { "value": "abyssal", "label": { "en": "Abyssal", "fr": "Abyssal" } },
+    { "value": "celestial", "label": { "en": "Celestial", "fr": "Céleste" } },
+    { "value": "draconic", "label": { "en": "Draconic", "fr": "Draconique" } },
+    { "value": "infernal", "label": { "en": "Infernal", "fr": "Infernal" } },
+    { "value": "sylvan", "label": { "en": "Sylvan", "fr": "Sylvestre" } },
+    { "value": "undercommon", "label": { "en": "Undercommon", "fr": "Commun des profondeurs" } },
+    { "value": "auran", "label": { "en": "Auran", "fr": "Auran" } },
+    { "value": "aquan", "label": { "en": "Aquan", "fr": "Aquatique" } },
+    { "value": "ignan", "label": { "en": "Ignan", "fr": "Igné" } },
+    { "value": "terran", "label": { "en": "Terran", "fr": "Terrane" } },
+    { "value": "druidic", "label": { "en": "Druidic (Secret)", "fr": "Druidique (Secret)" } },
+    { "value": "gnoll", "label": { "en": "Gnoll", "fr": "Gnoll" } }
+  ]
+}

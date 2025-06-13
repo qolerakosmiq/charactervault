@@ -1,0 +1,77 @@
+
+{
+  "DND_MAGIC_SCHOOLS_DATA": [
+    {
+      "value": "abjuration",
+      "label": { "en": "Abjuration", "fr": "Abjuration" },
+      "description": {
+        "en": "Spells that protect, block, or banish. An abjuration specialist is called an abjurer.",
+        "fr": "Sorts qui protègent, bloquent ou bannissent. Un spécialiste en abjuration est appelé un abjurateur."
+      }
+    },
+    {
+      "value": "conjuration",
+      "label": { "en": "Conjuration", "fr": "Invocation" },
+      "description": {
+        "en": "Spells that bring creatures or materials to the caster. A conjuration specialist is called a conjurer.",
+        "fr": "Sorts qui amènent des créatures ou des matériaux au lanceur. Un spécialiste en invocation est appelé un invocateur."
+      }
+    },
+    {
+      "value": "divination",
+      "label": { "en": "Divination", "fr": "Divination" },
+      "description": {
+        "en": "Spells that reveal information. A divination specialist is called a diviner.",
+        "fr": "Sorts qui révèlent des informations. Un spécialiste en divination est appelé un devin."
+      }
+    },
+    {
+      "value": "enchantment",
+      "label": { "en": "Enchantment", "fr": "Enchantement" },
+      "description": {
+        "en": "Spells that imbue the recipient with some property or grant the caster power over another being. An enchantment specialist is called an enchanter.",
+        "fr": "Sorts qui imprègnent le destinataire d'une certaine propriété ou accordent au lanceur un pouvoir sur un autre être. Un spécialiste en enchantement est appelé un enchanteur."
+      }
+    },
+    {
+      "value": "evocation",
+      "label": { "en": "Evocation", "fr": "Évocation" },
+      "description": {
+        "en": "Spells that manipulate energy or create something from nothing. An evocation specialist is called an evoker.",
+        "fr": "Sorts qui manipulent l'énergie ou créent quelque chose à partir de rien. Un spécialiste en évocation est appelé un évocateur."
+      }
+    },
+    {
+      "value": "illusion",
+      "label": { "en": "Illusion", "fr": "Illusion" },
+      "description": {
+        "en": "Spells that alter perception or create false images. An illusion specialist is called an illusionist.",
+        "fr": "Sorts qui altèrent la perception ou créent de fausses images. Un spécialiste en illusion est appelé un illusionniste."
+      }
+    },
+    {
+      "value": "necromancy",
+      "label": { "en": "Necromancy", "fr": "Nécromancie" },
+      "description": {
+        "en": "Spells that manipulate, create, or destroy life or life force. A necromancy specialist is called a necromancer.",
+        "fr": "Sorts qui manipulent, créent ou détruisent la vie ou la force vitale. Un spécialiste en nécromancie est appelé un nécromancien."
+      }
+    },
+    {
+      "value": "transmutation",
+      "label": { "en": "Transmutation", "fr": "Transmutation" },
+      "description": {
+        "en": "Spells that physically alter a creature or object. A transmutation specialist is called a transmuter.",
+        "fr": "Sorts qui altèrent physiquement une créature ou un objet. Un spécialiste en transmutation est appelé un transmutateur."
+      }
+    },
+    {
+      "value": "universal",
+      "label": { "en": "Universal", "fr": "Universel" },
+      "description": {
+        "en": "Not a school, but a category for spells that all wizards can learn, such as cantrips or spells that do not fall into any specific school.",
+        "fr": "Pas une école, mais une catégorie pour les sorts que tous les magiciens peuvent apprendre, tels que les sorts mineurs ou les sorts qui n'appartiennent à aucune école spécifique."
+      }
+    }
+  ]
+}
