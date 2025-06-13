@@ -96,7 +96,7 @@ const SpeedPanelComponent = ({
   );
 
 
-  if (translationsLoading || !translations || !aggregatedFeatEffects) { 
+  if (translationsLoading || !translations || !translations.UI_STRINGS || !aggregatedFeatEffects) { 
     return (
       <Card>
         <CardHeader>
@@ -306,3 +306,4 @@ const SpeedPanelComponent = ({
 };
 SpeedPanelComponent.displayName = 'SpeedPanelComponent';
 export const SpeedPanel = React.memo(SpeedPanelComponent);
+

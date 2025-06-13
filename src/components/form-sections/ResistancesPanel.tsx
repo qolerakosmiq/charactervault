@@ -44,24 +44,24 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
   const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>("none");
   const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>('bypassed-by-type');
 
-  const energyResistancesFields: Array<{ field: ResistanceFieldKeySheet; labelKey: keyof NonNullable<NonNullable<typeof translations>['UI_STRINGS']>; Icon: React.ElementType; fieldPrefix?: string }> = [
+  const energyResistancesFields: Array<{ field: ResistanceFieldKeySheet; labelKey: keyof NonNullable<NonNullable<typeof translations>['UI_STRINGS']>; Icon: React.ElementType; fieldPrefix?: string }> = React.useMemo(() => [
     { field: 'fireResistance', labelKey: 'resistanceLabelFire', Icon: Flame, fieldPrefix: 'form-res' },
     { field: 'coldResistance', labelKey: 'resistanceLabelCold', Icon: Snowflake, fieldPrefix: 'form-res' },
     { field: 'acidResistance', labelKey: 'resistanceLabelAcid', Icon: Atom, fieldPrefix: 'form-res' },
     { field: 'electricityResistance', labelKey: 'resistanceLabelElectricity', Icon: ElectricityIcon, fieldPrefix: 'form-res' },
     { field: 'sonicResistance', labelKey: 'resistanceLabelSonic', Icon: Waves, fieldPrefix: 'form-res' },
-  ];
+  ], []);
 
-  const otherNumericResistancesFields: Array<{ field: ResistanceFieldKeySheet; labelKey: keyof NonNullable<NonNullable<typeof translations>['UI_STRINGS']>; Icon: React.ElementType; unit?: string; fieldPrefix?: string }> = [
+  const otherNumericResistancesFields: Array<{ field: ResistanceFieldKeySheet; labelKey: keyof NonNullable<NonNullable<typeof translations>['UI_STRINGS']>; Icon: React.ElementType; unit?: string; fieldPrefix?: string }> = React.useMemo(() => [
     { field: 'spellResistance', labelKey: 'resistanceLabelSpellResistance', Icon: Sigma, fieldPrefix: 'form-res' },
     { field: 'powerResistance', labelKey: 'resistanceLabelPowerResistance', Icon: Brain, fieldPrefix: 'form-res' },
     { field: 'fortification', labelKey: 'resistanceLabelFortification', Icon: ShieldCheck, unit: '%', fieldPrefix: 'form-res' },
-  ];
+  ], []);
 
   const debouncedResistanceMods = {} as Record<ResistanceFieldKeySheet, [number, (val: number) => void]>;
 
   [...energyResistancesFields, ...otherNumericResistancesFields].forEach(({ field }) => {
-     // eslint-disable-next-line react-hooks/rules-of-hooks
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     debouncedResistanceMods[field] = useDebouncedFormField(
       characterData[field]?.customMod || 0,
       (value) => onResistanceChange(field, 'customMod', value),
@@ -83,7 +83,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
     }
   }, [newDrRule, newDrType, translations, translationsLoading]);
   
-  if (translationsLoading || !translations) {
+  if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.DAMAGE_REDUCTION_TYPES || !translations.DAMAGE_REDUCTION_RULES_OPTIONS) {
     return (
       <Card>
         <CardHeader>
@@ -362,7 +362,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                         <Label htmlFor="form-dr-type" className="text-sm inline-block w-full text-left">{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
                         <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
                             <SelectTrigger id="form-dr-type" className="h-9 text-sm">
-                              <SelectValue placeholder="Select type..." />
+                              <SelectValue placeholder={UI_STRINGS.resistancesPanelDrSelectTypePlaceholder || "Select type..."} />
                             </SelectTrigger>
                             <SelectContent>
                                 {DAMAGE_REDUCTION_TYPES.map(option => (
@@ -428,4 +428,3 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
 ResistancesPanelComponent.displayName = 'ResistancesPanelComponent';
 export const ResistancesPanel = React.memo(ResistancesPanelComponent);
 
-    
