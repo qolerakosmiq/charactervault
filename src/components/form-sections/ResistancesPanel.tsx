@@ -75,11 +75,11 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
     const { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS } = translations;
 
     if (newDrRule !== 'bypassed-by-type' && newDrType === 'none') {
-      const firstNonNoneType = DAMAGE_REDUCTION_TYPES.find(t => t.value !== 'none')?.value || 'magic';
+      const firstNonNoneType = DAMAGE_REDUCTION_TYPES.find(t => t.id !== 'none')?.id || 'magic';
       setNewDrType(firstNonNoneType);
     }
     if (newDrType === "none" && !newDrRule) {
-        setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.value || 'bypassed-by-type');
+        setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.id || 'bypassed-by-type');
     }
   }, [newDrRule, newDrType, translations, translationsLoading]);
   
@@ -122,7 +122,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
         toast({ title: UI_STRINGS.toastDrTypeMissingTitle || "DR Type Missing", description: UI_STRINGS.toastDrTypeMissingDesc || "Please select a DR type.", variant: "destructive"});
         return;
     }
-    const ruleLabelForToast = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === newDrRule)?.label || newDrRule;
+    const ruleLabelForToast = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === newDrRule)?.label || newDrRule;
     if ((newDrRule === 'excepted-by-type' || newDrRule === 'versus-specific-type') && newDrType === 'none') {
       toast({ 
         title: UI_STRINGS.toastDrInvalidCombinationTitle || "Invalid Combination", 
@@ -149,8 +149,8 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
     };
     onDamageReductionChange([...characterData.damageReduction, newInstance]);
     setNewDrValue(1);
-    setNewDrType(DAMAGE_REDUCTION_TYPES[0]?.value || "none");
-    setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.value || 'bypassed-by-type');
+    setNewDrType(DAMAGE_REDUCTION_TYPES[0]?.id || "none");
+    setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.id || 'bypassed-by-type');
   };
 
   const handleRemoveDamageReduction = (idToRemove: string) => {
@@ -158,7 +158,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
   };
   
   const getDrTypeUiLabel = (typeValue: DamageReductionTypeValue | string): string => {
-    return DAMAGE_REDUCTION_TYPES.find(t => t.value === typeValue)?.label || String(typeValue);
+    return DAMAGE_REDUCTION_TYPES.find(t => t.id === typeValue)?.label || String(typeValue);
   };
   
   const getDrPrimaryNotation = (dr: DamageReductionInstance): React.ReactNode => {
@@ -174,18 +174,18 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
       return <>{valueText} {vsLabel} {typeLabel}</>;
     }
     if (dr.rule === 'excepted-by-type') {
-       const displayType = typeLabel === (DAMAGE_REDUCTION_TYPES.find(t => t.value === 'none')?.label || "None") ? "—" : typeLabel;
+       const displayType = typeLabel === (DAMAGE_REDUCTION_TYPES.find(t => t.id === 'none')?.label || "None") ? "—" : typeLabel;
        return <>{valueText}/{displayType} {immunitySuffix}</>;
     }
-    return <>{valueText}/{typeLabel} ({DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule)?.label || dr.rule})</>;
+    return <>{valueText}/{typeLabel} ({DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule)?.label || dr.rule})</>;
   };
   
   const getDrRuleDescription = (dr: DamageReductionInstance): React.ReactNode => {
     const typeLabel = getDrTypeUiLabel(dr.type);
-    const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
+    const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
     
     const valueBadge = <Badge variant="outline">{dr.value}</Badge>;
-    const typeIsNone = dr.type === "none" || typeLabel === (DAMAGE_REDUCTION_TYPES.find(t => t.value === 'none')?.label || "None");
+    const typeIsNone = dr.type === "none" || typeLabel === (DAMAGE_REDUCTION_TYPES.find(t => t.id === 'none')?.label || "None");
     const typeBadge = !typeIsNone
         ? <Badge variant="outline">{typeLabel}</Badge>
         : <span className="italic mx-0.5">{typeLabel}</span>;
@@ -351,7 +351,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                               </SelectTrigger>
                               <SelectContent>
                                   {DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (
-                                      <SelectItem key={option.value} value={option.value}>
+                                      <SelectItem key={option.id} value={option.id}>
                                           {option.label}
                                       </SelectItem>
                                   ))}
@@ -367,9 +367,9 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                             <SelectContent>
                                 {DAMAGE_REDUCTION_TYPES.map(option => (
                                     <SelectItem 
-                                      key={option.value} 
-                                      value={option.value}
-                                      disabled={option.value === 'none' && newDrRule !== 'bypassed-by-type'}
+                                      key={option.id} 
+                                      value={option.id}
+                                      disabled={option.id === 'none' && newDrRule !== 'bypassed-by-type'}
                                     >
                                         {option.label}
                                     </SelectItem>
@@ -385,7 +385,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                   <div className="md:col-span-2 space-y-3">
                     {characterData.damageReduction.length > 0 ? (
                       characterData.damageReduction.map(dr => {
-                        const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.value === dr.rule);
+                        const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
                         const ruleLabel = ruleDef?.label || dr.rule;
                         return (
                           <div key={dr.id} className="flex flex-col items-start justify-between p-2 border rounded-md bg-muted/5 text-sm">
