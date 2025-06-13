@@ -27,10 +27,10 @@ interface RaceContentDisplayProps {
   speeds?: Partial<Record<SpeedType, number>>;
   translations: {
     UI_STRINGS: Record<string, string>;
-    ABILITY_LABELS: readonly { id: Exclude<AbilityName, 'none'>; label: string; abbr: string }[]; // Changed value to id
+    ABILITY_LABELS: readonly { id: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
     DND_CLASSES: readonly DndClassOption[];
     DND_RACES: readonly DndRaceOption[];
-    ALIGNMENT_PREREQUISITE_OPTIONS: readonly { id: string; label: string }[]; // Changed value to id
+    ALIGNMENT_PREREQUISITE_OPTIONS: readonly { id: string; label: string }[];
     SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[];
   };
   allCombinedFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
@@ -58,14 +58,17 @@ export const RaceContentDisplay = ({
   const speedUnit = UI_STRINGS.speedUnit || "ft.";
   const outputBlocks: React.ReactNode[] = [];
 
-  if (htmlContent) {
-    outputBlocks.push(
-      <div
-        key="race-html-content-block"
-        className="text-sm prose prose-sm dark:prose-invert max-w-none"
-        dangerouslySetInnerHTML={{ __html: htmlContent }}
-      />
-    );
+  // Simplified condition and added margin bottom for spacing
+  const htmlContentBlock = (htmlContent && htmlContent.trim()) ? (
+    <div
+      key="race-html-content-block"
+      className="text-sm prose prose-sm dark:prose-invert max-w-none mb-3"
+      dangerouslySetInnerHTML={{ __html: htmlContent }}
+    />
+  ) : null;
+
+  if (htmlContentBlock) {
+    outputBlocks.push(htmlContentBlock);
   }
 
   const generalTraitsSubSections: React.ReactNode[] = [];
@@ -214,17 +217,19 @@ export const RaceContentDisplay = ({
 
           if (currentBlockKey === "race-html-content-block" &&
               (nextBlockKey === "race-general-traits-section" || nextBlockKey === "race-granted-feats-section")) {
-            separatorClass = "mt-2 mb-1";
+            separatorClass = "mt-0 mb-2"; // No top margin if description is followed by traits/feats, keep bottom
+          } else if (nextBlockKey === "race-general-traits-section" || nextBlockKey === "race-granted-feats-section"){
+            separatorClass = "mt-3 mb-2";
           }
         }
         return (
           <React.Fragment key={`race-display-root-block-${index}`}>
             {block}
-            {index < arr.length - 1 && <Separator className={separatorClass} />}
+            {index < arr.length - 1 && outputBlocks[index+1] && <Separator className={separatorClass} />}
           </React.Fragment>
         );
       })}
     </div>
   ) : null;
 };
-
+    
