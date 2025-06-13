@@ -6,7 +6,8 @@ import type {
   FeatTypeString, ClassCastingDetails, CharacterSizeObject, CharacterAlignmentObject,
   DndRaceOption, DndClassOption, DndDeityOption, DeityAttribute, AbilityScores, SavingThrows,
   ResistanceValue, SpeedDetails, CharacterClass, LanguageId, LanguageOption, ClassAttribute,
-  DomainDefinition, DomainId, MagicSchoolId, MagicSchoolDefinition, SpeedType, LocalizedString
+  DomainDefinition, DomainId, MagicSchoolId, MagicSchoolDefinition, SpeedType, LocalizedString,
+  ClassSpecificUIBlock, FeatChoiceFilter // Added ClassSpecificUIBlock, FeatChoiceFilter
 } from '@/types/character-core';
 import type { LanguageCode } from './config';
 import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from './config';
@@ -285,8 +286,6 @@ function processLocalizedArray<T extends { id: string; label: LocalizedString; [
         } else if (typeof rawFieldValue === 'string') {
            newItem[fieldKey] = rawFieldValue;
         } else if (rawFieldValue === undefined && fieldKey === 'generalDescription') {
-            // Specifically ensure generalDescription gets a default empty string if missing,
-            // so it doesn't become undefined.
             newItem[fieldKey] = '';
         }
       });
@@ -311,18 +310,17 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   const DND_RACES_RAW = bundle.races?.DND_RACES_DATA || [];
   const DND_RACES = DND_RACES_RAW.map(r => {
     const localizedRace: DndRaceOption = {
-      ...r, // Spread raw properties first
+      ...r,
       id: r.id,
       label: getLocalizedString(r.label, lang),
-      // Ensure generalDescription is always present, even if empty, and correctly localized
-      generalDescription: getLocalizedString(r.generalDescription || r.description, lang),
+      generalDescription: getLocalizedString(r.generalDescription || r.description, lang) || '',
       loreAttributes: (r.loreAttributes || []).map(la => ({
         key: getLocalizedString(la.key, lang),
         value: getLocalizedString(la.value, lang)
       })),
       grantedFeats: (r.grantedFeats || []).map(gf => ({
         ...gf,
-        name: getLocalizedString(gf.name, lang), // Localize name if present
+        name: getLocalizedString(gf.name, lang),
         note: getLocalizedString(gf.note, lang)
       })),
     };
@@ -333,11 +331,10 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   const DND_CLASSES_RAW = bundle.allClasses || [];
   const DND_CLASSES = DND_CLASSES_RAW.map(c => {
     const localizedClass: DndClassOption = {
-      ...c, // Spread raw properties
+      ...c,
       id: c.id,
       label: getLocalizedString(c.label, lang),
-      // Ensure generalDescription is always present, even if empty, and correctly localized
-      generalDescription: getLocalizedString(c.generalDescription, lang),
+      generalDescription: getLocalizedString(c.generalDescription, lang) || '',
       loreAttributes: (c.loreAttributes || []).map(la => ({
         key: getLocalizedString(la.key, lang),
         value: getLocalizedString(la.value, lang)
@@ -507,3 +504,4 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   };
 }
 
+    
