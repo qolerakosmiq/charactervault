@@ -431,14 +431,15 @@
       "value": "skill-focus",
       "label": { "en": "Skill Focus", "fr": "Compétence de prédilection" },
       "description": {
-        "en": "<b>Benefit:</b> Choose a skill. You get a +3 bonus on all checks involving that skill.",
-        "fr": "<b>Avantage :</b> Choisissez une compétence. Vous obtenez un bonus de +3 à tous les tests impliquant cette compétence."
+        "en": "<b>Benefit:</b> Choose a skill. You get a +3 bonus on all checks involving that skill.<br/><b>Special:</b> You can gain this feat multiple times. Its effects do not stack. Each time you take the feat, it applies to a new skill.",
+        "fr": "<b>Avantage :</b> Choisissez une compétence. Vous obtenez un bonus de +3 à tous les tests impliquant cette compétence.<br/><b>Spécial :</b> Vous pouvez prendre ce don plusieurs fois. Ses effets ne se cumulent pas. Chaque fois que vous prenez le don, il s'applique à une nouvelle compétence."
       },
       "requiresSpecialization": "skill",
       "effectsText": { "en": "+3 to chosen skill.", "fr": "+3 à la compétence choisie." },
       "effects": [
         { "type": "skill", "skillId": "SPEC", "value": 3, "bonusType": "untyped" }
       ],
+      "canTakeMultipleTimes": true,
       "type": "general"
     },
     {
@@ -929,3 +930,5 @@
     { "value": "monkBonusFeatL6", "label": { "en": "Monk Bonus Feat (L6)", "fr": "Don suppl. Moine (N6)" } }
   ]
 }
+
+    
