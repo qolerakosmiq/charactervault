@@ -208,12 +208,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
 
   React.useEffect(() => {
-    if (!isClient || translationsLoading || !translations || !translations.UI_STRINGS) return; // Added UI_STRINGS check
+    if (!isClient || translationsLoading || !translations || !translations.UI_STRINGS) return; 
 
     let initialCharData = createBaseCharacterData(translations, globalCustomSkillDefinitions);
-    // This effect is for *initializing* a new character.
-    // If loading an existing character, that would be a different flow (e.g., from a store).
-
+    
     const { CLASS_SKILLS, SIZES, DND_RACES, DND_CLASSES, DND_DOMAINS, DND_DEITIES, XP_TABLE, EPIC_LEVEL_XP_INCREASE, UI_STRINGS } = translations;
 
     let currentSkills = [...initialCharData.skills];
@@ -241,7 +239,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       allAvailableFeatDefinitions, DND_RACES, DND_CLASSES, DND_DOMAINS, DND_DEITIES, XP_TABLE, EPIC_LEVEL_XP_INCREASE, UI_STRINGS
     );
     
-    const userChosenFeats = initialCharData.feats?.filter(fi => !fi.isGranted) || []; // Should be empty for new char
+    const userChosenFeats = initialCharData.feats?.filter(fi => !fi.isGranted) || []; 
 
     const combinedFeatsMap = new Map<string, CharacterFeatInstance>();
     initialGrantedFeats.forEach(inst => combinedFeatsMap.set(inst.instanceId, { ...inst, isGranted: true }));
@@ -257,7 +255,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     }
     initialCharData.sizeModifierAttack = getSizeModifierAttack(initialCharData.size, SIZES);
 
-    const tempAggFeats = calculateFeatEffects(initialCharData, allAvailableFeatDefinitions);
+    const tempAggFeats = calculateFeatEffects(initialCharData, allAvailableFeatDefinitions, translations); // Pass translations
     const existingUserDrInstances = initialCharData.damageReduction?.filter(dr => !dr.isGranted) || [];
     let finalDrArray: DamageReductionInstance[] = [...existingUserDrInstances];
 
@@ -292,7 +290,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   }, [
     isClient, translationsLoading, translations, globalCustomFeatDefinitionsFromStore, 
     globalCustomSkillDefinitionsFromStore, allAvailableFeatDefinitions, 
-    allAvailableSkillDefinitionsForDisplay, globalCustomSkillDefinitions // Ensure UI_STRINGS is here if getGrantedFeats needs it for notes
+    allAvailableSkillDefinitionsForDisplay, globalCustomSkillDefinitions 
   ]);
 
 
@@ -326,8 +324,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
 
   React.useEffect(() => {
-    if (character && translations && allAvailableFeatDefinitions.length > 0 && translations.UI_STRINGS) { // ensure allAvailFeats is populated
-      const aggFeats = calculateFeatEffects(character, allAvailableFeatDefinitions);
+    if (character && translations && allAvailableFeatDefinitions.length > 0 && translations.UI_STRINGS) { 
+      const aggFeats = calculateFeatEffects(character, allAvailableFeatDefinitions, translations); // Pass translations
       setAggregatedFeatEffects(aggFeats);
       
       const detailedScores = calculateDetailedAbilityScores(
@@ -406,7 +404,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   }, [detailedAbilityScores, character]);
 
   React.useEffect(() => {
-    if (character && character.race && character.age > 0 && translations && translations.ABILITY_LABELS.length > 0) { // Check ABILITY_LABELS
+    if (character && character.race && character.age > 0 && translations && translations.ABILITY_LABELS.length > 0) { 
       const details = getNetAgingEffects(
         character.race as DndRaceId,
         character.age,
@@ -422,7 +420,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   }, [character?.race, character?.age, translations]);
 
   React.useEffect(() => {
-    if (character && character.race && translations && allAvailableFeatDefinitions.length > 0 && allAvailableSkillDefinitionsForDisplay.length > 0 && translations.ABILITY_LABELS.length > 0) { // Check dependencies
+    if (character && character.race && translations && allAvailableFeatDefinitions.length > 0 && allAvailableSkillDefinitionsForDisplay.length > 0 && translations.ABILITY_LABELS.length > 0) { 
       const details = getRaceSpecialQualities(
         character.race as DndRaceId,
         translations.DND_RACES,
@@ -552,7 +550,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   }, []);
 
   const handleClassChange = React.useCallback((value: DndClassId | string) => {
-    if (!translations || !translations.UI_STRINGS) return; // Ensure UI_STRINGS is available
+    if (!translations || !translations.UI_STRINGS) return; 
     setCharacter(prev => {
       if (!prev) return null;
       const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: value, level: 1 }];
@@ -726,7 +724,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         ...prevCharacter,
         feats: prevCharacter.feats.map(featInstance => {
           const definition = allAvailableFeatDefinitions.find(def => def.value === featInstance.definitionId);
-          if (definition && !definition.permanentEffect) { // Only toggle non-permanent effects
+          if (definition && !definition.permanentEffect) { 
             const hasThisConditionInEffects = definition.effects?.some(eff => eff.condition === conditionKey);
             if (hasThisConditionInEffects) {
               const newStates = { ...(featInstance.conditionalEffectStates || {}) };
@@ -1232,3 +1230,5 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
 
+
+    
