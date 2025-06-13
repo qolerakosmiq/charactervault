@@ -1,0 +1,382 @@
+
+{
+  "DND_DOMAINS_DATA": [
+    {
+      "value": "air-domain",
+      "label": { "en": "Air", "fr": "Air" },
+      "description": { "en": "Masters of the sky and wind.", "fr": "Maîtres du ciel et du vent." },
+      "grantedPowerDescription": { "en": "Turn or destroy earth creatures as a good cleric turns undead. Rebuke, command, or bolster air creatures as an evil cleric rebukes undead. Use these abilities a total number of times per day equal to 3 + your Charisma modifier.", "fr": "Renvoi ou destruction des créatures de la terre comme un prêtre bon renvoie les morts-vivants. Intimidation, contrôle ou animation des créatures de l'air comme un prêtre mauvais intimide les morts-vivants. Utilisez ces capacités un nombre total de fois par jour égal à 3 + votre modificateur de Charisme." },
+      "domainSpells": [
+        { "level": 1, "spellId": "obscuring-mist", "spellName": { "en": "Obscuring Mist", "fr": "Brume de dissimulation" } },
+        { "level": 2, "spellId": "wind-wall", "spellName": { "en": "Wind Wall", "fr": "Mur de vent" } },
+        { "level": 3, "spellId": "gaseous-form", "spellName": { "en": "Gaseous Form", "fr": "Forme gazeuse" } },
+        { "level": 4, "spellId": "air-walk", "spellName": { "en": "Air Walk", "fr": "Marche dans les airs" } },
+        { "level": 5, "spellId": "control-winds", "spellName": { "en": "Control Winds", "fr": "Contrôle des vents" } },
+        { "level": 6, "spellId": "chain-lightning", "spellName": { "en": "Chain Lightning", "fr": "Éclair multiple" } },
+        { "level": 7, "spellId": "control-weather", "spellName": { "en": "Control Weather", "fr": "Contrôle du climat" } },
+        { "level": 8, "spellId": "whirlwind", "spellName": { "en": "Whirlwind", "fr": "Tornade" } },
+        { "level": 9, "spellId": "elemental-swarm-air", "spellName": { "en": "Elemental Swarm (Air)", "fr": "Nuée d'élémentaires (Air)" } }
+      ]
+    },
+    {
+      "value": "animal-domain",
+      "label": { "en": "Animal", "fr": "Animal" },
+      "description": { "en": "Connected to the wild creatures of the world.", "fr": "Connecté aux créatures sauvages du monde." },
+      "grantedPowerDescription": { "en": "You can use speak with animals once per day as a spell-like ability. Add Handle Animal to your list of cleric class skills.", "fr": "Vous pouvez utiliser communication avec les animaux une fois par jour comme un pouvoir magique. Ajoutez Dressage à votre liste de compétences de classe de prêtre." },
+      "domainSpells": [
+        { "level": 1, "spellId": "calm-animals", "spellName": { "en": "Calm Animals", "fr": "Apaisement des animaux" } },
+        { "level": 2, "spellId": "hold-animal", "spellName": { "en": "Hold Animal", "fr": "Immobilisation d'animal" } },
+        { "level": 3, "spellId": "dominate-animal", "spellName": { "en": "Dominate Animal", "fr": "Domination d'animal" } },
+        { "level": 4, "spellId": "summon-natures-ally-iv-animal", "spellName": { "en": "Summon Nature's Ally IV (Animal)", "fr": "Convocation d'alliés naturels IV (Animal)" } },
+        { "level": 5, "spellId": "commune-with-nature", "spellName": { "en": "Commune with Nature", "fr": "Communion avec la nature" } },
+        { "level": 6, "spellId": "antilife-shell", "spellName": { "en": "Antilife Shell", "fr": "Zone d'anti-vie" } },
+        { "level": 7, "spellId": "animal-shapes", "spellName": { "en": "Animal Shapes", "fr": "Formes animales" } },
+        { "level": 8, "spellId": "summon-natures-ally-viii-animal", "spellName": { "en": "Summon Nature's Ally VIII (Animal)", "fr": "Convocation d'alliés naturels VIII (Animal)" } },
+        { "level": 9, "spellId": "shapechange-animal", "spellName": { "en": "Shapechange (Animal forms only)", "fr": "Métamorphose (Formes animales uniquement)" } }
+      ]
+    },
+    {
+      "value": "chaos-domain",
+      "label": { "en": "Chaos", "fr": "Chaos" },
+      "description": { "en": "Embraces freedom and randomness.", "fr": "Embrasse la liberté et l'aléatoire." },
+      "grantedPowerDescription": { "en": "You cast chaos spells at +1 caster level.", "fr": "Vous lancez les sorts du Chaos avec un niveau de lanceur de sorts +1." },
+      "domainSpells": [
+        { "level": 1, "spellId": "protection-from-law", "spellName": { "en": "Protection from Law", "fr": "Protection contre la Loi" } },
+        { "level": 2, "spellId": "shatter", "spellName": { "en": "Shatter", "fr": "Fracassement" } },
+        { "level": 3, "spellId": "magic-circle-against-law", "spellName": { "en": "Magic Circle against Law", "fr": "Cercle magique contre la Loi" } },
+        { "level": 4, "spellId": "chaos-hammer", "spellName": { "en": "Chaos Hammer", "fr": "Marteau du Chaos" } },
+        { "level": 5, "spellId": "dispel-law", "spellName": { "en": "Dispel Law", "fr": "Dissipation de la Loi" } },
+        { "level": 6, "spellId": "animate-objects", "spellName": { "en": "Animate Objects", "fr": "Animation d'objets" } },
+        { "level": 7, "spellId": "word-of-chaos", "spellName": { "en": "Word of Chaos", "fr": "Mot du Chaos" } },
+        { "level": 8, "spellId": "cloak-of-chaos", "spellName": { "en": "Cloak of Chaos", "fr": "Cape du Chaos" } },
+        { "level": 9, "spellId": "summon-monster-ix-chaos", "spellName": { "en": "Summon Monster IX (Chaos)", "fr": "Convocation de monstre IX (Chaos)" } }
+      ]
+    },
+    {
+      "value": "death-domain",
+      "label": { "en": "Death", "fr": "Mort" },
+      "description": { "en": "Focuses on mortality and the undead.", "fr": "Se concentre sur la mortalité et les morts-vivants." },
+      "grantedPowerDescription": { "en": "You may use death touch once per day. Your death touch is a supernatural ability that produces a death effect. You must succeed on a melee touch attack against a living creature (using the rules for touch spells). When you touch, roll 1d6 per cleric level you possess. If the total at least equals the creature’s current hit points, it dies (no save).", "fr": "Vous pouvez utiliser le contact mortel une fois par jour. Votre contact mortel est un pouvoir surnaturel qui produit un effet de mort. Vous devez réussir une attaque de contact au corps à corps contre une créature vivante (en utilisant les règles pour les sorts de contact). Lorsque vous touchez, lancez 1d6 par niveau de prêtre que vous possédez. Si le total est au moins égal aux points de vie actuels de la créature, elle meurt (pas de jet de sauvegarde)." },
+      "domainSpells": [
+        { "level": 1, "spellId": "cause-fear", "spellName": { "en": "Cause Fear", "fr": "Terreur" } },
+        { "level": 2, "spellId": "death-knell", "spellName": { "en": "Death Knell", "fr": "Glas funèbre" } },
+        { "level": 3, "spellId": "animate-dead", "spellName": { "en": "Animate Dead", "fr": "Animation des morts" } },
+        { "level": 4, "spellId": "death-ward", "spellName": { "en": "Death Ward", "fr": "Protection contre la mort" } },
+        { "level": 5, "spellId": "slay-living", "spellName": { "en": "Slay Living", "fr": "Exécution" } },
+        { "level": 6, "spellId": "create-undead", "spellName": { "en": "Create Undead", "fr": "Création de mort-vivant" } },
+        { "level": 7, "spellId": "destruction", "spellName": { "en": "Destruction", "fr": "Destruction" } },
+        { "level": 8, "spellId": "create-greater-undead", "spellName": { "en": "Create Greater Undead", "fr": "Création de mort-vivant dominant" } },
+        { "level": 9, "spellId": "wail-of-the-banshee", "spellName": { "en": "Wail of the Banshee", "fr": "Plainte de la banshee" } }
+      ]
+    },
+    {
+      "value": "destruction-domain",
+      "label": { "en": "Destruction", "fr": "Destruction" },
+      "description": { "en": "Revels in ruin and entropy.", "fr": "Se délecte de la ruine et de l'entropie." },
+      "grantedPowerDescription": { "en": "You gain the smite power, the supernatural ability to make a single melee attack with a +4 attack bonus and a +1 damage bonus per cleric level (if you hit). You must declare the smite before making the attack. This ability is usable once per day.", "fr": "Vous gagnez le pouvoir de châtiment, la capacité surnaturelle d'effectuer une seule attaque au corps à corps avec un bonus d'attaque de +4 et un bonus de dégâts de +1 par niveau de prêtre (si vous touchez). Vous devez déclarer le châtiment avant d'effectuer l'attaque. Cette capacité est utilisable une fois par jour." },
+      "domainSpells": [
+        { "level": 1, "spellId": "inflict-light-wounds", "spellName": { "en": "Inflict Light Wounds", "fr": "Blessure légère" } },
+        { "level": 2, "spellId": "shatter", "spellName": { "en": "Shatter", "fr": "Fracassement" } },
+        { "level": 3, "spellId": "contagion", "spellName": { "en": "Contagion", "fr": "Contagion" } },
+        { "level": 4, "spellId": "inflict-critical-wounds", "spellName": { "en": "Inflict Critical Wounds", "fr": "Blessure critique" } },
+        { "level": 5, "spellId": "inflict-light-wounds-mass", "spellName": { "en": "Inflict Light Wounds, Mass", "fr": "Blessure légère de groupe" } },
+        { "level": 6, "spellId": "harm", "spellName": { "en": "Harm", "fr": "Mise à mal" } },
+        { "level": 7, "spellId": "disintegrate", "spellName": { "en": "Disintegrate", "fr": "Désintégration" } },
+        { "level": 8, "spellId": "earthquake", "spellName": { "en": "Earthquake", "fr": "Tremblement de terre" } },
+        { "level": 9, "spellId": "implosion", "spellName": { "en": "Implosion", "fr": "Implosion" } }
+      ]
+    },
+    {
+      "value": "earth-domain",
+      "label": { "en": "Earth", "fr": "Terre" },
+      "description": { "en": "Connected to stone and the deep places of the earth.", "fr": "Connecté à la pierre et aux profondeurs de la terre." },
+      "grantedPowerDescription": { "en": "Turn or destroy air creatures as a good cleric turns undead. Rebuke, command, or bolster earth creatures as an evil cleric rebukes undead. Use these abilities a total number of times per day equal to 3 + your Charisma modifier.", "fr": "Renvoi ou destruction des créatures de l'air comme un prêtre bon renvoie les morts-vivants. Intimidation, contrôle ou animation des créatures de la terre comme un prêtre mauvais intimide les morts-vivants. Utilisez ces capacités un nombre total de fois par jour égal à 3 + votre modificateur de Charisme." },
+      "domainSpells": [
+        { "level": 1, "spellId": "magic-stone", "spellName": { "en": "Magic Stone", "fr": "Pierre magique" } },
+        { "level": 2, "spellId": "soften-earth-and-stone", "spellName": { "en": "Soften Earth and Stone", "fr": "Ramollir la terre et la pierre" } },
+        { "level": 3, "spellId": "stone-shape", "spellName": { "en": "Stone Shape", "fr": "Façonnage de la pierre" } },
+        { "level": 4, "spellId": "spike-stones", "spellName": { "en": "Spike Stones", "fr": "Pierres acérées" } },
+        { "level": 5, "spellId": "wall-of-stone", "spellName": { "en": "Wall of Stone", "fr": "Mur de pierre" } },
+        { "level": 6, "spellId": "stoneskin", "spellName": { "en": "Stoneskin", "fr": "Peau de pierre" } },
+        { "level": 7, "spellId": "earthquake", "spellName": { "en": "Earthquake", "fr": "Tremblement de terre" } },
+        { "level": 8, "spellId": "iron-body", "spellName": { "en": "Iron Body", "fr": "Corps de fer" } },
+        { "level": 9, "spellId": "elemental-swarm-earth", "spellName": { "en": "Elemental Swarm (Earth)", "fr": "Nuée d'élémentaires (Terre)" } }
+      ]
+    },
+    {
+      "value": "evil-domain",
+      "label": { "en": "Evil", "fr": "Mal" },
+      "description": { "en": "Empowered by dark forces and malevolence.", "fr": "Puisance tirée des forces obscures et de la malveillance." },
+      "grantedPowerDescription": { "en": "You cast evil spells at +1 caster level.", "fr": "Vous lancez les sorts du Mal avec un niveau de lanceur de sorts +1." },
+      "domainSpells": [
+        { "level": 1, "spellId": "protection-from-good", "spellName": { "en": "Protection from Good", "fr": "Protection contre le Bien" } },
+        { "level": 2, "spellId": "desecrate", "spellName": { "en": "Desecrate", "fr": "Profanation" } },
+        { "level": 3, "spellId": "magic-circle-against-good", "spellName": { "en": "Magic Circle against Good", "fr": "Cercle magique contre le Bien" } },
+        { "level": 4, "spellId": "unholy-blight", "spellName": { "en": "Unholy Blight", "fr": "Fumées nocives" } },
+        { "level": 5, "spellId": "dispel-good", "spellName": { "en": "Dispel Good", "fr": "Dissipation du Bien" } },
+        { "level": 6, "spellId": "create-undead", "spellName": { "en": "Create Undead", "fr": "Création de mort-vivant" } },
+        { "level": 7, "spellId": "blasphemy", "spellName": { "en": "Blasphemy", "fr": "Blasphème" } },
+        { "level": 8, "spellId": "unholy-aura", "spellName": { "en": "Unholy Aura", "fr": "Aura maudite" } },
+        { "level": 9, "spellId": "summon-monster-ix-evil", "spellName": { "en": "Summon Monster IX (Evil)", "fr": "Convocation de monstre IX (Mal)" } }
+      ]
+    },
+    {
+      "value": "fire-domain",
+      "label": { "en": "Fire", "fr": "Feu" },
+      "description": { "en": "Commands the searing power of flame.", "fr": "Commande le pouvoir brûlant de la flamme." },
+      "grantedPowerDescription": { "en": "Turn or destroy water creatures as a good cleric turns undead. Rebuke, command, or bolster fire creatures as an evil cleric rebukes undead. Use these abilities a total number of times per day equal to 3 + your Charisma modifier.", "fr": "Renvoi ou destruction des créatures de l'eau comme un prêtre bon renvoie les morts-vivants. Intimidation, contrôle ou animation des créatures du feu comme un prêtre mauvais intimide les morts-vivants. Utilisez ces capacités un nombre total de fois par jour égal à 3 + votre modificateur de Charisme." },
+      "domainSpells": [
+        { "level": 1, "spellId": "burning-hands", "spellName": { "en": "Burning Hands", "fr": "Mains brûlantes" } },
+        { "level": 2, "spellId": "produce-flame", "spellName": { "en": "Produce Flame", "fr": "Production de flamme" } },
+        { "level": 3, "spellId": "resist-energy-fire", "spellName": { "en": "Resist Energy (Fire)", "fr": "Résistance aux énergies (Feu)" } },
+        { "level": 4, "spellId": "wall-of-fire", "spellName": { "en": "Wall of Fire", "fr": "Mur de feu" } },
+        { "level": 5, "spellId": "fire-shield", "spellName": { "en": "Fire Shield", "fr": "Bouclier de feu" } },
+        { "level": 6, "spellId": "fire-seeds", "spellName": { "en": "Fire Seeds", "fr": "Graines de feu" } },
+        { "level": 7, "spellId": "fire-storm", "spellName": { "en": "Fire Storm", "fr": "Tempête de feu" } },
+        { "level": 8, "spellId": "incendiary-cloud", "spellName": { "en": "Incendiary Cloud", "fr": "Nuage incendiaire" } },
+        { "level": 9, "spellId": "elemental-swarm-fire", "spellName": { "en": "Elemental Swarm (Fire)", "fr": "Nuée d'élémentaires (Feu)" } }
+      ]
+    },
+    {
+      "value": "good-domain",
+      "label": { "en": "Good", "fr": "Bien" },
+      "description": { "en": "Dedicated to righteousness and compassion.", "fr": "Dédié à la droiture et à la compassion." },
+      "grantedPowerDescription": { "en": "You cast good spells at +1 caster level.", "fr": "Vous lancez les sorts du Bien avec un niveau de lanceur de sorts +1." },
+      "domainSpells": [
+        { "level": 1, "spellId": "protection-from-evil", "spellName": { "en": "Protection from Evil", "fr": "Protection contre le Mal" } },
+        { "level": 2, "spellId": "aid", "spellName": { "en": "Aid", "fr": "Aide" } },
+        { "level": 3, "spellId": "magic-circle-against-evil", "spellName": { "en": "Magic Circle against Evil", "fr": "Cercle magique contre le Mal" } },
+        { "level": 4, "spellId": "holy-smite", "spellName": { "en": "Holy Smite", "fr": "Châtiment sacré" } },
+        { "level": 5, "spellId": "dispel-evil", "spellName": { "en": "Dispel Evil", "fr": "Dissipation du Mal" } },
+        { "level": 6, "spellId": "blade-barrier", "spellName": { "en": "Blade Barrier", "fr": "Barrière de lames" } },
+        { "level": 7, "spellId": "holy-word", "spellName": { "en": "Holy Word", "fr": "Mot sacré" } },
+        { "level": 8, "spellId": "holy-aura", "spellName": { "en": "Holy Aura", "fr": "Aura sacrée" } },
+        { "level": 9, "spellId": "summon-monster-ix-good", "spellName": { "en": "Summon Monster IX (Good)", "fr": "Convocation de monstre IX (Bien)" } }
+      ]
+    },
+    {
+      "value": "healing-domain",
+      "label": { "en": "Healing", "fr": "Guérison" },
+      "description": { "en": "Specializes in mending wounds and curing ailments.", "fr": "Spécialisé dans la réparation des blessures et la guérison des maladies." },
+      "grantedPowerDescription": { "en": "You cast healing spells at +1 caster level.", "fr": "Vous lancez les sorts de guérison avec un niveau de lanceur de sorts +1." },
+      "domainSpells": [
+        { "level": 1, "spellId": "cure-light-wounds", "spellName": { "en": "Cure Light Wounds", "fr": "Soins légers" } },
+        { "level": 2, "spellId": "cure-moderate-wounds", "spellName": { "en": "Cure Moderate Wounds", "fr": "Soins modérés" } },
+        { "level": 3, "spellId": "cure-serious-wounds", "spellName": { "en": "Cure Serious Wounds", "fr": "Soins importants" } },
+        { "level": 4, "spellId": "cure-critical-wounds", "spellName": { "en": "Cure Critical Wounds", "fr": "Soins critiques" } },
+        { "level": 5, "spellId": "cure-light-wounds-mass", "spellName": { "en": "Cure Light Wounds, Mass", "fr": "Soins légers de groupe" } },
+        { "level": 6, "spellId": "heal", "spellName": { "en": "Heal", "fr": "Guérison suprême" } },
+        { "level": 7, "spellId": "regenerate", "spellName": { "en": "Regenerate", "fr": "Régénération" } },
+        { "level": 8, "spellId": "cure-critical-wounds-mass", "spellName": { "en": "Cure Critical Wounds, Mass", "fr": "Soins critiques de groupe" } },
+        { "level": 9, "spellId": "heal-mass", "spellName": { "en": "Heal, Mass", "fr": "Guérison suprême de groupe" } }
+      ]
+    },
+    {
+      "value": "knowledge-domain",
+      "label": { "en": "Knowledge", "fr": "Connaissance" },
+      "description": { "en": "Values learning and understanding above all.", "fr": "Valorise l'apprentissage et la compréhension par-dessus tout." },
+      "grantedPowerDescription": { "en": "You cast divination spells at +1 caster level. Add all Knowledge skills to your list of cleric class skills.", "fr": "Vous lancez les sorts de divination avec un niveau de lanceur de sorts +1. Ajoutez toutes les compétences de Connaissances à votre liste de compétences de classe de prêtre." },
+      "domainSpells": [
+        { "level": 1, "spellId": "detect-secret-doors", "spellName": { "en": "Detect Secret Doors", "fr": "Détection des passages secrets" } },
+        { "level": 2, "spellId": "detect-thoughts", "spellName": { "en": "Detect Thoughts", "fr": "Détection des pensées" } },
+        { "level": 3, "spellId": "clairaudience-clairvoyance", "spellName": { "en": "Clairaudience/Clairvoyance", "fr": "Clairaudience/Clairvoyance" } },
+        { "level": 4, "spellId": "divination", "spellName": { "en": "Divination", "fr": "Divination" } },
+        { "level": 5, "spellId": "true-seeing", "spellName": { "en": "True Seeing", "fr": "Vision lucide" } },
+        { "level": 6, "spellId": "find-the-path", "spellName": { "en": "Find the Path", "fr": "Trouver le chemin" } },
+        { "level": 7, "spellId": "legend-lore", "spellName": { "en": "Legend Lore", "fr": "Légende" } },
+        { "level": 8, "spellId": "discern-location", "spellName": { "en": "Discern Location", "fr": "Localisation suprême" } },
+        { "level": 9, "spellId": "foresight", "spellName": { "en": "Foresight", "fr": "Prescience" } }
+      ]
+    },
+    {
+      "value": "law-domain",
+      "label": { "en": "Law", "fr": "Loi" },
+      "description": { "en": "Upholds order and structure.", "fr": "Maintient l'ordre et la structure." },
+      "grantedPowerDescription": { "en": "You cast law spells at +1 caster level.", "fr": "Vous lancez les sorts de la Loi avec un niveau de lanceur de sorts +1." },
+      "domainSpells": [
+        { "level": 1, "spellId": "protection-from-chaos", "spellName": { "en": "Protection from Chaos", "fr": "Protection contre le Chaos" } },
+        { "level": 2, "spellId": "calm-emotions", "spellName": { "en": "Calm Emotions", "fr": "Apaisement des émotions" } },
+        { "level": 3, "spellId": "magic-circle-against-chaos", "spellName": { "en": "Magic Circle against Chaos", "fr": "Cercle magique contre le Chaos" } },
+        { "level": 4, "spellId": "order's-wrath", "spellName": { "en": "Order's Wrath", "fr": "Colère de l'ordre" } },
+        { "level": 5, "spellId": "dispel-chaos", "spellName": { "en": "Dispel Chaos", "fr": "Dissipation du Chaos" } },
+        { "level": 6, "spellId": "hold-monster", "spellName": { "en": "Hold Monster", "fr": "Immobilisation de monstre" } },
+        { "level": 7, "spellId": "dictum", "spellName": { "en": "Dictum", "fr": "Parole de la Loi" } },
+        { "level": 8, "spellId": "shield-of-law", "spellName": { "en": "Shield of Law", "fr": "Bouclier de la Loi" } },
+        { "level": 9, "spellId": "summon-monster-ix-law", "spellName": { "en": "Summon Monster IX (Law)", "fr": "Convocation de monstre IX (Loi)" } }
+      ]
+    },
+    {
+      "value": "luck-domain",
+      "label": { "en": "Luck", "fr": "Chance" },
+      "description": { "en": "Influences fortune and probability.", "fr": "Influence la fortune et la probabilité." },
+      "grantedPowerDescription": { "en": "You gain the power of good fortune, which is the supernatural ability to reroll one die roll that you have just made. You must take the result of the reroll, even if it’s worse than the original roll. This ability is usable once per day.", "fr": "Vous gagnez le pouvoir de la bonne fortune, qui est la capacité surnaturelle de relancer un jet de dé que vous venez de faire. Vous devez prendre le résultat du nouveau jet, même s'il est pire que le jet original. Cette capacité est utilisable une fois par jour." },
+      "domainSpells": [
+        { "level": 1, "spellId": "entropic-shield", "spellName": { "en": "Entropic Shield", "fr": "Bouclier entropique" } },
+        { "level": 2, "spellId": "aid", "spellName": { "en": "Aid", "fr": "Aide" } },
+        { "level": 3, "spellId": "protection-from-energy", "spellName": { "en": "Protection from Energy", "fr": "Protection contre les énergies destructives" } },
+        { "level": 4, "spellId": "freedom-of-movement", "spellName": { "en": "Freedom of Movement", "fr": "Liberté de mouvement" } },
+        { "level": 5, "spellId": "break-enchantment", "spellName": { "en": "Break Enchantment", "fr": "Délivrance des enchantements" } },
+        { "level": 6, "spellId": "mislead", "spellName": { "en": "Mislead", "fr": "Double illusoire" } },
+        { "level": 7, "spellId": "spell-turning", "spellName": { "en": "Spell Turning", "fr": "Renvoi des sorts" } },
+        { "level": 8, "spellId": "moment-of-prescience", "spellName": { "en": "Moment of Prescience", "fr": "Moment de prescience" } },
+        { "level": 9, "spellId": "miracle", "spellName": { "en": "Miracle", "fr": "Miracle" } }
+      ]
+    },
+    {
+      "value": "magic-domain",
+      "label": { "en": "Magic", "fr": "Magie" },
+      "description": { "en": "Devoted to the study and use of arcane power.", "fr": "Dédié à l'étude et à l'utilisation du pouvoir arcanique." },
+      "grantedPowerDescription": { "en": "Use scrolls, wands, and other devices with spell completion or spell trigger activation as a wizard of one-half your cleric level (at least 1st level). For the purpose of using a scroll or other magic device, if you are also a wizard, actual wizard levels and these effective wizard levels stack.", "fr": "Utilisez les parchemins, les baguettes et autres dispositifs à achèvement de sort ou à déclenchement de sort comme un magicien de la moitié de votre niveau de prêtre (au moins niveau 1). Aux fins d'utilisation d'un parchemin ou d'un autre dispositif magique, si vous êtes également un magicien, les niveaux réels de magicien et ces niveaux effectifs de magicien se cumulent." },
+      "domainSpells": [
+        { "level": 1, "spellId": "magic-aura", "spellName": { "en": "Magic Aura", "fr": "Aura magique" } },
+        { "level": 2, "spellId": "identify", "spellName": { "en": "Identify", "fr": "Identification" } },
+        { "level": 3, "spellId": "dispel-magic", "spellName": { "en": "Dispel Magic", "fr": "Dissipation de la magie" } },
+        { "level": 4, "spellId": "imbue-with-spell-ability", "spellName": { "en": "Imbue with Spell Ability", "fr": "Imprégnation de capacité magique" } },
+        { "level": 5, "spellId": "spell-resistance", "spellName": { "en": "Spell Resistance", "fr": "Résistance à la magie" } },
+        { "level": 6, "spellId": "antimagic-field", "spellName": { "en": "Antimagic Field", "fr": "Zone d'antimagie" } },
+        { "level": 7, "spellId": "spell-turning", "spellName": { "en": "Spell Turning", "fr": "Renvoi des sorts" } },
+        { "level": 8, "spellId": "protection-from-spells", "spellName": { "en": "Protection from Spells", "fr": "Protection contre les sorts" } },
+        { "level": 9, "spellId": "mordenkainens-disjunction", "spellName": { "en": "Mordenkainen's Disjunction", "fr": "Disjonction de Mordenkainen" } }
+      ]
+    },
+    {
+      "value": "plant-domain",
+      "label": { "en": "Plant", "fr": "Végétal" },
+      "description": { "en": "Governs growth, nature, and the cycle of life in flora.", "fr": "Gouverne la croissance, la nature et le cycle de vie de la flore." },
+      "grantedPowerDescription": { "en": "Rebuke or command plant creatures as an evil cleric rebukes or commands undead. Use this ability a total number of times per day equal to 3 + your Charisma modifier. Add Knowledge (nature) to your list of cleric class skills.", "fr": "Intimidation ou contrôle des créatures végétales comme un prêtre mauvais intimide ou contrôle les morts-vivants. Utilisez cette capacité un nombre total de fois par jour égal à 3 + votre modificateur de Charisme. Ajoutez Connaissances (nature) à votre liste de compétences de classe de prêtre." },
+      "domainSpells": [
+        { "level": 1, "spellId": "entangle", "spellName": { "en": "Entangle", "fr": "Enchevêtrement" } },
+        { "level": 2, "spellId": "barkskin", "spellName": { "en": "Barkskin", "fr": "Peau d'écorce" } },
+        { "level": 3, "spellId": "plant-growth", "spellName": { "en": "Plant Growth", "fr": "Croissance végétale" } },
+        { "level": 4, "spellId": "command-plants", "spellName": { "en": "Command Plants", "fr": "Contrôle des végétaux" } },
+        { "level": 5, "spellId": "wall-of-thorns", "spellName": { "en": "Wall of Thorns", "fr": "Mur d'épines" } },
+        { "level": 6, "spellId": "repel-wood", "spellName": { "en": "Repel Wood", "fr": "Rejet du bois" } },
+        { "level": 7, "spellId": "animate-plants", "spellName": { "en": "Animate Plants", "fr": "Animation des végétaux" } },
+        { "level": 8, "spellId": "control-plants", "spellName": { "en": "Control Plants", "fr": "Contrôle des plantes" } },
+        { "level": 9, "spellId": "shambler", "spellName": { "en": "Shambler", "fr": "Grand tertre" } }
+      ]
+    },
+    {
+      "value": "protection-domain",
+      "label": { "en": "Protection", "fr": "Protection" },
+      "description": { "en": "Offers defense and security against harm.", "fr": "Offre défense et sécurité contre le mal." },
+      "grantedPowerDescription": { "en": "You can generate a protective ward as a supernatural ability. Grant someone you touch a resistance bonus equal to your cleric level on his or her next saving throw. Activating this power is a standard action. The protective ward is an abjuration effect with a duration of 1 hour that is usable once per day.", "fr": "Vous pouvez générer une protection magique comme un pouvoir surnaturel. Accordez à quelqu'un que vous touchez un bonus de résistance égal à votre niveau de prêtre à son prochain jet de sauvegarde. Activer ce pouvoir est une action simple. La protection magique est un effet d'abjuration d'une durée de 1 heure utilisable une fois par jour." },
+      "domainSpells": [
+        { "level": 1, "spellId": "sanctuary", "spellName": { "en": "Sanctuary", "fr": "Sanctuaire" } },
+        { "level": 2, "spellId": "shield-other", "spellName": { "en": "Shield Other", "fr": "Bouclier d'autrui" } },
+        { "level": 3, "spellId": "protection-from-energy", "spellName": { "en": "Protection from Energy", "fr": "Protection contre les énergies destructives" } },
+        { "level": 4, "spellId": "spell-immunity", "spellName": { "en": "Spell Immunity", "fr": "Immunité contre les sorts" } },
+        { "level": 5, "spellId": "spell-resistance", "spellName": { "en": "Spell Resistance", "fr": "Résistance à la magie" } },
+        { "level": 6, "spellId": "antimagic-field", "spellName": { "en": "Antimagic Field", "fr": "Zone d'antimagie" } },
+        { "level": 7, "spellId": "repulsion", "spellName": { "en": "Repulsion", "fr": "Répulsion" } },
+        { "level": 8, "spellId": "mind-blank", "spellName": { "en": "Mind Blank", "fr": "Vacuité d'esprit" } },
+        { "level": 9, "spellId": "prismatic-sphere", "spellName": { "en": "Prismatic Sphere", "fr": "Sphère prismatique" } }
+      ]
+    },
+    {
+      "value": "strength-domain",
+      "label": { "en": "Strength", "fr": "Force" },
+      "description": { "en": "Grants power and physical might.", "fr": "Accorde pouvoir et puissance physique." },
+      "grantedPowerDescription": { "en": "You can perform a feat of strength as a supernatural ability. You gain an enhancement bonus to Strength equal to your cleric level. Activating the power is a free action, the power lasts 1 round, and it is usable once per day.", "fr": "Vous pouvez accomplir un exploit de force comme un pouvoir surnaturel. Vous gagnez un bonus d'altération à la Force égal à votre niveau de prêtre. Activer le pouvoir est une action libre, le pouvoir dure 1 round, et il est utilisable une fois par jour." },
+      "domainSpells": [
+        { "level": 1, "spellId": "enlarge-person", "spellName": { "en": "Enlarge Person", "fr": "Agrandissement" } },
+        { "level": 2, "spellId": "bulls-strength", "spellName": { "en": "Bull's Strength", "fr": "Force de taureau" } },
+        { "level": 3, "spellId": "magic-vestment", "spellName": { "en": "Magic Vestment", "fr": "Armure magique" } },
+        { "level": 4, "spellId": "spell-immunity", "spellName": { "en": "Spell Immunity", "fr": "Immunité contre les sorts" } },
+        { "level": 5, "spellId": "righteous-might", "spellName": { "en": "Righteous Might", "fr": "Force du colosse" } },
+        { "level": 6, "spellId": "stoneskin", "spellName": { "en": "Stoneskin", "fr": "Peau de pierre" } },
+        { "level": 7, "spellId": "grasping-hand", "spellName": { "en": "Grasping Hand", "fr": "Main agrippante" } },
+        { "level": 8, "spellId": "clenched-fist", "spellName": { "en": "Clenched Fist", "fr": "Poing serré" } },
+        { "level": 9, "spellId": "crushing-hand", "spellName": { "en": "Crushing Hand", "fr": "Main broyeuse" } }
+      ]
+    },
+    {
+      "value": "sun-domain",
+      "label": { "en": "Sun", "fr": "Soleil" },
+      "description": { "en": "Associated with light, warmth, and vision.", "fr": "Associé à la lumière, la chaleur et la vision." },
+      "grantedPowerDescription": { "en": "Once per day, you can perform a greater turning against undead in place of a regular turning. The greater turning is like a normal turning except that the undead creatures that would be turned are destroyed instead.", "fr": "Une fois par jour, vous pouvez effectuer un renvoi majeur contre les morts-vivants à la place d'un renvoi normal. Le renvoi majeur est comme un renvoi normal, sauf que les créatures mortes-vivantes qui seraient renvoyées sont détruites à la place." },
+      "domainSpells": [
+        { "level": 1, "spellId": "endure-elements", "spellName": { "en": "Endure Elements", "fr": "Endurance aux énergies destructives" } },
+        { "level": 2, "spellId": "heat-metal", "spellName": { "en": "Heat Metal", "fr": "Métal brûlant" } },
+        { "level": 3, "spellId": "searing-light", "spellName": { "en": "Searing Light", "fr": "Lumière brûlante" } },
+        { "level": 4, "spellId": "fire-shield", "spellName": { "en": "Fire Shield", "fr": "Bouclier de feu" } },
+        { "level": 5, "spellId": "flame-strike", "spellName": { "en": "Flame Strike", "fr": "Colonne de feu" } },
+        { "level": 6, "spellId": "fire-seeds", "spellName": { "en": "Fire Seeds", "fr": "Graines de feu" } },
+        { "level": 7, "spellId": "sunbeam", "spellName": { "en": "Sunbeam", "fr": "Rayon de soleil" } },
+        { "level": 8, "spellId": "sunburst", "spellName": { "en": "Sunburst", "fr": "Explosion de lumière" } },
+        { "level": 9, "spellId": "prismatic-sphere", "spellName": { "en": "Prismatic Sphere", "fr": "Sphère prismatique" } }
+      ]
+    },
+    {
+      "value": "travel-domain",
+      "label": { "en": "Travel", "fr": "Voyage" },
+      "description": { "en": "Masters of movement and exploration.", "fr": "Maîtres du mouvement et de l'exploration." },
+      "grantedPowerDescription": { "en": "For a total time per day of 1 round per cleric level you possess, you can act freely regardless of magical effects that impede movement as if you were affected by the spell freedom of movement. This effect occurs automatically as soon as it applies, lasts until it runs out or is no longer needed, and can operate multiple times per day (up to the total daily limit of rounds). This is a supernatural ability. Add Survival to your list of cleric class skills.", "fr": "Pendant un temps total par jour de 1 round par niveau de prêtre que vous possédez, vous pouvez agir librement quels que soient les effets magiques qui entravent le mouvement comme si vous étiez affecté par le sort liberté de mouvement. Cet effet se produit automatiquement dès qu'il s'applique, dure jusqu'à ce qu'il s'épuise ou ne soit plus nécessaire, et peut fonctionner plusieurs fois par jour (jusqu'à la limite quotidienne totale de rounds). C'est un pouvoir surnaturel. Ajoutez Survie à votre liste de compétences de classe de prêtre." },
+      "domainSpells": [
+        { "level": 1, "spellId": "longstrider", "spellName": { "en": "Longstrider", "fr": "Grande foulée" } },
+        { "level": 2, "spellId": "locate-object", "spellName": { "en": "Locate Object", "fr": "Localisation d'objet" } },
+        { "level": 3, "spellId": "fly", "spellName": { "en": "Fly", "fr": "Vol" } },
+        { "level": 4, "spellId": "dimension-door", "spellName": { "en": "Dimension Door", "fr": "Porte dimensionnelle" } },
+        { "level": 5, "spellId": "teleport", "spellName": { "en": "Teleport", "fr": "Téléportation" } },
+        { "level": 6, "spellId": "find-the-path", "spellName": { "en": "Find the Path", "fr": "Trouver le chemin" } },
+        { "level": 7, "spellId": "teleport-greater", "spellName": { "en": "Teleport, Greater", "fr": "Téléportation suprême" } },
+        { "level": 8, "spellId": "phase-door", "spellName": { "en": "Phase Door", "fr": "Passage dans l'éther" } },
+        { "level": 9, "spellId": "astral-projection", "spellName": { "en": "Astral Projection", "fr": "Projection astrale" } }
+      ]
+    },
+    {
+      "value": "trickery-domain",
+      "label": { "en": "Trickery", "fr": "Ruse" },
+      "description": { "en": "Experts in deception and misdirection.", "fr": "Experts en tromperie et en égarement." },
+      "grantedPowerDescription": { "en": "Add Bluff, Disguise, and Hide to your list of cleric class skills.", "fr": "Ajoutez Bluff, Déguisement et Discrétion à votre liste de compétences de classe de prêtre." },
+      "domainSpells": [
+        { "level": 1, "spellId": "disguise-self", "spellName": { "en": "Disguise Self", "fr": "Déguisement" } },
+        { "level": 2, "spellId": "invisibility", "spellName": { "en": "Invisibility", "fr": "Invisibilité" } },
+        { "level": 3, "spellId": "nondetection", "spellName": { "en": "Nondetection", "fr": "Antidétection" } },
+        { "level": 4, "spellId": "confusion", "spellName": { "en": "Confusion", "fr": "Confusion" } },
+        { "level": 5, "spellId": "false-vision", "spellName": { "en": "False Vision", "fr": "Vision erronée" } },
+        { "level": 6, "spellId": "mislead", "spellName": { "en": "Mislead", "fr": "Double illusoire" } },
+        { "level": 7, "spellId": "screen", "spellName": { "en": "Screen", "fr": "Écran" } },
+        { "level": 8, "spellId": "polymorph-any-object", "spellName": { "en": "Polymorph Any Object", "fr": "Métamorphose universelle" } },
+        { "level": 9, "spellId": "time-stop", "spellName": { "en": "Time Stop", "fr": "Arrêt du temps" } }
+      ]
+    },
+    {
+      "value": "war-domain",
+      "label": { "en": "War", "fr": "Guerre" },
+      "description": { "en": "Devoted to conflict and martial prowess.", "fr": "Dédié au conflit et à la prouesse martiale." },
+      "grantedPowerDescription": { "en": "Free Martial Weapon Proficiency with deity’s favored weapon (if necessary) and Weapon Focus with the deity’s favored weapon.", "fr": "Maîtrise gratuite de l'arme de prédilection de la divinité (si nécessaire) et Don Arme de prédilection avec l'arme de prédilection de la divinité." },
+      "grantedPowerFeatId": "feat-weapon-focus-SPEC",
+      "domainSpells": [
+        { "level": 1, "spellId": "magic-weapon", "spellName": { "en": "Magic Weapon", "fr": "Arme magique" } },
+        { "level": 2, "spellId": "spiritual-weapon", "spellName": { "en": "Spiritual Weapon", "fr": "Arme spirituelle" } },
+        { "level": 3, "spellId": "magic-vestment", "spellName": { "en": "Magic Vestment", "fr": "Armure magique" } },
+        { "level": 4, "spellId": "divine-power", "spellName": { "en": "Divine Power", "fr": "Puissance divine" } },
+        { "level": 5, "spellId": "flame-strike", "spellName": { "en": "Flame Strike", "fr": "Colonne de feu" } },
+        { "level": 6, "spellId": "blade-barrier", "spellName": { "en": "Blade Barrier", "fr": "Barrière de lames" } },
+        { "level": 7, "spellId": "power-word-blind", "spellName": { "en": "Power Word Blind", "fr": "Mot de pouvoir aveuglant" } },
+        { "level": 8, "spellId": "power-word-stun", "spellName": { "en": "Power Word Stun", "fr": "Mot de pouvoir étourdissant" } },
+        { "level": 9, "spellId": "power-word-kill", "spellName": { "en": "Power Word Kill", "fr": "Mot de pouvoir mortel" } }
+      ]
+    },
+    {
+      "value": "water-domain",
+      "label": { "en": "Water", "fr": "Eau" },
+      "description": { "en": "Connected to seas, lakes, rivers, and creatures of the deep.", "fr": "Connecté aux mers, lacs, rivières et créatures des profondeurs." },
+      "grantedPowerDescription": { "en": "Turn or destroy fire creatures as a good cleric turns undead. Rebuke, command, or bolster water creatures as an evil cleric rebukes undead. Use these abilities a total number of times per day equal to 3 + your Charisma modifier.", "fr": "Renvoi ou destruction des créatures du feu comme un prêtre bon renvoie les morts-vivants. Intimidation, contrôle ou animation des créatures de l'eau comme un prêtre mauvais intimide les morts-vivants. Utilisez ces capacités un nombre total de fois par jour égal à 3 + votre modificateur de Charisme." },
+      "domainSpells": [
+        { "level": 1, "spellId": "obscuring-mist", "spellName": { "en": "Obscuring Mist", "fr": "Brume de dissimulation" } },
+        { "level": 2, "spellId": "fog-cloud", "spellName": { "en": "Fog Cloud", "fr": "Nappe de brouillard" } },
+        { "level": 3, "spellId": "water-breathing", "spellName": { "en": "Water Breathing", "fr": "Respiration aquatique" } },
+        { "level": 4, "spellId": "control-water", "spellName": { "en": "Control Water", "fr": "Contrôle de l'eau" } },
+        { "level": 5, "spellId": "ice-storm", "spellName": { "en": "Ice Storm", "fr": "Tempête de grêle" } },
+        { "level": 6, "spellId": "cone-of-cold", "spellName": { "en": "Cone of Cold", "fr": "Cône de froid" } },
+        { "level": 7, "spellId": "acid-fog", "spellName": { "en": "Acid Fog", "fr": "Brouillard acide" } },
+        { "level": 8, "spellId": "horrid-wilting", "spellName": { "en": "Horrid Wilting", "fr": "Flétrissure" } },
+        { "level": 9, "spellId": "elemental-swarm-water", "spellName": { "en": "Elemental Swarm (Water)", "fr": "Nuée d'élémentaires (Eau)" } }
+      ]
+    }
+  ]
+}
+
+    

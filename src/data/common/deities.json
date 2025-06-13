@@ -1,0 +1,216 @@
+
+{
+  "DND_DEITIES_DATA": [
+    {
+      "value": "boccob",
+      "label": { "en": "Boccob", "fr": "Boccob" },
+      "alignment": "true-neutral",
+      "fullName": { "en": "Boccob, the Uncaring", "fr": "Boccob, l'Indifférent" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Magic, arcane knowledge, foresight, balance", "fr": "Magie, connaissance des arcanes, prévoyance, équilibre" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Knowledge, Magic, Trickery", "fr": "Connaissance, Magie, Ruse" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Quarterstaff", "fr": "Bâton" } }
+      ]
+    },
+    {
+      "value": "corellon-larethian",
+      "label": { "en": "Corellon Larethian", "fr": "Corellon Larethian" },
+      "alignment": "chaotic-good",
+      "fullName": { "en": "Corellon Larethian, Creator of the Elves", "fr": "Corellon Larethian, Créateur des Elfes" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Magic, music, arts, crafts, war, poetry, elves", "fr": "Magie, musique, arts, artisanat, guerre, poésie, elfes" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Chaos, Good, Protection, War", "fr": "Chaos, Bien, Protection, Guerre" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Longsword", "fr": "Épée longue" } }
+      ]
+    },
+    {
+      "value": "ehlonna",
+      "label": { "en": "Ehlonna", "fr": "Ehlonna" },
+      "alignment": "neutral-good",
+      "fullName": { "en": "Ehlonna of the Forests", "fr": "Ehlonna des Forêts" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Forests, woodlands, flora, fauna, fertility", "fr": "Forêts, bois, flore, faune, fertilité" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Animal, Good, Plant, Sun", "fr": "Animal, Bien, Végétal, Soleil" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Longbow", "fr": "Arc long" } }
+      ]
+    },
+    {
+      "value": "erythnul",
+      "label": { "en": "Erythnul", "fr": "Erythnul" },
+      "alignment": "chaotic-evil",
+      "fullName": { "en": "Erythnul, the Many", "fr": "Erythnul, le Multiple" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Malice, envy, slaughter, panic", "fr": "Malice, envie, massacre, panique" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Chaos, Evil, Trickery, War", "fr": "Chaos, Mal, Ruse, Guerre" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Morningstar", "fr": "Morgenstern" } }
+      ]
+    },
+    {
+      "value": "fharlanghn",
+      "label": { "en": "Fharlanghn", "fr": "Fharlanghn" },
+      "alignment": "true-neutral",
+      "fullName": { "en": "Fharlanghn, Dweller on the Horizon", "fr": "Fharlanghn, Celui qui Demeure à l'Horizon" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Horizons, distance, travel, roads", "fr": "Horizons, distance, voyage, routes" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Luck, Protection, Travel", "fr": "Chance, Protection, Voyage" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Quarterstaff", "fr": "Bâton" } }
+      ]
+    },
+    {
+      "value": "garl-glittergold",
+      "label": { "en": "Garl Glittergold", "fr": "Garl Brilledor" },
+      "alignment": "neutral-good",
+      "fullName": { "en": "Garl Glittergold, the Watchful Protector", "fr": "Garl Brilledor, le Protecteur Vigilant" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Protection, humor, trickery, gemcutting, gnomes", "fr": "Protection, humour, ruse, taille de gemmes, gnomes" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Good, Protection, Trickery", "fr": "Bien, Protection, Ruse" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Battleaxe", "fr": "Hache de guerre" } }
+      ]
+    },
+    {
+      "value": "gruumsh",
+      "label": { "en": "Gruumsh", "fr": "Gruumsh" },
+      "alignment": "chaotic-evil",
+      "fullName": { "en": "Gruumsh One-Eye", "fr": "Gruumsh le Borgne" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Orcs, war, territory, strength", "fr": "Orques, guerre, territoire, force" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Chaos, Evil, Strength, War", "fr": "Chaos, Mal, Force, Guerre" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Spear", "fr": "Lance" } }
+      ]
+    },
+    {
+      "value": "heironeous",
+      "label": { "en": "Heironeous", "fr": "Heironeous" },
+      "alignment": "lawful-good",
+      "fullName": { "en": "Heironeous the Invincible", "fr": "Heironeous l'Invincible" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Chivalry, justice, honor, war, valor", "fr": "Chevalerie, justice, honneur, guerre, valeur" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Good, Law, War", "fr": "Bien, Loi, Guerre" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Longsword", "fr": "Épée longue" } }
+      ]
+    },
+    {
+      "value": "hextor",
+      "label": { "en": "Hextor", "fr": "Hextor" },
+      "alignment": "lawful-evil",
+      "fullName": { "en": "Hextor, Champion of Evil", "fr": "Hextor, Champion du Mal" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "War, discord, massacre, conflict, fitness, tyranny", "fr": "Guerre, discorde, massacre, conflit, forme physique, tyrannie" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Destruction, Evil, Law, War", "fr": "Destruction, Mal, Loi, Guerre" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Flail", "fr": "Fléau d'armes" } }
+      ]
+    },
+    {
+      "value": "kord",
+      "label": { "en": "Kord", "fr": "Kord" },
+      "alignment": "chaotic-good",
+      "fullName": { "en": "Kord, the Brawler", "fr": "Kord, le Bagarreur" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Strength, athletics, sports, brawling, courage", "fr": "Force, athlétisme, sports, bagarre, courage" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Chaos, Good, Luck, Strength", "fr": "Chaos, Bien, Chance, Force" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Greatsword", "fr": "Épée à deux mains" } }
+      ]
+    },
+    {
+      "value": "moradin",
+      "label": { "en": "Moradin", "fr": "Moradin" },
+      "alignment": "lawful-good",
+      "fullName": { "en": "Moradin, Soul Forger", "fr": "Moradin, le Forgeur d'Âmes" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Dwarves, creation, smithing, protection, metalcraft, stonework", "fr": "Nains, création, forge, protection, travail du métal, travail de la pierre" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Earth, Good, Law, Protection", "fr": "Terre, Bien, Loi, Protection" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Warhammer", "fr": "Marteau de guerre" } }
+      ]
+    },
+    {
+      "value": "nerull",
+      "label": { "en": "Nerull", "fr": "Nerull" },
+      "alignment": "neutral-evil",
+      "fullName": { "en": "Nerull, the Reaper", "fr": "Nerull, le Faucheur" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Death, darkness, murder, the Underworld", "fr": "Mort, ténèbres, meurtre, les Enfers" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Death, Evil, Trickery", "fr": "Mort, Mal, Ruse" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Scythe", "fr": "Faux" } }
+      ]
+    },
+    {
+      "value": "obad-hai",
+      "label": { "en": "Obad-Hai", "fr": "Obad-Hai" },
+      "alignment": "true-neutral",
+      "fullName": { "en": "Obad-Hai, the Shalm", "fr": "Obad-Hai, le Shalm" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Nature, woodlands, freedom, hunting, beasts", "fr": "Nature, bois, liberté, chasse, bêtes" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Air, Animal, Earth, Fire, Plant, Water", "fr": "Air, Animal, Terre, Feu, Végétal, Eau" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Quarterstaff", "fr": "Bâton" } }
+      ]
+    },
+    {
+      "value": "olidammara",
+      "label": { "en": "Olidammara", "fr": "Olidammara" },
+      "alignment": "chaotic-neutral",
+      "fullName": { "en": "Olidammara, the Laughing Rogue", "fr": "Olidammara, le Filou Rieur" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Music, revels, wine, rogues, humor, tricks", "fr": "Musique, fêtes, vin, roublards, humour, tours" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Chaos, Luck, Trickery", "fr": "Chaos, Chance, Ruse" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Rapier", "fr": "Rapière" } }
+      ]
+    },
+    {
+      "value": "pelor",
+      "label": { "en": "Pelor", "fr": "Pelor" },
+      "alignment": "neutral-good",
+      "fullName": { "en": "Pelor, the Shining One", "fr": "Pelor, le Brillant" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Sun, light, strength, healing", "fr": "Soleil, lumière, force, guérison" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Good, Healing, Strength, Sun", "fr": "Bien, Guérison, Force, Soleil" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Mace", "fr": "Masse d'armes" } }
+      ]
+    },
+    {
+      "value": "st-cuthbert",
+      "label": { "en": "St. Cuthbert", "fr": "Saint Cuthbert" },
+      "alignment": "lawful-neutral",
+      "fullName": { "en": "St. Cuthbert of the Cudgel", "fr": "Saint Cuthbert de la Matraque" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Retribution, common sense, wisdom, zeal, honesty, truth, discipline", "fr": "Châtiment, bon sens, sagesse, zèle, honnêteté, vérité, discipline" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Destruction, Law, Protection, Strength", "fr": "Destruction, Loi, Protection, Force" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Mace", "fr": "Masse d'armes" } }
+      ]
+    },
+    {
+      "value": "vecna",
+      "label": { "en": "Vecna", "fr": "Vecna" },
+      "alignment": "neutral-evil",
+      "fullName": { "en": "Vecna, the Maimed Lord", "fr": "Vecna, le Seigneur Mutilé" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Destructive and evil secrets, magic, hidden knowledge, intrigue", "fr": "Secrets destructeurs et maléfiques, magie, connaissance cachée, intrigue" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Evil, Knowledge, Magic", "fr": "Mal, Connaissance, Magie" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Dagger", "fr": "Dague" } }
+      ]
+    },
+    {
+      "value": "wee-jas",
+      "label": { "en": "Wee Jas", "fr": "Wee Jas" },
+      "alignment": "lawful-neutral",
+      "fullName": { "en": "Wee Jas, the Ruby Sorceress", "fr": "Wee Jas, la Sorcière Rubis" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Magic, death, vanity, law", "fr": "Magie, mort, vanité, loi" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Death, Law, Magic", "fr": "Mort, Loi, Magie" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Dagger", "fr": "Dague" } }
+      ]
+    },
+    {
+      "value": "yondalla",
+      "label": { "en": "Yondalla", "fr": "Yondalla" },
+      "alignment": "lawful-good",
+      "fullName": { "en": "Yondalla, the Protector and Provider", "fr": "Yondalla, la Protectrice et Pourvoyeuse" },
+      "attributes": [
+        { "key": { "en": "Portfolio", "fr": "Portefeuille" }, "value": { "en": "Halflings, protection, bounty, family, tradition", "fr": "Halfelins, protection, générosité, famille, tradition" } },
+        { "key": { "en": "Domains", "fr": "Domaines" }, "value": { "en": "Good, Law, Protection", "fr": "Bien, Loi, Protection" } },
+        { "key": { "en": "Favored Weapon", "fr": "Arme de prédilection" }, "value": { "en": "Short sword", "fr": "Épée courte" } }
+      ]
+    }
+  ]
+}
+
+    
