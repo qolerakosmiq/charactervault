@@ -10,7 +10,10 @@ import type {
 } from '@/types/character';
 import type { XpDataEntry } from '@/i18n/i18n-data';
 
-export function calculateAbilityModifier(score: number): number {
+export function calculateAbilityModifier(score: number | undefined): number { // Allow undefined
+  if (typeof score !== 'number' || isNaN(score)) { // Check for undefined or NaN
+    return 0; // Return 0 if score is not a valid number
+  }
   return Math.floor((score - 10) / 2);
 }
 

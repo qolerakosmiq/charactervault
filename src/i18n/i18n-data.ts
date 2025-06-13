@@ -296,6 +296,9 @@ function processLocalizedArray<T extends { label: LocalizedString, description?:
   }).sort((a, b) => (a.label).localeCompare(b.label));
 }
 
+const HARDCODED_DEFAULT_ABILITIES: AbilityScores = {
+  strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10,
+};
 
 export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCode): ProcessedSiteData {
   const ALIGNMENTS = processLocalizedArray<AlignmentDataEntry, CharacterAlignmentObject>(bundle.alignments?.ALIGNMENTS_DATA, lang);
@@ -443,6 +446,11 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       }))
     };
   }
+  
+  const processedDefaultAbilities = (bundle.base?.DEFAULT_ABILITIES_DATA && Object.keys(bundle.base.DEFAULT_ABILITIES_DATA).length === 6)
+    ? { ...bundle.base.DEFAULT_ABILITIES_DATA }
+    : { ...HARDCODED_DEFAULT_ABILITIES };
+
 
   return {
     ALIGNMENTS,
@@ -464,7 +472,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     DAMAGE_REDUCTION_TYPES,
     DAMAGE_REDUCTION_RULES_OPTIONS,
     ALIGNMENT_PREREQUISITE_OPTIONS,
-    DEFAULT_ABILITIES: bundle.base?.DEFAULT_ABILITIES_DATA || {},
+    DEFAULT_ABILITIES: processedDefaultAbilities,
     DEFAULT_SAVING_THROWS: bundle.base?.DEFAULT_SAVING_THROWS_DATA || { fortitude: {base:0,magicMod:0,miscMod:0}, reflex:{base:0,magicMod:0,miscMod:0}, will:{base:0,magicMod:0,miscMod:0}},
     DEFAULT_RESISTANCE_VALUE: bundle.base?.DEFAULT_RESISTANCE_VALUE_DATA || {base:0, customMod:0},
     DEFAULT_SPEED_DETAILS: bundle.base?.DEFAULT_SPEED_DETAILS_DATA || {base:0, miscModifier:0},
