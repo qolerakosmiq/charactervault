@@ -1,0 +1,35 @@
+
+{
+  "value": "sorcerer",
+  "label": { "en": "Sorcerer", "fr": "Ensorceleur" },
+  "hitDice": "d4",
+  "babProgression": "poor",
+  "spellcasting": { "type": "full", "casterAbility": "charisma", "knownSpells": true },
+  "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
+  "generalDescription": {
+    "en": "<p>Sorcerers create magic the way a poet creates poems, with inborn talent honed by practice. They have no books, no mentors, no theories just raw power that they direct at will.</p>",
+    "fr": "<p>Les ensorceleurs créent la magie comme un poète crée des poèmes, avec un talent inné perfectionné par la pratique. Ils n'ont pas de livres, pas de mentors, pas de théories, juste un pouvoir brut qu'ils dirigent à volonté.</p>"
+  },
+  "loreAttributes": [
+    { "key": { "en": "Alignment", "fr": "Alignement" }, "value": { "en": "Any.", "fr": "Tout." } },
+    { "key": { "en": "Religion", "fr": "Religion" }, "value": { "en": "Sorcerers often favor deities of magic, fate, or personal power, such as Boccob, Wee Jas, or Vecna.", "fr": "Les ensorceleurs favorisent souvent les divinités de la magie, du destin ou du pouvoir personnel, telles que Boccob, Wee Jas ou Vecna." } },
+    { "key": { "en": "Weapon and Armor Proficiency", "fr": "Maîtrise des armes et armures" }, "value": { "en": "Sorcerers are proficient with all simple weapons. They are not proficient with any type of armor or shield. Armor of any type interferes with a sorcerer’s gestures, which can cause her spells with somatic components to fail.", "fr": "Les ensorceleurs sont compétents avec toutes les armes simples. Ils ne sont compétents avec aucun type d'armure ou de bouclier. Les armures de tout type interfèrent avec les gestes d'un ensorceleur, ce qui peut faire échouer ses sorts avec des composantes somatiques." } }
+  ],
+  "grantedFeats": [
+    { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Compétence de classe" } },
+    { "featId": "class-sorcerer-familiar", "levelAcquired": 1 }
+  ],
+  "classSpecificFeats": [
+    {
+      "value": "class-sorcerer-familiar",
+      "label": { "en": "Summon Familiar", "fr": "Convocation de familier" },
+      "description": {
+        "en": "A sorcerer can obtain a familiar in exactly the same way as a wizard can. See the wizard class feature.",
+        "fr": "Un ensorceleur peut obtenir un familier exactement de la même manière qu'un magicien. Voir la caractéristique de classe du magicien."
+      },
+      "type": "special-ex",
+      "isClassFeature": true
+    }
+  ]
+}
+    

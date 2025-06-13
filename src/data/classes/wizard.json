@@ -1,0 +1,89 @@
+
+{
+  "value": "wizard",
+  "label": { "en": "Wizard", "fr": "Magicien" },
+  "hitDice": "d4",
+  "babProgression": "poor",
+  "spellcasting": { "type": "full", "casterAbility": "intelligence", "preparedSpells": true },
+  "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
+  "generalDescription": {
+    "en": "<p>Wizards are arcane spellcasters who depend on intensive study to create their magic. To wizards, magic is not a talent but a difficult, rewarding art. They are scholars of the unseen, manipulating reality through careful research and practice.</p>",
+    "fr": "<p>Les magiciens sont des lanceurs de sorts profanes qui dépendent d'une étude intensive pour créer leur magie. Pour les magiciens, la magie n'est pas un talent mais un art difficile et gratifiant. Ce sont des érudits de l'invisible, manipulant la réalité par une recherche et une pratique minutieuses.</p>"
+  },
+  "loreAttributes": [
+    { "key": { "en": "Alignment", "fr": "Alignement" }, "value": { "en": "Any.", "fr": "Tout." } },
+    { "key": { "en": "Religion", "fr": "Religion" }, "value": { "en": "Wizards often worship deities of knowledge, magic, or secrets, such as Boccob, Wee Jas, or Vecna.", "fr": "Les magiciens vénèrent souvent des divinités de la connaissance, de la magie ou des secrets, telles que Boccob, Wee Jas ou Vecna." } },
+    { "key": { "en": "Weapon and Armor Proficiency", "fr": "Maîtrise des armes et armures" }, "value": { "en": "Wizards are proficient with the club, dagger, heavy crossbow, light crossbow, and quarterstaff, but not with any type of armor or shield. Armor of any type interferes with a wizard’s movements, which can cause his spells with somatic components to fail.", "fr": "Les magiciens sont compétents avec le gourdin, la dague, l'arbalète lourde, l'arbalète légère et le bâton, mais avec aucun type d'armure ou de bouclier. Les armures de tout type interfèrent avec les mouvements d'un magicien, ce qui peut faire échouer ses sorts avec des composantes somatiques." } }
+  ],
+  "uiSections": [
+    { "key": "wizardSpecialization", "labelKey": "wizardSpecializationTitle" },
+    { 
+      "key": "wizardProhibitedSchools", 
+      "labelKey": "wizardProhibitedSchoolsTitle",
+      "conditionDependsOnUIStateKey": "chosenSpecializationSchool",
+      "conditionDependsOnUIStateValueNotIn": ["", null, "universal"]
+    }
+  ],
+  "grantedFeats": [
+    { "featId": "wizard-weapon-proficiencies", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Compétence de classe" } },
+    { "featId": "scribe-scroll", "levelAcquired": 1, "note": { "en": "Wizard Bonus Feat", "fr": "Don supplémentaire de Magicien" } },
+    { "featId": "class-wizard-familiar", "levelAcquired": 1 },
+    { "featId": "class-wizard-bonus-feat-slot-5", "levelAcquired": 5 },
+    { "featId": "class-wizard-bonus-feat-slot-10", "levelAcquired": 10 },
+    { "featId": "class-wizard-bonus-feat-slot-15", "levelAcquired": 15 },
+    { "featId": "class-wizard-bonus-feat-slot-20", "levelAcquired": 20 }
+  ],
+  "classSpecificFeats": [
+    {
+      "value": "wizard-weapon-proficiencies",
+      "label": { "en": "Wizard Weapon Proficiencies", "fr": "Maîtrise des armes (Magicien)" },
+      "description": { "en": "Club, dagger, heavy crossbow, light crossbow, quarterstaff.", "fr": "Gourdin, dague, arbalète lourde, arbalète légère, bâton." },
+      "isClassFeature": true, "type": "general",
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "club" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "dagger" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "crossbow-heavy" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "crossbow-light" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "quarterstaff" }
+      ]
+    },
+    {
+      "value": "class-wizard-familiar",
+      "label": { "en": "Summon Familiar", "fr": "Convocation de familier" },
+      "description": {
+        "en": "A wizard can obtain a familiar. Doing so takes 24 hours and uses up magical materials that cost 100 gp. A familiar is a magical beast that resembles a small animal and is unusually tough and intelligent. The creature serves as a companion and servant.",
+        "fr": "Un magicien peut obtenir un familier. Cela prend 24 heures et utilise des matériaux magiques qui coûtent 100 po. Un familier est une bête magique qui ressemble à un petit animal et est exceptionnellement résistante et intelligente. La créature sert de compagnon et de serviteur."
+      },
+      "type": "special-ex",
+      "isClassFeature": true
+    },
+    {
+      "value": "class-wizard-bonus-feat-slot-5",
+      "label": { "en": "Wizard Bonus Feat (Level 5)", "fr": "Don supplémentaire de Magicien (Niveau 5)" },
+      "description": { "en": "At 5th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat.", "fr": "Au niveau 5, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie." },
+      "isClassFeature": true, "type": "special-ex",
+      "effects": [{ "type": "bonusFeatSlot", "category": "wizardBonusFeat", "count": 1 }]
+    },
+    {
+      "value": "class-wizard-bonus-feat-slot-10",
+      "label": { "en": "Wizard Bonus Feat (Level 10)", "fr": "Don supplémentaire de Magicien (Niveau 10)" },
+      "description": { "en": "At 10th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat.", "fr": "Au niveau 10, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie." },
+      "isClassFeature": true, "type": "special-ex",
+      "effects": [{ "type": "bonusFeatSlot", "category": "wizardBonusFeat", "count": 1 }]
+    },
+    {
+      "value": "class-wizard-bonus-feat-slot-15",
+      "label": { "en": "Wizard Bonus Feat (Level 15)", "fr": "Don supplémentaire de Magicien (Niveau 15)" },
+      "description": { "en": "At 15th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat.", "fr": "Au niveau 15, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie." },
+      "isClassFeature": true, "type": "special-ex",
+      "effects": [{ "type": "bonusFeatSlot", "category": "wizardBonusFeat", "count": 1 }]
+    },
+    {
+      "value": "class-wizard-bonus-feat-slot-20",
+      "label": { "en": "Wizard Bonus Feat (Level 20)", "fr": "Don supplémentaire de Magicien (Niveau 20)" },
+      "description": { "en": "At 20th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat.", "fr": "Au niveau 20, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie." },
+      "isClassFeature": true, "type": "special-ex",
+      "effects": [{ "type": "bonusFeatSlot", "category": "wizardBonusFeat", "count": 1 }]
+    }
+  ]
+}
