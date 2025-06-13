@@ -85,8 +85,8 @@ const FeatsFormSectionComponent = ({
 
   const sortInstancesByLabel = (instances: CharacterFeatInstance[]) => {
     return [...instances].sort((a, b) => {
-      const defA = allAvailableFeatDefinitions.find(d => d.value === a.definitionId);
-      const defB = allAvailableFeatDefinitions.find(d => d.value === b.definitionId);
+      const defA = allAvailableFeatDefinitions.find(d => d.id === a.definitionId);
+      const defB = allAvailableFeatDefinitions.find(d => d.id === b.definitionId);
       return (defA?.label || '').localeCompare(defB?.label || '');
     });
   };
@@ -117,7 +117,7 @@ const FeatsFormSectionComponent = ({
     if (featSlotsLeft <= 0 && classBonusDetails && classBonusDetails.length > 0) {
       const availableBonusCategories = classBonusDetails.filter(detail => {
         const chosenInCategory = userChosenFeatInstances.filter(inst => {
-          const def = allAvailableFeatDefinitions.find(d => d.value === inst.definitionId);
+          const def = allAvailableFeatDefinitions.find(d => d.id === inst.definitionId);
           return def?.category === detail.category &&
                  (!def.requiresSpecializationCategory || def.requiresSpecializationCategory === detail.category);
         }).length;
@@ -140,7 +140,7 @@ const FeatsFormSectionComponent = ({
   const handleAddOrUpdateChosenFeatInstance = (definitionId: string) => {
     if (!translations) return;
     const UI_STRINGS = translations.UI_STRINGS;
-    const definition = allAvailableFeatDefinitions.find(def => def.value === definitionId);
+    const definition = allAvailableFeatDefinitions.find(def => def.id === definitionId);
     if (!definition) {
       toast({ title: UI_STRINGS.toastFeatDefNotFoundTitle, description: UI_STRINGS.toastFeatDefNotFoundDesc, variant: "destructive" });
       return;
@@ -181,13 +181,13 @@ const FeatsFormSectionComponent = ({
       }
     }
 
-    let newInstanceId = definition.value;
+    let newInstanceId = definition.id; // Uses id
     if (definition.canTakeMultipleTimes) {
-      newInstanceId = `${definition.value}-MULTI-INSTANCE-${crypto.randomUUID()}`;
+      newInstanceId = `${definition.id}-MULTI-INSTANCE-${crypto.randomUUID()}`; // Uses id
     }
 
     const newInstance: CharacterFeatInstance = {
-      definitionId: definition.value,
+      definitionId: definition.id, // Uses id
       instanceId: newInstanceId,
       isGranted: false,
       chosenSpecializationCategory: definition.requiresSpecializationCategory,
@@ -195,14 +195,14 @@ const FeatsFormSectionComponent = ({
     };
 
     onFeatInstancesChange([...chosenFeatInstances, newInstance].sort((a, b) => {
-      const defA = allAvailableFeatDefinitions.find(d => d.value === a.definitionId);
-      const defB = allAvailableFeatDefinitions.find(d => d.value === b.definitionId);
+      const defA = allAvailableFeatDefinitions.find(d => d.id === a.definitionId);
+      const defB = allAvailableFeatDefinitions.find(d => d.id === b.definitionId);
       return (defA?.label || '').localeCompare(defB?.label || '');
     }));
   };
 
   const handleOpenEditSpecializationDialog = (instance: CharacterFeatInstance) => {
-    const definition = allAvailableFeatDefinitions.find(def => def.value === instance.definitionId);
+    const definition = allAvailableFeatDefinitions.find(def => def.id === instance.definitionId);
     if (definition && definition.requiresSpecialization) {
       setFeatToSpecialize(definition);
       setEditingFeatInstanceId(instance.instanceId);
@@ -219,16 +219,7 @@ const FeatsFormSectionComponent = ({
     if (editingFeatInstanceId) { // Editing existing specialization
       const updatedInstances = chosenFeatInstances.map(inst => {
         if (inst.instanceId === editingFeatInstanceId) {
-          // For editing, we generally keep the instanceId unless the specialization change makes it a "new" variant
-          // of a feat that can be taken multiple times with different specializations.
-          // For simplicity now, just update the detail. If ID needs to change, it might conflict.
-          // A more robust approach might involve removing the old and adding a new one if IDs must strictly follow `featValue-specSlug`.
-          // For now, let's assume the instance ID remains stable on edit, and uniqueness is managed at add time.
-          // If Weapon Focus (Longsword) becomes Weapon Focus (Greatsword), its specific effects might change,
-          // but it's still that "slot" of Weapon Focus.
-          // However, if the ID *must* encode the spec, then:
-          let newFinalInstanceId = `${definition.value}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`;
-          // Check if this new ID would clash with another existing feat (excluding the one being edited)
+          let newFinalInstanceId = `${definition.id}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`; // Uses id
           if (chosenFeatInstances.some(otherInst => otherInst.instanceId === newFinalInstanceId && otherInst.instanceId !== editingFeatInstanceId)) {
             newFinalInstanceId = `${newFinalInstanceId}-${crypto.randomUUID().substring(0,8)}`; // Make unique
           }
@@ -240,10 +231,10 @@ const FeatsFormSectionComponent = ({
 
     } else { // Adding new specialized feat
       const existingChosenInstances = chosenFeatInstances.filter(
-        inst => inst.definitionId === definition.value && !inst.isGranted && inst.specializationDetail === specializationDetail
+        inst => inst.definitionId === definition.id && !inst.isGranted && inst.specializationDetail === specializationDetail // Uses id
       );
       const isAlreadyGrantedWithSameSpecialization = chosenFeatInstances.some(
-        inst => inst.definitionId === definition.value && inst.isGranted && inst.specializationDetail === specializationDetail
+        inst => inst.definitionId === definition.id && inst.isGranted && inst.specializationDetail === specializationDetail // Uses id
       );
 
       if (!definition.canTakeMultipleTimes) {
@@ -257,13 +248,13 @@ const FeatsFormSectionComponent = ({
         }
       }
 
-      let newInstanceId = `${definition.value}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`;
+      let newInstanceId = `${definition.id}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`; // Uses id
       if (definition.canTakeMultipleTimes || chosenFeatInstances.some(fi => fi.instanceId === newInstanceId)) {
-        newInstanceId = `${definition.value}-SPEC-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID()}`;
+        newInstanceId = `${definition.id}-SPEC-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID()}`; // Uses id
       }
 
       const newInstance: CharacterFeatInstance = {
-        definitionId: definition.value,
+        definitionId: definition.id, // Uses id
         instanceId: newInstanceId,
         specializationDetail: specializationDetail.trim() || undefined,
         isGranted: false,
@@ -288,7 +279,7 @@ const FeatsFormSectionComponent = ({
   const handleOpenEditDialog = (definitionId: string) => {
     if (!translations) return;
     const UI_STRINGS = translations.UI_STRINGS;
-    const defToEdit = allAvailableFeatDefinitions.find(def => def.value === definitionId && def.isCustom);
+    const defToEdit = allAvailableFeatDefinitions.find(def => def.id === definitionId && def.isCustom); // Uses id
     if (defToEdit) {
       onEditCustomFeatDefinition(definitionId);
     } else {
@@ -296,13 +287,13 @@ const FeatsFormSectionComponent = ({
     }
   };
 
-  const getFeatSource = React.useCallback((definitionValue: string): string | null => {
+  const getFeatSource = React.useCallback((definitionId: string): string | null => { // Changed from definitionValue to definitionId
     if (translationsLoading || !translations) return null;
-    if (definitionValue.startsWith('class-')) {
-      const parts = definitionValue.split('-');
+    if (definitionId.startsWith('class-')) {
+      const parts = definitionId.split('-');
       if (parts.length > 1) {
         const classNameKey = parts[1];
-        const classDef = translations.DND_CLASSES.find(c => c.value === classNameKey);
+        const classDef = translations.DND_CLASSES.find(c => c.id === classNameKey); // Uses id
         return classDef ? classDef.label : classNameKey.charAt(0).toUpperCase() + classNameKey.slice(1);
       }
     }
@@ -312,7 +303,7 @@ const FeatsFormSectionComponent = ({
   const renderFeatInstance = React.useCallback((instance: CharacterFeatInstance) => {
     if (translationsLoading || !translations) return <Skeleton className="h-16 w-full mb-2" />;
 
-    const definition = allAvailableFeatDefinitions.find(def => def.value === instance.definitionId);
+    const definition = allAvailableFeatDefinitions.find(def => def.id === instance.definitionId); // Uses id
     if (!definition) return null;
 
     const prereqMessages = checkFeatPrerequisites(
@@ -330,10 +321,10 @@ const FeatsFormSectionComponent = ({
     const isCustomDefinition = definition.isCustom;
 
     const featTypeLabel = definition.type && definition.type !== "special"
-      ? translations.FEAT_TYPES.find(ft => ft.value === definition.type)?.label
+      ? translations.FEAT_TYPES.find(ft => ft.id === definition.type)?.label // Uses id
       : null;
 
-    const featSource = (instance.isGranted && definition.isClassFeature) ? getFeatSource(definition.value) : null;
+    const featSource = (instance.isGranted && definition.isClassFeature) ? getFeatSource(definition.id) : null; // Uses id
     const { UI_STRINGS } = translations;
 
     return (
@@ -546,4 +537,3 @@ const FeatsFormSectionComponent = ({
 FeatsFormSectionComponent.displayName = "FeatsFormSectionComponent";
 export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
 
-    

@@ -31,7 +31,7 @@ export interface SavingThrowBreakdownDetails {
 interface SavingThrowBreakdownContentDisplayProps {
   breakdown?: SavingThrowBreakdownDetails;
   uiStrings: Record<string, string>;
-  abilityLabels: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
+  abilityLabels: readonly { id: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
 }
 
 export const SavingThrowBreakdownContentDisplay = ({
@@ -42,7 +42,7 @@ export const SavingThrowBreakdownContentDisplay = ({
   if (!breakdown) return null;
 
   const abilityAbbr = breakdown.abilityKey
-    ? (abilityLabels.find(al => al.value === breakdown.abilityKey)?.abbr || String(breakdown.abilityKey).substring(0,3).toUpperCase())
+    ? (abilityLabels.find(al => al.id === breakdown.abilityKey)?.abbr || String(breakdown.abilityKey).substring(0,3).toUpperCase())
     : 'N/A';
 
   const activeFeatComponents = breakdown.featComponents?.filter(fc => fc.isActive && fc.value !== 0) || [];
@@ -104,3 +104,4 @@ export const SavingThrowBreakdownContentDisplay = ({
     </div>
   );
 };
+

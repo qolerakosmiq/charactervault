@@ -183,12 +183,12 @@ export function InfoDisplayDialog({
   const allCombinedSkillDefinitionsForDisplay = React.useMemo((): SkillDefinitionForDisplay[] => {
     if (translationsLoading || !translations) return [];
     const predefined = translations.SKILL_DEFINITIONS.map(sd => ({
-      id: sd.value,
+      id: sd.id, // Corrected from sd.value
       name: sd.label,
       keyAbility: sd.keyAbility as AbilityName,
       description: sd.description,
       isCustom: false,
-      providesSynergies: (translations.SKILL_SYNERGIES as Record<string, any>)[sd.value] || [],
+      providesSynergies: (translations.SKILL_SYNERGIES as Record<string, any>)[sd.id] || [], // Corrected from sd.value
     }));
     const custom = customSkillDefinitions.map(csd => ({
       ...csd,
@@ -226,7 +226,7 @@ export function InfoDisplayDialog({
       case 'race': {
         iconKey = 'race';
         const raceId = character.race;
-        const raceData = DND_RACES.find(r => r.value === raceId);
+        const raceData = DND_RACES.find(r => r.id === raceId); // Uses id
         const qualities = getRaceSpecialQualities(raceId, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, SKILL_DEFINITIONS, PREDEFINED_FEATS, ABILITY_LABELS);
 
         let raceBonusFeatSlotsValue = qualities.bonusFeatSlots;
@@ -256,13 +256,13 @@ export function InfoDisplayDialog({
       case 'class': {
         iconKey = 'class';
         const classId = character.classes[0]?.className;
-        const classData = DND_CLASSES.find(c => c.value === classId);
+        const classData = DND_CLASSES.find(c => c.id === classId); // Uses id
         const classSpecificDetails: Array<{ label: string; value: string | number; isBold?: boolean }> = [];
         if (classData?.hitDice) classSpecificDetails.push({ label: UI_STRINGS.hitDiceLabel || "Hit Dice", value: classData.hitDice, isBold: true });
         if (classData?.saves) {
-          const fortSaveLabel = SAVING_THROW_LABELS.find(l => l.value === 'fortitude')?.label || "Fortitude Save";
-          const reflexSaveLabel = SAVING_THROW_LABELS.find(l => l.value === 'reflex')?.label || "Reflex Save";
-          const willSaveLabel = SAVING_THROW_LABELS.find(l => l.value === 'will')?.label || "Will Save";
+          const fortSaveLabel = SAVING_THROW_LABELS.find(l => l.id === 'fortitude')?.label || "Fortitude Save"; // Uses id
+          const reflexSaveLabel = SAVING_THROW_LABELS.find(l => l.id === 'reflex')?.label || "Reflex Save"; // Uses id
+          const willSaveLabel = SAVING_THROW_LABELS.find(l => l.id === 'will')?.label || "Will Save"; // Uses id
 
           const fortProgression = classData.saves.fortitude === 'good' ? (UI_STRINGS.saveProgressionGood || 'Good') : (UI_STRINGS.saveProgressionPoor || 'Poor');
           const reflexProgression = classData.saves.reflex === 'good' ? (UI_STRINGS.saveProgressionGood || 'Good') : (UI_STRINGS.saveProgressionPoor || 'Poor');
@@ -274,7 +274,7 @@ export function InfoDisplayDialog({
         }
 
         const grantedFeatsFormatted = classData?.grantedFeats?.map(gf => ({
-            ...gf, name: allCombinedFeatDefinitions.find(f => f.value === gf.featId)?.label || gf.featId
+            ...gf, name: allCombinedFeatDefinitions.find(f => f.id === gf.featId)?.label || gf.featId // Uses id
         }));
 
         data = {
@@ -304,7 +304,7 @@ export function InfoDisplayDialog({
       case 'deity':
         iconKey = 'deity';
         const deityId = character.deity;
-        const deityData = DND_DEITIES.find(d => d.value === deityId);
+        const deityData = DND_DEITIES.find(d => d.id === deityId); // Uses id
 
         if (deityData) {
             data = {
@@ -313,7 +313,7 @@ export function InfoDisplayDialog({
             };
         } else if (deityId && deityId.trim() !== '') {
              const customDeityDisplay: DndDeityOption = {
-                value: deityId,
+                id: deityId, // Uses id
                 label: deityId,
                 alignment: '',
                 fullName: deityId,
@@ -322,7 +322,7 @@ export function InfoDisplayDialog({
             data = { title: deityId, content: [DeityContentDisplay({ deityData: customDeityDisplay, uiStrings: UI_STRINGS })] };
         } else {
              const placeholderDeity: DndDeityOption = {
-                value: "__placeholder__",
+                id: "__placeholder__", // Uses id
                 label: UI_STRINGS.infoDialogDeityDefaultTitle || "Deity Information",
                 alignment: '',
                 fullName: UI_STRINGS.infoDialogDeityDefaultTitle || "Deity Information",
@@ -334,7 +334,7 @@ export function InfoDisplayDialog({
       case 'abilityScoreBreakdown': {
         iconKey = 'abilityScoreBreakdown';
         const abilityKeyForTitle = contentType.abilityName as Exclude<AbilityName, 'none'>;
-        const abilityLabelForTitle = ABILITY_LABELS.find(al => al.value === abilityKeyForTitle);
+        const abilityLabelForTitle = ABILITY_LABELS.find(al => al.id === abilityKeyForTitle); // Uses id
         const abilityNameString = abilityLabelForTitle?.label || abilityKeyForTitle;
         data = {
           title: (UI_STRINGS.infoDialogTitleScoreCalculation || "{abilityName} Score Calculation").replace("{abilityName}", abilityNameString),
@@ -355,7 +355,7 @@ export function InfoDisplayDialog({
           const sizeBonus = calculateSizeSpecificSkillBonus(skillDef.id, character.size, SIZES);
           const calculatedMiscModifier = synergyBonus + racialBonus + sizeBonus;
           const totalSkillBonus = (skillInstance.ranks || 0) + keyAbilityMod + calculatedMiscModifier + (skillInstance.miscModifier || 0) + featBonus;
-          const keyAbilityLabel = skillDef.keyAbility && skillDef.keyAbility !== 'none' ? ABILITY_LABELS.find(al => al.value === skillDef.keyAbility)?.abbr : undefined;
+          const keyAbilityLabel = skillDef.keyAbility && skillDef.keyAbility !== 'none' ? ABILITY_LABELS.find(al => al.id === skillDef.keyAbility)?.abbr : undefined; // Uses id
 
           const currentSkillId = contentType.skillId;
           const synergyItems: SynergyInfoItem[] = [];
@@ -503,7 +503,7 @@ export function InfoDisplayDialog({
         const dexMod = calculateAbilityModifier(finalAbilityScores.dexterity);
         const wisMod = calculateAbilityModifier(finalAbilityScores.wisdom);
         const sizeModACVal = getSizeModifierAC(character.size, SIZES);
-        const sizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size;
+        const sizeLabel = SIZES.find(s => s.id === character.size)?.label || character.size; // Uses id
 
         const details: AcBreakdownDetailItem[] = [];
         details.push({ mainLabel: UI_STRINGS.acBreakdownBaseLabel || "Base", value: 10 });
@@ -513,7 +513,7 @@ export function InfoDisplayDialog({
                 mainLabel: `${UI_STRINGS.infoDialogAcAbilityLabel || "Ability Modifier"}`,
                 value: dexMod,
                 type: 'acAbilityMod',
-                abilityAbbr: ABILITY_LABELS.find(al => al.value === 'dexterity')?.abbr || 'DEX'
+                abilityAbbr: ABILITY_LABELS.find(al => al.id === 'dexterity')?.abbr || 'DEX' // Uses id
             });
         }
         details.push({
@@ -692,7 +692,7 @@ export function InfoDisplayDialog({
               baseBabFromClasses: baseBabArrayVal,
               miscModifier: character.babMiscModifier || 0,
               totalBab: baseBabArrayVal.map(b => b + (character.babMiscModifier || 0)),
-              characterClassLabel: DND_CLASSES.find(c => c.value === character.classes[0]?.className)?.label || character.classes[0]?.className,
+              characterClassLabel: DND_CLASSES.find(c => c.id === character.classes[0]?.className)?.label || character.classes[0]?.className, // Uses id
               featAttackBonus: 0,
             },
             uiStrings: UI_STRINGS
@@ -814,7 +814,7 @@ export function InfoDisplayDialog({
         const currentSaveType = contentType.saveType;
         iconKey = currentSaveType;
 
-        const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.value === currentSaveType)?.label || currentSaveType;
+        const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.id === currentSaveType)?.label || currentSaveType; // Uses id
         const dialogTitle = (UI_STRINGS.infoDialogTitleSavingThrowBreakdown || "{saveTypeLabel} Breakdown").replace("{saveTypeLabel}", saveTypeLabel);
 
         const calculatedBaseSaves = getBaseSaves(character.classes, DND_CLASSES);
@@ -969,4 +969,3 @@ interface DerivedDialogData {
   iconKey?: string;
 }
 
-    
