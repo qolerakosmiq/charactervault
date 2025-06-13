@@ -1,0 +1,144 @@
+
+{
+  "value": "druid",
+  "label": { "en": "Druid", "fr": "Druide" },
+  "hitDice": "d8",
+  "babProgression": "average",
+  "spellcasting": { "type": "full", "casterAbility": "wisdom", "preparedSpells": true },
+  "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
+  "generalDescription": {
+    "en": "<p>Druids are priests of the old faith, worshiping nature in all its forms. They are guardians of the wilderness, friends to animals, and capable of calling upon the raw power of the natural world.</p>",
+    "fr": "<p>Les druides sont les prêtres de l'ancienne foi, vénérant la nature sous toutes ses formes. Ils sont les gardiens des étendues sauvages, les amis des animaux et capables de faire appel à la puissance brute du monde naturel.</p>"
+  },
+  "loreAttributes": [
+    { "key": { "en": "Alignment", "fr": "Alignement" }, "value": { "en": "Any neutral (Neutral Good, Lawful Neutral, True Neutral, Chaotic Neutral, or Neutral Evil).", "fr": "Tout neutre (Neutre Bon, Loyal Neutre, Neutre Strict, Chaotique Neutre ou Neutre Mauvais)." } },
+    { "key": { "en": "Religion", "fr": "Religion" }, "value": { "en": "Druids revere nature itself or specific nature deities like Obad-Hai or Ehlonna.", "fr": "Les druides vénèrent la nature elle-même ou des divinités spécifiques de la nature comme Obad-Hai ou Ehlonna." } },
+    { "key": { "en": "Weapon and Armor Proficiency", "fr": "Maîtrise des armes et armures" }, "value": { "en": "Druids are proficient with the following weapons: club, dagger, dart, quarterstaff, scimitar, sickle, shortspear, sling, and spear. They are also proficient with all natural attacks (claw, bite, and so forth) of any form they assume with wild shape. Druids are proficient with light and medium armor but are prohibited from wearing metal armor; thus, they may wear only padded, leather, or hide armor. (A druid may also wear wooden armor that has been altered by the ironwood spell so that it functions as steel.) Druids are proficient with shields (except tower shields) but must use only wooden ones. A druid who wears prohibited armor or carries a prohibited shield is unable to cast druid spells or use any of her supernatural or spell-like class abilities while doing so and for 24 hours thereafter.", "fr": "Les druides sont compétents avec les armes suivantes : gourdin, dague, fléchette, bâton, cimeterre, faucille, épieu, fronde et lance. Ils sont également compétents avec toutes les attaques naturelles (griffe, morsure, etc.) de toute forme qu'ils prennent avec forme animale. Les druides sont compétents avec les armures légères et intermédiaires mais il leur est interdit de porter des armures métalliques ; ainsi, ils ne peuvent porter que des armures matelassées, de cuir ou de peau. (Un druide peut également porter une armure en bois qui a été modifiée par le sort bois de fer afin qu'elle fonctionne comme de l'acier.) Les druides sont compétents avec les boucliers (sauf les pavois) mais ne doivent utiliser que des boucliers en bois. Un druide qui porte une armure interdite ou un bouclier interdit est incapable de lancer des sorts de druide ou d'utiliser l'une de ses capacités de classe surnaturelles ou magiques tant qu'il le fait et pendant les 24 heures suivantes." } }
+  ],
+  "grantedFeats": [
+    { "featId": "druid-weapon-armor-proficiencies", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "class-druid-animal-companion", "levelAcquired": 1 },
+    { "featId": "class-druid-nature-sense", "levelAcquired": 1 },
+    { "featId": "class-druid-wild-empathy", "levelAcquired": 1 },
+    { "featId": "class-druid-woodland-stride", "levelAcquired": 2 },
+    { "featId": "class-druid-trackless-step", "levelAcquired": 3 },
+    { "featId": "class-druid-resist-natures-lure", "levelAcquired": 4 },
+    { "featId": "class-druid-wild-shape", "levelAcquired": 5 },
+    { "featId": "class-druid-venom-immunity", "levelAcquired": 9 },
+    { "featId": "class-druid-a-thousand-faces", "levelAcquired": 13 },
+    { "featId": "class-druid-timeless-body", "levelAcquired": 15 }
+  ],
+  "classSpecificFeats": [
+    {
+      "value": "druid-weapon-armor-proficiencies",
+      "label": { "en": "Druid Proficiencies", "fr": "Compétences de Druide" },
+      "description": { "en": "Proficient with club, dagger, dart, quarterstaff, scimitar, sickle, shortspear, sling, spear. Proficient with light/medium nonmetal armor and wooden shields (except tower).", "fr": "Compétent avec gourdin, dague, fléchette, bâton, cimeterre, faucille, épieu, fronde, lance. Compétent avec les armures légères/intermédiaires non métalliques et les boucliers en bois (sauf pavois)." },
+      "type": "general",
+      "isClassFeature": true,
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "club" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "dagger" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "dart" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "quarterstaff" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "scimitar" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "sickle" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "shortspear" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "sling" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "spear" },
+        { "type": "grantsProficiency", "proficiencyType": "armor", "itemCategory": "light" },
+        { "type": "grantsProficiency", "proficiencyType": "armor", "itemCategory": "medium" },
+        { "type": "grantsProficiency", "proficiencyType": "shield", "itemCategory": "shield" }
+      ]
+    },
+    {
+      "value": "class-druid-animal-companion",
+      "label": { "en": "Animal Companion", "fr": "Compagnon animal" },
+      "description": { "en": "A druid begins play with an animal companion selected from a list. This companion is a loyal comrade who accompanies the druid on her adventures.", "fr": "Un druide commence le jeu avec un compagnon animal sélectionné dans une liste. Ce compagnon est un camarade loyal qui accompagne le druide dans ses aventures." },
+      "isClassFeature": true, "type": "special-ex"
+    },
+    {
+      "value": "class-druid-nature-sense",
+      "label": { "en": "Nature Sense", "fr": "Sens de la nature" },
+      "description": { "en": "A druid gains a +2 bonus on Knowledge (nature) and Survival checks.", "fr": "Un druide gagne un bonus de +2 aux tests de Connaissances (nature) et de Survie." },
+      "effectsText": { "en": "+2 Knowledge (nature), +2 Survival.", "fr": "+2 Connaissances (nature), +2 Survie." },
+      "isClassFeature": true, "type": "special-ex", "permanentEffect": true,
+      "effects": [
+        { "type": "skill", "skillId": "knowledge-nature", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "survival", "value": 2, "bonusType": "untyped" }
+      ]
+    },
+    {
+      "value": "class-druid-wild-empathy",
+      "label": { "en": "Wild Empathy", "fr": "Empathie sauvage" },
+      "description": { "en": "A druid can improve the attitude of an animal. This ability functions just like a Diplomacy check made to improve the attitude of a person. The druid rolls 1d20 and adds her druid level and her Charisma modifier to determine the wild empathy check result. The typical domestic animal has a starting attitude of indifferent, while wild animals are usually unfriendly.", "fr": "Un druide peut améliorer l'attitude d'un animal. Cette capacité fonctionne comme un test de Diplomatie effectué pour améliorer l'attitude d'une personne. Le druide lance 1d20 et ajoute son niveau de druide et son modificateur de Charisme pour déterminer le résultat du test d'empathie sauvage. L'animal domestique typique a une attitude de départ indifférente, tandis que les animaux sauvages sont généralement inamicaux." },
+      "isClassFeature": true, "type": "special-ex"
+    },
+    {
+      "value": "class-druid-woodland-stride",
+      "label": { "en": "Woodland Stride", "fr": "Déplacement facilité en milieu naturel" },
+      "description": { "en": "Starting at 2nd level, a druid may move through any sort of undergrowth (such as natural thorns, briars, overgrown areas, and similar terrain) at her normal speed and without taking damage or suffering any other impairment. However, thorns, briars, and overgrown areas that have been magically manipulated to impede motion still affect her.", "fr": "À partir du niveau 2, un druide peut se déplacer à travers n'importe quel type de sous-bois (comme les épines naturelles, les ronces, les zones envahies par la végétation et les terrains similaires) à sa vitesse normale et sans subir de dégâts ni aucune autre altération. Cependant, les épines, les ronces et les zones envahies par la végétation qui ont été manipulées par magie pour entraver le mouvement l'affectent toujours." },
+      "isClassFeature": true, "type": "special-ex"
+    },
+    {
+      "value": "class-druid-trackless-step",
+      "label": { "en": "Trackless Step", "fr": "Déplacement sans trace" },
+      "description": { "en": "Starting at 3rd level, a druid leaves no trail in natural surroundings and cannot be tracked. She may choose to leave a trail if so desired.", "fr": "À partir du niveau 3, un druide ne laisse aucune trace dans les environnements naturels et ne peut pas être pisté. Elle peut choisir de laisser une trace si elle le souhaite." },
+      "isClassFeature": true, "type": "special-ex"
+    },
+    {
+      "value": "class-druid-resist-natures-lure",
+      "label": { "en": "Resist Nature's Lure", "fr": "Résistance aux attraits de la nature" },
+      "description": { "en": "Starting at 4th level, a druid gains a +4 bonus on saving throws against the spell-like abilities of fey.", "fr": "À partir du niveau 4, un druide gagne un bonus de +4 aux jets de sauvegarde contre les pouvoirs magiques des fées." },
+      "effectsText": { "en": "+4 saves vs. fey spell-like abilities.", "fr": "+4 aux jets de sauvegarde contre les pouvoirs magiques des fées." },
+      "isClassFeature": true, "type": "special-ex", "permanentEffect": true,
+      "effects": [
+        { "type": "savingThrow", "save": "all", "value": 4, "bonusType": "untyped", "condition": "vs_fey_sla" }
+      ]
+    },
+    {
+      "value": "class-druid-wild-shape",
+      "label": { "en": "Wild Shape", "fr": "Forme animale" },
+      "description": { "en": "At 5th level, a druid gains the ability to turn herself into any Small or Medium animal and back again once per day. This ability functions like the alternate form special ability, except as noted here. The effect lasts for 1 hour per druid level, or until she changes back. Changing form (to animal or back) is a standard action and doesn’t provoke an attack of opportunity. The form chosen must be that of an animal the druid is familiar with. The druid can use this ability more times per day at 6th, 7th, 10th, 14th, and 18th level. In addition, she gains the ability to take the shape of a Large animal at 8th level, a Tiny animal at 11th level, and a Huge animal at 15th level. At 12th level, a druid becomes able to use wild shape to change into a plant creature with the same size restrictions as for animal forms. At 16th level, a druid becomes able to use wild shape to change into an elemental (Small, Medium, Large, or Huge). At 18th level, a druid may assume elemental form twice per day. At 20th level, a druid may assume elemental form three times per day.", "fr": "Au niveau 5, un druide acquiert la capacité de se transformer en n'importe quel animal de taille P ou M et de reprendre sa forme initiale une fois par jour. Cette capacité fonctionne comme la capacité spéciale de forme alternative, sauf indication contraire ici. L'effet dure 1 heure par niveau de druide, ou jusqu'à ce qu'elle reprenne sa forme initiale. Changer de forme (en animal ou inversement) est une action simple et ne provoque pas d'attaque d'opportunité. La forme choisie doit être celle d'un animal que le druide connaît bien. Le druide peut utiliser cette capacité plus de fois par jour aux niveaux 6, 7, 10, 14 et 18. De plus, il acquiert la capacité de prendre la forme d'un animal de taille G au niveau 8, d'un animal de taille TP au niveau 11 et d'un animal de taille TG au niveau 15. Au niveau 12, un druide devient capable d'utiliser la forme animale pour se transformer en une créature végétale avec les mêmes restrictions de taille que pour les formes animales. Au niveau 16, un druide devient capable d'utiliser la forme animale pour se transformer en un élémentaire (P, M, G ou TG). Au niveau 18, un druide peut prendre une forme élémentaire deux fois par jour. Au niveau 20, un druide peut prendre une forme élémentaire trois fois par jour." },
+      "isClassFeature": true, "type": "special-su",
+      "effectsText": { "en": "Transform into animals (later plants/elementals). Uses/day scale with level.", "fr": "Se transforme en animaux (plus tard plantes/élémentaires). Utilisations/jour augmentent avec le niveau." },
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "wildShapeUses",
+          "name": { "en": "Wild Shape Uses", "fr": "Utilisations de Forme Animale" },
+          "uses": {
+            "per": "day",
+            "value": "scaled",
+            "scaleWithClassLevel": {
+              "classId": "druid",
+              "specificLevels": [
+                { "level": 5, "value": 1 }, { "level": 6, "value": 2 }, { "level": 7, "value": 3 },
+                { "level": 10, "value": 4 }, { "level": 14, "value": 5 }, { "level": 18, "value": 6 }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "value": "class-druid-venom-immunity",
+      "label": { "en": "Venom Immunity", "fr": "Immunité au venin" },
+      "description": { "en": "At 9th level, a druid gains immunity to all poisons.", "fr": "Au niveau 9, un druide gagne l'immunité à tous les poisons." },
+      "isClassFeature": true, "type": "special-ex", "permanentEffect": true
+    },
+    {
+      "value": "class-druid-a-thousand-faces",
+      "label": { "en": "A Thousand Faces", "fr": "Mille visages" },
+      "description": { "en": "At 13th level, a druid gains the ability to change her appearance at will, as if using the disguise self spell, but only while in her normal form. This affects the druid’s body but not her possessions. It is not an illusory effect, but a minor physical alteration of a druid’s appearance, within the limits of the spell.", "fr": "Au niveau 13, un druide acquiert la capacité de changer son apparence à volonté, comme s'il utilisait le sort déguisement, mais uniquement sous sa forme normale. Cela affecte le corps du druide mais pas ses possessions. Ce n'est pas un effet illusoire, mais une altération physique mineure de l'apparence d'un druide, dans les limites du sort." },
+      "isClassFeature": true, "type": "special-su"
+    },
+    {
+      "value": "class-druid-timeless-body",
+      "label": { "en": "Timeless Body", "fr": "Corps intemporel" },
+      "description": { "en": "After attaining 15th level, a druid no longer takes ability score penalties for aging and cannot be magically aged. Any penalties she may have already incurred, however, remain in place. Bonuses still accrue, and the druid still dies of old age when her time is up.", "fr": "Après avoir atteint le niveau 15, un druide ne subit plus de pénalités de score de caractéristique dues au vieillissement et ne peut pas être vieilli par magie. Cependant, les pénalités qu'il a déjà subies restent en place. Les bonus s'accumulent toujours, et le druide meurt toujours de vieillesse lorsque son heure est venue." },
+      "isClassFeature": true, "type": "special-ex", "permanentEffect": true
+    }
+  ]
+}
+
+    

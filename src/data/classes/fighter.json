@@ -15,7 +15,7 @@
     { "key": { "en": "Background", "fr": "Antécédents" }, "value": { "en": "Varied, from noble knights to grizzled mercenaries or simple village guards.", "fr": "Variés, des nobles chevaliers aux mercenaires aguerris ou simples gardes de village." } },
     { "key": { "en": "Races", "fr": "Races" }, "value": { "en": "All races produce skilled fighters, especially humans, dwarves, and half-orcs.", "fr": "Toutes les races produisent des guerriers compétents, en particulier les humains, les nains et les demi-orques." } },
     { "key": { "en": "Weapon and Armor Proficiency", "fr": "Maîtrise des armes et armures" }, "value": { "en": "Fighters are proficient with all simple and martial weapons and with all armor (heavy, medium, and light) and shields (including tower shields).", "fr": "Les guerriers sont formés au maniement de toutes les armes courantes et de guerre, ainsi qu'à tous les types d'armures (lourdes, intermédiaires et légères) et de boucliers (y compris les pavois)." } },
-    { "key": { "en": "Bonus Feats", "fr": "Dons supplémentaires" }, "value": { "en": "A fighter gains a bonus combat-oriented feat at 1st level, at 2nd level, and at every two fighter levels thereafter (4th, 6th, 8th, 10th, 12th, 14th, 16th, 18th, and 20th). These bonus feats must be selected from those listed as fighter bonus feats in the Player's Handbook. These are in addition to the feat that any character gets at 1st level and every three levels thereafter, and the bonus feat for a human character.", "fr": "Un guerrier gagne un don supplémentaire orienté combat au niveau 1, au niveau 2, et tous les deux niveaux de guerrier par la suite (4e, 6e, 8e, 10e, 12e, 14e, 16e, 18e et 20e). Ces dons supplémentaires doivent être sélectionnés parmi ceux listés comme dons supplémentaires de guerrier dans le Manuel des Joueurs. Ils s'ajoutent au don que tout personnage reçoit au niveau 1 et tous les trois niveaux par la suite, ainsi qu'au don supplémentaire pour un personnage humain." } }
+    { "key": { "en": "Bonus Feats", "fr": "Dons supplémentaires" }, "value": { "en": "A fighter gains a bonus combat-oriented feat at 1st level, at 2nd level, and at every two fighter levels thereafter (4th, 6th, 8th, 10th, 12th, 14th, 16th, 18th, and 20th). These bonus feats must be selected from those listed as fighter bonus feats. These are in addition to the feat that any character gets at 1st level and every three levels thereafter, and the bonus feat for a human character.", "fr": "Un guerrier gagne un don supplémentaire orienté combat au niveau 1, au niveau 2, et tous les deux niveaux de guerrier par la suite (4e, 6e, 8e, 10e, 12e, 14e, 16e, 18e et 20e). Ces dons supplémentaires doivent être sélectionnés parmi ceux listés comme dons supplémentaires de guerrier. Ils s'ajoutent au don que tout personnage reçoit au niveau 1 et tous les trois niveaux par la suite, ainsi qu'au don supplémentaire pour un personnage humain." } }
   ],
   "grantedFeats": [
     { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
@@ -42,8 +42,8 @@
       "value": "class-fighter-bonus-feat-slot",
       "label": { "en": "Fighter Bonus Feat Slot", "fr": "Emplacement de Don Supplémentaire de Guerrier" },
       "description": {
-        "en": "Grants a bonus feat slot that can be used for feats in the 'fighterBonusFeat' category.",
-        "fr": "Octroie un emplacement de don supplémentaire pouvant être utilisé pour les dons de la catégorie 'fighterBonusFeat'."
+        "en": "Grants a bonus feat slot that must be used for feats in the 'fighterBonusFeat' category.",
+        "fr": "Octroie un emplacement de don supplémentaire qui doit être utilisé pour les dons de la catégorie 'fighterBonusFeat'."
       },
       "isClassFeature": true,
       "type": "special-ex",
@@ -53,3 +53,5 @@
     }
   ]
 }
+
+    

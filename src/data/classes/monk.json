@@ -1,0 +1,251 @@
+
+{
+  "value": "monk",
+  "label": { "en": "Monk", "fr": "Moine" },
+  "hitDice": "d8",
+  "babProgression": "average",
+  "saves": { "fortitude": "good", "reflex": "good", "will": "good" },
+  "generalDescription": {
+    "en": "<p>Monks are warriors who pursue perfection through contemplation as well as action. They are disciplined ascetics, training their bodies to be deadly weapons and their minds to be fortresses of calm. Monks cannot multiclass freely; a monk who gains a new class or (if already multiclassed) raises another class by a level may never again raise her monk level, though she retains all her monk abilities.</p>",
+    "fr": "<p>Les moines sont des guerriers qui poursuivent la perfection par la contemplation autant que par l'action. Ce sont des ascètes disciplinés, entraînant leur corps à devenir des armes mortelles et leur esprit à devenir des forteresses de calme. Les moines ne peuvent pas se multiclasser librement ; un moine qui acquiert une nouvelle classe ou (s'il est déjà multiclassé) augmente une autre classe d'un niveau ne pourra plus jamais augmenter son niveau de moine, bien qu'il conserve toutes ses capacités de moine.</p>"
+  },
+  "loreAttributes": [
+    { "key": { "en": "Alignment", "fr": "Alignement" }, "value": { "en": "Any lawful.", "fr": "Tout loyal." } },
+    { "key": { "en": "Weapon and Armor Proficiency", "fr": "Maîtrise des armes et armures" }, "value": { "en": "Monks are proficient with club, crossbow (light or heavy), dagger, handaxe, javelin, kama, nunchaku, quarterstaff, sai, shuriken, siangham, and sling. Monks are not proficient with any armor or shields. When wearing armor, using a shield, or carrying a medium or heavy load, a monk loses her AC bonus, as well as her fast movement and flurry of blows abilities.", "fr": "Les moines sont compétents avec le gourdin, l'arbalète (légère ou lourde), la dague, la hachette, le javelot, le kama, le nunchaku, le bâton, le sai, le shuriken, le siangham et la fronde. Les moines ne sont compétents avec aucune armure ni aucun bouclier. Lorsqu'il porte une armure, utilise un bouclier ou porte une charge moyenne ou lourde, un moine perd son bonus de CA, ainsi que ses capacités de déplacement rapide et de déluge de coups." } }
+  ],
+  "grantedFeats": [
+    { "featId": "monk-weapon-proficiencies", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "class-monk-flurry-of-blows", "levelAcquired": 1 },
+    { "featId": "class-monk-unarmed-strike", "levelAcquired": 1 },
+    { "featId": "class-monk-ac-bonus", "levelAcquired": 1 },
+    { "featId": "class-monk-bonus-feat-1", "levelAcquired": 1 },
+    { "featId": "class-monk-bonus-feat-2", "levelAcquired": 2 },
+    { "featId": "class-monk-evasion", "levelAcquired": 2 },
+    { "featId": "class-monk-fast-movement", "levelAcquired": 3 },
+    { "featId": "class-monk-still-mind", "levelAcquired": 3 },
+    { "featId": "class-monk-ki-strike-magic", "levelAcquired": 4 },
+    { "featId": "class-monk-slow-fall", "levelAcquired": 4 },
+    { "featId": "class-monk-purity-of-body", "levelAcquired": 5 },
+    { "featId": "class-monk-bonus-feat-6", "levelAcquired": 6 },
+    { "featId": "class-monk-wholeness-of-body", "levelAcquired": 7 },
+    { "featId": "class-monk-improved-evasion", "levelAcquired": 9 },
+    { "featId": "class-monk-ki-strike-lawful", "levelAcquired": 10 },
+    { "featId": "class-monk-diamond-body", "levelAcquired": 11 },
+    { "featId": "class-monk-abundant-step", "levelAcquired": 12 },
+    { "featId": "class-monk-diamond-soul", "levelAcquired": 13 },
+    { "featId": "class-monk-quivering-palm", "levelAcquired": 15 },
+    { "featId": "class-monk-ki-strike-adamantine", "levelAcquired": 16 },
+    { "featId": "class-monk-timeless-body", "levelAcquired": 17 },
+    { "featId": "class-monk-tongue-of-sun-moon", "levelAcquired": 17 },
+    { "featId": "class-monk-empty-body", "levelAcquired": 19 },
+    { "featId": "class-monk-perfect-self", "levelAcquired": 20 }
+  ],
+  "classSpecificFeats": [
+    {
+      "value": "monk-weapon-proficiencies",
+      "label": { "en": "Monk Weapon Proficiencies", "fr": "Compétences d'armes (Moine)" },
+      "description": { "en": "Proficient with club, crossbow (light or heavy), dagger, handaxe, javelin, kama, nunchaku, quarterstaff, sai, shuriken, siangham, and sling.", "fr": "Compétent avec gourdin, arbalète (légère ou lourde), dague, hachette, javelot, kama, nunchaku, bâton, sai, shuriken, siangham et fronde." },
+      "type": "general", "isClassFeature": true,
+      "effects": [
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "club" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "crossbow-light" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "crossbow-heavy" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "dagger" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "handaxe" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "javelin" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "kama" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "nunchaku" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "quarterstaff" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "sai" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "shuriken" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "siangham" },
+        { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "sling" }
+      ]
+    },
+    {
+      "value": "class-monk-flurry-of-blows",
+      "label": { "en": "Flurry of Blows", "fr": "Déluge de coups" },
+      "description": { "en": "When unarmored, a monk may strike with a flurry of blows at the expense of accuracy. When doing so, she may make one extra attack in a round at her highest base attack bonus, but this attack takes a –2 penalty, as does each other attack made that round. The A monk may substitute disarm, sunder, or trip combat maneuvers for unarmed attacks in a flurry of blows.", "fr": "Lorsqu'il n'est pas en armure, un moine peut frapper avec un déluge de coups au détriment de la précision. Ce faisant, il peut effectuer une attaque supplémentaire dans un round à son bonus d'attaque de base le plus élevé, mais cette attaque subit une pénalité de –2, tout comme chaque autre attaque effectuée ce round-là. Un moine peut substituer des manœuvres de combat de désarmement, de destruction d'arme ou de croc-en-jambe à des attaques à mains nues dans un déluge de coups." },
+      "type": "special-ex", "isClassFeature": true, "permanentEffect": false,
+      "effectsText": { "en": "One extra attack at highest BAB, all attacks this round at -2. Penalties reduce with level.", "fr": "Une attaque supplémentaire au BBA le plus élevé, toutes les attaques ce round à -2. Les pénalités diminuent avec le niveau." },
+      "effects": [
+        { "type": "modifiesMechanic", "mechanicKey": "flurryOfBlowsAttackPenalty", "value": -2, "scaleWithClassLevel": { "classId": "monk", "specificLevels": [{"level":1, "value":-2},{"level":5, "value":-1},{"level":9, "value":0}]} },
+        { "type": "modifiesMechanic", "mechanicKey": "flurryOfBlowsNumExtraAttacks", "value": 1, "scaleWithClassLevel": { "classId": "monk", "specificLevels": [{"level":1, "value":1},{"level":11, "value":2}]} }
+      ]
+    },
+    {
+      "value": "class-monk-unarmed-strike",
+      "label": { "en": "Unarmed Strike", "fr": "Frappe à mains nues" },
+      "description": { "en": "Monks are highly trained in fighting unarmed, giving them considerable advantages when doing so. At 1st level, a monk gains Improved Unarmed Strike as a bonus feat. A monk’s attacks may be with either fist interchangeably or even from elbows, knees, and feet. This means that a monk may even make unarmed strikes with her hands full. There is no such thing as an off-hand attack for a monk striking unarmed. A monk may thus apply her full Strength bonus on damage rolls for all her unarmed strikes. Usually a monk’s unarmed strikes deal lethal damage, but she can choose to deal nonlethal damage instead with no penalty on her attack roll. She has the same choice to deal lethal or nonlethal damage while grappling. A monk’s unarmed strike is treated both as a manufactured weapon and a natural weapon for the purpose of spells and effects that enhance or improve either manufactured weapons or natural weapons. A monk also deals more damage with her unarmed strikes than a normal person would, as shown on Table: Monk Unarmed Damage. The unarmed damage values listed are for Medium monks. A Small monk deals less damage than the amount given there, while a Large monk deals more damage; see Table: Small or Large Monk Unarmed Damage.", "fr": "Les moines sont hautement entraînés au combat à mains nues, ce qui leur confère des avantages considérables. Au niveau 1, un moine gagne Science du combat à mains nues comme don supplémentaire. Les attaques d'un moine peuvent être portées indifféremment avec l'un ou l'autre poing, ou même avec les coudes, les genoux et les pieds. Cela signifie qu'un moine peut même effectuer des frappes à mains nues avec les mains pleines. Il n'existe pas d'attaque de main non directrice pour un moine frappant à mains nues. Un moine peut ainsi appliquer son bonus de Force complet aux jets de dégâts pour toutes ses frappes à mains nues. Habituellement, les frappes à mains nues d'un moine infligent des dégâts létaux, mais il peut choisir d'infliger des dégâts non létaux à la place sans pénalité à son jet d'attaque. Il a le même choix d'infliger des dégâts létaux ou non létaux en situation de lutte. La frappe à mains nues d'un moine est traitée à la fois comme une arme manufacturée et une arme naturelle aux fins des sorts et des effets qui améliorent les armes manufacturées ou les armes naturelles. Un moine inflige également plus de dégâts avec ses frappes à mains nues qu'une personne normale, comme indiqué dans la Table : Dégâts à mains nues du moine. Les valeurs de dégâts à mains nues indiquées sont pour les moines de taille M. Un moine de taille P inflige moins de dégâts que le montant indiqué, tandis qu'un moine de taille G inflige plus de dégâts ; voir Table : Dégâts à mains nues du moine de taille P ou G." },
+      "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
+      "effectsText": { "en": "Gains Improved Unarmed Strike. Unarmed strikes deal scaling lethal/nonlethal damage.", "fr": "Gagne Science du combat à mains nues. Les frappes à mains nues infligent des dégâts létaux/non létaux évolutifs." },
+      "effects": [
+        { "type": "grantsFeat", "featId": "improved-unarmed-strike" },
+        { "type": "modifiesMechanic", "mechanicKey": "unarmedDamage", "value": "1d6", "scaleWithClassLevel": { "classId": "monk", "specificLevels": [{"level":1, "value":"1d6"},{"level":4, "value":"1d8"},{"level":8, "value":"1d10"},{"level":12, "value":"2d6"},{"level":16, "value":"2d8"},{"level":20, "value":"2d10"}] } }
+      ]
+    },
+    {
+      "value": "class-monk-ac-bonus",
+      "label": { "en": "AC Bonus (Monk)", "fr": "Bonus CA (Moine)" },
+      "description": { "en": "When unarmored and unencumbered, the monk adds her Wisdom bonus (if any) to her AC. In addition, a monk gains a +1 bonus to AC at 5th level. This bonus increases by 1 for every five monk levels thereafter (+2 at 10th, +3 at 15th, and +4 at 20th level). These bonuses to AC apply even against touch attacks or when the monk is flat-footed. She loses these bonuses when she is immobilized or helpless, when she wears any armor, when she carries a shield, or when she carries a medium or heavy load.", "fr": "Lorsqu'il n'est pas en armure et sans charge, le moine ajoute son bonus de Sagesse (le cas échéant) à sa CA. De plus, un moine gagne un bonus de +1 à la CA au niveau 5. Ce bonus augmente de 1 tous les cinq niveaux de moine par la suite (+2 au 10e, +3 au 15e et +4 au 20e niveau). Ces bonus à la CA s'appliquent même contre les attaques de contact ou lorsque le moine est pris au dépourvu. Il perd ces bonus lorsqu'il est immobilisé ou sans défense, lorsqu'il porte une armure, lorsqu'il porte un bouclier ou lorsqu'il porte une charge moyenne ou lourde." },
+      "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
+      "effectsText": { "en": "Wisdom bonus to AC (unarmored, unencumbered). Additional +1 AC every 5 levels.", "fr": "Bonus de Sagesse à la CA (sans armure, sans charge). +1 CA supplémentaire tous les 5 niveaux." },
+      "effects": [
+        { "type": "armorClass", "acType": "monk_wisdom", "value": "WIS", "bonusType": "untyped", "condition": "unarmored_and_unencumbered" },
+        { "type": "armorClass", "acType": "monkScaling", "value": 0, "bonusType": "untyped", "condition": "unarmored_and_unencumbered", "appliesToScope": ["normal","touch","flatFooted"], "scaleWithClassLevel": { "classId": "monk", "specificLevels": [{"level":1, "value":0}, {"level":5, "value":1},{"level":10, "value":2},{"level":15, "value":3},{"level":20, "value":4}]} }
+      ]
+    },
+    {
+      "value": "class-monk-bonus-feat-1",
+      "label": { "en": "Monk Bonus Feat (Level 1)", "fr": "Don supplémentaire de Moine (Niveau 1)" },
+      "description": { "en": "At 1st level, a monk may select either Improved Grapple or Stunning Fist as a bonus feat.", "fr": "Au niveau 1, un moine peut choisir soit Lutte améliorée, soit Poing étourdissant comme don supplémentaire." },
+      "type": "special-ex", "isClassFeature": true,
+      "effects": [{ "type": "bonusFeatSlot", "category": "monkBonusFeatL1", "count": 1 }]
+    },
+    {
+      "value": "class-monk-bonus-feat-2",
+      "label": { "en": "Monk Bonus Feat (Level 2)", "fr": "Don supplémentaire de Moine (Niveau 2)" },
+      "description": { "en": "At 2nd level, a monk may select either Combat Reflexes or Deflect Arrows as a bonus feat.", "fr": "Au niveau 2, un moine peut choisir soit Réflexes de combat, soit Esquive instinctive des projectiles comme don supplémentaire." },
+      "type": "special-ex", "isClassFeature": true,
+      "effects": [{ "type": "bonusFeatSlot", "category": "monkBonusFeatL2", "count": 1 }]
+    },
+    {
+      "value": "class-monk-evasion",
+      "label": { "en": "Evasion", "fr": "Esquive totale" },
+      "description": { "en": "At 2nd level or higher, if a monk makes a successful Reflex saving throw against an attack that normally deals half damage on a successful save, she instead takes no damage. Evasion can be used only if a monk is wearing light armor or no armor. A helpless monk does not gain the benefit of evasion.", "fr": "Au niveau 2 ou plus, si un moine réussit un jet de Réflexes contre une attaque qui inflige normalement la moitié des dégâts sur un jet de sauvegarde réussi, il ne subit aucun dégât à la place. L'esquive totale ne peut être utilisée que si un moine porte une armure légère ou aucune armure. Un moine sans défense ne bénéficie pas de l'avantage de l'esquive totale." },
+      "type": "special-ex", "isClassFeature": true
+    },
+    {
+      "value": "class-monk-fast-movement",
+      "label": { "en": "Fast Movement (Monk)", "fr": "Déplacement rapide (Moine)" },
+      "description": { "en": "At 3rd level, a monk gains an enhancement bonus to her speed, as shown on Table: Monk. A monk in armor (even light armor) or carrying a medium or heavy load loses this extra speed.", "fr": "Au niveau 3, un moine gagne un bonus d'altération à sa vitesse, comme indiqué dans la Table : Moine. Un moine en armure (même légère) ou portant une charge moyenne ou lourde perd cette vitesse supplémentaire." },
+      "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
+      "effectsText": { "en": "Enhancement bonus to speed when unarmored and unencumbered. Scales with level.", "fr": "Bonus d'altération à la vitesse sans armure et sans charge. Évolue avec le niveau." },
+      "effects": [
+        { "type": "speed", "speedType": "land", "modification": "bonus", "value": 0, "bonusType": "enhancement", "condition": "unarmored_and_unencumbered",
+          "scaleWithClassLevel": { "classId": "monk", "specificLevels": [
+            {"level":1, "value":0}, {"level":3, "value":10}, {"level":6, "value":20}, {"level":9, "value":30},
+            {"level":12, "value":40}, {"level":15, "value":50}, {"level":18, "value":60}
+          ]}
+        }
+      ]
+    },
+    {
+      "value": "class-monk-still-mind",
+      "label": { "en": "Still Mind", "fr": "Esprit calme" },
+      "description": { "en": "A monk of 3rd level or higher gains a +2 bonus on saving throws against spells and effects from the school of enchantment.", "fr": "Un moine de niveau 3 ou plus gagne un bonus de +2 aux jets de sauvegarde contre les sorts et les effets de l'école d'enchantement." },
+      "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
+      "effectsText": { "en": "+2 saves vs. enchantment.", "fr": "+2 aux jets de sauvegarde contre les enchantements." },
+      "effects": [{ "type": "savingThrow", "save": "all", "value": 2, "bonusType": "untyped", "condition": "vs_enchantment"}]
+    },
+    {
+      "value": "class-monk-ki-strike-magic",
+      "label": { "en": "Ki Strike (Magic)", "fr": "Frappe ki (Magie)" },
+      "description": { "en": "At 4th level, a monk’s unarmed strike is empowered with ki. Her unarmed attacks are treated as magic weapons for the purpose of dealing damage to creatures with damage reduction.", "fr": "Au niveau 4, la frappe à mains nues d'un moine est imprégnée de ki. Ses attaques à mains nues sont traitées comme des armes magiques pour infliger des dégâts aux créatures ayant une réduction des dégâts." },
+      "type": "special-su", "isClassFeature": true, "permanentEffect": true,
+      "effects": [{"type": "note", "text": {"en": "Unarmed strikes count as magic for DR.", "fr": "Les frappes à mains nues comptent comme magiques pour la RD."}}]
+    },
+    {
+      "value": "class-monk-slow-fall",
+      "label": { "en": "Slow Fall", "fr": "Chute ralentie" },
+      "description": { "en": "At 4th level or higher, a monk within arm’s reach of a wall can use it to slow her descent. When first using this ability, she takes damage as if the fall were 20 feet shorter than it actually is. The monk’s ability to slow her fall improves with her monk level until at 20th level she can use a wall to slow her descent and fall any distance without harm.", "fr": "Au niveau 4 ou plus, un moine à portée de bras d'un mur peut l'utiliser pour ralentir sa descente. Lorsqu'il utilise cette capacité pour la première fois, il subit des dégâts comme si la chute était de 6 mètres plus courte qu'elle ne l'est réellement. La capacité du moine à ralentir sa chute s'améliore avec son niveau de moine jusqu'à ce qu'au niveau 20, il puisse utiliser un mur pour ralentir sa descente et tomber de n'importe quelle distance sans subir de dégâts." },
+      "type": "special-ex", "isClassFeature": true
+    },
+    {
+      "value": "class-monk-purity-of-body",
+      "label": { "en": "Purity of Body", "fr": "Pureté du corps" },
+      "description": { "en": "At 5th level, a monk gains immunity to all diseases except for supernatural and magical diseases.", "fr": "Au niveau 5, un moine gagne l'immunité à toutes les maladies, à l'exception des maladies surnaturelles et magiques." },
+      "type": "special-ex", "isClassFeature": true, "permanentEffect": true
+    },
+    {
+      "value": "class-monk-bonus-feat-6",
+      "label": { "en": "Monk Bonus Feat (Level 6)", "fr": "Don supplémentaire de Moine (Niveau 6)" },
+      "description": { "en": "At 6th level, a monk may select either Improved Disarm or Improved Trip as a bonus feat.", "fr": "Au niveau 6, un moine peut choisir soit Désarmement amélioré, soit Croc-en-jambe amélioré comme don supplémentaire." },
+      "type": "special-ex", "isClassFeature": true,
+      "effects": [{ "type": "bonusFeatSlot", "category": "monkBonusFeatL6", "count": 1 }]
+    },
+    {
+      "value": "class-monk-wholeness-of-body",
+      "label": { "en": "Wholeness of Body", "fr": "Plénitude du corps" },
+      "description": { "en": "At 7th level or higher, a monk can heal her own wounds. She can heal a number of hit points of damage equal to twice her current monk level each day and can spread this healing out among several uses.", "fr": "Au niveau 7 ou plus, un moine peut guérir ses propres blessures. Il peut guérir un nombre de points de vie de dégâts égal à deux fois son niveau de moine actuel chaque jour et peut répartir cette guérison sur plusieurs utilisations." },
+      "type": "special-su", "isClassFeature": true
+    },
+    {
+      "value": "class-monk-improved-evasion",
+      "label": { "en": "Improved Evasion", "fr": "Esquive totale améliorée" },
+      "description": { "en": "At 9th level, a monk’s evasion ability improves. She still takes no damage on a successful Reflex saving throw against attacks, but henceforth she takes only half damage on a failed save. A helpless monk does not gain the benefit of improved evasion.", "fr": "Au niveau 9, la capacité d'esquive totale d'un moine s'améliore. Il ne subit toujours aucun dégât sur un jet de Réflexes réussi contre les attaques, mais désormais il ne subit que la moitié des dégâts sur un jet de sauvegarde raté. Un moine sans défense ne bénéficie pas de l'avantage de l'esquive totale améliorée." },
+      "type": "special-ex", "isClassFeature": true
+    },
+    {
+      "value": "class-monk-ki-strike-lawful",
+      "label": { "en": "Ki Strike (Lawful)", "fr": "Frappe ki (Loyale)" },
+      "description": { "en": "At 10th level, a monk’s unarmed strike is empowered with ki. Her unarmed attacks are treated as lawful weapons for the purpose of dealing damage to creatures with damage reduction.", "fr": "Au niveau 10, la frappe à mains nues d'un moine est imprégnée de ki. Ses attaques à mains nues sont traitées comme des armes loyales pour infliger des dégâts aux créatures ayant une réduction des dégâts." },
+      "type": "special-su", "isClassFeature": true, "permanentEffect": true,
+      "effects": [{"type": "note", "text": {"en": "Unarmed strikes count as lawful for DR.", "fr": "Les frappes à mains nues comptent comme loyales pour la RD."}}]
+    },
+    {
+      "value": "class-monk-diamond-body",
+      "label": { "en": "Diamond Body", "fr": "Corps de diamant" },
+      "description": { "en": "At 11th level, a monk gains immunity to poisons of all kinds.", "fr": "Au niveau 11, un moine gagne l'immunité aux poisons de toutes sortes." },
+      "type": "special-su", "isClassFeature": true, "permanentEffect": true
+    },
+    {
+      "value": "class-monk-abundant-step",
+      "label": { "en": "Abundant Step", "fr": "Foulée aérienne" },
+      "description": { "en": "At 12th level or higher, a monk can slip magically between spaces, as if using the spell dimension door, once per day. Her caster level for this effect is one-half her monk level (rounded down).", "fr": "Au niveau 12 ou plus, un moine peut se glisser magiquement entre les espaces, comme s'il utilisait le sort porte dimensionnelle, une fois par jour. Son niveau de lanceur de sorts pour cet effet est la moitié de son niveau de moine (arrondi à l'inférieur)." },
+      "type": "special-su", "isClassFeature": true
+    },
+    {
+      "value": "class-monk-diamond-soul",
+      "label": { "en": "Diamond Soul", "fr": "Âme de diamant" },
+      "description": { "en": "At 13th level, a monk gains spell resistance equal to her current monk level + 10.", "fr": "Au niveau 13, un moine gagne une résistance à la magie égale à son niveau de moine actuel + 10." },
+      "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
+      "effectsText": { "en": "Spell resistance = Monk level + 10.", "fr": "Résistance à la magie = Niveau de moine + 10." },
+      "effects": [{"type": "resistance", "resistanceTo": "spell", "value": 10, "scaleWithClassLevel": { "classId": "monk", "valuePerLevel": 1 } }]
+    },
+    {
+      "value": "class-monk-quivering-palm",
+      "label": { "en": "Quivering Palm", "fr": "Paume vibratoire" },
+      "description": { "en": "Starting at 15th level, a monk can set up vibrations within the body of another creature that can thereafter be fatal if the monk so chooses. The monk can use this quivering palm attack once a week. The save DC is 10 + 1/2 the monk’s level + the monk’s Wis modifier.", "fr": "À partir du niveau 15, un moine peut déclencher des vibrations dans le corps d'une autre créature qui peuvent ensuite être fatales si le moine le souhaite. Le moine peut utiliser cette attaque de paume vibratoire une fois par semaine. Le DD du jet de sauvegarde est de 10 + 1/2 niveau du moine + modificateur de Sag du moine." },
+      "type": "special-su", "isClassFeature": true
+    },
+    {
+      "value": "class-monk-ki-strike-adamantine",
+      "label": { "en": "Ki Strike (Adamantine)", "fr": "Frappe ki (Adamantium)" },
+      "description": { "en": "At 16th level, a monk’s unarmed strike is empowered with ki. Her unarmed attacks are treated as adamantine weapons for the purpose of dealing damage to creatures with damage reduction and bypassing hardness.", "fr": "Au niveau 16, la frappe à mains nues d'un moine est imprégnée de ki. Ses attaques à mains nues sont traitées comme des armes en adamantium pour infliger des dégâts aux créatures ayant une réduction des dégâts et pour contourner la solidité." },
+      "type": "special-su", "isClassFeature": true, "permanentEffect": true,
+      "effects": [{"type": "note", "text": {"en": "Unarmed strikes count as adamantine for DR and hardness.", "fr": "Les frappes à mains nues comptent comme adamantium pour la RD et la solidité."}}]
+    },
+    {
+      "value": "class-monk-timeless-body",
+      "label": { "en": "Timeless Body (Monk)", "fr": "Corps intemporel (Moine)" },
+      "description": { "en": "At 17th level, a monk no longer takes penalties to her ability scores for aging and cannot be magically aged. Any such penalties that she has already taken, however, remain in place. Bonuses still accrue, and the monk still dies of old age when her time is up.", "fr": "Au niveau 17, un moine ne subit plus de pénalités à ses scores de caractéristique pour le vieillissement et ne peut pas être vieilli par magie. Cependant, les pénalités qu'il a déjà subies restent en place. Les bonus s'accumulent toujours, et le moine meurt toujours de vieillesse lorsque son heure est venue." },
+      "type": "special-ex", "isClassFeature": true, "permanentEffect": true
+    },
+    {
+      "value": "class-monk-tongue-of-sun-moon",
+      "label": { "en": "Tongue of the Sun and Moon", "fr": "Langage du soleil et de la lune" },
+      "description": { "en": "A monk of 17th level or higher can speak with any living creature.", "fr": "Un moine de niveau 17 ou plus peut parler avec n'importe quelle créature vivante." },
+      "type": "special-ex", "isClassFeature": true
+    },
+    {
+      "value": "class-monk-empty-body",
+      "label": { "en": "Empty Body", "fr": "Corps vide" },
+      "description": { "en": "At 19th level, a monk gains the ability to assume an ethereal state for 1 round per monk level per day. This ability functions as the spell etherealness cast by a wizard of the monk’s class level.", "fr": "Au niveau 19, un moine acquiert la capacité de prendre un état éthéré pendant 1 round par niveau de moine par jour. Cette capacité fonctionne comme le sort état éthéré lancé par un magicien du niveau de classe du moine." },
+      "type": "special-su", "isClassFeature": true
+    },
+    {
+      "value": "class-monk-perfect-self",
+      "label": { "en": "Perfect Self", "fr": "Perfection de soi" },
+      "description": { "en": "At 20th level, a monk becomes a magical creature. She is forevermore treated as an outsider rather than as a humanoid (or whatever the monk’s creature type was) for the purpose of spells and magical effects. Additionally, the monk gains damage reduction 10/magic.", "fr": "Au niveau 20, un moine devient une créature magique. Il est à jamais traité comme un extérieur plutôt que comme un humanoïde (ou quel que soit le type de créature du moine) aux fins des sorts et des effets magiques. De plus, le moine gagne une réduction des dégâts de 10/magie." },
+      "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
+      "effectsText": { "en": "Becomes outsider. DR 10/magic.", "fr": "Devient un extérieur. RD 10/magie." },
+      "effects": [
+        { "type": "note", "text": {"en": "Creature type becomes Outsider. Gains DR 10/magic.", "fr": "Le type de créature devient Extérieur. Gagne RD 10/magie."} },
+        { "type": "damageReduction", "drType": "magic", "value": 10 }
+      ]
+    }
+  ]
+}
+
+    
