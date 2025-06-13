@@ -82,5 +82,10 @@
   "rollDialogTitleAbilityCheck": {"en": "{abilityName} Check", "fr": "Test de {abilityName}"},
   "rollDialogAbilityCheckAriaLabel": {"en": "Roll {abilityName} Check", "fr": "Lancer un test de {abilityName}"},
   "toastErrorTitle": {"en": "Error", "fr": "Erreur"},
-  "toastSuccessTitle": {"en": "Success!", "fr": "Succès !"}
+  "toastSuccessTitle": {"en": "Success!", "fr": "Succès !"},
+  "rangerCombatStyleFeatNoteFormat": { "en": "{styleName} (L{level})", "fr": "{styleName} (N{level})" },
+  "clericDomainPowerFeatNoteFormat": { "en": "Granted by {domainName} Domain", "fr": "Accordé par le Domaine {domainName}" },
+  "improvedTripNormalDescription": { "en": "You provoke an attack of opportunity when you attempt to trip an opponent while you are unarmed.", "fr": "Vous provoquez une attaque d'opportunité lorsque vous tentez de faire un croc-en-jambe à un adversaire alors que vous êtes désarmé." }
 }
+
+    

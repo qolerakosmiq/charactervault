@@ -116,7 +116,7 @@
       "prerequisites": { "abilities": { "intelligence": 13 } },
       "effectsText": { "en": "Trade attack penalty for AC dodge bonus (up to -5 attack for +5 AC).", "fr": "Échangez une pénalité d'attaque contre un bonus d'esquive à la CA (jusqu'à -5 à l'attaque pour +5 à la CA)." },
       "effects": [
-        { "type": "note", "text": { "en": "Allows trading attack penalty for AC dodge bonus.", "fr": "Permet d'échanger une pénalité d'attaque contre un bonus d'esquive à la CA." } }
+        { "type": "note", "text": { "en": "Allows trading melee attack penalty for AC dodge bonus.", "fr": "Permet d'échanger une pénalité d'attaque au corps à corps contre un bonus d'esquive à la CA." } }
       ],
       "type": "general",
       "category": "fighterBonusFeat"
@@ -672,7 +672,8 @@
         "fr": "<b>Prérequis :</b> Niveau de lanceur de sorts 1er.<br/><b>Avantage :</b> Vous pouvez créer un parchemin de n'importe quel sort que vous connaissez. Écrire un parchemin prend 1 jour pour chaque tranche de 1 000 po de son prix de base. Le prix de base d'un parchemin est son niveau de sort × son niveau de lanceur de sorts × 25 po. Pour écrire un parchemin, vous devez dépenser 1/25 de ce prix de base en XP et utiliser des matières premières coûtant la moitié de ce prix de base."
       },
       "prerequisites": { "casterLevel": 1 },
-      "type": "itemCreation"
+      "type": "itemCreation",
+      "category": "wizardBonusFeat"
     },
     {
       "value": "brew-potion",
@@ -682,7 +683,8 @@
         "fr": "<b>Prérequis :</b> Niveau de lanceur de sorts 3ème.<br/><b>Avantage :</b> Vous pouvez créer une potion de n'importe quel sort de 3ème niveau ou inférieur que vous connaissez et qui cible une ou plusieurs créatures. La préparation d'une potion prend 1 jour. Lorsque vous créez une potion, vous définissez le niveau de lanceur de sorts, qui doit être suffisant pour le sort en question et pas plus élevé que votre propre niveau. Le prix de base d'une potion est son niveau de sort × son niveau de lanceur de sorts × 50 po. Pour préparer une potion, vous devez dépenser 1/25 de ce prix de base en XP et utiliser des matières premières coûtant la moitié de ce prix de base."
       },
       "prerequisites": { "casterLevel": 3 },
-      "type": "itemCreation"
+      "type": "itemCreation",
+      "category": "wizardBonusFeat"
     },
     {
       "value": "craft-magic-arms-and-armor",
@@ -692,7 +694,8 @@
         "fr": "<b>Prérequis :</b> Niveau de lanceur de sorts 5ème.<br/><b>Avantage :</b> Vous pouvez créer des armures, des boucliers et des armes magiques. L'amélioration d'un objet prend 1 jour pour chaque tranche de 1 000 po du prix total de ses caractéristiques. Pour améliorer un objet, vous devez dépenser 1/25 du prix total de ses caractéristiques en XP et utiliser des matières premières coûtant la moitié de ce prix total."
       },
       "prerequisites": { "casterLevel": 5 },
-      "type": "itemCreation"
+      "type": "itemCreation",
+      "category": "wizardBonusFeat"
     },
     {
       "value": "craft-wondrous-item",
@@ -702,7 +705,8 @@
         "fr": "<b>Prérequis :</b> Niveau de lanceur de sorts 3ème.<br/><b>Avantage :</b> Vous pouvez créer n'importe quel objet merveilleux. La création d'un objet merveilleux prend 1 jour pour chaque tranche de 1 000 po de son prix de marché. Pour créer un objet merveilleux, vous devez dépenser 1/25 du prix de marché de l'objet en XP et utiliser des matières premières coûtant la moitié de ce prix."
       },
       "prerequisites": { "casterLevel": 3 },
-      "type": "itemCreation"
+      "type": "itemCreation",
+      "category": "wizardBonusFeat"
     },
     {
       "value": "empower-spell",
@@ -711,7 +715,8 @@
         "en": "<b>Benefit:</b> All variable, numeric effects of an empowered spell are increased by one-half. An empowered spell deals half again as much damage as normal, cures half again as many hit points, affects half again as many targets, etc., as appropriate. Saving throws and opposed rolls are not affected, nor are spells without random variables. An empowered spell uses up a spell slot two levels higher than the spell’s actual level.",
         "fr": "<b>Avantage :</b> Tous les effets numériques variables d'un sort renforcé sont augmentés de moitié. Un sort renforcé inflige une fois et demie les dégâts normaux, soigne une fois et demie plus de points de vie, affecte une fois et demie plus de cibles, etc., selon le cas. Les jets de sauvegarde et les jets opposés ne sont pas affectés, ni les sorts sans variables aléatoires. Un sort renforcé utilise un emplacement de sort de deux niveaux supérieurs au niveau réel du sort."
       },
-      "type": "metamagic"
+      "type": "metamagic",
+      "category": "wizardBonusFeat"
     },
     {
       "value": "maximize-spell",
@@ -720,7 +725,8 @@
         "en": "<b>Benefit:</b> All variable, numeric effects of a spell modified by this feat are maximized. A maximized spell deals maximum damage, cures the maximum number of hit points, affects the maximum number of targets, etc., as appropriate. Saving throws and opposed rolls are not affected, nor are spells without random variables. A maximized spell uses up a spell slot three levels higher than the spell’s actual level.",
         "fr": "<b>Avantage :</b> Tous les effets numériques variables d'un sort modifié par ce don sont maximisés. Un sort maximisé inflige le maximum de dégâts, soigne le maximum de points de vie, affecte le maximum de cibles, etc., selon le cas. Les jets de sauvegarde et les jets opposés ne sont pas affectés, ni les sorts sans variables aléatoires. Un sort maximisé utilise un emplacement de sort de trois niveaux supérieurs au niveau réel du sort."
       },
-      "type": "metamagic"
+      "type": "metamagic",
+      "category": "wizardBonusFeat"
     },
     {
       "value": "quicken-spell",
@@ -729,7 +735,8 @@
         "en": "<b>Benefit:</b> Casting a quickened spell is a free action. You can perform another action, even casting another spell, in the same round as you cast a quickened spell. You may only cast one quickened spell per round. A spell whose casting time is more than 1 full round action cannot be quickened. A quickened spell uses up a spell slot four levels higher than the spell’s actual level. Casting a quickened spell doesn’t provoke an attack of opportunity.",
         "fr": "<b>Avantage :</b> Lancer un sort rapide est une action libre. Vous pouvez effectuer une autre action, même lancer un autre sort, dans le même round où vous lancez un sort rapide. Vous ne pouvez lancer qu'un seul sort rapide par round. Un sort dont le temps d'incantation est supérieur à 1 action complexe ne peut pas être accéléré. Un sort rapide utilise un emplacement de sort de quatre niveaux supérieurs au niveau réel du sort. Lancer un sort rapide ne provoque pas d'attaque d'opportunité."
       },
-      "type": "metamagic"
+      "type": "metamagic",
+      "category": "wizardBonusFeat"
     },
     {
       "value": "silent-spell",
@@ -738,7 +745,8 @@
         "en": "<b>Benefit:</b> A silent spell can be cast with no verbal components. Spells without verbal components are not affected. A silent spell uses up a spell slot one level higher than the spell’s actual level.",
         "fr": "<b>Avantage :</b> Un sort silencieux peut être lancé sans composantes verbales. Les sorts sans composantes verbales ne sont pas affectés. Un sort silencieux utilise un emplacement de sort d'un niveau supérieur au niveau réel du sort."
       },
-      "type": "metamagic"
+      "type": "metamagic",
+      "category": "wizardBonusFeat"
     },
     {
       "value": "still-spell",
@@ -747,7 +755,8 @@
         "en": "<b>Benefit:</b> A stilled spell can be cast with no somatic components. Spells without somatic components are not affected. A stilled spell uses up a spell slot one level higher than the spell’s actual level.",
         "fr": "<b>Avantage :</b> Un sort statique peut être lancé sans composantes somatiques. Les sorts sans composantes somatiques ne sont pas affectés. Un sort statique utilise un emplacement de sort d'un niveau supérieur au niveau réel du sort."
       },
-      "type": "metamagic"
+      "type": "metamagic",
+      "category": "wizardBonusFeat"
     },
     {
       "value": "armor-proficiency-light",
@@ -832,6 +841,12 @@
     { "value": "special-ex", "label": { "en": "Special Ability (Ex)", "fr": "Capacité spéciale (Ext)" } },
     { "value": "special-su", "label": { "en": "Special Ability (Su)", "fr": "Capacité spéciale (Sur)" } },
     { "value": "special-sp", "label": { "en": "Special Ability (Sp)", "fr": "Capacité spéciale (Mag)" } },
-    { "value": "fighterBonusFeat", "label": { "en": "Fighter Bonus Feat", "fr": "Don supplémentaire de Guerrier" } }
+    { "value": "fighterBonusFeat", "label": { "en": "Fighter Bonus Feat", "fr": "Don supplémentaire de Guerrier" } },
+    { "value": "wizardBonusFeat", "label": { "en": "Wizard Bonus Feat", "fr": "Don supplémentaire de Magicien" } },
+    { "value": "monkBonusFeatL1", "label": { "en": "Monk Bonus Feat (L1)", "fr": "Don suppl. Moine (N1)" } },
+    { "value": "monkBonusFeatL2", "label": { "en": "Monk Bonus Feat (L2)", "fr": "Don suppl. Moine (N2)" } },
+    { "value": "monkBonusFeatL6", "label": { "en": "Monk Bonus Feat (L6)", "fr": "Don suppl. Moine (N6)" } }
   ]
 }
+
+    
