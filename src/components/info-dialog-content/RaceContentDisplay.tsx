@@ -56,20 +56,14 @@ export const RaceContentDisplay = ({
 }: RaceContentDisplayProps) => {
   const { UI_STRINGS, ABILITY_LABELS, DND_CLASSES, DND_RACES, ALIGNMENT_PREREQUISITE_OPTIONS, SKILL_DEFINITIONS } = translations;
   const speedUnit = UI_STRINGS.speedUnit || "ft.";
-  const outputBlocks: React.ReactNode[] = [];
 
-  // Simplified condition and added margin bottom for spacing
   const htmlContentBlock = (htmlContent && htmlContent.trim()) ? (
     <div
       key="race-html-content-block"
-      className="text-sm prose prose-sm dark:prose-invert max-w-none mb-3"
+      className="text-sm prose prose-sm dark:prose-invert max-w-none mb-3" // Added mb-3 for spacing
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   ) : null;
-
-  if (htmlContentBlock) {
-    outputBlocks.push(htmlContentBlock);
-  }
 
   const generalTraitsSubSections: React.ReactNode[] = [];
   if (abilityModifiers && abilityModifiers.length > 0) {
@@ -135,101 +129,86 @@ export const RaceContentDisplay = ({
     );
   }
 
-  if (generalTraitsSubSections.length > 0) {
-    outputBlocks.push(
-      <div key="race-general-traits-section">
-        <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading || "General Traits"}</h3>
-        {generalTraitsSubSections.map((subSection, index) => (
-          <div key={`gen-trait-sub-${index}`} className={cn(index > 0 && "mt-0")}>
-            {subSection}
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (grantedFeats && grantedFeats.length > 0) {
-    outputBlocks.push(
-      <div key="race-granted-feats-section">
-        <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h3>
-        <ul className="list-none space-y-0.5 text-sm mt-0 mb-0" key="race-granted-feats-list">
-          {grantedFeats.map(feat => {
-            const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
-            return (
-               <li key={uniqueKey} className="group">
-                  <div
-                    className="flex items-baseline gap-2 p-1 -mx-1 rounded transition-colors cursor-pointer"
-                    onClick={() => toggleExpanded(uniqueKey)}
-                    role="button"
-                    aria-expanded={expandedItems.has(uniqueKey)}
-                    aria-controls={`feat-details-${uniqueKey}`}
-                  >
-                    {feat.levelAcquired !== undefined && (
-                      <Badge variant="outline" className={cn(
-                        "whitespace-nowrap shrink-0 justify-center",
-                        "min-w-[5rem]"
-                      )}>
-                        {(UI_STRINGS.levelLabel || "Level")}{'\u00A0'}{feat.levelAcquired}
-                      </Badge>
-                    )}
-                     <div className="flex-grow">
-                        <strong className="text-foreground leading-tight transition-colors">{feat.name}</strong>
-                        {feat.note && (
-                          <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
-                            {feat.note}
-                          </p>
-                        )}
-                     </div>
-                  </div>
-                  {expandedItems.has(uniqueKey) && (
-                   <div id={`feat-details-${uniqueKey}`} className="my-1 mb-1">
-                      <ExpandableDetailWrapper>
-                        <FeatDetailsDisplay
-                            featId={feat.featId}
-                            character={character}
-                            allFeats={allCombinedFeatDefinitions}
-                            allPredefinedSkills={SKILL_DEFINITIONS}
-                            allCustomSkills={customSkillDefinitions}
-                            allClasses={DND_CLASSES}
-                            allRaces={DND_RACES}
-                            abilityLabels={ABILITY_LABELS}
-                            alignmentPrereqOptions={ALIGNMENT_PREREQUISITE_OPTIONS}
-                            uiStrings={UI_STRINGS}
-                        />
-                      </ExpandableDetailWrapper>
-                   </div>
-                  )}
-                </li>
-            );
-          })}
-        </ul>
-      </div>
-    );
-  }
-
-  return outputBlocks.length > 0 ? (
-    <div>
-      {outputBlocks.map((block, index, arr) => {
-        let separatorClass = "mt-3 mb-2"; // Default for separators between major blocks
-        if (index < arr.length - 1) {
-          const currentBlockKey = (block as React.ReactElement)?.key;
-          const nextBlockKey = (arr[index + 1] as React.ReactElement)?.key;
-
-          if (currentBlockKey === "race-html-content-block" &&
-              (nextBlockKey === "race-general-traits-section" || nextBlockKey === "race-granted-feats-section")) {
-            separatorClass = "mt-0 mb-2"; // No top margin if description is followed by traits/feats, keep bottom
-          } else if (nextBlockKey === "race-general-traits-section" || nextBlockKey === "race-granted-feats-section"){
-            separatorClass = "mt-3 mb-2";
-          }
-        }
-        return (
-          <React.Fragment key={`race-display-root-block-${index}`}>
-            {block}
-            {index < arr.length - 1 && outputBlocks[index+1] && <Separator className={separatorClass} />}
-          </React.Fragment>
-        );
-      })}
+  const generalTraitsSectionContent = generalTraitsSubSections.length > 0 ? (
+    <div key="race-general-traits-section">
+      <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGeneralTraitsHeading || "General Traits"}</h3>
+      {generalTraitsSubSections.map((subSection, index) => (
+        <div key={`gen-trait-sub-${index}`} className={cn(index > 0 && "mt-0")}> {/* Removed mt-2 for tighter packing */}
+          {subSection}
+        </div>
+      ))}
     </div>
   ) : null;
+
+  const grantedFeatsSectionContent = (grantedFeats && grantedFeats.length > 0) ? (
+    <div key="race-granted-feats-section">
+      <h3 className={sectionHeadingClass}>{UI_STRINGS.infoDialogGrantedFeaturesAndFeats || "Granted Features & Feats"}</h3>
+      <ul className="list-none space-y-0.5 text-sm mt-0 mb-0" key="race-granted-feats-list">
+        {grantedFeats.map(feat => {
+          const uniqueKey = feat.featId + (feat.note || '') + (feat.levelAcquired || '');
+          return (
+             <li key={uniqueKey} className="group">
+                <div
+                  className="flex items-baseline gap-2 p-1 -mx-1 rounded transition-colors cursor-pointer"
+                  onClick={() => toggleExpanded(uniqueKey)}
+                  role="button"
+                  aria-expanded={expandedItems.has(uniqueKey)}
+                  aria-controls={`feat-details-${uniqueKey}`}
+                >
+                  {feat.levelAcquired !== undefined && (
+                    <Badge variant="outline" className={cn(
+                      "whitespace-nowrap shrink-0 justify-center",
+                      "min-w-[5rem]"
+                    )}>
+                      {(UI_STRINGS.levelLabel || "Level")}{'\u00A0'}{feat.levelAcquired}
+                    </Badge>
+                  )}
+                   <div className="flex-grow">
+                      <strong className="text-foreground leading-tight transition-colors">{feat.name}</strong>
+                      {feat.note && (
+                        <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
+                          {feat.note}
+                        </p>
+                      )}
+                   </div>
+                </div>
+                {expandedItems.has(uniqueKey) && (
+                 <div id={`feat-details-${uniqueKey}`} className="my-1 mb-1">
+                    <ExpandableDetailWrapper>
+                      <FeatDetailsDisplay
+                          featId={feat.featId}
+                          character={character}
+                          allFeats={allCombinedFeatDefinitions}
+                          allPredefinedSkills={SKILL_DEFINITIONS}
+                          allCustomSkills={customSkillDefinitions}
+                          allClasses={DND_CLASSES}
+                          allRaces={DND_RACES}
+                          abilityLabels={ABILITY_LABELS}
+                          alignmentPrereqOptions={ALIGNMENT_PREREQUISITE_OPTIONS}
+                          uiStrings={UI_STRINGS}
+                      />
+                    </ExpandableDetailWrapper>
+                 </div>
+                )}
+              </li>
+          );
+        })}
+      </ul>
+    </div>
+  ) : null;
+
+  const renderedBlocks = [htmlContentBlock, generalTraitsSectionContent, grantedFeatsSectionContent].filter(Boolean);
+
+  if (renderedBlocks.length === 0) return null;
+
+  return (
+    <div>
+      {renderedBlocks.map((block, index) => (
+        <React.Fragment key={`race-display-block-${index}`}>
+          {block}
+          {index < renderedBlocks.length - 1 && <Separator className="my-3" />}
+        </React.Fragment>
+      ))}
+    </div>
+  );
 };
-    
