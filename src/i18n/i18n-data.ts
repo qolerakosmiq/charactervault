@@ -73,6 +73,7 @@ export interface SizeDataEntry {
   id: CharacterSize;
   label: LocalizedString;
   acModifier: number;
+  grappleModifier: number; // Added from CharacterSizeObject definition consistency
   skillModifiers?: Record<string, number>;
   grappleDamage?: string;
 }
@@ -160,8 +161,8 @@ export interface CommonFeatsJson {
 export interface RawRaceDataEntry {
   id: DndRaceId;
   label: LocalizedString;
-  description?: LocalizedString;
-  generalDescription?: LocalizedString;
+  description?: LocalizedString; // Fallback
+  generalDescription?: LocalizedString; // Preferred
   loreAttributes?: Array<{key: LocalizedString, value: LocalizedString}>;
   bonusFeatSlots?: number;
   racialSkillBonuses?: Record<string, number>;
@@ -284,7 +285,7 @@ function processLocalizedArray<T extends { id: string; label: LocalizedString; [
       otherFieldsToLocalize.forEach(fieldKey => {
         const rawFieldValue = item_raw[fieldKey];
         if (rawFieldValue && typeof rawFieldValue === 'object' && !Array.isArray(rawFieldValue)) {
-          newItem[fieldKey] = getLocalizedString(rawFieldValue as LocalizedString, lang);
+          newItem[fieldKey] = getLocalizedString(rawFieldValue as LocalizedString, lang) || ''; // Ensure empty string for undefined
         } else if (typeof rawFieldValue === 'string') {
            newItem[fieldKey] = rawFieldValue;
         } else if (rawFieldValue === undefined && (fieldKey === 'generalDescription' || fieldKey === 'description')) {
@@ -375,20 +376,38 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       bonusFeatSlots: bonusFeatSlots,
       racialSkillBonuses: racialSkillBonuses,
       grantedFeats: (rawGrantedFeats || []).map(gf_raw => {
+        let displayName = '';
         const featDef = DND_FEATS_DEFINITIONS.find(f => f.id === gf_raw.featId);
-        let displayName = gf_raw.featId;
-        if (featDef && featDef.label) {
+
+        if (featDef && featDef.label && featDef.label.trim() !== '') {
           displayName = featDef.label;
-        } else if (gf_raw.name) {
-          displayName = getLocalizedString(gf_raw.name, lang);
-        } else if (gf_raw.note) {
-          displayName = getLocalizedString(gf_raw.note, lang);
         }
+        
+        if (displayName === '' && gf_raw.name) {
+          const localizedName = getLocalizedString(gf_raw.name, lang);
+          if (localizedName && localizedName.trim() !== '') {
+            displayName = localizedName;
+          }
+        }
+        
+        if (displayName === '' && gf_raw.note) {
+          const localizedNoteAsName = getLocalizedString(gf_raw.note, lang);
+          if (localizedNoteAsName && localizedNoteAsName.trim() !== '') {
+            displayName = localizedNoteAsName;
+          }
+        }
+        
+        if (displayName === '') {
+          displayName = gf_raw.featId;
+        }
+
         const noteText = getLocalizedString(gf_raw.note, lang);
+        const finalNote = (displayName !== noteText && noteText && noteText.trim() !== '') ? noteText : undefined;
+
         return {
           featId: gf_raw.featId,
           name: displayName,
-          note: (displayName !== noteText || !displayName) ? noteText : undefined, // Only keep note if it's different or if name is just ID
+          note: finalNote,
           levelAcquired: gf_raw.levelAcquired
         };
       }),
@@ -420,20 +439,38 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       saves: saves,
       spellcasting: spellcasting,
       grantedFeats: (rawGrantedFeats || []).map(gf_raw => {
+        let displayName = '';
         const featDef = DND_FEATS_DEFINITIONS.find(f => f.id === gf_raw.featId);
-        let displayName = gf_raw.featId;
-        if (featDef && featDef.label) {
+
+        if (featDef && featDef.label && featDef.label.trim() !== '') {
           displayName = featDef.label;
-        } else if (gf_raw.name) {
-          displayName = getLocalizedString(gf_raw.name, lang);
-        } else if (gf_raw.note) {
-          displayName = getLocalizedString(gf_raw.note, lang);
         }
+        
+        if (displayName === '' && gf_raw.name) {
+          const localizedName = getLocalizedString(gf_raw.name, lang);
+          if (localizedName && localizedName.trim() !== '') {
+            displayName = localizedName;
+          }
+        }
+        
+        if (displayName === '' && gf_raw.note) {
+          const localizedNoteAsName = getLocalizedString(gf_raw.note, lang);
+          if (localizedNoteAsName && localizedNoteAsName.trim() !== '') {
+            displayName = localizedNoteAsName;
+          }
+        }
+        
+        if (displayName === '') {
+          displayName = gf_raw.featId;
+        }
+
         const noteText = getLocalizedString(gf_raw.note, lang);
+        const finalNote = (displayName !== noteText && noteText && noteText.trim() !== '') ? noteText : undefined;
+        
         return {
           featId: gf_raw.featId,
           name: displayName,
-          note: (displayName !== noteText || !displayName) ? noteText : undefined,
+          note: finalNote,
           levelAcquired: gf_raw.levelAcquired
         };
       }),
@@ -613,3 +650,6 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     UI_STRINGS,
   };
 }
+
+
+    
