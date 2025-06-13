@@ -35,14 +35,11 @@
     { "featId": "class-ranger-favored-enemy", "levelAcquired": 1 },
     { "featId": "track", "levelAcquired": 1, "note": { "en": "Ranger Bonus Feat", "fr": "Don supplémentaire de Rôdeur" } },
     { "featId": "class-ranger-wild-empathy", "levelAcquired": 1 },
-    { "featId": "class-ranger-combat-style", "levelAcquired": 2 },
     { "featId": "endurance", "levelAcquired": 3, "note": { "en": "Ranger Bonus Feat", "fr": "Don supplémentaire de Rôdeur" } },
     { "featId": "class-ranger-animal-companion", "levelAcquired": 4 },
-    { "featId": "class-ranger-improved-combat-style", "levelAcquired": 6 },
     { "featId": "class-ranger-woodland-stride", "levelAcquired": 7 },
     { "featId": "class-ranger-swift-tracker", "levelAcquired": 8 },
     { "featId": "class-ranger-evasion", "levelAcquired": 9 },
-    { "featId": "class-ranger-combat-style-mastery", "levelAcquired": 11 },
     { "featId": "class-ranger-camouflage", "levelAcquired": 13 },
     { "featId": "class-ranger-hide-in-plain-sight", "levelAcquired": 17 }
   ],
@@ -70,21 +67,9 @@
       "type": "special-ex", "isClassFeature": true
     },
     {
-      "value": "class-ranger-combat-style",
-      "label": { "en": "Combat Style", "fr": "Style de combat" },
-      "description": { "en": "At 2nd level, a ranger must select one of two combat styles to pursue: archery or two-weapon combat. This choice affects the character’s class features but does not restrict his selection of feats or special abilities in any way. If the ranger selects archery, he is treated as having the Rapid Shot feat, even if he does not have the normal prerequisites for that feat. If the ranger selects two-weapon combat, he is treated as having the Two-Weapon Fighting feat, even if he does not have the normal prerequisites for that feat. The benefits of the ranger’s chosen style apply only when he wears light or no armor. He loses all benefits of his combat style when wearing medium or heavy armor.", "fr": "Au niveau 2, un rôdeur doit choisir l'un des deux styles de combat à suivre : l'archerie ou le combat à deux armes. Ce choix affecte les caractéristiques de classe du personnage mais ne restreint en aucune façon sa sélection de dons ou de capacités spéciales. Si le rôdeur choisit l'archerie, il est traité comme s'il possédait le don Tir rapide, même s'il n'a pas les prérequis normaux pour ce don. Si le rôdeur choisit le combat à deux armes, il est traité comme s'il possédait le don Combat à deux armes, même s'il n'a pas les prérequis normaux pour ce don. Les avantages du style choisi par le rôdeur ne s'appliquent que lorsqu'il porte une armure légère ou aucune armure. Il perd tous les avantages de son style de combat lorsqu'il porte une armure intermédiaire ou lourde." },
-      "type": "special-ex", "isClassFeature": true
-    },
-    {
       "value": "class-ranger-animal-companion",
       "label": { "en": "Animal Companion (Ranger)", "fr": "Compagnon animal (Rôdeur)" },
       "description": { "en": "At 4th level, a ranger gains an animal companion selected from a list. This ability functions like the druid ability of the same name, except that the ranger’s effective druid level is one-half his ranger level.", "fr": "Au niveau 4, un rôdeur gagne un compagnon animal sélectionné dans une liste. Cette capacité fonctionne comme la capacité de druide du même nom, sauf que le niveau de druide effectif du rôdeur est la moitié de son niveau de rôdeur." },
-      "type": "special-ex", "isClassFeature": true
-    },
-    {
-      "value": "class-ranger-improved-combat-style",
-      "label": { "en": "Improved Combat Style", "fr": "Style de combat amélioré" },
-      "description": { "en": "At 6th level, a ranger’s aptitude in his chosen combat style (archery or two-weapon combat) improves. If he selected archery at 2nd level, he is treated as having the Manyshot feat, even if he does not have the normal prerequisites for that feat. If the ranger selected two-weapon combat at 2nd level, he is treated as having the Improved Two-Weapon Fighting feat, even if he does not have the normal prerequisites for that feat. As before, the benefits of the ranger’s chosen style apply only when he wears light or no armor.", "fr": "Au niveau 6, l'aptitude d'un rôdeur dans son style de combat choisi (archerie ou combat à deux armes) s'améliore. S'il a choisi l'archerie au niveau 2, il est traité comme s'il possédait le don Tir multiple, même s'il n'a pas les prérequis normaux pour ce don. Si le rôdeur a choisi le combat à deux armes au niveau 2, il est traité comme s'il possédait le don Combat à deux armes amélioré, même s'il n'a pas les prérequis normaux pour ce don. Comme auparavant, les avantages du style choisi par le rôdeur ne s'appliquent que lorsqu'il porte une armure légère ou aucune armure." },
       "type": "special-ex", "isClassFeature": true
     },
     {
@@ -106,12 +91,6 @@
       "type": "special-ex", "isClassFeature": true
     },
     {
-      "value": "class-ranger-combat-style-mastery",
-      "label": { "en": "Combat Style Mastery", "fr": "Maîtrise du style de combat" },
-      "description": { "en": "At 11th level, a ranger’s aptitude in his chosen combat style (archery or two-weapon combat) improves again. If he selected archery at 2nd level, he is treated as having the Improved Precise Shot feat, even if he does not have the normal prerequisites for that feat. If the ranger selected two-weapon combat at 2nd level, he is treated as having the Greater Two-Weapon Fighting feat, even if he does not have the normal prerequisites for that feat. As before, the benefits of the ranger’s chosen style apply only when he wears light or no armor.", "fr": "Au niveau 11, l'aptitude d'un rôdeur dans son style de combat choisi (archerie ou combat à deux armes) s'améliore à nouveau. S'il a choisi l'archerie au niveau 2, il est traité comme s'il possédait le don Tir de précision amélioré, même s'il n'a pas les prérequis normaux pour ce don. Si le rôdeur a choisi le combat à deux armes au niveau 2, il est traité comme s'il possédait le don Combat à deux armes supérieur, même s'il n'a pas les prérequis normaux pour ce don. Comme auparavant, les avantages du style choisi par le rôdeur ne s'appliquent que lorsqu'il porte une armure légère ou aucune armure." },
-      "type": "special-ex", "isClassFeature": true
-    },
-    {
       "value": "class-ranger-camouflage",
       "label": { "en": "Camouflage", "fr": "Camouflage" },
       "description": { "en": "A ranger of 13th level or higher can use the Hide skill in any sort of natural terrain, even if the terrain doesn’t grant cover or concealment.", "fr": "Un rôdeur de niveau 13 ou plus peut utiliser la compétence Discrétion dans n'importe quel type de terrain naturel, même si le terrain n'offre pas de couverture ou de dissimulation." },
@@ -125,5 +104,3 @@
     }
   ]
 }
-
-    

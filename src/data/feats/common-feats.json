@@ -429,6 +429,66 @@
       "category": "fighterBonusFeat"
     },
     {
+      "value": "rapid-shot",
+      "label": { "en": "Rapid Shot", "fr": "Tir rapide" },
+      "description": {
+        "en": "<b>Prerequisites:</b> Dex 13, Point Blank Shot.<br/><b>Benefit:</b> You can get one extra attack per round with a ranged weapon. The attack is at your highest base attack bonus, but each attack you make in that round (the extra one and the normal ones) takes a –2 penalty. You must use the full attack action to use this feat.",
+        "fr": "<b>Prérequis :</b> Dex 13, Tir à bout portant.<br/><b>Avantage :</b> Vous pouvez obtenir une attaque supplémentaire par round avec une arme à distance. L'attaque est à votre bonus d'attaque de base le plus élevé, mais chaque attaque que vous effectuez ce round-là (celle en plus et les normales) subit une pénalité de –2. Vous devez utiliser l'action d'attaque à outrance pour utiliser ce don."
+      },
+      "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["point-blank-shot"] },
+      "effectsText": { "en": "One extra ranged attack per round at highest BAB, all attacks at -2. Full attack action.", "fr": "Une attaque à distance supplémentaire par round au BBA le plus élevé, toutes les attaques à -2. Action d'attaque à outrance." },
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "manyshot",
+      "label": { "en": "Manyshot", "fr": "Tir multiple" },
+      "description": {
+        "en": "<b>Prerequisites:</b> Dex 17, Point Blank Shot, Rapid Shot, base attack bonus +6.<br/><b>Benefit:</b> As a standard action, you may fire two arrows at a single opponent within 30 feet. Both arrows use the same attack roll (with a –4 penalty) to determine success and deal damage normally (but see Special). For every five points of base attack bonus you have above +6, you may add one additional arrow to this attack, to a maximum of four arrows at a base attack bonus of +16. Each additional arrow incurs an additional –2 penalty on the attack roll (for example, three arrows are at a –6 penalty and four arrows are at a –8 penalty).<br/><b>Special:</b> Regardless of the number of arrows you fire, you apply precision-based damage (such as sneak attack) only once. If you score a critical hit, only the first arrow deals critical damage; all others deal normal damage.",
+        "fr": "<b>Prérequis :</b> Dex 17, Tir à bout portant, Tir rapide, bonus d'attaque de base +6.<br/><b>Avantage :</b> Par une action simple, vous pouvez tirer deux flèches sur un seul adversaire à moins de 9 mètres. Les deux flèches utilisent le même jet d'attaque (avec une pénalité de –4) pour déterminer le succès et infligent des dégâts normalement (mais voir Spécial). Pour chaque tranche de cinq points de bonus d'attaque de base que vous avez au-dessus de +6, vous pouvez ajouter une flèche supplémentaire à cette attaque, jusqu'à un maximum de quatre flèches avec un bonus d'attaque de base de +16. Chaque flèche supplémentaire encourt une pénalité supplémentaire de –2 au jet d'attaque (par exemple, trois flèches sont à une pénalité de –6 et quatre flèches sont à une pénalité de –8).<br/><b>Spécial :</b> Quel que soit le nombre de flèches que vous tirez, vous n'appliquez les dégâts basés sur la précision (comme l'attaque sournoise) qu'une seule fois. Si vous réussissez un coup critique, seule la première flèche inflige des dégâts critiques ; toutes les autres infligent des dégâts normaux."
+      },
+      "prerequisites": { "abilities": { "dexterity": 17 }, "feats": ["point-blank-shot", "rapid-shot"], "bab": 6 },
+      "effectsText": { "en": "Standard action: fire multiple arrows (2 at BAB +6, +1 arrow per 5 BAB above +6, max 4) at one target within 30ft. Single attack roll with increasing penalty. Precision damage once.", "fr": "Action simple : tire plusieurs flèches (2 à BBA +6, +1 flèche par 5 BBA au-dessus de +6, max 4) sur une cible à moins de 9m. Jet d'attaque unique avec pénalité croissante. Dégâts de précision une fois." },
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "improved-precise-shot",
+      "label": { "en": "Improved Precise Shot", "fr": "Tir de précision amélioré" },
+      "description": {
+        "en": "<b>Prerequisites:</b> Dex 19, Point Blank Shot, Precise Shot, base attack bonus +11.<br/><b>Benefit:</b> Your ranged attacks ignore the AC bonus granted to targets by anything less than total cover, and the miss chance granted to targets by anything less than total concealment. Total cover and total concealment provide their normal benefits against your ranged attacks.<br/><b>Normal:</b> See the normal rules for cover and concealment.",
+        "fr": "<b>Prérequis :</b> Dex 19, Tir à bout portant, Tir de précision, bonus d'attaque de base +11.<br/><b>Avantage :</b> Vos attaques à distance ignorent le bonus de CA accordé aux cibles par tout ce qui est inférieur à une couverture totale, et le risque d'échec accordé aux cibles par tout ce qui est inférieur à une dissimulation totale. La couverture totale et la dissimulation totale offrent leurs avantages normaux contre vos attaques à distance.<br/><b>Normal :</b> Voir les règles normales pour la couverture et la dissimulation."
+      },
+      "prerequisites": { "abilities": { "dexterity": 19 }, "feats": ["point-blank-shot", "precise-shot"], "bab": 11 },
+      "effectsText": { "en": "Ranged attacks ignore AC bonus from less than total cover, and miss chance from less than total concealment.", "fr": "Les attaques à distance ignorent le bonus de CA d'une couverture inférieure à totale, et le risque d'échec d'une dissimulation inférieure à totale." },
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "improved-two-weapon-fighting",
+      "label": { "en": "Improved Two-Weapon Fighting", "fr": "Combat à deux armes amélioré" },
+      "description": {
+        "en": "<b>Prerequisites:</b> Dex 17, Two-Weapon Fighting, base attack bonus +6.<br/><b>Benefit:</b> You get a second attack with your off-hand weapon, albeit at a –5 penalty.<br/><b>Normal:</b> Without this feat, you can only get a single extra attack with an off-hand weapon.",
+        "fr": "<b>Prérequis :</b> Dex 17, Combat à deux armes, bonus d'attaque de base +6.<br/><b>Avantage :</b> Vous obtenez une deuxième attaque avec votre arme de main non directrice, mais avec une pénalité de –5.<br/><b>Normal :</b> Sans ce don, vous ne pouvez obtenir qu'une seule attaque supplémentaire avec une arme de main non directrice."
+      },
+      "prerequisites": { "abilities": { "dexterity": 17 }, "feats": ["two-weapon-fighting"], "bab": 6 },
+      "effectsText": { "en": "Gain a second off-hand attack at -5 penalty.", "fr": "Gagnez une deuxième attaque de main non directrice avec une pénalité de -5." },
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "greater-two-weapon-fighting",
+      "label": { "en": "Greater Two-Weapon Fighting", "fr": "Combat à deux armes supérieur" },
+      "description": {
+        "en": "<b>Prerequisites:</b> Dex 19, Improved Two-Weapon Fighting, Two-Weapon Fighting, base attack bonus +11.<br/><b>Benefit:</b> You get a third attack with your off-hand weapon, albeit at a –10 penalty.",
+        "fr": "<b>Prérequis :</b> Dex 19, Combat à deux armes amélioré, Combat à deux armes, bonus d'attaque de base +11.<br/><b>Avantage :</b> Vous obtenez une troisième attaque avec votre arme de main non directrice, mais avec une pénalité de –10."
+      },
+      "prerequisites": { "abilities": { "dexterity": 19 }, "feats": ["improved-two-weapon-fighting", "two-weapon-fighting"], "bab": 11 },
+      "effectsText": { "en": "Gain a third off-hand attack at -10 penalty.", "fr": "Gagnez une troisième attaque de main non directrice avec une pénalité de -10." },
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
       "value": "power-attack",
       "label": { "en": "Power Attack", "fr": "Attaque en puissance" },
       "description": {

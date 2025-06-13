@@ -58,12 +58,12 @@ import type {
   DamageReductionFeatEffect,
   CharacterFavoredEnemy,
   FeatChoiceFilter, // Added for data-driven feat choices
-  LocalizedString // Ensure LocalizedString is imported
+  LocalizedString 
 } from './character-core';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 // Import calculateLevelFromXp and other used utilities directly
 import { getBab, calculateSumOfClassLevels, calculateAbilityModifier, getXpRequiredForLevel, calculateLevelFromXp, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
-import { getLocalizedString } from '@/i18n/i18n-data'; // Import getLocalizedString
+import { getLocalizedString } from '@/i18n/i18n-data'; 
 
 
 // Utility Functions (many will now need translated data passed in)
@@ -93,10 +93,9 @@ export function getInitialCharacterSkills(
     miscModifier: 0,
     isClassSkill: classSkillsForCurrentClass.includes(def.value),
   })).sort((a, b) => {
-    // label is already localized string in SkillDefinitionJsonData after processing
     const nameA = SKILL_DEFINITIONS.find(d => d.value === a.id)?.label || '';
     const nameB = SKILL_DEFINITIONS.find(d => d.value === b.id)?.label || '';
-    return nameA.localeCompare(nameB);
+    return String(nameA).localeCompare(String(nameB));
   });
 }
 
@@ -109,7 +108,7 @@ export function getNetAgingEffects(
   DND_RACE_AGING_EFFECTS_DATA: Record<string, { categories: Array<{ categoryName: string; ageFactor: number; effects: Record<string, number> }> }>, // string is RaceAgingCategoryKey
   ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[]
 ): AgingEffectsDetails {
-  if (!raceId) return { categoryName: "Adult", effects: [] }; // Assuming "Adult" is a sensible default string
+  if (!raceId) return { categoryName: "Adult", effects: [] }; 
   const raceMaxAge = DND_RACE_BASE_MAX_AGE_DATA[raceId as DndRaceId];
   if (raceMaxAge === undefined) return { categoryName: "Adult", effects: [] };
   const agingCategoryKey = RACE_TO_AGING_CATEGORY_MAP_DATA[raceId as DndRaceId];
@@ -117,14 +116,14 @@ export function getNetAgingEffects(
   const raceAgingPattern = DND_RACE_AGING_EFFECTS_DATA[agingCategoryKey];
   if (!raceAgingPattern) return { categoryName: "Adult", effects: [] };
 
-  let currentCategoryLabel: string = "Adult"; // Default, will be localized string from data
+  let currentCategoryLabel: string = "Adult"; 
   let highestAttainedCategoryEffects: Partial<Record<Exclude<AbilityName, 'none'>, number>> | null = null;
   const sortedCategories = [...raceAgingPattern.categories].sort((a, b) => a.ageFactor - b.ageFactor);
 
   for (const category of sortedCategories) {
     const ageThresholdForCategory = Math.floor(category.ageFactor * raceMaxAge);
     if (age >= ageThresholdForCategory) {
-      currentCategoryLabel = category.categoryName; // categoryName is already localized string from ProcessedSiteData
+      currentCategoryLabel = category.categoryName; 
       highestAttainedCategoryEffects = category.effects as Partial<Record<Exclude<AbilityName, 'none'>, number>>;
     } else {
       break;
@@ -155,7 +154,7 @@ export function getRaceSpecialQualities(
   raceId: DndRaceId | '',
   DND_RACES: readonly DndRaceOption[],
   DND_RACE_ABILITY_MODIFIERS_DATA: Record<string, Partial<Record<Exclude<AbilityName, 'none'>, number>>>,
-  SKILL_DEFINITIONS: readonly {value: string; label: string; keyAbility: AbilityName}[], // Simplified for this context
+  SKILL_DEFINITIONS: readonly {value: string; label: string; keyAbility: AbilityName}[], 
   DND_FEATS_DEFINITIONS: readonly FeatDefinitionJsonData[],
   ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[]
 ): RaceSpecialQualities {
@@ -164,7 +163,7 @@ export function getRaceSpecialQualities(
     return { abilityEffects: [], skillBonuses: [], grantedFeats: [], bonusFeatSlots: 0, speeds: {} };
   }
   if (!raceId) return { abilityEffects: [], skillBonuses: [], grantedFeats: [], bonusFeatSlots: 0, speeds: {} };
-  const raceData = DND_RACES.find(r => r.value === raceId); // raceData.label is already localized string
+  const raceData = DND_RACES.find(r => r.value === raceId); 
   const abilityModifiers = raceId ? DND_RACE_ABILITY_MODIFIERS_DATA[raceId as DndRaceId] : undefined;
 
   const appliedAbilityEffects: Array<{ ability: Exclude<AbilityName, 'none'>; change: number }> = [];
@@ -188,7 +187,7 @@ export function getRaceSpecialQualities(
   const appliedSkillBonuses: Array<{ skillId: string; skillName: string; bonus: number }> = [];
   if (raceData?.racialSkillBonuses) {
     for (const [skillId_kebab, bonus] of Object.entries(raceData.racialSkillBonuses)) {
-      const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skillId_kebab); // SKILL_DEFINITIONS now has string labels
+      const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skillId_kebab); 
       if (skillDef && bonus !== 0) {
         appliedSkillBonuses.push({ skillId: skillDef.value, skillName: skillDef.label, bonus });
       }
@@ -198,7 +197,7 @@ export function getRaceSpecialQualities(
 
   const formattedGrantedFeats = raceData?.grantedFeats?.map(gf => {
     const featDef = DND_FEATS_DEFINITIONS.find(f => f.value === gf.featId);
-    return { ...gf, name: featDef?.label || gf.featId, note: gf.note }; // label & note are already localized strings
+    return { ...gf, name: featDef?.label || gf.featId, note: gf.note }; 
   }) || [];
 
   return {
@@ -213,7 +212,7 @@ export function getRaceSpecialQualities(
 export function calculateTotalSynergyBonus(
   targetSkillId: string,
   currentCharacterSkills: Skill[],
-  ALL_SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[], // Combined predefined and custom definitions
+  ALL_SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[], 
   SKILL_SYNERGIES: Record<string, Array<{ targetSkill: string; ranksRequired: number; bonus: number }>>,
   allCustomSkillDefinitions: readonly CustomSkillDefinition[]
 ): number {
@@ -254,7 +253,7 @@ export function calculateRacialSkillBonus(
   skillId_kebab: string,
   raceId: DndRaceId | string,
   DND_RACES: readonly DndRaceOption[],
-  SKILL_DEFINITIONS_UNUSED?: readonly {value: string; label: string; keyAbility: AbilityName | string; description?: string}[], // Parameter kept for signature consistency
+  SKILL_DEFINITIONS_UNUSED?: readonly {value: string; label: string; keyAbility: AbilityName | string; description?: string}[], 
 ): number {
   if (!raceId) return 0;
   const raceData = DND_RACES.find(r => r.value === raceId);
@@ -292,10 +291,11 @@ export function calculateAvailableFeats(
   }
 
   const characterLevel = calculateLevelFromXp(character.experiencePoints || 0, XP_TABLE, EPIC_LEVEL_XP_INCREASE);
+  const currentLang = 'en'; 
 
   let baseFeatSlots = 0;
-  if (characterLevel >= 1) baseFeatSlots = 1; // 1st level
-  baseFeatSlots += Math.floor(characterLevel / 3); // +1 every 3 levels (3, 6, 9, etc.)
+  if (characterLevel >= 1) baseFeatSlots = 1; 
+  baseFeatSlots += Math.floor(characterLevel / 3); 
 
   let racialBonusSlots = 0;
   const raceData = DND_RACES.find(r => r.value === character.race);
@@ -320,12 +320,13 @@ export function calculateAvailableFeats(
               }
               if (isActive) {
                 classBonusFeatSlotsTotal += slotEffect.count;
-                const key = `${slotEffect.category}-${featDef.label}`; // label is already localized string
+                const featLabelString = getLocalizedString(featDef.label, currentLang);
+                const key = `${slotEffect.category}-${featLabelString}`; 
                 const existingDetail = classBonusDetailsMap.get(key);
                 if (existingDetail) {
                   existingDetail.count += slotEffect.count;
                 } else {
-                  classBonusDetailsMap.set(key, { category: slotEffect.category, count: slotEffect.count, sourceFeatLabel: featDef.label });
+                  classBonusDetailsMap.set(key, { category: slotEffect.category, count: slotEffect.count, sourceFeatLabel: featLabelString });
                 }
               }
             }
@@ -365,7 +366,7 @@ export function getGrantedFeatsForCharacter(
   const addedDefinitionIds = new Set<string>();
 
   const characterLevel = calculateLevelFromXp(character.experiencePoints || 0, XP_TABLE, EPIC_LEVEL_XP_INCREASE);
-  const currentLang = 'en'; // Assuming English for now, or get from context
+  const currentLang = 'en'; 
 
   const addGrantedInstance = (featDefId: string, note: LocalizedString | undefined, source: LocalizedString, levelAcquired?: number, specializationDetail?: string, chosenSpecializationCategory?: string) => {
     if (!featDefId || (levelAcquired !== undefined && levelAcquired > characterLevel)) {
@@ -380,7 +381,7 @@ export function getGrantedFeatsForCharacter(
         definitionId: featDef.value,
         instanceId: featDef.canTakeMultipleTimes ? `${featDef.value}-GRANTED-${crypto.randomUUID()}` : instanceId,
         isGranted: true,
-        grantedNote: note,
+        grantedNote: getLocalizedString(note, currentLang),
         specializationDetail: specializationDetail,
         chosenSpecializationCategory: chosenSpecializationCategory,
         conditionalEffectStates: {},
@@ -421,6 +422,33 @@ export function getGrantedFeatsForCharacter(
         }
       });
     }
+    
+    // Ranger Combat Style Feats
+    if (classData.value === 'ranger' && character.chosenCombatStyle) {
+      const rangerLevel = charClass.level;
+      if (rangerLevel >= 2) {
+        if (character.chosenCombatStyle === 'archery') {
+          addGrantedInstance('rapid-shot', { en: "Archery Style (L2)", fr: "Style Archerie (N2)" }, classData.label, 2);
+        } else if (character.chosenCombatStyle === 'twoWeaponFighting') {
+          addGrantedInstance('two-weapon-fighting', { en: "Two-Weapon Style (L2)", fr: "Style Deux Armes (N2)" }, classData.label, 2);
+        }
+      }
+      if (rangerLevel >= 6) {
+        if (character.chosenCombatStyle === 'archery') {
+          addGrantedInstance('manyshot', { en: "Improved Archery Style (L6)", fr: "Style Archerie Amélioré (N6)" }, classData.label, 6);
+        } else if (character.chosenCombatStyle === 'twoWeaponFighting') {
+          addGrantedInstance('improved-two-weapon-fighting', { en: "Improved Two-Weapon Style (L6)", fr: "Style Deux Armes Amélioré (N6)" }, classData.label, 6);
+        }
+      }
+      if (rangerLevel >= 11) {
+        if (character.chosenCombatStyle === 'archery') {
+          addGrantedInstance('improved-precise-shot', { en: "Archery Style Mastery (L11)", fr: "Maîtrise Style Archerie (N11)" }, classData.label, 11);
+        } else if (character.chosenCombatStyle === 'twoWeaponFighting') {
+          addGrantedInstance('greater-two-weapon-fighting', { en: "Two-Weapon Style Mastery (L11)", fr: "Maîtrise Style Deux Armes (N11)" }, classData.label, 11);
+        }
+      }
+    }
+
 
     if (classData.value === 'cleric' && character.chosenDomains) {
       character.chosenDomains.forEach(domainId => {
@@ -440,7 +468,6 @@ export function getGrantedFeatsForCharacter(
         if (playerChoiceValue) {
           const matchingCase = filterDef.filterCases.find(fCase => fCase.choiceValue === playerChoiceValue);
           if (matchingCase) {
-            // Filter to keep only feats whose note matches the required note for the chosen style
             grantedInstances = grantedInstances.filter(instance => {
               const currentNote = getLocalizedString(instance.grantedNote, currentLang);
               const filterNote = getLocalizedString(matchingCase.noteMustContain, currentLang);
@@ -448,23 +475,20 @@ export function getGrantedFeatsForCharacter(
                 const anyCaseNote = getLocalizedString(anyCase.noteMustContain, currentLang);
                 return currentNote?.includes(anyCaseNote);
               });
-              if (!isRelatedToThisFilterGroup) return true; // Not part of this choice group, keep it
-              return currentNote?.includes(filterNote); // Part of group, keep only if matches chosen style
+              if (!isRelatedToThisFilterGroup) return true; 
+              return currentNote?.includes(filterNote); 
             });
           } else {
-            // If no specific choice matches (e.g. playerChoiceValue is empty or not in filterCases),
-            // remove all feats that would have been granted by any option in this filter group.
             grantedInstances = grantedInstances.filter(instance => {
               const currentNote = getLocalizedString(instance.grantedNote, currentLang);
               const isRelatedToThisFilterGroup = filterDef.filterCases.some(anyCase => {
                   const anyCaseNote = getLocalizedString(anyCase.noteMustContain, currentLang);
                   return currentNote?.includes(anyCaseNote);
               });
-              return !isRelatedToThisFilterGroup; // Keep only if NOT part of this filter group
+              return !isRelatedToThisFilterGroup; 
             });
           }
         } else {
-            // Player hasn't made a choice for this filterable field, remove all feats that would have been granted by any option in this group.
              grantedInstances = grantedInstances.filter(instance => {
                 const currentNote = getLocalizedString(instance.grantedNote, currentLang);
                 const isRelatedToThisFilterGroup = filterDef.filterCases.some(anyCase => {
@@ -496,11 +520,11 @@ export function checkFeatPrerequisites(
   DND_RACES: readonly DndRaceOption[],
   ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[],
   ALIGNMENT_PREREQUISITE_OPTIONS: readonly { value: string; label: string }[],
-  uiStrings: Record<string, string> // Pass localized UI strings
+  uiStrings: Record<string, string> 
 ): PrerequisiteMessage[] {
   const { prerequisites } = featDefinitionToCheck;
   const messages: PrerequisiteMessage[] = [];
-  const currentLang = 'en'; // Assume current language or get from context
+  const currentLang = 'en'; 
 
   if (!prerequisites || Object.keys(prerequisites).length === 0) {
     return [];
@@ -510,18 +534,18 @@ export function checkFeatPrerequisites(
     const combined: Array<{id: string; label: string}> = ALL_SKILL_DEFINITIONS.map(sd => ({id: sd.value, label: sd.label}));
     allCustomSkillDefinitions.forEach(csd => {
       if (!combined.find(s => s.id === csd.id)) {
-        combined.push({id: csd.id, label: csd.name}); // csd.name is already localized
+        combined.push({id: csd.id, label: csd.name}); 
       }
     });
     return combined;
   };
   const combinedSkillDefsForPrereq = getCombinedSkillDefsForPrereq();
 
-  const characterLevel = calculateLevelFromXp(character.experiencePoints || 0, [], 0); // Assuming XP_TABLE and EPIC_INCREASE are elsewhere
+  const characterLevel = calculateLevelFromXp(character.experiencePoints || 0, [], 0); 
 
   if (prerequisites.raceId !== undefined && prerequisites.raceId !== "") {
     const raceDef = DND_RACES.find(r => r.value === prerequisites!.raceId);
-    const raceName = raceDef?.label || prerequisites.raceId; // label is already localized
+    const raceName = raceDef?.label || prerequisites.raceId; 
     const isMet = character.race === prerequisites.raceId;
     messages.push({ text: `${uiStrings.raceLabel || 'Race'}: ${getLocalizedString(raceName, currentLang)}`, isMet, orderKey: 'race', originalText: raceName });
   }
@@ -530,7 +554,7 @@ export function checkFeatPrerequisites(
     const { classId, level: requiredClassLevel } = prerequisites.classLevel;
     const charClass = character.classes.find(c => c.className === classId);
     const classDef = DND_CLASSES.find(cd => cd.value === classId);
-    const className = classDef?.label || classId; // label is already localized
+    const className = classDef?.label || classId; 
     const isMet = charClass ? charClass.level >= requiredClassLevel : false;
     messages.push({ text: `${getLocalizedString(className, currentLang)} ${uiStrings.levelLabel || 'Level'} ${requiredClassLevel}`, isMet, orderKey: `classLevel_${classId}`, originalText: className });
   }
@@ -539,7 +563,7 @@ export function checkFeatPrerequisites(
     const reqAlign = prerequisites.alignment;
     const charAlign = character.alignment;
     let isMet = false;
-    const requiredAlignmentLabel = ALIGNMENT_PREREQUISITE_OPTIONS.find(opt => opt.value === reqAlign)?.label || reqAlign; // label is already localized
+    const requiredAlignmentLabel = ALIGNMENT_PREREQUISITE_OPTIONS.find(opt => opt.value === reqAlign)?.label || reqAlign; 
 
     if (charAlign === '') {
         isMet = false;
@@ -595,7 +619,7 @@ export function checkFeatPrerequisites(
       const ability = abilityKey as Exclude<AbilityName, 'none'>;
       const charScore = character.abilityScores[ability];
       const isMet = charScore >= requiredScore!;
-      const abilityLabelFull = ABILITY_LABELS.find(al => al.value === ability)?.label || ability.charAt(0).toUpperCase() + ability.slice(1); // label is already localized
+      const abilityLabelFull = ABILITY_LABELS.find(al => al.value === ability)?.label || ability.charAt(0).toUpperCase() + ability.slice(1); 
       messages.push({ text: `${getLocalizedString(abilityLabelFull, currentLang)} ${requiredScore}`, isMet, orderKey: `ability_${abilityKey}`, originalText: abilityLabelFull });
     }
   }
@@ -606,7 +630,7 @@ export function checkFeatPrerequisites(
     for (const skillReq of prerequisites.skills) {
       const charSkillInstance = character.skills.find(s => s.id === skillReq.id);
       const skillDef = combinedSkillDefsForPrereq.find(sd => sd.id === skillReq.id);
-      const skillName = skillDef?.label || skillReq.id; // label is already localized
+      const skillName = skillDef?.label || skillReq.id; 
       const isMet = charSkillInstance ? charSkillInstance.ranks >= skillReq.ranks : false;
 
       const messageText = formatString
@@ -622,7 +646,7 @@ export function checkFeatPrerequisites(
     const characterTakenFeatDefinitionIds = character.feats.map(f => f.definitionId);
     for (const requiredFeatDefId of prerequisites.feats) {
       const featDef = allFeatDefinitions.find(f => f.value === requiredFeatDefId);
-      const featName = featDef?.label || requiredFeatDefId; // label is already localized
+      const featName = featDef?.label || requiredFeatDefId; 
       const isMet = characterTakenFeatDefinitionIds.includes(requiredFeatDefId);
       messages.push({ text: getLocalizedString(featName, currentLang), isMet, orderKey: `feat_${requiredFeatDefId}`, originalText: featName });
     }
@@ -630,12 +654,8 @@ export function checkFeatPrerequisites(
 
   if (prerequisites.special) {
     const specialText = getLocalizedString(prerequisites.special, currentLang);
-    // For special, 'isMet' might need custom logic not implemented here. Assume true for now or base on actual conditions if defined.
     let isMetSpecial = true; 
     if (prerequisites.specialConditions && prerequisites.specialConditions.length > 0) {
-      // Placeholder for actual special condition checking.
-      // For example, if a condition type 'hasFeatSpecialization' exists:
-      // isMetSpecial = character.feats.some(f => f.definitionId === featDefinitionToCheck.value && f.specializationDetail);
     }
     messages.push({ text: specialText, isMet: isMetSpecial, orderKey: 'special', originalText: prerequisites.special });
   }
@@ -671,7 +691,7 @@ export function calculateDetailedAbilityScores(
   ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[]
 ): DetailedAbilityScores {
   const result: Partial<DetailedAbilityScores> = {};
-  const currentLang = 'en'; // Assume current language or get from context
+  const currentLang = 'en'; 
   const racialQualities = getRaceSpecialQualities(character.race, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, [], [], ABILITY_LABELS);
   const agingDetails = getNetAgingEffects(character.race, character.age, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, ABILITY_LABELS);
   const tempCustomModifiers = character.abilityScoreTempCustomModifiers ||
@@ -691,7 +711,6 @@ export function calculateDetailedAbilityScores(
 
     const agingModObj = agingDetails.effects.find(eff => eff.ability === ability);
     if (agingModObj && agingModObj.change !== 0) {
-      // agingDetails.categoryName is already a localized string
       components.push({ sourceLabel: "Aging", sourceDetail: agingDetails.categoryName, value: agingModObj.change, isActive: true });
       currentScore += agingModObj.change;
     }
@@ -730,7 +749,7 @@ export function calculateFeatEffects(
   character: Character,
   allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[]
 ): AggregatedFeatEffects {
-  const currentLang = 'en'; // Assuming English for now, or get from context
+  const currentLang = 'en'; 
   const newAggregatedEffects: AggregatedFeatEffects = {
     skillBonuses: {},
     allSkillEffectDetails: [],
@@ -751,7 +770,7 @@ export function calculateFeatEffects(
     spellSaveDcBonuses: [],
     turnUndeadBonuses: [],
     grantedAbilities: [],
-    modifiedMechanics: {}, // Initialize as empty object
+    modifiedMechanics: {}, 
     proficienciesGranted: [],
     bonusFeatSlots: [],
     languagesGranted: { count: 0, specific: [] },
@@ -789,14 +808,14 @@ export function calculateFeatEffects(
     }
 
     for (const originalEffect of definition.effects) {
-      const sourceFeatName = definition.label; // label is LocalizedString
+      const sourceFeatName = definition.label; 
 
       let effectToPush: FeatEffectDetail & AggregatedFeatEffectBase = JSON.parse(JSON.stringify(originalEffect));
       effectToPush.sourceFeat = sourceFeatName;
 
-      let effectIsActive = true; // Default to active
+      let effectIsActive = true; 
       if (definition.permanentEffect) {
-        effectIsActive = true; // Permanent effects are always active
+        effectIsActive = true; 
         if (effectToPush.condition && featInstance.conditionalEffectStates) {
            featInstance.conditionalEffectStates[effectToPush.condition] = true;
         }
@@ -875,7 +894,7 @@ export function calculateFeatEffects(
           const skillEffect = effectToPush as SkillEffectDetail & AggregatedFeatEffectBase;
           newAggregatedEffects.allSkillEffectDetails.push(skillEffect); 
           if (skillEffect.isActive && typeof skillEffect.value === 'number' && skillEffect.skillId && skillEffect.skillId !== "SPEC") {
-            if (skillEffect.condition === "vs_favored_enemy") { // Ranger Favored Enemy Skill Bonus
+            if (skillEffect.condition === "vs_favored_enemy") { 
                 if (skillEffect.value > (newAggregatedEffects.favoredEnemyBonuses?.skillBonus || 0)) {
                     newAggregatedEffects.favoredEnemyBonuses!.skillBonus = skillEffect.value;
                 }
@@ -896,14 +915,14 @@ export function calculateFeatEffects(
         case "damageRoll":
           const damageEffect = effectToPush as DamageRollEffect & AggregatedFeatEffectBase;
            if (damageEffect.isActive && typeof damageEffect.value === 'number') {
-             if (damageEffect.condition === "vs_favored_enemy") { // Ranger Favored Enemy Damage Bonus
+             if (damageEffect.condition === "vs_favored_enemy") { 
                 if (newAggregatedEffects.favoredEnemyBonuses && typeof damageEffect.value === 'number') {
                     newAggregatedEffects.favoredEnemyBonuses.damageBonus = (newAggregatedEffects.favoredEnemyBonuses.damageBonus || 0) + damageEffect.value;
                 }
              } else {
                 newAggregatedEffects.damageRollBonuses.push(damageEffect);
              }
-           } else if (damageEffect.isActive && typeof damageEffect.value === 'string') { // Handle dice strings
+           } else if (damageEffect.isActive && typeof damageEffect.value === 'string') { 
              newAggregatedEffects.damageRollBonuses.push(damageEffect);
            }
           break;
@@ -916,7 +935,7 @@ export function calculateFeatEffects(
               newAggregatedEffects.hpBonus += hpEffect.value;
           }
           newAggregatedEffects.hpBonusSources.push({
-              sourceFeatName: sourceFeatName, // sourceFeatName is LocalizedString
+              sourceFeatName: sourceFeatName, 
               value: typeof hpEffect.value === 'number' ? hpEffect.value : 0,
               condition: hpEffect.condition,
               isActive: effectIsActive,
@@ -996,7 +1015,7 @@ export function calculateSpeedBreakdown(
 ): SpeedBreakdownDetails {
   const components: { source: string; value: number }[] = [];
   let currentSpeed = 0;
-  const currentLang = 'en'; // Assume current language or get from context
+  const currentLang = 'en'; 
 
   const charRaceData = DND_RACES.find(r => r.value === character.race);
   const raceLabel = getLocalizedString(charRaceData?.label, currentLang) || getLocalizedString(character.race, currentLang) || 'Unknown Race';
@@ -1123,4 +1142,4 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
-    
+
