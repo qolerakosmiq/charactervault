@@ -41,8 +41,8 @@
       "effectsText": { "en": "+2 Listen, +2 Spot.", "fr": "+2 Perception auditive, +2 Détection." },
       "permanentEffect": true,
       "effects": [
-        { "type": "skill", "skillId": "listen", "value": 2, "bonusType": "untyped", "condition": "always_active_alertness" },
-        { "type": "skill", "skillId": "spot", "value": 2, "bonusType": "untyped", "condition": "always_active_alertness" }
+        { "type": "skill", "skillId": "listen", "value": 2, "bonusType": "untyped" },
+        { "type": "skill", "skillId": "spot", "value": 2, "bonusType": "untyped" }
       ],
       "isClassFeature": false,
       "type": "general"
@@ -829,6 +829,72 @@
         "fr": "<b>Avantage :</b> Vous effectuez des jets d'attaque avec toutes les armes de guerre sans pénalité."
       },
       "effects": [{ "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "martial" }],
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "run",
+      "label": { "en": "Run", "fr": "Course" },
+      "description": {
+        "en": "<b>Benefit:</b> When running, you move five times your normal speed (if wearing medium, light, or no armor and carrying no more than a medium load) or four times your speed (if wearing heavy armor or carrying a heavy load). If you make a jump after a running start (see the Jump skill description), you gain a +4 bonus on your Jump check.<br/><b>Normal:</b> You move four times your speed when running (if wearing medium, light, or no armor and carrying no more than a medium load) or three times your speed (if wearing heavy armor or carrying a heavy load) and get no bonus on Jump checks for a running start.",
+        "fr": "<b>Avantage :</b> En courant, vous vous déplacez à cinq fois votre vitesse normale (si vous portez une armure intermédiaire, légère ou aucune armure et ne transportez pas plus qu'une charge moyenne) ou à quatre fois votre vitesse (si vous portez une armure lourde ou transportez une charge lourde). Si vous effectuez un saut après un départ lancé (voir la description de la compétence Saut), vous gagnez un bonus de +4 à votre test de Saut.<br/><b>Normal :</b> Vous vous déplacez à quatre fois votre vitesse en courant (si vous portez une armure intermédiaire, légère ou aucune armure et ne transportez pas plus qu'une charge moyenne) ou à trois fois votre vitesse (si vous portez une armure lourde ou transportez une charge lourde) et n'obtenez aucun bonus aux tests de Saut pour un départ lancé."
+      },
+      "effectsText": { "en": "Run 5x speed (or 4x heavy). +4 Jump after running start.", "fr": "Course 5x vitesse (ou 4x lourd). +4 Saut après départ lancé." },
+      "effects": [{ "type": "note", "text": { "en": "Run 5x speed (light/medium/no armor, up to medium load) or 4x speed (heavy armor/load). +4 bonus on Jump checks after a running start.", "fr": "Courir à 5x la vitesse (armure légère/moyenne/aucune, charge jusqu'à moyenne) ou 4x la vitesse (armure/charge lourde). Bonus de +4 aux tests de Saut après un départ lancé." } }],
+      "type": "general"
+    },
+    {
+      "value": "mounted-combat",
+      "label": { "en": "Mounted Combat", "fr": "Combat monté" },
+      "description": {
+        "en": "<b>Benefit:</b> Once per round when your mount is hit in combat, you may attempt a Ride check (as a reaction) to negate the hit. The hit is negated if your Ride check result is greater than the opponent’s attack roll. (Essentially, the Ride check result becomes the mount’s Armor Class if it’s higher than the mount’s regular AC.)",
+        "fr": "<b>Avantage :</b> Une fois par round lorsque votre monture est touchée au combat, vous pouvez tenter un test d'Équitation (en réaction) pour annuler le coup. Le coup est annulé si le résultat de votre test d'Équitation est supérieur au jet d'attaque de l'adversaire. (Essentiellement, le résultat du test d'Équitation devient la Classe d'Armure de la monture s'il est supérieur à la CA normale de la monture.)"
+      },
+      "effectsText": { "en": "Once per round, Ride check to negate hit on mount.", "fr": "Une fois par round, test d'Équitation pour annuler un coup sur la monture." },
+      "effects": [{ "type": "note", "text": { "en": "Once per round when your mount is hit, attempt Ride check as reaction to negate hit (Ride check > attack roll).", "fr": "Une fois par round lorsque votre monture est touchée, tentez un test d'Équitation en réaction pour annuler le coup (test d'Équitation > jet d'attaque)." } }],
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "improved-unarmed-strike",
+      "label": { "en": "Improved Unarmed Strike", "fr": "Science du combat à mains nues" },
+      "description": {
+        "en": "<b>Benefit:</b> You are considered to be armed even when unarmed —you do not provoke attacks of opportunity when you attack foes while unarmed. Your unarmed strikes can deal lethal or nonlethal damage, as you choose.",
+        "fr": "<b>Avantage :</b> Vous êtes considéré comme armé même lorsque vous êtes désarmé — vous ne provoquez pas d'attaques d'opportunité lorsque vous attaquez des ennemis alors que vous êtes désarmé. Vos frappes à mains nues peuvent infliger des dégâts létaux ou non létaux, à votre choix."
+      },
+      "effectsText": { "en": "Always considered armed. Can deal lethal or nonlethal damage with unarmed strikes.", "fr": "Toujours considéré comme armé. Peut infliger des dégâts létaux ou non létaux avec des frappes à mains nues." },
+      "effects": [
+        { "type": "note", "text": { "en": "Considered armed when unarmed. Can deal lethal or nonlethal damage with unarmed strikes.", "fr": "Considéré comme armé lorsque désarmé. Peut infliger des dégâts létaux ou non létaux avec les frappes à mains nues." } }
+      ],
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "combat-reflexes",
+      "label": { "en": "Combat Reflexes", "fr": "Réflexes de combat" },
+      "description": {
+        "en": "<b>Benefit:</b> You may make a number of additional attacks of opportunity equal to your Dexterity bonus. With this feat, you may also make attacks of opportunity while flat-footed.<br/><b>Normal:</b> A character without this feat can make only one attack of opportunity per round and can’t make attacks of opportunity while flat-footed.",
+        "fr": "<b>Avantage :</b> Vous pouvez effectuer un nombre d'attaques d'opportunité supplémentaires égal à votre bonus de Dextérité. Avec ce don, vous pouvez également effectuer des attaques d'opportunité lorsque vous êtes pris au dépourvu.<br/><b>Normal :</b> Un personnage sans ce don ne peut effectuer qu'une seule attaque d'opportunité par round et ne peut pas effectuer d'attaques d'opportunité lorsqu'il est pris au dépourvu."
+      },
+      "effectsText": { "en": "Extra AoOs per round equal to Dex bonus. Can make AoOs while flat-footed.", "fr": "AdO supplémentaires par round égales au bonus de Dex. Peut faire des AdO en étant pris au dépourvu." },
+      "effects": [
+        { "type": "note", "text": { "en": "Make additional attacks of opportunity equal to Dexterity bonus. Can make AoOs while flat-footed.", "fr": "Effectuer des attaques d'opportunité supplémentaires égales au bonus de Dextérité. Peut effectuer des AdO en étant pris au dépourvu." } }
+      ],
+      "type": "general",
+      "category": "fighterBonusFeat"
+    },
+    {
+      "value": "quick-draw",
+      "label": { "en": "Quick Draw", "fr": "Dégainage rapide" },
+      "description": {
+        "en": "<b>Prerequisite:</b> Base attack bonus +1.<br/><b>Benefit:</b> You can draw a weapon as a free action instead of as a move action. You can draw a hidden weapon (see the Sleight of Hand skill) as a move action.<br/>A character who has selected this feat may throw weapons at his full normal rate of attacks (much like a character with a bow).",
+        "fr": "<b>Prérequis :</b> Bonus d'attaque de base +1.<br/><b>Avantage :</b> Vous pouvez dégainer une arme par une action libre au lieu d'une action de mouvement. Vous pouvez dégainer une arme cachée (voir la compétence Escamotage) par une action de mouvement.<br/>Un personnage qui a choisi ce don peut lancer des armes à sa cadence d'attaques normale complète (un peu comme un personnage avec un arc)."
+      },
+      "prerequisites": { "bab": 1 },
+      "effectsText": { "en": "Draw weapon as free action. Draw hidden weapon as move action.", "fr": "Dégainer une arme par une action libre. Dégainer une arme cachée par une action de mouvement." },
+      "effects": [
+        { "type": "note", "text": { "en": "Draw a weapon as a free action. Draw a hidden weapon as a move action. Can throw weapons at full normal rate of attacks.", "fr": "Dégainer une arme par une action libre. Dégainer une arme cachée par une action de mouvement. Peut lancer des armes à sa cadence d'attaques normale complète." } }
+      ],
       "type": "general",
       "category": "fighterBonusFeat"
     }
