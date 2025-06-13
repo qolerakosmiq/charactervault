@@ -376,8 +376,8 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       bonusFeatSlots: bonusFeatSlots,
       racialSkillBonuses: racialSkillBonuses,
       grantedFeats: (rawGrantedFeats || []).map(gf_raw => {
-        let displayName = '';
         const featDef = DND_FEATS_DEFINITIONS.find(f => f.id === gf_raw.featId);
+        let displayName = '';
 
         if (featDef && featDef.label && featDef.label.trim() !== '') {
           displayName = featDef.label;
@@ -402,7 +402,12 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
         }
 
         const noteText = getLocalizedString(gf_raw.note, lang);
-        const finalNote = (displayName !== noteText && noteText && noteText.trim() !== '') ? noteText : undefined;
+        let finalNote: string | undefined = undefined;
+        if (noteText && noteText.trim() !== '' && noteText !== displayName) {
+            if (!(featDef && featDef.label === noteText && displayName === featDef.label)) {
+                finalNote = noteText;
+            }
+        }
 
         return {
           featId: gf_raw.featId,
@@ -413,7 +418,6 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       }),
       speeds: speeds,
       automaticLanguages: automaticLanguages,
-      // bonusLanguages: bonusLanguages, // This field is not on DndRaceOption
     };
     return localizedRace;
   }).sort((a, b) => a.label.localeCompare(b.label));
@@ -439,8 +443,8 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       saves: saves,
       spellcasting: spellcasting,
       grantedFeats: (rawGrantedFeats || []).map(gf_raw => {
-        let displayName = '';
         const featDef = DND_FEATS_DEFINITIONS.find(f => f.id === gf_raw.featId);
+        let displayName = '';
 
         if (featDef && featDef.label && featDef.label.trim() !== '') {
           displayName = featDef.label;
@@ -465,7 +469,12 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
         }
 
         const noteText = getLocalizedString(gf_raw.note, lang);
-        const finalNote = (displayName !== noteText && noteText && noteText.trim() !== '') ? noteText : undefined;
+        let finalNote: string | undefined = undefined;
+        if (noteText && noteText.trim() !== '' && noteText !== displayName) {
+            if (!(featDef && featDef.label === noteText && displayName === featDef.label)) {
+                finalNote = noteText;
+            }
+        }
         
         return {
           featId: gf_raw.featId,
@@ -651,5 +660,3 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   };
 }
 
-
-    

@@ -1,6 +1,38 @@
-
 {
   "DND_FEATS_DATA": [
+    {
+      "id": "elf-weapon-proficiencies",
+      "label": { "en": "Elven Weapon Proficiencies", "fr": "Maîtrise des armes elfiques" },
+      "description": {
+        "en": "<b>Benefit:</b> Elves receive the Martial Weapon Proficiency feats for the longsword, rapier, longbow (including composite longbow), and shortbow (including composite shortbow) as bonus feats.",
+        "fr": "<b>Avantage :</b> Les elfes reçoivent les dons de Maîtrise d'arme de guerre pour l'épée longue, la rapière, l'arc long (y compris l'arc long composite) et l'arc court (y compris l'arc court composite) comme dons supplémentaires."
+      },
+      "effectsText": { "en": "Proficient with longsword, rapier, longbow, composite longbow, shortbow, composite shortbow.", "fr": "Maîtrise de l'épée longue, rapière, arc long, arc long composite, arc court, arc court composite." },
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "id": "dwarf-weapon-proficiencies",
+      "label": { "en": "Dwarven Weapon Familiarity", "fr": "Familiarité avec les armes naines" },
+      "description": {
+        "en": "<b>Benefit:</b> Dwarves treat dwarven waraxes and dwarven urgroshes as martial weapons, rather than exotic weapons.",
+        "fr": "<b>Avantage :</b> Les nains considèrent les haches de guerre naines et les urgroshs nains comme des armes de guerre, plutôt que des armes exotiques."
+      },
+      "effectsText": { "en": "Treat dwarven waraxe and urgrosh as martial weapons.", "fr": "Considère la hache de guerre naine et l'urgrosh nain comme des armes de guerre." },
+      "isClassFeature": true,
+      "type": "general"
+    },
+    {
+      "id": "gnome-weapon-familiarity",
+      "label": { "en": "Gnome Weapon Familiarity", "fr": "Familiarité avec les armes gnomes" },
+      "description": {
+        "en": "<b>Benefit:</b> Gnomes treat gnome hooked hammers as martial weapons, rather than exotic weapons.",
+        "fr": "<b>Avantage :</b> Les gnomes considèrent les marteaux-haches gnomes comme des armes de guerre, plutôt que des armes exotiques."
+      },
+      "effectsText": { "en": "Treat gnome hooked hammer as martial weapon.", "fr": "Considère le marteau-hache gnome comme une arme de guerre." },
+      "isClassFeature": true,
+      "type": "general"
+    },
     {
       "id": "acrobatic",
       "label": { "en": "Acrobatic", "fr": "Acrobatique" },
