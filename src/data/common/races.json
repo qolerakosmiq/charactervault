@@ -1,0 +1,151 @@
+
+{
+  "DND_RACES_DATA": [
+    {
+      "value": "human",
+      "label": { "en": "Human", "fr": "Humain" },
+      "generalDescription": {
+        "en": "<p>Humans are the most adaptable and ambitious people among the common races. Whatever drives them, humans are the innovators, the achievers, and the pioneers of the worlds.</p>",
+        "fr": "<p>Les humains sont le peuple le plus adaptable et le plus ambitieux parmi les races communes. Quelle que soit leur motivation, les humains sont les innovateurs, les réalisateurs et les pionniers des mondes.</p>"
+      },
+      "loreAttributes": [
+        { "key": { "en": "Size", "fr": "Taille" }, "value": { "en": "Medium", "fr": "Moyenne" } },
+        { "key": { "en": "Favored Class", "fr": "Classe de prédilection" }, "value": { "en": "Any. When determining whether a multiclass human takes an experience point penalty, his or her highest-level class does not count.", "fr": "Toutes. Lorsqu'on détermine si un humain multiclassé subit une pénalité de points d'expérience, sa classe de plus haut niveau ne compte pas." } }
+      ],
+      "speeds": { "land": 30 },
+      "automaticLanguages": ["common"],
+      "bonusFeatSlots": 1,
+      "racialSkillBonuses": {}
+    },
+    {
+      "value": "elf",
+      "label": { "en": "Elf", "fr": "Elfe" },
+      "generalDescription": {
+        "en": "<p>Elves are known for their poetry, song, and magical arts, but when danger threatens they are formidable warriors. Elves value their privacy and traditions, and while they are often slow to make friends, at both the personal and national levels, they are even slower to forget them. They are slow to anger, but also slow to forget a slight.</p>",
+        "fr": "<p>Les elfes sont connus pour leur poésie, leurs chants et leurs arts magiques, mais lorsque le danger menace, ce sont de redoutables guerriers. Les elfes apprécient leur intimité et leurs traditions, et bien qu'ils soient souvent lents à se faire des amis, tant au niveau personnel que national, ils sont encore plus lents à les oublier. Ils sont lents à la colère, mais aussi lents à oublier un affront.</p>"
+      },
+      "loreAttributes": [
+        { "key": { "en": "Size", "fr": "Taille" }, "value": { "en": "Medium", "fr": "Moyenne" } },
+        { "key": { "en": "Favored Class", "fr": "Classe de prédilection" }, "value": { "en": "Wizard.", "fr": "Magicien." } },
+        { "key": { "en": "Immunity", "fr": "Immunité" }, "value": { "en": "Immunity to magic sleep effects.", "fr": "Immunité aux effets de sommeil magiques." } },
+        { "key": { "en": "Enchantment Resistance", "fr": "Résistance aux enchantements" }, "value": { "en": "+2 racial bonus on saving throws against Enchantment spells or effects.", "fr": "Bonus racial de +2 aux jets de sauvegarde contre les sorts ou effets d'Enchantement." } },
+        { "key": { "en": "Low-Light Vision", "fr": "Vision nocturne" }, "value": { "en": "An elf can see twice as far as a human in starlight, moonlight, torchlight, and similar conditions of poor illumination. She retains the ability to distinguish color and detail under these conditions.", "fr": "Un elfe peut voir deux fois plus loin qu'un humain à la lumière des étoiles, de la lune, d'une torche et dans des conditions similaires de faible éclairage. Il conserve la capacité de distinguer les couleurs et les détails dans ces conditions." } },
+        { "key": { "en": "Secret Doors", "fr": "Portes secrètes" }, "value": { "en": "An elf who merely passes within 5 feet of a secret or concealed door is entitled to a Search check to notice it as if she were actively looking for it.", "fr": "Un elfe qui passe simplement à moins de 1,5 mètre d'une porte secrète ou dissimulée a droit à un test de Fouille pour la remarquer comme s'il la cherchait activement." } }
+      ],
+      "speeds": { "land": 30 },
+      "automaticLanguages": ["common", "elven"],
+      "bonusLanguages": ["draconic", "gnoll", "gnome", "goblin", "orc", "sylvan"],
+      "racialSkillBonuses": { "listen": 2, "search": 2, "spot": 2 },
+      "grantedFeats": [
+        { "featId": "elf-weapon-proficiencies", "note": { "en": "Elven Weapon Proficiencies", "fr": "Maîtrise des armes elfiques" } }
+      ]
+    },
+    {
+      "value": "dwarf",
+      "label": { "en": "Dwarf", "fr": "Nain" },
+      "generalDescription": {
+        "en": "<p>Dwarves are known for their skill in warfare, their ability to withstand physical and magical punishment, their knowledge of the earth’s secrets, their hard work, and their capacity for drinking ale. Their kingdoms are usually found in the depths of mountains where they mine the earth for its riches.</p>",
+        "fr": "<p>Les nains sont connus pour leur habileté à la guerre, leur capacité à résister aux châtiments physiques et magiques, leur connaissance des secrets de la terre, leur travail acharné et leur capacité à boire de la bière. Leurs royaumes se trouvent généralement dans les profondeurs des montagnes où ils exploitent la terre pour ses richesses.</p>"
+      },
+      "loreAttributes": [
+        { "key": { "en": "Size", "fr": "Taille" }, "value": { "en": "Medium", "fr": "Moyenne" } },
+        { "key": { "en": "Favored Class", "fr": "Classe de prédilection" }, "value": { "en": "Fighter.", "fr": "Guerrier." } },
+        { "key": { "en": "Darkvision", "fr": "Vision dans le noir" }, "value": { "en": "Darkvision out to 60 feet.", "fr": "Vision dans le noir jusqu'à 18 mètres." } },
+        { "key": { "en": "Stonecunning", "fr": "Expertise de la pierre" }, "value": { "en": "+2 racial bonus on Search checks to notice unusual stonework, such as sliding walls, new construction when mining, unsafe stone surfaces, shaky stone ceilings, and the like. Something that isn’t stone but that is disguised as stone also counts as unusual stonework. A dwarf who merely comes within 10 feet of unusual stonework can make a Search check as if he were actively searching, and a dwarf can use the Search skill to find traps when they involve new construction, or if the trap itself is built of stone.", "fr": "Bonus racial de +2 aux tests de Fouille pour remarquer la maçonnerie inhabituelle, comme les murs coulissants, les nouvelles constructions lors de l'exploitation minière, les surfaces en pierre dangereuses, les plafonds en pierre instables, etc. Quelque chose qui n'est pas en pierre mais qui est déguisé en pierre compte également comme de la maçonnerie inhabituelle. Un nain qui s'approche simplement à moins de 3 mètres d'une maçonnerie inhabituelle peut faire un test de Fouille comme s'il cherchait activement, et un nain peut utiliser la compétence Fouille pour trouver des pièges lorsqu'ils impliquent une nouvelle construction, ou si le piège lui-même est construit en pierre." } },
+        { "key": { "en": "Stability", "fr": "Stabilité" }, "value": { "en": "Dwarves are exceptionally stable on their feet. A dwarf has a +4 bonus on ability checks made to resist being bull rushed or tripped when standing on the ground (but not when climbing, flying, riding, or otherwise not standing firmly on the ground).", "fr": "Les nains sont exceptionnellement stables sur leurs pieds. Un nain bénéficie d'un bonus de +4 aux tests de caractéristique effectués pour résister à une bousculade ou à un croc-en-jambe lorsqu'il se tient sur le sol (mais pas lorsqu'il grimpe, vole, chevauche ou ne se tient pas fermement sur le sol)." } },
+        { "key": { "en": "Poison Resistance", "fr": "Résistance au poison" }, "value": { "en": "+2 racial bonus on saving throws against poison.", "fr": "Bonus racial de +2 aux jets de sauvegarde contre le poison." } },
+        { "key": { "en": "Spell Resistance", "fr": "Résistance à la magie" }, "value": { "en": "+2 racial bonus on saving throws against spells and spell-like effects.", "fr": "Bonus racial de +2 aux jets de sauvegarde contre les sorts et les effets magiques." } },
+        { "key": { "en": "Orc and Goblinoid Hatred", "fr": "Haine des orques et gobelinoïdes" }, "value": { "en": "+1 racial bonus on attack rolls against orcs and goblinoids.", "fr": "Bonus racial de +1 aux jets d'attaque contre les orques et les gobelinoïdes." } },
+        { "key": { "en": "Giant Defense", "fr": "Défense contre les géants" }, "value": { "en": "+4 dodge bonus to Armor Class against monsters of the giant type.", "fr": "Bonus d'esquive de +4 à la Classe d'Armure contre les monstres de type géant." } }
+      ],
+      "speeds": { "land": 20 },
+      "automaticLanguages": ["common", "dwarven"],
+      "bonusLanguages": ["giant", "gnome", "goblin", "orc", "terran", "undercommon"],
+      "racialSkillBonuses": { "appraise-stone-metal": 2, "craft-stone-metal": 2 },
+      "grantedFeats": [
+        { "featId": "dwarf-weapon-proficiencies", "note": { "en": "Dwarven Weapon Familiarity", "fr": "Familiarité avec les armes naines" } }
+      ]
+    },
+    {
+      "value": "gnome",
+      "label": { "en": "Gnome", "fr": "Gnome" },
+      "generalDescription": {
+        "en": "<p>Gnomes are welcome everywhere as technicians, alchemists, and inventors. Despite the demand for their skills, most gnomes prefer to remain among their own kind, living in comfortable burrows beneath rolling, wooded hills where animals abound and the gnomes make few demands on the soil.</p>",
+        "fr": "<p>Les gnomes sont les bienvenus partout en tant que techniciens, alchimistes et inventeurs. Malgré la demande pour leurs compétences, la plupart des gnomes préfèrent rester entre eux, vivant dans des terriers confortables sous des collines boisées et vallonnées où les animaux abondent et où les gnomes exigent peu du sol.</p>"
+      },
+      "loreAttributes": [
+        { "key": { "en": "Size", "fr": "Taille" }, "value": { "en": "Small", "fr": "Petite" } },
+        { "key": { "en": "Favored Class", "fr": "Classe de prédilection" }, "value": { "en": "Bard.", "fr": "Barde." } },
+        { "key": { "en": "Low-Light Vision", "fr": "Vision nocturne" }, "value": { "en": "Gnomes can see twice as far as a human in starlight, moonlight, torchlight, and similar conditions of poor illumination. They retain the ability to distinguish color and detail under these conditions.", "fr": "Les gnomes peuvent voir deux fois plus loin qu'un humain à la lumière des étoiles, de la lune, d'une torche et dans des conditions similaires de faible éclairage. Ils conservent la capacité de distinguer les couleurs et les détails dans ces conditions." } },
+        { "key": { "en": "Illusion Resistance", "fr": "Résistance aux illusions" }, "value": { "en": "+2 racial bonus on saving throws against illusion spells or effects.", "fr": "Bonus racial de +2 aux jets de sauvegarde contre les sorts ou effets d'illusion." } },
+        { "key": { "en": "Illusion Affinity", "fr": "Affinité avec les illusions" }, "value": { "en": "Add +1 to the Difficulty Class for all saving throws against illusion spells cast by gnomes. This adjustment stacks with those from similar effects such as the Spell Focus feat.", "fr": "Ajoutez +1 au Degré de Difficulté de tous les jets de sauvegarde contre les sorts d'illusion lancés par les gnomes. Cet ajustement se cumule avec ceux d'effets similaires tels que le don École renforcée." } },
+        { "key": { "en": "Kobold and Goblinoid Hatred", "fr": "Haine des kobolds et gobelinoïdes" }, "value": { "en": "+1 racial bonus on attack rolls against kobolds and goblinoids.", "fr": "Bonus racial de +1 aux jets d'attaque contre les kobolds et les gobelinoïdes." } },
+        { "key": { "en": "Giant Defense", "fr": "Défense contre les géants" }, "value": { "en": "+4 dodge bonus to Armor Class against monsters of the giant type.", "fr": "Bonus d'esquive de +4 à la Classe d'Armure contre les monstres de type géant." } }
+      ],
+      "speeds": { "land": 20 },
+      "automaticLanguages": ["common", "gnome"],
+      "bonusLanguages": ["draconic", "dwarven", "elven", "giant", "goblin", "orc"],
+      "racialSkillBonuses": { "listen": 2, "craft-alchemy": 2 },
+      "grantedFeats": [
+        { "featId": "gnome-weapon-familiarity", "note": { "en": "Gnome Weapon Familiarity", "fr": "Familiarité avec les armes gnomes" } }
+      ]
+    },
+    {
+      "value": "halfling",
+      "label": { "en": "Halfling", "fr": "Halfelin" },
+      "generalDescription": {
+        "en": "<p>Halflings are clever, capable opportunists. Halfling individuals and clans find room for themselves wherever they can. They are not possessive about their homes, and they are experts at blending into the society of other races.</p>",
+        "fr": "<p>Les halfelins sont des opportunistes intelligents et capables. Les individus et les clans halfelins se font une place partout où ils le peuvent. Ils ne sont pas possessifs quant à leurs maisons et sont experts pour se fondre dans la société des autres races.</p>"
+      },
+      "loreAttributes": [
+        { "key": { "en": "Size", "fr": "Taille" }, "value": { "en": "Small", "fr": "Petite" } },
+        { "key": { "en": "Favored Class", "fr": "Classe de prédilection" }, "value": { "en": "Rogue.", "fr": "Roublard." } },
+        { "key": { "en": "Saving Throw Bonus", "fr": "Bonus aux jets de sauvegarde" }, "value": { "en": "+1 racial bonus on all saving throws.", "fr": "Bonus racial de +1 à tous les jets de sauvegarde." } },
+        { "key": { "en": "Fear Resistance", "fr": "Résistance à la peur" }, "value": { "en": "+2 morale bonus on saving throws against fear (this bonus stacks with the halfling’s +1 bonus on saving throws in general).", "fr": "Bonus de moral de +2 aux jets de sauvegarde contre la peur (ce bonus se cumule avec le bonus de +1 des halfelins aux jets de sauvegarde en général)." } },
+        { "key": { "en": "Thrown Weapon/Sling Bonus", "fr": "Bonus aux armes de jet/frondes" }, "value": { "en": "+1 racial bonus on attack rolls with thrown weapons and slings.", "fr": "Bonus racial de +1 aux jets d'attaque avec les armes de jet et les frondes." } }
+      ],
+      "speeds": { "land": 20 },
+      "automaticLanguages": ["common", "halfling"],
+      "bonusLanguages": ["dwarven", "elven", "gnome", "goblin", "orc"],
+      "racialSkillBonuses": { "climb": 2, "jump": 2, "listen": 2, "move-silently": 2 }
+    },
+    {
+      "value": "half-elf",
+      "label": { "en": "Half-Elf", "fr": "Demi-Elfe" },
+      "generalDescription": {
+        "en": "<p>Half-elves are a mix of human and elven blood. They are versatile and adaptable, possessing some of the grace of elves and the drive of humans.</p>",
+        "fr": "<p>Les demi-elfes sont un mélange de sang humain et elfique. Ils sont polyvalents et adaptables, possédant une partie de la grâce des elfes et de la détermination des humains.</p>"
+      },
+      "loreAttributes": [
+        { "key": { "en": "Size", "fr": "Taille" }, "value": { "en": "Medium", "fr": "Moyenne" } },
+        { "key": { "en": "Favored Class", "fr": "Classe de prédilection" }, "value": { "en": "Any.", "fr": "Toutes." } },
+        { "key": { "en": "Immunity", "fr": "Immunité" }, "value": { "en": "Immunity to magic sleep effects.", "fr": "Immunité aux effets de sommeil magiques." } },
+        { "key": { "en": "Enchantment Resistance", "fr": "Résistance aux enchantements" }, "value": { "en": "+2 racial bonus on saving throws against Enchantment spells or effects.", "fr": "Bonus racial de +2 aux jets de sauvegarde contre les sorts ou effets d'Enchantement." } },
+        { "key": { "en": "Low-Light Vision", "fr": "Vision nocturne" }, "value": { "en": "A half-elf can see twice as far as a human in starlight, moonlight, torchlight, and similar conditions of poor illumination. She retains the ability to distinguish color and detail under these conditions.", "fr": "Un demi-elfe peut voir deux fois plus loin qu'un humain à la lumière des étoiles, de la lune, d'une torche et dans des conditions similaires de faible éclairage. Il conserve la capacité de distinguer les couleurs et les détails dans ces conditions." } },
+        { "key": { "en": "Elven Blood", "fr": "Sang elfique" }, "value": { "en": "For all effects related to race, a half-elf is considered an elf.", "fr": "Pour tous les effets liés à la race, un demi-elfe est considéré comme un elfe." } }
+      ],
+      "speeds": { "land": 30 },
+      "automaticLanguages": ["common", "elven"],
+      "bonusLanguages": ["any-non-secret"],
+      "racialSkillBonuses": { "listen": 1, "search": 1, "spot": 1, "diplomacy": 2, "gather-information": 2 }
+    },
+    {
+      "value": "half-orc",
+      "label": { "en": "Half-Orc", "fr": "Demi-Orque" },
+      "generalDescription": {
+        "en": "<p>Half-orcs are humanoids born of both human and orc ancestry. They are often shunned in human society and seen as brutish in elven or dwarven lands. They combine the adaptability of humans with the raw physical power of orcs.</p>",
+        "fr": "<p>Les demi-orques sont des humanoïdes nés d'ascendance humaine et orque. Ils sont souvent rejetés dans la société humaine et considérés comme brutaux dans les terres elfiques ou naines. Ils combinent l'adaptabilité des humains avec la puissance physique brute des orques.</p>"
+      },
+      "loreAttributes": [
+        { "key": { "en": "Size", "fr": "Taille" }, "value": { "en": "Medium", "fr": "Moyenne" } },
+        { "key": { "en": "Favored Class", "fr": "Classe de prédilection" }, "value": { "en": "Barbarian.", "fr": "Barbare." } },
+        { "key": { "en": "Darkvision", "fr": "Vision dans le noir" }, "value": { "en": "Darkvision out to 60 feet.", "fr": "Vision dans le noir jusqu'à 18 mètres." } },
+        { "key": { "en": "Orc Blood", "fr": "Sang orque" }, "value": { "en": "For all effects related to race, a half-orc is considered an orc.", "fr": "Pour tous les effets liés à la race, un demi-orque est considéré comme un orque." } }
+      ],
+      "speeds": { "land": 30 },
+      "automaticLanguages": ["common", "orc"],
+      "bonusLanguages": ["draconic", "giant", "gnoll", "goblin", "abyssal"],
+      "racialSkillBonuses": {}
+    }
+  ]
+}
