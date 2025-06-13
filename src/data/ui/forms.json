@@ -50,6 +50,9 @@
   "wizardProhibitedSchool1Label": { "en": "First Prohibited School", "fr": "Première École Interdite" },
   "wizardProhibitedSchool2Label": { "en": "Second Prohibited School", "fr": "Seconde École Interdite" },
   "wizardProhibitedSchoolInfo": { "en": "Spells from prohibited schools cannot be learned or cast. Divination cannot be prohibited.", "fr": "Les sorts des écoles interdites ne peuvent être ni appris ni lancés. La Divination ne peut pas être interdite." },
+  "wizardProhibitedSchoolDivinationError": { "en": "Divination cannot be a prohibited school.", "fr": "La Divination ne peut pas être une école interdite." },
+  "wizardProhibitedSchoolSpecializationError": { "en": "Cannot prohibit your specialized school.", "fr": "Impossible d'interdire votre école de spécialisation." },
+  "wizardProhibitedSchoolDuplicateError": { "en": "Cannot select the same prohibited school twice.", "fr": "Impossible de sélectionner deux fois la même école interdite." },
   "toastCharacterDataNotLoadedTitle": { "en": "Save Error", "fr": "Erreur de sauvegarde" },
   "toastCharacterDataNotLoadedDesc": { "en": "Character data not loaded. Cannot save.", "fr": "Données du personnage non chargées. Impossible de sauvegarder." },
   "toastMissingCharacterNameTitle": { "en": "Missing Information", "fr": "Information manquante" },
@@ -65,3 +68,5 @@
   "toastInvalidAbilityScoreTitle": { "en": "Invalid {abilityName} Score", "fr": "Score de {abilityName} invalide" },
   "toastInvalidAbilityScoreDesc": { "en": "{abilityName} score must be greater than 0.", "fr": "{abilityName} score doit être supérieur à 0." }
 }
+
+    
