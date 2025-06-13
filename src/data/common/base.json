@@ -1,0 +1,164 @@
+
+{
+  "SIZES_DATA": [
+    { "value": "fine", "label": { "en": "Fine", "fr": "Très Petite" }, "acModifier": 8, "skillModifiers": { "hide": 16 }, "grappleDamage": "0" },
+    { "value": "diminutive", "label": { "en": "Diminutive", "fr": "Minuscule" }, "acModifier": 4, "skillModifiers": { "hide": 12 }, "grappleDamage": "0" },
+    { "value": "tiny", "label": { "en": "Tiny", "fr": "Très Petite (TP)" }, "acModifier": 2, "skillModifiers": { "hide": 8 }, "grappleDamage": "1" },
+    { "value": "small", "label": { "en": "Small", "fr": "Petite (P)" }, "acModifier": 1, "skillModifiers": { "hide": 4 }, "grappleDamage": "1d2" },
+    { "value": "medium", "label": { "en": "Medium", "fr": "Moyenne (M)" }, "acModifier": 0, "skillModifiers": { "hide": 0 }, "grappleDamage": "1d3" },
+    { "value": "large", "label": { "en": "Large", "fr": "Grande (G)" }, "acModifier": -1, "skillModifiers": { "hide": -4 }, "grappleDamage": "1d4" },
+    { "value": "huge", "label": { "en": "Huge", "fr": "Très Grande (TG)" }, "acModifier": -2, "skillModifiers": { "hide": -8 }, "grappleDamage": "1d6" },
+    { "value": "gargantuan", "label": { "en": "Gargantuan", "fr": "Gigantesque (Gig)" }, "acModifier": -4, "skillModifiers": { "hide": -12 }, "grappleDamage": "1d8" },
+    { "value": "colossal", "label": { "en": "Colossal", "fr": "Colossale (Col)" }, "acModifier": -8, "skillModifiers": { "hide": -16 }, "grappleDamage": "2d6" }
+  ],
+  "GENDERS_DATA": [
+    { "value": "male", "label": { "en": "Male", "fr": "Masculin" } },
+    { "value": "female", "label": { "en": "Female", "fr": "Féminin" } },
+    { "value": "other", "label": { "en": "Other", "fr": "Autre" } },
+    { "value": "unspecified", "label": { "en": "Unspecified", "fr": "Non spécifié" } }
+  ],
+  "DEFAULT_ABILITIES_DATA": {
+    "strength": 10,
+    "dexterity": 10,
+    "constitution": 10,
+    "intelligence": 10,
+    "wisdom": 10,
+    "charisma": 10
+  },
+  "DEFAULT_SAVING_THROWS_DATA": {
+    "fortitude": { "base": 0, "magicMod": 0, "miscMod": 0 },
+    "reflex": { "base": 0, "magicMod": 0, "miscMod": 0 },
+    "will": { "base": 0, "magicMod": 0, "miscMod": 0 }
+  },
+  "DEFAULT_RESISTANCE_VALUE_DATA": { "base": 0, "customMod": 0 },
+  "DEFAULT_SPEED_DETAILS_DATA": { "base": 0, "miscModifier": 0 },
+  "DEFAULT_SPEED_PENALTIES_DATA": { 
+    "armorSpeedPenalty_base": 0, 
+    "armorSpeedPenalty_miscModifier": 0, 
+    "loadSpeedPenalty_base": 0, 
+    "loadSpeedPenalty_miscModifier": 0 
+  },
+  "DND_RACE_MIN_ADULT_AGE_DATA": {
+    "human": 15,
+    "elf": 110,
+    "dwarf": 40,
+    "halfling": 20,
+    "gnome": 40,
+    "half-elf": 20,
+    "half-orc": 14
+  },
+  "DND_RACE_BASE_MAX_AGE_DATA": {
+    "human": 70,
+    "elf": 350,
+    "dwarf": 250,
+    "halfling": 100,
+    "gnome": 200,
+    "half-elf": 125,
+    "half-orc": 60
+  },
+  "RACE_TO_AGING_CATEGORY_MAP_DATA": {
+    "human": "human-aging",
+    "elf": "elf-aging",
+    "dwarf": "dwarf-aging",
+    "gnome": "gnome-aging",
+    "halfling": "halfling-aging",
+    "half-elf": "elf-aging",
+    "half-orc": "orc-aging"
+  },
+  "DND_RACE_AGING_EFFECTS_DATA": {
+    "human-aging": {
+      "categories": [
+        { "categoryName": { "en": "Middle Age", "fr": "Âge Mûr" }, "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": { "en": "Old", "fr": "Vieux" }, "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": { "en": "Venerable", "fr": "Vénérable" }, "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    },
+    "elf-aging": {
+      "categories": [
+        { "categoryName": { "en": "Middle Age", "fr": "Âge Mûr" }, "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": { "en": "Old", "fr": "Vieux" }, "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": { "en": "Venerable", "fr": "Vénérable" }, "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    },
+    "dwarf-aging": {
+      "categories": [
+        { "categoryName": { "en": "Middle Age", "fr": "Âge Mûr" }, "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": { "en": "Old", "fr": "Vieux" }, "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": { "en": "Venerable", "fr": "Vénérable" }, "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    },
+    "gnome-aging": {
+      "categories": [
+        { "categoryName": { "en": "Middle Age", "fr": "Âge Mûr" }, "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": { "en": "Old", "fr": "Vieux" }, "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": { "en": "Venerable", "fr": "Vénérable" }, "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    },
+    "halfling-aging": {
+      "categories": [
+        { "categoryName": { "en": "Middle Age", "fr": "Âge Mûr" }, "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": { "en": "Old", "fr": "Vieux" }, "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": { "en": "Venerable", "fr": "Vénérable" }, "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    },
+    "orc-aging": {
+      "categories": [
+        { "categoryName": { "en": "Middle Age", "fr": "Âge Mûr" }, "ageFactor": 0.5, "effects": { "strength": -1, "dexterity": -1, "constitution": -1, "intelligence": 1, "wisdom": 1, "charisma": 1 } },
+        { "categoryName": { "en": "Old", "fr": "Vieux" }, "ageFactor": 0.66, "effects": { "strength": -2, "dexterity": -2, "constitution": -2, "intelligence": 2, "wisdom": 2, "charisma": 2 } },
+        { "categoryName": { "en": "Venerable", "fr": "Vénérable" }, "ageFactor": 1.0, "effects": { "strength": -3, "dexterity": -3, "constitution": -3, "intelligence": 3, "wisdom": 3, "charisma": 3 } }
+      ]
+    }
+  },
+  "DND_RACE_ABILITY_MODIFIERS_DATA": {
+    "human": {},
+    "elf": { "dexterity": 2, "constitution": -2 },
+    "dwarf": { "constitution": 2, "charisma": -2 },
+    "halfling": { "dexterity": 2, "strength": -2 },
+    "gnome": { "constitution": 2, "strength": -2 },
+    "half-elf": {},
+    "half-orc": { "strength": 2, "intelligence": -2, "charisma": -2 }
+  },
+  "DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA": {
+    "human": 1
+  },
+  "ABILITY_LABELS_DATA": [
+    { "value": "strength", "label": { "en": "Strength", "fr": "Force" }, "abbr": "STR" },
+    { "value": "dexterity", "label": { "en": "Dexterity", "fr": "Dextérité" }, "abbr": "DEX" },
+    { "value": "constitution", "label": { "en": "Constitution", "fr": "Constitution" }, "abbr": "CON" },
+    { "value": "intelligence", "label": { "en": "Intelligence", "fr": "Intelligence" }, "abbr": "INT" },
+    { "value": "wisdom", "label": { "en": "Wisdom", "fr": "Sagesse" }, "abbr": "WIS" },
+    { "value": "charisma", "label": { "en": "Charisma", "fr": "Charisme" }, "abbr": "CHA" }
+  ],
+  "SAVING_THROW_LABELS_DATA": [
+    { "value": "fortitude", "label": { "en": "Fortitude", "fr": "Vigueur" } },
+    { "value": "reflex", "label": { "en": "Reflex", "fr": "Réflexes" } },
+    { "value": "will", "label": { "en": "Will", "fr": "Volonté" } }
+  ],
+  "DAMAGE_REDUCTION_TYPES_DATA": [
+    { "value": "none", "label": { "en": "None", "fr": "Aucun" } },
+    { "value": "magic", "label": { "en": "Magic", "fr": "Magie" } },
+    { "value": "adamantine", "label": { "en": "Adamantine", "fr": "Adamantium" } },
+    { "value": "silver", "label": { "en": "Silver", "fr": "Argent" } },
+    { "value": "cold-iron", "label": { "en": "Cold Iron", "fr": "Fer froid" } },
+    { "value": "slashing", "label": { "en": "Slashing", "fr": "Tranchant" } },
+    { "value": "piercing", "label": { "en": "Piercing", "fr": "Perforant" } },
+    { "value": "bludgeoning", "label": { "en": "Bludgeoning", "fr": "Contondant" } },
+    { "value": "good", "label": { "en": "Good", "fr": "Bon" } },
+    { "value": "evil", "label": { "en": "Evil", "fr": "Mauvais" } },
+    { "value": "lawful", "label": { "en": "Lawful", "fr": "Loyal" } },
+    { "value": "chaotic", "label": { "en": "Chaotic", "fr": "Chaotique" } }
+  ],
+  "DAMAGE_REDUCTION_RULES_OPTIONS_DATA": [
+    { "value": "bypassed-by-type", "label": { "en": "Bypassed by Type", "fr": "Contournée par Type" } },
+    { "value": "versus-specific-type", "label": { "en": "Versus Specific Type", "fr": "Contre Type Spécifique" } },
+    { "value": "excepted-by-type", "label": { "en": "Excepted by Type", "fr": "Exceptée par Type" } }
+  ],
+  "ALIGNMENT_PREREQUISITE_GENERIC_LABELS_DATA": [
+    { "value": "lawful", "label": { "en": "Any Lawful", "fr": "Tout Loyal" } },
+    { "value": "neutral-lc", "label": { "en": "Any Neutral (Law/Chaos Axis)", "fr": "Tout Neutre (Axe Loi/Chaos)" } },
+    { "value": "chaotic", "label": { "en": "Any Chaotic", "fr": "Tout Chaotique" } },
+    { "value": "good", "label": { "en": "Any Good", "fr": "Tout Bon" } },
+    { "value": "neutral-ge", "label": { "en": "Any Neutral (Good/Evil Axis)", "fr": "Tout Neutre (Axe Bien/Mal)" } },
+    { "value": "evil", "label": { "en": "Any Evil", "fr": "Tout Mauvais" } }
+  ]
+}
