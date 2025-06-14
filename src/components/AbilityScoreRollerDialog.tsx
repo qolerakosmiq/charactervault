@@ -139,6 +139,50 @@ export function AbilityScoreRollerDialog({
     return [...rolledScores].sort((a, b) => b.value - a.value);
   }, [rolledScores]);
 
+  const scoreColors = useMemo(() => {
+    if (sortedRolledScoresForDisplay.length === 0) {
+      return [];
+    }
+    if (sortedRolledScoresForDisplay.length === 1) {
+      return ['green'];
+    }
+
+    const colors: string[] = new Array(sortedRolledScoresForDisplay.length).fill('');
+
+    // Assign Green
+    const secondHighestValue = sortedRolledScoresForDisplay[1].value;
+    for (let i = 0; i < sortedRolledScoresForDisplay.length; i++) {
+      if (sortedRolledScoresForDisplay[i].value >= secondHighestValue) {
+        colors[i] = 'green';
+      }
+    }
+
+    // Assign Orange
+    const uncoloredOrangeIndices = colors.map((c, i) => c === '' ? i : -1).filter(i => i !== -1);
+    if (uncoloredOrangeIndices.length > 0) {
+      const firstOrangeValue = sortedRolledScoresForDisplay[uncoloredOrangeIndices[0]].value;
+      let secondOrangeValue = firstOrangeValue;
+      if (uncoloredOrangeIndices.length > 1) {
+        secondOrangeValue = sortedRolledScoresForDisplay[uncoloredOrangeIndices[1]].value;
+      }
+      
+      for (const index of uncoloredOrangeIndices) {
+        if (sortedRolledScoresForDisplay[index].value >= secondOrangeValue) {
+          colors[index] = 'orange';
+        }
+      }
+    }
+    
+    // Assign Red
+    for (let i = 0; i < colors.length; i++) {
+      if (colors[i] === '') {
+        colors[i] = 'red';
+      }
+    }
+    return colors;
+  }, [sortedRolledScoresForDisplay]);
+
+
   if (translationsLoading || !translations) {
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -186,20 +230,21 @@ export function AbilityScoreRollerDialog({
             <div className="flex justify-center gap-2 mt-2 flex-wrap">
               {sortedRolledScoresForDisplay.map((score, index) => {
                 let badgeColorClasses = "";
-                if (index < 2) { // Top 2
+                const color = scoreColors[index];
+                if (color === 'green') {
                   badgeColorClasses = "bg-emerald-600 text-emerald-50 border-emerald-700";
-                } else if (index < 4) { // Middle 2
+                } else if (color === 'orange') {
                   badgeColorClasses = "bg-amber-500 text-amber-50 border-amber-600";
-                } else { // Bottom 2
+                } else { // red
                   badgeColorClasses = "bg-red-600 text-red-50 border-red-700";
                 }
                 return (
                   <Badge
                     key={score.id}
-                    variant={null} // Use null to avoid default variant styles interfering
+                    variant={null} 
                     className={cn(
-                      "text-lg font-semibold px-2.5 py-1", // Base styles
-                      badgeColorClasses // Color specific styles
+                      "text-lg font-semibold px-2.5 py-1",
+                      badgeColorClasses
                     )}
                   >
                     {score.value}
