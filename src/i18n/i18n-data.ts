@@ -406,7 +406,9 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     effectsText: getLocalizedString(feat_raw.effectsText, lang, DEFAULT_LANGUAGE, `${debugKeyPrefix}.effectsText`),
     prerequisites: feat_raw.prerequisites ? {
       ...feat_raw.prerequisites,
-      special: getLocalizedString(feat_raw.prerequisites.special, lang, DEFAULT_LANGUAGE, `${debugKeyPrefix}.prereq.special`) || undefined
+      special: (feat_raw.prerequisites.special && (typeof feat_raw.prerequisites.special === 'string' || typeof feat_raw.prerequisites.special === 'object'))
+               ? getLocalizedString(feat_raw.prerequisites.special as LocalizedString, lang, DEFAULT_LANGUAGE, `${debugKeyPrefix}.prereq.special`)
+               : undefined
     } : undefined,
     effects: feat_raw.effects?.map((effect, index) => {
       const localizedEffect = {...effect};
