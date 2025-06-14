@@ -279,10 +279,10 @@ const SavingThrowsPanelComponent = ({
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-muted-foreground pt-2">
-          {UI_STRINGS.savingThrowsPanelMiscModInfoNote_prefix || "The "}
-          <Badge variant="outline" className="text-xs">{UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}</Badge>
-          {UI_STRINGS.savingThrowsPanelMiscModInfoNote_suffix || " line includes bonuses from magic items, active feats, and other persistent effects."}
+        <p className="text-sm text-muted-foreground pt-2">
+          <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_prefix }} />
+          <Badge variant="outline">{UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}</Badge>
+          <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_suffix }}/>
         </p>
       </CardContent>
     </Card>
