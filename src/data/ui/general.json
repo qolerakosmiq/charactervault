@@ -90,9 +90,9 @@
   "savingThrowsRowLabelTemporaryModifier": { "en": "Temporary Modifier", "fr": "Mod. Temporaire" },
   "savingThrowsRowLabelMiscModifier": { "en": "Misc Modifier", "fr": "Mod. Divers" },
   "savingThrowsFeatsModifierLabel": { "en": "Feats Modifiers", "fr": "Modificateurs de Dons" },
-  "savingThrowsPanelMiscModInfoNote_prefix": { "en": "The ", "fr": "La ligne " },
+  "savingThrowsPanelMiscModInfoNote_prefix": { "en": "<b>Note:</b> The ", "fr": "<b>Note :</b> La ligne " },
   "savingThrowsPanelMiscModInfoNote_suffix": { "en": " line includes bonuses from magic items, active feats, and other persistent effects.", "fr": " inclut les bonus des objets magiques, des dons actifs et d'autres effets persistants." },
-  "healthPanelMaxHpMiscModInfoNote_prefix": { "en": "The ", "fr": "Le " },
+  "healthPanelMaxHpMiscModInfoNote_prefix": { "en": "<b>Note:</b> The ", "fr": "<b>Note :</b> Le " },
   "healthPanelMaxHpMiscModInfoNote_suffix": { "en": " to Maximum Hit Points includes bonuses from magic items, active feats, and other persistent effects.", "fr": " aux Points de Vie Maximum inclut les bonus des objets magiques, des dons actifs et d'autres effets persistants." }
 }
 
