@@ -22,6 +22,7 @@ export const ExpandableDetailWrapper: React.FC<{ children: React.ReactNode }> = 
 
 export const sectionHeadingClass = "text-lg font-semibold mb-2 text-primary";
 
+// This function remains as it's a general utility, but its use for ID-based fallbacks should be removed.
 export function capitalizeFirstLetter(string: string) {
   if (!string) return string;
   return string.charAt(0).toUpperCase() + string.slice(1);

@@ -28,23 +28,30 @@ interface CharacterCardProps {
 export function CharacterCard({ character, onDelete }: CharacterCardProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
 
-  const primaryClass = character.classes[0] ? `${character.classes[0].className} ${character.classes[0].level}` : 'N/A';
   const totalLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1;
 
-  const alignmentLabel = translations && !translationsLoading && character.alignment
-    ? translations.ALIGNMENTS.find(a => a.value === character.alignment)?.label || character.alignment
-    : character.alignment;
-  const sizeLabel = translations && !translationsLoading && character.size
-    ? translations.SIZES.find(s => s.value === character.size)?.label || character.size
-    : character.size;
-  
-  const characterClassName = translations && !translationsLoading && character.classes[0]?.className
-    ? translations.DND_CLASSES.find(c => c.value === character.classes[0].className)?.label || character.classes[0].className
-    : character.classes[0]?.className;
-  
-  const raceLabel = translations && !translationsLoading && character.race
-    ? translations.DND_RACES.find(r => r.value === character.race)?.label || character.race
-    : character.race;
+  let alignmentLabelForDisplay: string | undefined;
+  let sizeLabelForDisplay: string | undefined;
+  let characterClassNameForDisplay: string | undefined;
+  let raceLabelForDisplay: string | undefined;
+
+  if (translations && !translationsLoading) {
+    const alignmentData = translations.ALIGNMENTS.find(a => a.id === character.alignment);
+    alignmentLabelForDisplay = alignmentData ? alignmentData.label : (character.alignment ? `[INVALID_ID:${character.alignment}]` : (translations.UI_STRINGS.alignmentNotSet || 'N/A'));
+
+    const sizeData = translations.SIZES.find(s => s.id === character.size);
+    sizeLabelForDisplay = sizeData ? sizeData.label : (character.size ? `[INVALID_ID:${character.size}]` : (translations.UI_STRINGS.sizeNotSet || 'N/A'));
+
+    if (character.classes[0]?.className) {
+      const classDef = translations.DND_CLASSES.find(c => c.id === character.classes[0].className);
+      characterClassNameForDisplay = classDef ? classDef.label : `[INVALID_ID:${character.classes[0].className}]`;
+    } else {
+      characterClassNameForDisplay = translations.UI_STRINGS.classNotSet || 'N/A';
+    }
+
+    const raceData = translations.DND_RACES.find(r => r.id === character.race);
+    raceLabelForDisplay = raceData ? raceData.label : (character.race ? `[INVALID_ID:${character.race}]` : (translations.UI_STRINGS.raceNotSet || 'N/A'));
+  }
 
 
   if (translationsLoading || !translations?.UI_STRINGS) {
@@ -86,16 +93,16 @@ export function CharacterCard({ character, onDelete }: CharacterCardProps) {
           <div>
             <CardTitle className="text-xl font-serif">{character.name}</CardTitle>
             <CardDescription className="text-sm">
-              {raceLabel} - {UI_STRINGS.levelLabel || "Level"} {totalLevel} {characterClassName} {character.classes[0]?.level}
+              {raceLabelForDisplay} - {UI_STRINGS.levelLabel || "Level"} {totalLevel} {characterClassNameForDisplay} {character.classes[0]?.level}
             </CardDescription>
           </div>
         </div>
       </CardHeader>
       <CardContent className="p-4 flex-grow">
         <div className="space-y-1 text-sm">
-          <p><span className="font-semibold">{UI_STRINGS.alignmentLabel || "Alignment"}:</span> {alignmentLabel}</p>
+          <p><span className="font-semibold">{UI_STRINGS.alignmentLabel || "Alignment"}:</span> {alignmentLabelForDisplay || (UI_STRINGS.alignmentNotSet || 'N/A')}</p>
           {character.deity && <p><span className="font-semibold">{UI_STRINGS.deityLabel || "Deity"}:</span> {character.deity}</p>}
-          <p><span className="font-semibold">{UI_STRINGS.sizeLabel || "Size"}:</span> {sizeLabel}</p>
+          <p><span className="font-semibold">{UI_STRINGS.sizeLabel || "Size"}:</span> {sizeLabelForDisplay || (UI_STRINGS.sizeNotSet || 'N/A')}</p>
         </div>
       </CardContent>
       <CardFooter className="p-4 bg-muted/30 border-t">
@@ -131,3 +138,4 @@ export function CharacterCard({ character, onDelete }: CharacterCardProps) {
     </Card>
   );
 }
+

@@ -16,7 +16,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
-import { capitalizeFirstLetter } from '@/components/info-dialog-content/dialog-utils';
+// Removed capitalizeFirstLetter import as it's no longer used for fallbacks
 
 const DEBOUNCE_DELAY = 400;
 
@@ -233,8 +233,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
               {energyResistancesFields.map(({ field, labelKey, Icon, fieldPrefix }) => {
                 const resistanceFromProp = characterData[field];
                 const totalValue = (resistanceFromProp?.base || 0) + (resistanceFromProp?.customMod || 0);
-                const fallbackLabel = capitalizeFirstLetter(field.replace('Resistance', ''));
-                const label = UI_STRINGS[labelKey] || fallbackLabel;
+                const label = UI_STRINGS[labelKey]; // Directly use the string from UI_STRINGS
                 const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
@@ -285,8 +284,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                 const resistanceFromProp = characterData[field];
                 const totalValue = (resistanceFromProp?.base || 0) + (resistanceFromProp?.customMod || 0);
                 const isFortification = field === 'fortification';
-                const fallbackLabel = capitalizeFirstLetter(field.replace('Resistance', '').replace('Fortification', 'Fortification'));
-                const label = UI_STRINGS[labelKey] || fallbackLabel;
+                const label = UI_STRINGS[labelKey]; // Directly use the string from UI_STRINGS
                 const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
@@ -399,7 +397,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                                      {ruleLabel}
                                    </Badge>
                                    {dr.isGranted && dr.source && (
-                                    <Badge variant="secondary" className="ml-1">{dr.source}</Badge>
+                                    <Badge variant="secondary" className="ml-1">{getLocalizedString(dr.source, translations.UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>
                                   )}
                                 </div>
                                 {!dr.isGranted && (
