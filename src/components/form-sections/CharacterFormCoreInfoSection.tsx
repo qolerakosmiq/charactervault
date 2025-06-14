@@ -24,7 +24,7 @@ import type {
   GrantsAbilityEffectUses,
   ClassSpecificUIBlock
 } from '@/types/character-core';
-import { isAlignmentCompatible } from '@/types/character';
+import { isAlignmentCompatibleWithDeity, isAlignmentValidForRequirement } from '@/types/character'; // Updated import
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -39,12 +39,12 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Separator } from '@/components/ui/separator';
-import { useToast } from "@/hooks/use-toast"; // Added useToast
+import { useToast } from "@/hooks/use-toast";
 
-const DEBOUNCE_DELAY = 400; // ms
+const DEBOUNCE_DELAY = 400;
 const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__";
 const DOMAIN_NONE_OPTION_VALUE = "__NONE_DOMAIN__";
-const MAGIC_SCHOOL_NONE_OPTION_VALUE = "__NONE_SCHOOL__"; // Universal/Generalist
+const MAGIC_SCHOOL_NONE_OPTION_VALUE = "__NONE_SCHOOL__";
 const PROHIBITED_SCHOOL_NONE_VALUE = "__NONE_PROHIBITED__";
 
 
@@ -79,7 +79,7 @@ const CharacterFormCoreInfoSectionComponent = ({
   aggregatedFeatEffects,
 }: CharacterFormCoreInfoSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
-  const { toast } = useToast(); // Added toast
+  const { toast } = useToast();
 
   const [localName, setLocalName] = useDebouncedFormField(
     characterData.name || '',
@@ -151,7 +151,6 @@ const CharacterFormCoreInfoSectionComponent = ({
     onFieldChange('chosenFavoredEnemies', updatedEnemies);
   }, [characterData.chosenFavoredEnemies, onFieldChange]);
 
-
   const handleDomainChange = React.useCallback((index: 0 | 1, newDomainId: DomainId | undefined) => {
     const currentDomains = characterData.chosenDomains ? [...characterData.chosenDomains] : [undefined, undefined];
     currentDomains[index] = newDomainId === DOMAIN_NONE_OPTION_VALUE ? undefined : newDomainId;
@@ -181,20 +180,83 @@ const CharacterFormCoreInfoSectionComponent = ({
 
     if (finalProhibited[0] && finalProhibited[0] === finalProhibited[1]) {
         toast({ title: translations.UI_STRINGS.toastErrorTitle || "Error", description: translations.UI_STRINGS.wizardProhibitedSchoolDuplicateError || "Cannot select the same prohibited school twice.", variant: "destructive" });
-        // Reset the second one if they are the same and not "none"
-        if (index === 1 && finalProhibited[1] !== undefined) {
-          finalProhibited[1] = undefined;
-        } else if (index === 0 && finalProhibited[0] !== undefined && finalProhibited[0] === (characterData.prohibitedSchools?.[1])) {
-          // If changing the first to be same as existing second, clear the first.
-          // This case is a bit tricky, simpler to just let the user fix one.
-          // Or, for now, let's just prevent the set action that would cause a duplicate.
-           // This means we don't update the state if it causes a duplicate.
-          return; 
-        }
+        return;
     }
     
     onFieldChange('prohibitedSchools', finalProhibited.filter(s => s !== undefined) as MagicSchoolId[]);
   }, [characterData.prohibitedSchools, characterData.chosenSpecializationSchool, onFieldChange, toast, translations]);
+
+  const selectedClassInfo = React.useMemo(() => {
+    if (!translations || !localClassName) return undefined;
+    return translations.DND_CLASSES.find(c => c.id === localClassName);
+  }, [translations, localClassName]);
+
+  React.useEffect(() => {
+    if (translationsLoading || !translations || !selectedClassInfo?.alignmentRestriction || !localAlignment) return;
+    const UI_STRINGS = translations.UI_STRINGS;
+    const ALIGNMENTS = translations.ALIGNMENTS;
+
+    if (!isAlignmentValidForRequirement(localAlignment, selectedClassInfo.alignmentRestriction)) {
+      toast({
+        title: UI_STRINGS.toastInvalidAlignmentForClassTitle || "Invalid Alignment",
+        description: (UI_STRINGS.toastInvalidAlignmentForClassDesc || "The alignment '{alignment}' is not permitted for the {className} class. Please choose a valid alignment.")
+          .replace("{alignment}", ALIGNMENTS.find(a => a.id === localAlignment)?.label || localAlignment)
+          .replace("{className}", selectedClassInfo.label),
+        variant: "destructive",
+      });
+    }
+  }, [localAlignment, selectedClassInfo, translations, translationsLoading, toast]);
+
+  const deitySelectOptions = React.useMemo(() => {
+    if (translationsLoading || !translations) return [{ value: DEITY_NONE_OPTION_VALUE, label: "Loading..." }];
+    const noneOptionLabel = translations.UI_STRINGS?.deityNoneOption || "None";
+    
+    let compatibleDeities = translations.DND_DEITIES.filter(deity =>
+      isAlignmentCompatibleWithDeity(localAlignment, deity.alignment)
+    );
+
+    if (selectedClassInfo?.deityAlignmentRestriction) {
+      compatibleDeities = compatibleDeities.filter(deity =>
+        isAlignmentValidForRequirement(deity.alignment, selectedClassInfo.deityAlignmentRestriction!)
+      );
+    }
+    
+    return [{ value: DEITY_NONE_OPTION_VALUE, label: noneOptionLabel }, ...compatibleDeities.map(deity => ({value: deity.id, label: deity.label}))];
+  }, [translationsLoading, translations, localAlignment, selectedClassInfo]);
+
+  React.useEffect(() => {
+    if (translationsLoading || !translations || localDeity === DEITY_NONE_OPTION_VALUE) return;
+    const UI_STRINGS = translations.UI_STRINGS;
+    const ALIGNMENTS = translations.ALIGNMENTS;
+
+    const currentDeityInfo = translations.DND_DEITIES.find(d => d.id === localDeity);
+    if (!currentDeityInfo) return; 
+
+    if (!isAlignmentCompatibleWithDeity(localAlignment, currentDeityInfo.alignment)) {
+      toast({
+        title: UI_STRINGS.toastInvalidDeityForAlignmentTitle || "Deity Alignment Mismatch",
+        description: (UI_STRINGS.toastInvalidDeityForAlignmentDesc || "The deity '{deityName}' is not compatible with your character's alignment '{alignment}'.")
+          .replace("{deityName}", currentDeityInfo.label)
+          .replace("{alignment}", ALIGNMENTS.find(a => a.id === localAlignment)?.label || localAlignment),
+        variant: "destructive",
+      });
+      setLocalDeity(DEITY_NONE_OPTION_VALUE);
+      return;
+    }
+
+    if (selectedClassInfo?.deityAlignmentRestriction) {
+      if (!isAlignmentValidForRequirement(currentDeityInfo.alignment, selectedClassInfo.deityAlignmentRestriction)) {
+        toast({
+          title: UI_STRINGS.toastInvalidDeityForClassTitle || "Invalid Deity Choice",
+          description: (UI_STRINGS.toastInvalidDeityForClassDesc || "The deity '{deityName}' is not compatible with the alignment restrictions of the {className} class.")
+            .replace("{deityName}", currentDeityInfo.label)
+            .replace("{className}", selectedClassInfo.label),
+          variant: "destructive",
+        });
+        setLocalDeity(DEITY_NONE_OPTION_VALUE);
+      }
+    }
+  }, [localDeity, localAlignment, selectedClassInfo, translations, translationsLoading, toast, setLocalDeity]);
 
 
   React.useEffect(() => {
@@ -209,40 +271,10 @@ const CharacterFormCoreInfoSectionComponent = ({
     }
   }, [translationsLoading, translations, localRace, setLocalRace, localClassName, setLocalClassName]);
 
-  const selectedClassInfo = React.useMemo(() => {
-    if (!translations || !localClassName) return undefined;
-    return translations.DND_CLASSES.find(c => c.id === localClassName);
-  }, [translations, localClassName]);
-
   const isPredefinedRace = React.useMemo(() => {
     if (!translations || !localRace) return false;
     return !!translations.DND_RACES.find(r => r.id === localRace);
   }, [translations, localRace]);
-
-  const filteredDeities = React.useMemo(() => {
-    if (translationsLoading || !translations || !localAlignment) {
-      return translations?.DND_DEITIES || [];
-    }
-    return translations.DND_DEITIES.filter(deity =>
-      isAlignmentCompatible(localAlignment, deity.alignment)
-    );
-  }, [translationsLoading, translations, localAlignment]);
-
-  const deitySelectOptions = React.useMemo(() => {
-    if (translationsLoading || !translations) return [{ value: DEITY_NONE_OPTION_VALUE, label: "Loading..." }];
-    const noneOptionLabel = translations.UI_STRINGS?.deityNoneOption || "None";
-    return [{ value: DEITY_NONE_OPTION_VALUE, label: noneOptionLabel }, ...filteredDeities.map(deity => ({value: deity.id, label: deity.label}))];
-  }, [translationsLoading, translations, filteredDeities]);
-
-  React.useEffect(() => {
-    if (translationsLoading || !translations || !localAlignment || !localDeity) return;
-    if (localDeity !== DEITY_NONE_OPTION_VALUE) {
-      const currentDeityInfo = translations.DND_DEITIES.find(d => d.id === localDeity);
-      if (currentDeityInfo && !isAlignmentCompatible(localAlignment, currentDeityInfo.alignment)) {
-        setLocalDeity(DEITY_NONE_OPTION_VALUE);
-      }
-    }
-  }, [translationsLoading, translations, localAlignment, localDeity, setLocalDeity]);
 
   const raceSelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return null;
@@ -304,7 +336,6 @@ const CharacterFormCoreInfoSectionComponent = ({
     return prohibitedSchoolOptions.filter(opt => opt.value !== selectedProhibitedSchool1);
   }, [prohibitedSchoolOptions, selectedProhibitedSchool1]);
 
-
   if (translationsLoading || !translations) {
     return (
       <Card>
@@ -327,7 +358,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     );
   }
 
-  const { GENDERS, UI_STRINGS } = translations;
+  const { GENDERS, UI_STRINGS, ALIGNMENTS } = translations;
 
   const renderClassSpecificUI = (uiBlock: ClassSpecificUIBlock) => {
     const currentCharacterClassLevel = characterData.classes[0]?.level || 0;
@@ -354,7 +385,6 @@ const CharacterFormCoreInfoSectionComponent = ({
         return null;
       }
     }
-
 
     switch (uiBlock.key) {
       case "rangerCombatStyle":
@@ -470,7 +500,6 @@ const CharacterFormCoreInfoSectionComponent = ({
             </div>
           );
         case "wizardProhibitedSchools":
-          // Only render if a specialist school (not 'universal' or 'none') is chosen
           if (localSpecializationSchool === MAGIC_SCHOOL_NONE_OPTION_VALUE || localSpecializationSchool === 'universal') {
             return null;
           }
@@ -599,7 +628,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   const periodStrKey = `period${ability.uses.per.charAt(0).toUpperCase() + ability.uses.per.slice(1)}` as keyof typeof UI_STRINGS;
                   const periodStr = UI_STRINGS[periodStrKey] || ability.uses.per;
                   const displayString = (UI_STRINGS.abilityUsesFormat || "{abilityName}: {usesValue}/{period}")
-                    .replace("{abilityName}", ability.name as string) // name is already localized string
+                    .replace("{abilityName}", ability.name as string) 
                     .replace("{usesValue}", String(ability.uses.value))
                     .replace("{period}", periodStr);
 

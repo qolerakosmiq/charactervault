@@ -99,6 +99,11 @@
   "speedLabelBurrow": { "en": "Burrow Speed", "fr": "Vitesse de creusement" },
   "speedLabelClimb": { "en": "Climb Speed", "fr": "Vitesse d'escalade" },
   "speedLabelFly": { "en": "Fly Speed", "fr": "Vitesse de vol" },
-  "speedLabelSwim": { "en": "Swim Speed", "fr": "Vitesse de nage" }
+  "speedLabelSwim": { "en": "Swim Speed", "fr": "Vitesse de nage" },
+  "toastInvalidAlignmentForClassTitle": { "en": "Invalid Alignment", "fr": "Alignement Invalide" },
+  "toastInvalidAlignmentForClassDesc": { "en": "The alignment '{alignment}' is not permitted for the {className} class. Please choose a valid alignment.", "fr": "L'alignement '{alignment}' n'est pas autorisé pour la classe {className}. Veuillez choisir un alignement valide." },
+  "toastInvalidDeityForClassTitle": { "en": "Invalid Deity Choice", "fr": "Choix de Divinité Invalide" },
+  "toastInvalidDeityForClassDesc": { "en": "The deity '{deityName}' is not compatible with the alignment restrictions of the {className} class.", "fr": "La divinité '{deityName}' n'est pas compatible avec les restrictions d'alignement de la classe {className}." },
+  "toastInvalidDeityForAlignmentTitle": { "en": "Deity Alignment Mismatch", "fr": "Désaccord d'Alignement de Divinité" },
+  "toastInvalidDeityForAlignmentDesc": { "en": "The deity '{deityName}' is not compatible with your character's alignment '{alignment}'.", "fr": "La divinité '{deityName}' n'est pas compatible avec l'alignement de votre personnage '{alignment}'." }
 }
-
