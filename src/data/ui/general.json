@@ -88,7 +88,8 @@
   "currentLangCodeForNotesFallback": { "en": "en", "fr": "fr" },
   "savingThrowsRowLabelAbilityModifier": { "en": "Ability Modifier", "fr": "Mod. de Carac." },
   "savingThrowsRowLabelTemporaryModifier": { "en": "Temporary Modifier", "fr": "Mod. Temporaire" },
-  "savingThrowsRowLabelMiscModifier": { "en": "Misc Modifier", "fr": "Mod. Divers" }
+  "savingThrowsRowLabelMiscModifier": { "en": "Misc Modifier", "fr": "Mod. Divers" },
+  "savingThrowsFeatsModifierLabel": { "en": "Feats Modifiers", "fr": "Modificateurs de Dons" }
 }
 
     
