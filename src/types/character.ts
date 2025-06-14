@@ -988,7 +988,7 @@ export function calculateFeatEffects(
           newAggregatedEffects.proficienciesGranted.push(effectToPush as GrantsProficiencyEffect & AggregatedFeatEffectBase);
           break;
         case "bonusFeatSlot":
-          newAggregatedEffects.bonusFeatSlot.push(effectToPush as BonusFeatSlotEffect & AggregatedFeatEffectBase);
+          newAggregatedEffects.bonusFeatSlots.push(effectToPush as BonusFeatSlotEffect & AggregatedFeatEffectBase);
           break;
         case "language":
           const langEffect = effectToPush as LanguageEffect & AggregatedFeatEffectBase;
@@ -1118,7 +1118,14 @@ export function isAlignmentCompatible(
     const geDiff = Math.abs(charGeVal - deityGeVal);
 
     // Rule: "within one step ... on either the lawful-chaotic axis or the good-evil axis, but not both"
-    // This translates to: (total steps across both axes must be 0 or 1).
+    // This translates to: (lcDiff <= 1 AND geDiff === 0) OR (lcDiff === 0 AND geDiff <= 1)
+    // which is equivalent to: lcDiff + geDiff <= 1 (if diffs are 0 or 1)
+    // The current code: return (lcDiff <= 1 && geDiff <= 1 && (lcDiff + geDiff) <= 1);
+    // This condition correctly implements the "total steps across both axes must be 0 or 1".
+    // Example:
+    //   - Deity LG (0,0), Char LN (0,1): lcDiff=0, geDiff=1. Sum=1. (0<=1 && 1<=1 && 1<=1) -> true. Correct.
+    //   - Deity LG (0,0), Char NG (1,0): lcDiff=1, geDiff=0. Sum=1. (1<=1 && 0<=1 && 1<=1) -> true. Correct.
+    //   - Deity LG (0,0), Char TN (1,1): lcDiff=1, geDiff=1. Sum=2. (1<=1 && 1<=1 && 2<=1) -> false. Correct.
     return (lcDiff <= 1 && geDiff <= 1 && (lcDiff + geDiff) <= 1);
   }
 
@@ -1169,4 +1176,5 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
+
 
