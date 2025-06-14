@@ -260,10 +260,6 @@ export function getLocalizedString(
   }
   if (typeof entry === 'string') {
     // If it's already a string, it's assumed to be pre-localized or a non-localizable identifier.
-    // For a strict "crash if not an object with language keys" policy, you might adjust this.
-    // However, some data (like IDs) might legitimately be strings.
-    // If the intent is ONLY for LocalizedString objects, this check needs to be stricter.
-    // For now, assuming a string means it's already resolved or a literal.
     return entry;
   }
   if (typeof entry !== 'object' || Object.keys(entry).length === 0) {
@@ -287,8 +283,8 @@ export function getLocalizedString(
       return translation;
     }
   }
-
-  throw new Error(`[I18N_ERROR] No translation found for key: ${debugKeyPath}. Tried languages: ${uniqueLanguagesToTry.join(', ')}. Original entry: ${JSON.stringify(entry)}`);
+  // If no translation is found after trying all preferred languages, throw an error.
+  throw new Error(`[I18N_ERROR] No translation found for key: ${debugKeyPath} after trying languages: ${uniqueLanguagesToTry.join(', ')}. Original entry: ${JSON.stringify(entry)}`);
 }
 
 
@@ -318,11 +314,14 @@ function processLocalizedArray<
       otherFieldsToLocalize.forEach(fieldKey => {
         const rawFieldValue = item_raw[fieldKey];
         if (rawFieldValue !== undefined) { // Only process if field exists
-            if (typeof rawFieldValue === 'object' && rawFieldValue !== null && !Array.isArray(rawFieldValue)) {
-                newItem[fieldKey] = getLocalizedString(rawFieldValue as LocalizedString, lang, DEFAULT_LANGUAGE, `${itemTypeForDebug}.${itemId}.${String(fieldKey)}`);
+            // Ensure it's a localizable structure before attempting to localize
+            if (typeof rawFieldValue === 'object' && rawFieldValue !== null && !Array.isArray(rawFieldValue) && (rawFieldValue.hasOwnProperty('en') || rawFieldValue.hasOwnProperty(lang))) {
+                 newItem[fieldKey] = getLocalizedString(rawFieldValue as LocalizedString, lang, DEFAULT_LANGUAGE, `${itemTypeForDebug}.${itemId}.${String(fieldKey)}`);
             } else if (typeof rawFieldValue === 'string') {
-                newItem[fieldKey] = rawFieldValue; // Assume already localized or literal
+                 newItem[fieldKey] = rawFieldValue; // Assume already localized or literal
             }
+            // If it's an object but not a LocalizedString, or another type, it will be passed through as-is.
+            // This could be made stricter if needed.
         }
       });
     }
@@ -402,11 +401,11 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     ...feat_raw,
     id: feat_raw.id, // Already validated
     label: getLocalizedString(feat_raw.label, lang, DEFAULT_LANGUAGE, `${debugKeyPrefix}.label`),
-    description: getLocalizedString(feat_raw.description, lang, DEFAULT_LANGUAGE, `${debugKeyPrefix}.description`),
-    effectsText: getLocalizedString(feat_raw.effectsText, lang, DEFAULT_LANGUAGE, `${debugKeyPrefix}.effectsText`),
+    description: (feat_raw.description !== undefined && feat_raw.description !== null) ? getLocalizedString(feat_raw.description, lang, DEFAULT_LANGUAGE, `${debugKeyPrefix}.description`) : undefined,
+    effectsText: (feat_raw.effectsText !== undefined && feat_raw.effectsText !== null) ? getLocalizedString(feat_raw.effectsText, lang, DEFAULT_LANGUAGE, `${debugKeyPrefix}.effectsText`) : undefined,
     prerequisites: feat_raw.prerequisites ? {
       ...feat_raw.prerequisites,
-      special: (feat_raw.prerequisites.special && (typeof feat_raw.prerequisites.special === 'string' || typeof feat_raw.prerequisites.special === 'object'))
+      special: (feat_raw.prerequisites.special !== undefined && feat_raw.prerequisites.special !== null && (typeof feat_raw.prerequisites.special === 'string' || typeof feat_raw.prerequisites.special === 'object'))
                ? getLocalizedString(feat_raw.prerequisites.special as LocalizedString, lang, DEFAULT_LANGUAGE, `${debugKeyPrefix}.prereq.special`)
                : undefined
     } : undefined,
@@ -445,8 +444,8 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
         if (!featDef) throw new Error(`[DATA_ERROR] Feat definition for ID '${gf_raw.featId}' referenced by race '${id}' not found.`);
         return {
             featId: gf_raw.featId,
-            name: getLocalizedString(gf_raw.name, lang, DEFAULT_LANGUAGE, `races.${id}.grantedFeats.${gf_raw.featId}.name`) || featDef.label,
-            note: getLocalizedString(gf_raw.note, lang, DEFAULT_LANGUAGE, `races.${id}.grantedFeats.${gf_raw.featId}.note`) || undefined,
+            name: (gf_raw.name !== undefined && gf_raw.name !== null) ? getLocalizedString(gf_raw.name, lang, DEFAULT_LANGUAGE, `races.${id}.grantedFeats.${gf_raw.featId}.name`) : featDef.label,
+            note: (gf_raw.note !== undefined && gf_raw.note !== null) ? getLocalizedString(gf_raw.note, lang, DEFAULT_LANGUAGE, `races.${id}.grantedFeats.${gf_raw.featId}.note`) : undefined,
             levelAcquired: gf_raw.levelAcquired
         };
     });
@@ -488,8 +487,8 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
         if (!featDef) throw new Error(`[DATA_ERROR] Feat definition for ID '${gf_raw.featId}' referenced by class '${id}' not found.`);
         return {
             featId: gf_raw.featId,
-            name: getLocalizedString(gf_raw.name, lang, DEFAULT_LANGUAGE, `classes.${id}.grantedFeats.${gf_raw.featId}.name`) || featDef.label,
-            note: getLocalizedString(gf_raw.note, lang, DEFAULT_LANGUAGE, `classes.${id}.grantedFeats.${gf_raw.featId}.note`) || undefined,
+            name: (gf_raw.name !== undefined && gf_raw.name !== null) ? getLocalizedString(gf_raw.name, lang, DEFAULT_LANGUAGE, `classes.${id}.grantedFeats.${gf_raw.featId}.name`) : featDef.label,
+            note: (gf_raw.note !== undefined && gf_raw.note !== null) ? getLocalizedString(gf_raw.note, lang, DEFAULT_LANGUAGE, `classes.${id}.grantedFeats.${gf_raw.featId}.note`) : undefined,
             levelAcquired: gf_raw.levelAcquired
         };
     });
@@ -501,8 +500,8 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       ...csf_raw,
       id: csf_raw.id,
       label: getLocalizedString(csf_raw.label, lang, DEFAULT_LANGUAGE, `${csfDebugKeyPrefix}.label`),
-      description: getLocalizedString(csf_raw.description, lang, DEFAULT_LANGUAGE, `${csfDebugKeyPrefix}.description`),
-      effectsText: getLocalizedString(csf_raw.effectsText, lang, DEFAULT_LANGUAGE, `${csfDebugKeyPrefix}.effectsText`),
+      description: (csf_raw.description !== undefined && csf_raw.description !== null) ? getLocalizedString(csf_raw.description, lang, DEFAULT_LANGUAGE, `${csfDebugKeyPrefix}.description`) : undefined,
+      effectsText: (csf_raw.effectsText !== undefined && csf_raw.effectsText !== null) ? getLocalizedString(csf_raw.effectsText, lang, DEFAULT_LANGUAGE, `${csfDebugKeyPrefix}.effectsText`) : undefined,
       effects: csf_raw.effects?.map((effect, index) => {
           const localizedEffect = {...effect};
           const effectDebugKeyBase = `${csfDebugKeyPrefix}.effects[${index}]`;
@@ -581,7 +580,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       grantedPowerFeatId: d_raw.grantedPowerFeatId,
       domainSpells: (d_raw.domainSpells || []).map((ds, idx) => ({
           ...ds,
-          spellName: getLocalizedString(ds.spellName, lang, DEFAULT_LANGUAGE, `domains.${d_raw.id}.domainSpells[${idx}].spellName`) || ds.spellId
+          spellName: (ds.spellName !== undefined && ds.spellName !== null) ? getLocalizedString(ds.spellName, lang, DEFAULT_LANGUAGE, `domains.${d_raw.id}.domainSpells[${idx}].spellName`) : ds.spellId
       })),
       deityAlignmentRestrictions: d_raw.deityAlignmentRestrictions
   }}).sort((a,b) => a.label.localeCompare(b.label));
@@ -593,7 +592,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     return {
     id: ms_raw.id,
     label: getLocalizedString(ms_raw.label, lang, DEFAULT_LANGUAGE, `magicSchools.${ms_raw.id}.label`),
-    description: getLocalizedString(ms_raw.description, lang, DEFAULT_LANGUAGE, `magicSchools.${ms_raw.id}.description`),
+    description: (ms_raw.description !== undefined && ms_raw.description !== null) ? getLocalizedString(ms_raw.description, lang, DEFAULT_LANGUAGE, `magicSchools.${ms_raw.id}.description`) : undefined,
   }}).sort((a,b) => a.label.localeCompare(b.label));
 
   const SKILL_DEFINITIONS_RAW = getAndValidateArray(bundle.skills?.SKILL_DEFINITIONS_DATA, 'Skill Definitions');
@@ -603,7 +602,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     id: sd_raw.id,
     label: getLocalizedString(sd_raw.label, lang, DEFAULT_LANGUAGE, `skills.${sd_raw.id}.label`),
     keyAbility: sd_raw.keyAbility as AbilityName, // Assuming this is validated elsewhere or trusted
-    description: getLocalizedString(sd_raw.description, lang, DEFAULT_LANGUAGE, `skills.${sd_raw.id}.description`),
+    description: (sd_raw.description !== undefined && sd_raw.description !== null) ? getLocalizedString(sd_raw.description, lang, DEFAULT_LANGUAGE, `skills.${sd_raw.id}.description`) : undefined,
   }}).sort((a,b) => a.label.localeCompare(b.label));
 
 
@@ -717,5 +716,3 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     UI_STRINGS,
   };
 }
-
-    
