@@ -1,3 +1,4 @@
+
 {
   "DND_FEATS_DATA": [
     {
@@ -545,6 +546,16 @@
       "type": "general"
     },
     {
+      "id": "track",
+      "label": { "en": "Track", "fr": "Pistage" },
+      "description": {
+        "en": "<b>Benefit:</b> To find tracks or to follow them for 1 mile requires a Survival check. You must make another Survival check every time the tracks become difficult to follow, such as when the tracks leave a soft surface for a hard one, or when the trail is obscured by rain or snow.",
+        "fr": "<b>Avantage :</b> Pour trouver des traces ou les suivre sur 1,5 kilomètre, un test de Survie est nécessaire. Vous devez effectuer un autre test de Survie chaque fois que les traces deviennent difficiles à suivre, par exemple lorsque les traces quittent une surface meuble pour une surface dure, ou lorsque la piste est obscurcie par la pluie ou la neige."
+      },
+      "effectsText": { "en": "Use Survival to find and follow tracks.", "fr": "Utilisez Survie pour trouver et suivre des traces." },
+      "type": "general"
+    },
+    {
       "id": "two-weapon-fighting",
       "label": { "en": "Two-Weapon Fighting", "fr": "Combat à deux armes" },
       "description": {
@@ -593,7 +604,7 @@
       "label": { "en": "Brew Potion", "fr": "Préparation de potions" },
       "description": {
         "en": "<b>Prerequisite:</b> Caster level 3rd.<br/><b>Benefit:</b> You can create a potion of any 3rd-level or lower spell that you know and that targets one or more creatures. Brewing a potion takes 1 day. When you create a potion, you set the caster level, which must be sufficient for the spell in question and no higher than your own level. The base price of a potion is its spell level × its caster level × 50 gp. To brew a potion, you must spend 1/25 of this base price in XP and use up raw materials costing half of this base price.",
-        "fr": "<b>Prérequis :</b> Niveau de lanceur de sorts 3ème.<br/><b>Avantage :</b> Vous pouvez créer une potion de n'importe quel sort de 3ème niveau ou inférieur que vous connaissez et qui cible une ou plusieurs créatures. La préparation d'une potion prend 1 jour. Lorsque vous créez une potion, vous définissez le niveau de lanceur de sorts, qui doit être suffisant pour le sort en question et pas plus élevé que votre propre niveau. Le prix de base d'une potion est son niveau de sort × son niveau de lanceur de sorts × 50 po. Pour préparer une potion, vous devez dépenser 1/25 de ce prix de base en XP et utiliser des matières premières coûtant la moitié de ce prix de base."
+        "fr": "<b>Prérequis :</b> Niveau de lanceur de sorts 3ème.<br/><b>Avantage :</b> Vous pouvez créer une potion de n'importe quel sort de 3ème niveau ou inférieur que vous connaissez et qui cible une ou plusieurs créatures. La préparation d'une potion prend 1 jour. Lorsque vous créez une potion, vous définissez le niveau de lanceur de sorts, qui doit être suffisant pour le sort en question et pas plus élevé que votre propre niveau. Le prix de base d'une potion est son niveau de sort × son niveau de lanceur de sorts × 50 po. Pour préparer une potion, vous devez dépenser 1/25 de ce prix de base en XP et utiliser des matières premières coûtant la moitié de ce prix."
       },
       "prerequisites": { "casterLevel": 3 },
       "type": "itemCreation",
@@ -962,3 +973,4 @@
     { "id": "monkBonusFeatL6", "label": { "en": "Monk Bonus Feat (L6)", "fr": "Don suppl. Moine (N6)" } }
   ]
 }
+
