@@ -6,6 +6,7 @@
   "babProgression": "average",
   "spellcasting": { "type": "full", "casterAbility": "wisdom", "preparedSpells": true },
   "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
+  "alignmentRestriction": "any-neutral",
   "generalDescription": {
     "en": "<p>Druids are priests of the old faith, worshiping nature in all its forms. They are guardians of the wilderness, friends to animals, and capable of calling upon the raw power of the natural world.</p>",
     "fr": "<p>Les druides sont les prêtres de l'ancienne foi, vénérant la nature sous toutes ses formes. Ils sont les gardiens des étendues sauvages, les amis des animaux et capables de faire appel à la puissance brute du monde naturel.</p>"
@@ -221,3 +222,5 @@
     }
   ]
 }
+
+    

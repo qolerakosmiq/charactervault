@@ -133,6 +133,8 @@ export interface RawClassDataEntry {
   saves: { fortitude: 'good' | 'poor'; reflex: 'good' | 'poor'; will: 'good' | 'poor' };
   spellcasting?: ClassCastingDetails;
   grantedFeats?: Array<{ featId: string; name?: LocalizedString; note?: LocalizedString; levelAcquired?: number }>;
+  alignmentRestriction?: string;
+  deityAlignmentRestriction?: string;
   uiSections?: ClassSpecificUIBlock[];
   featChoiceFilters?: FeatChoiceFilter[];
   classSpecificFeats?: FeatDefinitionJsonData[];
@@ -277,15 +279,15 @@ function processLocalizedArray<T extends { id: string; label: LocalizedString; [
     return [];
   }
   return items.map(item_raw => {
-    const newItem: any = { ...item_raw }; 
-    newItem.id = item_raw.id; 
+    const newItem: any = { ...item_raw };
+    newItem.id = item_raw.id;
     newItem.label = getLocalizedString(item_raw.label, lang);
 
     if (otherFieldsToLocalize) {
       otherFieldsToLocalize.forEach(fieldKey => {
         const rawFieldValue = item_raw[fieldKey];
         if (rawFieldValue && typeof rawFieldValue === 'object' && !Array.isArray(rawFieldValue)) {
-          newItem[fieldKey] = getLocalizedString(rawFieldValue as LocalizedString, lang) || ''; // Ensure empty string for undefined
+          newItem[fieldKey] = getLocalizedString(rawFieldValue as LocalizedString, lang) || '';
         } else if (typeof rawFieldValue === 'string') {
            newItem[fieldKey] = rawFieldValue;
         } else if (rawFieldValue === undefined && (fieldKey === 'generalDescription' || fieldKey === 'description')) {
@@ -310,7 +312,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   const SIZES = processLocalizedArray<SizeDataEntry, CharacterSizeObject>(bundle.base?.SIZES_DATA, lang);
   const GENDERS = processLocalizedArray<GenderDataEntry, { id: GenderId | string; label: string }>(bundle.base?.GENDERS_DATA, lang);
 
-  
+
   const commonFeats = bundle.commonFeats?.DND_FEATS_DATA || [];
   const classSpecificFeatsFromBundleRaw = (bundle.allClasses || []).reduce((acc, cls_raw) => {
     if (cls_raw.classSpecificFeats) {
@@ -360,11 +362,51 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
 
   const DND_RACES_RAW = bundle.races?.DND_RACES_DATA || [];
   const DND_RACES = DND_RACES_RAW.map(r_raw => {
-    const { 
-      id, label, generalDescription, description, loreAttributes, 
-      bonusFeatSlots, racialSkillBonuses, grantedFeats: rawGrantedFeats, speeds, automaticLanguages, bonusLanguages 
+    const {
+      id, label, generalDescription, description, loreAttributes,
+      bonusFeatSlots, racialSkillBonuses, grantedFeats: rawGrantedFeats, speeds, automaticLanguages, bonusLanguages
     } = r_raw;
-    
+
+    let displayName = '';
+    const featDef = DND_FEATS_DEFINITIONS.find(f => f.id === id); // Check against main feats list for direct match
+    if (featDef && featDef.label && featDef.label.trim() !== '') {
+        displayName = featDef.label;
+    }
+
+    const localizedGrantedFeats = (rawGrantedFeats || []).map(gf_raw => {
+      let featDisplayName = '';
+      const fullFeatDef = DND_FEATS_DEFINITIONS.find(f => f.id === gf_raw.featId);
+
+      if (fullFeatDef && fullFeatDef.label && fullFeatDef.label.trim() !== '') {
+        featDisplayName = fullFeatDef.label;
+      }
+      if (featDisplayName === '' && gf_raw.name) {
+        const localizedName = getLocalizedString(gf_raw.name, lang);
+        if (localizedName && localizedName.trim() !== '') {
+          featDisplayName = localizedName;
+        }
+      }
+      if (featDisplayName === '' && gf_raw.note) {
+        const localizedNoteAsName = getLocalizedString(gf_raw.note, lang);
+        if (localizedNoteAsName && localizedNoteAsName.trim() !== '') {
+          featDisplayName = localizedNoteAsName;
+        }
+      }
+      if (featDisplayName === '') {
+        featDisplayName = gf_raw.featId;
+      }
+
+      const noteText = getLocalizedString(gf_raw.note, lang);
+      const finalNote = (featDisplayName !== noteText && noteText && noteText.trim() !== '') ? noteText : undefined;
+
+      return {
+        featId: gf_raw.featId,
+        name: featDisplayName,
+        note: finalNote,
+        levelAcquired: gf_raw.levelAcquired
+      };
+    });
+
     const localizedRace: DndRaceOption = {
       id: id,
       label: getLocalizedString(label, lang),
@@ -375,47 +417,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       })),
       bonusFeatSlots: bonusFeatSlots,
       racialSkillBonuses: racialSkillBonuses,
-      grantedFeats: (rawGrantedFeats || []).map(gf_raw => {
-        const featDef = DND_FEATS_DEFINITIONS.find(f => f.id === gf_raw.featId);
-        let displayName = '';
-
-        if (featDef && featDef.label && featDef.label.trim() !== '') {
-          displayName = featDef.label;
-        }
-        
-        if (displayName === '' && gf_raw.name) {
-          const localizedName = getLocalizedString(gf_raw.name, lang);
-          if (localizedName && localizedName.trim() !== '') {
-            displayName = localizedName;
-          }
-        }
-        
-        if (displayName === '' && gf_raw.note) {
-          const localizedNoteAsName = getLocalizedString(gf_raw.note, lang);
-          if (localizedNoteAsName && localizedNoteAsName.trim() !== '') {
-            displayName = localizedNoteAsName;
-          }
-        }
-        
-        if (displayName === '') {
-          displayName = gf_raw.featId;
-        }
-
-        const noteText = getLocalizedString(gf_raw.note, lang);
-        let finalNote: string | undefined = undefined;
-        if (noteText && noteText.trim() !== '' && noteText !== displayName) {
-            if (!(featDef && featDef.label === noteText && displayName === featDef.label)) {
-                finalNote = noteText;
-            }
-        }
-
-        return {
-          featId: gf_raw.featId,
-          name: displayName,
-          note: finalNote,
-          levelAcquired: gf_raw.levelAcquired
-        };
-      }),
+      grantedFeats: localizedGrantedFeats,
       speeds: speeds,
       automaticLanguages: automaticLanguages,
     };
@@ -427,8 +429,42 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   const DND_CLASSES = DND_CLASSES_RAW.map(c_raw => {
     const {
       id, label, hitDice, babProgression, generalDescription, loreAttributes,
-      saves, spellcasting, grantedFeats: rawGrantedFeats, uiSections, featChoiceFilters, classSpecificFeats
+      saves, spellcasting, grantedFeats: rawGrantedFeats, uiSections, featChoiceFilters,
+      classSpecificFeats, alignmentRestriction, deityAlignmentRestriction
     } = c_raw;
+
+    const localizedGrantedFeats = (rawGrantedFeats || []).map(gf_raw => {
+      let featDisplayName = '';
+      const fullFeatDef = DND_FEATS_DEFINITIONS.find(f => f.id === gf_raw.featId);
+
+      if (fullFeatDef && fullFeatDef.label && fullFeatDef.label.trim() !== '') {
+        featDisplayName = fullFeatDef.label;
+      }
+      if (featDisplayName === '' && gf_raw.name) {
+        const localizedName = getLocalizedString(gf_raw.name, lang);
+        if (localizedName && localizedName.trim() !== '') {
+          featDisplayName = localizedName;
+        }
+      }
+      if (featDisplayName === '' && gf_raw.note) {
+        const localizedNoteAsName = getLocalizedString(gf_raw.note, lang);
+        if (localizedNoteAsName && localizedNoteAsName.trim() !== '') {
+          featDisplayName = localizedNoteAsName;
+        }
+      }
+      if (featDisplayName === '') {
+        featDisplayName = gf_raw.featId;
+      }
+      const noteText = getLocalizedString(gf_raw.note, lang);
+      const finalNote = (featDisplayName !== noteText && noteText && noteText.trim() !== '') ? noteText : undefined;
+
+      return {
+        featId: gf_raw.featId,
+        name: featDisplayName,
+        note: finalNote,
+        levelAcquired: gf_raw.levelAcquired
+      };
+    });
 
     const localizedClass: DndClassOption = {
       id: id,
@@ -442,47 +478,9 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       })),
       saves: saves,
       spellcasting: spellcasting,
-      grantedFeats: (rawGrantedFeats || []).map(gf_raw => {
-        const featDef = DND_FEATS_DEFINITIONS.find(f => f.id === gf_raw.featId);
-        let displayName = '';
-
-        if (featDef && featDef.label && featDef.label.trim() !== '') {
-          displayName = featDef.label;
-        }
-        
-        if (displayName === '' && gf_raw.name) {
-          const localizedName = getLocalizedString(gf_raw.name, lang);
-          if (localizedName && localizedName.trim() !== '') {
-            displayName = localizedName;
-          }
-        }
-        
-        if (displayName === '' && gf_raw.note) {
-          const localizedNoteAsName = getLocalizedString(gf_raw.note, lang);
-          if (localizedNoteAsName && localizedNoteAsName.trim() !== '') {
-            displayName = localizedNoteAsName;
-          }
-        }
-        
-        if (displayName === '') {
-          displayName = gf_raw.featId;
-        }
-
-        const noteText = getLocalizedString(gf_raw.note, lang);
-        let finalNote: string | undefined = undefined;
-        if (noteText && noteText.trim() !== '' && noteText !== displayName) {
-            if (!(featDef && featDef.label === noteText && displayName === featDef.label)) {
-                finalNote = noteText;
-            }
-        }
-        
-        return {
-          featId: gf_raw.featId,
-          name: displayName,
-          note: finalNote,
-          levelAcquired: gf_raw.levelAcquired
-        };
-      }),
+      grantedFeats: localizedGrantedFeats,
+      alignmentRestriction: alignmentRestriction,
+      deityAlignmentRestriction: deityAlignmentRestriction,
       uiSections: uiSections,
       featChoiceFilters: featChoiceFilters ? featChoiceFilters.map(fcf => ({
         ...fcf,
@@ -493,8 +491,8 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       })) : undefined,
       classSpecificFeats: (classSpecificFeats || []).map(csf_raw => ({
         ...csf_raw,
-        id: csf_raw.id, 
-        label: getLocalizedString(csf_raw.label, lang), 
+        id: csf_raw.id,
+        label: getLocalizedString(csf_raw.label, lang),
         description: getLocalizedString(csf_raw.description, lang) || '',
         effectsText: getLocalizedString(csf_raw.effectsText, lang) || '',
         effects: csf_raw.effects?.map(effect => {
@@ -528,9 +526,9 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     label: getLocalizedString(d_raw.label, lang),
     alignment: d_raw.alignment,
     fullName: getLocalizedString(d_raw.fullName, lang),
-    attributes: (d_raw.attributes || []).map(attr => ({ 
-        key: getLocalizedString(attr.key, lang), 
-        value: getLocalizedString(attr.value, lang) 
+    attributes: (d_raw.attributes || []).map(attr => ({
+        key: getLocalizedString(attr.key, lang),
+        value: getLocalizedString(attr.value, lang)
     }))
   })).sort((a,b) => a.label.localeCompare(b.label));
 
@@ -543,8 +541,8 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       grantedPowerDescription: getLocalizedString(d_raw.grantedPowerDescription, lang),
       grantedPowerFeatId: d_raw.grantedPowerFeatId,
       domainSpells: (d_raw.domainSpells || []).map(ds => ({
-          ...ds, 
-          spellName: getLocalizedString(ds.spellName, lang) || ds.spellId 
+          ...ds,
+          spellName: getLocalizedString(ds.spellName, lang) || ds.spellId
       })),
       deityAlignmentRestrictions: d_raw.deityAlignmentRestrictions
   })).sort((a,b) => a.label.localeCompare(b.label));
@@ -574,12 +572,12 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   const ABILITY_LABELS_RAW = bundle.base?.ABILITY_LABELS_DATA || [];
   const ABILITY_LABELS = ABILITY_LABELS_RAW.map(al_raw => ({
     id: al_raw.id, label: getLocalizedString(al_raw.label, lang), abbr: al_raw.abbr
-  })); 
+  }));
 
   const SAVING_THROW_LABELS_RAW = bundle.base?.SAVING_THROW_LABELS_DATA || [];
   const SAVING_THROW_LABELS = SAVING_THROW_LABELS_RAW.map(stl_raw => ({
     id: stl_raw.id, label: getLocalizedString(stl_raw.label, lang)
-  })); 
+  }));
 
   const DAMAGE_REDUCTION_TYPES_RAW = bundle.base?.DAMAGE_REDUCTION_TYPES_DATA || [];
   const DAMAGE_REDUCTION_TYPES = DAMAGE_REDUCTION_TYPES_RAW.map(drt_raw => ({
@@ -603,7 +601,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   for (const key in uiStringsBundle) {
     UI_STRINGS[key] = getLocalizedString(uiStringsBundle[key], lang);
   }
-  UI_STRINGS.currentLangCodeForNotesFallback = lang; 
+  UI_STRINGS.currentLangCodeForNotesFallback = lang;
 
 
   const DND_RACE_AGING_EFFECTS_DATA_PROCESSED: ProcessedSiteData['DND_RACE_AGING_EFFECTS_DATA'] = {};
@@ -660,3 +658,4 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   };
 }
 
+    

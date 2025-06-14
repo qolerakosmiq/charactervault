@@ -6,6 +6,8 @@
   "babProgression": "good",
   "spellcasting": { "type": "partial", "casterAbility": "wisdom", "preparedSpells": true, "startsAtLevel": 4, "levelOffset": -3 },
   "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
+  "alignmentRestriction": "lawful-good",
+  "deityAlignmentRestriction": "lawful-good",
   "generalDescription": {
     "en": "<p>Paladins are champions of righteousness, embodying honor, justice, and courage. They are devoted to their deity and their cause, wielding divine power to protect the innocent and vanquish evil.</p>",
     "fr": "<p>Les paladins sont des champions de la droiture, incarnant l'honneur, la justice et le courage. Ils sont dévoués à leur divinité et à leur cause, maniant le pouvoir divin pour protéger les innocents et vaincre le mal.</p>"
@@ -174,3 +176,5 @@
     }
   ]
 }
+
+    
