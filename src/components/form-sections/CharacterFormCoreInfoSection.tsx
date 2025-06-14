@@ -24,7 +24,7 @@ import type {
   GrantsAbilityEffectUses,
   ClassSpecificUIBlock
 } from '@/types/character-core';
-import { isAlignmentCompatibleWithDeity, isAlignmentValidForRequirement } from '@/types/character'; // Updated import
+import { isAlignmentCompatibleWithDeity, isAlignmentValidForRequirement } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -191,21 +191,36 @@ const CharacterFormCoreInfoSectionComponent = ({
     return translations.DND_CLASSES.find(c => c.id === localClassName);
   }, [translations, localClassName]);
 
-  React.useEffect(() => {
-    if (translationsLoading || !translations || !selectedClassInfo?.alignmentRestriction || !localAlignment) return;
-    const UI_STRINGS = translations.UI_STRINGS;
-    const ALIGNMENTS = translations.ALIGNMENTS;
+  const availableAlignments = React.useMemo(() => {
+    if (translationsLoading || !translations) return [];
+    const classRestriction = selectedClassInfo?.alignmentRestriction || 'any';
+    return translations.ALIGNMENTS.filter(align => 
+      isAlignmentValidForRequirement(align.id as CharacterAlignment, classRestriction)
+    );
+  }, [translationsLoading, translations, selectedClassInfo]);
 
-    if (!isAlignmentValidForRequirement(localAlignment, selectedClassInfo.alignmentRestriction)) {
+  React.useEffect(() => {
+    if (translationsLoading || !translations || !selectedClassInfo) return;
+    const UI_STRINGS = translations.UI_STRINGS;
+
+    const currentAlignmentIsValid = availableAlignments.some(a => a.id === localAlignment);
+
+    if (!currentAlignmentIsValid) {
+      const newAlignment = availableAlignments.length > 0 
+        ? availableAlignments[0].id as CharacterAlignment 
+        : 'true-neutral'; // Fallback if no alignments are somehow valid (should not happen)
+      
+      setLocalAlignment(newAlignment);
       toast({
-        title: UI_STRINGS.toastInvalidAlignmentForClassTitle || "Invalid Alignment",
-        description: (UI_STRINGS.toastInvalidAlignmentForClassDesc || "The alignment '{alignment}' is not permitted for the {className} class. Please choose a valid alignment.")
-          .replace("{alignment}", ALIGNMENTS.find(a => a.id === localAlignment)?.label || localAlignment)
+        title: UI_STRINGS.toastAlignmentAutoChangedTitle || "Alignment Updated",
+        description: (UI_STRINGS.toastAlignmentAutoChangedDesc || "Your alignment was changed to '{newAlignment}' to be compatible with the {className} class restrictions.")
+          .replace("{newAlignment}", translations.ALIGNMENTS.find(a => a.id === newAlignment)?.label || newAlignment)
           .replace("{className}", selectedClassInfo.label),
-        variant: "destructive",
+        variant: "default", 
       });
     }
-  }, [localAlignment, selectedClassInfo, translations, translationsLoading, toast]);
+  }, [localClassName, selectedClassInfo, availableAlignments, localAlignment, setLocalAlignment, translations, translationsLoading, toast]);
+
 
   const deitySelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [{ value: DEITY_NONE_OPTION_VALUE, label: "Loading..." }];
@@ -232,6 +247,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     const currentDeityInfo = translations.DND_DEITIES.find(d => d.id === localDeity);
     if (!currentDeityInfo) return; 
 
+    // Check 1: Deity vs Character Alignment (one-step rule)
     if (!isAlignmentCompatibleWithDeity(localAlignment, currentDeityInfo.alignment)) {
       toast({
         title: UI_STRINGS.toastInvalidDeityForAlignmentTitle || "Deity Alignment Mismatch",
@@ -240,10 +256,11 @@ const CharacterFormCoreInfoSectionComponent = ({
           .replace("{alignment}", ALIGNMENTS.find(a => a.id === localAlignment)?.label || localAlignment),
         variant: "destructive",
       });
-      setLocalDeity(DEITY_NONE_OPTION_VALUE);
+      setLocalDeity(DEITY_NONE_OPTION_VALUE); // Reset deity
       return;
     }
 
+    // Check 2: Deity vs Class's Deity Restriction
     if (selectedClassInfo?.deityAlignmentRestriction) {
       if (!isAlignmentValidForRequirement(currentDeityInfo.alignment, selectedClassInfo.deityAlignmentRestriction)) {
         toast({
@@ -253,7 +270,7 @@ const CharacterFormCoreInfoSectionComponent = ({
             .replace("{className}", selectedClassInfo.label),
           variant: "destructive",
         });
-        setLocalDeity(DEITY_NONE_OPTION_VALUE);
+        setLocalDeity(DEITY_NONE_OPTION_VALUE); // Reset deity
       }
     }
   }, [localDeity, localAlignment, selectedClassInfo, translations, translationsLoading, toast, setLocalDeity]);
@@ -284,11 +301,6 @@ const CharacterFormCoreInfoSectionComponent = ({
   const classSelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return null;
     return translations.DND_CLASSES.map(c => <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>);
-  }, [translationsLoading, translations]);
-
-  const alignmentSelectOptions = React.useMemo(() => {
-    if (translationsLoading || !translations) return null;
-    return translations.ALIGNMENTS.map(align => <SelectItem key={align.id} value={align.id}>{align.label}</SelectItem>);
   }, [translationsLoading, translations]);
 
   const sizeSelectOptions = React.useMemo(() => {
@@ -656,9 +668,19 @@ const CharacterFormCoreInfoSectionComponent = ({
             <Label htmlFor="alignment">{UI_STRINGS.alignmentLabel || "Alignment"}</Label>
             <div className="flex items-center gap-2">
               <div className="flex-grow">
-                <Select name="alignment" value={localAlignment} onValueChange={(value) => setLocalAlignment(value as CharacterAlignment)}>
-                  <SelectTrigger><SelectValue placeholder={UI_STRINGS.selectAlignmentPlaceholder || "Select alignment"} /></SelectTrigger>
-                  <SelectContent> {alignmentSelectOptions} </SelectContent>
+                <Select 
+                  name="alignment" 
+                  value={localAlignment} 
+                  onValueChange={(value) => setLocalAlignment(value as CharacterAlignment)}
+                >
+                  <SelectTrigger id="alignment">
+                    <SelectValue placeholder={UI_STRINGS.selectAlignmentPlaceholder || "Select alignment"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableAlignments.map(align => (
+                      <SelectItem key={align.id} value={align.id}>{align.label}</SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenAlignmentInfoDialog}> <Info className="h-5 w-5" /> </Button>
