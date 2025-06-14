@@ -25,6 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useI18n } from '@/context/I18nProvider'; // Added useI18n
 import { Skeleton } from '@/components/ui/skeleton'; // Added Skeleton
+import { capitalizeFirstLetter } from '@/components/info-dialog-content/dialog-utils';
 
 type ResistanceFieldKey = Exclude<keyof Pick<Character,
   'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
@@ -348,7 +349,7 @@ export function CombatStatsSection({
                     </div>
                     <div className="text-xs space-y-1 mt-1">
                       <p>{UI_STRINGS.savingThrowsRowLabelBase || "Base"}: {baseSavesFromClass[saveType]}</p>
-                      <p>{UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability Mod"}: {abilityMod >= 0 ? '+' : ''}{abilityMod} ({(translations.ABILITY_LABELS.find(al => al.value === abilityKey)?.abbr || abilityKey.substring(0,3).toUpperCase())})</p>
+                      <p>{UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability Modifier"}: {abilityMod >= 0 ? '+' : ''}{abilityMod} ({(translations.ABILITY_LABELS.find(al => al.value === abilityKey)?.abbr || abilityKey.substring(0,3).toUpperCase())})</p>
                       <div className="flex items-center gap-1"><Label htmlFor={`st-magic-${saveType}`} className="shrink-0">{UI_STRINGS.savingThrowsRowLabelMagicModifier || "Magic"}:</Label> 
                         <NumberSpinnerInput 
                           id={`st-magic-${saveType}`}
@@ -420,9 +421,10 @@ export function CombatStatsSection({
             <h4 className="text-md font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelEnergyResistancesLabel || "Energy Resistances"}</h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {energyResistancesFields.map(({ field, labelKey, Icon, fieldPrefix }) => {
-                const resistance = character[field] as ResistanceValue;
+                const resistance = character[field as keyof Character] as ResistanceValue;
                 const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0) + (aggregatedFeatEffects.resistanceBonuses.find(b => b.resistanceTo === field.replace('Resistance','').toLowerCase() && b.isActive)?.value || 0);
-                const label = UI_STRINGS[labelKey] || field.replace('Resistance', '');
+                const fallbackLabel = capitalizeFirstLetter(field.replace('Resistance', ''));
+                const label = UI_STRINGS[labelKey] || fallbackLabel;
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
                     <div className="flex items-center justify-center">
@@ -466,11 +468,12 @@ export function CombatStatsSection({
             <h4 className="text-md font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelOtherDefensesLabel || "Other Defenses"}</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {otherNumericResistancesFields.map(({ field, labelKey, Icon, unit, fieldPrefix }) => {
-                const resistance = character[field] as ResistanceValue;
+                const resistance = character[field as keyof Character] as ResistanceValue;
                 const featBonus = aggregatedFeatEffects.resistanceBonuses.find(b => b.resistanceTo === field.toLowerCase().replace('resistance','').replace('fortification','fortification') && b.isActive)?.value || 0;
                 const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0) + featBonus;
                 const isFortification = field === 'fortification';
-                const label = UI_STRINGS[labelKey] || field.replace('Resistance', '').replace('Fortification', 'Fortification');
+                const fallbackLabel = capitalizeFirstLetter(field.replace('Resistance', '').replace('Fortification', 'Fortification'));
+                const label = UI_STRINGS[labelKey] || fallbackLabel;
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
                      <div className="flex items-center justify-center">
@@ -606,5 +609,3 @@ export function CombatStatsSection({
     </>
   );
 }
-
-    

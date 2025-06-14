@@ -16,6 +16,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
+import { capitalizeFirstLetter } from '@/components/info-dialog-content/dialog-utils';
 
 const DEBOUNCE_DELAY = 400;
 
@@ -232,7 +233,8 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
               {energyResistancesFields.map(({ field, labelKey, Icon, fieldPrefix }) => {
                 const resistanceFromProp = characterData[field];
                 const totalValue = (resistanceFromProp?.base || 0) + (resistanceFromProp?.customMod || 0);
-                const label = UI_STRINGS[labelKey] || field.replace('Resistance', '');
+                const fallbackLabel = capitalizeFirstLetter(field.replace('Resistance', ''));
+                const label = UI_STRINGS[labelKey] || fallbackLabel;
                 const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
@@ -283,7 +285,8 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                 const resistanceFromProp = characterData[field];
                 const totalValue = (resistanceFromProp?.base || 0) + (resistanceFromProp?.customMod || 0);
                 const isFortification = field === 'fortification';
-                const label = UI_STRINGS[labelKey] || field.replace('Resistance', '').replace('Fortification', 'Fortification');
+                const fallbackLabel = capitalizeFirstLetter(field.replace('Resistance', '').replace('Fortification', 'Fortification'));
+                const label = UI_STRINGS[labelKey] || fallbackLabel;
                 const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
