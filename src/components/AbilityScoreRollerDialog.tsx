@@ -1,9 +1,9 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import { useState, useEffect, useMemo } from 'react';
-import type { AbilityName, AbilityScores } from '@/types/character';
+import type { AbilityName, AbilityScores, DndClassId } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -26,6 +26,7 @@ interface AbilityScoreRollerDialogProps {
   onOpenChange: (open: boolean) => void;
   onScoresApplied: (scores: AbilityScores) => void;
   rerollOnes: boolean;
+  characterClassId: DndClassId | '';
 }
 
 const ABILITY_ORDER: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
@@ -63,6 +64,7 @@ export function AbilityScoreRollerDialog({
   onOpenChange,
   onScoresApplied,
   rerollOnes,
+  characterClassId,
 }: AbilityScoreRollerDialogProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
   const { toast } = useToast();
@@ -77,14 +79,35 @@ export function AbilityScoreRollerDialog({
         value: generateSingleAbilityScoreInternal(rerollOnes),
       }));
     setRolledScores(newScores);
-    setAssignments({});
-  }, [rerollOnes]);
+
+    // Automatic assignment based on class priorities
+    if (translations && translations.DND_CLASSES) {
+      const sortedNewScores = [...newScores].sort((a, b) => b.value - a.value);
+      const classDef = translations.DND_CLASSES.find(c => c.id === characterClassId);
+      const classSpecificPriorities = classDef?.abilityScorePriorities;
+
+      const priorities: Exclude<AbilityName, 'none'>[] =
+        (classSpecificPriorities && classSpecificPriorities.length === 6)
+        ? classSpecificPriorities
+        : ABILITY_ORDER;
+
+      const newAssignments: Partial<Record<Exclude<AbilityName, 'none'>, string>> = {};
+      priorities.forEach((ability, index) => {
+        if (sortedNewScores[index]) {
+          newAssignments[ability] = sortedNewScores[index].id;
+        }
+      });
+      setAssignments(newAssignments);
+    } else {
+      setAssignments({}); // Fallback if translations not ready for assignment
+    }
+  }, [rerollOnes, translations, characterClassId]);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && translations && !translationsLoading) { // Ensure translations are loaded before first roll
       generateNewRolls();
     }
-  }, [isOpen, generateNewRolls]);
+  }, [isOpen, generateNewRolls, translations, translationsLoading]);
 
   const handleAssignScore = (ability: Exclude<AbilityName, 'none'>, rollId: string | undefined) => {
     setAssignments((prev) => {
@@ -140,44 +163,37 @@ export function AbilityScoreRollerDialog({
   }, [rolledScores]);
 
   const scoreColors = useMemo(() => {
-    if (sortedRolledScoresForDisplay.length === 0) {
-      return [];
-    }
-    if (sortedRolledScoresForDisplay.length === 1) {
-      return ['green'];
-    }
-
+    if (sortedRolledScoresForDisplay.length === 0) return [];
     const colors: string[] = new Array(sortedRolledScoresForDisplay.length).fill('');
-
-    // Assign Green
-    const secondHighestValue = sortedRolledScoresForDisplay[1].value;
-    for (let i = 0; i < sortedRolledScoresForDisplay.length; i++) {
-      if (sortedRolledScoresForDisplay[i].value >= secondHighestValue) {
-        colors[i] = 'green';
-      }
-    }
-
-    // Assign Orange
-    const uncoloredOrangeIndices = colors.map((c, i) => c === '' ? i : -1).filter(i => i !== -1);
-    if (uncoloredOrangeIndices.length > 0) {
-      const firstOrangeValue = sortedRolledScoresForDisplay[uncoloredOrangeIndices[0]].value;
-      let secondOrangeValue = firstOrangeValue;
-      if (uncoloredOrangeIndices.length > 1) {
-        secondOrangeValue = sortedRolledScoresForDisplay[uncoloredOrangeIndices[1]].value;
-      }
-      
-      for (const index of uncoloredOrangeIndices) {
-        if (sortedRolledScoresForDisplay[index].value >= secondOrangeValue) {
-          colors[index] = 'orange';
-        }
-      }
-    }
     
-    // Assign Red
+    let greenCount = 0;
+    for (let i = 0; i < sortedRolledScoresForDisplay.length; i++) {
+        if (greenCount < 2 || (greenCount >=2 && i > 0 && sortedRolledScoresForDisplay[i].value === sortedRolledScoresForDisplay[i-1].value && colors[i-1] === 'green')) {
+            colors[i] = 'green';
+            greenCount++;
+        } else {
+            break; 
+        }
+    }
+
+    let orangeCount = 0;
+    let firstOrangeIndex = -1;
+    for (let i = 0; i < sortedRolledScoresForDisplay.length; i++) {
+        if (colors[i] === '') { 
+            if (firstOrangeIndex === -1) firstOrangeIndex = i;
+            if (orangeCount < 2 || (orangeCount >=2 && i > firstOrangeIndex && sortedRolledScoresForDisplay[i].value === sortedRolledScoresForDisplay[i-1].value && colors[i-1] === 'orange')) {
+                 colors[i] = 'orange';
+                 orangeCount++;
+            } else if (orangeCount >= 2) {
+                 break;
+            }
+        }
+    }
+
     for (let i = 0; i < colors.length; i++) {
-      if (colors[i] === '') {
-        colors[i] = 'red';
-      }
+        if (colors[i] === '') {
+            colors[i] = 'red';
+        }
     }
     return colors;
   }, [sortedRolledScoresForDisplay]);
@@ -241,7 +257,7 @@ export function AbilityScoreRollerDialog({
                 return (
                   <Badge
                     key={score.id}
-                    variant={null} 
+                    variant={null}
                     className={cn(
                       "text-lg font-semibold px-2.5 py-1",
                       badgeColorClasses
@@ -269,7 +285,7 @@ export function AbilityScoreRollerDialog({
               <React.Fragment key={ability}>
                 <Label htmlFor={`assign-${ability}`} className="font-medium text-right">
                   {abbrPart}
-                  {fullNamePart && <span className="text-muted-foreground ml-1 font-normal">({fullNamePart})</span>}
+                  {fullNamePart && <span className="text-muted-foreground ml-1 font-normal"> ({fullNamePart})</span>}
                 </Label>
                 <Select
                   value={currentAssignedRollId || UNASSIGN_VALUE}
