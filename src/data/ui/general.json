@@ -94,10 +94,11 @@
   "savingThrowsPanelMiscModInfoNote_suffix": { "en": " line includes bonuses from magic items, active feats, and other persistent effects.", "fr": " inclut les bonus des objets magiques, des dons actifs et d'autres effets persistants." },
   "healthPanelMaxHpMiscModInfoNote_prefix": { "en": "<b>Note:</b> The ", "fr": "<b>Note :</b> Le " },
   "healthPanelMaxHpMiscModInfoNote_suffix": { "en": " to Maximum Hit Points includes bonuses from magic items, active feats, and other persistent effects.", "fr": " aux Points de Vie Maximum inclut les bonus des objets magiques, des dons actifs et d'autres effets persistants." },
-  "alignmentNotSet": { "en": "Not Set", "fr": "Non défini" },
-  "raceNotSet": { "en": "Not Set", "fr": "Non définie" },
-  "classNotSet": { "en": "Not Set", "fr": "Non définie" },
-  "sizeNotSet": { "en": "Not Set", "fr": "Non définie" }
+  "alignmentNotSet": { "en": "Alignment Not Set", "fr": "Alignement non défini" },
+  "raceNotSet": { "en": "Race Not Set", "fr": "Race non définie" },
+  "classNotSet": { "en": "Class Not Set", "fr": "Classe non définie" },
+  "sizeNotSet": { "en": "Size Not Set", "fr": "Taille non définie" }
 }
+
 
     

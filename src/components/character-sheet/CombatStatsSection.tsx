@@ -2,7 +2,7 @@
 'use client';
 
 import type { Character, AbilityScores, SavingThrows, CharacterClass, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, InfoDialogContentType, DetailedAbilityScores, AggregatedFeatEffects, SavingThrowType } from '@/types/character';
-import { ABILITY_LABELS, SAVING_THROW_LABELS, SAVING_THROW_ABILITIES } from '@/types/character'; // Direct import of constants from character if they are truly static (not from i18n)
+import { SAVING_THROW_ABILITIES } from '@/types/character'; 
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, Swords, Heart, Zap as InitiativeIcon, ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, Info, Brain, ShieldCheck, PlusCircle, Trash2, Loader2 } from 'lucide-react';
@@ -24,8 +24,8 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getLocalizedString } from '@/i18n/i18n-data'; // Import for dr.source
-import { DEFAULT_LANGUAGE } from '@/i18n/config'; // Import for dr.source
+import { getLocalizedString } from '@/i18n/i18n-data'; 
+import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config'; 
 
 type ResistanceFieldKey = Exclude<keyof Pick<Character,
   'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
@@ -57,17 +57,17 @@ export function CombatStatsSection({
   const { toast } = useToast();
 
   const [newDrValue, setNewDrValue] = React.useState(1);
-  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>(translations?.DAMAGE_REDUCTION_TYPES?.[0]?.id || "none");
-  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>(translations?.DAMAGE_REDUCTION_RULES_OPTIONS?.[0]?.id || 'bypassed-by-type');
+  const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>("none");
+  const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>('bypassed-by-type');
 
   React.useEffect(() => {
-    if (translations && newDrRule !== 'bypassed-by-type' && newDrType === 'none') {
+    if (translations && translations.DAMAGE_REDUCTION_TYPES && newDrRule !== 'bypassed-by-type' && newDrType === 'none') {
       const firstNonNoneType = translations.DAMAGE_REDUCTION_TYPES.find(t => t.id !== 'none')?.id || 'magic';
       setNewDrType(firstNonNoneType);
     }
   }, [newDrRule, newDrType, translations]);
 
-  if (i18nLoading || !translations || !detailedAbilityScores || !aggregatedFeatEffects) {
+  if (i18nLoading || !translations || !translations.UI_STRINGS || !translations.ABILITY_LABELS || !translations.SAVING_THROW_LABELS || !translations.DND_CLASSES || !translations.SIZES || !translations.DAMAGE_REDUCTION_TYPES || !translations.DAMAGE_REDUCTION_RULES_OPTIONS || !detailedAbilityScores || !aggregatedFeatEffects) {
     return (
       <div className="space-y-6">
         <Card>
@@ -81,7 +81,7 @@ export function CombatStatsSection({
       </div>
     );
   }
-  const { UI_STRINGS, DND_CLASSES, SIZES, DAMAGE_REDUCTION_TYPES: DR_TYPES_DATA, DAMAGE_REDUCTION_RULES_OPTIONS: DR_RULES_DATA } = translations;
+  const { UI_STRINGS, DND_CLASSES, SIZES, DAMAGE_REDUCTION_TYPES: DR_TYPES_DATA, DAMAGE_REDUCTION_RULES_OPTIONS: DR_RULES_DATA, ABILITY_LABELS, SAVING_THROW_LABELS } = translations;
 
 
   const strModifier = detailedAbilityScores.strength.finalScore ? getAbilityModifierByName(detailedAbilityScores, 'strength') : 0;
@@ -148,7 +148,7 @@ export function CombatStatsSection({
     }
     const ruleLabelForToast = DR_RULES_DATA.find(opt => opt.id === newDrRule)?.label || newDrRule;
     if ((newDrRule === 'excepted-by-type' || newDrRule === 'versus-specific-type') && newDrType === 'none') {
-      toast({ title: UI_STRINGS.toastDrInvalidCombinationTitle, description: (UI_STRINGS.toastDrInvalidCombinationDesc || "The '{ruleLabel}' rule requires a specific damage type (not 'None').").replace("{ruleLabel}", ruleLabelForToast), variant: "destructive"});
+      toast({ title: UI_STRINGS.toastDrInvalidCombinationTitle, description: (UI_STRINGS.toastDrInvalidCombinationDesc).replace("{ruleLabel}", ruleLabelForToast), variant: "destructive"});
       return;
     }
 
@@ -178,7 +178,9 @@ export function CombatStatsSection({
   };
   
   const getDrTypeUiLabel = (typeValue: DamageReductionTypeValue | string): string => {
-    return DR_TYPES_DATA.find(t => t.id === typeValue)?.label || String(typeValue);
+    const drType = DR_TYPES_DATA.find(t => t.id === typeValue);
+    if (!drType) throw new Error(`[DATA_ERROR] DR Type definition not found for ID: ${typeValue}`);
+    return drType.label;
   };
   
   const getDrPrimaryNotation = (dr: DamageReductionInstance): string => {
@@ -190,16 +192,22 @@ export function CombatStatsSection({
       return `${dr.value} ${UI_STRINGS.drVsLabel || "vs"} ${typeLabel}`;
     }
     if (dr.rule === 'excepted-by-type') {
-       const displayType = typeLabel === (DR_TYPES_DATA.find(t => t.id === 'none')?.label || "None") ? "—" : typeLabel;
+       const noneTypeLabel = DR_TYPES_DATA.find(t => t.id === 'none')?.label;
+       if (!noneTypeLabel) throw new Error("[DATA_ERROR] DR Type 'none' definition missing.");
+       const displayType = typeLabel === noneTypeLabel ? "—" : typeLabel;
        return `${dr.value}/${displayType} ${UI_STRINGS.drImmunitySuffixLabel || "(Immunity)"}`;
     }
-    return `${dr.value}/${typeLabel} (${DR_RULES_DATA.find(opt => opt.id === dr.rule)?.label || dr.rule})`;
+    const ruleDef = DR_RULES_DATA.find(opt => opt.id === dr.rule);
+    if (!ruleDef) throw new Error(`[DATA_ERROR] DR Rule definition not found for ID: ${dr.rule}`);
+    return `${dr.value}/${typeLabel} (${ruleDef.label})`;
   };
   
   const getDrRuleDescription = (dr: DamageReductionInstance): string => {
     const typeLabel = getDrTypeUiLabel(dr.type);
     const ruleDef = DR_RULES_DATA.find(opt => opt.id === dr.rule);
+    if (!ruleDef) throw new Error(`[DATA_ERROR] DR Rule definition not found for ID: ${dr.rule}`);
     const value = dr.value;
+    
     let descriptionKey: keyof typeof UI_STRINGS | undefined;
 
     if (dr.rule === 'bypassed-by-type') {
@@ -213,7 +221,7 @@ export function CombatStatsSection({
     if (descriptionKey && UI_STRINGS[descriptionKey]) {
         return UI_STRINGS[descriptionKey].replace("{value}", String(value)).replace("{typeLabel}", typeLabel);
     }
-    return `${UI_STRINGS.resistancesPanelDrRuleLabel || "Rule"}: ${ruleDef ? ruleDef.label : dr.rule}`;
+    return `${UI_STRINGS.resistancesPanelDrRuleLabel}: ${ruleDef.label}`;
   };
 
   const totalArmorBonusNormal = (character.armorBonus || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'armor' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal')))?.value || 0);
@@ -252,14 +260,14 @@ export function CombatStatsSection({
         <CardHeader>
           <div className="flex items-center space-x-2">
             <Swords className="h-6 w-6 text-primary" />
-            <CardTitle className="font-serif">{UI_STRINGS.combatPanelCombatVitalsTitle || "Combat Vitals & Offense"}</CardTitle>
+            <CardTitle className="font-serif">{UI_STRINGS.combatPanelCombatVitalsTitle}</CardTitle>
           </div>
-           <CardDescription>{UI_STRINGS.combatPanelCombatVitalsDescription || "Key combat statistics including health, initiative, attack bonuses, and saving throws."}</CardDescription>
+           <CardDescription>{UI_STRINGS.combatPanelCombatVitalsDescription}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div>
-              <Label htmlFor="hp">{UI_STRINGS.healthPanelCurrentHpLabel || "Current HP"}</Label>
+              <Label htmlFor="hp">{UI_STRINGS.healthPanelCurrentHpLabel}</Label>
               <NumberSpinnerInput
                 id="hp"
                 value={character.hp}
@@ -272,7 +280,7 @@ export function CombatStatsSection({
               />
             </div>
             <div>
-              <Label htmlFor="maxHp">{UI_STRINGS.healthPanelMaxHpLabel || "Max HP"}</Label>
+              <Label htmlFor="maxHp">{UI_STRINGS.healthPanelMaxHpLabel}</Label>
                <NumberSpinnerInput
                 id="maxHp"
                 value={character.maxHp}
@@ -285,11 +293,11 @@ export function CombatStatsSection({
               />
             </div>
             <div className="text-center md:text-left">
-              <Label>{UI_STRINGS.combatPanelInitiativeLabel || "Initiative"}</Label>
+              <Label>{UI_STRINGS.combatPanelInitiativeLabel}</Label>
               <p className="text-3xl font-bold text-accent">{initiative >= 0 ? '+' : ''}{initiative}</p>
               <div className="flex items-center justify-center md:justify-start gap-1 mt-1">
                 <span className="text-xs text-muted-foreground">
-                  {UI_STRINGS.abilityAbbreviationDexterity || "Dex"} ({dexModifier >= 0 ? '+' : ''}{dexModifier}) + {UI_STRINGS.miscLabelShort || "Misc"}:
+                  {ABILITY_LABELS.find(al => al.id === 'dexterity')?.abbr || 'DEX'} ({dexModifier >= 0 ? '+' : ''}{dexModifier}) + {UI_STRINGS.miscLabelShort || "Misc"}:
                 </span>
                 <NumberSpinnerInput
                   value={character.initiativeMiscModifier || 0}
@@ -308,21 +316,21 @@ export function CombatStatsSection({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label>{UI_STRINGS.combatPanelBabLabel || "Base Attack Bonus (BAB)"}</Label>
+              <Label>{UI_STRINGS.combatPanelBabLabel}</Label>
               <div className="flex items-baseline">
                 <p className="text-2xl font-bold text-accent">{totalBabWithModifier.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</p>
                 <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={() => onOpenCombatStatInfoDialog({ type: 'babBreakdown' })}><Info className="h-4 w-4" /></Button>
               </div>
-              <span className="text-xs text-muted-foreground">{UI_STRINGS.combatPanelBabNote || "Note: General attack rolls also include Str/Dex mod, Size mod, etc."}</span>
+              <span className="text-xs text-muted-foreground">{UI_STRINGS.combatPanelBabNote}</span>
             </div>
             <div>
-              <Label>{UI_STRINGS.combatPanelGrappleModifierLabel || "Grapple Modifier"}</Label>
+              <Label>{UI_STRINGS.combatPanelGrappleModifierLabel}</Label>
               <div className="flex items-baseline">
                 <p className="text-2xl font-bold text-accent">{grapple >= 0 ? '+' : ''}{grapple}</p>
                 <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={() => onOpenCombatStatInfoDialog({ type: 'grappleModifierBreakdown' })}><Info className="h-4 w-4" /></Button>
               </div>
               <span className="text-xs text-muted-foreground">
-                {UI_STRINGS.combatPanelBabLabelShort || "BAB"} ({totalBabWithModifier[0] >= 0 ? '+' : ''}{totalBabWithModifier[0]}) + {UI_STRINGS.abilityAbbreviationStrength || "Str"} ({strModifier >= 0 ? '+' : ''}{strModifier}) + {UI_STRINGS.sizeLabel || "Size"} ({sizeModGrapple >= 0 ? '+' : ''}{sizeModGrapple})
+                {UI_STRINGS.combatPanelBabLabelShort} ({totalBabWithModifier[0] >= 0 ? '+' : ''}{totalBabWithModifier[0]}) + {ABILITY_LABELS.find(al => al.id === 'strength')?.abbr || 'STR'} ({strModifier >= 0 ? '+' : ''}{strModifier}) + {UI_STRINGS.sizeLabel} ({sizeModGrapple >= 0 ? '+' : ''}{sizeModGrapple})
               </span>
             </div>
           </div>
@@ -330,22 +338,24 @@ export function CombatStatsSection({
           <Separator />
 
           <div>
-            <h4 className="text-lg font-semibold mb-2 flex items-center"><InitiativeIcon className="h-5 w-5 mr-2 text-primary/80" />{UI_STRINGS.savingThrowsPanelTitle || "Saving Throws"}</h4>
+            <h4 className="text-lg font-semibold mb-2 flex items-center"><InitiativeIcon className="h-5 w-5 mr-2 text-primary/80" />{UI_STRINGS.savingThrowsPanelTitle}</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {(['fortitude', 'reflex', 'will'] as const).map(saveType => {
                 const abilityKey = SAVING_THROW_ABILITIES[saveType];
                 const abilityMod = getAbilityModifierByName(detailedAbilityScores, abilityKey);
+                const saveLabel = SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label;
+                if (!saveLabel) throw new Error (`[DATA_ERROR] Saving throw label for ${saveType} not found.`);
                 return (
                   <div key={saveType} className="p-3 border rounded-md bg-background/30">
-                    <Label className="capitalize font-medium">{translations.SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType}</Label>
+                    <Label className="capitalize font-medium">{saveLabel}</Label>
                     <div className="flex items-baseline">
                         <p className="text-3xl font-bold text-accent">{calculatedSaves[saveType] >= 0 ? '+' : ''}{calculatedSaves[saveType]}</p>
                         <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={() => onOpenCombatStatInfoDialog({ type: 'savingThrowBreakdown', saveType })}><Info className="h-4 w-4" /></Button>
                     </div>
                     <div className="text-xs space-y-1 mt-1">
-                      <p>{UI_STRINGS.savingThrowsRowLabelBase || "Base"}: {baseSavesFromClass[saveType]}</p>
-                      <p>{UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability Modifier"}: {abilityMod >= 0 ? '+' : ''}{abilityMod} ({(translations.ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr || abilityKey.substring(0,3).toUpperCase())})</p>
-                      <div className="flex items-center gap-1"><Label htmlFor={`st-magic-${saveType}`} className="shrink-0">{UI_STRINGS.savingThrowsRowLabelMagicModifier || "Magic"}:</Label> 
+                      <p>{UI_STRINGS.savingThrowsRowLabelBase}: {baseSavesFromClass[saveType]}</p>
+                      <p>{UI_STRINGS.savingThrowsRowLabelAbilityModifier}: {abilityMod >= 0 ? '+' : ''}{abilityMod} ({(ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr || abilityKey.substring(0,3).toUpperCase())})</p>
+                      <div className="flex items-center gap-1"><Label htmlFor={`st-magic-${saveType}`} className="shrink-0">{UI_STRINGS.savingThrowsRowLabelMagicModifier}:</Label> 
                         <NumberSpinnerInput 
                           id={`st-magic-${saveType}`}
                           value={character.savingThrows[saveType].magicMod || 0} 
@@ -353,7 +363,7 @@ export function CombatStatsSection({
                           min={-10} max={10}
                           inputClassName="w-12 h-6 text-xs" buttonClassName="h-6 w-6" buttonSize="icon" />
                       </div>
-                      <div className="flex items-center gap-1"><Label htmlFor={`st-misc-${saveType}`} className="shrink-0">{UI_STRINGS.savingThrowsRowLabelTemporaryModifier || "Misc"}:</Label> 
+                      <div className="flex items-center gap-1"><Label htmlFor={`st-misc-${saveType}`} className="shrink-0">{UI_STRINGS.savingThrowsRowLabelTemporaryModifier}:</Label> 
                         <NumberSpinnerInput
                           id={`st-misc-${saveType}`}
                           value={character.savingThrows[saveType].miscMod || 0} 
@@ -374,27 +384,27 @@ export function CombatStatsSection({
         <CardHeader>
             <div className="flex items-center space-x-2">
                 <Shield className="h-6 w-6 text-primary" />
-                <CardTitle className="font-serif">{UI_STRINGS.armorClassPanelTitle || "Armor Class"}</CardTitle>
+                <CardTitle className="font-serif">{UI_STRINGS.armorClassPanelTitle}</CardTitle>
             </div>
-            <CardDescription>{UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}</CardDescription>
+            <CardDescription>{UI_STRINGS.armorClassPanelDescription}</CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
             <div>
-                <Label>{UI_STRINGS.armorClassNormalLabel || "Normal AC"}</Label>
+                <Label>{UI_STRINGS.armorClassNormalLabel}</Label>
                 <div className="flex items-center justify-center">
                   <p className="text-3xl font-bold text-accent">{normalAC}</p>
                   <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleOpenAcBreakdownDialog('Normal')}><Info className="h-4 w-4" /></Button>
                 </div>
             </div>
             <div>
-                <Label>{UI_STRINGS.armorClassTouchLabel || "Touch AC"}</Label>
+                <Label>{UI_STRINGS.armorClassTouchLabel}</Label>
                  <div className="flex items-center justify-center">
                   <p className="text-3xl font-bold text-accent">{touchAC}</p>
                   <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleOpenAcBreakdownDialog('Touch')}><Info className="h-4 w-4" /></Button>
                 </div>
             </div>
             <div>
-                <Label>{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed AC"}</Label>
+                <Label>{UI_STRINGS.armorClassFlatFootedLabel}</Label>
                  <div className="flex items-center justify-center">
                   <p className="text-3xl font-bold text-accent">{flatFootedAC}</p>
                   <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleOpenAcBreakdownDialog('Flat-Footed')}><Info className="h-4 w-4" /></Button>
@@ -407,18 +417,19 @@ export function CombatStatsSection({
         <CardHeader>
           <div className="flex items-center space-x-2">
             <ShieldAlert className="h-6 w-6 text-primary" />
-            <CardTitle className="font-serif">{UI_STRINGS.resistancesPanelTitle || "Resistances & Other Defenses"}</CardTitle>
+            <CardTitle className="font-serif">{UI_STRINGS.resistancesPanelTitle}</CardTitle>
           </div>
-          <CardDescription>{UI_STRINGS.resistancesPanelDescription || "Manage custom modifiers for resistances, damage reductions, and fortification."}</CardDescription>
+          <CardDescription>{UI_STRINGS.resistancesPanelDescription}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <h4 className="text-md font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelEnergyResistancesLabel || "Energy Resistances"}</h4>
+            <h4 className="text-md font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelEnergyResistancesLabel}</h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {energyResistancesFields.map(({ field, labelKey, Icon, fieldPrefix }) => {
                 const resistance = character[field as keyof Character] as ResistanceValue;
                 const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0) + (aggregatedFeatEffects.resistanceBonuses.find(b => b.resistanceTo === field.replace('Resistance','').toLowerCase() && b.isActive)?.value || 0);
                 const label = UI_STRINGS[labelKey]; 
+                if(!label) throw new Error(`[UI_ERROR] Missing UI String for ${labelKey}`);
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
                     <div className="flex items-center justify-center">
@@ -459,7 +470,7 @@ export function CombatStatsSection({
           </div>
           <Separator />
           <div>
-            <h4 className="text-md font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelOtherDefensesLabel || "Other Defenses"}</h4>
+            <h4 className="text-md font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelOtherDefensesLabel}</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {otherNumericResistancesFields.map(({ field, labelKey, Icon, unit, fieldPrefix }) => {
                 const resistance = character[field as keyof Character] as ResistanceValue;
@@ -467,6 +478,7 @@ export function CombatStatsSection({
                 const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0) + featBonus;
                 const isFortification = field === 'fortification';
                 const label = UI_STRINGS[labelKey];
+                 if(!label) throw new Error(`[UI_ERROR] Missing UI String for ${labelKey}`);
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
                      <div className="flex items-center justify-center">
@@ -476,7 +488,7 @@ export function CombatStatsSection({
                         </span>
                       </div>
                     <div className="flex items-center justify-center">
-                      <p className="text-2xl font-bold text-accent min-w-[40px] text-center">
+                      <p className="text-2xl font-bold text-accent text-center">
                         {totalValue}
                       </p>
                        <Button
@@ -495,7 +507,7 @@ export function CombatStatsSection({
                         value={resistance?.customMod || 0}
                         onChange={(newValue) => onCharacterUpdate(`${field}.customMod` as `${ResistanceFieldKey}.customMod`, newValue)}
                         min={isFortification ? 0 : -50}
-                        max={isFortification ? 100 : undefined}
+                        max={isFortification ? 100 : undefined} 
                         inputClassName="w-16 h-7 text-sm text-center"
                         buttonClassName="h-7 w-7"
                         buttonSize="sm"
@@ -507,13 +519,16 @@ export function CombatStatsSection({
             </div>
             <Separator className="my-6" />
             <div>
-                <h4 className="text-md font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelDamageReductionLabel || "Damage Reduction"}</h4>
+                <h4 className="text-md font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
                 <div className="grid md:grid-cols-2 gap-x-6 gap-y-4">
                   <div className="space-y-3"> 
                     {(character.damageReduction || []).length > 0 ? (
                       (character.damageReduction || []).map(dr => {
                         const ruleDef = DR_RULES_DATA.find(opt => opt.id === dr.rule);
-                        const ruleLabel = ruleDef?.label || dr.rule;
+                        if (!ruleDef) throw new Error(`[DATA_ERROR] Missing DR Rule Definition for ID: ${dr.rule}`);
+                        const ruleLabel = ruleDef.label;
+                        const currentLangCode = UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode;
+
                         return (
                         <div key={dr.id} className="flex items-start justify-between p-2 border rounded-md bg-muted/5 text-sm">
                           <div>
@@ -526,7 +541,7 @@ export function CombatStatsSection({
                               </div>
                           </div>
                            <div className="flex items-center shrink-0">
-                            {dr.isGranted && dr.source && <Badge variant="secondary" className="text-xs mr-1 whitespace-nowrap">{getLocalizedString(dr.source, translations.UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>}
+                            {dr.isGranted && dr.source && <Badge variant="secondary" className="text-xs mr-1 whitespace-nowrap">{getLocalizedString(dr.source, currentLangCode, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>}
                             {!dr.isGranted && (
                               <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80" onClick={() => handleRemoveDamageReduction(dr.id)}>
                                 <Trash2 className="h-4 w-4" />
@@ -537,14 +552,14 @@ export function CombatStatsSection({
                         );
                       })
                     ) : (
-                      <p className="text-sm text-muted-foreground">{UI_STRINGS.resistancesPanelNoDrEntries || "No Damage Reduction entries."}</p>
+                      <p className="text-sm text-muted-foreground">{UI_STRINGS.resistancesPanelNoDrEntries}</p>
                     )}
                   </div>
 
                   <div className="space-y-3 border md:border-l md:border-t-0 p-4 rounded-md md:pl-6"> 
-                    <Label className="text-md font-medium">{UI_STRINGS.resistancesPanelAddCustomDrLabel || "Add Custom Damage Reduction"}</Label>
+                    <Label className="text-md font-medium">{UI_STRINGS.resistancesPanelAddCustomDrLabel}</Label>
                     <div className="space-y-1">
-                        <Label htmlFor="sheet-dr-value" className="text-xs">{UI_STRINGS.resistancesPanelDrValueLabel || "Value"}</Label>
+                        <Label htmlFor="sheet-dr-value" className="text-xs">{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
                         <NumberSpinnerInput
                         id="sheet-dr-value"
                         value={newDrValue}
@@ -556,7 +571,7 @@ export function CombatStatsSection({
                         />
                     </div>
                     <div className="space-y-1">
-                        <Label htmlFor="sheet-dr-rule" className="text-xs">{UI_STRINGS.resistancesPanelDrRuleLabel || "Rule"}</Label>
+                        <Label htmlFor="sheet-dr-rule" className="text-xs">{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
                          <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
                             <SelectTrigger id="sheet-dr-rule" className="h-9 text-sm">
                                 <SelectValue />
@@ -571,10 +586,10 @@ export function CombatStatsSection({
                         </Select>
                     </div>
                     <div className="space-y-1">
-                        <Label htmlFor="sheet-dr-type" className="text-xs">{UI_STRINGS.resistancesPanelDrTypeLabel || "Type (Bypassed by / Versus / Except)"}</Label>
+                        <Label htmlFor="sheet-dr-type" className="text-xs">{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
                         <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
                             <SelectTrigger id="sheet-dr-type" className="h-9 text-sm">
-                               <SelectValue placeholder={UI_STRINGS.resistancesPanelDrSelectTypePlaceholder || "Select type..."} />
+                               <SelectValue placeholder={UI_STRINGS.resistancesPanelDrSelectTypePlaceholder} />
                             </SelectTrigger>
                             <SelectContent>
                                 {DR_TYPES_DATA.map(option => (
@@ -590,7 +605,7 @@ export function CombatStatsSection({
                         </Select>
                     </div>
                     <Button type="button" onClick={handleAddDamageReduction} size="sm" className="mt-3">
-                        <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.resistancesPanelAddDrButton || "Add DR"}
+                        <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.resistancesPanelAddDrButton}
                     </Button>
                   </div>
                 </div>
@@ -603,3 +618,4 @@ export function CombatStatsSection({
   );
 }
 
+    

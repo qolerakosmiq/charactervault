@@ -30,31 +30,12 @@ export function CharacterCard({ character, onDelete }: CharacterCardProps) {
 
   const totalLevel = character.classes.reduce((sum, c) => sum + c.level, 0) || 1;
 
-  let alignmentLabelForDisplay: string | undefined;
-  let sizeLabelForDisplay: string | undefined;
-  let characterClassNameForDisplay: string | undefined;
-  let raceLabelForDisplay: string | undefined;
+  let alignmentLabelForDisplay: string;
+  let sizeLabelForDisplay: string;
+  let characterClassNameForDisplay: string;
+  let raceLabelForDisplay: string;
 
-  if (translations && !translationsLoading) {
-    const alignmentData = translations.ALIGNMENTS.find(a => a.id === character.alignment);
-    alignmentLabelForDisplay = alignmentData ? alignmentData.label : (character.alignment ? `[INVALID_ID:${character.alignment}]` : (translations.UI_STRINGS.alignmentNotSet || 'N/A'));
-
-    const sizeData = translations.SIZES.find(s => s.id === character.size);
-    sizeLabelForDisplay = sizeData ? sizeData.label : (character.size ? `[INVALID_ID:${character.size}]` : (translations.UI_STRINGS.sizeNotSet || 'N/A'));
-
-    if (character.classes[0]?.className) {
-      const classDef = translations.DND_CLASSES.find(c => c.id === character.classes[0].className);
-      characterClassNameForDisplay = classDef ? classDef.label : `[INVALID_ID:${character.classes[0].className}]`;
-    } else {
-      characterClassNameForDisplay = translations.UI_STRINGS.classNotSet || 'N/A';
-    }
-
-    const raceData = translations.DND_RACES.find(r => r.id === character.race);
-    raceLabelForDisplay = raceData ? raceData.label : (character.race ? `[INVALID_ID:${character.race}]` : (translations.UI_STRINGS.raceNotSet || 'N/A'));
-  }
-
-
-  if (translationsLoading || !translations?.UI_STRINGS) {
+  if (translationsLoading || !translations?.UI_STRINGS || !translations.ALIGNMENTS || !translations.SIZES || !translations.DND_CLASSES || !translations.DND_RACES) {
     return (
       <Card className="flex flex-col overflow-hidden shadow-lg">
         <CardHeader className="bg-muted/30 p-4">
@@ -84,6 +65,34 @@ export function CharacterCard({ character, onDelete }: CharacterCardProps) {
   }
   const { UI_STRINGS } = translations;
 
+  const alignmentData = translations.ALIGNMENTS.find(a => a.id === character.alignment);
+  if (character.alignment && !alignmentData) {
+    throw new Error(`[DATA_ERROR] Alignment definition not found for ID: ${character.alignment} on character ${character.id}`);
+  }
+  alignmentLabelForDisplay = alignmentData ? alignmentData.label : (UI_STRINGS.alignmentNotSet || 'Alignment Not Set');
+
+  const sizeData = translations.SIZES.find(s => s.id === character.size);
+   if (character.size && !sizeData) {
+    throw new Error(`[DATA_ERROR] Size definition not found for ID: ${character.size} on character ${character.id}`);
+  }
+  sizeLabelForDisplay = sizeData ? sizeData.label : (UI_STRINGS.sizeNotSet || 'Size Not Set');
+
+  if (character.classes[0]?.className) {
+    const classDef = translations.DND_CLASSES.find(c => c.id === character.classes[0].className);
+    if (!classDef) {
+        throw new Error(`[DATA_ERROR] Class definition not found for ID: ${character.classes[0].className} on character ${character.id}`);
+    }
+    characterClassNameForDisplay = classDef.label;
+  } else {
+    characterClassNameForDisplay = UI_STRINGS.classNotSet || 'Class Not Set';
+  }
+
+  const raceData = translations.DND_RACES.find(r => r.id === character.race);
+  if (character.race && !raceData) {
+    throw new Error(`[DATA_ERROR] Race definition not found for ID: ${character.race} on character ${character.id}`);
+  }
+  raceLabelForDisplay = raceData ? raceData.label : (UI_STRINGS.raceNotSet || 'Race Not Set');
+
 
   return (
     <Card className="flex flex-col overflow-hidden shadow-lg hover:shadow-primary/20 transition-shadow duration-300">
@@ -100,9 +109,9 @@ export function CharacterCard({ character, onDelete }: CharacterCardProps) {
       </CardHeader>
       <CardContent className="p-4 flex-grow">
         <div className="space-y-1 text-sm">
-          <p><span className="font-semibold">{UI_STRINGS.alignmentLabel || "Alignment"}:</span> {alignmentLabelForDisplay || (UI_STRINGS.alignmentNotSet || 'N/A')}</p>
+          <p><span className="font-semibold">{UI_STRINGS.alignmentLabel || "Alignment"}:</span> {alignmentLabelForDisplay}</p>
           {character.deity && <p><span className="font-semibold">{UI_STRINGS.deityLabel || "Deity"}:</span> {character.deity}</p>}
-          <p><span className="font-semibold">{UI_STRINGS.sizeLabel || "Size"}:</span> {sizeLabelForDisplay || (UI_STRINGS.sizeNotSet || 'N/A')}</p>
+          <p><span className="font-semibold">{UI_STRINGS.sizeLabel || "Size"}:</span> {sizeLabelForDisplay}</p>
         </div>
       </CardContent>
       <CardFooter className="p-4 bg-muted/30 border-t">
@@ -139,3 +148,4 @@ export function CharacterCard({ character, onDelete }: CharacterCardProps) {
   );
 }
 
+    

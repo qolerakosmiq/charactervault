@@ -16,7 +16,8 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
-// Removed capitalizeFirstLetter import as it's no longer used for fallbacks
+import { getLocalizedString } from '@/i18n/i18n-data'; 
+import { DEFAULT_LANGUAGE } from '@/i18n/config'; 
 
 const DEBOUNCE_DELAY = 400;
 
@@ -74,6 +75,8 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
  React.useEffect(() => {
     if (translationsLoading || !translations) return;
     const { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS } = translations;
+    if (!DAMAGE_REDUCTION_TYPES || !DAMAGE_REDUCTION_RULES_OPTIONS) throw new Error("[DATA_ERROR] DR types/rules missing in translations.");
+
 
     if (newDrRule !== 'bypassed-by-type' && newDrType === 'none') {
       const firstNonNoneType = DAMAGE_REDUCTION_TYPES.find(t => t.id !== 'none')?.id || 'magic';
@@ -116,18 +119,18 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
 
   const handleAddDamageReduction = () => {
     if (newDrValue <= 0) {
-      toast({ title: UI_STRINGS.toastInvalidDrValueTitle || "Invalid DR Value", description: UI_STRINGS.toastInvalidDrValueDesc || "Damage Reduction value must be greater than 0.", variant: "destructive"});
+      toast({ title: UI_STRINGS.toastInvalidDrValueTitle, description: UI_STRINGS.toastInvalidDrValueDesc, variant: "destructive"});
       return;
     }
-    if (!newDrType) {
-        toast({ title: UI_STRINGS.toastDrTypeMissingTitle || "DR Type Missing", description: UI_STRINGS.toastDrTypeMissingDesc || "Please select a DR type.", variant: "destructive"});
+     if (!newDrType) { 
+        toast({ title: UI_STRINGS.toastDrTypeMissingTitle, description: UI_STRINGS.toastDrTypeMissingDesc, variant: "destructive"});
         return;
     }
     const ruleLabelForToast = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === newDrRule)?.label || newDrRule;
     if ((newDrRule === 'excepted-by-type' || newDrRule === 'versus-specific-type') && newDrType === 'none') {
       toast({ 
-        title: UI_STRINGS.toastDrInvalidCombinationTitle || "Invalid Combination", 
-        description: (UI_STRINGS.toastDrInvalidCombinationDesc || "The '{ruleLabel}' rule requires a specific damage type (not 'None').").replace("{ruleLabel}", ruleLabelForToast), 
+        title: UI_STRINGS.toastDrInvalidCombinationTitle, 
+        description: (UI_STRINGS.toastDrInvalidCombinationDesc).replace("{ruleLabel}", ruleLabelForToast), 
         variant: "destructive"
       });
       return;
@@ -137,7 +140,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
       dr => !dr.isGranted && dr.type === newDrType && dr.rule === newDrRule
     );
     if (existingUserDrOfTypeAndRule) {
-      toast({ title: UI_STRINGS.toastDrDuplicateEntryTitle || "Duplicate DR Entry", description: UI_STRINGS.toastDrDuplicateEntryDesc || `You already have a custom DR with this type and rule.`, variant: "destructive"});
+      toast({ title: UI_STRINGS.toastDrDuplicateEntryTitle, description: UI_STRINGS.toastDrDuplicateEntryDesc, variant: "destructive"});
       return;
     }
 
@@ -159,13 +162,15 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
   };
   
   const getDrTypeUiLabel = (typeValue: DamageReductionTypeValue | string): string => {
-    return DAMAGE_REDUCTION_TYPES.find(t => t.id === typeValue)?.label || String(typeValue);
+    const drType = DAMAGE_REDUCTION_TYPES.find(t => t.id === typeValue);
+    if (!drType) throw new Error(`[DATA_ERROR] DR Type definition not found for ID: ${typeValue}`);
+    return drType.label;
   };
   
   const getDrPrimaryNotation = (dr: DamageReductionInstance): React.ReactNode => {
     const typeLabel = getDrTypeUiLabel(dr.type);
-    const vsLabel = UI_STRINGS.drVsLabel || "vs";
-    const immunitySuffix = UI_STRINGS.drImmunitySuffixLabel || "(Immunity)";
+    const vsLabel = UI_STRINGS.drVsLabel;
+    const immunitySuffix = UI_STRINGS.drImmunitySuffixLabel;
     const valueText = dr.value;
 
     if (dr.rule === 'bypassed-by-type') {
@@ -175,23 +180,22 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
       return <>{valueText} {vsLabel} {typeLabel}</>;
     }
     if (dr.rule === 'excepted-by-type') {
-       const displayType = typeLabel === (DAMAGE_REDUCTION_TYPES.find(t => t.id === 'none')?.label || "None") ? "—" : typeLabel;
+       const noneTypeLabel = DAMAGE_REDUCTION_TYPES.find(t => t.id === 'none')?.label;
+       if (!noneTypeLabel) throw new Error("[DATA_ERROR] DR Type 'none' definition missing.");
+       const displayType = typeLabel === noneTypeLabel ? "—" : typeLabel;
        return <>{valueText}/{displayType} {immunitySuffix}</>;
     }
-    return <>{valueText}/{typeLabel} ({DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule)?.label || dr.rule})</>;
+    const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
+    if (!ruleDef) throw new Error(`[DATA_ERROR] DR Rule definition not found for ID: ${dr.rule}`);
+    return <>{valueText}/{typeLabel} ({ruleDef.label})</>;
   };
   
   const getDrRuleDescription = (dr: DamageReductionInstance): React.ReactNode => {
     const typeLabel = getDrTypeUiLabel(dr.type);
     const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
+    if (!ruleDef) throw new Error(`[DATA_ERROR] DR Rule definition not found for ID: ${dr.rule}`);
+    const value = dr.value;
     
-    const valueBadge = <Badge variant="outline">{dr.value}</Badge>;
-    const typeIsNone = dr.type === "none" || typeLabel === (DAMAGE_REDUCTION_TYPES.find(t => t.id === 'none')?.label || "None");
-    const typeBadge = !typeIsNone
-        ? <Badge variant="outline">{typeLabel}</Badge>
-        : <span className="italic mx-0.5">{typeLabel}</span>;
-
-
     let descriptionKey: keyof typeof UI_STRINGS | undefined;
 
     if (dr.rule === 'bypassed-by-type') {
@@ -206,13 +210,12 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
         const template = UI_STRINGS[descriptionKey];
         const parts = template.split(/({value}|{typeLabel})/g);
         return parts.map((part, index) => {
-            if (part === "{value}") return <React.Fragment key={`${dr.id}-val-${index}`}>{valueBadge}</React.Fragment>;
-            if (part === "{typeLabel}") return <React.Fragment key={`${dr.id}-type-${index}`}>{typeBadge}</React.Fragment>;
+            if (part === "{value}") return <Badge key={`${dr.id}-val-${index}`} variant="outline">{value}</Badge>;
+            if (part === "{typeLabel}") return <Badge key={`${dr.id}-type-${index}`} variant="outline">{typeLabel}</Badge>;
             return part;
         });
     }
-
-    return `${UI_STRINGS.resistancesPanelDrRuleLabel || "Rule"}: ${ruleDef ? ruleDef.label : dr.rule}`;
+    return `${UI_STRINGS.resistancesPanelDrRuleLabel}: ${ruleDef.label}`;
   };
 
 
@@ -233,7 +236,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
               {energyResistancesFields.map(({ field, labelKey, Icon, fieldPrefix }) => {
                 const resistanceFromProp = characterData[field];
                 const totalValue = (resistanceFromProp?.base || 0) + (resistanceFromProp?.customMod || 0);
-                const label = UI_STRINGS[labelKey]; // Directly use the string from UI_STRINGS
+                const label = UI_STRINGS[labelKey]; 
                 const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
@@ -258,7 +261,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                       </Button>
                     </div>
                     <div className="w-full max-w-[120px] flex flex-col items-center">
-                       <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-xs text-muted-foreground mb-0.5">{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
+                       <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-xs text-muted-foreground mb-0.5">{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
                        <NumberSpinnerInput
                         id={`${fieldPrefix}-${field}-customMod`}
                         value={localCustomMod} 
@@ -284,7 +287,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                 const resistanceFromProp = characterData[field];
                 const totalValue = (resistanceFromProp?.base || 0) + (resistanceFromProp?.customMod || 0);
                 const isFortification = field === 'fortification';
-                const label = UI_STRINGS[labelKey]; // Directly use the string from UI_STRINGS
+                const label = UI_STRINGS[labelKey];
                 const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
@@ -309,7 +312,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                       </Button>
                     </div>
                      <div className="w-full max-w-[120px] flex flex-col items-center">
-                       <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-xs text-muted-foreground mb-0.5">{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
+                       <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-xs text-muted-foreground mb-0.5">{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
                        <NumberSpinnerInput
                         id={`${fieldPrefix}-${field}-customMod`}
                         value={localCustomMod}
@@ -363,7 +366,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                         <Label htmlFor="form-dr-type" className="text-sm inline-block w-full text-left">{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
                         <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
                             <SelectTrigger id="form-dr-type" className="h-9 text-sm">
-                              <SelectValue placeholder={UI_STRINGS.resistancesPanelDrSelectTypePlaceholder || "Select type..."} />
+                              <SelectValue placeholder={UI_STRINGS.resistancesPanelDrSelectTypePlaceholder} />
                             </SelectTrigger>
                             <SelectContent>
                                 {DAMAGE_REDUCTION_TYPES.map(option => (
@@ -387,7 +390,9 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                     {characterData.damageReduction.length > 0 ? (
                       characterData.damageReduction.map(dr => {
                         const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
-                        const ruleLabel = ruleDef?.label || dr.rule;
+                        if (!ruleDef) throw new Error(`[DATA_ERROR] Missing DR Rule Definition for ID: ${dr.rule}`);
+                        const ruleLabel = ruleDef.label;
+                        const currentLangCode = UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode;
                         return (
                           <div key={dr.id} className="flex flex-col items-start justify-between p-2 border rounded-md bg-muted/5 text-sm">
                             <div className="flex items-center justify-between w-full">
@@ -397,7 +402,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                                      {ruleLabel}
                                    </Badge>
                                    {dr.isGranted && dr.source && (
-                                    <Badge variant="secondary" className="ml-1">{getLocalizedString(dr.source, translations.UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>
+                                    <Badge variant="secondary" className="ml-1">{getLocalizedString(dr.source, currentLangCode, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>
                                   )}
                                 </div>
                                 {!dr.isGranted && (
@@ -429,3 +434,5 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
 ResistancesPanelComponent.displayName = 'ResistancesPanelComponent';
 export const ResistancesPanel = React.memo(ResistancesPanelComponent);
 
+
+    
