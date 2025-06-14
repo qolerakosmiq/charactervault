@@ -78,7 +78,7 @@ export interface SizeDataEntry {
   grappleDamage?: string;
 }
 export interface GenderDataEntry {
-  id: string;
+  id: GenderId; // Ensure GenderId is used for id
   label: LocalizedString;
 }
 export interface AbilityLabelEntry {
@@ -172,6 +172,7 @@ export interface RawRaceDataEntry {
   speeds?: Partial<Record<SpeedType, number>>;
   automaticLanguages?: LanguageId[];
   bonusLanguages?: LanguageId[];
+  genderOptions?: Array<{ id: GenderId; label: LocalizedString }>; // Added for race-specific genders
 }
 export interface RacesJson {
   DND_RACES_DATA: RawRaceDataEntry[];
@@ -215,7 +216,7 @@ export interface ProcessedSiteData {
   XP_TABLE: readonly XpDataEntry[];
   EPIC_LEVEL_XP_INCREASE: number;
   SIZES: readonly CharacterSizeObject[];
-  GENDERS: readonly { id: GenderId | string; label: string }[];
+  GENDERS: readonly { id: GenderId; label: string }[]; // Ensured GenderId
   DND_RACES: readonly DndRaceOption[];
   DND_CLASSES: readonly DndClassOption[];
   DND_DEITIES: readonly DndDeityOption[];
@@ -310,7 +311,19 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   const EPIC_LEVEL_XP_INCREASE = bundle.xpTable?.EPIC_LEVEL_XP_INCREASE || 0;
 
   const SIZES = processLocalizedArray<SizeDataEntry, CharacterSizeObject>(bundle.base?.SIZES_DATA, lang);
-  const GENDERS = processLocalizedArray<GenderDataEntry, { id: GenderId | string; label: string }>(bundle.base?.GENDERS_DATA, lang);
+  const GENDERS_RAW = bundle.base?.GENDERS_DATA || [];
+  const GENDERS = GENDERS_RAW.map(g_raw => ({
+      id: g_raw.id as GenderId, // Cast to GenderId
+      label: getLocalizedString(g_raw.label, lang)
+  })).sort((a, b) => { // Custom sort for genders
+      const order = ['unspecified', 'male', 'female', 'other'];
+      const indexA = order.indexOf(a.id);
+      const indexB = order.indexOf(b.id);
+      if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
+      return a.label.localeCompare(b.label);
+  });
 
 
   const commonFeats = bundle.commonFeats?.DND_FEATS_DATA || [];
@@ -364,7 +377,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   const DND_RACES = DND_RACES_RAW.map(r_raw => {
     const {
       id, label, generalDescription, description, loreAttributes,
-      bonusFeatSlots, racialSkillBonuses, grantedFeats: rawGrantedFeats, speeds, automaticLanguages, bonusLanguages
+      bonusFeatSlots, racialSkillBonuses, grantedFeats: rawGrantedFeats, speeds, automaticLanguages, bonusLanguages, genderOptions: rawGenderOptions
     } = r_raw;
 
     let displayName = '';
@@ -407,6 +420,11 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       };
     });
 
+    const localizedGenderOptions = (rawGenderOptions || []).map(go_raw => ({
+      id: go_raw.id as GenderId,
+      label: getLocalizedString(go_raw.label, lang)
+    }));
+
     const localizedRace: DndRaceOption = {
       id: id,
       label: getLocalizedString(label, lang),
@@ -420,6 +438,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       grantedFeats: localizedGrantedFeats,
       speeds: speeds,
       automaticLanguages: automaticLanguages,
+      genderOptions: localizedGenderOptions.length > 0 ? localizedGenderOptions : undefined,
     };
     return localizedRace;
   }).sort((a, b) => a.label.localeCompare(b.label));
@@ -658,4 +677,3 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   };
 }
 
-    

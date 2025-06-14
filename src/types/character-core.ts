@@ -446,6 +446,7 @@ export interface DndRaceOption {
   grantedFeats?: Array<{ featId: string; note?: string; name?: string; levelAcquired?: number }>;
   speeds?: Partial<Record<SpeedType, number>>;
   automaticLanguages?: LanguageId[];
+  genderOptions?: Array<{ id: GenderId; label: string }>; // Added for race-specific genders
 }
 export interface DndClassOption {
   id: DndClassId | string;
@@ -841,4 +842,3 @@ export { type AbilityScoreComponentValue };
 
 export * from './character-core';
 
-    

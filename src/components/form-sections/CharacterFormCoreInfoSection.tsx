@@ -115,7 +115,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     DEBOUNCE_DELAY
   );
   const [localGender, setLocalGender] = useDebouncedFormField(
-    characterData.gender || '',
+    characterData.gender || 'unspecified',
     React.useCallback((value) => onFieldChange('gender', value as GenderId | string), [onFieldChange]),
     DEBOUNCE_DELAY
   );
@@ -162,27 +162,29 @@ const CharacterFormCoreInfoSectionComponent = ({
 
     if (!isNoneValue) {
         if (newSchoolId === 'divination') {
-            // Toast for Divination was removed as per user request, but direct return prevents selection
-            return; 
+            return;
         }
         if (newSchoolId === characterData.chosenSpecializationSchool) {
-            // Toast for Specialization was removed
             return;
         }
     }
 
     const currentProhibited = [...(characterData.prohibitedSchools || [])];
     currentProhibited[index] = isNoneValue ? undefined : newSchoolId;
-    
+
     const finalProhibited: (MagicSchoolId | undefined)[] = [currentProhibited[0], currentProhibited[1]];
 
     if (finalProhibited[0] && finalProhibited[0] === finalProhibited[1] && finalProhibited[0] !== undefined) {
-        // Toast for duplicate was removed
         return;
     }
-    
+
     onFieldChange('prohibitedSchools', finalProhibited.filter(s => s !== undefined) as MagicSchoolId[]);
   }, [characterData.prohibitedSchools, characterData.chosenSpecializationSchool, onFieldChange, translations]);
+
+  const selectedRaceInfo = React.useMemo(() => {
+    if (!translations || !localRace) return undefined;
+    return translations.DND_RACES.find(r => r.id === localRace);
+  }, [translations, localRace]);
 
   const selectedClassInfo = React.useMemo(() => {
     if (!translations || !localClassName) return undefined;
@@ -191,8 +193,11 @@ const CharacterFormCoreInfoSectionComponent = ({
 
   const availableAlignments = React.useMemo(() => {
     if (translationsLoading || !translations) return [];
-    const classRestriction = selectedClassInfo?.alignmentRestriction || 'any';
-    return translations.ALIGNMENTS.filter(align => 
+    const classRestriction = selectedClassInfo?.alignmentRestriction;
+    if (!classRestriction || classRestriction === 'any') {
+      return translations.ALIGNMENTS;
+    }
+    return translations.ALIGNMENTS.filter(align =>
       isAlignmentValidForRequirement(align.id as CharacterAlignment, classRestriction)
     );
   }, [translationsLoading, translations, selectedClassInfo]);
@@ -205,9 +210,10 @@ const CharacterFormCoreInfoSectionComponent = ({
     if (!currentAlignmentIsValidForNewClass) {
       const preferredDefaults: CharacterAlignment[] = [
         'true-neutral', 'neutral-good', 'lawful-good', 'chaotic-good',
-        'lawful-neutral', 'chaotic-neutral',
+        'lawful-neutral', 'chaotic-neutral'
       ];
       let newAlignmentToSet: CharacterAlignment | undefined = undefined;
+
       for (const preferred of preferredDefaults) {
         if (availableAlignments.some(a => a.id === preferred)) {
           newAlignmentToSet = preferred;
@@ -215,12 +221,11 @@ const CharacterFormCoreInfoSectionComponent = ({
         }
       }
       if (!newAlignmentToSet) {
-        newAlignmentToSet = availableAlignments.length > 0 
-          ? availableAlignments[0].id as CharacterAlignment 
-          : 'true-neutral'; 
+        newAlignmentToSet = availableAlignments.length > 0
+          ? availableAlignments[0].id as CharacterAlignment
+          : 'true-neutral';
       }
       setLocalAlignment(newAlignmentToSet);
-      // Toast removed as per user request
     }
   }, [localClassName, selectedClassInfo, availableAlignments, localAlignment, setLocalAlignment, translations, translationsLoading]);
 
@@ -228,25 +233,25 @@ const CharacterFormCoreInfoSectionComponent = ({
   const deitySelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [{ value: DEITY_NONE_OPTION_VALUE, label: "Loading..." }];
     const noneOptionLabel = translations.UI_STRINGS?.deityNoneOption || "None";
-    
-    let compatibleDeities = translations.DND_DEITIES.filter(deity =>
+
+    let filteredDeities = translations.DND_DEITIES.filter(deity =>
       isAlignmentCompatibleWithDeity(localAlignment, deity.alignment)
     );
 
     if (selectedClassInfo?.deityAlignmentRestriction) {
-      compatibleDeities = compatibleDeities.filter(deity =>
+      filteredDeities = filteredDeities.filter(deity =>
         isAlignmentValidForRequirement(deity.alignment, selectedClassInfo.deityAlignmentRestriction!)
       );
     }
-    
-    return [{ value: DEITY_NONE_OPTION_VALUE, label: noneOptionLabel }, ...compatibleDeities.map(deity => ({value: deity.id, label: deity.label}))];
+
+    return [{ value: DEITY_NONE_OPTION_VALUE, label: noneOptionLabel }, ...filteredDeities.map(deity => ({value: deity.id, label: deity.label}))];
   }, [translationsLoading, translations, localAlignment, selectedClassInfo]);
 
   React.useEffect(() => {
     if (translationsLoading || !translations || localDeity === DEITY_NONE_OPTION_VALUE) return;
 
     const currentDeityInfo = translations.DND_DEITIES.find(d => d.id === localDeity);
-    if (!currentDeityInfo) return; 
+    if (!currentDeityInfo) return;
 
     let deityIsValid = true;
     if (!isAlignmentCompatibleWithDeity(localAlignment, currentDeityInfo.alignment)) {
@@ -259,8 +264,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     }
 
     if (!deityIsValid) {
-      setLocalDeity(DEITY_NONE_OPTION_VALUE); // Reset deity
-      // Toasts removed as per user request
+      setLocalDeity(DEITY_NONE_OPTION_VALUE);
     }
   }, [localDeity, localAlignment, selectedClassInfo, translations, translationsLoading, setLocalDeity]);
 
@@ -296,6 +300,27 @@ const CharacterFormCoreInfoSectionComponent = ({
     if (translationsLoading || !translations) return null;
     return translations.SIZES.map(s => <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>);
   }, [translationsLoading, translations]);
+
+  const genderSelectOptions = React.useMemo(() => {
+    if (translationsLoading || !translations) return [{ id: "unspecified", label: "Loading..." }];
+    
+    const unspecifiedOption = translations.GENDERS.find(g => g.id === 'unspecified') || { id: 'unspecified', label: 'Unspecified' };
+    const otherOption = translations.GENDERS.find(g => g.id === 'other') || { id: 'other', label: 'Other' };
+    const maleOption = translations.GENDERS.find(g => g.id === 'male') || { id: 'male', label: 'Male' };
+    const femaleOption = translations.GENDERS.find(g => g.id === 'female') || { id: 'female', label: 'Female' };
+
+    const options = [unspecifiedOption];
+    const raceSpecificGenders = selectedRaceInfo?.genderOptions;
+
+    if (raceSpecificGenders && raceSpecificGenders.length > 0) {
+      options.push(...raceSpecificGenders);
+    } else {
+      options.push(maleOption, femaleOption);
+    }
+    options.push(otherOption);
+    return options;
+  }, [translations, translationsLoading, selectedRaceInfo]);
+
 
   const domainOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [{ value: DOMAIN_NONE_OPTION_VALUE, label: "Loading..." }];
@@ -359,7 +384,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     );
   }
 
-  const { GENDERS, UI_STRINGS, ALIGNMENTS } = translations;
+  const { UI_STRINGS, ALIGNMENTS } = translations;
 
   const renderClassSpecificUI = (uiBlock: ClassSpecificUIBlock) => {
     const currentCharacterClassLevel = characterData.classes[0]?.level || 0;
@@ -591,11 +616,11 @@ const CharacterFormCoreInfoSectionComponent = ({
                <div className="flex flex-wrap items-baseline gap-1 pt-[6px] ml-1">
                 {raceSpecialQualities.abilityEffects.map((effect) => {
                   let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
-                  let badgeClassName = "whitespace-nowrap";
-                  if (effect.change > 0) badgeClassName = cn(badgeClassName, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
-                  else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassName = cn(badgeClassName, "hover:bg-destructive"); }
-                  else badgeClassName = cn(badgeClassName, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
-                  return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassName}> {effect.ability.substring(0, 3).toUpperCase()}{effect.change !== 0 ? '\u00A0' : ''} {effect.change > 0 ? '+' : ''} {effect.change !==0 ? effect.change : ''} </Badge> );
+                  let badgeClassNameInternal = "whitespace-nowrap";
+                  if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
+                  else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
+                  else badgeClassNameInternal = cn(badgeClassNameInternal, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
+                  return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {effect.ability.substring(0, 3).toUpperCase()}{effect.change !== 0 ? '\u00A0' : ''} {effect.change > 0 ? '+' : ''} {effect.change !==0 ? effect.change : ''} </Badge> );
                 })}
               </div>
             )}
@@ -657,9 +682,9 @@ const CharacterFormCoreInfoSectionComponent = ({
             <Label htmlFor="alignment">{UI_STRINGS.alignmentLabel || "Alignment"}</Label>
             <div className="flex items-center gap-2">
               <div className="flex-grow">
-                <Select 
-                  name="alignment" 
-                  value={localAlignment} 
+                <Select
+                  name="alignment"
+                  value={localAlignment}
                   onValueChange={(value) => setLocalAlignment(value as CharacterAlignment)}
                 >
                   <SelectTrigger id="alignment">
@@ -720,14 +745,20 @@ const CharacterFormCoreInfoSectionComponent = ({
             </div>
           <div className="space-y-1.5">
             <Label htmlFor="gender">{UI_STRINGS.genderLabel || "Gender"}</Label>
-             <ComboboxPrimitive
-                options={GENDERS.map(g => ({ value: g.id, label: g.label }))}
-                value={localGender}
-                onChange={setLocalGender}
-                placeholder={UI_STRINGS.selectGenderPlaceholder || "Select or type gender..."}
-                searchPlaceholder="Search genders..."
-                emptyPlaceholder="No gender found."
-            />
+            <Select
+              name="gender"
+              value={localGender || 'unspecified'}
+              onValueChange={(value) => setLocalGender(value as GenderId)}
+            >
+              <SelectTrigger id="gender">
+                <SelectValue placeholder={UI_STRINGS.selectGenderPlaceholder || "Select gender..."} />
+              </SelectTrigger>
+              <SelectContent>
+                {genderSelectOptions.map(g => (
+                  <SelectItem key={g.id} value={g.id}>{g.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="sizeCategory">{UI_STRINGS.sizeLabel || "Size Category"}</Label>

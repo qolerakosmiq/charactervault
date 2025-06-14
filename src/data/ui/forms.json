@@ -23,7 +23,7 @@
   "selectClassPlaceholder": { "en": "Select class", "fr": "Choisir une classe" },
   "selectAlignmentPlaceholder": { "en": "Select alignment", "fr": "Choisir un alignement" },
   "selectDeityPlaceholder": { "en": "Select deity", "fr": "Choisir une divinité" },
-  "selectGenderPlaceholder": { "en": "Select or type gender...", "fr": "Choisir ou écrire un genre..." },
+  "selectGenderPlaceholder": { "en": "Select gender...", "fr": "Choisir un genre..." },
   "selectSizePlaceholder": { "en": "Select size category", "fr": "Choisir une catégorie de taille" },
   "selectDomainPlaceholder": { "en": "Select Domain...", "fr": "Choisir un domaine..." },
   "selectMagicSchoolPlaceholder": { "en": "Select School...", "fr": "Choisir une école..." },
@@ -107,3 +107,4 @@
   "toastInvalidDeityForAlignmentTitle": { "en": "Deity Alignment Mismatch", "fr": "Désaccord d'Alignement de Divinité" },
   "toastInvalidDeityForAlignmentDesc": { "en": "The deity '{deityName}' is not compatible with your character's alignment '{alignment}'.", "fr": "La divinité '{deityName}' n'est pas compatible avec l'alignement de votre personnage '{alignment}'." }
 }
+

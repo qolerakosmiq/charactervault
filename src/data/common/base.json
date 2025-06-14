@@ -12,10 +12,10 @@
     { "id": "colossal", "label": { "en": "Colossal", "fr": "Colossale (Col)" }, "acModifier": -8, "grappleModifier": 16, "skillModifiers": { "hide": -16 }, "grappleDamage": "2d6" }
   ],
   "GENDERS_DATA": [
+    { "id": "unspecified", "label": { "en": "Unspecified", "fr": "Non spécifié" } },
     { "id": "male", "label": { "en": "Male", "fr": "Masculin" } },
     { "id": "female", "label": { "en": "Female", "fr": "Féminin" } },
-    { "id": "other", "label": { "en": "Other", "fr": "Autre" } },
-    { "id": "unspecified", "label": { "en": "Unspecified", "fr": "Non spécifié" } }
+    { "id": "other", "label": { "en": "Other", "fr": "Autre" } }
   ],
   "DEFAULT_ABILITIES_DATA": {
     "strength": 10,
@@ -162,3 +162,4 @@
     { "id": "evil", "label": { "en": "Any Evil", "fr": "Tout Mauvais" } }
   ]
 }
+
