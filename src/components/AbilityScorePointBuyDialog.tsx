@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import type { AbilityName, AbilityScores } from '@/types/character';
+import type { AbilityName, AbilityScores, DndClassId } from '@/types/character'; // Added DndClassId
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -27,6 +27,7 @@ interface AbilityScorePointBuyDialogProps {
   onOpenChange: (open: boolean) => void;
   onScoresApplied: (scores: AbilityScores) => void;
   totalPointsBudget: number | string;
+  characterClassId: DndClassId | ''; // Added prop
 }
 
 const ABILITY_ORDER: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
@@ -53,6 +54,7 @@ export function AbilityScorePointBuyDialog({
   onOpenChange,
   onScoresApplied,
   totalPointsBudget,
+  characterClassId, // Added prop
 }: AbilityScorePointBuyDialogProps) {
   const { translations, isLoading: translationsLoading } = useI18n();
   const { toast } = useToast();
@@ -65,7 +67,7 @@ export function AbilityScorePointBuyDialog({
 
   const parsedBudgetProp = typeof totalPointsBudget === 'string' ? parseFloat(totalPointsBudget) : totalPointsBudget;
   const isValidBudgetProp = typeof parsedBudgetProp === 'number' && !isNaN(parsedBudgetProp);
-  
+
   const displayBudget = isValidBudgetProp ? parsedBudgetProp : 'N/A';
   const safeBudgetForCalculations = isValidBudgetProp ? parsedBudgetProp : 0;
 
@@ -144,7 +146,11 @@ export function AbilityScorePointBuyDialog({
       </Dialog>
     );
   }
-  const { ABILITY_LABELS, UI_STRINGS } = translations;
+  const { ABILITY_LABELS, UI_STRINGS, DND_CLASSES } = translations;
+
+  const classDef = DND_CLASSES.find(c => c.id === characterClassId);
+  const classNameForDisplay = classDef?.label;
+  const classPriorities = classDef?.abilityScorePriorities;
 
 
   return (
@@ -176,14 +182,34 @@ export function AbilityScorePointBuyDialog({
                         </p>
                     </div>
                 </div>
+
+                {classNameForDisplay && classPriorities && classPriorities.length >= 3 && (
+                  <div className="text-sm text-muted-foreground text-center mt-2 mb-3 p-2 border rounded-md bg-muted/20">
+                    {UI_STRINGS.rollerDialogClassPriorityIntro || "Based on your selection of"}{' '}
+                    <Badge variant="outline" className="font-semibold text-foreground">{classNameForDisplay}</Badge>
+                    {' '}{UI_STRINGS.rollerDialogClassPriorityPart2 || "the generally recommended primary abilities are:"}
+                    <div className="flex justify-center gap-1.5 mt-1.5">
+                      <Badge className="bg-primary text-primary-foreground">
+                        {ABILITY_LABELS.find(al => al.id === classPriorities[0])?.label || classPriorities[0]}
+                      </Badge>
+                      <Badge variant="secondary">
+                        {ABILITY_LABELS.find(al => al.id === classPriorities[1])?.label || classPriorities[1]}
+                      </Badge>
+                      <Badge variant="outline" className="text-muted-foreground border-border">
+                        {ABILITY_LABELS.find(al => al.id === classPriorities[2])?.label || classPriorities[2]}
+                      </Badge>
+                    </div>
+                  </div>
+                )}
+
                 <Separator />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
                 {ABILITY_ORDER.map((ability) => {
                     const score = currentScores[ability];
                     const cost = POINT_BUY_COST[score];
-                    
-                    const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === ability);
+
+                    const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === ability);
                     const abbreviationPart = abilityLabelInfo?.abbr || ability.substring(0,3).toUpperCase();
                     const fullNamePart = abilityLabelInfo?.label || ability;
 
@@ -208,10 +234,10 @@ export function AbilityScorePointBuyDialog({
                               max={MAX_SCORE}
                               readOnly={true}
                               isIncrementDisabled={incrementWouldExceedBudget || score >= MAX_SCORE}
-                              inputClassName="w-16 h-10 text-center text-xl" 
-                              buttonClassName="h-10 w-10" 
-                              buttonSize="icon" 
-                              className="justify-center" 
+                              inputClassName="w-16 h-10 text-center text-xl"
+                              buttonClassName="h-10 w-10"
+                              buttonSize="icon"
+                              className="justify-center"
                            />
                         </div>
                     </div>

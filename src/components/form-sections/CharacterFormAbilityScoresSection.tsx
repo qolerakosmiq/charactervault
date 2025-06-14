@@ -31,7 +31,7 @@ export interface CharacterFormAbilityScoresSectionProps {
   onAbilityScoreTempCustomModifierChange: (ability: Exclude<AbilityName, 'none'>, value: number) => void;
   onMultipleBaseAbilityScoresChange: (newScores: AbilityScores) => void;
   onOpenAbilityScoreBreakdownDialog: (ability: Exclude<AbilityName, 'none'>) => void;
-  characterClassId: DndClassId | ''; // Added prop
+  characterClassId: DndClassId | '';
 }
 
 const CharacterFormAbilityScoresSectionComponent = ({
@@ -41,7 +41,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
   onAbilityScoreTempCustomModifierChange,
   onMultipleBaseAbilityScoresChange,
   onOpenAbilityScoreBreakdownDialog,
-  characterClassId, // Added prop
+  characterClassId,
 }: CharacterFormAbilityScoresSectionProps) => {
   const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
   const [isPointBuyDialogOpen, setIsPointBuyDialogOpen] = React.useState(false);
@@ -56,8 +56,8 @@ const CharacterFormAbilityScoresSectionComponent = ({
     pointBuyBudget: state.pointBuyBudget,
     rerollTwentiesForChecks: state.rerollTwentiesForChecks,
   }));
-  
-  const debouncedStates = {} as Record<Exclude<AbilityName, 'none'>, [number, (val: number) => void]> & 
+
+  const debouncedStates = {} as Record<Exclude<AbilityName, 'none'>, [number, (val: number) => void]> &
                                 Record<`${Exclude<AbilityName, 'none'>}TempMod`, [number, (val: number) => void]>;
 
   abilityKeys.forEach(key => {
@@ -91,7 +91,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
   const handleApplyRolledScores = React.useCallback((newScores: AbilityScores) => {
     onMultipleBaseAbilityScoresChange(newScores);
     abilityKeys.forEach(key => {
-      debouncedStates[key][1](newScores[key]); 
+      debouncedStates[key][1](newScores[key]);
     });
     setIsRollerDialogOpen(false);
   }, [onMultipleBaseAbilityScoresChange, debouncedStates]);
@@ -116,17 +116,17 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
     setRollAbilityDialogData({
       dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck || "{abilityName} Check").replace("{abilityName}", abilityName),
-      rollType: `ability_check_${ability}`, 
+      rollType: `ability_check_${ability}`,
       baseModifier: finalModifier,
       calculationBreakdown: breakdown,
-      rerollTwentiesForChecks: rerollTwentiesForChecks, 
+      rerollTwentiesForChecks: rerollTwentiesForChecks,
     });
     setIsRollAbilityDialogOpen(true);
   }, [detailedAbilityScores, translations, rerollTwentiesForChecks]);
 
   const handleAbilityRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number) => {
   }, []);
-  
+
   if (translationsLoading || !translations) {
     return (
       <Card>
@@ -146,12 +146,12 @@ const CharacterFormAbilityScoresSectionComponent = ({
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
             {abilityKeys.map(ability => (
               <div key={ability} className="flex flex-col items-center space-y-1.5 p-3 border rounded-md bg-card shadow-sm">
-                <Skeleton className="h-6 w-12 mb-1" /> 
-                <Skeleton className="h-8 w-16 mb-1" /> 
-                <Skeleton className="h-4 w-16 mb-1" /> 
-                <Skeleton className="h-8 w-full" />   
-                <Skeleton className="h-4 w-20 mt-1" /> 
-                <Skeleton className="h-8 w-full" />   
+                <Skeleton className="h-6 w-12 mb-1" />
+                <Skeleton className="h-8 w-16 mb-1" />
+                <Skeleton className="h-4 w-16 mb-1" />
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-4 w-20 mt-1" />
+                <Skeleton className="h-8 w-full" />
               </div>
             ))}
           </div>
@@ -188,11 +188,11 @@ const CharacterFormAbilityScoresSectionComponent = ({
               const [tempCustomModValue, setTempCustomModValue] = debouncedStates[`${ability}TempMod`];
 
               const actualScoreData = detailedAbilityScores ? detailedAbilityScores[ability] : null;
-              const displayTotalScore = actualScoreData 
-                ? actualScoreData.finalScore 
-                : (abilityScoresData.abilityScores[ability] || 0) + 
+              const displayTotalScore = actualScoreData
+                ? actualScoreData.finalScore
+                : (abilityScoresData.abilityScores[ability] || 0) +
                   (abilityScoresData.abilityScoreTempCustomModifiers?.[ability] || 0);
-              
+
               const displayModifier = calculateAbilityModifier(displayTotalScore);
 
               const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === ability);
@@ -210,7 +210,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   <div className="flex items-center justify-center space-x-1 mb-1">
                     <span className="text-xl font-bold text-accent">{displayTotalScore}</span>
                     <span className="text-xl text-accent font-normal">({displayModifier >= 0 ? '+' : ''}{displayModifier})</span>
-                    
+
                     {actualScoreData && (
                        <Button
                         type="button"
@@ -239,7 +239,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                     <Label htmlFor={`base-score-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresBaseScoreLabel || "Base Score"}</Label>
                     <NumberSpinnerInput
                       id={`base-score-${ability}`}
-                      value={baseScoreValue} 
+                      value={baseScoreValue}
                       onChange={setBaseScoreValue}
                       min={1}
                       inputClassName="h-8 text-base text-center"
@@ -253,7 +253,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                     <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresTempModLabel || "Temporary Modifier"}</Label>
                     <NumberSpinnerInput
                       id={`temp-mod-${ability}`}
-                      value={tempCustomModValue} 
+                      value={tempCustomModValue}
                       onChange={setTempCustomModValue}
                       inputClassName="h-8 text-base text-center"
                       buttonSize="icon"
@@ -290,6 +290,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
           onOpenChange={setIsPointBuyDialogOpen}
           onScoresApplied={handleApplyPointBuyScores}
           totalPointsBudget={pointBuyBudget}
+          characterClassId={characterClassId}
       />
       {rollAbilityDialogData && (
         <RollDialog
@@ -308,5 +309,3 @@ const CharacterFormAbilityScoresSectionComponent = ({
 };
 CharacterFormAbilityScoresSectionComponent.displayName = 'CharacterFormAbilityScoresSectionComponent';
 export const CharacterFormAbilityScoresSection = React.memo(CharacterFormAbilityScoresSectionComponent);
-
-    
