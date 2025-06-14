@@ -70,7 +70,7 @@ const SavingThrowsPanelComponent = ({
 
 
   const handleOpenSavingThrowRollDialog = React.useCallback((saveType: SavingThrowType) => {
-    if (!translations || !abilityScores) return;
+    if (!translations || !abilityScores || !aggregatedFeatEffects) return;
     const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations;
     const currentSaveDataFromProp = savingThrowsData.savingThrows[saveType];
     const calculatedBaseSaves = getBaseSaves(savingThrowsData.classes, DND_CLASSES);
@@ -82,11 +82,11 @@ const SavingThrowsPanelComponent = ({
     const magicModifier = currentSaveDataFromProp.magicMod || 0;
 
     const totalSaveModifier = baseSaveValue + abilityModifier + magicModifier + calculatedFeatBonusForThisSave + localTemporaryMod;
-    const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.value === saveType)?.label || saveType;
-    const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === abilityKey);
+    const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType;
+    const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === abilityKey);
 
     const breakdown: GenericBreakdownItem[] = [
-      { label: UI_STRINGS.savingThrowsRowLabelBase || "Base", value: baseSaveValue },
+      { label: UI_STRINGS.savingThrowsRowLabelBase || "Base", value: baseSaveValue, isRawValue: true },
       { label: `${UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability Modifier"} (${abilityLabelInfo?.abbr || abilityKey.toUpperCase()})`, value: abilityModifier },
     ];
     if (magicModifier !== 0) {
@@ -110,7 +110,7 @@ const SavingThrowsPanelComponent = ({
   }, [translations, abilityScores, savingThrowsData, aggregatedFeatEffects, onOpenRollDialog, calculateCalculatedTotalFeatBonusForSave, debouncedTemporaryMods, rerollTwentiesForChecks]);
 
 
-  if (translationsLoading || !translations) {
+  if (translationsLoading || !translations || !aggregatedFeatEffects) {
     return (
       <Card>
         <CardHeader>
@@ -166,6 +166,7 @@ const SavingThrowsPanelComponent = ({
                   size="icon"
                   className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
                   onClick={() => onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType: saveType })}
+                  aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel || "Info for {saveTypeLabel} Save").replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType)}
                 >
                   <Info className="h-4 w-4" />
                 </Button>
@@ -175,7 +176,7 @@ const SavingThrowsPanelComponent = ({
                   size="icon"
                   className="h-6 w-6 text-muted-foreground hover:text-primary"
                   onClick={() => handleOpenSavingThrowRollDialog(saveType)}
-                  aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.value === saveType)?.label || saveType)}
+                  aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType)}
                 >
                   <Dices className="h-4 w-4" />
                 </Button>
@@ -187,7 +188,7 @@ const SavingThrowsPanelComponent = ({
     },
     {
       labelKey: "savingThrowsRowLabelBase",
-      getValue: (saveDataProp, localTemporaryMod, baseSave) => baseSave,
+      getValue: (saveDataProp, localTemporaryMod, baseSave) => <span className="font-bold">{baseSave}</span>, // Render base save as raw number
       rowKey: 'base',
     },
     {
@@ -195,7 +196,7 @@ const SavingThrowsPanelComponent = ({
       getValue: (saveDataProp, localTemporaryMod, baseSave, abilityMod, calculatedTotalFeatBonus, totalFromProp, saveType?: SavingThrowType) => {
         if (!saveType) return renderModifierValue(abilityMod);
         const abilityKey = SAVING_THROW_ABILITIES[saveType];
-        const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === abilityKey);
+        const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === abilityKey);
         const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
         return (
           <span className="inline-flex items-baseline">
@@ -252,7 +253,7 @@ const SavingThrowsPanelComponent = ({
                 <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground w-[100px]"></th>
                 {SAVE_TYPES.map((saveType) => (
                   <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-foreground capitalize">
-                    {SAVING_THROW_LABELS.find(stl => stl.value === saveType)?.label || saveType}
+                    {SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType}
                   </th>
                 ))}
               </tr>
@@ -261,8 +262,8 @@ const SavingThrowsPanelComponent = ({
               {dataRows.map((dataRow) => {
                 const rowLabel = UI_STRINGS[dataRow.labelKey] || dataRow.labelKey.replace('savingThrowsRowLabel', '');
                 return (
-                  <tr key={dataRow.rowKey} className="border-b last:border-b-0 transition-colors">
-                    <td className="py-3 px-1 text-left text-sm font-medium text-muted-foreground align-middle whitespace-normal md:whitespace-nowrap">
+                  <tr key={dataRow.rowKey} className="border-b last:border-b-0 transition-colors hover:bg-muted/10">
+                    <td className="py-3 px-1 text-left text-sm font-medium text-muted-foreground align-middle whitespace-nowrap">
                       {rowLabel}
                     </td>
                     {SAVE_TYPES.map((saveType) => {
@@ -294,3 +295,5 @@ const SavingThrowsPanelComponent = ({
 
 SavingThrowsPanelComponent.displayName = 'SavingThrowsPanelComponent';
 export const SavingThrowsPanel = React.memo(SavingThrowsPanelComponent);
+
+    
