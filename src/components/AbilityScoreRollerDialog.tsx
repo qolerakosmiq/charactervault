@@ -80,7 +80,6 @@ export function AbilityScoreRollerDialog({
       }));
     setRolledScores(newScores);
 
-    // Automatic assignment based on class priorities
     if (translations && translations.DND_CLASSES) {
       const sortedNewScores = [...newScores].sort((a, b) => b.value - a.value);
       const classDef = translations.DND_CLASSES.find(c => c.id === characterClassId);
@@ -99,15 +98,16 @@ export function AbilityScoreRollerDialog({
       });
       setAssignments(newAssignments);
     } else {
-      setAssignments({}); // Fallback if translations not ready for assignment
+      setAssignments({});
     }
   }, [rerollOnes, translations, characterClassId]);
 
   useEffect(() => {
-    if (isOpen && translations && !translationsLoading) { // Ensure translations are loaded before first roll
+    if (isOpen && translations && !translationsLoading) {
       generateNewRolls();
     }
-  }, [isOpen, generateNewRolls, translations, translationsLoading]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, translations, translationsLoading]); // generateNewRolls removed to prevent re-roll on every render where it might be redefined if not stable
 
   const handleAssignScore = (ability: Exclude<AbilityName, 'none'>, rollId: string | undefined) => {
     setAssignments((prev) => {
@@ -223,6 +223,10 @@ export function AbilityScoreRollerDialog({
   }
   const { UI_STRINGS, ABILITY_LABELS } = translations;
 
+  const classDef = translations.DND_CLASSES.find(c => c.id === characterClassId);
+  const classNameForDisplay = classDef?.label;
+  const classPriorities = classDef?.abilityScorePriorities;
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md md:sm:max-w-lg">
@@ -273,6 +277,25 @@ export function AbilityScoreRollerDialog({
             <RefreshCw className="mr-2 h-4 w-4" /> {UI_STRINGS.rollerDialogRerollButton || "Reroll Scores"}
           </Button>
         </div>
+
+        {classNameForDisplay && classPriorities && classPriorities.length >= 3 && (
+          <div className="text-sm text-muted-foreground text-center my-3 p-2 border rounded-md bg-muted/20">
+            {UI_STRINGS.rollerDialogClassPriorityIntro || "Based on your selection of"}{' '}
+            <Badge variant="outline" className="font-semibold text-foreground">{classNameForDisplay}</Badge>
+            {', '}{UI_STRINGS.rollerDialogClassPriorityPart2 || "the generally recommended primary abilities are:"}
+            <div className="flex justify-center gap-1.5 mt-1.5">
+              <Badge className="bg-primary text-primary-foreground">
+                {translations.ABILITY_LABELS.find(al => al.id === classPriorities[0])?.label || classPriorities[0]}
+              </Badge>
+              <Badge variant="secondary">
+                {translations.ABILITY_LABELS.find(al => al.id === classPriorities[1])?.label || classPriorities[1]}
+              </Badge>
+              <Badge variant="outline" className="text-muted-foreground border-border">
+                {translations.ABILITY_LABELS.find(al => al.id === classPriorities[2])?.label || classPriorities[2]}
+              </Badge>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-x-4 gap-y-3 items-center">
           {ABILITY_ORDER.map((ability) => {
@@ -332,3 +355,4 @@ export function AbilityScoreRollerDialog({
   );
 }
 
+    

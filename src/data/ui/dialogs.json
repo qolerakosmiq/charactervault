@@ -12,6 +12,8 @@
   "rollerDialogNotSelectedOption": { "en": "Not selected", "fr": "Non sélectionné" },
   "rollerDialogErrorNotAllAssignedToastTitle": { "en": "Assignment Incomplete", "fr": "Assignation incomplète" },
   "rollerDialogErrorNotAllAssignedToastDesc": { "en": "Please assign all rolled scores to abilities before applying.", "fr": "Veuillez assigner tous les scores lancés aux caractéristiques avant d'appliquer." },
+  "rollerDialogClassPriorityIntro": { "en": "Based on your selection of", "fr": "Selon votre sélection de" },
+  "rollerDialogClassPriorityPart2": { "en": "class, the generally recommended primary abilities are:", "fr": "classe, les caractéristiques principales généralement recommandées sont :" },
   "pointBuyDialogTitle": { "en": "Point Buy Ability Scores", "fr": "Achat par points des caractéristiques" },
   "pointBuyDialogTitleLoading": { "en": "Point Buy Ability Scores", "fr": "Achat par points des caractéristiques" },
   "pointBuyDialogDescription": { "en": "Distribute points to set your character's initial ability scores. Scores start at 8, and the maximum score is 18.", "fr": "Répartissez les points pour définir les caractéristiques initiales de votre personnage. Les scores commencent à 8, et le score maximum est de 18." },
@@ -38,3 +40,4 @@
   "specializationSelectPlaceholderSchool": { "en": "Select school of magic...", "fr": "Choisir une école de magie..." },
   "specializationInputPlaceholderWeapon": { "en": "Enter weapon name (e.g., Longsword)", "fr": "Entrer le nom de l'arme (ex : Épée longue)" }
 }
+
