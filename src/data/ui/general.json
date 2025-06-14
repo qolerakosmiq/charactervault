@@ -85,7 +85,10 @@
   "toastSuccessTitle": {"en": "Success!", "fr": "Succès !"},
   "rangerCombatStyleFeatNoteFormat": { "en": "{styleName} (L{level})", "fr": "{styleName} (N{level})" },
   "clericDomainPowerFeatNoteFormat": { "en": "Granted by {domainName} Domain", "fr": "Accordé par le Domaine {domainName}" },
-  "currentLangCodeForNotesFallback": { "en": "en", "fr": "fr" }
+  "currentLangCodeForNotesFallback": { "en": "en", "fr": "fr" },
+  "savingThrowsRowLabelAbilityModifier": { "en": "Ability Modifier", "fr": "Mod. de Carac." },
+  "savingThrowsRowLabelTemporaryModifier": { "en": "Temporary Modifier", "fr": "Mod. Temporaire" },
+  "savingThrowsRowLabelMiscModifier": { "en": "Misc Modifier", "fr": "Mod. Divers" }
 }
 
     
