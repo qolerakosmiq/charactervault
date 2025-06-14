@@ -279,10 +279,10 @@ export function AbilityScoreRollerDialog({
         </div>
 
         {classNameForDisplay && classPriorities && classPriorities.length >= 3 && (
-          <div className="text-sm text-muted-foreground text-center my-3 p-2 border rounded-md bg-muted/20">
+          <div className="text-sm text-muted-foreground text-center mt-2 mb-3 p-2 border rounded-md bg-muted/20">
             {UI_STRINGS.rollerDialogClassPriorityIntro || "Based on your selection of"}{' '}
             <Badge variant="outline" className="font-semibold text-foreground">{classNameForDisplay}</Badge>
-            {', '}{UI_STRINGS.rollerDialogClassPriorityPart2 || "the generally recommended primary abilities are:"}
+            {' '}{UI_STRINGS.rollerDialogClassPriorityPart2 || "the generally recommended primary abilities are:"}
             <div className="flex justify-center gap-1.5 mt-1.5">
               <Badge className="bg-primary text-primary-foreground">
                 {translations.ABILITY_LABELS.find(al => al.id === classPriorities[0])?.label || classPriorities[0]}
