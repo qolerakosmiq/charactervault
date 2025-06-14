@@ -109,7 +109,7 @@ const HealthPanelComponent = ({
   }
 
   const { UI_STRINGS, ABILITY_LABELS } = translations;
-  const conAbbr = ABILITY_LABELS.find(al => al.value === 'constitution')?.abbr || 'CON';
+  const conAbbr = ABILITY_LABELS.find(al => al.id === 'constitution')?.abbr || 'CON';
   
   const missingHp = Math.max(0, calculatedMaxHp - localHp);
 
@@ -360,6 +360,11 @@ const HealthPanelComponent = ({
                 </span>
               </div>
             </div>
+            <p className="text-xs text-muted-foreground pt-2">
+              {UI_STRINGS.healthPanelMaxHpMiscModInfoNote_prefix || "The "}
+              <Badge variant="outline" className="text-xs">{UI_STRINGS.healthPanelMiscMaxHpLabel || "Misc Modifier"}</Badge>
+              {UI_STRINGS.healthPanelMaxHpMiscModInfoNote_suffix || " to Maximum Hit Points includes bonuses from magic items, active feats, and other persistent effects."}
+            </p>
         </div>
       </CardContent>
     </Card>
@@ -367,3 +372,4 @@ const HealthPanelComponent = ({
 });
 HealthPanelComponent.displayName = 'HealthPanelComponent';
 export const HealthPanel = React.memo(HealthPanelComponent);
+

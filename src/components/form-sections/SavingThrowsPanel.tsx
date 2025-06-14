@@ -55,34 +55,35 @@ const SavingThrowsPanelComponent = ({
     );
   });
 
-  const calculateCalculatedTotalFeatBonusForSave = React.useCallback((saveType: SavingThrowType): number => {
-    if (!aggregatedFeatEffects?.savingThrowBonuses) return 0;
-    let totalFeatBonus = 0;
-    aggregatedFeatEffects.savingThrowBonuses.forEach(effect => {
-      if (effect.isActive && (effect.save === saveType || effect.save === 'all')) {
-        if (typeof effect.value === 'number') {
-          totalFeatBonus += effect.value;
+  const calculateCalculatedTotalMiscBonusForSave = React.useCallback((saveType: SavingThrowType): number => {
+    if (!aggregatedFeatEffects) return 0;
+    let totalMiscBonus = savingThrowsData.savingThrows[saveType].magicMod || 0;
+    
+    if (aggregatedFeatEffects.savingThrowBonuses) {
+      aggregatedFeatEffects.savingThrowBonuses.forEach(effect => {
+        if (effect.isActive && (effect.save === saveType || effect.save === 'all')) {
+          if (typeof effect.value === 'number') {
+            totalMiscBonus += effect.value;
+          }
         }
-      }
-    });
-    return totalFeatBonus;
-  }, [aggregatedFeatEffects]);
+      });
+    }
+    return totalMiscBonus;
+  }, [aggregatedFeatEffects, savingThrowsData.savingThrows]);
 
 
   const handleOpenSavingThrowRollDialog = React.useCallback((saveType: SavingThrowType) => {
     if (!translations || !abilityScores || !aggregatedFeatEffects) return;
     const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations;
-    const currentSaveDataFromProp = savingThrowsData.savingThrows[saveType];
+    
     const calculatedBaseSaves = getBaseSaves(savingThrowsData.classes, DND_CLASSES);
     const baseSaveValue = calculatedBaseSaves[saveType];
     const abilityKey = SAVING_THROW_ABILITIES[saveType];
     const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
-    const calculatedFeatBonusForThisSave = calculateCalculatedTotalFeatBonusForSave(saveType);
+    const calculatedTotalMiscBonus = calculateCalculatedTotalMiscBonusForSave(saveType);
     const [localTemporaryMod] = debouncedTemporaryMods[saveType];
-    const magicModifier = currentSaveDataFromProp.magicMod || 0;
-
-    const miscModifierTotal = magicModifier + calculatedFeatBonusForThisSave;
-    const totalSaveModifier = baseSaveValue + abilityModifier + miscModifierTotal + localTemporaryMod;
+    
+    const totalSaveModifier = baseSaveValue + abilityModifier + calculatedTotalMiscBonus + localTemporaryMod;
     const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType;
     const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === abilityKey);
 
@@ -90,8 +91,8 @@ const SavingThrowsPanelComponent = ({
       { label: UI_STRINGS.savingThrowsRowLabelBase || "Base", value: baseSaveValue, isRawValue: true },
       { label: `${UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability Modifier"} (${abilityLabelInfo?.abbr || abilityKey.toUpperCase()})`, value: abilityModifier },
     ];
-    if (miscModifierTotal !== 0) {
-      breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier", value: miscModifierTotal });
+    if (calculatedTotalMiscBonus !== 0) {
+      breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier", value: calculatedTotalMiscBonus });
     }
     if (localTemporaryMod !== 0) {
       breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelTemporaryModifier || "Temporary Modifier", value: localTemporaryMod });
@@ -105,7 +106,7 @@ const SavingThrowsPanelComponent = ({
       calculationBreakdown: breakdown,
       rerollTwentiesForChecks: rerollTwentiesForChecks, 
     });
-  }, [translations, abilityScores, savingThrowsData, aggregatedFeatEffects, onOpenRollDialog, calculateCalculatedTotalFeatBonusForSave, debouncedTemporaryMods, rerollTwentiesForChecks]);
+  }, [translations, abilityScores, savingThrowsData, aggregatedFeatEffects, onOpenRollDialog, calculateCalculatedTotalMiscBonusForSave, debouncedTemporaryMods, rerollTwentiesForChecks]);
 
 
   if (translationsLoading || !translations || !aggregatedFeatEffects) {
@@ -138,12 +139,11 @@ const SavingThrowsPanelComponent = ({
   const dataRows: Array<{
     labelKey: keyof typeof UI_STRINGS;
     getValue: (
-        saveDataFromProp: SingleSavingThrow,
         localTemporaryModValue: number,
         baseSave: number,
         abilityMod: number,
-        calculatedTotalMiscBonus: number, // Renamed from calculatedTotalFeatBonus
-        totalCalculatedFromProp: number,
+        calculatedTotalMiscBonusValue: number, 
+        totalCalculatedValue: number,
         saveType?: SavingThrowType,
         setLocalTemporaryMod?: (val: number) => void
     ) => React.ReactNode;
@@ -151,10 +151,10 @@ const SavingThrowsPanelComponent = ({
   }> = [
     {
       labelKey: "savingThrowsRowLabelTotal",
-      getValue: (saveDataProp, localTemporaryMod, baseSave, abilityMod, calculatedTotalMiscBonus, totalFromProp, saveType) => (
+      getValue: (localTemporaryMod, baseSave, abilityMod, calculatedTotalMiscBonus, totalCalculated, saveType) => (
         <div className="flex items-center justify-center">
-            <span className={cn("text-lg font-bold", totalFromProp >= 0 ? "text-accent" : "text-destructive")}>
-              {totalFromProp >= 0 ? '+' : ''}{totalFromProp}
+            <span className={cn("text-lg font-bold", totalCalculated >= 0 ? "text-accent" : "text-destructive")}>
+              {totalCalculated >= 0 ? '+' : ''}{totalCalculated}
             </span>
             {saveType && (
               <>
@@ -186,12 +186,12 @@ const SavingThrowsPanelComponent = ({
     },
     {
       labelKey: "savingThrowsRowLabelBase",
-      getValue: (saveDataProp, localTemporaryMod, baseSave) => <span className="font-bold">{baseSave}</span>,
+      getValue: (localTemporaryMod, baseSave) => <span className="font-bold">{baseSave}</span>,
       rowKey: 'base',
     },
     {
       labelKey: "savingThrowsRowLabelAbilityModifier",
-      getValue: (saveDataProp, localTemporaryMod, baseSave, abilityMod, calculatedTotalMiscBonus, totalFromProp, saveType?: SavingThrowType) => {
+      getValue: (localTemporaryMod, baseSave, abilityMod, calculatedTotalMiscBonus, totalCalculated, saveType?: SavingThrowType) => {
         if (!saveType) return renderModifierValue(abilityMod);
         const abilityKey = SAVING_THROW_ABILITIES[saveType];
         const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === abilityKey);
@@ -206,13 +206,13 @@ const SavingThrowsPanelComponent = ({
       rowKey: 'abilityMod',
     },
     {
-      labelKey: "savingThrowsRowLabelMiscModifier", // New combined row
-      getValue: (saveDataProp, localTemporaryMod, baseSave, abilityMod, calculatedTotalMiscBonus) => renderModifierValue(calculatedTotalMiscBonus),
+      labelKey: "savingThrowsRowLabelMiscModifier",
+      getValue: (localTemporaryMod, baseSave, abilityMod, calculatedTotalMiscBonus) => renderModifierValue(calculatedTotalMiscBonus),
       rowKey: 'miscModDisplay',
     },
     {
       labelKey: "savingThrowsRowLabelTemporaryModifier",
-      getValue: (saveDataProp, localTemporaryMod, baseSave, abilityMod, calculatedTotalMiscBonus, totalFromProp, saveType?: SavingThrowType, setLocalTemporaryMod?: (val: number) => void) => (
+      getValue: (localTemporaryMod, baseSave, abilityMod, calculatedTotalMiscBonus, totalCalculated, saveType?: SavingThrowType, setLocalTemporaryMod?: (val: number) => void) => (
         <div className="flex justify-center">
           <NumberSpinnerInput
             value={localTemporaryMod}
@@ -238,7 +238,7 @@ const SavingThrowsPanelComponent = ({
           <CardTitle className="text-2xl font-serif">{UI_STRINGS.savingThrowsPanelTitle || "Saving Throws"}</CardTitle>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-2">
         <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
           <table className="w-full min-w-[400px]">
             <thead>
@@ -261,19 +261,15 @@ const SavingThrowsPanelComponent = ({
                     </td>
                     {SAVE_TYPES.map((saveType) => {
                       const [localTemporaryMod, setLocalTemporaryMod] = debouncedTemporaryMods[saveType];
-                      const currentSaveDataFromProp = savingThrowsData.savingThrows[saveType];
                       const baseSaveValue = calculatedBaseSaves[saveType];
                       const abilityKey = SAVING_THROW_ABILITIES[saveType];
                       const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
-                      const calculatedFeatBonusForThisSave = calculateCalculatedTotalFeatBonusForSave(saveType);
-                      const magicModForThisSave = currentSaveDataFromProp.magicMod || 0;
-                      
-                      const calculatedTotalMiscBonus = magicModForThisSave + calculatedFeatBonusForThisSave;
-                      const totalSaveCalculatedFromProp = baseSaveValue + abilityModifier + calculatedTotalMiscBonus + localTemporaryMod;
+                      const calculatedTotalMiscBonusForSave = calculateCalculatedTotalMiscBonusForSave(saveType);
+                      const totalSaveCalculatedValue = baseSaveValue + abilityModifier + calculatedTotalMiscBonusForSave + localTemporaryMod;
 
                       return (
                         <td key={`${saveType}-${dataRow.rowKey}`} className="py-3 px-1 text-center text-sm text-foreground align-middle">
-                          {dataRow.getValue(currentSaveDataFromProp, localTemporaryMod, baseSaveValue, abilityModifier, calculatedTotalMiscBonus, totalSaveCalculatedFromProp, saveType, setLocalTemporaryMod)}
+                          {dataRow.getValue(localTemporaryMod, baseSaveValue, abilityModifier, calculatedTotalMiscBonusForSave, totalSaveCalculatedValue, saveType, setLocalTemporaryMod)}
                         </td>
                       );
                     })}
@@ -283,6 +279,11 @@ const SavingThrowsPanelComponent = ({
             </tbody>
           </table>
         </div>
+        <p className="text-xs text-muted-foreground pt-2">
+          {UI_STRINGS.savingThrowsPanelMiscModInfoNote_prefix || "The "}
+          <Badge variant="outline" className="text-xs">{UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}</Badge>
+          {UI_STRINGS.savingThrowsPanelMiscModInfoNote_suffix || " line includes bonuses from magic items, active feats, and other persistent effects."}
+        </p>
       </CardContent>
     </Card>
   );
@@ -292,3 +293,4 @@ SavingThrowsPanelComponent.displayName = 'SavingThrowsPanelComponent';
 export const SavingThrowsPanel = React.memo(SavingThrowsPanelComponent);
 
     
+
