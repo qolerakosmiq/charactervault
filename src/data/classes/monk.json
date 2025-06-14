@@ -6,6 +6,7 @@
   "babProgression": "average",
   "saves": { "fortitude": "good", "reflex": "good", "will": "good" },
   "alignmentRestriction": "lawful",
+  "abilityScorePriorities": ["wisdom", "dexterity", "strength", "constitution", "intelligence", "charisma"],
   "generalDescription": {
     "en": "<p>Monks are warriors who pursue perfection through contemplation as well as action. They are disciplined ascetics, training their bodies to be deadly weapons and their minds to be fortresses of calm. Monks cannot multiclass freely; a monk who gains a new class or (if already multiclassed) raises another class by a level may never again raise her monk level, though she retains all her monk abilities.</p>",
     "fr": "<p>Les moines sont des guerriers qui poursuivent la perfection par la contemplation autant que par l'action. Ce sont des ascètes disciplinés, entraînant leur corps à devenir des armes mortelles et leur esprit à devenir des forteresses de calme. Les moines ne peuvent pas se multiclasser librement ; un moine qui acquiert une nouvelle classe ou (s'il est déjà multiclassé) augmente une autre classe d'un niveau ne pourra plus jamais augmenter son niveau de moine, bien qu'il conserve toutes ses capacités de moine.</p>"

@@ -5,6 +5,7 @@
   "hitDice": "d10",
   "babProgression": "good",
   "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
+  "abilityScorePriorities": ["strength", "wisdom", "constitution", "dexterity", "intelligence", "charisma"],
   "generalDescription": {
     "en": "<p>A soulknife is a warrior who has learned to manifest a semisolid blade of psychic energy. This mind blade can be shaped into various forms and imbued with different properties. They are skilled combatants who rely on their mental fortitude and the power of their mind blade.</p>",
     "fr": "<p>Un psychlame est un guerrier qui a appris à manifester une lame semi-solide d'énergie psychique. Cette lame mentale peut prendre diverses formes et être imprégnée de différentes propriétés. Ce sont des combattants habiles qui comptent sur leur force mentale et la puissance de leur lame mentale.</p>"
@@ -130,3 +131,5 @@
     { "id": "class-soulknife-mind-blade-enhancement-plus-5", "label": { "en": "Mind Blade Enhancement +5", "fr": "Amélioration de Lame Mentale +5" }, "description": {"en": "Mind blade enhancement bonus increases to +5.", "fr": "Le bonus d'altération de la lame mentale passe à +5."}, "type": "special-su", "isClassFeature": true, "permanentEffect": true }
   ]
 }
+
+    

@@ -7,6 +7,7 @@
   "spellcasting": { "type": "full", "casterAbility": "charisma", "knownSpells": true },
   "saves": { "fortitude": "poor", "reflex": "good", "will": "good" },
   "alignmentRestriction": "any-nonlawful",
+  "abilityScorePriorities": ["charisma", "dexterity", "intelligence", "constitution", "strength", "wisdom"],
   "generalDescription": {
     "en": "<p>Bards are versatile performers, weaving magic through music and words.<br />They are storytellers, diplomats, and adventurers, often charismatic and quick-witted.</p>",
     "fr": "<p>Les bardes sont des artistes polyvalents, tissant la magie par la musique et les mots.<br />Ce sont des conteurs, des diplomates et des aventuriers, souvent charismatiques et vifs d'esprit.</p>"

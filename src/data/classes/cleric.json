@@ -6,6 +6,7 @@
   "babProgression": "average",
   "spellcasting": { "type": "full", "casterAbility": "wisdom", "preparedSpells": true },
   "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
+  "abilityScorePriorities": ["wisdom", "charisma", "constitution", "strength", "dexterity", "intelligence"],
   "generalDescription": {
     "en": "<p>Clerics are intermediaries between the mortal world and the distant planes of the gods. As varied as the gods they serve, clerics strive to embody the handiwork of their deities. Answering the call to serve, clerics can be champions of good, agents of evil, or anything in between.</p>",
     "fr": "<p>Les prêtres sont des intermédiaires entre le monde des mortels et les plans lointains des dieux. Aussi variés que les dieux qu'ils servent, les prêtres s'efforcent d'incarner l'œuvre de leurs divinités. Répondant à l'appel du service, les prêtres peuvent être des champions du bien, des agents du mal, ou n'importe quoi entre les deux.</p>"
@@ -48,3 +49,5 @@
     }
   ]
 }
+
+    

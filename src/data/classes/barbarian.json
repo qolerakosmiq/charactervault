@@ -6,6 +6,7 @@
   "babProgression": "good",
   "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
   "alignmentRestriction": "any-nonlawful",
+  "abilityScorePriorities": ["strength", "constitution", "dexterity", "wisdom", "intelligence", "charisma"],
   "generalDescription": {
     "en": "<p>Barbarians are savage warriors from the wild frontiers, relying on their primal fury and immense strength.<br />They are often tribal, disdainful of civilization, and fiercely independent.<br/><b>Note:</b> Barbarians are illiterate unless they spend skill points on the Read/Write Language skill or take a level in another class.</p>",
     "fr": "<p>Les barbares sont des guerriers sauvages des frontières sauvages, comptant sur leur fureur primale et leur force immense.<br />Ils sont souvent tribaux, dédaigneux de la civilisation et farouchement indépendants.<br/><b>Note :</b> Les barbares sont illettrés à moins qu'ils ne dépensent des points de compétence dans la compétence Lire/Écrire une langue ou ne prennent un niveau dans une autre classe.</p>"

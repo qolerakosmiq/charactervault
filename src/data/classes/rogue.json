@@ -5,6 +5,7 @@
   "hitDice": "d6",
   "babProgression": "average",
   "saves": { "fortitude": "poor", "reflex": "good", "will": "poor" },
+  "abilityScorePriorities": ["dexterity", "intelligence", "constitution", "wisdom", "charisma", "strength"],
   "generalDescription": {
     "en": "<p>Rogues are masters of stealth, deception, and a wide array of skills. They excel at finding and disarming traps, picking locks, and dealing devastating sneak attacks.</p>",
     "fr": "<p>Les roublards sont des maîtres de la furtivité, de la tromperie et d'un large éventail de compétences. Ils excellent à trouver et désarmer les pièges, crocheter les serrures et infliger des attaques sournoises dévastatrices.</p>"
@@ -119,3 +120,5 @@
     }
   ]
 }
+
+    

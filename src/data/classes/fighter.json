@@ -5,6 +5,7 @@
   "hitDice": "d10",
   "babProgression": "good",
   "saves": { "fortitude": "good", "reflex": "poor", "will": "poor" },
+  "abilityScorePriorities": ["strength", "constitution", "dexterity", "wisdom", "intelligence", "charisma"],
   "generalDescription": {
     "en": "<p>Fighters are masters of martial combat, excelling with all forms of weapons and armor.<br />They are the backbone of armies, the sellswords in taverns, and the dedicated protectors of kingdoms.</p>",
     "fr": "<p>Les guerriers sont maîtres du combat martial, excellant avec toutes les formes d'armes et d'armures.<br />Ils sont l'épine dorsale des armées, les mercenaires dans les tavernes et les protecteurs dévoués des royaumes.</p>"
@@ -53,3 +54,5 @@
     }
   ]
 }
+
+    

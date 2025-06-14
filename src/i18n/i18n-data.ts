@@ -138,6 +138,7 @@ export interface RawClassDataEntry {
   uiSections?: ClassSpecificUIBlock[];
   featChoiceFilters?: FeatChoiceFilter[];
   classSpecificFeats?: FeatDefinitionJsonData[];
+  abilityScorePriorities?: Array<Exclude<AbilityName, 'none'>>;
 }
 
 export interface RawDeityDataEntry {
@@ -449,7 +450,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     const {
       id, label, hitDice, babProgression, generalDescription, loreAttributes,
       saves, spellcasting, grantedFeats: rawGrantedFeats, uiSections, featChoiceFilters,
-      classSpecificFeats, alignmentRestriction, deityAlignmentRestriction
+      classSpecificFeats, alignmentRestriction, deityAlignmentRestriction, abilityScorePriorities
     } = c_raw;
 
     const localizedGrantedFeats = (rawGrantedFeats || []).map(gf_raw => {
@@ -533,7 +534,8 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
           }
           return localizedEffect;
         })
-      }))
+      })),
+      abilityScorePriorities: abilityScorePriorities,
     };
     return localizedClass;
   }).sort((a,b) => a.label.localeCompare(b.label));
@@ -677,3 +679,4 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   };
 }
 
+    

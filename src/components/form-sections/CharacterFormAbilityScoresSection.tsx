@@ -2,7 +2,7 @@
 'use client';
 
 import *as React from 'react';
-import type { AbilityName, AbilityScores, DetailedAbilityScores, Character, GenericBreakdownItem } from '@/types/character';
+import type { AbilityName, AbilityScores, DetailedAbilityScores, Character, GenericBreakdownItem, DndClassId } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,6 +31,7 @@ export interface CharacterFormAbilityScoresSectionProps {
   onAbilityScoreTempCustomModifierChange: (ability: Exclude<AbilityName, 'none'>, value: number) => void;
   onMultipleBaseAbilityScoresChange: (newScores: AbilityScores) => void;
   onOpenAbilityScoreBreakdownDialog: (ability: Exclude<AbilityName, 'none'>) => void;
+  characterClassId: DndClassId | ''; // Added prop
 }
 
 const CharacterFormAbilityScoresSectionComponent = ({
@@ -40,6 +41,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
   onAbilityScoreTempCustomModifierChange,
   onMultipleBaseAbilityScoresChange,
   onOpenAbilityScoreBreakdownDialog,
+  characterClassId, // Added prop
 }: CharacterFormAbilityScoresSectionProps) => {
   const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
   const [isPointBuyDialogOpen, setIsPointBuyDialogOpen] = React.useState(false);
@@ -104,7 +106,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
   const handleOpenRollDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => {
     if (!detailedAbilityScores || !translations) return;
-    const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.value === ability);
+    const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.id === ability);
     const abilityName = abilityLabelInfo?.label || ability;
     const finalModifier = calculateAbilityModifier(detailedAbilityScores[ability].finalScore);
 
@@ -193,7 +195,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
               
               const displayModifier = calculateAbilityModifier(displayTotalScore);
 
-              const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === ability);
+              const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === ability);
               const abilityDisplayName = abilityLabelInfo?.label || ability;
               const abilityAbbr = abilityLabelInfo?.abbr || ability.substring(0,3).toUpperCase();
 
@@ -281,6 +283,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
         onOpenChange={setIsRollerDialogOpen}
         onScoresApplied={handleApplyRolledScores}
         rerollOnes={rerollOnesForAbilityScores}
+        characterClassId={characterClassId}
       />
       <AbilityScorePointBuyDialog
           isOpen={isPointBuyDialogOpen}
@@ -305,3 +308,5 @@ const CharacterFormAbilityScoresSectionComponent = ({
 };
 CharacterFormAbilityScoresSectionComponent.displayName = 'CharacterFormAbilityScoresSectionComponent';
 export const CharacterFormAbilityScoresSection = React.memo(CharacterFormAbilityScoresSectionComponent);
+
+    

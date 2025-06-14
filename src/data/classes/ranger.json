@@ -6,6 +6,7 @@
   "babProgression": "good",
   "spellcasting": { "type": "partial", "casterAbility": "wisdom", "preparedSpells": true, "startsAtLevel": 4, "levelOffset": -3 },
   "saves": { "fortitude": "good", "reflex": "good", "will": "poor" },
+  "abilityScorePriorities": ["dexterity", "wisdom", "constitution", "strength", "intelligence", "charisma"],
   "generalDescription": {
     "en": "<p>Rangers are skilled stalkers and hunters, at home in the wilderness. They are often expert archers or dual-wielders, and many form close bonds with animals.</p>",
     "fr": "<p>Les rôdeurs sont des traqueurs et des chasseurs habiles, à l'aise dans la nature sauvage. Ce sont souvent des archers experts ou des combattants à deux armes, et beaucoup forment des liens étroits avec les animaux.</p>"
@@ -104,3 +105,5 @@
     }
   ]
 }
+
+    

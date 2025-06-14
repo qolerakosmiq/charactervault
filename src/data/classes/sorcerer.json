@@ -6,6 +6,7 @@
   "babProgression": "poor",
   "spellcasting": { "type": "full", "casterAbility": "charisma", "knownSpells": true },
   "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
+  "abilityScorePriorities": ["charisma", "dexterity", "constitution", "intelligence", "wisdom", "strength"],
   "generalDescription": {
     "en": "<p>Sorcerers create magic the way a poet creates poems, with inborn talent honed by practice. They have no books, no mentors, no theories just raw power that they direct at will.</p>",
     "fr": "<p>Les ensorceleurs créent la magie comme un poète crée des poèmes, avec un talent inné perfectionné par la pratique. Ils n'ont pas de livres, pas de mentors, pas de théories, juste un pouvoir brut qu'ils dirigent à volonté.</p>"
@@ -44,3 +45,5 @@
     }
   ]
 }
+
+    

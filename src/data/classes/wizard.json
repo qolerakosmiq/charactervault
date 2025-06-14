@@ -6,6 +6,7 @@
   "babProgression": "poor",
   "spellcasting": { "type": "full", "casterAbility": "intelligence", "preparedSpells": true },
   "saves": { "fortitude": "poor", "reflex": "poor", "will": "good" },
+  "abilityScorePriorities": ["intelligence", "dexterity", "constitution", "wisdom", "charisma", "strength"],
   "generalDescription": {
     "en": "<p>Wizards are arcane spellcasters who depend on intensive study to create their magic. To wizards, magic is not a talent but a difficult, rewarding art. They are scholars of the unseen, manipulating reality through careful research and practice.</p>",
     "fr": "<p>Les magiciens sont des lanceurs de sorts profanes qui dépendent d'une étude intensive pour créer leur magie. Pour les magiciens, la magie n'est pas un talent mais un art difficile et gratifiant. Ce sont des érudits de l'invisible, manipulant la réalité par une recherche et une pratique minutieuses.</p>"
@@ -102,3 +103,5 @@
     }
   ]
 }
+
+    

@@ -467,6 +467,7 @@ export interface DndClassOption {
   uiSections?: ClassSpecificUIBlock[];
   featChoiceFilters?: FeatChoiceFilter[];
   classSpecificFeats?: FeatDefinitionJsonData[];
+  abilityScorePriorities?: Array<Exclude<AbilityName, 'none'>>;
 }
 
 export interface DeityAttribute {
@@ -842,3 +843,4 @@ export { type AbilityScoreComponentValue };
 
 export * from './character-core';
 
+    
