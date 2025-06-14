@@ -39,7 +39,6 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Separator } from '@/components/ui/separator';
-import { useToast } from "@/hooks/use-toast";
 
 const DEBOUNCE_DELAY = 400;
 const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__";
@@ -79,7 +78,6 @@ const CharacterFormCoreInfoSectionComponent = ({
   aggregatedFeatEffects,
 }: CharacterFormCoreInfoSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
-  const { toast } = useToast();
 
   const [localName, setLocalName] = useDebouncedFormField(
     characterData.name || '',
@@ -164,11 +162,11 @@ const CharacterFormCoreInfoSectionComponent = ({
 
     if (!isNoneValue) {
         if (newSchoolId === 'divination') {
-            toast({ title: translations.UI_STRINGS.toastErrorTitle || "Error", description: translations.UI_STRINGS.wizardProhibitedSchoolDivinationError || "Divination cannot be a prohibited school.", variant: "destructive" });
+            // Toast for Divination was removed as per user request, but direct return prevents selection
             return; 
         }
         if (newSchoolId === characterData.chosenSpecializationSchool) {
-            toast({ title: translations.UI_STRINGS.toastErrorTitle || "Error", description: translations.UI_STRINGS.wizardProhibitedSchoolSpecializationError || "Cannot prohibit your specialized school.", variant: "destructive" });
+            // Toast for Specialization was removed
             return;
         }
     }
@@ -178,13 +176,13 @@ const CharacterFormCoreInfoSectionComponent = ({
     
     const finalProhibited: (MagicSchoolId | undefined)[] = [currentProhibited[0], currentProhibited[1]];
 
-    if (finalProhibited[0] && finalProhibited[0] === finalProhibited[1]) {
-        toast({ title: translations.UI_STRINGS.toastErrorTitle || "Error", description: translations.UI_STRINGS.wizardProhibitedSchoolDuplicateError || "Cannot select the same prohibited school twice.", variant: "destructive" });
+    if (finalProhibited[0] && finalProhibited[0] === finalProhibited[1] && finalProhibited[0] !== undefined) {
+        // Toast for duplicate was removed
         return;
     }
     
     onFieldChange('prohibitedSchools', finalProhibited.filter(s => s !== undefined) as MagicSchoolId[]);
-  }, [characterData.prohibitedSchools, characterData.chosenSpecializationSchool, onFieldChange, toast, translations]);
+  }, [characterData.prohibitedSchools, characterData.chosenSpecializationSchool, onFieldChange, translations]);
 
   const selectedClassInfo = React.useMemo(() => {
     if (!translations || !localClassName) return undefined;
@@ -201,25 +199,30 @@ const CharacterFormCoreInfoSectionComponent = ({
 
   React.useEffect(() => {
     if (translationsLoading || !translations || !selectedClassInfo) return;
-    const UI_STRINGS = translations.UI_STRINGS;
 
-    const currentAlignmentIsValid = availableAlignments.some(a => a.id === localAlignment);
+    const currentAlignmentIsValidForNewClass = availableAlignments.some(a => a.id === localAlignment);
 
-    if (!currentAlignmentIsValid) {
-      const newAlignment = availableAlignments.length > 0 
-        ? availableAlignments[0].id as CharacterAlignment 
-        : 'true-neutral'; // Fallback if no alignments are somehow valid (should not happen)
-      
-      setLocalAlignment(newAlignment);
-      toast({
-        title: UI_STRINGS.toastAlignmentAutoChangedTitle || "Alignment Updated",
-        description: (UI_STRINGS.toastAlignmentAutoChangedDesc || "Your alignment was changed to '{newAlignment}' to be compatible with the {className} class restrictions.")
-          .replace("{newAlignment}", translations.ALIGNMENTS.find(a => a.id === newAlignment)?.label || newAlignment)
-          .replace("{className}", selectedClassInfo.label),
-        variant: "default", 
-      });
+    if (!currentAlignmentIsValidForNewClass) {
+      const preferredDefaults: CharacterAlignment[] = [
+        'true-neutral', 'neutral-good', 'lawful-good', 'chaotic-good',
+        'lawful-neutral', 'chaotic-neutral',
+      ];
+      let newAlignmentToSet: CharacterAlignment | undefined = undefined;
+      for (const preferred of preferredDefaults) {
+        if (availableAlignments.some(a => a.id === preferred)) {
+          newAlignmentToSet = preferred;
+          break;
+        }
+      }
+      if (!newAlignmentToSet) {
+        newAlignmentToSet = availableAlignments.length > 0 
+          ? availableAlignments[0].id as CharacterAlignment 
+          : 'true-neutral'; 
+      }
+      setLocalAlignment(newAlignmentToSet);
+      // Toast removed as per user request
     }
-  }, [localClassName, selectedClassInfo, availableAlignments, localAlignment, setLocalAlignment, translations, translationsLoading, toast]);
+  }, [localClassName, selectedClassInfo, availableAlignments, localAlignment, setLocalAlignment, translations, translationsLoading]);
 
 
   const deitySelectOptions = React.useMemo(() => {
@@ -241,39 +244,25 @@ const CharacterFormCoreInfoSectionComponent = ({
 
   React.useEffect(() => {
     if (translationsLoading || !translations || localDeity === DEITY_NONE_OPTION_VALUE) return;
-    const UI_STRINGS = translations.UI_STRINGS;
-    const ALIGNMENTS = translations.ALIGNMENTS;
 
     const currentDeityInfo = translations.DND_DEITIES.find(d => d.id === localDeity);
     if (!currentDeityInfo) return; 
 
-    // Check 1: Deity vs Character Alignment (one-step rule)
+    let deityIsValid = true;
     if (!isAlignmentCompatibleWithDeity(localAlignment, currentDeityInfo.alignment)) {
-      toast({
-        title: UI_STRINGS.toastInvalidDeityForAlignmentTitle || "Deity Alignment Mismatch",
-        description: (UI_STRINGS.toastInvalidDeityForAlignmentDesc || "The deity '{deityName}' is not compatible with your character's alignment '{alignment}'.")
-          .replace("{deityName}", currentDeityInfo.label)
-          .replace("{alignment}", ALIGNMENTS.find(a => a.id === localAlignment)?.label || localAlignment),
-        variant: "destructive",
-      });
-      setLocalDeity(DEITY_NONE_OPTION_VALUE); // Reset deity
-      return;
+      deityIsValid = false;
     }
-
-    // Check 2: Deity vs Class's Deity Restriction
-    if (selectedClassInfo?.deityAlignmentRestriction) {
+    if (deityIsValid && selectedClassInfo?.deityAlignmentRestriction) {
       if (!isAlignmentValidForRequirement(currentDeityInfo.alignment, selectedClassInfo.deityAlignmentRestriction)) {
-        toast({
-          title: UI_STRINGS.toastInvalidDeityForClassTitle || "Invalid Deity Choice",
-          description: (UI_STRINGS.toastInvalidDeityForClassDesc || "The deity '{deityName}' is not compatible with the alignment restrictions of the {className} class.")
-            .replace("{deityName}", currentDeityInfo.label)
-            .replace("{className}", selectedClassInfo.label),
-          variant: "destructive",
-        });
-        setLocalDeity(DEITY_NONE_OPTION_VALUE); // Reset deity
+        deityIsValid = false;
       }
     }
-  }, [localDeity, localAlignment, selectedClassInfo, translations, translationsLoading, toast, setLocalDeity]);
+
+    if (!deityIsValid) {
+      setLocalDeity(DEITY_NONE_OPTION_VALUE); // Reset deity
+      // Toasts removed as per user request
+    }
+  }, [localDeity, localAlignment, selectedClassInfo, translations, translationsLoading, setLocalDeity]);
 
 
   React.useEffect(() => {
@@ -738,7 +727,6 @@ const CharacterFormCoreInfoSectionComponent = ({
                 placeholder={UI_STRINGS.selectGenderPlaceholder || "Select or type gender..."}
                 searchPlaceholder="Search genders..."
                 emptyPlaceholder="No gender found."
-                isEditable={true}
             />
           </div>
           <div className="space-y-1.5">
