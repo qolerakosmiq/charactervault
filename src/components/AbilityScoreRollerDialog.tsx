@@ -29,10 +29,10 @@ interface AbilityScoreRollerDialogProps {
 }
 
 const ABILITY_ORDER: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
-const UNASSIGN_VALUE = "__UNASSIGN__"; 
+const UNASSIGN_VALUE = "__UNASSIGN__";
 
 type RolledScoreItem = {
-  id: string; 
+  id: string;
   value: number;
 };
 
@@ -53,9 +53,9 @@ const generateSingleAbilityScoreInternal = (rerollActive: boolean): number => {
     rollDieInternal(rerollActive),
     rollDieInternal(rerollActive),
   ];
-  rolls.sort((a, b) => a - b); 
-  rolls.shift(); 
-  return rolls.reduce((sum, val) => sum + val, 0); 
+  rolls.sort((a, b) => a - b);
+  rolls.shift();
+  return rolls.reduce((sum, val) => sum + val, 0);
 };
 
 export function AbilityScoreRollerDialog({
@@ -73,11 +73,11 @@ export function AbilityScoreRollerDialog({
     const newScores = Array(6)
       .fill(0)
       .map((_, index) => ({
-        id: `roll-${index}-${Date.now()}`, 
+        id: `roll-${index}-${Date.now()}`,
         value: generateSingleAbilityScoreInternal(rerollOnes),
       }));
     setRolledScores(newScores);
-    setAssignments({}); 
+    setAssignments({});
   }, [rerollOnes]);
 
   useEffect(() => {
@@ -89,7 +89,7 @@ export function AbilityScoreRollerDialog({
   const handleAssignScore = (ability: Exclude<AbilityName, 'none'>, rollId: string | undefined) => {
     setAssignments((prev) => {
       const newAssignments = { ...prev };
-      if (rollId === undefined || rollId === UNASSIGN_VALUE) { 
+      if (rollId === undefined || rollId === UNASSIGN_VALUE) {
         delete newAssignments[ability];
       } else {
         for (const key in newAssignments) {
@@ -134,6 +134,10 @@ export function AbilityScoreRollerDialog({
     const uniqueAssignedRollIds = new Set(Object.values(assignments).filter(Boolean));
     return assignedCount !== 6 || uniqueAssignedRollIds.size !== 6 || translationsLoading;
   }, [assignments, translationsLoading]);
+
+  const sortedRolledScoresForDisplay = useMemo(() => {
+    return [...rolledScores].sort((a, b) => b.value - a.value);
+  }, [rolledScores]);
 
   if (translationsLoading || !translations) {
     return (
@@ -180,11 +184,28 @@ export function AbilityScoreRollerDialog({
               {UI_STRINGS.rollerDialogYourScoresLabel || "Your Rolled Scores:"}
             </Label>
             <div className="flex justify-center gap-2 mt-2 flex-wrap">
-              {rolledScores.map((score) => (
-                <Badge key={score.id} variant="secondary">
-                  {score.value}
-                </Badge>
-              ))}
+              {sortedRolledScoresForDisplay.map((score, index) => {
+                let badgeColorClasses = "";
+                if (index < 2) { // Top 2
+                  badgeColorClasses = "bg-emerald-600 text-emerald-50 border-emerald-700";
+                } else if (index < 4) { // Middle 2
+                  badgeColorClasses = "bg-amber-500 text-amber-50 border-amber-600";
+                } else { // Bottom 2
+                  badgeColorClasses = "bg-red-600 text-red-50 border-red-700";
+                }
+                return (
+                  <Badge
+                    key={score.id}
+                    variant={null} // Use null to avoid default variant styles interfering
+                    className={cn(
+                      "text-lg font-semibold px-2.5 py-1", // Base styles
+                      badgeColorClasses // Color specific styles
+                    )}
+                  >
+                    {score.value}
+                  </Badge>
+                );
+              })}
             </div>
           </div>
           <Button onClick={generateNewRolls} variant="outline" className="w-full">
@@ -195,10 +216,10 @@ export function AbilityScoreRollerDialog({
         <div className="grid grid-cols-2 gap-x-4 gap-y-3 items-center">
           {ABILITY_ORDER.map((ability) => {
             const currentAssignedRollId = assignments[ability];
-            const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === ability);
+            const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === ability);
             const abbrPart = abilityLabelInfo?.abbr || ability.substring(0,3).toUpperCase();
             const fullNamePart = abilityLabelInfo?.label || ability;
-            
+
             return (
               <React.Fragment key={ability}>
                 <Label htmlFor={`assign-${ability}`} className="font-medium text-right">
@@ -206,7 +227,7 @@ export function AbilityScoreRollerDialog({
                   {fullNamePart && <span className="text-muted-foreground ml-1 font-normal">({fullNamePart})</span>}
                 </Label>
                 <Select
-                  value={currentAssignedRollId || UNASSIGN_VALUE} // Ensure UNASSIGN_VALUE is used if undefined
+                  value={currentAssignedRollId || UNASSIGN_VALUE}
                   onValueChange={(value) => handleAssignScore(ability, value)}
                 >
                   <SelectTrigger id={`assign-${ability}`} className="w-full">
@@ -223,8 +244,8 @@ export function AbilityScoreRollerDialog({
                         key={roll.id}
                         value={roll.id}
                         disabled={
-                          Object.values(assignments).includes(roll.id) && 
-                          assignments[ability] !== roll.id 
+                          Object.values(assignments).includes(roll.id) &&
+                          assignments[ability] !== roll.id
                         }
                       >
                         {roll.value}
@@ -249,3 +270,4 @@ export function AbilityScoreRollerDialog({
     </Dialog>
   );
 }
+
