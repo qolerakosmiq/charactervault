@@ -16,8 +16,8 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
-import { getLocalizedString } from '@/i18n/i18n-data'; 
-import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config'; 
+import { getLocalizedString } from '@/i18n/i18n-data';
+import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 
 
 const DEBOUNCE_DELAY = 400;
@@ -32,7 +32,7 @@ export interface ArmorClassPanelProps {
 const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) => {
   const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
 
-  const handleUpdateCallback = React.useCallback((fieldName: keyof Pick<Character, 'acMiscModifier' | 'armorBonus' | 'shieldBonus' | 'naturalArmor' | 'deflectionBonus' | 'dodgeBonus'>) => (value: number) => {
+  const handleUpdateCallback = React.useCallback((fieldName: keyof Pick<Character, 'acMiscModifier'>) => (value: number) => {
     if (onCharacterUpdate) {
       onCharacterUpdate(fieldName, value);
     }
@@ -207,10 +207,10 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
             </div>
           </div>
 
-          <Separator className="my-3" />
-          
+          <Separator className="mt-3 mb-1" /> {/* Changed my-3 to mt-3 mb-1 */}
+
           {/* Temporary Modifier Input */}
-          <div className="pt-3">
+          <div className="pt-2 pb-4"> {/* Changed pt-3 to pt-2 and added pb-4 */}
             <div className="flex items-center justify-between">
               <Label htmlFor="temporary-ac-modifier-input" className="text-sm font-medium">
                 {UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}
@@ -222,11 +222,11 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
                 disabled={!onCharacterUpdate}
                 min={-20}
                 max={20}
-                inputClassName="w-20 h-9 text-base" 
+                inputClassName="w-20 h-9 text-base"
                 buttonClassName="h-9 w-9"
               />
             </div>
-             <p className="text-xs text-muted-foreground pt-1">
+            <p className="text-xs text-muted-foreground pt-1">
               <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.armorClassPanelTempModInfoNote_prefix }} />
               <Badge variant="outline">{UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}</Badge>
               <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.armorClassPanelTempModInfoNote_suffix }} />
