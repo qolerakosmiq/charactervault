@@ -19,28 +19,28 @@ import { Badge } from '@/components/ui/badge';
 
 const DEBOUNCE_DELAY_HEALTH = 400;
 
-export type HealthPanelData = Pick<Character, 
-  'hp' | 'baseMaxHp' | 'customMaxHpModifier' | 
+export type HealthPanelData = Pick<Character,
+  'hp' | 'baseMaxHp' | 'customMaxHpModifier' |
   'nonlethalDamage' | 'temporaryHp' | 'abilityScores' | 'numberOfWounds'
 >;
 
 export interface HealthPanelProps {
   healthData: HealthPanelData;
-  calculatedMaxHp: number; 
+  calculatedMaxHp: number;
   finalConstitutionModifier: number;
-  calculatedMiscMaxHpBonus: number; 
+  calculatedMiscMaxHpBonus: number;
   onCharacterUpdate: (
-    field: keyof Pick<Character, 'hp' | 'baseMaxHp' | 'customMaxHpModifier' | 'nonlethalDamage' | 'temporaryHp' | 'numberOfWounds'>, 
+    field: keyof Pick<Character, 'hp' | 'baseMaxHp' | 'customMaxHpModifier' | 'nonlethalDamage' | 'temporaryHp' | 'numberOfWounds'>,
     value: number
   ) => void;
   onOpenHealthInfoDialog: (contentType: InfoDialogContentType) => void;
 }
 
-const HealthPanelComponent = ({ 
-  healthData, 
-  calculatedMaxHp, 
+const HealthPanelComponent = ({
+  healthData,
+  calculatedMaxHp,
   finalConstitutionModifier,
-  calculatedMiscMaxHpBonus, 
+  calculatedMiscMaxHpBonus,
   onCharacterUpdate,
   onOpenHealthInfoDialog
 }: HealthPanelProps) => {
@@ -79,7 +79,7 @@ const HealthPanelComponent = ({
 
 
   React.useEffect(() => {
-    if (calculatedMaxHp > 0 && localHp > calculatedMaxHp) { 
+    if (calculatedMaxHp > 0 && localHp > calculatedMaxHp) {
         setLocalHp(calculatedMaxHp);
     }
   }, [calculatedMaxHp, localHp, setLocalHp]);
@@ -110,11 +110,11 @@ const HealthPanelComponent = ({
 
   const { UI_STRINGS, ABILITY_LABELS } = translations;
   const conAbbr = ABILITY_LABELS.find(al => al.id === 'constitution')?.abbr || 'CON';
-  
+
   const missingHp = Math.max(0, calculatedMaxHp - localHp);
 
-  const actualCurrentHpForBar = Math.max(0, localHp); 
-  const effectiveTotalHpForBar = Math.max(1, calculatedMaxHp); 
+  const actualCurrentHpForBar = Math.max(0, localHp);
+  const effectiveTotalHpForBar = Math.max(1, calculatedMaxHp);
 
   const tempHpBarWidthPercentage = ((actualCurrentHpForBar + localTemporaryHp) / effectiveTotalHpForBar) * 100;
   const currentHpBarWidthPercentage = (actualCurrentHpForBar / effectiveTotalHpForBar) * 100;
@@ -136,17 +136,17 @@ const HealthPanelComponent = ({
     statusText = UI_STRINGS.healthStatusDisabled || "Disabled";
     statusColorClass = "text-amber-600";
   }
-  
-  if (localHp > -10) { 
+
+  if (localHp > -10) {
     if (localNonlethalDamage > 0 && localNonlethalDamage >= localHp) {
-      if (localHp > 0) { 
+      if (localHp > 0) {
         statusText = UI_STRINGS.healthStatusStaggered || "Staggered";
         statusColorClass = "text-amber-600";
-        if (localNonlethalDamage > localHp) { 
+        if (localNonlethalDamage > localHp) {
             statusText = UI_STRINGS.healthStatusUnconscious || "Unconscious";
             statusColorClass = "text-destructive";
         }
-      } else { 
+      } else {
         statusText = UI_STRINGS.healthStatusUnconscious || "Unconscious";
         statusColorClass = "text-destructive";
       }
@@ -204,7 +204,7 @@ const HealthPanelComponent = ({
         </div>
 
         <Separator className="my-6" />
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
           <div className="space-y-1">
             <Label htmlFor="current-hp-input" className="text-sm font-medium block w-full text-center">
@@ -214,12 +214,12 @@ const HealthPanelComponent = ({
               id="current-hp-input"
               value={localHp}
               onChange={setLocalHp}
-              min={-999} 
+              min={-999}
               max={calculatedMaxHp > 0 ? calculatedMaxHp : 999}
               inputClassName={cn(
                 "w-full h-10 text-lg text-center font-bold",
                 localHp <= 0 && localHp > -10 && "text-amber-600",
-                localHp <= -10 && "text-destructive", 
+                localHp <= -10 && "text-destructive",
                 localHp > 0 && "text-emerald-600"
               )}
               buttonClassName="h-10 w-10"
@@ -251,7 +251,7 @@ const HealthPanelComponent = ({
                 onChange={setLocalTemporaryHp}
                 min={0}
                 inputClassName={cn(
-                  "w-full h-10 text-lg text-center font-bold", 
+                  "w-full h-10 text-lg text-center font-bold",
                   localTemporaryHp > 0 ? "text-sky-500" : "text-muted-foreground"
                 )}
                 buttonClassName="h-10 w-10"
@@ -267,14 +267,14 @@ const HealthPanelComponent = ({
                 onChange={setLocalNumberOfWounds}
                 min={0}
                 inputClassName={cn(
-                  "w-full h-10 text-lg text-center font-bold", 
+                  "w-full h-10 text-lg text-center font-bold",
                   localNumberOfWounds > 0 ? "text-destructive" : "text-muted-foreground"
                 )}
                 buttonClassName="h-10 w-10"
             />
           </div>
         </div>
-        
+
         <div className="space-y-2 text-sm mt-4">
             <div className="flex items-center justify-between">
                 <Label htmlFor="base-max-hp">{UI_STRINGS.healthPanelBaseMaxHpLabel || "Base Hit Points"}</Label>
@@ -298,7 +298,7 @@ const HealthPanelComponent = ({
                     <span className={cn(
                         "font-semibold font-bold",
                         finalConstitutionModifier === 0 && "text-muted-foreground",
-                        finalConstitutionModifier > 0 && "text-emerald-600", 
+                        finalConstitutionModifier > 0 && "text-emerald-600",
                         finalConstitutionModifier < 0 && "text-destructive"
                     )}>
                         {finalConstitutionModifier >= 0 ? `+${finalConstitutionModifier}` : finalConstitutionModifier}
@@ -311,9 +311,9 @@ const HealthPanelComponent = ({
                 </Label>
                  <div className="w-36 text-center">
                     <span className={cn(
-                        "font-semibold font-bold", 
+                        "font-semibold font-bold",
                         calculatedMiscMaxHpBonus === 0 && "text-muted-foreground",
-                        calculatedMiscMaxHpBonus > 0 && "text-emerald-600", 
+                        calculatedMiscMaxHpBonus > 0 && "text-emerald-600",
                         calculatedMiscMaxHpBonus < 0 && "text-destructive"
                     )}>
                         {calculatedMiscMaxHpBonus >= 0 ? `+${calculatedMiscMaxHpBonus}` : calculatedMiscMaxHpBonus}
@@ -369,7 +369,7 @@ const HealthPanelComponent = ({
       </CardContent>
     </Card>
   );
-});
+};
 HealthPanelComponent.displayName = 'HealthPanelComponent';
 export const HealthPanel = React.memo(HealthPanelComponent);
 
