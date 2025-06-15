@@ -714,10 +714,28 @@ export function calculateDetailedAbilityScores(
 }
 
 export function calculateFeatEffects(
-  character: Character, // Now accepts the full Character object
+  character: Character,
   allFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[],
   processedSiteData: ProcessedSiteData
 ): AggregatedFeatEffects {
+
+  if (!processedSiteData || !processedSiteData.UI_STRINGS || typeof processedSiteData.UI_STRINGS.currentLangCodeForNotesFallback === 'undefined') {
+    console.error("calculateFeatEffects called with incomplete processedSiteData or missing UI_STRINGS.currentLangCodeForNotesFallback.", { 
+      characterId: character.id, 
+      processedSiteDataExists: !!processedSiteData,
+      uiStringsExists: !!processedSiteData?.UI_STRINGS,
+      currentLangCodeExists: !!processedSiteData?.UI_STRINGS?.currentLangCodeForNotesFallback
+    });
+    // Return a default/empty AggregatedFeatEffects to prevent further errors
+    return {
+      skillBonuses: {}, allSkillEffectDetails: [], favoredEnemyBonuses: { skillBonus: 0, damageBonus: 0 }, favoredEnemySlots: 0,
+      abilityScoreBonuses: [], savingThrowBonuses: [], attackRollBonuses: [], damageRollBonuses: [], acBonuses: [],
+      hpBonus: 0, hpBonusSources: [], initiativeBonus: 0, speedBonuses: [], resistanceBonuses: [], damageReductions: [], casterLevelCheckBonuses: [], spellSaveDcBonuses: [],
+      turnUndeadBonuses: [], grantedAbilities: [], modifiedMechanics: {}, proficienciesGranted: [], bonusFeatSlots: [], languagesGranted: { count: 0, specific: [] }, descriptiveNotes: [],
+      classLevels: character.classes.reduce((acc, cur) => { if (cur.className) acc[cur.className] = cur.level; return acc; }, {} as Record<DndClassId, number>)
+    };
+  }
+
   const { DND_CLASSES, ABILITY_LABELS, UI_STRINGS, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA } = processedSiteData;
   const allItemDefinitions = [
     ...(processedSiteData.ITEM_DEFINITIONS_WEAPONS || []),
@@ -738,7 +756,6 @@ export function calculateFeatEffects(
   };
 
   // --- First pass to get detailed ability scores based *only* on inherent bonuses (race, age, initial temp mods) for accurate mod calculations for other effects ---
-  // Create a temporary aggregated effects object with *only* inherent ability bonuses from feats/items for the detailedAbilityScores calculation
   const initialAbilityAggEffects: AggregatedFeatEffects = { ...newAggregatedEffects, abilityScoreBonuses: [] };
 
   const sourcesForAbilityAggregation: Array<{ definition: FeatDefinitionJsonData | ItemDefinition, instance?: CharacterFeatInstance | ItemInstance, sourceName: LocalizedString, conditionalEffectStates?: Record<string, boolean> }> = [];
@@ -770,17 +787,20 @@ export function calculateFeatEffects(
       source.definition.effects.forEach(effect => {
         if (effect.type === 'abilityScore') {
           let isActive = true;
-          if (definition.permanentEffect) { // 'definition' here refers to FeatDefinition for feats
+          // Assuming FeatDefinitionJsonData has permanentEffect, ItemDefinition does not
+          const permanentEffect = (source.definition as FeatDefinitionJsonData).permanentEffect;
+
+          if (permanentEffect) { 
             isActive = true;
           } else if (effect.condition && source.instance && 'conditionalEffectStates' in source.instance && source.instance.conditionalEffectStates) {
             isActive = !!source.instance.conditionalEffectStates[effect.condition];
-          } else if (effect.condition && !source.instance) { // For items that might have conditional effects not tied to instance states
-             isActive = false; // Or handle item-specific conditions if they exist
+          } else if (effect.condition && !source.instance) { 
+             isActive = false; 
           }
           if (isActive) {
             initialAbilityAggEffects.abilityScoreBonuses.push({
               ...effect,
-              sourceFeat: source.sourceName, // Using sourceName which is the label
+              sourceFeat: source.sourceName, 
               isActive: true,
             } as AbilityScoreEffect & AggregatedFeatEffectBase);
           }
@@ -854,22 +874,19 @@ export function calculateFeatEffects(
       effectToPush.sourceFeat = sourceName; // sourceName is already localized
 
       let effectIsActive = true;
-      if ((definition as FeatDefinitionJsonData).permanentEffect) { // Feat specific
+      const permanentEffect = (definition as FeatDefinitionJsonData).permanentEffect; // Feat specific
+      if (permanentEffect) { 
         effectIsActive = true;
         if (effectToPush.condition && conditionalEffectStates) {
            conditionalEffectStates[effectToPush.condition] = true;
         }
       } else if (effectToPush.condition && effectToPush.condition.trim() !== "") {
         if (isItemSource) {
-          // Items currently don't have conditionalEffectStates on the instance.
-          // Assume active unless specific item condition logic is added later.
-          // For now, if an item has a conditional effect, it's assumed to be globally active if equipped.
-          // This might need refinement if items can have togglable conditional states.
-          effectIsActive = true; // Default to true for equipped items with conditions for now
+          effectIsActive = true; 
         } else if (conditionalEffectStates) {
            effectIsActive = !!conditionalEffectStates[effectToPush.condition];
         } else {
-           effectIsActive = false; // If condition present but no states, assume false
+           effectIsActive = false; 
         }
       }
       effectToPush.isActive = effectIsActive;
@@ -965,8 +982,7 @@ export function calculateFeatEffects(
           }
           break;
         case "abilityScore":
-          // Ability score bonuses from items are handled in the initial pass for detailedAbilityScores
-          if (!isItemSource) {
+          if (!isItemSource) { // Ability score bonuses from items already handled in detailedAbilityScores first pass
             newAggregatedEffects.abilityScoreBonuses.push(effectToPush as AbilityScoreEffect & AggregatedFeatEffectBase);
           }
           break;
@@ -1238,6 +1254,5 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
-
 
     
