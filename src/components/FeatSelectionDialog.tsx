@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/command';
 import type {
   FeatDefinitionJsonData, Character, PrerequisiteMessage, SkillDefinitionJsonData,
-  DndClassOption, DndRaceOption, AbilityName, LocalizedString
+  DndClassOption, DndRaceOption, AbilityName, LocalizedString, NoteEffectDetail
 } from '@/types/character';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -98,10 +98,11 @@ export function FeatSelectionDialog({
     const lowerSearchTerm = searchTerm.toLowerCase();
     return baseSortedAndFilteredFeats.filter(featDef => {
       const labelMatch = featDef.label.toLowerCase().includes(lowerSearchTerm);
-      const descriptionMatch = (featDef.description ? stripHtml(typeof featDef.description === 'string' ? featDef.description : getLocalizedString(featDef.description, currentLang)).toLowerCase() : '').includes(lowerSearchTerm);
+      const descriptionMatch = (featDef.description ? stripHtml(getLocalizedString(featDef.description, currentLang)).toLowerCase() : '').includes(lowerSearchTerm);
       const categoryMatch = (featDef.category ? featDef.category.toLowerCase() : '').includes(lowerSearchTerm);
       const typeMatch = (featDef.type ? featDef.type.toLowerCase() : '').includes(lowerSearchTerm);
-      return labelMatch || descriptionMatch || categoryMatch || typeMatch;
+      const benefitMatch = (featDef.effectsText ? stripHtml(getLocalizedString(featDef.effectsText, currentLang)).toLowerCase() : '').includes(lowerSearchTerm);
+      return labelMatch || descriptionMatch || categoryMatch || typeMatch || benefitMatch;
     });
   }, [baseSortedAndFilteredFeats, searchTerm, currentLang]);
 
@@ -177,8 +178,24 @@ export function FeatSelectionDialog({
               <CommandEmpty>{UI_STRINGS.featSelectionDialogEmpty || "No feats found."}</CommandEmpty>
               <CommandGroup>
                 {displayedFeats
-                  .filter(featDef => featDef && typeof featDef.id === 'string' && featDef.id.length > 0 && typeof featDef.label === 'string') 
+                  .filter(featDef => featDef && typeof featDef.id === 'string' && featDef.id.length > 0 && typeof featDef.label === 'string')
                   .map((featDef) => {
+                  const featDefDescription = featDef.description ? getLocalizedString(featDef.description, currentLang, undefined, `feats.${featDef.id}.description`) : "";
+                  
+                  let benefitContentText = "";
+                  if (featDef.effectsText) {
+                    benefitContentText = getLocalizedString(featDef.effectsText, currentLang, undefined, `feats.${featDef.id}.effectsText`);
+                  }
+                  const noteEffects = (featDef.effects?.filter(e => e.type === 'note') as NoteEffectDetail[] | undefined) || [];
+                  if (noteEffects.length > 0) {
+                    const noteText = noteEffects.map(ne => ne.text).join(' '); // text is already localized string
+                    if (noteText.trim() !== "") {
+                      if (benefitContentText.trim() !== "") benefitContentText += " ";
+                      benefitContentText += noteText.trim();
+                    }
+                  }
+                  const showBenefitLine = benefitContentText.trim() !== "";
+
                   const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(
                     featDef,
                     character,
@@ -198,7 +215,7 @@ export function FeatSelectionDialog({
                   const hasStructuralPrereqs = prereqMessages.length > 0;
                   const hasTextualPrereqs = !!(localizedSpecialPrereqText && localizedSpecialPrereqText.trim() !== "");
                   const showPrerequisitesLine = hasStructuralPrereqs || hasTextualPrereqs;
-                  const featDefDescription = featDef.description ? (typeof featDef.description === 'string' ? featDef.description : getLocalizedString(featDef.description, currentLang)) : "";
+
 
                   return (
                     <CommandItem
@@ -221,9 +238,15 @@ export function FeatSelectionDialog({
                           dangerouslySetInnerHTML={{ __html: featDefDescription }}
                         />
                       )}
+                      {showBenefitLine && (
+                         <p className="text-xs mt-0.5 whitespace-normal">
+                          <strong className="text-muted-foreground">{UI_STRINGS.featBenefitLabel || "Benefit:"}</strong>{' '}
+                          <span dangerouslySetInnerHTML={{ __html: benefitContentText }} />
+                        </p>
+                      )}
                       {showPrerequisitesLine && (
                         <p className="text-xs mt-0.5 whitespace-normal">
-                          <b className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel || "Prerequisites:"}</b>{' '}
+                          <strong className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel || "Prerequisites:"}</strong>{' '}
                           <>
                             {hasStructuralPrereqs && prereqMessages.map((msg, index) => (
                               <React.Fragment key={index}>

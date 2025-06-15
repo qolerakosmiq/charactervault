@@ -5,10 +5,10 @@
       "id": "elf-weapon-proficiencies",
       "label": { "en": "Elven Weapon Proficiencies", "fr": "Maîtrise des armes elfiques" },
       "description": {
-        "en": "Elves treat longswords, rapiers, longbows (including composite longbows), and shortbows (including composite shortbows) as martial weapons rather than exotic weapons.",
-        "fr": "Les elfes considèrent les épées longues, les rapières, les arcs longs (y compris les arcs longs composites) et les arcs courts (y compris les arcs courts composites) comme des armes de guerre plutôt que des armes exotiques."
+        "en": "Elves possess the martial training to use longswords, rapiers, longbows (including composite longbows), and shortbows (including composite shortbows).",
+        "fr": "Les elfes possèdent l'entraînement martial pour utiliser les épées longues, les rapières, les arcs longs (y compris les arcs longs composites) et les arcs courts (y compris les arcs courts composites)."
       },
-      "effectsText": { "en": "Proficient with longsword, rapier, longbow, composite longbow, shortbow, composite shortbow.", "fr": "Maîtrise de l'épée longue, rapière, arc long, arc long composite, arc court, arc court composite." },
+      "effectsText": { "en": "Treat longswords, rapiers, longbows, and shortbows as martial weapons.", "fr": "Considère les épées longues, rapières, arcs longs et arcs courts comme des armes de guerre." },
       "isClassFeature": true,
       "type": "general"
     },
@@ -16,8 +16,8 @@
       "id": "dwarf-weapon-proficiencies",
       "label": { "en": "Dwarven Weapon Familiarity", "fr": "Familiarité avec les armes naines" },
       "description": {
-        "en": "Dwarves may treat dwarven waraxes and dwarven urgroshes as martial weapons, rather than exotic weapons.",
-        "fr": "Les nains peuvent considérer les haches de guerre naines et les urgroshs nains comme des armes de guerre, plutôt que des armes exotiques."
+        "en": "Dwarves are familiar with the use of dwarven waraxes and dwarven urgroshes.",
+        "fr": "Les nains sont familiers avec l'utilisation des haches de guerre naines et des urgroshs nains."
       },
       "effectsText": { "en": "Treat dwarven waraxe and urgrosh as martial weapons.", "fr": "Considère la hache de guerre naine et l'urgrosh nain comme des armes de guerre." },
       "isClassFeature": true,
@@ -27,8 +27,8 @@
       "id": "gnome-weapon-familiarity",
       "label": { "en": "Gnome Weapon Familiarity", "fr": "Familiarité avec les armes gnomes" },
       "description": {
-        "en": "Gnomes may treat gnome hooked hammers as martial weapons rather than exotic weapons.",
-        "fr": "Les gnomes peuvent considérer les marteaux-haches gnomes comme des armes de guerre plutôt que des armes exotiques."
+        "en": "Gnomes are familiar with the use of gnome hooked hammers.",
+        "fr": "Les gnomes sont familiers avec l'utilisation des marteaux-haches gnomes."
       },
       "effectsText": { "en": "Treat gnome hooked hammer as martial weapon.", "fr": "Considère le marteau-hache gnome comme une arme de guerre." },
       "isClassFeature": true,
@@ -694,10 +694,7 @@
     {
       "id": "armor-proficiency-light",
       "label": { "en": "Armor Proficiency (Light)", "fr": "Port des armures légères" },
-      "description": {
-        "en": "You are proficient with light armor.",
-        "fr": "Vous êtes compétent avec les armures légères."
-      },
+      "description": { "en": "You are proficient with light armor.", "fr": "Vous êtes compétent avec les armures légères." },
       "effectsText": { "en": "When you wear a type of armor with which you are proficient, the armor check penalty applies only to Balance, Climb, Escape Artist, Hide, Jump, Move Silently, Sleight of Hand, and Tumble checks", "fr": "Lorsque vous portez un type d'armure avec lequel vous êtes formé, le malus d'armure aux tests ne s'applique qu'aux tests d'Équilibre, d'Escalade, d'Art de la Fugue, de Discrétion, de Saut, de Déplacement silencieux, d'Escamotage et d'Acrobaties" },
       "type": "general",
       "category": "fighterBonusFeat"
@@ -705,10 +702,7 @@
     {
       "id": "armor-proficiency-medium",
       "label": { "en": "Armor Proficiency (Medium)", "fr": "Port des armures intermédiaires" },
-      "description": {
-        "en": "You are proficient with medium armor.",
-        "fr": "Vous êtes compétent avec les armures intermédiaires."
-      },
+      "description": { "en": "You are proficient with medium armor.", "fr": "Vous êtes compétent avec les armures intermédiaires." },
       "effectsText": { "en": "See Armor Proficiency (Light)", "fr": "Voir Port des armures légères" },
       "prerequisites": { "feats": ["armor-proficiency-light"] },
       "type": "general",
@@ -717,10 +711,7 @@
     {
       "id": "armor-proficiency-heavy",
       "label": { "en": "Armor Proficiency (Heavy)", "fr": "Port des armures lourdes" },
-      "description": {
-        "en": "You are proficient with heavy armor.",
-        "fr": "Vous êtes compétent avec les armures lourdes."
-      },
+      "description": { "en": "You are proficient with heavy armor.", "fr": "Vous êtes compétent avec les armures lourdes." },
       "effectsText": { "en": "See Armor Proficiency (Light)", "fr": "Voir Port des armures légères" },
       "prerequisites": { "feats": ["armor-proficiency-medium"] },
       "type": "general",
@@ -729,10 +720,7 @@
     {
       "id": "shield-proficiency",
       "label": { "en": "Shield Proficiency", "fr": "Maniement des boucliers" },
-      "description": {
-        "en": "You are proficient with shields (except tower shields).",
-        "fr": "Vous êtes compétent avec les boucliers (sauf les pavois)."
-      },
+      "description": { "en": "You are proficient with shields (except tower shields).", "fr": "Vous êtes compétent avec les boucliers (sauf les pavois)." },
       "effectsText": { "en": "You can use a shield and take only the standard armor check penalty", "fr": "Vous pouvez utiliser un bouclier et ne subir que le malus d'armure aux tests standard" },
       "type": "general",
       "category": "fighterBonusFeat"
@@ -762,10 +750,7 @@
     {
       "id": "martial-weapon-proficiency-all",
       "label": { "en": "Martial Weapon Proficiency (All)", "fr": "Maniement des armes de guerre (Toutes)" },
-      "description": {
-        "en": "You are proficient with all martial weapons.",
-        "fr": "Vous êtes compétent avec toutes les armes de guerre."
-      },
+      "description": { "en": "You are proficient with all martial weapons.", "fr": "Vous êtes compétent avec toutes les armes de guerre." },
       "effectsText": { "en": "You make attack rolls with all martial weapons without penalty", "fr": "Vous effectuez des jets d'attaque avec toutes les armes de guerre sans pénalité" },
       "effects": [{ "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "martial" }],
       "type": "general",
@@ -989,4 +974,3 @@
   ]
 }
 
-    
