@@ -38,6 +38,13 @@
   "specializationErrorRequired": { "en": "Specialization is required for this feat.", "fr": "La spécialisation est requise pour ce don." },
   "specializationSelectPlaceholderSkill": { "en": "Select skill...", "fr": "Choisir une compétence..." },
   "specializationSelectPlaceholderSchool": { "en": "Select school of magic...", "fr": "Choisir une école de magie..." },
-  "specializationInputPlaceholderWeapon": { "en": "Enter weapon name (e.g., Longsword)", "fr": "Entrer le nom de l'arme (ex : Épée longue)" }
+  "specializationInputPlaceholderWeapon": { "en": "Enter weapon name (e.g., Longsword)", "fr": "Entrer le nom de l'arme (ex : Épée longue)" },
+  "rollDialogCriticalHitLabel": { "en": "Critical Hit!", "fr": "Coup Critique !" },
+  "rollDialogDamageMultiplierLabel": { "en": "Damage", "fr": "Dégâts" },
+  "rollDialogCriticalHitAppliedLabel": { "en": "CRITICAL HIT APPLIED!", "fr": "COUP CRITIQUE APPLIQUÉ !" },
+  "rollDialogWeaponDamageDiceLabel": { "en": "Weapon Dice Rolled:", "fr": "Dés d'Arme Lancés :" },
+  "rollDialogExtraDamageDiceLabel": { "en": "Extra Dice Rolled:", "fr": "Dés Supplémentaires Lancés :" }
 }
 
+
+    

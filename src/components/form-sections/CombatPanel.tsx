@@ -9,8 +9,8 @@ import type {
   GenericBreakdownItem,
   AbilityName,
   Item,
-  ItemInstance, // Added ItemInstance
-  ItemDefinition, // Added ItemDefinition
+  ItemInstance,
+  ItemDefinition,
   FeatDefinitionJsonData,
   CombatPanelCharacterData,
   AttackRollEffect,
@@ -32,7 +32,7 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
 import { getLocalizedString } from '@/i18n/i18n-data';
-import { DEFAULT_LANGUAGE } from '@/i18n/config';
+import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 
 const DEBOUNCE_DELAY = 400;
 
@@ -501,6 +501,12 @@ const CombatPanelComponent = ({
     });
   };
 
+  const parseCritMultiplier = (critMultString: string | undefined): number => {
+    if (!critMultString) return 1;
+    const match = critMultString.toLowerCase().match(/x(\d+)/);
+    return match ? parseInt(match[1], 10) : 1;
+  };
+
   const handleOpenMeleeAttackRollDialog = () => {
     const weaponName = selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : (UI_STRINGS.attacksPanelUnarmedOption || "Unarmed");
     const breakdown = getMeleeAttackBonusBreakdownComponentsInternal().filter(item => item.label !== (UI_STRINGS.infoDialogTotalLabel || "Total"));
@@ -509,7 +515,7 @@ const CombatPanelComponent = ({
       rollType: `melee_attack_${selectedMeleeWeaponInstanceId}`,
       baseModifier: calculatedMeleeAttackBonus,
       calculationBreakdown: breakdown,
-      rerollTwentiesForChecks: false,
+      rerollTwentiesForChecks: false, 
     });
   };
 
@@ -527,18 +533,21 @@ const CombatPanelComponent = ({
   };
 
   const handleOpenMeleeDamageRollDialog = () => {
-    if (!selectedMeleeWeaponDefinition) return;
-    const weaponName = getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE);
-    const weaponDamageDiceString = selectedMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMeleeWeaponDefinition.damage || 'N/A';
+    const weaponDamageString = selectedMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMeleeWeaponDefinition?.damage || 'N/A';
+    const critMultiplier = parseCritMultiplier(selectedMeleeWeaponDefinition?.criticalMultiplier);
+    
+    const weaponName = selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : UI_STRINGS.attacksPanelUnarmedOption || "Unarmed";
     const breakdown = getMeleeDamageBonusBreakdownComponentsInternal().filter(item => item.label !== (UI_STRINGS.infoDialogTotalNumericBonusLabel || "Total Numeric Bonus"));
+    
     onOpenRollDialog({
       dialogTitle: (UI_STRINGS.rollDialogTitleMeleeDamageFormat || "Melee Damage ({weaponName}: {dice})")
         .replace("{weaponName}", weaponName)
-        .replace("{dice}", weaponDamageDiceString),
+        .replace("{dice}", weaponDamageString),
       rollType: `damage_roll_melee_${selectedMeleeWeaponInstanceId}`,
       baseModifier: calculatedMeleeNumericalDamageBonus,
       calculationBreakdown: breakdown,
-      weaponDamageDice: weaponDamageDiceString,
+      weaponDamageDiceString: weaponDamageString,
+      weaponCriticalMultiplier: critMultiplier,
       rerollTwentiesForChecks: false,
     });
   };
@@ -546,19 +555,23 @@ const CombatPanelComponent = ({
   const handleOpenRangedDamageRollDialog = () => {
     if (!selectedRangedWeaponDefinition) return;
     const weaponName = getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE);
-    const weaponDamageDiceString = selectedRangedWeaponDefinition.damage || 'N/A';
+    const weaponDamageString = selectedRangedWeaponDefinition.damage || 'N/A';
+    const critMultiplier = parseCritMultiplier(selectedRangedWeaponDefinition.criticalMultiplier);
     const breakdown = getRangedDamageBonusBreakdownComponentsInternal().filter(item => item.label !== (UI_STRINGS.infoDialogTotalNumericBonusLabel || "Total Numeric Bonus"));
+
     onOpenRollDialog({
       dialogTitle: (UI_STRINGS.rollDialogTitleRangedDamageFormat || "Ranged Damage ({weaponName}: {dice})")
         .replace("{weaponName}", weaponName)
-        .replace("{dice}", weaponDamageDiceString),
+        .replace("{dice}", weaponDamageString),
       rollType: `damage_roll_ranged_${selectedRangedWeaponInstanceId}`,
       baseModifier: calculatedRangedNumericalDamageBonus,
       calculationBreakdown: breakdown,
-      weaponDamageDice: weaponDamageDiceString,
+      weaponDamageDiceString: weaponDamageString,
+      weaponCriticalMultiplier: critMultiplier,
       rerollTwentiesForChecks: false,
     });
   };
+
 
   return (
     <Card>
@@ -788,7 +801,7 @@ const CombatPanelComponent = ({
                 <div className="flex items-center justify-center">
                   <p className="text-base font-bold text-accent">{renderModifierValue(calculatedMeleeNumericalDamageBonus)}</p>
                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={handleOpenMeleeDamageInfo}><Info className="h-3.5 w-3.5" /></Button>
-                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenMeleeDamageRollDialog} disabled={!selectedMeleeWeaponDefinition} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : UI_STRINGS.attacksPanelUnarmedOption || "Unarmed")}><Dices className="h-3.5 w-3.5" /></Button>
+                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenMeleeDamageRollDialog} disabled={!selectedMeleeWeaponDefinition && selectedMeleeWeaponInstanceId !== 'unarmed'} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : UI_STRINGS.attacksPanelUnarmedOption || "Unarmed")}><Dices className="h-3.5 w-3.5" /></Button>
                 </div>
               </div>
             </div>
@@ -849,3 +862,4 @@ const CombatPanelComponent = ({
 CombatPanelComponent.displayName = 'CombatPanelComponent';
 export const CombatPanel = React.memo(CombatPanelComponent);
 
+    

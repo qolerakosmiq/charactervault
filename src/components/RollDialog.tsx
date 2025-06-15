@@ -10,6 +10,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { Dices, Loader2 } from 'lucide-react';
 import type { GenericBreakdownItem } from '@/types/character-core';
 import { useI18n } from '@/context/I18nProvider';
@@ -24,9 +26,11 @@ export interface RollDialogProps {
   onOpenChange: (open: boolean) => void;
   dialogTitle: string;
   rollType: string;
-  baseModifier: number;
+  baseModifier: number; // Static bonuses
   calculationBreakdown: GenericBreakdownItem[];
-  weaponDamageDice?: string;
+  weaponDamageDiceString?: string; // e.g., "1d8", "2d6" - dice that ARE multiplied on critical
+  weaponCriticalMultiplier?: number; // e.g., 2 for x2, 3 for x3
+  extraDamageDice?: string[]; // e.g., ["1d6", "2d4"] - dice that are NOT multiplied on critical (like sneak attack, elemental)
   onRoll: (diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString?: string) => void;
   rerollTwentiesForChecks?: boolean;
 }
@@ -38,7 +42,9 @@ export function RollDialog({
   rollType,
   baseModifier,
   calculationBreakdown,
-  weaponDamageDice,
+  weaponDamageDiceString,
+  weaponCriticalMultiplier,
+  extraDamageDice,
   onRoll,
   rerollTwentiesForChecks = false,
 }: RollDialogProps) {
@@ -48,6 +54,10 @@ export function RollDialog({
   const [totalDiceValue, setTotalDiceValue] = React.useState<number | null>(null);
   const [finalResult, setFinalResult] = React.useState<number | null>(null);
   const [isRolling, setIsRolling] = React.useState(false);
+  const [isCritical, setIsCritical] = React.useState(false);
+  const [rolledWeaponDiceDetails, setRolledWeaponDiceDetails] = React.useState<string | null>(null);
+  const [rolledExtraDiceDetails, setRolledExtraDiceDetails] = React.useState<string | null>(null);
+
 
   const isDamageRoll = rollType.toLowerCase().includes('damage');
   const isAttackRoll = rollType.toLowerCase().includes('attack');
@@ -60,44 +70,79 @@ export function RollDialog({
       setBonusRolls([]);
       setTotalDiceValue(null);
       setFinalResult(null);
+      setIsCritical(false);
+      setRolledWeaponDiceDetails(null);
+      setRolledExtraDiceDetails(null);
     }
   }, [isOpen]);
 
   const handleRollOrConfirm = () => {
     setIsRolling(true);
+    setRolledWeaponDiceDetails(null);
+    setRolledExtraDiceDetails(null);
+
     setTimeout(() => {
-      if (isDamageRoll && weaponDamageDice) {
-        const weaponDiceRollResult = parseAndRollDice(weaponDamageDice);
-        const totalDamage = weaponDiceRollResult + baseModifier;
-        setInitialD20Roll(null);
-        setBonusRolls([]);
-        setTotalDiceValue(weaponDiceRollResult);
+      if (isDamageRoll) {
+        let multipliedWeaponDiceRollResult = 0;
+        const weaponDiceRolls: number[] = [];
+
+        if (weaponDamageDiceString) {
+          const numCritRolls = isCritical && weaponCriticalMultiplier && weaponCriticalMultiplier > 1 ? weaponCriticalMultiplier : 1;
+          for (let i = 0; i < numCritRolls; i++) {
+            const roll = parseAndRollDice(weaponDamageDiceString);
+            weaponDiceRolls.push(roll);
+            multipliedWeaponDiceRollResult += roll;
+          }
+          if (weaponDiceRolls.length > 0) {
+            setRolledWeaponDiceDetails(`${numCritRolls > 1 ? `${numCritRolls}x ` : ''}${weaponDamageDiceString} (${weaponDiceRolls.join(', ')}) = ${multipliedWeaponDiceRollResult}`);
+          }
+        }
+
+        let extraDiceRollResult = 0;
+        const extraDiceRollsBreakdown: string[] = [];
+        if (extraDamageDice && extraDamageDice.length > 0) {
+          extraDamageDice.forEach(diceStr => {
+            const roll = parseAndRollDice(diceStr);
+            extraDiceRollResult += roll;
+            extraDiceRollsBreakdown.push(`${diceStr} (${roll})`);
+          });
+          if (extraDiceRollsBreakdown.length > 0) {
+            setRolledExtraDiceDetails(`${extraDiceRollsBreakdown.join(' + ')} = ${extraDiceRollResult}`);
+          }
+        }
+        
+        const currentTotalDiceRolled = multipliedWeaponDiceRollResult + extraDiceRollResult;
+        const totalDamage = currentTotalDiceRolled + baseModifier;
+
+        setInitialD20Roll(null); // Not applicable for damage
+        setBonusRolls([]);      // Not applicable for damage
+        setTotalDiceValue(currentTotalDiceRolled);
         setFinalResult(totalDamage);
-        onRoll(weaponDiceRollResult, baseModifier, totalDamage, weaponDamageDice);
-      } else {
+        onRoll(currentTotalDiceRolled, baseModifier, totalDamage, weaponDamageDiceString);
+
+      } else { // d20 roll (attack, check, save)
         const firstRoll = Math.floor(Math.random() * 20) + 1;
         setInitialD20Roll(firstRoll);
 
-        let currentTotalDiceValue = firstRoll;
+        let currentTotalD20Value = firstRoll;
         const currentBonusRolls: number[] = [];
         const isRelevantCheckRoll = isCheckRoll || rollType.startsWith('grapple_check') || rollType.startsWith('initiative_check');
-
 
         if (isRelevantCheckRoll && rerollTwentiesForChecks && firstRoll === 20) {
           let latestBonusRoll = 20;
           let safetyBreak = 0;
-          while (latestBonusRoll === 20 && safetyBreak < 10) {
+          while (latestBonusRoll === 20 && safetyBreak < 10) { // Safety break for extreme luck
             latestBonusRoll = Math.floor(Math.random() * 20) + 1;
             currentBonusRolls.push(latestBonusRoll);
-            currentTotalDiceValue += latestBonusRoll;
+            currentTotalD20Value += latestBonusRoll;
             safetyBreak++;
           }
         }
         setBonusRolls(currentBonusRolls);
-        setTotalDiceValue(currentTotalDiceValue);
-        const calculatedFinalResult = currentTotalDiceValue + baseModifier;
+        setTotalDiceValue(currentTotalD20Value);
+        const calculatedFinalResult = currentTotalD20Value + baseModifier;
         setFinalResult(calculatedFinalResult);
-        onRoll(currentTotalDiceValue, baseModifier, calculatedFinalResult);
+        onRoll(currentTotalD20Value, baseModifier, calculatedFinalResult);
       }
       setIsRolling(false);
     }, 300);
@@ -123,25 +168,26 @@ export function RollDialog({
 
   const UI_STRINGS = translations.UI_STRINGS;
   const buttonText = isDamageRoll ? (UI_STRINGS.rollDialogConfirmDamageButton || "Confirm Damage") : (UI_STRINGS.rollDialogRollButton || "Roll 1d20");
-  const actualWeaponDicePart = weaponDamageDice?.match(/^(\d*d\d+)/)?.[0] || weaponDamageDice;
-
-  const isCritFailure = !isDamageRoll && initialD20Roll === 1;
+  
+  const isInitialRollCritFailure = !isDamageRoll && initialD20Roll === 1;
   const isInitialRollNat20 = !isDamageRoll && initialD20Roll === 20;
 
 
   const resultCardBackground = cn(
     "p-3 border rounded-md space-y-1",
-    isCritFailure ? "bg-destructive/20 border-destructive/50" :
-    isInitialRollNat20 ? "bg-emerald-600/20 border-emerald-600/50" :
+    isInitialRollCritFailure ? "bg-destructive/20 border-destructive/50" :
+    isInitialRollNat20 && bonusRolls.length === 0 ? "bg-emerald-600/20 border-emerald-600/50" :
     "bg-card border-border"
   );
 
   const diceResultColor = cn(
     "font-bold text-lg",
-    isCritFailure ? "text-destructive" :
-    isInitialRollNat20 ? "text-emerald-500" :
+    isInitialRollCritFailure ? "text-destructive" :
+    isInitialRollNat20 && bonusRolls.length === 0 ? "text-emerald-500" :
     "text-primary"
   );
+
+  const canBeCritical = isDamageRoll && weaponDamageDiceString && weaponCriticalMultiplier && weaponCriticalMultiplier > 1;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -232,18 +278,40 @@ export function RollDialog({
             </div>
           )}
 
+          {canBeCritical && (
+            <div className="flex items-center space-x-2 mt-2">
+              <Checkbox
+                id="critical-hit-checkbox"
+                checked={isCritical}
+                onCheckedChange={(checked) => setIsCritical(!!checked)}
+              />
+              <Label htmlFor="critical-hit-checkbox" className="font-medium">
+                {UI_STRINGS.rollDialogCriticalHitLabel || "Critical Hit!"} ({weaponCriticalMultiplier}x {UI_STRINGS.rollDialogDamageMultiplierLabel || "Damage"})
+              </Label>
+            </div>
+          )}
+
           {totalDiceValue !== null && finalResult !== null && (
             <div className={resultCardBackground}>
               {isDamageRoll ? (
                 <>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-foreground">
-                      {(UI_STRINGS.rollDialogDamageWeaponDiceRolledLabel || "Weapon Dice ({diceString}) Rolled {diceSum}")
-                          .replace("{diceString}", actualWeaponDicePart || 'N/A')
-                          .replace("{diceSum}", String(totalDiceValue))}
-                    </span>
-                    <span className="font-bold text-lg text-primary">{totalDiceValue}</span>
-                  </div>
+                  {isCritical && weaponCriticalMultiplier && weaponCriticalMultiplier > 1 && weaponDamageDiceString && (
+                    <div className="text-center mb-1">
+                      <Badge variant="destructive" className="text-sm px-2 py-0.5">{UI_STRINGS.rollDialogCriticalHitAppliedLabel || "CRITICAL HIT APPLIED!"}</Badge>
+                    </div>
+                  )}
+                  {rolledWeaponDiceDetails && (
+                    <div className="flex justify-between items-center text-sm">
+                        <span className="text-foreground">{UI_STRINGS.rollDialogWeaponDamageDiceLabel || "Weapon Dice Rolled:"}</span>
+                        <span className="font-bold text-primary">{rolledWeaponDiceDetails}</span>
+                    </div>
+                  )}
+                   {rolledExtraDiceDetails && (
+                    <div className="flex justify-between items-center text-sm">
+                        <span className="text-foreground">{UI_STRINGS.rollDialogExtraDamageDiceLabel || "Extra Dice Rolled:"}</span>
+                        <span className="font-bold text-primary">{rolledExtraDiceDetails}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-foreground">{UI_STRINGS.rollDialogDamageOtherBonusesLabel || "Other Bonuses"}</span>
                     <span className="font-bold text-primary">{renderModifierValue(baseModifier)}</span>
@@ -254,7 +322,7 @@ export function RollDialog({
                     <span className="font-bold text-lg text-primary">{finalResult}</span>
                   </div>
                 </>
-              ) : (
+              ) : ( // d20 roll results
                 <>
                   {initialD20Roll !== null && (
                     <div className="flex justify-between items-center">
@@ -277,7 +345,7 @@ export function RollDialog({
                   <Separator className="mt-2 mb-1" />
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalResultLabel || "Final Result"}</span>
-                    {isCritFailure ? (
+                    {isInitialRollCritFailure ? (
                       <span className="font-bold text-lg text-destructive">{UI_STRINGS.rollDialogCritFailureLabel || "Critical Failure!"}</span>
                     ) : (
                       <span className="font-bold text-lg text-primary">{finalResult}</span>
@@ -303,3 +371,5 @@ export function RollDialog({
     </Dialog>
   );
 }
+
+    
