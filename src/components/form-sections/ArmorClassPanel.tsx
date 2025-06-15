@@ -1,6 +1,7 @@
+
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { Character, InfoDialogContentType, AggregatedFeatEffects, ItemDefinition, ItemInstance, GearSlotId } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Shield, Info, Loader2 } from 'lucide-react';
@@ -15,20 +16,23 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
+import { getLocalizedString } from '@/i18n/i18n-data'; // Ensure this is imported
+import { DEFAULT_LANGUAGE } from '@/i18n/config'; // Ensure this is imported
+
 
 const DEBOUNCE_DELAY = 400;
 
 export interface ArmorClassPanelProps {
   character: Character;
   aggregatedFeatEffects?: AggregatedFeatEffects | null;
-  onCharacterUpdate?: (field: keyof Pick<Character, 'acMiscModifier'>, value: number) => void; // Updated prop
+  onCharacterUpdate?: (field: keyof Pick<Character, 'acMiscModifier' | 'armorBonus' | 'shieldBonus' | 'naturalArmor' | 'deflectionBonus' | 'dodgeBonus'>, value: number) => void;
   onOpenAcBreakdownDialog?: (contentType: InfoDialogContentType) => void;
 }
 
 const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) => {
-  const { translations, isLoading: translationsLoading } = useI18n();
+  const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
 
-  const handleUpdateCallback = React.useCallback((fieldName: keyof Pick<Character, 'acMiscModifier'>) => (value: number) => {
+  const handleUpdateCallback = React.useCallback((fieldName: keyof Pick<Character, 'acMiscModifier' | 'armorBonus' | 'shieldBonus' | 'naturalArmor' | 'deflectionBonus' | 'dodgeBonus'>) => (value: number) => {
     if (onCharacterUpdate) {
       onCharacterUpdate(fieldName, value);
     }
@@ -41,9 +45,9 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
   );
 
   const calculateTotalAcComponent = React.useCallback((
-    baseCharacterValue: number | undefined, // e.g., character.armorBonus
+    baseCharacterValue: number | undefined,
     featAcType: "dodge" | "armor" | "shield" | "natural" | "deflection" | "insight" | "circumstance" | "untyped" | "monk_wisdom" | "monkScaling" | "other_feat_bonus",
-    physicalItemBonus: number, // e.g., bonus from equipped armor or shield item
+    physicalItemBonus: number,
     acTypeForScope?: 'Normal' | 'Touch' | 'Flat-Footed'
   ): number => {
     let total = (baseCharacterValue || 0) + physicalItemBonus;
@@ -57,7 +61,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
             if (acTypeForScope === 'Touch' && effect.appliesToScope.includes('touch')) effectAppliesToCurrentAcScope = true;
             if (acTypeForScope === 'Flat-Footed' && effect.appliesToScope.includes('flatFooted')) effectAppliesToCurrentAcScope = true;
         } else {
-            effectAppliesToCurrentAcScope = true; // If no scope specified for component, assume it applies generally before specific AC type calc
+            effectAppliesToCurrentAcScope = true;
         }
 
         if (effect.isActive && effectAppliesToCurrentAcScope) {
@@ -68,9 +72,9 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
             } else if ((effect.value === "WIS" || effect.value === "INT" || effect.value === "CHA") && character?.abilityScores) {
               const abilityKey = effect.value.toLowerCase() as 'wisdom' | 'intelligence' | 'charisma';
               const abilityMod = getAbilityModifierByName(character.abilityScores, abilityKey);
-              if (featAcType === "monk_wisdom" && abilityMod > 0) { // Monk Wis bonus is usually not negative
+              if (featAcType === "monk_wisdom" && abilityMod > 0) {
                 valueToAdd = abilityMod;
-              } else if (featAcType !== "monk_wisdom") { // Other ability-to-AC bonuses might be negative
+              } else if (featAcType !== "monk_wisdom") {
                  valueToAdd = abilityMod;
               }
             }
@@ -108,7 +112,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
     );
   }
 
-  const { DEFAULT_ABILITIES, SIZES, UI_STRINGS, ITEM_DEFINITIONS_ARMOR, ITEM_DEFINITIONS_SHIELDS, ABILITY_LABELS } = translations;
+  const { DEFAULT_ABILITIES, SIZES, UI_STRINGS, ITEM_DEFINITIONS_ARMOR, ITEM_DEFINITIONS_SHIELDS, ABILITY_LABELS, ITEM_DEFINITIONS_MAGIC_ITEMS } = translations;
   const currentAbilityScores = character.abilityScores || DEFAULT_ABILITIES;
   const currentSize = character.size || 'medium';
 
@@ -116,16 +120,21 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
   const wisModifier = getAbilityModifierByName(currentAbilityScores, 'wisdom');
   const sizeModAC = getSizeModifierAC(currentSize, SIZES);
 
+  const allItemDefinitions = React.useMemo(() => [
+    ...(ITEM_DEFINITIONS_ARMOR || []),
+    ...(ITEM_DEFINITIONS_SHIELDS || []),
+    ...(ITEM_DEFINITIONS_MAGIC_ITEMS || [])
+  ], [ITEM_DEFINITIONS_ARMOR, ITEM_DEFINITIONS_SHIELDS, ITEM_DEFINITIONS_MAGIC_ITEMS]);
+
+
   const equippedArmorInstanceId = character.equippedGear?.['armor-body'];
   const equippedArmorInstance = equippedArmorInstanceId ? character.inventory.find(i => i.instanceId === equippedArmorInstanceId) : undefined;
-  const allArmorDefs = [...(ITEM_DEFINITIONS_ARMOR || []), ...(translations.ITEM_DEFINITIONS_MAGIC_ITEMS || []).filter(item => item.itemType === 'armor')];
-  const equippedArmorDefinition = equippedArmorInstance ? allArmorDefs.find(def => def.definitionId === equippedArmorInstance.definitionId) : undefined;
+  const equippedArmorDefinition = equippedArmorInstance ? allItemDefinitions.find(def => def.definitionId === equippedArmorInstance.definitionId && def.itemType === 'armor') : undefined;
   const physicalArmorBonus = equippedArmorDefinition?.armorBonus || 0;
 
   const equippedShieldInstanceId = character.equippedGear?.['shield'];
   const equippedShieldInstance = equippedShieldInstanceId ? character.inventory.find(i => i.instanceId === equippedShieldInstanceId) : undefined;
-  const allShieldDefs = [...(ITEM_DEFINITIONS_SHIELDS || []), ...(translations.ITEM_DEFINITIONS_MAGIC_ITEMS || []).filter(item => item.itemType === 'shield')];
-  const equippedShieldDefinition = equippedShieldInstance ? allShieldDefs.find(def => def.definitionId === equippedShieldInstance.definitionId) : undefined;
+  const equippedShieldDefinition = equippedShieldInstance ? allItemDefinitions.find(def => def.definitionId === equippedShieldInstance.definitionId && def.itemType === 'shield') : undefined;
   const physicalShieldBonus = equippedShieldDefinition?.shieldBonus || 0;
 
   const totalArmorBonusNormal = calculateTotalAcComponent(character.armorBonus, "armor", physicalArmorBonus, "Normal");
@@ -155,13 +164,6 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
     }
   }, [onOpenAcBreakdownDialog]);
 
-  const acComponentDisplayConfig = [
-    { labelKey: 'acBreakdownArmorBonusLabel', value: totalArmorBonusNormal, note: equippedArmorDefinition?.label ? getLocalizedString(equippedArmorDefinition.label, UI_STRINGS.currentLangCodeForNotesFallback as 'en' | 'fr' || 'en') : (physicalArmorBonus > 0 ? UI_STRINGS.acItemBonusDefaultEquippedLabel || 'Equipped Item' : undefined) },
-    { labelKey: 'acBreakdownShieldBonusLabel', value: totalShieldBonusNormal, note: equippedShieldDefinition?.label ? getLocalizedString(equippedShieldDefinition.label, UI_STRINGS.currentLangCodeForNotesFallback as 'en' | 'fr' || 'en') : (physicalShieldBonus > 0 ? UI_STRINGS.acItemBonusDefaultEquippedLabel || 'Equipped Item' : undefined) },
-    { labelKey: 'acBreakdownNaturalArmorLabel', value: totalNaturalArmorNormal },
-    { labelKey: 'acBreakdownDeflectionBonusLabel', value: totalDeflectionBonusNormal },
-    { labelKey: 'acBreakdownDodgeBonusLabel', value: totalDodgeBonusNormal }
-  ];
 
   return (
     <>
@@ -206,35 +208,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
           </div>
 
           <Separator className="my-3" />
-
-          {/* Individual AC Components Display */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {acComponentDisplayConfig.map(config => (
-              <div key={config.labelKey} className="p-2 border rounded-md bg-card space-y-0.5 text-center">
-                <Label className="text-xs font-medium text-muted-foreground">{UI_STRINGS[config.labelKey] || config.labelKey}</Label>
-                <p className="text-lg font-semibold text-foreground">{renderModifierValue(config.value)}</p>
-                {config.note && <p className="text-xs text-muted-foreground/70 truncate" title={config.note}>{config.note}</p>}
-              </div>
-            ))}
-             {/* Dexterity and Size Modifiers */}
-            <div className="p-2 border rounded-md bg-card space-y-0.5 text-center">
-                <Label className="text-xs font-medium text-muted-foreground">{UI_STRINGS.infoDialogAcAbilityLabel || "Ability Modifier"} <Badge variant="outline" className="ml-1">{ABILITY_LABELS.find(al => al.id === 'dexterity')?.abbr || 'DEX'}</Badge></Label>
-                <p className="text-lg font-semibold text-foreground">{renderModifierValue(dexModifier)}</p>
-            </div>
-             <div className="p-2 border rounded-md bg-card space-y-0.5 text-center">
-                <Label className="text-xs font-medium text-muted-foreground">{UI_STRINGS.infoDialogSizeModifierLabel || "Size Modifier"} <Badge variant="outline" className="ml-1">{SIZES.find(s => s.id === currentSize)?.label || currentSize}</Badge></Label>
-                <p className="text-lg font-semibold text-foreground">{renderModifierValue(sizeModAC)}</p>
-            </div>
-            {/* Other Misc bonuses from Feats, etc. (like Monk Wisdom/Scaling) */}
-            {(calculatedFeatMiscAcBonusNormal !== 0 || (character.acMiscModifier || 0) !== 0) && (
-                 <div className="p-2 border rounded-md bg-card space-y-0.5 text-center md:col-span-1">
-                    <Label className="text-xs font-medium text-muted-foreground">{UI_STRINGS.acBreakdownOtherBonusesLabel || "Other Bonuses"}</Label>
-                    <p className="text-lg font-semibold text-foreground">{renderModifierValue(calculatedFeatMiscAcBonusNormal + (character.acMiscModifier || 0))}</p>
-                </div>
-            )}
-          </div>
-
-
+          
           {/* Temporary Modifier Input */}
           <div className="pt-3">
             <Label htmlFor="temporary-ac-modifier-input" className="text-sm font-medium">
@@ -263,3 +237,5 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
 };
 ArmorClassPanelComponent.displayName = 'ArmorClassPanelComponent';
 export const ArmorClassPanel = React.memo(ArmorClassPanelComponent);
+
+    
