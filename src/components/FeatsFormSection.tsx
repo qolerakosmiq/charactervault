@@ -329,7 +329,8 @@ const FeatsFormSectionComponent = ({
     const featSource = (instance.isGranted && definition.isClassFeature) ? getFeatSource(definition.id) : null;
     const isCustomDefinition = definition.isCustom;
 
-    const localizedDescription = getLocalizedString(definition.description, currentLang, undefined, `feats.${definition.id}.description`);
+    const localizedDescription = definition.description ? getLocalizedString(definition.description, currentLang, undefined, `feats.${definition.id}.description`) : "";
+    const showDescriptionLine = localizedDescription.trim() !== "";
 
     let finalBenefitText = "";
     if (definition.effectsText) {
@@ -364,7 +365,6 @@ const FeatsFormSectionComponent = ({
     }
     const hasPrereqsToShow = prereqMessages.length > 0 || !!specialPrereqTextContent;
 
-
     return (
       <div key={instance.instanceId} className="group flex items-start justify-between py-2 transition-colors">
         <div className="flex-grow mr-2 space-y-1 text-sm">
@@ -373,22 +373,22 @@ const FeatsFormSectionComponent = ({
               {featLabel}
             </h4>
             {featTypeLabel && <Badge variant="outline" className="whitespace-nowrap text-xs">{featTypeLabel}</Badge>}
-            {isCustomDefinition && <Badge variant="outline" className="text-xs">{UI_STRINGS.badgeCustomLabel}</Badge>}
+            {isCustomDefinition && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel}</Badge>}
             {featSource && <Badge variant="secondary" className="whitespace-nowrap">{featSource}</Badge>}
             {instance.grantedNote && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
           </div>
           {definition.requiresSpecialization && instance.specializationDetail && <p className="text-xs text-muted-foreground ml-1 italic">({instance.specializationDetail})</p>}
 
-          {localizedDescription && localizedDescription.trim() !== "" ? (
-            <p className="text-foreground whitespace-normal" dangerouslySetInnerHTML={{ __html: localizedDescription }} />
+          {showDescriptionLine ? (
+            <p className="text-xs text-muted-foreground whitespace-normal" dangerouslySetInnerHTML={{ __html: localizedDescription }} />
           ) : (
-            <p className="text-muted-foreground whitespace-normal italic">
+            <p className="text-xs text-muted-foreground whitespace-normal italic">
               {UI_STRINGS.featDescriptionNoneLabel}
             </p>
           )}
 
           {showBenefitLine && (
-            <p className="whitespace-normal">
+            <p className="text-xs whitespace-normal">
               <strong className="font-semibold text-muted-foreground">{UI_STRINGS.featBenefitLabel}</strong>
               {' '}
               <span className="text-foreground" dangerouslySetInnerHTML={{ __html: finalBenefitText }} />
@@ -396,18 +396,18 @@ const FeatsFormSectionComponent = ({
           )}
 
           {hasPrereqsToShow && (
-            <p className="whitespace-normal">
+            <p className="text-xs whitespace-normal">
               <strong className="font-semibold text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel}</strong>
               {' '}
-              <span className="text-foreground">
+              <span className="text-muted-foreground">
                 {prereqMessages.map((msg, idx, arr) => (
                   <React.Fragment key={idx}>
-                    <span className={cn(!msg.isMet ? 'text-destructive' : 'text-foreground')} dangerouslySetInnerHTML={{ __html: msg.text }} />
+                    <span className={cn(!msg.isMet ? 'text-destructive' : 'text-muted-foreground')} dangerouslySetInnerHTML={{ __html: msg.text }} />
                     {idx < arr.length - 1 && ', '}
                   </React.Fragment>
                 ))}
                 {prereqMessages.length > 0 && specialPrereqTextContent && specialPrereqTextContent.trim() !== "" && ', '}
-                {specialPrereqTextContent && specialPrereqTextContent.trim() !== "" && <span dangerouslySetInnerHTML={{ __html: specialPrereqTextContent }} />}
+                {specialPrereqTextContent && specialPrereqTextContent.trim() !== "" && <span className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: specialPrereqTextContent }} />}
               </span>
             </p>
           )}
@@ -590,4 +590,5 @@ FeatsFormSectionComponent.displayName = "FeatsFormSectionComponent";
 export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
 
     
+
 
