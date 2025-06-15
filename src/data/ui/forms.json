@@ -124,15 +124,30 @@
   "resistanceLabelSpell": { "en": "Spell Resistance", "fr": "Résistance à la magie" },
   "resistanceLabelPower": { "en": "Power Resistance", "fr": "Résistance au pouvoir" },
   "resistanceLabelFortification": { "en": "Fortification", "fr": "Fortification" },
+
+  "skillsPanelTitle": { "en": "Skills", "fr": "Compétences" },
+  "skillsPanelDescription": { "en": "Allocate skill points based on your class and Intelligence.", "fr": "Allouez des points de compétence en fonction de votre classe et de votre Intelligence." },
+  "skillPointsAvailableLabel": { "en": "Skill Points Available: ", "fr": "Points de compétence disponibles : " },
+  "skillPointsLeftLabel": { "en": "Skill Points Left: ", "fr": "Points de compétence restants : " },
+  "skillsTableClassHeader": { "en": "Class", "fr": "Classe" },
+  "skillsTableSkillHeader": { "en": "Skill", "fr": "Compétence" },
+  "skillsTableTotalBonusHeader": { "en": "Total", "fr": "Total" },
+  "skillsTableKeyAbilityHeader": { "en": "Key Abil.", "fr": "Carac. Clé" },
+  "skillsTableAbilityModHeader": { "en": "Ability Mod", "fr": "Mod. Carac." },
+  "skillsTableMiscModHeader": { "en": "Misc Mod", "fr": "Mod. Divers" },
+  "skillsTableRanksHeader": { "en": "Ranks", "fr": "Rangs" },
+  "skillsTableCostHeader": { "en": "Cost", "fr": "Coût" },
+  "skillsTableMaxHeader": { "en": "Max", "fr": "Max" },
+  "skillsTableTooltipInfoForSkill": { "en": "Info for {skillName}", "fr": "Infos pour {skillName}" },
+  "rollDialogSkillCheckAriaLabel": { "en": "Roll {skillName} Check", "fr": "Lancer un test de {skillName}" },
+
   "skillPointFormulaClassBaseLabel": { "en": "{classLabel} Base", "fr": "Base {classLabel}" },
   "skillPointFormulaIntModLabel": { "en": "INT Mod", "fr": "Mod. INT" },
   "skillPointFormulaRacialModLabel": { "en": "Racial", "fr": "Racial" },
   "skillPointFormulaMinOneLabel": { "en": " (min 1)", "fr": " (min 1)" },
   "skillPointFormulaFirstLevelFactor": { "en": "for 1st Level", "fr": "pour 1er Niveau" },
   "skillPointFormulaLevelProgressionFactor": { "en": "for other levels", "fr": "pour autres niveaux" },
-  "skillPointFormulaSelectClassPrompt": { "en": "Select a class to see detailed skill point calculation.", "fr": "Sélectionnez une classe pour voir le calcul détaillé des points de compétence." },
-  "skillsTableTooltipInfoForSkill": { "en": "Info for {skillName}", "fr": "Infos pour {skillName}" },
-  "rollDialogSkillCheckAriaLabel": { "en": "Roll {skillName} Check", "fr": "Lancer un test de {skillName}" }
+  "skillPointFormulaSelectClassPrompt": { "en": "Select a class to see detailed skill point calculation.", "fr": "Sélectionnez une classe pour voir le calcul détaillé des points de compétence." }
 }
 
     

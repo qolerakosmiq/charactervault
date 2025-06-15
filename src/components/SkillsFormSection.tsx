@@ -353,15 +353,15 @@ const SkillsFormSectionComponent = ({
         <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
           <div className="space-y-1 min-w-[680px]">
             <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
-              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderClassLabel }} />
-              <span className="pl-1">{UI_STRINGS.skillsTableHeaderSkillLabel}</span>
-              <span className="text-right w-20 pr-1" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderSkillModLabel }} />
-              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderKeyAbilityLabel }} />
-              <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderAbilityModLabel }} />
-              <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderMiscModLabel }} />
-              <span className="text-center w-32">{UI_STRINGS.skillsTableHeaderRanksLabel}</span>
-              <span className="text-center w-12">{UI_STRINGS.skillsTableHeaderCostLabel}</span>
-              <span className="text-center w-10">{UI_STRINGS.skillsTableHeaderMaxLabel}</span>
+              <span className="text-center w-10">{UI_STRINGS.skillsTableClassHeader}</span>
+              <span className="pl-1">{UI_STRINGS.skillsTableSkillHeader}</span>
+              <span className="text-right w-20 pr-1">{UI_STRINGS.skillsTableTotalBonusHeader}</span>
+              <span className="text-center w-10">{UI_STRINGS.skillsTableKeyAbilityHeader}</span>
+              <span className="text-center w-12">{UI_STRINGS.skillsTableAbilityModHeader}</span>
+              <span className="text-center w-12">{UI_STRINGS.skillsTableMiscModHeader}</span>
+              <span className="text-center w-32">{UI_STRINGS.skillsTableRanksHeader}</span>
+              <span className="text-center w-12">{UI_STRINGS.skillsTableCostHeader}</span>
+              <span className="text-center w-10">{UI_STRINGS.skillsTableMaxHeader}</span>
             </div>
 
             {validSkillsForDisplay.map(skillInstanceProp => {
@@ -470,5 +470,4 @@ export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
 
     
 
-
-
+    
