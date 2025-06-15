@@ -123,7 +123,14 @@
   "resistanceLabelSonic": { "en": "Sonic", "fr": "Sonique" },
   "resistanceLabelSpell": { "en": "Spell Resistance", "fr": "Résistance à la magie" },
   "resistanceLabelPower": { "en": "Power Resistance", "fr": "Résistance au pouvoir" },
-  "resistanceLabelFortification": { "en": "Fortification", "fr": "Fortification" }
+  "resistanceLabelFortification": { "en": "Fortification", "fr": "Fortification" },
+  "skillPointFormulaClassBaseLabel": { "en": "{classLabel} Base", "fr": "Base {classLabel}" },
+  "skillPointFormulaIntModLabel": { "en": "INT Mod", "fr": "Mod. INT" },
+  "skillPointFormulaRacialModLabel": { "en": "Racial", "fr": "Racial" },
+  "skillPointFormulaMinOneLabel": { "en": " (min 1)", "fr": " (min 1)" },
+  "skillPointFormulaFirstLevelFactor": { "en": "for 1st Level", "fr": "pour 1er Niveau" },
+  "skillPointFormulaLevelProgressionFactor": { "en": "for other levels", "fr": "pour autres niveaux" },
+  "skillPointFormulaSelectClassPrompt": { "en": "Select a class to see detailed skill point calculation.", "fr": "Sélectionnez une classe pour voir le calcul détaillé des points de compétence." }
 }
 
     
