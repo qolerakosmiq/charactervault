@@ -146,8 +146,8 @@
   "skillPointCalcAbilityMod": { "en": "{abilityLabel} Modifier", "fr": "Modificateur {abilityLabel}" },
   "skillPointCalcRacialBonus": { "en": "Racial Bonus", "fr": "Bonus Racial" },
   "skillPointCalcMinOne": { "en": ", Minimum 1", "fr": ", Minimum 1" },
-  "skillPointCalcForFirstLevel": { "en": "for First Level = ", "fr": "pour le Premier Niveau = " },
-  "skillPointCalcForProgression": { "en": "for Progression Levels = ", "fr": "pour les Niveaux de Progression = " },
+  "skillPointCalcForFirstLevel": { "en": " for First Level = ", "fr": " pour le Premier Niveau = " },
+  "skillPointCalcForProgression": { "en": " for Progression Levels = ", "fr": " pour les Niveaux de Progression = " },
   "skillPointFormulaSelectClassPrompt": { "en": "Select a class to see detailed skill point calculation.", "fr": "Sélectionnez une classe pour voir le calcul détaillé des points de compétence." }
 }
     
