@@ -5,7 +5,7 @@ import *as React from 'react';
 import type { AbilityScores, SavingThrows, SavingThrowType, SingleSavingThrow, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects, GenericBreakdownItem } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
-import { Zap, Loader2, Info, Dices } from 'lucide-react';
+import { Zap, Loader2, Info, Dices, Lock } from 'lucide-react'; // Added Lock
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
@@ -113,11 +113,12 @@ const SavingThrowsPanelComponent = ({
     return (
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-3">
-            <Zap className="h-8 w-8 text-primary" />
-            <CardTitle className="text-2xl font-serif">
-              {translations?.UI_STRINGS.savingThrowsPanelTitle || "Saving Throws"}
-            </CardTitle>
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <Zap className="h-8 w-8 text-primary" />
+              <Skeleton className="h-7 w-1/2" />
+            </div>
+            <Skeleton className="h-8 w-8" />
           </div>
         </CardHeader>
         <CardContent className="pt-4">
@@ -233,9 +234,14 @@ const SavingThrowsPanelComponent = ({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center space-x-3">
-          <Zap className="h-8 w-8 text-primary" />
-          <CardTitle className="text-2xl font-serif">{UI_STRINGS.savingThrowsPanelTitle || "Saving Throws"}</CardTitle>
+        <div className="flex justify-between items-start">
+          <div className="flex items-center space-x-3">
+            <Zap className="h-8 w-8 text-primary" />
+            <CardTitle className="text-2xl font-serif">{UI_STRINGS.savingThrowsPanelTitle || "Saving Throws"}</CardTitle>
+          </div>
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
+            <Lock className="h-5 w-5" />
+          </Button>
         </div>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -293,4 +299,3 @@ SavingThrowsPanelComponent.displayName = 'SavingThrowsPanelComponent';
 export const SavingThrowsPanel = React.memo(SavingThrowsPanelComponent);
 
     
-

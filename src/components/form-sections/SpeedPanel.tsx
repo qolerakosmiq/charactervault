@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Wind, Waves, MoveVertical, Shell, Feather, Info, Loader2, ShieldOff, Weight } from 'lucide-react';
+import { Wind, Waves, MoveVertical, Shell, Feather, Info, Loader2, ShieldOff, Weight, Lock } from 'lucide-react'; // Added Lock
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -100,11 +100,14 @@ const SpeedPanelComponent = ({
     return (
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-3">
-            <Wind className="h-8 w-8 text-primary" />
-            <CardTitle className="text-2xl font-serif">{translations?.UI_STRINGS.speedPanelTitle || "Movement Speeds"}</CardTitle>
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <Wind className="h-8 w-8 text-primary" />
+              <Skeleton className="h-7 w-1/2" />
+            </div>
+            <Skeleton className="h-8 w-8" />
           </div>
-          <CardDescription>{translations?.UI_STRINGS.speedPanelDescription || "Manage your character's various movement capabilities and penalties."}</CardDescription>
+          <Skeleton className="h-4 w-3/4" />
         </CardHeader>
         <CardContent className="space-y-3">
           {translationsLoading || !translations ? (
@@ -153,9 +156,14 @@ const SpeedPanelComponent = ({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center space-x-3">
-          <Wind className="h-8 w-8 text-primary" />
-          <CardTitle className="text-2xl font-serif">{UI_STRINGS.speedPanelTitle}</CardTitle>
+        <div className="flex justify-between items-start">
+          <div className="flex items-center space-x-3">
+            <Wind className="h-8 w-8 text-primary" />
+            <CardTitle className="text-2xl font-serif">{UI_STRINGS.speedPanelTitle}</CardTitle>
+          </div>
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
+            <Lock className="h-5 w-5" />
+          </Button>
         </div>
         <CardDescription>{UI_STRINGS.speedPanelDescription}</CardDescription>
       </CardHeader>
