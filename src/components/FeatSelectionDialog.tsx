@@ -175,7 +175,9 @@ export function FeatSelectionDialog({
             <CommandList className="max-h-none">
               <CommandEmpty>{UI_STRINGS.featSelectionDialogEmpty || "No feats found."}</CommandEmpty>
               <CommandGroup>
-                {displayedFeats.map((featDef) => {
+                {displayedFeats
+                  .filter(featDef => featDef && typeof featDef.id === 'string' && featDef.id.length > 0 && typeof featDef.label === 'string') // Defensive filter for valid ID and label
+                  .map((featDef) => {
                   const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(
                     featDef,
                     character,
@@ -241,3 +243,4 @@ export function FeatSelectionDialog({
     </Dialog>
   );
 }
+
