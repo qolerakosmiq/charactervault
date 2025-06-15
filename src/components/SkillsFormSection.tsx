@@ -323,29 +323,29 @@ const SkillsFormSectionComponent = ({
                 <>
                   <p>
                     {UI_STRINGS.skillPointCalcOpenParen}
-                    {UI_STRINGS.skillPointCalcClassBase.replace("{classLabel}", classLabel)} <Badge variant="outline">{baseSkillPointsForClass}</Badge>
-                    {UI_STRINGS.skillPointCalcPlus}{UI_STRINGS.skillPointCalcAbilityMod.replace("{abilityLabel}", intelligenceAbilityLabel)} <Badge variant="outline">{intelligenceModifier}</Badge>
+                    {UI_STRINGS.skillPointCalcClassBase.replace("{classLabel}", classLabel)}{'\u00A0'}<Badge variant="outline">{baseSkillPointsForClass}</Badge>
+                    {UI_STRINGS.skillPointCalcPlus}{UI_STRINGS.skillPointCalcAbilityMod.replace("{abilityLabel}", intelligenceAbilityLabel)}{'\u00A0'}<Badge variant="outline">{intelligenceModifier}</Badge>
                     {(racialBonusSkillPoints || 0) !== 0 && (
                         <>
-                          {UI_STRINGS.skillPointCalcPlus}{UI_STRINGS.skillPointCalcRacialBonus} <Badge variant="outline">{racialBonusSkillPoints || 0}</Badge>
+                          {UI_STRINGS.skillPointCalcPlus}{UI_STRINGS.skillPointCalcRacialBonus}{'\u00A0'}<Badge variant="outline">{racialBonusSkillPoints || 0}</Badge>
                         </>
                     )}
                     {UI_STRINGS.skillPointCalcMinOne}
-                    {UI_STRINGS.skillPointCalcCloseParenX} <Badge variant="outline">4</Badge>
-                    {UI_STRINGS.skillPointCalcForFirstLevel} <span className="font-bold text-primary">{pointsForFirstLevel}</span>
+                    {UI_STRINGS.skillPointCalcCloseParenX}{'\u00A0'}<Badge variant="outline">4</Badge>
+                    {UI_STRINGS.skillPointCalcForFirstLevel}<span className="font-bold text-primary">{pointsForFirstLevel}</span>
                   </p>
                   <p>
                     {UI_STRINGS.skillPointCalcPlus}{UI_STRINGS.skillPointCalcOpenParen}
-                    {UI_STRINGS.skillPointCalcClassBase.replace("{classLabel}", classLabel)} <Badge variant="outline">{baseSkillPointsForClass}</Badge>
-                    {UI_STRINGS.skillPointCalcPlus}{UI_STRINGS.skillPointCalcAbilityMod.replace("{abilityLabel}", intelligenceAbilityLabel)} <Badge variant="outline">{intelligenceModifier}</Badge>
+                    {UI_STRINGS.skillPointCalcClassBase.replace("{classLabel}", classLabel)}{'\u00A0'}<Badge variant="outline">{baseSkillPointsForClass}</Badge>
+                    {UI_STRINGS.skillPointCalcPlus}{UI_STRINGS.skillPointCalcAbilityMod.replace("{abilityLabel}", intelligenceAbilityLabel)}{'\u00A0'}<Badge variant="outline">{intelligenceModifier}</Badge>
                     {(racialBonusSkillPoints || 0) !== 0 && (
                         <>
-                          {UI_STRINGS.skillPointCalcPlus}{UI_STRINGS.skillPointCalcRacialBonus} <Badge variant="outline">{racialBonusSkillPoints || 0}</Badge>
+                          {UI_STRINGS.skillPointCalcPlus}{UI_STRINGS.skillPointCalcRacialBonus}{'\u00A0'}<Badge variant="outline">{racialBonusSkillPoints || 0}</Badge>
                         </>
                     )}
                     {UI_STRINGS.skillPointCalcMinOne}
-                    {UI_STRINGS.skillPointCalcCloseParenX} <Badge variant="outline">{characterLevel > 1 ? (characterLevel - 1) : 0}</Badge>
-                    {UI_STRINGS.skillPointCalcForProgression} <span className="font-bold text-primary">{pointsFromLevelProgression}</span>
+                    {UI_STRINGS.skillPointCalcCloseParenX}{'\u00A0'}<Badge variant="outline">{characterLevel > 1 ? (characterLevel - 1) : 0}</Badge>
+                    {UI_STRINGS.skillPointCalcForProgression}<span className="font-bold text-primary">{pointsFromLevelProgression}</span>
                   </p>
                 </>
               ) : (
@@ -358,15 +358,15 @@ const SkillsFormSectionComponent = ({
         <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
           <div className="space-y-1 min-w-[680px]">
             <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
-              <span className="text-center w-10">{UI_STRINGS.skillsTableClassHeader}</span>
-              <span className="pl-1">{UI_STRINGS.skillsTableSkillHeader}</span>
-              <span className="text-right w-20 pr-1">{UI_STRINGS.skillsTableTotalBonusHeader}</span>
-              <span className="text-center w-10">{UI_STRINGS.skillsTableKeyAbilityHeader}</span>
-              <span className="text-center w-12">{UI_STRINGS.skillsTableAbilityModHeader}</span>
-              <span className="text-center w-12">{UI_STRINGS.skillsTableMiscModHeader}</span>
-              <span className="text-center w-32">{UI_STRINGS.skillsTableRanksHeader}</span>
-              <span className="text-center w-12">{UI_STRINGS.skillsTableCostHeader}</span>
-              <span className="text-center w-10">{UI_STRINGS.skillsTableMaxHeader}</span>
+              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableClassHeader || "Class<br/>Skill?" }} />
+              <span className="pl-1">{UI_STRINGS.skillsTableSkillHeader || "Skill Name"}</span>
+              <span className="text-left w-20 pl-1">{UI_STRINGS.skillsTableTotalBonusHeader || "Total"}</span>
+              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableKeyAbilityHeader || "Key<br/>Ability" }} />
+              <span className="text-center w-12">{UI_STRINGS.skillsTableAbilityModHeader || "Ability Mod"}</span>
+              <span className="text-center w-12">{UI_STRINGS.skillsTableMiscModHeader || "Misc Mod"}</span>
+              <span className="text-center w-32">{UI_STRINGS.skillsTableRanksHeader || "Ranks"}</span>
+              <span className="text-center w-12">{UI_STRINGS.skillsTableCostHeader || "Cost"}</span>
+              <span className="text-center w-10">{UI_STRINGS.skillsTableMaxHeader || "Max"}</span>
             </div>
 
             {validSkillsForDisplay.map(skillInstanceProp => {
@@ -473,4 +473,6 @@ SkillsFormSectionComponent.displayName = 'SkillsFormSectionComponent';
 
 export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
 
+    
+    
     

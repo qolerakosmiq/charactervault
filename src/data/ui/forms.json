@@ -128,10 +128,10 @@
   "skillsPanelDescription": { "en": "Allocate skill points based on your class and Intelligence.", "fr": "Allouez des points de compétence en fonction de votre classe et de votre Intelligence." },
   "skillPointsAvailableLabel": { "en": "Skill Points Available: ", "fr": "Points de compétence disponibles : " },
   "skillPointsLeftLabel": { "en": "Skill Points Left: ", "fr": "Points de compétence restants : " },
-  "skillsTableClassHeader": { "en": "Class", "fr": "Classe" },
-  "skillsTableSkillHeader": { "en": "Skill", "fr": "Compétence" },
+  "skillsTableClassHeader": { "en": "Class<br/>Skill?", "fr": "Classe<br/>Comp?" },
+  "skillsTableSkillHeader": { "en": "Skill Name", "fr": "Nom de la Compétence" },
   "skillsTableTotalBonusHeader": { "en": "Total", "fr": "Total" },
-  "skillsTableKeyAbilityHeader": { "en": "Key Abil.", "fr": "Carac. Clé" },
+  "skillsTableKeyAbilityHeader": { "en": "Key<br/>Ability", "fr": "Carac.<br/>Clé" },
   "skillsTableAbilityModHeader": { "en": "Ability Mod", "fr": "Mod. Carac." },
   "skillsTableMiscModHeader": { "en": "Misc Mod", "fr": "Mod. Divers" },
   "skillsTableRanksHeader": { "en": "Ranks", "fr": "Rangs" },
@@ -150,4 +150,6 @@
   "skillPointCalcForProgression": { "en": " for Progression Levels = ", "fr": " pour les Niveaux de Progression = " },
   "skillPointFormulaSelectClassPrompt": { "en": "Select a class to see detailed skill point calculation.", "fr": "Sélectionnez une classe pour voir le calcul détaillé des points de compétence." }
 }
+
+    
     
