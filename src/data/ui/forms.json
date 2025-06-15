@@ -211,7 +211,13 @@
   "toastCustomSkillAddedTitle": { "en": "Custom Skill Added", "fr": "Compétence personnalisée ajoutée" },
   "toastCustomSkillAddedDesc": { "en": "{skillName} has been added to global definitions.", "fr": "{skillName} a été ajouté aux définitions globales." },
   "toastCustomSkillNotFoundEditTitle": { "en": "Custom Skill Not Found", "fr": "Compétence personnalisée introuvable" },
-  "toastCustomSkillNotFoundEditDesc": { "en": "The custom skill definition to edit could not be found.", "fr": "La définition de la compétence personnalisée à modifier n'a pas pu être trouvée." }
+  "toastCustomSkillNotFoundEditDesc": { "en": "The custom skill definition to edit could not be found.", "fr": "La définition de la compétence personnalisée à modifier n'a pas pu être trouvée." },
+  "featCategory_fighterBonusFeat": { "en": "Fighter Bonus Feat", "fr": "Don Guerrier" },
+  "featCategory_monkBonusFeatL1": { "en": "Monk Bonus (L1)", "fr": "Don Moine (N1)" },
+  "featCategory_monkBonusFeatL2": { "en": "Monk Bonus (L2)", "fr": "Don Moine (N2)" },
+  "featCategory_monkBonusFeatL6": { "en": "Monk Bonus (L6)", "fr": "Don Moine (N6)" },
+  "featCategory_rogueSpecialAbility": { "en": "Rogue Special Ability", "fr": "Capacité Spéciale Roublard"},
+  "featCategory_wizardBonusFeat": { "en": "Wizard Bonus Feat", "fr": "Don supplémentaire Magicien" }
 }
 
     

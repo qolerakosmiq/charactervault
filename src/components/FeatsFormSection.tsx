@@ -4,7 +4,7 @@
 import *as React from 'react';
 import type {
   FeatDefinitionJsonData, CharacterFeatInstance, Character, AbilityScores, Skill,
-  SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown, AggregatedFeatEffects, ComboboxOption, NoteEffectDetail, LocalizedString
+  SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown, AggregatedFeatEffects, ComboboxOption, NoteEffectDetail, LocalizedString, DndClassOption
 } from '@/types/character-core';
 import {
   checkFeatPrerequisites, calculateAvailableFeats
@@ -38,6 +38,22 @@ export interface FeatsFormSectionProps {
   characterLevel: number;
   aggregatedFeatEffects?: AggregatedFeatEffects | null;
 }
+
+const getFeatSourceClassName = (featId: string, allClasses: readonly DndClassOption[]): string | null => {
+  if (featId.startsWith('class-')) {
+    const parts = featId.split('-');
+    if (parts.length > 1) {
+      // Assumes class ID is the segment after "class-" e.g., "class-fighter-..." -> "fighter"
+      // More robust parsing might be needed if IDs have multiple hyphens before class name part.
+      // For now, taking the first part after "class-".
+      const classIdCandidate = parts[1];
+      const classDef = allClasses.find(c => c.id === classIdCandidate);
+      return classDef ? classDef.label : null;
+    }
+  }
+  return null;
+};
+
 
 const FeatsFormSectionComponent = ({
   featSectionData,
@@ -293,25 +309,6 @@ const FeatsFormSectionComponent = ({
     }
   };
 
-  const getFeatSource = React.useCallback((definitionId: string): string | null => {
-    if (translationsLoading || !translations || !translations.DND_CLASSES) return null;
-    if (definitionId.startsWith('class-')) {
-      const parts = definitionId.split('-');
-      if (parts.length > 1) {
-        const classNameKey = parts.slice(1, -1).join('-');
-        const classDef = translations.DND_CLASSES.find(c => c.id === classNameKey);
-        return classDef ? classDef.label : capitalizeFirstLetter(classNameKey.replace(/-/g, ' '));
-      }
-    }
-    return null;
-  }, [translations, translationsLoading]);
-
-  const capitalizeFirstLetter = (str: string) => {
-    if (!str) return str;
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  };
-
-
   const renderFeatInstance = React.useCallback((instance: CharacterFeatInstance) => {
     if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.SKILL_DEFINITIONS) return <Skeleton className="h-20 w-full mb-2" />;
 
@@ -326,7 +323,6 @@ const FeatsFormSectionComponent = ({
     const featTypeLabel = definition.type && definition.type !== "special"
       ? translations.FEAT_TYPES.find(ft => ft.id === definition.type)?.label
       : null;
-    const featSource = (instance.isGranted && definition.isClassFeature) ? getFeatSource(definition.id) : null;
     const isCustomDefinition = definition.isCustom;
 
     const localizedDescription = definition.description ? getLocalizedString(definition.description, currentLang, undefined, `feats.${definition.id}.description`) : "";
@@ -365,22 +361,67 @@ const FeatsFormSectionComponent = ({
     }
     const hasPrereqsToShow = prereqMessages.length > 0 || !!specialPrereqTextContent;
 
+    let featCategoryBadgeText: string | null = null;
+    if (definition.category) {
+      const categoryLabelKey = `featCategory_${definition.category}` as keyof typeof UI_STRINGS;
+      if (UI_STRINGS[categoryLabelKey]) {
+        featCategoryBadgeText = UI_STRINGS[categoryLabelKey];
+      }
+    }
+    
+    let classSourceBadgeText: string | null = null;
+    let showOriginalGrantedNote = instance.isGranted && !!instance.grantedNote;
+
+    if (instance.isGranted) {
+      let parsedClassNameFromNote: string | null = null;
+      if (instance.grantedNote) {
+        const note = instance.grantedNote;
+        const classProfMatch = note.match(/^Class Proficiency \(([^)]+)\)$/);
+        const levelNoteMatch = note.match(/^\d+(?:st|nd|rd|th) Level \(([^)]+)\)$/);
+        const simpleParenMatch = note.match(/^\(([^)]+)\)$/);
+
+        if (classProfMatch && classProfMatch[1]) {
+            parsedClassNameFromNote = classProfMatch[1];
+        } else if (levelNoteMatch && levelNoteMatch[1]) {
+            parsedClassNameFromNote = levelNoteMatch[1];
+        } else if (simpleParenMatch && simpleParenMatch[1] && translations.DND_CLASSES.some(c => c.label === simpleParenMatch[1])) {
+            parsedClassNameFromNote = simpleParenMatch[1];
+        }
+      }
+
+      if (parsedClassNameFromNote && translations.DND_CLASSES.some(c => c.label === parsedClassNameFromNote)) {
+        classSourceBadgeText = parsedClassNameFromNote;
+        // If the note was fully consumed by the class badge, don't show original note
+        if (instance.grantedNote === `Class Proficiency (${parsedClassNameFromNote})` || 
+            instance.grantedNote?.match(new RegExp(`^\\d+(st|nd|rd|th) Level \\(${parsedClassNameFromNote}\\)$`)) ||
+            instance.grantedNote === `(${parsedClassNameFromNote})` ) {
+          showOriginalGrantedNote = false;
+        }
+      } else if (definition.isClassFeature) {
+          const classNameFromId = getFeatSourceClassName(definition.id, translations.DND_CLASSES);
+          if (classNameFromId) {
+              classSourceBadgeText = classNameFromId;
+              showOriginalGrantedNote = false; // If ID gave class, likely don't need note unless it's extra details
+          }
+      }
+    }
+
     return (
       <div key={instance.instanceId} className="group flex items-start justify-between py-2 transition-colors">
         <div className="flex-grow mr-2 space-y-1 text-sm">
           <div className="flex items-baseline flex-wrap gap-x-1.5">
-            <h4 className="font-medium text-foreground inline-flex items-center">
-              {featLabel}
-            </h4>
+            <h4 className="font-medium text-foreground inline-flex items-center">{featLabel}</h4>
             {featTypeLabel && <Badge variant="outline" className="whitespace-nowrap text-xs">{featTypeLabel}</Badge>}
             {isCustomDefinition && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel}</Badge>}
-            {featSource && <Badge variant="secondary" className="whitespace-nowrap">{featSource}</Badge>}
-            {instance.grantedNote && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
+            {featCategoryBadgeText && <Badge variant="secondary" className="whitespace-nowrap text-xs">{featCategoryBadgeText}</Badge>}
+            {classSourceBadgeText && <Badge variant="secondary" className="whitespace-nowrap text-xs">{classSourceBadgeText}</Badge>}
+            {showOriginalGrantedNote && instance.grantedNote && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
           </div>
+
           {definition.requiresSpecialization && instance.specializationDetail && <p className="text-xs text-muted-foreground ml-1 italic">({instance.specializationDetail})</p>}
 
           {showDescriptionLine ? (
-            <p className="text-xs text-muted-foreground whitespace-normal" dangerouslySetInnerHTML={{ __html: localizedDescription }} />
+             <p className="text-xs text-muted-foreground whitespace-normal" dangerouslySetInnerHTML={{ __html: localizedDescription }} />
           ) : (
             <p className="text-xs text-muted-foreground whitespace-normal italic">
               {UI_STRINGS.featDescriptionNoneLabel}
@@ -441,7 +482,7 @@ const FeatsFormSectionComponent = ({
         </div>
       </div>
     );
-  }, [translationsLoading, translations, language, allAvailableFeatDefinitions, characterForPrereqCheck, allPredefinedSkillDefinitions, allCustomSkillDefinitions, getFeatSource, handleOpenEditDialog, handleRemoveChosenFeatInstance, handleOpenEditSpecializationDialog]);
+  }, [translationsLoading, translations, language, allAvailableFeatDefinitions, characterForPrereqCheck, allPredefinedSkillDefinitions, allCustomSkillDefinitions, handleOpenEditDialog, handleRemoveChosenFeatInstance, handleOpenEditSpecializationDialog]);
 
 
   if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS) {
@@ -590,5 +631,6 @@ FeatsFormSectionComponent.displayName = "FeatsFormSectionComponent";
 export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
 
     
-
+    
+    
 

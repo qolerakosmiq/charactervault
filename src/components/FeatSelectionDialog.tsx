@@ -48,6 +48,19 @@ interface FeatSelectionDialogProps {
   isLoadingTranslations?: boolean;
 }
 
+const getFeatSourceClassNameFromDialog = (featId: string, allClasses: readonly DndClassOption[]): string | null => {
+  if (featId.startsWith('class-')) {
+    const parts = featId.split('-');
+    if (parts.length > 1) {
+      const classIdCandidate = parts[1];
+      const classDef = allClasses.find(c => c.id === classIdCandidate);
+      return classDef ? classDef.label : null;
+    }
+  }
+  return null;
+};
+
+
 const stripHtml = (html: string): string => {
   let text = html.replace(/<br\s*\/?>/gi, ' ');
   text = text.replace(/<\/?b>/gi, '');
@@ -188,7 +201,7 @@ export function FeatSelectionDialog({
                   }
                   const noteEffects = (featDef.effects?.filter(e => e.type === 'note') as NoteEffectDetail[] | undefined) || [];
                   if (noteEffects.length > 0) {
-                    const noteText = noteEffects.map(ne => ne.text).join(' '); // text is already localized string
+                    const noteText = noteEffects.map(ne => ne.text).join(' '); 
                     if (noteText.trim() !== "") {
                       if (benefitContentText.trim() !== "") benefitContentText += " ";
                       benefitContentText += noteText.trim();
@@ -216,6 +229,8 @@ export function FeatSelectionDialog({
                   const hasTextualPrereqs = !!(localizedSpecialPrereqText && localizedSpecialPrereqText.trim() !== "");
                   const showPrerequisitesLine = hasStructuralPrereqs || hasTextualPrereqs;
 
+                  const featSourceClassName = (featDef.isClassFeature && featDef.id.startsWith('class-')) ? getFeatSourceClassNameFromDialog(featDef.id, allClasses) : null;
+
 
                   return (
                     <CommandItem
@@ -230,7 +245,8 @@ export function FeatSelectionDialog({
                       <div className="font-medium text-sm text-foreground">
                         {featDef.label}
                         {featDef.isCustom && <Badge variant="outline" className="ml-1 text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
-                        {featDef.category && <Badge variant="secondary" className="ml-1 whitespace-nowrap">{featDef.category}</Badge>}
+                        {featDef.category && !featSourceClassName && <Badge variant="secondary" className="ml-1 whitespace-nowrap">{featDef.category}</Badge>}
+                        {featSourceClassName && <Badge variant="secondary" className="ml-1 whitespace-nowrap">{featSourceClassName}</Badge>}
                       </div>
                       {featDefDescription && (
                         <div
@@ -240,13 +256,13 @@ export function FeatSelectionDialog({
                       )}
                       {showBenefitLine && (
                          <p className="text-xs mt-0.5 whitespace-normal">
-                          <strong className="text-muted-foreground">{UI_STRINGS.featBenefitLabel || "Benefit:"}</strong>{' '}
-                          <span dangerouslySetInnerHTML={{ __html: benefitContentText }} />
+                          <strong className="text-muted-foreground">{UI_STRINGS.featBenefitLabel || "Benefit"}</strong>{' '}
+                          <span className="text-foreground" dangerouslySetInnerHTML={{ __html: benefitContentText }} />
                         </p>
                       )}
                       {showPrerequisitesLine && (
                         <p className="text-xs mt-0.5 whitespace-normal">
-                          <strong className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel || "Prerequisites:"}</strong>{' '}
+                          <strong className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel || "Prerequisites"}</strong>{' '}
                           <>
                             {hasStructuralPrereqs && prereqMessages.map((msg, index) => (
                               <React.Fragment key={index}>
