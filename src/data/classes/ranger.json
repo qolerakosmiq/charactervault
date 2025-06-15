@@ -50,7 +50,7 @@
       "label": { "en": "Favored Enemy", "fr": "Ennemi juré" },
       "description": { "en": "At 1st level, a ranger may select a type of creature from the ranger favored enemies table. The ranger gains a +2 bonus on Bluff, Listen, Sense Motive, Spot, and Survival checks when using these skills against creatures of this type. Likewise, he gets a +2 bonus on weapon damage rolls against such creatures. At 5th level and every five levels thereafter (10th, 15th, and 20th level), the ranger may select an additional favored enemy. In addition, at each such interval, the bonus against any one favored enemy (including the one just selected, if so desired) increases by 2.", "fr": "Au niveau 1, un rôdeur peut choisir un type de créature dans la table des ennemis jurés du rôdeur. Le rôdeur gagne un bonus de +2 aux tests de Bluff, Perception auditive, Psychologie, Détection et Survie lorsqu'il utilise ces compétences contre des créatures de ce type. De même, il obtient un bonus de +2 aux jets de dégâts d'arme contre de telles créatures. Au niveau 5 et tous les cinq niveaux par la suite (10e, 15e et 20e niveau), le rôdeur peut choisir un ennemi juré supplémentaire. De plus, à chaque intervalle, le bonus contre n'importe quel ennemi juré (y compris celui qui vient d'être sélectionné, si désiré) augmente de 2." },
       "type": "special-ex", "isClassFeature": true,
-      "effectsText": { "en": "+2 bonus on Bluff, Listen, Sense Motive, Spot, Survival checks and weapon damage vs. chosen favored enemy type. Bonus increases and new types chosen at L5, L10, L15, L20.", "fr": "Bonus de +2 aux tests de Bluff, Perception auditive, Psychologie, Détection, Survie et aux dégâts d'arme contre le type d'ennemi juré choisi. Le bonus augmente et de nouveaux types sont choisis aux N5, N10, N15, N20." },
+      "effectsText": { "en": "+2 bonus on Bluff, Listen, Sense Motive, Spot, Survival checks and weapon damage vs. chosen favored enemy type. Bonus increases and new types chosen at L5, L10, L15, L20", "fr": "Bonus de +2 aux tests de Bluff, Perception auditive, Psychologie, Détection, Survie et aux dégâts d'arme contre le type d'ennemi juré choisi. Le bonus augmente et de nouveaux types sont choisis aux N5, N10, N15, N20" },
       "effects": [
         { "type": "modifiesMechanic", "mechanicKey": "favoredEnemySlots", "value": 1, "change": "adds" },
         { "type": "skill", "skillId": "bluff", "value": 2, "bonusType": "untyped", "condition": "vs_favored_enemy"},
@@ -65,45 +65,50 @@
       "id": "class-ranger-wild-empathy",
       "label": { "en": "Wild Empathy", "fr": "Empathie sauvage" },
       "description": { "en": "A ranger can improve the attitude of an animal. This ability functions just like a Diplomacy check made to improve the attitude of a person. The ranger rolls 1d20 and adds her ranger level and her Charisma modifier to determine the wild empathy check result.", "fr": "Un rôdeur peut améliorer l'attitude d'un animal. Cette capacité fonctionne comme un test de Diplomatie effectué pour améliorer l'attitude d'une personne. Le rôdeur lance 1d20 et ajoute son niveau de rôdeur et son modificateur de Charisme pour déterminer le résultat du test d'empathie sauvage." },
+      "effectsText": { "en": "Improve animal attitude (1d20 + Ranger level + Cha mod)", "fr": "Améliore l'attitude des animaux (1d20 + niveau de Rôdeur + mod Cha)" },
       "type": "special-ex", "isClassFeature": true
     },
     {
       "id": "class-ranger-animal-companion",
       "label": { "en": "Animal Companion (Ranger)", "fr": "Compagnon animal (Rôdeur)" },
       "description": { "en": "At 4th level, a ranger gains an animal companion selected from a list. This ability functions like the druid ability of the same name, except that the ranger’s effective druid level is one-half his ranger level.", "fr": "Au niveau 4, un rôdeur gagne un compagnon animal sélectionné dans une liste. Cette capacité fonctionne comme la capacité de druide du même nom, sauf que le niveau de druide effectif du rôdeur est la moitié de son niveau de rôdeur." },
+      "effectsText": { "en": "Gain animal companion. Effective druid level = 1/2 ranger level", "fr": "Gagne un compagnon animal. Niveau effectif de druide = 1/2 niveau de rôdeur" },
       "type": "special-ex", "isClassFeature": true
     },
     {
       "id": "class-ranger-woodland-stride",
       "label": { "en": "Woodland Stride", "fr": "Déplacement facilité en milieu naturel" },
       "description": { "en": "Starting at 7th level, a ranger may move through any sort of undergrowth (such as natural thorns, briars, overgrown areas, and similar terrain) at his normal speed and without taking damage or suffering any other impairment. However, thorns, briars, and overgrown areas that have been magically manipulated to impede motion still affect him.", "fr": "À partir du niveau 7, un rôdeur peut se déplacer à travers n'importe quel type de sous-bois (comme les épines naturelles, les ronces, les zones envahies par la végétation et les terrains similaires) à sa vitesse normale et sans subir de dégâts ni aucune autre altération. Cependant, les épines, les ronces et les zones envahies par la végétation qui ont été manipulées par magie pour entraver le mouvement l'affectent toujours." },
+      "effectsText": { "en": "Move through natural undergrowth at normal speed without penalty", "fr": "Se déplace dans les sous-bois naturels à vitesse normale sans pénalité" },
       "type": "special-ex", "isClassFeature": true
     },
     {
       "id": "class-ranger-swift-tracker",
       "label": { "en": "Swift Tracker", "fr": "Pistage rapide" },
       "description": { "en": "Beginning at 8th level, a ranger can move at his normal speed while following tracks without taking the normal –5 penalty. He takes only a –10 penalty (instead of the normal –20) when moving at up to twice normal speed while tracking.", "fr": "À partir du niveau 8, un rôdeur peut se déplacer à sa vitesse normale tout en suivant des traces sans subir la pénalité normale de –5. Il ne subit qu'une pénalité de –10 (au lieu de la normale –20) lorsqu'il se déplace jusqu'à deux fois sa vitesse normale en pistage." },
+      "effectsText": { "en": "Move at normal speed while tracking (-5 penalty waived). Only -10 penalty (instead of -20) when moving 2x speed while tracking", "fr": "Se déplace à vitesse normale en pistage (pénalité de -5 annulée). Seulement -10 de pénalité (au lieu de -20) en se déplaçant à 2x la vitesse en pistage" },
       "type": "special-ex", "isClassFeature": true
     },
     {
       "id": "class-ranger-evasion",
       "label": { "en": "Evasion (Ranger)", "fr": "Esquive totale (Rôdeur)" },
       "description": { "en": "At 9th level, a ranger can avoid even magical and unusual attacks with great agility. If he makes a successful Reflex saving throw against an attack that normally deals half damage on a successful save, he instead takes no damage. Evasion can be used only if a ranger is wearing light armor or no armor. A helpless ranger does not gain the benefit of evasion.", "fr": "Au niveau 9, un rôdeur peut éviter même les attaques magiques et inhabituelles avec une grande agilité. S'il réussit un jet de Réflexes contre une attaque qui inflige normalement la moitié des dégâts sur un jet de sauvegarde réussi, il ne subit aucun dégât à la place. L'esquive totale ne peut être utilisée que si un rôdeur porte une armure légère ou aucune armure. Un rôdeur sans défense ne bénéficie pas de l'avantage de l'esquive totale." },
+      "effectsText": { "en": "If successful on Reflex save vs. attack that normally deals half damage, take no damage instead (if in light/no armor, not helpless)", "fr": "Si jet de Réflexes réussi contre une attaque qui inflige normalement la moitié des dégâts, ne subit aucun dégât à la place (si en armure légère/aucune, non sans défense)" },
       "type": "special-ex", "isClassFeature": true
     },
     {
       "id": "class-ranger-camouflage",
       "label": { "en": "Camouflage", "fr": "Camouflage" },
       "description": { "en": "A ranger of 13th level or higher can use the Hide skill in any sort of natural terrain, even if the terrain doesn’t grant cover or concealment.", "fr": "Un rôdeur de niveau 13 ou plus peut utiliser la compétence Discrétion dans n'importe quel type de terrain naturel, même si le terrain n'offre pas de couverture ou de dissimulation." },
+      "effectsText": { "en": "Use Hide skill in any natural terrain, even without cover/concealment", "fr": "Utilise la compétence Discrétion dans tout terrain naturel, même sans couverture/dissimulation" },
       "type": "special-ex", "isClassFeature": true
     },
     {
       "id": "class-ranger-hide-in-plain-sight",
       "label": { "en": "Hide in Plain Sight", "fr": "Discrétion totale" },
       "description": { "en": "While in any sort of natural terrain, a ranger of 17th level or higher can use the Hide skill even while being observed.", "fr": "Dans n'importe quel type de terrain naturel, un rôdeur de niveau 17 ou plus peut utiliser la compétence Discrétion même en étant observé." },
+      "effectsText": { "en": "Use Hide skill in any natural terrain even while being observed", "fr": "Utilise la compétence Discrétion dans tout terrain naturel même en étant observé" },
       "type": "special-ex", "isClassFeature": true
     }
   ]
 }
-
-    
