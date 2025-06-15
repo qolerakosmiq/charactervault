@@ -161,7 +161,7 @@
   "featsPanelGrantedFeatsTitle": { "en": "Granted Feats", "fr": "Dons accordés" },
   "featsPanelNoFeatsYet": { "en": "No feats selected or granted yet.", "fr": "Aucun don sélectionné ou accordé pour le moment." },
   "featEffectsLabel": { "en": "<b>Effects:</b>", "fr": "<b>Effets :</b>" },
-  "featPrerequisitesLabel": { "en": "<b>Prerequisites:</b>", "fr": "<b>Prérequis :</b>" },
+  "featPrerequisitesLabel": { "en": "Prerequisites:", "fr": "Prérequis :" },
   "featPrerequisitesNoneLabel": { "en": "None", "fr": "Aucun" },
   "featInstanceEditAriaLabel": { "en": "Edit {featLabel}", "fr": "Modifier {featLabel}" },
   "featEditSpecializationAriaLabel": { "en": "Edit specialization for {featLabel}", "fr": "Modifier la spécialisation pour {featLabel}" },
@@ -209,5 +209,6 @@
   "toastCustomSkillNotFoundEditTitle": { "en": "Custom Skill Not Found", "fr": "Compétence personnalisée introuvable" },
   "toastCustomSkillNotFoundEditDesc": { "en": "The custom skill definition to edit could not be found.", "fr": "La définition de la compétence personnalisée à modifier n'a pas pu être trouvée." }
 }
+
 
     
