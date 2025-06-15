@@ -89,20 +89,19 @@ const FeatsFormSectionComponent = ({
     return [...instances].sort((a, b) => {
       const defA = allAvailableFeatDefinitions.find(d => d.id === a.definitionId);
       const defB = allAvailableFeatDefinitions.find(d => d.id === b.definitionId);
-      // The label in allAvailableFeatDefinitions is already localized by processRawDataBundle
-      const labelA = defA?.label || '';
-      const labelB = defB?.label || '';
+      const labelA = defA?.label ? getLocalizedString(defA.label, language) : '';
+      const labelB = defB?.label ? getLocalizedString(defB.label, language) : '';
       return labelA.localeCompare(labelB);
     });
   };
 
   const userChosenFeatInstances = React.useMemo(() => {
     return sortInstancesByLabel(chosenFeatInstances.filter(f => !f.isGranted));
-  }, [chosenFeatInstances, allAvailableFeatDefinitions]);
+  }, [chosenFeatInstances, allAvailableFeatDefinitions, language]);
 
   const grantedFeatInstances = React.useMemo(() => {
     return sortInstancesByLabel(chosenFeatInstances.filter(f => f.isGranted));
-  }, [chosenFeatInstances, allAvailableFeatDefinitions]);
+  }, [chosenFeatInstances, allAvailableFeatDefinitions, language]);
 
   const userChosenFeatInstancesCount = userChosenFeatInstances.length;
   const featSlotsLeft = availableFeatSlots - userChosenFeatInstancesCount;
@@ -145,12 +144,10 @@ const FeatsFormSectionComponent = ({
     const UI_STRINGS = translations.UI_STRINGS;
     const definition = allAvailableFeatDefinitions.find(def => def.id === definitionId);
     if (!definition) {
-      // This case should ideally not be reached if feat selection dialog is populated correctly.
-      // If it is, it indicates an issue with allAvailableFeatDefinitions or the selection mechanism.
       toast({ title: UI_STRINGS.toastFeatDefNotFoundTitle, description: UI_STRINGS.toastFeatDefNotFoundDesc.replace("{featId}", definitionId), variant: "destructive" });
       return;
     }
-    const currentFeatLabel = definition.label; // Already localized
+    const currentFeatLabel = getLocalizedString(definition.label, language);
 
     setEditingFeatInstanceId(null);
     setInitialSpecializationForEdit(undefined);
@@ -203,8 +200,8 @@ const FeatsFormSectionComponent = ({
     onFeatInstancesChange([...chosenFeatInstances, newInstance].sort((a, b) => {
       const defA = allAvailableFeatDefinitions.find(d => d.id === a.definitionId);
       const defB = allAvailableFeatDefinitions.find(d => d.id === b.definitionId);
-      const labelA = defA?.label || '';
-      const labelB = defB?.label || '';
+      const labelA = defA?.label ? getLocalizedString(defA.label, language) : '';
+      const labelB = defB?.label ? getLocalizedString(defB.label, language) : '';
       return labelA.localeCompare(labelB);
     }));
   };
@@ -223,7 +220,7 @@ const FeatsFormSectionComponent = ({
     if (!featToSpecialize || !translations || !translations.UI_STRINGS) throw new Error("Feat definition or translations not available for specialization.");
     const UI_STRINGS = translations.UI_STRINGS;
     const definition = featToSpecialize;
-    const currentFeatLabel = definition.label; // Already localized
+    const currentFeatLabel = getLocalizedString(definition.label, language);
 
     if (editingFeatInstanceId) {
       const updatedInstances = chosenFeatInstances.map(inst => {
@@ -320,14 +317,12 @@ const FeatsFormSectionComponent = ({
 
     const definition = allAvailableFeatDefinitions.find(def => def.id === instance.definitionId);
     if (!definition) {
-        // This should not happen if data is consistent. If it does, it's a critical data error.
         throw new Error(`[DATA_ERROR] Feat definition for ID '${instance.definitionId}' not found during rendering.`);
     }
     const currentLang = language;
     const { UI_STRINGS } = translations;
 
-    // Feat label is already localized from allAvailableFeatDefinitions
-    const featLabel = definition.label;
+    const featLabel = getLocalizedString(definition.label, currentLang, undefined, `feats.${definition.id}.label`);
     const featTypeLabel = definition.type && definition.type !== "special"
       ? translations.FEAT_TYPES.find(ft => ft.id === definition.type)?.label
       : null;
@@ -335,35 +330,27 @@ const FeatsFormSectionComponent = ({
     const isCustomDefinition = definition.isCustom;
 
     // --- DESCRIPTION ---
-    // Description is mandatory. getLocalizedString will throw if definition.description is undefined or localizes to empty.
-    const localizedDescription = getLocalizedString(definition.description, currentLang, undefined, `feats.${definition.id}.description`);
-    const descriptionToShow = localizedDescription.trim() !== '' && localizedDescription.trim() !== '<p></p>'
-        ? localizedDescription
-        : UI_STRINGS.featDescriptionNoneLabel; // Fallback only if localization returned empty (which getLocalizedString should prevent)
+    const localizedDescription = definition.description ? getLocalizedString(definition.description, currentLang, undefined, `feats.${definition.id}.description`) : UI_STRINGS.featDescriptionNoneLabel;
 
     // --- BENEFIT ---
     let benefitContent = "";
     if (definition.effectsText) {
-      const localizedEffectsText = getLocalizedString(definition.effectsText, currentLang, undefined, `feats.${definition.id}.effectsText`);
-      if (localizedEffectsText.trim() !== "") {
-        benefitContent += localizedEffectsText;
-      }
+        benefitContent = getLocalizedString(definition.effectsText, currentLang, undefined, `feats.${definition.id}.effectsText`);
     }
     const noteEffects = (definition.effects?.filter(e => e.type === 'note') as NoteEffectDetail[] | undefined) || [];
     if (noteEffects.length > 0) {
       const noteText = noteEffects.map(ne =>
-          // 'ne.text' is already localized by processRawDataBundle
-          ne.text
+          ne.text // This is already localized by processRawDataBundle
       ).join(' ');
       if (noteText.trim() !== "") {
         if (benefitContent.trim() !== "") benefitContent += " ";
-        benefitContent += noteText;
+        benefitContent += noteText.trim();
       }
     }
     const finalBenefitText = benefitContent.trim() ? benefitContent : UI_STRINGS.featBenefitNoneLabel;
 
     // --- PREREQUISITES ---
-    const prereqMessages = checkFeatPrerequisites(
+    const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(
       definition,
       characterForPrereqCheck as Character,
       allAvailableFeatDefinitions,
@@ -399,7 +386,7 @@ const FeatsFormSectionComponent = ({
 
           <div className="text-xs text-muted-foreground">
             <strong className="font-bold text-muted-foreground mr-1">{UI_STRINGS.featDescriptionLabel}</strong>
-            <span dangerouslySetInnerHTML={{ __html: descriptionToShow }} />
+            <span dangerouslySetInnerHTML={{ __html: localizedDescription }} />
           </div>
 
           <div className="text-xs text-muted-foreground">
