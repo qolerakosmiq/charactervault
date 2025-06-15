@@ -18,9 +18,8 @@ import { Badge } from '@/components/ui/badge';
 
 const DEBOUNCE_DELAY = 400;
 
-// ArmorClassPanelData is now more aligned with the Character structure
 export interface ArmorClassPanelProps {
-  character: Character; // Pass the full character or a more comprehensive subset
+  character: Character;
   aggregatedFeatEffects?: AggregatedFeatEffects | null;
   onCharacterUpdate?: (field: keyof Pick<Character, 'armorBonus' | 'shieldBonus' | 'naturalArmor' | 'deflectionBonus' | 'dodgeBonus' | 'acMiscModifier'>, value: any) => void;
   onOpenAcBreakdownDialog?: (contentType: InfoDialogContentType) => void;
@@ -28,7 +27,7 @@ export interface ArmorClassPanelProps {
 
 const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
-  const acData = character; // Use character directly
+  const acData = character; // Use character directly for clarity within this component's scope
 
   const handleUpdateCallback = React.useCallback((fieldName: keyof Pick<Character, 'acMiscModifier' | 'armorBonus' | 'shieldBonus' | 'naturalArmor' | 'deflectionBonus' | 'dodgeBonus'>) => (value: number) => {
     if (onCharacterUpdate) {
@@ -42,7 +41,6 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
     DEBOUNCE_DELAY
   );
 
-  // Debounced fields for base AC components
   const [localArmorBonus, setLocalArmorBonus] = useDebouncedFormField(acData.armorBonus || 0, handleUpdateCallback('armorBonus'), DEBOUNCE_DELAY);
   const [localShieldBonus, setLocalShieldBonus] = useDebouncedFormField(acData.shieldBonus || 0, handleUpdateCallback('shieldBonus'), DEBOUNCE_DELAY);
   const [localNaturalArmor, setLocalNaturalArmor] = useDebouncedFormField(acData.naturalArmor || 0, handleUpdateCallback('naturalArmor'), DEBOUNCE_DELAY);
@@ -100,8 +98,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
   }, [aggregatedFeatEffects, acData?.abilityScores]);
 
 
-  if (translationsLoading || !translations || !acData || !aggregatedFeatEffects) {
-    // Skeleton remains the same
+  if (translationsLoading || !translations || !character || !aggregatedFeatEffects) {
     return (
       <Card>
         <CardHeader>
@@ -182,42 +179,42 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
   }
 
   const { DEFAULT_ABILITIES, SIZES, UI_STRINGS, ITEM_DEFINITIONS_ARMOR, ITEM_DEFINITIONS_SHIELDS } = translations;
-  const currentAbilityScores = acData.abilityScores || DEFAULT_ABILITIES;
-  const currentSize = acData.size || 'medium';
+  const currentAbilityScores = character.abilityScores || DEFAULT_ABILITIES;
+  const currentSize = character.size || 'medium';
 
   const dexModifier = getAbilityModifierByName(currentAbilityScores, 'dexterity');
   const sizeModAC = getSizeModifierAC(currentSize, SIZES);
 
-  const equippedArmorInstanceId = acData.equippedGear?.['armor-body'];
-  const equippedArmorInstance = equippedArmorInstanceId ? acData.inventory.find(i => i.instanceId === equippedArmorInstanceId) : undefined;
+  const equippedArmorInstanceId = character.equippedGear?.['armor-body'];
+  const equippedArmorInstance = equippedArmorInstanceId ? character.inventory.find(i => i.instanceId === equippedArmorInstanceId) : undefined;
   const equippedArmorDefinition = equippedArmorInstance ? ITEM_DEFINITIONS_ARMOR.find(def => def.definitionId === equippedArmorInstance.definitionId) : undefined;
   const physicalArmorBonus = equippedArmorDefinition?.armorBonus || 0;
 
-  const equippedShieldInstanceId = acData.equippedGear?.['shield'];
-  const equippedShieldInstance = equippedShieldInstanceId ? acData.inventory.find(i => i.instanceId === equippedShieldInstanceId) : undefined;
+  const equippedShieldInstanceId = character.equippedGear?.['shield'];
+  const equippedShieldInstance = equippedShieldInstanceId ? character.inventory.find(i => i.instanceId === equippedShieldInstanceId) : undefined;
   const equippedShieldDefinition = equippedShieldInstance ? ITEM_DEFINITIONS_SHIELDS.find(def => def.definitionId === equippedShieldInstance.definitionId) : undefined;
   const physicalShieldBonus = equippedShieldDefinition?.shieldBonus || 0;
 
 
-  const totalArmorBonusNormal = calculateTotalAcComponent(acData.armorBonus, "armor", "Normal") + physicalArmorBonus;
-  const totalShieldBonusNormal = calculateTotalAcComponent(acData.shieldBonus, "shield", "Normal") + physicalShieldBonus;
-  const totalNaturalArmorNormal = calculateTotalAcComponent(acData.naturalArmor, "natural", "Normal");
-  const totalDeflectionBonusNormal = calculateTotalAcComponent(acData.deflectionBonus, "deflection", "Normal");
-  const totalDodgeBonusNormal = calculateTotalAcComponent(acData.dodgeBonus, "dodge", "Normal");
+  const totalArmorBonusNormal = calculateTotalAcComponent(character.armorBonus, "armor", "Normal") + physicalArmorBonus;
+  const totalShieldBonusNormal = calculateTotalAcComponent(character.shieldBonus, "shield", "Normal") + physicalShieldBonus;
+  const totalNaturalArmorNormal = calculateTotalAcComponent(character.naturalArmor, "natural", "Normal");
+  const totalDeflectionBonusNormal = calculateTotalAcComponent(character.deflectionBonus, "deflection", "Normal");
+  const totalDodgeBonusNormal = calculateTotalAcComponent(character.dodgeBonus, "dodge", "Normal");
   const calculatedFeatMiscAcBonusNormal = calculateTotalAcComponent(0, "other_feat_bonus", "Normal") + calculateTotalAcComponent(0, "monk_wisdom", "Normal") + calculateTotalAcComponent(0, "monkScaling", "Normal");
-  const normalAC = 10 + totalArmorBonusNormal + totalShieldBonusNormal + dexModifier + sizeModAC + totalNaturalArmorNormal + totalDeflectionBonusNormal + totalDodgeBonusNormal + calculatedFeatMiscAcBonusNormal + (acData.acMiscModifier || 0);
+  const normalAC = 10 + totalArmorBonusNormal + totalShieldBonusNormal + dexModifier + sizeModAC + totalNaturalArmorNormal + totalDeflectionBonusNormal + totalDodgeBonusNormal + calculatedFeatMiscAcBonusNormal + (character.acMiscModifier || 0);
 
-  const totalDeflectionBonusTouch = calculateTotalAcComponent(acData.deflectionBonus, "deflection", "Touch");
-  const totalDodgeBonusTouch = calculateTotalAcComponent(acData.dodgeBonus, "dodge", "Touch");
+  const totalDeflectionBonusTouch = calculateTotalAcComponent(character.deflectionBonus, "deflection", "Touch");
+  const totalDodgeBonusTouch = calculateTotalAcComponent(character.dodgeBonus, "dodge", "Touch");
   const calculatedFeatMiscAcBonusTouch = calculateTotalAcComponent(0, "other_feat_bonus", "Touch") + calculateTotalAcComponent(0, "monk_wisdom", "Touch") + calculateTotalAcComponent(0, "monkScaling", "Touch");
-  const touchAC = 10 + dexModifier + sizeModAC + totalDeflectionBonusTouch + totalDodgeBonusTouch + calculatedFeatMiscAcBonusTouch + (acData.acMiscModifier || 0);
+  const touchAC = 10 + dexModifier + sizeModAC + totalDeflectionBonusTouch + totalDodgeBonusTouch + calculatedFeatMiscAcBonusTouch + (character.acMiscModifier || 0);
 
-  const totalArmorBonusFlat = calculateTotalAcComponent(acData.armorBonus, "armor", "Flat-Footed") + physicalArmorBonus;
-  const totalShieldBonusFlat = calculateTotalAcComponent(acData.shieldBonus, "shield", "Flat-Footed") + physicalShieldBonus;
-  const totalNaturalArmorFlat = calculateTotalAcComponent(acData.naturalArmor, "natural", "Flat-Footed");
-  const totalDeflectionBonusFlat = calculateTotalAcComponent(acData.deflectionBonus, "deflection", "Flat-Footed");
+  const totalArmorBonusFlat = calculateTotalAcComponent(character.armorBonus, "armor", "Flat-Footed") + physicalArmorBonus;
+  const totalShieldBonusFlat = calculateTotalAcComponent(character.shieldBonus, "shield", "Flat-Footed") + physicalShieldBonus;
+  const totalNaturalArmorFlat = calculateTotalAcComponent(character.naturalArmor, "natural", "Flat-Footed");
+  const totalDeflectionBonusFlat = calculateTotalAcComponent(character.deflectionBonus, "deflection", "Flat-Footed");
   const calculatedFeatMiscAcBonusFlat = calculateTotalAcComponent(0, "other_feat_bonus", "Flat-Footed") + calculateTotalAcComponent(0, "monk_wisdom", "Flat-Footed") + calculateTotalAcComponent(0, "monkScaling", "Flat-Footed");
-  const flatFootedAC = 10 + totalArmorBonusFlat + totalShieldBonusFlat + sizeModAC + totalNaturalArmorFlat + totalDeflectionBonusFlat + calculatedFeatMiscAcBonusFlat + (acData.acMiscModifier || 0);
+  const flatFootedAC = 10 + totalArmorBonusFlat + totalShieldBonusFlat + sizeModAC + totalNaturalArmorFlat + totalDeflectionBonusFlat + calculatedFeatMiscAcBonusFlat + (character.acMiscModifier || 0);
 
 
   const handleShowAcBreakdown = React.useCallback((acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
