@@ -14,6 +14,7 @@ import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/context/I18nProvider';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge'; // Added Badge import
 
 const DEBOUNCE_DELAY = 400;
 
@@ -148,6 +149,7 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
                   buttonClassName="h-9 w-9"
                 />
               </div>
+              <Skeleton className="h-5 w-3/4 mt-2" />
             </>
           )}
         </CardContent>
@@ -245,6 +247,11 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
               buttonClassName="h-9 w-9"
             />
           </div>
+          <p className="text-sm text-muted-foreground pt-2">
+            <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.armorClassPanelTempModInfoNote_prefix }} />
+            <Badge variant="outline">{UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}</Badge>
+            <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.armorClassPanelTempModInfoNote_suffix }} />
+          </p>
         </CardContent>
       </Card>
     </>
@@ -252,3 +259,4 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
 };
 ArmorClassPanelComponent.displayName = 'ArmorClassPanelComponent';
 export const ArmorClassPanel = React.memo(ArmorClassPanelComponent);
+
