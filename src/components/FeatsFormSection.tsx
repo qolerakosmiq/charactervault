@@ -317,15 +317,18 @@ const FeatsFormSectionComponent = ({
     const { UI_STRINGS } = translations;
 
     const featLabel = getLocalizedString(definition.label, currentLang, undefined, `feats.${definition.id}.label`);
-    const featTypeLabel = definition.type && definition.type !== "special"
-      ? translations.FEAT_TYPES.find(ft => ft.id === definition.type)?.label
-      : null;
+    
+    let featTypeDisplayBadge: React.ReactNode = null;
+    if (definition?.type && definition.type !== "special") {
+      const featTypeObject = translations.FEAT_TYPES.find(ft => ft.id === definition.type);
+      if (featTypeObject && featTypeObject.id !== 'general') { // Check the ID, not the label
+        featTypeDisplayBadge = <Badge variant="outline" className="whitespace-nowrap text-xs">{featTypeObject.label}</Badge>;
+      }
+    }
     const isCustomDefinition = definition.isCustom;
 
-
     const localizedDescription = definition.description ? getLocalizedString(definition.description, currentLang, undefined, `feats.${definition.id}.description`) : "";
-    const showDescriptionLine = localizedDescription.trim() !== "";
-
+    const showDescriptionLine = localizedDescription && localizedDescription.trim() !== "";
 
     let finalBenefitText = "";
     if (definition.effectsText) {
@@ -340,7 +343,6 @@ const FeatsFormSectionComponent = ({
       }
     }
     const showBenefitLine = finalBenefitText.trim() !== "";
-
 
     const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(
       definition,
@@ -357,7 +359,7 @@ const FeatsFormSectionComponent = ({
     let specialPrereqTextContent: string | undefined = undefined;
     if (definition.prerequisites?.special) {
         specialPrereqTextContent = getLocalizedString(definition.prerequisites.special, currentLang, undefined, `feats.${definition.id}.prereq.special`);
-        if (specialPrereqTextContent.trim() === "") specialPrereqTextContent = undefined;
+        if (specialPrereqTextContent && specialPrereqTextContent.trim() === "") specialPrereqTextContent = undefined;
     }
     const hasPrereqsToShow = prereqMessages.length > 0 || !!specialPrereqTextContent;
     
@@ -408,7 +410,7 @@ const FeatsFormSectionComponent = ({
         <div className="flex-grow mr-2 space-y-1 text-sm">
           <div className="flex items-baseline flex-wrap gap-x-1.5">
             <h4 className="font-medium text-foreground inline-flex items-center">{featLabel}</h4>
-            {featTypeLabel && <Badge variant="outline" className="whitespace-nowrap text-xs">{featTypeLabel}</Badge>}
+            {featTypeDisplayBadge}
             {isCustomDefinition && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
             {classSourceBadgeText && <Badge variant="secondary" className="whitespace-nowrap text-xs">{classSourceBadgeText}</Badge>}
             {showOriginalGrantedNote && instance.grantedNote && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
@@ -420,7 +422,7 @@ const FeatsFormSectionComponent = ({
              <p className="text-xs text-muted-foreground whitespace-normal" dangerouslySetInnerHTML={{ __html: localizedDescription }} />
           ) : (
             <p className="text-xs text-muted-foreground whitespace-normal italic">
-              {UI_STRINGS.featDescriptionNoneLabel || "No specific description provided."}
+              {UI_STRINGS.featDescriptionNoneLabel}
             </p>
           )}
 
@@ -629,5 +631,6 @@ export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
     
     
     
+
 
 
