@@ -297,7 +297,7 @@ const FeatsFormSectionComponent = ({
     if (definitionId.startsWith('class-')) {
       const parts = definitionId.split('-');
       if (parts.length > 1) {
-        const classNameKey = parts.slice(1, -1).join('-'); 
+        const classNameKey = parts.slice(1, -1).join('-');
         const classDef = translations.DND_CLASSES.find(c => c.id === classNameKey);
         return classDef ? classDef.label : capitalizeFirstLetter(classNameKey.replace(/-/g, ' '));
       }
@@ -312,14 +312,54 @@ const FeatsFormSectionComponent = ({
 
 
   const renderFeatInstance = React.useCallback((instance: CharacterFeatInstance) => {
-    if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.SKILL_DEFINITIONS) return <Skeleton className="h-16 w-full mb-2" />;
+    if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.SKILL_DEFINITIONS) return <Skeleton className="h-20 w-full mb-2" />;
 
     const definition = allAvailableFeatDefinitions.find(def => def.id === instance.definitionId);
     if (!definition) {
         throw new Error(`Feat definition for ID '${instance.definitionId}' not found.`);
     }
     const currentLang = language;
+    const { UI_STRINGS } = translations;
 
+    const featLabel = getLocalizedString(definition.label, currentLang, undefined, `feats.${definition.id}.label`);
+    const featTypeLabel = definition.type && definition.type !== "special"
+      ? translations.FEAT_TYPES.find(ft => ft.id === definition.type)?.label
+      : null;
+    const featSource = (instance.isGranted && definition.isClassFeature) ? getFeatSource(definition.id) : null;
+    const isCustomDefinition = definition.isCustom;
+
+
+    // --- DESCRIPTION ---
+    let rawDescriptionString: string | undefined = undefined;
+    if (definition.description) {
+        rawDescriptionString = typeof definition.description === 'string'
+            ? definition.description
+            : getLocalizedString(definition.description, currentLang, undefined, `feats.${definition.id}.description`);
+    }
+    const descriptionToShow = rawDescriptionString && rawDescriptionString.trim() !== '' && rawDescriptionString.trim() !== '<p></p>'
+        ? rawDescriptionString
+        : UI_STRINGS.featDescriptionNoneLabel;
+
+
+    // --- BENEFIT ---
+    let benefitContent = "";
+    if (definition.effectsText) {
+        benefitContent = typeof definition.effectsText === 'string'
+            ? definition.effectsText
+            : getLocalizedString(definition.effectsText, currentLang, undefined, `feats.${definition.id}.effectsText`) || "";
+    }
+    if (!benefitContent.trim()) {
+        const noteEffects = (definition.effects?.filter(e => e.type === 'note') as NoteEffectDetail[] | undefined) || [];
+        if (noteEffects.length > 0) {
+            benefitContent = noteEffects.map(ne =>
+                typeof ne.text === 'string' ? ne.text : getLocalizedString(ne.text, currentLang, undefined, `feats.${definition.id}.effects.note.${ne.text.en?.substring(0,10) || 'default'}`)
+            ).join(' ');
+        }
+    }
+    const finalBenefitText = benefitContent.trim() ? benefitContent : UI_STRINGS.featBenefitNoneLabel;
+
+
+    // --- PREREQUISITES ---
     const prereqMessages = checkFeatPrerequisites(
       definition,
       characterForPrereqCheck as Character,
@@ -330,60 +370,16 @@ const FeatsFormSectionComponent = ({
       translations.DND_RACES,
       translations.ABILITY_LABELS,
       translations.ALIGNMENT_PREREQUISITE_OPTIONS,
-      translations.UI_STRINGS
+      UI_STRINGS
     );
-    const isCustomDefinition = definition.isCustom;
-
-    const featTypeLabel = definition.type && definition.type !== "special"
-      ? translations.FEAT_TYPES.find(ft => ft.id === definition.type)?.label
-      : null;
-
-    const featSource = (instance.isGranted && definition.isClassFeature) ? getFeatSource(definition.id) : null;
-    const { UI_STRINGS } = translations;
-    const featLabel = getLocalizedString(definition.label, currentLang, undefined, `feats.${definition.id}.label`);
-
-
-    let rawDescriptionString: string | undefined = undefined;
-    if (definition.description) {
-        rawDescriptionString = typeof definition.description === 'string' 
-            ? definition.description 
-            : getLocalizedString(definition.description, currentLang, undefined, `feats.${definition.id}.description`);
-    }
-    let descriptionContent = rawDescriptionString || "";
-    if (rawDescriptionString) {
-        const benefitMarker = "<b>Benefit:</b>";
-        const prereqMarker = "<b>Prerequisites:</b>";
-        const benefitIndex = rawDescriptionString.toLowerCase().indexOf(benefitMarker.toLowerCase());
-        const prereqIndex = rawDescriptionString.toLowerCase().indexOf(prereqMarker.toLowerCase());
-
-        let endIndex = rawDescriptionString.length;
-        if (benefitIndex !== -1) endIndex = Math.min(endIndex, benefitIndex);
-        if (prereqIndex !== -1) endIndex = Math.min(endIndex, prereqIndex);
-        descriptionContent = rawDescriptionString.substring(0, endIndex).trim();
-    }
-    const showDescriptionSection = descriptionContent && descriptionContent.trim() !== "" && descriptionContent.toLowerCase() !== "<p></p>";
-
-    let benefitContent = "";
-    if (definition.effectsText) {
-        benefitContent = typeof definition.effectsText === 'string'
-            ? definition.effectsText
-            : getLocalizedString(definition.effectsText, currentLang, undefined, `feats.${definition.id}.effectsText`);
-    }
-    if (!benefitContent.trim()) {
-        const noteEffects = (definition.effects?.filter(e => e.type === 'note') as NoteEffectDetail[] | undefined) || [];
-        if (noteEffects.length > 0) {
-            benefitContent = noteEffects.map(ne => ne.text).join(' ');
-        }
-    }
-    const showBenefitSection = benefitContent && benefitContent.trim() !== "";
-
     let specialPrereqText: string | undefined = undefined;
     if (definition.prerequisites?.special) {
         specialPrereqText = typeof definition.prerequisites.special === 'string'
             ? definition.prerequisites.special
             : getLocalizedString(definition.prerequisites.special, currentLang, undefined, `feats.${definition.id}.prereq.special`);
     }
-    const showPrerequisitesLine = prereqMessages.length > 0 || (specialPrereqText && specialPrereqText.trim() !== "");
+    const hasPrereqsToShow = prereqMessages.length > 0 || (specialPrereqText && specialPrereqText.trim() !== "");
+
 
     return (
       <div key={instance.instanceId} className="group flex items-start justify-between py-2 transition-colors">
@@ -398,22 +394,18 @@ const FeatsFormSectionComponent = ({
             {instance.grantedNote && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
           </div>
           {definition.requiresSpecialization && instance.specializationDetail && <p className="text-xs text-muted-foreground ml-1 italic">({instance.specializationDetail})</p>}
-          
-          {showDescriptionSection && (
-            <div className="text-xs text-muted-foreground">
-              <strong className="font-bold text-muted-foreground mr-1">{UI_STRINGS.featDescriptionLabel}</strong>
-              <span dangerouslySetInnerHTML={{ __html: descriptionContent }} />
-            </div>
-          )}
 
-          {showBenefitSection && (
-            <div className="text-xs text-muted-foreground">
-              <strong className="font-bold text-muted-foreground mr-1">{UI_STRINGS.featBenefitLabel}</strong>
-              <span dangerouslySetInnerHTML={{ __html: benefitContent }} />
-            </div>
-          )}
+          <div className="text-xs text-muted-foreground">
+            <strong className="font-bold text-muted-foreground mr-1">{UI_STRINGS.featDescriptionLabel}</strong>
+            <span dangerouslySetInnerHTML={{ __html: descriptionToShow }} />
+          </div>
 
-          {showPrerequisitesLine && (
+          <div className="text-xs text-muted-foreground">
+            <strong className="font-bold text-muted-foreground mr-1">{UI_STRINGS.featBenefitLabel}</strong>
+            <span dangerouslySetInnerHTML={{ __html: finalBenefitText }} />
+          </div>
+
+          {hasPrereqsToShow && (
             <div className="text-xs text-muted-foreground">
               <strong className="font-bold text-muted-foreground mr-1">{UI_STRINGS.featPrerequisitesLabel}</strong>
               <>

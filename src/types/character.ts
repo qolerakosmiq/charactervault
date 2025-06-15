@@ -392,8 +392,8 @@ export function getGrantedFeatsForCharacter(
     if (!featDef.canTakeMultipleTimes && !specializationDetail && grantedInstances.some(inst => inst.definitionId === featDef.id)) {
       return;
     }
-
-    const localizedNote = rawNote ? getLocalizedString(rawNote, currentLang, undefined, `grantedFeats.${featDef.id}.note`) : undefined;
+    
+    const localizedNote = rawNote ? getLocalizedString(rawNote, currentLang, undefined, `grantedFeats.${featDefId}.note`) : undefined;
     const fullGrantedNote = localizedNote ? `${localizedNote} ${sourceContext}` : sourceContext;
 
 
@@ -625,14 +625,8 @@ export function checkFeatPrerequisites(
     }
   }
 
-  if (prerequisites.special) {
-    const specialText = getLocalizedString(prerequisites.special, uiStrings.currentLangCodeForNotesFallback || 'en', undefined, `feats.${featDefinitionToCheck.id}.prereq.special`);
-    let isMetSpecial = true;
-    if (prerequisites.specialConditions && prerequisites.specialConditions.length > 0) {
-      // Complex special condition logic would go here if needed
-    }
-    messages.push({ text: specialText, isMet: isMetSpecial, orderKey: 'special', originalText: specialText });
-  }
+  // The 'special' prerequisite text is handled in the rendering component (FeatsFormSection)
+  // after these structured messages are generated and sorted.
 
   messages.sort((a, b) => {
     const orderA = PREREQ_ORDER_MAP[a.orderKey.split('_')[0]] || 99;
