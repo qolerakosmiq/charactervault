@@ -6,8 +6,8 @@ import type { Character, AbilityScores, InfoDialogContentType } from '@/types/ch
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Heart, Activity, Loader2, Info, Lock } from 'lucide-react'; // Added Lock
-import { Button } from '@/components/ui/button'; // Already here
+import { Heart, Activity, Loader2, Info, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
+import { Button } from '@/components/ui/button';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
@@ -45,6 +45,8 @@ const HealthPanelComponent = ({
   onOpenHealthInfoDialog
 }: HealthPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
+  const [isLocked, setIsLocked] = React.useState(true);
+  const toggleLock = () => setIsLocked(prev => !prev);
 
   const [localHp, setLocalHp] = useDebouncedFormField(
     healthData.hp,
@@ -94,7 +96,7 @@ const HealthPanelComponent = ({
               <Heart className="h-8 w-8 text-primary" />
               <Skeleton className="h-7 w-24" />
             </div>
-            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
+            <Skeleton className="h-8 w-8" />
           </div>
           <Skeleton className="h-4 w-48" />
         </CardHeader>
@@ -170,8 +172,15 @@ const HealthPanelComponent = ({
               <CardDescription>{UI_STRINGS.healthPanelDescription || "Manage hit points, damage, and related attributes."}</CardDescription>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
-            <Lock className="h-5 w-5" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-muted-foreground hover:text-foreground shrink-0"
+            onClick={toggleLock}
+            aria-pressed={!isLocked}
+            aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelLocked : UI_STRINGS.lockButtonAriaLabelUnlocked}
+          >
+            {isLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
           </Button>
         </div>
       </CardHeader>

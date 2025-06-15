@@ -5,10 +5,10 @@ import *as React from 'react';
 import type { Character, DndRaceId, AbilityScores, LanguageId, LanguageOption, Skill } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button'; // Already here
+import { Button } from '@/components/ui/button';
 import { ComboboxPrimitive } from '@/components/ui/combobox';
 import { Badge } from '@/components/ui/badge';
-import { Languages as LanguagesIcon, PlusCircle, Trash2, Loader2, Lock } from 'lucide-react'; // Added Lock
+import { Languages as LanguagesIcon, PlusCircle, Trash2, Loader2, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
 import { useI18n } from '@/context/I18nProvider';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -31,6 +31,8 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
 }) => {
   const { translations, isLoading: translationsLoading } = useI18n();
   const [selectedLanguageToAdd, setSelectedLanguageToAdd] = React.useState<string>('');
+  const [isLocked, setIsLocked] = React.useState(true);
+  const toggleLock = () => setIsLocked(prev => !prev);
 
   if (translationsLoading || !translations) {
     return (
@@ -41,7 +43,7 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
               <LanguagesIcon className="h-8 w-8 text-primary" />
               <Skeleton className="h-7 w-32" />
             </div>
-            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
+            <Skeleton className="h-8 w-8" />
           </div>
           <Skeleton className="h-4 w-3/4 mt-1" />
         </CardHeader>
@@ -72,10 +74,10 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
   const allKnownLanguageIds = Array.from(new Set([...automaticLanguages, ...characterLanguages]));
   
   const allKnownLanguagesToDisplay = LANGUAGES
-    .filter(lang => allKnownLanguageIds.includes(lang.id)) // Changed from value to id
+    .filter(lang => allKnownLanguageIds.includes(lang.id))
     .sort((a, b) => {
-      const isAAutomatic = automaticLanguages.includes(a.id); // Changed from value to id
-      const isBAutomatic = automaticLanguages.includes(b.id); // Changed from value to id
+      const isAAutomatic = automaticLanguages.includes(a.id);
+      const isBAutomatic = automaticLanguages.includes(b.id);
       if (isAAutomatic && !isBAutomatic) return -1;
       if (!isAAutomatic && isBAutomatic) return 1;
       return a.label.localeCompare(b.label);
@@ -83,9 +85,9 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
 
 
   const availableLanguagesForAdding = LANGUAGES.filter(
-    lang => !allKnownLanguageIds.includes(lang.id) && lang.id !== 'druidic' // Changed from value to id
+    lang => !allKnownLanguageIds.includes(lang.id) && lang.id !== 'druidic'
   ).sort((a,b) => a.label.localeCompare(b.label))
-  .map(lang => ({ value: lang.id, label: lang.label })); // Ensure options have value/label for combobox
+  .map(lang => ({ value: lang.id, label: lang.label }));
 
   const handleAddLanguage = React.useCallback(() => {
     if (selectedLanguageToAdd && !allKnownLanguageIds.includes(selectedLanguageToAdd)) {
@@ -110,8 +112,15 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
               <CardDescription>{UI_STRINGS.languagesPanelDescription || "Manage your character's known languages."}</CardDescription>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
-            <Lock className="h-5 w-5" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-muted-foreground hover:text-foreground shrink-0"
+            onClick={toggleLock}
+            aria-pressed={!isLocked}
+            aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelLocked : UI_STRINGS.lockButtonAriaLabelUnlocked}
+          >
+            {isLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
           </Button>
         </div>
       </CardHeader>
@@ -141,7 +150,7 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
           {allKnownLanguagesToDisplay.length > 0 ? (
             <div className="mt-1"> 
               {allKnownLanguagesToDisplay.map(langObj => {
-                const isAutomatic = automaticLanguages.includes(langObj.id); // Changed from value to id
+                const isAutomatic = automaticLanguages.includes(langObj.id);
                 return (
                   <div key={`known-${langObj.id}`} className="flex items-center justify-between py-1 px-1.5 rounded-md text-sm"> 
                     <span>
@@ -154,7 +163,7 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
                         variant="ghost"
                         size="icon"
                         className="h-6 w-6 text-destructive hover:text-destructive/80"
-                        onClick={() => handleRemoveLanguage(langObj.id)} // Changed from value to id
+                        onClick={() => handleRemoveLanguage(langObj.id)}
                         aria-label={(UI_STRINGS.languagesPanelRemoveAriaLabel || "Remove {languageName}").replace("{languageName}", langObj.label)}
                       >
                         <Trash2 className="h-3.5 w-3.5" />

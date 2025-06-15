@@ -7,12 +7,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
-import { UserSquare2, Palette, Loader2, Lock } from 'lucide-react'; // Added Lock
+import { UserSquare2, Palette, Loader2, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
 import type { Character } from '@/types/character';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
-import { Button } from '@/components/ui/button'; // Added import
+import { Button } from '@/components/ui/button';
 
 const DEBOUNCE_DELAY = 400; // ms
 
@@ -28,6 +28,8 @@ const CharacterFormStoryPortraitSectionComponent = ({
   onPortraitChange,
 }: CharacterFormStoryPortraitSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
+  const [isLocked, setIsLocked] = React.useState(true);
+  const toggleLock = () => setIsLocked(prev => !prev);
 
   const [localCampaign, setLocalCampaign] = useDebouncedFormField(
     storyAndAppearanceData.campaign || '', React.useCallback((value) => onFieldChange('campaign', value), [onFieldChange]), DEBOUNCE_DELAY
@@ -66,7 +68,7 @@ const CharacterFormStoryPortraitSectionComponent = ({
                 <Skeleton className="h-4 w-80" />
               </div>
             </div>
-            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
+            <Skeleton className="h-8 w-8" />
           </div>
         </CardHeader>
         <CardContent className="space-y-4 pt-2">
@@ -119,8 +121,15 @@ const CharacterFormStoryPortraitSectionComponent = ({
               </CardDescription>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
-            <Lock className="h-5 w-5" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-muted-foreground hover:text-foreground shrink-0"
+            onClick={toggleLock}
+            aria-pressed={!isLocked}
+            aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelLocked : UI_STRINGS.lockButtonAriaLabelUnlocked}
+          >
+            {isLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
           </Button>
         </div>
       </CardHeader>

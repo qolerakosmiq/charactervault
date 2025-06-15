@@ -5,17 +5,17 @@ import *as React from 'react';
 import type {
   FeatDefinitionJsonData, CharacterFeatInstance, Character, AbilityScores, Skill as SkillType,
   SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown, AggregatedFeatEffects, ComboboxOption, NoteEffectDetail, LocalizedString, DndClassOption,
-  DndRaceId, CharacterSize // Added DndRaceId, CharacterSize
+  DndRaceId, CharacterSize
 } from '@/types/character-core';
 import {
   checkFeatPrerequisites, calculateAvailableFeats, calculateTotalSynergyBonus, calculateRacialSkillBonus, calculateSizeSpecificSkillBonus, getRaceSkillPointsBonusPerLevel
 } from '@/types/character';
-import type { CustomSkillDefinition, CustomSynergyRule } from '@/lib/definitions-store'; // Added CustomSynergyRule
+import type { CustomSkillDefinition, CustomSynergyRule } from '@/lib/definitions-store';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label'; // Added missing import
-import { ScrollText, Info, Loader2, Dices, Lock } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { ScrollText, Info, Loader2, Dices, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -71,8 +71,8 @@ export interface SkillsFormSectionProps {
 
 // Helper component for a single skill row to encapsulate its debounced field
 const DebouncedSkillRankInput: React.FC<{
-  skillProp: SkillType; // Renamed to avoid conflict
-  onDebouncedRankChange: (newRank: number) => void; // Callback for debounced change
+  skillProp: SkillType; 
+  onDebouncedRankChange: (newRank: number) => void; 
   currentStepForInput: number;
   maxRanksValue: number;
 }> = ({ skillProp, onDebouncedRankChange, currentStepForInput, maxRanksValue }) => {
@@ -115,6 +115,8 @@ const SkillsFormSectionComponent = ({
   const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({
     rerollTwentiesForChecks: state.rerollTwentiesForChecks,
   }));
+  const [isLocked, setIsLocked] = React.useState(true);
+  const toggleLock = () => setIsLocked(prev => !prev);
 
   const characterSkillInstances = skillsData.skills;
   const characterClasses = skillsData.classes;
@@ -213,7 +215,7 @@ const SkillsFormSectionComponent = ({
         keyAbility: definition?.keyAbility || 'none',
         description: definition?.description,
         isCustom: definition?.isCustom || false,
-        definitionProvidesSynergies: definition?.providesSynergies,
+        providesSynergies: definition?.providesSynergies,
       };
     }).sort((a,b) => a.name.localeCompare(b.name));
   }, [characterSkillInstances, allCombinedSkillDefinitions]);
@@ -266,10 +268,10 @@ const SkillsFormSectionComponent = ({
 
     onOpenRollDialog({
       dialogTitle: UI_STRINGS.rollDialogTitleSkillCheck.replace("{skillName}", skillDef.name),
-      rollType: `skill_check_${skillDef.id}`, // More specific rollType for checks
+      rollType: `skill_check_${skillDef.id}`,
       baseModifier: totalBonus,
       calculationBreakdown: breakdown,
-      rerollTwentiesForChecks: rerollTwentiesForChecks, // Pass the DM setting
+      rerollTwentiesForChecks: rerollTwentiesForChecks,
     });
   };
 
@@ -283,7 +285,7 @@ const SkillsFormSectionComponent = ({
               <ScrollText className="h-8 w-8 text-primary" />
               <div><Skeleton className="h-7 w-20 mb-1" /><Skeleton className="h-4 w-48" /></div>
             </div>
-            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
+            <Skeleton className="h-8 w-8" />
           </div>
         </CardHeader>
         <CardContent>
@@ -313,8 +315,15 @@ const SkillsFormSectionComponent = ({
               </CardDescription>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
-            <Lock className="h-5 w-5" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-muted-foreground hover:text-foreground shrink-0"
+            onClick={toggleLock}
+            aria-pressed={!isLocked}
+            aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelLocked : UI_STRINGS.lockButtonAriaLabelUnlocked}
+          >
+            {isLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
           </Button>
         </div>
       </CardHeader>
@@ -371,12 +380,12 @@ const SkillsFormSectionComponent = ({
            </div>
         </div>
         <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
-          <div className="space-y-1 min-w-[720px]"> {/* Increased min-width to accommodate new icon column */}
+          <div className="space-y-1 min-w-[720px]">
             <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
               <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableClassHeader }} />
               <span className="pl-1">{UI_STRINGS.skillsTableSkillHeader}</span>
               <span className="text-right w-10 pr-1">{UI_STRINGS.skillsTableTotalBonusHeader}</span>
-              <span className="w-14"></span> {/* Empty header for icons */}
+              <span className="w-14"></span>
               <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableKeyAbilityHeader }} />
               <span className="text-center w-12">{UI_STRINGS.skillsTableAbilityModHeader}</span>
               <span className="text-center w-12">{UI_STRINGS.skillsTableMiscModHeader}</span>
@@ -433,7 +442,7 @@ const SkillsFormSectionComponent = ({
                       </Label>
                   </div>
                   <span className="font-bold text-accent text-xl w-10 text-right pr-1">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
-                  <div className="flex items-center justify-start w-14"> {/* Cell for icons */}
+                  <div className="flex items-center justify-start w-14">
                     <Button
                       type="button"
                       variant="ghost"
@@ -492,4 +501,3 @@ export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
     
     
     
-

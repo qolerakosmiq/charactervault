@@ -6,7 +6,7 @@ import type { AbilityName, AbilityScores, DetailedAbilityScores, Character, Gene
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dices, Info, Calculator, Loader2, Lock } from 'lucide-react'; // Added Lock
+import { Dices, Info, Calculator, Loader2, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -48,6 +48,8 @@ const CharacterFormAbilityScoresSectionComponent = ({
   const [isRollAbilityDialogOpen, setIsRollAbilityDialogOpen] = React.useState(false);
   const [rollAbilityDialogData, setRollAbilityDialogData] = React.useState<Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'> | null>(null);
   const { toast } = useToast();
+  const [isLocked, setIsLocked] = React.useState(true);
+  const toggleLock = () => setIsLocked(prev => !prev);
 
   const { translations, isLoading: translationsLoading } = useI18n();
 
@@ -137,7 +139,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 <Dices className="h-8 w-8 text-primary" />
                 <Skeleton className="h-7 w-32" />
               </div>
-              <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
+              <Skeleton className="h-8 w-8" />
             </div>
           </div>
         </CardHeader>
@@ -175,8 +177,15 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 <Dices className="h-8 w-8 text-primary" />
                 <CardTitle className="text-2xl font-serif">{UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}</CardTitle>
               </div>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground ml-2 shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
-                <Lock className="h-5 w-5" />
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="text-muted-foreground hover:text-foreground ml-2 shrink-0"
+                onClick={toggleLock}
+                aria-pressed={!isLocked}
+                aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelLocked : UI_STRINGS.lockButtonAriaLabelUnlocked}
+              >
+                {isLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
               </Button>
             </div>
           </div>
@@ -266,15 +275,15 @@ const CharacterFormAbilityScoresSectionComponent = ({
             })}
           </div>
 
-           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 border-t border-border/30 justify-end">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 justify-end">
               <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto">
                 <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton || "Roll Scores"}
               </Button>
               <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} className="w-full sm:w-auto">
                 <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton || "Point Buy"}
               </Button>
-            </div>
-           <p className="text-sm text-muted-foreground mt-4 pt-2 border-t border-border/30">
+          </div>
+          <p className="text-sm text-muted-foreground mt-4 pt-2 border-t border-border/30">
             <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.abilityScoresNote_prefix || "<strong>Note:</strong> The " }} />
             <Badge variant="outline">
               {UI_STRINGS.abilityScoresNote_badge0_text || "Temporary Modifier"}

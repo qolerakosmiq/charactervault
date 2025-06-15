@@ -5,7 +5,7 @@ import *as React from 'react';
 import type { AbilityScores, SavingThrows, SavingThrowType, SingleSavingThrow, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects, GenericBreakdownItem } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
-import { Zap, Loader2, Info, Dices, Lock } from 'lucide-react'; // Added Lock
+import { Zap, Loader2, Info, Dices, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
@@ -43,6 +43,8 @@ const SavingThrowsPanelComponent = ({
   const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({ 
     rerollTwentiesForChecks: state.rerollTwentiesForChecks,
   }));
+  const [isLocked, setIsLocked] = React.useState(true);
+  const toggleLock = () => setIsLocked(prev => !prev);
 
   const debouncedTemporaryMods = {} as Record<SavingThrowType, [number, (val: number) => void]>;
 
@@ -239,8 +241,15 @@ const SavingThrowsPanelComponent = ({
             <Zap className="h-8 w-8 text-primary" />
             <CardTitle className="text-2xl font-serif">{UI_STRINGS.savingThrowsPanelTitle || "Saving Throws"}</CardTitle>
           </div>
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
-            <Lock className="h-5 w-5" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-muted-foreground hover:text-foreground shrink-0"
+            onClick={toggleLock}
+            aria-pressed={!isLocked}
+            aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelLocked : UI_STRINGS.lockButtonAriaLabelUnlocked}
+          >
+            {isLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
           </Button>
         </div>
       </CardHeader>

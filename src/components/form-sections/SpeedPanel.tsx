@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Wind, Waves, MoveVertical, Shell, Feather, Info, Loader2, ShieldOff, Weight, Lock } from 'lucide-react'; // Added Lock
+import { Wind, Waves, MoveVertical, Shell, Feather, Info, Loader2, ShieldOff, Weight, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -54,6 +54,8 @@ const SpeedPanelComponent = ({
   onOpenLoadSpeedPenaltyInfoDialog
 }: SpeedPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
+  const [isLocked, setIsLocked] = React.useState(true);
+  const toggleLock = () => setIsLocked(prev => !prev);
 
   const speedTypesConfig: Array<{
     type: SpeedType;
@@ -161,8 +163,15 @@ const SpeedPanelComponent = ({
             <Wind className="h-8 w-8 text-primary" />
             <CardTitle className="text-2xl font-serif">{UI_STRINGS.speedPanelTitle}</CardTitle>
           </div>
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
-            <Lock className="h-5 w-5" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-muted-foreground hover:text-foreground shrink-0"
+            onClick={toggleLock}
+            aria-pressed={!isLocked}
+            aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelLocked : UI_STRINGS.lockButtonAriaLabelUnlocked}
+          >
+            {isLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
           </Button>
         </div>
         <CardDescription>{UI_STRINGS.speedPanelDescription}</CardDescription>
@@ -226,7 +235,7 @@ const SpeedPanelComponent = ({
               <span className="text-sm font-medium">{UI_STRINGS.armorPenaltyCardTitle}</span>
             </div>
             <div className="flex items-center justify-center space-x-1 h-9">
-              <span className={cn(
+               <span className={cn(
                 "text-lg font-bold",
                 netArmorEffectOnSpeed > 0 && "text-emerald-500",
                 netArmorEffectOnSpeed < 0 && "text-destructive",

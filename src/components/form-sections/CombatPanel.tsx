@@ -19,9 +19,9 @@ import type {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button'; // Already here
+import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Swords, Info, Loader2, Dices, Hand, ArrowRightLeft, Activity, Shield as ShieldIcon, Lock } from 'lucide-react'; // Added Lock
+import { Swords, Info, Loader2, Dices, Hand, ArrowRightLeft, Activity, Shield as ShieldIcon, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
 import { getAbilityModifierByName, getBab, calculateInitiative, calculateGrapple, getSizeModifierGrapple, getUnarmedGrappleDamage, getSizeModifierAttack } from '@/lib/dnd-utils';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -62,6 +62,8 @@ const CombatPanelComponent = ({
   const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({
     rerollTwentiesForChecks: state.rerollTwentiesForChecks,
   }));
+  const [isLocked, setIsLocked] = React.useState(true);
+  const toggleLock = () => setIsLocked(prev => !prev);
 
   const [selectedMeleeWeaponInstanceId, setSelectedMeleeWeaponInstanceId] = React.useState<string>('unarmed');
   const [selectedRangedWeaponInstanceId, setSelectedRangedWeaponInstanceId] = React.useState<string>('none');
@@ -223,7 +225,7 @@ const CombatPanelComponent = ({
               <Swords className="h-8 w-8 text-primary" />
               <Skeleton className="h-7 w-1/2" />
             </div>
-            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
+            <Skeleton className="h-8 w-8" />
           </div>
           <Skeleton className="h-4 w-3/4" />
         </CardHeader>
@@ -550,7 +552,7 @@ const CombatPanelComponent = ({
         ? meleeWeaponInstances.find(w => w.instanceId === 'unarmed')?.definition 
         : selectedMeleeWeaponDefinition;
 
-    const weaponDamageDiceString = weaponDefForDamage?.damage && weaponDefForDamage.damage.trim() !== "" ? weaponDefForDamage.damage : undefined;
+    const weaponDamageDiceString = weaponDefForDamage?.damage && weaponDefForDamage.damage.trim() !== "" && weaponDefForDamage.damage !== "0" ? weaponDefForDamage.damage : undefined;
     const critMultiplier = parseCritMultiplier(weaponDefForDamage?.criticalMultiplier);
     const breakdown = getMeleeDamageBonusBreakdownComponentsInternal().filter(item => item.label !== (UI_STRINGS.infoDialogTotalNumericBonusLabel || "Total Numeric Bonus"));
     
@@ -570,7 +572,7 @@ const CombatPanelComponent = ({
   const handleOpenRangedDamageRollDialog = () => {
     if (!selectedRangedWeaponDefinition) return;
     const weaponName = getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE);
-    const weaponDamageDiceString = selectedRangedWeaponDefinition.damage && selectedRangedWeaponDefinition.damage.trim() !== "" ? selectedRangedWeaponDefinition.damage : undefined;
+    const weaponDamageDiceString = selectedRangedWeaponDefinition.damage && selectedRangedWeaponDefinition.damage.trim() !== "" && selectedRangedWeaponDefinition.damage !== "0" ? selectedRangedWeaponDefinition.damage : undefined;
     const critMultiplier = parseCritMultiplier(selectedRangedWeaponDefinition.criticalMultiplier);
     const breakdown = getRangedDamageBonusBreakdownComponentsInternal().filter(item => item.label !== (UI_STRINGS.infoDialogTotalNumericBonusLabel || "Total Numeric Bonus"));
 
@@ -599,8 +601,15 @@ const CombatPanelComponent = ({
               <CardDescription>{UI_STRINGS.combatPanelDescription || "Key offensive and grappling statistics."}</CardDescription>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
-            <Lock className="h-5 w-5" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-muted-foreground hover:text-foreground shrink-0"
+            onClick={toggleLock}
+            aria-pressed={!isLocked}
+            aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelLocked : UI_STRINGS.lockButtonAriaLabelUnlocked}
+          >
+            {isLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
           </Button>
         </div>
       </CardHeader>

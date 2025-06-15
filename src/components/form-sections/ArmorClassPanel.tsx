@@ -4,9 +4,9 @@
 import *as React from 'react';
 import type { Character, InfoDialogContentType, AggregatedFeatEffects, ItemDefinition, ItemInstance, GearSlotId } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Shield, Info, Loader2, Lock } from 'lucide-react'; // Added Lock
+import { Shield, Info, Loader2, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button'; // Already here
+import { Button } from '@/components/ui/button';
 import { getAbilityModifierByName, getSizeModifierAC } from '@/lib/dnd-utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -31,6 +31,8 @@ export interface ArmorClassPanelProps {
 
 const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) => {
   const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
+  const [isLocked, setIsLocked] = React.useState(true);
+  const toggleLock = () => setIsLocked(prev => !prev);
 
   const handleUpdateCallback = React.useCallback((fieldName: keyof Pick<Character, 'acMiscModifier'>) => (value: number) => {
     if (onCharacterUpdate) {
@@ -101,7 +103,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
               <Shield className="h-8 w-8 text-primary" />
               <CardTitle className="text-2xl font-serif">{translations?.UI_STRINGS.armorClassPanelTitle || "Armor Class"}</CardTitle>
             </div>
-            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
+            <Skeleton className="h-8 w-8" />
           </div>
           <CardDescription>{translations?.UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}</CardDescription>
         </CardHeader>
@@ -180,8 +182,15 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
                 <CardDescription>{UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}</CardDescription>
               </div>
             </div>
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
-              <Lock className="h-5 w-5" />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-muted-foreground hover:text-foreground shrink-0"
+              onClick={toggleLock}
+              aria-pressed={!isLocked}
+              aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelLocked : UI_STRINGS.lockButtonAriaLabelUnlocked}
+            >
+              {isLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
             </Button>
           </div>
         </CardHeader>

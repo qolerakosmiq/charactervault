@@ -10,9 +10,9 @@ import {
   checkFeatPrerequisites, calculateAvailableFeats
 } from '@/types/character';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
-import { Button } from '@/components/ui/button'; // Already here
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, PlusCircle, Trash2, Pencil, Loader2, Info, Edit3, Lock } from 'lucide-react'; // Added Lock
+import { Award, PlusCircle, Trash2, Pencil, Loader2, Info, Edit3, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
 import { SpecializationInputDialog } from './SpecializationInputDialog';
@@ -70,6 +70,8 @@ const FeatsFormSectionComponent = ({
   const i18nContext = useI18n();
   const { translations, isLoading: translationsLoading, language } = i18nContext;
   const { toast } = useToast();
+  const [isLocked, setIsLocked] = React.useState(true);
+  const toggleLock = () => setIsLocked(prev => !prev);
 
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
   const [featDialogFilterCategory, setFeatDialogFilterCategory] = React.useState<string | undefined>(undefined);
@@ -321,7 +323,7 @@ const FeatsFormSectionComponent = ({
     let featTypeDisplayBadge: React.ReactNode = null;
     if (definition?.type && definition.type !== "special") {
       const featTypeObject = translations.FEAT_TYPES.find(ft => ft.id === definition.type);
-      if (featTypeObject && featTypeObject.id !== 'general') { // Check the ID, not the label
+      if (featTypeObject && featTypeObject.id !== 'general') {
         featTypeDisplayBadge = <Badge variant="outline" className="whitespace-nowrap text-xs">{featTypeObject.label}</Badge>;
       }
     }
@@ -492,7 +494,7 @@ const FeatsFormSectionComponent = ({
               <Award className="h-8 w-8 text-primary" />
               <div><Skeleton className="h-7 w-16 mb-1" /><Skeleton className="h-4 w-40" /></div>
             </div>
-            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
+            <Skeleton className="h-8 w-8" />
           </div>
         </CardHeader>
         <CardContent>
@@ -518,8 +520,15 @@ const FeatsFormSectionComponent = ({
                 <CardDescription>{UI_STRINGS.featsPanelDescription}</CardDescription>
               </div>
             </div>
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
-              <Lock className="h-5 w-5" />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-muted-foreground hover:text-foreground shrink-0"
+              onClick={toggleLock}
+              aria-pressed={!isLocked}
+              aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelLocked : UI_STRINGS.lockButtonAriaLabelUnlocked}
+            >
+              {isLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
             </Button>
           </div>
         </CardHeader>

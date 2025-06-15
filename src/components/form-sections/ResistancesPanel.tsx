@@ -2,13 +2,13 @@
 'use client';
 
 import *as React from 'react';
-import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet, AggregatedFeatEffects } from '@/types/character'; // Added AggregatedFeatEffects
+import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet, AggregatedFeatEffects } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Loader2, Lock } from 'lucide-react'; // Added Lock
+import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Loader2, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button'; // Already here
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -24,11 +24,11 @@ import { renderModifierValue, sectionHeadingClass } from '@/components/info-dial
 const DEBOUNCE_DELAY = 400;
 
 export interface ResistancesPanelProps {
-  characterData: Pick<Character, // Updated to Pick
+  characterData: Pick<Character, 
     'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
     'spellResistance' | 'powerResistance' | 'damageReduction' | 'fortification'
   >;
-  aggregatedFeatEffects: AggregatedFeatEffects | null; // Added
+  aggregatedFeatEffects: AggregatedFeatEffects | null;
   onResistanceChange: (field: ResistanceFieldKeySheet, subField: 'customMod', value: number) => void;
   onDamageReductionChange: (newDrArray: DamageReductionInstance[]) => void;
   onOpenResistanceInfoDialog: (resistanceField: ResistanceFieldKeySheet) => void;
@@ -37,6 +37,8 @@ export interface ResistancesPanelProps {
 const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onResistanceChange, onDamageReductionChange, onOpenResistanceInfoDialog }: ResistancesPanelProps) => {
   const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
   const { toast } = useToast();
+  const [isLocked, setIsLocked] = React.useState(true);
+  const toggleLock = () => setIsLocked(prev => !prev);
 
   const [newDrValue, setNewDrValue] = React.useState(1);
   const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>("none");
@@ -92,7 +94,7 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
               <ShieldAlert className="h-8 w-8 text-primary" />
               <Skeleton className="h-7 w-1/2" />
             </div>
-            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
+            <Skeleton className="h-8 w-8" />
           </div>
           <Skeleton className="h-4 w-3/4" />
         </CardHeader>
@@ -233,8 +235,15 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
                 <CardDescription>{UI_STRINGS.resistancesPanelDescription}</CardDescription>
               </div>
             </div>
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
-              <Lock className="h-5 w-5" />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-muted-foreground hover:text-foreground shrink-0"
+              onClick={toggleLock}
+              aria-pressed={!isLocked}
+              aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelLocked : UI_STRINGS.lockButtonAriaLabelUnlocked}
+            >
+              {isLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
             </Button>
           </div>
         </CardHeader>
