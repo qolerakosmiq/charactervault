@@ -43,12 +43,12 @@
       "id": "class-fighter-bonus-feat-slot",
       "label": { "en": "Fighter Bonus Feat Slot", "fr": "Emplacement de Don Supplémentaire de Guerrier" },
       "description": {
-        "en": "A fighter gains a bonus combat-oriented feat at 1st level, at 2nd level, and at every two fighter levels thereafter (4th, 6th, 8th, 10th, 12th, 14th, 16th, 18th, and 20th).",
-        "fr": "Un guerrier gagne un don supplémentaire orienté combat au niveau 1, au niveau 2, et tous les deux niveaux de guerrier par la suite (4e, 6e, 8e, 10e, 12e, 14e, 16e, 18e et 20e)."
+        "en": "At 1st level, and at every even-numbered fighter level thereafter, the fighter gains a bonus feat in addition to those gained from normal advancement. These bonus feats must be selected from those listed as fighter bonus feats",
+        "fr": "Au niveau 1, et à chaque niveau pair de guerrier par la suite, le guerrier gagne un don supplémentaire en plus de ceux obtenus par progression normale. Ces dons supplémentaires doivent être sélectionnés parmi ceux listés comme dons supplémentaires de guerrier"
       },
       "effectsText": {
-        "en": "Grants a bonus feat slot. These bonus feats must be selected from those listed as fighter bonus feats. These are in addition to the feat that any character gets at 1st level and every three levels thereafter, and the bonus feat for a human character",
-        "fr": "Octroie un emplacement de don supplémentaire. Ces dons supplémentaires doivent être sélectionnés parmi ceux listés comme dons supplémentaires de guerrier. Ils s'ajoutent au don que tout personnage reçoit au niveau 1 et tous les trois niveaux par la suite, ainsi qu'au don supplémentaire pour un personnage humain"
+        "en": "Grants a bonus feat slot that must be used for feats in the 'fighterBonusFeat' category",
+        "fr": "Octroie un emplacement de don supplémentaire qui doit être utilisé pour les dons de la catégorie 'fighterBonusFeat'"
       },
       "isClassFeature": true,
       "type": "special-ex",
@@ -58,5 +58,3 @@
     }
   ]
 }
-
-    
