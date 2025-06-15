@@ -16,8 +16,8 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
-import { getLocalizedString } from '@/i18n/i18n-data'; // Ensure this is imported
-import { DEFAULT_LANGUAGE } from '@/i18n/config'; // Ensure this is imported
+import { getLocalizedString } from '@/i18n/i18n-data'; 
+import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config'; 
 
 
 const DEBOUNCE_DELAY = 400;
@@ -211,19 +211,21 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
           
           {/* Temporary Modifier Input */}
           <div className="pt-3">
-            <Label htmlFor="temporary-ac-modifier-input" className="text-sm font-medium">
-              {UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}
-            </Label>
-            <NumberSpinnerInput
-              id="temporary-ac-modifier-input"
-              value={localTemporaryAcModifier}
-              onChange={setLocalTemporaryAcModifier}
-              disabled={!onCharacterUpdate}
-              min={-20}
-              max={20}
-              inputClassName="w-full h-9 text-base"
-              buttonClassName="h-9 w-9"
-            />
+            <div className="flex items-center justify-between">
+              <Label htmlFor="temporary-ac-modifier-input" className="text-sm font-medium">
+                {UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}
+              </Label>
+              <NumberSpinnerInput
+                id="temporary-ac-modifier-input"
+                value={localTemporaryAcModifier}
+                onChange={setLocalTemporaryAcModifier}
+                disabled={!onCharacterUpdate}
+                min={-20}
+                max={20}
+                inputClassName="w-20 h-9 text-base" 
+                buttonClassName="h-9 w-9"
+              />
+            </div>
              <p className="text-xs text-muted-foreground pt-1">
               <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.armorClassPanelTempModInfoNote_prefix }} />
               <Badge variant="outline">{UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}</Badge>
@@ -238,4 +240,3 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
 ArmorClassPanelComponent.displayName = 'ArmorClassPanelComponent';
 export const ArmorClassPanel = React.memo(ArmorClassPanelComponent);
 
-    
