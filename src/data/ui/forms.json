@@ -115,7 +115,15 @@
   "experiencePanelLevelLabelFormat": { "en": "Level {levelNumber}", "fr": "Niveau {levelNumber}" },
   "experiencePanelXpToLevelUpFormat": { "en": "{currentXp} / {xpForNextLevel} XP", "fr": "{currentXp} / {xpForNextLevel} XP" },
   "experiencePanelMaxLevel": { "en": "Max Level Reached", "fr": "Niveau Max Atteint" },
-  "experiencePanelLevelUpButton": { "en": "Level Up", "fr": "Monter de Niveau" }
+  "experiencePanelLevelUpButton": { "en": "Level Up", "fr": "Monter de Niveau" },
+  "resistanceLabelFire": { "en": "Fire", "fr": "Feu" },
+  "resistanceLabelCold": { "en": "Cold", "fr": "Froid" },
+  "resistanceLabelAcid": { "en": "Acid", "fr": "Acide" },
+  "resistanceLabelElectricity": { "en": "Electricity", "fr": "Électricité" },
+  "resistanceLabelSonic": { "en": "Sonic", "fr": "Sonique" },
+  "resistanceLabelSpell": { "en": "Spell Resistance", "fr": "Résistance à la magie" },
+  "resistanceLabelPower": { "en": "Power Resistance", "fr": "Résistance au pouvoir" },
+  "resistanceLabelFortification": { "en": "Fortification", "fr": "Fortification" }
 }
 
     
