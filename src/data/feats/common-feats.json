@@ -5,10 +5,10 @@
       "id": "elf-weapon-proficiencies",
       "label": { "en": "Elven Weapon Proficiencies", "fr": "Maîtrise des armes elfiques" },
       "description": {
-        "en": "Elves possess the martial training to use longswords, rapiers, longbows (including composite longbows), and shortbows (including composite shortbows).",
-        "fr": "Les elfes possèdent l'entraînement martial pour utiliser les épées longues, les rapières, les arcs longs (y compris les arcs longs composites) et les arcs courts (y compris les arcs courts composites)."
+        "en": "Elves receive the Martial Weapon Proficiency feats for the longsword, rapier, longbow (including composite longbow), and shortbow (including composite shortbow) as bonus feats",
+        "fr": "Les elfes reçoivent les dons de Maîtrise des armes de guerre pour l'épée longue, la rapière, l'arc long (y compris l'arc long composite) et l'arc court (y compris l'arc court composite) comme dons supplémentaires"
       },
-      "effectsText": { "en": "Treat longswords, rapiers, longbows, and shortbows as martial weapons.", "fr": "Considère les épées longues, rapières, arcs longs et arcs courts comme des armes de guerre." },
+      "effectsText": { "en": "Treat longswords, rapiers, longbows, and shortbows as martial weapons", "fr": "Considère les épées longues, rapières, arcs longs et arcs courts comme des armes de guerre" },
       "isClassFeature": true,
       "type": "general"
     },
@@ -16,10 +16,10 @@
       "id": "dwarf-weapon-proficiencies",
       "label": { "en": "Dwarven Weapon Familiarity", "fr": "Familiarité avec les armes naines" },
       "description": {
-        "en": "Dwarves are familiar with the use of dwarven waraxes and dwarven urgroshes.",
-        "fr": "Les nains sont familiers avec l'utilisation des haches de guerre naines et des urgroshs nains."
+        "en": "Dwarves may treat dwarven waraxes and dwarven urgroshes as martial weapons, rather than exotic weapons",
+        "fr": "Les nains peuvent traiter les haches de guerre naines et les urgroshs nains comme des armes de guerre, plutôt que comme des armes exotiques"
       },
-      "effectsText": { "en": "Treat dwarven waraxe and urgrosh as martial weapons.", "fr": "Considère la hache de guerre naine et l'urgrosh nain comme des armes de guerre." },
+      "effectsText": { "en": "Treat dwarven waraxe and urgrosh as martial weapons", "fr": "Considère la hache de guerre naine et l'urgrosh nain comme des armes de guerre" },
       "isClassFeature": true,
       "type": "general"
     },
@@ -27,10 +27,10 @@
       "id": "gnome-weapon-familiarity",
       "label": { "en": "Gnome Weapon Familiarity", "fr": "Familiarité avec les armes gnomes" },
       "description": {
-        "en": "Gnomes are familiar with the use of gnome hooked hammers.",
-        "fr": "Les gnomes sont familiers avec l'utilisation des marteaux-haches gnomes."
+        "en": "Gnomes may treat gnome hooked hammers as martial weapons rather than exotic weapons",
+        "fr": "Les gnomes peuvent traiter les marteaux-haches gnomes comme des armes de guerre plutôt que comme des armes exotiques"
       },
-      "effectsText": { "en": "Treat gnome hooked hammer as martial weapon.", "fr": "Considère le marteau-hache gnome comme une arme de guerre." },
+      "effectsText": { "en": "Treat gnome hooked hammer as martial weapon", "fr": "Considère le marteau-hache gnome comme une arme de guerre" },
       "isClassFeature": true,
       "type": "general"
     },
@@ -38,8 +38,8 @@
       "id": "acrobatic",
       "label": { "en": "Acrobatic", "fr": "Acrobatique" },
       "description": {
-        "en": "You are skillful at impressive feats of balance as well as jumping.",
-        "fr": "Vous êtes habile pour des prouesses impressionnantes d'équilibre ainsi que pour sauter."
+        "en": "You are skillful at impressive feats of balance as well as jumping",
+        "fr": "Vous êtes habile pour des prouesses impressionnantes d'équilibre ainsi que pour sauter"
       },
       "effectsText": { "en": "+2 Balance, +2 Jump", "fr": "+2 Équilibre, +2 Saut" },
       "effects": [
@@ -53,8 +53,8 @@
       "id": "agile",
       "label": { "en": "Agile", "fr": "Agile" },
       "description": {
-        "en": "You are particularly good at athletic feats requiring grace and balance.",
-        "fr": "Vous êtes particulièrement doué pour les prouesses athlétiques nécessitant grâce et équilibre."
+        "en": "You are particularly good at athletic feats requiring grace and balance",
+        "fr": "Vous êtes particulièrement doué pour les prouesses athlétiques nécessitant grâce et équilibre"
       },
       "effectsText": { "en": "+2 Balance, +2 Escape Artist", "fr": "+2 Équilibre, +2 Art de la Fugue" },
       "effects": [
@@ -68,8 +68,8 @@
       "id": "alertness",
       "label": { "en": "Alertness", "fr": "Vigilance" },
       "description": {
-        "en": "You have keen senses.",
-        "fr": "Vous avez des sens aiguisés."
+        "en": "You have keen senses",
+        "fr": "Vous avez des sens aiguisés"
       },
       "effectsText": { "en": "+2 Listen, +2 Spot", "fr": "+2 Perception auditive, +2 Détection" },
       "permanentEffect": true,
@@ -84,8 +84,8 @@
       "id": "animal-affinity",
       "label": { "en": "Animal Affinity", "fr": "Affinité Animale" },
       "description": {
-        "en": "You have a way with animals.",
-        "fr": "Vous avez le contact facile avec les animaux."
+        "en": "You have a way with animals",
+        "fr": "Vous avez le contact facile avec les animaux"
       },
       "effectsText": { "en": "+2 Handle Animal, +2 Ride", "fr": "+2 Dressage, +2 Équitation" },
       "effects": [
@@ -99,8 +99,8 @@
       "id": "athletic",
       "label": { "en": "Athletic", "fr": "Athlétique" },
       "description": {
-        "en": "You are a natural athlete.",
-        "fr": "Vous êtes un athlète né."
+        "en": "You are a natural athlete",
+        "fr": "Vous êtes un athlète né"
       },
       "effectsText": { "en": "+2 Climb, +2 Swim", "fr": "+2 Escalade, +2 Natation" },
       "effects": [
@@ -114,8 +114,8 @@
       "id": "augment-summoning",
       "label": { "en": "Augment Summoning", "fr": "Convocation augmentée" },
       "description": {
-        "en": "Your summoned creatures are more powerful and robust.",
-        "fr": "Vos créatures convoquées sont plus puissantes et robustes."
+        "en": "Your summoned creatures are more powerful and robust",
+        "fr": "Vos créatures convoquées sont plus puissantes et robustes"
       },
       "prerequisites": { "feats": ["spell-focus-conjuration"] },
       "effectsText": { "en": "Summoned creatures gain +4 STR, +4 CON", "fr": "Les créatures convoquées gagnent +4 FOR, +4 CON" },
@@ -129,8 +129,8 @@
       "id": "combat-casting",
       "label": { "en": "Combat Casting", "fr": "Incantation en combat" },
       "description": {
-        "en": "You are adept at casting spells in combat.",
-        "fr": "Vous êtes doué pour lancer des sorts en combat."
+        "en": "You are adept at casting spells in combat",
+        "fr": "Vous êtes doué pour lancer des sorts en combat"
       },
       "effectsText": { "en": "+4 Concentration when casting defensively, grappling, or pinned", "fr": "+4 Concentration lorsque vous lancez en défensif, que vous êtes agrippé ou maîtrisé" },
       "effects": [
@@ -143,8 +143,8 @@
       "id": "combat-expertise",
       "label": { "en": "Combat Expertise", "fr": "Expertise du combat" },
       "description": {
-        "en": "You can increase your defense at the expense of your accuracy.",
-        "fr": "Vous pouvez augmenter votre défense au détriment de votre précision."
+        "en": "You can increase your defense at the expense of your accuracy",
+        "fr": "Vous pouvez augmenter votre défense au détriment de votre précision"
       },
       "prerequisites": { "abilities": { "intelligence": 13 } },
       "effectsText": { "en": "Trade attack penalty for AC dodge bonus (up to -5 attack for +5 AC). The penalty on attacks and bonus on damage apply until your next turn. Normal: A character who doesn’t have this feat can fight defensively while using the attack or full attack action to take a –4 penalty on attacks and gain a +2 dodge bonus to AC", "fr": "Échangez une pénalité d'attaque contre un bonus d'esquive à la CA (jusqu'à -5 à l'attaque pour +5 à la CA). La pénalité aux attaques et le bonus aux dégâts s'appliquent jusqu'à votre prochain tour. Normal : Un personnage qui ne possède pas ce don ne peut pas choisir de subir une pénalité aux jets d'attaque pour appliquer le même nombre comme bonus aux jets de dégâts" },
@@ -158,8 +158,8 @@
       "id": "improved-trip",
       "label": { "en": "Improved Trip", "fr": "Croc-en-jambe amélioré" },
       "description": {
-        "en": "You are skilled at sending your opponents to the ground.",
-        "fr": "Vous êtes doué pour envoyer vos adversaires au sol."
+        "en": "You are skilled at sending your opponents to the ground",
+        "fr": "Vous êtes doué pour envoyer vos adversaires au sol"
       },
       "prerequisites": { "abilities": { "intelligence": 13 }, "feats": ["combat-expertise"] },
       "effectsText": { "en": "No AoO for unarmed trip. +4 on STR check to trip. Immediate attack on successful trip. Normal: You provoke an attack of opportunity when you attempt to trip an opponent while you are unarmed", "fr": "Pas d'AdO pour croc-en-jambe à mains nues. +4 au test de FOR pour croc-en-jambe. Attaque immédiate sur croc-en-jambe réussi. Normal : Vous provoquez une attaque d'opportunité lorsque vous tentez de faire un croc-en-jambe à un adversaire alors que vous êtes désarmé" },
@@ -173,8 +173,8 @@
       "id": "deceitful",
       "label": { "en": "Deceitful", "fr": "Subtil" },
       "description": {
-        "en": "You are skilled at fooling and impersonating others.",
-        "fr": "Vous êtes doué pour tromper et imiter les autres."
+        "en": "You are skilled at fooling and impersonating others",
+        "fr": "Vous êtes doué pour tromper et imiter les autres"
       },
       "effectsText": { "en": "+2 Disguise, +2 Forgery", "fr": "+2 Déguisement, +2 Contrefaçon" },
       "effects": [
@@ -188,8 +188,8 @@
       "id": "deft-hands",
       "label": { "en": "Deft Hands", "fr": "Mains Habiles" },
       "description": {
-        "en": "You have exceptional manual dexterity.",
-        "fr": "Vous avez une dextérité manuelle exceptionnelle."
+        "en": "You have exceptional manual dexterity",
+        "fr": "Vous avez une dextérité manuelle exceptionnelle"
       },
       "effectsText": { "en": "+2 Sleight of Hand, +2 Use Rope", "fr": "+2 Escamotage, +2 Utilisation de corde" },
       "effects": [
@@ -203,8 +203,8 @@
       "id": "diligent",
       "label": { "en": "Diligent", "fr": "Application" },
       "description": {
-        "en": "You are painstaking in your attention to detail.",
-        "fr": "Vous êtes méticuleux dans votre attention aux détails."
+        "en": "You are painstaking in your attention to detail",
+        "fr": "Vous êtes méticuleux dans votre attention aux détails"
       },
       "effectsText": { "en": "+2 Appraise, +2 Decipher Script", "fr": "+2 Estimation, +2 Déchiffrage" },
       "effects": [
@@ -218,11 +218,11 @@
       "id": "dodge",
       "label": { "en": "Dodge", "fr": "Esquive" },
       "description": {
-        "en": "You are adept at dodging attacks.",
-        "fr": "Vous êtes doué pour esquiver les attaques."
+        "en": "You are adept at dodging attacks",
+        "fr": "Vous êtes doué pour esquiver les attaques"
       },
       "prerequisites": { "abilities": { "dexterity": 13 } },
-      "effectsText": { "en": "During your action, you designate an opponent and receive a +1 dodge bonus to Armor Class against attacks from that opponent. You can select a new opponent on any action. A condition that makes you lose your Dexterity bonus to Armor Class (if any) also makes you lose dodge bonuses. Also, dodge bonuses stack with each other, unlike most other types of bonuses", "fr": "Pendant votre action, vous désignez un adversaire et recevez un bonus d'esquive de +1 à la Classe d'Armure contre les attaques de cet adversaire. Vous pouvez sélectionner un nouvel adversaire à n'importe quelle action. Une condition qui vous fait perdre votre bonus de Dextérité à la Classe d'Armure (le cas échéant) vous fait également perdre les bonus d'esquive. De plus, les bonus d'esquive se cumulent entre eux, contrairement à la plupart des autres types de bonus" },
+      "effectsText": { "en": "Designate an opponent and receive a +1 dodge bonus to AC against attacks from that opponent. This choice lasts until your next action. A condition that makes you lose your Dexterity bonus to Armor Class (if any) also makes you lose dodge bonuses", "fr": "Désignez un adversaire et recevez un bonus d'esquive de +1 à la CA contre les attaques de cet adversaire. Ce choix dure jusqu'à votre prochaine action. Une condition qui vous fait perdre votre bonus de Dextérité à la Classe d'Armure (le cas échéant) vous fait également perdre les bonus d'esquive" },
       "effects": [
         { "type": "armorClass", "acType": "dodge", "value": 1, "bonusType": "dodge", "condition": "vs_designated_target" }
       ],
@@ -233,11 +233,11 @@
       "id": "mobility",
       "label": { "en": "Mobility", "fr": "Souplesse du serpent" },
       "description": {
-        "en": "You are skilled at dodging past opponents.",
-        "fr": "Vous êtes doué pour esquiver les adversaires."
+        "en": "You are skilled at dodging past opponents",
+        "fr": "Vous êtes doué pour esquiver les adversaires"
       },
       "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge"] },
-      "effectsText": { "en": "+4 dodge AC vs. AoOs from movement", "fr": "+4 CA d'esquive contre les AdO dues au mouvement" },
+      "effectsText": { "en": "+4 dodge AC vs AoOs from movement", "fr": "+4 CA d'esquive contre les AdO dues au mouvement" },
       "effects": [
         { "type": "armorClass", "acType": "dodge", "value": 4, "bonusType": "dodge", "condition": "vs_aoo_from_movement" }
       ],
@@ -248,8 +248,8 @@
       "id": "spring-attack",
       "label": { "en": "Spring Attack", "fr": "Attaque éclair" },
       "description": {
-        "en": "You can nimbly move in, attack, and move away.",
-        "fr": "Vous pouvez vous déplacer avec agilité, attaquer et vous éloigner."
+        "en": "You can nimbly move in, attack, and move away",
+        "fr": "Vous pouvez vous déplacer avec agilité, attaquer et vous éloigner"
       },
       "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge", "mobility"], "bab": 4 },
       "effectsText": { "en": "Move, attack, and move again (up to speed). No AoO from target. You can’t use this feat if you are wearing heavy armor. You must move at least 5 feet both before and after you make your attack in order to utilize the benefits of Spring Attack", "fr": "Bougez, attaquez, et bougez à nouveau (jusqu'à votre vitesse). Pas d'AdO de la cible. Vous ne pouvez pas utiliser ce don si vous portez une armure lourde. Vous devez vous déplacer d'au moins 1,5 mètre avant et après avoir effectué votre attaque pour utiliser les avantages de l'Attaque éclair" },
@@ -263,8 +263,8 @@
       "id": "endurance",
       "label": { "en": "Endurance", "fr": "Endurance" },
       "description": {
-        "en": "You are capable of amazing feats of stamina.",
-        "fr": "Vous êtes capable d'incroyables prouesses d'endurance."
+        "en": "You are capable of amazing feats of stamina",
+        "fr": "Vous êtes capable d'incroyables prouesses d'endurance"
       },
       "effectsText": { "en": "+4 on various Con checks and Fort saves related to endurance. Sleep in light/medium armor", "fr": "+4 à divers tests de Con et jets de Vig liés à l'endurance. Dormir en armure légère/intermédiaire" },
       "effects": [
@@ -277,8 +277,8 @@
       "id": "diehard",
       "label": { "en": "Diehard", "fr": "Dur à cuire" },
       "description": {
-        "en": "You are unusually tough and can continue to act when others would be dying.",
-        "fr": "Vous êtes exceptionnellement coriace et pouvez continuer à agir lorsque d'autres seraient mourants."
+        "en": "You are unusually tough and can continue to act when others would be dying",
+        "fr": "Vous êtes exceptionnellement coriace et pouvez continuer à agir lorsque d'autres seraient mourants"
       },
       "prerequisites": { "feats": ["endurance"] },
       "effectsText": { "en": "Automatically stable at -1 to -9 hp. Can act as if disabled instead of dying. Normal: A character without this feat who is reduced to between –1 and –9 hit points is unconscious and dying", "fr": "Automatiquement stable de -1 à -9 pv. Peut agir comme si handicapé au lieu de mourant. Normal : Un personnage sans ce don qui est réduit entre –1 et –9 points de vie est inconscient et mourant" },
@@ -291,8 +291,8 @@
       "id": "eschew-materials",
       "label": { "en": "Eschew Materials", "fr": "Rejet des composantes matérielles" },
       "description": {
-        "en": "You can cast spells with minor material components without preparing them ahead of time.",
-        "fr": "Vous pouvez lancer des sorts avec des composantes matérielles mineures sans les préparer à l'avance."
+        "en": "You can cast spells with minor material components without preparing them ahead of time",
+        "fr": "Vous pouvez lancer des sorts avec des composantes matérielles mineures sans les préparer à l'avance"
       },
       "effectsText": { "en": "Cast spells with material components <= 1gp without them", "fr": "Lancez des sorts avec des composantes matérielles <= 1po sans elles" },
       "effects": [{ "type": "note", "text": { "en": "Cast spells with material components costing 1 gp or less without needing them", "fr": "Lancez des sorts avec des composantes matérielles coûtant 1 po ou moins sans avoir besoin d'elles" }}],
@@ -303,8 +303,8 @@
       "id": "great-fortitude",
       "label": { "en": "Great Fortitude", "fr": "Vigueur surhumaine" },
       "description": {
-        "en": "You are tougher than normal.",
-        "fr": "Vous êtes plus résistant que la normale."
+        "en": "You are tougher than normal",
+        "fr": "Vous êtes plus résistant que la normale"
       },
       "effectsText": { "en": "+2 on Fortitude saves", "fr": "+2 aux jets de Vigueur" },
       "effects": [{ "type": "savingThrow", "save": "fortitude", "value": 2, "bonusType": "untyped" }],
@@ -314,8 +314,8 @@
       "id": "improved-initiative",
       "label": { "en": "Improved Initiative", "fr": "Initiative améliorée" },
       "description": {
-        "en": "You can react more quickly than normal in a fight.",
-        "fr": "Vous pouvez réagir plus rapidement que la normale dans un combat."
+        "en": "You can react more quickly than normal in a fight",
+        "fr": "Vous pouvez réagir plus rapidement que la normale dans un combat"
       },
       "effectsText": { "en": "+4 on initiative checks", "fr": "+4 aux tests d'initiative" },
       "effects": [
@@ -328,8 +328,8 @@
       "id": "investigator",
       "label": { "en": "Investigator", "fr": "Investigateur" },
       "description": {
-        "en": "You are skilled at interviewing people and finding obscure information.",
-        "fr": "Vous êtes doué pour interroger les gens et trouver des informations obscures."
+        "en": "You are skilled at interviewing people and finding obscure information",
+        "fr": "Vous êtes doué pour interroger les gens et trouver des informations obscures"
       },
       "effectsText": { "en": "+2 Gather Information, +2 Search", "fr": "+2 Renseignement, +2 Fouille" },
       "effects": [
@@ -342,8 +342,8 @@
       "id": "iron-will",
       "label": { "en": "Iron Will", "fr": "Volonté de fer" },
       "description": {
-        "en": "You have a stronger will than normal.",
-        "fr": "Vous avez une volonté plus forte que la normale."
+        "en": "You have a stronger will than normal",
+        "fr": "Vous avez une volonté plus forte que la normale"
       },
       "effectsText": { "en": "+2 on Will saves", "fr": "+2 aux jets de Volonté" },
       "effects": [{ "type": "savingThrow", "save": "will", "value": 2, "bonusType": "untyped" }],
@@ -353,8 +353,8 @@
       "id": "lightning-reflexes",
       "label": { "en": "Lightning Reflexes", "fr": "Réflexes surhumains" },
       "description": {
-        "en": "You have faster reflexes than normal.",
-        "fr": "Vous avez des réflexes plus rapides que la normale."
+        "en": "You have faster reflexes than normal",
+        "fr": "Vous avez des réflexes plus rapides que la normale"
       },
       "effectsText": { "en": "+2 on Reflex saves", "fr": "+2 aux jets de Réflexes" },
       "effects": [{ "type": "savingThrow", "save": "reflex", "value": 2, "bonusType": "untyped" }],
@@ -364,8 +364,8 @@
       "id": "magical-aptitude",
       "label": { "en": "Magical Aptitude", "fr": "Aptitude magique" },
       "description": {
-        "en": "You have a natural talent for magic.",
-        "fr": "Vous avez un talent naturel pour la magie."
+        "en": "You have a natural talent for magic",
+        "fr": "Vous avez un talent naturel pour la magie"
       },
       "effectsText": { "en": "+2 Spellcraft, +2 Use Magic Device", "fr": "+2 Art de la magie, +2 Utilisation d'objets magiques" },
       "effects": [
@@ -378,8 +378,8 @@
       "id": "negotiator",
       "label": { "en": "Negotiator", "fr": "Négociateur" },
       "description": {
-        "en": "You are skilled at influencing others.",
-        "fr": "Vous êtes doué pour influencer les autres."
+        "en": "You are skilled at influencing others",
+        "fr": "Vous êtes doué pour influencer les autres"
       },
       "effectsText": { "en": "+2 Diplomacy, +2 Sense Motive", "fr": "+2 Diplomatie, +2 Psychologie" },
       "effects": [
@@ -392,8 +392,8 @@
       "id": "nimble-fingers",
       "label": { "en": "Nimble Fingers", "fr": "Doigts agiles" },
       "description": {
-        "en": "You have an exceptional talent for fine detail work.",
-        "fr": "Vous avez un talent exceptionnel pour le travail de détail fin."
+        "en": "You have an exceptional talent for fine detail work",
+        "fr": "Vous avez un talent exceptionnel pour le travail de détail fin"
       },
       "effectsText": { "en": "+2 Disable Device, +2 Open Lock", "fr": "+2 Désamorçage/Sabotage, +2 Crochetage" },
       "effects": [
@@ -406,8 +406,8 @@
       "id": "persuasive",
       "label": { "en": "Persuasive", "fr": "Persuasion" },
       "description": {
-        "en": "You are skilled at influencing others.",
-        "fr": "Vous êtes doué pour influencer les autres."
+        "en": "You are skilled at influencing others",
+        "fr": "Vous êtes doué pour influencer les autres"
       },
       "effectsText": { "en": "+2 Bluff, +2 Intimidate", "fr": "+2 Bluff, +2 Intimidation" },
       "effects": [
@@ -420,8 +420,8 @@
       "id": "point-blank-shot",
       "label": { "en": "Point Blank Shot", "fr": "Tir à bout portant" },
       "description": {
-        "en": "You are especially accurate when making ranged attacks against close targets.",
-        "fr": "Vous êtes particulièrement précis lorsque vous effectuez des attaques à distance contre des cibles proches."
+        "en": "You are especially accurate when making ranged attacks against close targets",
+        "fr": "Vous êtes particulièrement précis lorsque vous effectuez des attaques à distance contre des cibles proches"
       },
       "effectsText": { "en": "+1 attack and damage with ranged weapons within 30 ft", "fr": "+1 attaque et dégâts avec armes à distance à moins de 9m" },
       "effects": [
@@ -435,8 +435,8 @@
       "id": "power-attack",
       "label": { "en": "Power Attack", "fr": "Attaque en puissance" },
       "description": {
-        "en": "You can make exceptionally powerful melee attacks.",
-        "fr": "Vous pouvez effectuer des attaques au corps à corps exceptionnellement puissantes."
+        "en": "You can make exceptionally powerful melee attacks",
+        "fr": "Vous pouvez effectuer des attaques au corps à corps exceptionnellement puissantes"
       },
       "prerequisites": { "abilities": { "strength": 13 } },
       "effectsText": { "en": "On your action, before making attack rolls for a round, you may choose to subtract a number from all melee attack rolls and add the same number to all melee damage rolls. This number may not exceed your base attack bonus. The penalty on attacks and bonus on damage apply until your next turn", "fr": "Lors de votre action, avant d'effectuer des jets d'attaque pour un round, vous pouvez choisir de soustraire un nombre à tous les jets d'attaque au corps à corps et d'ajouter le même nombre à tous les jets de dégâts au corps à corps. Ce nombre ne peut pas dépasser votre bonus d'attaque de base. La pénalité aux attaques et le bonus aux dégâts s'appliquent jusqu'à votre prochain tour" },
@@ -450,8 +450,8 @@
       "id": "self-sufficient",
       "label": { "en": "Self-Sufficient", "fr": "Autosuffisance" },
       "description": {
-        "en": "You are skilled at surviving in the wild and at tending to your own wounds.",
-        "fr": "Vous êtes doué pour survivre dans la nature et soigner vos propres blessures."
+        "en": "You are skilled at surviving in the wild and at tending to your own wounds",
+        "fr": "Vous êtes doué pour survivre dans la nature et soigner vos propres blessures"
       },
       "effectsText": { "en": "+2 Heal, +2 Survival", "fr": "+2 Premiers secours, +2 Survie" },
       "effects": [
@@ -464,8 +464,8 @@
       "id": "skill-focus",
       "label": { "en": "Skill Focus", "fr": "Compétence de prédilection" },
       "description": {
-        "en": "Choose a skill. You are particularly adept at that skill.",
-        "fr": "Choisissez une compétence. Vous êtes particulièrement doué pour cette compétence."
+        "en": "Choose a skill. You are particularly adept at that skill",
+        "fr": "Choisissez une compétence. Vous êtes particulièrement doué pour cette compétence"
       },
       "requiresSpecialization": "skill",
       "effectsText": { "en": "You get a +3 bonus on all checks involving that skill. Special: You can gain this feat multiple times. Its effects do not stack. Each time you take the feat, it applies to a new skill", "fr": "Vous obtenez un bonus de +3 à tous les tests impliquant cette compétence. Spécial : Vous pouvez prendre ce don plusieurs fois. Ses effets ne se cumulent pas. Chaque fois que vous prenez le don, il s'applique à une nouvelle compétence" },
@@ -479,8 +479,8 @@
       "id": "spell-focus",
       "label": { "en": "Spell Focus", "fr": "École renforcée" },
       "description": {
-        "en": "Choose a school of magic. Your spells of that school are more potent than normal.",
-        "fr": "Choisissez une école de magie. Vos sorts de cette école sont plus puissants que la normale."
+        "en": "Choose a school of magic. Your spells of that school are more potent than normal",
+        "fr": "Choisissez une école de magie. Vos sorts de cette école sont plus puissants que la normale"
       },
       "requiresSpecialization": "school of magic",
       "effectsText": { "en": "+1 DC for chosen school of magic", "fr": "+1 DD pour l'école de magie choisie" },
@@ -493,8 +493,8 @@
       "id": "greater-spell-focus",
       "label": { "en": "Greater Spell Focus", "fr": "École renforcée supérieure" },
       "description": {
-        "en": "Choose a school of magic to which you already have applied the Spell Focus feat. Your spells of that school are even more potent than normal.",
-        "fr": "Choisissez une école de magie à laquelle vous avez déjà appliqué le don École renforcée. Vos sorts de cette école sont encore plus puissants que la normale."
+        "en": "Choose a school of magic to which you already have applied the Spell Focus feat. Your spells of that school are even more potent than normal",
+        "fr": "Choisissez une école de magie à laquelle vous avez déjà appliqué le don École renforcée. Vos sorts de cette école sont encore plus puissants que la normale"
       },
       "requiresSpecialization": "school of magic",
       "prerequisites": { "special": { "en": "Spell Focus in the same school", "fr": "École renforcée dans la même école" } },
@@ -508,8 +508,8 @@
       "id": "spell-penetration",
       "label": { "en": "Spell Penetration", "fr": "Perforation de la résistance à la magie" },
       "description": {
-        "en": "Your spells are especially potent, breaking through spell resistance more readily than normal.",
-        "fr": "Vos sorts sont particulièrement puissants, traversant la résistance à la magie plus facilement que la normale."
+        "en": "Your spells are especially potent, breaking through spell resistance more readily than normal",
+        "fr": "Vos sorts sont particulièrement puissants, traversant la résistance à la magie plus facilement que la normale"
       },
       "effectsText": { "en": "+2 on caster level checks to overcome SR", "fr": "+2 aux tests de niveau de lanceur pour surmonter la RM" },
       "effects": [
@@ -521,8 +521,8 @@
       "id": "stealthy",
       "label": { "en": "Stealthy", "fr": "Discret" },
       "description": {
-        "en": "You are particularly good at sneaking and hiding.",
-        "fr": "Vous êtes particulièrement doué pour vous faufiler et vous cacher."
+        "en": "You are particularly good at sneaking and hiding",
+        "fr": "Vous êtes particulièrement doué pour vous faufiler et vous cacher"
       },
       "effectsText": { "en": "+2 Hide, +2 Move Silently", "fr": "+2 Discrétion, +2 Déplacement silencieux" },
       "effects": [
@@ -535,8 +535,8 @@
       "id": "toughness",
       "label": { "en": "Toughness", "fr": "Robustesse" },
       "description": {
-        "en": "You are tougher than normal.",
-        "fr": "Vous êtes plus résistant que la normale."
+        "en": "You are tougher than normal",
+        "fr": "Vous êtes plus résistant que la normale"
       },
       "effectsText": { "en": "+3 hit points. Special: A character may gain this feat multiple times. Its effects stack", "fr": "+3 points de vie. Spécial : Un personnage peut prendre ce don plusieurs fois. Ses effets se cumulent" },
       "effects": [
@@ -549,8 +549,8 @@
       "id": "track",
       "label": { "en": "Track", "fr": "Pistage" },
       "description": {
-        "en": "You can follow the trails of creatures and characters across most types of terrain.",
-        "fr": "Vous pouvez suivre les pistes des créatures et des personnages sur la plupart des types de terrain."
+        "en": "You can follow the trails of creatures and characters across most types of terrain",
+        "fr": "Vous pouvez suivre les pistes des créatures et des personnages sur la plupart des types de terrain"
       },
       "effectsText": { "en": "To find tracks or to follow them for 1 mile requires a Survival check. You must make another Survival check every time the tracks become difficult to follow, such as when the tracks leave a soft surface for a hard one, or when the trail is obscured by rain or snow", "fr": "Pour trouver des traces ou les suivre sur 1,5 kilomètre, un test de Survie est nécessaire. Vous devez effectuer un autre test de Survie chaque fois que les traces deviennent difficiles à suivre, par exemple lorsque les traces quittent une surface meuble pour une surface dure, ou lorsque la piste est obscurcie par la pluie ou la neige" },
       "type": "general"
@@ -559,8 +559,8 @@
       "id": "two-weapon-fighting",
       "label": { "en": "Two-Weapon Fighting", "fr": "Combat à deux armes" },
       "description": {
-        "en": "You can fight with a weapon in each hand. You can make one extra attack each round with the second weapon.",
-        "fr": "Vous pouvez combattre avec une arme dans chaque main. Vous pouvez effectuer une attaque supplémentaire chaque round avec la seconde arme."
+        "en": "You can fight with a weapon in each hand. You can make one extra attack each round with the second weapon",
+        "fr": "Vous pouvez combattre avec une arme dans chaque main. Vous pouvez effectuer une attaque supplémentaire chaque round avec la seconde arme"
       },
       "prerequisites": { "abilities": { "dexterity": 15 } },
       "effectsText": { "en": "Your penalties on attack rolls for fighting with two weapons are reduced. The penalty for your primary hand lessens by 2 and the one for your off hand lessens by 6. Normal: If you wield a second weapon in your off hand, you can get one extra attack per round with that weapon. When fighting in this way you suffer a –6 penalty with your regular attack or attacks with your primary hand and a –10 penalty to the attack with your off hand. If your off-hand weapon is light, the penalties are reduced by 2 each. (An unarmed strike is always considered light)", "fr": "Vos pénalités aux jets d'attaque pour combattre avec deux armes sont réduites. La pénalité pour votre main principale diminue de 2 et celle pour votre main non directrice diminue de 6. Normal : Si vous maniez une seconde arme dans votre main non directrice, vous pouvez obtenir une attaque supplémentaire par round avec cette arme. En combattant de cette manière, vous subissez une pénalité de –6 avec votre attaque ou vos attaques régulières avec votre main principale et une pénalité de –10 à l'attaque avec votre main non directrice. Si votre arme de main non directrice est légère, les pénalités sont réduites de 2 chacune. (Une attaque à mains nues est toujours considérée comme légère)" },
@@ -574,8 +574,8 @@
       "id": "weapon-focus",
       "label": { "en": "Weapon Focus", "fr": "Arme de prédilection" },
       "description": {
-        "en": "Choose one type of weapon (such as greataxe). You are especially good at using this weapon.",
-        "fr": "Choisissez un type d'arme (comme une hache d'armes). Vous êtes particulièrement doué pour utiliser cette arme."
+        "en": "Choose one type of weapon (such as greataxe). You are especially good at using this weapon",
+        "fr": "Choisissez un type d'arme (comme une hache d'armes). Vous êtes particulièrement doué pour utiliser cette arme"
       },
       "prerequisites": { "special": { "en": "Proficiency with selected weapon", "fr": "Maîtrise de l'arme sélectionnée" }, "bab": 1 },
       "requiresSpecialization": "weapon",
@@ -592,8 +592,8 @@
       "id": "scribe-scroll",
       "label": { "en": "Scribe Scroll", "fr": "Écriture de parchemins" },
       "description": {
-        "en": "You can create magic scrolls.",
-        "fr": "Vous pouvez créer des parchemins magiques."
+        "en": "You can create magic scrolls",
+        "fr": "Vous pouvez créer des parchemins magiques"
       },
       "prerequisites": { "casterLevel": 1 },
       "effectsText": { "en": "You can create a scroll of any spell that you know. Scribing a scroll takes 1 day for each 1,000 gp in its base price. The base price of a scroll is its spell level × its caster level × 25 gp. To scribe a scroll, you must spend 1/25 of this base price in XP and use up raw materials costing half of this base price", "fr": "Vous pouvez créer un parchemin de n'importe quel sort que vous connaissez. Écrire un parchemin prend 1 jour pour chaque tranche de 1 000 po de son prix de base. Le prix de base d'un parchemin est son niveau de sort × son niveau de lanceur de sorts × 25 po. Pour écrire un parchemin, vous devez dépenser 1/25 de ce prix de base en XP et utiliser des matières premières coûtant la moitié de ce prix de base" },
@@ -604,8 +604,8 @@
       "id": "brew-potion",
       "label": { "en": "Brew Potion", "fr": "Préparation de potions" },
       "description": {
-        "en": "You can create magic potions.",
-        "fr": "Vous pouvez créer des potions magiques."
+        "en": "You can create magic potions",
+        "fr": "Vous pouvez créer des potions magiques"
       },
       "prerequisites": { "casterLevel": 3 },
       "effectsText": { "en": "You can create a potion of any 3rd-level or lower spell that you know and that targets one or more creatures. Brewing a potion takes 1 day. When you create a potion, you set the caster level, which must be sufficient for the spell in question and no higher than your own level. The base price of a potion is its spell level × its caster level × 50 gp. To brew a potion, you must spend 1/25 of this base price in XP and use up raw materials costing half of this base price", "fr": "Vous pouvez créer une potion de n'importe quel sort de 3ème niveau ou inférieur que vous connaissez et qui cible une ou plusieurs créatures. La préparation d'une potion prend 1 jour. Lorsque vous créez une potion, vous définissez le niveau de lanceur de sorts, qui doit être suffisant pour le sort en question et pas plus élevé que votre propre niveau. Le prix de base d'une potion est son niveau de sort × son niveau de lanceur de sorts × 50 po. Pour préparer une potion, vous devez dépenser 1/25 de ce prix de base en XP et utiliser des matières premières coûtant la moitié de ce prix" },
@@ -616,8 +616,8 @@
       "id": "craft-magic-arms-and-armor",
       "label": { "en": "Craft Magic Arms and Armor", "fr": "Création d'armes et armures magiques" },
       "description": {
-        "en": "You can create magic weapons, armor, and shields.",
-        "fr": "Vous pouvez créer des armes, armures et boucliers magiques."
+        "en": "You can create magic weapons, armor, and shields",
+        "fr": "Vous pouvez créer des armes, armures et boucliers magiques"
       },
       "prerequisites": { "casterLevel": 5 },
       "effectsText": { "en": "You can create magic armor, shields, and weapons. Enhancing an item takes 1 day for each 1,000 gp in the features’ total price. To enhance an item, you must spend 1/25 of its features’ total price in XP and use up raw materials costing half of this total price", "fr": "Vous pouvez créer des armures, des boucliers et des armes magiques. L'amélioration d'un objet prend 1 jour pour chaque tranche de 1 000 po du prix total de ses caractéristiques. Pour améliorer un objet, vous devez dépenser 1/25 du prix total de ses caractéristiques en XP et utiliser des matières premières coûtant la moitié de ce prix total" },
@@ -628,8 +628,8 @@
       "id": "craft-wondrous-item",
       "label": { "en": "Craft Wondrous Item", "fr": "Création d'objets merveilleux" },
       "description": {
-        "en": "You can create a wide variety of magic items.",
-        "fr": "Vous pouvez créer une grande variété d'objets magiques."
+        "en": "You can create a wide variety of magic items",
+        "fr": "Vous pouvez créer une grande variété d'objets magiques"
       },
       "prerequisites": { "casterLevel": 3 },
       "effectsText": { "en": "You can create any wondrous item. Crafting a wondrous item takes 1 day for each 1,000 gp in its market price. To craft a wondrous item, you must spend 1/25 of the item’s market price in XP and use up raw materials costing half of this price", "fr": "Vous pouvez créer n'importe quel objet merveilleux. La création d'un objet merveilleux prend 1 jour pour chaque tranche de 1 000 po de son prix de marché. Pour créer un objet merveilleux, vous devez dépenser 1/25 du prix de marché de l'objet en XP et utiliser des matières premières coûtant la moitié de ce prix" },
@@ -640,8 +640,8 @@
       "id": "empower-spell",
       "label": { "en": "Empower Spell", "fr": "Incantation renforcée" },
       "description": {
-        "en": "You can cast spells to greater effect.",
-        "fr": "Vous pouvez lancer des sorts avec un effet accru."
+        "en": "You can cast spells to greater effect",
+        "fr": "Vous pouvez lancer des sorts avec un effet accru"
       },
       "effectsText": { "en": "All variable, numeric effects of an empowered spell are increased by one-half. An empowered spell deals half again as much damage as normal, cures half again as many hit points, affects half again as many targets, etc., as appropriate. Saving throws and opposed rolls are not affected, nor are spells without random variables. An empowered spell uses up a spell slot two levels higher than the spell’s actual level", "fr": "Tous les effets numériques variables d'un sort renforcé sont augmentés de moitié. Un sort renforcé inflige une fois et demie les dégâts normaux, soigne une fois et demie plus de points de vie, affecte une fois et demie plus de cibles, etc., selon le cas. Les jets de sauvegarde et les jets opposés ne sont pas affectés, ni les sorts sans variables aléatoires. Un sort renforcé utilise un emplacement de sort de deux niveaux supérieurs au niveau réel du sort" },
       "type": "metamagic",
@@ -651,8 +651,8 @@
       "id": "maximize-spell",
       "label": { "en": "Maximize Spell", "fr": "Incantation maximisée" },
       "description": {
-        "en": "You can cast spells to maximum effect.",
-        "fr": "Vous pouvez lancer des sorts avec un effet maximal."
+        "en": "You can cast spells to maximum effect",
+        "fr": "Vous pouvez lancer des sorts avec un effet maximal"
       },
       "effectsText": { "en": "All variable, numeric effects of a spell modified by this feat are maximized. A maximized spell deals maximum damage, cures the maximum number of hit points, affects the maximum number of targets, etc., as appropriate. Saving throws and opposed rolls are not affected, nor are spells without random variables. A maximized spell uses up a spell slot three levels higher than the spell’s actual level", "fr": "Tous les effets numériques variables d'un sort modifié par ce don sont maximisés. Un sort maximisé inflige le maximum de dégâts, soigne le maximum de points de vie, affecte le maximum de cibles, etc., selon le cas. Les jets de sauvegarde et les jets opposés ne sont pas affectés, ni les sorts sans variables aléatoires. Un sort maximisé utilise un emplacement de sort de trois niveaux supérieurs au niveau réel du sort" },
       "type": "metamagic",
@@ -662,8 +662,8 @@
       "id": "quicken-spell",
       "label": { "en": "Quicken Spell", "fr": "Incantation rapide" },
       "description": {
-        "en": "You can cast a spell with a moment’s thought.",
-        "fr": "Vous pouvez lancer un sort en une fraction de seconde."
+        "en": "You can cast a spell with a moment’s thought",
+        "fr": "Vous pouvez lancer un sort en une fraction de seconde"
       },
       "effectsText": { "en": "Casting a quickened spell is a free action. You can perform another action, even casting another spell, in the same round as you cast a quickened spell. You may only cast one quickened spell per round. A spell whose casting time is more than 1 full round action cannot be quickened. A quickened spell uses up a spell slot four levels higher than the spell’s actual level. Casting a quickened spell doesn’t provoke an attack of opportunity", "fr": "Lancer un sort rapide est une action libre. Vous pouvez effectuer une autre action, même lancer un autre sort, dans le même round où vous lancez un sort rapide. Vous ne pouvez lancer qu'un seul sort rapide par round. Un sort dont le temps d'incantation est supérieur à 1 action complexe ne peut pas être accéléré. Un sort rapide utilise un emplacement de sort de quatre niveaux supérieurs au niveau réel du sort. Lancer un sort rapide ne provoque pas d'attaque d'opportunité" },
       "type": "metamagic",
@@ -673,8 +673,8 @@
       "id": "silent-spell",
       "label": { "en": "Silent Spell", "fr": "Incantation silencieuse" },
       "description": {
-        "en": "You can cast spells without verbal components.",
-        "fr": "Vous pouvez lancer des sorts sans composantes verbales."
+        "en": "You can cast spells without verbal components",
+        "fr": "Vous pouvez lancer des sorts sans composantes verbales"
       },
       "effectsText": { "en": "A silent spell can be cast with no verbal components. Spells without verbal components are not affected. A silent spell uses up a spell slot one level higher than the spell’s actual level", "fr": "Un sort silencieux peut être lancé sans composantes verbales. Les sorts sans composantes verbales ne sont pas affectés. Un sort silencieux utilise un emplacement de sort d'un niveau supérieur au niveau réel du sort" },
       "type": "metamagic",
@@ -684,8 +684,8 @@
       "id": "still-spell",
       "label": { "en": "Still Spell", "fr": "Incantation statique" },
       "description": {
-        "en": "You can cast spells without somatic components.",
-        "fr": "Vous pouvez lancer des sorts sans composantes somatiques."
+        "en": "You can cast spells without somatic components",
+        "fr": "Vous pouvez lancer des sorts sans composantes somatiques"
       },
       "effectsText": { "en": "A stilled spell can be cast with no somatic components. Spells without somatic components are not affected. A stilled spell uses up a spell slot one level higher than the spell’s actual level", "fr": "Un sort statique peut être lancé sans composantes somatiques. Les sorts sans composantes verbales ne sont pas affectés. Un sort statique utilise un emplacement de sort d'un niveau supérieur au niveau réel du sort" },
       "type": "metamagic",
@@ -694,7 +694,7 @@
     {
       "id": "armor-proficiency-light",
       "label": { "en": "Armor Proficiency (Light)", "fr": "Port des armures légères" },
-      "description": { "en": "You are proficient with light armor.", "fr": "Vous êtes compétent avec les armures légères." },
+      "description": { "en": "You are proficient with light armor", "fr": "Vous êtes compétent avec les armures légères" },
       "effectsText": { "en": "When you wear a type of armor with which you are proficient, the armor check penalty applies only to Balance, Climb, Escape Artist, Hide, Jump, Move Silently, Sleight of Hand, and Tumble checks", "fr": "Lorsque vous portez un type d'armure avec lequel vous êtes formé, le malus d'armure aux tests ne s'applique qu'aux tests d'Équilibre, d'Escalade, d'Art de la Fugue, de Discrétion, de Saut, de Déplacement silencieux, d'Escamotage et d'Acrobaties" },
       "type": "general",
       "category": "fighterBonusFeat"
@@ -702,7 +702,7 @@
     {
       "id": "armor-proficiency-medium",
       "label": { "en": "Armor Proficiency (Medium)", "fr": "Port des armures intermédiaires" },
-      "description": { "en": "You are proficient with medium armor.", "fr": "Vous êtes compétent avec les armures intermédiaires." },
+      "description": { "en": "You are proficient with medium armor", "fr": "Vous êtes compétent avec les armures intermédiaires" },
       "effectsText": { "en": "See Armor Proficiency (Light)", "fr": "Voir Port des armures légères" },
       "prerequisites": { "feats": ["armor-proficiency-light"] },
       "type": "general",
@@ -711,7 +711,7 @@
     {
       "id": "armor-proficiency-heavy",
       "label": { "en": "Armor Proficiency (Heavy)", "fr": "Port des armures lourdes" },
-      "description": { "en": "You are proficient with heavy armor.", "fr": "Vous êtes compétent avec les armures lourdes." },
+      "description": { "en": "You are proficient with heavy armor", "fr": "Vous êtes compétent avec les armures lourdes" },
       "effectsText": { "en": "See Armor Proficiency (Light)", "fr": "Voir Port des armures légères" },
       "prerequisites": { "feats": ["armor-proficiency-medium"] },
       "type": "general",
@@ -720,8 +720,8 @@
     {
       "id": "shield-proficiency",
       "label": { "en": "Shield Proficiency", "fr": "Maniement des boucliers" },
-      "description": { "en": "You are proficient with shields (except tower shields).", "fr": "Vous êtes compétent avec les boucliers (sauf les pavois)." },
-      "effectsText": { "en": "You can use a shield and take only the standard armor check penalty", "fr": "Vous pouvez utiliser un bouclier et ne subir que le malus d'armure aux tests standard" },
+      "description": { "en": "You are proficient with shields (except tower shields)", "fr": "Vous êtes compétent avec les boucliers (sauf les pavois)" },
+      "effectsText": { "en": "Use a shield and take only the standard armor check penalty", "fr": "Utilisez un bouclier et ne subissez que le malus d'armure aux tests standard" },
       "type": "general",
       "category": "fighterBonusFeat"
     },
@@ -729,11 +729,11 @@
       "id": "tower-shield-proficiency",
       "label": { "en": "Tower Shield Proficiency", "fr": "Maniement des pavois" },
       "description": {
-        "en": "You are proficient with tower shields.",
-        "fr": "Vous êtes compétent avec les pavois."
+        "en": "You are proficient with tower shields",
+        "fr": "Vous êtes compétent avec les pavois"
       },
       "prerequisites": { "feats": ["shield-proficiency"] },
-      "effectsText": { "en": "You can use a tower shield and take only the standard armor check penalty", "fr": "Vous pouvez utiliser un pavois et ne subir que le malus d'armure aux tests standard" },
+      "effectsText": { "en": "Use a tower shield and take only the standard armor check penalty", "fr": "Utilisez un pavois et ne subissez que le malus d'armure aux tests standard" },
       "type": "general",
       "category": "fighterBonusFeat"
     },
@@ -741,17 +741,18 @@
       "id": "simple-weapon-proficiency",
       "label": { "en": "Simple Weapon Proficiency", "fr": "Maniement des armes courantes" },
       "description": {
-        "en": "You make attack rolls with simple weapons without penalty.",
-        "fr": "Vous effectuez des jets d'attaque avec des armes courantes sans pénalité."
+        "en": "You are proficient with all simple weapons",
+        "fr": "Vous êtes compétent avec toutes les armes courantes"
       },
+      "effectsText": { "en": "Make attack rolls with simple weapons without penalty", "fr": "Effectuez des jets d'attaque avec les armes courantes sans pénalité" },
       "effects": [{ "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "simple" }],
       "type": "general"
     },
     {
       "id": "martial-weapon-proficiency-all",
       "label": { "en": "Martial Weapon Proficiency (All)", "fr": "Maniement des armes de guerre (Toutes)" },
-      "description": { "en": "You are proficient with all martial weapons.", "fr": "Vous êtes compétent avec toutes les armes de guerre." },
-      "effectsText": { "en": "You make attack rolls with all martial weapons without penalty", "fr": "Vous effectuez des jets d'attaque avec toutes les armes de guerre sans pénalité" },
+      "description": { "en": "You are proficient with all martial weapons", "fr": "Vous êtes compétent avec toutes les armes de guerre" },
+      "effectsText": { "en": "Make attack rolls with all martial weapons without penalty", "fr": "Effectuez des jets d'attaque avec toutes les armes de guerre sans pénalité" },
       "effects": [{ "type": "grantsProficiency", "proficiencyType": "weapon", "itemCategory": "martial" }],
       "type": "general",
       "category": "fighterBonusFeat"
@@ -760,8 +761,8 @@
       "id": "run",
       "label": { "en": "Run", "fr": "Course" },
       "description": {
-        "en": "You are faster when running.",
-        "fr": "Vous êtes plus rapide en courant."
+        "en": "You are faster when running",
+        "fr": "Vous êtes plus rapide en courant"
       },
       "effectsText": { "en": "When running, you move five times your normal speed (if wearing medium, light, or no armor and carrying no more than a medium load) or four times your speed (if wearing heavy armor or carrying a heavy load). If you make a jump after a running start (see the Jump skill description), you gain a +4 bonus on your Jump check. Normal: You move four times your speed when running (if wearing medium, light, or no armor and carrying no more than a medium load) or three times your speed (if wearing heavy armor or carrying a heavy load) and get no bonus on Jump checks for a running start", "fr": "En courant, vous vous déplacez à cinq fois votre vitesse normale (si vous portez une armure intermédiaire, légère ou aucune armure et ne transportez pas plus qu'une charge moyenne) ou à quatre fois votre vitesse (si vous portez une armure lourde ou transportez une charge lourde). Si vous effectuez un saut après un départ lancé (voir la description de la compétence Saut), vous gagnez un bonus de +4 à votre test de Saut. Normal : Vous vous déplacez à quatre fois votre vitesse en courant (si vous portez une armure intermédiaire, légère ou aucune armure et ne transportez pas plus qu'une charge moyenne) ou à trois fois votre vitesse (si vous portez une armure lourde ou transportez une charge lourde) et n'obtenez aucun bonus aux tests de Saut pour un départ lancé" },
       "effects": [{ "type": "note", "text": { "en": "Run 5x speed (light/medium/no armor, up to medium load) or 4x speed (heavy armor/load). +4 bonus on Jump checks after a running start", "fr": "Courir à 5x la vitesse (armure légère/moyenne/aucune, charge jusqu'à moyenne) ou 4x la vitesse (armure/charge lourde). Bonus de +4 aux tests de Saut après un départ lancé" } }],
@@ -771,8 +772,8 @@
       "id": "mounted-combat",
       "label": { "en": "Mounted Combat", "fr": "Combat monté" },
       "description": {
-        "en": "You are adept at guiding your mount through combat.",
-        "fr": "Vous êtes doué pour guider votre monture au combat."
+        "en": "You are adept at guiding your mount through combat",
+        "fr": "Vous êtes doué pour guider votre monture au combat"
       },
       "effectsText": { "en": "Once per round when your mount is hit in combat, you may attempt a Ride check (as a reaction) to negate the hit. The hit is negated if your Ride check result is greater than the opponent’s attack roll. (Essentially, the Ride check result becomes the mount’s Armor Class if it’s higher than the mount’s regular AC)", "fr": "Une fois par round lorsque votre monture est touchée au combat, vous pouvez tenter un test d'Équitation (en réaction) pour annuler le coup. Le coup est annulé si le résultat de votre test d'Équitation est supérieur au jet d'attaque de l'adversaire. (Essentiellement, le résultat du test d'Équitation devient la Classe d'Armure de la monture s'il est supérieur à la CA normale de la monture)" },
       "effects": [{ "type": "note", "text": { "en": "Once per round when your mount is hit, attempt Ride check as reaction to negate hit (Ride check > attack roll)", "fr": "Une fois par round lorsque votre monture est touchée, tentez un test d'Équitation en réaction pour annuler le coup (test d'Équitation > jet d'attaque)" } }],
@@ -783,8 +784,8 @@
       "id": "improved-unarmed-strike",
       "label": { "en": "Improved Unarmed Strike", "fr": "Science du combat à mains nues" },
       "description": {
-        "en": "You are skilled at fighting while unarmed.",
-        "fr": "Vous êtes doué pour combattre à mains nues."
+        "en": "You are skilled at fighting while unarmed",
+        "fr": "Vous êtes doué pour combattre à mains nues"
       },
       "effectsText": { "en": "You are considered to be armed even when unarmed —you do not provoke attacks of opportunity when you attack foes while unarmed. Your unarmed strikes can deal lethal or nonlethal damage, as you choose", "fr": "Vous êtes considéré comme armé même lorsque vous êtes désarmé — vous ne provoquez pas d'attaques d'opportunité lorsque vous attaquez des ennemis alors que vous êtes désarmé. Vos frappes à mains nues peuvent infliger des dégâts létaux ou non létaux, à votre choix" },
       "effects": [
@@ -797,8 +798,8 @@
       "id": "combat-reflexes",
       "label": { "en": "Combat Reflexes", "fr": "Réflexes de combat" },
       "description": {
-        "en": "You can make more attacks of opportunity than normal.",
-        "fr": "Vous pouvez effectuer plus d'attaques d'opportunité que la normale."
+        "en": "You can make more attacks of opportunity than normal",
+        "fr": "Vous pouvez effectuer plus d'attaques d'opportunité que la normale"
       },
       "effectsText": { "en": "You may make a number of additional attacks of opportunity equal to your Dexterity bonus. With this feat, you may also make attacks of opportunity while flat-footed. Normal: A character without this feat can make only one attack of opportunity per round and can’t make attacks of opportunity while flat-footed", "fr": "Vous pouvez effectuer un nombre d'attaques d'opportunité supplémentaires égal à votre bonus de Dextérité. Avec ce don, vous pouvez également effectuer des attaques d'opportunité lorsque vous êtes pris au dépourvu. Normal : Un personnage sans ce don ne peut effectuer qu'une seule attaque d'opportunité par round et ne peut pas effectuer d'attaques d'opportunité lorsqu'il est pris au dépourvu" },
       "effects": [
@@ -811,8 +812,8 @@
       "id": "quick-draw",
       "label": { "en": "Quick Draw", "fr": "Dégainage rapide" },
       "description": {
-        "en": "You can draw weapons with startling speed.",
-        "fr": "Vous pouvez dégainer des armes avec une vitesse surprenante."
+        "en": "You can draw weapons with startling speed",
+        "fr": "Vous pouvez dégainer des armes avec une vitesse surprenante"
       },
       "prerequisites": { "bab": 1 },
       "effectsText": { "en": "You can draw a weapon as a free action instead of as a move action. You can draw a hidden weapon (see the Sleight of Hand skill) as a move action. A character who has selected this feat may throw weapons at his full normal rate of attacks (much like a character with a bow)", "fr": "Vous pouvez dégainer une arme par une action libre au lieu d'une action de mouvement. Vous pouvez dégainer une arme cachée (voir la compétence Escamotage) par une action de mouvement. Un personnage qui a choisi ce don peut lancer des armes à sa cadence d'attaques normale complète (un peu comme un personnage avec un arc)" },
@@ -826,8 +827,8 @@
       "id": "cleave",
       "label": { "en": "Cleave", "fr": "Enchaînement" },
       "description": {
-        "en": "You can follow through with powerful melee attacks.",
-        "fr": "Vous pouvez enchaîner des attaques au corps à corps puissantes."
+        "en": "You can follow through with powerful melee attacks",
+        "fr": "Vous pouvez enchaîner des attaques au corps à corps puissantes"
       },
       "prerequisites": { "abilities": { "strength": 13 }, "feats": ["power-attack"] },
       "effectsText": { "en": "If you deal a creature enough damage to make it drop (typically by reducing it to below 0 hit points or killing it), you get an immediate, extra melee attack against another creature within reach. You cannot take a 5-foot step before making this extra attack. The extra attack is with the same weapon and at the same bonus as the attack that dropped the previous creature. You can use this ability once per round", "fr": "Si vous infligez suffisamment de dégâts à une créature pour la faire tomber (généralement en la réduisant à moins de 0 point de vie ou en la tuant), vous obtenez une attaque au corps à corps supplémentaire et immédiate contre une autre créature à portée. Vous ne pouvez pas faire un pas de placement de 1,50 mètre avant d'effectuer cette attaque supplémentaire. L'attaque supplémentaire est effectuée avec la même arme et avec le même bonus que l'attaque qui a fait tomber la créature précédente. Vous pouvez utiliser cette capacité une fois par round" },
@@ -841,8 +842,8 @@
       "id": "great-cleave",
       "label": { "en": "Great Cleave", "fr": "Enchaînement supérieur" },
       "description": {
-        "en": "You can wield a melee weapon with such power that you can strike multiple opponents.",
-        "fr": "Vous pouvez manier une arme de corps à corps avec une telle puissance que vous pouvez frapper plusieurs adversaires."
+        "en": "You can wield a melee weapon with such power that you can strike multiple opponents",
+        "fr": "Vous pouvez manier une arme de corps à corps avec une telle puissance que vous pouvez frapper plusieurs adversaires"
       },
       "prerequisites": { "abilities": { "strength": 13 }, "feats": ["power-attack", "cleave"], "bab": 4 },
       "effectsText": { "en": "This feat works like Cleave, except that you have no limit to the number of times you can use it per round", "fr": "Ce don fonctionne comme Enchaînement, sauf que vous n'avez aucune limite au nombre de fois où vous pouvez l'utiliser par round" },
@@ -856,8 +857,8 @@
       "id": "improved-precise-shot",
       "label": { "en": "Improved Precise Shot", "fr": "Tir de précision amélioré" },
       "description": {
-        "en": "You are an expert at making ranged attacks against foes that are partially concealed or in melee.",
-        "fr": "Vous êtes un expert pour effectuer des attaques à distance contre des ennemis partiellement dissimulés ou en mêlée."
+        "en": "You are an expert at making ranged attacks against foes that are partially concealed or in melee",
+        "fr": "Vous êtes un expert pour effectuer des attaques à distance contre des ennemis partiellement dissimulés ou en mêlée"
       },
       "prerequisites": { "abilities": { "dexterity": 19 }, "feats": ["point-blank-shot", "precise-shot"], "bab": 11 },
       "effectsText": { "en": "Your ranged attacks ignore the AC bonus granted to targets by anything less than total cover, and the miss chance granted to targets by anything less than total concealment. Total cover and total concealment provide their normal benefits against your ranged attacks. Normal: See the normal rules for cover and concealment", "fr": "Vos attaques à distance ignorent le bonus de CA accordé aux cibles par tout ce qui est inférieur à une couverture totale, et le risque d'échec accordé aux cibles par tout ce qui est inférieur à une dissimulation totale. La couverture totale et la dissimulation totale offrent leurs avantages normaux contre vos attaques à distance. Normal : Voir les règles normales pour la couverture et la dissimulation" },
@@ -871,8 +872,8 @@
       "id": "improved-two-weapon-fighting",
       "label": { "en": "Improved Two-Weapon Fighting", "fr": "Combat à deux armes amélioré" },
       "description": {
-        "en": "You are an expert in fighting with two weapons.",
-        "fr": "Vous êtes un expert du combat à deux armes."
+        "en": "You are an expert in fighting with two weapons",
+        "fr": "Vous êtes un expert du combat à deux armes"
       },
       "prerequisites": { "abilities": { "dexterity": 17 }, "feats": ["two-weapon-fighting"], "bab": 6 },
       "effectsText": { "en": "You get a second attack with your off-hand weapon, albeit at a –5 penalty. Normal: Without this feat, you can only get a single extra attack with an off-hand weapon", "fr": "Vous obtenez une deuxième attaque avec votre arme de main non directrice, mais avec une pénalité de –5. Normal : Sans ce don, vous ne pouvez obtenir qu'une seule attaque supplémentaire avec une arme de main non directrice" },
@@ -886,8 +887,8 @@
       "id": "greater-two-weapon-fighting",
       "label": { "en": "Greater Two-Weapon Fighting", "fr": "Combat à deux armes supérieur" },
       "description": {
-        "en": "You are a master of fighting with two weapons.",
-        "fr": "Vous êtes un maître du combat à deux armes."
+        "en": "You are a master of fighting with two weapons",
+        "fr": "Vous êtes un maître du combat à deux armes"
       },
       "prerequisites": { "abilities": { "dexterity": 19 }, "feats": ["improved-two-weapon-fighting", "two-weapon-fighting"], "bab": 11 },
       "effectsText": { "en": "You get a third attack with your off-hand weapon, albeit at a –10 penalty", "fr": "Vous obtenez une troisième attaque avec votre arme de main non directrice, mais avec une pénalité de –10" },
@@ -901,8 +902,8 @@
       "id": "far-shot",
       "label": { "en": "Far Shot", "fr": "Tir de loin" },
       "description": {
-        "en": "You can shoot accurately at long range.",
-        "fr": "Vous pouvez tirer avec précision à longue portée."
+        "en": "You can shoot accurately at long range",
+        "fr": "Vous pouvez tirer avec précision à longue portée"
       },
       "prerequisites": { "feats": ["point-blank-shot"] },
       "effectsText": { "en": "When you use a projectile weapon, its range increment is increased by one-half (multiply by 1.5). When you use a thrown weapon, its range increment is doubled", "fr": "Lorsque vous utilisez une arme à projectiles, son facteur de portée est augmenté de moitié (multipliez par 1,5). Lorsque vous utilisez une arme de jet, son facteur de portée est doublé" },
@@ -916,8 +917,8 @@
       "id": "precise-shot",
       "label": { "en": "Precise Shot", "fr": "Tir de précision" },
       "description": {
-        "en": "You are skilled at timing your shots to hit opponents in melee.",
-        "fr": "Vous êtes doué pour synchroniser vos tirs afin de toucher les adversaires en mêlée."
+        "en": "You are skilled at timing your shots to hit opponents in melee",
+        "fr": "Vous êtes doué pour synchroniser vos tirs afin de toucher les adversaires en mêlée"
       },
       "prerequisites": { "feats": ["point-blank-shot"] },
       "effectsText": { "en": "You can shoot or throw ranged weapons at an opponent engaged in melee without taking the standard –4 penalty on your attack roll", "fr": "Vous pouvez tirer ou lancer des armes à distance sur un adversaire engagé au corps à corps sans subir la pénalité standard de –4 à votre jet d'attaque" },
@@ -931,8 +932,8 @@
       "id": "rapid-shot",
       "label": { "en": "Rapid Shot", "fr": "Tir rapide" },
       "description": {
-        "en": "You can make an extra ranged attack.",
-        "fr": "Vous pouvez effectuer une attaque à distance supplémentaire."
+        "en": "You can make an extra ranged attack",
+        "fr": "Vous pouvez effectuer une attaque à distance supplémentaire"
       },
       "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["point-blank-shot"] },
       "effectsText": { "en": "You can get one extra attack per round with a ranged weapon. The attack is at your highest base attack bonus, but each attack you make in that round (the extra one and the normal ones) takes a –2 penalty. You must use the full attack action to use this feat", "fr": "Vous pouvez obtenir une attaque supplémentaire par round avec une arme à distance. L'attaque est à votre bonus d'attaque de base le plus élevé, mais chaque attaque que vous effectuez ce round-là (celle en plus et les normales) subit une pénalité de –2. Vous devez utiliser l'action d'attaque à outrance pour utiliser ce don" },
@@ -946,8 +947,8 @@
       "id": "manyshot",
       "label": { "en": "Manyshot", "fr": "Tir multiple" },
       "description": {
-        "en": "You can fire multiple arrows as a single attack against a nearby target.",
-        "fr": "Vous pouvez tirer plusieurs flèches en une seule attaque contre une cible proche."
+        "en": "You can fire multiple arrows as a single attack against a nearby target",
+        "fr": "Vous pouvez tirer plusieurs flèches en une seule attaque contre une cible proche"
       },
       "prerequisites": { "abilities": { "dexterity": 17 }, "feats": ["point-blank-shot", "rapid-shot"], "bab": 6 },
       "effectsText": { "en": "As a standard action, you may fire two arrows at a single opponent within 30 feet. Both arrows use the same attack roll (with a –4 penalty) to determine success and deal damage normally (but see Special). For every five points of base attack bonus you have above +6, you may add one additional arrow to this attack, to a maximum of four arrows at a base attack bonus of +16. Each additional arrow incurs an additional –2 penalty on the attack roll (for example, three arrows are at a –6 penalty and four arrows are at a –8 penalty). Special: Regardless of the number of arrows you fire, you apply precision-based damage (such as sneak attack) only once. If you score a critical hit, only the first arrow deals critical damage; all others deal normal damage", "fr": "Par une action simple, vous pouvez tirer deux flèches sur un seul adversaire à moins de 9 mètres. Les deux flèches utilisent le même jet d'attaque (avec une pénalité de –4) pour déterminer le succès et infligent des dégâts normalement (mais voir Spécial). Pour chaque tranche de cinq points de bonus d'attaque de base que vous avez au-dessus de +6, vous pouvez ajouter une flèche supplémentaire à cette attaque, jusqu'à un maximum de quatre flèches avec un bonus d'attaque de base de +16. Chaque flèche supplémentaire encourt une pénalité supplémentaire de –2 au jet d'attaque (par exemple, trois flèches sont à une pénalité de –6 et quatre flèches sont à une pénalité de –8). Spécial : Quel que soit le nombre de flèches que vous tirez, vous n'appliquez les dégâts basés sur la précision (comme l'attaque sournoise) qu'une seule fois. Si vous réussissez un coup critique, seule la première flèche inflige des dégâts critiques ; toutes les autres infligent des dégâts normaux" },
@@ -966,11 +967,10 @@
     { "id": "special-ex", "label": { "en": "Special Ability (Ex)", "fr": "Capacité spéciale (Ext)" } },
     { "id": "special-su", "label": { "en": "Special Ability (Su)", "fr": "Capacité spéciale (Sur)" } },
     { "id": "special-sp", "label": { "en": "Special Ability (Sp)", "fr": "Capacité spéciale (Mag)" } },
-    { "id": "fighterBonusFeat", "label": { "en": "Fighter Bonus Feat", "fr": "Don supplémentaire de Guerrier" } },
-    { "id": "wizardBonusFeat", "label": { "en": "Wizard Bonus Feat", "fr": "Don supplémentaire de Magicien" } },
-    { "id": "monkBonusFeatL1", "label": { "en": "Monk Bonus Feat (L1)", "fr": "Don suppl. Moine (N1)" } },
-    { "id": "monkBonusFeatL2", "label": { "en": "Monk Bonus Feat (L2)", "fr": "Don suppl. Moine (N2)" } },
-    { "id": "monkBonusFeatL6", "label": { "en": "Monk Bonus Feat (L6)", "fr": "Don suppl. Moine (N6)" } }
+    { "id": "fighterBonusFeat", "label": { "en": "Fighter Bonus Feat", "fr": "Don Guerrier" } },
+    { "id": "wizardBonusFeat", "label": { "en": "Wizard Bonus Feat", "fr": "Don supplémentaire Magicien" } },
+    { "id": "monkBonusFeatL1", "label": { "en": "Monk Bonus (L1)", "fr": "Don suppl. Moine (N1)" } },
+    { "id": "monkBonusFeatL2", "label": { "en": "Monk Bonus (L2)", "fr": "Don suppl. Moine (N2)" } },
+    { "id": "monkBonusFeatL6", "label": { "en": "Monk Bonus (L6)", "fr": "Don suppl. Moine (N6)" } }
   ]
 }
-
