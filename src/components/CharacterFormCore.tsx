@@ -12,7 +12,8 @@ import type {
   ResistanceValue, DamageReductionInstance, DamageReductionType, InfoDialogContentType, ResistanceFieldKeySheet,
   SpeedDetails, SpeedType, CharacterAlignment, ProcessedSiteData, SpeedPanelCharacterData, CombatPanelCharacterData, LanguageId,
   AggregatedFeatEffects, ExperiencePanelData, ComboboxOption, MagicSchoolId, Item, GenericBreakdownItem, DamageReductionFeatEffect,
-  CharacterFavoredEnemy, CharacterAnimalCompanion, DomainDefinition, DndDeityOption
+  CharacterFavoredEnemy, CharacterAnimalCompanion, DomainDefinition, DndDeityOption,
+  GearSlot, GearSlotId, ItemDefinition, ItemInstance, ItemInstanceId, ItemBaseType // Added Gear types
 } from '@/types/character';
 import {
   getNetAgingEffects,
@@ -62,6 +63,9 @@ import { AddCustomSkillDialog } from '@/components/AddCustomSkillDialog';
 import { AddCustomFeatDialog } from '@/components/AddCustomFeatDialog';
 import { ConditionsPanel, type ConditionsPanelProps } from '@/components/form-sections/ConditionsPanel';
 import { ExperiencePanel } from '@/components/form-sections/ExperiencePanel';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'; // Added for panel
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // Added for panel
+import { Label } from '@/components/ui/label'; // Added for panel
 
 import { Loader2 } from 'lucide-react';
 
@@ -145,7 +149,9 @@ function createBaseCharacterData(
       classes: defaultClasses,
       skills: initialSkillInstances,
       feats: [],
-      inventory: [], personalStory: '', portraitDataUrl: undefined,
+      inventory: [],
+      equippedGear: {}, // Initialize equippedGear
+      personalStory: '', portraitDataUrl: undefined,
       fireResistance: { ...DEFAULT_RESISTANCE_VALUE }, coldResistance: { ...DEFAULT_RESISTANCE_VALUE }, acidResistance: { ...DEFAULT_RESISTANCE_VALUE }, electricityResistance: { ...DEFAULT_RESISTANCE_VALUE }, sonicResistance: { ...DEFAULT_RESISTANCE_VALUE },
       spellResistance: { ...DEFAULT_RESISTANCE_VALUE }, powerResistance: { ...DEFAULT_RESISTANCE_VALUE }, damageReduction: [], fortification: { ...DEFAULT_RESISTANCE_VALUE },
       landSpeed: { ...DEFAULT_SPEED_DETAILS }, burrowSpeed: { ...DEFAULT_SPEED_DETAILS }, climbSpeed: { ...DEFAULT_SPEED_DETAILS }, flySpeed: { ...DEFAULT_SPEED_DETAILS }, swimSpeed: { ...DEFAULT_SPEED_DETAILS },
@@ -1001,6 +1007,108 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     };
   }, [character, allAvailableFeatDefinitions]);
 
+  // --- Quick Equip Panel Logic ---
+  const allItemsForQuickEquip = React.useMemo(() => {
+    if (translationsLoading || !translations) return [];
+    return [
+      ...(translations.ITEM_DEFINITIONS_WEAPONS || []),
+      ...(translations.ITEM_DEFINITIONS_ARMOR || []),
+      ...(translations.ITEM_DEFINITIONS_SHIELDS || []),
+      ...(translations.ITEM_DEFINITIONS_MAGIC_ITEMS || []),
+    ];
+  }, [translations, translationsLoading]);
+
+  const getCompatibleItemsForSlot = React.useCallback((slot: GearSlot, allItems: ItemDefinition[]): ItemDefinition[] => {
+    if (!translations) return [];
+    if (!slot.tags || slot.tags.length === 0) {
+      if (slot.id.includes('ring')) return allItems.filter(item => item.itemType === 'ring');
+      if (slot.id === 'neck') return allItems.filter(item => item.itemType === 'amulet');
+      return allItems.filter(item => item.itemType === 'wondrous' || item.itemType === 'other');
+    }
+
+    let itemTypesForSlot: ItemBaseType[] = [];
+    if (slot.tags.includes('weapon')) itemTypesForSlot.push('weapon');
+    if (slot.tags.includes('armor')) itemTypesForSlot.push('armor');
+    if (slot.tags.includes('shield')) itemTypesForSlot.push('shield');
+    if (slot.tags.includes('ring')) itemTypesForSlot.push('ring');
+    if (slot.tags.includes('amulet')) itemTypesForSlot.push('amulet');
+    if (slot.tags.includes('headwear')) itemTypesForSlot.push('headband');
+    if (slot.tags.includes('cloak') || slot.tags.includes('cape')) itemTypesForSlot.push('cloak');
+    if (slot.tags.includes('bracer')) itemTypesForSlot.push('bracers');
+    if (slot.tags.includes('glove')) itemTypesForSlot.push('gloves');
+    if (slot.tags.includes('belt')) itemTypesForSlot.push('belt');
+    if (slot.tags.includes('footwear')) itemTypesForSlot.push('boots');
+    
+    if (itemTypesForSlot.length === 0 && slot.tags.some(t => ['jewelry', 'accessory', 'clothing', 'eyewear'].includes(t))) {
+        itemTypesForSlot.push('wondrous', 'other');
+    }
+    if (itemTypesForSlot.length === 0 && !slot.tags.includes('container') && !slot.tags.includes('ammunition')) {
+        itemTypesForSlot.push('wondrous', 'other');
+    }
+
+    return allItems.filter(item => item.itemType && itemTypesForSlot.includes(item.itemType));
+  }, [translations]);
+
+  const handleEquipItem = React.useCallback((slotId: GearSlotId, itemDefinitionId: ItemDefinitionId | '__NONE__') => {
+    setCharacter(prevCharacter => {
+      if (!prevCharacter || !translations) return null;
+      const newCharacter = { ...prevCharacter };
+      newCharacter.equippedGear = { ...(newCharacter.equippedGear || {}) };
+      newCharacter.inventory = [...(newCharacter.inventory || [])];
+
+      if (itemDefinitionId === '__NONE__') {
+        newCharacter.equippedGear[slotId] = undefined;
+        return newCharacter;
+      }
+
+      const itemDefToEquip = allItemsForQuickEquip.find(def => def.definitionId === itemDefinitionId);
+      if (!itemDefToEquip) return prevCharacter;
+
+      let instanceToEquip = newCharacter.inventory.find(
+        inst => inst.definitionId === itemDefinitionId &&
+                !Object.values(newCharacter.equippedGear).includes(inst.instanceId)
+      );
+
+      if (!instanceToEquip) {
+        instanceToEquip = {
+          instanceId: crypto.randomUUID(),
+          definitionId: itemDefinitionId,
+          quantity: 1,
+        };
+        newCharacter.inventory.push(instanceToEquip);
+      }
+
+      newCharacter.equippedGear[slotId] = instanceToEquip.instanceId;
+      
+      const currentSlotDef = translations.GEAR_SLOTS.find(s => s.id === slotId);
+      if (currentSlotDef?.mutuallyExclusiveWith) {
+        currentSlotDef.mutuallyExclusiveWith.forEach(exclusiveSlotId => {
+          if (newCharacter.equippedGear[exclusiveSlotId] && slotId !== exclusiveSlotId) {
+            newCharacter.equippedGear[exclusiveSlotId] = undefined;
+          }
+        });
+      }
+      
+      if (itemDefToEquip.itemType === 'weapon' && itemDefToEquip.isTwoHandedWeapon) {
+          if (newCharacter.equippedGear['main-hand'] && slotId !== 'main-hand') newCharacter.equippedGear['main-hand'] = undefined;
+          if (newCharacter.equippedGear['off-hand'] && slotId !== 'off-hand') newCharacter.equippedGear['off-hand'] = undefined;
+          if (newCharacter.equippedGear['shield'] && slotId !== 'shield') newCharacter.equippedGear['shield'] = undefined;
+      } else if (slotId === 'main-hand' || slotId === 'off-hand' || slotId === 'shield') {
+          const twoHandSlotId = 'two-hand';
+          const twoHandInstanceId = newCharacter.equippedGear[twoHandSlotId];
+          if (twoHandInstanceId) {
+               const twoHandItemInstance = newCharacter.inventory.find(i => i.instanceId === twoHandInstanceId);
+               const twoHandItemDef = twoHandItemInstance ? allItemsForQuickEquip.find(def => def.definitionId === twoHandItemInstance.definitionId) : undefined;
+               if (twoHandItemDef?.itemType === 'weapon' && twoHandItemDef.isTwoHandedWeapon) {
+                   newCharacter.equippedGear[twoHandSlotId] = undefined;
+               }
+          }
+      }
+      return newCharacter;
+    });
+  }, [allItemsForQuickEquip, translations]);
+  // --- End Quick Equip Panel Logic ---
+
 
   if (translationsLoading || !character || !translations || !translations.UI_STRINGS || !detailedAbilityScores || !aggregatedFeatEffects || !coreInfoData) {
     return (
@@ -1179,6 +1287,46 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           />
         )}
 
+        {/* Quick Equip Panel */}
+        {character && translations?.GEAR_SLOTS && allItemsForQuickEquip.length > 0 && (
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle className="font-serif text-xl">Quick Equip (Testing Panel)</CardTitle>
+              <CardDescription>Select items to equip directly. This is for testing and will be removed.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {translations.GEAR_SLOTS.map((slot) => {
+                const compatibleItems = getCompatibleItemsForSlot(slot, allItemsForQuickEquip);
+                const equippedInstanceId = character.equippedGear?.[slot.id];
+                const equippedInstance = equippedInstanceId ? character.inventory.find(inst => inst.instanceId === equippedInstanceId) : undefined;
+                const equippedItemDef = equippedInstance ? allItemsForQuickEquip.find(def => def.definitionId === equippedInstance.definitionId) : undefined;
+
+                return (
+                  <div key={slot.id} className="space-y-1">
+                    <Label htmlFor={`equip-${slot.id}`}>{slot.label}</Label>
+                    <Select
+                      value={equippedItemDef?.definitionId || '__NONE__'}
+                      onValueChange={(itemDefId) => handleEquipItem(slot.id, itemDefId as ItemDefinitionId | '__NONE__')}
+                    >
+                      <SelectTrigger id={`equip-${slot.id}`}>
+                        <SelectValue placeholder="None" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__NONE__">None</SelectItem>
+                        {compatibleItems.map(itemDef => (
+                          <SelectItem key={itemDef.definitionId} value={itemDef.definitionId}>
+                            {itemDef.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+        )}
+
 
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-12 pt-8 border-t">
           <Button type="button" variant="outline" size="lg" onClick={handleCancel} className="w-full md:w-auto">
@@ -1235,3 +1383,4 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
+
