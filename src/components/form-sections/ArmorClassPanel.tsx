@@ -4,7 +4,7 @@
 import *as React from 'react';
 import type { Character, InfoDialogContentType, AggregatedFeatEffects, ItemDefinition, ItemInstance, GearSlotId } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Shield, Info, Loader2, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
+import { Shield, Info, Loader2, Lock, Unlock } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { getAbilityModifierByName, getSizeModifierAC } from '@/lib/dnd-utils';
@@ -31,7 +31,7 @@ export interface ArmorClassPanelProps {
 
 const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) => {
   const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
-  const [isLocked, setIsLocked] = React.useState(true);
+  const [isLocked, setIsLocked] = React.useState(false);
   const toggleLock = () => setIsLocked(prev => !prev);
 
   const handleUpdateCallback = React.useCallback((fieldName: keyof Pick<Character, 'acMiscModifier'>) => (value: number) => {
@@ -182,9 +182,9 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
                 <CardDescription>{UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}</CardDescription>
               </div>
             </div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant={isLocked ? "ghost" : "secondary"}
+              size="icon"
               className="text-muted-foreground hover:text-foreground shrink-0"
               onClick={toggleLock}
               aria-pressed={!isLocked}
@@ -242,7 +242,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
               buttonClassName="h-9 w-9"
             />
           </div>
-          <p className="text-sm text-muted-foreground pt-1 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.armorClassPanelTempModInfoNote_prefix }} />
             <Badge variant="outline">{UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}</Badge>
             <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.armorClassPanelTempModInfoNote_suffix }} />

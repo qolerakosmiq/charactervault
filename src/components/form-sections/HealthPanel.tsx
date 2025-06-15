@@ -6,7 +6,7 @@ import type { Character, AbilityScores, InfoDialogContentType } from '@/types/ch
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Heart, Activity, Loader2, Info, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
+import { Heart, Activity, Loader2, Info, Lock, Unlock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -45,7 +45,7 @@ const HealthPanelComponent = ({
   onOpenHealthInfoDialog
 }: HealthPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
-  const [isLocked, setIsLocked] = React.useState(true);
+  const [isLocked, setIsLocked] = React.useState(false);
   const toggleLock = () => setIsLocked(prev => !prev);
 
   const [localHp, setLocalHp] = useDebouncedFormField(
@@ -172,9 +172,9 @@ const HealthPanelComponent = ({
               <CardDescription>{UI_STRINGS.healthPanelDescription || "Manage hit points, damage, and related attributes."}</CardDescription>
             </div>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant={isLocked ? "ghost" : "secondary"}
+            size="icon"
             className="text-muted-foreground hover:text-foreground shrink-0"
             onClick={toggleLock}
             aria-pressed={!isLocked}

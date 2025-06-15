@@ -21,7 +21,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Swords, Info, Loader2, Dices, Hand, ArrowRightLeft, Activity, Shield as ShieldIcon, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
+import { Swords, Info, Loader2, Dices, Hand, ArrowRightLeft, Activity, Shield as ShieldIcon, Lock, Unlock } from 'lucide-react';
 import { getAbilityModifierByName, getBab, calculateInitiative, calculateGrapple, getSizeModifierGrapple, getUnarmedGrappleDamage, getSizeModifierAttack } from '@/lib/dnd-utils';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -62,7 +62,7 @@ const CombatPanelComponent = ({
   const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({
     rerollTwentiesForChecks: state.rerollTwentiesForChecks,
   }));
-  const [isLocked, setIsLocked] = React.useState(true);
+  const [isLocked, setIsLocked] = React.useState(false);
   const toggleLock = () => setIsLocked(prev => !prev);
 
   const [selectedMeleeWeaponInstanceId, setSelectedMeleeWeaponInstanceId] = React.useState<string>('unarmed');
@@ -601,9 +601,9 @@ const CombatPanelComponent = ({
               <CardDescription>{UI_STRINGS.combatPanelDescription || "Key offensive and grappling statistics."}</CardDescription>
             </div>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant={isLocked ? "ghost" : "secondary"}
+            size="icon"
             className="text-muted-foreground hover:text-foreground shrink-0"
             onClick={toggleLock}
             aria-pressed={!isLocked}

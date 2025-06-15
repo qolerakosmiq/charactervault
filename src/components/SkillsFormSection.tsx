@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { ScrollText, Info, Loader2, Dices, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
+import { ScrollText, Info, Loader2, Dices, Lock, Unlock } from 'lucide-react';
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -115,7 +115,7 @@ const SkillsFormSectionComponent = ({
   const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({
     rerollTwentiesForChecks: state.rerollTwentiesForChecks,
   }));
-  const [isLocked, setIsLocked] = React.useState(true);
+  const [isLocked, setIsLocked] = React.useState(false);
   const toggleLock = () => setIsLocked(prev => !prev);
 
   const characterSkillInstances = skillsData.skills;
@@ -315,9 +315,9 @@ const SkillsFormSectionComponent = ({
               </CardDescription>
             </div>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant={isLocked ? "ghost" : "secondary"}
+            size="icon"
             className="text-muted-foreground hover:text-foreground shrink-0"
             onClick={toggleLock}
             aria-pressed={!isLocked}

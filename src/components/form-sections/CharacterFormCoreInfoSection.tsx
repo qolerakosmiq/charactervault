@@ -29,7 +29,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollText, Info, Loader2, Users, Activity, BookOpen, Wand2, Heart, Lock, Unlock } from 'lucide-react'; // Added Unlock
+import { ScrollText, Info, Loader2, Users, Activity, BookOpen, Wand2, Heart, Lock, Unlock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -78,7 +78,7 @@ const CharacterFormCoreInfoSectionComponent = ({
   aggregatedFeatEffects,
 }: CharacterFormCoreInfoSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
-  const [isLocked, setIsLocked] = React.useState(true);
+  const [isLocked, setIsLocked] = React.useState(false);
   const toggleLock = () => setIsLocked(prev => !prev);
 
   const [localName, setLocalName] = useDebouncedFormField(
@@ -584,10 +584,10 @@ const CharacterFormCoreInfoSectionComponent = ({
               </CardDescription>
             </div>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="text-muted-foreground hover:text-foreground shrink-0" 
+          <Button
+            variant={isLocked ? "ghost" : "secondary"}
+            size="icon"
+            className="text-muted-foreground hover:text-foreground shrink-0"
             onClick={toggleLock}
             aria-pressed={!isLocked}
             aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelLocked : UI_STRINGS.lockButtonAriaLabelUnlocked}

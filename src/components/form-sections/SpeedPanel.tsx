@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Wind, Waves, MoveVertical, Shell, Feather, Info, Loader2, ShieldOff, Weight, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
+import { Wind, Waves, MoveVertical, Shell, Feather, Info, Loader2, ShieldOff, Weight, Lock, Unlock } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -54,7 +54,7 @@ const SpeedPanelComponent = ({
   onOpenLoadSpeedPenaltyInfoDialog
 }: SpeedPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
-  const [isLocked, setIsLocked] = React.useState(true);
+  const [isLocked, setIsLocked] = React.useState(false);
   const toggleLock = () => setIsLocked(prev => !prev);
 
   const speedTypesConfig: Array<{
@@ -163,9 +163,9 @@ const SpeedPanelComponent = ({
             <Wind className="h-8 w-8 text-primary" />
             <CardTitle className="text-2xl font-serif">{UI_STRINGS.speedPanelTitle}</CardTitle>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant={isLocked ? "ghost" : "secondary"}
+            size="icon"
             className="text-muted-foreground hover:text-foreground shrink-0"
             onClick={toggleLock}
             aria-pressed={!isLocked}

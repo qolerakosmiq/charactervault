@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Progress } from '@/components/ui/progress';
-import { Award, TrendingUp, Loader2, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
+import { Award, TrendingUp, Loader2, Lock, Unlock } from 'lucide-react';
 import { useI18n } from '@/context/I18nProvider';
 import type { XpDataEntry } from '@/i18n/i18n-data';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
@@ -38,7 +38,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
 }) => {
   const { translations, isLoading: translationsLoading } = useI18n();
   const { currentXp, currentLevel } = experienceData;
-  const [isLocked, setIsLocked] = React.useState(true);
+  const [isLocked, setIsLocked] = React.useState(false);
   const toggleLock = () => setIsLocked(prev => !prev);
 
   const debouncedXpChange = React.useCallback(onXpChange, [onXpChange]);
@@ -112,9 +112,9 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
               <CardDescription>{UI_STRINGS.experiencePanelDescription || "Track your character's progression and current experience points."}</CardDescription>
             </div>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant={isLocked ? "ghost" : "secondary"}
+            size="icon"
             className="text-muted-foreground hover:text-foreground shrink-0"
             onClick={toggleLock}
             aria-pressed={!isLocked}

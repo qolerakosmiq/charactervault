@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { ComboboxPrimitive } from '@/components/ui/combobox';
 import { Badge } from '@/components/ui/badge';
-import { Languages as LanguagesIcon, PlusCircle, Trash2, Loader2, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
+import { Languages as LanguagesIcon, PlusCircle, Trash2, Loader2, Lock, Unlock } from 'lucide-react';
 import { useI18n } from '@/context/I18nProvider';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -31,7 +31,7 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
 }) => {
   const { translations, isLoading: translationsLoading } = useI18n();
   const [selectedLanguageToAdd, setSelectedLanguageToAdd] = React.useState<string>('');
-  const [isLocked, setIsLocked] = React.useState(true);
+  const [isLocked, setIsLocked] = React.useState(false);
   const toggleLock = () => setIsLocked(prev => !prev);
 
   if (translationsLoading || !translations) {
@@ -112,9 +112,9 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
               <CardDescription>{UI_STRINGS.languagesPanelDescription || "Manage your character's known languages."}</CardDescription>
             </div>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant={isLocked ? "ghost" : "secondary"}
+            size="icon"
             className="text-muted-foreground hover:text-foreground shrink-0"
             onClick={toggleLock}
             aria-pressed={!isLocked}

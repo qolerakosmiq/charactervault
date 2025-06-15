@@ -4,7 +4,7 @@
 import *as React from 'react';
 import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet, AggregatedFeatEffects } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Loader2, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
+import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Loader2, Lock, Unlock } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Separator } from '@/components/ui/separator';
@@ -37,7 +37,7 @@ export interface ResistancesPanelProps {
 const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onResistanceChange, onDamageReductionChange, onOpenResistanceInfoDialog }: ResistancesPanelProps) => {
   const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
   const { toast } = useToast();
-  const [isLocked, setIsLocked] = React.useState(true);
+  const [isLocked, setIsLocked] = React.useState(false);
   const toggleLock = () => setIsLocked(prev => !prev);
 
   const [newDrValue, setNewDrValue] = React.useState(1);
@@ -235,9 +235,9 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
                 <CardDescription>{UI_STRINGS.resistancesPanelDescription}</CardDescription>
               </div>
             </div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant={isLocked ? "ghost" : "secondary"}
+              size="icon"
               className="text-muted-foreground hover:text-foreground shrink-0"
               onClick={toggleLock}
               aria-pressed={!isLocked}

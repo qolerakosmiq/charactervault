@@ -12,7 +12,7 @@ import {
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, PlusCircle, Trash2, Pencil, Loader2, Info, Edit3, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
+import { Award, PlusCircle, Trash2, Pencil, Loader2, Info, Edit3, Lock, Unlock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
 import { SpecializationInputDialog } from './SpecializationInputDialog';
@@ -70,7 +70,7 @@ const FeatsFormSectionComponent = ({
   const i18nContext = useI18n();
   const { translations, isLoading: translationsLoading, language } = i18nContext;
   const { toast } = useToast();
-  const [isLocked, setIsLocked] = React.useState(true);
+  const [isLocked, setIsLocked] = React.useState(false);
   const toggleLock = () => setIsLocked(prev => !prev);
 
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
@@ -520,9 +520,9 @@ const FeatsFormSectionComponent = ({
                 <CardDescription>{UI_STRINGS.featsPanelDescription}</CardDescription>
               </div>
             </div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant={isLocked ? "ghost" : "secondary"}
+              size="icon"
               className="text-muted-foreground hover:text-foreground shrink-0"
               onClick={toggleLock}
               aria-pressed={!isLocked}

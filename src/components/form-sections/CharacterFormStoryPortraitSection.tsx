@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
-import { UserSquare2, Palette, Loader2, Lock, Unlock } from 'lucide-react'; // Added Lock, Unlock
+import { UserSquare2, Palette, Loader2, Lock, Unlock } from 'lucide-react';
 import type { Character } from '@/types/character';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -28,7 +28,7 @@ const CharacterFormStoryPortraitSectionComponent = ({
   onPortraitChange,
 }: CharacterFormStoryPortraitSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
-  const [isLocked, setIsLocked] = React.useState(true);
+  const [isLocked, setIsLocked] = React.useState(false);
   const toggleLock = () => setIsLocked(prev => !prev);
 
   const [localCampaign, setLocalCampaign] = useDebouncedFormField(
@@ -121,9 +121,9 @@ const CharacterFormStoryPortraitSectionComponent = ({
               </CardDescription>
             </div>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant={isLocked ? "ghost" : "secondary"}
+            size="icon"
             className="text-muted-foreground hover:text-foreground shrink-0"
             onClick={toggleLock}
             aria-pressed={!isLocked}

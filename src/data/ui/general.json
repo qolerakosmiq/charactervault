@@ -98,7 +98,6 @@
   "raceNotSet": { "en": "Race Not Set", "fr": "Race non définie" },
   "classNotSet": { "en": "Class Not Set", "fr": "Classe non définie" },
   "sizeNotSet": { "en": "Size Not Set", "fr": "Taille non définie" },
-  "lockButtonAriaLabel": { "en": "Lock section", "fr": "Verrouiller la section" },
   "lockButtonAriaLabelLocked": { "en": "Section is locked. Click to unlock.", "fr": "La section est verrouillée. Cliquez pour déverrouiller." },
   "lockButtonAriaLabelUnlocked": { "en": "Section is unlocked. Click to lock.", "fr": "La section est déverrouillée. Cliquez pour verrouiller." }
 }
