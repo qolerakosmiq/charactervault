@@ -1,0 +1,136 @@
+
+{
+  "ITEM_DEFINITIONS_ARMOR_DATA": [
+    {
+      "definitionId": "padded-armor",
+      "label": { "en": "Padded Armor", "fr": "Armure matelassée" },
+      "itemType": "armor",
+      "armorType": "light",
+      "weight": 10,
+      "cost": 500,
+      "armorBonus": 1,
+      "maxDexBonus": 8,
+      "armorCheckPenalty": 0,
+      "spellFailureChance": 5,
+      "speedWhenWorn": 30
+    },
+    {
+      "definitionId": "leather-armor",
+      "label": { "en": "Leather Armor", "fr": "Armure de cuir" },
+      "itemType": "armor",
+      "armorType": "light",
+      "weight": 15,
+      "cost": 1000,
+      "armorBonus": 2,
+      "maxDexBonus": 6,
+      "armorCheckPenalty": 0,
+      "spellFailureChance": 10,
+      "speedWhenWorn": 30
+    },
+    {
+      "definitionId": "studded-leather-armor",
+      "label": { "en": "Studded Leather Armor", "fr": "Armure de cuir clouté" },
+      "itemType": "armor",
+      "armorType": "light",
+      "weight": 20,
+      "cost": 2500,
+      "armorBonus": 3,
+      "maxDexBonus": 5,
+      "armorCheckPenalty": -1,
+      "spellFailureChance": 15,
+      "speedWhenWorn": 30
+    },
+    {
+      "definitionId": "hide-armor",
+      "label": { "en": "Hide Armor", "fr": "Armure de peau" },
+      "itemType": "armor",
+      "armorType": "medium",
+      "weight": 25,
+      "cost": 1500,
+      "armorBonus": 3,
+      "maxDexBonus": 4,
+      "armorCheckPenalty": -3,
+      "spellFailureChance": 20,
+      "speedWhenWorn": 20
+    },
+    {
+      "definitionId": "scale-mail",
+      "label": { "en": "Scale Mail", "fr": "Écaille" },
+      "itemType": "armor",
+      "armorType": "medium",
+      "weight": 30,
+      "cost": 5000,
+      "armorBonus": 4,
+      "maxDexBonus": 3,
+      "armorCheckPenalty": -4,
+      "spellFailureChance": 25,
+      "speedWhenWorn": 20
+    },
+    {
+      "definitionId": "chainmail",
+      "label": { "en": "Chainmail", "fr": "Cotte de mailles" },
+      "itemType": "armor",
+      "armorType": "medium",
+      "weight": 40,
+      "cost": 15000,
+      "armorBonus": 5,
+      "maxDexBonus": 2,
+      "armorCheckPenalty": -5,
+      "spellFailureChance": 30,
+      "speedWhenWorn": 20
+    },
+    {
+      "definitionId": "splint-mail",
+      "label": { "en": "Splint Mail", "fr": "Armure d'ébonite" },
+      "itemType": "armor",
+      "armorType": "heavy",
+      "weight": 45,
+      "cost": 20000,
+      "armorBonus": 6,
+      "maxDexBonus": 0,
+      "armorCheckPenalty": -7,
+      "spellFailureChance": 40,
+      "speedWhenWorn": 20
+    },
+    {
+      "definitionId": "banded-mail",
+      "label": { "en": "Banded Mail", "fr": "Armure de plates" },
+      "itemType": "armor",
+      "armorType": "heavy",
+      "weight": 35,
+      "cost": 25000,
+      "armorBonus": 6,
+      "maxDexBonus": 1,
+      "armorCheckPenalty": -6,
+      "spellFailureChance": 35,
+      "speedWhenWorn": 20
+    },
+    {
+      "definitionId": "half-plate",
+      "label": { "en": "Half-Plate", "fr": "Demi-plate" },
+      "itemType": "armor",
+      "armorType": "heavy",
+      "weight": 50,
+      "cost": 60000,
+      "armorBonus": 7,
+      "maxDexBonus": 0,
+      "armorCheckPenalty": -7,
+      "spellFailureChance": 40,
+      "speedWhenWorn": 20
+    },
+    {
+      "definitionId": "full-plate",
+      "label": { "en": "Full Plate", "fr": "Harnois" },
+      "itemType": "armor",
+      "armorType": "heavy",
+      "weight": 50,
+      "cost": 150000,
+      "armorBonus": 8,
+      "maxDexBonus": 1,
+      "armorCheckPenalty": -6,
+      "spellFailureChance": 35,
+      "speedWhenWorn": 20
+    }
+  ]
+}
+    

@@ -1,0 +1,101 @@
+
+{
+  "ITEM_DEFINITIONS_MAGIC_ITEMS_DATA": [
+    {
+      "definitionId": "ring-of-protection-plus-1",
+      "label": { "en": "Ring of Protection +1", "fr": "Anneau de protection +1" },
+      "description": { "en": "This ring offers a continual magical protection in the form of a deflection bonus to Armor Class.", "fr": "Cet anneau offre une protection magique continue sous la forme d'un bonus de déviation à la Classe d'Armure." },
+      "itemType": "ring",
+      "weight": 0,
+      "cost": 200000,
+      "effects": [
+        { "type": "armorClass", "value": 1, "acType": "deflection", "bonusType": "deflection" }
+      ]
+    },
+    {
+      "definitionId": "ring-of-sustenance",
+      "label": { "en": "Ring of Sustenance", "fr": "Anneau de subsistance" },
+      "description": { "en": "This ring continually provides its wearer with life-sustaining nourishment. The ring also refreshes the body and mind, so that its wearer needs only 2 hours of sleep each day to gain the benefit of 8 hours of sleep.", "fr": "Cet anneau fournit continuellement à son porteur une nourriture vitale. L'anneau rafraîchit également le corps et l'esprit, de sorte que son porteur n'a besoin que de 2 heures de sommeil chaque jour pour bénéficier de 8 heures de sommeil." },
+      "itemType": "ring",
+      "weight": 0,
+      "cost": 250000
+    },
+    {
+      "definitionId": "amulet-of-natural-armor-plus-1",
+      "label": { "en": "Amulet of Natural Armor +1", "fr": "Amulette d'armure naturelle +1" },
+      "description": { "en": "This amulet toughens the wearer’s body and flesh, giving them an enhancement bonus to their natural armor bonus.", "fr": "Cette amulette durcit le corps et la chair du porteur, lui conférant un bonus d'amélioration à son bonus d'armure naturelle." },
+      "itemType": "amulet",
+      "weight": 0,
+      "cost": 200000,
+      "effects": [
+        { "type": "armorClass", "value": 1, "acType": "natural", "bonusType": "natural" }
+      ]
+    },
+    {
+      "definitionId": "amulet-of-health-plus-2",
+      "label": { "en": "Amulet of Health +2", "fr": "Amulette de santé +2" },
+      "description": { "en": "This amulet grants the wearer an enhancement bonus to Constitution.", "fr": "Cette amulette confère au porteur un bonus d'amélioration à la Constitution." },
+      "itemType": "amulet",
+      "weight": 0,
+      "cost": 400000,
+      "effects": [
+        { "type": "abilityScore", "ability": "constitution", "value": 2, "bonusType": "enhancement" }
+      ]
+    },
+    {
+      "definitionId": "cloak-of-resistance-plus-1",
+      "label": { "en": "Cloak of Resistance +1", "fr": "Cape de résistance +1" },
+      "description": { "en": "These garments offer magical protection in the form of a resistance bonus on all saving throws (Fortitude, Reflex, and Will).", "fr": "Ces vêtements offrent une protection magique sous la forme d'un bonus de résistance à tous les jets de sauvegarde (Vigueur, Réflexes et Volonté)." },
+      "itemType": "cloak",
+      "weight": 1,
+      "cost": 100000,
+      "effects": [
+        { "type": "savingThrow", "save": "all", "value": 1, "bonusType": "resistance" }
+      ]
+    },
+    {
+      "definitionId": "boots-of-striding-and-springing",
+      "label": { "en": "Boots of Striding and Springing", "fr": "Bottes de marche et de saut" },
+      "description": { "en": "These boots increase the wearer’s land speed by 10 feet. In addition to this speed bonus, the wearer gains a +5 competence bonus on Jump checks.", "fr": "Ces bottes augmentent la vitesse terrestre du porteur de 3 mètres. En plus de ce bonus de vitesse, le porteur gagne un bonus de compétence de +5 aux tests de Saut." },
+      "itemType": "boots",
+      "weight": 1,
+      "cost": 550000,
+      "effects": [
+        { "type": "speed", "speedType": "land", "modification": "bonus", "value": 10, "bonusType": "enhancement" },
+        { "type": "skill", "skillId": "jump", "value": 5, "bonusType": "competence" }
+      ]
+    },
+    {
+      "definitionId": "gloves-of-dexterity-plus-2",
+      "label": { "en": "Gloves of Dexterity +2", "fr": "Gants de dextérité +2" },
+      "description": { "en": "These thin leather gloves grant the wearer an enhancement bonus to Dexterity.", "fr": "Ces gants en cuir fin confèrent au porteur un bonus d'amélioration à la Dextérité." },
+      "itemType": "gloves",
+      "weight": 0,
+      "cost": 400000,
+      "effects": [
+        { "type": "abilityScore", "ability": "dexterity", "value": 2, "bonusType": "enhancement" }
+      ]
+    },
+    {
+      "definitionId": "headband-of-intellect-plus-2",
+      "label": { "en": "Headband of Intellect +2", "fr": "Bandeau d'intelligence +2" },
+      "description": { "en": "This ornate headband grants the wearer an enhancement bonus to Intelligence.", "fr": "Ce bandeau orné confère au porteur un bonus d'amélioration à l'Intelligence." },
+      "itemType": "headband",
+      "weight": 0,
+      "cost": 400000,
+      "effects": [
+        { "type": "abilityScore", "ability": "intelligence", "value": 2, "bonusType": "enhancement" }
+      ]
+    },
+    {
+      "definitionId": "pearl-of-power-1st-level",
+      "label": { "en": "Pearl of Power (1st level)", "fr": "Perle de pouvoir (1er niveau)" },
+      "description": { "en": "This seemingly normal pearl of average size and luster is a potent aid to all spellcasters who prepare spells (clerics, druids, rangers, paladins, and wizards). Once per day on command, a pearl of power enables the possessor to recall any one spell that she had prepared and then cast. The spell is then prepared again, just as if it had not been cast. The spell must be of a particular level, depending on the pearl. This pearl allows recalling a 1st-level spell.", "fr": "Cette perle d'apparence normale, de taille et de lustre moyens, est une aide puissante pour tous les lanceurs de sorts qui préparent leurs sorts (prêtres, druides, rôdeurs, paladins et magiciens). Une fois par jour sur commande, une perle de pouvoir permet au possesseur de se souvenir d'un sort qu'il avait préparé puis lancé. Le sort est alors à nouveau préparé, comme s'il n'avait pas été lancé. Le sort doit être d'un niveau particulier, en fonction de la perle. Cette perle permet de se souvenir d'un sort de 1er niveau." },
+      "itemType": "wondrous",
+      "weight": 0,
+      "cost": 100000,
+      "prerequisites": { "special": { "en": "Caster must be able to cast 1st-level spells.", "fr": "Le lanceur doit être capable de lancer des sorts de 1er niveau." }}
+    }
+  ]
+}
+    

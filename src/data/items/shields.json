@@ -1,0 +1,79 @@
+
+{
+  "ITEM_DEFINITIONS_SHIELDS_DATA": [
+    {
+      "definitionId": "buckler",
+      "label": { "en": "Buckler", "fr": "Targe" },
+      "itemType": "shield",
+      "armorType": "shield",
+      "weight": 5,
+      "cost": 1500,
+      "shieldBonus": 1,
+      "maxDexBonus": null,
+      "armorCheckPenalty": -1,
+      "spellFailureChance": 5
+    },
+    {
+      "definitionId": "light-wooden-shield",
+      "label": { "en": "Light Wooden Shield", "fr": "Écu en bois" },
+      "itemType": "shield",
+      "armorType": "shield",
+      "weight": 5,
+      "cost": 300,
+      "shieldBonus": 1,
+      "maxDexBonus": null,
+      "armorCheckPenalty": -1,
+      "spellFailureChance": 5
+    },
+    {
+      "definitionId": "light-steel-shield",
+      "label": { "en": "Light Steel Shield", "fr": "Écu en acier" },
+      "itemType": "shield",
+      "armorType": "shield",
+      "weight": 6,
+      "cost": 900,
+      "shieldBonus": 1,
+      "maxDexBonus": null,
+      "armorCheckPenalty": -1,
+      "spellFailureChance": 5
+    },
+    {
+      "definitionId": "heavy-wooden-shield",
+      "label": { "en": "Heavy Wooden Shield", "fr": "Bouclier en bois" },
+      "itemType": "shield",
+      "armorType": "shield",
+      "weight": 10,
+      "cost": 700,
+      "shieldBonus": 2,
+      "maxDexBonus": null,
+      "armorCheckPenalty": -2,
+      "spellFailureChance": 15
+    },
+    {
+      "definitionId": "heavy-steel-shield",
+      "label": { "en": "Heavy Steel Shield", "fr": "Bouclier en acier" },
+      "itemType": "shield",
+      "armorType": "shield",
+      "weight": 15,
+      "cost": 2000,
+      "shieldBonus": 2,
+      "maxDexBonus": null,
+      "armorCheckPenalty": -2,
+      "spellFailureChance": 15
+    },
+    {
+      "definitionId": "tower-shield",
+      "label": { "en": "Tower Shield", "fr": "Pavois" },
+      "description": { "en": "A massive shield that provides significant cover but is cumbersome.", "fr": "Un bouclier massif qui offre une couverture importante mais est encombrant." },
+      "itemType": "shield",
+      "armorType": "shield",
+      "weight": 45,
+      "cost": 3000,
+      "shieldBonus": 4,
+      "maxDexBonus": 2,
+      "armorCheckPenalty": -10,
+      "spellFailureChance": 50
+    }
+  ]
+}
+    
