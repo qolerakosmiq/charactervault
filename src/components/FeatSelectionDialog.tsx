@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/command';
 import type {
   FeatDefinitionJsonData, Character, PrerequisiteMessage, SkillDefinitionJsonData,
-  DndClassOption, DndRaceOption, AbilityName
+  DndClassOption, DndRaceOption, AbilityName, LocalizedString
 } from '@/types/character';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -30,6 +30,7 @@ import { checkFeatPrerequisites } from '@/types/character';
 import { cn } from '@/lib/utils';
 import { useI18n } from '@/context/I18nProvider';
 import { Badge } from '@/components/ui/badge';
+import { getLocalizedString } from '@/i18n/i18n-data';
 
 interface FeatSelectionDialogProps {
   isOpen: boolean;
@@ -71,7 +72,7 @@ export function FeatSelectionDialog({
   filterByCategory,
   isLoadingTranslations: propIsLoadingTranslations = false,
 }: FeatSelectionDialogProps) {
-  const { translations, isLoading: i18nIsLoading } = useI18n();
+  const { translations, isLoading: i18nIsLoading, language: currentLang } = useI18n();
   const [searchTerm, setSearchTerm] = React.useState('');
   const scrollAreaRef = React.useRef<HTMLDivElement>(null);
 
@@ -97,12 +98,12 @@ export function FeatSelectionDialog({
     const lowerSearchTerm = searchTerm.toLowerCase();
     return baseSortedAndFilteredFeats.filter(featDef => {
       const labelMatch = featDef.label.toLowerCase().includes(lowerSearchTerm);
-      const descriptionMatch = (featDef.description ? stripHtml(featDef.description).toLowerCase() : '').includes(lowerSearchTerm);
+      const descriptionMatch = (featDef.description ? stripHtml(typeof featDef.description === 'string' ? featDef.description : getLocalizedString(featDef.description, currentLang)).toLowerCase() : '').includes(lowerSearchTerm);
       const categoryMatch = (featDef.category ? featDef.category.toLowerCase() : '').includes(lowerSearchTerm);
       const typeMatch = (featDef.type ? featDef.type.toLowerCase() : '').includes(lowerSearchTerm);
       return labelMatch || descriptionMatch || categoryMatch || typeMatch;
     });
-  }, [baseSortedAndFilteredFeats, searchTerm]);
+  }, [baseSortedAndFilteredFeats, searchTerm, currentLang]);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -176,7 +177,7 @@ export function FeatSelectionDialog({
               <CommandEmpty>{UI_STRINGS.featSelectionDialogEmpty || "No feats found."}</CommandEmpty>
               <CommandGroup>
                 {displayedFeats
-                  .filter(featDef => featDef && typeof featDef.id === 'string' && featDef.id.length > 0 && typeof featDef.label === 'string') // Defensive filter for valid ID and label
+                  .filter(featDef => featDef && typeof featDef.id === 'string' && featDef.id.length > 0 && typeof featDef.label === 'string') 
                   .map((featDef) => {
                   const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(
                     featDef,
@@ -190,42 +191,55 @@ export function FeatSelectionDialog({
                     alignmentPrereqOptions,
                     UI_STRINGS
                   );
+                  const localizedSpecialPrereqText = (featDef.prerequisites?.special && typeof featDef.prerequisites.special === 'object')
+                    ? getLocalizedString(featDef.prerequisites.special as LocalizedString, currentLang, undefined, `feats.${featDef.id}.prereq.special`)
+                    : (typeof featDef.prerequisites?.special === 'string' ? featDef.prerequisites.special : undefined);
+
+                  const hasStructuralPrereqs = prereqMessages.length > 0;
+                  const hasTextualPrereqs = !!(localizedSpecialPrereqText && localizedSpecialPrereqText.trim() !== "");
+                  const showPrerequisitesLine = hasStructuralPrereqs || hasTextualPrereqs;
+                  const featDefDescription = featDef.description ? (typeof featDef.description === 'string' ? featDef.description : getLocalizedString(featDef.description, currentLang)) : "";
+
                   return (
                     <CommandItem
-                      key={featDef.id} // Use id
-                      value={featDef.label} // CMDK 'value' for filtering by label
+                      key={featDef.id} 
+                      value={featDef.label} 
                       onSelect={() => {
-                        onFeatSelected(featDef.id); // Pass id
+                        onFeatSelected(featDef.id); 
                         onOpenChange(false);
                       }}
                       className="flex flex-col items-start p-3 hover:bg-accent/10 cursor-pointer data-[selected=true]:bg-accent/20"
                     >
                       <div className="font-medium text-sm text-foreground">
                         {featDef.label}
-                        {featDef.isCustom && <Badge variant="outline" className="text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
-                        {featDef.category && <Badge variant="secondary" className="whitespace-nowrap">{featDef.category}</Badge>}
+                        {featDef.isCustom && <Badge variant="outline" className="ml-1 text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
+                        {featDef.category && <Badge variant="secondary" className="ml-1 whitespace-nowrap">{featDef.category}</Badge>}
                       </div>
-                      {featDef.description && (
+                      {featDefDescription && (
                         <div
                           className="text-xs text-muted-foreground mt-0.5 whitespace-normal"
-                          dangerouslySetInnerHTML={{ __html: featDef.description }}
+                          dangerouslySetInnerHTML={{ __html: featDefDescription }}
                         />
                       )}
-                      {prereqMessages.length > 0 ? (
+                      {showPrerequisitesLine && (
                         <p className="text-xs mt-0.5 whitespace-normal">
                           <b className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel || "Prerequisites:"}</b>{' '}
-                          {prereqMessages.map((msg, index) => (
-                            <React.Fragment key={index}>
-                              <span className={cn("text-xs", !msg.isMet ? 'text-destructive' : 'text-muted-foreground/80')}
-                                dangerouslySetInnerHTML={{ __html: msg.text }}
-                              >
-                              </span>
-                              {index < prereqMessages.length - 1 && ', '}
-                            </React.Fragment>
-                          ))}
+                          <>
+                            {hasStructuralPrereqs && prereqMessages.map((msg, index) => (
+                              <React.Fragment key={index}>
+                                <span className={cn("text-xs", !msg.isMet ? 'text-destructive' : 'text-muted-foreground/80')}
+                                  dangerouslySetInnerHTML={{ __html: msg.text }}
+                                >
+                                </span>
+                                {index < prereqMessages.length - 1 && ', '}
+                              </React.Fragment>
+                            ))}
+                            {hasStructuralPrereqs && hasTextualPrereqs && ', '}
+                            {hasTextualPrereqs && (
+                              <span className="text-xs text-muted-foreground/80" dangerouslySetInnerHTML={{ __html: localizedSpecialPrereqText! }} />
+                            )}
+                          </>
                         </p>
-                      ) : (
-                         <p className="text-xs mt-0.5 whitespace-normal text-muted-foreground/80"><b className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel || "Prerequisites:"}</b> {UI_STRINGS.featPrerequisitesNoneLabel || "None"}</p>
                       )}
                     </CommandItem>
                   );

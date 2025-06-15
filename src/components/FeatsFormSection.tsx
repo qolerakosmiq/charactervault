@@ -297,7 +297,7 @@ const FeatsFormSectionComponent = ({
     if (definitionId.startsWith('class-')) {
       const parts = definitionId.split('-');
       if (parts.length > 1) {
-        const classNameKey = parts.slice(1, -1).join('-'); // Handles multi-word class IDs like 'soulknife'
+        const classNameKey = parts.slice(1, -1).join('-'); 
         const classDef = translations.DND_CLASSES.find(c => c.id === classNameKey);
         return classDef ? classDef.label : capitalizeFirstLetter(classNameKey.replace(/-/g, ' '));
       }
@@ -342,46 +342,48 @@ const FeatsFormSectionComponent = ({
     const { UI_STRINGS } = translations;
     const featLabel = getLocalizedString(definition.label, currentLang, undefined, `feats.${definition.id}.label`);
 
-    // --- DESCRIPTION ---
-    let descriptionContent: string | undefined = undefined;
+
+    let rawDescriptionString: string | undefined = undefined;
     if (definition.description) {
-        let localizedDesc = typeof definition.description === 'string'
-            ? definition.description
+        rawDescriptionString = typeof definition.description === 'string' 
+            ? definition.description 
             : getLocalizedString(definition.description, currentLang, undefined, `feats.${definition.id}.description`);
-
-        const benefitMarkerIndex = localizedDesc.toLowerCase().search(/<b>\s*benefit:\s*<\/b>/i);
-        const prereqMarkerIndex = localizedDesc.toLowerCase().search(/<b>\s*prerequisites?:\s*<\/b>/i);
-        
-        let endIndex = localizedDesc.length;
-        if (benefitMarkerIndex !== -1) endIndex = Math.min(endIndex, benefitMarkerIndex);
-        if (prereqMarkerIndex !== -1) endIndex = Math.min(endIndex, prereqMarkerIndex);
-        
-        descriptionContent = localizedDesc.substring(0, endIndex).trim();
-        if (descriptionContent === "<p></p>" || descriptionContent === "") descriptionContent = undefined;
     }
+    let descriptionContent = rawDescriptionString || "";
+    if (rawDescriptionString) {
+        const benefitMarker = "<b>Benefit:</b>";
+        const prereqMarker = "<b>Prerequisites:</b>";
+        const benefitIndex = rawDescriptionString.toLowerCase().indexOf(benefitMarker.toLowerCase());
+        const prereqIndex = rawDescriptionString.toLowerCase().indexOf(prereqMarker.toLowerCase());
 
-    // --- BENEFIT ---
-    let finalBenefitText = "";
+        let endIndex = rawDescriptionString.length;
+        if (benefitIndex !== -1) endIndex = Math.min(endIndex, benefitIndex);
+        if (prereqIndex !== -1) endIndex = Math.min(endIndex, prereqIndex);
+        descriptionContent = rawDescriptionString.substring(0, endIndex).trim();
+    }
+    const showDescriptionSection = descriptionContent && descriptionContent.trim() !== "" && descriptionContent.toLowerCase() !== "<p></p>";
+
+    let benefitContent = "";
     if (definition.effectsText) {
-        finalBenefitText = typeof definition.effectsText === 'string'
+        benefitContent = typeof definition.effectsText === 'string'
             ? definition.effectsText
             : getLocalizedString(definition.effectsText, currentLang, undefined, `feats.${definition.id}.effectsText`);
     }
-    if (!finalBenefitText.trim()) {
+    if (!benefitContent.trim()) {
         const noteEffects = (definition.effects?.filter(e => e.type === 'note') as NoteEffectDetail[] | undefined) || [];
         if (noteEffects.length > 0) {
-            finalBenefitText = noteEffects.map(ne =>
-                (ne.text) // Assumes text is already localized string from processRawDataBundle
-            ).join(' ');
+            benefitContent = noteEffects.map(ne => ne.text).join(' ');
         }
     }
+    const showBenefitSection = benefitContent && benefitContent.trim() !== "";
 
-    // --- PREREQUISITES ---
     let specialPrereqText: string | undefined = undefined;
     if (definition.prerequisites?.special) {
-      specialPrereqText = getLocalizedString(definition.prerequisites.special, currentLang, undefined, `feats.${definition.id}.prereq.special`);
+        specialPrereqText = typeof definition.prerequisites.special === 'string'
+            ? definition.prerequisites.special
+            : getLocalizedString(definition.prerequisites.special, currentLang, undefined, `feats.${definition.id}.prereq.special`);
     }
-
+    const showPrerequisitesLine = prereqMessages.length > 0 || (specialPrereqText && specialPrereqText.trim() !== "");
 
     return (
       <div key={instance.instanceId} className="group flex items-start justify-between py-2 transition-colors">
@@ -397,27 +399,23 @@ const FeatsFormSectionComponent = ({
           </div>
           {definition.requiresSpecialization && instance.specializationDetail && <p className="text-xs text-muted-foreground ml-1 italic">({instance.specializationDetail})</p>}
           
-          <div>
-            <strong>{UI_STRINGS.featDescriptionLabel}</strong>{' '}
-            {descriptionContent && descriptionContent.trim() !== "" ? (
+          {showDescriptionSection && (
+            <div className="text-xs text-muted-foreground">
+              <strong className="font-bold text-muted-foreground mr-1">{UI_STRINGS.featDescriptionLabel}</strong>
               <span dangerouslySetInnerHTML={{ __html: descriptionContent }} />
-            ) : (
-              <span>{UI_STRINGS.featDescriptionNoneLabel}</span>
-            )}
-          </div>
+            </div>
+          )}
 
-          <div>
-            <strong>{UI_STRINGS.featBenefitLabel}</strong>{' '}
-            {finalBenefitText && finalBenefitText.trim() !== "" ? (
-              <span dangerouslySetInnerHTML={{ __html: finalBenefitText }} />
-            ) : (
-              <span>{UI_STRINGS.featBenefitNoneLabel}</span>
-            )}
-          </div>
+          {showBenefitSection && (
+            <div className="text-xs text-muted-foreground">
+              <strong className="font-bold text-muted-foreground mr-1">{UI_STRINGS.featBenefitLabel}</strong>
+              <span dangerouslySetInnerHTML={{ __html: benefitContent }} />
+            </div>
+          )}
 
-          <div>
-            <strong>{UI_STRINGS.featPrerequisitesLabel}</strong>{' '}
-            {prereqMessages.length > 0 || specialPrereqText ? (
+          {showPrerequisitesLine && (
+            <div className="text-xs text-muted-foreground">
+              <strong className="font-bold text-muted-foreground mr-1">{UI_STRINGS.featPrerequisitesLabel}</strong>
               <>
                 {prereqMessages.map((msg, idx, arr) => (
                   <React.Fragment key={idx}>
@@ -425,13 +423,11 @@ const FeatsFormSectionComponent = ({
                     {idx < arr.length - 1 && ', '}
                   </React.Fragment>
                 ))}
-                {prereqMessages.length > 0 && specialPrereqText && ', '}
-                {specialPrereqText && <span dangerouslySetInnerHTML={{ __html: specialPrereqText }} />}
+                {prereqMessages.length > 0 && specialPrereqText && specialPrereqText.trim() !== "" && ', '}
+                {specialPrereqText && specialPrereqText.trim() !== "" && <span dangerouslySetInnerHTML={{ __html: specialPrereqText }} />}
               </>
-            ) : (
-              <span>{UI_STRINGS.featPrerequisitesNoneLabel}</span>
-            )}
-          </div>
+            </div>
+          )}
 
         </div>
         <div className="flex items-center shrink-0">
@@ -493,6 +489,7 @@ const FeatsFormSectionComponent = ({
             <Award className="h-8 w-8 text-primary" />
             <div>
               <CardTitle className="text-2xl font-serif">{UI_STRINGS.featsPanelTitle}</CardTitle>
+              <CardDescription>{UI_STRINGS.featsPanelDescription}</CardDescription>
             </div>
           </div>
         </CardHeader>
