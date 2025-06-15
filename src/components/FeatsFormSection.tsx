@@ -12,7 +12,7 @@ import {
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, PlusCircle, Trash2, Pencil, Loader2, Info, Edit3 } from 'lucide-react'; // Added Edit3
+import { Award, PlusCircle, Trash2, Pencil, Loader2, Info, Edit3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
 import { SpecializationInputDialog } from './SpecializationInputDialog';
@@ -23,7 +23,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export interface FeatsFormSectionProps {
-  featSectionData: Pick<Character, 'race' | 'classes' | 'feats' | 'age' | 'alignment' | 'experiencePoints' | 'chosenCombatStyle' | 'chosenFavoredEnemies'>;
+  featSectionData: Pick<Character, 'race' | 'classes' | 'feats' | 'age' | 'alignment' | 'experiencePoints' | 'chosenCombatStyle' | 'chosenFavoredEnemies' | 'deity' | 'chosenDomains'>;
   allAvailableFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
   chosenFeatInstances: CharacterFeatInstance[];
   onFeatInstancesChange: (updatedInstances: CharacterFeatInstance[]) => void;
@@ -60,12 +60,12 @@ const FeatsFormSectionComponent = ({
   const [featDialogFilterCategory, setFeatDialogFilterCategory] = React.useState<string | undefined>(undefined);
   const [featToSpecialize, setFeatToSpecialize] = React.useState<FeatDefinitionJsonData | null>(null);
   const [isSpecializationDialogOpen, setIsSpecializationDialogOpen] = React.useState(false);
-  const [editingFeatInstanceId, setEditingFeatInstanceId] = React.useState<string | null>(null); // For editing specialization
+  const [editingFeatInstanceId, setEditingFeatInstanceId] = React.useState<string | null>(null);
   const [initialSpecializationForEdit, setInitialSpecializationForEdit] = React.useState<string | undefined>(undefined);
 
 
   const featSlotsBreakdown = React.useMemo(() => {
-    if (translationsLoading || !translations) return { total: 0, base: 0, racial: 0, classBonus: 0, classBonusDetails: [] };
+    if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.DND_RACES || !translations.XP_TABLE) return { total: 0, base: 0, racial: 0, classBonus: 0, classBonusDetails: [] };
     return calculateAvailableFeats(
       {
         race: featSectionData.race,
@@ -130,13 +130,13 @@ const FeatsFormSectionComponent = ({
       }
     }
     setFeatDialogFilterCategory(filterCategoryForDialog);
-    setEditingFeatInstanceId(null); // Ensure we are in "add new" mode
+    setEditingFeatInstanceId(null); 
     setIsFeatDialogOpen(true);
   };
 
 
   const handleAddOrUpdateChosenFeatInstance = (definitionId: string) => {
-    if (!translations) throw new Error("Translations not loaded for feat selection.");
+    if (!translations || !translations.UI_STRINGS) throw new Error("Translations not loaded for feat selection.");
     const UI_STRINGS = translations.UI_STRINGS;
     const definition = allAvailableFeatDefinitions.find(def => def.id === definitionId);
     if (!definition) {
@@ -144,7 +144,7 @@ const FeatsFormSectionComponent = ({
       return;
     }
 
-    setEditingFeatInstanceId(null); // Reset edit mode for this flow (add new)
+    setEditingFeatInstanceId(null); 
     setInitialSpecializationForEdit(undefined);
 
     if (definition.requiresSpecialization) {
@@ -210,16 +210,16 @@ const FeatsFormSectionComponent = ({
   };
 
   const handleSpecializationProvided = (specializationDetail: string) => {
-    if (!featToSpecialize || !translations) throw new Error("Feat definition or translations not available for specialization.");
+    if (!featToSpecialize || !translations || !translations.UI_STRINGS) throw new Error("Feat definition or translations not available for specialization.");
     const UI_STRINGS = translations.UI_STRINGS;
     const definition = featToSpecialize;
 
-    if (editingFeatInstanceId) { // Editing existing specialization
+    if (editingFeatInstanceId) { 
       const updatedInstances = chosenFeatInstances.map(inst => {
         if (inst.instanceId === editingFeatInstanceId) {
           let newFinalInstanceId = `${definition.id}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`; 
           if (chosenFeatInstances.some(otherInst => otherInst.instanceId === newFinalInstanceId && otherInst.instanceId !== editingFeatInstanceId)) {
-            newFinalInstanceId = `${newFinalInstanceId}-${crypto.randomUUID().substring(0,8)}`; // Make unique
+            newFinalInstanceId = `${newFinalInstanceId}-${crypto.randomUUID().substring(0,8)}`; 
           }
           return { ...inst, specializationDetail: specializationDetail.trim() || undefined, instanceId: newFinalInstanceId };
         }
@@ -227,7 +227,7 @@ const FeatsFormSectionComponent = ({
       });
       onFeatInstancesChange(sortInstancesByLabel(updatedInstances));
 
-    } else { // Adding new specialized feat
+    } else { 
       const existingChosenInstances = chosenFeatInstances.filter(
         inst => inst.definitionId === definition.id && !inst.isGranted && inst.specializationDetail === specializationDetail 
       );
@@ -275,7 +275,7 @@ const FeatsFormSectionComponent = ({
   };
 
   const handleOpenEditDialog = (definitionId: string) => {
-    if (!translations) throw new Error("Translations not loaded for custom feat edit.");
+    if (!translations || !translations.UI_STRINGS) throw new Error("Translations not loaded for custom feat edit.");
     const UI_STRINGS = translations.UI_STRINGS;
     const defToEdit = allAvailableFeatDefinitions.find(def => def.id === definitionId && def.isCustom); 
     if (defToEdit) {
@@ -286,7 +286,7 @@ const FeatsFormSectionComponent = ({
   };
 
   const getFeatSource = React.useCallback((definitionId: string): string | null => { 
-    if (translationsLoading || !translations) return null;
+    if (translationsLoading || !translations || !translations.DND_CLASSES) return null;
     if (definitionId.startsWith('class-')) {
       const parts = definitionId.split('-');
       if (parts.length > 1) {
@@ -299,14 +299,14 @@ const FeatsFormSectionComponent = ({
   }, [translations, translationsLoading]);
 
   const renderFeatInstance = React.useCallback((instance: CharacterFeatInstance) => {
-    if (translationsLoading || !translations) return <Skeleton className="h-16 w-full mb-2" />;
+    if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.SKILL_DEFINITIONS) return <Skeleton className="h-16 w-full mb-2" />;
 
     const definition = allAvailableFeatDefinitions.find(def => def.id === instance.definitionId); 
     if (!definition) {
         throw new Error(`Feat definition for ID '${instance.definitionId}' not found.`);
     }
 
-    const prereqMessages = checkFeatPrerequisites(
+    const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(
       definition,
       characterForPrereqCheck as Character,
       allAvailableFeatDefinitions,
@@ -394,7 +394,7 @@ const FeatsFormSectionComponent = ({
   }, [translationsLoading, translations, allAvailableFeatDefinitions, characterForPrereqCheck, allPredefinedSkillDefinitions, allCustomSkillDefinitions, getFeatSource, handleOpenEditDialog, handleRemoveChosenFeatInstance, handleOpenEditSpecializationDialog]);
 
 
-  if (translationsLoading || !translations) {
+  if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS) {
     return (
       <Card>
         <CardHeader>
@@ -438,7 +438,7 @@ const FeatsFormSectionComponent = ({
                 )}>{featSlotsLeft}</span>
               </p>
             </div>
-             <p className="text-sm text-muted-foreground mt-1">
+             <p className="text-xs text-muted-foreground mt-1">
               {UI_STRINGS.featsPanelBreakdownBaseLabel}{'\u00A0'}<Badge variant="outline">{featSlotsBreakdown.base}</Badge>
               {featSlotsBreakdown.racial > 0 && (
                 <>
@@ -537,7 +537,3 @@ const FeatsFormSectionComponent = ({
 };
 FeatsFormSectionComponent.displayName = "FeatsFormSectionComponent";
 export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
-
-
-
-    
