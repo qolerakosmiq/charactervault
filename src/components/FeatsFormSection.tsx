@@ -55,7 +55,7 @@ const FeatsFormSectionComponent = ({
   aggregatedFeatEffects,
 }: FeatsFormSectionProps) => {
   const i18nContext = useI18n();
-  const { translations, isLoading: translationsLoading } = i18nContext;
+  const { translations, isLoading: translationsLoading, language } = i18nContext;
   const { toast } = useToast();
 
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
@@ -89,19 +89,19 @@ const FeatsFormSectionComponent = ({
     return [...instances].sort((a, b) => {
       const defA = allAvailableFeatDefinitions.find(d => d.id === a.definitionId);
       const defB = allAvailableFeatDefinitions.find(d => d.id === b.definitionId);
-      const labelA = defA?.label ? getLocalizedString(defA.label, i18nContext.language, undefined, `feats.${defA.id}.label`) : '';
-      const labelB = defB?.label ? getLocalizedString(defB.label, i18nContext.language, undefined, `feats.${defB.id}.label`) : '';
+      const labelA = defA?.label ? getLocalizedString(defA.label, language, undefined, `feats.${defA.id}.label`) : '';
+      const labelB = defB?.label ? getLocalizedString(defB.label, language, undefined, `feats.${defB.id}.label`) : '';
       return labelA.localeCompare(labelB);
     });
   };
 
   const userChosenFeatInstances = React.useMemo(() => {
     return sortInstancesByLabel(chosenFeatInstances.filter(f => !f.isGranted));
-  }, [chosenFeatInstances, allAvailableFeatDefinitions, i18nContext.language]);
+  }, [chosenFeatInstances, allAvailableFeatDefinitions, language]);
 
   const grantedFeatInstances = React.useMemo(() => {
     return sortInstancesByLabel(chosenFeatInstances.filter(f => f.isGranted));
-  }, [chosenFeatInstances, allAvailableFeatDefinitions, i18nContext.language]);
+  }, [chosenFeatInstances, allAvailableFeatDefinitions, language]);
 
   const userChosenFeatInstancesCount = userChosenFeatInstances.length;
   const featSlotsLeft = availableFeatSlots - userChosenFeatInstancesCount;
@@ -168,7 +168,7 @@ const FeatsFormSectionComponent = ({
       if (isAlreadyGranted) {
         toast({
             title: UI_STRINGS.toastFeatAlreadyGrantedTitle,
-            description: UI_STRINGS.toastFeatAlreadyGrantedDesc.replace('{featLabel}', getLocalizedString(definition.label, i18nContext.language)),
+            description: UI_STRINGS.toastFeatAlreadyGrantedDesc.replace('{featLabel}', getLocalizedString(definition.label, language)),
             variant: "destructive"
         });
         return;
@@ -176,7 +176,7 @@ const FeatsFormSectionComponent = ({
       if (existingChosenInstances.length > 0) {
         toast({
             title: UI_STRINGS.toastDuplicateFeatTitle,
-            description: UI_STRINGS.toastDuplicateFeatDesc.replace('{featLabel}', getLocalizedString(definition.label, i18nContext.language)),
+            description: UI_STRINGS.toastDuplicateFeatDesc.replace('{featLabel}', getLocalizedString(definition.label, language)),
             variant: "destructive"
         });
         return;
@@ -199,8 +199,8 @@ const FeatsFormSectionComponent = ({
     onFeatInstancesChange([...chosenFeatInstances, newInstance].sort((a, b) => {
       const defA = allAvailableFeatDefinitions.find(d => d.id === a.definitionId);
       const defB = allAvailableFeatDefinitions.find(d => d.id === b.definitionId);
-      const labelA = defA?.label ? getLocalizedString(defA.label, i18nContext.language) : '';
-      const labelB = defB?.label ? getLocalizedString(defB.label, i18nContext.language) : '';
+      const labelA = defA?.label ? getLocalizedString(defA.label, language) : '';
+      const labelB = defB?.label ? getLocalizedString(defB.label, language) : '';
       return labelA.localeCompare(labelB);
     }));
   };
@@ -219,7 +219,7 @@ const FeatsFormSectionComponent = ({
     if (!featToSpecialize || !translations || !translations.UI_STRINGS) throw new Error("Feat definition or translations not available for specialization.");
     const UI_STRINGS = translations.UI_STRINGS;
     const definition = featToSpecialize;
-    const currentFeatLabel = getLocalizedString(definition.label, i18nContext.language);
+    const currentFeatLabel = getLocalizedString(definition.label, language);
 
     if (editingFeatInstanceId) {
       const updatedInstances = chosenFeatInstances.map(inst => {
@@ -297,13 +297,19 @@ const FeatsFormSectionComponent = ({
     if (definitionId.startsWith('class-')) {
       const parts = definitionId.split('-');
       if (parts.length > 1) {
-        const classNameKey = parts[1];
+        const classNameKey = parts.slice(1, -1).join('-'); // Handles multi-word class IDs like 'soulknife'
         const classDef = translations.DND_CLASSES.find(c => c.id === classNameKey);
-        return classDef ? classDef.label : classNameKey.charAt(0).toUpperCase() + classNameKey.slice(1);
+        return classDef ? classDef.label : capitalizeFirstLetter(classNameKey.replace(/-/g, ' '));
       }
     }
     return null;
   }, [translations, translationsLoading]);
+
+  const capitalizeFirstLetter = (str: string) => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
 
   const renderFeatInstance = React.useCallback((instance: CharacterFeatInstance) => {
     if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.SKILL_DEFINITIONS) return <Skeleton className="h-16 w-full mb-2" />;
@@ -312,7 +318,7 @@ const FeatsFormSectionComponent = ({
     if (!definition) {
         throw new Error(`Feat definition for ID '${instance.definitionId}' not found.`);
     }
-    const currentLang = i18nContext.language;
+    const currentLang = language;
 
     const prereqMessages = checkFeatPrerequisites(
       definition,
@@ -334,60 +340,65 @@ const FeatsFormSectionComponent = ({
 
     const featSource = (instance.isGranted && definition.isClassFeature) ? getFeatSource(definition.id) : null;
     const { UI_STRINGS } = translations;
-    const featLabel = getLocalizedString(definition.label, currentLang);
+    const featLabel = getLocalizedString(definition.label, currentLang, undefined, `feats.${definition.id}.label`);
 
     // --- DESCRIPTION ---
     let descriptionContent: string | undefined = undefined;
     if (definition.description) {
-        const localizedDesc = typeof definition.description === 'string'
+        let localizedDesc = typeof definition.description === 'string'
             ? definition.description
             : getLocalizedString(definition.description, currentLang, undefined, `feats.${definition.id}.description`);
 
-        const benefitMarker = /<b>\s*Benefit:\s*<\/b>/i;
-        const prereqMarker = /<b>\s*Prerequisites?:\s*<\/b>/i;
-        const benefitIndex = localizedDesc.search(benefitMarker);
-        const prereqIndex = localizedDesc.search(prereqMarker);
-
+        const benefitMarkerIndex = localizedDesc.toLowerCase().search(/<b>\s*benefit:\s*<\/b>/i);
+        const prereqMarkerIndex = localizedDesc.toLowerCase().search(/<b>\s*prerequisites?:\s*<\/b>/i);
+        
         let endIndex = localizedDesc.length;
-        if (benefitIndex !== -1) endIndex = Math.min(endIndex, benefitIndex);
-        if (prereqIndex !== -1) endIndex = Math.min(endIndex, prereqIndex);
+        if (benefitMarkerIndex !== -1) endIndex = Math.min(endIndex, benefitMarkerIndex);
+        if (prereqMarkerIndex !== -1) endIndex = Math.min(endIndex, prereqMarkerIndex);
         
         descriptionContent = localizedDesc.substring(0, endIndex).trim();
         if (descriptionContent === "<p></p>" || descriptionContent === "") descriptionContent = undefined;
     }
 
     // --- BENEFIT ---
-    let benefitContent: string | undefined = undefined;
+    let finalBenefitText = "";
     if (definition.effectsText) {
-        benefitContent = typeof definition.effectsText === 'string'
+        finalBenefitText = typeof definition.effectsText === 'string'
             ? definition.effectsText
             : getLocalizedString(definition.effectsText, currentLang, undefined, `feats.${definition.id}.effectsText`);
     }
-    if ((!benefitContent || benefitContent.trim() === "") && definition.effects) {
-        const noteEffects = definition.effects.filter(e => e.type === 'note') as NoteEffectDetail[];
+    if (!finalBenefitText.trim()) {
+        const noteEffects = (definition.effects?.filter(e => e.type === 'note') as NoteEffectDetail[] | undefined) || [];
         if (noteEffects.length > 0) {
-            benefitContent = noteEffects.map(ne => typeof ne.text === 'string' ? ne.text : getLocalizedString(ne.text, currentLang)).join(' ');
+            finalBenefitText = noteEffects.map(ne =>
+                (ne.text) // Assumes text is already localized string from processRawDataBundle
+            ).join(' ');
         }
+    }
+
+    // --- PREREQUISITES ---
+    let specialPrereqText: string | undefined = undefined;
+    if (definition.prerequisites?.special) {
+      specialPrereqText = getLocalizedString(definition.prerequisites.special, currentLang, undefined, `feats.${definition.id}.prereq.special`);
     }
 
 
     return (
       <div key={instance.instanceId} className="group flex items-start justify-between py-2 transition-colors">
-        <div className="flex-grow mr-2 space-y-1"> {/* Added space-y-1 */}
+        <div className="flex-grow mr-2 space-y-1 text-xs text-muted-foreground">
           <div className="flex items-baseline flex-wrap gap-x-1.5">
             {featSource && <Badge variant="secondary" className="whitespace-nowrap">{featSource}</Badge>}
-            <h4 className="font-medium text-foreground inline-flex items-center">
+            <h4 className="font-medium text-foreground inline-flex items-center text-sm">
               {featLabel}
             </h4>
-            {featTypeLabel && <Badge variant="outline" className="whitespace-nowrap">{featTypeLabel}</Badge>}
-            {isCustomDefinition && <Badge variant="outline">{UI_STRINGS.badgeCustomLabel}</Badge>}
+            {featTypeLabel && <Badge variant="outline" className="whitespace-nowrap text-xs">{featTypeLabel}</Badge>}
+            {isCustomDefinition && <Badge variant="outline" className="text-xs">{UI_STRINGS.badgeCustomLabel}</Badge>}
             {instance.grantedNote && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
           </div>
-          {definition.requiresSpecialization && instance.specializationDetail && <p className="text-xs text-muted-foreground ml-1">({instance.specializationDetail})</p>}
+          {definition.requiresSpecialization && instance.specializationDetail && <p className="text-xs text-muted-foreground ml-1 italic">({instance.specializationDetail})</p>}
           
-          {/* Description Section */}
-          <div className="text-xs text-muted-foreground whitespace-normal">
-            <strong className="text-muted-foreground">{UI_STRINGS.featDescriptionLabel}</strong>{' '}
+          <div>
+            <strong>{UI_STRINGS.featDescriptionLabel}</strong>{' '}
             {descriptionContent && descriptionContent.trim() !== "" ? (
               <span dangerouslySetInnerHTML={{ __html: descriptionContent }} />
             ) : (
@@ -395,34 +406,30 @@ const FeatsFormSectionComponent = ({
             )}
           </div>
 
-          {/* Benefit Section */}
-          <div className="text-xs text-muted-foreground whitespace-normal">
-            <strong className="text-muted-foreground">{UI_STRINGS.featBenefitLabel}</strong>{' '}
-            {benefitContent && benefitContent.trim() !== "" ? (
-              <span dangerouslySetInnerHTML={{ __html: benefitContent }} />
+          <div>
+            <strong>{UI_STRINGS.featBenefitLabel}</strong>{' '}
+            {finalBenefitText && finalBenefitText.trim() !== "" ? (
+              <span dangerouslySetInnerHTML={{ __html: finalBenefitText }} />
             ) : (
               <span>{UI_STRINGS.featBenefitNoneLabel}</span>
             )}
           </div>
 
-          {/* Prerequisites Section */}
-          <div className="text-xs text-muted-foreground whitespace-normal">
-            <strong className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel}</strong>{' '}
-            {prereqMessages.length > 0 ? (
-              prereqMessages.map((msg, idx, arr) => (
-                <React.Fragment key={idx}>
-                  <span className={cn(!msg.isMet ? 'text-destructive' : 'text-muted-foreground')} dangerouslySetInnerHTML={{ __html: msg.text }} />
-                  {idx < arr.length - 1 && ', '}
-                </React.Fragment>
-              ))
+          <div>
+            <strong>{UI_STRINGS.featPrerequisitesLabel}</strong>{' '}
+            {prereqMessages.length > 0 || specialPrereqText ? (
+              <>
+                {prereqMessages.map((msg, idx, arr) => (
+                  <React.Fragment key={idx}>
+                    <span className={cn(!msg.isMet ? 'text-destructive' : 'text-muted-foreground')} dangerouslySetInnerHTML={{ __html: msg.text }} />
+                    {idx < arr.length - 1 && ', '}
+                  </React.Fragment>
+                ))}
+                {prereqMessages.length > 0 && specialPrereqText && ', '}
+                {specialPrereqText && <span dangerouslySetInnerHTML={{ __html: specialPrereqText }} />}
+              </>
             ) : (
               <span>{UI_STRINGS.featPrerequisitesNoneLabel}</span>
-            )}
-            {definition.prerequisites?.special && (
-              <>
-                {prereqMessages.length > 0 && ', '}
-                <span dangerouslySetInnerHTML={{ __html: (typeof definition.prerequisites.special === 'string' ? definition.prerequisites.special : getLocalizedString(definition.prerequisites.special, currentLang)) }} />
-              </>
             )}
           </div>
 
@@ -455,7 +462,7 @@ const FeatsFormSectionComponent = ({
         </div>
       </div>
     );
-  }, [translationsLoading, translations, i18nContext.language, allAvailableFeatDefinitions, characterForPrereqCheck, allPredefinedSkillDefinitions, allCustomSkillDefinitions, getFeatSource, handleOpenEditDialog, handleRemoveChosenFeatInstance, handleOpenEditSpecializationDialog]);
+  }, [translationsLoading, translations, language, allAvailableFeatDefinitions, characterForPrereqCheck, allPredefinedSkillDefinitions, allCustomSkillDefinitions, getFeatSource, handleOpenEditDialog, handleRemoveChosenFeatInstance, handleOpenEditSpecializationDialog]);
 
 
   if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS) {
@@ -490,7 +497,7 @@ const FeatsFormSectionComponent = ({
           </div>
         </CardHeader>
         <CardContent className="flex flex-col">
-          <div className="mb-3 p-3 border rounded-md bg-muted/30">
+        <div className="mb-3 p-3 border rounded-md bg-muted/30">
             <div className="flex justify-between items-center">
               <p className="text-sm font-medium">
                 {UI_STRINGS.featsPanelFeatsAvailableLabel} <span className="text-lg font-bold text-primary">{availableFeatSlots}</span>
@@ -506,13 +513,13 @@ const FeatsFormSectionComponent = ({
                 {UI_STRINGS.featsPanelBreakdownBaseLabel}{'\u00A0'}<Badge variant="outline">{featSlotsBreakdown.base}</Badge>
                 {featSlotsBreakdown.racial > 0 && (
                     <>
-                    {' + '}{UI_STRINGS.featsPanelBreakdownRacialLabel}{'\u00A0'}<Badge variant="outline">{featSlotsBreakdown.racial}</Badge>
+                    {' + '}{UI_STRINGS.featsPanelBreakdownRacialLabel || "Racial Bonus"}{'\u00A0'}<Badge variant="outline">{featSlotsBreakdown.racial}</Badge>
                     </>
                 )}
                 {featSlotsBreakdown.classBonusDetails && featSlotsBreakdown.classBonusDetails.length > 0 && (
                     featSlotsBreakdown.classBonusDetails.map(detail => (
                         <React.Fragment key={`${detail.category}-${detail.sourceFeatLabel || 'general'}`}>
-                        {' + '}{detail.sourceFeatLabel || detail.category}{'\u00A0'}<Badge variant="outline">{detail.count}</Badge>
+                        {' + '}{(detail.sourceFeatLabel && typeof detail.sourceFeatLabel === 'object' ? getLocalizedString(detail.sourceFeatLabel, language) : detail.sourceFeatLabel) || detail.category}{'\u00A0'}<Badge variant="outline">{detail.count}</Badge>
                         </React.Fragment>
                     ))
                 )}
