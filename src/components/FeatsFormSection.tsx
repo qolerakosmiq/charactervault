@@ -439,19 +439,20 @@ const FeatsFormSectionComponent = ({
               </p>
             </div>
              <p className="text-sm text-muted-foreground mt-1">
-              {UI_STRINGS.featsPanelBreakdownBaseLabel} <Badge variant="outline">{featSlotsBreakdown.base}</Badge>
+              {UI_STRINGS.featsPanelBreakdownBaseLabel}{'\u00A0'}<Badge variant="outline">{featSlotsBreakdown.base}</Badge>
               {featSlotsBreakdown.racial > 0 && (
                 <>
-                  {' + '} {UI_STRINGS.featsPanelBreakdownRacialLabel} <Badge variant="outline">{featSlotsBreakdown.racial}</Badge>
+                  {' + '}{UI_STRINGS.featsPanelBreakdownRacialLabel}{'\u00A0'}<Badge variant="outline">{featSlotsBreakdown.racial}</Badge>
                 </>
               )}
               {featSlotsBreakdown.classBonusDetails && featSlotsBreakdown.classBonusDetails.length > 0 && (
                 featSlotsBreakdown.classBonusDetails.map(detail => (
                     <React.Fragment key={`${detail.category}-${detail.sourceFeatLabel || 'general'}`}>
-                    {' + '} {detail.sourceFeatLabel || detail.category} <Badge variant="outline">{detail.count}</Badge>
+                    {' + '}{detail.sourceFeatLabel || detail.category}{'\u00A0'}<Badge variant="outline">{detail.count}</Badge>
                     </React.Fragment>
                 ))
               )}
+              {' = '}<span className="font-bold text-primary">{availableFeatSlots}</span>
             </p>
           </div>
 
@@ -538,3 +539,5 @@ FeatsFormSectionComponent.displayName = "FeatsFormSectionComponent";
 export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
 
 
+
+    
