@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -211,6 +212,16 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     return [...predefined, ...custom].sort((a,b) => (a.label || '').localeCompare(b.label || ''));
   }, [translationsLoading, translations, globalCustomSkillDefinitions]);
 
+  const allItemDefinitions = React.useMemo(() => {
+    if (translationsLoading || !translations) return [];
+    const items: ItemDefinition[] = [];
+    if (translations.ITEM_DEFINITIONS_WEAPONS) items.push(...translations.ITEM_DEFINITIONS_WEAPONS);
+    if (translations.ITEM_DEFINITIONS_ARMOR) items.push(...translations.ITEM_DEFINITIONS_ARMOR);
+    if (translations.ITEM_DEFINITIONS_SHIELDS) items.push(...translations.ITEM_DEFINITIONS_SHIELDS);
+    if (translations.ITEM_DEFINITIONS_MAGIC_ITEMS) items.push(...translations.ITEM_DEFINITIONS_MAGIC_ITEMS);
+    return items;
+  }, [translations, translationsLoading]);
+
 
   React.useEffect(() => {
     if (!isClient || translationsLoading || !translations || !translations.UI_STRINGS) return;
@@ -252,7 +263,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     }
     initialCharData.sizeModifierAttack = getSizeModifierAttack(initialCharData.size, SIZES);
 
-    const tempAggFeats = calculateFeatEffects(initialCharData, allAvailableFeatDefinitions, translations);
+    const tempAggFeats = calculateFeatEffects(initialCharData, allAvailableFeatDefinitions, allItemDefinitions, translations);
     const existingUserDrInstances = initialCharData.damageReduction?.filter(dr => !dr.isGranted) || [];
     let finalDrArray: DamageReductionInstance[] = [...existingUserDrInstances];
 
@@ -265,7 +276,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
                         id: `granted-dr-${drEffect.sourceFeat?.toString().toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID().substring(0,4)}`,
                         value: drValue,
                         type: drEffect.drType,
-                        rule: 'bypassed-by-type',
+                        rule: 'bypassed-by-type', // Assuming default rule for feat-granted DR
                         isGranted: true,
                         source: drEffect.sourceFeat || 'Granted Feat'
                     });
@@ -276,7 +287,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     const uniqueDrMap = new Map<string, DamageReductionInstance>();
     finalDrArray.forEach(dr => {
         const key = `${dr.source}-${dr.value}-${dr.type}-${dr.rule}`;
-        if (!uniqueDrMap.has(key) || dr.isGranted) {
+        if (!uniqueDrMap.has(key) || dr.isGranted) { // Always keep granted, overwrite user if same key as granted
             uniqueDrMap.set(key, dr);
         }
     });
@@ -286,7 +297,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
   }, [
     isClient, translationsLoading, translations, globalCustomFeatDefinitionsFromStore,
-    globalCustomSkillDefinitionsFromStore, allAvailableFeatDefinitions,
+    globalCustomSkillDefinitionsFromStore, allAvailableFeatDefinitions, allItemDefinitions, // Added allItemDefinitions
     allAvailableSkillDefinitionsForDisplay, globalCustomSkillDefinitions
   ]);
 
@@ -322,13 +333,13 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
 
   React.useEffect(() => {
-    if (character && translations && allAvailableFeatDefinitions.length > 0 && translations.UI_STRINGS) {
-      const aggFeats = calculateFeatEffects(character, allAvailableFeatDefinitions, translations);
-      setAggregatedFeatEffects(aggFeats);
+    if (character && translations && allAvailableFeatDefinitions.length > 0 && translations.UI_STRINGS && allItemDefinitions.length > 0) { // Check allItemDefinitions
+      const aggFeatsAndItems = calculateFeatEffects(character, allAvailableFeatDefinitions, allItemDefinitions, translations); // Pass allItemDefinitions
+      setAggregatedFeatEffects(aggFeatsAndItems);
 
       const detailedScores = calculateDetailedAbilityScores(
         character,
-        aggFeats,
+        aggFeatsAndItems, // Use combined effects for detailed scores
         translations.DND_RACES,
         translations.DND_RACE_ABILITY_MODIFIERS_DATA,
         translations.DND_RACE_BASE_MAX_AGE_DATA,
@@ -339,14 +350,14 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       setDetailedAbilityScores(detailedScores);
 
       const conMod = detailedScores ? calculateAbilityModifier(detailedScores.constitution.finalScore) : 0;
-      const featHpBonus = aggFeats.hpBonus || 0;
+      const featHpBonus = aggFeatsAndItems.hpBonus || 0; // Use combined effects
       const newMaxHp = (character.baseMaxHp || 0) + conMod + (character.customMaxHpModifier || 0) + featHpBonus;
 
       const existingUserDrInstances = character.damageReduction?.filter(dr => !dr.isGranted) || [];
       let finalDrArray: DamageReductionInstance[] = [...existingUserDrInstances];
 
-      if (aggFeats.damageReductions) {
-          aggFeats.damageReductions.forEach(drEffect => {
+      if (aggFeatsAndItems.damageReductions) { // Use combined effects
+          aggFeatsAndItems.damageReductions.forEach(drEffect => {
               if (drEffect.isActive) {
                   const drValue = typeof drEffect.value === 'number' ? drEffect.value : 0;
                   if (drValue > 0) {
@@ -354,9 +365,9 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
                           id: `granted-dr-${drEffect.sourceFeat?.toString().toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID().substring(0,4)}`,
                           value: drValue,
                           type: drEffect.drType,
-                          rule: 'bypassed-by-type',
+                          rule: 'bypassed-by-type', // Assuming default rule
                           isGranted: true,
-                          source: drEffect.sourceFeat || 'Granted Feat'
+                          source: drEffect.sourceFeat || 'Granted Feat/Item'
                       });
                   }
               }
@@ -380,7 +391,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         });
       }
     }
-  }, [character, translations, allAvailableFeatDefinitions]);
+  }, [character, translations, allAvailableFeatDefinitions, allItemDefinitions]); // Added allItemDefinitions
 
 
   const actualAbilityScoresForSavesAndSkills = React.useMemo(() => {
@@ -996,16 +1007,6 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     };
   }, [character, allAvailableFeatDefinitions]);
 
-  const allItemsForQuickEquip = React.useMemo(() => {
-    if (translationsLoading || !translations) return [];
-    return [
-      ...(translations.ITEM_DEFINITIONS_WEAPONS || []),
-      ...(translations.ITEM_DEFINITIONS_ARMOR || []),
-      ...(translations.ITEM_DEFINITIONS_SHIELDS || []),
-      ...(translations.ITEM_DEFINITIONS_MAGIC_ITEMS || []),
-    ];
-  }, [translations, translationsLoading]);
-
   const getCompatibleItemsForSlot = React.useCallback((slot: GearSlot, allItems: ItemDefinition[]): ItemDefinition[] => {
     if (!translations) return [];
     if (!slot.tags || slot.tags.length === 0) {
@@ -1049,7 +1050,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         return newCharacter;
       }
 
-      const itemDefToEquip = allItemsForQuickEquip.find(def => def.definitionId === itemDefinitionId);
+      const itemDefToEquip = allItemDefinitions.find(def => def.definitionId === itemDefinitionId);
       if (!itemDefToEquip) return prevCharacter;
 
       let instanceToEquip = newCharacter.inventory.find(
@@ -1086,7 +1087,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           const twoHandInstanceId = newCharacter.equippedGear[twoHandSlotId];
           if (twoHandInstanceId) {
                const twoHandItemInstance = newCharacter.inventory.find(i => i.instanceId === twoHandInstanceId);
-               const twoHandItemDef = twoHandItemInstance ? allItemsForQuickEquip.find(def => def.definitionId === twoHandItemInstance.definitionId) : undefined;
+               const twoHandItemDef = twoHandItemInstance ? allItemDefinitions.find(def => def.definitionId === twoHandItemInstance.definitionId) : undefined;
                if (twoHandItemDef?.itemType === 'weapon' && twoHandItemDef.isTwoHandedWeapon) {
                    newCharacter.equippedGear[twoHandSlotId] = undefined;
                }
@@ -1094,10 +1095,21 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       }
       return newCharacter;
     });
-  }, [allItemsForQuickEquip, translations]);
+  }, [allItemDefinitions, translations]);
 
 
-  if (translationsLoading || !character || !translations || !translations.UI_STRINGS || !detailedAbilityScores || !aggregatedFeatEffects || !coreInfoData) {
+  if (
+    translationsLoading ||
+    !character ||
+    !translations ||
+    !translations.UI_STRINGS ||
+    !translations.DAMAGE_REDUCTION_TYPES || // Added this check
+    !translations.DAMAGE_REDUCTION_RULES_OPTIONS || // Added this check
+    !detailedAbilityScores ||
+    !aggregatedFeatEffects ||
+    !coreInfoData ||
+    allItemDefinitions.length === 0
+  ) {
     return (
       <div className="container mx-auto px-4 py-8 space-y-8">
         <div className="flex justify-center items-center py-10 min-h-[50vh]">
@@ -1188,9 +1200,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           </div>
         </div>
 
-        {resistancesData && (
+        {resistancesData && aggregatedFeatEffects && ( // Ensure aggregatedFeatEffects is passed
           <ResistancesPanel
             characterData={resistancesData}
+            aggregatedFeatEffects={aggregatedFeatEffects} // Pass it here
             onResistanceChange={handleResistanceChange}
             onDamageReductionChange={handleDamageReductionChange}
             onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
@@ -1281,7 +1294,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           />
         )}
 
-        {character && translations?.GEAR_SLOTS && allItemsForQuickEquip.length > 0 && (
+        {character && translations?.GEAR_SLOTS && allItemDefinitions.length > 0 && (
           <Card className="mt-8">
             <CardHeader>
               <CardTitle className="font-serif text-xl">Quick Equip (Testing Panel)</CardTitle>
@@ -1289,10 +1302,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {translations.GEAR_SLOTS.map((slot) => {
-                const compatibleItems = getCompatibleItemsForSlot(slot, allItemsForQuickEquip);
+                const compatibleItems = getCompatibleItemsForSlot(slot, allItemDefinitions);
                 const equippedInstanceId = character.equippedGear?.[slot.id];
                 const equippedInstance = equippedInstanceId ? character.inventory.find(inst => inst.instanceId === equippedInstanceId) : undefined;
-                const equippedItemDef = equippedInstance ? allItemsForQuickEquip.find(def => def.definitionId === equippedInstance.definitionId) : undefined;
+                const equippedItemDef = equippedInstance ? allItemDefinitions.find(def => def.definitionId === equippedInstance.definitionId) : undefined;
 
                 return (
                   <div key={slot.id} className="space-y-1">
@@ -1376,3 +1389,4 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
+
