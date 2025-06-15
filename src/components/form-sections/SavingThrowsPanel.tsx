@@ -3,9 +3,8 @@
 
 import *as React from 'react';
 import type { AbilityScores, SavingThrows, SavingThrowType, SingleSavingThrow, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects, GenericBreakdownItem } from '@/types/character';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
-import { Zap, Loader2, Info, Dices, Lock, Unlock } from 'lucide-react';
+import { Zap, Loader2, Info, Dices } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
@@ -17,6 +16,7 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Badge } from '@/components/ui/badge';
 import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store'; 
+import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; // Added
 
 const DEBOUNCE_DELAY = 400;
 
@@ -43,8 +43,6 @@ const SavingThrowsPanelComponent = ({
   const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({ 
     rerollTwentiesForChecks: state.rerollTwentiesForChecks,
   }));
-  const [isLocked, setIsLocked] = React.useState(false);
-  const toggleLock = () => setIsLocked(prev => !prev);
 
   const debouncedTemporaryMods = {} as Record<SavingThrowType, [number, (val: number) => void]>;
 
@@ -113,25 +111,21 @@ const SavingThrowsPanelComponent = ({
 
   if (translationsLoading || !translations || !aggregatedFeatEffects) {
     return (
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div className="flex items-center space-x-3">
-              <Zap className="h-8 w-8 text-primary" />
-              <Skeleton className="h-7 w-1/2" />
-            </div>
-            <Skeleton className="h-8 w-8" />
-          </div>
-        </CardHeader>
-        <CardContent className="pt-4">
+      <LockablePanelWrapper
+        title={translations?.UI_STRINGS.savingThrowsPanelTitle || "Saving Throws"}
+        icon={Zap}
+        initialLockedState={false}
+        cardContentClassName="pt-4"
+      >
+        {() => (
           <div className="flex justify-center items-center py-10">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <p className="ml-3 text-muted-foreground">
               {translations?.UI_STRINGS.savingThrowsPanelLoading || "Loading saving throw details..."}
             </p>
           </div>
-        </CardContent>
-      </Card>
+        )}
+      </LockablePanelWrapper>
     );
   }
 
@@ -148,13 +142,14 @@ const SavingThrowsPanelComponent = ({
         calculatedTotalMiscBonusValue: number, 
         totalCalculatedValue: number,
         saveType?: SavingThrowType,
-        setLocalTemporaryMod?: (val: number) => void
+        setLocalTemporaryMod?: (val: number) => void,
+        panelIsLocked?: boolean
     ) => React.ReactNode;
     rowKey: string;
   }> = [
     {
       labelKey: "savingThrowsRowLabelTotal",
-      getValue: (localTemporaryMod, baseSave, abilityMod, calculatedTotalMiscBonus, totalCalculated, saveType) => (
+      getValue: (localTemporaryMod, baseSave, abilityMod, calculatedTotalMiscBonus, totalCalculated, saveType, setLocalTemporaryMod, panelIsLocked) => (
         <div className="flex items-center justify-center">
             <span className={cn("text-lg font-bold", totalCalculated >= 0 ? "text-accent" : "text-destructive")}>
               {totalCalculated >= 0 ? '+' : ''}{totalCalculated}
@@ -168,6 +163,7 @@ const SavingThrowsPanelComponent = ({
                   className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
                   onClick={() => onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType: saveType })}
                   aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel || "Info for {saveTypeLabel} Save").replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType)}
+                  disabled={panelIsLocked}
                 >
                   <Info className="h-4 w-4" />
                 </Button>
@@ -178,6 +174,7 @@ const SavingThrowsPanelComponent = ({
                   className="h-6 w-6 text-muted-foreground hover:text-primary"
                   onClick={() => handleOpenSavingThrowRollDialog(saveType)}
                   aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType)}
+                  disabled={panelIsLocked}
                 >
                   <Dices className="h-4 w-4" />
                 </Button>
@@ -215,7 +212,7 @@ const SavingThrowsPanelComponent = ({
     },
     {
       labelKey: "savingThrowsRowLabelTemporaryModifier",
-      getValue: (localTemporaryMod, baseSave, abilityMod, calculatedTotalMiscBonus, totalCalculated, saveType?: SavingThrowType, setLocalTemporaryMod?: (val: number) => void) => (
+      getValue: (localTemporaryMod, baseSave, abilityMod, calculatedTotalMiscBonus, totalCalculated, saveType?: SavingThrowType, setLocalTemporaryMod?: (val: number) => void, panelIsLocked?: boolean) => (
         <div className="flex justify-center">
           <NumberSpinnerInput
             value={localTemporaryMod}
@@ -225,6 +222,7 @@ const SavingThrowsPanelComponent = ({
             inputClassName="w-16 h-8 text-sm"
             buttonSize="icon"
             buttonClassName="h-8 w-8"
+            disabled={panelIsLocked}
           />
         </div>
       ),
@@ -234,83 +232,65 @@ const SavingThrowsPanelComponent = ({
 
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <div className="flex items-center space-x-3">
-            <Zap className="h-8 w-8 text-primary" />
-            <CardTitle className="text-2xl font-serif">{UI_STRINGS.savingThrowsPanelTitle || "Saving Throws"}</CardTitle>
-          </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "h-7 w-7 shrink-0 p-1.5", 
-              isLocked
-                ? "text-muted-foreground hover:text-foreground"
-                : "bg-accent text-accent-foreground hover:bg-accent/90"
-            )}
-            onClick={toggleLock}
-            aria-pressed={!isLocked}
-            aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelUnlocked : UI_STRINGS.lockButtonAriaLabelLocked}
-          >
-            {isLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
-          <table className="w-full min-w-[400px]">
-            <thead>
-              <tr className="border-b">
-                <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground w-[100px]"></th>
-                {SAVE_TYPES.map((saveType) => (
-                  <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-foreground capitalize">
-                    {SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {dataRows.map((dataRow) => {
-                const rowLabel = UI_STRINGS[dataRow.labelKey] || dataRow.labelKey.replace('savingThrowsRowLabel', '');
-                return (
-                  <tr key={dataRow.rowKey} className="border-b last:border-b-0 transition-colors hover:bg-muted/10">
-                    <td className="py-3 px-1 text-left text-sm font-medium text-muted-foreground align-middle whitespace-nowrap">
-                      {rowLabel}
-                    </td>
-                    {SAVE_TYPES.map((saveType) => {
-                      const [localTemporaryMod, setLocalTemporaryMod] = debouncedTemporaryMods[saveType];
-                      const baseSaveValue = calculatedBaseSaves[saveType];
-                      const abilityKey = SAVING_THROW_ABILITIES[saveType];
-                      const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
-                      const calculatedTotalMiscBonusForSave = calculateCalculatedTotalMiscBonusForSave(saveType);
-                      const totalSaveCalculatedValue = baseSaveValue + abilityModifier + calculatedTotalMiscBonusForSave + localTemporaryMod;
+    <LockablePanelWrapper
+      title={UI_STRINGS.savingThrowsPanelTitle || "Saving Throws"}
+      icon={Zap}
+      initialLockedState={false}
+      cardContentClassName="space-y-2"
+    >
+      {({ isLocked: panelIsLocked }) => (
+        <>
+          <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
+            <table className="w-full min-w-[400px]">
+              <thead>
+                <tr className="border-b">
+                  <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground w-[100px]"></th>
+                  {SAVE_TYPES.map((saveType) => (
+                    <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-foreground capitalize">
+                      {SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {dataRows.map((dataRow) => {
+                  const rowLabel = UI_STRINGS[dataRow.labelKey] || dataRow.labelKey.replace('savingThrowsRowLabel', '');
+                  return (
+                    <tr key={dataRow.rowKey} className="border-b last:border-b-0 transition-colors hover:bg-muted/10">
+                      <td className="py-3 px-1 text-left text-sm font-medium text-muted-foreground align-middle whitespace-nowrap">
+                        {rowLabel}
+                      </td>
+                      {SAVE_TYPES.map((saveType) => {
+                        const [localTemporaryMod, setLocalTemporaryMod] = debouncedTemporaryMods[saveType];
+                        const baseSaveValue = calculatedBaseSaves[saveType];
+                        const abilityKey = SAVING_THROW_ABILITIES[saveType];
+                        const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
+                        const calculatedTotalMiscBonusForSave = calculateCalculatedTotalMiscBonusForSave(saveType);
+                        const totalSaveCalculatedValue = baseSaveValue + abilityModifier + calculatedTotalMiscBonusForSave + localTemporaryMod;
 
-                      return (
-                        <td key={`${saveType}-${dataRow.rowKey}`} className="py-3 px-1 text-center text-sm text-foreground align-middle">
-                          {dataRow.getValue(localTemporaryMod, baseSaveValue, abilityModifier, calculatedTotalMiscBonusForSave, totalSaveCalculatedValue, saveType, setLocalTemporaryMod)}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        <p className="text-sm text-muted-foreground pt-2">
-          <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_prefix }} />
-          <Badge variant="outline">{UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}</Badge>
-          <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_suffix }}/>
-        </p>
-      </CardContent>
-    </Card>
+                        return (
+                          <td key={`${saveType}-${dataRow.rowKey}`} className="py-3 px-1 text-center text-sm text-foreground align-middle">
+                            {dataRow.getValue(localTemporaryMod, baseSaveValue, abilityModifier, calculatedTotalMiscBonusForSave, totalSaveCalculatedValue, saveType, setLocalTemporaryMod, panelIsLocked)}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-sm text-muted-foreground pt-2">
+            <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_prefix }} />
+            <Badge variant="outline">{UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}</Badge>
+            <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_suffix }}/>
+          </p>
+        </>
+      )}
+    </LockablePanelWrapper>
   );
 };
 
 SavingThrowsPanelComponent.displayName = 'SavingThrowsPanelComponent';
 export const SavingThrowsPanel = React.memo(SavingThrowsPanelComponent);
 
-    

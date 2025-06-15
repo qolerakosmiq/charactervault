@@ -4,7 +4,7 @@
 import *as React from 'react';
 import type { Character, InfoDialogContentType, AggregatedFeatEffects, ItemDefinition, ItemInstance, GearSlotId } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Shield, Info, Loader2, Lock, Unlock } from 'lucide-react';
+import { Shield, Info, Loader2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { getAbilityModifierByName, getSizeModifierAC } from '@/lib/dnd-utils';
@@ -18,7 +18,7 @@ import { Badge } from '@/components/ui/badge';
 import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
-
+import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; // Added
 
 const DEBOUNCE_DELAY = 400;
 
@@ -31,8 +31,6 @@ export interface ArmorClassPanelProps {
 
 const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) => {
   const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
-  const [isLocked, setIsLocked] = React.useState(false);
-  const toggleLock = () => setIsLocked(prev => !prev);
 
   const handleUpdateCallback = React.useCallback((fieldName: keyof Pick<Character, 'acMiscModifier'>) => (value: number) => {
     if (onCharacterUpdate) {
@@ -96,24 +94,21 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
 
   if (translationsLoading || !translations || !character || !aggregatedFeatEffects) {
     return (
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div className="flex items-center space-x-3">
-              <Shield className="h-8 w-8 text-primary" />
-              <CardTitle className="text-2xl font-serif">{translations?.UI_STRINGS.armorClassPanelTitle || "Armor Class"}</CardTitle>
-            </div>
-            <Skeleton className="h-8 w-8" />
-          </div>
-          <CardDescription>{translations?.UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <LockablePanelWrapper
+        title={translations?.UI_STRINGS.armorClassPanelTitle || "Armor Class"}
+        description={translations?.UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}
+        icon={Shield}
+        initialLockedState={false}
+      >
+        {() => (
+           <div className="space-y-4">
             <div className="flex justify-center items-center py-10">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.armorClassPanelLoading || "Loading AC details..."}</p>
             </div>
-        </CardContent>
-      </Card>
+          </div>
+        )}
+      </LockablePanelWrapper>
     );
   }
 
@@ -171,42 +166,21 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
 
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div className="flex items-center space-x-3">
-              <Shield className="h-8 w-8 text-primary" />
-              <div>
-                <CardTitle className="text-2xl font-serif">{UI_STRINGS.armorClassPanelTitle || "Armor Class"}</CardTitle>
-                <CardDescription>{UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}</CardDescription>
-              </div>
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "h-7 w-7 shrink-0 p-1.5", 
-                isLocked
-                  ? "text-muted-foreground hover:text-foreground"
-                  : "bg-accent text-accent-foreground hover:bg-accent/90"
-              )}
-              onClick={toggleLock}
-              aria-pressed={!isLocked}
-              aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelUnlocked : UI_STRINGS.lockButtonAriaLabelLocked}
-            >
-              {isLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
+    <LockablePanelWrapper
+      title={UI_STRINGS.armorClassPanelTitle || "Armor Class"}
+      description={UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}
+      icon={Shield}
+      initialLockedState={false}
+      cardContentClassName="space-y-4"
+    >
+      {({ isLocked: panelIsLocked }) => (
+        <>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-center">
             <div className="p-2 border rounded-md bg-muted/10">
               <Label htmlFor="normal-ac-display" className="text-sm font-medium">{UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
               <div className="flex items-center justify-center">
                 <p id="normal-ac-display" className="text-xl font-bold text-accent">{normalAC}</p>
-                <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')} disabled={!onOpenAcBreakdownDialog}>
+                <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')} disabled={!onOpenAcBreakdownDialog || panelIsLocked}>
                   <Info className="h-4 w-4" />
                 </Button>
               </div>
@@ -215,7 +189,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
               <Label htmlFor="touch-ac-display" className="text-sm font-medium">{UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
               <div className="flex items-center justify-center">
                 <p id="touch-ac-display" className="text-xl font-bold text-accent">{touchAC}</p>
-                <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')} disabled={!onOpenAcBreakdownDialog}>
+                <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')} disabled={!onOpenAcBreakdownDialog || panelIsLocked}>
                   <Info className="h-4 w-4" />
                 </Button>
               </div>
@@ -224,7 +198,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
               <Label htmlFor="flat-footed-ac-display" className="text-sm font-medium">{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
               <div className="flex items-center justify-center">
                 <p id="flat-footed-ac-display" className="text-xl font-bold text-accent">{flatFootedAC}</p>
-                <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Flat-Footed')} disabled={!onOpenAcBreakdownDialog}>
+                <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Flat-Footed')} disabled={!onOpenAcBreakdownDialog || panelIsLocked}>
                   <Info className="h-4 w-4" />
                 </Button>
               </div>
@@ -241,7 +215,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
               id="temporary-ac-modifier-input"
               value={localTemporaryAcModifier}
               onChange={setLocalTemporaryAcModifier}
-              disabled={!onCharacterUpdate}
+              disabled={!onCharacterUpdate || panelIsLocked}
               min={-20}
               max={20}
               inputClassName="w-20 h-9 text-base"
@@ -253,12 +227,10 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
             <Badge variant="outline">{UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}</Badge>
             <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.armorClassPanelTempModInfoNote_suffix }} />
           </p>
-        </CardContent>
-      </Card>
-    </>
+        </>
+      )}
+    </LockablePanelWrapper>
   );
 };
 ArmorClassPanelComponent.displayName = 'ArmorClassPanelComponent';
 export const ArmorClassPanel = React.memo(ArmorClassPanelComponent);
-
-    

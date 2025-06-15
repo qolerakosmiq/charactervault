@@ -5,8 +5,7 @@ import *as React from 'react';
 import type { AbilityName, AbilityScores, DetailedAbilityScores, Character, GenericBreakdownItem, DndClassId } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dices, Info, Calculator, Loader2, Lock, Unlock } from 'lucide-react';
+import { Dices, Info, Calculator, Loader2 } from 'lucide-react';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -19,6 +18,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { useToast } from '@/hooks/use-toast';
+import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; // Added
 
 const DEBOUNCE_DELAY = 400; // ms
 
@@ -48,8 +48,6 @@ const CharacterFormAbilityScoresSectionComponent = ({
   const [isRollAbilityDialogOpen, setIsRollAbilityDialogOpen] = React.useState(false);
   const [rollAbilityDialogData, setRollAbilityDialogData] = React.useState<Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'> | null>(null);
   const { toast } = useToast();
-  const [isLocked, setIsLocked] = React.useState(false);
-  const toggleLock = () => setIsLocked(prev => !prev);
 
   const { translations, isLoading: translationsLoading } = useI18n();
 
@@ -129,21 +127,27 @@ const CharacterFormAbilityScoresSectionComponent = ({
   const handleAbilityRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number) => {
   }, []);
 
+  const headerActions = (isPanelLocked: boolean) => ( // Modified to accept isPanelLocked
+    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+      <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto" disabled={isPanelLocked}>
+        <Dices className="mr-2 h-4 w-4" /> {translations?.UI_STRINGS.abilityScoresRollButton || "Roll Scores"}
+      </Button>
+      <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} className="w-full sm:w-auto" disabled={isPanelLocked}>
+        <Calculator className="mr-2 h-4 w-4" /> {translations?.UI_STRINGS.abilityScoresPointBuyButton || "Point Buy"}
+      </Button>
+    </div>
+  );
+
+
   if (translationsLoading || !translations) {
     return (
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-            <div className="flex items-center justify-between flex-grow mb-3 sm:mb-0 sm:mr-4">
-              <div className="flex items-center space-x-3">
-                <Dices className="h-8 w-8 text-primary" />
-                <Skeleton className="h-7 w-32" />
-              </div>
-              <Skeleton className="h-8 w-8" />
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-2">
+       <LockablePanelWrapper
+        title={translations?.UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}
+        icon={Dices}
+        cardContentClassName="pt-2"
+        initialLockedState={false}
+       >
+        {() => (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
             {abilityKeys.map(ability => (
               <div key={ability} className="flex flex-col items-center space-y-1.5 p-3 border rounded-md bg-card shadow-sm">
@@ -156,12 +160,8 @@ const CharacterFormAbilityScoresSectionComponent = ({
               </div>
             ))}
           </div>
-           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 justify-end">
-              <Skeleton className="h-9 w-full sm:w-28" />
-              <Skeleton className="h-9 w-full sm:w-28" />
-            </div>
-        </CardContent>
-      </Card>
+        )}
+      </LockablePanelWrapper>
     );
   }
   const { ABILITY_LABELS, UI_STRINGS } = translations;
@@ -169,137 +169,118 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start"> {/* Changed to items-start */}
-            <div className="flex items-center space-x-3 mb-3 sm:mb-0"> {/* Ensures title is on its own line effectively */}
-              <Dices className="h-8 w-8 text-primary" />
-              <CardTitle className="text-2xl font-serif">{UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}</CardTitle>
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "h-7 w-7 shrink-0 p-1.5", 
-                isLocked
-                  ? "text-muted-foreground hover:text-foreground"
-                  : "bg-accent text-accent-foreground hover:bg-accent/90"
-              )}
-              onClick={toggleLock}
-              aria-pressed={!isLocked}
-              aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelUnlocked : UI_STRINGS.lockButtonAriaLabelLocked}
-            >
-              {isLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-2">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-            {abilityKeys.map(ability => {
-              const [baseScoreValue, setBaseScoreValue] = debouncedStates[ability];
-              const [tempCustomModValue, setTempCustomModValue] = debouncedStates[`${ability}TempMod`];
+      <LockablePanelWrapper
+        title={UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}
+        icon={Dices}
+        cardContentClassName="pt-2"
+        initialLockedState={false}
+      >
+        {({ isLocked: panelIsLocked }) => (
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+              {abilityKeys.map(ability => {
+                const [baseScoreValue, setBaseScoreValue] = debouncedStates[ability];
+                const [tempCustomModValue, setTempCustomModValue] = debouncedStates[`${ability}TempMod`];
 
-              const actualScoreData = detailedAbilityScores ? detailedAbilityScores[ability] : null;
-              const displayTotalScore = actualScoreData
-                ? actualScoreData.finalScore
-                : (abilityScoresData.abilityScores[ability] || 0) +
-                  (abilityScoresData.abilityScoreTempCustomModifiers?.[ability] || 0);
+                const actualScoreData = detailedAbilityScores ? detailedAbilityScores[ability] : null;
+                const displayTotalScore = actualScoreData
+                  ? actualScoreData.finalScore
+                  : (abilityScoresData.abilityScores[ability] || 0) +
+                    (abilityScoresData.abilityScoreTempCustomModifiers?.[ability] || 0);
 
-              const displayModifier = calculateAbilityModifier(displayTotalScore);
+                const displayModifier = calculateAbilityModifier(displayTotalScore);
 
-              const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === ability);
-              const abilityDisplayName = abilityLabelInfo?.label || ability;
-              const abilityAbbr = abilityLabelInfo?.abbr || ability.substring(0,3).toUpperCase();
+                const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === ability);
+                const abilityDisplayName = abilityLabelInfo?.label || ability;
+                const abilityAbbr = abilityLabelInfo?.abbr || ability.substring(0,3).toUpperCase();
 
 
-              return (
-                <div key={ability} className="flex flex-col items-center space-y-1.5 p-3 border rounded-md bg-card shadow-sm">
-                  <Label htmlFor={`base-score-${ability}`} className="text-center text-md font-medium flex flex-col items-center">
-                    <span>{abilityAbbr}</span>
-                    <span className="text-xs text-muted-foreground">{abilityDisplayName}</span>
-                  </Label>
+                return (
+                  <div key={ability} className="flex flex-col items-center space-y-1.5 p-3 border rounded-md bg-card shadow-sm">
+                    <Label htmlFor={`base-score-${ability}`} className="text-center text-md font-medium flex flex-col items-center">
+                      <span>{abilityAbbr}</span>
+                      <span className="text-xs text-muted-foreground">{abilityDisplayName}</span>
+                    </Label>
 
-                  <div className="flex items-center justify-center space-x-1 mb-1">
-                    <span className="text-xl font-bold text-accent">{displayTotalScore}</span>
-                    <span className="text-xl text-accent font-normal">({displayModifier >= 0 ? '+' : ''}{displayModifier})</span>
+                    <div className="flex items-center justify-center space-x-1 mb-1">
+                      <span className="text-xl font-bold text-accent">{displayTotalScore}</span>
+                      <span className="text-xl text-accent font-normal">({displayModifier >= 0 ? '+' : ''}{displayModifier})</span>
 
-                    {actualScoreData && (
-                       <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5 mt-0.5"
-                        onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
-                         aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel || "Info for {abilityName} score breakdown").replace("{abilityName}", abilityDisplayName)}
-                      >
-                        <Info className="h-3.5 w-3.5" />
+                      {actualScoreData && (
+                         <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5 mt-0.5"
+                          onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
+                           aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel || "Info for {abilityName} score breakdown").replace("{abilityName}", abilityDisplayName)}
+                           disabled={panelIsLocked}
+                        >
+                          <Info className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                      <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5 mt-0.5"
+                          onClick={() => handleOpenRollDialog(ability)}
+                          aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
+                          disabled={panelIsLocked}
+                        >
+                          <Dices className="h-3.5 w-3.5" />
                       </Button>
-                    )}
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5 mt-0.5"
-                        onClick={() => handleOpenRollDialog(ability)}
-                        aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
-                      >
-                        <Dices className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
+                    </div>
 
-                  <div className="w-full space-y-0.5">
-                    <Label htmlFor={`base-score-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresBaseScoreLabel || "Base Score"}</Label>
-                    <NumberSpinnerInput
-                      id={`base-score-${ability}`}
-                      value={baseScoreValue}
-                      onChange={setBaseScoreValue}
-                      min={1}
-                      inputClassName="h-8 text-base text-center"
-                      buttonSize="icon"
-                      buttonClassName="h-8 w-8"
-                      className="w-full justify-center"
-                    />
-                  </div>
+                    <div className="w-full space-y-0.5">
+                      <Label htmlFor={`base-score-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresBaseScoreLabel || "Base Score"}</Label>
+                      <NumberSpinnerInput
+                        id={`base-score-${ability}`}
+                        value={baseScoreValue}
+                        onChange={setBaseScoreValue}
+                        min={1}
+                        inputClassName="h-8 text-base text-center"
+                        buttonSize="icon"
+                        buttonClassName="h-8 w-8"
+                        className="w-full justify-center"
+                        disabled={panelIsLocked}
+                      />
+                    </div>
 
-                  <div className="w-full space-y-0.5 pt-1">
-                    <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresTempModLabel || "Temporary Modifier"}</Label>
-                    <NumberSpinnerInput
-                      id={`temp-mod-${ability}`}
-                      value={tempCustomModValue}
-                      onChange={setTempCustomModValue}
-                      inputClassName="h-8 text-base text-center"
-                      buttonSize="icon"
-                      buttonClassName="h-8 w-8"
-                      className="w-full justify-center"
-                    />
+                    <div className="w-full space-y-0.5 pt-1">
+                      <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresTempModLabel || "Temporary Modifier"}</Label>
+                      <NumberSpinnerInput
+                        id={`temp-mod-${ability}`}
+                        value={tempCustomModValue}
+                        onChange={setTempCustomModValue}
+                        inputClassName="h-8 text-base text-center"
+                        buttonSize="icon"
+                        buttonClassName="h-8 w-8"
+                        className="w-full justify-center"
+                        disabled={panelIsLocked}
+                      />
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 justify-end">
-              <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto">
-                <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton || "Roll Scores"}
-              </Button>
-              <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} className="w-full sm:w-auto">
-                <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton || "Point Buy"}
-              </Button>
-          </div>
-          <p className="text-sm text-muted-foreground mt-4 pt-2 border-t border-border/30">
-            <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.abilityScoresNote_prefix || "<strong>Note:</strong> The " }} />
-            <Badge variant="outline">
-              {UI_STRINGS.abilityScoresNote_badge0_text || "Temporary Modifier"}
-            </Badge>
-            {UI_STRINGS.abilityScoresNote_text_after_badge0 || " field adjusts the "}
-            <Badge variant="outline">
-              {UI_STRINGS.abilityScoresNote_badge1_text || "Base Score"}
-            </Badge>
-            {UI_STRINGS.abilityScoresNote_suffix || ", not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score."}
-           </p>
-
-        </CardContent>
-      </Card>
+                );
+              })}
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 border-t border-border/30 pt-4 justify-end">
+              {headerActions(panelIsLocked)}
+            </div>
+            <p className="text-sm text-muted-foreground mt-4 pt-2 border-t border-border/30">
+              <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.abilityScoresNote_prefix || "<strong>Note:</strong> The " }} />
+              <Badge variant="outline">
+                {UI_STRINGS.abilityScoresNote_badge0_text || "Temporary Modifier"}
+              </Badge>
+              {UI_STRINGS.abilityScoresNote_text_after_badge0 || " field adjusts the "}
+              <Badge variant="outline">
+                {UI_STRINGS.abilityScoresNote_badge1_text || "Base Score"}
+              </Badge>
+              {UI_STRINGS.abilityScoresNote_suffix || ", not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score."}
+             </p>
+          </>
+        )}
+      </LockablePanelWrapper>
       <AbilityScoreRollerDialog
         isOpen={isRollerDialogOpen}
         onOpenChange={setIsRollerDialogOpen}

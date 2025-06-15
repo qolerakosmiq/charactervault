@@ -28,8 +28,7 @@ import { isAlignmentCompatibleWithDeity, isAlignmentValidForRequirement } from '
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollText, Info, Loader2, Users, Activity, BookOpen, Wand2, Heart, Lock, Unlock } from 'lucide-react';
+import { ScrollText, Info, Loader2, Users, Activity, BookOpen, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -39,6 +38,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Separator } from '@/components/ui/separator';
+import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; // Added
 
 const DEBOUNCE_DELAY = 400;
 const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__";
@@ -78,8 +78,6 @@ const CharacterFormCoreInfoSectionComponent = ({
   aggregatedFeatEffects,
 }: CharacterFormCoreInfoSectionProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
-  const [isLocked, setIsLocked] = React.useState(false);
-  const toggleLock = () => setIsLocked(prev => !prev);
 
   const [localName, setLocalName] = useDebouncedFormField(
     characterData.name || '',
@@ -366,32 +364,29 @@ const CharacterFormCoreInfoSectionComponent = ({
 
   if (translationsLoading || !translations) {
     return (
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div className="flex items-center space-x-3">
-              <ScrollText className="h-8 w-8 text-primary" />
-              <Skeleton className="h-7 w-1/3" />
-            </div>
-            <Skeleton className="h-8 w-8" />
-          </div>
-           <Skeleton className="h-4 w-3/4 mt-1" />
-        </CardHeader>
-        <CardContent className="space-y-6 pt-6">
-          {[1,2,3,4].map(i => (
-            <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-              <div className="space-y-1.5"> <Skeleton className="h-5 w-1/4 mb-1" /> <Skeleton className="h-10 w-full" /> </div>
-              <div className="space-y-1.5"> <Skeleton className="h-5 w-1/4 mb-1" /> <Skeleton className="h-10 w-full" /> </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+      <LockablePanelWrapper
+        title={translations?.UI_STRINGS.coreAttributesTitle || "Core Attributes"}
+        description={translations?.UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer."}
+        icon={ScrollText}
+        cardContentClassName="space-y-6 pt-6"
+      >
+        {() => (
+          <>
+            {[1,2,3,4].map(i => (
+              <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                <div className="space-y-1.5"> <Skeleton className="h-5 w-1/4 mb-1" /> <Skeleton className="h-10 w-full" /> </div>
+                <div className="space-y-1.5"> <Skeleton className="h-5 w-1/4 mb-1" /> <Skeleton className="h-10 w-full" /> </div>
+              </div>
+            ))}
+          </>
+        )}
+      </LockablePanelWrapper>
     );
   }
 
   const { UI_STRINGS, ALIGNMENTS } = translations;
 
-  const renderClassSpecificUI = (uiBlock: ClassSpecificUIBlock) => {
+  const renderClassSpecificUI = (uiBlock: ClassSpecificUIBlock, isLocked: boolean) => {
     const currentCharacterClassLevel = characterData.classes[0]?.level || 0;
     if (uiBlock.requiredLevel && currentCharacterClassLevel < uiBlock.requiredLevel) {
       return null;
@@ -426,6 +421,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               name="chosenCombatStyle"
               value={localChosenCombatStyle || ""}
               onValueChange={(value) => setLocalChosenCombatStyle(value as "archery" | "twoWeaponFighting")}
+              disabled={isLocked}
             >
               <SelectTrigger id="rangerCombatStyle">
                 <SelectValue placeholder={UI_STRINGS.selectRangerCombatStylePlaceholder || "Select Combat Style..."} />
@@ -471,6 +467,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   onChange={(e) => handleFavoredEnemyChange(index, e.target.value)}
                   placeholder={UI_STRINGS.favoredEnemyPlaceholder || "e.g., Orc, Goblin, Undead"}
                   className="h-9 text-sm"
+                  disabled={isLocked}
                 />
               </div>
             ))}
@@ -493,6 +490,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   onChange={(val) => handleDomainChange(0, val as DomainId)}
                   placeholder={UI_STRINGS.selectDomainPlaceholder || "Select Domain..."}
                   triggerClassName="h-9 text-sm"
+                  disabled={isLocked}
                 />
                 {selectedDomain1 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.id === selectedDomain1)?.grantedPowerDescription}</p>}
               </div>
@@ -505,6 +503,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   onChange={(val) => handleDomainChange(1, val as DomainId)}
                   placeholder={UI_STRINGS.selectDomainPlaceholder || "Select Domain..."}
                   triggerClassName="h-9 text-sm"
+                  disabled={isLocked}
                 />
                  {selectedDomain2 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.id === selectedDomain2)?.grantedPowerDescription}</p>}
               </div>
@@ -522,6 +521,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 onChange={(val) => setLocalSpecializationSchool(val as MagicSchoolId)}
                 placeholder={UI_STRINGS.selectMagicSchoolPlaceholder || "Select School..."}
                 triggerClassName="h-9 text-sm"
+                disabled={isLocked}
               />
               {localSpecializationSchool !== MAGIC_SCHOOL_NONE_OPTION_VALUE && localSpecializationSchool !== 'universal' && (
                 <p className="text-xs text-muted-foreground mt-1">
@@ -545,6 +545,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     onChange={(val) => handleProhibitedSchoolChange(0, val as MagicSchoolId)}
                     placeholder={UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School..."}
                     triggerClassName="h-9 text-sm"
+                    disabled={isLocked}
                   />
                 </div>
                   <div className="space-y-1 md:col-start-2">
@@ -556,7 +557,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     onChange={(val) => handleProhibitedSchoolChange(1, val as MagicSchoolId)}
                     placeholder={UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School..."}
                     triggerClassName="h-9 text-sm"
-                    disabled={!selectedProhibitedSchool1 || selectedProhibitedSchool1 === PROHIBITED_SCHOOL_NONE_VALUE}
+                    disabled={isLocked || !selectedProhibitedSchool1 || selectedProhibitedSchool1 === PROHIBITED_SCHOOL_NONE_VALUE}
                   />
                 </div>
                   <p className="text-xs text-muted-foreground mt-1 md:col-span-2">
@@ -568,247 +569,227 @@ const CharacterFormCoreInfoSectionComponent = ({
         return <div key={uiBlock.key} className="text-destructive">Unknown UI Block: {uiBlock.key}</div>;
     }
   };
-
+  
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <div className="flex items-center space-x-3">
-            <ScrollText className="h-8 w-8 text-primary" />
-            <div>
-              <CardTitle className="text-2xl font-serif">
-                {UI_STRINGS.coreAttributesTitle || "Core Attributes"}
-              </CardTitle>
-              <CardDescription>
-                {UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer."}
-              </CardDescription>
+    <LockablePanelWrapper
+      title={UI_STRINGS.coreAttributesTitle || "Core Attributes"}
+      description={UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer."}
+      icon={ScrollText}
+      cardContentClassName="space-y-6 pt-6"
+      initialLockedState={false}
+    >
+      {({ isLocked: panelIsLocked }) => (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            <div className="space-y-1.5">
+              <Label htmlFor="name">{UI_STRINGS.characterNameLabel || "Character Name"}</Label>
+              <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="playerName">{UI_STRINGS.playerNameLabel || "Player Name"}</Label>
+              <Input id="playerName" name="playerName" value={localPlayerName} onChange={(e) => setLocalPlayerName(e.target.value)} disabled={panelIsLocked}/>
             </div>
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "h-7 w-7 shrink-0 p-1.5",
-              isLocked
-                ? "text-muted-foreground hover:text-foreground"
-                : "bg-accent text-accent-foreground hover:bg-accent/90"
-            )}
-            onClick={toggleLock}
-            aria-pressed={!isLocked}
-            aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelUnlocked : UI_STRINGS.lockButtonAriaLabelLocked}
-          >
-            {isLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-6 pt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-          <div className="space-y-1.5">
-            <Label htmlFor="name">{UI_STRINGS.characterNameLabel || "Character Name"}</Label>
-            <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="playerName">{UI_STRINGS.playerNameLabel || "Player Name"}</Label>
-            <Input id="playerName" name="playerName" value={localPlayerName} onChange={(e) => setLocalPlayerName(e.target.value)} />
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-          <div className="space-y-1.5">
-            <Label htmlFor="race">{UI_STRINGS.raceLabel || "Race"}</Label>
-            <div className="flex items-center gap-2">
-              <div className="flex-grow">
-                <Select
-                  value={localRace}
-                  onValueChange={(value) => setLocalRace(value as DndRaceId)}
-                >
-                  <SelectTrigger id="race">
-                    <SelectValue placeholder={UI_STRINGS.selectRacePlaceholder || "Select race"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {raceSelectOptions}
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenRaceInfoDialog} disabled={!localRace}>
-                <Info className="h-5 w-5" />
-              </Button>
-            </div>
-            {isPredefinedRace && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
-               <div className="flex flex-wrap items-baseline gap-1 pt-[6px] ml-1">
-                {raceSpecialQualities.abilityEffects.map((effect) => {
-                  let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
-                  let badgeClassNameInternal = "whitespace-nowrap";
-                  if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
-                  else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
-                  else badgeClassNameInternal = cn(badgeClassNameInternal, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
-                  return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {effect.ability.substring(0, 3).toUpperCase()}{effect.change !== 0 ? '\u00A0' : ''} {effect.change > 0 ? '+' : ''} {effect.change !==0 ? effect.change : ''} </Badge> );
-                })}
-              </div>
-            )}
-          </div>
-           <div className="space-y-1.5">
-            <Label htmlFor="className">{UI_STRINGS.classLabel || "Class"}</Label>
-            <div className="flex items-center gap-2">
-              <div className="flex-grow">
-                <Select
-                  value={localClassName}
-                  onValueChange={(value) => setLocalClassName(value as DndClassId)}
-                >
-                  <SelectTrigger id="className"> <SelectValue placeholder={UI_STRINGS.selectClassPlaceholder || "Select class"} /> </SelectTrigger>
-                  <SelectContent> {classSelectOptions} </SelectContent>
-                </Select>
-              </div>
-              <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenClassInfoDialog} disabled={!localClassName} >
-                <Info className="h-5 w-5" />
-              </Button>
-            </div>
-            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-[6px] ml-1">
-              {selectedClassInfo?.hitDice && (
-                <Badge variant="secondary" className="whitespace-nowrap">
-                  <Heart fill="currentColor" className="inline h-3 w-3 mr-1.5 text-primary/70" />
-                  {UI_STRINGS.hitDiceLabel || "Hit Dice"}:{'\u00A0'}
-                  <strong className="font-bold">{selectedClassInfo.hitDice}</strong>
-                </Badge>
-              )}
-              {aggregatedFeatEffects?.grantedAbilities && aggregatedFeatEffects.grantedAbilities.map(ability => {
-                if (ability.uses && typeof ability.uses.value === 'number' && ability.uses.per) {
-                  const periodStrKey = `period${ability.uses.per.charAt(0).toUpperCase() + ability.uses.per.slice(1)}` as keyof typeof UI_STRINGS;
-                  const periodStr = UI_STRINGS[periodStrKey] || ability.uses.per;
-                  const displayString = (UI_STRINGS.abilityUsesFormat || "{abilityName}: {usesValue}/{period}")
-                    .replace("{abilityName}", ability.name as string) 
-                    .replace("{usesValue}", String(ability.uses.value))
-                    .replace("{period}", periodStr);
-
-                  return (
-                    <Badge key={ability.abilityKey} className="whitespace-nowrap bg-accent text-accent-foreground">
-                      <Activity className="inline h-3 w-3 mr-1" />
-                      {displayString}
-                    </Badge>
-                  );
-                }
-                return null;
-              })}
-            </div>
-          </div>
-        </div>
-
-        {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.map(uiBlock => (
-          <React.Fragment key={`ui-section-wrapper-${uiBlock.key}`}>
-            {renderClassSpecificUI(uiBlock)}
-          </React.Fragment>
-        ))}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-          <div className="space-y-1.5">
-            <Label htmlFor="alignment">{UI_STRINGS.alignmentLabel || "Alignment"}</Label>
-            <div className="flex items-center gap-2">
-              <div className="flex-grow">
-                <Select
-                  name="alignment"
-                  value={localAlignment}
-                  onValueChange={(value) => setLocalAlignment(value as CharacterAlignment)}
-                >
-                  <SelectTrigger id="alignment">
-                    <SelectValue placeholder={UI_STRINGS.selectAlignmentPlaceholder || "Select alignment"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableAlignments.map(align => (
-                      <SelectItem key={align.id} value={align.id}>{align.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenAlignmentInfoDialog}> <Info className="h-5 w-5" /> </Button>
-            </div>
-          </div>
-          <div className="space-y-1.5">
-              <Label htmlFor="deity">{UI_STRINGS.deityLabel || "Deity"}</Label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            <div className="space-y-1.5">
+              <Label htmlFor="race">{UI_STRINGS.raceLabel || "Race"}</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
-                  <Select value={localDeity} onValueChange={(value) => setLocalDeity(value)} >
-                    <SelectTrigger id="deity"> <SelectValue placeholder={UI_STRINGS.selectDeityPlaceholder || "Select deity"} /> </SelectTrigger>
-                    <SelectContent> {deitySelectOptions.map(opt => ( <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem> ))} </SelectContent>
+                  <Select
+                    value={localRace}
+                    onValueChange={(value) => setLocalRace(value as DndRaceId)}
+                    disabled={panelIsLocked}
+                  >
+                    <SelectTrigger id="race">
+                      <SelectValue placeholder={UI_STRINGS.selectRacePlaceholder || "Select race"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {raceSelectOptions}
+                    </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenDeityInfoDialog} disabled={!localDeity || localDeity.trim() === '' || localDeity === DEITY_NONE_OPTION_VALUE} >
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenRaceInfoDialog} disabled={!localRace || panelIsLocked}>
                   <Info className="h-5 w-5" />
                 </Button>
               </div>
+              {isPredefinedRace && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
+                 <div className="flex flex-wrap items-baseline gap-1 pt-[6px] ml-1">
+                  {raceSpecialQualities.abilityEffects.map((effect) => {
+                    let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
+                    let badgeClassNameInternal = "whitespace-nowrap";
+                    if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
+                    else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
+                    else badgeClassNameInternal = cn(badgeClassNameInternal, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
+                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {effect.ability.substring(0, 3).toUpperCase()}{effect.change !== 0 ? '\u00A0' : ''} {effect.change > 0 ? '+' : ''} {effect.change !==0 ? effect.change : ''} </Badge> );
+                  })}
+                </div>
+              )}
             </div>
-        </div>
+             <div className="space-y-1.5">
+              <Label htmlFor="className">{UI_STRINGS.classLabel || "Class"}</Label>
+              <div className="flex items-center gap-2">
+                <div className="flex-grow">
+                  <Select
+                    value={localClassName}
+                    onValueChange={(value) => setLocalClassName(value as DndClassId)}
+                    disabled={panelIsLocked}
+                  >
+                    <SelectTrigger id="className"> <SelectValue placeholder={UI_STRINGS.selectClassPlaceholder || "Select class"} /> </SelectTrigger>
+                    <SelectContent> {classSelectOptions} </SelectContent>
+                  </Select>
+                </div>
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenClassInfoDialog} disabled={!localClassName || panelIsLocked} >
+                  <Info className="h-5 w-5" />
+                </Button>
+              </div>
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-[6px] ml-1">
+                {selectedClassInfo?.hitDice && (
+                  <Badge variant="secondary" className="whitespace-nowrap">
+                    <Heart fill="currentColor" className="inline h-3 w-3 mr-1.5 text-primary/70" />
+                    {UI_STRINGS.hitDiceLabel || "Hit Dice"}:{'\u00A0'}
+                    <strong className="font-bold">{selectedClassInfo.hitDice}</strong>
+                  </Badge>
+                )}
+                {aggregatedFeatEffects?.grantedAbilities && aggregatedFeatEffects.grantedAbilities.map(ability => {
+                  if (ability.uses && typeof ability.uses.value === 'number' && ability.uses.per) {
+                    const periodStrKey = `period${ability.uses.per.charAt(0).toUpperCase() + ability.uses.per.slice(1)}` as keyof typeof UI_STRINGS;
+                    const periodStr = UI_STRINGS[periodStrKey] || ability.uses.per;
+                    const displayString = (UI_STRINGS.abilityUsesFormat || "{abilityName}: {usesValue}/{period}")
+                      .replace("{abilityName}", ability.name as string) 
+                      .replace("{usesValue}", String(ability.uses.value))
+                      .replace("{period}", periodStr);
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-          <div className="space-y-1.5">
-            <Label htmlFor="age" className="inline-block w-full text-center md:text-center">{UI_STRINGS.ageLabel || "Age"}</Label>
-            <NumberSpinnerInput
-              id="age"
-              value={localAge}
-              onChange={setLocalAge}
-              min={currentMinAgeForInput}
-              max={1000}
-              inputClassName="w-full h-10 text-base text-center"
-              buttonClassName="h-10 w-10"
-              buttonSize="icon"
-              className="justify-center"
-            />
-            {ageEffectsDetails && (ageEffectsDetails.categoryName !== 'Adult' || ageEffectsDetails.effects.length > 0) && (
-              <div className="flex flex-wrap items-baseline justify-center md:justify-start gap-1 pt-[6px] ml-1">
-                <Badge variant="secondary" className="whitespace-nowrap"> {ageEffectsDetails.categoryName} </Badge>
-                {ageEffectsDetails.effects.map((effect) => {
-                  let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
-                  let badgeClassNameInternal = "whitespace-nowrap";
-                  if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
-                  else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
-                  return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {effect.ability.substring(0, 3).toUpperCase()}{effect.change !== 0 ? '\u00A0' : ''} {effect.change > 0 ? '+' : ''} {effect.change} </Badge> );
+                    return (
+                      <Badge key={ability.abilityKey} className="whitespace-nowrap bg-accent text-accent-foreground">
+                        <Activity className="inline h-3 w-3 mr-1" />
+                        {displayString}
+                      </Badge>
+                    );
+                  }
+                  return null;
                 })}
               </div>
-            )}
-            </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="gender">{UI_STRINGS.genderLabel || "Gender"}</Label>
-            <Select
-              name="gender"
-              value={localGender || 'unspecified'}
-              onValueChange={(value) => setLocalGender(value as GenderId)}
-            >
-              <SelectTrigger id="gender">
-                <SelectValue placeholder={UI_STRINGS.selectGenderPlaceholder || "Select gender..."} />
-              </SelectTrigger>
-              <SelectContent>
-                {genderSelectOptions.map(g => (
-                  <SelectItem key={g.id} value={g.id}>{g.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="sizeCategory">{UI_STRINGS.sizeLabel || "Size Category"}</Label>
-            <Select name="sizeCategory" value={localSize} onValueChange={(value) => setLocalSize(value as CharacterSize)}>
-              <SelectTrigger id="sizeCategory"><SelectValue placeholder={UI_STRINGS.selectSizePlaceholder || "Select size category"} /></SelectTrigger>
-              <SelectContent> {sizeSelectOptions} </SelectContent>
-            </Select>
-            <div className="flex items-baseline gap-1 pt-[6px] ml-1">
-              {localSize && (() => {
-                const selectedSizeObject = translations.SIZES.find(s => s.id === localSize);
-                if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
-                  const acMod = selectedSizeObject.acModifier;
-                  let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
-                  let badgeClassNameForAc = "whitespace-nowrap";
-                  if (acMod > 0) badgeClassNameForAc = cn(badgeClassNameForAc, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
-                  else if (acMod < 0) { badgeVariantProp = "destructive"; badgeClassNameForAc = cn(badgeClassNameForAc, "hover:bg-destructive"); }
-                  return ( <Badge variant={badgeVariantProp} className={badgeClassNameForAc}> AC{'\u00A0'}{acMod >= 0 ? '+' : ''}{acMod} </Badge> );
-                } return null;
-              })()}
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+
+          {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.map(uiBlock => (
+            <React.Fragment key={`ui-section-wrapper-${uiBlock.key}`}>
+              {renderClassSpecificUI(uiBlock, panelIsLocked)}
+            </React.Fragment>
+          ))}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            <div className="space-y-1.5">
+              <Label htmlFor="alignment">{UI_STRINGS.alignmentLabel || "Alignment"}</Label>
+              <div className="flex items-center gap-2">
+                <div className="flex-grow">
+                  <Select
+                    name="alignment"
+                    value={localAlignment}
+                    onValueChange={(value) => setLocalAlignment(value as CharacterAlignment)}
+                    disabled={panelIsLocked}
+                  >
+                    <SelectTrigger id="alignment">
+                      <SelectValue placeholder={UI_STRINGS.selectAlignmentPlaceholder || "Select alignment"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableAlignments.map(align => (
+                        <SelectItem key={align.id} value={align.id}>{align.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked}> <Info className="h-5 w-5" /> </Button>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+                <Label htmlFor="deity">{UI_STRINGS.deityLabel || "Deity"}</Label>
+                <div className="flex items-center gap-2">
+                  <div className="flex-grow">
+                    <Select value={localDeity} onValueChange={(value) => setLocalDeity(value)} disabled={panelIsLocked} >
+                      <SelectTrigger id="deity"> <SelectValue placeholder={UI_STRINGS.selectDeityPlaceholder || "Select deity"} /> </SelectTrigger>
+                      <SelectContent> {deitySelectOptions.map(opt => ( <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem> ))} </SelectContent>
+                    </Select>
+                  </div>
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenDeityInfoDialog} disabled={!localDeity || localDeity.trim() === '' || localDeity === DEITY_NONE_OPTION_VALUE || panelIsLocked} >
+                    <Info className="h-5 w-5" />
+                  </Button>
+                </div>
+              </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+            <div className="space-y-1.5">
+              <Label htmlFor="age" className="inline-block w-full text-center md:text-center">{UI_STRINGS.ageLabel || "Age"}</Label>
+              <NumberSpinnerInput
+                id="age"
+                value={localAge}
+                onChange={setLocalAge}
+                min={currentMinAgeForInput}
+                max={1000}
+                inputClassName="w-full h-10 text-base text-center"
+                buttonClassName="h-10 w-10"
+                buttonSize="icon"
+                className="justify-center"
+                disabled={panelIsLocked}
+              />
+              {ageEffectsDetails && (ageEffectsDetails.categoryName !== 'Adult' || ageEffectsDetails.effects.length > 0) && (
+                <div className="flex flex-wrap items-baseline justify-center md:justify-start gap-1 pt-[6px] ml-1">
+                  <Badge variant="secondary" className="whitespace-nowrap"> {ageEffectsDetails.categoryName} </Badge>
+                  {ageEffectsDetails.effects.map((effect) => {
+                    let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
+                    let badgeClassNameInternal = "whitespace-nowrap";
+                    if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
+                    else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
+                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {effect.ability.substring(0, 3).toUpperCase()}{effect.change !== 0 ? '\u00A0' : ''} {effect.change > 0 ? '+' : ''} {effect.change} </Badge> );
+                  })}
+                </div>
+              )}
+              </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="gender">{UI_STRINGS.genderLabel || "Gender"}</Label>
+              <Select
+                name="gender"
+                value={localGender || 'unspecified'}
+                onValueChange={(value) => setLocalGender(value as GenderId)}
+                disabled={panelIsLocked}
+              >
+                <SelectTrigger id="gender">
+                  <SelectValue placeholder={UI_STRINGS.selectGenderPlaceholder || "Select gender..."} />
+                </SelectTrigger>
+                <SelectContent>
+                  {genderSelectOptions.map(g => (
+                    <SelectItem key={g.id} value={g.id}>{g.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="sizeCategory">{UI_STRINGS.sizeLabel || "Size Category"}</Label>
+              <Select name="sizeCategory" value={localSize} onValueChange={(value) => setLocalSize(value as CharacterSize)} disabled={panelIsLocked}>
+                <SelectTrigger id="sizeCategory"><SelectValue placeholder={UI_STRINGS.selectSizePlaceholder || "Select size category"} /></SelectTrigger>
+                <SelectContent> {sizeSelectOptions} </SelectContent>
+              </Select>
+              <div className="flex items-baseline gap-1 pt-[6px] ml-1">
+                {localSize && (() => {
+                  const selectedSizeObject = translations.SIZES.find(s => s.id === localSize);
+                  if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
+                    const acMod = selectedSizeObject.acModifier;
+                    let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
+                    let badgeClassNameForAc = "whitespace-nowrap";
+                    if (acMod > 0) badgeClassNameForAc = cn(badgeClassNameForAc, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
+                    else if (acMod < 0) { badgeVariantProp = "destructive"; badgeClassNameForAc = cn(badgeClassNameForAc, "hover:bg-destructive"); }
+                    return ( <Badge variant={badgeVariantProp} className={badgeClassNameForAc}> AC{'\u00A0'}{acMod >= 0 ? '+' : ''}{acMod} </Badge> );
+                  } return null;
+                })()}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </LockablePanelWrapper>
   );
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
-
-    
