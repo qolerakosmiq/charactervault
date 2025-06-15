@@ -4,16 +4,17 @@
 import *as React from 'react';
 import type {
   FeatDefinitionJsonData, CharacterFeatInstance, Character, AbilityScores, Skill as SkillType,
-  SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown, AggregatedFeatEffects, ComboboxOption, NoteEffectDetail, LocalizedString, DndClassOption
+  SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown, AggregatedFeatEffects, ComboboxOption, NoteEffectDetail, LocalizedString, DndClassOption,
+  DndRaceId, CharacterSize // Added DndRaceId, CharacterSize
 } from '@/types/character-core';
 import {
-  checkFeatPrerequisites, calculateAvailableFeats
+  checkFeatPrerequisites, calculateAvailableFeats, calculateTotalSynergyBonus, calculateRacialSkillBonus, calculateSizeSpecificSkillBonus, getRaceSkillPointsBonusPerLevel // Added getRaceSkillPointsBonusPerLevel
 } from '@/types/character';
-import type { CustomSkillDefinition } from '@/lib/definitions-store';
-import { Button } from '@/components/ui/button'; // Already here
+import type { CustomSkillDefinition, CustomSynergyRule } from '@/lib/definitions-store'; // Added CustomSynergyRule
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollText, Info, Loader2, Dices, Lock } from 'lucide-react'; // Added Lock
+import { ScrollText, Info, Loader2, Dices, Lock } from 'lucide-react';
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -25,7 +26,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import type { RollDialogProps } from '@/components/RollDialog';
 import type { GenericBreakdownItem } from '@/types/character-core';
-import type { AggregatedFeatEffects as AggFeatsType } from '@/types/character-core'; // Renamed to avoid conflict
+import type { AggregatedFeatEffects as AggFeatsType } from '@/types/character-core';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 
 
@@ -52,7 +53,7 @@ export interface SkillModifierBreakdownDetails {
   totalBonus: number;
 }
 
-interface SkillsFormSectionProps {
+export interface SkillsFormSectionProps {
   skillsData: Pick<Character, 'skills' | 'classes' | 'race' | 'size' | 'feats'>;
   actualAbilityScores: AbilityScores;
   allFeatDefinitions: (FeatDefinitionJsonData & {isCustom?: boolean})[];
