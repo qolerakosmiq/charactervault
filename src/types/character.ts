@@ -154,7 +154,7 @@ export function getRaceSpecialQualities(
   raceId: DndRaceId | '',
   DND_RACES: readonly DndRaceOption[],
   DND_RACE_ABILITY_MODIFIERS_DATA: Record<string, Partial<Record<Exclude<AbilityName, 'none'>, number>>>,
-  SKILL_DEFINITIONS: readonly {id: string; label: string; keyAbility: AbilityName | string}[],
+  SKILL_DEFINITIONS: readonly {id: string; label: string; keyAbility: AbilityName | string; description?: string}[],
   DND_FEATS_DEFINITIONS: readonly FeatDefinitionJsonData[],
   ABILITY_LABELS: readonly { id: Exclude<AbilityName, 'none'>; label: string; abbr: string }[]
 ): RaceSpecialQualities {
@@ -319,7 +319,7 @@ export function calculateAvailableFeats(
               }
               if (isActive) {
                 classBonusFeatSlotsTotal += slotEffect.count;
-                const featLabelString = featDef.label;
+                const featLabelString = featDef.label as string; // Assume label is always string post-processing
                 const key = `${slotEffect.category}-${featLabelString}`;
                 const existingDetail = classBonusDetailsMap.get(key);
                 if (existingDetail) {
@@ -393,7 +393,7 @@ export function getGrantedFeatsForCharacter(
       return;
     }
 
-    const localizedNote = getLocalizedString(rawNote, currentLang);
+    const localizedNote = rawNote ? getLocalizedString(rawNote, currentLang, undefined, `grantedFeats.${featDef.id}.note`) : undefined;
     const fullGrantedNote = localizedNote ? `${localizedNote} ${sourceContext}` : sourceContext;
 
 
@@ -421,7 +421,7 @@ export function getGrantedFeatsForCharacter(
   const raceData = DND_RACES.find(r => r.id === character.race);
   if (raceData?.grantedFeats) {
     raceData.grantedFeats.forEach(gf => {
-      addGrantedInstance(gf.featId, gf.note as LocalizedString, `(${raceData.label})`, gf.levelAcquired);
+      addGrantedInstance(gf.featId, gf.note as LocalizedString | undefined, `(${raceData.label})`, gf.levelAcquired);
     });
   }
 
@@ -435,7 +435,7 @@ export function getGrantedFeatsForCharacter(
     if (classData.grantedFeats) {
       classData.grantedFeats.forEach(gf => {
         if (gf.levelAcquired === undefined || gf.levelAcquired <= charClass.level) {
-          addGrantedInstance(gf.featId, gf.note as LocalizedString, classContext, gf.levelAcquired);
+          addGrantedInstance(gf.featId, gf.note as LocalizedString | undefined, classContext, gf.levelAcquired);
         }
       });
     }
@@ -450,7 +450,7 @@ export function getGrantedFeatsForCharacter(
       if (rangerLevel >= 2) {
         const featIdL2 = character.chosenCombatStyle === 'archery' ? 'rapid-shot' : 'two-weapon-fighting';
         const noteL2 = noteFormat.replace("{styleName}", styleName).replace("{level}", "2");
-        addGrantedInstance(featIdL2, { en: noteL2, fr: noteL2 }, classContext, 2); // Pass as LocalizedString
+        addGrantedInstance(featIdL2, { en: noteL2, fr: noteL2 }, classContext, 2);
       }
       if (rangerLevel >= 6) {
         const featIdL6 = character.chosenCombatStyle === 'archery' ? 'manyshot' : 'improved-two-weapon-fighting';
@@ -477,7 +477,8 @@ export function getGrantedFeatsForCharacter(
 
             if (domainDef.grantedPowerFeatId === "weapon-focus" && character.deity) {
               const deityDef = DND_DEITIES.find(deity => deity.id === character.deity);
-              const favoredWeaponAttr = deityDef?.attributes.find(attr => attr.key === (UI_STRINGS.favoredWeaponLabel || "Favored Weapon"));
+              const favoredWeaponAttrKey = UI_STRINGS.favoredWeaponLabel || "Favored Weapon";
+              const favoredWeaponAttr = deityDef?.attributes.find(attr => attr.key === favoredWeaponAttrKey);
               if (favoredWeaponAttr?.value) {
                 specializationDetail = favoredWeaponAttr.value;
                 specializationCategory = "weaponFocusFeats";
@@ -529,7 +530,7 @@ export function checkFeatPrerequisites(
   };
   const combinedSkillDefsForPrereq = getCombinedSkillDefsForPrereq();
 
-  const characterLevel = calculateLevelFromXp(character.experiencePoints || 0, [], 0);
+  const characterLevel = calculateLevelFromXp(character.experiencePoints || 0, [], 0); // XP table not needed if we only need current level
 
   if (prerequisites.raceId !== undefined && prerequisites.raceId !== "") {
     const raceDef = DND_RACES.find(r => r.id === prerequisites!.raceId);
@@ -625,7 +626,7 @@ export function checkFeatPrerequisites(
   }
 
   if (prerequisites.special) {
-    const specialText = getLocalizedString(prerequisites.special, uiStrings.currentLangCodeForNotesFallback || 'en');
+    const specialText = getLocalizedString(prerequisites.special, uiStrings.currentLangCodeForNotesFallback || 'en', undefined, `feats.${featDefinitionToCheck.id}.prereq.special`);
     let isMetSpecial = true;
     if (prerequisites.specialConditions && prerequisites.specialConditions.length > 0) {
       // Complex special condition logic would go here if needed
@@ -659,7 +660,7 @@ export function calculateDetailedAbilityScores(
   ABILITY_LABELS: readonly { id: Exclude<AbilityName, 'none'>; label: string; abbr: string }[]
 ): DetailedAbilityScores {
   const result: Partial<DetailedAbilityScores> = {};
-  const currentLang = 'en';
+  const currentLang = 'en'; // Assuming English for internal sourceDetail processing if UI_STRINGS not available here
   const racialQualities = getRaceSpecialQualities(character.race, DND_RACES, DND_RACE_ABILITY_MODIFIERS_DATA, [], [], ABILITY_LABELS);
   const agingDetails = getNetAgingEffects(character.race, character.age, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, ABILITY_LABELS);
   const tempCustomModifiers = character.abilityScoreTempCustomModifiers ||
@@ -686,9 +687,10 @@ export function calculateDetailedAbilityScores(
     if (aggregatedFeatEffects.abilityScoreBonuses) {
       for (const featEffect of aggregatedFeatEffects.abilityScoreBonuses) {
         if (featEffect.ability === ability && typeof featEffect.value === 'number') {
+          const sourceFeatName = featEffect.sourceFeat ? getLocalizedString(featEffect.sourceFeat, currentLang) : "Unknown Feat";
           components.push({
             sourceLabel: "Feat",
-            sourceDetail: getLocalizedString(featEffect.sourceFeat, currentLang),
+            sourceDetail: sourceFeatName,
             value: featEffect.value,
             condition: featEffect.condition,
             isActive: featEffect.isActive,
@@ -992,7 +994,7 @@ export function calculateFeatEffects(
         case "language":
           const langEffect = effectToPush as LanguageEffect & AggregatedFeatEffectBase;
           if(effectIsActive && langEffect.count && typeof langEffect.count === 'number') newAggregatedEffects.languagesGranted.count += langEffect.count;
-          if(langEffect.specific) newAggregatedEffects.languagesGranted.specific.push({languageId: langEffect.specific, note: langEffect.note, sourceFeat: sourceFeatName, condition: langEffect.condition, isActive: langEffect.isActive});
+          if(langEffect.specific) newAggregatedEffects.languagesGranted.specific.push({languageId: langEffect.specific, note: langEffect.note as string | undefined, sourceFeat: sourceFeatName, condition: langEffect.condition, isActive: langEffect.isActive});
           break;
       }
     }
@@ -1034,12 +1036,12 @@ export function calculateSpeedBreakdown(
   if (aggregatedFeatEffects?.speedBonuses) {
     aggregatedFeatEffects.speedBonuses.forEach(effect => {
       if (effect.isActive && (effect.speedType === speedType || effect.speedType === 'all')) {
-        const sourceFeatName = getLocalizedString(effect.sourceFeat, currentLang);
+        const sourceFeatName = effect.sourceFeat ? getLocalizedString(effect.sourceFeat, currentLang) : (UI_STRINGS.infoDialogFeatBonusLabel || "Feat Bonus");
         if (effect.modification === 'bonus' && typeof effect.value === 'number') {
-          components.push({ source: sourceFeatName || (UI_STRINGS.infoDialogFeatBonusLabel || "Feat Bonus"), value: effect.value });
+          components.push({ source: sourceFeatName, value: effect.value });
           currentSpeed += effect.value;
         } else if (effect.modification === 'setAbsolute' && typeof effect.value === 'number') {
-          components.push({ source: `${sourceFeatName || 'Feat'} (Set to)`, value: effect.value - currentSpeed });
+          components.push({ source: `${sourceFeatName} (Set to)`, value: effect.value - currentSpeed });
           currentSpeed = effect.value;
         } else if (effect.modification === 'penalty' && typeof effect.value === 'number') {
           components.push({ source: sourceFeatName || (UI_STRINGS.infoDialogFeatBonusLabel || "Feat Penalty"), value: -effect.value });
@@ -1051,7 +1053,7 @@ export function calculateSpeedBreakdown(
 
 
   const speedFieldKey = `${speedType}Speed` as keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>;
-  const miscModForThisSpeed = character[speedFieldKey]?.miscModifier || 0;
+  const miscModForThisSpeed = (character as any)[speedFieldKey]?.miscModifier || 0; // Type assertion
   if (miscModForThisSpeed !== 0) {
     components.push({ source: UI_STRINGS.infoDialogSpeedMiscModifierLabel || "Misc Modifier", value: miscModForThisSpeed });
     currentSpeed += miscModForThisSpeed;
@@ -1171,4 +1173,3 @@ export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
 
-    

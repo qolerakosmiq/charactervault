@@ -160,9 +160,13 @@
   "featsPanelChosenFeatsTitle": { "en": "Chosen Feats", "fr": "Dons choisis" },
   "featsPanelGrantedFeatsTitle": { "en": "Granted Feats", "fr": "Dons accordés" },
   "featsPanelNoFeatsYet": { "en": "No feats selected or granted yet.", "fr": "Aucun don sélectionné ou accordé pour le moment." },
-  "featEffectsLabel": { "en": "<b>Effects:</b>", "fr": "<b>Effets :</b>" },
+  "featDescriptionLabel": { "en": "Description:", "fr": "Description :" },
+  "featDescriptionNoneLabel": { "en": "No specific description provided.", "fr": "Aucune description spécifique fournie." },
+  "featBenefitLabel": { "en": "Benefit:", "fr": "Avantage :" },
+  "featBenefitNoneLabel": { "en": "None.", "fr": "Aucun." },
   "featPrerequisitesLabel": { "en": "Prerequisites:", "fr": "Prérequis :" },
-  "featPrerequisitesNoneLabel": { "en": "None", "fr": "Aucun" },
+  "featPrerequisitesNoneLabel": { "en": "None.", "fr": "Aucun." },
+  "featEffectsLabel": { "en": "<b>Effects:</b>", "fr": "<b>Effets :</b>" },
   "featInstanceEditAriaLabel": { "en": "Edit {featLabel}", "fr": "Modifier {featLabel}" },
   "featEditSpecializationAriaLabel": { "en": "Edit specialization for {featLabel}", "fr": "Modifier la spécialisation pour {featLabel}" },
   "featInstanceRemoveAriaLabel": { "en": "Remove feat", "fr": "Supprimer le don" },
@@ -210,5 +214,3 @@
   "toastCustomSkillNotFoundEditDesc": { "en": "The custom skill definition to edit could not be found.", "fr": "La définition de la compétence personnalisée à modifier n'a pas pu être trouvée." }
 }
 
-
-    

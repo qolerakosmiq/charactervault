@@ -4,7 +4,7 @@
 import *as React from 'react';
 import type {
   FeatDefinitionJsonData, CharacterFeatInstance, Character, AbilityScores, Skill,
-  SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown, AggregatedFeatEffects, ComboboxOption
+  SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown, AggregatedFeatEffects, ComboboxOption, NoteEffectDetail, LocalizedString
 } from '@/types/character-core';
 import {
   checkFeatPrerequisites, calculateAvailableFeats
@@ -19,8 +19,9 @@ import { SpecializationInputDialog } from './SpecializationInputDialog';
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { useI18n } from '@/context/I18nProvider';
+import { useI18n, type I18nContextType } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getLocalizedString } from '@/i18n/i18n-data';
 
 export interface FeatsFormSectionProps {
   featSectionData: Pick<Character, 'race' | 'classes' | 'feats' | 'age' | 'alignment' | 'experiencePoints' | 'chosenCombatStyle' | 'chosenFavoredEnemies' | 'deity' | 'chosenDomains'>;
@@ -53,7 +54,8 @@ const FeatsFormSectionComponent = ({
   characterLevel,
   aggregatedFeatEffects,
 }: FeatsFormSectionProps) => {
-  const { translations, isLoading: translationsLoading } = useI18n();
+  const i18nContext = useI18n();
+  const { translations, isLoading: translationsLoading } = i18nContext;
   const { toast } = useToast();
 
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
@@ -87,17 +89,19 @@ const FeatsFormSectionComponent = ({
     return [...instances].sort((a, b) => {
       const defA = allAvailableFeatDefinitions.find(d => d.id === a.definitionId);
       const defB = allAvailableFeatDefinitions.find(d => d.id === b.definitionId);
-      return (defA?.label || '').localeCompare(defB?.label || '');
+      const labelA = defA?.label ? getLocalizedString(defA.label, i18nContext.language, undefined, `feats.${defA.id}.label`) : '';
+      const labelB = defB?.label ? getLocalizedString(defB.label, i18nContext.language, undefined, `feats.${defB.id}.label`) : '';
+      return labelA.localeCompare(labelB);
     });
   };
 
   const userChosenFeatInstances = React.useMemo(() => {
     return sortInstancesByLabel(chosenFeatInstances.filter(f => !f.isGranted));
-  }, [chosenFeatInstances, allAvailableFeatDefinitions]);
+  }, [chosenFeatInstances, allAvailableFeatDefinitions, i18nContext.language]);
 
   const grantedFeatInstances = React.useMemo(() => {
     return sortInstancesByLabel(chosenFeatInstances.filter(f => f.isGranted));
-  }, [chosenFeatInstances, allAvailableFeatDefinitions]);
+  }, [chosenFeatInstances, allAvailableFeatDefinitions, i18nContext.language]);
 
   const userChosenFeatInstancesCount = userChosenFeatInstances.length;
   const featSlotsLeft = availableFeatSlots - userChosenFeatInstancesCount;
@@ -130,7 +134,7 @@ const FeatsFormSectionComponent = ({
       }
     }
     setFeatDialogFilterCategory(filterCategoryForDialog);
-    setEditingFeatInstanceId(null); 
+    setEditingFeatInstanceId(null);
     setIsFeatDialogOpen(true);
   };
 
@@ -144,7 +148,7 @@ const FeatsFormSectionComponent = ({
       return;
     }
 
-    setEditingFeatInstanceId(null); 
+    setEditingFeatInstanceId(null);
     setInitialSpecializationForEdit(undefined);
 
     if (definition.requiresSpecialization) {
@@ -164,7 +168,7 @@ const FeatsFormSectionComponent = ({
       if (isAlreadyGranted) {
         toast({
             title: UI_STRINGS.toastFeatAlreadyGrantedTitle,
-            description: UI_STRINGS.toastFeatAlreadyGrantedDesc.replace('{featLabel}', definition.label),
+            description: UI_STRINGS.toastFeatAlreadyGrantedDesc.replace('{featLabel}', getLocalizedString(definition.label, i18nContext.language)),
             variant: "destructive"
         });
         return;
@@ -172,20 +176,20 @@ const FeatsFormSectionComponent = ({
       if (existingChosenInstances.length > 0) {
         toast({
             title: UI_STRINGS.toastDuplicateFeatTitle,
-            description: UI_STRINGS.toastDuplicateFeatDesc.replace('{featLabel}', definition.label),
+            description: UI_STRINGS.toastDuplicateFeatDesc.replace('{featLabel}', getLocalizedString(definition.label, i18nContext.language)),
             variant: "destructive"
         });
         return;
       }
     }
 
-    let newInstanceId = definition.id; 
+    let newInstanceId = definition.id;
     if (definition.canTakeMultipleTimes) {
-      newInstanceId = `${definition.id}-MULTI-INSTANCE-${crypto.randomUUID()}`; 
+      newInstanceId = `${definition.id}-MULTI-INSTANCE-${crypto.randomUUID()}`;
     }
 
     const newInstance: CharacterFeatInstance = {
-      definitionId: definition.id, 
+      definitionId: definition.id,
       instanceId: newInstanceId,
       isGranted: false,
       chosenSpecializationCategory: definition.requiresSpecializationCategory,
@@ -195,7 +199,9 @@ const FeatsFormSectionComponent = ({
     onFeatInstancesChange([...chosenFeatInstances, newInstance].sort((a, b) => {
       const defA = allAvailableFeatDefinitions.find(d => d.id === a.definitionId);
       const defB = allAvailableFeatDefinitions.find(d => d.id === b.definitionId);
-      return (defA?.label || '').localeCompare(defB?.label || '');
+      const labelA = defA?.label ? getLocalizedString(defA.label, i18nContext.language) : '';
+      const labelB = defB?.label ? getLocalizedString(defB.label, i18nContext.language) : '';
+      return labelA.localeCompare(labelB);
     }));
   };
 
@@ -213,13 +219,14 @@ const FeatsFormSectionComponent = ({
     if (!featToSpecialize || !translations || !translations.UI_STRINGS) throw new Error("Feat definition or translations not available for specialization.");
     const UI_STRINGS = translations.UI_STRINGS;
     const definition = featToSpecialize;
+    const currentFeatLabel = getLocalizedString(definition.label, i18nContext.language);
 
-    if (editingFeatInstanceId) { 
+    if (editingFeatInstanceId) {
       const updatedInstances = chosenFeatInstances.map(inst => {
         if (inst.instanceId === editingFeatInstanceId) {
-          let newFinalInstanceId = `${definition.id}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`; 
+          let newFinalInstanceId = `${definition.id}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`;
           if (chosenFeatInstances.some(otherInst => otherInst.instanceId === newFinalInstanceId && otherInst.instanceId !== editingFeatInstanceId)) {
-            newFinalInstanceId = `${newFinalInstanceId}-${crypto.randomUUID().substring(0,8)}`; 
+            newFinalInstanceId = `${newFinalInstanceId}-${crypto.randomUUID().substring(0,8)}`;
           }
           return { ...inst, specializationDetail: specializationDetail.trim() || undefined, instanceId: newFinalInstanceId };
         }
@@ -227,32 +234,32 @@ const FeatsFormSectionComponent = ({
       });
       onFeatInstancesChange(sortInstancesByLabel(updatedInstances));
 
-    } else { 
+    } else {
       const existingChosenInstances = chosenFeatInstances.filter(
-        inst => inst.definitionId === definition.id && !inst.isGranted && inst.specializationDetail === specializationDetail 
+        inst => inst.definitionId === definition.id && !inst.isGranted && inst.specializationDetail === specializationDetail
       );
       const isAlreadyGrantedWithSameSpecialization = chosenFeatInstances.some(
-        inst => inst.definitionId === definition.id && inst.isGranted && inst.specializationDetail === specializationDetail 
+        inst => inst.definitionId === definition.id && inst.isGranted && inst.specializationDetail === specializationDetail
       );
 
       if (!definition.canTakeMultipleTimes) {
         if (isAlreadyGrantedWithSameSpecialization) {
-          toast({ title: UI_STRINGS.toastFeatAlreadyGrantedTitle, description: UI_STRINGS.toastFeatAlreadyGrantedDesc.replace('{featLabel}', definition.label), variant: "destructive" });
+          toast({ title: UI_STRINGS.toastFeatAlreadyGrantedTitle, description: UI_STRINGS.toastFeatAlreadyGrantedDesc.replace('{featLabel}', currentFeatLabel), variant: "destructive" });
           return;
         }
         if (existingChosenInstances.length > 0) {
-          toast({ title: UI_STRINGS.toastDuplicateFeatTitle, description: UI_STRINGS.toastDuplicateFeatDesc.replace('{featLabel}', definition.label), variant: "destructive" });
+          toast({ title: UI_STRINGS.toastDuplicateFeatTitle, description: UI_STRINGS.toastDuplicateFeatDesc.replace('{featLabel}', currentFeatLabel), variant: "destructive" });
           return;
         }
       }
 
-      let newInstanceId = `${definition.id}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`; 
+      let newInstanceId = `${definition.id}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`;
       if (definition.canTakeMultipleTimes || chosenFeatInstances.some(fi => fi.instanceId === newInstanceId)) {
-        newInstanceId = `${definition.id}-SPEC-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID()}`; 
+        newInstanceId = `${definition.id}-SPEC-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID()}`;
       }
 
       const newInstance: CharacterFeatInstance = {
-        definitionId: definition.id, 
+        definitionId: definition.id,
         instanceId: newInstanceId,
         specializationDetail: specializationDetail.trim() || undefined,
         isGranted: false,
@@ -277,7 +284,7 @@ const FeatsFormSectionComponent = ({
   const handleOpenEditDialog = (definitionId: string) => {
     if (!translations || !translations.UI_STRINGS) throw new Error("Translations not loaded for custom feat edit.");
     const UI_STRINGS = translations.UI_STRINGS;
-    const defToEdit = allAvailableFeatDefinitions.find(def => def.id === definitionId && def.isCustom); 
+    const defToEdit = allAvailableFeatDefinitions.find(def => def.id === definitionId && def.isCustom);
     if (defToEdit) {
       onEditCustomFeatDefinition(definitionId);
     } else {
@@ -285,13 +292,13 @@ const FeatsFormSectionComponent = ({
     }
   };
 
-  const getFeatSource = React.useCallback((definitionId: string): string | null => { 
+  const getFeatSource = React.useCallback((definitionId: string): string | null => {
     if (translationsLoading || !translations || !translations.DND_CLASSES) return null;
     if (definitionId.startsWith('class-')) {
       const parts = definitionId.split('-');
       if (parts.length > 1) {
         const classNameKey = parts[1];
-        const classDef = translations.DND_CLASSES.find(c => c.id === classNameKey); 
+        const classDef = translations.DND_CLASSES.find(c => c.id === classNameKey);
         return classDef ? classDef.label : classNameKey.charAt(0).toUpperCase() + classNameKey.slice(1);
       }
     }
@@ -301,10 +308,11 @@ const FeatsFormSectionComponent = ({
   const renderFeatInstance = React.useCallback((instance: CharacterFeatInstance) => {
     if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.SKILL_DEFINITIONS) return <Skeleton className="h-16 w-full mb-2" />;
 
-    const definition = allAvailableFeatDefinitions.find(def => def.id === instance.definitionId); 
+    const definition = allAvailableFeatDefinitions.find(def => def.id === instance.definitionId);
     if (!definition) {
         throw new Error(`Feat definition for ID '${instance.definitionId}' not found.`);
     }
+    const currentLang = i18nContext.language;
 
     const prereqMessages = checkFeatPrerequisites(
       definition,
@@ -321,56 +329,103 @@ const FeatsFormSectionComponent = ({
     const isCustomDefinition = definition.isCustom;
 
     const featTypeLabel = definition.type && definition.type !== "special"
-      ? translations.FEAT_TYPES.find(ft => ft.id === definition.type)?.label 
+      ? translations.FEAT_TYPES.find(ft => ft.id === definition.type)?.label
       : null;
 
-    const featSource = (instance.isGranted && definition.isClassFeature) ? getFeatSource(definition.id) : null; 
+    const featSource = (instance.isGranted && definition.isClassFeature) ? getFeatSource(definition.id) : null;
     const { UI_STRINGS } = translations;
+    const featLabel = getLocalizedString(definition.label, currentLang);
+
+    // --- DESCRIPTION ---
+    let descriptionContent: string | undefined = undefined;
+    if (definition.description) {
+        const localizedDesc = typeof definition.description === 'string'
+            ? definition.description
+            : getLocalizedString(definition.description, currentLang, undefined, `feats.${definition.id}.description`);
+
+        const benefitMarker = /<b>\s*Benefit:\s*<\/b>/i;
+        const prereqMarker = /<b>\s*Prerequisites?:\s*<\/b>/i;
+        const benefitIndex = localizedDesc.search(benefitMarker);
+        const prereqIndex = localizedDesc.search(prereqMarker);
+
+        let endIndex = localizedDesc.length;
+        if (benefitIndex !== -1) endIndex = Math.min(endIndex, benefitIndex);
+        if (prereqIndex !== -1) endIndex = Math.min(endIndex, prereqIndex);
+        
+        descriptionContent = localizedDesc.substring(0, endIndex).trim();
+        if (descriptionContent === "<p></p>" || descriptionContent === "") descriptionContent = undefined;
+    }
+
+    // --- BENEFIT ---
+    let benefitContent: string | undefined = undefined;
+    if (definition.effectsText) {
+        benefitContent = typeof definition.effectsText === 'string'
+            ? definition.effectsText
+            : getLocalizedString(definition.effectsText, currentLang, undefined, `feats.${definition.id}.effectsText`);
+    }
+    if ((!benefitContent || benefitContent.trim() === "") && definition.effects) {
+        const noteEffects = definition.effects.filter(e => e.type === 'note') as NoteEffectDetail[];
+        if (noteEffects.length > 0) {
+            benefitContent = noteEffects.map(ne => typeof ne.text === 'string' ? ne.text : getLocalizedString(ne.text, currentLang)).join(' ');
+        }
+    }
+
 
     return (
       <div key={instance.instanceId} className="group flex items-start justify-between py-2 transition-colors">
-        <div className="flex-grow mr-2">
-          <div className="flex items-baseline flex-wrap gap-x-1.5 mb-1">
+        <div className="flex-grow mr-2 space-y-1"> {/* Added space-y-1 */}
+          <div className="flex items-baseline flex-wrap gap-x-1.5">
             {featSource && <Badge variant="secondary" className="whitespace-nowrap">{featSource}</Badge>}
             <h4 className="font-medium text-foreground inline-flex items-center">
-              {definition.label}
+              {featLabel}
             </h4>
             {featTypeLabel && <Badge variant="outline" className="whitespace-nowrap">{featTypeLabel}</Badge>}
             {isCustomDefinition && <Badge variant="outline">{UI_STRINGS.badgeCustomLabel}</Badge>}
             {instance.grantedNote && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
           </div>
-          {definition.requiresSpecialization && instance.specializationDetail && <p className="text-sm text-muted-foreground mt-0.5 ml-1">({instance.specializationDetail})</p>}
+          {definition.requiresSpecialization && instance.specializationDetail && <p className="text-xs text-muted-foreground ml-1">({instance.specializationDetail})</p>}
           
-          {definition.description && (
-            <div
-              className="text-xs text-muted-foreground mt-0.5 whitespace-normal"
-              dangerouslySetInnerHTML={{ __html: definition.description }}
-            />
-          )}
+          {/* Description Section */}
+          <div className="text-xs text-muted-foreground whitespace-normal">
+            <strong className="text-muted-foreground">{UI_STRINGS.featDescriptionLabel}</strong>{' '}
+            {descriptionContent && descriptionContent.trim() !== "" ? (
+              <span dangerouslySetInnerHTML={{ __html: descriptionContent }} />
+            ) : (
+              <span>{UI_STRINGS.featDescriptionNoneLabel}</span>
+            )}
+          </div>
 
-          {prereqMessages.length > 0 ? (
-            <div className="text-xs mt-0.5 whitespace-normal text-muted-foreground">
-              <strong className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel}</strong>{' '}
-              {prereqMessages.map((msg, idx, arr) => (
+          {/* Benefit Section */}
+          <div className="text-xs text-muted-foreground whitespace-normal">
+            <strong className="text-muted-foreground">{UI_STRINGS.featBenefitLabel}</strong>{' '}
+            {benefitContent && benefitContent.trim() !== "" ? (
+              <span dangerouslySetInnerHTML={{ __html: benefitContent }} />
+            ) : (
+              <span>{UI_STRINGS.featBenefitNoneLabel}</span>
+            )}
+          </div>
+
+          {/* Prerequisites Section */}
+          <div className="text-xs text-muted-foreground whitespace-normal">
+            <strong className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel}</strong>{' '}
+            {prereqMessages.length > 0 ? (
+              prereqMessages.map((msg, idx, arr) => (
                 <React.Fragment key={idx}>
                   <span className={cn(!msg.isMet ? 'text-destructive' : 'text-muted-foreground')} dangerouslySetInnerHTML={{ __html: msg.text }} />
                   {idx < arr.length - 1 && ', '}
                 </React.Fragment>
-              ))}
-            </div>
-          ) : (
-            <div className="text-xs mt-0.5 whitespace-normal text-muted-foreground">
-              <strong className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel}</strong>{' '}
-              {UI_STRINGS.featPrerequisitesNoneLabel}
-            </div>
-          )}
-          
-          {definition.effectsText && (
-            <div className="text-xs text-muted-foreground mt-0.5 whitespace-normal">
-              <span className="font-bold text-muted-foreground" dangerouslySetInnerHTML={{ __html: UI_STRINGS.featEffectsLabel }} />
-              {' '}{definition.effectsText}
-            </div>
-          )}
+              ))
+            ) : (
+              <span>{UI_STRINGS.featPrerequisitesNoneLabel}</span>
+            )}
+            {definition.prerequisites?.special && (
+              <>
+                {prereqMessages.length > 0 && ', '}
+                <span dangerouslySetInnerHTML={{ __html: (typeof definition.prerequisites.special === 'string' ? definition.prerequisites.special : getLocalizedString(definition.prerequisites.special, currentLang)) }} />
+              </>
+            )}
+          </div>
+
         </div>
         <div className="flex items-center shrink-0">
           {isCustomDefinition && (
@@ -378,7 +433,7 @@ const FeatsFormSectionComponent = ({
               type="button" variant="ghost" size="icon"
               onClick={() => handleOpenEditDialog(instance.definitionId)}
               className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-50 group-hover:opacity-100 transition-opacity"
-              aria-label={UI_STRINGS.featInstanceEditAriaLabel.replace("{featLabel}", definition.label)}
+              aria-label={UI_STRINGS.featInstanceEditAriaLabel.replace("{featLabel}", featLabel)}
             ><Pencil className="h-4 w-4" /></Button>
           )}
           {!instance.isGranted && definition.requiresSpecialization && (
@@ -386,7 +441,7 @@ const FeatsFormSectionComponent = ({
               type="button" variant="ghost" size="icon"
               onClick={() => handleOpenEditSpecializationDialog(instance)}
               className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-50 group-hover:opacity-100 transition-opacity"
-              aria-label={UI_STRINGS.featEditSpecializationAriaLabel.replace("{featLabel}", definition.label)}
+              aria-label={UI_STRINGS.featEditSpecializationAriaLabel.replace("{featLabel}", featLabel)}
             ><Edit3 className="h-4 w-4" /></Button>
           )}
           {!instance.isGranted && (
@@ -400,7 +455,7 @@ const FeatsFormSectionComponent = ({
         </div>
       </div>
     );
-  }, [translationsLoading, translations, allAvailableFeatDefinitions, characterForPrereqCheck, allPredefinedSkillDefinitions, allCustomSkillDefinitions, getFeatSource, handleOpenEditDialog, handleRemoveChosenFeatInstance, handleOpenEditSpecializationDialog]);
+  }, [translationsLoading, translations, i18nContext.language, allAvailableFeatDefinitions, characterForPrereqCheck, allPredefinedSkillDefinitions, allCustomSkillDefinitions, getFeatSource, handleOpenEditDialog, handleRemoveChosenFeatInstance, handleOpenEditSpecializationDialog]);
 
 
   if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS) {
@@ -448,20 +503,20 @@ const FeatsFormSectionComponent = ({
               </p>
             </div>
              <p className="text-xs text-muted-foreground mt-1">
-              {UI_STRINGS.featsPanelBreakdownBaseLabel}{'\u00A0'}<Badge variant="outline">{featSlotsBreakdown.base}</Badge>
-              {featSlotsBreakdown.racial > 0 && (
-                <>
-                  {' + '}{UI_STRINGS.featsPanelBreakdownRacialLabel}{'\u00A0'}<Badge variant="outline">{featSlotsBreakdown.racial}</Badge>
-                </>
-              )}
-              {featSlotsBreakdown.classBonusDetails && featSlotsBreakdown.classBonusDetails.length > 0 && (
-                featSlotsBreakdown.classBonusDetails.map(detail => (
-                    <React.Fragment key={`${detail.category}-${detail.sourceFeatLabel || 'general'}`}>
-                    {' + '}{detail.sourceFeatLabel || detail.category}{'\u00A0'}<Badge variant="outline">{detail.count}</Badge>
-                    </React.Fragment>
-                ))
-              )}
-              {' = '}<span className="font-bold text-primary">{availableFeatSlots}</span>
+                {UI_STRINGS.featsPanelBreakdownBaseLabel}{'\u00A0'}<Badge variant="outline">{featSlotsBreakdown.base}</Badge>
+                {featSlotsBreakdown.racial > 0 && (
+                    <>
+                    {' + '}{UI_STRINGS.featsPanelBreakdownRacialLabel}{'\u00A0'}<Badge variant="outline">{featSlotsBreakdown.racial}</Badge>
+                    </>
+                )}
+                {featSlotsBreakdown.classBonusDetails && featSlotsBreakdown.classBonusDetails.length > 0 && (
+                    featSlotsBreakdown.classBonusDetails.map(detail => (
+                        <React.Fragment key={`${detail.category}-${detail.sourceFeatLabel || 'general'}`}>
+                        {' + '}{detail.sourceFeatLabel || detail.category}{'\u00A0'}<Badge variant="outline">{detail.count}</Badge>
+                        </React.Fragment>
+                    ))
+                )}
+                {' = '}<span className="font-bold text-primary">{availableFeatSlots}</span>
             </p>
           </div>
 
@@ -472,7 +527,7 @@ const FeatsFormSectionComponent = ({
                 .replace('{skillBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.skillBonus))
                 .replace('{damageBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.damageBonus))}
                 { ' ' }
-                ({UI_STRINGS.favoredEnemySlotsAvailable.replace('{slots}', String(aggregatedFeatEffects.favoredEnemySlots || 0))})
+                ({UI_STRINGS.favoredEnemySlotsAvailableShort.replace('{slots}', String(aggregatedFeatEffects.favoredEnemySlots || 0))})
             </div>
           )}
 
