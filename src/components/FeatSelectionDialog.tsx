@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/command';
 import type {
   FeatDefinitionJsonData, Character, PrerequisiteMessage, SkillDefinitionJsonData,
-  DndClassOption, DndRaceOption, AbilityName, LocalizedString, NoteEffectDetail
+  DndClassOption, DndRaceOption, AbilityName, LocalizedString, NoteEffectDetail, DndClassId
 } from '@/types/character';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -60,7 +60,6 @@ const getFeatSourceClassNameFromDialog = (featId: string, allClasses: readonly D
   return null;
 };
 
-
 const stripHtml = (html: string): string => {
   let text = html.replace(/<br\s*\/?>/gi, ' ');
   text = text.replace(/<\/?b>/gi, '');
@@ -69,6 +68,33 @@ const stripHtml = (html: string): string => {
   text = text.replace(/<[^>]+>/g, '');
   return text.replace(/\s\s+/g, ' ').trim();
 };
+
+const getCategoryBadgeVariant = (
+  featCategory: string,
+  characterPrimaryClassId?: DndClassId | string
+): "secondary" | "outline" => {
+  const classSpecificCategoryPatterns: Record<string, string[]> = {
+    "fighterBonusFeat": ["fighter"],
+    "wizardBonusFeat": ["wizard"],
+    "monkBonusFeatL1": ["monk"],
+    "monkBonusFeatL2": ["monk"],
+    "monkBonusFeatL6": ["monk"],
+    "rogueSpecialAbility": ["rogue"],
+    // Add other class-specific feat categories here if they arise
+  };
+
+  for (const categoryPatternKey in classSpecificCategoryPatterns) {
+    if (featCategory === categoryPatternKey) {
+      const associatedClasses = classSpecificCategoryPatterns[categoryPatternKey];
+      if (characterPrimaryClassId && associatedClasses.includes(characterPrimaryClassId)) {
+        return "secondary"; // Match: current class matches the feat's intended class
+      }
+      return "outline"; // Mismatch: current class does not match, or no character class
+    }
+  }
+  return "secondary"; // Default for non-class-specific categories or if characterClassId is undefined
+};
+
 
 export function FeatSelectionDialog({
   isOpen,
@@ -161,6 +187,7 @@ export function FeatSelectionDialog({
     );
   }
   const { UI_STRINGS } = translations;
+  const characterPrimaryClassId = character.classes[0]?.className;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -230,6 +257,8 @@ export function FeatSelectionDialog({
                   const showPrerequisitesLine = hasStructuralPrereqs || hasTextualPrereqs;
 
                   const featSourceClassName = (featDef.isClassFeature && featDef.id.startsWith('class-')) ? getFeatSourceClassNameFromDialog(featDef.id, allClasses) : null;
+                  
+                  const categoryBadgeVariant = featDef.category ? getCategoryBadgeVariant(featDef.category, characterPrimaryClassId) : "secondary";
                   const categoryDisplayLabel = featDef.category ? (UI_STRINGS[`featCategory_${featDef.category}` as keyof typeof UI_STRINGS] || featDef.category) : null;
 
 
@@ -246,7 +275,11 @@ export function FeatSelectionDialog({
                       <div className="font-medium text-sm text-foreground mb-0.5">
                         {featDef.label}
                         {featDef.isCustom && <Badge variant="outline" className="ml-1 text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
-                        {categoryDisplayLabel && !featSourceClassName && <Badge variant="secondary" className="ml-1 whitespace-nowrap">{categoryDisplayLabel}</Badge>}
+                        {categoryDisplayLabel && !featSourceClassName && (
+                           <Badge variant={categoryBadgeVariant} className="ml-1 whitespace-nowrap">
+                            {categoryDisplayLabel}
+                          </Badge>
+                        )}
                         {featSourceClassName && <Badge variant="secondary" className="ml-1 whitespace-nowrap">{featSourceClassName}</Badge>}
                       </div>
                       {featDefDescription && (
@@ -298,3 +331,4 @@ export function FeatSelectionDialog({
   );
 }
 
+    
