@@ -107,6 +107,15 @@
   "toastInvalidDeityForAlignmentTitle": { "en": "Deity Alignment Mismatch", "fr": "Désaccord d'Alignement de Divinité" },
   "toastInvalidDeityForAlignmentDesc": { "en": "The deity '{deityName}' is not compatible with your character's alignment '{alignment}'.", "fr": "La divinité '{deityName}' n'est pas compatible avec l'alignement de votre personnage '{alignment}'." },
   "armorClassPanelTempModInfoNote_prefix": { "en": "<b>Note:</b> The ", "fr": "<b>Note :</b> Le " },
-  "armorClassPanelTempModInfoNote_suffix": { "en": " field applies to Normal, Touch, and Flat-Footed Armor Class calculations.", "fr": " s'applique aux calculs de Classe d'Armure Normale, de Contact et Prise au Dépourvu." }
+  "armorClassPanelTempModInfoNote_suffix": { "en": " field applies to Normal, Touch, and Flat-Footed Armor Class calculations.", "fr": " s'applique aux calculs de Classe d'Armure Normale, de Contact et Prise au Dépourvu." },
+  "experiencePanelTitle": { "en": "Experience", "fr": "Expérience" },
+  "experiencePanelDescription": { "en": "Track your character's progression and current experience points.", "fr": "Suivez la progression de votre personnage et ses points d'expérience actuels." },
+  "experiencePanelCurrentXpMainLabel": { "en": "Current XP", "fr": "XP Actuels" },
+  "experiencePanelCurrentXpSubLabel": { "en": "Experience Points", "fr": "Points d'Expérience" },
+  "experiencePanelLevelLabelFormat": { "en": "Level {levelNumber}", "fr": "Niveau {levelNumber}" },
+  "experiencePanelXpToLevelUpFormat": { "en": "{currentXp} / {xpForNextLevel} XP", "fr": "{currentXp} / {xpForNextLevel} XP" },
+  "experiencePanelMaxLevel": { "en": "Max Level Reached", "fr": "Niveau Max Atteint" },
+  "experiencePanelLevelUpButton": { "en": "Level Up", "fr": "Monter de Niveau" }
 }
 
+    
