@@ -130,7 +130,9 @@
   "skillPointFormulaMinOneLabel": { "en": " (min 1)", "fr": " (min 1)" },
   "skillPointFormulaFirstLevelFactor": { "en": "for 1st Level", "fr": "pour 1er Niveau" },
   "skillPointFormulaLevelProgressionFactor": { "en": "for other levels", "fr": "pour autres niveaux" },
-  "skillPointFormulaSelectClassPrompt": { "en": "Select a class to see detailed skill point calculation.", "fr": "Sélectionnez une classe pour voir le calcul détaillé des points de compétence." }
+  "skillPointFormulaSelectClassPrompt": { "en": "Select a class to see detailed skill point calculation.", "fr": "Sélectionnez une classe pour voir le calcul détaillé des points de compétence." },
+  "skillsTableTooltipInfoForSkill": { "en": "Info for {skillName}", "fr": "Infos pour {skillName}" },
+  "rollDialogSkillCheckAriaLabel": { "en": "Roll {skillName} Check", "fr": "Lancer un test de {skillName}" }
 }
 
     
