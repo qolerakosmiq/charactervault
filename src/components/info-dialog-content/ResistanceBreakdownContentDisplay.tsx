@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React from 'react';
@@ -25,6 +26,12 @@ export const ResistanceBreakdownContentDisplay = ({
           <span className="text-foreground">{uiStrings.infoDialogBaseValueLabel || "Base Value"}</span>
           <span className="font-bold">{resistanceBreakdown.base}</span>
         </div>
+        {resistanceBreakdown.itemBonus !== 0 && (
+           <div className="flex justify-between text-sm">
+            <span className="text-foreground">{uiStrings.infoDialogItemBonusLabel || "Item Bonus"}</span>
+            {renderModifierValue(resistanceBreakdown.itemBonus)}
+          </div>
+        )}
         <div className="flex justify-between text-sm">
           <span className="text-foreground">{uiStrings.infoDialogCustomModifierLabel || "Custom Modifier"}</span>
           {renderModifierValue(resistanceBreakdown.customMod)}
@@ -38,3 +45,5 @@ export const ResistanceBreakdownContentDisplay = ({
     </div>
   );
 };
+
+    

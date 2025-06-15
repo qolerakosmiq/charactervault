@@ -1,8 +1,9 @@
 
+
 'use client';
 
 import *as React from 'react';
-import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet } from '@/types/character';
+import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet, AggregatedFeatEffects } from '@/types/character'; // Added AggregatedFeatEffects
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Loader2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
@@ -17,29 +18,25 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
 import { getLocalizedString } from '@/i18n/i18n-data'; 
-import { DEFAULT_LANGUAGE } from '@/i18n/config'; 
+import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config'; 
+import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
+
 
 const DEBOUNCE_DELAY = 400;
 
 export interface ResistancesPanelProps {
-  characterData: {
-    fireResistance: ResistanceValue;
-    coldResistance: ResistanceValue;
-    acidResistance: ResistanceValue;
-    electricityResistance: ResistanceValue;
-    sonicResistance: ResistanceValue;
-    spellResistance: ResistanceValue;
-    powerResistance: ResistanceValue;
-    damageReduction: DamageReductionInstance[];
-    fortification: ResistanceValue;
-  };
+  characterData: Pick<Character, // Updated to Pick
+    'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
+    'spellResistance' | 'powerResistance' | 'damageReduction' | 'fortification'
+  >;
+  aggregatedFeatEffects: AggregatedFeatEffects | null; // Added
   onResistanceChange: (field: ResistanceFieldKeySheet, subField: 'customMod', value: number) => void;
   onDamageReductionChange: (newDrArray: DamageReductionInstance[]) => void;
   onOpenResistanceInfoDialog: (resistanceField: ResistanceFieldKeySheet) => void;
 }
 
-const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamageReductionChange, onOpenResistanceInfoDialog }: ResistancesPanelProps) => {
-  const { translations, isLoading: translationsLoading } = useI18n();
+const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onResistanceChange, onDamageReductionChange, onOpenResistanceInfoDialog }: ResistancesPanelProps) => {
+  const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
   const { toast } = useToast();
 
   const [newDrValue, setNewDrValue] = React.useState(1);
@@ -87,7 +84,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
     }
   }, [newDrRule, newDrType, translations, translationsLoading]);
   
-  if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.DAMAGE_REDUCTION_TYPES || !translations.DAMAGE_REDUCTION_RULES_OPTIONS) {
+  if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.DAMAGE_REDUCTION_TYPES || !translations.DAMAGE_REDUCTION_RULES_OPTIONS || !aggregatedFeatEffects) {
     return (
       <Card>
         <CardHeader>
@@ -235,7 +232,8 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {energyResistancesFields.map(({ field, labelKey, Icon, fieldPrefix }) => {
                 const resistanceFromProp = characterData[field];
-                const totalValue = (resistanceFromProp?.base || 0) + (resistanceFromProp?.customMod || 0);
+                const itemBonus = aggregatedFeatEffects.resistanceBonuses.find(rb => rb.resistanceTo === field && rb.isActive)?.value || 0;
+                const totalValue = (resistanceFromProp?.base || 0) + (resistanceFromProp?.customMod || 0) + itemBonus;
                 const label = UI_STRINGS[labelKey]; 
                 const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
                 return (
@@ -285,7 +283,8 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {otherNumericResistancesFields.map(({ field, labelKey, Icon, unit, fieldPrefix }) => {
                 const resistanceFromProp = characterData[field];
-                const totalValue = (resistanceFromProp?.base || 0) + (resistanceFromProp?.customMod || 0);
+                const itemBonus = aggregatedFeatEffects.resistanceBonuses.find(rb => rb.resistanceTo === field && rb.isActive)?.value || 0;
+                const totalValue = (resistanceFromProp?.base || 0) + (resistanceFromProp?.customMod || 0) + itemBonus;
                 const isFortification = field === 'fortification';
                 const label = UI_STRINGS[labelKey];
                 const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
@@ -392,7 +391,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                         const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
                         if (!ruleDef) throw new Error(`[DATA_ERROR] Missing DR Rule Definition for ID: ${dr.rule}`);
                         const ruleLabel = ruleDef.label;
-                        const currentLangCode = UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode;
+                        const currentLangCodeForDr = UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode || DEFAULT_LANGUAGE;
                         return (
                           <div key={dr.id} className="flex flex-col items-start justify-between p-2 border rounded-md bg-muted/5 text-sm">
                             <div className="flex items-center justify-between w-full">
@@ -402,7 +401,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
                                      {ruleLabel}
                                    </Badge>
                                    {dr.isGranted && dr.source && (
-                                    <Badge variant="secondary" className="ml-1">{getLocalizedString(dr.source, currentLangCode, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>
+                                    <Badge variant="secondary" className="ml-1">{getLocalizedString(dr.source, currentLangCodeForDr, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>
                                   )}
                                 </div>
                                 {!dr.isGranted && (
@@ -433,5 +432,7 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
 };
 ResistancesPanelComponent.displayName = 'ResistancesPanelComponent';
 export const ResistancesPanel = React.memo(ResistancesPanelComponent);
+
+    
 
     

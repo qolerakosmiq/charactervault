@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import *as React from 'react';
@@ -74,6 +75,7 @@ export interface ResistanceBreakdownDetails {
   name: string;
   base: number;
   customMod: number;
+  itemBonus: number; // Added itemBonus
   total: number;
 }
 
@@ -210,7 +212,7 @@ export function InfoDisplayDialog({
       DND_RACE_ABILITY_MODIFIERS_DATA, DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA,
       SKILL_SYNERGIES: SKILL_SYNERGIES_DATA, CLASS_SKILLS: CLASS_SKILLS_DATA,
       ALIGNMENT_PREREQUISITE_OPTIONS, DND_RACE_BASE_MAX_AGE_DATA, RACE_TO_AGING_CATEGORY_MAP_DATA, DND_RACE_AGING_EFFECTS_DATA, UI_STRINGS,
-      ITEM_DEFINITIONS_ARMOR, ITEM_DEFINITIONS_SHIELDS // Added item defs
+      ITEM_DEFINITIONS_ARMOR, ITEM_DEFINITIONS_SHIELDS, ITEM_DEFINITIONS_WEAPONS, ITEM_DEFINITIONS_MAGIC_ITEMS
     } = translations;
 
     let data: DerivedDialogData = { title: UI_STRINGS.infoDialogDefaultTitle || 'Information', content: [] };
@@ -481,11 +483,12 @@ export function InfoDisplayDialog({
         }
         break;
       }
-      case 'resistanceBreakdown':
+      case 'resistanceBreakdown': {
         iconKey = 'resistanceBreakdown';
         const resistanceValue = character[contentType.resistanceField] as ResistanceValue;
         const resistanceFieldLabelKey = `resistanceLabel${contentType.resistanceField.charAt(0).toUpperCase() + contentType.resistanceField.slice(1).replace('Resistance', '')}` as keyof typeof UI_STRINGS;
         const resistanceLabel = UI_STRINGS[resistanceFieldLabelKey] || contentType.resistanceField.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).replace(' Resistance', '');
+        const itemBonus = aggregatedFeatEffectsProp.resistanceBonuses.find(rb => rb.resistanceTo === contentType.resistanceField && rb.isActive)?.value || 0;
 
         data = {
           title: (UI_STRINGS.infoDialogTitleResistanceBreakdown || "{resistanceName} Resistance Breakdown").replace("{resistanceName}", resistanceLabel),
@@ -494,12 +497,14 @@ export function InfoDisplayDialog({
                 name: resistanceLabel,
                 base: resistanceValue.base || 0,
                 customMod: resistanceValue.customMod || 0,
-                total: (resistanceValue.base || 0) + (resistanceValue.customMod || 0),
+                itemBonus: itemBonus,
+                total: (resistanceValue.base || 0) + (resistanceValue.customMod || 0) + itemBonus,
             },
             uiStrings: UI_STRINGS,
           })],
         };
         break;
+      }
       case 'acBreakdown': {
         iconKey = 'acBreakdown';
         const dexMod = calculateAbilityModifier(finalAbilityScores.dexterity);
@@ -509,12 +514,14 @@ export function InfoDisplayDialog({
 
         const equippedArmorInstanceId = character.equippedGear?.['armor-body'];
         const equippedArmorInstance = equippedArmorInstanceId ? character.inventory.find(i => i.instanceId === equippedArmorInstanceId) : undefined;
-        const equippedArmorDefinition = equippedArmorInstance ? ITEM_DEFINITIONS_ARMOR.find(def => def.definitionId === equippedArmorInstance.definitionId) : undefined;
+        const allArmorDefs = [...ITEM_DEFINITIONS_ARMOR, ...ITEM_DEFINITIONS_MAGIC_ITEMS.filter(item => item.itemType === 'armor')];
+        const equippedArmorDefinition = equippedArmorInstance ? allArmorDefs.find(def => def.definitionId === equippedArmorInstance.definitionId) : undefined;
         const physicalArmorBonus = equippedArmorDefinition?.armorBonus || 0;
 
         const equippedShieldInstanceId = character.equippedGear?.['shield'];
         const equippedShieldInstance = equippedShieldInstanceId ? character.inventory.find(i => i.instanceId === equippedShieldInstanceId) : undefined;
-        const equippedShieldDefinition = equippedShieldInstance ? ITEM_DEFINITIONS_SHIELDS.find(def => def.definitionId === equippedShieldInstance.definitionId) : undefined;
+        const allShieldDefs = [...ITEM_DEFINITIONS_SHIELDS, ...ITEM_DEFINITIONS_MAGIC_ITEMS.filter(item => item.itemType === 'shield')];
+        const equippedShieldDefinition = equippedShieldInstance ? allShieldDefs.find(def => def.definitionId === equippedShieldInstance.definitionId) : undefined;
         const physicalShieldBonus = equippedShieldDefinition?.shieldBonus || 0;
 
 
@@ -843,7 +850,7 @@ export function InfoDisplayDialog({
 
         if (aggregatedFeatEffectsProp?.savingThrowBonuses) {
           aggregatedFeatEffectsProp.savingThrowBonuses.forEach(effect => {
-            if (effect.save === currentSaveType || effect.save === "all") {
+            if (effect.isActive && (effect.save === currentSaveType || effect.save === "all")) {
               let numericValueFromEffect = 0;
               if (typeof effect.value === 'number') {
                 numericValueFromEffect = effect.value;
@@ -851,7 +858,7 @@ export function InfoDisplayDialog({
                 numericValueFromEffect = calculateAbilityModifier(detailedAbilityScoresProp.charisma.finalScore);
               }
               featComponentsForDialog.push({
-                sourceFeat: getLocalizedString(effect.sourceFeat, UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode),
+                sourceFeat: effect.sourceFeat ? getLocalizedString(effect.sourceFeat, UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode) : (UI_STRINGS.infoDialogUnknownFeatSource || "Unknown Feat"),
                 value: numericValueFromEffect,
                 condition: effect.condition,
                 isActive: effect.isActive,
@@ -994,3 +1001,5 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
+
+    
