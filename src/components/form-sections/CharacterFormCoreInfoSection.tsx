@@ -29,7 +29,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollText, Info, Loader2, Users, Activity, BookOpen, Wand2, Heart } from 'lucide-react';
+import { ScrollText, Info, Loader2, Users, Activity, BookOpen, Wand2, Heart, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -366,9 +366,12 @@ const CharacterFormCoreInfoSectionComponent = ({
     return (
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-3">
-            <ScrollText className="h-8 w-8 text-primary" />
-            <Skeleton className="h-7 w-1/3" />
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <ScrollText className="h-8 w-8 text-primary" />
+              <Skeleton className="h-7 w-1/3" />
+            </div>
+            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
           </div>
            <Skeleton className="h-4 w-3/4 mt-1" />
         </CardHeader>
@@ -567,16 +570,21 @@ const CharacterFormCoreInfoSectionComponent = ({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center space-x-3">
-          <ScrollText className="h-8 w-8 text-primary" />
-          <div>
-            <CardTitle className="text-2xl font-serif">
-              {UI_STRINGS.coreAttributesTitle || "Core Attributes"}
-            </CardTitle>
-            <CardDescription>
-              {UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer."}
-            </CardDescription>
+        <div className="flex justify-between items-start">
+          <div className="flex items-center space-x-3">
+            <ScrollText className="h-8 w-8 text-primary" />
+            <div>
+              <CardTitle className="text-2xl font-serif">
+                {UI_STRINGS.coreAttributesTitle || "Core Attributes"}
+              </CardTitle>
+              <CardDescription>
+                {UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer."}
+              </CardDescription>
+            </div>
           </div>
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
+            <Lock className="h-5 w-5" />
+          </Button>
         </div>
       </CardHeader>
       <CardContent className="space-y-6 pt-6">

@@ -1,15 +1,14 @@
 
-
 'use client';
 
 import *as React from 'react';
 import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet, AggregatedFeatEffects } from '@/types/character'; // Added AggregatedFeatEffects
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Loader2 } from 'lucide-react';
+import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Loader2, Lock } from 'lucide-react'; // Added Lock
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button'; // Already here
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -88,7 +87,13 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
     return (
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-3"> <ShieldAlert className="h-8 w-8 text-primary" /> <Skeleton className="h-7 w-1/2" /> </div>
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <ShieldAlert className="h-8 w-8 text-primary" />
+              <Skeleton className="h-7 w-1/2" />
+            </div>
+            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
+          </div>
           <Skeleton className="h-4 w-3/4" />
         </CardHeader>
         <CardContent className="space-y-6">
@@ -220,11 +225,18 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
     <>
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-3">
-            <ShieldAlert className="h-8 w-8 text-primary" />
-            <CardTitle className="text-2xl font-serif">{UI_STRINGS.resistancesPanelTitle}</CardTitle>
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <ShieldAlert className="h-8 w-8 text-primary" />
+              <div>
+                <CardTitle className="text-2xl font-serif">{UI_STRINGS.resistancesPanelTitle}</CardTitle>
+                <CardDescription>{UI_STRINGS.resistancesPanelDescription}</CardDescription>
+              </div>
+            </div>
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
+              <Lock className="h-5 w-5" />
+            </Button>
           </div>
-          <CardDescription>{UI_STRINGS.resistancesPanelDescription}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div>
@@ -432,7 +444,5 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
 };
 ResistancesPanelComponent.displayName = 'ResistancesPanelComponent';
 export const ResistancesPanel = React.memo(ResistancesPanelComponent);
-
-    
 
     

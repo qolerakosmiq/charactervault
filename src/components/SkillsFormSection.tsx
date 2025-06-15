@@ -2,18 +2,22 @@
 'use client';
 
 import *as React from 'react';
-import type { AbilityScores, CharacterClass, Skill as SkillType, AbilityName, DndRaceId, CustomSynergyRule, CharacterFeatInstance, DndRaceOption, SkillDefinitionJsonData, FeatDefinitionJsonData, CharacterSize, InfoDialogContentType, Character } from '@/types/character-core';
-import { getRaceSkillPointsBonusPerLevel, calculateTotalSynergyBonus, calculateRacialSkillBonus, calculateSizeSpecificSkillBonus } from '@/types/character';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
+import type {
+  FeatDefinitionJsonData, CharacterFeatInstance, Character, AbilityScores, Skill as SkillType,
+  SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown, AggregatedFeatEffects, ComboboxOption, NoteEffectDetail, LocalizedString, DndClassOption
+} from '@/types/character-core';
+import {
+  checkFeatPrerequisites, calculateAvailableFeats
+} from '@/types/character';
+import type { CustomSkillDefinition } from '@/lib/definitions-store';
+import { Button } from '@/components/ui/button'; // Already here
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollText, Info, Loader2, Dices } from 'lucide-react';
+import { ScrollText, Info, Loader2, Dices, Lock } from 'lucide-react'; // Added Lock
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
@@ -21,7 +25,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import type { RollDialogProps } from '@/components/RollDialog';
 import type { GenericBreakdownItem } from '@/types/character-core';
-import type { AggregatedFeatEffects } from '@/types/character-core';
+import type { AggregatedFeatEffects as AggFeatsType } from '@/types/character-core'; // Renamed to avoid conflict
 import { useDefinitionsStore } from '@/lib/definitions-store';
 
 
@@ -59,7 +63,7 @@ interface SkillsFormSectionProps {
   onOpenSkillInfoDialog: (skillId: string) => void;
   onOpenRollDialog: (data: Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'>) => void;
   characterLevel: number;
-  aggregatedFeatEffects: AggregatedFeatEffects | null;
+  aggregatedFeatEffects: AggFeatsType | null;
 }
 
 
@@ -272,9 +276,12 @@ const SkillsFormSectionComponent = ({
     return (
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-3">
-            <ScrollText className="h-8 w-8 text-primary" />
-            <div><Skeleton className="h-7 w-20 mb-1" /><Skeleton className="h-4 w-48" /></div>
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <ScrollText className="h-8 w-8 text-primary" />
+              <div><Skeleton className="h-7 w-20 mb-1" /><Skeleton className="h-4 w-48" /></div>
+            </div>
+            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
           </div>
         </CardHeader>
         <CardContent>
@@ -294,14 +301,19 @@ const SkillsFormSectionComponent = ({
     <>
     <Card>
       <CardHeader>
-        <div className="flex items-center space-x-3">
-          <ScrollText className="h-8 w-8 text-primary" />
-          <div>
-            <CardTitle className="text-2xl font-serif">{UI_STRINGS.skillsPanelTitle}</CardTitle>
-            <CardDescription>
-              {UI_STRINGS.skillsPanelDescription}
-            </CardDescription>
+        <div className="flex justify-between items-start">
+          <div className="flex items-center space-x-3">
+            <ScrollText className="h-8 w-8 text-primary" />
+            <div>
+              <CardTitle className="text-2xl font-serif">{UI_STRINGS.skillsPanelTitle}</CardTitle>
+              <CardDescription>
+                {UI_STRINGS.skillsPanelDescription}
+              </CardDescription>
+            </div>
           </div>
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
+            <Lock className="h-5 w-5" />
+          </Button>
         </div>
       </CardHeader>
       <CardContent>

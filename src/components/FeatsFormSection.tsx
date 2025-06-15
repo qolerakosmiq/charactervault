@@ -10,9 +10,9 @@ import {
   checkFeatPrerequisites, calculateAvailableFeats
 } from '@/types/character';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button'; // Already here
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, PlusCircle, Trash2, Pencil, Loader2, Info, Edit3 } from 'lucide-react';
+import { Award, PlusCircle, Trash2, Pencil, Loader2, Info, Edit3, Lock } from 'lucide-react'; // Added Lock
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from './FeatSelectionDialog';
 import { SpecializationInputDialog } from './SpecializationInputDialog';
@@ -487,9 +487,12 @@ const FeatsFormSectionComponent = ({
     return (
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-3">
-            <Award className="h-8 w-8 text-primary" />
-            <div><Skeleton className="h-7 w-16 mb-1" /><Skeleton className="h-4 w-40" /></div>
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <Award className="h-8 w-8 text-primary" />
+              <div><Skeleton className="h-7 w-16 mb-1" /><Skeleton className="h-4 w-40" /></div>
+            </div>
+            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
           </div>
         </CardHeader>
         <CardContent>
@@ -507,12 +510,17 @@ const FeatsFormSectionComponent = ({
     <>
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-3">
-            <Award className="h-8 w-8 text-primary" />
-            <div>
-              <CardTitle className="text-2xl font-serif">{UI_STRINGS.featsPanelTitle}</CardTitle>
-              <CardDescription>{UI_STRINGS.featsPanelDescription}</CardDescription>
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <Award className="h-8 w-8 text-primary" />
+              <div>
+                <CardTitle className="text-2xl font-serif">{UI_STRINGS.featsPanelTitle}</CardTitle>
+                <CardDescription>{UI_STRINGS.featsPanelDescription}</CardDescription>
+              </div>
             </div>
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
+              <Lock className="h-5 w-5" />
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col">
@@ -631,6 +639,3 @@ export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
     
     
     
-
-
-

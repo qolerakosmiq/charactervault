@@ -6,8 +6,8 @@ import type { Character, AbilityScores, InfoDialogContentType } from '@/types/ch
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Heart, Activity, Loader2, Info } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Heart, Activity, Loader2, Info, Lock } from 'lucide-react'; // Added Lock
+import { Button } from '@/components/ui/button'; // Already here
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
@@ -89,9 +89,12 @@ const HealthPanelComponent = ({
     return (
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-3">
-            <Heart className="h-8 w-8 text-primary" />
-            <Skeleton className="h-7 w-24" />
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <Heart className="h-8 w-8 text-primary" />
+              <Skeleton className="h-7 w-24" />
+            </div>
+            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
           </div>
           <Skeleton className="h-4 w-48" />
         </CardHeader>
@@ -159,11 +162,18 @@ const HealthPanelComponent = ({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center space-x-3">
-          <Heart className="h-8 w-8 text-primary" />
-          <CardTitle className="text-2xl font-serif">{UI_STRINGS.healthPanelTitle || "Health & Vitality"}</CardTitle>
+        <div className="flex justify-between items-start">
+          <div className="flex items-center space-x-3">
+            <Heart className="h-8 w-8 text-primary" />
+            <div>
+              <CardTitle className="text-2xl font-serif">{UI_STRINGS.healthPanelTitle || "Health & Vitality"}</CardTitle>
+              <CardDescription>{UI_STRINGS.healthPanelDescription || "Manage hit points, damage, and related attributes."}</CardDescription>
+            </div>
+          </div>
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
+            <Lock className="h-5 w-5" />
+          </Button>
         </div>
-        <CardDescription>{UI_STRINGS.healthPanelDescription || "Manage hit points, damage, and related attributes."}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
 

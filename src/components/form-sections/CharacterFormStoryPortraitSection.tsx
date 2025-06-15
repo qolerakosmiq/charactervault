@@ -7,11 +7,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
-import { UserSquare2, Palette, Loader2 } from 'lucide-react';
+import { UserSquare2, Palette, Loader2, Lock } from 'lucide-react'; // Added Lock
 import type { Character } from '@/types/character';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
+import { Button } from '@/components/ui/button'; // Added import
 
 const DEBOUNCE_DELAY = 400; // ms
 
@@ -57,12 +58,15 @@ const CharacterFormStoryPortraitSectionComponent = ({
     return (
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-3">
-            <UserSquare2 className="h-8 w-8 text-primary" />
-            <div>
-              <Skeleton className="h-7 w-64 mb-1" />
-              <Skeleton className="h-4 w-80" />
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <UserSquare2 className="h-8 w-8 text-primary" />
+              <div>
+                <Skeleton className="h-7 w-64 mb-1" />
+                <Skeleton className="h-4 w-80" />
+              </div>
             </div>
+            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
           </div>
         </CardHeader>
         <CardContent className="space-y-4 pt-2">
@@ -103,16 +107,21 @@ const CharacterFormStoryPortraitSectionComponent = ({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center space-x-3">
-          <UserSquare2 className="h-8 w-8 text-primary" />
-          <div>
-            <CardTitle className="text-2xl font-serif">
-              {UI_STRINGS.storyPortraitPanelTitle || "Personal Story & Appearance"}
-            </CardTitle>
-            <CardDescription>
-              {UI_STRINGS.storyPortraitPanelDescription || "Flesh out your character's background and physical details."}
-            </CardDescription>
+        <div className="flex justify-between items-start">
+          <div className="flex items-center space-x-3">
+            <UserSquare2 className="h-8 w-8 text-primary" />
+            <div>
+              <CardTitle className="text-2xl font-serif">
+                {UI_STRINGS.storyPortraitPanelTitle || "Personal Story & Appearance"}
+              </CardTitle>
+              <CardDescription>
+                {UI_STRINGS.storyPortraitPanelDescription || "Flesh out your character's background and physical details."}
+              </CardDescription>
+            </div>
           </div>
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
+            <Lock className="h-5 w-5" />
+          </Button>
         </div>
       </CardHeader>
       <CardContent className="space-y-4 pt-2">

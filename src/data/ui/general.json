@@ -97,8 +97,8 @@
   "alignmentNotSet": { "en": "Alignment Not Set", "fr": "Alignement non défini" },
   "raceNotSet": { "en": "Race Not Set", "fr": "Race non définie" },
   "classNotSet": { "en": "Class Not Set", "fr": "Classe non définie" },
-  "sizeNotSet": { "en": "Size Not Set", "fr": "Taille non définie" }
+  "sizeNotSet": { "en": "Size Not Set", "fr": "Taille non définie" },
+  "lockButtonAriaLabel": { "en": "Lock section", "fr": "Verrouiller la section" }
 }
-
 
     

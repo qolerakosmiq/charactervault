@@ -7,14 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Progress } from '@/components/ui/progress';
-import { Award, TrendingUp, Loader2 } from 'lucide-react';
+import { Award, TrendingUp, Loader2, Lock } from 'lucide-react'; // Added Lock
 import { useI18n } from '@/context/I18nProvider';
 import type { XpDataEntry } from '@/i18n/i18n-data';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getXpRequiredForLevel } from '@/lib/dnd-utils'; 
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button'; // Already here
 
 const DEBOUNCE_DELAY_XP = 500;
 
@@ -77,9 +77,12 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
     return (
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-3">
-            <Award className="h-8 w-8 text-primary" />
-            <Skeleton className="h-7 w-32" />
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <Award className="h-8 w-8 text-primary" />
+              <Skeleton className="h-7 w-32" />
+            </div>
+            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
           </div>
           <Skeleton className="h-4 w-3/4 mt-1" />
         </CardHeader>
@@ -99,14 +102,21 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center space-x-3">
-          <Award className="h-8 w-8 text-primary" />
-          <CardTitle className="text-2xl font-serif">{UI_STRINGS.experiencePanelTitle || "Experience"}</CardTitle>
+        <div className="flex justify-between items-start">
+          <div className="flex items-center space-x-3">
+            <Award className="h-8 w-8 text-primary" />
+            <div>
+              <CardTitle className="text-2xl font-serif">{UI_STRINGS.experiencePanelTitle || "Experience"}</CardTitle>
+              <CardDescription>{UI_STRINGS.experiencePanelDescription || "Track your character's progression and current experience points."}</CardDescription>
+            </div>
+          </div>
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
+            <Lock className="h-5 w-5" />
+          </Button>
         </div>
-        <CardDescription>{UI_STRINGS.experiencePanelDescription || "Track your character's progression and current experience points."}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 pt-4">
-        <div className="flex items-end gap-x-2"> {/* Changed to items-end for vertical alignment */}
+        <div className="flex items-center gap-x-2"> {/* Changed to items-end for vertical alignment */}
           <div className="w-1/2 space-y-1.5">
             <Label htmlFor="current-xp" className="text-sm font-medium block w-full text-center mb-0">
               <span>{UI_STRINGS.experiencePanelCurrentXpMainLabel || "Current XP"}</span>

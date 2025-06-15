@@ -4,9 +4,9 @@
 import *as React from 'react';
 import type { Character, InfoDialogContentType, AggregatedFeatEffects, ItemDefinition, ItemInstance, GearSlotId } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Shield, Info, Loader2 } from 'lucide-react';
+import { Shield, Info, Loader2, Lock } from 'lucide-react'; // Added Lock
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button'; // Already here
 import { getAbilityModifierByName, getSizeModifierAC } from '@/lib/dnd-utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -96,9 +96,12 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
     return (
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-3">
-            <Shield className="h-8 w-8 text-primary" />
-            <CardTitle className="text-2xl font-serif">{translations?.UI_STRINGS.armorClassPanelTitle || "Armor Class"}</CardTitle>
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <Shield className="h-8 w-8 text-primary" />
+              <CardTitle className="text-2xl font-serif">{translations?.UI_STRINGS.armorClassPanelTitle || "Armor Class"}</CardTitle>
+            </div>
+            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
           </div>
           <CardDescription>{translations?.UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}</CardDescription>
         </CardHeader>
@@ -137,8 +140,8 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
   const equippedShieldDefinition = equippedShieldInstance ? allItemDefinitions.find(def => def.definitionId === equippedShieldInstance.definitionId && def.itemType === 'shield') : undefined;
   const physicalShieldBonus = equippedShieldDefinition?.shieldBonus || 0;
 
-  const totalArmorBonusNormal = calculateTotalAcComponent(character.armorBonus, "armor", physicalArmorBonus, "Normal");
-  const totalShieldBonusNormal = calculateTotalAcComponent(character.shieldBonus, "shield", physicalShieldBonus, "Normal");
+  const totalArmorBonusNormal = calculateTotalAcComponent(0, "armor", physicalArmorBonus, "Normal");
+  const totalShieldBonusNormal = calculateTotalAcComponent(0, "shield", physicalShieldBonus, "Normal");
   const totalNaturalArmorNormal = calculateTotalAcComponent(character.naturalArmor, "natural", 0, "Normal");
   const totalDeflectionBonusNormal = calculateTotalAcComponent(character.deflectionBonus, "deflection", 0, "Normal");
   const totalDodgeBonusNormal = calculateTotalAcComponent(character.dodgeBonus, "dodge", 0, "Normal");
@@ -150,8 +153,8 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
   const calculatedFeatMiscAcBonusTouch = calculateTotalAcComponent(0, "other_feat_bonus", 0, "Touch") + calculateTotalAcComponent(0, "monk_wisdom", 0, "Touch") + calculateTotalAcComponent(0, "monkScaling", 0, "Touch");
   const touchAC = 10 + dexModifier + sizeModAC + totalDeflectionBonusTouch + totalDodgeBonusTouch + calculatedFeatMiscAcBonusTouch + (character.acMiscModifier || 0);
 
-  const totalArmorBonusFlat = calculateTotalAcComponent(character.armorBonus, "armor", physicalArmorBonus, "Flat-Footed");
-  const totalShieldBonusFlat = calculateTotalAcComponent(character.shieldBonus, "shield", physicalShieldBonus, "Flat-Footed");
+  const totalArmorBonusFlat = calculateTotalAcComponent(0, "armor", physicalArmorBonus, "Flat-Footed");
+  const totalShieldBonusFlat = calculateTotalAcComponent(0, "shield", physicalShieldBonus, "Flat-Footed");
   const totalNaturalArmorFlat = calculateTotalAcComponent(character.naturalArmor, "natural", 0, "Flat-Footed");
   const totalDeflectionBonusFlat = calculateTotalAcComponent(character.deflectionBonus, "deflection", 0, "Flat-Footed");
   const calculatedFeatMiscAcBonusFlat = calculateTotalAcComponent(0, "other_feat_bonus", 0, "Flat-Footed") + calculateTotalAcComponent(0, "monk_wisdom", 0, "Flat-Footed") + calculateTotalAcComponent(0, "monkScaling", 0, "Flat-Footed");
@@ -169,14 +172,20 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
     <>
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-3">
-            <Shield className="h-8 w-8 text-primary" />
-            <CardTitle className="text-2xl font-serif">{UI_STRINGS.armorClassPanelTitle || "Armor Class"}</CardTitle>
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <Shield className="h-8 w-8 text-primary" />
+              <div>
+                <CardTitle className="text-2xl font-serif">{UI_STRINGS.armorClassPanelTitle || "Armor Class"}</CardTitle>
+                <CardDescription>{UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}</CardDescription>
+              </div>
+            </div>
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
+              <Lock className="h-5 w-5" />
+            </Button>
           </div>
-          <CardDescription>{UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Main AC Types Display */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-center">
             <div className="p-2 border rounded-md bg-muted/10">
               <Label htmlFor="normal-ac-display" className="text-sm font-medium">{UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
@@ -208,8 +217,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
           </div>
 
           <Separator className="mt-3 mb-1" />
-
-          {/* Temporary Modifier Input */}
+          
           <div className="flex items-center justify-between">
             <Label htmlFor="temporary-ac-modifier-input" className="text-sm font-medium">
               {UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}

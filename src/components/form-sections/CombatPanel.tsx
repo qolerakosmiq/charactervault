@@ -19,9 +19,9 @@ import type {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button'; // Already here
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Swords, Info, Loader2, Dices, Hand, ArrowRightLeft, Activity, Shield as ShieldIcon } from 'lucide-react';
+import { Swords, Info, Loader2, Dices, Hand, ArrowRightLeft, Activity, Shield as ShieldIcon, Lock } from 'lucide-react'; // Added Lock
 import { getAbilityModifierByName, getBab, calculateInitiative, calculateGrapple, getSizeModifierGrapple, getUnarmedGrappleDamage, getSizeModifierAttack } from '@/lib/dnd-utils';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -218,9 +218,12 @@ const CombatPanelComponent = ({
     return (
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-3">
-            <Swords className="h-8 w-8 text-primary" />
-            <Skeleton className="h-7 w-1/2" />
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <Swords className="h-8 w-8 text-primary" />
+              <Skeleton className="h-7 w-1/2" />
+            </div>
+            <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
           </div>
           <Skeleton className="h-4 w-3/4" />
         </CardHeader>
@@ -547,18 +550,18 @@ const CombatPanelComponent = ({
         ? meleeWeaponInstances.find(w => w.instanceId === 'unarmed')?.definition 
         : selectedMeleeWeaponDefinition;
 
-    const weaponDamageString = weaponDefForDamage?.damage && weaponDefForDamage.damage.trim() !== "" ? weaponDefForDamage.damage : undefined;
+    const weaponDamageDiceString = weaponDefForDamage?.damage && weaponDefForDamage.damage.trim() !== "" ? weaponDefForDamage.damage : undefined;
     const critMultiplier = parseCritMultiplier(weaponDefForDamage?.criticalMultiplier);
     const breakdown = getMeleeDamageBonusBreakdownComponentsInternal().filter(item => item.label !== (UI_STRINGS.infoDialogTotalNumericBonusLabel || "Total Numeric Bonus"));
     
     onOpenRollDialog({
       dialogTitle: (UI_STRINGS.rollDialogTitleMeleeDamageFormat || "Melee Damage ({weaponName}: {dice})")
         .replace("{weaponName}", weaponName)
-        .replace("{dice}", weaponDamageString || "N/A"),
+        .replace("{dice}", weaponDamageDiceString || "N/A"),
       rollType: `damage_roll_melee_${selectedMeleeWeaponInstanceId}`,
       baseModifier: calculatedMeleeNumericalDamageBonus,
       calculationBreakdown: breakdown,
-      weaponDamageDiceString: weaponDamageString,
+      weaponDamageDiceString: weaponDamageDiceString,
       weaponCriticalMultiplier: critMultiplier,
       rerollTwentiesForChecks: false,
     });
@@ -567,18 +570,18 @@ const CombatPanelComponent = ({
   const handleOpenRangedDamageRollDialog = () => {
     if (!selectedRangedWeaponDefinition) return;
     const weaponName = getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE);
-    const weaponDamageString = selectedRangedWeaponDefinition.damage && selectedRangedWeaponDefinition.damage.trim() !== "" ? selectedRangedWeaponDefinition.damage : undefined;
+    const weaponDamageDiceString = selectedRangedWeaponDefinition.damage && selectedRangedWeaponDefinition.damage.trim() !== "" ? selectedRangedWeaponDefinition.damage : undefined;
     const critMultiplier = parseCritMultiplier(selectedRangedWeaponDefinition.criticalMultiplier);
     const breakdown = getRangedDamageBonusBreakdownComponentsInternal().filter(item => item.label !== (UI_STRINGS.infoDialogTotalNumericBonusLabel || "Total Numeric Bonus"));
 
     onOpenRollDialog({
       dialogTitle: (UI_STRINGS.rollDialogTitleRangedDamageFormat || "Ranged Damage ({weaponName}: {dice})")
         .replace("{weaponName}", weaponName)
-        .replace("{dice}", weaponDamageString || "N/A"),
+        .replace("{dice}", weaponDamageDiceString || "N/A"),
       rollType: `damage_roll_ranged_${selectedRangedWeaponInstanceId}`,
       baseModifier: calculatedRangedNumericalDamageBonus,
       calculationBreakdown: breakdown,
-      weaponDamageDiceString: weaponDamageString,
+      weaponDamageDiceString: weaponDamageDiceString,
       weaponCriticalMultiplier: critMultiplier,
       rerollTwentiesForChecks: false,
     });
@@ -588,11 +591,18 @@ const CombatPanelComponent = ({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center space-x-3">
-          <Swords className="h-8 w-8 text-primary" />
-          <CardTitle className="text-2xl font-serif">{UI_STRINGS.combatPanelTitle || "Combat Stats"}</CardTitle>
+        <div className="flex justify-between items-start">
+          <div className="flex items-center space-x-3">
+            <Swords className="h-8 w-8 text-primary" />
+            <div>
+              <CardTitle className="text-2xl font-serif">{UI_STRINGS.combatPanelTitle || "Combat Stats"}</CardTitle>
+              <CardDescription>{UI_STRINGS.combatPanelDescription || "Key offensive and grappling statistics."}</CardDescription>
+            </div>
+          </div>
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
+            <Lock className="h-5 w-5" />
+          </Button>
         </div>
-        <CardDescription>{UI_STRINGS.combatPanelDescription || "Key offensive and grappling statistics."}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Row 1: BAB, Initiative */}

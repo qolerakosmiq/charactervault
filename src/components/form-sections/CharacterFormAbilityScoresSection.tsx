@@ -6,7 +6,7 @@ import type { AbilityName, AbilityScores, DetailedAbilityScores, Character, Gene
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dices, Info, Calculator, Loader2 } from 'lucide-react';
+import { Dices, Info, Calculator, Loader2, Lock } from 'lucide-react'; // Added Lock
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -132,9 +132,12 @@ const CharacterFormAbilityScoresSectionComponent = ({
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-            <div className="flex items-center space-x-3">
-              <Dices className="h-8 w-8 text-primary" />
-              <CardTitle className="text-2xl font-serif">Ability Scores</CardTitle>
+            <div className="flex items-center justify-between flex-grow mb-3 sm:mb-0 sm:mr-4">
+              <div className="flex items-center space-x-3">
+                <Dices className="h-8 w-8 text-primary" />
+                <Skeleton className="h-7 w-32" />
+              </div>
+              <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
             </div>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-3 sm:mt-0">
               <Skeleton className="h-9 w-full sm:w-28" />
@@ -167,9 +170,14 @@ const CharacterFormAbilityScoresSectionComponent = ({
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-            <div className="flex items-center space-x-3">
-              <Dices className="h-8 w-8 text-primary" />
-              <CardTitle className="text-2xl font-serif">{UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}</CardTitle>
+            <div className="flex items-center justify-between flex-grow mb-3 sm:mb-0 sm:mr-4">
+              <div className="flex items-center space-x-3">
+                <Dices className="h-8 w-8 text-primary" />
+                <CardTitle className="text-2xl font-serif">{UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}</CardTitle>
+              </div>
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground ml-2 shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
+                <Lock className="h-5 w-5" />
+              </Button>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-3 sm:mt-0">
               <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto">
@@ -309,3 +317,4 @@ const CharacterFormAbilityScoresSectionComponent = ({
 };
 CharacterFormAbilityScoresSectionComponent.displayName = 'CharacterFormAbilityScoresSectionComponent';
 export const CharacterFormAbilityScoresSection = React.memo(CharacterFormAbilityScoresSectionComponent);
+
