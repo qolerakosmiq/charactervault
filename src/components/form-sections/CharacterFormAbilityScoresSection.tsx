@@ -139,10 +139,6 @@ const CharacterFormAbilityScoresSectionComponent = ({
               </div>
               <Skeleton className="h-8 w-8" /> {/* Lock button placeholder */}
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-3 sm:mt-0">
-              <Skeleton className="h-9 w-full sm:w-28" />
-              <Skeleton className="h-9 w-full sm:w-28" />
-            </div>
           </div>
         </CardHeader>
         <CardContent className="pt-2">
@@ -158,6 +154,10 @@ const CharacterFormAbilityScoresSectionComponent = ({
               </div>
             ))}
           </div>
+           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 justify-end">
+              <Skeleton className="h-9 w-full sm:w-28" />
+              <Skeleton className="h-9 w-full sm:w-28" />
+            </div>
         </CardContent>
       </Card>
     );
@@ -177,14 +177,6 @@ const CharacterFormAbilityScoresSectionComponent = ({
               </div>
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground ml-2 shrink-0" aria-label={UI_STRINGS.lockButtonAriaLabel || "Lock section"}>
                 <Lock className="h-5 w-5" />
-              </Button>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-3 sm:mt-0">
-              <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto">
-                <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton || "Roll Scores"}
-              </Button>
-              <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} className="w-full sm:w-auto">
-                <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton || "Point Buy"}
               </Button>
             </div>
           </div>
@@ -284,6 +276,14 @@ const CharacterFormAbilityScoresSectionComponent = ({
             </Badge>
             {UI_STRINGS.abilityScoresNote_suffix || ", not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score."}
            </p>
+           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 pt-4 border-t border-border/30 justify-end">
+              <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto">
+                <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton || "Roll Scores"}
+              </Button>
+              <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} className="w-full sm:w-auto">
+                <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton || "Point Buy"}
+              </Button>
+            </div>
         </CardContent>
       </Card>
       <AbilityScoreRollerDialog
