@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Backpack, PlusCircle, Trash2, Edit3 } from 'lucide-react';
+import { Backpack, PlusCircle, Trash2, Edit3, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
@@ -311,5 +311,3 @@ export function InventoryListing({ inventory, onItemAdd, onItemRemove, onItemUpd
     </Card>
   );
 }
-
-```
