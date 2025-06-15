@@ -43,9 +43,6 @@ const getFeatSourceClassName = (featId: string, allClasses: readonly DndClassOpt
   if (featId.startsWith('class-')) {
     const parts = featId.split('-');
     if (parts.length > 1) {
-      // Assumes class ID is the segment after "class-" e.g., "class-fighter-..." -> "fighter"
-      // More robust parsing might be needed if IDs have multiple hyphens before class name part.
-      // For now, taking the first part after "class-".
       const classIdCandidate = parts[1];
       const classDef = allClasses.find(c => c.id === classIdCandidate);
       return classDef ? classDef.label : null;
@@ -325,12 +322,14 @@ const FeatsFormSectionComponent = ({
       : null;
     const isCustomDefinition = definition.isCustom;
 
+
     const localizedDescription = definition.description ? getLocalizedString(definition.description, currentLang, undefined, `feats.${definition.id}.description`) : "";
     const showDescriptionLine = localizedDescription.trim() !== "";
 
+
     let finalBenefitText = "";
     if (definition.effectsText) {
-      finalBenefitText = getLocalizedString(definition.effectsText, currentLang, undefined, `feats.${definition.id}.effectsText`);
+        finalBenefitText = getLocalizedString(definition.effectsText, currentLang, undefined, `feats.${definition.id}.effectsText`);
     }
     const noteEffects = (definition.effects?.filter(e => e.type === 'note') as NoteEffectDetail[] | undefined) || [];
     if (noteEffects.length > 0) {
@@ -341,6 +340,7 @@ const FeatsFormSectionComponent = ({
       }
     }
     const showBenefitLine = finalBenefitText.trim() !== "";
+
 
     const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(
       definition,
@@ -360,14 +360,6 @@ const FeatsFormSectionComponent = ({
         if (specialPrereqTextContent.trim() === "") specialPrereqTextContent = undefined;
     }
     const hasPrereqsToShow = prereqMessages.length > 0 || !!specialPrereqTextContent;
-
-    let featCategoryBadgeText: string | null = null;
-    if (definition.category) {
-      const categoryLabelKey = `featCategory_${definition.category}` as keyof typeof UI_STRINGS;
-      if (UI_STRINGS[categoryLabelKey]) {
-        featCategoryBadgeText = UI_STRINGS[categoryLabelKey];
-      }
-    }
     
     let classSourceBadgeText: string | null = null;
     let showOriginalGrantedNote = instance.isGranted && !!instance.grantedNote;
@@ -376,8 +368,8 @@ const FeatsFormSectionComponent = ({
       let parsedClassNameFromNote: string | null = null;
       if (instance.grantedNote) {
         const note = instance.grantedNote;
-        const classProfMatch = note.match(/^Class Proficiency \(([^)]+)\)$/);
-        const levelNoteMatch = note.match(/^\d+(?:st|nd|rd|th) Level \(([^)]+)\)$/);
+        const classProfMatch = note.match(/^(?:Class Proficiency|Compétence de classe) \(([^)]+)\)$/i);
+        const levelNoteMatch = note.match(/^(?:\d+(?:st|nd|rd|th) Level|Niveau \d+) \(([^)]+)\)$/i);
         const simpleParenMatch = note.match(/^\(([^)]+)\)$/);
 
         if (classProfMatch && classProfMatch[1]) {
@@ -391,9 +383,14 @@ const FeatsFormSectionComponent = ({
 
       if (parsedClassNameFromNote && translations.DND_CLASSES.some(c => c.label === parsedClassNameFromNote)) {
         classSourceBadgeText = parsedClassNameFromNote;
-        // If the note was fully consumed by the class badge, don't show original note
-        if (instance.grantedNote === `Class Proficiency (${parsedClassNameFromNote})` || 
-            instance.grantedNote?.match(new RegExp(`^\\d+(st|nd|rd|th) Level \\(${parsedClassNameFromNote}\\)$`)) ||
+        const profStringEn = `Class Proficiency (${parsedClassNameFromNote})`;
+        const profStringFr = `Compétence de classe (${parsedClassNameFromNote})`;
+        const levelStringEnRegex = new RegExp(`^\\d+(st|nd|rd|th) Level \\(${parsedClassNameFromNote}\\)$`);
+        const levelStringFrRegex = new RegExp(`^Niveau \\d+ \\(${parsedClassNameFromNote}\\)$`);
+
+        if (instance.grantedNote === profStringEn || instance.grantedNote === profStringFr ||
+            (instance.grantedNote && levelStringEnRegex.test(instance.grantedNote)) ||
+            (instance.grantedNote && levelStringFrRegex.test(instance.grantedNote)) ||
             instance.grantedNote === `(${parsedClassNameFromNote})` ) {
           showOriginalGrantedNote = false;
         }
@@ -401,7 +398,7 @@ const FeatsFormSectionComponent = ({
           const classNameFromId = getFeatSourceClassName(definition.id, translations.DND_CLASSES);
           if (classNameFromId) {
               classSourceBadgeText = classNameFromId;
-              showOriginalGrantedNote = false; // If ID gave class, likely don't need note unless it's extra details
+              showOriginalGrantedNote = false; 
           }
       }
     }
@@ -412,8 +409,7 @@ const FeatsFormSectionComponent = ({
           <div className="flex items-baseline flex-wrap gap-x-1.5">
             <h4 className="font-medium text-foreground inline-flex items-center">{featLabel}</h4>
             {featTypeLabel && <Badge variant="outline" className="whitespace-nowrap text-xs">{featTypeLabel}</Badge>}
-            {isCustomDefinition && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel}</Badge>}
-            {featCategoryBadgeText && <Badge variant="secondary" className="whitespace-nowrap text-xs">{featCategoryBadgeText}</Badge>}
+            {isCustomDefinition && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
             {classSourceBadgeText && <Badge variant="secondary" className="whitespace-nowrap text-xs">{classSourceBadgeText}</Badge>}
             {showOriginalGrantedNote && instance.grantedNote && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
           </div>
@@ -424,7 +420,7 @@ const FeatsFormSectionComponent = ({
              <p className="text-xs text-muted-foreground whitespace-normal" dangerouslySetInnerHTML={{ __html: localizedDescription }} />
           ) : (
             <p className="text-xs text-muted-foreground whitespace-normal italic">
-              {UI_STRINGS.featDescriptionNoneLabel}
+              {UI_STRINGS.featDescriptionNoneLabel || "No specific description provided."}
             </p>
           )}
 
@@ -432,7 +428,7 @@ const FeatsFormSectionComponent = ({
             <p className="text-xs whitespace-normal">
               <strong className="font-semibold text-muted-foreground">{UI_STRINGS.featBenefitLabel}</strong>
               {' '}
-              <span className="text-foreground" dangerouslySetInnerHTML={{ __html: finalBenefitText }} />
+              <span className="text-foreground whitespace-normal" dangerouslySetInnerHTML={{ __html: finalBenefitText }} />
             </p>
           )}
 
@@ -633,4 +629,5 @@ export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
     
     
     
+
 
