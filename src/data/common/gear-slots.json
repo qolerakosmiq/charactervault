@@ -1,0 +1,117 @@
+
+{
+  "GEAR_SLOTS_DATA": [
+    {
+      "id": "main-hand",
+      "label": { "en": "Main Hand", "fr": "Main principale" },
+      "description": { "en": "Primary weapon or item held in the dominant hand.", "fr": "Arme principale ou objet tenu dans la main dominante." },
+      "tags": ["weapon", "held"],
+      "mutuallyExclusiveWith": ["two-hand"]
+    },
+    {
+      "id": "off-hand",
+      "label": { "en": "Off Hand", "fr": "Main secondaire" },
+      "description": { "en": "Secondary weapon, shield, or item held in the non-dominant hand.", "fr": "Arme secondaire, bouclier ou objet tenu dans la main non dominante." },
+      "tags": ["weapon", "shield", "held"],
+      "mutuallyExclusiveWith": ["two-hand"]
+    },
+    {
+      "id": "two-hand",
+      "label": { "en": "Two-Handed", "fr": "À deux mains" },
+      "description": { "en": "For items that require both hands, like a greatsword or heavy crossbow.", "fr": "Pour les objets nécessitant les deux mains, comme une épée à deux mains ou une arbalète lourde." },
+      "tags": ["weapon", "held"],
+      "mutuallyExclusiveWith": ["main-hand", "off-hand", "shield"]
+    },
+    {
+      "id": "armor-body",
+      "label": { "en": "Body Armor", "fr": "Armure corporelle" },
+      "description": { "en": "Primary protective garment.", "fr": "Vêtement de protection principal." },
+      "tags": ["armor"]
+    },
+    {
+      "id": "shield",
+      "label": { "en": "Shield", "fr": "Bouclier" },
+      "description": { "en": "Held in one hand for defense.", "fr": "Tenu dans une main pour la défense." },
+      "tags": ["shield", "held"],
+      "mutuallyExclusiveWith": ["two-hand"]
+    },
+    {
+      "id": "head",
+      "label": { "en": "Head", "fr": "Tête" },
+      "description": { "en": "Helmets, circlets, hats, etc.", "fr": "Casques, diadèmes, chapeaux, etc." },
+      "tags": ["headwear"]
+    },
+    {
+      "id": "eyes",
+      "label": { "en": "Eyes", "fr": "Yeux" },
+      "description": { "en": "Goggles, lenses, etc.", "fr": "Lunettes, lentilles, etc." },
+      "tags": ["eyewear"]
+    },
+    {
+      "id": "neck",
+      "label": { "en": "Neck", "fr": "Cou" },
+      "description": { "en": "Amulets, necklaces, pendants, etc.", "fr": "Amulettes, colliers, pendentifs, etc." },
+      "tags": ["jewelry", "amulet"]
+    },
+    {
+      "id": "shoulders",
+      "label": { "en": "Shoulders", "fr": "Épaules" },
+      "description": { "en": "Cloaks, capes, mantles (that primarily cover shoulders).", "fr": "Manteaux, capes, pèlerines (qui couvrent principalement les épaules)." },
+      "tags": ["cloak", "cape"]
+    },
+    {
+      "id": "back",
+      "label": { "en": "Back", "fr": "Dos" },
+      "description": { "en": "Backpacks, bedrolls, some types of long cloaks or capes.", "fr": "Sacs à dos, sacs de couchage, certains types de longs manteaux ou capes." },
+      "tags": ["container", "cape"]
+    },
+    {
+      "id": "chest",
+      "label": { "en": "Chest", "fr": "Torse" },
+      "description": { "en": "Robes, vestments, shirts (sometimes layered with armor).", "fr": "Robes, vêtements, chemises (parfois superposés à une armure)." },
+      "tags": ["clothing", "robe"]
+    },
+    {
+      "id": "bracers",
+      "label": { "en": "Wrists/Arms", "fr": "Poignets/Bras" },
+      "description": { "en": "Bracers, armbands, etc.", "fr": "Brassards, bracelets, etc." },
+      "tags": ["bracer"]
+    },
+    {
+      "id": "gloves",
+      "label": { "en": "Hands", "fr": "Mains" },
+      "description": { "en": "Gloves, gauntlets.", "fr": "Gants, gantelets." },
+      "tags": ["glove"]
+    },
+    {
+      "id": "ring-1",
+      "label": { "en": "Ring 1", "fr": "Anneau 1" },
+      "description": { "en": "First finger ring slot.", "fr": "Premier emplacement d'anneau." },
+      "tags": ["ring", "jewelry"]
+    },
+    {
+      "id": "ring-2",
+      "label": { "en": "Ring 2", "fr": "Anneau 2" },
+      "description": { "en": "Second finger ring slot.", "fr": "Second emplacement d'anneau." },
+      "tags": ["ring", "jewelry"]
+    },
+    {
+      "id": "belt",
+      "label": { "en": "Waist", "fr": "Taille" },
+      "description": { "en": "Belts, sashes, girdles.", "fr": "Ceintures, écharpes, ceinturons." },
+      "tags": ["belt"]
+    },
+    {
+      "id": "boots",
+      "label": { "en": "Feet", "fr": "Pieds" },
+      "description": { "en": "Boots, shoes, sandals.", "fr": "Bottes, chaussures, sandales." },
+      "tags": ["footwear"]
+    },
+    {
+      "id": "ammunition-quiver",
+      "label": { "en": "Ammunition/Quiver", "fr": "Munitions/Carquois" },
+      "description": { "en": "Slot for holding arrows, bolts, or sling bullets.", "fr": "Emplacement pour flèches, carreaux ou balles de fronde." },
+      "tags": ["ammunition", "container"]
+    }
+  ]
+}

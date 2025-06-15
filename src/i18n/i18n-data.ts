@@ -7,7 +7,7 @@ import type {
   DndRaceOption, DndClassOption, DndDeityOption, DeityAttribute, AbilityScores, SavingThrows,
   ResistanceValue, SpeedDetails, CharacterClass, LanguageId, LanguageOption, ClassAttribute,
   DomainDefinition, DomainId, MagicSchoolId, MagicSchoolDefinition, SpeedType, LocalizedString,
-  ClassSpecificUIBlock, FeatChoiceFilter
+  ClassSpecificUIBlock, FeatChoiceFilter, GearSlot, GearSlotId, ItemDefinition, ItemDefinitionId
 } from '@/types/character-core';
 import type { LanguageCode } from './config';
 import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from './config';
@@ -193,6 +193,16 @@ export interface SkillsJson {
   SKILL_SYNERGIES_DATA: SkillSynergiesJsonData;
 }
 
+export interface GearSlotsJson {
+  GEAR_SLOTS_DATA: GearSlot[];
+}
+
+export interface ItemsWeaponsJson { ITEM_DEFINITIONS_WEAPONS_DATA: ItemDefinition[]; }
+export interface ItemsArmorJson { ITEM_DEFINITIONS_ARMOR_DATA: ItemDefinition[]; }
+export interface ItemsShieldsJson { ITEM_DEFINITIONS_SHIELDS_DATA: ItemDefinition[]; }
+export interface ItemsMagicItemsJson { ITEM_DEFINITIONS_MAGIC_ITEMS_DATA: ItemDefinition[]; }
+// Add more item types as needed
+
 export type RawUiStringsData = Record<string, LocalizedString>;
 
 
@@ -208,6 +218,12 @@ export interface LocaleDataBundle {
   xpTable: XpJson;
   domains: DomainJson;
   magicSchools: MagicSchoolsJson;
+  gearSlots: GearSlotsJson; // Added
+  item_definitions_weapons: ItemsWeaponsJson; // Added
+  item_definitions_armor: ItemsArmorJson; // Added
+  item_definitions_shields: ItemsShieldsJson; // Added
+  item_definitions_magic_items: ItemsMagicItemsJson; // Added
+  // Add more item types as needed
   uiStrings: RawUiStringsData;
 }
 
@@ -231,6 +247,12 @@ export interface ProcessedSiteData {
   DAMAGE_REDUCTION_TYPES: readonly { id: DamageReductionTypeValue; label: string }[];
   DAMAGE_REDUCTION_RULES_OPTIONS: readonly { id: string; label: string }[];
   ALIGNMENT_PREREQUISITE_OPTIONS: readonly { id: string; label: string }[];
+  GEAR_SLOTS: readonly GearSlot[]; // Added
+  ITEM_DEFINITIONS_WEAPONS: readonly ItemDefinition[]; // Added
+  ITEM_DEFINITIONS_ARMOR: readonly ItemDefinition[]; // Added
+  ITEM_DEFINITIONS_SHIELDS: readonly ItemDefinition[]; // Added
+  ITEM_DEFINITIONS_MAGIC_ITEMS: readonly ItemDefinition[]; // Added
+  // Add more item types as needed
   DEFAULT_ABILITIES: AbilityScores;
   DEFAULT_SAVING_THROWS: SavingThrows;
   DEFAULT_RESISTANCE_VALUE: ResistanceValue;
@@ -297,14 +319,14 @@ export function getLocalizedString(
 
 
 function processLocalizedArray<
-  T extends { id: string; label: LocalizedString; [key: string]: any },
-  R extends { id: string; label: string; [key: string]: any }
+  T extends { id?: ItemDefinitionId | DndClassId | DndRaceId | DomainId | MagicSchoolId | FeatTypeString | LanguageId | GearSlotId | string; definitionId?: ItemDefinitionId; label: LocalizedString; [key: string]: any }, // Ensure id is generic enough, or use definitionId
+  R extends { id?: ItemDefinitionId | DndClassId | DndRaceId | DomainId | MagicSchoolId | FeatTypeString | LanguageId | GearSlotId | string; definitionId?: ItemDefinitionId; label: string; [key: string]: any }
 >(
   items: T[] | undefined,
   lang: LanguageCode,
   itemTypeForDebug: string,
   otherFieldsToLocalize?: Array<keyof T>,
-  idFieldName: keyof T = 'id' as keyof T
+  idFieldName: keyof T = ('id' as keyof T) // Default to 'id', but allow override (like 'definitionId' for ItemDefinition)
 ): R[] {
   if (!items || !Array.isArray(items)) {
     throw new Error(`[DATA_ERROR] Expected an array for ${itemTypeForDebug} but received: ${JSON.stringify(items)}`);
@@ -312,10 +334,10 @@ function processLocalizedArray<
   return items.map(item_raw => {
     const itemId = item_raw[idFieldName] as string;
     if (typeof itemId !== 'string' || !itemId) {
-        throw new Error(`[DATA_ERROR] Invalid or missing ID for item in ${itemTypeForDebug}: ${JSON.stringify(item_raw)}`);
+        throw new Error(`[DATA_ERROR] Invalid or missing ID (using field '${String(idFieldName)}') for item in ${itemTypeForDebug}: ${JSON.stringify(item_raw)}`);
     }
     const newItem: any = { ...item_raw };
-    newItem.id = itemId; 
+    newItem[idFieldName] = itemId; // Ensure the correct ID field is preserved
     newItem.label = getLocalizedString(item_raw.label, lang, DEFAULT_LANGUAGE, `${itemTypeForDebug}.${itemId}.label`);
 
     if (otherFieldsToLocalize) {
@@ -655,6 +677,42 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   }}).sort((a,b) => a.label.localeCompare(b.label));
   const ALIGNMENT_PREREQUISITE_OPTIONS = [...specificAlignmentOptions, ...genericAlignmentOptions].sort((a,b) => a.label.localeCompare(b.label));
 
+  const GEAR_SLOTS = processLocalizedArray<GearSlot, GearSlot>(
+    getAndValidateArray(bundle.gearSlots?.GEAR_SLOTS_DATA, 'Gear Slots'),
+    lang,
+    'gearSlots',
+    ['description']
+  );
+
+  const ITEM_DEFINITIONS_WEAPONS = processLocalizedArray<ItemDefinition, ItemDefinition>(
+    getAndValidateArray(bundle.item_definitions_weapons?.ITEM_DEFINITIONS_WEAPONS_DATA, 'Weapon Item Definitions'),
+    lang,
+    'item_definitions_weapons',
+    ['description', 'damageType', 'specialProperties'],
+    'definitionId'
+  );
+  const ITEM_DEFINITIONS_ARMOR = processLocalizedArray<ItemDefinition, ItemDefinition>(
+    getAndValidateArray(bundle.item_definitions_armor?.ITEM_DEFINITIONS_ARMOR_DATA, 'Armor Item Definitions'),
+    lang,
+    'item_definitions_armor',
+    ['description'],
+    'definitionId'
+  );
+  const ITEM_DEFINITIONS_SHIELDS = processLocalizedArray<ItemDefinition, ItemDefinition>(
+    getAndValidateArray(bundle.item_definitions_shields?.ITEM_DEFINITIONS_SHIELDS_DATA, 'Shield Item Definitions'),
+    lang,
+    'item_definitions_shields',
+    ['description'],
+    'definitionId'
+  );
+  const ITEM_DEFINITIONS_MAGIC_ITEMS = processLocalizedArray<ItemDefinition, ItemDefinition>(
+    getAndValidateArray(bundle.item_definitions_magic_items?.ITEM_DEFINITIONS_MAGIC_ITEMS_DATA, 'Magic Item Definitions'),
+    lang,
+    'item_definitions_magic_items',
+    ['description', 'specialProperties'],
+    'definitionId'
+  );
+
   const UI_STRINGS_RAW = getAndValidateObject(bundle.uiStrings, 'UI Strings');
   const UI_STRINGS: Record<string, string> = {};
   for (const key in UI_STRINGS_RAW) {
@@ -705,6 +763,11 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     DAMAGE_REDUCTION_TYPES,
     DAMAGE_REDUCTION_RULES_OPTIONS,
     ALIGNMENT_PREREQUISITE_OPTIONS,
+    GEAR_SLOTS,
+    ITEM_DEFINITIONS_WEAPONS,
+    ITEM_DEFINITIONS_ARMOR,
+    ITEM_DEFINITIONS_SHIELDS,
+    ITEM_DEFINITIONS_MAGIC_ITEMS,
     DEFAULT_ABILITIES: processedDefaultAbilities,
     DEFAULT_SAVING_THROWS: getAndValidateObject(bundle.base?.DEFAULT_SAVING_THROWS_DATA, 'Default Saving Throws'),
     DEFAULT_RESISTANCE_VALUE: getAndValidateObject(bundle.base?.DEFAULT_RESISTANCE_VALUE_DATA, 'Default Resistance Value'),

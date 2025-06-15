@@ -1,5 +1,5 @@
 
-import type { LocaleDataBundle, RawClassDataEntry, RawUiStringsData, LocalizedString } from './i18n-data';
+import type { LocaleDataBundle, RawClassDataEntry, RawUiStringsData, LocalizedString, GearSlotsJson, ItemsWeaponsJson, ItemsArmorJson, ItemsShieldsJson, ItemsMagicItemsJson } from './i18n-data';
 import type { LanguageCode } from './config';
 
 // Helper for dynamic imports, assuming files are in 'src/data/'
@@ -29,13 +29,22 @@ const commonDataFileConfigs = [
   { path: 'common/races', key: 'DND_RACES_DATA', isArray: true },
   { path: 'common/skills', isArray: false },
   { path: 'common/xp', isArray: false },
-  { path: 'feats/common-feats', isArray: false }
+  { path: 'feats/common-feats', isArray: false },
+  { path: 'common/gear-slots', key: 'GEAR_SLOTS_DATA', isArray: true } // Added gear-slots
 ];
 
 
 const classFileNames = [
   'barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk',
   'paladin', 'ranger', 'rogue', 'sorcerer', 'soulknife', 'wizard'
+];
+
+const itemFileConfigs = [
+  { path: 'items/weapons', key: 'ITEM_DEFINITIONS_WEAPONS_DATA', bundleKey: 'item_definitions_weapons', isArray: true },
+  { path: 'items/armor', key: 'ITEM_DEFINITIONS_ARMOR_DATA', bundleKey: 'item_definitions_armor', isArray: true },
+  { path: 'items/shields', key: 'ITEM_DEFINITIONS_SHIELDS_DATA', bundleKey: 'item_definitions_shields', isArray: true },
+  { path: 'items/magic-items', key: 'ITEM_DEFINITIONS_MAGIC_ITEMS_DATA', bundleKey: 'item_definitions_magic_items', isArray: true },
+  // Add more item file configs here
 ];
 
 const uiStringFiles = [
@@ -46,11 +55,20 @@ const uiStringFiles = [
 export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBundle> {
   const commonDataPromises = commonDataFileConfigs.map(config => loadJson(config.path, config.isArray, config.key));
   const classPromises = classFileNames.map(className => loadJson(`classes/${className}`));
+  const itemDataPromises = itemFileConfigs.map(config => loadJson(config.path, config.isArray, config.key));
   const uiStringPromises = uiStringFiles.map(fileKey => loadJson(fileKey));
 
-  const commonDataResults = await Promise.all(commonDataPromises);
-  const classDataResults = await Promise.all(classPromises);
-  const uiStringResults = await Promise.all(uiStringPromises);
+  const [
+    commonDataResults,
+    classDataResults,
+    itemDataResults,
+    uiStringResults
+  ] = await Promise.all([
+    Promise.all(commonDataPromises),
+    Promise.all(classPromises),
+    Promise.all(itemDataPromises),
+    Promise.all(uiStringPromises)
+  ]);
   
   const bundle: Partial<LocaleDataBundle> = {};
 
@@ -64,9 +82,14 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
   bundle.skills = commonDataResults[7] as LocaleDataBundle['skills'];
   bundle.xpTable = commonDataResults[8] as LocaleDataBundle['xpTable'];
   bundle.commonFeats = commonDataResults[9] as LocaleDataBundle['commonFeats'];
+  bundle.gearSlots = commonDataResults[10] as LocaleDataBundle['gearSlots'];
 
 
-  bundle.allClasses = classDataResults.filter(c => c && typeof c === 'object' && c.id) as RawClassDataEntry[]; // Check for 'id' now
+  bundle.allClasses = classDataResults.filter(c => c && typeof c === 'object' && c.id) as RawClassDataEntry[];
+
+  itemFileConfigs.forEach((config, index) => {
+    (bundle as any)[config.bundleKey] = itemDataResults[index] as any;
+  });
 
   const mergedUiStrings: RawUiStringsData = uiStringResults.reduce((acc, currentFileContent) => {
     if (currentFileContent && typeof currentFileContent === 'object' && !Array.isArray(currentFileContent)) {
@@ -100,8 +123,14 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
     xpTable: bundle.xpTable || { XP_TABLE_DATA: [], EPIC_LEVEL_XP_INCREASE: 0 },
     domains: bundle.domains || { DND_DOMAINS_DATA: [] },
     magicSchools: bundle.magicSchools || { DND_MAGIC_SCHOOLS_DATA: [] },
+    gearSlots: bundle.gearSlots || { GEAR_SLOTS_DATA: [] },
+    item_definitions_weapons: bundle.item_definitions_weapons || { ITEM_DEFINITIONS_WEAPONS_DATA: [] },
+    item_definitions_armor: bundle.item_definitions_armor || { ITEM_DEFINITIONS_ARMOR_DATA: [] },
+    item_definitions_shields: bundle.item_definitions_shields || { ITEM_DEFINITIONS_SHIELDS_DATA: [] },
+    item_definitions_magic_items: bundle.item_definitions_magic_items || { ITEM_DEFINITIONS_MAGIC_ITEMS_DATA: [] },
     uiStrings: bundle.uiStrings || {},
   };
 
   return finalBundle;
 }
+
