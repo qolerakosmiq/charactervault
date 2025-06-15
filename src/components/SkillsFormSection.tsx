@@ -287,6 +287,7 @@ const SkillsFormSectionComponent = ({
     );
   }
   const { DND_CLASSES, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES, SIZES, UI_STRINGS, ABILITY_LABELS } = translations;
+  const intelligenceAbilityLabel = ABILITY_LABELS.find(al => al.id === 'intelligence')?.label || 'Intelligence';
 
   return (
     <>
@@ -321,26 +322,30 @@ const SkillsFormSectionComponent = ({
              {firstClass?.className && classLabel ? (
                 <>
                   <p>
-                    ({UI_STRINGS.skillPointFormulaClassBaseLabel.replace("{classLabel}", classLabel)}{'\u00A0'}<Badge variant="outline">{baseSkillPointsForClass}</Badge>
-                    {' + '}{UI_STRINGS.skillPointFormulaIntModLabel}{'\u00A0'}<Badge variant="outline">{intelligenceModifier}</Badge>
+                    {UI_STRINGS.skillPointCalcOpenParen}
+                    {UI_STRINGS.skillPointCalcClassBase.replace("{classLabel}", classLabel)} <Badge variant="outline">{baseSkillPointsForClass}</Badge>
+                    {UI_STRINGS.skillPointCalcPlus}{UI_STRINGS.skillPointCalcAbilityMod.replace("{abilityLabel}", intelligenceAbilityLabel)} <Badge variant="outline">{intelligenceModifier}</Badge>
                     {(racialBonusSkillPoints || 0) !== 0 && (
                         <>
-                        {' + '}{UI_STRINGS.skillPointFormulaRacialModLabel}{'\u00A0'}<Badge variant="outline">{racialBonusSkillPoints || 0}</Badge>
+                          {UI_STRINGS.skillPointCalcPlus}{UI_STRINGS.skillPointCalcRacialBonus} <Badge variant="outline">{racialBonusSkillPoints || 0}</Badge>
                         </>
                     )}
-                    {UI_STRINGS.skillPointFormulaMinOneLabel}) × <Badge variant="outline">4</Badge>{'\u00A0'}{UI_STRINGS.skillPointFormulaFirstLevelFactor}
-                    {' = '}{'\u00A0'}<span className="font-bold text-primary">{pointsForFirstLevel}</span>
+                    {UI_STRINGS.skillPointCalcMinOne}
+                    {UI_STRINGS.skillPointCalcCloseParenX} <Badge variant="outline">4</Badge>
+                    {UI_STRINGS.skillPointCalcForFirstLevel} <span className="font-bold text-primary">{pointsForFirstLevel}</span>
                   </p>
                   <p>
-                    + ({UI_STRINGS.skillPointFormulaClassBaseLabel.replace("{classLabel}", classLabel)}{'\u00A0'}<Badge variant="outline">{baseSkillPointsForClass}</Badge>
-                    {' + '}{UI_STRINGS.skillPointFormulaIntModLabel}{'\u00A0'}<Badge variant="outline">{intelligenceModifier}</Badge>
+                    {UI_STRINGS.skillPointCalcPlus}{UI_STRINGS.skillPointCalcOpenParen}
+                    {UI_STRINGS.skillPointCalcClassBase.replace("{classLabel}", classLabel)} <Badge variant="outline">{baseSkillPointsForClass}</Badge>
+                    {UI_STRINGS.skillPointCalcPlus}{UI_STRINGS.skillPointCalcAbilityMod.replace("{abilityLabel}", intelligenceAbilityLabel)} <Badge variant="outline">{intelligenceModifier}</Badge>
                     {(racialBonusSkillPoints || 0) !== 0 && (
                         <>
-                        {' + '}{UI_STRINGS.skillPointFormulaRacialModLabel}{'\u00A0'}<Badge variant="outline">{racialBonusSkillPoints || 0}</Badge>
+                          {UI_STRINGS.skillPointCalcPlus}{UI_STRINGS.skillPointCalcRacialBonus} <Badge variant="outline">{racialBonusSkillPoints || 0}</Badge>
                         </>
                     )}
-                    {UI_STRINGS.skillPointFormulaMinOneLabel}) × <Badge variant="outline">{characterLevel > 1 ? (characterLevel -1) : 0}</Badge>{'\u00A0'}{UI_STRINGS.skillPointFormulaLevelProgressionFactor}
-                    {' = '}{'\u00A0'}<span className="font-bold text-primary">{pointsFromLevelProgression}</span>
+                    {UI_STRINGS.skillPointCalcMinOne}
+                    {UI_STRINGS.skillPointCalcCloseParenX} <Badge variant="outline">{characterLevel > 1 ? (characterLevel - 1) : 0}</Badge>
+                    {UI_STRINGS.skillPointCalcForProgression} <span className="font-bold text-primary">{pointsFromLevelProgression}</span>
                   </p>
                 </>
               ) : (
@@ -467,7 +472,5 @@ const SkillsFormSectionComponent = ({
 SkillsFormSectionComponent.displayName = 'SkillsFormSectionComponent';
 
 export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
-
-    
 
     

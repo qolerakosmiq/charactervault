@@ -124,7 +124,6 @@
   "resistanceLabelSpell": { "en": "Spell Resistance", "fr": "Résistance à la magie" },
   "resistanceLabelPower": { "en": "Power Resistance", "fr": "Résistance au pouvoir" },
   "resistanceLabelFortification": { "en": "Fortification", "fr": "Fortification" },
-
   "skillsPanelTitle": { "en": "Skills", "fr": "Compétences" },
   "skillsPanelDescription": { "en": "Allocate skill points based on your class and Intelligence.", "fr": "Allouez des points de compétence en fonction de votre classe et de votre Intelligence." },
   "skillPointsAvailableLabel": { "en": "Skill Points Available: ", "fr": "Points de compétence disponibles : " },
@@ -140,14 +139,15 @@
   "skillsTableMaxHeader": { "en": "Max", "fr": "Max" },
   "skillsTableTooltipInfoForSkill": { "en": "Info for {skillName}", "fr": "Infos pour {skillName}" },
   "rollDialogSkillCheckAriaLabel": { "en": "Roll {skillName} Check", "fr": "Lancer un test de {skillName}" },
-
-  "skillPointFormulaClassBaseLabel": { "en": "{classLabel} Base", "fr": "Base {classLabel}" },
-  "skillPointFormulaIntModLabel": { "en": "INT Mod", "fr": "Mod. INT" },
-  "skillPointFormulaRacialModLabel": { "en": "Racial", "fr": "Racial" },
-  "skillPointFormulaMinOneLabel": { "en": " (min 1)", "fr": " (min 1)" },
-  "skillPointFormulaFirstLevelFactor": { "en": "for 1st Level", "fr": "pour 1er Niveau" },
-  "skillPointFormulaLevelProgressionFactor": { "en": "for other levels", "fr": "pour autres niveaux" },
+  "skillPointCalcOpenParen": { "en": "(", "fr": "(" },
+  "skillPointCalcCloseParenX": { "en": ") ×", "fr": ") ×" },
+  "skillPointCalcClassBase": { "en": "{classLabel} Base", "fr": "Base {classLabel}" },
+  "skillPointCalcPlus": { "en": " + ", "fr": " + " },
+  "skillPointCalcAbilityMod": { "en": "{abilityLabel} Modifier", "fr": "Modificateur {abilityLabel}" },
+  "skillPointCalcRacialBonus": { "en": "Racial Bonus", "fr": "Bonus Racial" },
+  "skillPointCalcMinOne": { "en": ", Minimum 1", "fr": ", Minimum 1" },
+  "skillPointCalcForFirstLevel": { "en": "for First Level = ", "fr": "pour le Premier Niveau = " },
+  "skillPointCalcForProgression": { "en": "for Progression Levels = ", "fr": "pour les Niveaux de Progression = " },
   "skillPointFormulaSelectClassPrompt": { "en": "Select a class to see detailed skill point calculation.", "fr": "Sélectionnez une classe pour voir le calcul détaillé des points de compétence." }
 }
-
     
