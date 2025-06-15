@@ -266,7 +266,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
             })}
           </div>
 
-           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 pt-4 border-t border-border/30 justify-end">
+           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 border-t border-border/30 justify-end">
               <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto">
                 <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton || "Roll Scores"}
               </Button>
@@ -274,7 +274,6 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton || "Point Buy"}
               </Button>
             </div>
-
            <p className="text-sm text-muted-foreground mt-4 pt-2 border-t border-border/30">
             <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.abilityScoresNote_prefix || "<strong>Note:</strong> The " }} />
             <Badge variant="outline">
