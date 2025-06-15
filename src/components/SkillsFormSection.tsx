@@ -131,9 +131,10 @@ const SkillsFormSectionComponent = ({
       return { totalSkillPointsAvailable: 0, skillPointsLeft: 0, classLabel: "", baseSkillPointsForClass: 0, racialBonusSkillPoints: 0, intelligenceModifier: 0, pointsForFirstLevel: 0, pointsFromLevelProgression: 0, totalSkillPointsSpent: 0 };
     }
 
-    const { CLASS_SKILL_POINTS_BASE, DND_CLASSES, DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA } = translations;
+    const { CLASS_SKILL_POINTS_BASE, DND_CLASSES, DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA, UI_STRINGS } = translations;
+    const currentClassDef = firstClass?.className ? DND_CLASSES.find(c => c.id === firstClass.className) : undefined;
+    const currentClassLabel = currentClassDef?.label || (firstClass?.className || "");
 
-    const currentClassLabel = firstClass?.className ? DND_CLASSES.find(c => c.id === firstClass.className)?.label || firstClass.className : "";
     const currentIntMod = (actualAbilityScores && actualAbilityScores.intelligence !== undefined)
       ? getAbilityModifierByName(actualAbilityScores, 'intelligence')
       : 0;
@@ -356,17 +357,18 @@ const SkillsFormSectionComponent = ({
            </div>
         </div>
         <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
-          <div className="space-y-1 min-w-[680px]">
-            <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
-              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableClassHeader || "Class<br/>Skill?" }} />
-              <span className="pl-1">{UI_STRINGS.skillsTableSkillHeader || "Skill Name"}</span>
-              <span className="text-left w-20 pl-1">{UI_STRINGS.skillsTableTotalBonusHeader || "Total"}</span>
-              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableKeyAbilityHeader || "Key<br/>Ability" }} />
-              <span className="text-center w-12">{UI_STRINGS.skillsTableAbilityModHeader || "Ability Mod"}</span>
-              <span className="text-center w-12">{UI_STRINGS.skillsTableMiscModHeader || "Misc Mod"}</span>
-              <span className="text-center w-32">{UI_STRINGS.skillsTableRanksHeader || "Ranks"}</span>
-              <span className="text-center w-12">{UI_STRINGS.skillsTableCostHeader || "Cost"}</span>
-              <span className="text-center w-10">{UI_STRINGS.skillsTableMaxHeader || "Max"}</span>
+          <div className="space-y-1 min-w-[720px]"> {/* Increased min-width to accommodate new icon column */}
+            <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
+              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableClassHeader }} />
+              <span className="pl-1">{UI_STRINGS.skillsTableSkillHeader}</span>
+              <span className="text-right w-10 pr-1">{UI_STRINGS.skillsTableTotalBonusHeader}</span>
+              <span className="w-14"></span> {/* Empty header for icons */}
+              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableKeyAbilityHeader }} />
+              <span className="text-center w-12">{UI_STRINGS.skillsTableAbilityModHeader}</span>
+              <span className="text-center w-12">{UI_STRINGS.skillsTableMiscModHeader}</span>
+              <span className="text-center w-32">{UI_STRINGS.skillsTableRanksHeader}</span>
+              <span className="text-center w-12">{UI_STRINGS.skillsTableCostHeader}</span>
+              <span className="text-center w-10">{UI_STRINGS.skillsTableMaxHeader}</span>
             </div>
 
             {validSkillsForDisplay.map(skillInstanceProp => {
@@ -399,7 +401,7 @@ const SkillsFormSectionComponent = ({
               const currentStepForInput = (skillDef.keyAbility === 'none' || skillInstanceProp.isClassSkill) ? 1 : 0.5;
 
               return (
-                <div key={skillInstanceProp.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 transition-colors text-sm">
+                <div key={skillInstanceProp.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 transition-colors text-sm">
                   <div className="flex justify-center w-10">
                     <Checkbox
                       id={`skill_class_${skillInstanceProp.id}`}
@@ -416,13 +418,13 @@ const SkillsFormSectionComponent = ({
                           {skillDef.isCustom && (<>{'\u00A0'}<Badge variant="outline">{UI_STRINGS.badgeCustomLabel}</Badge></>)}
                       </Label>
                   </div>
-                  <div className="flex items-center justify-end w-20 pr-1">
-                    <span className="font-bold text-accent text-xl">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
+                  <span className="font-bold text-accent text-xl w-10 text-right pr-1">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
+                  <div className="flex items-center justify-start w-14"> {/* Cell for icons */}
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-foreground"
+                      className="h-6 w-6 text-muted-foreground hover:text-foreground"
                       onClick={() => handleTriggerSkillInfoDialog(skillInstanceProp.id)}
                       aria-label={UI_STRINGS.skillsTableTooltipInfoForSkill.replace("{skillName}", skillDef.name)}
                     >
