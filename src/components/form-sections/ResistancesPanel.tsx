@@ -55,8 +55,8 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
   ], []);
 
   const otherNumericResistancesFields: Array<{ field: ResistanceFieldKeySheet; labelKey: keyof NonNullable<NonNullable<typeof translations>['UI_STRINGS']>; Icon: React.ElementType; unit?: string; fieldPrefix?: string }> = React.useMemo(() => [
-    { field: 'spellResistance', labelKey: 'resistanceLabelSpellResistance', Icon: Sigma, fieldPrefix: 'form-res' },
-    { field: 'powerResistance', labelKey: 'resistanceLabelPowerResistance', Icon: Brain, fieldPrefix: 'form-res' },
+    { field: 'spellResistance', labelKey: 'resistanceLabelSpell', Icon: Sigma, fieldPrefix: 'form-res' },
+    { field: 'powerResistance', labelKey: 'resistanceLabelPower', Icon: Brain, fieldPrefix: 'form-res' },
     { field: 'fortification', labelKey: 'resistanceLabelFortification', Icon: ShieldCheck, unit: '%', fieldPrefix: 'form-res' },
   ], []);
 
@@ -433,6 +433,5 @@ const ResistancesPanelComponent = ({ characterData, onResistanceChange, onDamage
 };
 ResistancesPanelComponent.displayName = 'ResistancesPanelComponent';
 export const ResistancesPanel = React.memo(ResistancesPanelComponent);
-
 
     

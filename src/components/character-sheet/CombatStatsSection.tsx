@@ -123,8 +123,8 @@ export function CombatStatsSection({
   ];
 
   const otherNumericResistancesFields: Array<{ field: ResistanceFieldKey; labelKey: keyof typeof UI_STRINGS; Icon: React.ElementType; unit?: string; fieldPrefix?: string }> = [
-    { field: 'spellResistance', labelKey: 'resistanceLabelSpellResistance', Icon: Sigma, fieldPrefix: 'sheet-res' },
-    { field: 'powerResistance', labelKey: 'resistanceLabelPowerResistance', Icon: Brain, fieldPrefix: 'sheet-res' },
+    { field: 'spellResistance', labelKey: 'resistanceLabelSpell', Icon: Sigma, fieldPrefix: 'sheet-res' },
+    { field: 'powerResistance', labelKey: 'resistanceLabelPower', Icon: Brain, fieldPrefix: 'sheet-res' },
     { field: 'fortification', labelKey: 'resistanceLabelFortification', Icon: ShieldCheck, unit: '%', fieldPrefix: 'sheet-res' },
   ];
 
