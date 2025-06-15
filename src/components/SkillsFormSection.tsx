@@ -369,11 +369,11 @@ const SkillsFormSectionComponent = ({
               const keyAbility = skillDef.keyAbility;
               const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === keyAbility);
 
-              let keyAbilityDisplay = 'N/A';
+              let keyAbilityDisplay = '';
               if (keyAbility && keyAbility !== 'none' && abilityLabelInfo) {
                 keyAbilityDisplay = abilityLabelInfo.abbr;
               } else if (keyAbility === 'none') {
-                keyAbilityDisplay = '';
+                keyAbilityDisplay = ''; // Or 'N/A' if preferred for no ability
               }
 
               const baseAbilityMod = (keyAbility && keyAbility !== 'none')
@@ -406,7 +406,7 @@ const SkillsFormSectionComponent = ({
                   <div className="flex items-center">
                       <Label htmlFor={`skill_ranks_${skillInstanceProp.id}`} className="text-sm pr-1 leading-tight flex-grow flex items-center">
                           {skillDef.name}
-                          {skillDef.isCustom && (<>{'\u00A0'}<Badge variant="outline" className="text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge></>)}
+                          {skillDef.isCustom && (<>{'\u00A0'}<Badge variant="outline" className="whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge></>)}
                       </Label>
                   </div>
                   <div className="flex items-center justify-end w-20 pr-1">
@@ -432,7 +432,9 @@ const SkillsFormSectionComponent = ({
                         <Dices className="h-4 w-4" />
                     </Button>
                   </div>
-                  <span className="text-sm text-muted-foreground text-center w-10">{keyAbilityDisplay}</span>
+                  <span className="text-sm text-muted-foreground text-center w-10">
+                    {keyAbilityDisplay ? <Badge variant="outline" className="font-normal">{keyAbilityDisplay}</Badge> : ''}
+                  </span>
                   <span className="text-sm text-center w-12">{baseAbilityMod >= 0 ? '+' : ''}{baseAbilityMod}</span>
                   <span className="text-sm text-center w-12">{calculatedMiscModifier >= 0 ? '+' : ''}{calculatedMiscModifier}</span>
                   <div className="w-32 flex justify-center">
@@ -465,4 +467,5 @@ SkillsFormSectionComponent.displayName = 'SkillsFormSectionComponent';
 export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
 
     
+
 
