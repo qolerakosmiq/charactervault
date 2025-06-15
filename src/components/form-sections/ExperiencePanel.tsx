@@ -2,6 +2,7 @@
 'use client';
 
 import *as React from 'react';
+import type { MouseEvent } from 'react'; // Import MouseEvent
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -13,7 +14,7 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getXpRequiredForLevel } from '@/lib/dnd-utils'; 
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button'; // Added Button import
+import { Button } from '@/components/ui/button';
 
 const DEBOUNCE_DELAY_XP = 500;
 
@@ -61,11 +62,11 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
     return Math.min(100, (progressInCurrentLevel / xpNeededForThisLevel) * 100);
   }, [localCurrentXp, xpForCurrentLevelStart, xpForNextLevel]);
 
-  const handleLevelUp = () => {
+  const handleLevelUpClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault(); // Explicitly prevent default form submission behavior
     if (xpForNextLevel !== Infinity && localCurrentXp < xpForNextLevel) {
-      // Set XP to the exact amount needed for the next level
       const newXpToReachNextLevel = xpForNextLevel;
-      setLocalCurrentXp(newXpToReachNextLevel); // This will trigger the debounced onXpChange
+      setLocalCurrentXp(newXpToReachNextLevel);
     }
   };
 
@@ -86,7 +87,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-6 w-full" />
           <Skeleton className="h-4 w-1/2 mx-auto" />
-          <Skeleton className="h-10 w-24 mx-auto" /> {/* Skeleton for Level Up button */}
+          <Skeleton className="h-10 w-24 mx-auto" />
         </CardContent>
       </Card>
     );
@@ -149,7 +150,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
         
         {!isMaxLevel && (
           <div className="pt-2 text-center">
-            <Button onClick={handleLevelUp} disabled={isMaxLevel} size="sm">
+            <Button onClick={handleLevelUpClick} disabled={isMaxLevel} size="sm">
               <TrendingUp className="mr-2 h-4 w-4" />
               {UI_STRINGS.experiencePanelLevelUpButton || "Level Up"}
             </Button>
@@ -167,4 +168,3 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
 ExperiencePanelComponent.displayName = "ExperiencePanelComponent";
 export const ExperiencePanel = React.memo(ExperiencePanelComponent);
 
-    
