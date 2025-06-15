@@ -330,19 +330,17 @@ const FeatsFormSectionComponent = ({
     const isCustomDefinition = definition.isCustom;
 
     // --- DESCRIPTION ---
-    let localizedDescription: string | undefined = undefined;
-    if (definition.description) { // Check if description exists before trying to localize
-        localizedDescription = getLocalizedString(definition.description, currentLang, undefined, `feats.${definition.id}.description`);
-    }
+    const localizedDescription = getLocalizedString(definition.description, currentLang, undefined, `feats.${definition.id}.description`); // Mandatory field, getLocalizedString handles missing/empty
+    const showDescriptionLine = !!(localizedDescription && localizedDescription.trim() !== "");
 
     // --- BENEFIT ---
     let finalBenefitText = "";
-    if (definition.effectsText) {
+    if (definition.effectsText) { // Optional field
         finalBenefitText = getLocalizedString(definition.effectsText, currentLang, undefined, `feats.${definition.id}.effectsText`);
     }
     const noteEffects = (definition.effects?.filter(e => e.type === 'note') as NoteEffectDetail[] | undefined) || [];
     if (noteEffects.length > 0) {
-      const noteText = noteEffects.map(ne => ne.text).join(' ');
+      const noteText = noteEffects.map(ne => ne.text).join(' '); // text is already localized string
       if (noteText.trim() !== "") {
         if (finalBenefitText.trim() !== "") finalBenefitText += " ";
         finalBenefitText += noteText.trim();
@@ -365,7 +363,7 @@ const FeatsFormSectionComponent = ({
       UI_STRINGS
     );
     let specialPrereqTextContent: string | undefined = undefined;
-    if (definition.prerequisites?.special) {
+    if (definition.prerequisites?.special) { // Optional field
         specialPrereqTextContent = getLocalizedString(definition.prerequisites.special, currentLang, undefined, `feats.${definition.id}.prereq.special`);
         if (specialPrereqTextContent.trim() === "") specialPrereqTextContent = undefined;
     }
@@ -374,52 +372,71 @@ const FeatsFormSectionComponent = ({
 
     return (
       <div key={instance.instanceId} className="group flex items-start justify-between py-2 transition-colors">
-        <div className="flex-grow mr-2 space-y-1 text-xs text-muted-foreground">
+        <div className="flex-grow mr-2 space-y-1 text-sm"> {/* Base text size sm, no text-muted-foreground here */}
           <div className="flex items-baseline flex-wrap gap-x-1.5">
-            {featSource && <Badge variant="secondary" className="whitespace-nowrap">{featSource}</Badge>}
             <h4 className="font-medium text-foreground inline-flex items-center text-sm">
               {featLabel}
             </h4>
             {featTypeLabel && <Badge variant="outline" className="whitespace-nowrap text-xs">{featTypeLabel}</Badge>}
             {isCustomDefinition && <Badge variant="outline" className="text-xs">{UI_STRINGS.badgeCustomLabel}</Badge>}
+            {featSource && <Badge variant="secondary" className="whitespace-nowrap">{featSource}</Badge>}
             {instance.grantedNote && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
           </div>
           {definition.requiresSpecialization && instance.specializationDetail && <p className="text-xs text-muted-foreground ml-1 italic">({instance.specializationDetail})</p>}
 
-          { (localizedDescription && localizedDescription.trim() !== "") ? (
-            <p className="text-xs text-muted-foreground whitespace-normal">
-              <strong className="text-muted-foreground">{UI_STRINGS.featDescriptionLabel}</strong>{' '}
+          {/* Description */}
+          {showDescriptionLine ? (
+            <p className="text-foreground whitespace-normal">
               <span dangerouslySetInnerHTML={{ __html: localizedDescription }} />
             </p>
           ) : (
-            <p className="text-xs text-muted-foreground whitespace-normal">
-              <strong className="text-muted-foreground">{UI_STRINGS.featDescriptionLabel}</strong>{' '}
-              <span>{UI_STRINGS.featDescriptionNoneLabel}</span>
+            <p className="text-muted-foreground whitespace-normal italic">
+              {UI_STRINGS.featDescriptionNoneLabel}
             </p>
           )}
 
+          {/* Benefit */}
           {showBenefitLine && (
-            <p className="text-xs text-muted-foreground whitespace-normal">
-              <strong className="text-muted-foreground">{UI_STRINGS.featBenefitLabel}</strong>{' '}
-              <span dangerouslySetInnerHTML={{ __html: finalBenefitText }} />
+            <p className="whitespace-normal">
+              <strong className="font-semibold text-muted-foreground">{UI_STRINGS.featBenefitLabel}</strong>
+              {' '}
+              <span className="text-foreground" dangerouslySetInnerHTML={{ __html: finalBenefitText }} />
             </p>
           )}
 
+          {/* Prerequisites */}
           {hasPrereqsToShow && (
-            <p className="text-xs text-muted-foreground whitespace-normal">
-              <strong className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel}</strong>{' '}
+            <p className="whitespace-normal">
+              <strong className="font-semibold text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel}</strong>
+              {' '}
               <>
                 {prereqMessages.map((msg, idx, arr) => (
                   <React.Fragment key={idx}>
-                    <span className={cn(!msg.isMet ? 'text-destructive' : 'text-muted-foreground')} dangerouslySetInnerHTML={{ __html: msg.text }} />
+                    <span className={cn(!msg.isMet ? 'text-destructive' : 'text-foreground')} dangerouslySetInnerHTML={{ __html: msg.text }} />
                     {idx < arr.length - 1 && ', '}
                   </React.Fragment>
                 ))}
                 {prereqMessages.length > 0 && specialPrereqTextContent && specialPrereqTextContent.trim() !== "" && ', '}
-                {specialPrereqTextContent && specialPrereqTextContent.trim() !== "" && <span dangerouslySetInnerHTML={{ __html: specialPrereqTextContent }} />}
+                {specialPrereqTextContent && specialPrereqTextContent.trim() !== "" && <span className="text-foreground" dangerouslySetInnerHTML={{ __html: specialPrereqTextContent }} />}
               </>
             </p>
           )}
+          {/* Display "None" explicitly if no benefit/prereqs were shown and should have a label */}
+          {!showBenefitLine && (
+             <p className="whitespace-normal">
+              <strong className="font-semibold text-muted-foreground">{UI_STRINGS.featBenefitLabel}</strong>
+              {' '}
+              <span className="text-foreground">{UI_STRINGS.featBenefitNoneLabel}</span>
+            </p>
+          )}
+           {!hasPrereqsToShow && (
+             <p className="whitespace-normal">
+              <strong className="font-semibold text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel}</strong>
+              {' '}
+              <span className="text-foreground">{UI_STRINGS.featPrerequisitesNoneLabel}</span>
+            </p>
+          )}
+
         </div>
         <div className="flex items-center shrink-0">
           {isCustomDefinition && (
