@@ -263,7 +263,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     }
     initialCharData.sizeModifierAttack = getSizeModifierAttack(initialCharData.size, SIZES);
 
-    const tempAggFeats = calculateFeatEffects(initialCharData, allAvailableFeatDefinitions, allItemDefinitions, translations);
+    const tempAggFeats = calculateFeatEffects(initialCharData, allAvailableFeatDefinitions, translations);
     const existingUserDrInstances = initialCharData.damageReduction?.filter(dr => !dr.isGranted) || [];
     let finalDrArray: DamageReductionInstance[] = [...existingUserDrInstances];
 
@@ -297,7 +297,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
   }, [
     isClient, translationsLoading, translations, globalCustomFeatDefinitionsFromStore,
-    globalCustomSkillDefinitionsFromStore, allAvailableFeatDefinitions, allItemDefinitions, // Added allItemDefinitions
+    globalCustomSkillDefinitionsFromStore, allAvailableFeatDefinitions, // allItemDefinitions removed from direct dependency, indirectly via translations
     allAvailableSkillDefinitionsForDisplay, globalCustomSkillDefinitions
   ]);
 
@@ -333,13 +333,13 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
 
   React.useEffect(() => {
-    if (character && translations && allAvailableFeatDefinitions.length > 0 && translations.UI_STRINGS && allItemDefinitions.length > 0) { // Check allItemDefinitions
-      const aggFeatsAndItems = calculateFeatEffects(character, allAvailableFeatDefinitions, allItemDefinitions, translations); // Pass allItemDefinitions
+    if (character && translations && allAvailableFeatDefinitions.length > 0 && translations.UI_STRINGS && translations.UI_STRINGS.currentLangCodeForNotesFallback && allItemDefinitions.length > 0) {
+      const aggFeatsAndItems = calculateFeatEffects(character, allAvailableFeatDefinitions, translations);
       setAggregatedFeatEffects(aggFeatsAndItems);
 
       const detailedScores = calculateDetailedAbilityScores(
         character,
-        aggFeatsAndItems, // Use combined effects for detailed scores
+        aggFeatsAndItems,
         translations.DND_RACES,
         translations.DND_RACE_ABILITY_MODIFIERS_DATA,
         translations.DND_RACE_BASE_MAX_AGE_DATA,
@@ -350,13 +350,13 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       setDetailedAbilityScores(detailedScores);
 
       const conMod = detailedScores ? calculateAbilityModifier(detailedScores.constitution.finalScore) : 0;
-      const featHpBonus = aggFeatsAndItems.hpBonus || 0; // Use combined effects
+      const featHpBonus = aggFeatsAndItems.hpBonus || 0;
       const newMaxHp = (character.baseMaxHp || 0) + conMod + (character.customMaxHpModifier || 0) + featHpBonus;
 
       const existingUserDrInstances = character.damageReduction?.filter(dr => !dr.isGranted) || [];
       let finalDrArray: DamageReductionInstance[] = [...existingUserDrInstances];
 
-      if (aggFeatsAndItems.damageReductions) { // Use combined effects
+      if (aggFeatsAndItems.damageReductions) {
           aggFeatsAndItems.damageReductions.forEach(drEffect => {
               if (drEffect.isActive) {
                   const drValue = typeof drEffect.value === 'number' ? drEffect.value : 0;
@@ -365,7 +365,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
                           id: `granted-dr-${drEffect.sourceFeat?.toString().toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID().substring(0,4)}`,
                           value: drValue,
                           type: drEffect.drType,
-                          rule: 'bypassed-by-type', // Assuming default rule
+                          rule: 'bypassed-by-type',
                           isGranted: true,
                           source: drEffect.sourceFeat || 'Granted Feat/Item'
                       });
@@ -391,7 +391,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         });
       }
     }
-  }, [character, translations, allAvailableFeatDefinitions, allItemDefinitions]); // Added allItemDefinitions
+  }, [character, translations, allAvailableFeatDefinitions, allItemDefinitions]);
 
 
   const actualAbilityScoresForSavesAndSkills = React.useMemo(() => {
@@ -1103,8 +1103,9 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     !character ||
     !translations ||
     !translations.UI_STRINGS ||
-    !translations.DAMAGE_REDUCTION_TYPES || // Added this check
-    !translations.DAMAGE_REDUCTION_RULES_OPTIONS || // Added this check
+    !translations.UI_STRINGS.currentLangCodeForNotesFallback || // Explicit check for the property used
+    !translations.DAMAGE_REDUCTION_TYPES ||
+    !translations.DAMAGE_REDUCTION_RULES_OPTIONS ||
     !detailedAbilityScores ||
     !aggregatedFeatEffects ||
     !coreInfoData ||
@@ -1200,10 +1201,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           </div>
         </div>
 
-        {resistancesData && aggregatedFeatEffects && ( // Ensure aggregatedFeatEffects is passed
+        {resistancesData && aggregatedFeatEffects && ( 
           <ResistancesPanel
             characterData={resistancesData}
-            aggregatedFeatEffects={aggregatedFeatEffects} // Pass it here
+            aggregatedFeatEffects={aggregatedFeatEffects} 
             onResistanceChange={handleResistanceChange}
             onDamageReductionChange={handleDamageReductionChange}
             onOpenResistanceInfoDialog={handleOpenResistanceInfoDialog}
