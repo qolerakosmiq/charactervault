@@ -330,7 +330,7 @@ export interface ItemDefinition {
   // Armor/Shield specific
   armorBonus?: number;
   shieldBonus?: number;
-  maxDexBonus?: number;
+  maxDexBonus?: number | null; // Allow null for shields that don't have a max dex
   armorCheckPenalty?: number;
   spellFailureChance?: number; // As a percentage, e.g., 15 for 15%
   speedWhenWorn?: number; // If different from standard movement
@@ -749,7 +749,7 @@ export type CombatPanelCharacterData = Pick<Character,
   'abilityScores' | 'classes' | 'size' | 'inventory' | 'feats' |
   'babMiscModifier' | 'initiativeMiscModifier' | 'grappleMiscModifier' |
   'grappleDamage_baseNotes' | 'grappleDamage_bonus' | 'grappleWeaponChoice' |
-  'sizeModifierAttack' | 'powerAttackValue' | 'combatExpertiseValue'
+  'sizeModifierAttack' | 'powerAttackValue' | 'combatExpertiseValue' | 'equippedGear'
 >;
 
 
@@ -835,10 +835,43 @@ export type AbilityScoreComponentValue = AggregatedFeatEffectBase & {
   value: number;
 };
 
-// Existing export * from './character-core'; is removed as all types are now in this file.
-// Add back specific exports if they were being used from a separate ./character-core file that has been merged here.
-// For now, this file IS character-core.ts essentially.
+// Static default values (constants) can live here if they don't depend on runtime data like translations.
+export const DEFAULT_ABILITIES_DATA: AbilityScores = {
+  strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10,
+};
 
-// Remove the following line if `character.ts` is now this file or if `character-core.ts` is no longer separate.
-// export * from './character-core';
+export const DEFAULT_SAVING_THROWS_DATA: SavingThrows = {
+  fortitude: { base: 0, magicMod: 0, miscMod: 0 },
+  reflex: { base: 0, magicMod: 0, miscMod: 0 },
+  will: { base: 0, magicMod: 0, miscMod: 0 },
+};
 
+export const DEFAULT_SPEED_DETAILS_DATA: SpeedDetails = { base: 0, miscModifier: 0 };
+export const DEFAULT_SPEED_PENALTIES_DATA = {
+  armorSpeedPenalty_base: 0, armorSpeedPenalty_miscModifier: 0,
+  loadSpeedPenalty_base: 0, loadSpeedPenalty_miscModifier: 0
+};
+export const DEFAULT_RESISTANCE_VALUE_DATA: ResistanceValue = { base: 0, customMod: 0 };
+
+// If this file effectively *is* character-core.ts for this context,
+// then the re-export "export * from './character-core';" would be circular or unnecessary.
+// It should be removed if this file now defines all core character types.
+
+// The problematic line was likely within a constant object that tried to do:
+// grappleDamage_baseNotes: `${someVariableDefinedElsewhere} (...)`
+// All constants here are now static.
+// Any object that was causing the error, if defined in this file,
+// should have its grappleDamage_baseNotes (or similar fields) set to a static string.
+// For example:
+// export const SOME_DEFAULT_CHARACTER_STUB = {
+//   // ... other properties
+//   grappleDamage_baseNotes: "1d3 (Medium Unarmed)", // STATIC VALUE
+//   // ...
+// };
+// However, based on the provided file structure, such an object is more likely
+// to be in `src/lib/character-store.ts` (as `FULL_CHARACTER_DEFAULTS`)
+// or was temporarily introduced here in a previous, uncommitted change.
+// The current provided code for character-core.ts doesn't seem to have this at the module level.
+// But the fix is to ensure no such dynamic initialization happens at the module level in this file.
+
+    

@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -149,7 +148,7 @@ function createBaseCharacterData(
       skills: initialSkillInstances,
       feats: [],
       inventory: [],
-      equippedGear: {},
+      equippedGear: {}, // Initialize equippedGear
       personalStory: '', portraitDataUrl: undefined,
       fireResistance: { ...DEFAULT_RESISTANCE_VALUE }, coldResistance: { ...DEFAULT_RESISTANCE_VALUE }, acidResistance: { ...DEFAULT_RESISTANCE_VALUE }, electricityResistance: { ...DEFAULT_RESISTANCE_VALUE }, sonicResistance: { ...DEFAULT_RESISTANCE_VALUE },
       spellResistance: { ...DEFAULT_RESISTANCE_VALUE }, powerResistance: { ...DEFAULT_RESISTANCE_VALUE }, damageReduction: [], fortification: { ...DEFAULT_RESISTANCE_VALUE },
@@ -954,6 +953,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         classes: character.classes,
         size: character.size,
         inventory: character.inventory,
+        equippedGear: character.equippedGear, // Added equippedGear
         feats: character.feats,
         babMiscModifier: character.babMiscModifier,
         initiativeMiscModifier: character.initiativeMiscModifier,
