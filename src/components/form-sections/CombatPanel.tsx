@@ -205,6 +205,9 @@ const CombatPanelComponent = ({
     totalBonus += weaponEnhancement.damage;
 
     if (powerAttackVal > 0 && (weaponType === 'melee' || weaponType === 'unarmed')) {
+      // For two-handed weapon, power attack bonus is 2x.
+      // For one-handed, it's 1x. For light weapon, it's 0.5x (not implemented yet).
+      // This simple implementation assumes 1x. A more complex check would be needed.
       totalBonus += powerAttackVal;
     }
     return totalBonus;
@@ -335,7 +338,7 @@ const CombatPanelComponent = ({
             const conditionText = UI_STRINGS[conditionTextKey] || effect.condition;
             label = `${label} (${conditionText})`;
         }
-        components.push({label, value: effect.value});
+        components.push({label, value: typeof effect.value === 'number' ? effect.value : 0});
     });
     if (localPowerAttackValue > 0) {
        components.push({ label: UI_STRINGS.powerAttackPenaltyLabel || "Power Attack Penalty", value: -localPowerAttackValue });
@@ -356,8 +359,11 @@ const CombatPanelComponent = ({
   const getMeleeDamageBonusBreakdownComponentsInternal = React.useCallback((): GenericBreakdownItem[] => {
     const components: GenericBreakdownItem[] = [];
     
-    let baseDmg = selectedMeleeWeaponDefinition?.damage || (selectedMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : 'N/A');
-    components.push({ label: UI_STRINGS.attacksPanelBaseWeaponDamageLabel || "Base Weapon Damage", value: baseDmg, isRawValue: true });
+    let baseDmg = selectedMeleeWeaponDefinition?.damage || (selectedMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : undefined);
+    if(baseDmg) {
+      components.push({ label: UI_STRINGS.attacksPanelBaseWeaponDamageLabel || "Base Weapon Damage", value: baseDmg, isRawValue: true });
+    }
+
 
     if (strModifier !== 0 && (selectedMeleeWeaponInstanceId === 'unarmed' || selectedMeleeWeaponDefinition?.weaponType === 'melee' || selectedMeleeWeaponDefinition?.weaponType === 'melee-or-ranged')) {
         components.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel || "Ability Mod ({abilityAbbr})").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.id === 'strength')?.abbr || 'STR'), value: strModifier });
@@ -412,7 +418,7 @@ const CombatPanelComponent = ({
             const conditionText = UI_STRINGS[conditionTextKey] || effect.condition;
             label = `${label} (${conditionText})`;
         }
-         components.push({label, value: effect.value});
+         components.push({label, value: typeof effect.value === 'number' ? effect.value : 0});
     });
     const total = components.filter(c => typeof c.value === 'number').reduce((sum, comp) => sum + (comp.value as number), 0);
     components.push({ label: UI_STRINGS.infoDialogTotalLabel || "Total", value: total, isBold: true });
@@ -427,8 +433,11 @@ const CombatPanelComponent = ({
   const getRangedDamageBonusBreakdownComponentsInternal = React.useCallback((): GenericBreakdownItem[] => {
     if (!selectedRangedWeaponDefinition) return [{label: UI_STRINGS.attacksPanelNoRangedWeapons || "No Ranged Weapon", value: ""}];
     const components: GenericBreakdownItem[] = [];
-    const baseDmg = selectedRangedWeaponDefinition.damage || 'N/A';
-    components.push({ label: UI_STRINGS.attacksPanelBaseWeaponDamageLabel || "Base Weapon Damage", value: baseDmg, isRawValue: true });
+    const baseDmg = selectedRangedWeaponDefinition.damage;
+    if (baseDmg) {
+      components.push({ label: UI_STRINGS.attacksPanelBaseWeaponDamageLabel || "Base Weapon Damage", value: baseDmg, isRawValue: true });
+    }
+
 
     const weaponEnhancement = getWeaponEnhancementBonus(selectedRangedWeaponDefinition);
     if (weaponEnhancement.damage !== 0) {
@@ -533,16 +542,19 @@ const CombatPanelComponent = ({
   };
 
   const handleOpenMeleeDamageRollDialog = () => {
-    const weaponDamageString = selectedMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMeleeWeaponDefinition?.damage || 'N/A';
-    const critMultiplier = parseCritMultiplier(selectedMeleeWeaponDefinition?.criticalMultiplier);
-    
     const weaponName = selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : UI_STRINGS.attacksPanelUnarmedOption || "Unarmed";
+    const weaponDefForDamage = selectedMeleeWeaponInstanceId === 'unarmed' 
+        ? meleeWeaponInstances.find(w => w.instanceId === 'unarmed')?.definition 
+        : selectedMeleeWeaponDefinition;
+
+    const weaponDamageString = weaponDefForDamage?.damage && weaponDefForDamage.damage.trim() !== "" ? weaponDefForDamage.damage : undefined;
+    const critMultiplier = parseCritMultiplier(weaponDefForDamage?.criticalMultiplier);
     const breakdown = getMeleeDamageBonusBreakdownComponentsInternal().filter(item => item.label !== (UI_STRINGS.infoDialogTotalNumericBonusLabel || "Total Numeric Bonus"));
     
     onOpenRollDialog({
       dialogTitle: (UI_STRINGS.rollDialogTitleMeleeDamageFormat || "Melee Damage ({weaponName}: {dice})")
         .replace("{weaponName}", weaponName)
-        .replace("{dice}", weaponDamageString),
+        .replace("{dice}", weaponDamageString || "N/A"),
       rollType: `damage_roll_melee_${selectedMeleeWeaponInstanceId}`,
       baseModifier: calculatedMeleeNumericalDamageBonus,
       calculationBreakdown: breakdown,
@@ -555,14 +567,14 @@ const CombatPanelComponent = ({
   const handleOpenRangedDamageRollDialog = () => {
     if (!selectedRangedWeaponDefinition) return;
     const weaponName = getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE);
-    const weaponDamageString = selectedRangedWeaponDefinition.damage || 'N/A';
+    const weaponDamageString = selectedRangedWeaponDefinition.damage && selectedRangedWeaponDefinition.damage.trim() !== "" ? selectedRangedWeaponDefinition.damage : undefined;
     const critMultiplier = parseCritMultiplier(selectedRangedWeaponDefinition.criticalMultiplier);
     const breakdown = getRangedDamageBonusBreakdownComponentsInternal().filter(item => item.label !== (UI_STRINGS.infoDialogTotalNumericBonusLabel || "Total Numeric Bonus"));
 
     onOpenRollDialog({
       dialogTitle: (UI_STRINGS.rollDialogTitleRangedDamageFormat || "Ranged Damage ({weaponName}: {dice})")
         .replace("{weaponName}", weaponName)
-        .replace("{dice}", weaponDamageString),
+        .replace("{dice}", weaponDamageString || "N/A"),
       rollType: `damage_roll_ranged_${selectedRangedWeaponInstanceId}`,
       baseModifier: calculatedRangedNumericalDamageBonus,
       calculationBreakdown: breakdown,
@@ -861,5 +873,3 @@ const CombatPanelComponent = ({
 };
 CombatPanelComponent.displayName = 'CombatPanelComponent';
 export const CombatPanel = React.memo(CombatPanelComponent);
-
-    

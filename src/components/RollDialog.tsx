@@ -86,7 +86,7 @@ export function RollDialog({
         let multipliedWeaponDiceRollResult = 0;
         const weaponDiceRolls: number[] = [];
 
-        if (weaponDamageDiceString) {
+        if (weaponDamageDiceString && weaponDamageDiceString.trim() !== "" && weaponDamageDiceString !== "0") {
           const numCritRolls = isCritical && weaponCriticalMultiplier && weaponCriticalMultiplier > 1 ? weaponCriticalMultiplier : 1;
           for (let i = 0; i < numCritRolls; i++) {
             const roll = parseAndRollDice(weaponDamageDiceString);
@@ -102,9 +102,11 @@ export function RollDialog({
         const extraDiceRollsBreakdown: string[] = [];
         if (extraDamageDice && extraDamageDice.length > 0) {
           extraDamageDice.forEach(diceStr => {
-            const roll = parseAndRollDice(diceStr);
-            extraDiceRollResult += roll;
-            extraDiceRollsBreakdown.push(`${diceStr} (${roll})`);
+            if (diceStr && diceStr.trim() !== "" && diceStr !== "0") {
+              const roll = parseAndRollDice(diceStr);
+              extraDiceRollResult += roll;
+              extraDiceRollsBreakdown.push(`${diceStr} (${roll})`);
+            }
           });
           if (extraDiceRollsBreakdown.length > 0) {
             setRolledExtraDiceDetails(`${extraDiceRollsBreakdown.join(' + ')} = ${extraDiceRollResult}`);
@@ -114,8 +116,8 @@ export function RollDialog({
         const currentTotalDiceRolled = multipliedWeaponDiceRollResult + extraDiceRollResult;
         const totalDamage = currentTotalDiceRolled + baseModifier;
 
-        setInitialD20Roll(null); // Not applicable for damage
-        setBonusRolls([]);      // Not applicable for damage
+        setInitialD20Roll(null); 
+        setBonusRolls([]);      
         setTotalDiceValue(currentTotalDiceRolled);
         setFinalResult(totalDamage);
         onRoll(currentTotalDiceRolled, baseModifier, totalDamage, weaponDamageDiceString);
@@ -187,7 +189,7 @@ export function RollDialog({
     "text-primary"
   );
 
-  const canBeCritical = isDamageRoll && weaponDamageDiceString && weaponCriticalMultiplier && weaponCriticalMultiplier > 1;
+  const canBeCritical = isDamageRoll && !!weaponDamageDiceString && weaponDamageDiceString.trim() !== "" && weaponDamageDiceString !== "0" && weaponCriticalMultiplier && weaponCriticalMultiplier > 1;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -234,16 +236,16 @@ export function RollDialog({
                       } else if (matchFromRollTypeSkill) {
                           const skillIdParts = rollType.split('_');
                           const skillId = skillIdParts.length > 2 ? skillIdParts.slice(2).join('_') : skillIdParts[1];
-                          const skillDef = translations.SKILL_DEFINITIONS.find(sd => sd.value === skillId);
-                          if (skillDef) abilityKey = skillDef.keyAbility;
+                          const skillDef = translations.SKILL_DEFINITIONS.find(sd => sd.id === skillId); // Check against `id`
+                          if (skillDef) abilityKey = skillDef.keyAbility as string;
                       } else if (matchFromTitle) {
                           const extractedAbility = matchFromTitle[1];
                           const foundLabel = translations.ABILITY_LABELS.find(al => al.abbr === extractedAbility.toUpperCase() || al.label === extractedAbility);
-                          if (foundLabel) abilityKey = foundLabel.value;
+                          if (foundLabel) abilityKey = foundLabel.id; // Use `id`
                       }
 
                       if(abilityKey){
-                          abilityAbbr = translations.ABILITY_LABELS.find(al => al.value === abilityKey)?.abbr;
+                          abilityAbbr = translations.ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr; // Use `id`
                       }
                   }
 
@@ -295,7 +297,7 @@ export function RollDialog({
             <div className={resultCardBackground}>
               {isDamageRoll ? (
                 <>
-                  {isCritical && weaponCriticalMultiplier && weaponCriticalMultiplier > 1 && weaponDamageDiceString && (
+                  {isCritical && weaponCriticalMultiplier && weaponCriticalMultiplier > 1 && weaponDamageDiceString && weaponDamageDiceString.trim() !== "" && weaponDamageDiceString !== "0" && (
                     <div className="text-center mb-1">
                       <Badge variant="destructive" className="text-sm px-2 py-0.5">{UI_STRINGS.rollDialogCriticalHitAppliedLabel || "CRITICAL HIT APPLIED!"}</Badge>
                     </div>
@@ -371,5 +373,3 @@ export function RollDialog({
     </Dialog>
   );
 }
-
-    
