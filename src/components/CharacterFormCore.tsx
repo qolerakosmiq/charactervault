@@ -17,7 +17,7 @@ import type {
 import {
   getNetAgingEffects,
   getRaceSpecialQualities,
-  getInitialCharacterSkills,
+  getInitialCharacterSkills, // This might become unused if logic is fully in createBaseCharacterData
   getGrantedFeatsForCharacter,
   calculateDetailedAbilityScores,
   getRaceSkillPointsBonusPerLevel,
@@ -82,39 +82,40 @@ function createBaseCharacterData(
       SIZES, SKILL_DEFINITIONS, CLASS_SKILLS, DND_RACE_ABILITY_MODIFIERS_DATA
     } = translations;
 
-    const defaultHumanRace = DND_RACES.find(r => r.value === 'human');
-    const defaultRaceValue = defaultHumanRace?.value || (DND_RACES.length > 0 ? DND_RACES[0].value : '');
-    const defaultFighterClass = DND_CLASSES.find(c => c.value === 'fighter');
-    const defaultClassNameValue = defaultFighterClass?.value || (DND_CLASSES.length > 0 ? DND_CLASSES[0].value : '');
+    const defaultHumanRace = DND_RACES.find(r => r.id === 'human');
+    const defaultRaceValue = defaultHumanRace?.id || (DND_RACES.length > 0 ? DND_RACES[0].id : '');
+    const defaultFighterClass = DND_CLASSES.find(c => c.id === 'fighter');
+    const defaultClassNameValue = defaultFighterClass?.id || (DND_CLASSES.length > 0 ? DND_CLASSES[0].id : '');
     const defaultClasses: CharacterClass[] = [{ id: crypto.randomUUID(), className: defaultClassNameValue, level: 1 }];
     const defaultSize: CharacterSize = 'medium';
-    const sizeLabelForGrapple = SIZES.find(s => s.value === defaultSize)?.label || defaultSize;
+    const sizeLabelForGrapple = SIZES.find(s => s.id === defaultSize)?.label || defaultSize;
     const defaultUnarmedGrappleDice = getUnarmedGrappleDamage(defaultSize, SIZES);
     const defaultSizeModifierAttack = getSizeModifierAttack(defaultSize, SIZES);
 
-    const initialSkills = getInitialCharacterSkills(defaultClasses, SKILL_DEFINITIONS, CLASS_SKILLS);
+    // Combine predefined and custom skill definitions for creating instances
+    const allSkillDefinitionsForInstances: Array<{ id: string; label: string; keyAbility: AbilityName; isCustom: boolean }> = [
+      ...SKILL_DEFINITIONS.map(sd => ({ id: sd.id, label: sd.label, keyAbility: sd.keyAbility as AbilityName, isCustom: false })),
+      ...globalCustomSkillDefinitions.map(csd => ({ id: csd.id, label: csd.name, keyAbility: csd.keyAbility, isCustom: true }))
+    ];
 
-    const allSkillDefinitionsForBase = [...SKILL_DEFINITIONS.map(sd => ({...sd, isCustom: false})), ...globalCustomSkillDefinitions.map(csd => ({value: csd.id, label: csd.name, keyAbility: csd.keyAbility, isCustom: true}))];
-
-    const skillsWithAllGlobals = allSkillDefinitionsForBase.map(skillDef => {
-        const existingInstance = initialSkills.find(is => is.id === skillDef.value);
-        if (existingInstance) {
-            return {
-                ...existingInstance,
-                isClassSkill: defaultClasses[0]?.className ? (CLASS_SKILLS[defaultClasses[0].className as keyof typeof CLASS_SKILLS] || []).includes(existingInstance.id) : false,
-            };
-        }
-        return {
-            id: skillDef.value, ranks: 0, miscModifier: 0,
-            isClassSkill: defaultClasses[0]?.className ? (CLASS_SKILLS[defaultClasses[0].className as keyof typeof CLASS_SKILLS] || []).includes(skillDef.value) : false,
-        };
+    const initialSkillInstances = allSkillDefinitionsForInstances.map(skillDef => {
+      const isClassSkill = defaultClasses[0]?.className
+        ? (CLASS_SKILLS[defaultClasses[0].className as keyof typeof CLASS_SKILLS] || []).includes(skillDef.id)
+        : false;
+      return {
+        id: skillDef.id,
+        ranks: 0,
+        miscModifier: 0,
+        isClassSkill: isClassSkill,
+      };
     }).sort((a, b) => {
-        const nameA = allSkillDefinitionsForBase.find(d => d.value === a.id)?.label || '';
-        const nameB = allSkillDefinitionsForBase.find(d => d.value === b.id)?.label || '';
-        return nameA.localeCompare(nameB);
+      const nameA = allSkillDefinitionsForInstances.find(d => d.id === a.id)?.label || '';
+      const nameB = allSkillDefinitionsForInstances.find(d => d.id === b.id)?.label || '';
+      return nameA.localeCompare(nameB);
     });
 
-    const defaultClassDef = DND_CLASSES.find(c => c.value === defaultClassNameValue);
+
+    const defaultClassDef = DND_CLASSES.find(c => c.id === defaultClassNameValue);
     let initialBaseMaxHp = 10;
     if (defaultClassDef?.hitDice) {
         const hitDiceValue = parseInt(defaultClassDef.hitDice.substring(1));
@@ -142,7 +143,7 @@ function createBaseCharacterData(
       grappleMiscModifier: 0, grappleWeaponChoice: 'unarmed', grappleDamage_baseNotes: `${defaultUnarmedGrappleDice} (${sizeLabelForGrapple} Unarmed)`, grappleDamage_bonus: 0,
       savingThrows: JSON.parse(JSON.stringify(DEFAULT_SAVING_THROWS)),
       classes: defaultClasses,
-      skills: skillsWithAllGlobals,
+      skills: initialSkillInstances,
       feats: [],
       inventory: [], personalStory: '', portraitDataUrl: undefined,
       fireResistance: { ...DEFAULT_RESISTANCE_VALUE }, coldResistance: { ...DEFAULT_RESISTANCE_VALUE }, acidResistance: { ...DEFAULT_RESISTANCE_VALUE }, electricityResistance: { ...DEFAULT_RESISTANCE_VALUE }, sonicResistance: { ...DEFAULT_RESISTANCE_VALUE },
@@ -188,15 +189,15 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const allAvailableSkillDefinitionsForDisplay = React.useMemo((): SkillDefinitionJsonData[] => {
     if (translationsLoading || !translations) return [];
     const predefined = translations.SKILL_DEFINITIONS.map(sd => ({
-        value: sd.id, // Changed from sd.value
+        id: sd.id,
         label: sd.label,
         keyAbility: sd.keyAbility as AbilityName,
         description: sd.description,
         isCustom: false,
-        providesSynergies: (translations.SKILL_SYNERGIES as Record<string, any>)[sd.id] || [], // Changed from sd.value
+        providesSynergies: (translations.SKILL_SYNERGIES as Record<string, any>)[sd.id] || [],
     }));
     const custom = globalCustomSkillDefinitions.map(csd => ({
-        value: csd.id,
+        id: csd.id,
         label: csd.name,
         keyAbility: csd.keyAbility,
         description: csd.description,
@@ -214,25 +215,14 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     
     const { CLASS_SKILLS, SIZES, DND_RACES, DND_CLASSES, DND_DOMAINS, DND_DEITIES, XP_TABLE, EPIC_LEVEL_XP_INCREASE, UI_STRINGS } = translations;
 
-    let currentSkills = [...initialCharData.skills];
-    currentSkills = currentSkills.map(skillInstance => ({
+    // Update isClassSkill based on the default class.
+    // createBaseCharacterData should have already populated all skills.
+    let currentSkills = initialCharData.skills.map(skillInstance => ({
         ...skillInstance,
         isClassSkill: initialCharData.classes[0]?.className ? (CLASS_SKILLS[initialCharData.classes[0].className as keyof typeof CLASS_SKILLS] || []).includes(skillInstance.id) : false,
     }));
-
-    const skillInstancesToAdd: SkillType[] = [];
-    globalCustomSkillDefinitions.forEach(globalDef => {
-        if (!currentSkills.find(s => s.id === globalDef.id)) {
-            skillInstancesToAdd.push({
-                id: globalDef.id, ranks: 0, miscModifier: 0,
-                isClassSkill: initialCharData.classes[0]?.className ? (CLASS_SKILLS[initialCharData.classes[0].className as keyof typeof CLASS_SKILLS] || []).includes(globalDef.id) : false
-            });
-        }
-    });
-    if (skillInstancesToAdd.length > 0) {
-        currentSkills = [...currentSkills, ...skillInstancesToAdd];
-    }
-    initialCharData.skills = currentSkills.sort((a, b) => (allAvailableSkillDefinitionsForDisplay.find(d => d.value === a.id)?.label || '').localeCompare(allAvailableSkillDefinitionsForDisplay.find(d => d.value === b.id)?.label || ''));
+    
+    initialCharData.skills = currentSkills.sort((a, b) => (allAvailableSkillDefinitionsForDisplay.find(d => d.id === a.id)?.label || '').localeCompare(allAvailableSkillDefinitionsForDisplay.find(d => d.id === b.id)?.label || ''));
 
     const initialGrantedFeats = getGrantedFeatsForCharacter(
       initialCharData,
@@ -244,23 +234,23 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     const combinedFeatsMap = new Map<string, CharacterFeatInstance>();
     initialGrantedFeats.forEach(inst => combinedFeatsMap.set(inst.instanceId, { ...inst, isGranted: true }));
     userChosenFeats.forEach(inst => {
-      const def = allAvailableFeatDefinitions.find(d => d.id === inst.definitionId); // Use id
-      if (!newGrantedFeats.some(gf => gf.definitionId === inst.definitionId && !def?.canTakeMultipleTimes)) {
+      const def = allAvailableFeatDefinitions.find(d => d.id === inst.definitionId);
+      if (!initialGrantedFeats.some(gf => gf.definitionId === inst.definitionId && !def?.canTakeMultipleTimes)) { // Corrected: initialGrantedFeats
           combinedFeatsMap.set(inst.instanceId, inst);
       }
     });
     
-    initialCharData.feats = Array.from(combinedFeatsMap.values()).sort((a,b) => (allAvailableFeatDefinitions.find(d=>d.id===a.definitionId)?.label||'').localeCompare(allAvailableFeatDefinitions.find(d=>d.id===b.definitionId)?.label||'')); // Use id
+    initialCharData.feats = Array.from(combinedFeatsMap.values()).sort((a,b) => (allAvailableFeatDefinitions.find(d=>d.id===a.definitionId)?.label||'').localeCompare(allAvailableFeatDefinitions.find(d=>d.id===b.definitionId)?.label||''));
 
 
     if (initialCharData.grappleWeaponChoice === 'unarmed') {
         const unarmedDamageDice = getUnarmedGrappleDamage(initialCharData.size, SIZES);
-        const currentSizeLabelGrapple = SIZES.find(s => s.id === initialCharData.size)?.label || initialCharData.size; // Use id
+        const currentSizeLabelGrapple = SIZES.find(s => s.id === initialCharData.size)?.label || initialCharData.size;
         initialCharData.grappleDamage_baseNotes = `${unarmedDamageDice} (${currentSizeLabelGrapple} Unarmed)`;
     }
     initialCharData.sizeModifierAttack = getSizeModifierAttack(initialCharData.size, SIZES);
 
-    const tempAggFeats = calculateFeatEffects(initialCharData, allAvailableFeatDefinitions, translations); // Pass translations
+    const tempAggFeats = calculateFeatEffects(initialCharData, allAvailableFeatDefinitions, translations);
     const existingUserDrInstances = initialCharData.damageReduction?.filter(dr => !dr.isGranted) || [];
     let finalDrArray: DamageReductionInstance[] = [...existingUserDrInstances];
 
@@ -295,7 +285,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   }, [
     isClient, translationsLoading, translations, globalCustomFeatDefinitionsFromStore, 
     globalCustomSkillDefinitionsFromStore, allAvailableFeatDefinitions, 
-    allAvailableSkillDefinitionsForDisplay, globalCustomSkillDefinitions 
+    allAvailableSkillDefinitionsForDisplay, globalCustomSkillDefinitions
   ]);
 
 
@@ -312,7 +302,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const [isCustomFeatDialogOpen, setIsCustomFeatDialogOpen] = React.useState(false);
   const [editingCustomFeatDefinition, setEditingCustomFeatDefinition] = React.useState<(FeatDefinitionJsonData & { isCustom: true }) | undefined>(undefined);
 
-  const [isRollAbilityDialogOpen, setIsRollAbilityDialogOpen] = React.useState(false); // For ability checks
+  const [isRollAbilityDialogOpen, setIsRollAbilityDialogOpen] = React.useState(false);
   const [rollDialogProps, setRollDialogProps] = React.useState<Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'> | null>(null);
 
 
@@ -331,7 +321,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
   React.useEffect(() => {
     if (character && translations && allAvailableFeatDefinitions.length > 0 && translations.UI_STRINGS) { 
-      const aggFeats = calculateFeatEffects(character, allAvailableFeatDefinitions, translations); // Pass translations
+      const aggFeats = calculateFeatEffects(character, allAvailableFeatDefinitions, translations);
       setAggregatedFeatEffects(aggFeats);
       
       const detailedScores = calculateDetailedAbilityScores(
@@ -431,7 +421,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         character.race as DndRaceId,
         translations.DND_RACES,
         translations.DND_RACE_ABILITY_MODIFIERS_DATA,
-        allAvailableSkillDefinitionsForDisplay.map(sdd => ({value: sdd.value, label: sdd.label, keyAbility: sdd.keyAbility})),
+        allAvailableSkillDefinitionsForDisplay.map(sdd => ({id: sdd.id, label: sdd.label, keyAbility: sdd.keyAbility})),
         allAvailableFeatDefinitions,
         translations.ABILITY_LABELS
       );
@@ -556,18 +546,27 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   }, []);
 
   const handleClassChange = React.useCallback((value: DndClassId | string) => {
-    if (!translations || !translations.UI_STRINGS) return; 
+    if (!translations || !translations.UI_STRINGS) {
+        throw new Error("Translations not loaded in handleClassChange");
+    }
     setCharacter(prev => {
       if (!prev) return null;
       const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: value, level: 1 }];
-      const newSkills = prev.skills.map(skillInstance => {
+      
+      const newSkills = allAvailableSkillDefinitionsForDisplay.map(skillDef => {
+          const existingInstance = prev.skills.find(s => s.id === skillDef.id);
           const isNowClassSkill = value ?
-            (translations.CLASS_SKILLS[value as keyof typeof translations.CLASS_SKILLS] || []).includes(skillInstance.id)
+            (translations.CLASS_SKILLS[value as keyof typeof translations.CLASS_SKILLS] || []).includes(skillDef.id)
             : false;
-          return {...skillInstance, isClassSkill: isNowClassSkill };
+          return {
+            id: skillDef.id,
+            ranks: existingInstance?.ranks || 0,
+            miscModifier: existingInstance?.miscModifier || 0,
+            isClassSkill: isNowClassSkill 
+          };
       }).sort((a, b) => {
-        const nameA = allAvailableSkillDefinitionsForDisplay.find(d => d.value === a.id)?.label || '';
-        const nameB = allAvailableSkillDefinitionsForDisplay.find(d => d.value === b.id)?.label || '';
+        const nameA = allAvailableSkillDefinitionsForDisplay.find(d => d.id === a.id)?.label || '';
+        const nameB = allAvailableSkillDefinitionsForDisplay.find(d => d.id === b.id)?.label || '';
         return nameA.localeCompare(nameB);
       });
 
@@ -580,12 +579,12 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       const combinedFeatsMap = new Map<string, CharacterFeatInstance>();
       newGrantedFeats.forEach(inst => combinedFeatsMap.set(inst.instanceId, inst));
       userChosenFeats.forEach(inst => {
-        const def = allAvailableFeatDefinitions.find(d => d.id === inst.definitionId); // Use id
+        const def = allAvailableFeatDefinitions.find(d => d.id === inst.definitionId);
         if (!newGrantedFeats.some(gf => gf.definitionId === inst.definitionId && !def?.canTakeMultipleTimes)) {
             combinedFeatsMap.set(inst.instanceId, inst);
         }
       });
-      const updatedFeats = Array.from(combinedFeatsMap.values()).sort((a,b) => (allAvailableFeatDefinitions.find(d=>d.id===a.definitionId)?.label||'').localeCompare(allAvailableFeatDefinitions.find(d=>d.id===b.definitionId)?.label||'')); // Use id
+      const updatedFeats = Array.from(combinedFeatsMap.values()).sort((a,b) => (allAvailableFeatDefinitions.find(d=>d.id===a.definitionId)?.label||'').localeCompare(allAvailableFeatDefinitions.find(d=>d.id===b.definitionId)?.label||''));
 
       return { ...prev, classes: updatedClasses, skills: newSkills, feats: updatedFeats };
     });
@@ -601,7 +600,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   }, []);
 
   const handleCustomSkillDefinitionSaveToStore = React.useCallback((skillData: CustomSkillDefinition) => {
-    if(!translations || !translations.UI_STRINGS) return;
+    if(!translations || !translations.UI_STRINGS) throw new Error("Translations not loaded for skill save");
     const existing = definitionsActions.getCustomSkillDefinitionById(skillData.id);
     if(existing) {
         definitionsActions.updateCustomSkillDefinition(skillData);
@@ -615,7 +614,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   }, [definitionsActions, toast, translations]);
 
   const handleOpenEditCustomSkillDialog = React.useCallback((skillDefId: string) => {
-    if(!translations || !translations.UI_STRINGS) return;
+    if(!translations || !translations.UI_STRINGS) throw new Error("Translations not loaded for custom skill edit");
     const customDef = definitionsActions.getCustomSkillDefinitionById(skillDefId);
     if (customDef) {
       setSkillToEdit(customDef);
@@ -627,7 +626,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
   const handleFeatInstancesChange = React.useCallback((updatedFeatInstances: CharacterFeatInstance[]) => {
      setCharacter(prev => {
-        if (!prev || !translations || !translations.UI_STRINGS) return prev;
+        if (!prev || !translations || !translations.UI_STRINGS) throw new Error("Character or translations not loaded for feat instance change");
         const currentGrantedFeats = getGrantedFeatsForCharacter(
             prev, allAvailableFeatDefinitions, translations.DND_RACES, translations.DND_CLASSES, 
             translations.DND_DOMAINS, translations.DND_DEITIES, translations.XP_TABLE, translations.EPIC_LEVEL_XP_INCREASE, translations.UI_STRINGS
@@ -638,14 +637,14 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         currentGrantedFeats.forEach(inst => combinedFeatsMap.set(inst.instanceId, { ...inst, isGranted: true }));
         userChosenFeats.forEach(inst => combinedFeatsMap.set(inst.instanceId, { ...inst, isGranted: false }));
         
-        const finalFeats = Array.from(combinedFeatsMap.values()).sort((a,b) => (allAvailableFeatDefinitions.find(d=>d.id===a.definitionId)?.label||'').localeCompare(allAvailableFeatDefinitions.find(d=>d.id===b.definitionId)?.label||'')); // Use id
+        const finalFeats = Array.from(combinedFeatsMap.values()).sort((a,b) => (allAvailableFeatDefinitions.find(d=>d.id===a.definitionId)?.label||'').localeCompare(allAvailableFeatDefinitions.find(d=>d.id===b.definitionId)?.label||''));
         return { ...prev, feats: finalFeats };
     });
   }, [allAvailableFeatDefinitions, translations]);
 
   const handleCustomFeatDefinitionSaveToStore = React.useCallback((featDefData: (FeatDefinitionJsonData & { isCustom: true })) => {
-    if (!character || !translations || !translations.UI_STRINGS) return;
-    const existing = definitionsActions.getCustomFeatDefinitionById(featDefData.id); // Use id
+    if (!character || !translations || !translations.UI_STRINGS) throw new Error("Character or translations not loaded for custom feat save");
+    const existing = definitionsActions.getCustomFeatDefinitionById(featDefData.id);
     if (existing) {
         definitionsActions.updateCustomFeatDefinition(featDefData);
         toast({ title: translations.UI_STRINGS.toastCustomFeatUpdatedTitle, description: translations.UI_STRINGS.toastCustomFeatUpdatedDesc.replace("{featLabel}", featDefData.label) });
@@ -654,13 +653,13 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         definitionsActions.addCustomFeatDefinition(featDefData);
         toast({ title: translations.UI_STRINGS.toastCustomFeatAddedTitle, description: translations.UI_STRINGS.toastCustomFeatAddedDesc.replace("{featLabel}", featDefData.label) });
     }
-    const oldDefinition = allAvailableFeatDefinitions.find(d => d.id === featDefData.id && d.isCustom); // Use id
+    const oldDefinition = allAvailableFeatDefinitions.find(d => d.id === featDefData.id && d.isCustom);
     if (oldDefinition?.canTakeMultipleTimes && !featDefData.canTakeMultipleTimes) {
-      const instancesOfThisFeat = character.feats.filter(inst => inst.definitionId === featDefData.id && !inst.isGranted); // Use id
+      const instancesOfThisFeat = character.feats.filter(inst => inst.definitionId === featDefData.id && !inst.isGranted);
       if (instancesOfThisFeat.length > 1) {
         const firstInstance = instancesOfThisFeat[0];
         const newChosenInstances = character.feats.filter(
-          inst => inst.isGranted || inst.definitionId !== featDefData.id || inst.instanceId === firstInstance.instanceId // Use id
+          inst => inst.isGranted || inst.definitionId !== featDefData.id || inst.instanceId === firstInstance.instanceId
         );
         handleFeatInstancesChange(newChosenInstances);
       }
@@ -670,7 +669,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   }, [character, definitionsActions, allAvailableFeatDefinitions, handleFeatInstancesChange, translations, toast]);
 
   const handleOpenEditCustomFeatDefinitionDialog = React.useCallback((definitionId: string) => {
-    if(!translations || !translations.UI_STRINGS) return;
+    if(!translations || !translations.UI_STRINGS) throw new Error("Translations not loaded for custom feat edit dialog");
     const defToEdit = definitionsActions.getCustomFeatDefinitionById(definitionId);
     if (defToEdit) {
       setEditingCustomFeatDefinition(defToEdit);
@@ -682,13 +681,13 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
   const allSkillOptionsForDialog = React.useMemo((): ComboboxOption[] => {
     return allAvailableSkillDefinitionsForDisplay
-      .map(s => ({ value: s.value, label: s.label }))
+      .map(s => ({ value: s.id, label: s.label }))
       .sort((a,b) => a.label.localeCompare(b.label));
   }, [allAvailableSkillDefinitionsForDisplay]);
 
   const allMagicSchoolOptionsForDialog = React.useMemo((): ComboboxOption[] => {
     if (translationsLoading || !translations) return [];
-    return translations.DND_MAGIC_SCHOOLS.map(ms => ({ value: ms.id, label: ms.label })) // Use id
+    return translations.DND_MAGIC_SCHOOLS.map(ms => ({ value: ms.id, label: ms.label }))
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [translationsLoading, translations]);
 
@@ -729,7 +728,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       return {
         ...prevCharacter,
         feats: prevCharacter.feats.map(featInstance => {
-          const definition = allAvailableFeatDefinitions.find(def => def.id === featInstance.definitionId); // Use id
+          const definition = allAvailableFeatDefinitions.find(def => def.id === featInstance.definitionId);
           if (definition && !definition.permanentEffect) { 
             const hasThisConditionInEffects = definition.effects?.some(eff => eff.condition === conditionKey);
             if (hasThisConditionInEffects) {
@@ -754,7 +753,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   
   const handleOpenRollDialog = React.useCallback((data: Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'>) => {
     setRollDialogProps(data);
-    setIsRollAbilityDialogOpen(true); // Changed to setIsRollAbilityDialogOpen
+    setIsRollAbilityDialogOpen(true);
   }, []);
 
   const handleRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString?: string) => {
@@ -767,8 +766,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const handleOpenDeityInfoDialog = React.useCallback(() => openInfoDialog({ type: 'deity' }), [openInfoDialog]);
   
   const handleOpenAbilityCheckRollDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => { 
-    if (!detailedAbilityScores || !translations) return;
-    const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.id === ability); // Use id
+    if (!detailedAbilityScores || !translations) throw new Error("Detailed scores or translations not loaded for ability check roll");
+    const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.id === ability);
     const abilityName = abilityLabelInfo?.label || ability;
     const finalModifier = calculateAbilityModifier(detailedAbilityScores[ability].finalScore);
     const breakdown: GenericBreakdownItem[] = [
@@ -811,8 +810,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const handleSubmit = React.useCallback((e: FormEvent) => {
     e.preventDefault();
     if (!character || !translations || !translations.UI_STRINGS) {
-      toast({ title: translations?.UI_STRINGS.toastCharacterDataNotLoadedTitle || "Save Error", description: translations?.UI_STRINGS.toastCharacterDataNotLoadedDesc || "Character data not loaded.", variant: "destructive" });
-      return;
+      throw new Error(translations?.UI_STRINGS.toastCharacterDataNotLoadedDesc || "Character data not loaded. Cannot save.");
     }
     const UI_STRINGS = translations.UI_STRINGS;
     if (!character.name || character.name.trim() === '') { toast({ title: UI_STRINGS.toastMissingCharacterNameTitle, description: UI_STRINGS.toastMissingCharacterNameDesc, variant: "destructive" }); return; }
@@ -836,9 +834,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     for (const ability of abilityNames) {
       if (ability === 'none') continue;
       if (character.abilityScores[ability] <= 0) {
+        const abilityLabelForError = translations.ABILITY_LABELS.find(al => al.id === ability)?.label || ability;
         toast({
-          title: UI_STRINGS.toastInvalidAbilityScoreTitle.replace('{abilityName}', translations.ABILITY_LABELS.find(al => al.id === ability)?.label || ability), // Use id
-          description: UI_STRINGS.toastInvalidAbilityScoreDesc.replace('{abilityName}', translations.ABILITY_LABELS.find(al => al.id === ability)?.label || ability), // Use id
+          title: UI_STRINGS.toastInvalidAbilityScoreTitle.replace('{abilityName}', abilityLabelForError),
+          description: UI_STRINGS.toastInvalidAbilityScoreDesc.replace('{abilityName}', abilityLabelForError),
           variant: "destructive"
         });
         return;
@@ -1201,10 +1200,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           detailedAbilityScores={detailedAbilityScores}
         />
       )}
-      {isRollAbilityDialogOpen && rollDialogProps && ( // Changed from isRollDialogOpen
+      {isRollAbilityDialogOpen && rollDialogProps && (
         <RollDialog
-          isOpen={isRollAbilityDialogOpen} // Changed from isRollDialogOpen
-          onOpenChange={setIsRollAbilityDialogOpen} // Changed from setIsRollDialogOpen
+          isOpen={isRollAbilityDialogOpen}
+          onOpenChange={setIsRollAbilityDialogOpen}
           dialogTitle={rollDialogProps.dialogTitle}
           rollType={rollDialogProps.rollType}
           baseModifier={rollDialogProps.baseModifier}
@@ -1236,6 +1235,3 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
-
-
-    
