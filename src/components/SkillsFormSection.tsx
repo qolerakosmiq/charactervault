@@ -221,10 +221,14 @@ const SkillsFormSectionComponent = ({
   };
 
   const handleTriggerSkillRollDialog = (skillId: string) => {
-    if (!translations || !actualAbilityScores || !aggregatedFeatEffects) return;
+    if (!translations || !actualAbilityScores || !aggregatedFeatEffects) {
+        throw new Error("Translations, ability scores, or feat effects not loaded for skill roll dialog.");
+    }
     const skillDef = allCombinedSkillDefinitions.find(def => def.id === skillId);
     const skillInstance = characterSkillInstances.find(s => s.id === skillId);
-    if (!skillDef || !skillInstance) return;
+    if (!skillDef || !skillInstance) {
+      throw new Error(`Skill definition or instance not found for ID: ${skillId}`);
+    }
 
     const { UI_STRINGS, ABILITY_LABELS, DND_RACES, SKILL_DEFINITIONS, SKILL_SYNERGIES, SIZES } = translations;
 
@@ -240,21 +244,21 @@ const SkillsFormSectionComponent = ({
     const keyAbilityName = keyAbility && keyAbility !== 'none' ? (ABILITY_LABELS.find(al => al.id === keyAbility)?.abbr || keyAbility.toUpperCase()) : 'N/A';
 
     const breakdown: GenericBreakdownItem[] = [
-      { label: UI_STRINGS.rollDialogSkillRanksLabel || "Ranks", value: skillInstance.ranks || 0 },
+      { label: UI_STRINGS.rollDialogSkillRanksLabel, value: skillInstance.ranks || 0 },
     ];
     if (keyAbility !== 'none') {
-      breakdown.push({ label: (UI_STRINGS.rollDialogSkillKeyAbilityLabel || "Key Ability ({abilityAbbr})").replace("{abilityAbbr}", keyAbilityName), value: abilityMod });
+      breakdown.push({ label: UI_STRINGS.rollDialogSkillKeyAbilityLabel.replace("{abilityAbbr}", keyAbilityName), value: abilityMod });
     }
-    if (synergyBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillSynergyBonusLabel || "Synergy Bonus", value: synergyBonus });
-    if (featSkillBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillFeatBonusLabel || "Feat Bonus", value: featSkillBonus });
-    if (currentRacialBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillRacialBonusLabel || "Racial Bonus", value: currentRacialBonus });
-    if (currentSizeSpecificBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillSizeBonusLabel || "Size Bonus", value: currentSizeSpecificBonus });
-    if (userMiscMod !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillUserMiscModLabel || "User Misc Modifier", value: userMiscMod });
+    if (synergyBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillSynergyBonusLabel, value: synergyBonus });
+    if (featSkillBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillFeatBonusLabel, value: featSkillBonus });
+    if (currentRacialBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillRacialBonusLabel, value: currentRacialBonus });
+    if (currentSizeSpecificBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillSizeBonusLabel, value: currentSizeSpecificBonus });
+    if (userMiscMod !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillUserMiscModLabel, value: userMiscMod });
 
-    breakdown.push({ label: UI_STRINGS.infoDialogTotalLabel || "Total", value: totalBonus, isBold: true });
+    breakdown.push({ label: UI_STRINGS.infoDialogTotalLabel, value: totalBonus, isBold: true });
 
     onOpenRollDialog({
-      dialogTitle: (UI_STRINGS.rollDialogTitleSkillCheck || "Roll {skillName}").replace("{skillName}", skillDef.name),
+      dialogTitle: UI_STRINGS.rollDialogTitleSkillCheck.replace("{skillName}", skillDef.name),
       rollType: `skill_check_${skillDef.id}`, // More specific rollType for checks
       baseModifier: totalBonus,
       calculationBreakdown: breakdown,
@@ -262,8 +266,6 @@ const SkillsFormSectionComponent = ({
     });
   };
 
-
-  const badgeClassName = "text-primary border-primary whitespace-nowrap";
 
   if (translationsLoading || !translations || !aggregatedFeatEffects) {
     return (
@@ -293,9 +295,9 @@ const SkillsFormSectionComponent = ({
         <div className="flex items-center space-x-3">
           <ScrollText className="h-8 w-8 text-primary" />
           <div>
-            <CardTitle className="text-2xl font-serif">{UI_STRINGS.skillsPanelTitle || "Skills"}</CardTitle>
+            <CardTitle className="text-2xl font-serif">{UI_STRINGS.skillsPanelTitle}</CardTitle>
             <CardDescription>
-              {UI_STRINGS.skillsPanelDescription || "Invest points in your character's abilities."}
+              {UI_STRINGS.skillsPanelDescription}
             </CardDescription>
           </div>
         </div>
@@ -304,10 +306,10 @@ const SkillsFormSectionComponent = ({
         <div className="mb-4 p-3 border rounded-md bg-muted/30">
           <div className="flex justify-between items-center">
             <p className="text-sm font-medium">
-              {UI_STRINGS.skillPointsAvailableLabel || "Skill Points Available:"}{'\u00A0'}<span className="text-xl font-bold text-primary">{totalSkillPointsAvailable}</span>
+              {UI_STRINGS.skillPointsAvailableLabel}<span className="text-xl font-bold text-primary">{totalSkillPointsAvailable}</span>
             </p>
             <p className="text-sm font-medium">
-              {UI_STRINGS.skillPointsLeftLabel || "Skill Points Left:"}{'\u00A0'}<span className={cn(
+              {UI_STRINGS.skillPointsLeftLabel}<span className={cn(
                 "text-xl font-bold",
                 skillPointsLeft > 0 && "text-emerald-500",
                 skillPointsLeft < 0 && "text-destructive",
@@ -319,31 +321,31 @@ const SkillsFormSectionComponent = ({
              {firstClass?.className && classLabel ? (
                 <>
                   <p>
-                    ({(UI_STRINGS.skillPointFormulaClassBaseLabel || "{classLabel} Base").replace("{classLabel}", classLabel)}{'\u00A0'}<Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
-                    {' + '}{UI_STRINGS.skillPointFormulaIntModLabel || "Intelligence Modifier"}{'\u00A0'}<Badge variant="outline" className={badgeClassName}>{intelligenceModifier}</Badge>
+                    ({UI_STRINGS.skillPointFormulaClassBaseLabel.replace("{classLabel}", classLabel)}{'\u00A0'}<Badge variant="outline">{baseSkillPointsForClass}</Badge>
+                    {' + '}{UI_STRINGS.skillPointFormulaIntModLabel}{'\u00A0'}<Badge variant="outline">{intelligenceModifier}</Badge>
                     {(racialBonusSkillPoints || 0) !== 0 && (
                         <>
-                        {' + '}{UI_STRINGS.skillPointFormulaRacialModLabel || "Racial Modifier"}{'\u00A0'}<Badge variant="outline" className={badgeClassName}>{racialBonusSkillPoints || 0}</Badge>
+                        {' + '}{UI_STRINGS.skillPointFormulaRacialModLabel}{'\u00A0'}<Badge variant="outline">{racialBonusSkillPoints || 0}</Badge>
                         </>
                     )}
-                    {UI_STRINGS.skillPointFormulaMinOneLabel || ", Minimum 1"}) × <Badge variant="outline" className={badgeClassName}>4</Badge>{'\u00A0'}{UI_STRINGS.skillPointFormulaFirstLevelFactor || "First Level"}
+                    {UI_STRINGS.skillPointFormulaMinOneLabel}) × <Badge variant="outline">4</Badge>{'\u00A0'}{UI_STRINGS.skillPointFormulaFirstLevelFactor}
                     {' = '}{'\u00A0'}<span className="font-bold text-primary">{pointsForFirstLevel}</span>
                   </p>
                   <p>
-                    + ({(UI_STRINGS.skillPointFormulaClassBaseLabel || "{classLabel} Base").replace("{classLabel}", classLabel)}{'\u00A0'}<Badge variant="outline" className={badgeClassName}>{baseSkillPointsForClass}</Badge>
-                    {' + '}{UI_STRINGS.skillPointFormulaIntModLabel || "Intelligence Modifier"}{'\u00A0'}<Badge variant="outline" className={badgeClassName}>{intelligenceModifier}</Badge>
+                    + ({UI_STRINGS.skillPointFormulaClassBaseLabel.replace("{classLabel}", classLabel)}{'\u00A0'}<Badge variant="outline">{baseSkillPointsForClass}</Badge>
+                    {' + '}{UI_STRINGS.skillPointFormulaIntModLabel}{'\u00A0'}<Badge variant="outline">{intelligenceModifier}</Badge>
                     {(racialBonusSkillPoints || 0) !== 0 && (
                         <>
-                        {' + '}{UI_STRINGS.skillPointFormulaRacialModLabel || "Racial Modifier"}{'\u00A0'}<Badge variant="outline" className={badgeClassName}>{racialBonusSkillPoints || 0}</Badge>
+                        {' + '}{UI_STRINGS.skillPointFormulaRacialModLabel}{'\u00A0'}<Badge variant="outline">{racialBonusSkillPoints || 0}</Badge>
                         </>
                     )}
-                    {UI_STRINGS.skillPointFormulaMinOneLabel || ", Minimum 1"}) × <Badge variant="outline" className={badgeClassName}>{characterLevel > 1 ? (characterLevel -1) : 0}</Badge>{'\u00A0'}{UI_STRINGS.skillPointFormulaLevelProgressionFactor || "Level Progression"}
+                    {UI_STRINGS.skillPointFormulaMinOneLabel}) × <Badge variant="outline">{characterLevel > 1 ? (characterLevel -1) : 0}</Badge>{'\u00A0'}{UI_STRINGS.skillPointFormulaLevelProgressionFactor}
                     {' = '}{'\u00A0'}<span className="font-bold text-primary">{pointsFromLevelProgression}</span>
                   </p>
                 </>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  {UI_STRINGS.skillPointFormulaSelectClassPrompt || "Select a class to see available skill points."}
+                  {UI_STRINGS.skillPointFormulaSelectClassPrompt}
                 </p>
               )}
            </div>
@@ -351,20 +353,20 @@ const SkillsFormSectionComponent = ({
         <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
           <div className="space-y-1 min-w-[680px]">
             <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
-              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderClassLabel || "Class?" }} />
-              <span className="pl-1">{UI_STRINGS.skillsTableHeaderSkillLabel || "Skill"}</span>
-              <span className="text-right w-20 pr-1" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderSkillModLabel || "Skill<br/>Mod" }} />
-              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderKeyAbilityLabel || "Key<br/>Ability" }} />
-              <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderAbilityModLabel || "Ability<br/>Mod" }} />
-              <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderMiscModLabel || "Misc<br/>Mod" }} />
-              <span className="text-center w-32">{UI_STRINGS.skillsTableHeaderRanksLabel || "Ranks"}</span>
-              <span className="text-center w-12">{UI_STRINGS.skillsTableHeaderCostLabel || "Cost"}</span>
-              <span className="text-center w-10">{UI_STRINGS.skillsTableHeaderMaxLabel || "Max"}</span>
+              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderClassLabel }} />
+              <span className="pl-1">{UI_STRINGS.skillsTableHeaderSkillLabel}</span>
+              <span className="text-right w-20 pr-1" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderSkillModLabel }} />
+              <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderKeyAbilityLabel }} />
+              <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderAbilityModLabel }} />
+              <span className="text-center w-12" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableHeaderMiscModLabel }} />
+              <span className="text-center w-32">{UI_STRINGS.skillsTableHeaderRanksLabel}</span>
+              <span className="text-center w-12">{UI_STRINGS.skillsTableHeaderCostLabel}</span>
+              <span className="text-center w-10">{UI_STRINGS.skillsTableHeaderMaxLabel}</span>
             </div>
 
             {validSkillsForDisplay.map(skillInstanceProp => {
               const skillDef = allCombinedSkillDefinitions.find(def => def.id === skillInstanceProp.id);
-              if (!skillDef) return null; // Should not happen due to filtering
+              if (!skillDef) throw new Error(`Skill definition for ID '${skillInstanceProp.id}' not found in allCombinedSkillDefinitions.`);
 
               const keyAbility = skillDef.keyAbility;
               const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === keyAbility);
@@ -373,7 +375,7 @@ const SkillsFormSectionComponent = ({
               if (keyAbility && keyAbility !== 'none' && abilityLabelInfo) {
                 keyAbilityDisplay = abilityLabelInfo.abbr;
               } else if (keyAbility === 'none') {
-                keyAbilityDisplay = ''; // Or 'N/A' if preferred for no ability
+                keyAbilityDisplay = ''; 
               }
 
               const baseAbilityMod = (keyAbility && keyAbility !== 'none')
@@ -406,7 +408,7 @@ const SkillsFormSectionComponent = ({
                   <div className="flex items-center">
                       <Label htmlFor={`skill_ranks_${skillInstanceProp.id}`} className="text-sm pr-1 leading-tight flex-grow flex items-center">
                           {skillDef.name}
-                          {skillDef.isCustom && (<>{'\u00A0'}<Badge variant="outline" className="whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge></>)}
+                          {skillDef.isCustom && (<>{'\u00A0'}<Badge variant="outline">{UI_STRINGS.badgeCustomLabel}</Badge></>)}
                       </Label>
                   </div>
                   <div className="flex items-center justify-end w-20 pr-1">
@@ -417,7 +419,7 @@ const SkillsFormSectionComponent = ({
                       size="icon"
                       className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-foreground"
                       onClick={() => handleTriggerSkillInfoDialog(skillInstanceProp.id)}
-                      aria-label={(UI_STRINGS.skillsTableTooltipInfoForSkill || "Info for {skillName}").replace("{skillName}", skillDef.name)}
+                      aria-label={UI_STRINGS.skillsTableTooltipInfoForSkill.replace("{skillName}", skillDef.name)}
                     >
                       <Info className="h-4 w-4" />
                     </Button>
@@ -427,7 +429,7 @@ const SkillsFormSectionComponent = ({
                         size="icon"
                         className="h-6 w-6 text-muted-foreground hover:text-primary"
                         onClick={() => handleTriggerSkillRollDialog(skillInstanceProp.id)}
-                        aria-label={(UI_STRINGS.rollDialogSkillCheckAriaLabel || "Roll {skillName} Check").replace("{skillName}", skillDef.name)}
+                        aria-label={UI_STRINGS.rollDialogSkillCheckAriaLabel.replace("{skillName}", skillDef.name)}
                       >
                         <Dices className="h-4 w-4" />
                     </Button>
@@ -467,5 +469,6 @@ SkillsFormSectionComponent.displayName = 'SkillsFormSectionComponent';
 export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
 
     
+
 
 

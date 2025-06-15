@@ -110,8 +110,6 @@ const FeatsFormSectionComponent = ({
   }), [featSectionData, abilityScores, skills]);
 
 
-  const badgeClassName = "text-primary border-primary whitespace-nowrap";
-
   const handleOpenFeatDialog = () => {
     let filterCategoryForDialog: string | undefined = undefined;
     if (featSlotsLeft <= 0 && classBonusDetails && classBonusDetails.length > 0) {
@@ -138,7 +136,7 @@ const FeatsFormSectionComponent = ({
 
 
   const handleAddOrUpdateChosenFeatInstance = (definitionId: string) => {
-    if (!translations) return;
+    if (!translations) throw new Error("Translations not loaded for feat selection.");
     const UI_STRINGS = translations.UI_STRINGS;
     const definition = allAvailableFeatDefinitions.find(def => def.id === definitionId);
     if (!definition) {
@@ -166,7 +164,7 @@ const FeatsFormSectionComponent = ({
       if (isAlreadyGranted) {
         toast({
             title: UI_STRINGS.toastFeatAlreadyGrantedTitle,
-            description: (UI_STRINGS.toastFeatAlreadyGrantedDesc || '"{featLabel}" is already granted and cannot be chosen again.').replace('{featLabel}', definition.label),
+            description: UI_STRINGS.toastFeatAlreadyGrantedDesc.replace('{featLabel}', definition.label),
             variant: "destructive"
         });
         return;
@@ -174,20 +172,20 @@ const FeatsFormSectionComponent = ({
       if (existingChosenInstances.length > 0) {
         toast({
             title: UI_STRINGS.toastDuplicateFeatTitle,
-            description: (UI_STRINGS.toastDuplicateFeatDesc || 'You have already chosen "{featLabel}", and it cannot be taken multiple times.').replace('{featLabel}', definition.label),
+            description: UI_STRINGS.toastDuplicateFeatDesc.replace('{featLabel}', definition.label),
             variant: "destructive"
         });
         return;
       }
     }
 
-    let newInstanceId = definition.id; // Uses id
+    let newInstanceId = definition.id; 
     if (definition.canTakeMultipleTimes) {
-      newInstanceId = `${definition.id}-MULTI-INSTANCE-${crypto.randomUUID()}`; // Uses id
+      newInstanceId = `${definition.id}-MULTI-INSTANCE-${crypto.randomUUID()}`; 
     }
 
     const newInstance: CharacterFeatInstance = {
-      definitionId: definition.id, // Uses id
+      definitionId: definition.id, 
       instanceId: newInstanceId,
       isGranted: false,
       chosenSpecializationCategory: definition.requiresSpecializationCategory,
@@ -212,14 +210,14 @@ const FeatsFormSectionComponent = ({
   };
 
   const handleSpecializationProvided = (specializationDetail: string) => {
-    if (!featToSpecialize || !translations) return;
+    if (!featToSpecialize || !translations) throw new Error("Feat definition or translations not available for specialization.");
     const UI_STRINGS = translations.UI_STRINGS;
     const definition = featToSpecialize;
 
     if (editingFeatInstanceId) { // Editing existing specialization
       const updatedInstances = chosenFeatInstances.map(inst => {
         if (inst.instanceId === editingFeatInstanceId) {
-          let newFinalInstanceId = `${definition.id}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`; // Uses id
+          let newFinalInstanceId = `${definition.id}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`; 
           if (chosenFeatInstances.some(otherInst => otherInst.instanceId === newFinalInstanceId && otherInst.instanceId !== editingFeatInstanceId)) {
             newFinalInstanceId = `${newFinalInstanceId}-${crypto.randomUUID().substring(0,8)}`; // Make unique
           }
@@ -231,30 +229,30 @@ const FeatsFormSectionComponent = ({
 
     } else { // Adding new specialized feat
       const existingChosenInstances = chosenFeatInstances.filter(
-        inst => inst.definitionId === definition.id && !inst.isGranted && inst.specializationDetail === specializationDetail // Uses id
+        inst => inst.definitionId === definition.id && !inst.isGranted && inst.specializationDetail === specializationDetail 
       );
       const isAlreadyGrantedWithSameSpecialization = chosenFeatInstances.some(
-        inst => inst.definitionId === definition.id && inst.isGranted && inst.specializationDetail === specializationDetail // Uses id
+        inst => inst.definitionId === definition.id && inst.isGranted && inst.specializationDetail === specializationDetail 
       );
 
       if (!definition.canTakeMultipleTimes) {
         if (isAlreadyGrantedWithSameSpecialization) {
-          toast({ title: UI_STRINGS.toastFeatAlreadyGrantedTitle, description: (UI_STRINGS.toastFeatAlreadyGrantedDesc || '"{featLabel}" is already granted with this specialization and cannot be chosen again.').replace('{featLabel}', definition.label), variant: "destructive" });
+          toast({ title: UI_STRINGS.toastFeatAlreadyGrantedTitle, description: UI_STRINGS.toastFeatAlreadyGrantedDesc.replace('{featLabel}', definition.label), variant: "destructive" });
           return;
         }
         if (existingChosenInstances.length > 0) {
-          toast({ title: UI_STRINGS.toastDuplicateFeatTitle, description: (UI_STRINGS.toastDuplicateFeatDesc || 'You have already chosen "{featLabel}" with this specialization, and it cannot be taken multiple times.').replace('{featLabel}', definition.label), variant: "destructive" });
+          toast({ title: UI_STRINGS.toastDuplicateFeatTitle, description: UI_STRINGS.toastDuplicateFeatDesc.replace('{featLabel}', definition.label), variant: "destructive" });
           return;
         }
       }
 
-      let newInstanceId = `${definition.id}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`; // Uses id
+      let newInstanceId = `${definition.id}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`; 
       if (definition.canTakeMultipleTimes || chosenFeatInstances.some(fi => fi.instanceId === newInstanceId)) {
-        newInstanceId = `${definition.id}-SPEC-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID()}`; // Uses id
+        newInstanceId = `${definition.id}-SPEC-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID()}`; 
       }
 
       const newInstance: CharacterFeatInstance = {
-        definitionId: definition.id, // Uses id
+        definitionId: definition.id, 
         instanceId: newInstanceId,
         specializationDetail: specializationDetail.trim() || undefined,
         isGranted: false,
@@ -277,9 +275,9 @@ const FeatsFormSectionComponent = ({
   };
 
   const handleOpenEditDialog = (definitionId: string) => {
-    if (!translations) return;
+    if (!translations) throw new Error("Translations not loaded for custom feat edit.");
     const UI_STRINGS = translations.UI_STRINGS;
-    const defToEdit = allAvailableFeatDefinitions.find(def => def.id === definitionId && def.isCustom); // Uses id
+    const defToEdit = allAvailableFeatDefinitions.find(def => def.id === definitionId && def.isCustom); 
     if (defToEdit) {
       onEditCustomFeatDefinition(definitionId);
     } else {
@@ -287,13 +285,13 @@ const FeatsFormSectionComponent = ({
     }
   };
 
-  const getFeatSource = React.useCallback((definitionId: string): string | null => { // Changed from definitionValue to definitionId
+  const getFeatSource = React.useCallback((definitionId: string): string | null => { 
     if (translationsLoading || !translations) return null;
     if (definitionId.startsWith('class-')) {
       const parts = definitionId.split('-');
       if (parts.length > 1) {
         const classNameKey = parts[1];
-        const classDef = translations.DND_CLASSES.find(c => c.id === classNameKey); // Uses id
+        const classDef = translations.DND_CLASSES.find(c => c.id === classNameKey); 
         return classDef ? classDef.label : classNameKey.charAt(0).toUpperCase() + classNameKey.slice(1);
       }
     }
@@ -303,8 +301,10 @@ const FeatsFormSectionComponent = ({
   const renderFeatInstance = React.useCallback((instance: CharacterFeatInstance) => {
     if (translationsLoading || !translations) return <Skeleton className="h-16 w-full mb-2" />;
 
-    const definition = allAvailableFeatDefinitions.find(def => def.id === instance.definitionId); // Uses id
-    if (!definition) return null;
+    const definition = allAvailableFeatDefinitions.find(def => def.id === instance.definitionId); 
+    if (!definition) {
+        throw new Error(`Feat definition for ID '${instance.definitionId}' not found.`);
+    }
 
     const prereqMessages = checkFeatPrerequisites(
       definition,
@@ -321,10 +321,10 @@ const FeatsFormSectionComponent = ({
     const isCustomDefinition = definition.isCustom;
 
     const featTypeLabel = definition.type && definition.type !== "special"
-      ? translations.FEAT_TYPES.find(ft => ft.id === definition.type)?.label // Uses id
+      ? translations.FEAT_TYPES.find(ft => ft.id === definition.type)?.label 
       : null;
 
-    const featSource = (instance.isGranted && definition.isClassFeature) ? getFeatSource(definition.id) : null; // Uses id
+    const featSource = (instance.isGranted && definition.isClassFeature) ? getFeatSource(definition.id) : null; 
     const { UI_STRINGS } = translations;
 
     return (
@@ -336,20 +336,20 @@ const FeatsFormSectionComponent = ({
               {definition.label}
             </h4>
             {featTypeLabel && <Badge variant="outline" className="whitespace-nowrap">{featTypeLabel}</Badge>}
-            {isCustomDefinition && <Badge variant="outline" className="text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
+            {isCustomDefinition && <Badge variant="outline">{UI_STRINGS.badgeCustomLabel}</Badge>}
             {instance.grantedNote && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
           </div>
           {definition.requiresSpecialization && instance.specializationDetail && <p className="text-sm text-muted-foreground mt-0.5 ml-1">({instance.specializationDetail})</p>}
           {definition.description && <div className="text-sm text-muted-foreground mt-0.5 whitespace-normal" dangerouslySetInnerHTML={{ __html: definition.description }} />}
           {definition.effectsText && (
             <p className="text-sm text-muted-foreground mt-0.5 whitespace-normal">
-              <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.featEffectsLabel || "<b>Effects:</b>" }} />
+              <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.featEffectsLabel }} />
               {' '}{definition.effectsText}
             </p>
           )}
           {prereqMessages.length > 0 ? (
             <div className="text-sm mt-0.5 whitespace-normal text-muted-foreground">
-              <strong>{UI_STRINGS.featPrerequisitesLabel || "Prerequisites:"}</strong>{' '}
+              <strong>{UI_STRINGS.featPrerequisitesLabel}</strong>{' '}
               {prereqMessages.map((msg, idx, arr) => (
                 <React.Fragment key={idx}>
                   <span className={cn(!msg.isMet ? 'text-destructive' : 'text-muted-foreground')} dangerouslySetInnerHTML={{ __html: msg.text }} />
@@ -359,7 +359,7 @@ const FeatsFormSectionComponent = ({
             </div>
           ) : (
             <p className="text-sm mt-0.5 whitespace-normal text-muted-foreground">
-              <strong>{UI_STRINGS.featPrerequisitesLabel || "Prerequisites:"}</strong> {UI_STRINGS.featPrerequisitesNoneLabel || "None"}
+              <strong>{UI_STRINGS.featPrerequisitesLabel}</strong> {UI_STRINGS.featPrerequisitesNoneLabel}
             </p>
           )}
         </div>
@@ -369,7 +369,7 @@ const FeatsFormSectionComponent = ({
               type="button" variant="ghost" size="icon"
               onClick={() => handleOpenEditDialog(instance.definitionId)}
               className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-50 group-hover:opacity-100 transition-opacity"
-              aria-label={(UI_STRINGS.featInstanceEditAriaLabel || "Edit custom feat definition {featLabel}").replace("{featLabel}", definition.label)}
+              aria-label={UI_STRINGS.featInstanceEditAriaLabel.replace("{featLabel}", definition.label)}
             ><Pencil className="h-4 w-4" /></Button>
           )}
           {!instance.isGranted && definition.requiresSpecialization && (
@@ -377,7 +377,7 @@ const FeatsFormSectionComponent = ({
               type="button" variant="ghost" size="icon"
               onClick={() => handleOpenEditSpecializationDialog(instance)}
               className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-50 group-hover:opacity-100 transition-opacity"
-              aria-label={(UI_STRINGS.featEditSpecializationAriaLabel || "Edit Specialization for {featLabel}").replace("{featLabel}", definition.label)}
+              aria-label={UI_STRINGS.featEditSpecializationAriaLabel.replace("{featLabel}", definition.label)}
             ><Edit3 className="h-4 w-4" /></Button>
           )}
           {!instance.isGranted && (
@@ -385,7 +385,7 @@ const FeatsFormSectionComponent = ({
               type="button" variant="ghost" size="icon"
               onClick={() => handleRemoveChosenFeatInstance(instance.instanceId)}
               className="h-8 w-8 text-destructive hover:text-destructive/80 opacity-50 group-hover:opacity-100 transition-opacity"
-              aria-label={UI_STRINGS.featInstanceRemoveAriaLabel || "Remove feat instance"}
+              aria-label={UI_STRINGS.featInstanceRemoveAriaLabel}
             ><Trash2 className="h-4 w-4" /></Button>
           )}
         </div>
@@ -421,7 +421,7 @@ const FeatsFormSectionComponent = ({
           <div className="flex items-center space-x-3">
             <Award className="h-8 w-8 text-primary" />
             <div>
-              <CardTitle className="text-2xl font-serif">{UI_STRINGS.featsPanelTitle || "Feats"}</CardTitle>
+              <CardTitle className="text-2xl font-serif">{UI_STRINGS.featsPanelTitle}</CardTitle>
             </div>
           </div>
         </CardHeader>
@@ -429,26 +429,26 @@ const FeatsFormSectionComponent = ({
           <div className="mb-3 p-3 border rounded-md bg-muted/30">
             <div className="flex justify-between items-center">
               <p className="text-sm font-medium">
-                {UI_STRINGS.featsPanelFeatsAvailableLabel || "Feats Available:"} <span className="text-lg font-bold text-primary">{availableFeatSlots}</span>
+                {UI_STRINGS.featsPanelFeatsAvailableLabel} <span className="text-lg font-bold text-primary">{availableFeatSlots}</span>
               </p>
               <p className="text-sm font-medium">
-                {UI_STRINGS.featsPanelFeatsLeftLabel || "Feats Left to Choose:"} <span className={cn(
+                {UI_STRINGS.featsPanelFeatsLeftLabel} <span className={cn(
                   "text-lg font-bold whitespace-nowrap",
                   featSlotsLeft >= 0 ? "text-emerald-500" : "text-destructive"
                 )}>{featSlotsLeft}</span>
               </p>
             </div>
              <p className="text-sm text-muted-foreground mt-1">
-              {UI_STRINGS.featsPanelBreakdownBaseLabel || "Base"} <Badge variant="outline" className={badgeClassName}>{featSlotsBreakdown.base}</Badge>
+              {UI_STRINGS.featsPanelBreakdownBaseLabel} <Badge variant="outline">{featSlotsBreakdown.base}</Badge>
               {featSlotsBreakdown.racial > 0 && (
                 <>
-                  {' + '} {UI_STRINGS.featsPanelBreakdownRacialLabel || "Racial Bonus"} <Badge variant="outline" className={badgeClassName}>{featSlotsBreakdown.racial}</Badge>
+                  {' + '} {UI_STRINGS.featsPanelBreakdownRacialLabel} <Badge variant="outline">{featSlotsBreakdown.racial}</Badge>
                 </>
               )}
               {featSlotsBreakdown.classBonusDetails && featSlotsBreakdown.classBonusDetails.length > 0 && (
                 featSlotsBreakdown.classBonusDetails.map(detail => (
                     <React.Fragment key={`${detail.category}-${detail.sourceFeatLabel || 'general'}`}>
-                    {' + '} {detail.sourceFeatLabel || detail.category} <Badge variant="outline" className={badgeClassName}>{detail.count}</Badge>
+                    {' + '} {detail.sourceFeatLabel || detail.category} <Badge variant="outline">{detail.count}</Badge>
                     </React.Fragment>
                 ))
               )}
@@ -458,25 +458,25 @@ const FeatsFormSectionComponent = ({
           {aggregatedFeatEffects?.favoredEnemyBonuses && (aggregatedFeatEffects.favoredEnemyBonuses.skillBonus > 0 || aggregatedFeatEffects.favoredEnemyBonuses.damageBonus > 0) && (
             <div className="mt-1 mb-3 p-2 border border-dashed border-primary/50 rounded-md bg-primary/5 text-sm text-primary">
               <Info className="inline h-4 w-4 mr-1.5 mb-0.5" />
-              {(UI_STRINGS.favoredEnemyBonusDisplayInfo || "Favored Enemy Bonus: +{skillBonus} to Bluff, Listen, Sense Motive, Spot, Survival checks and +{damageBonus} damage against chosen favored enemies.")
+              {UI_STRINGS.favoredEnemyBonusDisplayInfo
                 .replace('{skillBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.skillBonus))
                 .replace('{damageBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.damageBonus))}
                 { ' ' }
-                ({(UI_STRINGS.favoredEnemySlotsAvailable || "Slots available: {slots}").replace('{slots}', String(aggregatedFeatEffects.favoredEnemySlots || 0))})
+                ({UI_STRINGS.favoredEnemySlotsAvailable.replace('{slots}', String(aggregatedFeatEffects.favoredEnemySlots || 0))})
             </div>
           )}
 
 
           <div className="mt-3 mb-1 flex gap-2">
             <Button type="button" variant="outline" size="sm" onClick={handleOpenFeatDialog} disabled={featSlotsLeft <= 0 && (!classBonusDetails || classBonusDetails.length === 0 || classBonusDetails.every(d => d.count === 0))}>
-              <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.featsPanelAddButton || "Choose Feat"}
+              <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.featsPanelAddButton}
             </Button>
           </div>
 
           {userChosenFeatInstances.length > 0 && (
             <>
               <h3 className={cn("text-lg font-semibold mb-2 text-primary", "mt-2")}>
-                {UI_STRINGS.featsPanelChosenFeatsTitle || "Chosen Feats"}
+                {UI_STRINGS.featsPanelChosenFeatsTitle}
               </h3>
               <div className="space-y-1 mb-3">
                 {userChosenFeatInstances.map(renderFeatInstance)}
@@ -493,7 +493,7 @@ const FeatsFormSectionComponent = ({
                    userChosenFeatInstances.length === 0 ? "mt-2" : ""
                 )}
               >
-                {UI_STRINGS.featsPanelGrantedFeatsTitle || "Granted Feats"}
+                {UI_STRINGS.featsPanelGrantedFeatsTitle}
               </h3>
               <div className="space-y-1 mb-3">
                 {grantedFeatInstances.map(renderFeatInstance)}
@@ -502,7 +502,7 @@ const FeatsFormSectionComponent = ({
           )}
 
           {userChosenFeatInstances.length === 0 && grantedFeatInstances.length === 0 && (
-             <p className="text-sm text-muted-foreground mt-4">{UI_STRINGS.featsPanelNoFeatsYet || "No feats selected or granted yet."}</p>
+             <p className="text-sm text-muted-foreground mt-4">{UI_STRINGS.featsPanelNoFeatsYet}</p>
           )}
 
         </CardContent>
@@ -536,4 +536,5 @@ const FeatsFormSectionComponent = ({
 };
 FeatsFormSectionComponent.displayName = "FeatsFormSectionComponent";
 export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
+
 

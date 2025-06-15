@@ -53,9 +53,8 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
   }
 
   const { LANGUAGES, DND_RACES, UI_STRINGS } = translations;
-  const badgeClassName = "text-primary border-primary whitespace-nowrap";
 
-  const raceData = DND_RACES.find(r => r.value === characterRaceId);
+  const raceData = DND_RACES.find(r => r.id === characterRaceId);
   const automaticLanguages: LanguageId[] = ['common', ...(raceData?.automaticLanguages || [])];
   
   const intBonusLanguages = Math.max(0, calculateAbilityModifier(characterIntelligenceScore));
@@ -70,10 +69,10 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
   const allKnownLanguageIds = Array.from(new Set([...automaticLanguages, ...characterLanguages]));
   
   const allKnownLanguagesToDisplay = LANGUAGES
-    .filter(lang => allKnownLanguageIds.includes(lang.value))
+    .filter(lang => allKnownLanguageIds.includes(lang.id)) // Changed from value to id
     .sort((a, b) => {
-      const isAAutomatic = automaticLanguages.includes(a.value);
-      const isBAutomatic = automaticLanguages.includes(b.value);
+      const isAAutomatic = automaticLanguages.includes(a.id); // Changed from value to id
+      const isBAutomatic = automaticLanguages.includes(b.id); // Changed from value to id
       if (isAAutomatic && !isBAutomatic) return -1;
       if (!isAAutomatic && isBAutomatic) return 1;
       return a.label.localeCompare(b.label);
@@ -81,8 +80,9 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
 
 
   const availableLanguagesForAdding = LANGUAGES.filter(
-    lang => !allKnownLanguageIds.includes(lang.value) && lang.value !== 'druidic' 
-  ).sort((a,b) => a.label.localeCompare(b.label));
+    lang => !allKnownLanguageIds.includes(lang.id) && lang.id !== 'druidic' // Changed from value to id
+  ).sort((a,b) => a.label.localeCompare(b.label))
+  .map(lang => ({ value: lang.id, label: lang.label })); // Ensure options have value/label for combobox
 
   const handleAddLanguage = React.useCallback(() => {
     if (selectedLanguageToAdd && !allKnownLanguageIds.includes(selectedLanguageToAdd)) {
@@ -121,8 +121,8 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
             </p>
           </div>
            <p className="text-xs text-muted-foreground mt-1">
-              {UI_STRINGS.languagesPanelFormulaIntModLabel || "Intelligence Modifier"}{'\u00A0'}<Badge variant="outline" className={badgeClassName}>{intBonusLanguages}</Badge>
-              {' + '}{UI_STRINGS.languagesPanelFormulaSkillRanksLabel || "Speak Language Ranks"}{'\u00A0'}<Badge variant="outline" className={badgeClassName}>{skillBonusLanguages}</Badge>
+              {UI_STRINGS.languagesPanelFormulaIntModLabel || "Intelligence Modifier"}{'\u00A0'}<Badge variant="outline">{intBonusLanguages}</Badge>
+              {' + '}{UI_STRINGS.languagesPanelFormulaSkillRanksLabel || "Speak Language Ranks"}{'\u00A0'}<Badge variant="outline">{skillBonusLanguages}</Badge>
               {' = '}<span className="font-bold text-primary">{totalBonusLanguageSlots}</span>
             </p>
         </div>
@@ -131,9 +131,9 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
           {allKnownLanguagesToDisplay.length > 0 ? (
             <div className="mt-1"> 
               {allKnownLanguagesToDisplay.map(langObj => {
-                const isAutomatic = automaticLanguages.includes(langObj.value);
+                const isAutomatic = automaticLanguages.includes(langObj.id); // Changed from value to id
                 return (
-                  <div key={`known-${langObj.value}`} className="flex items-center justify-between py-1 px-1.5 rounded-md text-sm"> 
+                  <div key={`known-${langObj.id}`} className="flex items-center justify-between py-1 px-1.5 rounded-md text-sm"> 
                     <span>
                       {langObj.label}
                       {isAutomatic && <>{'\u00A0'}<Badge variant="outline" className="text-muted-foreground border-muted-foreground/50">{UI_STRINGS.languagesPanelAutomaticBadgeLabel || "Automatic"}</Badge></>}
@@ -144,7 +144,7 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
                         variant="ghost"
                         size="icon"
                         className="h-6 w-6 text-destructive hover:text-destructive/80"
-                        onClick={() => handleRemoveLanguage(langObj.value)}
+                        onClick={() => handleRemoveLanguage(langObj.id)} // Changed from value to id
                         aria-label={(UI_STRINGS.languagesPanelRemoveAriaLabel || "Remove {languageName}").replace("{languageName}", langObj.label)}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -182,3 +182,4 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
 };
 LanguagesPanelComponent.displayName = "LanguagesPanelComponent";
 export const LanguagesPanel = React.memo(LanguagesPanelComponent);
+
