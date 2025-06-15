@@ -1,17 +1,17 @@
 
 'use client';
 
-import type { Character, AbilityScores, SavingThrows, CharacterClass, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, InfoDialogContentType, DetailedAbilityScores, AggregatedFeatEffects, SavingThrowType } from '@/types/character';
-import { SAVING_THROW_ABILITIES } from '@/types/character'; 
+import type { Character, AbilityScores, SavingThrows, CharacterClass, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, InfoDialogContentType, DetailedAbilityScores, AggregatedFeatEffects, SavingThrowType, ItemDefinition, ItemInstance, GearSlotId } from '@/types/character';
+import { SAVING_THROW_ABILITIES } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, Swords, Heart, Zap as InitiativeIcon, ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, Info, Brain, ShieldCheck, PlusCircle, Trash2, Loader2 } from 'lucide-react';
-import { 
+import {
   getAbilityModifierByName,
-  getBab, 
-  getBaseSaves, 
-  calculateInitiative, 
-  calculateGrapple, 
+  getBab,
+  getBaseSaves,
+  calculateInitiative,
+  calculateGrapple,
   getSizeModifierAC,
   getSizeModifierGrapple
 } from '@/lib/dnd-utils';
@@ -24,8 +24,8 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getLocalizedString } from '@/i18n/i18n-data'; 
-import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config'; 
+import { getLocalizedString } from '@/i18n/i18n-data';
+import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 
 type ResistanceFieldKey = Exclude<keyof Pick<Character,
   'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
@@ -34,22 +34,22 @@ type ResistanceFieldKey = Exclude<keyof Pick<Character,
 
 interface CombatStatsSectionProps {
   character: Character;
-  detailedAbilityScores: DetailedAbilityScores | null; 
-  aggregatedFeatEffects: AggregatedFeatEffects | null; 
+  detailedAbilityScores: DetailedAbilityScores | null;
+  aggregatedFeatEffects: AggregatedFeatEffects | null;
   onCharacterUpdate: (
-    field: keyof Character | 
+    field: keyof Character |
            `savingThrows.${keyof SavingThrows}.${'base'|'magicMod'|'miscMod'}` |
-           `${ResistanceFieldKey}.customMod` | 
-           'damageReduction', 
+           `${ResistanceFieldKey}.customMod` |
+           'damageReduction',
     value: any
   ) => void;
-  onOpenCombatStatInfoDialog: (contentType: InfoDialogContentType) => void; 
+  onOpenCombatStatInfoDialog: (contentType: InfoDialogContentType) => void;
 }
 
-export function CombatStatsSection({ 
-  character, 
-  detailedAbilityScores, 
-  aggregatedFeatEffects, 
+export function CombatStatsSection({
+  character,
+  detailedAbilityScores,
+  aggregatedFeatEffects,
   onCharacterUpdate,
   onOpenCombatStatInfoDialog
 }: CombatStatsSectionProps) {
@@ -81,29 +81,29 @@ export function CombatStatsSection({
       </div>
     );
   }
-  const { UI_STRINGS, DND_CLASSES, SIZES, DAMAGE_REDUCTION_TYPES: DR_TYPES_DATA, DAMAGE_REDUCTION_RULES_OPTIONS: DR_RULES_DATA, ABILITY_LABELS, SAVING_THROW_LABELS } = translations;
+  const { UI_STRINGS, DND_CLASSES, SIZES, DAMAGE_REDUCTION_TYPES: DR_TYPES_DATA, DAMAGE_REDUCTION_RULES_OPTIONS: DR_RULES_DATA, ABILITY_LABELS, SAVING_THROW_LABELS, ITEM_DEFINITIONS_ARMOR, ITEM_DEFINITIONS_SHIELDS } = translations;
 
 
   const strModifier = detailedAbilityScores.strength.finalScore ? getAbilityModifierByName(detailedAbilityScores, 'strength') : 0;
   const dexModifier = detailedAbilityScores.dexterity.finalScore ? getAbilityModifierByName(detailedAbilityScores, 'dexterity') : 0;
   const conModifier = detailedAbilityScores.constitution.finalScore ? getAbilityModifierByName(detailedAbilityScores, 'constitution') : 0;
   const wisModifier = detailedAbilityScores.wisdom.finalScore ? getAbilityModifierByName(detailedAbilityScores, 'wisdom') : 0;
-  
-  const babArray = getBab(character.classes, DND_CLASSES); 
-  const totalBabWithModifier = babArray.map(bab => bab + (character.babMiscModifier || 0)); 
+
+  const babArray = getBab(character.classes, DND_CLASSES);
+  const totalBabWithModifier = babArray.map(bab => bab + (character.babMiscModifier || 0));
 
   const sizeModAC = getSizeModifierAC(character.size, SIZES);
   const sizeModGrapple = getSizeModifierGrapple(character.size, SIZES);
 
   const initiativeFeatBonus = aggregatedFeatEffects.initiativeBonus || 0;
   const initiative = calculateInitiative(dexModifier, character.initiativeMiscModifier || 0) + initiativeFeatBonus;
-  
+
   const grappleFeatBonus = aggregatedFeatEffects.attackRollBonuses?.filter(b => b.appliesTo === 'grapple' && b.isActive).reduce((sum, b) => sum + (typeof b.value === 'number' ? b.value : 0), 0) || 0;
   const grappleBase = calculateGrapple(character.classes, strModifier, sizeModGrapple, DND_CLASSES);
   const grapple = grappleBase + (character.grappleMiscModifier || 0) + grappleFeatBonus;
 
   const baseSavesFromClass = getBaseSaves(character.classes, DND_CLASSES);
-  
+
   const calculatedSaves = {
     fortitude: baseSavesFromClass.fortitude + conModifier + (character.savingThrows.fortitude.magicMod || 0) + (aggregatedFeatEffects.savingThrowBonuses.find(b => (b.save === 'fortitude' || b.save === 'all') && b.isActive)?.value || 0) + (character.savingThrows.fortitude.miscMod || 0),
     reflex: baseSavesFromClass.reflex + dexModifier + (character.savingThrows.reflex.magicMod || 0) + (aggregatedFeatEffects.savingThrowBonuses.find(b => (b.save === 'reflex' || b.save === 'all') && b.isActive)?.value || 0) + (character.savingThrows.reflex.miscMod || 0),
@@ -131,7 +131,7 @@ export function CombatStatsSection({
   const handleOpenResistanceInfoDialog = (field: ResistanceFieldKey) => {
     onOpenCombatStatInfoDialog({ type: 'resistanceBreakdown', resistanceField: field });
   };
-  
+
   const handleOpenAcBreakdownDialog = (acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
     onOpenCombatStatInfoDialog({ type: 'acBreakdown', acType });
   };
@@ -142,7 +142,7 @@ export function CombatStatsSection({
       toast({ title: UI_STRINGS.toastInvalidDrValueTitle, description: UI_STRINGS.toastInvalidDrValueDesc, variant: "destructive"});
       return;
     }
-     if (!newDrType) { 
+     if (!newDrType) {
         toast({ title: UI_STRINGS.toastDrTypeMissingTitle, description: UI_STRINGS.toastDrTypeMissingDesc, variant: "destructive"});
         return;
     }
@@ -169,20 +169,20 @@ export function CombatStatsSection({
     };
     onCharacterUpdate('damageReduction', [...(character.damageReduction || []), newInstance]);
     setNewDrValue(1);
-    setNewDrType(DR_TYPES_DATA[0]?.id || "none"); 
-    setNewDrRule(DR_RULES_DATA[0]?.id || 'bypassed-by-type'); 
+    setNewDrType(DR_TYPES_DATA[0]?.id || "none");
+    setNewDrRule(DR_RULES_DATA[0]?.id || 'bypassed-by-type');
   };
 
   const handleRemoveDamageReduction = (idToRemove: string) => {
     onCharacterUpdate('damageReduction', (character.damageReduction || []).filter(dr => dr.id !== idToRemove));
   };
-  
+
   const getDrTypeUiLabel = (typeValue: DamageReductionTypeValue | string): string => {
     const drType = DR_TYPES_DATA.find(t => t.id === typeValue);
     if (!drType) throw new Error(`[DATA_ERROR] DR Type definition not found for ID: ${typeValue}`);
     return drType.label;
   };
-  
+
   const getDrPrimaryNotation = (dr: DamageReductionInstance): string => {
     const typeLabel = getDrTypeUiLabel(dr.type);
     if (dr.rule === 'bypassed-by-type') {
@@ -201,13 +201,13 @@ export function CombatStatsSection({
     if (!ruleDef) throw new Error(`[DATA_ERROR] DR Rule definition not found for ID: ${dr.rule}`);
     return `${dr.value}/${typeLabel} (${ruleDef.label})`;
   };
-  
+
   const getDrRuleDescription = (dr: DamageReductionInstance): string => {
     const typeLabel = getDrTypeUiLabel(dr.type);
     const ruleDef = DR_RULES_DATA.find(opt => opt.id === dr.rule);
     if (!ruleDef) throw new Error(`[DATA_ERROR] DR Rule definition not found for ID: ${dr.rule}`);
     const value = dr.value;
-    
+
     let descriptionKey: keyof typeof UI_STRINGS | undefined;
 
     if (dr.rule === 'bypassed-by-type') {
@@ -224,27 +224,38 @@ export function CombatStatsSection({
     return `${UI_STRINGS.resistancesPanelDrRuleLabel}: ${ruleDef.label}`;
   };
 
-  const totalArmorBonusNormal = (character.armorBonus || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'armor' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal')))?.value || 0);
-  const totalShieldBonusNormal = (character.shieldBonus || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'shield' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal')))?.value || 0);
+  const equippedArmorInstanceId = character.equippedGear?.['armor-body'];
+  const equippedArmorInstance = equippedArmorInstanceId ? character.inventory.find(i => i.instanceId === equippedArmorInstanceId) : undefined;
+  const equippedArmorDefinition = equippedArmorInstance ? ITEM_DEFINITIONS_ARMOR.find(def => def.definitionId === equippedArmorInstance.definitionId) : undefined;
+  const physicalArmorBonus = equippedArmorDefinition?.armorBonus || 0;
+
+  const equippedShieldInstanceId = character.equippedGear?.['shield'];
+  const equippedShieldInstance = equippedShieldInstanceId ? character.inventory.find(i => i.instanceId === equippedShieldInstanceId) : undefined;
+  const equippedShieldDefinition = equippedShieldInstance ? ITEM_DEFINITIONS_SHIELDS.find(def => def.definitionId === equippedShieldInstance.definitionId) : undefined;
+  const physicalShieldBonus = equippedShieldDefinition?.shieldBonus || 0;
+
+
+  const totalArmorBonusNormal = (character.armorBonus || 0) + physicalArmorBonus + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'armor' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal')))?.value || 0);
+  const totalShieldBonusNormal = (character.shieldBonus || 0) + physicalShieldBonus + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'shield' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal')))?.value || 0);
   const totalNaturalArmorNormal = (character.naturalArmor || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'natural' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal')))?.value || 0);
   const totalDeflectionBonusNormal = (character.deflectionBonus || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'deflection' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal')))?.value || 0);
   const totalDodgeBonusNormal = (character.dodgeBonus || 0) + (aggregatedFeatEffects.acBonuses.filter(b => b.acType === 'dodge' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal'))).reduce((sum, b) => sum + (b.value as number), 0) );
-  
+
   const monkWisAcBonus = aggregatedFeatEffects.acBonuses.find(b => b.acType === 'monk_wisdom' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal')))?.value === "WIS" ? Math.max(0, wisModifier) : 0;
   const monkScalingAcBonus = aggregatedFeatEffects.acBonuses.find(b => b.acType === 'monkScaling' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal')))?.value || 0;
   const otherFeatAcBonusesNormal = aggregatedFeatEffects.acBonuses.filter(b => !['armor','shield','natural','deflection','dodge','monk_wisdom','monkScaling'].includes(b.acType) && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('normal'))).reduce((sum,b) => sum + (b.value as number),0);
 
   const normalAC = 10 + totalArmorBonusNormal + totalShieldBonusNormal + dexModifier + sizeModAC + totalNaturalArmorNormal + totalDeflectionBonusNormal + totalDodgeBonusNormal + monkWisAcBonus + (monkScalingAcBonus as number) + otherFeatAcBonusesNormal + (character.acMiscModifier || 0);
-  
+
   const totalDeflectionBonusTouch = (character.deflectionBonus || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'deflection' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('touch')))?.value || 0);
   const totalDodgeBonusTouch = (character.dodgeBonus || 0) + (aggregatedFeatEffects.acBonuses.filter(b => b.acType === 'dodge' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('touch'))).reduce((sum, b) => sum + (b.value as number), 0) );
   const monkWisAcBonusTouch = aggregatedFeatEffects.acBonuses.find(b => b.acType === 'monk_wisdom' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('touch')))?.value === "WIS" ? Math.max(0, wisModifier) : 0;
   const monkScalingAcBonusTouch = aggregatedFeatEffects.acBonuses.find(b => b.acType === 'monkScaling' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('touch')))?.value || 0;
   const otherFeatAcBonusesTouch = aggregatedFeatEffects.acBonuses.filter(b => !['armor','shield','natural','deflection','dodge','monk_wisdom','monkScaling'].includes(b.acType) && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('touch'))).reduce((sum,b) => sum + (b.value as number),0);
   const touchAC = 10 + dexModifier + sizeModAC + totalDeflectionBonusTouch + totalDodgeBonusTouch + monkWisAcBonusTouch + (monkScalingAcBonusTouch as number) + otherFeatAcBonusesTouch + (character.acMiscModifier || 0);
-  
-  const totalArmorBonusFlat = (character.armorBonus || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'armor' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('flatFooted')))?.value || 0);
-  const totalShieldBonusFlat = (character.shieldBonus || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'shield' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('flatFooted')))?.value || 0);
+
+  const totalArmorBonusFlat = (character.armorBonus || 0) + physicalArmorBonus + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'armor' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('flatFooted')))?.value || 0);
+  const totalShieldBonusFlat = (character.shieldBonus || 0) + physicalShieldBonus + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'shield' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('flatFooted')))?.value || 0);
   const totalNaturalArmorFlat = (character.naturalArmor || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'natural' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('flatFooted')))?.value || 0);
   const totalDeflectionBonusFlat = (character.deflectionBonus || 0) + (aggregatedFeatEffects.acBonuses.find(b => b.acType === 'deflection' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('flatFooted')))?.value || 0);
   const monkWisAcBonusFlat = aggregatedFeatEffects.acBonuses.find(b => b.acType === 'monk_wisdom' && b.isActive && (!b.appliesToScope || b.appliesToScope.includes('flatFooted')))?.value === "WIS" ? Math.max(0, wisModifier) : 0;
@@ -272,8 +283,8 @@ export function CombatStatsSection({
                 id="hp"
                 value={character.hp}
                 onChange={(newValue) => onCharacterUpdate('hp', newValue)}
-                min={-999} 
-                max={character.maxHp > 0 ? character.maxHp + 20 : 999} 
+                min={-999}
+                max={character.maxHp > 0 ? character.maxHp + 20 : 999}
                 inputClassName="w-24 h-10 text-lg"
                 buttonClassName="h-10 w-10"
                 buttonSize="icon"
@@ -355,18 +366,18 @@ export function CombatStatsSection({
                     <div className="text-xs space-y-1 mt-1">
                       <p>{UI_STRINGS.savingThrowsRowLabelBase}: {baseSavesFromClass[saveType]}</p>
                       <p>{UI_STRINGS.savingThrowsRowLabelAbilityModifier}: {abilityMod >= 0 ? '+' : ''}{abilityMod} ({(ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr || abilityKey.substring(0,3).toUpperCase())})</p>
-                      <div className="flex items-center gap-1"><Label htmlFor={`st-magic-${saveType}`} className="shrink-0">{UI_STRINGS.savingThrowsRowLabelMagicModifier}:</Label> 
-                        <NumberSpinnerInput 
+                      <div className="flex items-center gap-1"><Label htmlFor={`st-magic-${saveType}`} className="shrink-0">{UI_STRINGS.savingThrowsRowLabelMagicModifier}:</Label>
+                        <NumberSpinnerInput
                           id={`st-magic-${saveType}`}
-                          value={character.savingThrows[saveType].magicMod || 0} 
-                          onChange={(val) => handleSavingThrowChange(saveType, 'magicMod', val)} 
+                          value={character.savingThrows[saveType].magicMod || 0}
+                          onChange={(val) => handleSavingThrowChange(saveType, 'magicMod', val)}
                           min={-10} max={10}
                           inputClassName="w-12 h-6 text-xs" buttonClassName="h-6 w-6" buttonSize="icon" />
                       </div>
-                      <div className="flex items-center gap-1"><Label htmlFor={`st-misc-${saveType}`} className="shrink-0">{UI_STRINGS.savingThrowsRowLabelTemporaryModifier}:</Label> 
+                      <div className="flex items-center gap-1"><Label htmlFor={`st-misc-${saveType}`} className="shrink-0">{UI_STRINGS.savingThrowsRowLabelTemporaryModifier}:</Label>
                         <NumberSpinnerInput
                           id={`st-misc-${saveType}`}
-                          value={character.savingThrows[saveType].miscMod || 0} 
+                          value={character.savingThrows[saveType].miscMod || 0}
                           onChange={(val) => handleSavingThrowChange(saveType, 'miscMod', val)}
                           min={-10} max={10}
                           inputClassName="w-12 h-6 text-xs" buttonClassName="h-6 w-6" buttonSize="icon" />
@@ -379,7 +390,7 @@ export function CombatStatsSection({
           </div>
         </CardContent>
       </Card>
-      
+
        <Card>
         <CardHeader>
             <div className="flex items-center space-x-2">
@@ -428,7 +439,7 @@ export function CombatStatsSection({
               {energyResistancesFields.map(({ field, labelKey, Icon, fieldPrefix }) => {
                 const resistance = character[field as keyof Character] as ResistanceValue;
                 const totalValue = (resistance?.base || 0) + (resistance?.customMod || 0) + (aggregatedFeatEffects.resistanceBonuses.find(b => b.resistanceTo === field.replace('Resistance','').toLowerCase() && b.isActive)?.value || 0);
-                const label = UI_STRINGS[labelKey]; 
+                const label = UI_STRINGS[labelKey];
                 if(!label) throw new Error(`[UI_ERROR] Missing UI String for ${labelKey}`);
                 return (
                   <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1 text-center shadow-sm">
@@ -507,7 +518,7 @@ export function CombatStatsSection({
                         value={resistance?.customMod || 0}
                         onChange={(newValue) => onCharacterUpdate(`${field}.customMod` as `${ResistanceFieldKey}.customMod`, newValue)}
                         min={isFortification ? 0 : -50}
-                        max={isFortification ? 100 : undefined} 
+                        max={isFortification ? 100 : undefined}
                         inputClassName="w-16 h-7 text-sm text-center"
                         buttonClassName="h-7 w-7"
                         buttonSize="sm"
@@ -521,7 +532,7 @@ export function CombatStatsSection({
             <div>
                 <h4 className="text-md font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
                 <div className="grid md:grid-cols-2 gap-x-6 gap-y-4">
-                  <div className="space-y-3"> 
+                  <div className="space-y-3">
                     {(character.damageReduction || []).length > 0 ? (
                       (character.damageReduction || []).map(dr => {
                         const ruleDef = DR_RULES_DATA.find(opt => opt.id === dr.rule);
@@ -556,7 +567,7 @@ export function CombatStatsSection({
                     )}
                   </div>
 
-                  <div className="space-y-3 border md:border-l md:border-t-0 p-4 rounded-md md:pl-6"> 
+                  <div className="space-y-3 border md:border-l md:border-t-0 p-4 rounded-md md:pl-6">
                     <Label className="text-md font-medium">{UI_STRINGS.resistancesPanelAddCustomDrLabel}</Label>
                     <div className="space-y-1">
                         <Label htmlFor="sheet-dr-value" className="text-xs">{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
@@ -593,8 +604,8 @@ export function CombatStatsSection({
                             </SelectTrigger>
                             <SelectContent>
                                 {DR_TYPES_DATA.map(option => (
-                                    <SelectItem 
-                                      key={option.id} 
+                                    <SelectItem
+                                      key={option.id}
                                       value={option.id}
                                       disabled={option.id === 'none' && newDrRule !== 'bypassed-by-type'}
                                     >
@@ -617,5 +628,3 @@ export function CombatStatsSection({
     </>
   );
 }
-
-    

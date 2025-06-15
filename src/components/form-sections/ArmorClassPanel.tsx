@@ -2,7 +2,7 @@
 'use client';
 
 import *as React from 'react';
-import type { Character, InfoDialogContentType, AggregatedFeatEffects, CharacterFeatInstance } from '@/types/character';
+import type { Character, InfoDialogContentType, AggregatedFeatEffects, CharacterFeatInstance, ItemDefinition, ItemInstance, GearSlotId } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Shield, Info, Loader2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
@@ -14,45 +14,53 @@ import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/context/I18nProvider';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge'; // Added Badge import
+import { Badge } from '@/components/ui/badge';
 
 const DEBOUNCE_DELAY = 400;
 
-export type ArmorClassPanelData = Pick<Character, 'abilityScores' | 'size' | 'armorBonus' | 'shieldBonus' | 'naturalArmor' | 'deflectionBonus' | 'dodgeBonus' | 'acMiscModifier' | 'feats'>;
-
+// ArmorClassPanelData is now more aligned with the Character structure
 export interface ArmorClassPanelProps {
-  acData?: ArmorClassPanelData;
+  character: Character; // Pass the full character or a more comprehensive subset
   aggregatedFeatEffects?: AggregatedFeatEffects | null;
-  onCharacterUpdate?: (field: keyof Omit<ArmorClassPanelData, 'feats'>, value: any) => void; 
+  onCharacterUpdate?: (field: keyof Pick<Character, 'armorBonus' | 'shieldBonus' | 'naturalArmor' | 'deflectionBonus' | 'dodgeBonus' | 'acMiscModifier'>, value: any) => void;
   onOpenAcBreakdownDialog?: (contentType: InfoDialogContentType) => void;
 }
 
-const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) => {
+const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
+  const acData = character; // Use character directly
 
-  const handleUpdateCallback = React.useCallback((value: number) => {
+  const handleUpdateCallback = React.useCallback((fieldName: keyof Pick<Character, 'acMiscModifier' | 'armorBonus' | 'shieldBonus' | 'naturalArmor' | 'deflectionBonus' | 'dodgeBonus'>) => (value: number) => {
     if (onCharacterUpdate) {
-      onCharacterUpdate('acMiscModifier', value);
+      onCharacterUpdate(fieldName, value);
     }
   }, [onCharacterUpdate]);
 
   const [localTemporaryAcModifier, setLocalTemporaryAcModifier] = useDebouncedFormField(
     acData?.acMiscModifier || 0,
-    handleUpdateCallback,
+    handleUpdateCallback('acMiscModifier'),
     DEBOUNCE_DELAY
   );
+
+  // Debounced fields for base AC components
+  const [localArmorBonus, setLocalArmorBonus] = useDebouncedFormField(acData.armorBonus || 0, handleUpdateCallback('armorBonus'), DEBOUNCE_DELAY);
+  const [localShieldBonus, setLocalShieldBonus] = useDebouncedFormField(acData.shieldBonus || 0, handleUpdateCallback('shieldBonus'), DEBOUNCE_DELAY);
+  const [localNaturalArmor, setLocalNaturalArmor] = useDebouncedFormField(acData.naturalArmor || 0, handleUpdateCallback('naturalArmor'), DEBOUNCE_DELAY);
+  const [localDeflectionBonus, setLocalDeflectionBonus] = useDebouncedFormField(acData.deflectionBonus || 0, handleUpdateCallback('deflectionBonus'), DEBOUNCE_DELAY);
+  const [localDodgeBonus, setLocalDodgeBonus] = useDebouncedFormField(acData.dodgeBonus || 0, handleUpdateCallback('dodgeBonus'), DEBOUNCE_DELAY);
+
 
   const calculateTotalAcComponent = React.useCallback((
     baseValue: number | undefined,
     featAcType: "dodge" | "armor" | "shield" | "natural" | "deflection" | "insight" | "circumstance" | "untyped" | "monk_wisdom" | "monkScaling" | "other_feat_bonus",
-    acTypeForScope?: 'Normal' | 'Touch' | 'Flat-Footed' 
+    acTypeForScope?: 'Normal' | 'Touch' | 'Flat-Footed'
   ): number => {
     let total = baseValue || 0;
     if (aggregatedFeatEffects?.acBonuses) {
       aggregatedFeatEffects.acBonuses.forEach(effect => {
         let effectAppliesToCurrentAcScope = false;
         if (!effect.appliesToScope || effect.appliesToScope.length === 0) {
-            effectAppliesToCurrentAcScope = true; 
+            effectAppliesToCurrentAcScope = true;
         } else if (acTypeForScope) {
             if (acTypeForScope === 'Normal' && effect.appliesToScope.includes('normal')) effectAppliesToCurrentAcScope = true;
             if (acTypeForScope === 'Touch' && effect.appliesToScope.includes('touch')) effectAppliesToCurrentAcScope = true;
@@ -71,7 +79,7 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
               const abilityMod = getAbilityModifierByName(acData.abilityScores, abilityKey);
               if (featAcType === "monk_wisdom" && abilityMod > 0) {
                 valueToAdd = abilityMod;
-              } else if (featAcType !== "monk_wisdom") { 
+              } else if (featAcType !== "monk_wisdom") {
                  valueToAdd = abilityMod;
               }
             }
@@ -93,6 +101,7 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
 
 
   if (translationsLoading || !translations || !acData || !aggregatedFeatEffects) {
+    // Skeleton remains the same
     return (
       <Card>
         <CardHeader>
@@ -138,16 +147,31 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
                 </div>
               </div>
               <Separator className="my-3" />
-              <div className="flex items-center justify-between">
-                <Label htmlFor="custom-ac-mod-display" className="text-sm font-medium">{translations?.UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}</Label>
-                <NumberSpinnerInput
-                  id="custom-ac-mod-display"
-                  value={0}
-                  onChange={() => {}}
-                  disabled={true}
-                  inputClassName="w-24 h-9 text-base"
-                  buttonClassName="h-9 w-9"
-                />
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="armorBonus">Base Armor Bonus</Label>
+                    <Skeleton className="h-9 w-full" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="shieldBonus">Base Shield Bonus</Label>
+                    <Skeleton className="h-9 w-full" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="naturalArmor">Base Natural Armor</Label>
+                    <Skeleton className="h-9 w-full" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="deflectionBonus">Base Deflection Bonus</Label>
+                    <Skeleton className="h-9 w-full" />
+                  </div>
+                   <div className="space-y-1">
+                    <Label htmlFor="dodgeBonus">Base Dodge Bonus</Label>
+                    <Skeleton className="h-9 w-full" />
+                  </div>
+                  <div className="space-y-1">
+                     <Label htmlFor="custom-ac-mod-display">Temporary Modifier</Label>
+                     <Skeleton className="h-9 w-full" />
+                  </div>
               </div>
               <Skeleton className="h-5 w-3/4 mt-2" />
             </>
@@ -157,20 +181,30 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
     );
   }
 
-  const { DEFAULT_ABILITIES, SIZES, UI_STRINGS } = translations;
+  const { DEFAULT_ABILITIES, SIZES, UI_STRINGS, ITEM_DEFINITIONS_ARMOR, ITEM_DEFINITIONS_SHIELDS } = translations;
   const currentAbilityScores = acData.abilityScores || DEFAULT_ABILITIES;
   const currentSize = acData.size || 'medium';
 
   const dexModifier = getAbilityModifierByName(currentAbilityScores, 'dexterity');
   const sizeModAC = getSizeModifierAC(currentSize, SIZES);
 
-  const totalArmorBonusNormal = calculateTotalAcComponent(acData.armorBonus, "armor", "Normal");
-  const totalShieldBonusNormal = calculateTotalAcComponent(acData.shieldBonus, "shield", "Normal");
+  const equippedArmorInstanceId = acData.equippedGear?.['armor-body'];
+  const equippedArmorInstance = equippedArmorInstanceId ? acData.inventory.find(i => i.instanceId === equippedArmorInstanceId) : undefined;
+  const equippedArmorDefinition = equippedArmorInstance ? ITEM_DEFINITIONS_ARMOR.find(def => def.definitionId === equippedArmorInstance.definitionId) : undefined;
+  const physicalArmorBonus = equippedArmorDefinition?.armorBonus || 0;
+
+  const equippedShieldInstanceId = acData.equippedGear?.['shield'];
+  const equippedShieldInstance = equippedShieldInstanceId ? acData.inventory.find(i => i.instanceId === equippedShieldInstanceId) : undefined;
+  const equippedShieldDefinition = equippedShieldInstance ? ITEM_DEFINITIONS_SHIELDS.find(def => def.definitionId === equippedShieldInstance.definitionId) : undefined;
+  const physicalShieldBonus = equippedShieldDefinition?.shieldBonus || 0;
+
+
+  const totalArmorBonusNormal = calculateTotalAcComponent(acData.armorBonus, "armor", "Normal") + physicalArmorBonus;
+  const totalShieldBonusNormal = calculateTotalAcComponent(acData.shieldBonus, "shield", "Normal") + physicalShieldBonus;
   const totalNaturalArmorNormal = calculateTotalAcComponent(acData.naturalArmor, "natural", "Normal");
   const totalDeflectionBonusNormal = calculateTotalAcComponent(acData.deflectionBonus, "deflection", "Normal");
   const totalDodgeBonusNormal = calculateTotalAcComponent(acData.dodgeBonus, "dodge", "Normal");
   const calculatedFeatMiscAcBonusNormal = calculateTotalAcComponent(0, "other_feat_bonus", "Normal") + calculateTotalAcComponent(0, "monk_wisdom", "Normal") + calculateTotalAcComponent(0, "monkScaling", "Normal");
-
   const normalAC = 10 + totalArmorBonusNormal + totalShieldBonusNormal + dexModifier + sizeModAC + totalNaturalArmorNormal + totalDeflectionBonusNormal + totalDodgeBonusNormal + calculatedFeatMiscAcBonusNormal + (acData.acMiscModifier || 0);
 
   const totalDeflectionBonusTouch = calculateTotalAcComponent(acData.deflectionBonus, "deflection", "Touch");
@@ -178,8 +212,8 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
   const calculatedFeatMiscAcBonusTouch = calculateTotalAcComponent(0, "other_feat_bonus", "Touch") + calculateTotalAcComponent(0, "monk_wisdom", "Touch") + calculateTotalAcComponent(0, "monkScaling", "Touch");
   const touchAC = 10 + dexModifier + sizeModAC + totalDeflectionBonusTouch + totalDodgeBonusTouch + calculatedFeatMiscAcBonusTouch + (acData.acMiscModifier || 0);
 
-  const totalArmorBonusFlat = calculateTotalAcComponent(acData.armorBonus, "armor", "Flat-Footed");
-  const totalShieldBonusFlat = calculateTotalAcComponent(acData.shieldBonus, "shield", "Flat-Footed");
+  const totalArmorBonusFlat = calculateTotalAcComponent(acData.armorBonus, "armor", "Flat-Footed") + physicalArmorBonus;
+  const totalShieldBonusFlat = calculateTotalAcComponent(acData.shieldBonus, "shield", "Flat-Footed") + physicalShieldBonus;
   const totalNaturalArmorFlat = calculateTotalAcComponent(acData.naturalArmor, "natural", "Flat-Footed");
   const totalDeflectionBonusFlat = calculateTotalAcComponent(acData.deflectionBonus, "deflection", "Flat-Footed");
   const calculatedFeatMiscAcBonusFlat = calculateTotalAcComponent(0, "other_feat_bonus", "Flat-Footed") + calculateTotalAcComponent(0, "monk_wisdom", "Flat-Footed") + calculateTotalAcComponent(0, "monkScaling", "Flat-Footed");
@@ -234,18 +268,70 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
           </div>
 
           <Separator className="my-3" />
-          <div className="flex items-center justify-between">
-            <Label htmlFor="temporary-ac-modifier-input" className="text-sm font-medium">{UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}</Label>
-            <NumberSpinnerInput
-              id="temporary-ac-modifier-input"
-              value={localTemporaryAcModifier}
-              onChange={setLocalTemporaryAcModifier}
-              disabled={!isEditable}
-              min={-20}
-              max={20}
-              inputClassName="w-24 h-9 text-base"
-              buttonClassName="h-9 w-9"
-            />
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <Label htmlFor="armorBonusInput">{UI_STRINGS.acBreakdownBaseArmorBonusLabel || "Base Armor Bonus (Other)"}</Label>
+                <NumberSpinnerInput
+                  id="armorBonusInput"
+                  value={localArmorBonus}
+                  onChange={setLocalArmorBonus}
+                  disabled={!isEditable}
+                  inputClassName="w-full h-9 text-base" buttonClassName="h-9 w-9"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="shieldBonusInput">{UI_STRINGS.acBreakdownBaseShieldBonusLabel || "Base Shield Bonus (Other)"}</Label>
+                <NumberSpinnerInput
+                  id="shieldBonusInput"
+                  value={localShieldBonus}
+                  onChange={setLocalShieldBonus}
+                  disabled={!isEditable}
+                  inputClassName="w-full h-9 text-base" buttonClassName="h-9 w-9"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="naturalArmorInput">{UI_STRINGS.acBreakdownNaturalArmorLabel || "Base Natural Armor"}</Label>
+                <NumberSpinnerInput
+                  id="naturalArmorInput"
+                  value={localNaturalArmor}
+                  onChange={setLocalNaturalArmor}
+                  disabled={!isEditable}
+                  inputClassName="w-full h-9 text-base" buttonClassName="h-9 w-9"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="deflectionBonusInput">{UI_STRINGS.acBreakdownDeflectionBonusLabel || "Base Deflection Bonus"}</Label>
+                <NumberSpinnerInput
+                  id="deflectionBonusInput"
+                  value={localDeflectionBonus}
+                  onChange={setLocalDeflectionBonus}
+                  disabled={!isEditable}
+                  inputClassName="w-full h-9 text-base" buttonClassName="h-9 w-9"
+                />
+              </div>
+               <div className="space-y-1">
+                <Label htmlFor="dodgeBonusInput">{UI_STRINGS.acBreakdownDodgeBonusLabel || "Base Dodge Bonus"}</Label>
+                <NumberSpinnerInput
+                  id="dodgeBonusInput"
+                  value={localDodgeBonus}
+                  onChange={setLocalDodgeBonus}
+                  disabled={!isEditable}
+                  inputClassName="w-full h-9 text-base" buttonClassName="h-9 w-9"
+                />
+              </div>
+              <div className="space-y-1">
+                 <Label htmlFor="temporary-ac-modifier-input">{UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}</Label>
+                 <NumberSpinnerInput
+                  id="temporary-ac-modifier-input"
+                  value={localTemporaryAcModifier}
+                  onChange={setLocalTemporaryAcModifier}
+                  disabled={!isEditable}
+                  min={-20}
+                  max={20}
+                  inputClassName="w-full h-9 text-base"
+                  buttonClassName="h-9 w-9"
+                />
+              </div>
           </div>
           <p className="text-sm text-muted-foreground pt-2">
             <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.armorClassPanelTempModInfoNote_prefix }} />
@@ -259,4 +345,3 @@ const ArmorClassPanelComponent = ({ acData, aggregatedFeatEffects, onCharacterUp
 };
 ArmorClassPanelComponent.displayName = 'ArmorClassPanelComponent';
 export const ArmorClassPanel = React.memo(ArmorClassPanelComponent);
-
