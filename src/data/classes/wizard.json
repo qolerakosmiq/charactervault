@@ -41,7 +41,8 @@
     {
       "id": "wizard-weapon-proficiencies",
       "label": { "en": "Wizard Weapon Proficiencies", "fr": "Maîtrise des armes (Magicien)" },
-      "description": { "en": "Club, dagger, heavy crossbow, light crossbow, quarterstaff.", "fr": "Gourdin, dague, arbalète lourde, arbalète légère, bâton." },
+      "description": { "en": "Wizards are proficient with the club, dagger, heavy crossbow, light crossbow, and quarterstaff", "fr": "Les magiciens sont compétents avec le gourdin, la dague, l'arbalète lourde, l'arbalète légère et le bâton" },
+      "effectsText": { "en": "Proficient with club, dagger, heavy crossbow, light crossbow, quarterstaff", "fr": "Maîtrise du gourdin, de la dague, de l'arbalète lourde, de l'arbalète légère, du bâton"},
       "isClassFeature": true, "type": "general",
       "effects": [
         { "type": "grantsProficiency", "proficiencyType": "weapon", "specificItem": "club" },
@@ -55,10 +56,10 @@
       "id": "class-wizard-familiar",
       "label": { "en": "Summon Familiar", "fr": "Convocation de familier" },
       "description": {
-        "en": "A wizard can obtain a familiar. Doing so takes 24 hours and uses up magical materials that cost 100 gp. A familiar is a magical beast that resembles a small animal and is unusually tough and intelligent. The creature serves as a companion and servant.",
-        "fr": "Un magicien peut obtenir un familier. Cela prend 24 heures et utilise des matériaux magiques qui coûtent 100 po. Un familier est une bête magique qui ressemble à un petit animal et est exceptionnellement résistante et intelligente. La créature sert de compagnon et de serviteur."
+        "en": "A wizard can obtain a familiar. Doing so takes 24 hours and uses up magical materials that cost 100 gp. A familiar is a magical beast that resembles a small animal and is unusually tough and intelligent. The creature serves as a companion and servant",
+        "fr": "Un magicien peut obtenir un familier. Cela prend 24 heures et utilise des matériaux magiques qui coûtent 100 po. Un familier est une bête magique qui ressemble à un petit animal et est exceptionnellement résistante et intelligente. La créature sert de compagnon et de serviteur"
       },
-      "effectsText": { "en": "Can summon a familiar.", "fr": "Peut convoquer un familier." },
+      "effectsText": { "en": "Can summon a familiar", "fr": "Peut convoquer un familier" },
       "type": "special-ex",
       "isClassFeature": true,
       "effects": [
@@ -76,28 +77,32 @@
     {
       "id": "class-wizard-bonus-feat-slot-5",
       "label": { "en": "Wizard Bonus Feat (Level 5)", "fr": "Don supplémentaire de Magicien (Niveau 5)" },
-      "description": { "en": "At 5th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat.", "fr": "Au niveau 5, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie." },
+      "description": { "en": "At 5th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat", "fr": "Au niveau 5, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie" },
+      "effectsText": { "en": "Choose an item creation or metamagic feat", "fr": "Choisir un don de création d'objet ou de métamagie"},
       "isClassFeature": true, "type": "special-ex",
       "effects": [{ "type": "bonusFeatSlot", "category": "wizardBonusFeat", "count": 1 }]
     },
     {
       "id": "class-wizard-bonus-feat-slot-10",
       "label": { "en": "Wizard Bonus Feat (Level 10)", "fr": "Don supplémentaire de Magicien (Niveau 10)" },
-      "description": { "en": "At 10th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat.", "fr": "Au niveau 10, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie." },
+      "description": { "en": "At 10th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat", "fr": "Au niveau 10, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie" },
+      "effectsText": { "en": "Choose an item creation or metamagic feat", "fr": "Choisir un don de création d'objet ou de métamagie"},
       "isClassFeature": true, "type": "special-ex",
       "effects": [{ "type": "bonusFeatSlot", "category": "wizardBonusFeat", "count": 1 }]
     },
     {
       "id": "class-wizard-bonus-feat-slot-15",
       "label": { "en": "Wizard Bonus Feat (Level 15)", "fr": "Don supplémentaire de Magicien (Niveau 15)" },
-      "description": { "en": "At 15th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat.", "fr": "Au niveau 15, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie." },
+      "description": { "en": "At 15th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat", "fr": "Au niveau 15, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie" },
+      "effectsText": { "en": "Choose an item creation or metamagic feat", "fr": "Choisir un don de création d'objet ou de métamagie"},
       "isClassFeature": true, "type": "special-ex",
       "effects": [{ "type": "bonusFeatSlot", "category": "wizardBonusFeat", "count": 1 }]
     },
     {
       "id": "class-wizard-bonus-feat-slot-20",
       "label": { "en": "Wizard Bonus Feat (Level 20)", "fr": "Don supplémentaire de Magicien (Niveau 20)" },
-      "description": { "en": "At 20th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat.", "fr": "Au niveau 20, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie." },
+      "description": { "en": "At 20th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat", "fr": "Au niveau 20, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie" },
+      "effectsText": { "en": "Choose an item creation or metamagic feat", "fr": "Choisir un don de création d'objet ou de métamagie"},
       "isClassFeature": true, "type": "special-ex",
       "effects": [{ "type": "bonusFeatSlot", "category": "wizardBonusFeat", "count": 1 }]
     }
