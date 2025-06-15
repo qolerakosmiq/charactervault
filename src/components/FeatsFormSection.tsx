@@ -306,7 +306,7 @@ const FeatsFormSectionComponent = ({
         throw new Error(`Feat definition for ID '${instance.definitionId}' not found.`);
     }
 
-    const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(
+    const prereqMessages = checkFeatPrerequisites(
       definition,
       characterForPrereqCheck as Character,
       allAvailableFeatDefinitions,
@@ -340,16 +340,17 @@ const FeatsFormSectionComponent = ({
             {instance.grantedNote && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
           </div>
           {definition.requiresSpecialization && instance.specializationDetail && <p className="text-sm text-muted-foreground mt-0.5 ml-1">({instance.specializationDetail})</p>}
-          {definition.description && <div className="text-sm text-muted-foreground mt-0.5 whitespace-normal" dangerouslySetInnerHTML={{ __html: definition.description }} />}
-          {definition.effectsText && (
-            <p className="text-sm text-muted-foreground mt-0.5 whitespace-normal">
-              <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.featEffectsLabel }} />
-              {' '}{definition.effectsText}
-            </p>
+          
+          {definition.description && (
+            <div
+              className="text-xs text-muted-foreground mt-0.5 whitespace-normal"
+              dangerouslySetInnerHTML={{ __html: definition.description }}
+            />
           )}
+
           {prereqMessages.length > 0 ? (
-            <div className="text-sm mt-0.5 whitespace-normal text-muted-foreground">
-              <strong>{UI_STRINGS.featPrerequisitesLabel}</strong>{' '}
+            <div className="text-xs mt-0.5 whitespace-normal text-muted-foreground">
+              <strong className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel}</strong>{' '}
               {prereqMessages.map((msg, idx, arr) => (
                 <React.Fragment key={idx}>
                   <span className={cn(!msg.isMet ? 'text-destructive' : 'text-muted-foreground')} dangerouslySetInnerHTML={{ __html: msg.text }} />
@@ -358,9 +359,17 @@ const FeatsFormSectionComponent = ({
               ))}
             </div>
           ) : (
-            <p className="text-sm mt-0.5 whitespace-normal text-muted-foreground">
-              <strong>{UI_STRINGS.featPrerequisitesLabel}</strong> {UI_STRINGS.featPrerequisitesNoneLabel}
-            </p>
+            <div className="text-xs mt-0.5 whitespace-normal text-muted-foreground">
+              <strong className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel}</strong>{' '}
+              {UI_STRINGS.featPrerequisitesNoneLabel}
+            </div>
+          )}
+          
+          {definition.effectsText && (
+            <div className="text-xs text-muted-foreground mt-0.5 whitespace-normal">
+              <span className="font-bold text-muted-foreground" dangerouslySetInnerHTML={{ __html: UI_STRINGS.featEffectsLabel }} />
+              {' '}{definition.effectsText}
+            </div>
           )}
         </div>
         <div className="flex items-center shrink-0">
@@ -537,3 +546,4 @@ const FeatsFormSectionComponent = ({
 };
 FeatsFormSectionComponent.displayName = "FeatsFormSectionComponent";
 export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
+
