@@ -8,12 +8,13 @@ import type {
   DndRaceId, CharacterSize // Added DndRaceId, CharacterSize
 } from '@/types/character-core';
 import {
-  checkFeatPrerequisites, calculateAvailableFeats, calculateTotalSynergyBonus, calculateRacialSkillBonus, calculateSizeSpecificSkillBonus, getRaceSkillPointsBonusPerLevel // Added getRaceSkillPointsBonusPerLevel
+  checkFeatPrerequisites, calculateAvailableFeats, calculateTotalSynergyBonus, calculateRacialSkillBonus, calculateSizeSpecificSkillBonus, getRaceSkillPointsBonusPerLevel
 } from '@/types/character';
 import type { CustomSkillDefinition, CustomSynergyRule } from '@/lib/definitions-store'; // Added CustomSynergyRule
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label'; // Added missing import
 import { ScrollText, Info, Loader2, Dices, Lock } from 'lucide-react';
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
@@ -491,3 +492,4 @@ export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
     
     
     
+
