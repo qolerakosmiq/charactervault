@@ -171,24 +171,27 @@ const CharacterFormAbilityScoresSectionComponent = ({
     <>
       <Card>
         <CardHeader>
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-            <div className="flex items-center justify-between flex-grow mb-3 sm:mb-0 sm:mr-4">
-              <div className="flex items-center space-x-3">
-                <Dices className="h-8 w-8 text-primary" />
-                <CardTitle className="text-2xl font-serif">{UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}</CardTitle>
-              </div>
-              <Button
-                type="button"
-                variant={isLocked ? "ghost" : "secondary"}
-                size="icon"
-                className="text-muted-foreground hover:text-foreground ml-2 shrink-0"
-                onClick={toggleLock}
-                aria-pressed={!isLocked}
-                aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelLocked : UI_STRINGS.lockButtonAriaLabelUnlocked}
-              >
-                {isLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
-              </Button>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start"> {/* Changed to items-start */}
+            <div className="flex items-center space-x-3 mb-3 sm:mb-0"> {/* Ensures title is on its own line effectively */}
+              <Dices className="h-8 w-8 text-primary" />
+              <CardTitle className="text-2xl font-serif">{UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}</CardTitle>
             </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "h-7 w-7 shrink-0 p-1.5", 
+                isLocked
+                  ? "text-muted-foreground hover:text-foreground"
+                  : "bg-accent text-accent-foreground hover:bg-accent/90"
+              )}
+              onClick={toggleLock}
+              aria-pressed={!isLocked}
+              aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelUnlocked : UI_STRINGS.lockButtonAriaLabelLocked}
+            >
+              {isLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-2">
@@ -275,7 +278,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
               );
             })}
           </div>
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 border-t border-border/30 justify-end">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 justify-end">
               <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto">
                 <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton || "Roll Scores"}
               </Button>

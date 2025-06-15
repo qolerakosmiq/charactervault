@@ -8,7 +8,12 @@ import type {
   DndRaceId, CharacterSize
 } from '@/types/character-core';
 import {
-  checkFeatPrerequisites, calculateAvailableFeats, calculateTotalSynergyBonus, calculateRacialSkillBonus, calculateSizeSpecificSkillBonus, getRaceSkillPointsBonusPerLevel
+  checkFeatPrerequisites,
+  calculateAvailableFeats,
+  calculateTotalSynergyBonus,
+  calculateRacialSkillBonus,
+  calculateSizeSpecificSkillBonus,
+  getRaceSkillPointsBonusPerLevel
 } from '@/types/character';
 import type { CustomSkillDefinition, CustomSynergyRule } from '@/lib/definitions-store';
 import { Button } from '@/components/ui/button';
@@ -317,14 +322,19 @@ const SkillsFormSectionComponent = ({
           </div>
           <Button
             type="button"
-            variant={isLocked ? "ghost" : "secondary"}
+            variant="ghost"
             size="icon"
-            className="text-muted-foreground hover:text-foreground shrink-0"
+            className={cn(
+              "h-7 w-7 shrink-0 p-1.5", 
+              isLocked
+                ? "text-muted-foreground hover:text-foreground"
+                : "bg-accent text-accent-foreground hover:bg-accent/90"
+            )}
             onClick={toggleLock}
             aria-pressed={!isLocked}
-            aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelLocked : UI_STRINGS.lockButtonAriaLabelUnlocked}
+            aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelUnlocked : UI_STRINGS.lockButtonAriaLabelLocked}
           >
-            {isLocked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
+            {isLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
           </Button>
         </div>
       </CardHeader>
