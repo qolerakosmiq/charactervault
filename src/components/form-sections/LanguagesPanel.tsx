@@ -113,6 +113,7 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
             </div>
           </div>
           <Button
+            type="button"
             variant={isLocked ? "ghost" : "secondary"}
             size="icon"
             className="text-muted-foreground hover:text-foreground shrink-0"

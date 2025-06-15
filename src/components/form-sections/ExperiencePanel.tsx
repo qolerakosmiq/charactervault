@@ -113,6 +113,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
             </div>
           </div>
           <Button
+            type="button"
             variant={isLocked ? "ghost" : "secondary"}
             size="icon"
             className="text-muted-foreground hover:text-foreground shrink-0"
@@ -144,7 +145,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
           </div>
           <div className="w-1/2">
             {!isMaxLevel && (
-            <Button onClick={handleLevelUpClick} disabled={isMaxLevel} className="w-full h-10">
+            <Button type="button" onClick={handleLevelUpClick} disabled={isMaxLevel} className="w-full h-10">
                 <TrendingUp className="mr-2 h-4 w-4" />
                 {UI_STRINGS.experiencePanelLevelUpButton || "Level Up"}
             </Button>

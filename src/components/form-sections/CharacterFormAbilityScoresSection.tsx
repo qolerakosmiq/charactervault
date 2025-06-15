@@ -178,6 +178,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 <CardTitle className="text-2xl font-serif">{UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}</CardTitle>
               </div>
               <Button
+                type="button"
                 variant={isLocked ? "ghost" : "secondary"}
                 size="icon"
                 className="text-muted-foreground hover:text-foreground ml-2 shrink-0"
