@@ -172,7 +172,7 @@ export function FeatSelectionDialog({
           </DialogTitle>
           <DialogDescription>
             {filterByCategory
-              ? `${UI_STRINGS.featSelectionDialogDescriptionCategoryFilter || "Choose a feat from the filtered list. Showing feats for category:"} ${filterByCategory}`
+              ? `${UI_STRINGS.featSelectionDialogDescriptionCategoryFilter || "Choose a feat from the filtered list. Showing feats for category:"} ${UI_STRINGS[`featCategory_${filterByCategory}` as keyof typeof UI_STRINGS] || filterByCategory}`
               : UI_STRINGS.featSelectionDialogDescription || "Search and choose a feat from the list. Descriptions and prerequisites are shown below each feat."
             }
           </DialogDescription>
@@ -193,15 +193,15 @@ export function FeatSelectionDialog({
                 {displayedFeats
                   .filter(featDef => featDef && typeof featDef.id === 'string' && featDef.id.length > 0 && typeof featDef.label === 'string')
                   .map((featDef) => {
-                  const featDefDescription = featDef.description ? getLocalizedString(featDef.description, currentLang, undefined, `feats.${featDef.id}.description`) : "";
+                  const featDefDescription = getLocalizedString(featDef.description, currentLang, undefined, `feats.${featDef.id}.description`);
                   
                   let benefitContentText = "";
                   if (featDef.effectsText) {
-                    benefitContentText = getLocalizedString(featDef.effectsText, currentLang, undefined, `feats.${featDef.id}.effectsText`);
+                     benefitContentText = getLocalizedString(featDef.effectsText, currentLang, undefined, `feats.${featDef.id}.effectsText`);
                   }
                   const noteEffects = (featDef.effects?.filter(e => e.type === 'note') as NoteEffectDetail[] | undefined) || [];
                   if (noteEffects.length > 0) {
-                    const noteText = noteEffects.map(ne => ne.text).join(' '); 
+                    const noteText = noteEffects.map(ne => getLocalizedString(ne.text, currentLang)).join(' '); 
                     if (noteText.trim() !== "") {
                       if (benefitContentText.trim() !== "") benefitContentText += " ";
                       benefitContentText += noteText.trim();
@@ -221,15 +221,16 @@ export function FeatSelectionDialog({
                     alignmentPrereqOptions,
                     UI_STRINGS
                   );
-                  const localizedSpecialPrereqText = (featDef.prerequisites?.special && typeof featDef.prerequisites.special === 'object')
-                    ? getLocalizedString(featDef.prerequisites.special as LocalizedString, currentLang, undefined, `feats.${featDef.id}.prereq.special`)
-                    : (typeof featDef.prerequisites?.special === 'string' ? featDef.prerequisites.special : undefined);
+                  const localizedSpecialPrereqText = (featDef.prerequisites?.special)
+                    ? getLocalizedString(featDef.prerequisites.special, currentLang, undefined, `feats.${featDef.id}.prereq.special`)
+                    : undefined;
 
                   const hasStructuralPrereqs = prereqMessages.length > 0;
                   const hasTextualPrereqs = !!(localizedSpecialPrereqText && localizedSpecialPrereqText.trim() !== "");
                   const showPrerequisitesLine = hasStructuralPrereqs || hasTextualPrereqs;
 
                   const featSourceClassName = (featDef.isClassFeature && featDef.id.startsWith('class-')) ? getFeatSourceClassNameFromDialog(featDef.id, allClasses) : null;
+                  const categoryDisplayLabel = featDef.category ? (UI_STRINGS[`featCategory_${featDef.category}` as keyof typeof UI_STRINGS] || featDef.category) : null;
 
 
                   return (
@@ -242,27 +243,27 @@ export function FeatSelectionDialog({
                       }}
                       className="flex flex-col items-start p-3 hover:bg-accent/10 cursor-pointer data-[selected=true]:bg-accent/20"
                     >
-                      <div className="font-medium text-sm text-foreground">
+                      <div className="font-medium text-sm text-foreground mb-0.5">
                         {featDef.label}
                         {featDef.isCustom && <Badge variant="outline" className="ml-1 text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
-                        {featDef.category && !featSourceClassName && <Badge variant="secondary" className="ml-1 whitespace-nowrap">{featDef.category}</Badge>}
+                        {categoryDisplayLabel && !featSourceClassName && <Badge variant="secondary" className="ml-1 whitespace-nowrap">{categoryDisplayLabel}</Badge>}
                         {featSourceClassName && <Badge variant="secondary" className="ml-1 whitespace-nowrap">{featSourceClassName}</Badge>}
                       </div>
                       {featDefDescription && (
-                        <div
-                          className="text-xs text-muted-foreground mt-0.5 whitespace-normal"
+                        <p
+                          className="text-xs text-muted-foreground whitespace-normal"
                           dangerouslySetInnerHTML={{ __html: featDefDescription }}
                         />
                       )}
                       {showBenefitLine && (
-                         <p className="text-xs mt-0.5 whitespace-normal">
-                          <strong className="text-muted-foreground">{UI_STRINGS.featBenefitLabel || "Benefit"}</strong>{' '}
+                         <p className="text-xs whitespace-normal mt-0.5">
+                          <strong className="text-muted-foreground">{UI_STRINGS.featBenefitLabel || "Benefit:"}</strong>{' '}
                           <span className="text-foreground" dangerouslySetInnerHTML={{ __html: benefitContentText }} />
                         </p>
                       )}
                       {showPrerequisitesLine && (
-                        <p className="text-xs mt-0.5 whitespace-normal">
-                          <strong className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel || "Prerequisites"}</strong>{' '}
+                        <p className="text-xs whitespace-normal mt-0.5">
+                          <strong className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel || "Prerequisites:"}</strong>{' '}
                           <>
                             {hasStructuralPrereqs && prereqMessages.map((msg, index) => (
                               <React.Fragment key={index}>
