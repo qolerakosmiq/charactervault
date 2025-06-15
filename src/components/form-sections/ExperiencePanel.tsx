@@ -106,22 +106,32 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
         <CardDescription>{UI_STRINGS.experiencePanelDescription || "Track your character's progression and current experience points."}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 pt-4">
-        <div>
+        <div className="space-y-1.5">
           <Label htmlFor="current-xp" className="text-sm font-medium block w-full text-center mb-0">
             <span>{UI_STRINGS.experiencePanelCurrentXpMainLabel || "Current XP"}</span>
             <span className="block text-xs text-muted-foreground">
               {UI_STRINGS.experiencePanelCurrentXpSubLabel || "Experience Points"}
             </span>
           </Label>
-          <div className="flex justify-center mt-1.5">
-            <NumberSpinnerInput
-              id="current-xp"
-              value={localCurrentXp}
-              onChange={setLocalCurrentXp}
-              min={0}
-              inputClassName="w-32 h-10 text-lg text-center"
-              buttonClassName="h-10 w-10"
-            />
+          <div className="flex items-center gap-x-2 mt-1.5">
+            <div className="w-1/2 flex justify-center">
+                <NumberSpinnerInput
+                id="current-xp"
+                value={localCurrentXp}
+                onChange={setLocalCurrentXp}
+                min={0}
+                inputClassName="w-full h-10 text-lg text-center" 
+                buttonClassName="h-10 w-10"
+                />
+            </div>
+            <div className="w-1/2">
+                {!isMaxLevel && (
+                <Button onClick={handleLevelUpClick} disabled={isMaxLevel} className="w-full h-10">
+                    <TrendingUp className="mr-2 h-4 w-4" />
+                    {UI_STRINGS.experiencePanelLevelUpButton || "Level Up"}
+                </Button>
+                )}
+            </div>
           </div>
         </div>
 
@@ -148,15 +158,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
           </div>
         </div>
         
-        {!isMaxLevel && (
-          <div className="pt-2 text-center">
-            <Button onClick={handleLevelUpClick} disabled={isMaxLevel} size="sm">
-              <TrendingUp className="mr-2 h-4 w-4" />
-              {UI_STRINGS.experiencePanelLevelUpButton || "Level Up"}
-            </Button>
-          </div>
-        )}
-        {isMaxLevel && (
+        {isMaxLevel && ( 
            <p className="text-sm text-center text-muted-foreground pt-2">
             {UI_STRINGS.experiencePanelMaxLevel || "Max Level Reached"}
            </p>
