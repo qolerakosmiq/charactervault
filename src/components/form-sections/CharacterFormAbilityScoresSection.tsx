@@ -265,6 +265,16 @@ const CharacterFormAbilityScoresSectionComponent = ({
               );
             })}
           </div>
+
+           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 pt-4 border-t border-border/30 justify-end">
+              <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto">
+                <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton || "Roll Scores"}
+              </Button>
+              <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} className="w-full sm:w-auto">
+                <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton || "Point Buy"}
+              </Button>
+            </div>
+
            <p className="text-sm text-muted-foreground mt-4 pt-2 border-t border-border/30">
             <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.abilityScoresNote_prefix || "<strong>Note:</strong> The " }} />
             <Badge variant="outline">
@@ -276,14 +286,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
             </Badge>
             {UI_STRINGS.abilityScoresNote_suffix || ", not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score."}
            </p>
-           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 pt-4 border-t border-border/30 justify-end">
-              <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto">
-                <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton || "Roll Scores"}
-              </Button>
-              <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} className="w-full sm:w-auto">
-                <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton || "Point Buy"}
-              </Button>
-            </div>
+
         </CardContent>
       </Card>
       <AbilityScoreRollerDialog
