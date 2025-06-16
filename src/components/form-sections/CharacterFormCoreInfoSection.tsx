@@ -216,6 +216,28 @@ const CharacterFormCoreInfoSectionComponent = ({
     }
   }, [localDeity, localAlignment, selectedClassInfo, translations, translationsLoading, setLocalDeity]);
 
+  const genderSelectOptions = React.useMemo(() => {
+    if (translationsLoading || !translations || !translations.GENDERS) return [{ id: "unspecified" as GenderId, label: "Loading..." }];
+
+    const unspecifiedOption = translations.GENDERS.find(g => g.id === 'unspecified') || { id: 'unspecified' as GenderId, label: 'Unspecified' };
+    const otherOption = translations.GENDERS.find(g => g.id === 'other') || { id: 'other' as GenderId, label: 'Other' };
+    const maleOption = translations.GENDERS.find(g => g.id === 'male') || { id: 'male' as GenderId, label: 'Male' };
+    const femaleOption = translations.GENDERS.find(g => g.id === 'female') || { id: 'female' as GenderId, label: 'Female' };
+
+    const options = [unspecifiedOption];
+    const raceSpecificGenders = selectedRaceInfo?.genderOptions;
+
+    if (raceSpecificGenders && raceSpecificGenders.length > 0) {
+      options.push(...raceSpecificGenders.map(go => ({id: go.id as GenderId, label: go.label})));
+    } else {
+      options.push(maleOption, femaleOption);
+    }
+    if (!options.find(opt => opt.id === 'other')) {
+      options.push(otherOption);
+    }
+    return options.filter((opt, index, self) => index === self.findIndex(o => o.id === opt.id));
+  }, [translations, translationsLoading, selectedRaceInfo]);
+
 
   React.useEffect(() => {
     if (translationsLoading || !translations) return;
@@ -236,7 +258,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     localRace, setLocalRace, 
     localClassName, setLocalClassName, 
     characterData.gender, setLocalGender,
-    // genderSelectOptions needs to be stable or correctly memoized if used as dependency
+    genderSelectOptions
   ]);
 
   const isPredefinedRace = React.useMemo(() => {
@@ -259,27 +281,6 @@ const CharacterFormCoreInfoSectionComponent = ({
     return translations.SIZES.map(s => <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>);
   }, [translationsLoading, translations]);
 
-  const genderSelectOptions = React.useMemo(() => {
-    if (translationsLoading || !translations || !translations.GENDERS) return [{ id: "unspecified" as GenderId, label: "Loading..." }];
-
-    const unspecifiedOption = translations.GENDERS.find(g => g.id === 'unspecified') || { id: 'unspecified' as GenderId, label: 'Unspecified' };
-    const otherOption = translations.GENDERS.find(g => g.id === 'other') || { id: 'other' as GenderId, label: 'Other' };
-    const maleOption = translations.GENDERS.find(g => g.id === 'male') || { id: 'male' as GenderId, label: 'Male' };
-    const femaleOption = translations.GENDERS.find(g => g.id === 'female') || { id: 'female' as GenderId, label: 'Female' };
-
-    const options = [unspecifiedOption];
-    const raceSpecificGenders = selectedRaceInfo?.genderOptions;
-
-    if (raceSpecificGenders && raceSpecificGenders.length > 0) {
-      options.push(...raceSpecificGenders.map(go => ({id: go.id as GenderId, label: go.label})));
-    } else {
-      options.push(maleOption, femaleOption);
-    }
-    if (!options.find(opt => opt.id === 'other')) {
-      options.push(otherOption);
-    }
-    return options.filter((opt, index, self) => index === self.findIndex(o => o.id === opt.id));
-  }, [translations, translationsLoading, selectedRaceInfo]);
 
   const handleClassSpecificChoiceChange = React.useCallback((
     featureKey: string,
@@ -457,7 +458,6 @@ const CharacterFormCoreInfoSectionComponent = ({
 
     const currentBlockValue = getCurrentValue(uiBlock.key, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined);
     
-    // Filter out any options that still have an empty string value right before rendering
     const filteredActualOptions = actualOptions.filter(opt => opt.value !== "");
 
     if (uiBlock.choiceType === 'select') {
@@ -596,10 +596,15 @@ const CharacterFormCoreInfoSectionComponent = ({
                   {raceSpecialQualities.abilityEffects.map((effect) => {
                     let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
                     let badgeClassNameInternal = "whitespace-nowrap";
+                    const changeValue = effect.change > 0 ? `+${effect.change}` : String(effect.change);
                     if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
                     else badgeClassNameInternal = cn(badgeClassNameInternal, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
-                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString(UI_STRINGS.abilityScoreRaceModBadgeFormat || "{abilityAbbr}: {change}", { abilityAbbr: effect.ability.substring(0, 3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : (effect.change < 0 ? effect.change : '0')) })} </Badge> );
+                    return (
+                      <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}>
+                        {effect.ability.substring(0, 3).toUpperCase()}{`\u00A0|\u00A0`}<b>{changeValue}</b>
+                      </Badge>
+                    );
                   })}
                 </div>
               )}
@@ -731,9 +736,14 @@ const CharacterFormCoreInfoSectionComponent = ({
                   {ageEffectsDetails.effects.map((effect) => {
                     let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
                     let badgeClassNameInternal = "whitespace-nowrap";
+                    const changeValue = effect.change > 0 ? `+${effect.change}` : String(effect.change);
                     if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
-                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString(UI_STRINGS.abilityScoreAgingEffectBadgeFormat || "{abilityAbbr}: {change}", {abilityAbbr: effect.ability.substring(0,3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : effect.change)})} </Badge> );
+                    return (
+                      <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}>
+                        {effect.ability.substring(0, 3).toUpperCase()}{`\u00A0|\u00A0`}<b>{changeValue}</b>
+                      </Badge>
+                    );
                   })}
                 </div>
               )}
@@ -769,9 +779,14 @@ const CharacterFormCoreInfoSectionComponent = ({
                     const acMod = selectedSizeObject.acModifier;
                     let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
                     let badgeClassNameForAc = "whitespace-nowrap";
+                    const acModValue = acMod > 0 ? `+${acMod}` : String(acMod);
                     if (acMod > 0) badgeClassNameForAc = cn(badgeClassNameForAc, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (acMod < 0) { badgeVariantProp = "destructive"; badgeClassNameForAc = cn(badgeClassNameForAc, "hover:bg-destructive"); }
-                    return ( <Badge variant={badgeVariantProp} className={badgeClassNameForAc}> {parseAndRenderUIString(UI_STRINGS.acModSizeBadgeFormat || "AC Mod: {acModValue}", {acModValue: (acMod > 0 ? `+${acMod}` : acMod)})} </Badge> );
+                    return (
+                      <Badge variant={badgeVariantProp} className={badgeClassNameForAc}>
+                        AC{`\u00A0|\u00A0`}<b>{acModValue}</b>
+                      </Badge>
+                    );
                   } return null;
                 })()}
               </div>
@@ -784,5 +799,3 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
-
-    
