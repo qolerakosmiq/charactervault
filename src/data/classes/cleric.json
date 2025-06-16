@@ -1,4 +1,3 @@
-
 {
   "id": "cleric",
   "label": { "en": "Cleric", "fr": "Prêtre" },
@@ -18,28 +17,28 @@
   "uiSections": [
     {
       "key": "clericDomainsTitle",
-      "labelKey": "clericDomainsTitle",
-      "choiceType": "textInput",
+      "label": { "en": "Cleric Domains", "fr": "Domaines de Prêtre" },
+      "choiceType": "heading",
       "isHeadingOnly": true
     },
     {
       "key": "clericDomain1",
-      "labelKey": "clericDomain1Label",
+      "label": { "en": "First Domain", "fr": "Premier Domaine" },
       "choiceType": "select",
       "optionsSource": "domains",
-      "placeholderKey": "selectDomainPlaceholder",
+      "placeholder": { "en": "Select Domain...", "fr": "Choisir un domaine..." },
       "grantsFeatsFromDomainChoice": true
     },
     {
       "key": "clericDomain2",
-      "labelKey": "clericDomain2Label",
+      "label": { "en": "Second Domain", "fr": "Second Domaine" },
       "choiceType": "select",
       "optionsSource": "domains",
-      "placeholderKey": "selectDomainPlaceholder",
+      "placeholder": { "en": "Select Domain...", "fr": "Choisir un domaine..." },
       "relatedSlotKeyForDisable": "clericDomain1",
       "disabledIfChoiceValue": {
         "featureKey": "clericDomain1",
-        "values": ["__NONE_DOMAIN__"]
+        "values": ["__NONE_DOMAIN__", ""]
       },
       "grantsFeatsFromDomainChoice": true
     }
@@ -75,4 +74,3 @@
     }
   ]
 }
-

@@ -458,26 +458,34 @@ export interface ClassSpecificUIGrantsFeat {
   featId: string;
   levelAcquired?: number;
   note?: LocalizedString;
-  conditionOnChoiceValue?: string; 
+  conditionOnChoiceValue?: string;
+  grantsFeatsFromDomainChoice?: boolean; // New flag
 }
 
 export interface ClassSpecificUIBlock {
-  key: string; 
-  labelKey: string; 
-  descriptionKey?: string;
-  choiceType: "select" | "combobox" | "textInput" | "multiInput";
-  maxSelections?: number; 
+  key: string;
+  label?: LocalizedString; // Now direct LocalizedString
+  labelKey?: string;       // Fallback to UI_STRINGS key
+  description?: LocalizedString; // Now direct LocalizedString
+  descriptionKey?: string;    // Fallback
+  placeholder?: LocalizedString; // Now direct LocalizedString
+  placeholderKey?: string;    // Fallback
+  inputPlaceholder?: LocalizedString; // Now direct LocalizedString
+  inputPlaceholderKey?: string; // Fallback
+  slotLabel?: LocalizedString; // For multiInput
+  slotLabelKey?: string; // Fallback for multiInput
+  choiceType: "select" | "combobox" | "textInput" | "multiInput" | "heading"; // Added "heading"
+  isHeadingOnly?: boolean; // If true, only renders label as a heading
+  maxSelections?: number;
   optionsSource?: "domains" | "magicSchools" | "rangerCombatStyles" | "customList";
   customOptions?: ClassSpecificUICustomOption[];
   grantsFeats?: ClassSpecificUIGrantsFeat[];
+  grantsFeatsFromDomainChoice?: boolean; // Moved to ClassSpecificUIGrantsFeat
   requiredLevel?: number;
   conditionAggregatedEffect?: ClassSpecificUIBlockConditionAggregatedEffect;
   valueFromDataContext?: string;
   relatedSlotKeyForDisable?: string;
   disabledIfChoiceValue?: { featureKey: string; values: string[] };
-  placeholderKey?: string; // For select/combobox placeholder
-  inputPlaceholderKey?: string; // For textInput placeholder
-  slotLabelKey?: string; // For multiInput slot labels, e.g. "favoredEnemySlotLabel"
 }
 
 export interface FeatChoiceFilterCase {
@@ -486,8 +494,8 @@ export interface FeatChoiceFilterCase {
 }
 
 export interface FeatChoiceFilter {
-  characterField: keyof Pick<Character, 'chosenCombatStyle' | 'classSpecificChoices'>; // Updated
-  classSpecificChoiceKey?: string; // If characterField is classSpecificChoices, this identifies which one
+  characterField: keyof Pick<Character, 'classSpecificChoices'>; // Simplified
+  classSpecificChoiceKey: string; // Key from ClassSpecificUIBlock that this filter applies to
   filterCases: FeatChoiceFilterCase[];
 }
 
@@ -660,11 +668,6 @@ export interface Character {
   armorSpeedPenalty_miscModifier: number;
   loadSpeedPenalty_base: number;
   loadSpeedPenalty_miscModifier: number;
-  // chosenCombatStyle?: "archery" | "twoWeaponFighting"; // Replaced by classSpecificChoices
-  // chosenFavoredEnemies?: CharacterFavoredEnemy[]; // Replaced by classSpecificChoices
-  // chosenDomains?: [DomainId | undefined, DomainId | undefined]; // Replaced by classSpecificChoices
-  // chosenSpecializationSchool?: MagicSchoolId; // Replaced by classSpecificChoices
-  // prohibitedSchools?: MagicSchoolId[]; // Replaced by classSpecificChoices
   classSpecificChoices?: CharacterClassSpecificChoice[];
   powerAttackValue?: number;
   combatExpertiseValue?: number;
@@ -882,26 +885,85 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
   loadSpeedPenalty_base: 0, loadSpeedPenalty_miscModifier: 0
 };
 export const DEFAULT_RESISTANCE_VALUE_DATA: ResistanceValue = { base: 0, customMod: 0 };
-
-// If this file effectively *is* character-core.ts for this context,
-// then the re-export "export * from './character-core';" would be circular or unnecessary.
-// It should be removed if this file now defines all core character types.
-
-// The problematic line was likely within a constant object that tried to do:
-// grappleDamage_baseNotes: `${someVariableDefinedElsewhere} (...)`
-// All constants here are now static.
-// Any object that was causing the error, if defined in this file,
-// should have its grappleDamage_baseNotes (or similar fields) set to a static string.
-// For example:
-// export const SOME_DEFAULT_CHARACTER_STUB = {
-//   // ... other properties
-//   grappleDamage_baseNotes: "1d3 (Medium Unarmed)", // STATIC VALUE
-//   // ...
-// };
-// However, based on the provided file structure, such an object is more likely
-// to be in `src/lib/character-store.ts` (as `FULL_CHARACTER_DEFAULTS`)
-// or was temporarily introduced here in a previous, uncommitted change.
-// The current provided code for character-core.ts doesn't seem to have this at the module level.
-// But the fix is to ensure no such dynamic initialization happens at the module level in this file.
-
     
+```
+  </change>
+  <change>
+    <file>src/data/classes/cleric.json</file>
+    <content><![CDATA[
+{
+  "id": "cleric",
+  "label": { "en": "Cleric", "fr": "Prêtre" },
+  "hitDice": "d8",
+  "babProgression": "average",
+  "spellcasting": { "type": "full", "casterAbility": "wisdom", "preparedSpells": true },
+  "saves": { "fortitude": "good", "reflex": "poor", "will": "good" },
+  "abilityScorePriorities": ["wisdom", "charisma", "constitution", "strength", "dexterity", "intelligence"],
+  "generalDescription": {
+    "en": "<p>Clerics are intermediaries between the mortal world and the distant planes of the gods. As varied as the gods they serve, clerics strive to embody the handiwork of their deities. Answering the call to serve, clerics can be champions of good, agents of evil, or anything in between.</p>",
+    "fr": "<p>Les prêtres sont des intermédiaires entre le monde des mortels et les plans lointains des dieux. Aussi variés que les dieux qu'ils servent, les prêtres s'efforcent d'incarner l'œuvre de leurs divinités. Répondant à l'appel du service, les prêtres peuvent être des champions du bien, des agents du mal, ou n'importe quoi entre les deux.</p>"
+  },
+  "loreAttributes": [
+    { "key": { "en": "Alignment", "fr": "Alignement" }, "value": { "en": "Usually within one step of his deity’s (if any).", "fr": "Généralement à un pas de celui de sa divinité (le cas échéant)." } },
+    { "key": { "en": "Weapon and Armor Proficiency", "fr": "Maîtrise des armes et armures" }, "value": { "en": "Clerics are proficient with all simple weapons, with all types of armor (light, medium, and heavy), and with shields (except tower shields). A cleric who chooses the War domain receives the Martial Weapon Proficiency feat related to his deity’s favored weapon (if necessary) and Weapon Focus feat with that weapon.", "fr": "Les prêtres sont formés au maniement de toutes les armes courantes, de tous les types d'armures (légères, intermédiaires et lourdes) et des boucliers (sauf les pavois). Un prêtre qui choisit le domaine de la Guerre reçoit le don Maniement d'arme de guerre lié à l'arme de prédilection de sa divinité (si nécessaire) et le don Arme de prédilection avec cette arme." } }
+  ],
+  "uiSections": [
+    {
+      "key": "clericDomainsTitle",
+      "label": { "en": "Cleric Domains", "fr": "Domaines de Prêtre" },
+      "choiceType": "heading",
+      "isHeadingOnly": true
+    },
+    {
+      "key": "clericDomain1",
+      "label": { "en": "First Domain", "fr": "Premier Domaine" },
+      "choiceType": "select",
+      "optionsSource": "domains",
+      "placeholder": { "en": "Select Domain...", "fr": "Choisir un domaine..." },
+      "grantsFeatsFromDomainChoice": true
+    },
+    {
+      "key": "clericDomain2",
+      "label": { "en": "Second Domain", "fr": "Second Domaine" },
+      "choiceType": "select",
+      "optionsSource": "domains",
+      "placeholder": { "en": "Select Domain...", "fr": "Choisir un domaine..." },
+      "relatedSlotKeyForDisable": "clericDomain1",
+      "disabledIfChoiceValue": {
+        "featureKey": "clericDomain1",
+        "values": ["__NONE_DOMAIN__", ""]
+      },
+      "grantsFeatsFromDomainChoice": true
+    }
+  ],
+  "grantedFeats": [
+    { "featId": "simple-weapon-proficiency", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "armor-proficiency-light", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "armor-proficiency-medium", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "armor-proficiency-heavy", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "shield-proficiency", "levelAcquired": 1, "note": { "en": "Class Proficiency", "fr": "Formation de classe" } },
+    { "featId": "class-cleric-turn-or-rebuke-undead", "levelAcquired": 1 }
+  ],
+  "classSpecificFeats": [
+    {
+      "id": "class-cleric-turn-or-rebuke-undead",
+      "label": { "en": "Turn or Rebuke Undead", "fr": "Renvoi ou intimidation des morts-vivants" },
+      "description": {
+        "en": "Any cleric, regardless of alignment, has the power to affect undead creatures by channeling the power of his faith through his holy (or unholy) symbol. A good cleric (or a neutral cleric who worships a good deity) can turn or destroy undead creatures. An evil cleric (or a neutral cleric who worships an evil deity) can rebuke or command undead creatures. A neutral cleric of a neutral deity must choose whether his turning ability functions as that of a good cleric or an evil cleric. Once this choice is made, it cannot be reversed. This decision also determines whether the cleric can cast spontaneous cure or inflict spells. A cleric may attempt to turn undead a number of times per day equal to 3 + his Charisma modifier. A cleric with 5 or more ranks in Knowledge (religion) gets a +2 bonus on turning checks against undead.",
+        "fr": "Tout prêtre, quel que soit son alignement, a le pouvoir d'affecter les créatures mortes-vivantes en canalisant la puissance de sa foi à travers son symbole sacré (ou impie). Un prêtre bon (ou un prêtre neutre qui vénère une divinité bonne) peut renvoyer ou détruire les créatures mortes-vivantes. Un prêtre mauvais (ou un prêtre neutre qui vénère une divinité mauvaise) peut intimider ou commander les créatures mortes-vivantes. Un prêtre neutre d'une divinité neutre doit choisir si sa capacité de renvoi fonctionne comme celle d'un prêtre bon ou d'un prêtre mauvais. Une fois ce choix fait, il ne peut être annulé. Cette décision détermine également si le prêtre peut lancer spontanément des sorts de soins ou d'infliction. Un prêtre peut tenter de renvoyer les morts-vivants un nombre de fois par jour égal à 3 + son modificateur de Charisme. Un prêtre avec 5 rangs ou plus en Connaissances (religion) obtient un bonus de +2 aux tests de renvoi contre les morts-vivants."
+      },
+      "effectsText": { "en": "Affect undead (turn/destroy or rebuke/command). Uses/day: 3 + Cha mod", "fr": "Affecte les morts-vivants (renvoi/destruction ou intimidation/contrôle). Utilisations/jour : 3 + mod Cha" },
+      "isClassFeature": true,
+      "type": "special-su",
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "turnUndeadAttempts",
+          "name": { "en": "Turn/Rebuke Undead", "fr": "Renvoi/Intimidation des Morts-Vivants" },
+          "uses": { "per": "day", "value": 3, "basedOnAbility": "charisma" }
+        },
+        { "type": "turnUndead", "property": "checkBonus", "value": 2, "condition": "has_5_ranks_knowledge_religion" }
+      ]
+    }
+  ]
+}
