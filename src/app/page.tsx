@@ -59,27 +59,27 @@ export default function CharacterDashboardPage() {
     const existing = definitionsActions.getCustomSkillDefinitionById(skillData.id);
     if (existing) {
       definitionsActions.updateCustomSkillDefinition(skillData);
-      toast({ title: "Custom Skill Updated", description: `${skillData.name} has been updated.` });
+      toast({ title: translations?.UI_STRINGS.toastCustomSkillUpdatedTitle, description: translations?.UI_STRINGS.toastCustomSkillUpdatedDesc.replace("{skillName}", skillData.name) });
     } else {
       definitionsActions.addCustomSkillDefinition(skillData);
-      toast({ title: "Custom Skill Added", description: `${skillData.name} has been added to global definitions.` });
+      toast({ title: translations?.UI_STRINGS.toastCustomSkillAddedTitle, description: translations?.UI_STRINGS.toastCustomSkillAddedDesc.replace("{skillName}", skillData.name) });
     }
     setIsAddOrEditSkillDialogOpen(false);
     setSkillToEdit(undefined);
-  }, [definitionsActions, toast]);
+  }, [definitionsActions, toast, translations]);
 
   const handleCustomFeatDefinitionSaveToStore = React.useCallback((featDefData: FeatDefinitionJsonData & { isCustom: true }) => {
     const existing = definitionsActions.getCustomFeatDefinitionById(featDefData.value);
     if (existing) {
       definitionsActions.updateCustomFeatDefinition(featDefData);
-      toast({ title: "Custom Feat Updated", description: `${featDefData.label} has been updated.` });
+      toast({ title: translations?.UI_STRINGS.toastCustomFeatUpdatedTitle, description: translations?.UI_STRINGS.toastCustomFeatUpdatedDesc.replace("{featLabel}", featDefData.label) });
     } else {
       definitionsActions.addCustomFeatDefinition(featDefData);
-      toast({ title: "Custom Feat Added", description: `${featDefData.label} has been added to global definitions.` });
+      toast({ title: translations?.UI_STRINGS.toastCustomFeatAddedTitle, description: translations?.UI_STRINGS.toastCustomFeatAddedDesc.replace("{featLabel}", featDefData.label) });
     }
     setIsCustomFeatDialogOpen(false);
     setEditingCustomFeatDefinition(undefined);
-  }, [definitionsActions, toast]);
+  }, [definitionsActions, toast, translations]);
 
   const allAvailableSkillDefinitionsForDisplay = React.useMemo(() => {
     if (translationsLoading || !translations) return [];
@@ -123,7 +123,7 @@ export default function CharacterDashboardPage() {
         <div className="flex justify-center items-center py-10">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <p className="ml-3 text-muted-foreground">
-              {translations?.UI_STRINGS.dashboardLoadingCharacters || "Loading characters..."}
+              {translations?.UI_STRINGS.dashboardLoadingCharacters}
             </p>
         </div>
       </div>
@@ -184,18 +184,18 @@ export default function CharacterDashboardPage() {
         <div className="space-y-4 p-4 border rounded-lg shadow-sm bg-card">
             <h3 className="text-xl font-serif text-foreground/80 flex items-center">
                 <Settings className="mr-3 h-6 w-6 text-primary/70" />
-                {UI_STRINGS.dmSettingsPanelTitle || "Dungeon Master Settings"}
+                {UI_STRINGS.dmSettingsPanelTitle}
             </h3>
             <div className="space-y-2 pt-2">
               <div className="flex items-center space-x-3">
                 <Label htmlFor="dm-language-switcher" className="flex items-center text-sm font-medium">
                   <Languages className="mr-2 h-4 w-4 text-muted-foreground" />
-                  {UI_STRINGS.dmSettingsLanguageLabel || "Game Language"}
+                  {UI_STRINGS.dmSettingsLanguageLabel}
                 </Label>
                 <LanguageSwitcher />
               </div>
               <p className="text-xs text-muted-foreground pl-6">
-                {UI_STRINGS.dmSettingsLanguageDescription || "Affects game data such as units, numerical increments, and default names."}
+                {UI_STRINGS.dmSettingsLanguageDescription}
               </p>
             </div>
             <Separator className="my-4" />
@@ -208,10 +208,10 @@ export default function CharacterDashboardPage() {
                             onCheckedChange={definitionsActions.toggleRerollOnesForAbilityScores}
                             className="mr-2"
                         />
-                        {UI_STRINGS.dmSettingsRerollOnesLabel || "Reroll 1s for Ability Score Rolls"}
+                        {UI_STRINGS.dmSettingsRerollOnesLabel}
                     </Label>
                     <p className="text-xs text-muted-foreground pl-6">
-                        {UI_STRINGS.dmSettingsRerollOnesDescription || "When using 4d6 drop lowest, reroll any die that shows a 1 until it is not a 1."}
+                        {UI_STRINGS.dmSettingsRerollOnesDescription}
                     </p>
                 </div>
                  <div className="space-y-2">
@@ -223,16 +223,16 @@ export default function CharacterDashboardPage() {
                             onCheckedChange={definitionsActions.toggleRerollTwentiesForChecks}
                             className="mr-2"
                         />
-                        {UI_STRINGS.dmSettingsRerollTwentiesLabel || "Reroll 20s for Checks (Exploding Dice)"}
+                        {UI_STRINGS.dmSettingsRerollTwentiesLabel}
                     </Label>
                     <p className="text-xs text-muted-foreground pl-6">
-                        {UI_STRINGS.dmSettingsRerollTwentiesDescription || "When rolling a 20 on a d20 for a check, roll again and add. Repeat on subsequent 20s."}
+                        {UI_STRINGS.dmSettingsRerollTwentiesDescription}
                     </p>
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="dm-point-buy-budget" className="flex items-center">
                         <Calculator className="mr-2 h-4 w-4 text-muted-foreground" />
-                        {UI_STRINGS.dmSettingsPointBuyBudgetLabel || "Point Buy Budget for Ability Scores"}
+                        {UI_STRINGS.dmSettingsPointBuyBudgetLabel}
                     </Label>
                     <NumberSpinnerInput
                         id="dm-point-buy-budget"
@@ -244,7 +244,7 @@ export default function CharacterDashboardPage() {
                         buttonSize="sm"
                     />
                      <p className="text-xs text-muted-foreground">
-                        {UI_STRINGS.dmSettingsPointBuyBudgetDescription || "Default is 25 points for standard D&D 3.5 point buy."}
+                        {UI_STRINGS.dmSettingsPointBuyBudgetDescription}
                     </p>
                 </div>
             </div>
@@ -256,7 +256,7 @@ export default function CharacterDashboardPage() {
                     onClick={() => { setSkillToEdit(undefined); setIsAddOrEditSkillDialogOpen(true); }}
                     className="w-full sm:w-auto"
                 >
-                    <BookOpenCheck className="mr-2 h-5 w-5" /> {UI_STRINGS.dmSettingsAddCustomSkillButton || "Add New Custom Skill"}
+                    <BookOpenCheck className="mr-2 h-5 w-5" /> {UI_STRINGS.dmSettingsAddCustomSkillButton}
                 </Button>
                 <Button
                     type="button"
@@ -264,7 +264,7 @@ export default function CharacterDashboardPage() {
                     onClick={() => { setEditingCustomFeatDefinition(undefined); setIsCustomFeatDialogOpen(true); }}
                     className="w-full sm:w-auto"
                 >
-                    <ShieldPlus className="mr-2 h-5 w-5" /> {UI_STRINGS.dmSettingsAddCustomFeatButton || "Add New Custom Feat"}
+                    <ShieldPlus className="mr-2 h-5 w-5" /> {UI_STRINGS.dmSettingsAddCustomFeatButton}
                 </Button>
             </div>
         </div>

@@ -12,7 +12,7 @@ import type { XpDataEntry } from '@/i18n/i18n-data';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getXpRequiredForLevel } from '@/lib/dnd-utils'; 
-import { cn } from '@/lib/utils';
+import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; // Added
 
@@ -76,8 +76,8 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
   if (translationsLoading || !translations) {
     return (
       <LockablePanelWrapper
-        title={translations?.UI_STRINGS.experiencePanelTitle || "Experience"}
-        description={translations?.UI_STRINGS.experiencePanelDescription || "Track your character's progression and current experience points."}
+        title={translations?.UI_STRINGS.experiencePanelTitle}
+        description={translations?.UI_STRINGS.experiencePanelDescription}
         icon={Award}
         cardContentClassName="space-y-4 pt-4"
         initialLockedState={false}
@@ -95,12 +95,12 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
   }
 
   const { UI_STRINGS } = translations;
-  const levelLabelFormat = UI_STRINGS.experiencePanelLevelLabelFormat || "Level {levelNumber}";
+  const levelLabelFormat = UI_STRINGS.experiencePanelLevelLabelFormat;
 
   return (
     <LockablePanelWrapper
-      title={UI_STRINGS.experiencePanelTitle || "Experience"}
-      description={UI_STRINGS.experiencePanelDescription || "Track your character's progression and current experience points."}
+      title={UI_STRINGS.experiencePanelTitle}
+      description={UI_STRINGS.experiencePanelDescription}
       icon={Award}
       cardContentClassName="space-y-4 pt-4"
       initialLockedState={false}
@@ -110,9 +110,9 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
           <div className="flex items-center gap-x-2">
             <div className="w-1/2 space-y-1.5">
               <Label htmlFor="current-xp" className="text-sm font-medium block w-full text-center mb-0">
-                <span>{UI_STRINGS.experiencePanelCurrentXpMainLabel || "Current XP"}</span>
+                <span>{UI_STRINGS.experiencePanelCurrentXpMainLabel}</span>
                 <span className="block text-xs text-muted-foreground">
-                  {UI_STRINGS.experiencePanelCurrentXpSubLabel || "Experience Points"}
+                  {UI_STRINGS.experiencePanelCurrentXpSubLabel}
                 </span>
               </Label>
               <NumberSpinnerInput
@@ -129,7 +129,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
               {!isMaxLevel && (
               <Button type="button" onClick={handleLevelUpClick} disabled={isMaxLevel || panelIsLocked} className="w-full h-10">
                   <TrendingUp className="mr-2 h-4 w-4" />
-                  {UI_STRINGS.experiencePanelLevelUpButton || "Level Up"}
+                  {UI_STRINGS.experiencePanelLevelUpButton}
               </Button>
               )}
             </div>
@@ -142,25 +142,25 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
                   "font-semibold text-xl text-accent",
                   currentLevel === 0 && "text-muted-foreground"
               )}>
-                {levelLabelFormat.replace("{levelNumber}", String(currentLevel))}
+                {parseAndRenderUIString(levelLabelFormat, {levelNumber: String(currentLevel)})}
               </span>
               {xpForNextLevel !== Infinity ? (
                 <span className="text-xs">
-                  {(UI_STRINGS.experiencePanelXpToLevelUpFormat || "{currentXp} / {xpForNextLevel} XP")
-                    .replace("{currentXp}", localCurrentXp.toLocaleString())
-                    .replace("{xpForNextLevel}", xpForNextLevel.toLocaleString())
-                  }
+                  {parseAndRenderUIString(UI_STRINGS.experiencePanelXpToLevelUpFormat, {
+                    currentXp: localCurrentXp.toLocaleString(),
+                    xpForNextLevel: xpForNextLevel.toLocaleString()
+                  })}
                 </span>
               ) : (
-                <span className="font-semibold text-primary text-xs">{UI_STRINGS.experiencePanelMaxLevel || "Max Level"}</span>
+                <span className="font-semibold text-primary text-xs">{UI_STRINGS.experiencePanelMaxLevel}</span>
               )}
-              {xpForNextLevel !== Infinity && <span className="text-xs">{levelLabelFormat.replace("{levelNumber}", String(currentLevel + 1))}</span>}
+              {xpForNextLevel !== Infinity && <span className="text-xs">{parseAndRenderUIString(levelLabelFormat, {levelNumber: String(currentLevel + 1)})}</span>}
             </div>
           </div>
           
           {isMaxLevel && ( 
              <p className="text-sm text-center text-muted-foreground pt-2">
-              {UI_STRINGS.experiencePanelMaxLevel || "Max Level Reached"}
+              {UI_STRINGS.experiencePanelMaxLevel}
              </p>
           )}
         </>
@@ -171,3 +171,5 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
 ExperiencePanelComponent.displayName = "ExperiencePanelComponent";
 export const ExperiencePanel = React.memo(ExperiencePanelComponent);
 
+
+    

@@ -17,8 +17,8 @@ export default function NewCharacterPage() {
   const handleSaveCharacter = (newCharacter: Character) => {
     addCharacter(newCharacter);
     toast({
-      title: translations?.UI_STRINGS.toastCharacterForgedTitle || "Character Forged!",
-      description: (translations?.UI_STRINGS.toastCharacterForgedDescription || "{characterName} has been successfully created.").replace("{characterName}", newCharacter.name),
+      title: translations?.UI_STRINGS.toastCharacterForgedTitle,
+      description: (translations?.UI_STRINGS.toastCharacterForgedDescription).replace("{characterName}", newCharacter.name),
     });
     router.push(`/character/${newCharacter.id}`);
   };

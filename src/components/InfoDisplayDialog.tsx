@@ -30,7 +30,7 @@ import type {
   CharacterSizeObject,
   DndRaceOption, DndClassOption, AbilityScores, AggregatedFeatEffects, DetailedAbilityScores,
   CharacterAlignmentObject, DndDeityOption, ClassAttribute, AggregatedFeatEffectBase, SkillEffectDetail,
-  ItemDefinition, ItemInstance, GearSlotId // Added Item types
+  ItemDefinition, ItemInstance, GearSlotId, LocalizedString // Added Item types and LocalizedString
 } from '@/types/character';
 
 import {
@@ -47,6 +47,8 @@ import {
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
 import { useI18n } from '@/context/I18nProvider';
 import { Separator } from '@/components/ui/separator';
+import { getLocalizedString, type ProcessedSiteData } from '@/i18n/i18n-data';
+import type { LanguageCode } from '@/i18n/config';
 
 import {
   calculateAbilityModifier, getAbilityModifierByName, getBab, getSizeModifierAC, getSizeModifierGrapple,
@@ -75,7 +77,7 @@ export interface ResistanceBreakdownDetails {
   name: string;
   base: number;
   customMod: number;
-  itemBonus: number; // Added itemBonus
+  itemBonus: number;
   total: number;
 }
 
@@ -92,7 +94,7 @@ export interface SkillModifierBreakdownDetails {
   keyAbilityModifier: number;
   ranks: number;
   synergyBonus: number;
-  featBonus: number; // Total feat bonus from active, numerical effects
+  featBonus: number;
   racialBonus: number;
   sizeSpecificBonus: number;
   miscModifier: number;
@@ -148,7 +150,7 @@ export function InfoDisplayDialog({
   aggregatedFeatEffects: aggregatedFeatEffectsProp,
   detailedAbilityScores: detailedAbilityScoresProp,
 }: InfoDisplayDialogProps) {
-  const { translations, isLoading: translationsLoading } = useI18n();
+  const { translations, isLoading: translationsLoading, language } = useI18n();
   const { customFeatDefinitions, customSkillDefinitions } = useDefinitionsStore(state => ({
     customFeatDefinitions: state.customFeatDefinitions,
     customSkillDefinitions: state.customSkillDefinitions,
@@ -215,8 +217,8 @@ export function InfoDisplayDialog({
       ITEM_DEFINITIONS_ARMOR, ITEM_DEFINITIONS_SHIELDS, ITEM_DEFINITIONS_WEAPONS, ITEM_DEFINITIONS_MAGIC_ITEMS
     } = translations;
 
-    let data: DerivedDialogData = { title: UI_STRINGS.infoDialogDefaultTitle || 'Information', content: [] };
-    let detailsListHeading: string = UI_STRINGS.infoDialogSectionHeadingDetails || "Details";
+    let data: DerivedDialogData = { title: UI_STRINGS.infoDialogDefaultTitle, content: [] };
+    let detailsListHeading: string = UI_STRINGS.infoDialogSectionHeadingDetails;
     let iconKey = "default";
 
     const detailedCharScoresForDialog = detailedAbilityScoresProp;
@@ -239,7 +241,7 @@ export function InfoDisplayDialog({
         }
 
         data = {
-          title: raceData?.label || UI_STRINGS.infoDialogRaceDefaultTitle || 'Race Information',
+          title: raceData?.label || UI_STRINGS.infoDialogRaceDefaultTitle,
           content: RaceContentDisplay({
             htmlContent: raceData?.generalDescription,
             abilityModifiers: qualities.abilityEffects,
@@ -262,19 +264,19 @@ export function InfoDisplayDialog({
         const classId = character.classes[0]?.className;
         const classData = DND_CLASSES.find(c => c.id === classId);
         const classSpecificDetails: Array<{ label: string; value: string | number; isBold?: boolean }> = [];
-        if (classData?.hitDice) classSpecificDetails.push({ label: UI_STRINGS.hitDiceLabel || "Hit Dice", value: classData.hitDice, isBold: true });
+        if (classData?.hitDice) classSpecificDetails.push({ label: UI_STRINGS.hitDiceLabel, value: classData.hitDice, isBold: true });
         if (classData?.saves) {
-          const fortSaveLabel = SAVING_THROW_LABELS.find(l => l.id === 'fortitude')?.label || "Fortitude Save";
-          const reflexSaveLabel = SAVING_THROW_LABELS.find(l => l.id === 'reflex')?.label || "Reflex Save";
-          const willSaveLabel = SAVING_THROW_LABELS.find(l => l.id === 'will')?.label || "Will Save";
+          const fortSaveLabel = SAVING_THROW_LABELS.find(l => l.id === 'fortitude')?.label;
+          const reflexSaveLabel = SAVING_THROW_LABELS.find(l => l.id === 'reflex')?.label;
+          const willSaveLabel = SAVING_THROW_LABELS.find(l => l.id === 'will')?.label;
 
-          const fortProgression = classData.saves.fortitude === 'good' ? (UI_STRINGS.saveProgressionGood || 'Good') : (UI_STRINGS.saveProgressionPoor || 'Poor');
-          const reflexProgression = classData.saves.reflex === 'good' ? (UI_STRINGS.saveProgressionGood || 'Good') : (UI_STRINGS.saveProgressionPoor || 'Poor');
-          const willProgression = classData.saves.will === 'good' ? (UI_STRINGS.saveProgressionGood || 'Good') : (UI_STRINGS.saveProgressionPoor || 'Poor');
+          const fortProgression = classData.saves.fortitude === 'good' ? UI_STRINGS.saveProgressionGood : UI_STRINGS.saveProgressionPoor;
+          const reflexProgression = classData.saves.reflex === 'good' ? UI_STRINGS.saveProgressionGood : UI_STRINGS.saveProgressionPoor;
+          const willProgression = classData.saves.will === 'good' ? UI_STRINGS.saveProgressionGood : UI_STRINGS.saveProgressionPoor;
 
-          classSpecificDetails.push({ label: fortSaveLabel, value: fortProgression });
-          classSpecificDetails.push({ label: reflexSaveLabel, value: reflexProgression });
-          classSpecificDetails.push({ label: willSaveLabel, value: willProgression });
+          if (fortSaveLabel) classSpecificDetails.push({ label: fortSaveLabel, value: fortProgression });
+          if (reflexSaveLabel) classSpecificDetails.push({ label: reflexSaveLabel, value: reflexProgression });
+          if (willSaveLabel) classSpecificDetails.push({ label: willSaveLabel, value: willProgression });
         }
 
         const grantedFeatsFormatted = classData?.grantedFeats?.map(gf => ({
@@ -282,7 +284,7 @@ export function InfoDisplayDialog({
         }));
 
         data = {
-          title: classData?.label || UI_STRINGS.infoDialogClassDefaultTitle || 'Class Information',
+          title: classData?.label || UI_STRINGS.infoDialogClassDefaultTitle,
           content: ClassContentDisplay({
             htmlContent: classData?.generalDescription,
             loreAttributes: classData?.loreAttributes,
@@ -301,7 +303,7 @@ export function InfoDisplayDialog({
       case 'alignmentSummary':
         iconKey = 'alignmentSummary';
         data = {
-          title: UI_STRINGS.infoDialogAlignmentsTitle || 'Alignments',
+          title: UI_STRINGS.infoDialogAlignmentsTitle,
           content: [AlignmentSummaryContentDisplay({ alignments: ALIGNMENTS, uiStrings: UI_STRINGS })],
         };
         break;
@@ -321,18 +323,18 @@ export function InfoDisplayDialog({
                 label: deityId,
                 alignment: '',
                 fullName: deityId,
-                attributes: [{ key: (UI_STRINGS.infoDialogDeityPlaceholder || "Custom deity. No predefined information available."), value: ""}]
+                attributes: [{ key: UI_STRINGS.infoDialogDeityPlaceholder, value: ""}]
              };
             data = { title: deityId, content: [DeityContentDisplay({ deityData: customDeityDisplay, uiStrings: UI_STRINGS })] };
         } else {
              const placeholderDeity: DndDeityOption = {
                 id: "__placeholder__",
-                label: UI_STRINGS.infoDialogDeityDefaultTitle || "Deity Information",
+                label: UI_STRINGS.infoDialogDeityDefaultTitle,
                 alignment: '',
-                fullName: UI_STRINGS.infoDialogDeityDefaultTitle || "Deity Information",
-                attributes: [{ key: (UI_STRINGS.infoDialogDeityPlaceholder || "Select or type a deity to see more information."), value: ""}]
+                fullName: UI_STRINGS.infoDialogDeityDefaultTitle,
+                attributes: [{ key: UI_STRINGS.infoDialogDeityPlaceholder, value: ""}]
              };
-            data = { title: UI_STRINGS.infoDialogDeityDefaultTitle || "Deity Information", content: [DeityContentDisplay({ deityData: placeholderDeity, uiStrings: UI_STRINGS })]};
+            data = { title: UI_STRINGS.infoDialogDeityDefaultTitle, content: [DeityContentDisplay({ deityData: placeholderDeity, uiStrings: UI_STRINGS })]};
         }
         break;
       case 'abilityScoreBreakdown': {
@@ -341,7 +343,7 @@ export function InfoDisplayDialog({
         const abilityLabelForTitle = ABILITY_LABELS.find(al => al.id === abilityKeyForTitle);
         const abilityNameString = abilityLabelForTitle?.label || abilityKeyForTitle;
         data = {
-          title: (UI_STRINGS.infoDialogTitleScoreCalculation || "{abilityName} Score Calculation").replace("{abilityName}", abilityNameString),
+          title: UI_STRINGS.infoDialogTitleScoreCalculation.replace("{abilityName}", abilityNameString),
           content: [AbilityScoreBreakdownContentDisplay({abilityScoreBreakdown: detailedCharScoresForDialog[contentType.abilityName], uiStrings: UI_STRINGS})],
         };
         break;
@@ -377,15 +379,15 @@ export function InfoDisplayDialog({
                           id: `provided-${currentSkillId}-${sRule.targetSkill}`,
                           text: (
                             <>
-                                {UI_STRINGS.synergyTextPart1ThisSkill || "This skill"}
-                                {UI_STRINGS.synergyTextPart1Provided || ", with "}
+                                {UI_STRINGS.synergyTextPart1ThisSkill}
+                                {UI_STRINGS.synergyTextPart1Provided}
                                 <Badge variant="outline" className={badgeClass}>{sRule.ranksRequired}</Badge>
-                                {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
-                                {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
+                                {UI_STRINGS.synergyTextPart2Ranks}
+                                {UI_STRINGS.synergyTextPart3GrantsA}
                                 <Badge variant="outline" className={badgeClass}>{sRule.bonus > 0 ? '+' : ''}{sRule.bonus}</Badge>
-                                {UI_STRINGS.synergyTextPart4BonusToTargetSkillStart || " bonus to "}
+                                {UI_STRINGS.synergyTextPart4BonusToTargetSkillStart}
                                 {targetSkillName}
-                                {UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "'s checks."}
+                                {UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd}
                             </>
                           ),
                           isActive: providingSkillRanks >= sRule.ranksRequired
@@ -398,15 +400,15 @@ export function InfoDisplayDialog({
                               id: `provided-custom-${currentSkillId}-${customRule.id}`,
                                text: (
                                  <>
-                                      {UI_STRINGS.synergyTextPart1ThisSkill || "This skill"}
-                                      {UI_STRINGS.synergyTextPart1Provided || ", with "}
+                                      {UI_STRINGS.synergyTextPart1ThisSkill}
+                                      {UI_STRINGS.synergyTextPart1Provided}
                                       <Badge variant="outline" className={badgeClass}>{customRule.ranksInThisSkillRequired}</Badge>
-                                      {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
-                                      {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
+                                      {UI_STRINGS.synergyTextPart2Ranks}
+                                      {UI_STRINGS.synergyTextPart3GrantsA}
                                       <Badge variant="outline" className={badgeClass}>{customRule.bonusGranted > 0 ? '+' : ''}{customRule.bonusGranted}</Badge>
-                                      {UI_STRINGS.synergyTextPart4BonusToTargetSkillStart || " bonus to "}
+                                      {UI_STRINGS.synergyTextPart4BonusToTargetSkillStart}
                                       {targetSkillNameNode}
-                                      {UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd || "'s checks."}
+                                      {UI_STRINGS.synergyTextPart4BonusToTargetSkillEnd}
                                   </>
                                 ),
                               isActive: providingSkillRanks >= customRule.ranksInThisSkillRequired
@@ -421,12 +423,12 @@ export function InfoDisplayDialog({
                               text: (
                                 <>
                                     {providingSkillName}
-                                    {UI_STRINGS.synergyTextPart1Received || ", with "}
+                                    {UI_STRINGS.synergyTextPart1Received}
                                     <Badge variant="outline" className={badgeClass}>{sRule.ranksRequired}</Badge>
-                                    {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
-                                    {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
+                                    {UI_STRINGS.synergyTextPart2Ranks}
+                                    {UI_STRINGS.synergyTextPart3GrantsA}
                                     <Badge variant="outline" className={badgeClass}>{sRule.bonus > 0 ? '+' : ''}{sRule.bonus}</Badge>
-                                    {UI_STRINGS.synergyTextPart4BonusToThisSkill || " bonus to this skill's checks."}
+                                    {UI_STRINGS.synergyTextPart4BonusToThisSkill}
                                 </>
                               ),
                               isActive: providingSkillRanks >= sRule.ranksRequired
@@ -442,12 +444,12 @@ export function InfoDisplayDialog({
                                   text: (
                                      <>
                                           {providingSkillName}
-                                          {UI_STRINGS.synergyTextPart1Received || ", with "}
+                                          {UI_STRINGS.synergyTextPart1Received}
                                           <Badge variant="outline" className={badgeClass}>{customRule.ranksInThisSkillRequired}</Badge>
-                                          {UI_STRINGS.synergyTextPart2Ranks || " ranks"}
-                                          {UI_STRINGS.synergyTextPart3GrantsA || ", grants a "}
+                                          {UI_STRINGS.synergyTextPart2Ranks}
+                                          {UI_STRINGS.synergyTextPart3GrantsA}
                                           <Badge variant="outline" className={badgeClass}>{customRule.bonusGranted > 0 ? '+' : ''}{customRule.bonusGranted}</Badge>
-                                          {UI_STRINGS.synergyTextPart4BonusToThisSkill || " bonus to this skill's checks."}
+                                          {UI_STRINGS.synergyTextPart4BonusToThisSkill}
                                       </>
                                   ),
                                   isActive: providingSkillRanks >= customRule.ranksInThisSkillRequired
@@ -469,7 +471,7 @@ export function InfoDisplayDialog({
           };
 
           data = {
-            title: (UI_STRINGS.infoDialogTitleModifierBreakdown || "{skillName} Modifier Breakdown").replace("{skillName}", skillDef.name),
+            title: UI_STRINGS.infoDialogTitleModifierBreakdown.replace("{skillName}", skillDef.name),
             content: SkillModifierBreakdownContentDisplay({
                 htmlContent: skillDef.description,
                 synergyInfoList: synergyItems.length > 0 ? synergyItems : undefined,
@@ -479,7 +481,7 @@ export function InfoDisplayDialog({
             }),
           };
         } else {
-            data = { title: UI_STRINGS.infoDialogSkillDefaultTitle || "Skill Information", content: [GenericHtmlContentDisplay({htmlContent: `<p>${UI_STRINGS.infoDialogSkillNotFound || "Skill details not found."}</p>`})]};
+            data = { title: UI_STRINGS.infoDialogSkillDefaultTitle, content: [GenericHtmlContentDisplay({htmlContent: `<p>${UI_STRINGS.infoDialogSkillNotFound}</p>`})]};
         }
         break;
       }
@@ -491,7 +493,7 @@ export function InfoDisplayDialog({
         const itemBonus = aggregatedFeatEffectsProp.resistanceBonuses.find(rb => rb.resistanceTo === contentType.resistanceField && rb.isActive)?.value || 0;
 
         data = {
-          title: (UI_STRINGS.infoDialogTitleResistanceBreakdown || "{resistanceName} Resistance Breakdown").replace("{resistanceName}", resistanceLabel),
+          title: UI_STRINGS.infoDialogTitleResistanceBreakdown.replace("{resistanceName}", resistanceLabel),
           content: [ResistanceBreakdownContentDisplay({
             resistanceBreakdown: {
                 name: resistanceLabel,
@@ -526,18 +528,18 @@ export function InfoDisplayDialog({
 
 
         const details: AcBreakdownDetailItem[] = [];
-        details.push({ mainLabel: UI_STRINGS.acBreakdownBaseLabel || "Base", value: 10 });
+        details.push({ mainLabel: UI_STRINGS.acBreakdownBaseLabel, value: 10 });
 
         if (contentType.acType === 'Normal' || contentType.acType === 'Touch') {
             details.push({
-                mainLabel: `${UI_STRINGS.infoDialogAcAbilityLabel || "Ability Modifier"}`,
+                mainLabel: UI_STRINGS.infoDialogAcAbilityLabel,
                 value: dexMod,
                 type: 'acAbilityMod',
-                abilityAbbr: ABILITY_LABELS.find(al => al.id === 'dexterity')?.abbr || 'DEX'
+                abilityAbbr: ABILITY_LABELS.find(al => al.id === 'dexterity')?.abbr
             });
         }
         details.push({
-            mainLabel: `${UI_STRINGS.infoDialogSizeModifierLabel || "Size Modifier"}`,
+            mainLabel: UI_STRINGS.infoDialogSizeModifierLabel,
             value: sizeModACVal,
             type: 'acSizeMod',
             sizeName: sizeLabel
@@ -573,7 +575,7 @@ export function InfoDisplayDialog({
                         }
                         totalFeatBonusForThisType += bonusFromThisFeat;
                         if (featEffect.sourceFeat) {
-                            featSourcesForThisType.push(getLocalizedString(featEffect.sourceFeat, UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode));
+                            featSourcesForThisType.push(getLocalizedString(featEffect.sourceFeat, language as LanguageCode));
                         }
                     }
                 });
@@ -624,9 +626,9 @@ export function InfoDisplayDialog({
                         bonusVal = featEffect.value;
                     }
 
-                    let sourceName = featEffect.sourceFeat ? getLocalizedString(featEffect.sourceFeat, UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode) : (UI_STRINGS.infoDialogUnknownFeatSource || "Unknown Feat");
-                    if (featEffect.acType === "monk_wisdom") sourceName = UI_STRINGS.abilityScoreSourceMonkWisdom || "Monk Wisdom";
-                    else if (featEffect.acType === "monkScaling") sourceName = (UI_STRINGS.acBreakdownMonkScalingLabel || "Monk AC Bonus");
+                    let sourceName = featEffect.sourceFeat ? getLocalizedString(featEffect.sourceFeat, language as LanguageCode) : UI_STRINGS.infoDialogUnknownFeatSource;
+                    if (featEffect.acType === "monk_wisdom") sourceName = UI_STRINGS.abilityScoreSourceMonkWisdom;
+                    else if (featEffect.acType === "monkScaling") sourceName = UI_STRINGS.acBreakdownMonkScalingLabel;
 
                     if (bonusVal !==0) {
                         otherFeatBonusSources.push({ name: sourceName, value: bonusVal, condition: featEffect.condition, isActive: featEffect.isActive });
@@ -652,7 +654,7 @@ export function InfoDisplayDialog({
 
 
         if (character.acMiscModifier && character.acMiscModifier !== 0) {
-            details.push({ mainLabel: UI_STRINGS.armorClassTempModifierLabel || "Temporary Modifier", value: character.acMiscModifier });
+            details.push({ mainLabel: UI_STRINGS.armorClassTempModifierLabel, value: character.acMiscModifier });
         }
 
         let totalACValueForDialog = 10 + sizeModACVal;
@@ -694,10 +696,10 @@ export function InfoDisplayDialog({
         totalACValueForDialog += sumOfOtherFeatBonuses;
         totalACValueForDialog += (character.acMiscModifier || 0);
 
-        const titleTemplate = UI_STRINGS.infoDialogTitleAcBreakdown || "{acType} Armor Class Breakdown";
-        const acTypeLabel = contentType.acType === 'Normal' ? (UI_STRINGS.armorClassNormalLabel || 'Normal')
-                          : contentType.acType === 'Touch' ? (UI_STRINGS.armorClassTouchLabel || 'Touch')
-                          : (UI_STRINGS.armorClassFlatFootedLabel || 'Flat-Footed');
+        const titleTemplate = UI_STRINGS.infoDialogTitleAcBreakdown;
+        const acTypeLabel = contentType.acType === 'Normal' ? UI_STRINGS.armorClassNormalLabel
+                          : contentType.acType === 'Touch' ? UI_STRINGS.armorClassTouchLabel
+                          : UI_STRINGS.armorClassFlatFootedLabel;
 
         data = { title: titleTemplate.replace("{acType}", acTypeLabel), content: [AcBreakdownContentDisplay({detailsList: details, totalACValue: totalACValueForDialog, detailsListHeading, uiStrings: UI_STRINGS})] };
         break;
@@ -706,7 +708,7 @@ export function InfoDisplayDialog({
         iconKey = 'babBreakdown';
         const baseBabArrayVal = getBab(character.classes, DND_CLASSES);
         data = {
-          title: UI_STRINGS.infoDialogTitleBabBreakdown || 'Base Attack Bonus Breakdown',
+          title: UI_STRINGS.infoDialogTitleBabBreakdown,
           content: [BabBreakdownContentDisplay({
             babBreakdown: {
               baseBabFromClasses: baseBabArrayVal,
@@ -725,7 +727,7 @@ export function InfoDisplayDialog({
         const dexMod = calculateAbilityModifier(finalAbilityScores.dexterity);
         const featBonus = aggregatedFeatEffectsProp?.initiativeBonus || 0;
         data = {
-          title: UI_STRINGS.infoDialogTitleInitiativeBreakdown || 'Initiative Breakdown',
+          title: UI_STRINGS.infoDialogTitleInitiativeBreakdown,
           content: [InitiativeBreakdownContentDisplay({
             initiativeBreakdown: {
               dexModifier: dexMod,
@@ -746,7 +748,7 @@ export function InfoDisplayDialog({
         const sizeModGrappleVal = getSizeModifierGrapple(character.size, SIZES);
         const featGrappleBonus = aggregatedFeatEffectsProp?.attackRollBonuses?.filter(b => b.appliesTo === 'grapple' && b.isActive).reduce((sum, b) => sum + (typeof b.value === 'number' ? b.value : 0), 0) || 0;
         data = {
-          title: UI_STRINGS.infoDialogTitleGrappleModifierBreakdown || 'Grapple Modifier Breakdown',
+          title: UI_STRINGS.infoDialogTitleGrappleModifierBreakdown,
           content: [GrappleModifierBreakdownContentDisplay({
             grappleModifierBreakdown: {
                 baseAttackBonus: baseBabArrayVal[0] || 0,
@@ -768,7 +770,7 @@ export function InfoDisplayDialog({
         const featGrappleDamageBonus = aggregatedFeatEffectsProp?.damageRollBonuses?.filter(b => b.appliesTo === 'grapple' && b.isActive && typeof b.value === 'number').reduce((sum, b) => sum + b.value, 0) || 0;
 
         data = {
-          title: UI_STRINGS.infoDialogTitleGrappleDamageBreakdown || 'Grapple Damage Breakdown',
+          title: UI_STRINGS.infoDialogTitleGrappleDamageBreakdown,
           content: [GrappleDamageBreakdownContentDisplay({
             grappleDamageBreakdown: {
               baseDamage: character.grappleDamage_baseNotes || getUnarmedGrappleDamage(character.size, SIZES),
@@ -787,7 +789,7 @@ export function InfoDisplayDialog({
         const speedBreakdownDetails = calculateSpeedBreakdown(contentType.speedType, character, aggregatedFeatEffectsProp, DND_RACES, DND_CLASSES, SIZES, UI_STRINGS);
         const speedNameString = speedBreakdownDetails.name;
         data = {
-          title: (UI_STRINGS.infoDialogTitleSpeedBreakdown || "{speedName} Breakdown").replace("{speedName}", speedNameString),
+          title: UI_STRINGS.infoDialogTitleSpeedBreakdown.replace("{speedName}", speedNameString),
           content: [SpeedBreakdownContentDisplay({speedBreakdown: speedBreakdownDetails, uiStrings: UI_STRINGS})],
         };
         break;
@@ -798,15 +800,15 @@ export function InfoDisplayDialog({
         const miscModifier = character.armorSpeedPenalty_miscModifier || 0;
         const netEffectOnSpeed = miscModifier - basePenalty;
         const penaltyBreakdown: SpeedBreakdownDetailsType = {
-            name: UI_STRINGS.totalArmorPenaltyLabel || "Total Armor Penalty Effect",
+            name: UI_STRINGS.totalArmorPenaltyLabel,
             components: [
-                { source: UI_STRINGS.speedPenaltyBaseArmorLabel || "Base from Armor", value: -basePenalty },
-                { source: UI_STRINGS.speedMiscModifierLabel || "Misc Modifier", value: miscModifier }
+                { source: UI_STRINGS.speedPenaltyBaseArmorLabel, value: -basePenalty },
+                { source: UI_STRINGS.speedMiscModifierLabel, value: miscModifier }
             ],
             total: netEffectOnSpeed
         };
         data = {
-            title: UI_STRINGS.infoDialogTitleArmorPenaltyBreakdown || "Armor Penalty Breakdown",
+            title: UI_STRINGS.infoDialogTitleArmorPenaltyBreakdown,
             content: [SpeedBreakdownContentDisplay({ speedBreakdown: penaltyBreakdown, uiStrings: UI_STRINGS })]
         };
         break;
@@ -817,15 +819,15 @@ export function InfoDisplayDialog({
         const miscModifier = character.loadSpeedPenalty_miscModifier || 0;
         const netEffectOnSpeed = miscModifier - basePenalty;
         const penaltyBreakdown: SpeedBreakdownDetailsType = {
-            name: UI_STRINGS.totalLoadPenaltyLabel || "Total Load Penalty Effect",
+            name: UI_STRINGS.totalLoadPenaltyLabel,
             components: [
-                { source: UI_STRINGS.speedPenaltyBaseLoadLabel || "Base from Load", value: -basePenalty },
-                { source: UI_STRINGS.speedMiscModifierLabel || "Misc Modifier", value: miscModifier }
+                { source: UI_STRINGS.speedPenaltyBaseLoadLabel, value: -basePenalty },
+                { source: UI_STRINGS.speedMiscModifierLabel, value: miscModifier }
             ],
             total: netEffectOnSpeed
         };
         data = {
-            title: UI_STRINGS.infoDialogTitleLoadPenaltyBreakdown || "Load Penalty Breakdown",
+            title: UI_STRINGS.infoDialogTitleLoadPenaltyBreakdown,
             content: [SpeedBreakdownContentDisplay({ speedBreakdown: penaltyBreakdown, uiStrings: UI_STRINGS })]
         };
         break;
@@ -835,7 +837,7 @@ export function InfoDisplayDialog({
         iconKey = currentSaveType;
 
         const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.id === currentSaveType)?.label || currentSaveType;
-        const dialogTitle = (UI_STRINGS.infoDialogTitleSavingThrowBreakdown || "{saveTypeLabel} Breakdown").replace("{saveTypeLabel}", saveTypeLabel);
+        const dialogTitle = UI_STRINGS.infoDialogTitleSavingThrowBreakdown.replace("{saveTypeLabel}", saveTypeLabel);
 
         const calculatedBaseSaves = getBaseSaves(character.classes, DND_CLASSES);
         const baseSave = calculatedBaseSaves[currentSaveType];
@@ -858,7 +860,7 @@ export function InfoDisplayDialog({
                 numericValueFromEffect = calculateAbilityModifier(detailedAbilityScoresProp.charisma.finalScore);
               }
               featComponentsForDialog.push({
-                sourceFeat: effect.sourceFeat ? getLocalizedString(effect.sourceFeat, UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode) : (UI_STRINGS.infoDialogUnknownFeatSource || "Unknown Feat"),
+                sourceFeat: effect.sourceFeat ? getLocalizedString(effect.sourceFeat, language as LanguageCode) : UI_STRINGS.infoDialogUnknownFeatSource,
                 value: numericValueFromEffect,
                 condition: effect.condition,
                 isActive: effect.isActive,
@@ -895,7 +897,7 @@ export function InfoDisplayDialog({
       case 'maxHpBreakdown': {
         iconKey = 'maxHpBreakdown';
         data = {
-          title: UI_STRINGS.infoDialogTitleMaxHpBreakdown || "Maximum HP Breakdown",
+          title: UI_STRINGS.infoDialogTitleMaxHpBreakdown,
           content: [
             <MaxHpBreakdownContentDisplay
               key="max-hp-breakdown"
@@ -915,7 +917,7 @@ export function InfoDisplayDialog({
         break;
        case 'genericNumericalBreakdown':
         iconKey = 'default';
-        const titleForGeneric = UI_STRINGS[contentType.titleKey] || contentType.titleKey.toString();
+        const titleForGeneric = UI_STRINGS[contentType.titleKey];
         const contentForGeneric = [<div key="generic-num-content">{contentType.components.map((comp, idx) => (
             <div key={`${idx}-${comp.label}`} className="flex justify-between text-sm">
                 <span>{comp.label}</span>
@@ -927,7 +929,7 @@ export function InfoDisplayDialog({
     }
     data.iconKey = iconKey;
     return data;
-  }, [isOpen, contentType, character, translationsLoading, translations, customFeatDefinitions, customSkillDefinitions, allCombinedFeatDefinitions, allCombinedSkillDefinitionsForDisplay, expandedItems, toggleExpanded, aggregatedFeatEffectsProp, detailedAbilityScoresProp]);
+  }, [isOpen, contentType, character, translationsLoading, translations, customFeatDefinitions, customSkillDefinitions, allCombinedFeatDefinitions, allCombinedSkillDefinitionsForDisplay, expandedItems, toggleExpanded, aggregatedFeatEffectsProp, detailedAbilityScoresProp, language]);
 
 
   if (translationsLoading || !translations || !isOpen || !derivedData) {
@@ -937,14 +939,14 @@ export function InfoDisplayDialog({
           <DialogHeader>
             <DialogTitle className="flex items-center font-serif text-left">
               <Loader2 className="mr-2 h-5 w-5 animate-spin text-primary" />
-              {translations?.UI_STRINGS.infoDialogLoadingTitle || "Loading Information..."}
+              {translations?.UI_STRINGS.infoDialogLoadingTitle}
             </DialogTitle>
           </DialogHeader>
           <div className="py-6 text-center">
-            <p className="text-muted-foreground">{translations?.UI_STRINGS.infoDialogLoadingDescription || "Fetching details..."}</p>
+            <p className="text-muted-foreground">{translations?.UI_STRINGS.infoDialogLoadingDescription}</p>
           </div>
           <DialogFooter className="mt-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)} type="button">{translations?.UI_STRINGS.infoDialogCloseButton || "Close"}</Button>
+            <Button variant="outline" onClick={() => onOpenChange(false)} type="button">{translations?.UI_STRINGS.infoDialogCloseButton}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1001,5 +1003,3 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
-
-    

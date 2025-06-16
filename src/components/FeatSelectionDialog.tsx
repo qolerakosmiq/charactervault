@@ -168,10 +168,10 @@ export function FeatSelectionDialog({
           <DialogHeader>
             <DialogTitle className="flex items-center font-serif">
               <BookOpenText className="mr-2 h-6 w-6 text-primary" />
-              {translations?.UI_STRINGS.featSelectionDialogTitle || "Select a Feat"}
+              {translations?.UI_STRINGS.featSelectionDialogTitle}
             </DialogTitle>
             <DialogDescription>
-              {translations?.UI_STRINGS.featSelectionDialogLoadingDescription || "Loading feat information..."}
+              {translations?.UI_STRINGS.featSelectionDialogLoadingDescription}
             </DialogDescription>
           </DialogHeader>
           <div className="flex-grow flex items-center justify-center">
@@ -179,7 +179,7 @@ export function FeatSelectionDialog({
           </div>
           <DialogFooter className="mt-4 pt-0">
             <Button variant="outline" onClick={() => { onOpenChange(false); }}>
-              {translations?.UI_STRINGS.featSelectionDialogCancelButton || "Cancel"}
+              {translations?.UI_STRINGS.featSelectionDialogCancelButton}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -195,12 +195,12 @@ export function FeatSelectionDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif">
             <BookOpenText className="mr-2 h-6 w-6 text-primary" />
-            {UI_STRINGS.featSelectionDialogTitle || "Select a Feat"}
+            {UI_STRINGS.featSelectionDialogTitle}
           </DialogTitle>
           <DialogDescription>
             {filterByCategory
-              ? `${UI_STRINGS.featSelectionDialogDescriptionCategoryFilter || "Choose a feat from the filtered list. Showing feats for category:"} ${UI_STRINGS[`featCategory_${filterByCategory}` as keyof typeof UI_STRINGS] || filterByCategory}`
-              : UI_STRINGS.featSelectionDialogDescription || "Search and choose a feat from the list. Descriptions and prerequisites are shown below each feat."
+              ? `${UI_STRINGS.featSelectionDialogDescriptionCategoryFilter} ${UI_STRINGS[`featCategory_${filterByCategory}` as keyof typeof UI_STRINGS] || filterByCategory}`
+              : UI_STRINGS.featSelectionDialogDescription
             }
           </DialogDescription>
         </DialogHeader>
@@ -209,13 +209,13 @@ export function FeatSelectionDialog({
           className="rounded-lg border shadow-md flex-grow min-h-0 flex flex-col"
         >
           <CommandInput
-            placeholder={UI_STRINGS.featSelectionDialogSearchPlaceholder || "Search feats by name or description..."}
+            placeholder={UI_STRINGS.featSelectionDialogSearchPlaceholder}
             value={searchTerm}
             onValueChange={setSearchTerm}
           />
           <ScrollArea ref={scrollAreaRef} className="flex-grow min-h-0">
             <CommandList className="max-h-none">
-              <CommandEmpty>{UI_STRINGS.featSelectionDialogEmpty || "No feats found."}</CommandEmpty>
+              <CommandEmpty>{UI_STRINGS.featSelectionDialogEmpty}</CommandEmpty>
               <CommandGroup>
                 {displayedFeats
                   .filter(featDef => featDef && typeof featDef.id === 'string' && featDef.id.length > 0 && typeof featDef.label === 'string')
@@ -274,7 +274,7 @@ export function FeatSelectionDialog({
                     >
                       <div className="font-medium text-sm text-foreground mb-0.5">
                         {featDef.label}
-                        {featDef.isCustom && <Badge variant="outline" className="ml-1 text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
+                        {featDef.isCustom && <Badge variant="outline" className="ml-1 text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel}</Badge>}
                         {categoryDisplayLabel && !featSourceClassName && (
                            <Badge variant={categoryBadgeVariant} className="ml-1 whitespace-nowrap">
                             {categoryDisplayLabel}
@@ -290,13 +290,13 @@ export function FeatSelectionDialog({
                       )}
                       {showBenefitLine && (
                          <p className="text-xs whitespace-normal mt-0.5">
-                          <strong className="text-muted-foreground">{UI_STRINGS.featBenefitLabel || "Benefit:"}</strong>{' '}
+                          <strong className="text-muted-foreground">{UI_STRINGS.featBenefitLabel}</strong>{' '}
                           <span className="text-foreground" dangerouslySetInnerHTML={{ __html: benefitContentText }} />
                         </p>
                       )}
                       {showPrerequisitesLine && (
                         <p className="text-xs whitespace-normal mt-0.5">
-                          <strong className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel || "Prerequisites:"}</strong>{' '}
+                          <strong className="text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel}</strong>{' '}
                           <>
                             {hasStructuralPrereqs && prereqMessages.map((msg, index) => (
                               <React.Fragment key={index}>
@@ -323,7 +323,7 @@ export function FeatSelectionDialog({
         </Command>
         <DialogFooter className="mt-4 pt-0">
           <Button variant="outline" onClick={() => { onOpenChange(false); }}>
-            {UI_STRINGS.featSelectionDialogCancelButton || "Cancel"}
+            {UI_STRINGS.featSelectionDialogCancelButton}
           </Button>
         </DialogFooter>
       </DialogContent>

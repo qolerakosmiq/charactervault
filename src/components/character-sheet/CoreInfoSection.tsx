@@ -56,33 +56,33 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div><Label>{translations?.UI_STRINGS.characterNameLabel || "Name"}</Label><Skeleton className="h-10 w-full" /></div>
-            <div><Label>{translations?.UI_STRINGS.raceLabel || "Race"}</Label><Skeleton className="h-10 w-full" /></div>
+            <div><Label>{translations?.UI_STRINGS.characterNameLabel}</Label><Skeleton className="h-10 w-full" /></div>
+            <div><Label>{translations?.UI_STRINGS.raceLabel}</Label><Skeleton className="h-10 w-full" /></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div><Label>{translations?.UI_STRINGS.classLabel || "Class"}</Label><Skeleton className="h-10 w-full" /></div>
-            <div><Label>{translations?.UI_STRINGS.levelLabel || "Level"}</Label><Skeleton className="h-10 w-24" /></div>
+            <div><Label>{translations?.UI_STRINGS.classLabel}</Label><Skeleton className="h-10 w-full" /></div>
+            <div><Label>{translations?.UI_STRINGS.levelLabel}</Label><Skeleton className="h-10 w-24" /></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div><Label>{translations?.UI_STRINGS.alignmentLabel || "Alignment"}</Label><Skeleton className="h-10 w-full" /></div>
-            <div><Label>{translations?.UI_STRINGS.deityLabel || "Deity"}</Label><Skeleton className="h-10 w-full" /></div>
+            <div><Label>{translations?.UI_STRINGS.alignmentLabel}</Label><Skeleton className="h-10 w-full" /></div>
+            <div><Label>{translations?.UI_STRINGS.deityLabel}</Label><Skeleton className="h-10 w-full" /></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div><Label className="inline-block w-full text-center">{translations?.UI_STRINGS.ageLabel || "Age"}</Label><Skeleton className="h-10 w-24 mx-auto" /></div>
-            <div><Label>{translations?.UI_STRINGS.genderLabel || "Gender"}</Label><Skeleton className="h-10 w-full" /></div>
-            <div><Label>{translations?.UI_STRINGS.sizeLabel || "Size"}</Label><Skeleton className="h-10 w-full" /></div>
+            <div><Label className="inline-block w-full text-center">{translations?.UI_STRINGS.ageLabel}</Label><Skeleton className="h-10 w-24 mx-auto" /></div>
+            <div><Label>{translations?.UI_STRINGS.genderLabel}</Label><Skeleton className="h-10 w-full" /></div>
+            <div><Label>{translations?.UI_STRINGS.sizeLabel}</Label><Skeleton className="h-10 w-full" /></div>
           </div>
         </CardContent>
       </Card>
     );
   }
-  const { SIZES, ALIGNMENTS, UI_STRINGS, DND_RACES, DND_CLASSES } = translations;
+  const { SIZES, ALIGNMENTS, UI_STRINGS, DND_RACES, DND_CLASSES, GENDERS } = translations;
 
   const currentRaceLabel = DND_RACES.find(r => r.value === character.race)?.label || character.race || UI_STRINGS.selectRacePlaceholder;
   const currentClassLabel = DND_CLASSES.find(c => c.value === firstClass.className)?.label || firstClass.className || UI_STRINGS.selectClassPlaceholder;
   const currentAlignmentLabel = ALIGNMENTS.find(a => a.value === character.alignment)?.label || character.alignment || UI_STRINGS.selectAlignmentPlaceholder;
   const currentSizeLabel = SIZES.find(s => s.value === character.size)?.label || character.size || UI_STRINGS.selectSizePlaceholder;
-  const currentGenderLabel = GENDERS.find(g => g.value === character.gender)?.label || character.gender || UI_STRINGS.selectGenderPlaceholder;
+  const currentGenderLabel = GENDERS.find(g => g.id === character.gender)?.label || character.gender || UI_STRINGS.selectGenderPlaceholder;
 
 
   return (
@@ -90,35 +90,35 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
       <CardHeader>
         <div className="flex items-center space-x-2">
           <UserCircle2 className="h-6 w-6 text-primary" />
-          <CardTitle className="font-serif">{UI_STRINGS.coreInfoSectionTitle || "Core Information"}</CardTitle>
+          <CardTitle className="font-serif">{UI_STRINGS.coreInfoSectionTitle}</CardTitle>
         </div>
-        <CardDescription>{UI_STRINGS.coreInfoSectionDescription || "Fundamental aspects of your character."}</CardDescription>
+        <CardDescription>{UI_STRINGS.coreInfoSectionDescription}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="name-cs">{UI_STRINGS.characterNameLabel || "Name"}</Label>
+            <Label htmlFor="name-cs">{UI_STRINGS.characterNameLabel}</Label>
             <Input id="name-cs" name="name" value={character.name} onChange={handleInputChange} />
           </div>
            <div>
-            <Label htmlFor="playerName-cs">{UI_STRINGS.playerNameLabel || "Player Name"}</Label>
+            <Label htmlFor="playerName-cs">{UI_STRINGS.playerNameLabel}</Label>
             <Input id="playerName-cs" name="playerName" value={character.playerName || ''} onChange={handleInputChange} />
           </div>
         </div>
          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="campaign-cs">{UI_STRINGS.campaignLabel || "Campaign"}</Label>
+            <Label htmlFor="campaign-cs">{UI_STRINGS.campaignLabel}</Label>
             <Input id="campaign-cs" name="campaign" value={character.campaign || ''} onChange={handleInputChange} />
           </div>
           <div>
-            <Label htmlFor="homeland-cs">{UI_STRINGS.homelandLabel || "Homeland"}</Label>
+            <Label htmlFor="homeland-cs">{UI_STRINGS.homelandLabel}</Label>
             <Input id="homeland-cs" name="homeland" value={character.homeland || ''} onChange={handleInputChange} />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
            <div>
-            <Label htmlFor="race-cs">{UI_STRINGS.raceLabel || "Race"}</Label>
+            <Label htmlFor="race-cs">{UI_STRINGS.raceLabel}</Label>
             <Select name="race" value={character.race} onValueChange={(value) => handleSelectChange('race', value as DndRaceId)}>
               <SelectTrigger id="race-cs"><SelectValue placeholder={currentRaceLabel} /></SelectTrigger>
               <SelectContent>
@@ -127,7 +127,7 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
             </Select>
           </div>
           <div>
-            <Label htmlFor="className-cs">{UI_STRINGS.classLabel || "Class"}</Label>
+            <Label htmlFor="className-cs">{UI_STRINGS.classLabel}</Label>
             <Select name="className" value={firstClass.className} onValueChange={(value) => handleClassFieldChange(0, 'className', value as DndClassId)}>
               <SelectTrigger id="className-cs"><SelectValue placeholder={currentClassLabel} /></SelectTrigger>
               <SelectContent>
@@ -139,7 +139,7 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="level-cs">{UI_STRINGS.levelLabel || "Level"}</Label>
+            <Label htmlFor="level-cs">{UI_STRINGS.levelLabel}</Label>
             <NumberSpinnerInput
               id="level-cs"
               value={firstClass.level}
@@ -152,7 +152,7 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
             />
           </div>
           <div>
-            <Label htmlFor="alignment-cs">{UI_STRINGS.alignmentLabel || "Alignment"}</Label>
+            <Label htmlFor="alignment-cs">{UI_STRINGS.alignmentLabel}</Label>
             <Select name="alignment" value={character.alignment} onValueChange={(value) => handleSelectChange('alignment', value)}>
               <SelectTrigger id="alignment-cs"><SelectValue placeholder={currentAlignmentLabel} /></SelectTrigger>
               <SelectContent>
@@ -164,11 +164,11 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <Label htmlFor="deity-cs">{UI_STRINGS.deityLabel || "Deity"}</Label>
+            <Label htmlFor="deity-cs">{UI_STRINGS.deityLabel}</Label>
             <Input id="deity-cs" name="deity" value={character.deity as string || ''} onChange={handleInputChange} />
           </div>
           <div>
-            <Label htmlFor="age-cs-input" className="inline-block w-full">{UI_STRINGS.ageLabel || "Age"}</Label>
+            <Label htmlFor="age-cs-input" className="inline-block w-full">{UI_STRINGS.ageLabel}</Label>
             <NumberSpinnerInput
               id="age-cs-input"
               value={character.age}
@@ -180,16 +180,16 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
             />
           </div>
           <div>
-            <Label htmlFor="gender-cs">{UI_STRINGS.genderLabel || "Gender"}</Label>
+            <Label htmlFor="gender-cs">{UI_STRINGS.genderLabel}</Label>
             <Select name="gender" value={character.gender} onValueChange={(value) => handleSelectChange('gender', value)}>
               <SelectTrigger id="gender-cs"><SelectValue placeholder={currentGenderLabel} /></SelectTrigger>
               <SelectContent>
-                {GENDERS.map(g => <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>)}
+                {GENDERS.map(g => <SelectItem key={g.id} value={g.id}>{g.label}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
           <div>
-            <Label htmlFor="size-cs">{UI_STRINGS.sizeLabel || "Size"}</Label>
+            <Label htmlFor="size-cs">{UI_STRINGS.sizeLabel}</Label>
             <Select name="size" value={character.size} onValueChange={(value) => handleSelectChange('size', value)}>
               <SelectTrigger id="size-cs"><SelectValue placeholder={currentSizeLabel} /></SelectTrigger>
               <SelectContent>
@@ -202,3 +202,5 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
     </Card>
   );
 }
+
+    

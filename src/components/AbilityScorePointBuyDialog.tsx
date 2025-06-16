@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { AbilityName, AbilityScores, DndClassId } from '@/types/character'; // Added DndClassId
 import { Button } from '@/components/ui/button';
 import {
@@ -111,8 +111,8 @@ export function AbilityScorePointBuyDialog({
       onOpenChange(false);
     } else {
       toast({
-        title: translations?.UI_STRINGS.pointBuyDialogErrorInvalidApplicationTitle || "Invalid Scores",
-        description: translations?.UI_STRINGS.pointBuyDialogErrorInvalidApplicationDesc || "Cannot apply scores. Points spent must exactly match the total points budget, or the budget is invalid.",
+        title: translations?.UI_STRINGS.pointBuyDialogErrorInvalidApplicationTitle,
+        description: translations?.UI_STRINGS.pointBuyDialogErrorInvalidApplicationDesc,
         variant: "destructive",
       });
     }
@@ -127,12 +127,12 @@ export function AbilityScorePointBuyDialog({
           <DialogHeader>
             <DialogTitle className="flex items-center font-serif">
               <Calculator className="mr-2 h-6 w-6 text-primary" />
-              {translations?.UI_STRINGS.pointBuyDialogTitleLoading || "Point Buy Ability Scores"}
+              {translations?.UI_STRINGS.pointBuyDialogTitleLoading}
             </DialogTitle>
           </DialogHeader>
           <div className="flex justify-center items-center py-10">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingAbilityNamesTitle || "Loading ability names..."}</p>
+            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingAbilityNamesTitle}</p>
           </div>
            <DialogFooter className="mt-6 pt-4 border-t">
             <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
@@ -159,10 +159,10 @@ export function AbilityScorePointBuyDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif">
             <Calculator className="mr-2 h-6 w-6 text-primary" />
-            {UI_STRINGS.pointBuyDialogTitle || "Point Buy Ability Scores"}
+            {UI_STRINGS.pointBuyDialogTitle}
           </DialogTitle>
           <DialogDescription>
-            {UI_STRINGS.pointBuyDialogDescription || "Distribute points to set your character's initial ability scores. Scores start at 8, and the maximum score is 18."}
+            {UI_STRINGS.pointBuyDialogDescription}
           </DialogDescription>
         </DialogHeader>
 
@@ -170,24 +170,24 @@ export function AbilityScorePointBuyDialog({
             <div className="p-1 space-y-4">
                 <div className="flex items-center justify-between gap-4 p-3 border rounded-md bg-muted/30">
                     <div className="text-left">
-                        <p className="text-sm font-medium">{UI_STRINGS.pointBuyDialogTotalPointsBudgetLabel || "Total Points Budget:"}</p>
+                        <p className="text-sm font-medium">{UI_STRINGS.pointBuyDialogTotalPointsBudgetLabel}</p>
                         <p className="text-xl font-bold text-primary">{String(displayBudget)}</p>
                     </div>
                     <div className="flex-grow text-right">
                         <p className="text-sm">
-                        {UI_STRINGS.pointBuyDialogPointsSpentLabel || "Points Spent:"} <Badge variant="secondary" className="whitespace-nowrap">{String(pointsSpent)}</Badge>
+                        {UI_STRINGS.pointBuyDialogPointsSpentLabel} <Badge variant="secondary" className="whitespace-nowrap">{String(pointsSpent)}</Badge>
                         </p>
                         <p className={cn("text-sm font-semibold mt-1", pointsRemaining !== 0 ? "text-destructive" : "text-emerald-500")}>
-                        {UI_STRINGS.pointBuyDialogPointsRemainingLabel || "Points Remaining:"} <Badge variant={pointsRemaining !== 0 || !isValidBudgetProp ? "destructive" : "default"} className={cn(pointsRemaining === 0 && isValidBudgetProp ? "bg-emerald-600 hover:bg-emerald-600/80" : "", "whitespace-nowrap")}>{String(pointsRemaining)}</Badge>
+                        {UI_STRINGS.pointBuyDialogPointsRemainingLabel} <Badge variant={pointsRemaining !== 0 || !isValidBudgetProp ? "destructive" : "default"} className={cn(pointsRemaining === 0 && isValidBudgetProp ? "bg-emerald-600 hover:bg-emerald-600/80" : "", "whitespace-nowrap")}>{String(pointsRemaining)}</Badge>
                         </p>
                     </div>
                 </div>
 
                 {classNameForDisplay && classPriorities && classPriorities.length >= 3 && (
                   <div className="text-sm text-muted-foreground text-center mt-2 mb-3 p-2 border rounded-md bg-muted/20">
-                    {UI_STRINGS.rollerDialogClassPriorityIntro || "Based on your selection of"}{' '}
+                    {UI_STRINGS.rollerDialogClassPriorityIntro}{' '}
                     <Badge variant="outline" className="font-semibold text-foreground">{classNameForDisplay}</Badge>
-                    {' '}{UI_STRINGS.rollerDialogClassPriorityPart2 || "the generally recommended primary abilities are:"}
+                    {' '}{UI_STRINGS.rollerDialogClassPriorityPart2}
                     <div className="flex justify-center gap-1.5 mt-1.5">
                       <Badge className="bg-primary text-primary-foreground">
                         {ABILITY_LABELS.find(al => al.id === classPriorities[0])?.label || classPriorities[0]}
@@ -223,7 +223,7 @@ export function AbilityScorePointBuyDialog({
                             <span className="font-semibold">{abbreviationPart}</span>
                             {fullNamePart && <span className="text-muted-foreground ml-1 font-normal">({fullNamePart})</span>}
                           </span>
-                          <Badge variant="outline" className="whitespace-nowrap">{UI_STRINGS.pointBuyDialogCostLabel || "Cost:"} {cost}</Badge>
+                          <Badge variant="outline" className="whitespace-nowrap">{UI_STRINGS.pointBuyDialogCostLabel} {cost}</Badge>
                         </Label>
                         <div className="flex items-center justify-center">
                            <NumberSpinnerInput
@@ -249,10 +249,10 @@ export function AbilityScorePointBuyDialog({
 
         <DialogFooter className="mt-6 pt-4 border-t">
           <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
-            {UI_STRINGS.pointBuyDialogCancelButton || "Cancel"}
+            {UI_STRINGS.pointBuyDialogCancelButton}
           </Button>
           <Button onClick={handleApply} disabled={isApplyDisabled} type="button">
-            {UI_STRINGS.pointBuyDialogApplyButton || "Apply Scores"}
+            {UI_STRINGS.pointBuyDialogApplyButton}
           </Button>
         </DialogFooter>
       </DialogContent>

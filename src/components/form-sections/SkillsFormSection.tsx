@@ -306,8 +306,8 @@ const SkillsFormSectionComponent = ({
   if (translationsLoading || !translations || !aggregatedFeatEffects) {
     return (
       <LockablePanelWrapper
-        title={translations?.UI_STRINGS.skillsPanelTitle || "Skills"}
-        description={translations?.UI_STRINGS.skillsPanelDescription || "Allocate skill points based on your class and Intelligence."}
+        title={translations?.UI_STRINGS.skillsPanelTitle}
+        description={translations?.UI_STRINGS.skillsPanelDescription}
         icon={ScrollText}
         initialLockedState={false}
       >
@@ -335,7 +335,7 @@ const SkillsFormSectionComponent = ({
       intelligenceAbilityLabel: skillPointCalcData.intelligenceAbilityLabel,
       intelligenceModifier: skillPointCalcData.intelligenceModifier,
       racialBonusPart: racialBonusPartForContext,
-      racialBonusSkillPoints: skillPointCalcData.racialBonusSkillPoints,
+      racialBonusSkillPoints: skillPointCalcData.racialBonusSkillPoints, 
       pointsForFirstLevel: skillPointCalcData.pointsForFirstLevel,
   };
   const formulaContextLine2 = {
@@ -344,7 +344,7 @@ const SkillsFormSectionComponent = ({
       intelligenceAbilityLabel: skillPointCalcData.intelligenceAbilityLabel,
       intelligenceModifier: skillPointCalcData.intelligenceModifier,
       racialBonusPart: racialBonusPartForContext,
-      racialBonusSkillPoints: skillPointCalcData.racialBonusSkillPoints,
+      racialBonusSkillPoints: skillPointCalcData.racialBonusSkillPoints, 
       progressionLevels: skillPointCalcData.progressionLevels,
       pointsFromLevelProgression: skillPointCalcData.pointsFromLevelProgression,
   };
@@ -352,8 +352,8 @@ const SkillsFormSectionComponent = ({
 
   return (
     <LockablePanelWrapper
-      title={UI_STRINGS.skillsPanelTitle || "Skills"}
-      description={UI_STRINGS.skillsPanelDescription || "Allocate skill points based on your class and Intelligence."}
+      title={UI_STRINGS.skillsPanelTitle}
+      description={UI_STRINGS.skillsPanelDescription}
       icon={ScrollText}
       initialLockedState={false}
     >
@@ -390,13 +390,13 @@ const SkillsFormSectionComponent = ({
           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
             <div className="space-y-1 min-w-[720px]">
               <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-2 items-center font-semibold border-b bg-background sticky top-0 z-10 text-sm">
-                <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableClassHeader }} />
+                <span className="text-center w-10">{parseAndRenderUIString(UI_STRINGS.skillsTableClassHeader)}</span>
                 <span className="pl-1">{UI_STRINGS.skillsTableSkillHeader}</span>
                 <span className="text-right w-10 pr-1">{UI_STRINGS.skillsTableTotalBonusHeader}</span>
-                <span className="w-14"></span> {/* Combined Info & Roll Buttons */}
-                <span className="text-center w-10" dangerouslySetInnerHTML={{ __html: UI_STRINGS.skillsTableKeyAbilityHeader }} />
+                <span className="w-14"></span> 
+                <span className="text-center w-10">{parseAndRenderUIString(UI_STRINGS.skillsTableKeyAbilityHeader)}</span>
                 <span className="text-center w-12">{UI_STRINGS.skillsTableAbilityModHeader}</span>
-                <span className="text-center w-16">{UI_STRINGS.skillsTableMiscModHeader}</span> {/* Wider for input */}
+                <span className="text-center w-16">{UI_STRINGS.skillsTableMiscModHeader}</span> 
                 <span className="text-center w-32">{UI_STRINGS.skillsTableRanksHeader}</span>
                 <span className="text-center w-12">{UI_STRINGS.skillsTableCostHeader}</span>
                 <span className="text-center w-10">{UI_STRINGS.skillsTableMaxHeader}</span>

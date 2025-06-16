@@ -49,7 +49,7 @@ export function AbilityScoresSection({ abilityScores, onAbilityScoreChange }: Ab
       <CardHeader>
         <div className="flex items-center space-x-2">
           <Dices className="h-6 w-6 text-primary" />
-          <CardTitle className="font-serif">{UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}</CardTitle>
+          <CardTitle className="font-serif">{UI_STRINGS.abilityScoresSectionTitle}</CardTitle>
         </div>
       </CardHeader>
       <CardContent>
@@ -58,7 +58,7 @@ export function AbilityScoresSection({ abilityScores, onAbilityScoreChange }: Ab
             if (ability === 'none') return null;
             const score = abilityScores[ability];
             const modifier = calculateAbilityModifier(score);
-            const abilityLabelInfo = ABILITY_LABELS.find(al => al.value === ability);
+            const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === ability);
             const abilityAbbr = abilityLabelInfo?.abbr || ability.substring(0, 3).toUpperCase();
             const abilityFullName = abilityLabelInfo?.label || ability.charAt(0).toUpperCase() + ability.slice(1);
 
@@ -89,3 +89,5 @@ export function AbilityScoresSection({ abilityScores, onAbilityScoreChange }: Ab
   );
 }
 
+
+    

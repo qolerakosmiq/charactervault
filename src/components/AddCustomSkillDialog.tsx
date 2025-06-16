@@ -143,12 +143,12 @@ const AddCustomSkillDialogComponent = ({
           <DialogHeader>
             <DialogTitle className="flex items-center font-serif">
               {isEditing ? <Pencil className="mr-2 h-6 w-6 text-primary" /> : <PlusCircle className="mr-2 h-6 w-6 text-primary" />}
-               {translations?.UI_STRINGS.loadingOptionsTitle || "Loading Skill Definition..."}
+               {translations?.UI_STRINGS.loadingOptionsTitle}
             </DialogTitle>
           </DialogHeader>
           <div className="flex justify-center items-center py-10">
              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-             <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingOptionsTitle || "Loading options..."}</p>
+             <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingOptionsTitle}</p>
           </div>
           <DialogFooter className="mt-2">
             <Button variant="outline" onClick={() => onOpenChange(false)} type="button" disabled>
@@ -170,7 +170,7 @@ const AddCustomSkillDialogComponent = ({
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif">
             {isEditing ? <Pencil className="mr-2 h-6 w-6 text-primary" /> : <PlusCircle className="mr-2 h-6 w-6 text-primary" />}
-            {isEditing ? (UI_STRINGS.dmSettingsEditCustomSkillButton || 'Edit Custom Skill Definition') : (UI_STRINGS.dmSettingsAddCustomSkillButton || 'Add Custom Skill Definition')}
+            {isEditing ? (UI_STRINGS.dmSettingsEditCustomSkillButton) : (UI_STRINGS.dmSettingsAddCustomSkillButton)}
           </DialogTitle>
           <DialogDescription>
             {isEditing ? `Modify the definition of ${initialSkillData?.name}.` : 'Define a new skill template, its synergies, and description.'}
@@ -203,7 +203,7 @@ const AddCustomSkillDialogComponent = ({
                       {option.label}
                     </SelectItem>
                   ))}
-                   <SelectItem value="none">{UI_STRINGS.deityNoneOption || "None"}</SelectItem>
+                   <SelectItem value="none">{UI_STRINGS.deityNoneOption}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -291,10 +291,10 @@ const AddCustomSkillDialogComponent = ({
 
         <DialogFooter className="mt-2">
           <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
-            {UI_STRINGS.formButtonCancel || "Cancel"}
+            {UI_STRINGS.formButtonCancel}
           </Button>
           <Button onClick={handleSaveSkill} type="button">
-            {isEditing ? (UI_STRINGS.formButtonSaveChanges || "Save Changes") : (UI_STRINGS.dmSettingsAddCustomSkillButton || 'Add Custom Skill Definition')}
+            {isEditing ? (UI_STRINGS.formButtonSaveChanges) : (UI_STRINGS.dmSettingsAddCustomSkillButton)}
           </Button>
         </DialogFooter>
       </DialogContent>

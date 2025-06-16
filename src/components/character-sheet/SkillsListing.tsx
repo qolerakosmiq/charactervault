@@ -57,13 +57,13 @@ export const SkillsListing: React.FC<SkillsListingProps> = ({
         <CardHeader>
           <div className="flex items-center space-x-2">
             <Scroll className="h-6 w-6 text-primary" />
-            <CardTitle className="font-serif">{translations?.UI_STRINGS?.skillsPanelTitle || "Skills"}</CardTitle>
+            <CardTitle className="font-serif">{translations?.UI_STRINGS?.skillsPanelTitle}</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-center items-center py-10">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS?.skillsPanelLoadingSkills || "Loading skills..."}</p>
+            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS?.skillsPanelLoadingSkills}</p>
           </div>
           <Skeleton className="h-8 w-full mb-2" />
           <Skeleton className="h-8 w-full mb-2" />
@@ -81,37 +81,37 @@ export const SkillsListing: React.FC<SkillsListingProps> = ({
       <CardHeader>
         <div className="flex items-center space-x-2">
           <Scroll className="h-6 w-6 text-primary" />
-          <CardTitle className="font-serif">{UI_STRINGS.skillsPanelTitle || "Skills"}</CardTitle>
+          <CardTitle className="font-serif">{UI_STRINGS.skillsPanelTitle}</CardTitle>
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-1 -mx-2">
           {/* Header Row */}
           <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-2 py-2 items-center font-semibold border-b">
-            <span className="text-sm">{UI_STRINGS.skillsTableHeaderSkillLabel || "Skill Name"}</span>
-            <span className="text-sm text-center">{UI_STRINGS.skillsTableHeaderSkillModLabel || "Total"}</span>
-            <span className="text-sm text-center">{UI_STRINGS.skillsTableHeaderKeyAbilityLabel || "Ability"}</span>
-            <span className="text-sm text-center">{UI_STRINGS.skillsTableHeaderAbilityModLabel || "Mod"}</span>
-            <span className="text-sm text-center">{UI_STRINGS.skillsTableHeaderRanksLabel || "Ranks"}</span>
-            <span className="text-sm text-center">{UI_STRINGS.skillsTableHeaderMiscModLabel || "Misc"}</span>
-            <span className="text-sm text-center">{UI_STRINGS.skillsTableHeaderClassLabel || "Class?"}</span>
+            <span className="text-sm">{UI_STRINGS.skillsTableHeaderSkillLabel}</span>
+            <span className="text-sm text-center">{UI_STRINGS.skillsTableHeaderSkillModLabel}</span>
+            <span className="text-sm text-center">{UI_STRINGS.skillsTableHeaderKeyAbilityLabel}</span>
+            <span className="text-sm text-center">{UI_STRINGS.skillsTableHeaderAbilityModLabel}</span>
+            <span className="text-sm text-center">{UI_STRINGS.skillsTableHeaderRanksLabel}</span>
+            <span className="text-sm text-center">{UI_STRINGS.skillsTableHeaderMiscModLabel}</span>
+            <span className="text-sm text-center">{UI_STRINGS.skillsTableHeaderClassLabel}</span>
           </div>
 
           {skills.map(skillInstance => {
-            const skillDef = SKILL_DEFINITIONS.find(sd => sd.value === skillInstance.id);
+            const skillDef = SKILL_DEFINITIONS.find(sd => sd.id === skillInstance.id);
             if (!skillDef) return null;
 
             const keyAbility = skillDef.keyAbility as Exclude<AbilityName, 'none'> | 'none';
-            const keyAbilityShort = keyAbility !== 'none' ? (ABILITY_LABELS.find(al => al.value === keyAbility)?.abbr || keyAbility.substring(0, 3).toUpperCase()) : 'N/A';
+            const keyAbilityShort = keyAbility !== 'none' ? (ABILITY_LABELS.find(al => al.id === keyAbility)?.abbr || keyAbility.substring(0, 3).toUpperCase()) : 'N/A';
             
             const abilityMod = keyAbility !== 'none' && detailedAbilityScores
               ? getAbilityModifierByName(detailedAbilityScores, keyAbility)
               : 0;
             
-            const synergyBonus = calculateTotalSynergyBonus(skillDef.value, skills, SKILL_DEFINITIONS, SKILL_SYNERGIES, []); // Assuming no custom skills on sheet display for now
-            const featSkillBonus = aggregatedFeatEffects.skillBonuses[skillDef.value] || 0;
-            const racialBonus = calculateRacialSkillBonus(skillDef.value, characterRaceId, DND_RACES, SKILL_DEFINITIONS);
-            const sizeSpecificBonus = calculateSizeSpecificSkillBonus(skillDef.value, characterSizeId, SIZES);
+            const synergyBonus = calculateTotalSynergyBonus(skillDef.id, skills, SKILL_DEFINITIONS, SKILL_SYNERGIES, []); // Assuming no custom skills on sheet display for now
+            const featSkillBonus = aggregatedFeatEffects.skillBonuses[skillDef.id] || 0;
+            const racialBonus = calculateRacialSkillBonus(skillDef.id, characterRaceId, DND_RACES, SKILL_DEFINITIONS);
+            const sizeSpecificBonus = calculateSizeSpecificSkillBonus(skillDef.id, characterSizeId, SIZES);
             const userMiscMod = skillInstance.miscModifier || 0;
             
             const totalBonus = (skillInstance.ranks || 0) + abilityMod + synergyBonus + featSkillBonus + racialBonus + sizeSpecificBonus + userMiscMod;
@@ -157,7 +157,7 @@ export const SkillsListing: React.FC<SkillsListingProps> = ({
                           />
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>{(UI_STRINGS.skillsTableTooltipMaxRanks || "Max Ranks: {maxRanksValue}").replace("{maxRanksValue}", String(maxRanks))}</p>
+                        <p>{UI_STRINGS.skillsTableTooltipMaxRanks.replace("{maxRanksValue}", String(maxRanks))}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>

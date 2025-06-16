@@ -311,3 +311,5 @@ export function InventoryListing({ inventory, onItemAdd, onItemRemove, onItemUpd
     </Card>
   );
 }
+
+    

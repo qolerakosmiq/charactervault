@@ -79,7 +79,7 @@ const AddCustomFeatDialogComponent = ({
   const classComboboxOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [{ value: NONE_VALUE, label: "Loading..." }];
     return [
-      { value: NONE_VALUE, label: translations.UI_STRINGS.deityNoneOption || "None" },
+      { value: NONE_VALUE, label: translations.UI_STRINGS.deityNoneOption },
       ...propAllClasses.map(c => ({ value: c.id, label: c.label })) // Use id
     ];
   }, [translations, translationsLoading, propAllClasses]);
@@ -87,7 +87,7 @@ const AddCustomFeatDialogComponent = ({
   const raceComboboxOptions = React.useMemo(() => {
      if (translationsLoading || !translations) return [{ value: NONE_VALUE, label: "Loading..." }];
     return [
-      { value: NONE_VALUE, label: translations.UI_STRINGS.deityNoneOption || "None" },
+      { value: NONE_VALUE, label: translations.UI_STRINGS.deityNoneOption },
       ...propAllRaces.map(r => ({ value: r.id, label: r.label })) // Use id
     ];
   }, [translations, translationsLoading, propAllRaces]);
@@ -95,7 +95,7 @@ const AddCustomFeatDialogComponent = ({
   const alignmentComboboxOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [{ value: NONE_VALUE, label: "Loading..." }];
     return [
-      { value: NONE_VALUE, label: translations.UI_STRINGS.deityNoneOption || "None" },
+      { value: NONE_VALUE, label: translations.UI_STRINGS.deityNoneOption },
       ...translations.ALIGNMENT_PREREQUISITE_OPTIONS.map(opt => ({ value: opt.id, label: opt.label })) // Use id
     ];
   }, [translations, translationsLoading]);
@@ -276,12 +276,12 @@ const AddCustomFeatDialogComponent = ({
                 <DialogHeader>
                     <DialogTitle className="flex items-center font-serif">
                         {isEditing ? <Pencil className="mr-2 h-6 w-6 text-primary" /> : <PlusCircle className="mr-2 h-6 w-6 text-primary" />}
-                        {translations?.UI_STRINGS.loadingFeatDefinitionTitle || "Loading Feat Definition..."}
+                        {translations?.UI_STRINGS.loadingFeatDefinitionTitle}
                     </DialogTitle>
                 </DialogHeader>
                 <div className="flex justify-center items-center py-10">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingOptionsTitle || "Loading options..."}</p>
+                    <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingOptionsTitle}</p>
                 </div>
                 <DialogFooter className="mt-2 pt-4 border-t">
                     <Button variant="outline" onClick={() => onOpenChange(false)} type="button" disabled>
@@ -303,7 +303,7 @@ const AddCustomFeatDialogComponent = ({
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif">
             {isEditing ? <Pencil className="mr-2 h-6 w-6 text-primary" /> : <PlusCircle className="mr-2 h-6 w-6 text-primary" />}
-            {isEditing ? (UI_STRINGS.dmSettingsEditCustomFeatButton || 'Edit Custom Feat Definition') : (UI_STRINGS.dmSettingsAddCustomFeatButton || 'Add Custom Feat Definition')}
+            {isEditing ? (UI_STRINGS.dmSettingsEditCustomFeatButton) : (UI_STRINGS.dmSettingsAddCustomFeatButton)}
           </DialogTitle>
           <DialogDescription>
             {isEditing ? `Modify the definition of ${initialFeatData?.label}.` : 'Define a new custom feat template.'}
@@ -534,10 +534,10 @@ const AddCustomFeatDialogComponent = ({
 
         <DialogFooter className="mt-2 pt-4 border-t">
           <Button variant="outline" onClick={() => onOpenChange(false)} type="button" disabled={isFormDisabled}>
-            {UI_STRINGS.formButtonCancel || "Cancel"}
+            {UI_STRINGS.formButtonCancel}
           </Button>
           <Button onClick={handleSaveFeat} type="button" disabled={isFormDisabled}>
-            {isEditing ? (UI_STRINGS.formButtonSaveChanges || 'Save Changes') : (UI_STRINGS.dmSettingsAddCustomFeatButton || 'Add Custom Feat Definition')}
+            {isEditing ? (UI_STRINGS.formButtonSaveChanges) : (UI_STRINGS.dmSettingsAddCustomFeatButton)}
           </Button>
         </DialogFooter>
       </DialogContent>

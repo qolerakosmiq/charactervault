@@ -49,11 +49,11 @@ export function SpecializationInputDialog({
   }, [isOpen, initialSpecializationDetail]);
 
   const handleSave = () => {
-    if (!featDefinition) return;
+    if (!featDefinition || !translations) return;
     if (featDefinition.requiresSpecialization && !specializationDetail.trim()) {
       toast({
-        title: translations?.UI_STRINGS.toastErrorTitle || "Error",
-        description: translations?.UI_STRINGS.specializationErrorRequired || "Specialization is required for this feat.",
+        title: translations.UI_STRINGS.toastErrorTitle,
+        description: translations.UI_STRINGS.specializationErrorRequired,
         variant: "destructive",
       });
       return;
@@ -69,11 +69,11 @@ export function SpecializationInputDialog({
           <DialogHeader>
             <DialogTitle className="flex items-center font-serif">
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              {translations?.UI_STRINGS.loadingText || "Loading..."}
+              {translations?.UI_STRINGS.loadingText}
             </DialogTitle>
           </DialogHeader>
           <div className="py-4 text-center">
-            <p>{translations?.UI_STRINGS.loadingText || "Loading specialization options..."}</p>
+            <p>{translations?.UI_STRINGS.loadingText}</p>
           </div>
         </DialogContent>
       </Dialog>
@@ -89,36 +89,36 @@ export function SpecializationInputDialog({
 
   switch (specializationType) {
     case 'skill':
-      placeholderText = UI_STRINGS.specializationSelectPlaceholderSkill || "Select skill...";
+      placeholderText = UI_STRINGS.specializationSelectPlaceholderSkill;
       inputField = (
         <ComboboxPrimitive
           options={allSkills}
           value={specializationDetail}
           onChange={setSpecializationDetail} // onChange will receive the skill ID (from ComboboxOption.value)
           placeholder={placeholderText}
-          searchPlaceholder={UI_STRINGS.searchPlaceholder || "Search..."}
-          emptyPlaceholder={UI_STRINGS.noOptionFoundPlaceholder || "No option found."}
+          searchPlaceholder={UI_STRINGS.searchPlaceholder}
+          emptyPlaceholder={UI_STRINGS.noOptionFoundPlaceholder}
           triggerClassName="h-10"
         />
       );
       break;
     case 'school of magic':
-      placeholderText = UI_STRINGS.specializationSelectPlaceholderSchool || "Select school of magic...";
+      placeholderText = UI_STRINGS.specializationSelectPlaceholderSchool;
       inputField = (
         <ComboboxPrimitive
           options={allMagicSchools}
           value={specializationDetail}
           onChange={setSpecializationDetail} // onChange will receive the school ID
           placeholder={placeholderText}
-          searchPlaceholder={UI_STRINGS.searchPlaceholder || "Search..."}
-          emptyPlaceholder={UI_STRINGS.noOptionFoundPlaceholder || "No option found."}
+          searchPlaceholder={UI_STRINGS.searchPlaceholder}
+          emptyPlaceholder={UI_STRINGS.noOptionFoundPlaceholder}
           triggerClassName="h-10"
         />
       );
       break;
     case 'weapon':
     default:
-      placeholderText = UI_STRINGS.specializationInputPlaceholderWeapon || "Enter weapon name (e.g., Longsword)";
+      placeholderText = UI_STRINGS.specializationInputPlaceholderWeapon;
       if (specializationType && specializationType !== 'weapon') {
         placeholderText = `Enter ${specializationType}`;
       }
@@ -138,30 +138,32 @@ export function SpecializationInputDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-serif">
-            {(UI_STRINGS.specializationDialogTitle || "Feat Specialization: {featName}").replace("{featName}", featName)}
+            {UI_STRINGS.specializationDialogTitle.replace("{featName}", featName)}
           </DialogTitle>
           <DialogDescription>
-            {(UI_STRINGS.specializationDialogDescription || "Please provide the required specialization for the feat '{featName}'.").replace("{featName}", featName)}
+            {UI_STRINGS.specializationDialogDescription.replace("{featName}", featName)}
             {specializationType && <span className="text-muted-foreground text-xs"> ({specializationType})</span>}
           </DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-2">
           <Label htmlFor="specialization-input">
-            {UI_STRINGS.featSpecializationLabel || "Specialization"}
+            {UI_STRINGS.featSpecializationLabel}
             {specializationType && <span className="text-muted-foreground text-xs"> ({specializationType})</span>}
           </Label>
           {inputField}
         </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            {UI_STRINGS.formButtonCancel || "Cancel"}
+            {UI_STRINGS.formButtonCancel}
           </Button>
           <Button type="button" onClick={handleSave} disabled={!specializationDetail.trim()}>
             <CheckCircle className="mr-2 h-4 w-4" />
-            {UI_STRINGS.specializationSaveButton || "Confirm Specialization"}
+            {UI_STRINGS.specializationSaveButton}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
+
+    

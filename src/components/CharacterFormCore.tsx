@@ -50,8 +50,8 @@ import { RollDialog, type RollDialogProps } from '@/components/RollDialog';
 import { CharacterFormCoreInfoSection, type CharacterFormCoreInfoSectionProps } from '@/components/form-sections/CharacterFormCoreInfoSection';
 import { CharacterFormAbilityScoresSection, type CharacterFormAbilityScoresSectionProps } from '@/components/form-sections/CharacterFormAbilityScoresSection';
 import { CharacterFormStoryPortraitSection, type CharacterFormStoryPortraitSectionProps } from '@/components/form-sections/CharacterFormStoryPortraitSection';
-import { SkillsFormSection, type SkillsFormSectionProps } from '@/components/SkillsFormSection';
-import { FeatsFormSection, type FeatsFormSectionProps } from '@/components/FeatsFormSection';
+import { SkillsFormSection, type SkillsFormSectionProps } from '@/components/form-sections/SkillsFormSection';
+import { FeatsFormSection, type FeatsFormSectionProps } from '@/components/form-sections/FeatsFormSection';
 import { SavingThrowsPanel, type SavingThrowsPanelProps } from '@/components/form-sections/SavingThrowsPanel';
 import { ArmorClassPanel, type ArmorClassPanelProps } from '@/components/form-sections/ArmorClassPanel';
 import { HealthPanel, type HealthPanelProps } from '@/components/form-sections/HealthPanel';
@@ -132,7 +132,7 @@ function createBaseCharacterData(
 
     return {
       id: crypto.randomUUID(), name: '', playerName: '', campaign: '', homeland: '', race: defaultRaceValue, alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, sizeModifierAttack: defaultSizeModifierAttack, age: 20, gender: 'unspecified',
-      languages: [], experiencePoints: 0,
+      languages: [], experiencePoints: 0, classSpecificChoices: [],
       abilityScores: { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES))) },
       abilityScoreTempCustomModifiers: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
       hp: initialMaxHp,
@@ -160,7 +160,6 @@ function createBaseCharacterData(
       loadSpeedPenalty_miscModifier: DEFAULT_SPEED_PENALTIES.loadSpeedPenalty_miscModifier || 0,
       powerAttackValue: 0,
       combatExpertiseValue: 0,
-      classSpecificChoices: [],
       animalCompanion: undefined,
     };
 }
@@ -279,7 +278,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
                         type: drEffect.drType,
                         rule: 'bypassed-by-type',
                         isGranted: true,
-                        source: drEffect.sourceFeat || 'Granted Feat'
+                        source: drEffect.sourceFeat || 'Granted Feat/Item'
                     });
                 }
             }
@@ -324,7 +323,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const { toast } = useToast();
 
   React.useEffect(() => {
-    if (character && translations && allAvailableFeatDefinitions.length > 0 && translations.UI_STRINGS && translations.UI_STRINGS.currentLangCodeForNotesFallback && allItemDefinitions.length > 0) {
+    if (character && translations && allAvailableFeatDefinitions.length > 0 && translations.UI_STRINGS && allItemDefinitions.length > 0) {
       const aggFeatsAndItems = calculateFeatEffects(character, allAvailableFeatDefinitions, translations);
       setAggregatedFeatEffects(aggFeatsAndItems);
 
@@ -833,7 +832,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const handleSubmit = React.useCallback((e: FormEvent) => {
     e.preventDefault();
     if (!character || !translations || !translations.UI_STRINGS) {
-      throw new Error(translations?.UI_STRINGS.toastCharacterDataNotLoadedDesc || "Character data not loaded. Cannot save.");
+      throw new Error(translations?.UI_STRINGS.toastCharacterDataNotLoadedDesc);
     }
     const UI_STRINGS = translations.UI_STRINGS;
     if (!character.name || character.name.trim() === '') { toast({ title: UI_STRINGS.toastMissingCharacterNameTitle, description: UI_STRINGS.toastMissingCharacterNameDesc, variant: "destructive" }); return; }
@@ -922,7 +921,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       nonlethalDamage: character.nonlethalDamage,
       temporaryHp: character.temporaryHp,
       numberOfWounds: character.numberOfWounds,
-      abilityScores: character.abilityScores, // Base scores are fine for this panel's direct edits.
+      abilityScores: character.abilityScores, 
     };
   }, [character?.hp, character?.baseMaxHp, character?.customMaxHpModifier, character?.nonlethalDamage, character?.temporaryHp, character?.numberOfWounds, character?.abilityScores]);
 
@@ -1127,9 +1126,6 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     !character ||
     !translations ||
     !translations.UI_STRINGS ||
-    !translations.UI_STRINGS.currentLangCodeForNotesFallback ||
-    !translations.DAMAGE_REDUCTION_TYPES ||
-    !translations.DAMAGE_REDUCTION_RULES_OPTIONS ||
     !detailedAbilityScores ||
     !aggregatedFeatEffects ||
     !coreInfoData ||
@@ -1140,7 +1136,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         <div className="flex justify-center items-center py-10 min-h-[50vh]">
           <Loader2 className="h-12 w-12 animate-spin text-primary" />
           <p className="ml-4 text-muted-foreground text-lg">
-            {translations?.UI_STRINGS.loadingCharacterDetailsTitle || "Loading Character Details..."}
+            {translations?.UI_STRINGS.loadingCharacterDetailsTitle}
           </p>
         </div>
       </div>
@@ -1322,8 +1318,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         {character && translations?.GEAR_SLOTS && allItemDefinitions.length > 0 && (
           <Card className="mt-8">
             <CardHeader>
-              <CardTitle className="font-serif text-xl">Quick Equip (Testing Panel)</CardTitle>
-              <CardDescription>Select items to equip directly. This is for testing and will be removed.</CardDescription>
+              <CardTitle className="font-serif text-xl">{UI_STRINGS.quickEquipPanelTitle}</CardTitle>
+              <CardDescription>{UI_STRINGS.quickEquipPanelDescription}</CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {translations.GEAR_SLOTS.map((slot) => {
@@ -1340,10 +1336,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
                       onValueChange={(itemDefId) => handleEquipItem(slot.id, itemDefId as ItemDefinitionId | '__NONE__')}
                     >
                       <SelectTrigger id={`equip-${slot.id}`}>
-                        <SelectValue placeholder="None" />
+                        <SelectValue placeholder={UI_STRINGS.deityNoneOption} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="__NONE__">None</SelectItem>
+                        <SelectItem value="__NONE__">{UI_STRINGS.deityNoneOption}</SelectItem>
                         {compatibleItems.map(itemDef => (
                           <SelectItem key={itemDef.definitionId} value={itemDef.definitionId}>
                             {itemDef.label}
@@ -1361,10 +1357,10 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-12 pt-8 border-t">
           <Button type="button" variant="outline" size="lg" onClick={handleCancel} className="w-full md:w-auto">
-            {UI_STRINGS.formButtonCancel || "Cancel"}
+            {UI_STRINGS.formButtonCancel}
           </Button>
           <Button type="submit" size="lg" className="w-full md:w-auto shadow-md hover:shadow-lg transition-shadow">
-            {UI_STRINGS.formButtonCreateCharacter || "Create Character"}
+            {UI_STRINGS.formButtonCreateCharacter}
           </Button>
         </div>
       </form>
@@ -1414,3 +1410,4 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
+

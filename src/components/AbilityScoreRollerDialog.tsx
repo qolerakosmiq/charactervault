@@ -107,7 +107,7 @@ export function AbilityScoreRollerDialog({
       generateNewRolls();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, translations, translationsLoading]); // generateNewRolls removed to prevent re-roll on every render where it might be redefined if not stable
+  }, [isOpen, translations, translationsLoading]); 
 
   const handleAssignScore = (ability: Exclude<AbilityName, 'none'>, rollId: string | undefined) => {
     setAssignments((prev) => {
@@ -145,8 +145,8 @@ export function AbilityScoreRollerDialog({
       onOpenChange(false);
     } else {
       toast({
-        title: translations?.UI_STRINGS.rollerDialogErrorNotAllAssignedToastTitle || "Assignment Incomplete",
-        description: translations?.UI_STRINGS.rollerDialogErrorNotAllAssignedToastDesc || "Please assign all rolled scores to abilities before applying.",
+        title: translations?.UI_STRINGS.rollerDialogErrorNotAllAssignedToastTitle,
+        description: translations?.UI_STRINGS.rollerDialogErrorNotAllAssignedToastDesc,
         variant: "destructive",
       });
     }
@@ -206,12 +206,12 @@ export function AbilityScoreRollerDialog({
           <DialogHeader>
             <DialogTitle className="flex items-center font-serif">
               <Dices className="mr-2 h-6 w-6 text-primary" />
-              {translations?.UI_STRINGS.rollerDialogTitleLoading || "Roll Initial Ability Scores"}
+              {translations?.UI_STRINGS.rollerDialogTitleLoading}
             </DialogTitle>
           </DialogHeader>
           <div className="flex justify-center items-center py-10">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingOptionsTitle || "Loading options..."}</p>
+            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingOptionsTitle}</p>
           </div>
           <DialogFooter className="mt-6">
             <Button variant="outline" onClick={() => onOpenChange(false)} disabled>Cancel</Button>
@@ -233,19 +233,19 @@ export function AbilityScoreRollerDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif">
             <Dices className="mr-2 h-6 w-6 text-primary" />
-            {UI_STRINGS.rollerDialogTitle || "Roll Initial Ability Scores"}
+            {UI_STRINGS.rollerDialogTitle}
           </DialogTitle>
           <DialogDescription>
-            {UI_STRINGS.rollerDialogDescPart1 || "Roll 4d6 (drop lowest"}
-            {rerollOnes && (UI_STRINGS.rollerDialogDescRerollOnes || ", rerolling 1s")}
-            {UI_STRINGS.rollerDialogDescPart2 || "). Assign these values to your abilities."}
+            {UI_STRINGS.rollerDialogDescPart1}
+            {rerollOnes && (UI_STRINGS.rollerDialogDescRerollOnes)}
+            {UI_STRINGS.rollerDialogDescPart2}
           </DialogDescription>
         </DialogHeader>
 
         <div className="my-4 space-y-4">
           <div className="text-center">
             <Label className="text-sm font-medium text-muted-foreground">
-              {UI_STRINGS.rollerDialogYourScoresLabel || "Your Rolled Scores:"}
+              {UI_STRINGS.rollerDialogYourScoresLabel}
             </Label>
             <div className="flex justify-center gap-2 mt-2 flex-wrap">
               {sortedRolledScoresForDisplay.map((score, index) => {
@@ -274,15 +274,15 @@ export function AbilityScoreRollerDialog({
             </div>
           </div>
           <Button onClick={generateNewRolls} variant="outline" className="w-full">
-            <RefreshCw className="mr-2 h-4 w-4" /> {UI_STRINGS.rollerDialogRerollButton || "Reroll Scores"}
+            <RefreshCw className="mr-2 h-4 w-4" /> {UI_STRINGS.rollerDialogRerollButton}
           </Button>
         </div>
 
         {classNameForDisplay && classPriorities && classPriorities.length >= 3 && (
           <div className="text-sm text-muted-foreground text-center mt-2 mb-3 p-2 border rounded-md bg-muted/20">
-            {UI_STRINGS.rollerDialogClassPriorityIntro || "Based on your selection of"}{' '}
+            {UI_STRINGS.rollerDialogClassPriorityIntro}{' '}
             <Badge variant="outline" className="font-semibold text-foreground">{classNameForDisplay}</Badge>
-            {' '}{UI_STRINGS.rollerDialogClassPriorityPart2 || "the generally recommended primary abilities are:"}
+            {' '}{UI_STRINGS.rollerDialogClassPriorityPart2}
             <div className="flex justify-center gap-1.5 mt-1.5">
               <Badge className="bg-primary text-primary-foreground">
                 {translations.ABILITY_LABELS.find(al => al.id === classPriorities[0])?.label || classPriorities[0]}
@@ -318,11 +318,11 @@ export function AbilityScoreRollerDialog({
                     <SelectValue>
                       {currentAssignedRollId && currentAssignedRollId !== UNASSIGN_VALUE
                         ? rolledScores.find(r => r.id === currentAssignedRollId)?.value
-                        : (UI_STRINGS.rollerDialogNotSelectedOption || "Not selected")}
+                        : (UI_STRINGS.rollerDialogNotSelectedOption)}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={UNASSIGN_VALUE}>{UI_STRINGS.rollerDialogNotSelectedOption || "Not selected"}</SelectItem>
+                    <SelectItem value={UNASSIGN_VALUE}>{UI_STRINGS.rollerDialogNotSelectedOption}</SelectItem>
                     {rolledScores.map((roll) => (
                        <SelectItem
                         key={roll.id}
@@ -344,15 +344,13 @@ export function AbilityScoreRollerDialog({
 
         <DialogFooter className="mt-6">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {UI_STRINGS.rollerDialogCancelButton || "Cancel"}
+            {UI_STRINGS.rollerDialogCancelButton}
           </Button>
           <Button onClick={handleApply} disabled={isApplyDisabled}>
-            {UI_STRINGS.rollerDialogApplyButton || "Apply Scores"}
+            {UI_STRINGS.rollerDialogApplyButton}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
-
-    

@@ -6,6 +6,7 @@
   "formButtonSaveChanges": { "en": "Save Changes", "fr": "Sauvegarder les modifications" },
   "formButtonCreateCharacter": { "en": "Create Character", "fr": "Créer le personnage" },
   "formButtonApply": { "en": "Apply", "fr": "Appliquer" },
+  "formButtonClose": { "en": "Close", "fr": "Fermer" },
   "selectPlaceholder": { "en": "Select an option...", "fr": "Choisir une option..." },
   "searchPlaceholder": { "en": "Search...", "fr": "Rechercher..." },
   "noOptionFoundPlaceholder": { "en": "No option found.", "fr": "Aucune option trouvée." },
@@ -104,6 +105,8 @@
   "abilityPoolFormat": { "en": "{abilityName} | <b>{poolValue}</b> per {period}", "fr": "{abilityName} | <b>{poolValue}</b> par {period}" },
   "periodDay": { "en": "Day", "fr": "Jour" },
   "periodEncounter": { "en": "Encounter", "fr": "Rencontre" },
-  "periodWeek": { "en": "Week", "fr": "Semaine" }
+  "periodWeek": { "en": "Week", "fr": "Semaine" },
+  "newCharacterDefaultName": { "en": "New Adventurer", "fr": "Nouvel Aventurier" },
+  "quickEquipPanelTitle": { "en": "Quick Equip", "fr": "Équipement Rapide" },
+  "quickEquipPanelDescription": { "en": "Select items to equip directly. (This panel might be for testing/internal use or specific scenarios).", "fr": "Sélectionnez les objets à équiper directement. (Ce panneau peut être pour des tests/usage interne ou des scénarios spécifiques)." }
 }
-

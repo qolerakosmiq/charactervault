@@ -17,7 +17,7 @@ export function FooterText() {
 
   return (
     <p className="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
-      {translations.UI_STRINGS.footerAppDescription || "Built with ❤️ for D&D 3.5 Players"}
+      {translations.UI_STRINGS.footerAppDescription}
     </p>
   );
 }

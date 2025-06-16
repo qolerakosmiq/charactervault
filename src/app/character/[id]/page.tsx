@@ -51,7 +51,7 @@ export default function CharacterSheetPage() {
         <div className="flex justify-center items-center py-10 min-h-[300px]">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <p className="ml-3 text-muted-foreground">
-              {translations?.UI_STRINGS.characterSheetLoadingCharacter || "Loading character sheet..."}
+              {translations?.UI_STRINGS.characterSheetLoadingCharacter}
             </p>
         </div>
       </div>
@@ -81,5 +81,3 @@ export default function CharacterSheetPage() {
     </div>
   );
 }
-
-    

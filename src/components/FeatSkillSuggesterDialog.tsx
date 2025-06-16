@@ -17,6 +17,7 @@ import { suggestFeatsSkills, type SuggestFeatsSkillsOutput, type SuggestFeatsSki
 import { Loader2, Sparkles, PlusCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
+import { parseAndRenderUIString } from '@/lib/utils';
 
 interface FeatSkillSuggesterDialogProps {
   isOpen: boolean;
@@ -61,7 +62,7 @@ export function FeatSkillSuggesterDialog({
       setSuggestions(result);
     } catch (e) {
       console.error('Error fetching suggestions:', e);
-      const errorMessage = translations.UI_STRINGS.toastAISuggestionErrorDesc || 'Could not fetch suggestions. Check console for details.';
+      const errorMessage = translations.UI_STRINGS.toastAISuggestionErrorDesc;
       setError(errorMessage);
       toast({
         title: translations.UI_STRINGS.toastAISuggestionErrorTitle,
@@ -74,11 +75,13 @@ export function FeatSkillSuggesterDialog({
   };
 
   const handleAdd = (name: string, description: string) => {
+    if (!translations?.UI_STRINGS) return;
     onAddSuggested(name, description);
-    // This toast can remain generic as it's a success message
+    const titleKey = suggestionType === 'feats' ? translations.UI_STRINGS.toastFeatAddedFromAISuggestionTitle : translations.UI_STRINGS.toastSkillAddedFromAISuggestionTitle;
+    const descKey = suggestionType === 'feats' ? translations.UI_STRINGS.toastFeatAddedFromAISuggestionDesc : translations.UI_STRINGS.toastSkillAddedFromAISuggestionDesc;
     toast({
-      title: `${suggestionType === 'feats' ? 'Feat' : 'Skill'} Added`,
-      description: `${name} has been added to your character.`,
+      title: titleKey,
+      description: parseAndRenderUIString(descKey, {itemName: name}),
     });
   };
   
@@ -108,10 +111,10 @@ export function FeatSkillSuggesterDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center font-serif">
             <Sparkles className="h-6 w-6 mr-2 text-primary" />
-            AI {suggestionType === 'feats' ? UI_STRINGS.featsPanelTitle : UI_STRINGS.skillsPanelTitle} Suggestions
+            {parseAndRenderUIString(UI_STRINGS.aiSuggestionsDialogTitle, {suggestionType: suggestionType === 'feats' ? UI_STRINGS.featsPanelTitle : UI_STRINGS.skillsPanelTitle})}
           </DialogTitle>
           <DialogDescription>
-            Get AI-powered suggestions for {suggestionType} based on {characterClass} (Level {level}).
+            {parseAndRenderUIString(UI_STRINGS.aiSuggestionsDialogDescription, {suggestionType: suggestionType, characterClass: characterClass, level: level.toString()})}
           </DialogDescription>
         </DialogHeader>
         
@@ -123,7 +126,7 @@ export function FeatSkillSuggesterDialog({
                     ) : (
                         <Sparkles className="mr-2 h-4 w-4" />
                     )}
-                    Generate Suggestions
+                    {UI_STRINGS.aiSuggestionsGenerateButton}
                 </Button>
             </div>
         )}
@@ -132,7 +135,7 @@ export function FeatSkillSuggesterDialog({
         {isLoading && (
           <div className="flex justify-center items-center py-10">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="ml-4 text-muted-foreground">Conjuring suggestions...</p>
+            <p className="ml-4 text-muted-foreground">{UI_STRINGS.aiSuggestionsLoadingText}</p>
           </div>
         )}
 
@@ -147,7 +150,7 @@ export function FeatSkillSuggesterDialog({
             <div className="space-y-6 py-4">
               {suggestionType === 'feats' && suggestions.suggestedFeats.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold mb-2 text-primary">Suggested Feats</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-primary">{UI_STRINGS.aiSuggestionsFeatsHeading}</h3>
                   <ul className="space-y-3">
                     {suggestions.suggestedFeats.map((feat, index) => (
                       <li key={`feat-${index}`} className="p-3 border rounded-md bg-muted/20">
@@ -157,7 +160,7 @@ export function FeatSkillSuggesterDialog({
                                 <p className="text-sm text-muted-foreground mt-1">{feat.description}</p>
                             </div>
                             <Button size="sm" variant="ghost" onClick={() => handleAdd(feat.name, feat.description)} className="shrink-0 ml-2">
-                                <PlusCircle className="h-4 w-4 mr-1"/> Add
+                                <PlusCircle className="h-4 w-4 mr-1"/> {UI_STRINGS.aiSuggestionsAddButton}
                             </Button>
                         </div>
                       </li>
@@ -168,7 +171,7 @@ export function FeatSkillSuggesterDialog({
 
               {suggestionType === 'skills' && suggestions.suggestedSkills.length > 0 && (
                  <div>
-                  <h3 className="text-lg font-semibold mb-2 text-primary">Suggested Skills to Focus On</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-primary">{UI_STRINGS.aiSuggestionsSkillsHeading}</h3>
                   <ul className="space-y-3">
                     {suggestions.suggestedSkills.map((skill, index) => (
                        <li key={`skill-${index}`} className="p-3 border rounded-md bg-muted/20">
@@ -186,7 +189,7 @@ export function FeatSkillSuggesterDialog({
               
               {(suggestionType === 'feats' && suggestions.suggestedFeats.length === 0) &&
                (suggestionType === 'skills' && suggestions.suggestedSkills.length === 0) &&
-                <p className="text-muted-foreground text-center py-4">No specific suggestions found for this combination.</p>
+                <p className="text-muted-foreground text-center py-4">{UI_STRINGS.aiSuggestionsNoResults}</p>
               }
             </div>
           </ScrollArea>
@@ -194,12 +197,10 @@ export function FeatSkillSuggesterDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Close
+            {UI_STRINGS.formButtonClose}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
-
-    

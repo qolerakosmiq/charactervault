@@ -72,7 +72,7 @@ export function FeatsListing({ feats, characterClasses, onFeatAdd, onFeatRemove,
   };
 
   const getFeatDefinition = (definitionId: string): FeatDefinitionJsonData | undefined => {
-    return allFeatDefinitions.find(def => def.value === definitionId);
+    return allFeatDefinitions.find(def => def.id === definitionId);
   };
   
   if (translationsLoading || !UI_STRINGS) {
@@ -103,15 +103,15 @@ export function FeatsListing({ feats, characterClasses, onFeatAdd, onFeatRemove,
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Award className="h-6 w-6 text-primary" />
-            <CardTitle className="font-serif">{UI_STRINGS.featsPanelTitle || "Feats"}</CardTitle>
+            <CardTitle className="font-serif">{UI_STRINGS.featsPanelTitle}</CardTitle>
           </div>
           {characterClasses.length > 0 && (
             <Button variant="outline" size="sm" onClick={() => setIsSuggesterOpen(true)}>
-              <Sparkles className="mr-2 h-4 w-4" /> {UI_STRINGS.aiSuggestionsButton || "AI Suggestions"}
+              <Sparkles className="mr-2 h-4 w-4" /> {UI_STRINGS.aiSuggestionsButton}
             </Button>
           )}
         </div>
-        <CardDescription>{UI_STRINGS.featsPanelSheetDescription || "Manage your character's special abilities and advantages."}</CardDescription>
+        <CardDescription>{UI_STRINGS.featsPanelSheetDescription}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -130,20 +130,20 @@ export function FeatsListing({ feats, characterClasses, onFeatAdd, onFeatRemove,
                       {featRequiresSpecialization && (
                         <div>
                           <Label htmlFor={`feat-spec-${featInstance.instanceId}`} className="text-xs text-muted-foreground">
-                            {UI_STRINGS.featSpecializationLabel || "Specialization"} ({definition?.requiresSpecialization})
+                            {UI_STRINGS.featSpecializationLabel} ({definition?.requiresSpecialization})
                           </Label>
                           <Input
                             id={`feat-spec-${featInstance.instanceId}`}
                             value={editingSpecializationDetail}
                             onChange={(e) => setEditingSpecializationDetail(e.target.value)}
-                            placeholder={UI_STRINGS.featSpecializationPlaceholder || "Enter specialization detail"}
+                            placeholder={UI_STRINGS.featSpecializationPlaceholder}
                           />
                         </div>
                       )}
-                       {!featRequiresSpecialization && <p className="text-sm text-muted-foreground italic">{UI_STRINGS.featNoSpecializationNeeded || "This feat does not require specialization."}</p>}
+                       {!featRequiresSpecialization && <p className="text-sm text-muted-foreground italic">{UI_STRINGS.featNoSpecializationNeeded}</p>}
                       <div className="flex justify-end space-x-2">
-                        <Button size="sm" variant="ghost" onClick={handleCancelEdit}>{UI_STRINGS.formButtonCancel || "Cancel"}</Button>
-                        <Button size="sm" onClick={handleSaveEdit}>{UI_STRINGS.formButtonSaveChanges || "Save"}</Button>
+                        <Button size="sm" variant="ghost" onClick={handleCancelEdit}>{UI_STRINGS.formButtonCancel}</Button>
+                        <Button size="sm" onClick={handleSaveEdit}>{UI_STRINGS.formButtonSaveChanges}</Button>
                       </div>
                     </div>
                   ) : (
@@ -162,12 +162,12 @@ export function FeatsListing({ feats, characterClasses, onFeatAdd, onFeatRemove,
                       </div>
                       <div className="flex space-x-1 shrink-0">
                         {featRequiresSpecialization && !featInstance.isGranted && (
-                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleStartEdit(featInstance)} aria-label={UI_STRINGS.featEditSpecializationAriaLabel || "Edit Specialization"}>
+                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleStartEdit(featInstance)} aria-label={UI_STRINGS.featEditSpecializationAriaLabel}>
                             <Edit3 className="h-4 w-4" />
                           </Button>
                         )}
                         {!featInstance.isGranted && (
-                           <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => onFeatRemove(featInstance.instanceId)} aria-label={UI_STRINGS.featInstanceRemoveAriaLabel || "Remove Feat"}>
+                           <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => onFeatRemove(featInstance.instanceId)} aria-label={UI_STRINGS.featInstanceRemoveAriaLabel}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         )}
@@ -178,7 +178,7 @@ export function FeatsListing({ feats, characterClasses, onFeatAdd, onFeatRemove,
               );
             })
           ) : (
-            <p className="text-sm text-muted-foreground">{UI_STRINGS.featsPanelNoFeatsYet || "No feats added yet."}</p>
+            <p className="text-sm text-muted-foreground">{UI_STRINGS.featsPanelNoFeatsYet}</p>
           )}
         </div>
 
@@ -220,7 +220,7 @@ export function FeatsListing({ feats, characterClasses, onFeatAdd, onFeatRemove,
             const newFeatInstance: FeatType = {
               definitionId: slugifiedDefId,
               instanceId: crypto.randomUUID(),
-              specializationDetail: `${UI_STRINGS.aiSuggestedFeatLabel || "AI Suggested"}: ${name} - ${description}`,
+              specializationDetail: `${UI_STRINGS.aiSuggestedFeatLabel}: ${name} - ${description}`,
               isGranted: false,
             };
             onFeatAdd(newFeatInstance);
@@ -230,3 +230,5 @@ export function FeatsListing({ feats, characterClasses, onFeatAdd, onFeatRemove,
     </Card>
   );
 }
+
+    

@@ -46,8 +46,8 @@ const LockablePanelWrapperComponent = ({
 
   const uiStrings = translations?.UI_STRINGS;
   const lockAriaLabel = isLocked
-    ? (uiStrings?.lockButtonAriaLabelUnlocked || "Section is locked. Click to unlock.")
-    : (uiStrings?.lockButtonAriaLabelLocked || "Section is unlocked. Click to lock.");
+    ? uiStrings?.lockButtonAriaLabelUnlocked
+    : uiStrings?.lockButtonAriaLabelLocked;
 
   return (
     <Card className={cardClassName}>
@@ -90,3 +90,5 @@ const LockablePanelWrapperComponent = ({
 
 LockablePanelWrapperComponent.displayName = "LockablePanelWrapperComponent";
 export const LockablePanelWrapper = React.memo(LockablePanelWrapperComponent);
+
+    
