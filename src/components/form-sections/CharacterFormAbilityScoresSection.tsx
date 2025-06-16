@@ -18,7 +18,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { useToast } from '@/hooks/use-toast';
-import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; 
+import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { parseAndRenderUIString } from '@/lib/utils';
 
 const DEBOUNCE_DELAY = 400; // ms
@@ -115,7 +115,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
     const finalModifier = calculateAbilityModifier(detailedAbilityScores[ability].finalScore);
 
     const breakdown: GenericBreakdownItem[] = [
-      { label: translations.UI_STRINGS.abilityModifierLabel, value: finalModifier, isBold: true }
+      { label: translations.UI_STRINGS.rollDialogAbilityModifierLabel || `Ability Modifier ({abilityAbbr})`, value: finalModifier, isBold: true }
     ];
 
     setRollAbilityDialogData({
@@ -218,7 +218,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                           size="icon"
                           className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5 mt-0.5"
                           onClick={() => handleOpenRollDialog(ability)}
-                          aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel).replace("{abilityName}", abilityDisplayName)}
+                          aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
                           disabled={panelIsLocked}
                         >
                           <Dices className="h-3.5 w-3.5" />
@@ -304,3 +304,6 @@ const CharacterFormAbilityScoresSectionComponent = ({
 };
 CharacterFormAbilityScoresSectionComponent.displayName = 'CharacterFormAbilityScoresSectionComponent';
 export const CharacterFormAbilityScoresSection = React.memo(CharacterFormAbilityScoresSectionComponent);
+
+    
+    

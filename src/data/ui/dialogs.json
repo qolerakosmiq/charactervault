@@ -44,6 +44,17 @@
   "rollDialogCriticalHitAppliedLabel": { "en": "CRITICAL HIT APPLIED!", "fr": "COUP CRITIQUE APPLIQUÉ !" },
   "rollDialogWeaponDamageDiceLabel": { "en": "Weapon Dice Rolled:", "fr": "Dés d'Arme Lancés :" },
   "rollDialogExtraDamageDiceLabel": { "en": "Extra Dice Rolled:", "fr": "Dés Supplémentaires Lancés :" },
-  "infoDialogAbilityBreakdownAriaLabel": { "en": "Detailed breakdown for {abilityName}", "fr": "Détail du calcul pour {abilityName}" }
+  "infoDialogAbilityBreakdownAriaLabel": { "en": "Detailed breakdown for {abilityName}", "fr": "Détail du calcul pour {abilityName}" },
+  "rollDialogAbilityModifierLabel": { "en": "Ability Modifier", "fr": "Modificateur de caractéristique" },
+  "rollDialogSkillKeyAbilityLabel": { "en": "Key Ability ({abilityAbbr})", "fr": "Caractéristique clé ({abilityAbbr})" },
+  "rollDialogSkillRanksLabel": { "en": "Ranks", "fr": "Rangs" },
+  "rollDialogSkillSynergyBonusLabel": { "en": "Synergy Bonus", "fr": "Bonus de synergie" },
+  "rollDialogSkillFeatBonusLabel": { "en": "Feat Bonus", "fr": "Bonus de don" },
+  "rollDialogSkillRacialBonusLabel": { "en": "Racial Bonus", "fr": "Bonus racial" },
+  "rollDialogSkillSizeBonusLabel": { "en": "Size Bonus", "fr": "Bonus de taille" },
+  "rollDialogSkillUserMiscModLabel": { "en": "User Misc Mod", "fr": "Mod Divers Utilisateur" },
+  "rollDialogGenericBreakdownLabel": { "en": "Component", "fr": "Composant"}
 }
 
+    
+    

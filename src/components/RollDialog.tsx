@@ -212,42 +212,45 @@ export function RollDialog({
                   }
 
                   let abilityAbbr: string | undefined;
-                  let labelText = item.label;
+                  let labelText = item.label || (UI_STRINGS.rollDialogGenericBreakdownLabel || "Component"); // Fallback for label
 
-                  const labelMatch = item.label.match(/^(.*)\s+\(([^)]+)\)$/);
-                  if (labelMatch) {
-                      labelText = labelMatch[1];
-                      const potentialAbbr = labelMatch[2].toUpperCase();
-                      if (translations.ABILITY_LABELS.some(al => al.abbr === potentialAbbr)) {
-                          abilityAbbr = potentialAbbr;
-                      }
-                  } else if (item.label === UI_STRINGS.abilityModifierLabel) {
-                      const matchFromTitle = dialogTitle.match(/\(([^)]+)\)/);
-                      const matchFromRollTypeAbility = rollType.match(/ability_check_(\w+)/);
-                      const matchFromRollTypeSave = rollType.match(/saving_throw_(\w+)/);
-                      const matchFromRollTypeSkill = rollType.match(/skill_check_([a-zA-Z-]+)_(\w+)/);
+                  if (item.label && typeof item.label === 'string') {
+                    const labelMatch = item.label.match(/^(.*)\s+\(([^)]+)\)$/);
+                    if (labelMatch) {
+                        labelText = labelMatch[1];
+                        const potentialAbbr = labelMatch[2].toUpperCase();
+                        if (translations.ABILITY_LABELS.some(al => al.abbr === potentialAbbr)) {
+                            abilityAbbr = potentialAbbr;
+                        }
+                    } else if (item.label === (UI_STRINGS.rollDialogAbilityModifierLabel || "Ability Modifier")) { // Ensure key exists
+                        const matchFromTitle = dialogTitle.match(/\(([^)]+)\)/);
+                        const matchFromRollTypeAbility = rollType.match(/ability_check_(\w+)/);
+                        const matchFromRollTypeSave = rollType.match(/saving_throw_(\w+)/);
+                        const matchFromRollTypeSkill = rollType.match(/skill_check_([a-zA-Z-]+)_(\w+)/);
 
-                      let abilityKey: string | undefined;
+                        let abilityKey: string | undefined;
 
-                      if (matchFromRollTypeAbility) abilityKey = matchFromRollTypeAbility[1];
-                      else if (matchFromRollTypeSave) {
-                          const saveType = matchFromRollTypeSave[1] as keyof typeof SAVING_THROW_ABILITIES;
-                          abilityKey = SAVING_THROW_ABILITIES[saveType];
-                      } else if (matchFromRollTypeSkill) {
-                          const skillIdParts = rollType.split('_');
-                          const skillId = skillIdParts.length > 2 ? skillIdParts.slice(2).join('_') : skillIdParts[1];
-                          const skillDef = translations.SKILL_DEFINITIONS.find(sd => sd.id === skillId); // Check against `id`
-                          if (skillDef) abilityKey = skillDef.keyAbility as string;
-                      } else if (matchFromTitle) {
-                          const extractedAbility = matchFromTitle[1];
-                          const foundLabel = translations.ABILITY_LABELS.find(al => al.abbr === extractedAbility.toUpperCase() || al.label === extractedAbility);
-                          if (foundLabel) abilityKey = foundLabel.id; // Use `id`
-                      }
+                        if (matchFromRollTypeAbility) abilityKey = matchFromRollTypeAbility[1];
+                        else if (matchFromRollTypeSave) {
+                            const saveType = matchFromRollTypeSave[1] as keyof typeof SAVING_THROW_ABILITIES;
+                            abilityKey = SAVING_THROW_ABILITIES[saveType];
+                        } else if (matchFromRollTypeSkill) {
+                            const skillIdParts = rollType.split('_');
+                            const skillId = skillIdParts.length > 2 ? skillIdParts.slice(2).join('_') : skillIdParts[1];
+                            const skillDef = translations.SKILL_DEFINITIONS.find(sd => sd.id === skillId);
+                            if (skillDef) abilityKey = skillDef.keyAbility as string;
+                        } else if (matchFromTitle) {
+                            const extractedAbility = matchFromTitle[1];
+                            const foundLabel = translations.ABILITY_LABELS.find(al => al.abbr === extractedAbility.toUpperCase() || al.label === extractedAbility);
+                            if (foundLabel) abilityKey = foundLabel.id;
+                        }
 
-                      if(abilityKey){
-                          abilityAbbr = translations.ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr; // Use `id`
-                      }
+                        if(abilityKey){
+                            abilityAbbr = translations.ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr;
+                        }
+                    }
                   }
+
 
                   return (
                     <div key={`breakdown-${index}`} className="flex justify-between text-sm">
@@ -374,4 +377,5 @@ export function RollDialog({
   );
 }
 
+    
     
