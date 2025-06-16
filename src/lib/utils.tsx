@@ -45,7 +45,7 @@ const getProperty = (obj: any, path: string): any => {
 function applyNbspToReactNode(nodes: React.ReactNode): React.ReactNode {
   return React.Children.map(nodes, (child) => {
     if (typeof child === 'string') {
-      return child.replace(/ /g, '\u00A0');
+      return child.replace(/ /g, '&nbsp;');
     }
     if (React.isValidElement(child) && child.props.children) {
       return React.cloneElement(child as React.ReactElement<any>, {
@@ -83,7 +83,7 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
       const content = contentMatch ? contentMatch[1] : '';
       
       const badgeContentNodes = parseAndRenderUIString(content, dataContext);
-      const contentWithNbsp = applyNbspToReactNode(badgeContentNodes); // Apply nbsp transformation
+      const contentWithNbsp = applyNbspToReactNode(badgeContentNodes);
       
       elements.push(
         <Badge key={`${match.index}-${elements.length}-badge-${Math.random().toString(36).substring(7)}`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
@@ -138,3 +138,4 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
     React.isValidElement(el) ? (el.key ? el : React.cloneElement(el, { key: `parsed-el-${i}-${Math.random().toString(36).substring(7)}` })) : el
   ));
 }
+
