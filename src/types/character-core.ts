@@ -449,13 +449,35 @@ export interface ClassSpecificUIBlockConditionAggregatedEffect {
   value?: any;
 }
 
+export interface ClassSpecificUICustomOption {
+  value: string;
+  label: LocalizedString;
+}
+
+export interface ClassSpecificUIGrantsFeat {
+  featId: string;
+  levelAcquired?: number;
+  note?: LocalizedString;
+  conditionOnChoiceValue?: string; 
+}
+
 export interface ClassSpecificUIBlock {
-  key: string;
-  labelKey: string;
+  key: string; 
+  labelKey: string; 
+  descriptionKey?: string;
+  choiceType: "select" | "combobox" | "textInput" | "multiInput";
+  maxSelections?: number; 
+  optionsSource?: "domains" | "magicSchools" | "rangerCombatStyles" | "customList";
+  customOptions?: ClassSpecificUICustomOption[];
+  grantsFeats?: ClassSpecificUIGrantsFeat[];
   requiredLevel?: number;
   conditionAggregatedEffect?: ClassSpecificUIBlockConditionAggregatedEffect;
-  conditionDependsOnUIStateKey?: keyof Pick<Character, 'chosenSpecializationSchool'>;
-  conditionDependsOnUIStateValueNotIn?: Array<string | null | undefined>;
+  valueFromDataContext?: string;
+  relatedSlotKeyForDisable?: string;
+  disabledIfChoiceValue?: { featureKey: string; values: string[] };
+  placeholderKey?: string; // For select/combobox placeholder
+  inputPlaceholderKey?: string; // For textInput placeholder
+  slotLabelKey?: string; // For multiInput slot labels, e.g. "favoredEnemySlotLabel"
 }
 
 export interface FeatChoiceFilterCase {
@@ -464,7 +486,8 @@ export interface FeatChoiceFilterCase {
 }
 
 export interface FeatChoiceFilter {
-  characterField: keyof Pick<Character, 'chosenCombatStyle'>;
+  characterField: keyof Pick<Character, 'chosenCombatStyle' | 'classSpecificChoices'>; // Updated
+  classSpecificChoiceKey?: string; // If characterField is classSpecificChoices, this identifies which one
   filterCases: FeatChoiceFilterCase[];
 }
 
@@ -563,6 +586,12 @@ export interface CharacterAnimalCompanion {
   notes?: string;
 }
 
+export interface CharacterClassSpecificChoice {
+  featureKey: string; // Corresponds to uiBlock.key
+  value: string;      // The ID of the selected option or the text input
+  slotIndex?: number; // For multi-selection features
+}
+
 export interface Character {
   id: string;
   name: string;
@@ -631,11 +660,12 @@ export interface Character {
   armorSpeedPenalty_miscModifier: number;
   loadSpeedPenalty_base: number;
   loadSpeedPenalty_miscModifier: number;
-  chosenCombatStyle?: "archery" | "twoWeaponFighting";
-  chosenFavoredEnemies?: CharacterFavoredEnemy[];
-  chosenDomains?: [DomainId | undefined, DomainId | undefined];
-  chosenSpecializationSchool?: MagicSchoolId;
-  prohibitedSchools?: MagicSchoolId[];
+  // chosenCombatStyle?: "archery" | "twoWeaponFighting"; // Replaced by classSpecificChoices
+  // chosenFavoredEnemies?: CharacterFavoredEnemy[]; // Replaced by classSpecificChoices
+  // chosenDomains?: [DomainId | undefined, DomainId | undefined]; // Replaced by classSpecificChoices
+  // chosenSpecializationSchool?: MagicSchoolId; // Replaced by classSpecificChoices
+  // prohibitedSchools?: MagicSchoolId[]; // Replaced by classSpecificChoices
+  classSpecificChoices?: CharacterClassSpecificChoice[];
   powerAttackValue?: number;
   combatExpertiseValue?: number;
   animalCompanion?: CharacterAnimalCompanion;

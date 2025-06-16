@@ -224,7 +224,10 @@
   "featCategory_monkBonusFeatL2": { "en": "Monk Bonus (L2)", "fr": "Don Moine (N2)" },
   "featCategory_monkBonusFeatL6": { "en": "Monk Bonus (L6)", "fr": "Don Moine (N6)" },
   "featCategory_rogueSpecialAbility": { "en": "Rogue Special Ability", "fr": "Capacité Spéciale Roublard"},
-  "featCategory_wizardBonusFeat": { "en": "Wizard Bonus Feat", "fr": "Don supplémentaire Magicien" }
+  "featCategory_wizardBonusFeat": { "en": "Wizard Bonus Feat", "fr": "Don supplémentaire Magicien" },
+  "favoredEnemySlotLabel": { "en": "Favored Enemy Slot {slotNum}", "fr": "Emplacement d'Ennemi Juré {slotNum}" },
+  "favoredEnemyPlaceholder": { "en": "e.g., Orc, Undead", "fr": "ex : Orque, Mort-vivant" },
+  "selectRangerCombatStylePlaceholder": { "en": "Select Combat Style...", "fr": "Choisir un style de combat..." }
 }
 
     
