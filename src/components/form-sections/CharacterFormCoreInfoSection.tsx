@@ -601,9 +601,9 @@ const CharacterFormCoreInfoSectionComponent = ({
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
                     else badgeClassNameInternal = cn(badgeClassNameInternal, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
                     return (
-                      <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}>
-                        {effect.ability.substring(0, 3).toUpperCase()}{`\u00A0|\u00A0`}<b>{changeValue}</b>
-                      </Badge>
+                       <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}>
+                          {effect.ability.substring(0, 3).toUpperCase()}{'\u00A0|\u00A0'}<b>{changeValue}</b>
+                       </Badge>
                     );
                   })}
                 </div>
@@ -630,36 +630,33 @@ const CharacterFormCoreInfoSectionComponent = ({
                 {selectedClassInfo?.hitDice && (
                    <Badge variant="secondary" className="whitespace-nowrap">
                     <Heart fill="currentColor" className="inline h-3 w-3 mr-1.5 text-primary/70" />
-                     {parseAndRenderUIString(UI_STRINGS.hitDiceLabel || "Hit Dice | <b>{value}</b>", {value: selectedClassInfo.hitDice})}
+                     {(UI_STRINGS.hitDiceLabel?.split('|')[0]?.trim() || 'Hit Dice')}{'\u00A0|\u00A0'}<b>{selectedClassInfo.hitDice}</b>
                   </Badge>
                 )}
                 {aggregatedFeatEffects?.grantedAbilities && aggregatedFeatEffects.grantedAbilities.map(ability => {
                    const abilityNameForDisplay = getLocalizedString(ability.name, currentLang);
                    if (ability.uses && typeof ability.uses.value === 'number' && ability.uses.per) {
                     const localizedPeriod = (ability.uses.per === 'day' ? (UI_STRINGS.periodDay || 'Day') : ability.uses.per === 'encounter' ? (UI_STRINGS.periodEncounter || 'Encounter') : ability.uses.per === 'week' ? (UI_STRINGS.periodWeek || 'Week') : ability.uses.per);
-                    const dataContext = {
-                      abilityName: abilityNameForDisplay,
-                      usesValue: ability.uses.value,
-                      period: localizedPeriod
-                    };
+                    const usesValue = ability.uses.value;
                     return (
                       <Badge key={ability.abilityKey} variant="secondary" className="whitespace-nowrap bg-accent text-accent-foreground">
                         <Activity className="inline h-3 w-3 mr-1" />
-                        {parseAndRenderUIString(UI_STRINGS.abilityUsesFormat || "{abilityName} Uses per {period} | <b>{usesValue}</b>", dataContext)}
+                        {abilityNameForDisplay}
+                        {` Uses per ${localizedPeriod}`}
+                        {'\u00A0|\u00A0'}
+                        <b>{usesValue}</b>
                       </Badge>
                     );
                   } else if (ability.uses && ability.uses.value === "customPool" && ability.abilityKey === "layOnHandsHealingPool" && aggregatedFeatEffects?.modifiedMechanics?.layOnHandsHealingPool) {
                     const localizedPeriod = UI_STRINGS.periodDay || 'Day';
                     const poolValue = aggregatedFeatEffects.modifiedMechanics.layOnHandsHealingPool.value;
-                     const dataContext = {
-                        abilityName: abilityNameForDisplay,
-                        poolValue: typeof poolValue === 'number' ? poolValue : "Pool",
-                        period: localizedPeriod
-                    };
                     return (
                          <Badge key={ability.abilityKey} variant="secondary" className="whitespace-nowrap bg-accent text-accent-foreground">
                             <Heart className="inline h-3 w-3 mr-1" />
-                            {parseAndRenderUIString(UI_STRINGS.abilityPoolFormat || "{abilityName} | <b>{poolValue}</b> per {period}", dataContext)}
+                            {abilityNameForDisplay}
+                            {'\u00A0|\u00A0'}
+                            <b>{typeof poolValue === 'number' ? poolValue : "Pool"}</b>
+                            {` per ${localizedPeriod}`}
                         </Badge>
                     );
                   }
@@ -741,7 +738,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
                     return (
                       <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}>
-                        {effect.ability.substring(0, 3).toUpperCase()}{`\u00A0|\u00A0`}<b>{changeValue}</b>
+                        {effect.ability.substring(0, 3).toUpperCase()}{'\u00A0|\u00A0'}<b>{changeValue}</b>
                       </Badge>
                     );
                   })}
@@ -784,7 +781,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     else if (acMod < 0) { badgeVariantProp = "destructive"; badgeClassNameForAc = cn(badgeClassNameForAc, "hover:bg-destructive"); }
                     return (
                       <Badge variant={badgeVariantProp} className={badgeClassNameForAc}>
-                        AC{`\u00A0|\u00A0`}<b>{acModValue}</b>
+                        AC{'\u00A0|\u00A0'}<b>{acModValue}</b>
                       </Badge>
                     );
                   } return null;
