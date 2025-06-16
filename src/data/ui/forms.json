@@ -41,6 +41,12 @@
   "toastInvalidAgeDesc": { "en": "Age must be at least {minAge}{raceContext}.", "fr": "L'âge doit être d'au moins {minAge}{raceContext}." },
   "toastInvalidAbilityScoreTitle": { "en": "Invalid {abilityName} Score", "fr": "Score de {abilityName} invalide" },
   "toastInvalidAbilityScoreDesc": { "en": "{abilityName} score must be greater than 0.", "fr": "{abilityName} score doit être supérieur à 0." },
+  "abilityScoresSectionTitle": { "en": "Ability Scores", "fr": "Caractéristiques" },
+  "abilityScoresRollButton": { "en": "Roll Scores", "fr": "Lancer les scores" },
+  "abilityScoresPointBuyButton": { "en": "Point Buy", "fr": "Achat par points" },
+  "abilityScoresBaseScoreLabel": { "en": "Base Score", "fr": "Score de base" },
+  "abilityScoresTempModLabel": { "en": "Temporary Modifier", "fr": "Modificateur temporaire" },
+  "abilityScoresNote_full": { "en": "<b>Note:</b> The <badge outline>Temporary Modifier</badge> field adjusts the <badge outline>Base Score</badge>, not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score.", "fr": "<b>Note :</b> Le champ <badge outline>Modificateur temporaire</badge> ajuste le <badge outline>Score de base</badge>, et non le modificateur de caractéristique dérivé du score de base. Les autres bonus de race, de vieillissement ou de dons sont appliqués automatiquement au score total." },
   "resistancesPanelTitle": { "en": "Resistances & Other Defenses", "fr": "Résistances et autres défenses" },
   "resistancesPanelDescription": { "en": "Manage custom modifiers for resistances, damage reductions, and fortification.", "fr": "Gérer les modificateurs personnalisés pour les résistances, les réductions de dégâts et la fortification." },
   "resistancesPanelEnergyResistancesLabel": { "en": "Energy Resistances", "fr": "Résistances aux énergies" },
@@ -108,7 +114,7 @@
   "skillsTableTotalBonusHeader": { "en": "Total", "fr": "Total" },
   "skillsTableKeyAbilityHeader": { "en": "Key<br/>Ability", "fr": "Carac.<br/>Clé" },
   "skillsTableAbilityModHeader": { "en": "Ability Mod", "fr": "Mod. Carac." },
-  "skillsTableMiscModHeader": { "en": "Misc Mod", "fr": "Mod. Divers" },
+  "skillsTableMiscModHeader": { "en": "User Misc", "fr": "Mod. Utilisateur" },
   "skillsTableRanksHeader": { "en": "Ranks", "fr": "Rangs" },
   "skillsTableCostHeader": { "en": "Cost", "fr": "Coût" },
   "skillsTableMaxHeader": { "en": "Max", "fr": "Max" },
@@ -153,7 +159,7 @@
   "featEditSpecializationAriaLabel": { "en": "Edit specialization for {featLabel}", "fr": "Modifier la spécialisation pour {featLabel}" },
   "featInstanceRemoveAriaLabel": { "en": "Remove feat", "fr": "Supprimer le don" },
   "toastFeatDefNotFoundTitle": { "en": "Feat Definition Not Found", "fr": "Définition de don introuvable" },
-  "toastFeatDefNotFoundDesc": { "en": "Could not find the definition for the selected feat.", "fr": "Impossible de trouver la définition du don sélectionné." },
+  "toastFeatDefNotFoundDesc": { "en": "Could not find the definition for the selected feat ID: {featId}.", "fr": "Impossible de trouver la définition du don sélectionné avec l'ID : {featId}." },
   "toastDuplicateFeatTitle": { "en": "Duplicate Feat", "fr": "Don en double" },
   "toastDuplicateFeatDesc": { "en": "{featLabel} cannot be taken more than once (unless specified).", "fr": "{featLabel} ne peut pas être pris plus d'une fois (sauf indication contraire)." },
   "toastFeatAlreadyGrantedTitle": { "en": "Feat Already Granted", "fr": "Don déjà accordé" },
@@ -213,3 +219,4 @@
   "aiSuggestionsAddButton": { "en": "Add", "fr": "Ajouter" },
   "aiSuggestionsNoResults": { "en": "No specific suggestions found for this combination.", "fr": "Aucune suggestion spécifique trouvée pour cette combinaison." }
 }
+

@@ -19,6 +19,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { useToast } from '@/hooks/use-toast';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; 
+import { parseAndRenderUIString } from '@/lib/utils';
 
 const DEBOUNCE_DELAY = 400; // ms
 
@@ -114,11 +115,11 @@ const CharacterFormAbilityScoresSectionComponent = ({
     const finalModifier = calculateAbilityModifier(detailedAbilityScores[ability].finalScore);
 
     const breakdown: GenericBreakdownItem[] = [
-      { label: translations.UI_STRINGS.abilityModifierLabel || "Ability Modifier", value: finalModifier, isBold: true }
+      { label: translations.UI_STRINGS.abilityModifierLabel, value: finalModifier, isBold: true }
     ];
 
     setRollAbilityDialogData({
-      dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck || "{abilityName} Check").replace("{abilityName}", abilityName),
+      dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck).replace("{abilityName}", abilityName),
       rollType: `ability_check_${ability}`,
       baseModifier: finalModifier,
       calculationBreakdown: breakdown,
@@ -130,22 +131,11 @@ const CharacterFormAbilityScoresSectionComponent = ({
   const handleAbilityRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number) => {
   }, []);
 
-  const headerActions = React.useCallback((isPanelLocked: boolean) => (
-    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-      <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto" disabled={isPanelLocked}>
-        <Dices className="mr-2 h-4 w-4" /> {translations?.UI_STRINGS.abilityScoresRollButton || "Roll Scores"}
-      </Button>
-      <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} className="w-full sm:w-auto" disabled={isPanelLocked}>
-        <Calculator className="mr-2 h-4 w-4" /> {translations?.UI_STRINGS.abilityScoresPointBuyButton || "Point Buy"}
-      </Button>
-    </div>
-  ), [translations]);
-
 
   if (translationsLoading || !translations) {
     return (
        <LockablePanelWrapper
-        title={translations?.UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}
+        title={translations?.UI_STRINGS.abilityScoresSectionTitle}
         icon={Dices}
         cardContentClassName="pt-2"
         initialLockedState={false}
@@ -173,11 +163,10 @@ const CharacterFormAbilityScoresSectionComponent = ({
   return (
     <>
       <LockablePanelWrapper
-        title={UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}
+        title={UI_STRINGS.abilityScoresSectionTitle}
         icon={Dices}
         cardContentClassName="pt-2"
         initialLockedState={false}
-        headerActions={headerActions}
       >
         {({ isLocked: panelIsLocked }) => (
           <>
@@ -217,7 +206,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                           size="icon"
                           className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5 mt-0.5"
                           onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
-                           aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel || "Info for {abilityName} score breakdown").replace("{abilityName}", abilityDisplayName)}
+                           aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel).replace("{abilityName}", abilityDisplayName)}
                            disabled={panelIsLocked}
                         >
                           <Info className="h-3.5 w-3.5" />
@@ -229,7 +218,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                           size="icon"
                           className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5 mt-0.5"
                           onClick={() => handleOpenRollDialog(ability)}
-                          aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
+                          aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel).replace("{abilityName}", abilityDisplayName)}
                           disabled={panelIsLocked}
                         >
                           <Dices className="h-3.5 w-3.5" />
@@ -237,7 +226,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                     </div>
 
                     <div className="w-full space-y-0.5">
-                      <Label htmlFor={`base-score-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresBaseScoreLabel || "Base Score"}</Label>
+                      <Label htmlFor={`base-score-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
                       <NumberSpinnerInput
                         id={`base-score-${ability}`}
                         value={baseScoreValue}
@@ -252,7 +241,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                     </div>
 
                     <div className="w-full space-y-0.5 pt-1">
-                      <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresTempModLabel || "Temporary Modifier"}</Label>
+                      <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresTempModLabel}</Label>
                       <NumberSpinnerInput
                         id={`temp-mod-${ability}`}
                         value={tempCustomModValue}
@@ -268,17 +257,19 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 );
               })}
             </div>
+
+            <div className="flex justify-end gap-2 mt-4 mb-2">
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto" disabled={panelIsLocked}>
+                    <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton}
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} className="w-full sm:w-auto" disabled={panelIsLocked}>
+                    <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton}
+                </Button>
+            </div>
+            
             <p className="text-sm text-muted-foreground mt-4 pt-2 border-t border-border/30">
-              <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.abilityScoresNote_prefix || "<strong>Note:</strong> The " }} />
-              <Badge variant="outline">
-                {UI_STRINGS.abilityScoresNote_badge0_text || "Temporary Modifier"}
-              </Badge>
-              {UI_STRINGS.abilityScoresNote_text_after_badge0 || " field adjusts the "}
-              <Badge variant="outline">
-                {UI_STRINGS.abilityScoresNote_badge1_text || "Base Score"}
-              </Badge>
-              {UI_STRINGS.abilityScoresNote_suffix || ", not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score."}
-             </p>
+              {parseAndRenderUIString(UI_STRINGS.abilityScoresNote_full)}
+            </p>
           </>
         )}
       </LockablePanelWrapper>
