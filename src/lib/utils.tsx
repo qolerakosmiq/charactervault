@@ -73,7 +73,8 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
         
         elements.push(
           <Badge key={`${match.index}-${elements.length}`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
-            <span className="text-muted-foreground/90 mr-1">{labelPartNode}:</span>
+            {labelPartNode}
+            <span className="mx-1">|</span>
             <strong className="font-semibold">{valuePartNode}</strong>
           </Badge>
         );
@@ -128,3 +129,4 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
     React.isValidElement(el) ? React.cloneElement(el, { key: `parsed-${i}-${Math.random().toString(36).substring(7)}` }) : el
   ));
 }
+
