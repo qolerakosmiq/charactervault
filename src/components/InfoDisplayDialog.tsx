@@ -838,7 +838,9 @@ export function InfoDisplayDialog({
         iconKey = currentSaveType;
 
         const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.id === currentSaveType)?.label || currentSaveType;
-        const dialogTitle = UI_STRINGS.infoDialogTitleSavingThrowBreakdown.replace("{saveTypeLabel}", saveTypeLabel);
+        const dialogTitleTemplate = UI_STRINGS.infoDialogTitleSavingThrowBreakdown || "Saving Throw Breakdown ({saveTypeLabel})";
+        const dialogTitle = dialogTitleTemplate.replace("{saveTypeLabel}", saveTypeLabel);
+
 
         const calculatedBaseSaves = getBaseSaves(character.classes, DND_CLASSES);
         const baseSave = calculatedBaseSaves[currentSaveType];
@@ -1004,4 +1006,5 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
+
 

@@ -45,7 +45,7 @@
   "rollDialogWeaponDamageDiceLabel": { "en": "Weapon Dice Rolled:", "fr": "Dés d'Arme Lancés :" },
   "rollDialogExtraDamageDiceLabel": { "en": "Extra Dice Rolled:", "fr": "Dés Supplémentaires Lancés :" },
   "infoDialogAbilityBreakdownAriaLabel": { "en": "Detailed breakdown for {abilityName}", "fr": "Détail du calcul pour {abilityName}" },
-  "rollDialogAbilityModifierLabel": { "en": "Ability Modifier", "fr": "Modificateur de caractéristique" },
+  "rollDialogAbilityModifierLabel": { "en": "Ability Modifier ({abilityAbbr})", "fr": "Modificateur de Caractéristique ({abilityAbbr})" },
   "rollDialogSkillKeyAbilityLabel": { "en": "Key Ability ({abilityAbbr})", "fr": "Caractéristique clé ({abilityAbbr})" },
   "rollDialogSkillRanksLabel": { "en": "Ranks", "fr": "Rangs" },
   "rollDialogSkillSynergyBonusLabel": { "en": "Synergy Bonus", "fr": "Bonus de synergie" },
@@ -54,7 +54,10 @@
   "rollDialogSkillSizeBonusLabel": { "en": "Size Bonus", "fr": "Bonus de taille" },
   "rollDialogSkillUserMiscModLabel": { "en": "User Misc Mod", "fr": "Mod Divers Utilisateur" },
   "rollDialogGenericBreakdownLabel": { "en": "Component", "fr": "Composant"},
-  "infoDialogTitleScoreCalculation": { "en": "{abilityName} Score Calculation", "fr": "Calcul du score de {abilityName}" }
+  "rollDialogTotalBonusLabel": { "en": "Total Bonus", "fr": "Bonus Total" },
+  "rollDialogTotalNumericBonusLabel": { "en": "Total Numeric Bonus", "fr": "Bonus Numérique Total" },
+  "infoDialogTitleScoreCalculation": { "en": "{abilityName} Score Calculation", "fr": "Calcul du score de {abilityName}" },
+  "infoDialogTitleSavingThrowBreakdown": { "en": "Saving Throw Breakdown ({saveTypeLabel})", "fr": "Détail du Jet de Sauvegarde ({saveTypeLabel})" }
 }
 
     
