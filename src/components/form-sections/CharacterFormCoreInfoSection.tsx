@@ -207,34 +207,29 @@ const CharacterFormCoreInfoSectionComponent = ({
   }, [translationsLoading, translations, selectedClassInfo]);
 
   React.useEffect(() => {
-    if (translationsLoading || !translations || !selectedClassInfo || !translations.UI_STRINGS) return;
+    if (translationsLoading || !translations || !selectedClassInfo || !translations.UI_STRINGS || !translations.PREFERRED_DEFAULT_ALIGNMENT_IDS) return;
 
     const currentAlignmentIsValidForNewClass = availableAlignments.some(a => a.id === localAlignment);
 
     if (!currentAlignmentIsValidForNewClass) {
-        const preferredAlignmentIds = [
-            'true-neutral', 'neutral-good', 'lawful-good', 'chaotic-good',
-            'lawful-neutral', 'chaotic-neutral'
-        ];
-        const preferredDefaults: CharacterAlignment[] = preferredAlignmentIds
-            .map(id => translations.ALIGNMENTS.find(a => a.id === id)?.id)
-            .filter(Boolean) as CharacterAlignment[];
-            
-      let newAlignmentToSet: CharacterAlignment | undefined = undefined;
+        const preferredDefaultsFromData: readonly CharacterAlignment[] = translations.PREFERRED_DEFAULT_ALIGNMENT_IDS;
+        let newAlignmentToSet: CharacterAlignment | undefined = undefined;
 
-      for (const preferred of preferredDefaults) {
-        if (availableAlignments.some(a => a.id === preferred)) {
-          newAlignmentToSet = preferred;
-          break;
+        for (const preferred of preferredDefaultsFromData) {
+            if (availableAlignments.some(a => a.id === preferred)) {
+            newAlignmentToSet = preferred;
+            break;
+            }
         }
-      }
-      if (!newAlignmentToSet) {
-        const fallbackTrueNeutralId = translations.ALIGNMENTS.find(a => a.id === 'true-neutral')?.id || 'true-neutral';
-        newAlignmentToSet = availableAlignments.length > 0
-          ? availableAlignments[0].id
-          : fallbackTrueNeutralId;
-      }
-      setLocalAlignment(newAlignmentToSet);
+
+        if (!newAlignmentToSet && availableAlignments.length > 0) {
+            newAlignmentToSet = availableAlignments[0].id;
+        }
+        
+        if (!newAlignmentToSet) {
+            newAlignmentToSet = preferredDefaultsFromData[0]; 
+        }
+        setLocalAlignment(newAlignmentToSet);
     }
   }, [localClassName, selectedClassInfo, availableAlignments, localAlignment, setLocalAlignment, translations, translationsLoading]);
 
@@ -374,8 +369,8 @@ const CharacterFormCoreInfoSectionComponent = ({
   if (translationsLoading || !translations) {
     return (
       <LockablePanelWrapper
-        title={parseAndRenderUIString(translations?.UI_STRINGS.coreAttributesTitle || "Core Attributes")}
-        description={parseAndRenderUIString(translations?.UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer.")}
+        title={translations?.UI_STRINGS.coreAttributesTitle || "Core Attributes"}
+        description={translations?.UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer."}
         icon={ScrollText}
         cardContentClassName="space-y-6 pt-6"
         initialLockedState={false}
@@ -576,8 +571,8 @@ const CharacterFormCoreInfoSectionComponent = ({
 
   return (
     <LockablePanelWrapper
-      title={parseAndRenderUIString(UI_STRINGS.coreAttributesTitle || "Core Attributes") as string}
-      description={parseAndRenderUIString(UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer.") as string}
+      title={parseAndRenderUIString(UI_STRINGS.coreAttributesTitle) as string}
+      description={parseAndRenderUIString(UI_STRINGS.coreAttributesDescription) as string}
       icon={ScrollText}
       cardContentClassName="space-y-6 pt-6"
       initialLockedState={false}
@@ -586,18 +581,18 @@ const CharacterFormCoreInfoSectionComponent = ({
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div className="space-y-1.5">
-              <Label htmlFor="name">{parseAndRenderUIString(UI_STRINGS.characterNameLabel || "Character Name")}</Label>
+              <Label htmlFor="name">{parseAndRenderUIString(UI_STRINGS.characterNameLabel)}</Label>
               <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="playerName">{parseAndRenderUIString(UI_STRINGS.playerNameLabel || "Player Name")}</Label>
+              <Label htmlFor="playerName">{parseAndRenderUIString(UI_STRINGS.playerNameLabel)}</Label>
               <Input id="playerName" name="playerName" value={localPlayerName} onChange={(e) => setLocalPlayerName(e.target.value)} disabled={panelIsLocked}/>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div className="space-y-1.5">
-              <Label htmlFor="race">{parseAndRenderUIString(UI_STRINGS.raceLabel || "Race")}</Label>
+              <Label htmlFor="race">{parseAndRenderUIString(UI_STRINGS.raceLabel)}</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
                   <Select
@@ -625,13 +620,13 @@ const CharacterFormCoreInfoSectionComponent = ({
                     if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
                     else badgeClassNameInternal = cn(badgeClassNameInternal, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
-                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString(UI_STRINGS.abilityScoreRaceModBadgeFormat || "{abilityAbbr} | <b>{change}</b>", { abilityAbbr: effect.ability.substring(0, 3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : (effect.change < 0 ? effect.change : '0')) })} </Badge> );
+                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString(UI_STRINGS.abilityScoreRaceModBadgeFormat, { abilityAbbr: effect.ability.substring(0, 3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : (effect.change < 0 ? effect.change : '0')) })} </Badge> );
                   })}
                 </div>
               )}
             </div>
              <div className="space-y-1.5">
-              <Label htmlFor="className">{parseAndRenderUIString(UI_STRINGS.classLabel || "Class")}</Label>
+              <Label htmlFor="className">{parseAndRenderUIString(UI_STRINGS.classLabel)}</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
                   <Select
@@ -651,7 +646,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 {selectedClassInfo?.hitDice && (
                    <Badge variant="secondary" className="whitespace-nowrap">
                     <Heart fill="currentColor" className="inline h-3 w-3 mr-1.5 text-primary/70" />
-                     {parseAndRenderUIString(UI_STRINGS.hitDiceLabel || "Hit Dice | <b>{value}</b>", { value: selectedClassInfo.hitDice })}
+                     {parseAndRenderUIString(UI_STRINGS.hitDiceLabel, { value: selectedClassInfo.hitDice })}
                   </Badge>
                 )}
                 {aggregatedFeatEffects?.grantedAbilities && aggregatedFeatEffects.grantedAbilities.map(ability => {
@@ -667,7 +662,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     return (
                       <Badge key={ability.abilityKey} variant="secondary" className="whitespace-nowrap bg-accent text-accent-foreground">
                         <Activity className="inline h-3 w-3 mr-1" />
-                        {parseAndRenderUIString(UI_STRINGS.abilityUsesFormat || "{abilityName} Uses per {period} | <b>{usesValue}</b>", dataContext)}
+                        {parseAndRenderUIString(UI_STRINGS.abilityUsesFormat, dataContext)}
                       </Badge>
                     );
                   } else if (ability.uses && ability.uses.value === "customPool" && ability.abilityKey === "layOnHandsHealingPool" && aggregatedFeatEffects?.modifiedMechanics?.layOnHandsHealingPool) {
@@ -681,7 +676,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     return (
                          <Badge key={ability.abilityKey} variant="secondary" className="whitespace-nowrap bg-accent text-accent-foreground">
                             <Heart className="inline h-3 w-3 mr-1" />
-                            {parseAndRenderUIString(UI_STRINGS.abilityPoolFormat || "{abilityName} | <b>{poolValue}</b> per {period}", dataContext)}
+                            {parseAndRenderUIString(UI_STRINGS.abilityPoolFormat, dataContext)}
                         </Badge>
                     );
                   }
@@ -699,7 +694,7 @@ const CharacterFormCoreInfoSectionComponent = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div className="space-y-1.5">
-              <Label htmlFor="alignment">{parseAndRenderUIString(UI_STRINGS.alignmentLabel || "Alignment")}</Label>
+              <Label htmlFor="alignment">{parseAndRenderUIString(UI_STRINGS.alignmentLabel)}</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
                   <Select
@@ -722,7 +717,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               </div>
             </div>
             <div className="space-y-1.5">
-                <Label htmlFor="deity">{parseAndRenderUIString(UI_STRINGS.deityLabel || "Deity")}</Label>
+                <Label htmlFor="deity">{parseAndRenderUIString(UI_STRINGS.deityLabel)}</Label>
                 <div className="flex items-center gap-2">
                   <div className="flex-grow">
                     <Select value={localDeity} onValueChange={(value) => setLocalDeity(value)} disabled={panelIsLocked} >
@@ -739,7 +734,7 @@ const CharacterFormCoreInfoSectionComponent = ({
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
             <div className="space-y-1.5">
-              <Label htmlFor="age" className="inline-block w-full text-center md:text-center">{parseAndRenderUIString(UI_STRINGS.ageLabel || "Age")}</Label>
+              <Label htmlFor="age" className="inline-block w-full text-center md:text-center">{parseAndRenderUIString(UI_STRINGS.ageLabel)}</Label>
               <NumberSpinnerInput
                 id="age"
                 value={localAge}
@@ -760,13 +755,13 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let badgeClassNameInternal = "whitespace-nowrap";
                     if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
-                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString(UI_STRINGS.abilityScoreAgingEffectBadgeFormat || "{abilityAbbr} | <b>{change}</b>", {abilityAbbr: effect.ability.substring(0,3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : effect.change)})} </Badge> );
+                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString(UI_STRINGS.abilityScoreAgingEffectBadgeFormat, {abilityAbbr: effect.ability.substring(0,3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : effect.change)})} </Badge> );
                   })}
                 </div>
               )}
               </div>
             <div className="space-y-1.5">
-              <Label htmlFor="gender">{parseAndRenderUIString(UI_STRINGS.genderLabel || "Gender")}</Label>
+              <Label htmlFor="gender">{parseAndRenderUIString(UI_STRINGS.genderLabel)}</Label>
               <Select
                 name="gender"
                 value={localGender}
@@ -784,7 +779,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="sizeCategory">{parseAndRenderUIString(UI_STRINGS.sizeLabel || "Size Category")}</Label>
+              <Label htmlFor="sizeCategory">{parseAndRenderUIString(UI_STRINGS.sizeLabel)}</Label>
               <Select name="sizeCategory" value={localSize} onValueChange={(value) => setLocalSize(value as CharacterSize)} disabled={panelIsLocked}>
                 <SelectTrigger id="sizeCategory"><SelectValue /></SelectTrigger>
                 <SelectContent> {sizeSelectOptions} </SelectContent>
@@ -798,7 +793,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let badgeClassNameForAc = "whitespace-nowrap";
                     if (acMod > 0) badgeClassNameForAc = cn(badgeClassNameForAc, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (acMod < 0) { badgeVariantProp = "destructive"; badgeClassNameForAc = cn(badgeClassNameForAc, "hover:bg-destructive"); }
-                    return ( <Badge variant={badgeVariantProp} className={badgeClassNameForAc}> {parseAndRenderUIString(UI_STRINGS.acModSizeBadgeFormat || "AC | <b>{acModValue}</b>", {acModValue: (acMod > 0 ? `+${acMod}` : acMod)})} </Badge> );
+                    return ( <Badge variant={badgeVariantProp} className={badgeClassNameForAc}> {parseAndRenderUIString(UI_STRINGS.acModSizeBadgeFormat, {acModValue: (acMod > 0 ? `+${acMod}` : acMod)})} </Badge> );
                   } return null;
                 })()}
               </div>

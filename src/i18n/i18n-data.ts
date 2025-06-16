@@ -21,6 +21,7 @@ export interface AlignmentDataEntry {
 }
 export interface AlignmentsJson {
   ALIGNMENTS_DATA: AlignmentDataEntry[];
+  PREFERRED_DEFAULT_ALIGNMENT_IDS_DATA?: readonly CharacterAlignment[];
 }
 
 export interface LanguageDataEntry {
@@ -247,6 +248,7 @@ export interface ProcessedSiteData {
   DAMAGE_REDUCTION_TYPES: readonly { id: DamageReductionTypeValue; label: string }[];
   DAMAGE_REDUCTION_RULES_OPTIONS: readonly { id: string; label: string }[];
   ALIGNMENT_PREREQUISITE_OPTIONS: readonly { id: string; label: string }[];
+  PREFERRED_DEFAULT_ALIGNMENT_IDS: readonly CharacterAlignment[];
   GEAR_SLOTS: readonly GearSlot[]; // Added
   ITEM_DEFINITIONS_WEAPONS: readonly ItemDefinition[]; // Added
   ITEM_DEFINITIONS_ARMOR: readonly ItemDefinition[]; // Added
@@ -282,7 +284,10 @@ export function getLocalizedString(
   }
   if (typeof entry === 'string') {
     if (entry.trim() === "") {
-        throw new Error(`[I18N_ERROR] Translation for key '${debugKeyPath}' resolved to an EMPTY STRING (from direct string entry).`);
+        // Allow empty strings if they come from the source JSON as such (e.g. empty description)
+        // but still log a warning for potential data issue.
+        // console.warn(`[I18N_WARNING] Translation for key '${debugKeyPath}' resolved to an EMPTY STRING (from direct string entry).`);
+        return "";
     }
     return entry; // Assumed to be pre-localized or a non-localizable identifier
   }
@@ -308,7 +313,8 @@ export function getLocalizedString(
         throw new Error(`[I18N_ERROR] Translation for key '${debugKeyPath}' in language '${tryLang}' is NOT A STRING. Value: ${JSON.stringify(translation)}`);
       }
       if (translation.trim() === "") {
-        throw new Error(`[I18N_ERROR] Translation for key '${debugKeyPath}' in language '${tryLang}' resolved to an EMPTY STRING.`);
+         // console.warn(`[I18N_WARNING] Translation for key '${debugKeyPath}' in language '${tryLang}' resolved to an EMPTY STRING.`);
+        return ""; // Allow empty string if explicitly defined as such for a language.
       }
       return translation;
     }
@@ -347,7 +353,8 @@ function processLocalizedArray<
             if (typeof rawFieldValue === 'object' && !Array.isArray(rawFieldValue) && (rawFieldValue.hasOwnProperty('en') || rawFieldValue.hasOwnProperty(lang) || SUPPORTED_LANGUAGES.some(l => rawFieldValue.hasOwnProperty(l.code)))) {
                  newItem[fieldKey] = getLocalizedString(rawFieldValue as LocalizedString, lang, DEFAULT_LANGUAGE, `${itemTypeForDebug}.${itemId}.${String(fieldKey)}`);
             } else if (typeof rawFieldValue === 'string') {
-                 if (rawFieldValue.trim() === "") throw new Error(`[I18N_ERROR] Field '${String(fieldKey)}' for '${itemTypeForDebug}.${itemId}' is an empty string.`);
+                 // Allow empty strings for descriptions, etc.
+                 // if (rawFieldValue.trim() === "") throw new Error(`[I18N_ERROR] Field '${String(fieldKey)}' for '${itemTypeForDebug}.${itemId}' is an empty string.`);
                  newItem[fieldKey] = rawFieldValue; 
             }
         }
@@ -677,6 +684,27 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   }}).sort((a,b) => a.label.localeCompare(b.label));
   const ALIGNMENT_PREREQUISITE_OPTIONS = [...specificAlignmentOptions, ...genericAlignmentOptions].sort((a,b) => a.label.localeCompare(b.label));
 
+  const rawPreferredDefaults = bundle.alignments?.PREFERRED_DEFAULT_ALIGNMENT_IDS_DATA;
+  let PREFERRED_DEFAULT_ALIGNMENT_IDS: readonly CharacterAlignment[];
+
+  if (!rawPreferredDefaults || !Array.isArray(rawPreferredDefaults) || rawPreferredDefaults.length === 0) {
+    console.warn("[DATA_WARNING] PREFERRED_DEFAULT_ALIGNMENT_IDS_DATA is missing or empty in alignments.json. Using hardcoded fallback ['true-neutral'].");
+    const fallbackTrueNeutral = ALIGNMENTS.find(a => a.id === 'true-neutral')?.id;
+    if (!fallbackTrueNeutral) throw new Error("[DATA_ERROR] 'true-neutral' alignment ID not found for fallback preferred default.");
+    PREFERRED_DEFAULT_ALIGNMENT_IDS = [fallbackTrueNeutral];
+  } else {
+    const validIds = rawPreferredDefaults.filter(id => ALIGNMENTS.some(a => a.id === id));
+    if (validIds.length === 0) {
+      console.warn(`[DATA_WARNING] No valid alignment IDs found in PREFERRED_DEFAULT_ALIGNMENT_IDS_DATA from alignments.json. Raw: ${JSON.stringify(rawPreferredDefaults)}. Defaulting to ['true-neutral'].`);
+      const fallbackTrueNeutral = ALIGNMENTS.find(a => a.id === 'true-neutral')?.id;
+      if (!fallbackTrueNeutral) throw new Error("[DATA_ERROR] 'true-neutral' alignment ID not found for fallback preferred default after invalid list.");
+      PREFERRED_DEFAULT_ALIGNMENT_IDS = [fallbackTrueNeutral];
+    } else {
+      PREFERRED_DEFAULT_ALIGNMENT_IDS = validIds as CharacterAlignment[];
+    }
+  }
+
+
   const GEAR_SLOTS = processLocalizedArray<GearSlot, GearSlot>(
     getAndValidateArray(bundle.gearSlots?.GEAR_SLOTS_DATA, 'Gear Slots'),
     lang,
@@ -763,6 +791,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     DAMAGE_REDUCTION_TYPES,
     DAMAGE_REDUCTION_RULES_OPTIONS,
     ALIGNMENT_PREREQUISITE_OPTIONS,
+    PREFERRED_DEFAULT_ALIGNMENT_IDS,
     GEAR_SLOTS,
     ITEM_DEFINITIONS_WEAPONS,
     ITEM_DEFINITIONS_ARMOR,

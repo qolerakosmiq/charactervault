@@ -73,5 +73,14 @@
         "fr": "<p>Les personnages chaotiques mauvais sont motivés par le désir de gain personnel et de plaisir. Ils ne voient absolument rien de mal à prendre tout ce qu'ils veulent par tous les moyens possibles. Les lois et les gouvernements sont les outils des faibles, conçus pour voler ceux qui ont droit à tout ce qu'ils désirent. Les gens forts et puissants prennent ce qu'ils veulent, et les faibles sont là pour être exploités. Lorsqu'un personnage chaotique mauvais se déchaîne, il est un moteur de destruction et de chaos. Ils n'ont aucun respect pour les règles, l'ordre ou les droits des autres.</p>"
       }
     }
+  ],
+  "PREFERRED_DEFAULT_ALIGNMENT_IDS_DATA": [
+    "true-neutral",
+    "neutral-good",
+    "lawful-good",
+    "chaotic-good",
+    "lawful-neutral",
+    "chaotic-neutral"
   ]
 }
+
