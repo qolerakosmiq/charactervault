@@ -283,7 +283,11 @@ const SkillsFormSectionComponent = ({
       { label: UI_STRINGS.rollDialogSkillRanksLabel, value: skillInstance.ranks || 0 },
     ];
     if (keyAbility !== 'none') {
-      breakdown.push({ label: UI_STRINGS.rollDialogSkillKeyAbilityLabel.replace("{abilityAbbr}", keyAbilityName), value: abilityMod });
+      const rawLabel = UI_STRINGS.rollDialogSkillKeyAbilityLabel;
+      const labelText = rawLabel
+        ? rawLabel.replace("{abilityAbbr}", keyAbilityName)
+        : `Key Ability (${keyAbilityName})`; // Fallback
+      breakdown.push({ label: labelText, value: abilityMod });
     }
     if (synergyBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillSynergyBonusLabel, value: synergyBonus });
     if (featSkillBonus !== 0) breakdown.push({ label: UI_STRINGS.rollDialogSkillFeatBonusLabel, value: featSkillBonus });
@@ -306,8 +310,8 @@ const SkillsFormSectionComponent = ({
   if (translationsLoading || !translations || !aggregatedFeatEffects) {
     return (
       <LockablePanelWrapper
-        title={translations?.UI_STRINGS.skillsPanelTitle}
-        description={translations?.UI_STRINGS.skillsPanelDescription}
+        title={translations?.UI_STRINGS.skillsPanelTitle || "Skills"}
+        description={translations?.UI_STRINGS.skillsPanelDescription || "Allocate skill points based on your class and Intelligence."}
         icon={ScrollText}
         initialLockedState={false}
       >
@@ -517,3 +521,4 @@ const SkillsFormSectionComponent = ({
 SkillsFormSectionComponent.displayName = 'SkillsFormSectionComponent';
 
 export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
+
