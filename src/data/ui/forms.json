@@ -139,15 +139,22 @@
   "skillsTableMaxHeader": { "en": "Max", "fr": "Max" },
   "skillsTableTooltipInfoForSkill": { "en": "Info for {skillName}", "fr": "Infos pour {skillName}" },
   "rollDialogSkillCheckAriaLabel": { "en": "Roll {skillName} Check", "fr": "Lancer un test de {skillName}" },
-  "skillPointCalcOpenParen": { "en": "(", "fr": "(" },
-  "skillPointCalcCloseParenX": { "en": ") ×", "fr": ") ×" },
-  "skillPointCalcClassBase": { "en": "{classLabel} Base", "fr": "Base {classLabel}" },
-  "skillPointCalcPlus": { "en": " + ", "fr": " + " },
-  "skillPointCalcAbilityMod": { "en": "{abilityLabel} Modifier", "fr": "Modificateur {abilityLabel}" },
-  "skillPointCalcRacialBonus": { "en": "Racial Bonus", "fr": "Bonus Racial" },
-  "skillPointCalcMinOne": { "en": ", Minimum 1", "fr": ", Minimum 1" },
-  "skillPointCalcForFirstLevel": { "en": " for First Level = ", "fr": " pour le Premier Niveau = " },
-  "skillPointCalcForProgression": { "en": " for Progression Levels = ", "fr": " pour les Niveaux de Progression = " },
+  "skillPointFormulaLine1": {
+    "en": "(<badge outline>{classLabel}</badge> Base <badge>{baseSkillPointsForClass}</badge> + <badge outline>{intelligenceAbilityLabel}</badge> Mod <badge>{intelligenceModifier}</badge>{racialBonusPart}) × <badge outline>4</badge> for First Level = <badge>{pointsForFirstLevel}</badge>",
+    "fr": "(Base <badge outline>{classLabel}</badge> <badge>{baseSkillPointsForClass}</badge> + Mod. <badge outline>{intelligenceAbilityLabel}</badge> <badge>{intelligenceModifier}</badge>{racialBonusPart}) × <badge outline>4</badge> pour Premier Niveau = <badge>{pointsForFirstLevel}</badge>"
+  },
+  "skillPointFormulaLine2": {
+    "en": "+ (<badge outline>{classLabel}</badge> Base <badge>{baseSkillPointsForClass}</badge> + <badge outline>{intelligenceAbilityLabel}</badge> Mod <badge>{intelligenceModifier}</badge>{racialBonusPart}) × <badge outline>{progressionLevels}</badge> for Progression = <badge>{pointsFromLevelProgression}</badge>",
+    "fr": "+ (Base <badge outline>{classLabel}</badge> <badge>{baseSkillPointsForClass}</badge> + Mod. <badge outline>{intelligenceAbilityLabel}</badge> <badge>{intelligenceModifier}</badge>{racialBonusPart}) × <badge outline>{progressionLevels}</badge> pour Progression = <badge>{pointsFromLevelProgression}</badge>"
+  },
+  "skillPointRacialBonusPartFormat": {
+    "en": " + Racial Bonus <badge>{racialBonusSkillPoints}</badge>",
+    "fr": " + Bonus Racial <badge>{racialBonusSkillPoints}</badge>"
+  },
+  "skillPointFormulaMinOneNote": {
+    "en": "Minimum 1 skill point per level applies after all bonuses.",
+    "fr": "Minimum 1 point de compétence par niveau s'applique après tous les bonus."
+  },
   "skillPointFormulaSelectClassPrompt": { "en": "Select a class to see detailed skill point calculation.", "fr": "Sélectionnez une classe pour voir le calcul détaillé des points de compétence." },
   "featsPanelTitle": { "en": "Feats", "fr": "Dons" },
   "featsPanelSheetDescription": { "en": "Manage your character's special abilities and advantages.", "fr": "Gérez les capacités spéciales et les avantages de votre personnage." },
