@@ -53,8 +53,8 @@
   "abilityScoresBaseScoreLabel": { "en": "Base Score", "fr": "Score de base" },
   "abilityScoresTempModLabel": { "en": "Temporary Modifier", "fr": "Modificateur temporaire" },
   "abilityScoresNote_full": { "en": "<b>Note:</b> The <badge outline>Temporary Modifier</badge> field adjusts the <badge outline>Base Score</badge>, not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score.", "fr": "<b>Note :</b> Le champ <badge outline>Modificateur temporaire</badge> ajuste le <badge outline>Score de base</badge>, et non le modificateur de caractéristique dérivé du score de base. Les autres bonus de race, de vieillissement ou de dons sont appliqués automatiquement au score total." },
-  "abilityScoreRaceModBadgeFormat": { "en": "{abilityAbbr} | {change}", "fr": "{abilityAbbr} | {change}" },
-  "acModSizeBadgeFormat": { "en": "AC | {acModValue}", "fr": "CA | {acModValue}" },
+  "abilityScoreRaceModBadgeFormat": { "en": "{abilityAbbr} | <b>{change}</b>", "fr": "{abilityAbbr} | <b>{change}</b>" },
+  "acModSizeBadgeFormat": { "en": "AC | <b>{acModValue}</b>", "fr": "CA | <b>{acModValue}</b>" },
   "resistancesPanelTitle": { "en": "Resistances & Other Defenses", "fr": "Résistances et autres défenses" },
   "resistancesPanelDescription": { "en": "Manage custom modifiers for resistances, damage reductions, and fortification.", "fr": "Gérer les modificateurs personnalisés pour les résistances, les réductions de dégâts et la fortification." },
   "resistancesPanelEnergyResistancesLabel": { "en": "Energy Resistances", "fr": "Résistances aux énergies" },
@@ -258,3 +258,4 @@
   "skinPlaceholder": { "en": "e.g., Fair, Tanned", "fr": "ex : Claire, Bronzée" }
 }
 
+    
