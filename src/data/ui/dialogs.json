@@ -57,8 +57,10 @@
   "rollDialogTotalBonusLabel": { "en": "Total Bonus", "fr": "Bonus Total" },
   "rollDialogTotalNumericBonusLabel": { "en": "Total Numeric Bonus", "fr": "Bonus Numérique Total" },
   "infoDialogTitleScoreCalculation": { "en": "{abilityName} Score Calculation", "fr": "Calcul du score de {abilityName}" },
-  "infoDialogTitleSavingThrowBreakdown": { "en": "Saving Throw Breakdown ({saveTypeLabel})", "fr": "Détail du Jet de Sauvegarde ({saveTypeLabel})" }
+  "infoDialogTitleSavingThrowBreakdown": { "en": "Saving Throw Breakdown ({saveTypeLabel})", "fr": "Détail du Jet de Sauvegarde ({saveTypeLabel})" },
+  "infoDialogTitleAcBreakdown": { "en": "Armor Class Breakdown ({acType})", "fr": "Détail de la Classe d'Armure ({acType})" }
 }
 
     
     
+  
