@@ -17,15 +17,44 @@
     { "key": { "en": "Weapon and Armor Proficiency", "fr": "Maîtrise des armes et armures" }, "value": { "en": "Wizards are proficient with the club, dagger, heavy crossbow, light crossbow, and quarterstaff, but not with any type of armor or shield. Armor of any type interferes with a wizard’s movements, which can cause his spells with somatic components to fail.", "fr": "Les magiciens sont compétents avec le gourdin, la dague, l'arbalète lourde, l'arbalète légère et le bâton, mais avec aucun type d'armure ou de bouclier. Les armures de tout type interfèrent avec les mouvements d'un magicien, ce qui peut faire échouer ses sorts avec des composantes somatiques." } }
   ],
   "uiSections": [
-    { 
-      "key": "wizardSpecialization", 
-      "labelKey": "wizardSpecializationTitle"
+    {
+      "key": "chosenSpecializationSchool",
+      "label": { "en": "Specialization School", "fr": "École de spécialisation" },
+      "description": {
+        "en": "Selecting a specialization grants one bonus spell slot per spell level for that school, but requires choosing two prohibited schools (Divination cannot be prohibited). Generalists (Universal school) have no prohibited schools and can prepare an extra spell of any school per spell level.",
+        "fr": "Choisir une spécialisation accorde un emplacement de sort bonus par niveau de sort pour cette école, mais nécessite de choisir deux écoles interdites (la Divination ne peut pas être interdite). Les généralistes (école Universelle) n'ont pas d'écoles interdites et peuvent préparer un sort supplémentaire de n'importe quelle école par niveau de sort."
+      },
+      "choiceType": "select",
+      "optionsSource": "magicSchools",
+      "placeholder": { "en": "Select School (or Generalist)", "fr": "Choisir une École (ou Généraliste)" }
     },
-    { 
-      "key": "wizardProhibitedSchools", 
-      "labelKey": "wizardProhibitedSchoolsTitle",
+    {
+      "key": "prohibitedSchool1",
+      "label": { "en": "First Prohibited School", "fr": "Première École Interdite" },
+      "description": {
+        "en": "Spells from prohibited schools cannot be learned or cast. Divination cannot be prohibited. Cannot be your specialized school.",
+        "fr": "Les sorts des écoles interdites ne peuvent être ni appris ni lancés. La Divination ne peut pas être interdite. Ne peut pas être votre école de spécialisation."
+      },
+      "choiceType": "select",
+      "optionsSource": "magicSchools",
+      "placeholder": { "en": "Select Prohibited School...", "fr": "Choisir une École Interdite..." },
       "conditionDependsOnUIStateKey": "chosenSpecializationSchool",
-      "conditionDependsOnUIStateValueNotIn": ["", null, "universal"]
+      "conditionDependsOnUIStateValueNotIn": ["", "universal", "__NONE_SCHOOL__"]
+    },
+    {
+      "key": "prohibitedSchool2",
+      "label": { "en": "Second Prohibited School", "fr": "Seconde École Interdite" },
+      "description": {
+        "en": "Spells from prohibited schools cannot be learned or cast. Divination cannot be prohibited. Cannot be your specialized school or the first prohibited school.",
+        "fr": "Les sorts des écoles interdites ne peuvent être ni appris ni lancés. La Divination ne peut pas être interdite. Ne peut pas être votre école de spécialisation ou la première école interdite."
+      },
+      "choiceType": "select",
+      "optionsSource": "magicSchools",
+      "placeholder": { "en": "Select Prohibited School...", "fr": "Choisir une École Interdite..." },
+      "conditionDependsOnUIStateKey": "chosenSpecializationSchool",
+      "conditionDependsOnUIStateValueNotIn": ["", "universal", "__NONE_SCHOOL__"],
+      "relatedSlotKeyForDisable": "prohibitedSchool1",
+      "disabledIfChoiceValue": { "featureKey": "prohibitedSchool1", "values": ["", "__NONE_SCHOOL__"] }
     }
   ],
   "grantedFeats": [
@@ -93,7 +122,7 @@
     {
       "id": "class-wizard-bonus-feat-slot-15",
       "label": { "en": "Wizard Bonus Feat (Level 15)", "fr": "Don supplémentaire de Magicien (Niveau 15)" },
-      "description": { "en": "At 15th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat", "fr": "Au niveau 15, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie" },
+      "description": { "en": "At 15th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat", "fr": "Au niveau 15, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou de métamagie" },
       "effectsText": { "en": "Choose an item creation or metamagic feat", "fr": "Choisir un don de création d'objet ou de métamagie"},
       "isClassFeature": true, "type": "special-ex",
       "effects": [{ "type": "bonusFeatSlot", "category": "wizardBonusFeat", "count": 1 }]
@@ -101,12 +130,10 @@
     {
       "id": "class-wizard-bonus-feat-slot-20",
       "label": { "en": "Wizard Bonus Feat (Level 20)", "fr": "Don supplémentaire de Magicien (Niveau 20)" },
-      "description": { "en": "At 20th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat", "fr": "Au niveau 20, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou un don de métamagie" },
+      "description": { "en": "At 20th level, a wizard gains a bonus feat. This feat must be an item creation feat or a metamagic feat", "fr": "Au niveau 20, un magicien gagne un don supplémentaire. Ce don doit être un don de création d'objet ou de métamagie" },
       "effectsText": { "en": "Choose an item creation or metamagic feat", "fr": "Choisir un don de création d'objet ou de métamagie"},
       "isClassFeature": true, "type": "special-ex",
       "effects": [{ "type": "bonusFeatSlot", "category": "wizardBonusFeat", "count": 1 }]
     }
   ]
 }
-
-    

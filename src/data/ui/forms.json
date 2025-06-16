@@ -6,7 +6,7 @@
   "loadingAbilityNamesTitle": { "en": "Loading ability names...", "fr": "Chargement des noms de caractéristiques..." },
   "deityNoneOption": { "en": "None", "fr": "Aucune" },
   "domainNoneOption": { "en": "None", "fr": "Aucun" },
-  "magicSchoolNoneOption": { "en": "None / Generalist", "fr": "Aucune / Généraliste" },
+  "magicSchoolNoneOption": { "en": "None / Universalist", "fr": "Aucune / Universaliste" },
   "prohibitedSchoolNoneOption": { "en": "None", "fr": "Aucune" },
   "coreAttributesTitle": { "en": "Core Attributes", "fr": "Attributs principaux" },
   "coreAttributesDescription": { "en": "Define the fundamental aspects of your adventurer.", "fr": "Définissez les aspects fondamentaux de votre aventurier." },
@@ -20,13 +20,13 @@
   "genderLabel": { "en": "Gender", "fr": "Genre" },
   "sizeLabel": { "en": "Size Category", "fr": "Catégorie de taille" },
   "hitDiceLabel": { "en": "Hit Dice | <b>{value}</b>", "fr": "Dés de vie | <b>{value}</b>" },
-  "rangerCombatStyleLabel": { "en": "Ranger Combat Style", "fr": "Style de combat du Rôdeur" },
   "favoredEnemyTitle": { "en": "Favored Enemies", "fr": "Ennemis jurés" },
-  "wizardSpecializationSchoolLabel": { "en": "Specialization School", "fr": "École de spécialisation" },
+  "favoredEnemySlotLabel": { "en": "Favored Enemy (Level {level})", "fr": "Ennemi juré (Niveau {level})" },
+  "favoredEnemyPlaceholder": { "en": "Enter enemy type (e.g., Orcs)", "fr": "Entrer le type d'ennemi (ex: Orques)" },
+  "favoredEnemySlotsAvailableShort": { "en": "{slots} Slot(s)", "fr": "{slots} Emplacement(s)"},
+  "favoredEnemyBonusDisplayInfo": { "en": "Bonuses vs Favored Enemies: +{skillBonus} to skills (Bluff, Listen, Sense Motive, Spot, Survival), +{damageBonus} to damage.", "fr": "Bonus vs Ennemis Jurés : +{skillBonus} aux compétences (Bluff, Perception auditive, Psychologie, Détection, Survie), +{damageBonus} aux dégâts." },
+  "selectRangerCombatStylePlaceholder": { "en": "Select Combat Style...", "fr": "Choisir un style de combat..." },
   "wizardSpecialistBonusSpellInfo": { "en": "Grants one bonus spell of the chosen school per spell level per day.", "fr": "Accorde un sort supplémentaire de l'école choisie par niveau de sort par jour." },
-  "wizardProhibitedSchool1Label": { "en": "First Prohibited School", "fr": "Première École Interdite" },
-  "wizardProhibitedSchool2Label": { "en": "Second Prohibited School", "fr": "Seconde École Interdite" },
-  "wizardProhibitedSchoolInfo": { "en": "Spells from prohibited schools cannot be learned or cast. Divination cannot be prohibited.", "fr": "Les sorts des écoles interdites ne peuvent être ni appris ni lancés. La Divination ne peut pas être interdite." },
   "wizardProhibitedSchoolDivinationError": { "en": "Divination cannot be a prohibited school.", "fr": "La Divination ne peut pas être une école interdite." },
   "wizardProhibitedSchoolSpecializationError": { "en": "Cannot prohibit your specialized school.", "fr": "Impossible d'interdire votre école de spécialisation." },
   "wizardProhibitedSchoolDuplicateError": { "en": "Cannot select the same prohibited school twice.", "fr": "Impossible de sélectionner deux fois la même école interdite." },
@@ -203,3 +203,4 @@
   "featCategory_rogueSpecialAbility": { "en": "Rogue Special Ability", "fr": "Capacité Spéciale Roublard"},
   "featCategory_wizardBonusFeat": { "en": "Wizard Bonus Feat", "fr": "Don supplémentaire Magicien" }
 }
+

@@ -195,6 +195,8 @@ export interface GrantsAbilityEffectUses {
   per: "day" | "encounter" | "week"; // Added "week" for Quivering Palm
   value?: number | "levelBased" | "abilityModBased" | "scaled" | "customPool"; // Added customPool
   isActive?: boolean;
+  basedOnAbility?: Exclude<AbilityName, 'none'>; // For abilities like Turn Undead (3 + Cha mod)
+  scaleWithClassLevel?: FeatEffectScaling; // Ensure this is defined if value is 'scaled'
 }
 
 export interface GrantsAbilityEffect {
@@ -465,15 +467,15 @@ export interface ClassSpecificUIGrantsFeat {
 export interface ClassSpecificUIBlock {
   key: string;
   label?: LocalizedString;
-  labelKey?: string;
+  labelKey?: string; // Fallback if label not provided
   description?: LocalizedString;
-  descriptionKey?: string;
+  descriptionKey?: string; // Fallback
   placeholder?: LocalizedString;
-  placeholderKey?: string;
+  placeholderKey?: string; // Fallback
   inputPlaceholder?: LocalizedString;
-  inputPlaceholderKey?: string;
+  inputPlaceholderKey?: string; // Fallback
   slotLabel?: LocalizedString;
-  slotLabelKey?: string;
+  slotLabelKey?: string; // Fallback
   choiceType: "select" | "combobox" | "textInput" | "multiInput" | "heading";
   isHeadingOnly?: boolean;
   maxSelections?: number;
@@ -485,6 +487,7 @@ export interface ClassSpecificUIBlock {
   valueFromDataContext?: string;
   relatedSlotKeyForDisable?: string;
   disabledIfChoiceValue?: { featureKey: string; values: string[] };
+  note?: LocalizedString; // Added for Wizard prohibited school dynamic filtering note
 }
 
 export interface FeatChoiceFilterCase {
@@ -884,3 +887,5 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
   loadSpeedPenalty_base: 0, loadSpeedPenalty_miscModifier: 0
 };
 export const DEFAULT_RESISTANCE_VALUE_DATA: ResistanceValue = { base: 0, customMod: 0 };
+
+    

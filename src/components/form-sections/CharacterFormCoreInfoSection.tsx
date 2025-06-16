@@ -27,7 +27,7 @@ import type {
   ComboboxOption,
   LocalizedString
 } from '@/types/character-core';
-import { isAlignmentCompatibleWithDeity, isAlignmentValidForRequirement, getGrantedFeatsForCharacter } from '@/types/character';
+import { isAlignmentCompatibleWithDeity, isAlignmentValidForRequirement } from '@/types/character';
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -353,8 +353,8 @@ const CharacterFormCoreInfoSectionComponent = ({
     }
 
     if (uiBlock.conditionDependsOnUIStateKey) {
-      const stateValue = (characterData as any)[uiBlock.conditionDependsOnUIStateKey]; 
-      if (uiBlock.conditionDependsOnUIStateValueNotIn && uiBlock.conditionDependsOnUIStateValueNotIn.includes(stateValue as string | null | undefined)) {
+      const stateValue = (characterData.classSpecificChoices || []).find(c => c.featureKey === uiBlock.conditionDependsOnUIStateKey)?.value;
+      if (uiBlock.conditionDependsOnUIStateValueNotIn && uiBlock.conditionDependsOnUIStateValueNotIn.includes(stateValue || "")) {
         return null;
       }
     }
@@ -598,8 +598,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 {aggregatedFeatEffects?.grantedAbilities && aggregatedFeatEffects.grantedAbilities.map(ability => {
                    const abilityNameForDisplay = getLocalizedString(ability.name, currentLang);
                    if (ability.uses && typeof ability.uses.value === 'number' && ability.uses.per) {
-                    const periodStrKey = `period${ability.uses.per.charAt(0).toUpperCase() + ability.uses.per.slice(1)}` as keyof typeof UI_STRINGS;
-                    const localizedPeriod = UI_STRINGS[periodStrKey] || ability.uses.per;
+                    const localizedPeriod = (ability.uses.per === 'day' ? UI_STRINGS.periodDay : ability.uses.per === 'encounter' ? UI_STRINGS.periodEncounter : ability.uses.per === 'week' ? UI_STRINGS.periodWeek : ability.uses.per) || ability.uses.per;
                     const dataContext = {
                       abilityName: abilityNameForDisplay,
                       usesValue: ability.uses.value,
