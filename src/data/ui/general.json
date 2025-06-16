@@ -100,10 +100,10 @@
   "sizeNotSet": { "en": "Size Not Set", "fr": "Taille non définie" },
   "lockButtonAriaLabelLocked": { "en": "Section is unlocked. Click to lock.", "fr": "La section est déverrouillée. Cliquez pour verrouiller." },
   "lockButtonAriaLabelUnlocked": { "en": "Section is locked. Click to unlock.", "fr": "La section est verrouillée. Cliquez pour déverrouiller." },
-  "abilityUsesFormat": { "en": "{abilityName} Uses | <b>{usesValue}</b> per {period}", "fr": "Utilisations de {abilityName} | <b>{usesValue}</b> par {period}" },
-  "abilityPoolFormat": { "en": "{abilityName} | <b>{poolValue}</b> per {period}", "fr": "{abilityName} | <b>{poolValue}</b> par {period}" },
-  "periodDay": { "en": "day", "fr": "jour" },
-  "periodEncounter": { "en": "encounter", "fr": "rencontre" },
-  "periodWeek": { "en": "week", "fr": "semaine" }
+  "abilityUsesFormat": { "en": "{abilityName} Uses per {Period} | <b>{usesValue}</b>", "fr": "{abilityName} Utilisations par {Period} | <b>{usesValue}</b>" },
+  "abilityPoolFormat": { "en": "{abilityName} | <b>{poolValue}</b> per {Period}", "fr": "{abilityName} | <b>{poolValue}</b> par {Period}" },
+  "periodDay": { "en": "Day", "fr": "Jour" },
+  "periodEncounter": { "en": "Encounter", "fr": "Rencontre" },
+  "periodWeek": { "en": "Week", "fr": "Semaine" }
 }
 
