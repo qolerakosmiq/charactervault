@@ -358,7 +358,7 @@ const CombatPanelComponent = ({
 
   const handleOpenMeleeAttackInfo = () => {
     const components = getMeleeAttackBonusBreakdownComponentsInternal();
-    onOpenCombatStatInfoDialog({type: 'genericNumericalBreakdown', titleKey: 'infoDialogTitleMeleeAttackBreakdown', components});
+    onOpenCombatStatInfoDialog({type: 'meleeAttackBreakdown', components});
   };
 
   const getMeleeDamageBonusBreakdownComponentsInternal = React.useCallback((): GenericBreakdownItem[] => {
@@ -401,7 +401,7 @@ const CombatPanelComponent = ({
 
   const handleOpenMeleeDamageInfo = () => {
     const components = getMeleeDamageBonusBreakdownComponentsInternal();
-    onOpenCombatStatInfoDialog({type: 'genericNumericalBreakdown', titleKey: 'infoDialogTitleMeleeDamageBreakdown', components});
+    onOpenCombatStatInfoDialog({type: 'meleeDamageBreakdown', components});
   };
 
   const getRangedAttackBonusBreakdownComponentsInternal = React.useCallback((): GenericBreakdownItem[] => {
@@ -432,7 +432,7 @@ const CombatPanelComponent = ({
 
   const handleOpenRangedAttackInfo = () => {
     const components = getRangedAttackBonusBreakdownComponentsInternal();
-    onOpenCombatStatInfoDialog({type: 'genericNumericalBreakdown', titleKey: 'infoDialogTitleRangedAttackBreakdown', components});
+    onOpenCombatStatInfoDialog({type: 'rangedAttackBreakdown', components});
   };
 
   const getRangedDamageBonusBreakdownComponentsInternal = React.useCallback((): GenericBreakdownItem[] => {
@@ -472,7 +472,7 @@ const CombatPanelComponent = ({
 
   const handleOpenRangedDamageInfo = () => {
     const components = getRangedDamageBonusBreakdownComponentsInternal();
-    onOpenCombatStatInfoDialog({type: 'genericNumericalBreakdown', titleKey: 'infoDialogTitleRangedDamageBreakdown', components});
+    onOpenCombatStatInfoDialog({type: 'rangedDamageBreakdown', components});
   };
 
   const handleOpenInitiativeRoll = () => {

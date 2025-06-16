@@ -58,9 +58,9 @@
   "rollDialogTotalNumericBonusLabel": { "en": "Total Numeric Bonus", "fr": "Bonus Numérique Total" },
   "infoDialogTitleScoreCalculation": { "en": "{abilityName} Score Calculation", "fr": "Calcul du score de {abilityName}" },
   "infoDialogTitleSavingThrowBreakdown": { "en": "Saving Throw Breakdown ({saveTypeLabel})", "fr": "Détail du Jet de Sauvegarde ({saveTypeLabel})" },
-  "infoDialogTitleAcBreakdown": { "en": "Armor Class Breakdown ({acType})", "fr": "Détail de la Classe d'Armure ({acType})" }
+  "infoDialogTitleAcBreakdown": { "en": "Armor Class Breakdown ({acType})", "fr": "Détail de la Classe d'Armure ({acType})" },
+  "infoDialogTitleMeleeAttackBreakdown": { "en": "Melee Attack Breakdown", "fr": "Détail de l'Attaque au Corps à Corps" },
+  "infoDialogTitleMeleeDamageBreakdown": { "en": "Melee Damage Breakdown", "fr": "Détail des Dégâts au Corps à Corps" },
+  "infoDialogTitleRangedAttackBreakdown": { "en": "Ranged Attack Breakdown", "fr": "Détail de l'Attaque à Distance" },
+  "infoDialogTitleRangedDamageBreakdown": { "en": "Ranged Damage Breakdown", "fr": "Détail des Dégâts à Distance" }
 }
-
-    
-    
-  

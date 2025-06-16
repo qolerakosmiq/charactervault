@@ -715,6 +715,10 @@ export type InfoDialogContentType =
   | { type: 'savingThrowBreakdown'; saveType: SavingThrowType }
   | { type: 'maxHpBreakdown' }
   | { type: 'genericHtml'; title: string; content: string }
+  | { type: 'meleeAttackBreakdown'; components: GenericBreakdownItem[] }
+  | { type: 'meleeDamageBreakdown'; components: GenericBreakdownItem[] }
+  | { type: 'rangedAttackBreakdown'; components: GenericBreakdownItem[] }
+  | { type: 'rangedDamageBreakdown'; components: GenericBreakdownItem[] }
   | { type: 'genericNumericalBreakdown'; titleKey: keyof ProcessedSiteData['UI_STRINGS']; components: GenericBreakdownItem[] };
 
 

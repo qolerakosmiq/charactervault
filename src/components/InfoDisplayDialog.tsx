@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import *as React from 'react';
@@ -30,7 +29,7 @@ import type {
   CharacterSizeObject,
   DndRaceOption, DndClassOption, AbilityScores, AggregatedFeatEffects, DetailedAbilityScores,
   CharacterAlignmentObject, DndDeityOption, ClassAttribute, AggregatedFeatEffectBase, SkillEffectDetail,
-  ItemDefinition, ItemInstance, GearSlotId, LocalizedString // Added Item types and LocalizedString
+  ItemDefinition, ItemInstance, GearSlotId, LocalizedString, GenericBreakdownItem // Added Item types and LocalizedString
 } from '@/types/character';
 
 import {
@@ -71,6 +70,10 @@ import { SpeedBreakdownContentDisplay } from './info-dialog-content/SpeedBreakdo
 import { SavingThrowBreakdownContentDisplay, type SavingThrowBreakdownDetails, type SavingThrowFeatComponent } from './info-dialog-content/SavingThrowBreakdownContentDisplay';
 import { GenericHtmlContentDisplay } from './info-dialog-content/GenericHtmlContentDisplay';
 import { MaxHpBreakdownContentDisplay } from './info-dialog-content/MaxHpBreakdownContentDisplay';
+import { MeleeAttackBreakdownContentDisplay } from './info-dialog-content/MeleeAttackBreakdownContentDisplay';
+import { MeleeDamageBreakdownContentDisplay } from './info-dialog-content/MeleeDamageBreakdownContentDisplay';
+import { RangedAttackBreakdownContentDisplay } from './info-dialog-content/RangedAttackBreakdownContentDisplay';
+import { RangedDamageBreakdownContentDisplay } from './info-dialog-content/RangedDamageBreakdownContentDisplay';
 
 
 export interface ResistanceBreakdownDetails {
@@ -129,6 +132,10 @@ const DIALOG_ICONS: Record<string, React.ElementType> = {
   initiativeBreakdown: Zap,
   grappleModifierBreakdown: Swords,
   grappleDamageBreakdown: Swords,
+  meleeAttackBreakdown: Swords,
+  meleeDamageBreakdown: Swords,
+  rangedAttackBreakdown: Swords,
+  rangedDamageBreakdown: Swords,
   land: Wind, burrow: Shell, climb: MoveVertical, fly: Feather, swim: Waves,
   armorSpeedPenaltyBreakdown: ShieldOff,
   loadSpeedPenaltyBreakdown: Weight,
@@ -698,9 +705,8 @@ export function InfoDisplayDialog({
         totalACValueForDialog += (character.acMiscModifier || 0);
 
         const titleTemplate = UI_STRINGS.infoDialogTitleAcBreakdown || "Armor Class Breakdown ({acType})";
-        const acTypeLabel = contentType.acType === 'Normal' ? (UI_STRINGS.armorClassNormalLabel || "Normal")
-                          : contentType.acType === 'Touch' ? (UI_STRINGS.armorClassTouchLabel || "Touch")
-                          : (UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed");
+        const acTypeLabelKey = `armorClass${contentType.acType}Label` as keyof typeof UI_STRINGS;
+        const acTypeLabel = UI_STRINGS[acTypeLabelKey] || contentType.acType;
 
         data = { title: titleTemplate.replace("{acType}", acTypeLabel), content: [AcBreakdownContentDisplay({detailsList: details, totalACValue: totalACValueForDialog, detailsListHeading, uiStrings: UI_STRINGS})] };
         break;
@@ -716,7 +722,7 @@ export function InfoDisplayDialog({
               miscModifier: character.babMiscModifier || 0,
               totalBab: baseBabArrayVal.map(b => b + (character.babMiscModifier || 0)),
               characterClassLabel: DND_CLASSES.find(c => c.id === character.classes[0]?.className)?.label || character.classes[0]?.className,
-              featAttackBonus: 0,
+              featAttackBonus: 0, // This needs to be calculated from aggregatedFeatEffects if applicable to general BAB
             },
             uiStrings: UI_STRINGS
           })],
@@ -914,13 +920,42 @@ export function InfoDisplayDialog({
         };
         break;
       }
+      case 'meleeAttackBreakdown':
+        iconKey = 'meleeAttackBreakdown';
+        data = {
+          title: UI_STRINGS.infoDialogTitleMeleeAttackBreakdown || "Melee Attack Breakdown",
+          content: [<MeleeAttackBreakdownContentDisplay components={contentType.components} uiStrings={UI_STRINGS} />]
+        };
+        break;
+      case 'meleeDamageBreakdown':
+        iconKey = 'meleeDamageBreakdown';
+        data = {
+          title: UI_STRINGS.infoDialogTitleMeleeDamageBreakdown || "Melee Damage Breakdown",
+          content: [<MeleeDamageBreakdownContentDisplay components={contentType.components} uiStrings={UI_STRINGS} />]
+        };
+        break;
+      case 'rangedAttackBreakdown':
+        iconKey = 'rangedAttackBreakdown';
+        data = {
+          title: UI_STRINGS.infoDialogTitleRangedAttackBreakdown || "Ranged Attack Breakdown",
+          content: [<RangedAttackBreakdownContentDisplay components={contentType.components} uiStrings={UI_STRINGS} />]
+        };
+        break;
+      case 'rangedDamageBreakdown':
+        iconKey = 'rangedDamageBreakdown';
+        data = {
+          title: UI_STRINGS.infoDialogTitleRangedDamageBreakdown || "Ranged Damage Breakdown",
+          content: [<RangedDamageBreakdownContentDisplay components={contentType.components} uiStrings={UI_STRINGS} />]
+        };
+        break;
       case 'genericHtml':
         iconKey = 'genericHtml';
         data = { title: contentType.title, content: [GenericHtmlContentDisplay({htmlContent: contentType.content})] };
         break;
        case 'genericNumericalBreakdown':
-        iconKey = 'default';
+        iconKey = 'default'; // Or derive from titleKey if possible
         const titleForGeneric = UI_STRINGS[contentType.titleKey] || "Breakdown";
+        // This case might need its own specific display component if styling for values is complex
         const contentForGeneric = [<div key="generic-num-content">{contentType.components.map((comp, idx) => (
             <div key={`${idx}-${comp.label}`} className="flex justify-between text-sm">
                 <span>{comp.label}</span>
@@ -1006,6 +1041,3 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
-
-
-
