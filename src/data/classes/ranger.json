@@ -39,6 +39,7 @@
     {
       "key": "rangerFavoredEnemiesTitle",
       "label": { "en": "Favored Enemies", "fr": "Ennemis jurés" },
+      "description": { "en": "The ranger gains bonuses on checks and damage rolls against these types of creatures.", "fr": "Le rôdeur gagne des bonus aux tests et jets de dégâts contre ces types de créatures." },
       "choiceType": "heading",
       "isHeadingOnly": true
     },
