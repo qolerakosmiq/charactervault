@@ -342,8 +342,9 @@ export function InfoDisplayDialog({
         const abilityKeyForTitle = contentType.abilityName as Exclude<AbilityName, 'none'>;
         const abilityLabelForTitle = ABILITY_LABELS.find(al => al.id === abilityKeyForTitle);
         const abilityNameString = abilityLabelForTitle?.label || abilityKeyForTitle;
+        const titleString = UI_STRINGS.infoDialogTitleScoreCalculation || "{abilityName} Score Calculation";
         data = {
-          title: UI_STRINGS.infoDialogTitleScoreCalculation.replace("{abilityName}", abilityNameString),
+          title: titleString.replace("{abilityName}", abilityNameString),
           content: [AbilityScoreBreakdownContentDisplay({abilityScoreBreakdown: detailedCharScoresForDialog[contentType.abilityName], uiStrings: UI_STRINGS})],
         };
         break;
@@ -917,7 +918,7 @@ export function InfoDisplayDialog({
         break;
        case 'genericNumericalBreakdown':
         iconKey = 'default';
-        const titleForGeneric = UI_STRINGS[contentType.titleKey];
+        const titleForGeneric = UI_STRINGS[contentType.titleKey] || "Breakdown";
         const contentForGeneric = [<div key="generic-num-content">{contentType.components.map((comp, idx) => (
             <div key={`${idx}-${comp.label}`} className="flex justify-between text-sm">
                 <span>{comp.label}</span>
@@ -1003,3 +1004,4 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
+

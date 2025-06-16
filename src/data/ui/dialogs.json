@@ -53,7 +53,8 @@
   "rollDialogSkillRacialBonusLabel": { "en": "Racial Bonus", "fr": "Bonus racial" },
   "rollDialogSkillSizeBonusLabel": { "en": "Size Bonus", "fr": "Bonus de taille" },
   "rollDialogSkillUserMiscModLabel": { "en": "User Misc Mod", "fr": "Mod Divers Utilisateur" },
-  "rollDialogGenericBreakdownLabel": { "en": "Component", "fr": "Composant"}
+  "rollDialogGenericBreakdownLabel": { "en": "Component", "fr": "Composant"},
+  "infoDialogTitleScoreCalculation": { "en": "{abilityName} Score Calculation", "fr": "Calcul du score de {abilityName}" }
 }
 
     
