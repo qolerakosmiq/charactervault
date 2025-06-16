@@ -10,37 +10,39 @@ import { useI18n } from '@/context/I18nProvider';
 
 interface LockablePanelWrapperProps {
   title: string;
-  description?: string; // Make description optional
+  description?: string; 
   icon: React.ElementType;
   children: React.ReactNode | (({ isLocked }: { isLocked: boolean }) => React.ReactNode);
   initialLockedState?: boolean;
   onLockChange?: (isLocked: boolean) => void;
   cardClassName?: string;
   cardContentClassName?: string;
-  headerActions?: React.ReactNode; // For extra buttons like "Roll Scores"
+  headerActions?: ((isPanelLocked: boolean) => React.ReactNode) | React.ReactNode;
 }
 
-export function LockablePanelWrapper({
+const LockablePanelWrapperComponent = ({
   title,
   description,
   icon: Icon,
   children,
-  initialLockedState = false, // Default to unlocked for character creation
+  initialLockedState = false,
   onLockChange,
   cardClassName,
   cardContentClassName,
   headerActions,
-}: LockablePanelWrapperProps) {
+}: LockablePanelWrapperProps) => {
   const [isLocked, setIsLocked] = React.useState(initialLockedState);
   const { translations } = useI18n();
 
-  const toggleLock = () => {
-    const newLockState = !isLocked;
-    setIsLocked(newLockState);
-    if (onLockChange) {
-      onLockChange(newLockState);
-    }
-  };
+  const toggleLock = React.useCallback(() => {
+    setIsLocked(prev => {
+      const newLockState = !prev;
+      if (onLockChange) {
+        onLockChange(newLockState);
+      }
+      return newLockState;
+    });
+  }, [onLockChange]);
 
   const uiStrings = translations?.UI_STRINGS;
   const lockAriaLabel = isLocked
@@ -59,7 +61,7 @@ export function LockablePanelWrapper({
             </div>
           </div>
           <div className="flex items-center gap-x-1">
-            {headerActions}
+            {typeof headerActions === 'function' ? headerActions(isLocked) : headerActions}
             <Button
               type="button"
               variant="ghost"
@@ -84,4 +86,7 @@ export function LockablePanelWrapper({
       </CardContent>
     </Card>
   );
-}
+};
+
+LockablePanelWrapperComponent.displayName = "LockablePanelWrapperComponent";
+export const LockablePanelWrapper = React.memo(LockablePanelWrapperComponent);

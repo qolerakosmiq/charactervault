@@ -12,7 +12,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
-import { cn } from '@/lib/utils'; // Added import
+import { cn } from '@/lib/utils';
 
 export interface LanguagesPanelProps {
   characterLanguages: LanguageId[];
@@ -32,11 +32,64 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
   const { translations, isLoading: translationsLoading } = useI18n();
   const [selectedLanguageToAdd, setSelectedLanguageToAdd] = React.useState<string>('');
 
-  if (translationsLoading || !translations) {
+  const { LANGUAGES, DND_RACES, UI_STRINGS } = translations || {};
+
+  const automaticLanguages = React.useMemo(() => {
+    if (!DND_RACES) return ['common'];
+    const raceData = DND_RACES.find(r => r.id === characterRaceId);
+    return ['common', ...(raceData?.automaticLanguages || [])];
+  }, [DND_RACES, characterRaceId]);
+  
+  const intBonusLanguages = React.useMemo(() => Math.max(0, calculateAbilityModifier(characterIntelligenceScore)), [characterIntelligenceScore]);
+  const skillBonusLanguages = React.useMemo(() => speakLanguageSkillRanks, [speakLanguageSkillRanks]);
+  
+  const totalBonusLanguageSlots = React.useMemo(() => intBonusLanguages + skillBonusLanguages, [intBonusLanguages, skillBonusLanguages]);
+
+  const chosenPlayerLanguages = React.useMemo(() => characterLanguages.filter(lang => !automaticLanguages.includes(lang)), [characterLanguages, automaticLanguages]);
+  const slotsUsed = React.useMemo(() => chosenPlayerLanguages.length, [chosenPlayerLanguages]);
+  const slotsRemaining = React.useMemo(() => totalBonusLanguageSlots - slotsUsed, [totalBonusLanguageSlots, slotsUsed]);
+
+  const allKnownLanguageIds = React.useMemo(() => Array.from(new Set([...automaticLanguages, ...characterLanguages])), [automaticLanguages, characterLanguages]);
+  
+  const allKnownLanguagesToDisplay = React.useMemo(() => {
+    if (!LANGUAGES) return [];
+    return LANGUAGES
+      .filter(lang => allKnownLanguageIds.includes(lang.id))
+      .sort((a, b) => {
+        const isAAutomatic = automaticLanguages.includes(a.id);
+        const isBAutomatic = automaticLanguages.includes(b.id);
+        if (isAAutomatic && !isBAutomatic) return -1;
+        if (!isAAutomatic && isBAutomatic) return 1;
+        return a.label.localeCompare(b.label);
+      });
+  }, [LANGUAGES, allKnownLanguageIds, automaticLanguages]);
+
+
+  const availableLanguagesForAdding = React.useMemo(() => {
+    if (!LANGUAGES) return [];
+    return LANGUAGES.filter(
+      lang => !allKnownLanguageIds.includes(lang.id) && lang.id !== 'druidic' // Druidic is secret
+    ).sort((a,b) => a.label.localeCompare(b.label))
+    .map(lang => ({ value: lang.id, label: lang.label }));
+  }, [LANGUAGES, allKnownLanguageIds]);
+
+  const handleAddLanguage = React.useCallback(() => {
+    if (selectedLanguageToAdd && !allKnownLanguageIds.includes(selectedLanguageToAdd)) {
+      onLanguagesChange([...characterLanguages, selectedLanguageToAdd]);
+      setSelectedLanguageToAdd('');
+    }
+  }, [selectedLanguageToAdd, allKnownLanguageIds, characterLanguages, onLanguagesChange]);
+
+  const handleRemoveLanguage = React.useCallback((languageIdToRemove: LanguageId) => {
+    if (automaticLanguages.includes(languageIdToRemove)) return; 
+    onLanguagesChange(characterLanguages.filter(langId => langId !== languageIdToRemove));
+  }, [automaticLanguages, characterLanguages, onLanguagesChange]);
+
+  if (translationsLoading || !UI_STRINGS || !LANGUAGES || !DND_RACES) {
     return (
       <LockablePanelWrapper
-        title={translations?.UI_STRINGS.languagesPanelTitle || "Languages"}
-        description={translations?.UI_STRINGS.languagesPanelDescription || "Manage your character's known languages."}
+        title={UI_STRINGS?.languagesPanelTitle || "Languages"}
+        description={UI_STRINGS?.languagesPanelDescription || "Manage your character's known languages."}
         icon={LanguagesIcon}
         initialLockedState={false}
       >
@@ -52,49 +105,6 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
     );
   }
 
-  const { LANGUAGES, DND_RACES, UI_STRINGS } = translations;
-
-  const raceData = DND_RACES.find(r => r.id === characterRaceId);
-  const automaticLanguages: LanguageId[] = ['common', ...(raceData?.automaticLanguages || [])];
-  
-  const intBonusLanguages = Math.max(0, calculateAbilityModifier(characterIntelligenceScore));
-  const skillBonusLanguages = speakLanguageSkillRanks;
-  
-  const totalBonusLanguageSlots = intBonusLanguages + skillBonusLanguages;
-
-  const chosenPlayerLanguages = characterLanguages.filter(lang => !automaticLanguages.includes(lang));
-  const slotsUsed = chosenPlayerLanguages.length;
-  const slotsRemaining = totalBonusLanguageSlots - slotsUsed;
-
-  const allKnownLanguageIds = Array.from(new Set([...automaticLanguages, ...characterLanguages]));
-  
-  const allKnownLanguagesToDisplay = LANGUAGES
-    .filter(lang => allKnownLanguageIds.includes(lang.id))
-    .sort((a, b) => {
-      const isAAutomatic = automaticLanguages.includes(a.id);
-      const isBAutomatic = automaticLanguages.includes(b.id);
-      if (isAAutomatic && !isBAutomatic) return -1;
-      if (!isAAutomatic && isBAutomatic) return 1;
-      return a.label.localeCompare(b.label);
-    });
-
-
-  const availableLanguagesForAdding = LANGUAGES.filter(
-    lang => !allKnownLanguageIds.includes(lang.id) && lang.id !== 'druidic'
-  ).sort((a,b) => a.label.localeCompare(b.label))
-  .map(lang => ({ value: lang.id, label: lang.label }));
-
-  const handleAddLanguage = React.useCallback(() => {
-    if (selectedLanguageToAdd && !allKnownLanguageIds.includes(selectedLanguageToAdd)) {
-      onLanguagesChange([...characterLanguages, selectedLanguageToAdd]);
-      setSelectedLanguageToAdd('');
-    }
-  }, [selectedLanguageToAdd, allKnownLanguageIds, characterLanguages, onLanguagesChange]);
-
-  const handleRemoveLanguage = React.useCallback((languageIdToRemove: LanguageId) => {
-    if (automaticLanguages.includes(languageIdToRemove)) return; 
-    onLanguagesChange(characterLanguages.filter(langId => langId !== languageIdToRemove));
-  }, [automaticLanguages, characterLanguages, onLanguagesChange]);
 
   return (
     <LockablePanelWrapper
@@ -185,4 +195,3 @@ const LanguagesPanelComponent: React.FC<LanguagesPanelProps> = ({
 };
 LanguagesPanelComponent.displayName = "LanguagesPanelComponent";
 export const LanguagesPanel = React.memo(LanguagesPanelComponent);
-

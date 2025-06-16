@@ -1,0 +1,654 @@
+
+'use client';
+
+import *as React from 'react';
+import type {
+  FeatDefinitionJsonData, CharacterFeatInstance, Character, AbilityScores, Skill,
+  SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown, AggregatedFeatEffects, ComboboxOption, NoteEffectDetail, LocalizedString, DndClassOption, CharacterClassSpecificChoice
+} from '@/types/character-core';
+import {
+  checkFeatPrerequisites, calculateAvailableFeats
+} from '@/types/character';
+import type { CustomSkillDefinition } from '@/lib/definitions-store';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Award, PlusCircle, Trash2, Pencil, Loader2, Info, Edit3, Lock, Unlock } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { FeatSelectionDialog } from '../FeatSelectionDialog';
+import { SpecializationInputDialog } from '../SpecializationInputDialog';
+import { useToast } from "@/hooks/use-toast";
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { useI18n, type I18nContextType } from '@/context/I18nProvider';
+import { Skeleton } from '@/components/ui/skeleton';
+import { getLocalizedString } from '@/i18n/i18n-data';
+
+export interface FeatsFormSectionProps {
+  featSectionData: Pick<Character, 'race' | 'classes' | 'feats' | 'age' | 'alignment' | 'experiencePoints' | 'deity' | 'classSpecificChoices'>;
+  allAvailableFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
+  chosenFeatInstances: CharacterFeatInstance[];
+  onFeatInstancesChange: (updatedInstances: CharacterFeatInstance[]) => void;
+  onEditCustomFeatDefinition: (featDefId: string) => void;
+  abilityScores: AbilityScores;
+  skills: Skill[];
+  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
+  allCustomSkillDefinitions: readonly CustomSkillDefinition[];
+  allSkillOptionsForDialog: ComboboxOption[];
+  allMagicSchoolOptionsForDialog: ComboboxOption[];
+  characterLevel: number;
+  aggregatedFeatEffects?: AggregatedFeatEffects | null;
+}
+
+const getFeatSourceClassName = (featId: string, allClasses: readonly DndClassOption[]): string | null => {
+  if (featId.startsWith('class-')) {
+    const parts = featId.split('-');
+    if (parts.length > 1) {
+      const classIdCandidate = parts[1];
+      const classDef = allClasses.find(c => c.id === classIdCandidate);
+      return classDef ? classDef.label : null;
+    }
+  }
+  return null;
+};
+
+
+const FeatsFormSectionComponent = ({
+  featSectionData,
+  allAvailableFeatDefinitions,
+  chosenFeatInstances,
+  onFeatInstancesChange,
+  onEditCustomFeatDefinition,
+  abilityScores,
+  skills,
+  allPredefinedSkillDefinitions,
+  allCustomSkillDefinitions,
+  allSkillOptionsForDialog,
+  allMagicSchoolOptionsForDialog,
+  characterLevel,
+  aggregatedFeatEffects,
+}: FeatsFormSectionProps) => {
+  const i18nContext = useI18n();
+  const { translations, isLoading: translationsLoading, language } = i18nContext;
+  const { toast } = useToast();
+  const [isLocked, setIsLocked] = React.useState(false);
+  const toggleLock = React.useCallback(() => setIsLocked(prev => !prev), []);
+
+  const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
+  const [featDialogFilterCategory, setFeatDialogFilterCategory] = React.useState<string | undefined>(undefined);
+  const [featToSpecialize, setFeatToSpecialize] = React.useState<FeatDefinitionJsonData | null>(null);
+  const [isSpecializationDialogOpen, setIsSpecializationDialogOpen] = React.useState(false);
+  const [editingFeatInstanceId, setEditingFeatInstanceId] = React.useState<string | null>(null);
+  const [initialSpecializationForEdit, setInitialSpecializationForEdit] = React.useState<string | undefined>(undefined);
+
+
+  const featSlotsBreakdown = React.useMemo(() => {
+    if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.DND_RACES || !translations.XP_TABLE) return { total: 0, base: 0, racial: 0, classBonus: 0, classBonusDetails: [] };
+    return calculateAvailableFeats(
+      {
+        race: featSectionData.race,
+        classes: featSectionData.classes,
+        feats: featSectionData.feats,
+        experiencePoints: featSectionData.experiencePoints || 0,
+        classSpecificChoices: featSectionData.classSpecificChoices,
+        deity: featSectionData.deity,
+      },
+      allAvailableFeatDefinitions,
+      translations.DND_RACES,
+      translations.XP_TABLE,
+      translations.EPIC_LEVEL_XP_INCREASE
+    );
+  }, [featSectionData, allAvailableFeatDefinitions, translations, translationsLoading]);
+
+
+  const { total: availableFeatSlots, classBonusDetails } = featSlotsBreakdown;
+
+  const sortInstancesByLabel = React.useCallback((instances: CharacterFeatInstance[]) => {
+    return [...instances].sort((a, b) => {
+      const defA = allAvailableFeatDefinitions.find(d => d.id === a.definitionId);
+      const defB = allAvailableFeatDefinitions.find(d => d.id === b.definitionId);
+      const labelA = defA?.label ? getLocalizedString(defA.label, language) : '';
+      const labelB = defB?.label ? getLocalizedString(defB.label, language) : '';
+      return labelA.localeCompare(labelB);
+    });
+  }, [allAvailableFeatDefinitions, language]);
+
+  const userChosenFeatInstances = React.useMemo(() => {
+    return sortInstancesByLabel(chosenFeatInstances.filter(f => !f.isGranted));
+  }, [chosenFeatInstances, sortInstancesByLabel]);
+
+  const grantedFeatInstances = React.useMemo(() => {
+    return sortInstancesByLabel(chosenFeatInstances.filter(f => f.isGranted));
+  }, [chosenFeatInstances, sortInstancesByLabel]);
+
+  const userChosenFeatInstancesCount = userChosenFeatInstances.length;
+  const featSlotsLeft = availableFeatSlots - userChosenFeatInstancesCount;
+
+  const characterForPrereqCheck = React.useMemo(() => ({
+    ...featSectionData,
+    abilityScores,
+    skills,
+    experiencePoints: featSectionData.experiencePoints || 0,
+  }), [featSectionData, abilityScores, skills]);
+
+
+  const handleOpenFeatDialog = React.useCallback(() => {
+    let filterCategoryForDialog: string | undefined = undefined;
+    if (featSlotsLeft <= 0 && classBonusDetails && classBonusDetails.length > 0) {
+      const availableBonusCategories = classBonusDetails.filter(detail => {
+        const chosenInCategory = userChosenFeatInstances.filter(inst => {
+          const def = allAvailableFeatDefinitions.find(d => d.id === inst.definitionId);
+          return def?.category === detail.category &&
+                 (!def.requiresSpecializationCategory || def.requiresSpecializationCategory === detail.category);
+        }).length;
+        const totalSlotsForCategory = classBonusDetails
+          .filter(bd => bd.category === detail.category)
+          .reduce((sum, bd) => sum + bd.count, 0);
+        return chosenInCategory < totalSlotsForCategory;
+      });
+
+      if (availableBonusCategories.length > 0) {
+        filterCategoryForDialog = availableBonusCategories[0].category;
+      }
+    }
+    setFeatDialogFilterCategory(filterCategoryForDialog);
+    setEditingFeatInstanceId(null);
+    setIsFeatDialogOpen(true);
+  }, [featSlotsLeft, classBonusDetails, userChosenFeatInstances, allAvailableFeatDefinitions]);
+
+
+  const handleAddOrUpdateChosenFeatInstance = React.useCallback((definitionId: string) => {
+    if (!translations || !translations.UI_STRINGS) throw new Error("Translations not loaded for feat selection.");
+    const UI_STRINGS = translations.UI_STRINGS;
+    const definition = allAvailableFeatDefinitions.find(def => def.id === definitionId);
+    if (!definition) {
+      toast({ title: UI_STRINGS.toastFeatDefNotFoundTitle, description: UI_STRINGS.toastFeatDefNotFoundDesc.replace("{featId}", definitionId), variant: "destructive" });
+      return;
+    }
+    const currentFeatLabel = getLocalizedString(definition.label, language);
+
+    setEditingFeatInstanceId(null);
+    setInitialSpecializationForEdit(undefined);
+
+    if (definition.requiresSpecialization) {
+      setFeatToSpecialize(definition);
+      setIsSpecializationDialogOpen(true);
+      return;
+    }
+
+    const existingChosenInstances = chosenFeatInstances.filter(
+      inst => inst.definitionId === definitionId && !inst.isGranted
+    );
+    const isAlreadyGranted = chosenFeatInstances.some(
+      inst => inst.definitionId === definitionId && inst.isGranted
+    );
+
+    if (!definition.canTakeMultipleTimes) {
+      if (isAlreadyGranted) {
+        toast({
+            title: UI_STRINGS.toastFeatAlreadyGrantedTitle,
+            description: UI_STRINGS.toastFeatAlreadyGrantedDesc.replace('{featLabel}', currentFeatLabel),
+            variant: "destructive"
+        });
+        return;
+      }
+      if (existingChosenInstances.length > 0) {
+        toast({
+            title: UI_STRINGS.toastDuplicateFeatTitle,
+            description: UI_STRINGS.toastDuplicateFeatDesc.replace('{featLabel}', currentFeatLabel),
+            variant: "destructive"
+        });
+        return;
+      }
+    }
+
+    let newInstanceId = definition.id;
+    if (definition.canTakeMultipleTimes) {
+      newInstanceId = `${definition.id}-MULTI-INSTANCE-${crypto.randomUUID()}`;
+    }
+
+    const newInstance: CharacterFeatInstance = {
+      definitionId: definition.id,
+      instanceId: newInstanceId,
+      isGranted: false,
+      chosenSpecializationCategory: definition.requiresSpecializationCategory,
+      conditionalEffectStates: {},
+    };
+
+    onFeatInstancesChange([...chosenFeatInstances, newInstance].sort((a, b) => {
+      const defA = allAvailableFeatDefinitions.find(d => d.id === a.definitionId);
+      const defB = allAvailableFeatDefinitions.find(d => d.id === b.definitionId);
+      const labelA = defA?.label ? getLocalizedString(defA.label, language) : '';
+      const labelB = defB?.label ? getLocalizedString(defB.label, language) : '';
+      return labelA.localeCompare(labelB);
+    }));
+  }, [translations, allAvailableFeatDefinitions, toast, language, chosenFeatInstances, onFeatInstancesChange]);
+
+  const handleOpenEditSpecializationDialog = React.useCallback((instance: CharacterFeatInstance) => {
+    const definition = allAvailableFeatDefinitions.find(def => def.id === instance.definitionId);
+    if (definition && definition.requiresSpecialization) {
+      setFeatToSpecialize(definition);
+      setEditingFeatInstanceId(instance.instanceId);
+      setInitialSpecializationForEdit(instance.specializationDetail || '');
+      setIsSpecializationDialogOpen(true);
+    }
+  }, [allAvailableFeatDefinitions]);
+
+  const handleSpecializationProvided = React.useCallback((specializationDetail: string) => {
+    if (!featToSpecialize || !translations || !translations.UI_STRINGS) throw new Error("Feat definition or translations not available for specialization.");
+    const UI_STRINGS = translations.UI_STRINGS;
+    const definition = featToSpecialize;
+    const currentFeatLabel = getLocalizedString(definition.label, language);
+
+    if (editingFeatInstanceId) {
+      const updatedInstances = chosenFeatInstances.map(inst => {
+        if (inst.instanceId === editingFeatInstanceId) {
+          let newFinalInstanceId = `${definition.id}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`;
+          if (chosenFeatInstances.some(otherInst => otherInst.instanceId === newFinalInstanceId && otherInst.instanceId !== editingFeatInstanceId)) {
+            newFinalInstanceId = `${newFinalInstanceId}-${crypto.randomUUID().substring(0,8)}`;
+          }
+          return { ...inst, specializationDetail: specializationDetail.trim() || undefined, instanceId: newFinalInstanceId };
+        }
+        return inst;
+      });
+      onFeatInstancesChange(sortInstancesByLabel(updatedInstances));
+
+    } else {
+      const existingChosenInstances = chosenFeatInstances.filter(
+        inst => inst.definitionId === definition.id && !inst.isGranted && inst.specializationDetail === specializationDetail
+      );
+      const isAlreadyGrantedWithSameSpecialization = chosenFeatInstances.some(
+        inst => inst.definitionId === definition.id && inst.isGranted && inst.specializationDetail === specializationDetail
+      );
+
+      if (!definition.canTakeMultipleTimes) {
+        if (isAlreadyGrantedWithSameSpecialization) {
+          toast({ title: UI_STRINGS.toastFeatAlreadyGrantedTitle, description: UI_STRINGS.toastFeatAlreadyGrantedDesc.replace('{featLabel}', currentFeatLabel), variant: "destructive" });
+          return;
+        }
+        if (existingChosenInstances.length > 0) {
+          toast({ title: UI_STRINGS.toastDuplicateFeatTitle, description: UI_STRINGS.toastDuplicateFeatDesc.replace('{featLabel}', currentFeatLabel), variant: "destructive" });
+          return;
+        }
+      }
+
+      let newInstanceId = `${definition.id}-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}`;
+      if (definition.canTakeMultipleTimes || chosenFeatInstances.some(fi => fi.instanceId === newInstanceId)) {
+        newInstanceId = `${definition.id}-SPEC-${specializationDetail.toLowerCase().replace(/\s+/g, '-')}-${crypto.randomUUID()}`;
+      }
+
+      const newInstance: CharacterFeatInstance = {
+        definitionId: definition.id,
+        instanceId: newInstanceId,
+        specializationDetail: specializationDetail.trim() || undefined,
+        isGranted: false,
+        chosenSpecializationCategory: definition.requiresSpecializationCategory,
+        conditionalEffectStates: {},
+      };
+      onFeatInstancesChange(sortInstancesByLabel([...chosenFeatInstances, newInstance]));
+    }
+
+    setFeatToSpecialize(null);
+    setIsSpecializationDialogOpen(false);
+    setEditingFeatInstanceId(null);
+    setInitialSpecializationForEdit(undefined);
+  }, [featToSpecialize, translations, language, editingFeatInstanceId, chosenFeatInstances, onFeatInstancesChange, toast, sortInstancesByLabel]);
+
+
+  const handleRemoveChosenFeatInstance = React.useCallback((instanceIdToRemove: string) => {
+    const updatedInstances = chosenFeatInstances.filter(inst => inst.instanceId !== instanceIdToRemove);
+    onFeatInstancesChange(updatedInstances);
+  }, [chosenFeatInstances, onFeatInstancesChange]);
+
+  const handleOpenEditDialog = React.useCallback((definitionId: string) => {
+    if (!translations || !translations.UI_STRINGS) throw new Error("Translations not loaded for custom feat edit.");
+    const UI_STRINGS = translations.UI_STRINGS;
+    const defToEdit = allAvailableFeatDefinitions.find(def => def.id === definitionId && def.isCustom);
+    if (defToEdit) {
+      onEditCustomFeatDefinition(definitionId);
+    } else {
+      toast({ title: UI_STRINGS.toastCustomFeatNotFoundEditTitle, description: UI_STRINGS.toastCustomFeatNotFoundEditDesc, variant: "destructive" });
+    }
+  }, [translations, allAvailableFeatDefinitions, onEditCustomFeatDefinition, toast]);
+
+  const renderFeatInstance = React.useCallback((instance: CharacterFeatInstance, isPanelLocked: boolean) => {
+    if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.SKILL_DEFINITIONS) return <Skeleton className="h-20 w-full mb-2" />;
+
+    const definition = allAvailableFeatDefinitions.find(def => def.id === instance.definitionId);
+    if (!definition) {
+        throw new Error(`[DATA_ERROR] Feat definition for ID '${instance.definitionId}' not found during rendering.`);
+    }
+    const currentLang = language;
+    const { UI_STRINGS } = translations;
+
+    const featLabel = getLocalizedString(definition.label, currentLang, undefined, `feats.${definition.id}.label`);
+    
+    let featTypeDisplayBadge: React.ReactNode = null;
+    if (definition?.type && definition.type !== "special") {
+      const featTypeObject = translations.FEAT_TYPES.find(ft => ft.id === definition.type);
+      if (featTypeObject && featTypeObject.id !== 'general') {
+        featTypeDisplayBadge = <Badge variant="outline" className="whitespace-nowrap text-xs">{featTypeObject.label}</Badge>;
+      }
+    }
+    const isCustomDefinition = definition.isCustom;
+
+    const localizedDescription = definition.description ? getLocalizedString(definition.description, currentLang, undefined, `feats.${definition.id}.description`) : "";
+    const showDescriptionLine = localizedDescription && localizedDescription.trim() !== "";
+
+    let finalBenefitText = "";
+    if (definition.effectsText) {
+        finalBenefitText = getLocalizedString(definition.effectsText, currentLang, undefined, `feats.${definition.id}.effectsText`);
+    }
+    const noteEffects = (definition.effects?.filter(e => e.type === 'note') as NoteEffectDetail[] | undefined) || [];
+    if (noteEffects.length > 0) {
+      const noteText = noteEffects.map(ne => ne.text).join(' ');
+      if (noteText.trim() !== "") {
+        if (finalBenefitText.trim() !== "") finalBenefitText += " ";
+        finalBenefitText += noteText.trim();
+      }
+    }
+    const showBenefitLine = finalBenefitText.trim() !== "";
+
+    const prereqMessages: PrerequisiteMessage[] = checkFeatPrerequisites(
+      definition,
+      characterForPrereqCheck as Character,
+      allAvailableFeatDefinitions,
+      allPredefinedSkillDefinitions,
+      allCustomSkillDefinitions,
+      translations.DND_CLASSES,
+      translations.DND_RACES,
+      translations.ABILITY_LABELS,
+      translations.ALIGNMENT_PREREQUISITE_OPTIONS,
+      UI_STRINGS
+    );
+    let specialPrereqTextContent: string | undefined = undefined;
+    if (definition.prerequisites?.special) {
+        specialPrereqTextContent = getLocalizedString(definition.prerequisites.special, currentLang, undefined, `feats.${definition.id}.prereq.special`);
+        if (specialPrereqTextContent && specialPrereqTextContent.trim() === "") specialPrereqTextContent = undefined;
+    }
+    const hasPrereqsToShow = prereqMessages.length > 0 || !!specialPrereqTextContent;
+    
+    let classSourceBadgeText: string | null = null;
+    let showOriginalGrantedNote = instance.isGranted && !!instance.grantedNote;
+
+    if (instance.isGranted) {
+      let parsedClassNameFromNote: string | null = null;
+      if (instance.grantedNote) {
+        const note = instance.grantedNote;
+        const classProfMatch = note.match(/^(?:Class Proficiency|Compétence de classe) \(([^)]+)\)$/i);
+        const levelNoteMatch = note.match(/^(?:\d+(?:st|nd|rd|th) Level|Niveau \d+) \(([^)]+)\)$/i);
+        const simpleParenMatch = note.match(/^\(([^)]+)\)$/);
+
+        if (classProfMatch && classProfMatch[1]) {
+            parsedClassNameFromNote = classProfMatch[1];
+        } else if (levelNoteMatch && levelNoteMatch[1]) {
+            parsedClassNameFromNote = levelNoteMatch[1];
+        } else if (simpleParenMatch && simpleParenMatch[1] && translations.DND_CLASSES.some(c => c.label === simpleParenMatch[1])) {
+            parsedClassNameFromNote = simpleParenMatch[1];
+        }
+      }
+
+      if (parsedClassNameFromNote && translations.DND_CLASSES.some(c => c.label === parsedClassNameFromNote)) {
+        classSourceBadgeText = parsedClassNameFromNote;
+        const profStringEn = `Class Proficiency (${parsedClassNameFromNote})`;
+        const profStringFr = `Compétence de classe (${parsedClassNameFromNote})`;
+        const levelStringEnRegex = new RegExp(`^\\d+(st|nd|rd|th) Level \\(${parsedClassNameFromNote}\\)$`);
+        const levelStringFrRegex = new RegExp(`^Niveau \\d+ \\(${parsedClassNameFromNote}\\)$`);
+
+        if (instance.grantedNote === profStringEn || instance.grantedNote === profStringFr ||
+            (instance.grantedNote && levelStringEnRegex.test(instance.grantedNote)) ||
+            (instance.grantedNote && levelStringFrRegex.test(instance.grantedNote)) ||
+            instance.grantedNote === `(${parsedClassNameFromNote})` ) {
+          showOriginalGrantedNote = false;
+        }
+      } else if (definition.isClassFeature) {
+          const classNameFromId = getFeatSourceClassName(definition.id, translations.DND_CLASSES);
+          if (classNameFromId) {
+              classSourceBadgeText = classNameFromId;
+              showOriginalGrantedNote = false; 
+          }
+      }
+    }
+
+    return (
+      <div key={instance.instanceId} className="group flex items-start justify-between py-2 transition-colors">
+        <div className="flex-grow mr-2 space-y-1 text-sm">
+          <div className="flex items-baseline flex-wrap gap-x-1.5">
+            <h4 className="font-medium text-foreground inline-flex items-center">{featLabel}</h4>
+            {featTypeDisplayBadge}
+            {isCustomDefinition && <Badge variant="outline" className="text-xs text-primary/70 border-primary/50 whitespace-nowrap">{UI_STRINGS.badgeCustomLabel || "Custom"}</Badge>}
+            {classSourceBadgeText && <Badge variant="secondary" className="whitespace-nowrap text-xs">{classSourceBadgeText}</Badge>}
+            {showOriginalGrantedNote && instance.grantedNote && <span className="text-xs text-muted-foreground">{instance.grantedNote}</span>}
+          </div>
+
+          {definition.requiresSpecialization && instance.specializationDetail && <p className="text-xs text-muted-foreground ml-1 italic">({instance.specializationDetail})</p>}
+
+          {showDescriptionLine ? (
+             <p className="text-xs text-muted-foreground whitespace-normal" dangerouslySetInnerHTML={{ __html: localizedDescription }} />
+          ) : (
+            <p className="text-xs text-muted-foreground whitespace-normal italic">
+              {UI_STRINGS.featDescriptionNoneLabel}
+            </p>
+          )}
+
+          {showBenefitLine && (
+            <p className="text-xs whitespace-normal">
+              <strong className="font-semibold text-muted-foreground">{UI_STRINGS.featBenefitLabel}</strong>
+              {' '}
+              <span className="text-foreground whitespace-normal" dangerouslySetInnerHTML={{ __html: finalBenefitText }} />
+            </p>
+          )}
+
+          {hasPrereqsToShow && (
+            <p className="text-xs whitespace-normal">
+              <strong className="font-semibold text-muted-foreground">{UI_STRINGS.featPrerequisitesLabel}</strong>
+              {' '}
+              <span className="text-muted-foreground">
+                {prereqMessages.map((msg, idx, arr) => (
+                  <React.Fragment key={idx}>
+                    <span className={cn(!msg.isMet ? 'text-destructive' : 'text-muted-foreground')} dangerouslySetInnerHTML={{ __html: msg.text }} />
+                    {idx < arr.length - 1 && ', '}
+                  </React.Fragment>
+                ))}
+                {prereqMessages.length > 0 && specialPrereqTextContent && specialPrereqTextContent.trim() !== "" && ', '}
+                {specialPrereqTextContent && specialPrereqTextContent.trim() !== "" && <span className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: specialPrereqTextContent }} />}
+              </span>
+            </p>
+          )}
+
+        </div>
+        <div className="flex items-center shrink-0">
+          {isCustomDefinition && !panelIsLocked && (
+            <Button
+              type="button" variant="ghost" size="icon"
+              onClick={() => handleOpenEditDialog(instance.definitionId)}
+              className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-50 group-hover:opacity-100 transition-opacity"
+              aria-label={(UI_STRINGS.featInstanceEditAriaLabel || "Edit {featLabel} definition").replace("{featLabel}", featLabel)}
+            ><Pencil className="h-4 w-4" /></Button>
+          )}
+          {!instance.isGranted && definition.requiresSpecialization && !panelIsLocked && (
+             <Button
+              type="button" variant="ghost" size="icon"
+              onClick={() => handleOpenEditSpecializationDialog(instance)}
+              className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-50 group-hover:opacity-100 transition-opacity"
+              aria-label={(UI_STRINGS.featEditSpecializationAriaLabel || "Edit specialization for {featLabel}").replace("{featLabel}", featLabel)}
+            ><Edit3 className="h-4 w-4" /></Button>
+          )}
+          {!instance.isGranted && !panelIsLocked && (
+            <Button
+              type="button" variant="ghost" size="icon"
+              onClick={() => handleRemoveChosenFeatInstance(instance.instanceId)}
+              className="h-8 w-8 text-destructive hover:text-destructive/80 opacity-50 group-hover:opacity-100 transition-opacity"
+              aria-label={UI_STRINGS.featInstanceRemoveAriaLabel || "Remove feat"}
+            ><Trash2 className="h-4 w-4" /></Button>
+          )}
+        </div>
+      </div>
+    );
+  }, [translationsLoading, translations, language, allAvailableFeatDefinitions, characterForPrereqCheck, allPredefinedSkillDefinitions, allCustomSkillDefinitions, handleOpenEditDialog, handleRemoveChosenFeatInstance, handleOpenEditSpecializationDialog]);
+
+
+  if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <Award className="h-8 w-8 text-primary" />
+              <div><Skeleton className="h-7 w-16 mb-1" /><Skeleton className="h-4 w-40" /></div>
+            </div>
+            <Skeleton className="h-8 w-8" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-12 w-full mb-4" />
+          <Skeleton className="h-10 w-1/3 mb-4" />
+          <Skeleton className="h-16 w-full mb-2" />
+          <Skeleton className="h-16 w-full mb-2" />
+        </CardContent>
+      </Card>
+    );
+  }
+  const { DND_CLASSES, DND_RACES, ABILITY_LABELS, ALIGNMENT_PREREQUISITE_OPTIONS, UI_STRINGS } = translations;
+
+  return (
+    <>
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <Award className="h-8 w-8 text-primary" />
+              <div>
+                <CardTitle className="text-2xl font-serif">{UI_STRINGS.featsPanelTitle}</CardTitle>
+                <CardDescription>{UI_STRINGS.featsPanelDescription}</CardDescription>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "h-7 w-7 shrink-0 p-1.5", 
+                isLocked
+                  ? "text-muted-foreground hover:text-foreground"
+                  : "bg-accent text-accent-foreground hover:bg-accent/90"
+              )}
+              onClick={toggleLock}
+              aria-pressed={!isLocked}
+              aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelUnlocked : UI_STRINGS.lockButtonAriaLabelLocked}
+            >
+              {isLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="flex flex-col">
+        <div className="mb-3 p-3 border rounded-md bg-muted/30">
+            <div className="flex justify-between items-center">
+              <p className="text-sm font-medium">
+                {UI_STRINGS.featsPanelFeatsAvailableLabel} <span className="text-lg font-bold text-primary">{availableFeatSlots}</span>
+              </p>
+              <p className="text-sm font-medium">
+                {UI_STRINGS.featsPanelFeatsLeftLabel} <span className={cn(
+                  "text-lg font-bold whitespace-nowrap",
+                  featSlotsLeft >= 0 ? "text-emerald-500" : "text-destructive"
+                )}>{featSlotsLeft}</span>
+              </p>
+            </div>
+             <p className="text-xs text-muted-foreground mt-1">
+                {UI_STRINGS.featsPanelBreakdownBaseLabel}{'\u00A0'}<Badge variant="outline">{featSlotsBreakdown.base}</Badge>
+                {featSlotsBreakdown.racial > 0 && (
+                    <>
+                    {' + '}{UI_STRINGS.featsPanelBreakdownRacialLabel || "Racial Bonus"}{'\u00A0'}<Badge variant="outline">{featSlotsBreakdown.racial}</Badge>
+                    </>
+                )}
+                {featSlotsBreakdown.classBonusDetails && featSlotsBreakdown.classBonusDetails.length > 0 && (
+                    featSlotsBreakdown.classBonusDetails.map(detail => (
+                        <React.Fragment key={`${detail.category}-${String(detail.sourceFeatLabel) || 'general'}`}>
+                        {' + '}{(detail.sourceFeatLabel ? detail.sourceFeatLabel : detail.category)}{'\u00A0'}<Badge variant="outline">{detail.count}</Badge>
+                        </React.Fragment>
+                    ))
+                )}
+                {' = '}<span className="font-bold text-primary">{availableFeatSlots}</span>
+            </p>
+          </div>
+
+          {aggregatedFeatEffects?.favoredEnemyBonuses && (aggregatedFeatEffects.favoredEnemyBonuses.skillBonus > 0 || aggregatedFeatEffects.favoredEnemyBonuses.damageBonus > 0) && (
+            <div className="mt-1 mb-3 p-2 border border-dashed border-primary/50 rounded-md bg-primary/5 text-sm text-primary">
+              <Info className="inline h-4 w-4 mr-1.5 mb-0.5" />
+              {UI_STRINGS.favoredEnemyBonusDisplayInfo
+                .replace('{skillBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.skillBonus))
+                .replace('{damageBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.damageBonus))}
+                { ' ' }
+                ({(UI_STRINGS.favoredEnemySlotsAvailableShort || "Slot(s)").replace('{slots}', String(aggregatedFeatEffects.favoredEnemySlots || 0))})
+            </div>
+          )}
+
+
+          <div className="mt-3 mb-1 flex gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={handleOpenFeatDialog} disabled={isLocked || (featSlotsLeft <= 0 && (!classBonusDetails || classBonusDetails.length === 0 || classBonusDetails.every(d => d.count === 0)))}>
+              <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.featsPanelAddButton}
+            </Button>
+          </div>
+
+          {userChosenFeatInstances.length > 0 && (
+            <>
+              <h3 className={cn("text-lg font-semibold mb-2 text-primary", "mt-2")}>
+                {UI_STRINGS.featsPanelChosenFeatsTitle}
+              </h3>
+              <div className="space-y-1 mb-3">
+                {userChosenFeatInstances.map(instance => renderFeatInstance(instance, isLocked))}
+              </div>
+            </>
+          )}
+
+          {grantedFeatInstances.length > 0 && (
+            <>
+              {userChosenFeatInstances.length > 0 && <Separator className="my-2" />}
+              <h3
+                className={cn(
+                  "text-lg font-semibold mb-2 text-primary",
+                   userChosenFeatInstances.length === 0 ? "mt-2" : ""
+                )}
+              >
+                {UI_STRINGS.featsPanelGrantedFeatsTitle}
+              </h3>
+              <div className="space-y-1 mb-3">
+                {grantedFeatInstances.map(instance => renderFeatInstance(instance, isLocked))}
+              </div>
+            </>
+          )}
+
+          {userChosenFeatInstances.length === 0 && grantedFeatInstances.length === 0 && (
+             <p className="text-sm text-muted-foreground mt-4">{UI_STRINGS.featsPanelNoFeatsYet}</p>
+          )}
+
+        </CardContent>
+      </Card>
+      <FeatSelectionDialog
+        isOpen={isFeatDialogOpen}
+        onOpenChange={setIsFeatDialogOpen}
+        onFeatSelected={handleAddOrUpdateChosenFeatInstance}
+        allFeats={allAvailableFeatDefinitions}
+        character={characterForPrereqCheck as Character}
+        allPredefinedSkillDefinitions={allPredefinedSkillDefinitions}
+        allCustomSkillDefinitions={allCustomSkillDefinitions}
+        allClasses={DND_CLASSES}
+        allRaces={DND_RACES}
+        abilityLabels={ABILITY_LABELS}
+        alignmentPrereqOptions={ALIGNMENT_PREREQUISITE_OPTIONS}
+        filterByCategory={featDialogFilterCategory}
+        isLoadingTranslations={translationsLoading}
+      />
+      <SpecializationInputDialog
+        isOpen={isSpecializationDialogOpen}
+        onOpenChange={setIsSpecializationDialogOpen}
+        featDefinition={featToSpecialize}
+        initialSpecializationDetail={initialSpecializationForEdit}
+        onSave={handleSpecializationProvided}
+        allSkills={allSkillOptionsForDialog}
+        allMagicSchools={allMagicSchoolOptionsForDialog}
+      />
+    </>
+  );
+};
+FeatsFormSectionComponent.displayName = "FeatsFormSectionComponent";
+export const FeatsFormSection = React.memo(FeatsFormSectionComponent);

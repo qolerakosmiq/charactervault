@@ -18,7 +18,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { useToast } from '@/hooks/use-toast';
-import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; // Added
+import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; 
 
 const DEBOUNCE_DELAY = 400; // ms
 
@@ -61,16 +61,19 @@ const CharacterFormAbilityScoresSectionComponent = ({
                                 Record<`${Exclude<AbilityName, 'none'>}TempMod`, [number, (val: number) => void]>;
 
   abilityKeys.forEach(key => {
+    const baseScoreCallback = React.useCallback((value: number) => onBaseAbilityScoreChange(key, value), [onBaseAbilityScoreChange, key]);
     // eslint-disable-next-line react-hooks/rules-of-hooks
     debouncedStates[key] = useDebouncedFormField(
       abilityScoresData.abilityScores[key] || 0,
-      React.useCallback((value) => onBaseAbilityScoreChange(key, value), [onBaseAbilityScoreChange, key]),
+      baseScoreCallback,
       DEBOUNCE_DELAY
     );
+    
+    const tempModCallback = React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange(key, value), [onAbilityScoreTempCustomModifierChange, key]);
     // eslint-disable-next-line react-hooks/rules-of-hooks
     debouncedStates[`${key}TempMod`] = useDebouncedFormField(
       abilityScoresData.abilityScoreTempCustomModifiers?.[key] || 0,
-      React.useCallback((value) => onAbilityScoreTempCustomModifierChange(key, value), [onAbilityScoreTempCustomModifierChange, key]),
+      tempModCallback,
       DEBOUNCE_DELAY
     );
   });
@@ -127,7 +130,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
   const handleAbilityRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number) => {
   }, []);
 
-  const headerActions = (isPanelLocked: boolean) => ( // Modified to accept isPanelLocked
+  const headerActions = React.useCallback((isPanelLocked: boolean) => (
     <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
       <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto" disabled={isPanelLocked}>
         <Dices className="mr-2 h-4 w-4" /> {translations?.UI_STRINGS.abilityScoresRollButton || "Roll Scores"}
@@ -136,7 +139,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
         <Calculator className="mr-2 h-4 w-4" /> {translations?.UI_STRINGS.abilityScoresPointBuyButton || "Point Buy"}
       </Button>
     </div>
-  );
+  ), [translations]);
 
 
   if (translationsLoading || !translations) {
@@ -174,6 +177,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
         icon={Dices}
         cardContentClassName="pt-2"
         initialLockedState={false}
+        headerActions={headerActions}
       >
         {({ isLocked: panelIsLocked }) => (
           <>
@@ -264,9 +268,6 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 );
               })}
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 border-t border-border/30 pt-4 justify-end">
-              {headerActions(panelIsLocked)}
-            </div>
             <p className="text-sm text-muted-foreground mt-4 pt-2 border-t border-border/30">
               <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.abilityScoresNote_prefix || "<strong>Note:</strong> The " }} />
               <Badge variant="outline">
@@ -312,4 +313,3 @@ const CharacterFormAbilityScoresSectionComponent = ({
 };
 CharacterFormAbilityScoresSectionComponent.displayName = 'CharacterFormAbilityScoresSectionComponent';
 export const CharacterFormAbilityScoresSection = React.memo(CharacterFormAbilityScoresSectionComponent);
-

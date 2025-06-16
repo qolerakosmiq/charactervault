@@ -68,7 +68,7 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
       const content = contentMatch ? contentMatch[1] : '';
       
       elements.push(
-        <Badge key={`${match.index}-${elements.length}-badge`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
+        <Badge key={`${match.index}-${elements.length}-badge-${Math.random().toString(36).substring(7)}`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
           {parseAndRenderUIString(content, dataContext)}
         </Badge>
       );
@@ -76,7 +76,7 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
       const colorContentMatch = matchedString.match(/<color accent>(.*?)<\/color>/);
       const content = colorContentMatch ? colorContentMatch[1] : '';
       elements.push(
-        <span key={`${match.index}-${elements.length}-color`} className="text-accent">
+        <span key={`${match.index}-${elements.length}-color-${Math.random().toString(36).substring(7)}`} className="text-accent">
           {parseAndRenderUIString(content, dataContext)}
         </span>
       );
@@ -84,7 +84,7 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
       const boldContentMatch = matchedString.match(/<b>(.*?)<\/b>/);
       const content = boldContentMatch ? boldContentMatch[1] : '';
       elements.push(
-        <strong key={`${match.index}-${elements.length}-bold`}>
+        <strong key={`${match.index}-${elements.length}-bold-${Math.random().toString(36).substring(7)}`}>
           {parseAndRenderUIString(content, dataContext)}
         </strong>
       );
@@ -118,4 +118,3 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
     React.isValidElement(el) ? (el.key ? el : React.cloneElement(el, { key: `parsed-el-${i}-${Math.random().toString(36).substring(7)}` })) : el
   ));
 }
-
