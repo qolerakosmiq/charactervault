@@ -8,6 +8,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+function replaceSpacesWithNbsp(text: string): string {
+  return text.replace(/ /g, '\u00A0');
+}
+
 // Helper to safely get nested properties
 const getProperty = (obj: any, path: string): any => {
   if (!obj || !path) return undefined;
@@ -53,21 +57,21 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
   while ((match = regex.exec(uiString)) !== null) {
     // Add text before the match
     if (match.index > lastIndex) {
-      elements.push(uiString.substring(lastIndex, match.index));
+      elements.push(replaceSpacesWithNbsp(uiString.substring(lastIndex, match.index)));
     }
 
     const matchedString = match[0];
 
     if (match[1]) { // <badge> tag
-      const badgeContentMatch = matchedString.match(/<badge(?: outline)?>(.*?)<\/badge>/);
-      const content = badgeContentMatch ? badgeContentMatch[1] : '';
       const isOutline = matchedString.includes(" outline");
-
-      const pipeIndex = content.indexOf("|"); // Find just the pipe
+      const contentMatch = matchedString.match(/<badge(?: outline)?>(.*?)<\/badge>/);
+      const content = contentMatch ? contentMatch[1] : '';
+      
+      const pipeIndex = content.indexOf("|");
       
       if (pipeIndex !== -1) {
-        const labelPartStr = content.substring(0, pipeIndex).trim(); // Trim spaces from JSON around pipe
-        const valuePartStr = content.substring(pipeIndex + 1).trim(); // Trim spaces from JSON around pipe
+        const labelPartStr = content.substring(0, pipeIndex); // No trim, keep spaces from JSON
+        const valuePartStr = content.substring(pipeIndex + 1); // No trim, keep spaces from JSON
 
         const labelPartNode = parseAndRenderUIString(labelPartStr, dataContext);
         const valuePartNode = parseAndRenderUIString(valuePartStr, dataContext);
@@ -75,8 +79,8 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
         elements.push(
           <Badge key={`${match.index}-${elements.length}-badge`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
             {labelPartNode}
-            {' \u00A0|\u00A0 '} {/* Consistent "space-nbsp-pipe-nbsp-space" separator */}
-            <strong className="font-semibold">{valuePartNode}</strong>
+            {"|"} 
+            <strong>{valuePartNode}</strong>
           </Badge>
         );
       } else {
@@ -111,23 +115,30 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
         if (typeof value === 'string' && (value.includes('<badge') || value.includes('<color') || value.includes('<b>') || value.includes('{'))) {
           elements.push(parseAndRenderUIString(value, dataContext));
         } else {
-          elements.push(String(value));
+          elements.push(replaceSpacesWithNbsp(String(value)));
         }
       } else {
-        elements.push(`{${variablePath}}`); 
+        elements.push(replaceSpacesWithNbsp(`{${variablePath}}`)); 
       }
     }
     lastIndex = regex.lastIndex;
   }
 
   if (lastIndex < uiString.length) {
-    elements.push(uiString.substring(lastIndex));
+    elements.push(replaceSpacesWithNbsp(uiString.substring(lastIndex)));
   }
 
   if (elements.length === 0) return '';
-  if (elements.length === 1 && typeof elements[0] === 'string') return elements[0];
+  if (elements.length === 1 && typeof elements[0] === 'string') {
+     // This case was applying nbsp twice if the whole input was a simple string.
+     // It should just return elements[0] as it would have already been processed if it was from substring.
+     // If uiString itself has no tags, the `lastIndex < uiString.length` block handles it.
+    return elements[0];
+  }
   
+  // Ensure keys for fragments children
   return React.createElement(React.Fragment, null, ...elements.map((el, i) => 
     React.isValidElement(el) ? (el.key ? el : React.cloneElement(el, { key: `parsed-el-${i}-${Math.random().toString(36).substring(7)}` })) : el
   ));
 }
+
