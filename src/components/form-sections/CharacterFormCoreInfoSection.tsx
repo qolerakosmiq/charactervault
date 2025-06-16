@@ -91,17 +91,17 @@ const CharacterFormCoreInfoSectionComponent = ({
     DEBOUNCE_DELAY
   );
   const [localRace, setLocalRace] = useDebouncedFormField(
-    characterData.race || '',
+    characterData.race, // No fallback, assuming characterData.race is initialized
     React.useCallback((value) => onFieldChange('race', value as DndRaceId), [onFieldChange]),
     DEBOUNCE_DELAY
   );
   const [localClassName, setLocalClassName] = useDebouncedFormField(
-    characterData.classes[0]?.className || '',
+    characterData.classes[0]?.className, // No fallback, assuming characterData.classes[0]?.className is initialized
     React.useCallback((value) => onClassChange(value as DndClassId | string), [onClassChange]),
     DEBOUNCE_DELAY
   );
   const [localAlignment, setLocalAlignment] = useDebouncedFormField(
-    characterData.alignment || 'true-neutral',
+    characterData.alignment, // No fallback, assuming characterData.alignment is initialized
     React.useCallback((value) => onFieldChange('alignment', value as CharacterAlignment), [onFieldChange]),
     DEBOUNCE_DELAY
   );
@@ -116,12 +116,12 @@ const CharacterFormCoreInfoSectionComponent = ({
     DEBOUNCE_DELAY
   );
   const [localGender, setLocalGender] = useDebouncedFormField(
-    characterData.gender || 'unspecified',
+    characterData.gender || 'unspecified', // Keep fallback as gender can be '' initially
     React.useCallback((value) => onFieldChange('gender', value as GenderId | string), [onFieldChange]),
     DEBOUNCE_DELAY
   );
   const [localSize, setLocalSize] = useDebouncedFormField(
-    characterData.size || 'medium',
+    characterData.size, // No fallback, assuming characterData.size is initialized
     React.useCallback((value) => onFieldChange('size', value as CharacterSize), [onFieldChange]),
     DEBOUNCE_DELAY
   );
@@ -175,7 +175,6 @@ const CharacterFormCoreInfoSectionComponent = ({
     const currentProhibited = [...(characterData.prohibitedSchools || [])];
     currentProhibited[index] = isNoneValue ? undefined : newSchoolId;
 
-    // Prevent selecting the same school twice if they are both not "None"
     const finalProhibited: (MagicSchoolId | undefined)[] = [currentProhibited[0], currentProhibited[1]];
 
     if (finalProhibited[0] && finalProhibited[0] === finalProhibited[1] && finalProhibited[0] !== undefined) {
@@ -230,12 +229,6 @@ const CharacterFormCoreInfoSectionComponent = ({
           ? availableAlignments[0].id as CharacterAlignment
           : 'true-neutral';
       }
-      // toast({
-      //   title: translations.UI_STRINGS.toastAlignmentAutoChangedTitle,
-      //   description: translations.UI_STRINGS.toastAlignmentAutoChangedDesc
-      //     .replace('{newAlignment}', newAlignmentToSet)
-      //     .replace('{className}', selectedClassInfo.label),
-      // });
       setLocalAlignment(newAlignmentToSet);
     }
   }, [localClassName, selectedClassInfo, availableAlignments, localAlignment, setLocalAlignment, translations, translationsLoading]);
@@ -262,16 +255,14 @@ const CharacterFormCoreInfoSectionComponent = ({
     if (translationsLoading || !translations || !translations.UI_STRINGS || localDeity === DEITY_NONE_OPTION_VALUE) return;
 
     const currentDeityInfo = translations.DND_DEITIES.find(d => d.id === localDeity);
-    if (!currentDeityInfo) return; // Custom deity name, skip validation
+    if (!currentDeityInfo) return; 
 
     let deityIsValid = true;
     if (!isAlignmentCompatibleWithDeity(localAlignment, currentDeityInfo.alignment)) {
-      // toast({ title: translations.UI_STRINGS.toastInvalidDeityForAlignmentTitle, description: translations.UI_STRINGS.toastInvalidDeityForAlignmentDesc.replace('{deityName}', currentDeityInfo.label).replace('{alignment}', localAlignment), variant: "destructive" });
       deityIsValid = false;
     }
     if (deityIsValid && selectedClassInfo?.deityAlignmentRestriction) {
       if (!isAlignmentValidForRequirement(currentDeityInfo.alignment, selectedClassInfo.deityAlignmentRestriction)) {
-        // toast({ title: translations.UI_STRINGS.toastInvalidDeityForClassTitle, description: translations.UI_STRINGS.toastInvalidDeityForClassDesc.replace('{deityName}', currentDeityInfo.label).replace('{className}', selectedClassInfo.label), variant: "destructive" });
         deityIsValid = false;
       }
     }
@@ -615,7 +606,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     disabled={panelIsLocked}
                   >
                     <SelectTrigger id="race">
-                      <SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectRacePlaceholder || "Select race") as string} />
+                      <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {raceSelectOptions}
@@ -634,7 +625,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
                     else badgeClassNameInternal = cn(badgeClassNameInternal, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
-                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString("{abilityAbbr} {change}", { abilityAbbr: effect.ability.substring(0, 3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : (effect.change < 0 ? effect.change : '')) })} </Badge> );
+                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString("{abilityAbbr} | <b>{change}</b>", { abilityAbbr: effect.ability.substring(0, 3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : (effect.change < 0 ? effect.change : '0')) })} </Badge> );
                   })}
                 </div>
               )}
@@ -648,7 +639,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     onValueChange={(value) => setLocalClassName(value as DndClassId)}
                     disabled={panelIsLocked}
                   >
-                    <SelectTrigger id="className"> <SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectClassPlaceholder || "Select class") as string} /> </SelectTrigger>
+                    <SelectTrigger id="className"> <SelectValue /> </SelectTrigger>
                     <SelectContent> {classSelectOptions} </SelectContent>
                   </Select>
                 </div>
@@ -664,17 +655,15 @@ const CharacterFormCoreInfoSectionComponent = ({
                   </Badge>
                 )}
                 {aggregatedFeatEffects?.grantedAbilities && aggregatedFeatEffects.grantedAbilities.map(ability => {
-                  if (ability.uses && typeof ability.uses.value === 'number' && ability.uses.per) {
+                   const abilityNameForDisplay = getLocalizedString(ability.name, currentLang);
+                   if (ability.uses && typeof ability.uses.value === 'number' && ability.uses.per) {
                     const periodStrKey = `period${ability.uses.per.charAt(0).toUpperCase() + ability.uses.per.slice(1)}` as keyof typeof UI_STRINGS;
                     const localizedPeriod = UI_STRINGS[periodStrKey] || ability.uses.per;
-                    const localizedAbilityName = getLocalizedString(ability.name, currentLang);
-
                     const dataContext = {
-                      abilityName: localizedAbilityName,
+                      abilityName: abilityNameForDisplay,
                       usesValue: ability.uses.value,
-                      period: localizedPeriod // lowercase 'p'
+                      period: localizedPeriod
                     };
-
                     return (
                       <Badge key={ability.abilityKey} variant="secondary" className="whitespace-nowrap bg-accent text-accent-foreground">
                         <Activity className="inline h-3 w-3 mr-1" />
@@ -682,13 +671,12 @@ const CharacterFormCoreInfoSectionComponent = ({
                       </Badge>
                     );
                   } else if (ability.uses && ability.uses.value === "customPool" && ability.abilityKey === "layOnHandsHealingPool" && aggregatedFeatEffects?.modifiedMechanics?.layOnHandsHealingPool) {
-                    const localizedAbilityName = getLocalizedString(ability.name, currentLang);
                     const localizedPeriod = UI_STRINGS.periodDay || 'day';
                     const poolValue = aggregatedFeatEffects.modifiedMechanics.layOnHandsHealingPool.value;
                      const dataContext = {
-                        abilityName: localizedAbilityName,
+                        abilityName: abilityNameForDisplay,
                         poolValue: typeof poolValue === 'number' ? poolValue : "Pool",
-                        period: localizedPeriod // lowercase 'p'
+                        period: localizedPeriod
                     };
                     return (
                          <Badge key={ability.abilityKey} variant="secondary" className="whitespace-nowrap bg-accent text-accent-foreground">
@@ -721,7 +709,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     disabled={panelIsLocked}
                   >
                     <SelectTrigger id="alignment">
-                      <SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectAlignmentPlaceholder || "Select alignment") as string} />
+                      <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {availableAlignments.map(align => (
@@ -738,7 +726,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 <div className="flex items-center gap-2">
                   <div className="flex-grow">
                     <Select value={localDeity} onValueChange={(value) => setLocalDeity(value)} disabled={panelIsLocked} >
-                      <SelectTrigger id="deity"> <SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectDeityPlaceholder || "Select deity") as string} /> </SelectTrigger>
+                      <SelectTrigger id="deity"> <SelectValue /> </SelectTrigger>
                       <SelectContent> {deitySelectOptions.map(opt => ( <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem> ))} </SelectContent>
                     </Select>
                   </div>
@@ -772,7 +760,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let badgeClassNameInternal = "whitespace-nowrap";
                     if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
-                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString("{abilityAbbr} {change}", {abilityAbbr: effect.ability.substring(0,3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : effect.change)})} </Badge> );
+                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString("{abilityAbbr} | <b>{change}</b>", {abilityAbbr: effect.ability.substring(0,3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : effect.change)})} </Badge> );
                   })}
                 </div>
               )}
@@ -786,7 +774,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 disabled={panelIsLocked}
               >
                 <SelectTrigger id="gender">
-                  <SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectGenderPlaceholder || "Select gender...") as string} />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {genderSelectOptions.map(g => (
@@ -798,7 +786,7 @@ const CharacterFormCoreInfoSectionComponent = ({
             <div className="space-y-1.5">
               <Label htmlFor="sizeCategory">{parseAndRenderUIString(UI_STRINGS.sizeLabel || "Size Category")}</Label>
               <Select name="sizeCategory" value={localSize} onValueChange={(value) => setLocalSize(value as CharacterSize)} disabled={panelIsLocked}>
-                <SelectTrigger id="sizeCategory"><SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectSizePlaceholder || "Select size category") as string} /></SelectTrigger>
+                <SelectTrigger id="sizeCategory"><SelectValue /></SelectTrigger>
                 <SelectContent> {sizeSelectOptions} </SelectContent>
               </Select>
               <div className="flex items-baseline gap-1 pt-[6px] ml-1">
