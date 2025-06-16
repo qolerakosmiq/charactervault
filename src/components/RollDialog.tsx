@@ -157,7 +157,7 @@ export function RollDialog({
           <DialogHeader>
             <DialogTitle className="font-serif flex items-center text-left">
               <Loader2 className="mr-2 h-5 w-5 animate-spin text-primary" />
-              {translations?.UI_STRINGS.loadingText}
+              {translations?.UI_STRINGS.loadingText || "Loading..."}
             </DialogTitle>
           </DialogHeader>
           <div className="py-4 text-center">
@@ -169,7 +169,7 @@ export function RollDialog({
   }
 
   const UI_STRINGS = translations.UI_STRINGS;
-  const buttonText = isDamageRoll ? UI_STRINGS.rollDialogConfirmDamageButton : UI_STRINGS.rollDialogRollButton;
+  const buttonText = isDamageRoll ? (UI_STRINGS.rollDialogConfirmDamageButton || "Confirm Damage") : (UI_STRINGS.rollDialogRollButton || "Roll 1d20");
   
   const isInitialRollCritFailure = !isDamageRoll && initialD20Roll === 1;
   const isInitialRollNat20 = !isDamageRoll && initialD20Roll === 20;
@@ -204,17 +204,17 @@ export function RollDialog({
         <div className="space-y-3 py-3 max-h-[60vh] overflow-y-auto pr-2">
           {calculationBreakdown.length > 0 && (
             <div>
-              <h3 className={cn(sectionHeadingClass, "mb-2")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle}</h3>
+              <h3 className={cn(sectionHeadingClass, "mb-2")}>{UI_STRINGS.rollDialogCalculationBreakdownTitle || "Calculation Breakdown"}</h3>
               <div>
                 {calculationBreakdown.map((item, index) => {
-                  if (item.label === UI_STRINGS.infoDialogTotalLabel && item.isBold) {
+                  if (item.label === (UI_STRINGS.infoDialogTotalLabel || "Total") && item.isBold) {
                     return null;
                   }
 
                   let abilityAbbr: string | undefined;
-                  let labelText = item.label || (UI_STRINGS.rollDialogGenericBreakdownLabel || "Component"); // Fallback for label
-
-                  if (item.label && typeof item.label === 'string') {
+                  let labelText = typeof item.label === 'string' ? item.label : (UI_STRINGS.rollDialogGenericBreakdownLabel || "Component");
+                  
+                  if (typeof item.label === 'string') {
                     const labelMatch = item.label.match(/^(.*)\s+\(([^)]+)\)$/);
                     if (labelMatch) {
                         labelText = labelMatch[1];
@@ -222,7 +222,7 @@ export function RollDialog({
                         if (translations.ABILITY_LABELS.some(al => al.abbr === potentialAbbr)) {
                             abilityAbbr = potentialAbbr;
                         }
-                    } else if (item.label === (UI_STRINGS.rollDialogAbilityModifierLabel || "Ability Modifier")) { // Ensure key exists
+                    } else if (item.label === (UI_STRINGS.rollDialogAbilityModifierLabel || "Ability Modifier ({abilityAbbr})")) {
                         const matchFromTitle = dialogTitle.match(/\(([^)]+)\)/);
                         const matchFromRollTypeAbility = rollType.match(/ability_check_(\w+)/);
                         const matchFromRollTypeSave = rollType.match(/saving_throw_(\w+)/);
@@ -273,7 +273,9 @@ export function RollDialog({
                 <Separator className="mt-2 mb-1" />
                 <div className="flex justify-between text-lg">
                   <span className="font-semibold">
-                    {isDamageRoll ? UI_STRINGS.rollDialogTotalNumericBonusLabel : UI_STRINGS.rollDialogTotalBonusLabel}
+                    {isDamageRoll 
+                      ? (UI_STRINGS.rollDialogTotalNumericBonusLabel || "Total Numeric Bonus") 
+                      : (UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus")}
                   </span>
                   <span className="font-bold text-accent">
                     {renderModifierValue(baseModifier)}
@@ -291,7 +293,7 @@ export function RollDialog({
                 onCheckedChange={(checked) => setIsCritical(!!checked)}
               />
               <Label htmlFor="critical-hit-checkbox" className="font-medium">
-                {UI_STRINGS.rollDialogCriticalHitLabel} ({weaponCriticalMultiplier}x {UI_STRINGS.rollDialogDamageMultiplierLabel})
+                {UI_STRINGS.rollDialogCriticalHitLabel || "Critical Hit!"} ({weaponCriticalMultiplier}x {UI_STRINGS.rollDialogDamageMultiplierLabel || "Damage"})
               </Label>
             </div>
           )}
@@ -302,28 +304,28 @@ export function RollDialog({
                 <>
                   {isCritical && weaponCriticalMultiplier && weaponCriticalMultiplier > 1 && weaponDamageDiceString && weaponDamageDiceString.trim() !== "" && weaponDamageDiceString !== "0" && (
                     <div className="text-center mb-1">
-                      <Badge variant="destructive" className="text-sm px-2 py-0.5">{UI_STRINGS.rollDialogCriticalHitAppliedLabel}</Badge>
+                      <Badge variant="destructive" className="text-sm px-2 py-0.5">{UI_STRINGS.rollDialogCriticalHitAppliedLabel || "CRITICAL HIT APPLIED!"}</Badge>
                     </div>
                   )}
                   {rolledWeaponDiceDetails && (
                     <div className="flex justify-between items-center text-sm">
-                        <span className="text-foreground">{UI_STRINGS.rollDialogWeaponDamageDiceLabel}</span>
+                        <span className="text-foreground">{UI_STRINGS.rollDialogWeaponDamageDiceLabel || "Weapon Dice Rolled:"}</span>
                         <span className="font-bold text-primary">{rolledWeaponDiceDetails}</span>
                     </div>
                   )}
                    {rolledExtraDiceDetails && (
                     <div className="flex justify-between items-center text-sm">
-                        <span className="text-foreground">{UI_STRINGS.rollDialogExtraDamageDiceLabel}</span>
+                        <span className="text-foreground">{UI_STRINGS.rollDialogExtraDamageDiceLabel || "Extra Dice Rolled:"}</span>
                         <span className="font-bold text-primary">{rolledExtraDiceDetails}</span>
                     </div>
                   )}
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-foreground">{UI_STRINGS.rollDialogDamageOtherBonusesLabel}</span>
+                    <span className="text-foreground">{UI_STRINGS.rollDialogDamageOtherBonusesLabel || "Other Bonuses:"}</span>
                     <span className="font-bold text-primary">{renderModifierValue(baseModifier)}</span>
                   </div>
                   <Separator className="my-1 bg-border/50"/>
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalDamageStringLabel}</span>
+                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalDamageStringLabel || "Total Damage:"}</span>
                     <span className="font-bold text-lg text-primary">{finalResult}</span>
                   </div>
                 </>
@@ -332,26 +334,26 @@ export function RollDialog({
                   {initialD20Roll !== null && (
                     <div className="flex justify-between items-center">
                       <div className="flex items-center">
-                        <span className="text-sm text-foreground">{UI_STRINGS.rollDialogDiceRollLabel}{'\u00A0'}</span><Badge variant="outline">1d20</Badge>
+                        <span className="text-sm text-foreground">{UI_STRINGS.rollDialogDiceRollLabel || "Dice Roll:"}{'\u00A0'}</span><Badge variant="outline">1d20</Badge>
                       </div>
                       <span className={diceResultColor}>{initialD20Roll}</span>
                     </div>
                   )}
                   {bonusRolls.length > 0 && (
                      <div className="flex justify-between items-center">
-                      <span className="text-sm text-foreground">{UI_STRINGS.rollDialogBonusDiceRollLabel}</span>
+                      <span className="text-sm text-foreground">{UI_STRINGS.rollDialogBonusDiceRollLabel || "Bonus Dice Roll:"}</span>
                       <span className="font-bold text-lg text-primary">{bonusRolls.join(', ')}</span>
                     </div>
                   )}
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-foreground">{UI_STRINGS.rollDialogTotalBonusLabel}</span>
+                    <span className="text-foreground">{UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus:"}</span>
                     <span className="font-bold text-primary">{renderModifierValue(baseModifier)}</span>
                   </div>
                   <Separator className="mt-2 mb-1" />
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalResultLabel}</span>
+                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalResultLabel || "Final Result:"}</span>
                     {isInitialRollCritFailure ? (
-                      <span className="font-bold text-lg text-destructive">{UI_STRINGS.rollDialogCritFailureLabel}</span>
+                      <span className="font-bold text-lg text-destructive">{UI_STRINGS.rollDialogCritFailureLabel || "Critical Failure!"}</span>
                     ) : (
                       <span className="font-bold text-lg text-primary">{finalResult}</span>
                     )}
