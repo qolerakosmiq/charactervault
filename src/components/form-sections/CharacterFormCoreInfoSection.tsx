@@ -28,7 +28,7 @@ import { isAlignmentCompatibleWithDeity, isAlignmentValidForRequirement } from '
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScrollText, Info, Loader2, Users, Activity, BookOpen, Wand2, Heart } from 'lucide-react'; // Added Heart
+import { ScrollText, Info, Loader2, Users, Activity, BookOpen, Wand2, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -387,7 +387,7 @@ const CharacterFormCoreInfoSectionComponent = ({
 
   const { UI_STRINGS, ALIGNMENTS } = translations;
 
-  const renderClassSpecificUI = (uiBlock: ClassSpecificUIBlock, isLocked: boolean) => {
+  const renderClassSpecificUI = (uiBlock: ClassSpecificUIBlock, isPanelLocked: boolean) => {
     const currentCharacterClassLevel = characterData.classes[0]?.level || 0;
     if (uiBlock.requiredLevel && currentCharacterClassLevel < uiBlock.requiredLevel) {
       return null;
@@ -422,7 +422,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               name="chosenCombatStyle"
               value={localChosenCombatStyle || ""}
               onValueChange={(value) => setLocalChosenCombatStyle(value as "archery" | "twoWeaponFighting")}
-              disabled={isLocked}
+              disabled={isPanelLocked}
             >
               <SelectTrigger id="rangerCombatStyle">
                 <SelectValue placeholder={UI_STRINGS.selectRangerCombatStylePlaceholder || "Select Combat Style..."} />
@@ -468,7 +468,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   onChange={(e) => handleFavoredEnemyChange(index, e.target.value)}
                   placeholder={UI_STRINGS.favoredEnemyPlaceholder || "e.g., Orc, Goblin, Undead"}
                   className="h-9 text-sm"
-                  disabled={isLocked}
+                  disabled={isPanelLocked}
                 />
               </div>
             ))}
@@ -491,7 +491,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   onChange={(val) => handleDomainChange(0, val as DomainId)}
                   placeholder={UI_STRINGS.selectDomainPlaceholder || "Select Domain..."}
                   triggerClassName="h-9 text-sm"
-                  disabled={isLocked}
+                  disabled={isPanelLocked}
                 />
                 {selectedDomain1 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.id === selectedDomain1)?.grantedPowerDescription}</p>}
               </div>
@@ -504,7 +504,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   onChange={(val) => handleDomainChange(1, val as DomainId)}
                   placeholder={UI_STRINGS.selectDomainPlaceholder || "Select Domain..."}
                   triggerClassName="h-9 text-sm"
-                  disabled={isLocked}
+                  disabled={isPanelLocked}
                 />
                  {selectedDomain2 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.id === selectedDomain2)?.grantedPowerDescription}</p>}
               </div>
@@ -522,7 +522,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 onChange={(val) => setLocalSpecializationSchool(val as MagicSchoolId)}
                 placeholder={UI_STRINGS.selectMagicSchoolPlaceholder || "Select School..."}
                 triggerClassName="h-9 text-sm"
-                disabled={isLocked}
+                disabled={isPanelLocked}
               />
               {localSpecializationSchool !== MAGIC_SCHOOL_NONE_OPTION_VALUE && localSpecializationSchool !== 'universal' && (
                 <p className="text-xs text-muted-foreground mt-1">
@@ -546,7 +546,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     onChange={(val) => handleProhibitedSchoolChange(0, val as MagicSchoolId)}
                     placeholder={UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School..."}
                     triggerClassName="h-9 text-sm"
-                    disabled={isLocked}
+                    disabled={isPanelLocked}
                   />
                 </div>
                   <div className="space-y-1 md:col-start-2">
@@ -558,7 +558,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     onChange={(val) => handleProhibitedSchoolChange(1, val as MagicSchoolId)}
                     placeholder={UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School..."}
                     triggerClassName="h-9 text-sm"
-                    disabled={isLocked || !selectedProhibitedSchool1 || selectedProhibitedSchool1 === PROHIBITED_SCHOOL_NONE_VALUE}
+                    disabled={isPanelLocked || !selectedProhibitedSchool1 || selectedProhibitedSchool1 === PROHIBITED_SCHOOL_NONE_VALUE}
                   />
                 </div>
                   <p className="text-xs text-muted-foreground mt-1 md:col-span-2">
@@ -610,7 +610,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenRaceInfoDialog} disabled={!localRace || panelIsLocked}>
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenRaceInfoDialog} disabled={!localRace}>
                   <Info className="h-5 w-5" />
                 </Button>
               </div>
@@ -640,7 +640,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     <SelectContent> {classSelectOptions} </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenClassInfoDialog} disabled={!localClassName || panelIsLocked} >
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenClassInfoDialog} disabled={!localClassName} >
                   <Info className="h-5 w-5" />
                 </Button>
               </div>
@@ -701,7 +701,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     </SelectContent>
                   </Select>
                 </div>
-                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked}> <Info className="h-5 w-5" /> </Button>
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenAlignmentInfoDialog}> <Info className="h-5 w-5" /> </Button>
               </div>
             </div>
             <div className="space-y-1.5">
@@ -713,7 +713,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                       <SelectContent> {deitySelectOptions.map(opt => ( <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem> ))} </SelectContent>
                     </Select>
                   </div>
-                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenDeityInfoDialog} disabled={!localDeity || localDeity.trim() === '' || localDeity === DEITY_NONE_OPTION_VALUE || panelIsLocked} >
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenDeityInfoDialog} disabled={!localDeity || localDeity.trim() === '' || localDeity === DEITY_NONE_OPTION_VALUE} >
                     <Info className="h-5 w-5" />
                   </Button>
                 </div>
