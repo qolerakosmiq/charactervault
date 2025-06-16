@@ -16,16 +16,66 @@
     { "key": { "en": "Weapon and Armor Proficiency", "fr": "Maîtrise des armes et armures" }, "value": { "en": "Rangers are proficient with all simple and martial weapons, and with light armor and shields (except tower shields).", "fr": "Les rôdeurs sont compétents avec toutes les armes simples et martiales, ainsi qu'avec les armures légères et les boucliers (sauf les pavois)." } }
   ],
   "uiSections": [
-    { "key": "rangerCombatStyle", "labelKey": "rangerCombatStyleLabel" },
-    { "key": "rangerFavoredEnemies", "labelKey": "favoredEnemyTitle" }
-  ],
-  "featChoiceFilters": [
     {
-      "characterField": "chosenCombatStyle",
-      "filterCases": [
-        { "choiceValue": "archery", "noteMustContain": { "en": "(Archery Style)", "fr": "(Style Archerie)" } },
-        { "choiceValue": "twoWeaponFighting", "noteMustContain": { "en": "(Two-Weapon Style)", "fr": "(Style Deux Armes)" } }
+      "key": "rangerCombatStyle",
+      "label": { "en": "Ranger Combat Style", "fr": "Style de combat du Rôdeur" },
+      "choiceType": "select",
+      "optionsSource": "customList",
+      "customOptions": [
+        { "value": "", "label": { "en": "Select Combat Style...", "fr": "Choisir un style de combat..." } },
+        { "value": "archery", "label": { "en": "Archery", "fr": "Archerie" } },
+        { "value": "twoWeaponFighting", "label": { "en": "Two-Weapon Fighting", "fr": "Combat à deux armes" } }
+      ],
+      "placeholder": { "en": "Select Combat Style...", "fr": "Choisir un style de combat..." },
+      "grantsFeats": [
+        { "featId": "rapid-shot", "levelAcquired": 2, "conditionOnChoiceValue": "archery", "note": { "en": "Archery Style (L2)", "fr": "Style Archerie (N2)" } },
+        { "featId": "two-weapon-fighting", "levelAcquired": 2, "conditionOnChoiceValue": "twoWeaponFighting", "note": { "en": "Two-Weapon Style (L2)", "fr": "Style Deux Armes (N2)" } },
+        { "featId": "manyshot", "levelAcquired": 6, "conditionOnChoiceValue": "archery", "note": { "en": "Archery Style (L6)", "fr": "Style Archerie (N6)" } },
+        { "featId": "improved-two-weapon-fighting", "levelAcquired": 6, "conditionOnChoiceValue": "twoWeaponFighting", "note": { "en": "Two-Weapon Style (L6)", "fr": "Style Deux Armes (N6)" } },
+        { "featId": "improved-precise-shot", "levelAcquired": 11, "conditionOnChoiceValue": "archery", "note": { "en": "Archery Style (L11)", "fr": "Style Archerie (N11)" } },
+        { "featId": "greater-two-weapon-fighting", "levelAcquired": 11, "conditionOnChoiceValue": "twoWeaponFighting", "note": { "en": "Two-Weapon Style (L11)", "fr": "Style Deux Armes (N11)" } }
       ]
+    },
+    {
+      "key": "rangerFavoredEnemiesTitle",
+      "label": { "en": "Favored Enemies", "fr": "Ennemis jurés" },
+      "choiceType": "heading",
+      "isHeadingOnly": true
+    },
+    {
+      "key": "rangerFavoredEnemy1",
+      "label": { "en": "Favored Enemy (Level 1)", "fr": "Ennemi juré (Niveau 1)" },
+      "choiceType": "textInput",
+      "inputPlaceholder": { "en": "Enter enemy type (e.g., Orcs)", "fr": "Entrer le type d'ennemi (ex: Orques)" },
+      "requiredLevel": 1
+    },
+    {
+      "key": "rangerFavoredEnemy2",
+      "label": { "en": "Favored Enemy (Level 5)", "fr": "Ennemi juré (Niveau 5)" },
+      "choiceType": "textInput",
+      "inputPlaceholder": { "en": "Enter enemy type or increase existing", "fr": "Entrer type ou augmenter existant" },
+      "requiredLevel": 5
+    },
+    {
+      "key": "rangerFavoredEnemy3",
+      "label": { "en": "Favored Enemy (Level 10)", "fr": "Ennemi juré (Niveau 10)" },
+      "choiceType": "textInput",
+      "inputPlaceholder": { "en": "Enter enemy type or increase existing", "fr": "Entrer type ou augmenter existant" },
+      "requiredLevel": 10
+    },
+    {
+      "key": "rangerFavoredEnemy4",
+      "label": { "en": "Favored Enemy (Level 15)", "fr": "Ennemi juré (Niveau 15)" },
+      "choiceType": "textInput",
+      "inputPlaceholder": { "en": "Enter enemy type or increase existing", "fr": "Entrer type ou augmenter existant" },
+      "requiredLevel": 15
+    },
+    {
+      "key": "rangerFavoredEnemy5",
+      "label": { "en": "Favored Enemy (Level 20)", "fr": "Ennemi juré (Niveau 20)" },
+      "choiceType": "textInput",
+      "inputPlaceholder": { "en": "Enter enemy type or increase existing", "fr": "Entrer type ou augmenter existant" },
+      "requiredLevel": 20
     }
   ],
   "grantedFeats": [
@@ -52,7 +102,7 @@
       "type": "special-ex", "isClassFeature": true,
       "effectsText": { "en": "+2 bonus on Bluff, Listen, Sense Motive, Spot, Survival checks and weapon damage vs. chosen favored enemy type. Bonus increases and new types chosen at L5, L10, L15, L20", "fr": "Bonus de +2 aux tests de Bluff, Perception auditive, Psychologie, Détection, Survie et aux dégâts d'arme contre le type d'ennemi juré choisi. Le bonus augmente et de nouveaux types sont choisis aux N5, N10, N15, N20" },
       "effects": [
-        { "type": "modifiesMechanic", "mechanicKey": "favoredEnemySlots", "value": 1, "change": "adds" },
+        { "type": "modifiesMechanic", "mechanicKey": "favoredEnemySlots", "value": 1, "scaleWithClassLevel": { "classId": "ranger", "specificLevels": [{"level":1,"value":1},{"level":5,"value":2},{"level":10,"value":3},{"level":15,"value":4},{"level":20,"value":5}] } },
         { "type": "skill", "skillId": "bluff", "value": 2, "bonusType": "untyped", "condition": "vs_favored_enemy"},
         { "type": "skill", "skillId": "listen", "value": 2, "bonusType": "untyped", "condition": "vs_favored_enemy"},
         { "type": "skill", "skillId": "sense-motive", "value": 2, "bonusType": "untyped", "condition": "vs_favored_enemy"},
@@ -112,3 +162,6 @@
     }
   ]
 }
+
+
+  
