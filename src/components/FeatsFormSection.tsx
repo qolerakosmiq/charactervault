@@ -4,7 +4,7 @@
 import *as React from 'react';
 import type {
   FeatDefinitionJsonData, CharacterFeatInstance, Character, AbilityScores, Skill,
-  SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown, AggregatedFeatEffects, ComboboxOption, NoteEffectDetail, LocalizedString, DndClassOption
+  SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown, AggregatedFeatEffects, ComboboxOption, NoteEffectDetail, LocalizedString, DndClassOption, CharacterClassSpecificChoice
 } from '@/types/character-core';
 import {
   checkFeatPrerequisites, calculateAvailableFeats
@@ -24,7 +24,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { getLocalizedString } from '@/i18n/i18n-data';
 
 export interface FeatsFormSectionProps {
-  featSectionData: Pick<Character, 'race' | 'classes' | 'feats' | 'age' | 'alignment' | 'experiencePoints' | 'chosenCombatStyle' | 'chosenFavoredEnemies' | 'deity' | 'chosenDomains'>;
+  featSectionData: Pick<Character, 'race' | 'classes' | 'feats' | 'age' | 'alignment' | 'experiencePoints' | 'deity' | 'classSpecificChoices'>;
   allAvailableFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];
   chosenFeatInstances: CharacterFeatInstance[];
   onFeatInstancesChange: (updatedInstances: CharacterFeatInstance[]) => void;
@@ -89,6 +89,8 @@ const FeatsFormSectionComponent = ({
         classes: featSectionData.classes,
         feats: featSectionData.feats,
         experiencePoints: featSectionData.experiencePoints || 0,
+        classSpecificChoices: featSectionData.classSpecificChoices, // Pass this through
+        deity: featSectionData.deity,
       },
       allAvailableFeatDefinitions,
       translations.DND_RACES,
@@ -653,4 +655,6 @@ export const FeatsFormSection = React.memo(FeatsFormSectionComponent);
 
     
     
+    
+
     

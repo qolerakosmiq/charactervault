@@ -149,7 +149,7 @@ function createBaseCharacterData(
       skills: initialSkillInstances,
       feats: [],
       inventory: [],
-      equippedGear: {}, 
+      equippedGear: {},
       personalStory: '', portraitDataUrl: undefined,
       fireResistance: { ...DEFAULT_RESISTANCE_VALUE }, coldResistance: { ...DEFAULT_RESISTANCE_VALUE }, acidResistance: { ...DEFAULT_RESISTANCE_VALUE }, electricityResistance: { ...DEFAULT_RESISTANCE_VALUE }, sonicResistance: { ...DEFAULT_RESISTANCE_VALUE },
       spellResistance: { ...DEFAULT_RESISTANCE_VALUE }, powerResistance: { ...DEFAULT_RESISTANCE_VALUE }, damageReduction: [], fortification: { ...DEFAULT_RESISTANCE_VALUE },
@@ -923,7 +923,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     return {
       name: character.name, playerName: character.playerName, race: character.race, alignment: character.alignment,
       deity: character.deity, size: character.size, age: character.age, gender: character.gender, classes: character.classes,
-      classSpecificChoices: character.classSpecificChoices, // Changed from chosen...
+      classSpecificChoices: character.classSpecificChoices,
     };
   }, [character]);
 
@@ -972,11 +972,16 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   }, [character]);
 
 
-  const featSectionData = React.useMemo<Omit<FeatsFormSectionProps, 'characterLevel' | 'allAvailableFeatDefinitions' | 'chosenFeatInstances' | 'onFeatInstancesChange' | 'onEditCustomFeatDefinition' | 'abilityScores' | 'skills' | 'allPredefinedSkillDefinitions' | 'allCustomSkillDefinitions' | 'allSkillOptionsForDialog' | 'allMagicSchoolOptionsForDialog' | 'aggregatedFeatEffects'>['featSectionData'] | undefined>(() => {
+  const featSectionData = React.useMemo<Omit<FeatsFormSectionProps, 'allAvailableFeatDefinitions' | 'chosenFeatInstances' | 'onFeatInstancesChange' | 'onEditCustomFeatDefinition' | 'abilityScores' | 'skills' | 'allPredefinedSkillDefinitions' | 'allCustomSkillDefinitions' | 'allSkillOptionsForDialog' | 'allMagicSchoolOptionsForDialog' | 'characterLevel' | 'aggregatedFeatEffects'>['featSectionData'] | undefined>(() => {
     if (!character) return undefined;
     return {
-      race: character.race, classes: character.classes, feats: character.feats, age: character.age, alignment: character.alignment, experiencePoints: character.experiencePoints,
-      classSpecificChoices: character.classSpecificChoices, // Changed from chosen...
+      race: character.race,
+      classes: character.classes,
+      feats: character.feats,
+      age: character.age,
+      alignment: character.alignment,
+      experiencePoints: character.experiencePoints,
+      classSpecificChoices: character.classSpecificChoices,
       deity: character.deity,
     };
   }, [character]);
@@ -1433,3 +1438,6 @@ export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
 
 
 
+
+
+    

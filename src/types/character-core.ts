@@ -467,15 +467,15 @@ export interface ClassSpecificUIGrantsFeat {
 export interface ClassSpecificUIBlock {
   key: string;
   label?: LocalizedString;
-  labelKey?: string; // Fallback if label not provided
+  labelKey?: string;
   description?: LocalizedString;
-  descriptionKey?: string; // Fallback
+  descriptionKey?: string;
   placeholder?: LocalizedString;
-  placeholderKey?: string; // Fallback
+  placeholderKey?: string;
   inputPlaceholder?: LocalizedString;
-  inputPlaceholderKey?: string; // Fallback
+  inputPlaceholderKey?: string;
   slotLabel?: LocalizedString;
-  slotLabelKey?: string; // Fallback
+  slotLabelKey?: string;
   choiceType: "select" | "combobox" | "textInput" | "multiInput" | "heading";
   isHeadingOnly?: boolean;
   maxSelections?: number;
@@ -487,7 +487,7 @@ export interface ClassSpecificUIBlock {
   valueFromDataContext?: string;
   relatedSlotKeyForDisable?: string;
   disabledIfChoiceValue?: { featureKey: string; values: string[] };
-  note?: LocalizedString; // Added for Wizard prohibited school dynamic filtering note
+  note?: LocalizedString;
 }
 
 export interface FeatChoiceFilterCase {
