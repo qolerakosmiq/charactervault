@@ -17,11 +17,12 @@ import type {
   DndClassOption,
   AggregatedFeatEffects,
   ClassSpecificUIBlock,
-  ComboboxOption, // Ensure this is Character-Core version if needed
-  LocalizedString
+  ComboboxOption,
+  LocalizedString,
+  CharacterClassSpecificChoice
 } from '@/types/character-core';
 import { isAlignmentCompatibleWithDeity, isAlignmentValidForRequirement } from '@/types/character';
-import { getLocalizedString } from '@/i18n/i18n-data';
+import { getLocalizedString, type ProcessedSiteData } from '@/i18n/i18n-data';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -36,7 +37,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Separator } from '@/components/ui/separator';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
-import type { ProcessedSiteData } from '@/i18n/i18n-data';
 
 const DEBOUNCE_DELAY = 400;
 const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__";
@@ -180,7 +180,7 @@ const CharacterFormCoreInfoSectionComponent = ({
 
   const deitySelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations || !translations.UI_STRINGS) return [{ value: DEITY_NONE_OPTION_VALUE, label: "Loading..." }];
-    const noneOptionLabel = translations.UI_STRINGS.deityNoneOption || "None";
+    const noneOptionLabel = getLocalizedString(translations.UI_STRINGS.deityNoneOption, currentLang) || "None";
 
     let filteredDeities = translations.DND_DEITIES.filter(deity =>
       isAlignmentCompatibleWithDeity(localAlignment, deity.alignment)
@@ -193,7 +193,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     }
 
     return [{ value: DEITY_NONE_OPTION_VALUE, label: noneOptionLabel }, ...filteredDeities.map(deity => ({value: deity.id, label: deity.label}))];
-  }, [translationsLoading, translations, localAlignment, selectedClassInfo]);
+  }, [translationsLoading, translations, localAlignment, selectedClassInfo, currentLang]);
 
   React.useEffect(() => {
     if (translationsLoading || !translations || !translations.UI_STRINGS || localDeity === DEITY_NONE_OPTION_VALUE) return;
@@ -221,13 +221,23 @@ const CharacterFormCoreInfoSectionComponent = ({
     if (translationsLoading || !translations) return;
     if (!localRace && translations.DND_RACES.length > 0) {
         const defaultRace = translations.DND_RACES.find(r => r.id === 'human')?.id || translations.DND_RACES[0]?.id;
-        setLocalRace(defaultRace as DndRaceId);
+        if (defaultRace) setLocalRace(defaultRace as DndRaceId);
     }
     if (!localClassName && translations.DND_CLASSES.length > 0) {
         const defaultClass = translations.DND_CLASSES.find(c => c.id === 'fighter')?.id || translations.DND_CLASSES[0]?.id;
-        setLocalClassName(defaultClass as DndClassId);
+        if (defaultClass) setLocalClassName(defaultClass as DndClassId);
     }
-  }, [translationsLoading, translations, localRace, setLocalRace, localClassName, setLocalClassName]);
+    if (!characterData.gender && genderSelectOptions.length > 0) {
+        const defaultGender = genderSelectOptions.find(g => g.id === 'unspecified')?.id || genderSelectOptions[0]?.id;
+        if (defaultGender) setLocalGender(defaultGender);
+    }
+  }, [
+    translationsLoading, translations, 
+    localRace, setLocalRace, 
+    localClassName, setLocalClassName, 
+    characterData.gender, setLocalGender,
+    // genderSelectOptions needs to be stable or correctly memoized if used as dependency
+  ]);
 
   const isPredefinedRace = React.useMemo(() => {
     if (!translations || !localRace) return false;
@@ -250,7 +260,7 @@ const CharacterFormCoreInfoSectionComponent = ({
   }, [translationsLoading, translations]);
 
   const genderSelectOptions = React.useMemo(() => {
-    if (translationsLoading || !translations) return [{ id: "unspecified" as GenderId, label: "Loading..." }];
+    if (translationsLoading || !translations || !translations.GENDERS) return [{ id: "unspecified" as GenderId, label: "Loading..." }];
 
     const unspecifiedOption = translations.GENDERS.find(g => g.id === 'unspecified') || { id: 'unspecified' as GenderId, label: 'Unspecified' };
     const otherOption = translations.GENDERS.find(g => g.id === 'other') || { id: 'other' as GenderId, label: 'Other' };
@@ -268,7 +278,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     if (!options.find(opt => opt.id === 'other')) {
       options.push(otherOption);
     }
-    return options.filter((opt, index, self) => index === self.findIndex(o => o.id === opt.id)); // Ensure uniqueness
+    return options.filter((opt, index, self) => index === self.findIndex(o => o.id === opt.id));
   }, [translations, translationsLoading, selectedRaceInfo]);
 
   const handleClassSpecificChoiceChange = React.useCallback((
@@ -277,9 +287,9 @@ const CharacterFormCoreInfoSectionComponent = ({
     slotIndex?: number
   ) => {
     const existingChoices = characterData.classSpecificChoices || [];
-    let updatedChoices: typeof existingChoices;
+    let updatedChoices: CharacterClassSpecificChoice[];
 
-    if (slotIndex !== undefined) {
+    if (slotIndex !== undefined) { // Multi-input scenario
       const choiceExists = existingChoices.some(
         (c) => c.featureKey === featureKey && c.slotIndex === slotIndex
       );
@@ -293,10 +303,10 @@ const CharacterFormCoreInfoSectionComponent = ({
         updatedChoices = [...existingChoices, { featureKey, value: newValue, slotIndex }];
       }
       // Remove if new value indicates "none" for a multi-input slot
-      if (newValue === "" || newValue.endsWith("__NONE__")) {
+      if (newValue === "" || newValue === DOMAIN_NONE_OPTION_VALUE || newValue === MAGIC_SCHOOL_NONE_OPTION_VALUE) {
         updatedChoices = updatedChoices.filter(c => !(c.featureKey === featureKey && c.slotIndex === slotIndex));
       }
-    } else {
+    } else { // Single input scenario
       const choiceExists = existingChoices.some((c) => c.featureKey === featureKey && c.slotIndex === undefined);
       if (choiceExists) {
         updatedChoices = existingChoices.map((c) =>
@@ -306,7 +316,7 @@ const CharacterFormCoreInfoSectionComponent = ({
         updatedChoices = [...existingChoices, { featureKey, value: newValue }];
       }
        // Remove if new value indicates "none" for a single-input slot
-      if (newValue === "" || newValue.endsWith("__NONE__")) {
+      if (newValue === "" || newValue === DOMAIN_NONE_OPTION_VALUE || newValue === MAGIC_SCHOOL_NONE_OPTION_VALUE) {
         updatedChoices = updatedChoices.filter(c => !(c.featureKey === featureKey && c.slotIndex === undefined));
       }
     }
@@ -316,13 +326,13 @@ const CharacterFormCoreInfoSectionComponent = ({
 
   if (translationsLoading || !translations) {
     return (
-      <LockablePanelWrapper
+       <LockablePanelWrapper
         title={translations?.UI_STRINGS.coreAttributesTitle || "Core Attributes"}
         description={translations?.UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer."}
         icon={ScrollText}
         cardContentClassName="space-y-6 pt-6"
         initialLockedState={false}
-      >
+       >
         {() => (
           <>
             {[1,2,3,4].map(i => (
@@ -369,8 +379,8 @@ const CharacterFormCoreInfoSectionComponent = ({
     }
 
     const blockLabel = uiBlock.label ? getLocalizedString(uiBlock.label, currentLang) : (uiBlock.labelKey ? UI_STRINGS[uiBlock.labelKey] : uiBlock.key);
-    const blockDescription = uiBlock.description ? getLocalizedString(uiBlock.description, currentLang) : (uiBlock.descriptionKey ? UI_STRINGS[uiBlock.descriptionKey] : null);
-    const blockNote = uiBlock.note ? getLocalizedString(uiBlock.note, currentLang) : null;
+    const blockDescription = uiBlock.description ? getLocalizedString(uiBlock.description, currentLang) : (uiBlock.descriptionKey ? UI_STRINGS[uiBlock.descriptionKey] : undefined);
+    const blockNote = uiBlock.note ? getLocalizedString(uiBlock.note, currentLang) : undefined;
 
     const getCurrentValue = (key: string, index?: number): string => {
       const choice = (characterData.classSpecificChoices || []).find(
@@ -385,7 +395,7 @@ const CharacterFormCoreInfoSectionComponent = ({
 
     let actualOptions: ComboboxOption[] = [];
     if (uiBlock.optionsSource === 'domains' && DND_DOMAINS) {
-        const noneOptionLabel = UI_STRINGS.domainNoneOption || "None";
+        const noneOptionLabel = getLocalizedString(UI_STRINGS.domainNoneOption, currentLang) || "None";
         actualOptions = [{ value: DOMAIN_NONE_OPTION_VALUE, label: noneOptionLabel }, ...DND_DOMAINS.map(d => ({ value: d.id, label: d.label }))]
             .sort((a, b) => a.label.localeCompare(b.label));
         if (uiBlock.key === 'clericDomain2') {
@@ -395,7 +405,7 @@ const CharacterFormCoreInfoSectionComponent = ({
             }
         }
     } else if (uiBlock.optionsSource === 'magicSchools' && DND_MAGIC_SCHOOLS) {
-        const noneOptionLabel = UI_STRINGS.magicSchoolNoneOption || "None / Universalist";
+        const noneOptionLabel = getLocalizedString(UI_STRINGS.magicSchoolNoneOption, currentLang) || "None / Universalist";
         actualOptions = [{ value: MAGIC_SCHOOL_NONE_OPTION_VALUE, label: noneOptionLabel }, ...DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }))]
             .sort((a, b) => a.label.localeCompare(b.label));
 
@@ -413,17 +423,12 @@ const CharacterFormCoreInfoSectionComponent = ({
                 actualOptions = actualOptions.filter(opt => opt.value !== prohibitedSchool1);
             }
         }
-
     } else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) {
-        actualOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, currentLang) }));
-         // If a placeholder is defined in the uiBlock, and the custom options don't already have an empty-value option, prepend it.
-        if (placeholderForSelectOrCombobox && !actualOptions.some(opt => opt.value === "")) {
-            actualOptions = [{ value: "", label: placeholderForSelectOrCombobox }, ...actualOptions];
-        }
+        actualOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, currentLang) })).filter(opt => opt.value !== ""); // Ensure no empty values
     }
 
     let isDisabled = panelIsLocked;
-    if (uiBlock.relatedSlotKeyForDisable) {
+    if (uiBlock.relatedSlotKeyForDisable && !isDisabled) {
         const relatedChoice = (characterData.classSpecificChoices || []).find(
             c => c.featureKey === uiBlock.relatedSlotKeyForDisable
         );
@@ -451,6 +456,9 @@ const CharacterFormCoreInfoSectionComponent = ({
     }
 
     const currentBlockValue = getCurrentValue(uiBlock.key, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined);
+    
+    // Filter out any options that still have an empty string value right before rendering
+    const filteredActualOptions = actualOptions.filter(opt => opt.value !== "");
 
     if (uiBlock.choiceType === 'select') {
       return (
@@ -466,7 +474,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               <SelectValue placeholder={placeholderForSelectOrCombobox ? placeholderForSelectOrCombobox : undefined} />
             </SelectTrigger>
             <SelectContent>
-              {actualOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
+              {filteredActualOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
             </SelectContent>
           </Select>
           {blockDescription && <p className="text-xs text-muted-foreground">{blockDescription}</p>}
@@ -478,7 +486,7 @@ const CharacterFormCoreInfoSectionComponent = ({
         <div key={`${uiBlock.key}-${blockIndex}`} className="space-y-1.5">
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
           <ComboboxPrimitive
-            options={actualOptions}
+            options={filteredActualOptions}
             value={currentBlockValue}
             onChange={(val) => handleClassSpecificChoiceChange(uiBlock.key, val, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)}
             placeholder={placeholderForSelectOrCombobox}
@@ -591,7 +599,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
                     else badgeClassNameInternal = cn(badgeClassNameInternal, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
-                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString(UI_STRINGS.abilityScoreRaceModBadgeFormat, { abilityAbbr: effect.ability.substring(0, 3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : (effect.change < 0 ? effect.change : '0')) })} </Badge> );
+                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString(UI_STRINGS.abilityScoreRaceModBadgeFormat || "{abilityAbbr}: {change}", { abilityAbbr: effect.ability.substring(0, 3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : (effect.change < 0 ? effect.change : '0')) })} </Badge> );
                   })}
                 </div>
               )}
@@ -617,13 +625,13 @@ const CharacterFormCoreInfoSectionComponent = ({
                 {selectedClassInfo?.hitDice && (
                    <Badge variant="secondary" className="whitespace-nowrap">
                     <Heart fill="currentColor" className="inline h-3 w-3 mr-1.5 text-primary/70" />
-                     {parseAndRenderUIString(UI_STRINGS.hitDiceLabel, {value: selectedClassInfo.hitDice})}
+                     {parseAndRenderUIString(UI_STRINGS.hitDiceLabel || "Hit Dice | <b>{value}</b>", {value: selectedClassInfo.hitDice})}
                   </Badge>
                 )}
                 {aggregatedFeatEffects?.grantedAbilities && aggregatedFeatEffects.grantedAbilities.map(ability => {
                    const abilityNameForDisplay = getLocalizedString(ability.name, currentLang);
                    if (ability.uses && typeof ability.uses.value === 'number' && ability.uses.per) {
-                    const localizedPeriod = (ability.uses.per === 'day' ? UI_STRINGS.periodDay : ability.uses.per === 'encounter' ? UI_STRINGS.periodEncounter : ability.uses.per === 'week' ? UI_STRINGS.periodWeek : ability.uses.per);
+                    const localizedPeriod = (ability.uses.per === 'day' ? (UI_STRINGS.periodDay || 'Day') : ability.uses.per === 'encounter' ? (UI_STRINGS.periodEncounter || 'Encounter') : ability.uses.per === 'week' ? (UI_STRINGS.periodWeek || 'Week') : ability.uses.per);
                     const dataContext = {
                       abilityName: abilityNameForDisplay,
                       usesValue: ability.uses.value,
@@ -632,11 +640,11 @@ const CharacterFormCoreInfoSectionComponent = ({
                     return (
                       <Badge key={ability.abilityKey} variant="secondary" className="whitespace-nowrap bg-accent text-accent-foreground">
                         <Activity className="inline h-3 w-3 mr-1" />
-                        {parseAndRenderUIString(UI_STRINGS.abilityUsesFormat, dataContext)}
+                        {parseAndRenderUIString(UI_STRINGS.abilityUsesFormat || "{abilityName} Uses per {period} | <b>{usesValue}</b>", dataContext)}
                       </Badge>
                     );
                   } else if (ability.uses && ability.uses.value === "customPool" && ability.abilityKey === "layOnHandsHealingPool" && aggregatedFeatEffects?.modifiedMechanics?.layOnHandsHealingPool) {
-                    const localizedPeriod = UI_STRINGS.periodDay;
+                    const localizedPeriod = UI_STRINGS.periodDay || 'Day';
                     const poolValue = aggregatedFeatEffects.modifiedMechanics.layOnHandsHealingPool.value;
                      const dataContext = {
                         abilityName: abilityNameForDisplay,
@@ -646,7 +654,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     return (
                          <Badge key={ability.abilityKey} variant="secondary" className="whitespace-nowrap bg-accent text-accent-foreground">
                             <Heart className="inline h-3 w-3 mr-1" />
-                            {parseAndRenderUIString(UI_STRINGS.abilityPoolFormat, dataContext)}
+                            {parseAndRenderUIString(UI_STRINGS.abilityPoolFormat || "{abilityName} | <b>{poolValue}</b> per {period}", dataContext)}
                         </Badge>
                     );
                   }
@@ -725,7 +733,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let badgeClassNameInternal = "whitespace-nowrap";
                     if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
-                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString(UI_STRINGS.abilityScoreAgingEffectBadgeFormat, {abilityAbbr: effect.ability.substring(0,3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : effect.change)})} </Badge> );
+                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString(UI_STRINGS.abilityScoreAgingEffectBadgeFormat || "{abilityAbbr}: {change}", {abilityAbbr: effect.ability.substring(0,3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : effect.change)})} </Badge> );
                   })}
                 </div>
               )}
@@ -763,7 +771,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let badgeClassNameForAc = "whitespace-nowrap";
                     if (acMod > 0) badgeClassNameForAc = cn(badgeClassNameForAc, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (acMod < 0) { badgeVariantProp = "destructive"; badgeClassNameForAc = cn(badgeClassNameForAc, "hover:bg-destructive"); }
-                    return ( <Badge variant={badgeVariantProp} className={badgeClassNameForAc}> {parseAndRenderUIString(UI_STRINGS.acModSizeBadgeFormat, {acModValue: (acMod > 0 ? `+${acMod}` : acMod)})} </Badge> );
+                    return ( <Badge variant={badgeVariantProp} className={badgeClassNameForAc}> {parseAndRenderUIString(UI_STRINGS.acModSizeBadgeFormat || "AC Mod: {acModValue}", {acModValue: (acMod > 0 ? `+${acMod}` : acMod)})} </Badge> );
                   } return null;
                 })()}
               </div>
@@ -777,3 +785,4 @@ const CharacterFormCoreInfoSectionComponent = ({
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
 
+    
