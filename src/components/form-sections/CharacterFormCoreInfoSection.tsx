@@ -24,7 +24,8 @@ import type {
   GrantsAbilityEffectUses,
   ClassSpecificUIBlock
 } from '@/types/character-core';
-import { isAlignmentCompatibleWithDeity, isAlignmentValidForRequirement, getLocalizedString } from '@/types/character';
+import { isAlignmentCompatibleWithDeity, isAlignmentValidForRequirement } from '@/types/character';
+import { getLocalizedString } from '@/i18n/i18n-data';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -38,7 +39,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Separator } from '@/components/ui/separator';
-import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; 
+import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 
 const DEBOUNCE_DELAY = 400;
 const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__";
@@ -303,7 +304,7 @@ const CharacterFormCoreInfoSectionComponent = ({
 
   const genderSelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [{ id: "unspecified", label: "Loading..." }];
-    
+
     const unspecifiedOption = translations.GENDERS.find(g => g.id === 'unspecified') || { id: 'unspecified', label: 'Unspecified' };
     const otherOption = translations.GENDERS.find(g => g.id === 'other') || { id: 'other', label: 'Other' };
     const maleOption = translations.GENDERS.find(g => g.id === 'male') || { id: 'male', label: 'Male' };
@@ -426,7 +427,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               disabled={panelIsLocked}
             >
               <SelectTrigger id="rangerCombatStyle">
-                <SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectRangerCombatStylePlaceholder || "Select Combat Style...")} />
+                <SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectRangerCombatStylePlaceholder || "Select Combat Style...") as string} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="archery">{parseAndRenderUIString(UI_STRINGS.rangerCombatStyleArchery || "Archery")}</SelectItem>
@@ -569,7 +570,7 @@ const CharacterFormCoreInfoSectionComponent = ({
         return <div key={uiBlock.key} className="text-destructive">{parseAndRenderUIString("Unknown UI Block: {blockKey}", {blockKey: uiBlock.key})}</div>;
     }
   };
-  
+
   return (
     <LockablePanelWrapper
       title={parseAndRenderUIString(UI_STRINGS.coreAttributesTitle || "Core Attributes") as string}
@@ -621,7 +622,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
                     else badgeClassNameInternal = cn(badgeClassNameInternal, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
-                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {effect.ability.substring(0, 3).toUpperCase()}{effect.change !== 0 ? '\u00A0' : ''} {effect.change > 0 ? '+' : ''} {effect.change !==0 ? effect.change : ''} </Badge> );
+                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString("{abilityAbbr} {change}", { abilityAbbr: effect.ability.substring(0, 3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : (effect.change < 0 ? effect.change : '')) })} </Badge> );
                   })}
                 </div>
               )}
@@ -647,7 +648,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 {selectedClassInfo?.hitDice && (
                    <Badge variant="secondary" className="whitespace-nowrap">
                     <Heart fill="currentColor" className="inline h-3 w-3 mr-1.5 text-primary/70" />
-                    {parseAndRenderUIString(UI_STRINGS.hitDiceLabel || "Hit Dice | <b>{value}</b>", { value: selectedClassInfo.hitDice })}
+                     {parseAndRenderUIString(UI_STRINGS.hitDiceLabel || "Hit Dice | <b>{value}</b>", { value: selectedClassInfo.hitDice })}
                   </Badge>
                 )}
                 {aggregatedFeatEffects?.grantedAbilities && aggregatedFeatEffects.grantedAbilities.map(ability => {
@@ -668,15 +669,13 @@ const CharacterFormCoreInfoSectionComponent = ({
                         {parseAndRenderUIString(UI_STRINGS.abilityUsesFormat || "{abilityName} Uses | <b>{usesValue}</b> per {period}", dataContext)}
                       </Badge>
                     );
-                  } else if (ability.uses && ability.uses.value === "customPool" && ability.abilityKey === "layOnHandsHealingPool") {
-                    // Handle Lay on Hands pool specifically if needed, or use a generic display
-                    // For now, let's use a generic display for customPool
-                    // You might want to calculate the pool (Paladin Lvl * Cha Mod) here if detailedAbilityScores were available
+                  } else if (ability.uses && ability.uses.value === "customPool" && ability.abilityKey === "layOnHandsHealingPool" && aggregatedFeatEffects?.modifiedMechanics?.layOnHandsHealingPool) {
                     const localizedAbilityName = getLocalizedString(ability.name, currentLang);
                     const localizedPeriod = UI_STRINGS.periodDay || 'day';
-                    const dataContext = {
+                    const poolValue = aggregatedFeatEffects.modifiedMechanics.layOnHandsHealingPool.value;
+                     const dataContext = {
                         abilityName: localizedAbilityName,
-                        poolValue: "N/A", // Placeholder for now
+                        poolValue: typeof poolValue === 'number' ? poolValue : "Pool",
                         period: localizedPeriod
                     };
                     return (
@@ -719,7 +718,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     </SelectContent>
                   </Select>
                 </div>
-                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked}> <Info className="h-5 w-5" /> </Button>
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenAlignmentInfoDialog}> <Info className="h-5 w-5" /> </Button>
               </div>
             </div>
             <div className="space-y-1.5">
@@ -753,15 +752,15 @@ const CharacterFormCoreInfoSectionComponent = ({
                 className="justify-center"
                 disabled={panelIsLocked}
               />
-              {ageEffectsDetails && (ageEffectsDetails.categoryName !== 'Adult' || ageEffectsDetails.effects.length > 0) && (
-                <div className="flex flex-wrap items-baseline justify-center md:justify-start gap-1 pt-[6px] ml-1">
+              {ageEffectsDetails && (ageEffectsDetails.categoryName !== (UI_STRINGS.ageCategoryAdult || 'Adult') || ageEffectsDetails.effects.length > 0) && (
+                 <div className="flex flex-wrap items-baseline justify-center md:justify-start gap-1 pt-[6px] ml-1">
                   <Badge variant="secondary" className="whitespace-nowrap"> {parseAndRenderUIString(ageEffectsDetails.categoryName)} </Badge>
                   {ageEffectsDetails.effects.map((effect) => {
                     let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
                     let badgeClassNameInternal = "whitespace-nowrap";
                     if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
-                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {effect.ability.substring(0, 3).toUpperCase()}{effect.change !== 0 ? '\u00A0' : ''} {effect.change > 0 ? '+' : ''} {effect.change} </Badge> );
+                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString("{abilityAbbr} {change}", {abilityAbbr: effect.ability.substring(0,3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : effect.change)})} </Badge> );
                   })}
                 </div>
               )}
@@ -799,7 +798,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let badgeClassNameForAc = "whitespace-nowrap";
                     if (acMod > 0) badgeClassNameForAc = cn(badgeClassNameForAc, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (acMod < 0) { badgeVariantProp = "destructive"; badgeClassNameForAc = cn(badgeClassNameForAc, "hover:bg-destructive"); }
-                    return ( <Badge variant={badgeVariantProp} className={badgeClassNameForAc}> AC{'\u00A0'}{acMod >= 0 ? '+' : ''}{acMod} </Badge> );
+                    return ( <Badge variant={badgeVariantProp} className={badgeClassNameForAc}> {parseAndRenderUIString("AC | <b>{acModValue}</b>", {acModValue: (acMod > 0 ? `+${acMod}` : acMod)})} </Badge> );
                   } return null;
                 })()}
               </div>
