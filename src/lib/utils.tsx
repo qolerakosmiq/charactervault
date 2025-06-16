@@ -63,24 +63,26 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
       let content = badgeContentMatch ? badgeContentMatch[1] : '';
       const isOutline = matchedString.includes(" outline");
 
-      const pipeIndex = content.indexOf('|');
+      const pipeSeparator = " | ";
+      const pipeIndex = content.indexOf(pipeSeparator);
+      
       if (pipeIndex !== -1) {
-        const labelPartStr = content.substring(0, pipeIndex).trim();
-        let valuePartStr = content.substring(pipeIndex + 1).trim();
+        const labelPartStr = content.substring(0, pipeIndex); // No .trim()
+        let valuePartStr = content.substring(pipeIndex + pipeSeparator.length); // No .trim()
 
         const labelPartNode = parseAndRenderUIString(labelPartStr, dataContext);
         const valuePartNode = parseAndRenderUIString(valuePartStr, dataContext);
         
         elements.push(
-          <Badge key={`${match.index}-${elements.length}`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
+          <Badge key={`${match.index}-${elements.length}-badge`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
             {labelPartNode}
-            <span className="mx-1">|</span>
+            {' \u00A0|\u00A0 '} {/* Space, NBSP, Pipe, NBSP, Space */}
             <strong className="font-semibold">{valuePartNode}</strong>
           </Badge>
         );
       } else {
         elements.push(
-          <Badge key={`${match.index}-${elements.length}`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
+          <Badge key={`${match.index}-${elements.length}-badge`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
             {parseAndRenderUIString(content, dataContext)}
           </Badge>
         );
@@ -89,7 +91,7 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
       const colorContentMatch = matchedString.match(/<color accent>(.*?)<\/color>/);
       const content = colorContentMatch ? colorContentMatch[1] : '';
       elements.push(
-        <span key={`${match.index}-${elements.length}`} className="text-accent">
+        <span key={`${match.index}-${elements.length}-color`} className="text-accent">
           {parseAndRenderUIString(content, dataContext)}
         </span>
       );
@@ -97,7 +99,7 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
       const boldContentMatch = matchedString.match(/<b>(.*?)<\/b>/);
       const content = boldContentMatch ? boldContentMatch[1] : '';
       elements.push(
-        <strong key={`${match.index}-${elements.length}`}>
+        <strong key={`${match.index}-${elements.length}-bold`}>
           {parseAndRenderUIString(content, dataContext)}
         </strong>
       );
@@ -107,17 +109,20 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
       
       if (value !== undefined) {
         if (typeof value === 'string' && (value.includes('<badge') || value.includes('<color') || value.includes('<b>') || value.includes('{'))) {
+          // If the resolved value itself might contain more tags, parse it recursively
           elements.push(parseAndRenderUIString(value, dataContext));
         } else {
           elements.push(String(value));
         }
       } else {
+        // If variable not found, render the placeholder itself to indicate missing data
         elements.push(`{${variablePath}}`); 
       }
     }
     lastIndex = regex.lastIndex;
   }
 
+  // Add any remaining text after the last match
   if (lastIndex < uiString.length) {
     elements.push(uiString.substring(lastIndex));
   }
@@ -125,8 +130,9 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
   if (elements.length === 0) return '';
   if (elements.length === 1 && typeof elements[0] === 'string') return elements[0];
   
+  // Ensure unique keys for fragments if elements contains multiple items not already keyed
   return React.createElement(React.Fragment, null, ...elements.map((el, i) => 
-    React.isValidElement(el) ? React.cloneElement(el, { key: `parsed-${i}-${Math.random().toString(36).substring(7)}` }) : el
+    React.isValidElement(el) ? (el.key ? el : React.cloneElement(el, { key: `parsed-el-${i}-${Math.random().toString(36).substring(7)}` })) : el
   ));
 }
 
