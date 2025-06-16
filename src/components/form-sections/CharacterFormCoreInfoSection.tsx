@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -30,7 +29,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollText, Info, Loader2, Users, Activity, BookOpen, Wand2, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Badge } from '@/components/ui/badge';
 import { ComboboxPrimitive } from '@/components/ui/combobox';
@@ -412,12 +411,13 @@ const CharacterFormCoreInfoSectionComponent = ({
         return null;
       }
     }
+    const blockLabel = parseAndRenderUIString(UI_STRINGS[uiBlock.labelKey as keyof typeof UI_STRINGS] || uiBlock.key);
 
     switch (uiBlock.key) {
       case "rangerCombatStyle":
         return (
           <div key={uiBlock.key} className="space-y-1.5">
-            <Label htmlFor="rangerCombatStyle">{UI_STRINGS[uiBlock.labelKey as keyof typeof UI_STRINGS] || uiBlock.key}</Label>
+            <Label htmlFor="rangerCombatStyle">{blockLabel}</Label>
             <Select
               name="chosenCombatStyle"
               value={localChosenCombatStyle || ""}
@@ -425,15 +425,15 @@ const CharacterFormCoreInfoSectionComponent = ({
               disabled={isPanelLocked}
             >
               <SelectTrigger id="rangerCombatStyle">
-                <SelectValue placeholder={UI_STRINGS.selectRangerCombatStylePlaceholder || "Select Combat Style..."} />
+                <SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectRangerCombatStylePlaceholder || "Select Combat Style...")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="archery">{UI_STRINGS.rangerCombatStyleArchery || "Archery"}</SelectItem>
-                <SelectItem value="twoWeaponFighting">{UI_STRINGS.rangerCombatStyleTwoWeapon || "Two-Weapon Fighting"}</SelectItem>
+                <SelectItem value="archery">{parseAndRenderUIString(UI_STRINGS.rangerCombatStyleArchery || "Archery")}</SelectItem>
+                <SelectItem value="twoWeaponFighting">{parseAndRenderUIString(UI_STRINGS.rangerCombatStyleTwoWeapon || "Two-Weapon Fighting")}</SelectItem>
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              {UI_STRINGS.rangerCombatStyleDescription || "Choose your combat style at Ranger level 2. This grants bonus feats as you level."}
+              {parseAndRenderUIString(UI_STRINGS.rangerCombatStyleDescription || "Choose your combat style at Ranger level 2. This grants bonus feats as you level.")}
             </p>
           </div>
         );
@@ -443,30 +443,28 @@ const CharacterFormCoreInfoSectionComponent = ({
           <div key={uiBlock.key} className="space-y-3 p-3 border rounded-md bg-muted/20">
             <Label className="flex items-center text-md font-medium">
               <Users className="mr-2 h-5 w-5 text-primary/70" />
-              {UI_STRINGS[uiBlock.labelKey as keyof typeof UI_STRINGS] || uiBlock.key}
-              <Badge variant="outline" className="ml-2">{favoredEnemySlots} {UI_STRINGS.favoredEnemySlotsAvailableShort || "Slot(s)"}</Badge>
+              {blockLabel}
+              <Badge variant="outline" className="ml-2">{parseAndRenderUIString(UI_STRINGS.favoredEnemySlotsAvailableShort || "{slots} Slot(s)", {slots: favoredEnemySlots})}</Badge>
             </Label>
             <p className="text-xs text-muted-foreground">
-              {UI_STRINGS.favoredEnemyDescription || "Select creature types your Ranger specializes against. Bonuses apply automatically when relevant."}
+              {parseAndRenderUIString(UI_STRINGS.favoredEnemyDescription || "Select creature types your Ranger specializes against. Bonuses apply automatically when relevant.")}
             </p>
             {aggregatedFeatEffects?.favoredEnemyBonuses && (aggregatedFeatEffects.favoredEnemyBonuses.skillBonus > 0 || aggregatedFeatEffects.favoredEnemyBonuses.damageBonus > 0) && (
               <div className="mt-1 mb-1 p-2 border border-dashed border-primary/50 rounded-md bg-primary/5 text-sm text-primary">
                 <Info className="inline h-4 w-4 mr-1.5 mb-0.5" />
-                {(UI_STRINGS.favoredEnemyBonusDisplayInfo || "Favored Enemy Bonus: +{skillBonus} to skills and +{damageBonus} damage.")
-                  .replace('{skillBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.skillBonus))
-                  .replace('{damageBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.damageBonus))}
+                {parseAndRenderUIString(UI_STRINGS.favoredEnemyBonusDisplayInfo, {skillBonus: aggregatedFeatEffects.favoredEnemyBonuses.skillBonus, damageBonus: aggregatedFeatEffects.favoredEnemyBonuses.damageBonus})}
               </div>
             )}
             {Array.from({ length: favoredEnemySlots }).map((_, index) => (
               <div key={`favored-enemy-${index}`} className="space-y-1">
                 <Label htmlFor={`favored-enemy-input-${index}`} className="text-xs">
-                  {(UI_STRINGS.favoredEnemySlotLabel || "Favored Enemy Slot {slotNum}").replace("{slotNum}", String(index + 1))}
+                  {parseAndRenderUIString(UI_STRINGS.favoredEnemySlotLabel || "Favored Enemy Slot {slotNum}", {slotNum: index + 1})}
                 </Label>
                 <Input
                   id={`favored-enemy-input-${index}`}
                   value={characterData.chosenFavoredEnemies?.[index]?.type || ''}
                   onChange={(e) => handleFavoredEnemyChange(index, e.target.value)}
-                  placeholder={UI_STRINGS.favoredEnemyPlaceholder || "e.g., Orc, Goblin, Undead"}
+                  placeholder={parseAndRenderUIString(UI_STRINGS.favoredEnemyPlaceholder || "e.g., Orc, Goblin, Undead") as string}
                   className="h-9 text-sm"
                   disabled={isPanelLocked}
                 />
@@ -479,30 +477,30 @@ const CharacterFormCoreInfoSectionComponent = ({
            <div key={uiBlock.key} className="space-y-4 p-3 border rounded-md bg-muted/20">
             <Label className="flex items-center text-md font-medium">
               <BookOpen className="mr-2 h-5 w-5 text-primary/70" />
-              {UI_STRINGS[uiBlock.labelKey as keyof typeof UI_STRINGS] || uiBlock.key}
+              {blockLabel}
             </Label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <Label htmlFor="cleric-domain-1" className="text-sm">{UI_STRINGS.clericDomain1Label || "First Domain"}</Label>
+                <Label htmlFor="cleric-domain-1" className="text-sm">{parseAndRenderUIString(UI_STRINGS.clericDomain1Label || "First Domain")}</Label>
                 <ComboboxPrimitive
                   id="cleric-domain-1"
                   options={domainOptions}
                   value={selectedDomain1 || DOMAIN_NONE_OPTION_VALUE}
                   onChange={(val) => handleDomainChange(0, val as DomainId)}
-                  placeholder={UI_STRINGS.selectDomainPlaceholder || "Select Domain..."}
+                  placeholder={parseAndRenderUIString(UI_STRINGS.selectDomainPlaceholder || "Select Domain...") as string}
                   triggerClassName="h-9 text-sm"
                   disabled={isPanelLocked}
                 />
                 {selectedDomain1 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.id === selectedDomain1)?.grantedPowerDescription}</p>}
               </div>
               <div className="space-y-1">
-                <Label htmlFor="cleric-domain-2" className="text-sm">{UI_STRINGS.clericDomain2Label || "Second Domain"}</Label>
+                <Label htmlFor="cleric-domain-2" className="text-sm">{parseAndRenderUIString(UI_STRINGS.clericDomain2Label || "Second Domain")}</Label>
                 <ComboboxPrimitive
                   id="cleric-domain-2"
                   options={domainOptionsForSecondPicker}
                   value={selectedDomain2 || DOMAIN_NONE_OPTION_VALUE}
                   onChange={(val) => handleDomainChange(1, val as DomainId)}
-                  placeholder={UI_STRINGS.selectDomainPlaceholder || "Select Domain..."}
+                  placeholder={parseAndRenderUIString(UI_STRINGS.selectDomainPlaceholder || "Select Domain...") as string}
                   triggerClassName="h-9 text-sm"
                   disabled={isPanelLocked}
                 />
@@ -514,19 +512,19 @@ const CharacterFormCoreInfoSectionComponent = ({
         case "wizardSpecialization":
           return (
              <div key={uiBlock.key} className="space-y-1">
-              <Label htmlFor="wizard-specialization" className="text-sm">{UI_STRINGS[uiBlock.labelKey as keyof typeof UI_STRINGS] || uiBlock.key}</Label>
+              <Label htmlFor="wizard-specialization" className="text-sm">{blockLabel}</Label>
               <ComboboxPrimitive
                 id="wizard-specialization"
                 options={magicSchoolOptions}
                 value={localSpecializationSchool}
                 onChange={(val) => setLocalSpecializationSchool(val as MagicSchoolId)}
-                placeholder={UI_STRINGS.selectMagicSchoolPlaceholder || "Select School..."}
+                placeholder={parseAndRenderUIString(UI_STRINGS.selectMagicSchoolPlaceholder || "Select School...") as string}
                 triggerClassName="h-9 text-sm"
                 disabled={isPanelLocked}
               />
               {localSpecializationSchool !== MAGIC_SCHOOL_NONE_OPTION_VALUE && localSpecializationSchool !== 'universal' && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  {UI_STRINGS.wizardSpecialistBonusSpellInfo || "Grants one bonus spell of the chosen school per spell level per day."}
+                  {parseAndRenderUIString(UI_STRINGS.wizardSpecialistBonusSpellInfo || "Grants one bonus spell of the chosen school per spell level per day.")}
                 </p>
               )}
             </div>
@@ -538,31 +536,31 @@ const CharacterFormCoreInfoSectionComponent = ({
           return (
              <React.Fragment key={uiBlock.key}>
                 <div className="space-y-1">
-                  <Label htmlFor="wizard-prohibited-1" className="text-sm">{UI_STRINGS.wizardProhibitedSchool1Label || "First Prohibited School"}</Label>
+                  <Label htmlFor="wizard-prohibited-1" className="text-sm">{parseAndRenderUIString(UI_STRINGS.wizardProhibitedSchool1Label || "First Prohibited School")}</Label>
                   <ComboboxPrimitive
                     id="wizard-prohibited-1"
                     options={prohibitedSchoolOptions}
                     value={selectedProhibitedSchool1 || PROHIBITED_SCHOOL_NONE_VALUE}
                     onChange={(val) => handleProhibitedSchoolChange(0, val as MagicSchoolId)}
-                    placeholder={UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School..."}
+                    placeholder={parseAndRenderUIString(UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School...") as string}
                     triggerClassName="h-9 text-sm"
                     disabled={isPanelLocked}
                   />
                 </div>
                   <div className="space-y-1 md:col-start-2">
-                  <Label htmlFor="wizard-prohibited-2" className="text-sm">{UI_STRINGS.wizardProhibitedSchool2Label || "Second Prohibited School"}</Label>
+                  <Label htmlFor="wizard-prohibited-2" className="text-sm">{parseAndRenderUIString(UI_STRINGS.wizardProhibitedSchool2Label || "Second Prohibited School")}</Label>
                   <ComboboxPrimitive
                     id="wizard-prohibited-2"
                     options={prohibitedSchoolOptionsForSecondPicker}
                     value={selectedProhibitedSchool2 || PROHIBITED_SCHOOL_NONE_VALUE}
                     onChange={(val) => handleProhibitedSchoolChange(1, val as MagicSchoolId)}
-                    placeholder={UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School..."}
+                    placeholder={parseAndRenderUIString(UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School...") as string}
                     triggerClassName="h-9 text-sm"
                     disabled={isPanelLocked || !selectedProhibitedSchool1 || selectedProhibitedSchool1 === PROHIBITED_SCHOOL_NONE_VALUE}
                   />
                 </div>
                   <p className="text-xs text-muted-foreground mt-1 md:col-span-2">
-                    {UI_STRINGS.wizardProhibitedSchoolInfo || "Spells from prohibited schools cannot be learned or cast. Divination cannot be prohibited."}
+                    {parseAndRenderUIString(UI_STRINGS.wizardProhibitedSchoolInfo || "Spells from prohibited schools cannot be learned or cast. Divination cannot be prohibited.")}
                   </p>
              </React.Fragment>
           );
@@ -573,8 +571,8 @@ const CharacterFormCoreInfoSectionComponent = ({
   
   return (
     <LockablePanelWrapper
-      title={UI_STRINGS.coreAttributesTitle || "Core Attributes"}
-      description={UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer."}
+      title={parseAndRenderUIString(UI_STRINGS.coreAttributesTitle || "Core Attributes") as string}
+      description={parseAndRenderUIString(UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer.") as string}
       icon={ScrollText}
       cardContentClassName="space-y-6 pt-6"
       initialLockedState={false}
@@ -583,18 +581,18 @@ const CharacterFormCoreInfoSectionComponent = ({
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div className="space-y-1.5">
-              <Label htmlFor="name">{UI_STRINGS.characterNameLabel || "Character Name"}</Label>
+              <Label htmlFor="name">{parseAndRenderUIString(UI_STRINGS.characterNameLabel || "Character Name")}</Label>
               <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="playerName">{UI_STRINGS.playerNameLabel || "Player Name"}</Label>
+              <Label htmlFor="playerName">{parseAndRenderUIString(UI_STRINGS.playerNameLabel || "Player Name")}</Label>
               <Input id="playerName" name="playerName" value={localPlayerName} onChange={(e) => setLocalPlayerName(e.target.value)} disabled={panelIsLocked}/>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div className="space-y-1.5">
-              <Label htmlFor="race">{UI_STRINGS.raceLabel || "Race"}</Label>
+              <Label htmlFor="race">{parseAndRenderUIString(UI_STRINGS.raceLabel || "Race")}</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
                   <Select
@@ -603,14 +601,14 @@ const CharacterFormCoreInfoSectionComponent = ({
                     disabled={panelIsLocked}
                   >
                     <SelectTrigger id="race">
-                      <SelectValue placeholder={UI_STRINGS.selectRacePlaceholder || "Select race"} />
+                      <SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectRacePlaceholder || "Select race") as string} />
                     </SelectTrigger>
                     <SelectContent>
                       {raceSelectOptions}
                     </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenRaceInfoDialog} disabled={!localRace}>
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenRaceInfoDialog} disabled={!localRace || panelIsLocked}>
                   <Info className="h-5 w-5" />
                 </Button>
               </div>
@@ -628,7 +626,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               )}
             </div>
              <div className="space-y-1.5">
-              <Label htmlFor="className">{UI_STRINGS.classLabel || "Class"}</Label>
+              <Label htmlFor="className">{parseAndRenderUIString(UI_STRINGS.classLabel || "Class")}</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
                   <Select
@@ -636,11 +634,11 @@ const CharacterFormCoreInfoSectionComponent = ({
                     onValueChange={(value) => setLocalClassName(value as DndClassId)}
                     disabled={panelIsLocked}
                   >
-                    <SelectTrigger id="className"> <SelectValue placeholder={UI_STRINGS.selectClassPlaceholder || "Select class"} /> </SelectTrigger>
+                    <SelectTrigger id="className"> <SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectClassPlaceholder || "Select class") as string} /> </SelectTrigger>
                     <SelectContent> {classSelectOptions} </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenClassInfoDialog} disabled={!localClassName} >
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenClassInfoDialog} disabled={!localClassName || panelIsLocked} >
                   <Info className="h-5 w-5" />
                 </Button>
               </div>
@@ -648,7 +646,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 {selectedClassInfo?.hitDice && (
                   <Badge variant="secondary" className="whitespace-nowrap">
                     <Heart fill="currentColor" className="inline h-3 w-3 mr-1.5 text-primary/70" />
-                    {UI_STRINGS.hitDiceLabel || "Hit Dice"}:{'\u00A0'}
+                    {parseAndRenderUIString(UI_STRINGS.hitDiceLabel || "Hit Dice")}:{'\u00A0'}
                     <strong className="font-bold">{selectedClassInfo.hitDice}</strong>
                   </Badge>
                 )}
@@ -664,7 +662,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     return (
                       <Badge key={ability.abilityKey} className="whitespace-nowrap bg-accent text-accent-foreground">
                         <Activity className="inline h-3 w-3 mr-1" />
-                        {displayString}
+                        {parseAndRenderUIString(displayString)}
                       </Badge>
                     );
                   }
@@ -682,7 +680,7 @@ const CharacterFormCoreInfoSectionComponent = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div className="space-y-1.5">
-              <Label htmlFor="alignment">{UI_STRINGS.alignmentLabel || "Alignment"}</Label>
+              <Label htmlFor="alignment">{parseAndRenderUIString(UI_STRINGS.alignmentLabel || "Alignment")}</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-grow">
                   <Select
@@ -692,7 +690,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     disabled={panelIsLocked}
                   >
                     <SelectTrigger id="alignment">
-                      <SelectValue placeholder={UI_STRINGS.selectAlignmentPlaceholder || "Select alignment"} />
+                      <SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectAlignmentPlaceholder || "Select alignment") as string} />
                     </SelectTrigger>
                     <SelectContent>
                       {availableAlignments.map(align => (
@@ -701,19 +699,19 @@ const CharacterFormCoreInfoSectionComponent = ({
                     </SelectContent>
                   </Select>
                 </div>
-                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenAlignmentInfoDialog}> <Info className="h-5 w-5" /> </Button>
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked}> <Info className="h-5 w-5" /> </Button>
               </div>
             </div>
             <div className="space-y-1.5">
-                <Label htmlFor="deity">{UI_STRINGS.deityLabel || "Deity"}</Label>
+                <Label htmlFor="deity">{parseAndRenderUIString(UI_STRINGS.deityLabel || "Deity")}</Label>
                 <div className="flex items-center gap-2">
                   <div className="flex-grow">
                     <Select value={localDeity} onValueChange={(value) => setLocalDeity(value)} disabled={panelIsLocked} >
-                      <SelectTrigger id="deity"> <SelectValue placeholder={UI_STRINGS.selectDeityPlaceholder || "Select deity"} /> </SelectTrigger>
+                      <SelectTrigger id="deity"> <SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectDeityPlaceholder || "Select deity") as string} /> </SelectTrigger>
                       <SelectContent> {deitySelectOptions.map(opt => ( <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem> ))} </SelectContent>
                     </Select>
                   </div>
-                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenDeityInfoDialog} disabled={!localDeity || localDeity.trim() === '' || localDeity === DEITY_NONE_OPTION_VALUE} >
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenDeityInfoDialog} disabled={!localDeity || localDeity.trim() === '' || localDeity === DEITY_NONE_OPTION_VALUE || panelIsLocked} >
                     <Info className="h-5 w-5" />
                   </Button>
                 </div>
@@ -722,7 +720,7 @@ const CharacterFormCoreInfoSectionComponent = ({
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
             <div className="space-y-1.5">
-              <Label htmlFor="age" className="inline-block w-full text-center md:text-center">{UI_STRINGS.ageLabel || "Age"}</Label>
+              <Label htmlFor="age" className="inline-block w-full text-center md:text-center">{parseAndRenderUIString(UI_STRINGS.ageLabel || "Age")}</Label>
               <NumberSpinnerInput
                 id="age"
                 value={localAge}
@@ -749,7 +747,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               )}
               </div>
             <div className="space-y-1.5">
-              <Label htmlFor="gender">{UI_STRINGS.genderLabel || "Gender"}</Label>
+              <Label htmlFor="gender">{parseAndRenderUIString(UI_STRINGS.genderLabel || "Gender")}</Label>
               <Select
                 name="gender"
                 value={localGender || 'unspecified'}
@@ -757,7 +755,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 disabled={panelIsLocked}
               >
                 <SelectTrigger id="gender">
-                  <SelectValue placeholder={UI_STRINGS.selectGenderPlaceholder || "Select gender..."} />
+                  <SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectGenderPlaceholder || "Select gender...") as string} />
                 </SelectTrigger>
                 <SelectContent>
                   {genderSelectOptions.map(g => (
@@ -767,9 +765,9 @@ const CharacterFormCoreInfoSectionComponent = ({
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="sizeCategory">{UI_STRINGS.sizeLabel || "Size Category"}</Label>
+              <Label htmlFor="sizeCategory">{parseAndRenderUIString(UI_STRINGS.sizeLabel || "Size Category")}</Label>
               <Select name="sizeCategory" value={localSize} onValueChange={(value) => setLocalSize(value as CharacterSize)} disabled={panelIsLocked}>
-                <SelectTrigger id="sizeCategory"><SelectValue placeholder={UI_STRINGS.selectSizePlaceholder || "Select size category"} /></SelectTrigger>
+                <SelectTrigger id="sizeCategory"><SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectSizePlaceholder || "Select size category") as string} /></SelectTrigger>
                 <SelectContent> {sizeSelectOptions} </SelectContent>
               </Select>
               <div className="flex items-baseline gap-1 pt-[6px] ml-1">
@@ -794,4 +792,3 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
-
