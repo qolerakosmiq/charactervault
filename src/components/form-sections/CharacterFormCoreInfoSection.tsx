@@ -28,7 +28,7 @@ import { isAlignmentCompatibleWithDeity, isAlignmentValidForRequirement } from '
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScrollText, Info, Loader2, Users, Activity, BookOpen, Wand2 } from 'lucide-react';
+import { ScrollText, Info, Loader2, Users, Activity, BookOpen, Wand2, Heart } from 'lucide-react'; // Added Heart
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -38,7 +38,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Separator } from '@/components/ui/separator';
-import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; // Added
+import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; 
 
 const DEBOUNCE_DELAY = 400;
 const DEITY_NONE_OPTION_VALUE = "__NONE_DEITY__";
@@ -369,6 +369,7 @@ const CharacterFormCoreInfoSectionComponent = ({
         description={translations?.UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer."}
         icon={ScrollText}
         cardContentClassName="space-y-6 pt-6"
+        initialLockedState={false}
       >
         {() => (
           <>
@@ -793,3 +794,4 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
+
