@@ -60,15 +60,14 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
 
     if (match[1]) { // <badge> tag
       const badgeContentMatch = matchedString.match(/<badge(?: outline)?>(.*?)<\/badge>/);
-      let content = badgeContentMatch ? badgeContentMatch[1] : '';
+      const content = badgeContentMatch ? badgeContentMatch[1] : '';
       const isOutline = matchedString.includes(" outline");
 
-      const pipeSeparator = " | ";
-      const pipeIndex = content.indexOf(pipeSeparator);
+      const pipeIndex = content.indexOf("|"); // Find just the pipe
       
       if (pipeIndex !== -1) {
-        const labelPartStr = content.substring(0, pipeIndex); // No .trim()
-        let valuePartStr = content.substring(pipeIndex + pipeSeparator.length); // No .trim()
+        const labelPartStr = content.substring(0, pipeIndex).trim(); // Trim spaces from JSON around pipe
+        const valuePartStr = content.substring(pipeIndex + 1).trim(); // Trim spaces from JSON around pipe
 
         const labelPartNode = parseAndRenderUIString(labelPartStr, dataContext);
         const valuePartNode = parseAndRenderUIString(valuePartStr, dataContext);
@@ -76,11 +75,12 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
         elements.push(
           <Badge key={`${match.index}-${elements.length}-badge`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
             {labelPartNode}
-            {' \u00A0|\u00A0 '} {/* Space, NBSP, Pipe, NBSP, Space */}
+            {' \u00A0|\u00A0 '} {/* Consistent "space-nbsp-pipe-nbsp-space" separator */}
             <strong className="font-semibold">{valuePartNode}</strong>
           </Badge>
         );
       } else {
+        // Badge without pipe
         elements.push(
           <Badge key={`${match.index}-${elements.length}-badge`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
             {parseAndRenderUIString(content, dataContext)}
@@ -109,20 +109,17 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
       
       if (value !== undefined) {
         if (typeof value === 'string' && (value.includes('<badge') || value.includes('<color') || value.includes('<b>') || value.includes('{'))) {
-          // If the resolved value itself might contain more tags, parse it recursively
           elements.push(parseAndRenderUIString(value, dataContext));
         } else {
           elements.push(String(value));
         }
       } else {
-        // If variable not found, render the placeholder itself to indicate missing data
         elements.push(`{${variablePath}}`); 
       }
     }
     lastIndex = regex.lastIndex;
   }
 
-  // Add any remaining text after the last match
   if (lastIndex < uiString.length) {
     elements.push(uiString.substring(lastIndex));
   }
@@ -130,9 +127,7 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
   if (elements.length === 0) return '';
   if (elements.length === 1 && typeof elements[0] === 'string') return elements[0];
   
-  // Ensure unique keys for fragments if elements contains multiple items not already keyed
   return React.createElement(React.Fragment, null, ...elements.map((el, i) => 
     React.isValidElement(el) ? (el.key ? el : React.cloneElement(el, { key: `parsed-el-${i}-${Math.random().toString(36).substring(7)}` })) : el
   ));
 }
-
