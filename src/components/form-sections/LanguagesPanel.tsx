@@ -11,7 +11,8 @@ import { Languages as LanguagesIcon, PlusCircle, Trash2, Loader2 } from 'lucide-
 import { useI18n } from '@/context/I18nProvider';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; // Added
+import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
+import { cn } from '@/lib/utils'; // Added import
 
 export interface LanguagesPanelProps {
   characterLanguages: LanguageId[];
