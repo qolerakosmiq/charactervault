@@ -133,7 +133,7 @@ const SkillsFormSectionComponent = ({
 
   const skillPointCalcData = React.useMemo(() => {
     if (translationsLoading || !translations) {
-      return { totalSkillPointsAvailable: 0, skillPointsLeft: 0, classLabel: "", baseSkillPointsForClass: 0, racialBonusSkillPoints: 0, intelligenceModifier: 0, pointsForFirstLevel: 0, pointsFromLevelProgression: 0, totalSkillPointsSpent: 0, progressionLevels: 0 };
+      return { totalSkillPointsAvailable: 0, skillPointsLeft: 0, classLabel: "", baseSkillPointsForClass: 0, racialBonusSkillPoints: 0, intelligenceModifier: 0, pointsForFirstLevel: 0, pointsFromLevelProgression: 0, totalSkillPointsSpent: 0, progressionLevels: 0, intelligenceAbilityLabel: "INT" };
     }
 
     const { CLASS_SKILL_POINTS_BASE, DND_CLASSES, DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA, UI_STRINGS, ABILITY_LABELS } = translations;
@@ -172,7 +172,7 @@ const SkillsFormSectionComponent = ({
       baseSkillPointsForClass: currentBaseSkillPoints,
       racialBonusSkillPoints: currentRacialBonus,
       intelligenceModifier: currentIntMod,
-      intelligenceAbilityLabel, // Added for formula string
+      intelligenceAbilityLabel, 
       pointsForFirstLevel: currentPointsForFirstLevel,
       pointsFromLevelProgression: currentPointsFromLevelProgression,
       totalSkillPointsSpent: currentTotalSkillPointsSpent,
@@ -299,8 +299,8 @@ const SkillsFormSectionComponent = ({
   }
   const { DND_CLASSES, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES, SIZES, UI_STRINGS, ABILITY_LABELS } = translations;
   
-  const racialBonusPart = skillPointCalcData.racialBonusSkillPoints !== 0
-    ? parseAndRenderUIString(UI_STRINGS.skillPointRacialBonusPartFormat, { racialBonusSkillPoints: skillPointCalcData.racialBonusSkillPoints })
+  const racialBonusPartForContext = skillPointCalcData.racialBonusSkillPoints !== 0
+    ? UI_STRINGS.skillPointRacialBonusPartFormat // Pass the raw string with placeholder
     : "";
 
   const formulaContextLine1 = {
@@ -308,7 +308,8 @@ const SkillsFormSectionComponent = ({
       baseSkillPointsForClass: skillPointCalcData.baseSkillPointsForClass,
       intelligenceAbilityLabel: skillPointCalcData.intelligenceAbilityLabel,
       intelligenceModifier: skillPointCalcData.intelligenceModifier,
-      racialBonusPart: racialBonusPart,
+      racialBonusPart: racialBonusPartForContext,
+      racialBonusSkillPoints: skillPointCalcData.racialBonusSkillPoints, // Also provide the raw number for the badge in racialBonusPart
       pointsForFirstLevel: skillPointCalcData.pointsForFirstLevel,
   };
   const formulaContextLine2 = {
@@ -316,7 +317,8 @@ const SkillsFormSectionComponent = ({
       baseSkillPointsForClass: skillPointCalcData.baseSkillPointsForClass,
       intelligenceAbilityLabel: skillPointCalcData.intelligenceAbilityLabel,
       intelligenceModifier: skillPointCalcData.intelligenceModifier,
-      racialBonusPart: racialBonusPart,
+      racialBonusPart: racialBonusPartForContext,
+      racialBonusSkillPoints: skillPointCalcData.racialBonusSkillPoints, // Also provide the raw number
       progressionLevels: skillPointCalcData.progressionLevels,
       pointsFromLevelProgression: skillPointCalcData.pointsFromLevelProgression,
   };
@@ -485,4 +487,5 @@ export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
     
     
     
+
 

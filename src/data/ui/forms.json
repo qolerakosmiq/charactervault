@@ -140,16 +140,16 @@
   "skillsTableTooltipInfoForSkill": { "en": "Info for {skillName}", "fr": "Infos pour {skillName}" },
   "rollDialogSkillCheckAriaLabel": { "en": "Roll {skillName} Check", "fr": "Lancer un test de {skillName}" },
   "skillPointFormulaLine1": {
-    "en": "(<badge outline>{classLabel}</badge> Base <badge>{baseSkillPointsForClass}</badge> + <badge outline>{intelligenceAbilityLabel}</badge> Mod <badge>{intelligenceModifier}</badge>{racialBonusPart}) × <badge outline>4</badge> for First Level = <badge>{pointsForFirstLevel}</badge>",
-    "fr": "(Base <badge outline>{classLabel}</badge> <badge>{baseSkillPointsForClass}</badge> + Mod. <badge outline>{intelligenceAbilityLabel}</badge> <badge>{intelligenceModifier}</badge>{racialBonusPart}) × <badge outline>4</badge> pour Premier Niveau = <badge>{pointsForFirstLevel}</badge>"
+    "en": "(<badge>{classLabel} Base | {baseSkillPointsForClass}</badge> + <badge outline>{intelligenceAbilityLabel} Modifier | {intelligenceModifier}</badge>{racialBonusPart}) × <b><color accent>4</color></b> for First Level = <b><color accent>{pointsForFirstLevel}</color></b>",
+    "fr": "(<badge>{classLabel} Base | {baseSkillPointsForClass}</badge> + <badge outline>{intelligenceAbilityLabel} Modificateur | {intelligenceModifier}</badge>{racialBonusPart}) × <b><color accent>4</color></b> pour Premier Niveau = <b><color accent>{pointsForFirstLevel}</color></b>"
   },
   "skillPointFormulaLine2": {
-    "en": "+ (<badge outline>{classLabel}</badge> Base <badge>{baseSkillPointsForClass}</badge> + <badge outline>{intelligenceAbilityLabel}</badge> Mod <badge>{intelligenceModifier}</badge>{racialBonusPart}) × <badge outline>{progressionLevels}</badge> for Progression = <badge>{pointsFromLevelProgression}</badge>",
-    "fr": "+ (Base <badge outline>{classLabel}</badge> <badge>{baseSkillPointsForClass}</badge> + Mod. <badge outline>{intelligenceAbilityLabel}</badge> <badge>{intelligenceModifier}</badge>{racialBonusPart}) × <badge outline>{progressionLevels}</badge> pour Progression = <badge>{pointsFromLevelProgression}</badge>"
+    "en": "+ (<badge>{classLabel} Base | {baseSkillPointsForClass}</badge> + <badge outline>{intelligenceAbilityLabel} Modifier | {intelligenceModifier}</badge>{racialBonusPart}) × <badge outline>{progressionLevels}</badge> for Progression = <b><color accent>{pointsFromLevelProgression}</color></b>",
+    "fr": "+ (<badge>{classLabel} Base | {baseSkillPointsForClass}</badge> + <badge outline>{intelligenceAbilityLabel} Modificateur | {intelligenceModifier}</badge>{racialBonusPart}) × <badge outline>{progressionLevels}</badge> pour Progression = <b><color accent>{pointsFromLevelProgression}</color></b>"
   },
   "skillPointRacialBonusPartFormat": {
-    "en": " + Racial Bonus <badge>{racialBonusSkillPoints}</badge>",
-    "fr": " + Bonus Racial <badge>{racialBonusSkillPoints}</badge>"
+    "en": " <badge>Racial Bonus | {racialBonusSkillPoints}</badge>",
+    "fr": " <badge>Bonus Racial | {racialBonusSkillPoints}</badge>"
   },
   "skillPointFormulaMinOneNote": {
     "en": "Minimum 1 skill point per level applies after all bonuses.",

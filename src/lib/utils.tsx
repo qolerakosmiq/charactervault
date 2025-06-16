@@ -35,7 +35,7 @@ const getProperty = (obj: any, path: string): any => {
     }
     return current;
   } catch (error) {
-    console.error(`Error accessing path "${path}" in object:`, obj, error);
+    // console.error(`Error accessing path "${path}" in object:`, obj, error);
     return undefined;
   }
 };
@@ -47,8 +47,7 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
   const elements: React.ReactNode[] = [];
   let lastIndex = 0;
 
-  // Regex to find <badge> tags and {variable.path[index].property} placeholders
-  const regex = /(<badge(?: outline)?>.*?<\/badge>)|({[a-zA-Z0-9_.[\]]+})/g;
+  const regex = /(<badge(?: outline)?>.*?<\/badge>)|(<color accent>.*?<\/color>)|(<b>.*?<\/b>)|({[a-zA-Z0-9_.[\]]+})/g;
 
   let match;
   while ((match = regex.exec(uiString)) !== null) {
@@ -57,43 +56,75 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
       elements.push(uiString.substring(lastIndex, match.index));
     }
 
-    const fullMatch = match[0];
+    const matchedString = match[0];
 
-    if (fullMatch.startsWith("<badge")) {
-      const isOutline = fullMatch.startsWith("<badge outline>");
-      const contentMatch = fullMatch.match(/<badge(?: outline)?>(.*?)<\/badge>/);
-      let content = contentMatch ? contentMatch[1] : '';
-      
-      // Check if badge content is a variable placeholder
-      if (content.startsWith("{") && content.endsWith("}")) {
-        const variablePathInBadge = content.substring(1, content.length - 1);
-        const valueInBadge = dataContext ? getProperty(dataContext, variablePathInBadge) : undefined;
-        content = valueInBadge !== undefined ? String(valueInBadge) : `{${variablePathInBadge}}`;
+    if (match[1]) { // <badge> tag
+      const badgeContentMatch = matchedString.match(/<badge(?: outline)?>(.*?)<\/badge>/);
+      let content = badgeContentMatch ? badgeContentMatch[1] : '';
+      const isOutline = matchedString.includes(" outline");
+
+      const pipeIndex = content.indexOf('|');
+      if (pipeIndex !== -1) {
+        const labelPartStr = content.substring(0, pipeIndex).trim();
+        let valuePartStr = content.substring(pipeIndex + 1).trim();
+
+        const labelPartNode = parseAndRenderUIString(labelPartStr, dataContext);
+        const valuePartNode = parseAndRenderUIString(valuePartStr, dataContext);
+        
+        elements.push(
+          <Badge key={`${match.index}-${elements.length}`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
+            <span className="text-muted-foreground/90 mr-1">{labelPartNode}:</span>
+            <strong className="font-semibold">{valuePartNode}</strong>
+          </Badge>
+        );
+      } else {
+        elements.push(
+          <Badge key={`${match.index}-${elements.length}`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
+            {parseAndRenderUIString(content, dataContext)}
+          </Badge>
+        );
       }
-
+    } else if (match[2]) { // <color accent> tag
+      const colorContentMatch = matchedString.match(/<color accent>(.*?)<\/color>/);
+      const content = colorContentMatch ? colorContentMatch[1] : '';
       elements.push(
-        <Badge key={`${match.index}-${elements.length}`} variant={isOutline ? "outline" : "default"}>
-          {content}
-        </Badge>
+        <span key={`${match.index}-${elements.length}`} className="text-accent">
+          {parseAndRenderUIString(content, dataContext)}
+        </span>
       );
-    } else if (fullMatch.startsWith("{") && fullMatch.endsWith("}")) {
-      const variablePath = fullMatch.substring(1, fullMatch.length - 1);
+    } else if (match[3]) { // <b> tag
+      const boldContentMatch = matchedString.match(/<b>(.*?)<\/b>/);
+      const content = boldContentMatch ? boldContentMatch[1] : '';
+      elements.push(
+        <strong key={`${match.index}-${elements.length}`}>
+          {parseAndRenderUIString(content, dataContext)}
+        </strong>
+      );
+    } else if (match[4]) { // {variable} placeholder
+      const variablePath = matchedString.substring(1, matchedString.length - 1);
       const value = dataContext ? getProperty(dataContext, variablePath) : undefined;
-      elements.push(value !== undefined ? String(value) : `{${variablePath}}`);
+      
+      if (value !== undefined) {
+        if (typeof value === 'string' && (value.includes('<badge') || value.includes('<color') || value.includes('<b>') || value.includes('{'))) {
+          elements.push(parseAndRenderUIString(value, dataContext));
+        } else {
+          elements.push(String(value));
+        }
+      } else {
+        elements.push(`{${variablePath}}`); 
+      }
     }
     lastIndex = regex.lastIndex;
   }
 
-  // Add any remaining text after the last match
   if (lastIndex < uiString.length) {
     elements.push(uiString.substring(lastIndex));
   }
 
-  // If only one element and it's a string, return it directly, otherwise return a fragment
   if (elements.length === 0) return '';
   if (elements.length === 1 && typeof elements[0] === 'string') return elements[0];
   
   return React.createElement(React.Fragment, null, ...elements.map((el, i) => 
-    React.isValidElement(el) ? React.cloneElement(el, { key: `parsed-${i}` }) : el
+    React.isValidElement(el) ? React.cloneElement(el, { key: `parsed-${i}-${Math.random().toString(36).substring(7)}` }) : el
   ));
 }
