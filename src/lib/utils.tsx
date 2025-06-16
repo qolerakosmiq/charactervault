@@ -40,23 +40,6 @@ const getProperty = (obj: any, path: string): any => {
   }
 };
 
-// Helper function to replace spaces with non-breaking spaces in ReactNode children
-// This is specifically for badge content.
-function applyNbspToReactNode(nodes: React.ReactNode): React.ReactNode {
-  return React.Children.map(nodes, (child) => {
-    if (typeof child === 'string') {
-      return child.replace(/ /g, '&nbsp;');
-    }
-    if (React.isValidElement(child) && child.props.children) {
-      return React.cloneElement(child as React.ReactElement<any>, {
-        ...child.props,
-        children: applyNbspToReactNode(child.props.children),
-      });
-    }
-    return child;
-  });
-}
-
 export function parseAndRenderUIString(uiString: string, dataContext?: Record<string, any>): React.ReactNode {
   if (!uiString) return '';
 
@@ -80,14 +63,17 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
     if (badgeMatch) {
       const isOutline = badgeMatch.includes(" outline");
       const contentMatch = badgeMatch.match(/<badge(?: outline)?>(.*?)<\/badge>/);
-      const content = contentMatch ? contentMatch[1] : '';
+      const rawBadgeContent = contentMatch ? contentMatch[1] : '';
       
-      const badgeContentNodes = parseAndRenderUIString(content, dataContext);
-      const contentWithNbsp = applyNbspToReactNode(badgeContentNodes);
+      // Replace spaces in the raw badge content string with non-breaking spaces
+      const badgeContentWithNbsp = rawBadgeContent.replace(/ /g, "\u00A0");
+      
+      // Recursively parse the (now non-breaking space-ified) badge content
+      const badgeChildNodes = parseAndRenderUIString(badgeContentWithNbsp, dataContext);
       
       elements.push(
         <Badge key={`${match.index}-${elements.length}-badge-${Math.random().toString(36).substring(7)}`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
-          {contentWithNbsp}
+          {badgeChildNodes}
         </Badge>
       );
     } else if (colorMatch) {
@@ -138,4 +124,3 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
     React.isValidElement(el) ? (el.key ? el : React.cloneElement(el, { key: `parsed-el-${i}-${Math.random().toString(36).substring(7)}` })) : el
   ));
 }
-
