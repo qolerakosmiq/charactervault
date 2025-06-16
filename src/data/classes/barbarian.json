@@ -77,7 +77,7 @@
         {
           "type": "grantsAbility",
           "abilityKey": "barbarianRageUses",
-          "name": { "en": "Rage Uses", "fr": "Utilisations de Rage" },
+          "name": { "en": "Rage", "fr": "Rage" },
           "uses": {
             "per": "day",
             "value": "scaled",
@@ -252,3 +252,4 @@
     }
   ]
 }
+

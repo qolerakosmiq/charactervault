@@ -139,7 +139,7 @@
         {
           "type": "grantsAbility",
           "abilityKey": "wildShapeUses",
-          "name": { "en": "Wild Shape Uses", "fr": "Utilisations de Forme Animale" },
+          "name": { "en": "Wild Shape", "fr": "Forme Animale" },
           "details": { "en": "Standard action to change form, lasts 1 hour/level or until changed back. Does not provoke AoO.", "fr": "Action simple pour changer de forme, dure 1 heure/niveau ou jusqu'à retour à la forme normale. Ne provoque pas d'AdO." },
           "uses": {
             "per": "day",
@@ -225,4 +225,3 @@
   ]
 }
 
-    

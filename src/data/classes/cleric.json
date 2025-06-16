@@ -41,7 +41,7 @@
         {
           "type": "grantsAbility",
           "abilityKey": "turnUndeadAttempts",
-          "name": { "en": "Turn/Rebuke Attempts", "fr": "Tentatives de Renvoi/Intimidation" },
+          "name": { "en": "Turn/Rebuke Undead", "fr": "Renvoi/Intimidation des Morts-Vivants" },
           "uses": { "per": "day", "value": 3, "basedOnAbility": "charisma" }
         },
         { "type": "turnUndead", "property": "checkBonus", "value": 2, "condition": "has_5_ranks_knowledge_religion" }
@@ -49,3 +49,4 @@
     }
   ]
 }
+

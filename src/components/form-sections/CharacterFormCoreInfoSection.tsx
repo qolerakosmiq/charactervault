@@ -24,7 +24,7 @@ import type {
   GrantsAbilityEffectUses,
   ClassSpecificUIBlock
 } from '@/types/character-core';
-import { isAlignmentCompatibleWithDeity, isAlignmentValidForRequirement } from '@/types/character';
+import { isAlignmentCompatibleWithDeity, isAlignmentValidForRequirement, getLocalizedString } from '@/types/character';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -77,7 +77,7 @@ const CharacterFormCoreInfoSectionComponent = ({
   onOpenDeityInfoDialog,
   aggregatedFeatEffects,
 }: CharacterFormCoreInfoSectionProps) => {
-  const { translations, isLoading: translationsLoading } = useI18n();
+  const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
 
   const [localName, setLocalName] = useDebouncedFormField(
     characterData.name || '',
@@ -609,7 +609,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenRaceInfoDialog} disabled={!localRace || panelIsLocked}>
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenRaceInfoDialog} disabled={!localRace}>
                   <Info className="h-5 w-5" />
                 </Button>
               </div>
@@ -639,7 +639,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     <SelectContent> {classSelectOptions} </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenClassInfoDialog} disabled={!localClassName || panelIsLocked} >
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenClassInfoDialog} disabled={!localClassName} >
                   <Info className="h-5 w-5" />
                 </Button>
               </div>
@@ -653,17 +653,37 @@ const CharacterFormCoreInfoSectionComponent = ({
                 {aggregatedFeatEffects?.grantedAbilities && aggregatedFeatEffects.grantedAbilities.map(ability => {
                   if (ability.uses && typeof ability.uses.value === 'number' && ability.uses.per) {
                     const periodStrKey = `period${ability.uses.per.charAt(0).toUpperCase() + ability.uses.per.slice(1)}` as keyof typeof UI_STRINGS;
-                    const periodStr = UI_STRINGS[periodStrKey] || ability.uses.per;
-                    const displayString = (UI_STRINGS.abilityUsesFormat || "{abilityName}: {usesValue}/{period}")
-                      .replace("{abilityName}", ability.name as string) 
-                      .replace("{usesValue}", String(ability.uses.value))
-                      .replace("{period}", periodStr);
+                    const localizedPeriod = UI_STRINGS[periodStrKey] || ability.uses.per;
+                    const localizedAbilityName = getLocalizedString(ability.name, currentLang);
+
+                    const dataContext = {
+                      abilityName: localizedAbilityName,
+                      usesValue: ability.uses.value,
+                      period: localizedPeriod
+                    };
 
                     return (
-                      <Badge key={ability.abilityKey} className="whitespace-nowrap bg-accent text-accent-foreground">
+                      <Badge key={ability.abilityKey} variant="secondary" className="whitespace-nowrap bg-accent text-accent-foreground">
                         <Activity className="inline h-3 w-3 mr-1" />
-                        {parseAndRenderUIString(displayString)}
+                        {parseAndRenderUIString(UI_STRINGS.abilityUsesFormat || "{abilityName} Uses | <b>{usesValue}</b> per {period}", dataContext)}
                       </Badge>
+                    );
+                  } else if (ability.uses && ability.uses.value === "customPool" && ability.abilityKey === "layOnHandsHealingPool") {
+                    // Handle Lay on Hands pool specifically if needed, or use a generic display
+                    // For now, let's use a generic display for customPool
+                    // You might want to calculate the pool (Paladin Lvl * Cha Mod) here if detailedAbilityScores were available
+                    const localizedAbilityName = getLocalizedString(ability.name, currentLang);
+                    const localizedPeriod = UI_STRINGS.periodDay || 'day';
+                    const dataContext = {
+                        abilityName: localizedAbilityName,
+                        poolValue: "N/A", // Placeholder for now
+                        period: localizedPeriod
+                    };
+                    return (
+                         <Badge key={ability.abilityKey} variant="secondary" className="whitespace-nowrap bg-accent text-accent-foreground">
+                            <Heart className="inline h-3 w-3 mr-1" />
+                            {parseAndRenderUIString(UI_STRINGS.abilityPoolFormat || "{abilityName} | <b>{poolValue}</b> per {period}", dataContext)}
+                        </Badge>
                     );
                   }
                   return null;
@@ -711,7 +731,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                       <SelectContent> {deitySelectOptions.map(opt => ( <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem> ))} </SelectContent>
                     </Select>
                   </div>
-                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenDeityInfoDialog} disabled={!localDeity || localDeity.trim() === '' || localDeity === DEITY_NONE_OPTION_VALUE || panelIsLocked} >
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-10 w-10" onClick={onOpenDeityInfoDialog} disabled={!localDeity || localDeity.trim() === '' || localDeity === DEITY_NONE_OPTION_VALUE} >
                     <Info className="h-5 w-5" />
                   </Button>
                 </div>

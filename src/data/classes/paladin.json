@@ -58,7 +58,7 @@
       "effectsText": { "en": "1/day (+1/5 levels): Add Cha to attack, +Paladin level to damage vs Evil", "fr": "1/jour (+1/5 niveaux) : Ajoute Cha à l'attaque, +niveau de Paladin aux dégâts contre le Mal" },
       "type": "special-su", "isClassFeature": true,
       "effects": [
-        { "type": "grantsAbility", "abilityKey": "smiteEvilUses", "name": { "en": "Smite Evil Uses", "fr": "Utilisations de Châtiment du Mal" },
+        { "type": "grantsAbility", "abilityKey": "smiteEvilUses", "name": { "en": "Smite Evil", "fr": "Châtiment du Mal" },
           "uses": { "per": "day", "value": "scaled", "scaleWithClassLevel": { "classId": "paladin", "specificLevels": [{"level":1,"value":1},{"level":5,"value":2},{"level":10,"value":3},{"level":15,"value":4},{"level":20,"value":5}] } }
         },
         { "type": "attackRoll", "value": "CHA", "bonusType": "untyped", "appliesTo": "melee", "condition": "smite_evil_active_vs_evil_target" },
@@ -83,7 +83,7 @@
         {
           "type": "grantsAbility",
           "abilityKey": "layOnHandsHealingPool",
-          "name": { "en": "Lay on Hands Healing Pool", "fr": "Imposition des Mains (Réserve de Soins)" },
+          "name": { "en": "Lay on Hands", "fr": "Imposition des Mains" },
           "details": { "en": "Healing pool: Paladin level x Charisma bonus per day. Can use to damage undead.", "fr": "Réserve de soins : Niveau de Paladin x bonus de Charisme par jour. Peut être utilisé pour blesser les morts-vivants." },
           "uses": { "per": "day", "value": "customPool" }
         }
@@ -129,7 +129,7 @@
       "type": "special-su", "isClassFeature": true,
       "effectsText": { "en": "Turn undead as Cleric (Paladin level -3). Uses/day: 3 + Cha mod", "fr": "Renvoi des morts-vivants comme Prêtre (Niveau Paladin -3). Utilisations/jour : 3 + mod Cha" },
       "effects": [
-        { "type": "grantsAbility", "abilityKey": "turnUndeadAttemptsPaladin", "name": { "en": "Turn Undead Attempts", "fr": "Tentatives de Renvoi des Morts-Vivants" },
+        { "type": "grantsAbility", "abilityKey": "turnUndeadAttemptsPaladin", "name": { "en": "Turn Undead", "fr": "Renvoi des Morts-Vivants" },
           "uses": { "per": "day", "value": 3, "basedOnAbility": "charisma" }
         }
       ]
@@ -159,7 +159,7 @@
         {
           "type": "grantsAbility",
           "abilityKey": "removeDiseaseUses",
-          "name": { "en": "Remove Disease Uses", "fr": "Utilisations de Guérison des Maladies" },
+          "name": { "en": "Remove Disease", "fr": "Guérison des Maladies" },
           "uses": {
             "per": "week",
             "value": "scaled",
@@ -179,3 +179,4 @@
     }
   ]
 }
+
