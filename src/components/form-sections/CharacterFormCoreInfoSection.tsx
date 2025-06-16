@@ -163,9 +163,11 @@ const CharacterFormCoreInfoSectionComponent = ({
 
     if (!isNoneValue) {
         if (newSchoolId === 'divination') {
+            // Potentially show toast: UI_STRINGS.wizardProhibitedSchoolDivinationError
             return;
         }
         if (newSchoolId === characterData.chosenSpecializationSchool) {
+            // Potentially show toast: UI_STRINGS.wizardProhibitedSchoolSpecializationError
             return;
         }
     }
@@ -173,9 +175,11 @@ const CharacterFormCoreInfoSectionComponent = ({
     const currentProhibited = [...(characterData.prohibitedSchools || [])];
     currentProhibited[index] = isNoneValue ? undefined : newSchoolId;
 
+    // Prevent selecting the same school twice if they are both not "None"
     const finalProhibited: (MagicSchoolId | undefined)[] = [currentProhibited[0], currentProhibited[1]];
 
     if (finalProhibited[0] && finalProhibited[0] === finalProhibited[1] && finalProhibited[0] !== undefined) {
+        // Potentially show toast: UI_STRINGS.wizardProhibitedSchoolDuplicateError
         return;
     }
 
@@ -204,7 +208,7 @@ const CharacterFormCoreInfoSectionComponent = ({
   }, [translationsLoading, translations, selectedClassInfo]);
 
   React.useEffect(() => {
-    if (translationsLoading || !translations || !selectedClassInfo) return;
+    if (translationsLoading || !translations || !selectedClassInfo || !translations.UI_STRINGS) return;
 
     const currentAlignmentIsValidForNewClass = availableAlignments.some(a => a.id === localAlignment);
 
@@ -226,6 +230,12 @@ const CharacterFormCoreInfoSectionComponent = ({
           ? availableAlignments[0].id as CharacterAlignment
           : 'true-neutral';
       }
+      // toast({
+      //   title: translations.UI_STRINGS.toastAlignmentAutoChangedTitle,
+      //   description: translations.UI_STRINGS.toastAlignmentAutoChangedDesc
+      //     .replace('{newAlignment}', newAlignmentToSet)
+      //     .replace('{className}', selectedClassInfo.label),
+      // });
       setLocalAlignment(newAlignmentToSet);
     }
   }, [localClassName, selectedClassInfo, availableAlignments, localAlignment, setLocalAlignment, translations, translationsLoading]);
@@ -249,17 +259,19 @@ const CharacterFormCoreInfoSectionComponent = ({
   }, [translationsLoading, translations, localAlignment, selectedClassInfo]);
 
   React.useEffect(() => {
-    if (translationsLoading || !translations || localDeity === DEITY_NONE_OPTION_VALUE) return;
+    if (translationsLoading || !translations || !translations.UI_STRINGS || localDeity === DEITY_NONE_OPTION_VALUE) return;
 
     const currentDeityInfo = translations.DND_DEITIES.find(d => d.id === localDeity);
-    if (!currentDeityInfo) return;
+    if (!currentDeityInfo) return; // Custom deity name, skip validation
 
     let deityIsValid = true;
     if (!isAlignmentCompatibleWithDeity(localAlignment, currentDeityInfo.alignment)) {
+      // toast({ title: translations.UI_STRINGS.toastInvalidDeityForAlignmentTitle, description: translations.UI_STRINGS.toastInvalidDeityForAlignmentDesc.replace('{deityName}', currentDeityInfo.label).replace('{alignment}', localAlignment), variant: "destructive" });
       deityIsValid = false;
     }
     if (deityIsValid && selectedClassInfo?.deityAlignmentRestriction) {
       if (!isAlignmentValidForRequirement(currentDeityInfo.alignment, selectedClassInfo.deityAlignmentRestriction)) {
+        // toast({ title: translations.UI_STRINGS.toastInvalidDeityForClassTitle, description: translations.UI_STRINGS.toastInvalidDeityForClassDesc.replace('{deityName}', currentDeityInfo.label).replace('{className}', selectedClassInfo.label), variant: "destructive" });
         deityIsValid = false;
       }
     }
@@ -366,8 +378,8 @@ const CharacterFormCoreInfoSectionComponent = ({
   if (translationsLoading || !translations) {
     return (
       <LockablePanelWrapper
-        title={translations?.UI_STRINGS.coreAttributesTitle || "Core Attributes"}
-        description={translations?.UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer."}
+        title={parseAndRenderUIString(translations?.UI_STRINGS.coreAttributesTitle || "Core Attributes")}
+        description={parseAndRenderUIString(translations?.UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer.")}
         icon={ScrollText}
         cardContentClassName="space-y-6 pt-6"
         initialLockedState={false}
@@ -660,13 +672,13 @@ const CharacterFormCoreInfoSectionComponent = ({
                     const dataContext = {
                       abilityName: localizedAbilityName,
                       usesValue: ability.uses.value,
-                      period: localizedPeriod
+                      period: localizedPeriod // lowercase 'p'
                     };
 
                     return (
                       <Badge key={ability.abilityKey} variant="secondary" className="whitespace-nowrap bg-accent text-accent-foreground">
                         <Activity className="inline h-3 w-3 mr-1" />
-                        {parseAndRenderUIString(UI_STRINGS.abilityUsesFormat || "{abilityName} Uses | <b>{usesValue}</b> per {period}", dataContext)}
+                        {parseAndRenderUIString(UI_STRINGS.abilityUsesFormat || "{abilityName} Uses per {period} | <b>{usesValue}</b>", dataContext)}
                       </Badge>
                     );
                   } else if (ability.uses && ability.uses.value === "customPool" && ability.abilityKey === "layOnHandsHealingPool" && aggregatedFeatEffects?.modifiedMechanics?.layOnHandsHealingPool) {
@@ -676,7 +688,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                      const dataContext = {
                         abilityName: localizedAbilityName,
                         poolValue: typeof poolValue === 'number' ? poolValue : "Pool",
-                        period: localizedPeriod
+                        period: localizedPeriod // lowercase 'p'
                     };
                     return (
                          <Badge key={ability.abilityKey} variant="secondary" className="whitespace-nowrap bg-accent text-accent-foreground">
