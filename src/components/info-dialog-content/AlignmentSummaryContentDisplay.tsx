@@ -20,7 +20,7 @@ export const AlignmentSummaryContentDisplay = ({
   return (
     <div className="space-y-3">
       {alignments.map((alignment, index) => (
-        <React.Fragment key={alignment.value}>
+        <React.Fragment key={alignment.id}>
           <div>
             <h3 className={sectionHeadingClass}>
               {alignment.label}
@@ -36,3 +36,4 @@ export const AlignmentSummaryContentDisplay = ({
     </div>
   );
 };
+
