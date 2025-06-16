@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -386,7 +387,7 @@ const CharacterFormCoreInfoSectionComponent = ({
 
   const { UI_STRINGS, ALIGNMENTS } = translations;
 
-  const renderClassSpecificUI = (uiBlock: ClassSpecificUIBlock, isPanelLocked: boolean) => {
+  const renderClassSpecificUI = (uiBlock: ClassSpecificUIBlock, panelIsLocked: boolean) => {
     const currentCharacterClassLevel = characterData.classes[0]?.level || 0;
     if (uiBlock.requiredLevel && currentCharacterClassLevel < uiBlock.requiredLevel) {
       return null;
@@ -422,7 +423,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               name="chosenCombatStyle"
               value={localChosenCombatStyle || ""}
               onValueChange={(value) => setLocalChosenCombatStyle(value as "archery" | "twoWeaponFighting")}
-              disabled={isPanelLocked}
+              disabled={panelIsLocked}
             >
               <SelectTrigger id="rangerCombatStyle">
                 <SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectRangerCombatStylePlaceholder || "Select Combat Style...")} />
@@ -466,7 +467,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   onChange={(e) => handleFavoredEnemyChange(index, e.target.value)}
                   placeholder={parseAndRenderUIString(UI_STRINGS.favoredEnemyPlaceholder || "e.g., Orc, Goblin, Undead") as string}
                   className="h-9 text-sm"
-                  disabled={isPanelLocked}
+                  disabled={panelIsLocked}
                 />
               </div>
             ))}
@@ -489,9 +490,9 @@ const CharacterFormCoreInfoSectionComponent = ({
                   onChange={(val) => handleDomainChange(0, val as DomainId)}
                   placeholder={parseAndRenderUIString(UI_STRINGS.selectDomainPlaceholder || "Select Domain...") as string}
                   triggerClassName="h-9 text-sm"
-                  disabled={isPanelLocked}
+                  disabled={panelIsLocked}
                 />
-                {selectedDomain1 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.id === selectedDomain1)?.grantedPowerDescription}</p>}
+                {selectedDomain1 && <p className="text-xs text-muted-foreground mt-1">{parseAndRenderUIString(translations.DND_DOMAINS.find(d=>d.id === selectedDomain1)?.grantedPowerDescription || "")}</p>}
               </div>
               <div className="space-y-1">
                 <Label htmlFor="cleric-domain-2" className="text-sm">{parseAndRenderUIString(UI_STRINGS.clericDomain2Label || "Second Domain")}</Label>
@@ -502,9 +503,9 @@ const CharacterFormCoreInfoSectionComponent = ({
                   onChange={(val) => handleDomainChange(1, val as DomainId)}
                   placeholder={parseAndRenderUIString(UI_STRINGS.selectDomainPlaceholder || "Select Domain...") as string}
                   triggerClassName="h-9 text-sm"
-                  disabled={isPanelLocked}
+                  disabled={panelIsLocked}
                 />
-                 {selectedDomain2 && <p className="text-xs text-muted-foreground mt-1">{translations.DND_DOMAINS.find(d=>d.id === selectedDomain2)?.grantedPowerDescription}</p>}
+                 {selectedDomain2 && <p className="text-xs text-muted-foreground mt-1">{parseAndRenderUIString(translations.DND_DOMAINS.find(d=>d.id === selectedDomain2)?.grantedPowerDescription || "")}</p>}
               </div>
             </div>
           </div>
@@ -520,7 +521,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 onChange={(val) => setLocalSpecializationSchool(val as MagicSchoolId)}
                 placeholder={parseAndRenderUIString(UI_STRINGS.selectMagicSchoolPlaceholder || "Select School...") as string}
                 triggerClassName="h-9 text-sm"
-                disabled={isPanelLocked}
+                disabled={panelIsLocked}
               />
               {localSpecializationSchool !== MAGIC_SCHOOL_NONE_OPTION_VALUE && localSpecializationSchool !== 'universal' && (
                 <p className="text-xs text-muted-foreground mt-1">
@@ -544,7 +545,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     onChange={(val) => handleProhibitedSchoolChange(0, val as MagicSchoolId)}
                     placeholder={parseAndRenderUIString(UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School...") as string}
                     triggerClassName="h-9 text-sm"
-                    disabled={isPanelLocked}
+                    disabled={panelIsLocked}
                   />
                 </div>
                   <div className="space-y-1 md:col-start-2">
@@ -556,7 +557,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     onChange={(val) => handleProhibitedSchoolChange(1, val as MagicSchoolId)}
                     placeholder={parseAndRenderUIString(UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School...") as string}
                     triggerClassName="h-9 text-sm"
-                    disabled={isPanelLocked || !selectedProhibitedSchool1 || selectedProhibitedSchool1 === PROHIBITED_SCHOOL_NONE_VALUE}
+                    disabled={panelIsLocked || !selectedProhibitedSchool1 || selectedProhibitedSchool1 === PROHIBITED_SCHOOL_NONE_VALUE}
                   />
                 </div>
                   <p className="text-xs text-muted-foreground mt-1 md:col-span-2">
@@ -565,7 +566,7 @@ const CharacterFormCoreInfoSectionComponent = ({
              </React.Fragment>
           );
       default:
-        return <div key={uiBlock.key} className="text-destructive">Unknown UI Block: {uiBlock.key}</div>;
+        return <div key={uiBlock.key} className="text-destructive">{parseAndRenderUIString("Unknown UI Block: {blockKey}", {blockKey: uiBlock.key})}</div>;
     }
   };
   
@@ -644,10 +645,9 @@ const CharacterFormCoreInfoSectionComponent = ({
               </div>
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-[6px] ml-1">
                 {selectedClassInfo?.hitDice && (
-                  <Badge variant="secondary" className="whitespace-nowrap">
+                   <Badge variant="secondary" className="whitespace-nowrap">
                     <Heart fill="currentColor" className="inline h-3 w-3 mr-1.5 text-primary/70" />
-                    {parseAndRenderUIString(UI_STRINGS.hitDiceLabel || "Hit Dice")}:{'\u00A0'}
-                    <strong className="font-bold">{selectedClassInfo.hitDice}</strong>
+                    {parseAndRenderUIString(UI_STRINGS.hitDiceLabel || "Hit Dice | <b>{value}</b>", { value: selectedClassInfo.hitDice })}
                   </Badge>
                 )}
                 {aggregatedFeatEffects?.grantedAbilities && aggregatedFeatEffects.grantedAbilities.map(ability => {
@@ -735,7 +735,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               />
               {ageEffectsDetails && (ageEffectsDetails.categoryName !== 'Adult' || ageEffectsDetails.effects.length > 0) && (
                 <div className="flex flex-wrap items-baseline justify-center md:justify-start gap-1 pt-[6px] ml-1">
-                  <Badge variant="secondary" className="whitespace-nowrap"> {ageEffectsDetails.categoryName} </Badge>
+                  <Badge variant="secondary" className="whitespace-nowrap"> {parseAndRenderUIString(ageEffectsDetails.categoryName)} </Badge>
                   {ageEffectsDetails.effects.map((effect) => {
                     let badgeVariantProp: "destructive" | "secondary" | "default" = "secondary";
                     let badgeClassNameInternal = "whitespace-nowrap";
@@ -792,3 +792,5 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
+
+    
