@@ -51,7 +51,8 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
   const elements: React.ReactNode[] = [];
   let lastIndex = 0;
 
-  const regex = /(<badge(?: outline)?>.*?<\/badge>)|(<color accent>.*?<\/color>)|(<b>.*?<\/b>)|({[a-zA-Z0-9_.[\]]+})/g;
+  // Updated regex to include <br/> tags
+  const regex = /(<badge(?: outline)?>.*?<\/badge>)|(<color accent>.*?<\/color>)|(<b>.*?<\/b>)|(<br\s*\/?>)|({[a-zA-Z0-9_.[\]]+})/g;
 
   let match;
   while ((match = regex.exec(uiString)) !== null) {
@@ -60,40 +61,45 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
       elements.push(replaceSpacesWithNbsp(uiString.substring(lastIndex, match.index)));
     }
 
-    const matchedString = match[0];
+    const badgeMatch = match[1];
+    const colorMatch = match[2];
+    const boldMatch = match[3];
+    const brMatch = match[4]; // Capture group for <br/>
+    const variableMatch = match[5]; // Variable placeholder
 
-    if (match[1]) { // <badge> tag
-      const isOutline = matchedString.includes(" outline");
-      const contentMatch = matchedString.match(/<badge(?: outline)?>(.*?)<\/badge>/);
+    if (badgeMatch) {
+      const isOutline = badgeMatch.includes(" outline");
+      const contentMatch = badgeMatch.match(/<badge(?: outline)?>(.*?)<\/badge>/);
       const content = contentMatch ? contentMatch[1] : '';
-      
       elements.push(
         <Badge key={`${match.index}-${elements.length}-badge-${Math.random().toString(36).substring(7)}`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
           {parseAndRenderUIString(content, dataContext)}
         </Badge>
       );
-    } else if (match[2]) { // <color accent> tag
-      const colorContentMatch = matchedString.match(/<color accent>(.*?)<\/color>/);
+    } else if (colorMatch) {
+      const colorContentMatch = colorMatch.match(/<color accent>(.*?)<\/color>/);
       const content = colorContentMatch ? colorContentMatch[1] : '';
       elements.push(
         <span key={`${match.index}-${elements.length}-color-${Math.random().toString(36).substring(7)}`} className="text-accent">
           {parseAndRenderUIString(content, dataContext)}
         </span>
       );
-    } else if (match[3]) { // <b> tag
-      const boldContentMatch = matchedString.match(/<b>(.*?)<\/b>/);
+    } else if (boldMatch) {
+      const boldContentMatch = boldMatch.match(/<b>(.*?)<\/b>/);
       const content = boldContentMatch ? boldContentMatch[1] : '';
       elements.push(
         <strong key={`${match.index}-${elements.length}-bold-${Math.random().toString(36).substring(7)}`}>
           {parseAndRenderUIString(content, dataContext)}
         </strong>
       );
-    } else if (match[4]) { // {variable} placeholder
-      const variablePath = matchedString.substring(1, matchedString.length - 1);
+    } else if (brMatch) { // Handle <br/> tag
+      elements.push(React.createElement('br', { key: `${match.index}-${elements.length}-br-${Math.random().toString(36).substring(7)}` }));
+    } else if (variableMatch) {
+      const variablePath = variableMatch.substring(1, variableMatch.length - 1);
       const value = dataContext ? getProperty(dataContext, variablePath) : undefined;
       
       if (value !== undefined) {
-        if (typeof value === 'string' && (value.includes('<badge') || value.includes('<color') || value.includes('<b>') || value.includes('{'))) {
+        if (typeof value === 'string' && (value.includes('<badge') || value.includes('<color') || value.includes('<b>') || value.includes('{') || value.includes('<br'))) {
           elements.push(parseAndRenderUIString(value, dataContext));
         } else {
           elements.push(replaceSpacesWithNbsp(String(value)));
@@ -105,6 +111,7 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
     lastIndex = regex.lastIndex;
   }
 
+  // Add any remaining text after the last match
   if (lastIndex < uiString.length) {
     elements.push(replaceSpacesWithNbsp(uiString.substring(lastIndex)));
   }
