@@ -131,7 +131,7 @@ function createBaseCharacterData(
 
 
     return {
-      id: crypto.randomUUID(), name: '', playerName: '', campaign: '', homeland: '', race: defaultRaceValue, alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, sizeModifierAttack: defaultSizeModifierAttack, age: 20, gender: '',
+      id: crypto.randomUUID(), name: '', playerName: '', campaign: '', homeland: '', race: defaultRaceValue, alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, sizeModifierAttack: defaultSizeModifierAttack, age: 20, gender: 'unspecified',
       languages: [], experiencePoints: 0,
       abilityScores: { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES))) },
       abilityScoreTempCustomModifiers: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
@@ -1390,4 +1390,5 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
+
 

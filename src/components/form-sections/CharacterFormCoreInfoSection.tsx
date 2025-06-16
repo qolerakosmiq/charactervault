@@ -91,17 +91,17 @@ const CharacterFormCoreInfoSectionComponent = ({
     DEBOUNCE_DELAY
   );
   const [localRace, setLocalRace] = useDebouncedFormField(
-    characterData.race, // No fallback, assuming characterData.race is initialized
+    characterData.race,
     React.useCallback((value) => onFieldChange('race', value as DndRaceId), [onFieldChange]),
     DEBOUNCE_DELAY
   );
   const [localClassName, setLocalClassName] = useDebouncedFormField(
-    characterData.classes[0]?.className, // No fallback, assuming characterData.classes[0]?.className is initialized
+    characterData.classes[0]?.className,
     React.useCallback((value) => onClassChange(value as DndClassId | string), [onClassChange]),
     DEBOUNCE_DELAY
   );
   const [localAlignment, setLocalAlignment] = useDebouncedFormField(
-    characterData.alignment, // No fallback, assuming characterData.alignment is initialized
+    characterData.alignment,
     React.useCallback((value) => onFieldChange('alignment', value as CharacterAlignment), [onFieldChange]),
     DEBOUNCE_DELAY
   );
@@ -116,12 +116,12 @@ const CharacterFormCoreInfoSectionComponent = ({
     DEBOUNCE_DELAY
   );
   const [localGender, setLocalGender] = useDebouncedFormField(
-    characterData.gender || 'unspecified', // Keep fallback as gender can be '' initially
+    characterData.gender, 
     React.useCallback((value) => onFieldChange('gender', value as GenderId | string), [onFieldChange]),
     DEBOUNCE_DELAY
   );
   const [localSize, setLocalSize] = useDebouncedFormField(
-    characterData.size, // No fallback, assuming characterData.size is initialized
+    characterData.size,
     React.useCallback((value) => onFieldChange('size', value as CharacterSize), [onFieldChange]),
     DEBOUNCE_DELAY
   );
@@ -212,10 +212,14 @@ const CharacterFormCoreInfoSectionComponent = ({
     const currentAlignmentIsValidForNewClass = availableAlignments.some(a => a.id === localAlignment);
 
     if (!currentAlignmentIsValidForNewClass) {
-      const preferredDefaults: CharacterAlignment[] = [
-        'true-neutral', 'neutral-good', 'lawful-good', 'chaotic-good',
-        'lawful-neutral', 'chaotic-neutral'
-      ];
+        const preferredAlignmentIds = [
+            'true-neutral', 'neutral-good', 'lawful-good', 'chaotic-good',
+            'lawful-neutral', 'chaotic-neutral'
+        ];
+        const preferredDefaults: CharacterAlignment[] = preferredAlignmentIds
+            .map(id => translations.ALIGNMENTS.find(a => a.id === id)?.id)
+            .filter(Boolean) as CharacterAlignment[];
+            
       let newAlignmentToSet: CharacterAlignment | undefined = undefined;
 
       for (const preferred of preferredDefaults) {
@@ -225,9 +229,10 @@ const CharacterFormCoreInfoSectionComponent = ({
         }
       }
       if (!newAlignmentToSet) {
+        const fallbackTrueNeutralId = translations.ALIGNMENTS.find(a => a.id === 'true-neutral')?.id || 'true-neutral';
         newAlignmentToSet = availableAlignments.length > 0
-          ? availableAlignments[0].id as CharacterAlignment
-          : 'true-neutral';
+          ? availableAlignments[0].id
+          : fallbackTrueNeutralId;
       }
       setLocalAlignment(newAlignmentToSet);
     }
@@ -430,7 +435,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               disabled={panelIsLocked}
             >
               <SelectTrigger id="rangerCombatStyle">
-                <SelectValue placeholder={parseAndRenderUIString(UI_STRINGS.selectRangerCombatStylePlaceholder || "Select Combat Style...") as string} />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="archery">{parseAndRenderUIString(UI_STRINGS.rangerCombatStyleArchery || "Archery")}</SelectItem>
@@ -492,7 +497,6 @@ const CharacterFormCoreInfoSectionComponent = ({
                   options={domainOptions}
                   value={selectedDomain1 || DOMAIN_NONE_OPTION_VALUE}
                   onChange={(val) => handleDomainChange(0, val as DomainId)}
-                  placeholder={parseAndRenderUIString(UI_STRINGS.selectDomainPlaceholder || "Select Domain...") as string}
                   triggerClassName="h-9 text-sm"
                   disabled={panelIsLocked}
                 />
@@ -505,7 +509,6 @@ const CharacterFormCoreInfoSectionComponent = ({
                   options={domainOptionsForSecondPicker}
                   value={selectedDomain2 || DOMAIN_NONE_OPTION_VALUE}
                   onChange={(val) => handleDomainChange(1, val as DomainId)}
-                  placeholder={parseAndRenderUIString(UI_STRINGS.selectDomainPlaceholder || "Select Domain...") as string}
                   triggerClassName="h-9 text-sm"
                   disabled={panelIsLocked}
                 />
@@ -523,7 +526,6 @@ const CharacterFormCoreInfoSectionComponent = ({
                 options={magicSchoolOptions}
                 value={localSpecializationSchool}
                 onChange={(val) => setLocalSpecializationSchool(val as MagicSchoolId)}
-                placeholder={parseAndRenderUIString(UI_STRINGS.selectMagicSchoolPlaceholder || "Select School...") as string}
                 triggerClassName="h-9 text-sm"
                 disabled={panelIsLocked}
               />
@@ -547,7 +549,6 @@ const CharacterFormCoreInfoSectionComponent = ({
                     options={prohibitedSchoolOptions}
                     value={selectedProhibitedSchool1 || PROHIBITED_SCHOOL_NONE_VALUE}
                     onChange={(val) => handleProhibitedSchoolChange(0, val as MagicSchoolId)}
-                    placeholder={parseAndRenderUIString(UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School...") as string}
                     triggerClassName="h-9 text-sm"
                     disabled={panelIsLocked}
                   />
@@ -559,7 +560,6 @@ const CharacterFormCoreInfoSectionComponent = ({
                     options={prohibitedSchoolOptionsForSecondPicker}
                     value={selectedProhibitedSchool2 || PROHIBITED_SCHOOL_NONE_VALUE}
                     onChange={(val) => handleProhibitedSchoolChange(1, val as MagicSchoolId)}
-                    placeholder={parseAndRenderUIString(UI_STRINGS.selectProhibitedSchoolPlaceholder || "Select School...") as string}
                     triggerClassName="h-9 text-sm"
                     disabled={panelIsLocked || !selectedProhibitedSchool1 || selectedProhibitedSchool1 === PROHIBITED_SCHOOL_NONE_VALUE}
                   />
@@ -625,7 +625,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
                     else badgeClassNameInternal = cn(badgeClassNameInternal, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
-                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString("{abilityAbbr} | <b>{change}</b>", { abilityAbbr: effect.ability.substring(0, 3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : (effect.change < 0 ? effect.change : '0')) })} </Badge> );
+                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString(UI_STRINGS.abilityScoreRaceModBadgeFormat || "{abilityAbbr} | <b>{change}</b>", { abilityAbbr: effect.ability.substring(0, 3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : (effect.change < 0 ? effect.change : '0')) })} </Badge> );
                   })}
                 </div>
               )}
@@ -760,7 +760,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let badgeClassNameInternal = "whitespace-nowrap";
                     if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
-                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString("{abilityAbbr} | <b>{change}</b>", {abilityAbbr: effect.ability.substring(0,3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : effect.change)})} </Badge> );
+                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString(UI_STRINGS.abilityScoreAgingEffectBadgeFormat || "{abilityAbbr} | <b>{change}</b>", {abilityAbbr: effect.ability.substring(0,3).toUpperCase(), change: (effect.change > 0 ? `+${effect.change}` : effect.change)})} </Badge> );
                   })}
                 </div>
               )}
@@ -769,7 +769,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               <Label htmlFor="gender">{parseAndRenderUIString(UI_STRINGS.genderLabel || "Gender")}</Label>
               <Select
                 name="gender"
-                value={localGender || 'unspecified'}
+                value={localGender}
                 onValueChange={(value) => setLocalGender(value as GenderId)}
                 disabled={panelIsLocked}
               >
@@ -798,7 +798,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let badgeClassNameForAc = "whitespace-nowrap";
                     if (acMod > 0) badgeClassNameForAc = cn(badgeClassNameForAc, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (acMod < 0) { badgeVariantProp = "destructive"; badgeClassNameForAc = cn(badgeClassNameForAc, "hover:bg-destructive"); }
-                    return ( <Badge variant={badgeVariantProp} className={badgeClassNameForAc}> {parseAndRenderUIString("AC | <b>{acModValue}</b>", {acModValue: (acMod > 0 ? `+${acMod}` : acMod)})} </Badge> );
+                    return ( <Badge variant={badgeVariantProp} className={badgeClassNameForAc}> {parseAndRenderUIString(UI_STRINGS.acModSizeBadgeFormat || "AC | <b>{acModValue}</b>", {acModValue: (acMod > 0 ? `+${acMod}` : acMod)})} </Badge> );
                   } return null;
                 })()}
               </div>
