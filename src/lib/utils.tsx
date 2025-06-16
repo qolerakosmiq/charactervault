@@ -8,10 +8,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-function replaceSpacesWithNbsp(text: string): string {
-  return text.replace(/ /g, '\u00A0');
-}
-
 // Helper to safely get nested properties
 const getProperty = (obj: any, path: string): any => {
   if (!obj || !path) return undefined;
@@ -58,7 +54,7 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
   while ((match = regex.exec(uiString)) !== null) {
     // Add text before the match
     if (match.index > lastIndex) {
-      elements.push(replaceSpacesWithNbsp(uiString.substring(lastIndex, match.index)));
+      elements.push(uiString.substring(lastIndex, match.index));
     }
 
     const badgeMatch = match[1];
@@ -102,10 +98,10 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
         if (typeof value === 'string' && (value.includes('<badge') || value.includes('<color') || value.includes('<b>') || value.includes('{') || value.includes('<br'))) {
           elements.push(parseAndRenderUIString(value, dataContext));
         } else {
-          elements.push(replaceSpacesWithNbsp(String(value)));
+          elements.push(String(value));
         }
       } else {
-        elements.push(replaceSpacesWithNbsp(`{${variablePath}}`)); 
+        elements.push(`{${variablePath}}`); 
       }
     }
     lastIndex = regex.lastIndex;
@@ -113,7 +109,7 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
 
   // Add any remaining text after the last match
   if (lastIndex < uiString.length) {
-    elements.push(replaceSpacesWithNbsp(uiString.substring(lastIndex)));
+    elements.push(uiString.substring(lastIndex));
   }
 
   if (elements.length === 0) return '';
