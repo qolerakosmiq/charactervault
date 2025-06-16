@@ -43,8 +43,7 @@
   "rollDialogDamageMultiplierLabel": { "en": "Damage", "fr": "Dégâts" },
   "rollDialogCriticalHitAppliedLabel": { "en": "CRITICAL HIT APPLIED!", "fr": "COUP CRITIQUE APPLIQUÉ !" },
   "rollDialogWeaponDamageDiceLabel": { "en": "Weapon Dice Rolled:", "fr": "Dés d'Arme Lancés :" },
-  "rollDialogExtraDamageDiceLabel": { "en": "Extra Dice Rolled:", "fr": "Dés Supplémentaires Lancés :" }
+  "rollDialogExtraDamageDiceLabel": { "en": "Extra Dice Rolled:", "fr": "Dés Supplémentaires Lancés :" },
+  "infoDialogAbilityBreakdownAriaLabel": { "en": "Detailed breakdown for {abilityName}", "fr": "Détail du calcul pour {abilityName}" }
 }
 
-
-    
