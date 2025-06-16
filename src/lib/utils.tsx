@@ -67,30 +67,11 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
       const contentMatch = matchedString.match(/<badge(?: outline)?>(.*?)<\/badge>/);
       const content = contentMatch ? contentMatch[1] : '';
       
-      const pipeIndex = content.indexOf("|");
-      
-      if (pipeIndex !== -1) {
-        const labelPartStr = content.substring(0, pipeIndex); // No trim, keep spaces from JSON
-        const valuePartStr = content.substring(pipeIndex + 1); // No trim, keep spaces from JSON
-
-        const labelPartNode = parseAndRenderUIString(labelPartStr, dataContext);
-        const valuePartNode = parseAndRenderUIString(valuePartStr, dataContext);
-        
-        elements.push(
-          <Badge key={`${match.index}-${elements.length}-badge`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
-            {labelPartNode}
-            {"|"} 
-            <strong>{valuePartNode}</strong>
-          </Badge>
-        );
-      } else {
-        // Badge without pipe
-        elements.push(
-          <Badge key={`${match.index}-${elements.length}-badge`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
-            {parseAndRenderUIString(content, dataContext)}
-          </Badge>
-        );
-      }
+      elements.push(
+        <Badge key={`${match.index}-${elements.length}-badge`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
+          {parseAndRenderUIString(content, dataContext)}
+        </Badge>
+      );
     } else if (match[2]) { // <color accent> tag
       const colorContentMatch = matchedString.match(/<color accent>(.*?)<\/color>/);
       const content = colorContentMatch ? colorContentMatch[1] : '';
@@ -130,13 +111,9 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
 
   if (elements.length === 0) return '';
   if (elements.length === 1 && typeof elements[0] === 'string') {
-     // This case was applying nbsp twice if the whole input was a simple string.
-     // It should just return elements[0] as it would have already been processed if it was from substring.
-     // If uiString itself has no tags, the `lastIndex < uiString.length` block handles it.
     return elements[0];
   }
   
-  // Ensure keys for fragments children
   return React.createElement(React.Fragment, null, ...elements.map((el, i) => 
     React.isValidElement(el) ? (el.key ? el : React.cloneElement(el, { key: `parsed-el-${i}-${Math.random().toString(36).substring(7)}` })) : el
   ));
