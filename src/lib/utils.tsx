@@ -41,6 +41,7 @@ const getProperty = (obj: any, path: string): any => {
 };
 
 // Helper function to replace spaces with non-breaking spaces in ReactNode children
+// This is specifically for badge content.
 function applyNbspToReactNode(nodes: React.ReactNode): React.ReactNode {
   return React.Children.map(nodes, (child) => {
     if (typeof child === 'string') {
@@ -62,12 +63,10 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
   const elements: React.ReactNode[] = [];
   let lastIndex = 0;
 
-  // Updated regex to include <br/> tags
   const regex = /(<badge(?: outline)?>.*?<\/badge>)|(<color accent>.*?<\/color>)|(<b>.*?<\/b>)|(<br\s*\/?>)|({[a-zA-Z0-9_.[\]]+})/g;
 
   let match;
   while ((match = regex.exec(uiString)) !== null) {
-    // Add text before the match
     if (match.index > lastIndex) {
       elements.push(uiString.substring(lastIndex, match.index));
     }
@@ -75,18 +74,16 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
     const badgeMatch = match[1];
     const colorMatch = match[2];
     const boldMatch = match[3];
-    const brMatch = match[4]; // Capture group for <br/>
-    const variableMatch = match[5]; // Variable placeholder
+    const brMatch = match[4];
+    const variableMatch = match[5];
 
     if (badgeMatch) {
       const isOutline = badgeMatch.includes(" outline");
       const contentMatch = badgeMatch.match(/<badge(?: outline)?>(.*?)<\/badge>/);
       const content = contentMatch ? contentMatch[1] : '';
       
-      // Recursively parse the content of the badge first
       const badgeContentNodes = parseAndRenderUIString(content, dataContext);
-      // Then apply non-breaking spaces to the parsed content
-      const contentWithNbsp = applyNbspToReactNode(badgeContentNodes);
+      const contentWithNbsp = applyNbspToReactNode(badgeContentNodes); // Apply nbsp transformation
       
       elements.push(
         <Badge key={`${match.index}-${elements.length}-badge-${Math.random().toString(36).substring(7)}`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
@@ -109,7 +106,7 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
           {parseAndRenderUIString(content, dataContext)}
         </strong>
       );
-    } else if (brMatch) { // Handle <br/> tag
+    } else if (brMatch) {
       elements.push(React.createElement('br', { key: `${match.index}-${elements.length}-br-${Math.random().toString(36).substring(7)}` }));
     } else if (variableMatch) {
       const variablePath = variableMatch.substring(1, variableMatch.length - 1);
@@ -117,31 +114,26 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
       
       if (value !== undefined) {
         if (typeof value === 'string' && (value.includes('<badge') || value.includes('<color') || value.includes('<b>') || value.includes('{') || value.includes('<br'))) {
-          // If the value itself might contain tags, parse it recursively
           elements.push(parseAndRenderUIString(value, dataContext));
         } else {
           elements.push(String(value));
         }
       } else {
-        // If variable not found, render the placeholder itself
         elements.push(`{${variablePath}}`); 
       }
     }
     lastIndex = regex.lastIndex;
   }
 
-  // Add any remaining text after the last match
   if (lastIndex < uiString.length) {
     elements.push(uiString.substring(lastIndex));
   }
 
-  // If only one element and it's a string, return it directly, otherwise return a fragment
   if (elements.length === 0) return '';
   if (elements.length === 1 && typeof elements[0] === 'string') {
     return elements[0];
   }
   
-  // Ensure unique keys for fragments children if not already handled by specific tag logic
   return React.createElement(React.Fragment, null, ...elements.map((el, i) => 
     React.isValidElement(el) ? (el.key ? el : React.cloneElement(el, { key: `parsed-el-${i}-${Math.random().toString(36).substring(7)}` })) : el
   ));
