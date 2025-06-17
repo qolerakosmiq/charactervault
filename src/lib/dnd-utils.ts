@@ -10,9 +10,9 @@ import type {
 } from '@/types/character';
 import type { XpDataEntry } from '@/i18n/i18n-data';
 
-export function calculateAbilityModifier(score: number | undefined): number { // Allow undefined
-  if (typeof score !== 'number' || isNaN(score)) { // Check for undefined or NaN
-    return 0; // Return 0 if score is not a valid number
+export function calculateAbilityModifier(score: number | undefined): number { 
+  if (typeof score !== 'number' || isNaN(score)) { 
+    return 0; 
   }
   return Math.floor((score - 10) / 2);
 }
@@ -26,24 +26,21 @@ export function getAbilityModifierByName(scores: AbilityScores, abilityName: Abi
   return calculateAbilityModifier(score);
 }
 
-// Renamed function to be specific about summing class levels
 export function calculateSumOfClassLevels(classes: CharacterClass[]): number {
   return classes.reduce((sum, currentClass) => sum + currentClass.level, 0) || 1;
 }
 
 export function getBab(
   classes: CharacterClass[],
-  allClassDefinitions: readonly DndClassOption[] // Now takes class definitions as an argument
+  allClassDefinitions: readonly DndClassOption[] 
 ): number[] {
   if (classes.length === 0 || !classes[0]?.className) return [0];
 
   let totalBab = 0;
   classes.forEach(charClass => {
     if (!charClass.className) return;
-    const classDef = allClassDefinitions.find(cd => cd.value === charClass.className);
-    if (!classDef || !classDef.babProgression) { // Check for babProgression
-      // Fallback or error if babProgression is missing
-      // For now, let's assume poor progression if undefined
+    const classDef = allClassDefinitions.find(cd => cd.id === charClass.className); // Changed value to id
+    if (!classDef || !classDef.babProgression) { 
       totalBab += Math.floor(charClass.level * 0.5);
       return;
     }
@@ -60,14 +57,14 @@ export function getBab(
         classBabContribution = Math.floor(charClass.level * 0.5);
         break;
       default:
-        classBabContribution = Math.floor(charClass.level * 0.5); // Fallback to poor
+        classBabContribution = Math.floor(charClass.level * 0.5); 
     }
     totalBab += classBabContribution;
   });
 
   const attacks: number[] = [totalBab];
   let nextAttack = totalBab - 5;
-  while (nextAttack >= 1) { // PHB p.22, "Multiple Attacks" - only attacks with BAB +1 or higher.
+  while (nextAttack >= 1) { 
     attacks.push(nextAttack);
     nextAttack -= 5;
   }
@@ -92,14 +89,13 @@ export function getBaseSaves(
 
   for (const charClass of classes) {
     if (!charClass.className) continue;
-    const classDef = allClassDefinitions.find(cd => cd.value === charClass.className);
+    const classDef = allClassDefinitions.find(cd => cd.id === charClass.className); // Changed value to id
 
     if (classDef && classDef.saves) {
       baseSavesResult.fortitude += calculateClassSaveContribution(charClass.level, classDef.saves.fortitude);
       baseSavesResult.reflex += calculateClassSaveContribution(charClass.level, classDef.saves.reflex);
       baseSavesResult.will += calculateClassSaveContribution(charClass.level, classDef.saves.will);
     } else if (classDef) {
-      // Fallback if saves not defined, treat as poor for all
       const poorSave = Math.floor(charClass.level / 3);
       baseSavesResult.fortitude += poorSave;
       baseSavesResult.reflex += poorSave;
@@ -141,7 +137,7 @@ export function getSizeModifierAC(
   SIZES_DATA: readonly CharacterSizeObject[]
 ): number {
   if (!sizeId) return 0;
-  const sizeObject = SIZES_DATA.find(s => s.value === sizeId);
+  const sizeObject = SIZES_DATA.find(s => s.id === sizeId); // Changed value to id
   return sizeObject ? sizeObject.acModifier : 0;
 }
 
@@ -150,9 +146,7 @@ export function getSizeModifierAttack(
   SIZES_DATA: readonly CharacterSizeObject[]
 ): number {
   if (!sizeId) return 0;
-  // Per PHB p.135 Table 8-1, the "Size Modifier" applies to Attack Rolls and AC.
-  // So this function returns the same value as getSizeModifierAC.
-  const sizeObject = SIZES_DATA.find(s => s.value === sizeId);
+  const sizeObject = SIZES_DATA.find(s => s.id === sizeId); // Changed value to id
   return sizeObject ? sizeObject.acModifier : 0;
 }
 
@@ -162,9 +156,9 @@ export function getSizeModifierGrapple(
   SIZES_DATA: readonly CharacterSizeObject[]
 ): number {
   if (!sizeId) return 0;
-  const sizeObject = SIZES_DATA.find(s => s.value === sizeId);
+  const sizeObject = SIZES_DATA.find(s => s.id === sizeId); // Changed value to id
   if (!sizeObject) return 0;
-  switch (sizeObject.value) {
+  switch (sizeObject.id) { // Changed value to id
     case 'fine': return -16;
     case 'diminutive': return -12;
     case 'tiny': return -8;
@@ -183,10 +177,10 @@ export function getUnarmedGrappleDamage(
   SIZES_DATA: readonly CharacterSizeObject[]
 ): string {
   if (!sizeId) {
-    const mediumSize = SIZES_DATA.find(s => s.value === 'medium');
+    const mediumSize = SIZES_DATA.find(s => s.id === 'medium'); // Changed value to id
     return mediumSize?.grappleDamage || '1d3';
   }
-  const sizeObject = SIZES_DATA.find(s => s.value === sizeId);
+  const sizeObject = SIZES_DATA.find(s => s.id === sizeId); // Changed value to id
   return sizeObject?.grappleDamage || '0';
 }
 
@@ -202,26 +196,20 @@ export function getXpRequiredForLevel(level: number, xpTable: readonly XpDataEnt
   if (standardEntry) {
     return standardEntry.xpRequired;
   }
-  // Handle epic levels (assuming level > 20, as SRD table goes to 20)
   const level20Entry = xpTable.find(entry => entry.level === 20);
   if (level > 20 && level20Entry && epicLevelXpIncrease > 0) {
     return level20Entry.xpRequired + (level - 20) * epicLevelXpIncrease;
   }
-  // For levels beyond the table that are not epic (e.g., next level if current is max table level but not epic yet)
-  // or if epicLevelXpIncrease is 0, effectively it's max level
   return Infinity;
 }
 
 export function calculateLevelFromXp(xp: number, xpTable: readonly XpDataEntry[], epicLevelXpIncrease: number): number {
-  if (xp < 0) return 1; // XP cannot be negative
+  if (xp < 0) return 1; 
 
-  // Iterate backwards from highest defined level in the table
   for (let i = xpTable.length - 1; i >= 0; i--) {
     const entry = xpTable[i];
     if (xp >= entry.xpRequired) {
-      // Found the highest level bracket the character falls into from the table
-      // Now check for epic levels if this is the max table level (e.g. 20)
-      const maxStandardLevelEntry = xpTable[xpTable.length - 1]; // Assumes table is sorted by level
+      const maxStandardLevelEntry = xpTable[xpTable.length - 1]; 
       if (entry.level === maxStandardLevelEntry.level && epicLevelXpIncrease > 0 && xp >= entry.xpRequired) {
           const xpIntoEpic = xp - entry.xpRequired;
           const epicLevelsGained = Math.floor(xpIntoEpic / epicLevelXpIncrease);
@@ -230,48 +218,80 @@ export function calculateLevelFromXp(xp: number, xpTable: readonly XpDataEntry[]
       return entry.level;
     }
   }
-  // If XP is less than the requirement for the lowest level > 1 in the table,
-  // it implies level 1 (assuming level 1 requires 0 XP, which is standard)
   return 1;
 }
 
-/**
- * Parses a dice string (e.g., "1d8", "2d6+2", "1d4-1") and rolls the dice.
- * @param diceString The dice string to parse.
- * @returns The sum of the dice rolls plus any static modifier.
- */
-export function parseAndRollDice(diceString: string): number {
+interface ParseAndRollResult {
+  result: number;
+  debugLogs: string[];
+}
+
+export function parseAndRollDice(diceString: string): ParseAndRollResult {
+  const debugLogs: string[] = [];
+  debugLogs.push(`parseAndRollDice received: "${diceString}" (type: ${typeof diceString})`);
+
   if (!diceString || typeof diceString !== 'string') {
-    return 0;
+    debugLogs.push("Input is not a valid string. Returning 0.");
+    return { result: 0, debugLogs };
   }
 
-  const cleanedString = diceString.toLowerCase().trim();
-  const match = cleanedString.match(/^(\d*)d(\d+)\s*([+-]\s*\d+)?$/);
+  const cleanedString = diceString.trim();
+  debugLogs.push(`Cleaned string: "${cleanedString}"`);
 
-  if (!match) {
-    // Check if it's just a static number
-    const staticNumber = parseInt(cleanedString, 10);
-    if (!isNaN(staticNumber)) {
-      return staticNumber;
-    }
-    console.warn(`Invalid dice string format: ${diceString}`);
-    return 0; // Or throw an error
+  // Regex to find a static modifier at the end (+X or -Y)
+  const modifierRegex = /([+-])\s*(\d+)$/;
+  let staticModifier = 0;
+  let dicePart = cleanedString;
+
+  const modifierMatch = cleanedString.match(modifierRegex);
+  if (modifierMatch) {
+    const sign = modifierMatch[1];
+    const value = parseInt(modifierMatch[2], 10);
+    staticModifier = (sign === '+') ? value : -value;
+    dicePart = cleanedString.substring(0, modifierMatch.index).trim(); // Remove modifier part
+    debugLogs.push(`Modifier found: ${sign}${value} -> staticModifier: ${staticModifier}`);
+    debugLogs.push(`Remaining dicePart: "${dicePart}"`);
+  } else {
+    debugLogs.push("No static modifier found at the end.");
   }
 
-  const numDice = match[1] ? parseInt(match[1], 10) : 1;
-  const numSides = parseInt(match[2], 10);
-  const modifierString = match[3] ? match[3].replace(/\s/g, '') : '';
-  const staticModifier = modifierString ? parseInt(modifierString, 10) : 0;
-
-  if (numDice <= 0 || numSides <= 0) {
-    console.warn(`Invalid dice numbers or sides in: ${diceString}`);
-    return staticModifier; // Return modifier if dice part is invalid
-  }
+  // Regex to parse the XdY dice notation
+  const diceNotationRegex = /^(\d*)d(\d+)$/i; // Case insensitive for 'd'
+  const diceMatch = dicePart.match(diceNotationRegex);
 
   let totalRoll = 0;
-  for (let i = 0; i < numDice; i++) {
-    totalRoll += Math.floor(Math.random() * numSides) + 1;
+
+  if (diceMatch) {
+    const numDice = diceMatch[1] ? parseInt(diceMatch[1], 10) : 1;
+    const numSides = parseInt(diceMatch[2], 10);
+    debugLogs.push(`Dice notation parsed: numDice=${numDice}, numSides=${numSides}`);
+
+    if (numDice > 0 && numSides > 0) {
+      for (let i = 0; i < numDice; i++) {
+        const roll = Math.floor(Math.random() * numSides) + 1;
+        debugLogs.push(`Roll ${i + 1}/${numDice} (d${numSides}): ${roll}`);
+        totalRoll += roll;
+      }
+      debugLogs.push(`Total from dice: ${totalRoll}`);
+    } else {
+      debugLogs.push("Invalid dice numbers or sides. Dice roll part is 0.");
+    }
+  } else if (dicePart && !isNaN(Number(dicePart))) {
+    // If no "d" is found, try to parse the dicePart as a plain number (e.g. "3")
+    totalRoll = parseInt(dicePart, 10);
+    debugLogs.push(`No dice notation ('d') found. Parsed "${dicePart}" as static value: ${totalRoll}`);
+  } else if (dicePart) {
+    debugLogs.push(`Could not parse dicePart "${dicePart}" as dice or number. Dice roll part is 0.`);
+  } else if (!dicePart && modifierMatch) {
+    // Only a modifier was present, e.g. "+2"
+    debugLogs.push("Only a static modifier was present, no dice part.");
+    totalRoll = 0; // Dice part is 0
+  } else {
+     debugLogs.push(`Could not parse input "${cleanedString}" as dice or number. Returning 0 for dice part.`);
   }
 
-  return totalRoll + staticModifier;
+  const finalResult = totalRoll + staticModifier;
+  debugLogs.push(`Final Result: totalRoll=${totalRoll} + staticModifier=${staticModifier} = ${finalResult}`);
+  return { result: finalResult, debugLogs };
 }
+
