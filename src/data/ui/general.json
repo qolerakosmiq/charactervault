@@ -109,7 +109,8 @@
   "newCharacterDefaultName": { "en": "New Adventurer", "fr": "Nouvel Aventurier" },
   "quickEquipPanelTitle": { "en": "Quick Equip", "fr": "Équipement Rapide" },
   "quickEquipPanelDescription": { "en": "Select items to equip directly. (This panel might be for testing/internal use or specific scenarios).", "fr": "Sélectionnez les objets à équiper directement. (Ce panneau peut être pour des tests/usage interne ou des scénarios spécifiques)." },
-  "rollDialogAbilityModifierLabel": { "en": "Ability Modifier", "fr": "Modificateur de caractéristique" }
+  "rollDialogAbilityModifierLabel": { "en": "Ability Modifier", "fr": "Modificateur de caractéristique" },
+  "unarmedDamageDefault": { "en": "1d3", "fr": "1d3" }
 }
 
     
