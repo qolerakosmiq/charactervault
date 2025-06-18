@@ -142,7 +142,7 @@ const CombatPanelComponent = ({
       return false;
     });
   }, [aggregatedFeatEffects?.attackRollBonuses, currentLang]);
-
+  
   const calculateFinalAttackBonus = React.useCallback((
     baseBab: number,
     abilityMod: number,
@@ -643,7 +643,7 @@ const CombatPanelComponent = ({
               <p id="bab-display" className="text-xl font-bold text-accent">
                 {totalBabWithModifier.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}
               </p>
-              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleBabInfo} disabled={panelIsLocked}>
+              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleBabInfo} disabled={isLocked}>
                 <Info className="h-4 w-4" />
               </Button>
             </div>
@@ -665,7 +665,7 @@ const CombatPanelComponent = ({
                   min={-20} max={20}
                   inputClassName="h-8 text-sm w-20"
                   buttonClassName="h-8 w-8"
-                  disabled={panelIsLocked || !onCharacterUpdate}
+                  disabled={isLocked || !onCharacterUpdate}
                 />
               </div>
             </div>
@@ -677,10 +677,10 @@ const CombatPanelComponent = ({
               <p id="initiative-display" className="text-xl font-bold text-accent">
                 {baseInitiative >= 0 ? '+' : ''}{baseInitiative}
               </p>
-              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-muted-foreground hover:text-foreground" onClick={handleInitiativeInfo} disabled={panelIsLocked}>
+              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-muted-foreground hover:text-foreground" onClick={handleInitiativeInfo} disabled={isLocked}>
                 <Info className="h-4 w-4" />
               </Button>
-              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenInitiativeRoll} aria-label={UI_STRINGS.rollDialogInitiativeAriaLabel || "Roll Initiative"} disabled={panelIsLocked}>
+              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenInitiativeRoll} aria-label={UI_STRINGS.rollDialogInitiativeAriaLabel || "Roll Initiative"} disabled={isLocked}>
                 <Dices className="h-4 w-4" />
               </Button>
             </div>
@@ -694,7 +694,7 @@ const CombatPanelComponent = ({
                   min={-20} max={20}
                   inputClassName="h-8 text-sm w-20"
                   buttonClassName="h-8 w-8"
-                  disabled={panelIsLocked || !onCharacterUpdate}
+                  disabled={isLocked || !onCharacterUpdate}
                 />
               </div>
             </div>
@@ -709,10 +709,10 @@ const CombatPanelComponent = ({
               <p id="grapple-mod-display" className="text-xl font-bold text-accent">
                 {totalGrappleModifier >= 0 ? '+' : ''}{totalGrappleModifier}
               </p>
-              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-muted-foreground hover:text-foreground" onClick={handleGrappleModifierInfo} disabled={panelIsLocked}>
+              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-muted-foreground hover:text-foreground" onClick={handleGrappleModifierInfo} disabled={isLocked}>
                 <Info className="h-4 w-4" />
               </Button>
-              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenGrappleCheckRoll} aria-label={UI_STRINGS.rollDialogGrappleCheckAriaLabel || "Roll Grapple Check"} disabled={panelIsLocked}>
+              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenGrappleCheckRoll} aria-label={UI_STRINGS.rollDialogGrappleCheckAriaLabel || "Roll Grapple Check"} disabled={isLocked}>
                 <Dices className="h-4 w-4" />
               </Button>
             </div>
@@ -726,7 +726,7 @@ const CombatPanelComponent = ({
                   min={-20} max={20}
                   inputClassName="h-8 text-sm w-20"
                   buttonClassName="h-8 w-8"
-                  disabled={panelIsLocked || !onCharacterUpdate}
+                  disabled={isLocked || !onCharacterUpdate}
                 />
               </div>
             </div>
@@ -738,7 +738,7 @@ const CombatPanelComponent = ({
                   <p id="grapple-damage-display" className="text-xl font-bold text-accent">
                     {displayedGrappleDamageTotal}
                   </p>
-                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleGrappleDamageInfo} disabled={panelIsLocked}>
+                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleGrappleDamageInfo} disabled={isLocked}>
                       <Info className="h-4 w-4" />
                   </Button>
               </div>
@@ -748,7 +748,7 @@ const CombatPanelComponent = ({
                       <Select
                           value={localGrappleWeaponChoice}
                           onValueChange={setLocalGrappleWeaponChoice}
-                          disabled={panelIsLocked || !onCharacterUpdate}
+                          disabled={isLocked || !onCharacterUpdate}
                       >
                           <SelectTrigger className="h-8 text-sm w-full max-w-[200px] mx-auto">
                               <SelectValue />
@@ -768,7 +768,7 @@ const CombatPanelComponent = ({
                             min={-20} max={20}
                             inputClassName="h-8 text-sm w-20"
                             buttonClassName="h-8 w-8"
-                            disabled={panelIsLocked || !onCharacterUpdate}
+                            disabled={isLocked || !onCharacterUpdate}
                         />
                       </div>
                   </div>
@@ -795,7 +795,7 @@ const CombatPanelComponent = ({
                     max={maxBabForSpinners > 0 ? maxBabForSpinners : 0}
                     inputClassName="h-8 text-sm w-20"
                     buttonClassName="h-8 w-8"
-                    disabled={panelIsLocked || !onCharacterUpdate}
+                    disabled={isLocked || !onCharacterUpdate}
                   />
                   <p className="text-xs text-muted-foreground">{UI_STRINGS.powerAttackDescription || "Set penalty to attack for damage bonus."}</p>
                 </div>
@@ -814,7 +814,7 @@ const CombatPanelComponent = ({
                     max={maxBabForSpinners > 0 ? maxBabForSpinners : 0}
                     inputClassName="h-8 text-sm w-20"
                     buttonClassName="h-8 w-8"
-                    disabled={panelIsLocked || !onCharacterUpdate}
+                    disabled={isLocked || !onCharacterUpdate}
                   />
                   <p className="text-xs text-muted-foreground">{UI_STRINGS.combatExpertiseDescription || "Set penalty to attack for AC bonus."}</p>
                 </div>
@@ -830,7 +830,7 @@ const CombatPanelComponent = ({
             <h4 className="text-lg font-semibold text-foreground/90 flex items-center"><Hand className="mr-2 h-5 w-5 text-primary/70"/>{UI_STRINGS.attacksPanelMeleeTitle || "Melee Attacks"}</h4>
             <div className="space-y-1">
               <Label htmlFor="melee-weapon-select">{UI_STRINGS.attacksPanelMeleeWeaponLabel || "Melee Weapon"}</Label>
-              <Select value={selectedMeleeWeaponInstanceId} onValueChange={setSelectedMeleeWeaponInstanceId} disabled={panelIsLocked}>
+              <Select value={selectedMeleeWeaponInstanceId} onValueChange={setSelectedMeleeWeaponInstanceId} disabled={isLocked}>
                 <SelectTrigger id="melee-weapon-select"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
@@ -851,16 +851,16 @@ const CombatPanelComponent = ({
                 <Label className="text-xs font-medium block">{UI_STRINGS.attacksPanelAttackBonusLabel || "Attack Bonus"}</Label>
                 <div className="flex items-center justify-center">
                     <p className="text-base font-bold text-accent">{calculatedMeleeAttackBonus >= 0 ? '+' : ''}{calculatedMeleeAttackBonus}</p>
-                    <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-foreground" onClick={handleOpenMeleeAttackInfo} disabled={panelIsLocked}><Info className="h-3.5 w-3.5" /></Button>
-                    <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenMeleeAttackRollDialog} aria-label={(UI_STRINGS.rollDialogMeleeAttackAriaLabel || "Roll Melee Attack with {weaponName}").replace("{weaponName}", selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : 'Unarmed')} disabled={panelIsLocked}><Dices className="h-3.5 w-3.5" /></Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-foreground" onClick={handleOpenMeleeAttackInfo} disabled={isLocked}><Info className="h-3.5 w-3.5" /></Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenMeleeAttackRollDialog} aria-label={(UI_STRINGS.rollDialogMeleeAttackAriaLabel || "Roll Melee Attack with {weaponName}").replace("{weaponName}", selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : 'Unarmed')} disabled={isLocked}><Dices className="h-3.5 w-3.5" /></Button>
                 </div>
               </div>
               <div className="text-center">
                 <Label className="text-xs font-medium block">{UI_STRINGS.attacksPanelDamageBonusLabel || "Damage Bonus"}</Label>
                 <div className="flex items-center justify-center">
                   <p className="text-base font-bold text-accent">{renderModifierValue(calculatedMeleeNumericalDamageBonus)}</p>
-                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={handleOpenMeleeDamageInfo} disabled={panelIsLocked}><Info className="h-3.5 w-3.5" /></Button>
-                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenMeleeDamageRollDialog} disabled={panelIsLocked || (!selectedMeleeWeaponDefinition && selectedMeleeWeaponInstanceId !== 'unarmed')} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : UI_STRINGS.attacksPanelUnarmedOption || "Unarmed")}><Dices className="h-3.5 w-3.5" /></Button>
+                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={handleOpenMeleeDamageInfo} disabled={isLocked}><Info className="h-3.5 w-3.5" /></Button>
+                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenMeleeDamageRollDialog} disabled={isLocked || (!selectedMeleeWeaponDefinition && selectedMeleeWeaponInstanceId !== 'unarmed')} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : UI_STRINGS.attacksPanelUnarmedOption || "Unarmed")}><Dices className="h-3.5 w-3.5" /></Button>
                 </div>
               </div>
             </div>
@@ -871,7 +871,7 @@ const CombatPanelComponent = ({
             <h4 className="text-lg font-semibold text-foreground/90 flex items-center"><ArrowRightLeft className="mr-2 h-5 w-5 text-primary/70"/>{UI_STRINGS.attacksPanelRangedTitle || "Ranged Attacks"}</h4>
             <div className="space-y-1">
               <Label htmlFor="ranged-weapon-select">{UI_STRINGS.attacksPanelRangedWeaponLabel || "Ranged Weapon"}</Label>
-              <Select value={selectedRangedWeaponInstanceId} onValueChange={setSelectedRangedWeaponInstanceId} disabled={panelIsLocked || rangedWeaponInstances.length === 0}>
+              <Select value={selectedRangedWeaponInstanceId} onValueChange={setSelectedRangedWeaponInstanceId} disabled={isLocked || rangedWeaponInstances.length === 0}>
                 <SelectTrigger id="ranged-weapon-select">
                   <SelectValue placeholder={rangedWeaponInstances.length === 0 ? (UI_STRINGS.attacksPanelNoRangedWeapons || "No ranged weapons") : (UI_STRINGS.attacksPanelSelectRangedWeapon || "Select ranged weapon...")} />
                 </SelectTrigger>
@@ -899,16 +899,16 @@ const CombatPanelComponent = ({
                 <Label className="text-xs font-medium block">{UI_STRINGS.attacksPanelAttackBonusLabel || "Attack Bonus"}</Label>
                 <div className="flex items-center justify-center">
                   <p className="text-base font-bold text-accent">{selectedRangedWeaponDefinition ? (calculatedRangedAttackBonus >= 0 ? '+' : '') + calculatedRangedAttackBonus : 'N/A'}</p>
-                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-foreground" onClick={handleOpenRangedAttackInfo} disabled={panelIsLocked || !selectedRangedWeaponDefinition}><Info className="h-3.5 w-3.5" /></Button>
-                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenRangedAttackRollDialog} disabled={panelIsLocked || !selectedRangedWeaponDefinition} aria-label={(UI_STRINGS.rollDialogRangedAttackAriaLabel || "Roll Ranged Attack with {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}><Dices className="h-3.5 w-3.5" /></Button>
+                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-foreground" onClick={handleOpenRangedAttackInfo} disabled={isLocked || !selectedRangedWeaponDefinition}><Info className="h-3.5 w-3.5" /></Button>
+                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenRangedAttackRollDialog} disabled={isLocked || !selectedRangedWeaponDefinition} aria-label={(UI_STRINGS.rollDialogRangedAttackAriaLabel || "Roll Ranged Attack with {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}><Dices className="h-3.5 w-3.5" /></Button>
                   </div>
               </div>
               <div className="text-center">
                 <Label className="text-xs font-medium block">{UI_STRINGS.attacksPanelDamageBonusLabel || "Damage Bonus"}</Label>
                 <div className="flex items-center justify-center">
                   <p className="text-base font-bold text-accent">{selectedRangedWeaponDefinition ? renderModifierValue(calculatedRangedNumericalDamageBonus) : 'N/A'}</p>
-                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={handleOpenRangedDamageInfo} disabled={panelIsLocked || !selectedRangedWeaponDefinition}><Info className="h-3.5 w-3.5" /></Button>
-                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenRangedDamageRollDialog} disabled={panelIsLocked || !selectedRangedWeaponDefinition} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}><Dices className="h-3.5 w-3.5" /></Button>
+                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={handleOpenRangedDamageInfo} disabled={isLocked || !selectedRangedWeaponDefinition}><Info className="h-3.5 w-3.5" /></Button>
+                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenRangedDamageRollDialog} disabled={isLocked || !selectedRangedWeaponDefinition} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}><Dices className="h-3.5 w-3.5" /></Button>
                 </div>
               </div>
             </div>
