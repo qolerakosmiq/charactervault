@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare, ShieldOff, Weight, Zap, AlertTriangle, Heart, ShieldQuestion, Swords, Dices, Brain, UserCircle2, Palette, ScrollText, Languages as LanguagesIcon, Award, Backpack, Sparkles as SpellsIcon, Users as UsersIcon, Shield } from 'lucide-react';
+import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare, ShieldOff, Weight, Zap, AlertTriangle, Heart, ShieldQuestion, Swords, Dices, Brain, UserCircle2, Palette, ScrollText, Languages as LanguagesIcon, Award, Backpack, Sparkles as SpellsIcon, Users as UsersIcon, Shield, ListChecks } from 'lucide-react'; // Added ListChecks
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
@@ -74,6 +74,7 @@ import { MeleeAttackBreakdownContentDisplay } from './info-dialog-content/MeleeA
 import { MeleeDamageBreakdownContentDisplay } from './info-dialog-content/MeleeDamageBreakdownContentDisplay';
 import { RangedAttackBreakdownContentDisplay } from './info-dialog-content/RangedAttackBreakdownContentDisplay';
 import { RangedDamageBreakdownContentDisplay } from './info-dialog-content/RangedDamageBreakdownContentDisplay';
+import { ClassSpecificChoiceOptionsDisplay } from './info-dialog-content/ClassSpecificChoiceOptionsDisplay'; // Added
 
 
 export interface ResistanceBreakdownDetails {
@@ -144,6 +145,7 @@ const DIALOG_ICONS: Record<string, React.ElementType> = {
   will: Brain,
   maxHpBreakdown: Heart,
   genericHtml: Info,
+  classSpecificChoiceOptions: ListChecks, // Added
   error: AlertTriangle,
   default: Info,
 };
@@ -662,7 +664,7 @@ export function InfoDisplayDialog({
 
 
         if (character.acMiscModifier && character.acMiscModifier !== 0) {
-            details.push({ mainLabel: UI_STRINGS.armorClassTempModifierLabel || "Temp Modifier", value: character.acMiscModifier });
+            details.push({ mainLabel: UI_STRINGS.armorClassMiscModifierLabel || "Temp Modifier", value: character.acMiscModifier });
         }
 
         let totalACValueForDialog = 10 + sizeModACVal;
@@ -722,7 +724,7 @@ export function InfoDisplayDialog({
               miscModifier: character.babMiscModifier || 0,
               totalBab: baseBabArrayVal.map(b => b + (character.babMiscModifier || 0)),
               characterClassLabel: DND_CLASSES.find(c => c.id === character.classes[0]?.className)?.label || character.classes[0]?.className,
-              featAttackBonus: 0, // This needs to be calculated from aggregatedFeatEffects if applicable to general BAB
+              featAttackBonus: 0, 
             },
             uiStrings: UI_STRINGS
           })],
@@ -964,6 +966,13 @@ export function InfoDisplayDialog({
         ))}</div>];
         data = { title: titleForGeneric, content: contentForGeneric };
         break;
+      case 'classSpecificChoiceOptions': // Added case
+        iconKey = 'classSpecificChoiceOptions';
+        data = {
+          title: contentType.title,
+          content: [<ClassSpecificChoiceOptionsDisplay title={contentType.title} options={contentType.options} uiStrings={UI_STRINGS} />]
+        };
+        break;
     }
     data.iconKey = iconKey;
     return data;
@@ -1041,3 +1050,4 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
+

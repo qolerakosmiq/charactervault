@@ -454,6 +454,7 @@ export interface ClassSpecificUIBlockConditionAggregatedEffect {
 export interface ClassSpecificUICustomOption {
   value: string;
   label: LocalizedString;
+  description?: LocalizedString; // Added
 }
 
 export interface ClassSpecificUIGrantsFeat {
@@ -677,6 +678,11 @@ export interface Character {
   powerAttackValue?: number;
   combatExpertiseValue?: number;
   animalCompanion?: CharacterAnimalCompanion;
+  chosenCombatStyle?: 'archery' | 'twoWeaponFighting' | ''; // For Ranger
+  chosenDomains?: (DomainId | '')[]; // For Cleric
+  chosenSpecializationSchool?: MagicSchoolId | ''; // For Wizard
+  prohibitedSchool1?: MagicSchoolId | ''; // For Wizard
+  prohibitedSchool2?: MagicSchoolId | ''; // For Wizard
 }
 
 export type ResistanceFieldKeySheet = Exclude<keyof Pick<Character,
@@ -723,7 +729,8 @@ export type InfoDialogContentType =
   | { type: 'meleeDamageBreakdown'; components: GenericBreakdownItem[] }
   | { type: 'rangedAttackBreakdown'; components: GenericBreakdownItem[] }
   | { type: 'rangedDamageBreakdown'; components: GenericBreakdownItem[] }
-  | { type: 'genericNumericalBreakdown'; titleKey: keyof ProcessedSiteData['UI_STRINGS']; components: GenericBreakdownItem[] };
+  | { type: 'genericNumericalBreakdown'; titleKey: keyof ProcessedSiteData['UI_STRINGS']; components: GenericBreakdownItem[] }
+  | { type: 'classSpecificChoiceOptions'; title: string; options: Array<{ id: string; label: string; description?: string; }>; };
 
 
 export interface SkillDefinitionForDisplay {
@@ -895,8 +902,3 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
   loadSpeedPenalty_base: 0, loadSpeedPenalty_miscModifier: 0
 };
 export const DEFAULT_RESISTANCE_VALUE_DATA: ResistanceValue = { base: 0, customMod: 0 };
-
-// Removed: export * from './character-core';
-// Types are exported by being declared with 'export' keyword.
-// Exporting the module itself is not needed.
-// Constants are exported directly.

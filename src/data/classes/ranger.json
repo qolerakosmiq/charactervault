@@ -23,10 +23,11 @@
       "choiceType": "select",
       "optionsSource": "customList",
       "customOptions": [
-        { "value": "archery", "label": { "en": "Archery", "fr": "Archerie" } },
-        { "value": "twoWeaponFighting", "label": { "en": "Two-Weapon Fighting", "fr": "Combat à deux armes" } }
+        { "value": "archery", "label": { "en": "Archery", "fr": "Archerie" }, "description": { "en": "Focuses on ranged combat with bows. Grants Rapid Shot at level 2, Manyshot at level 6, and Improved Precise Shot at level 11.", "fr": "Se concentre sur le combat à distance avec des arcs. Accorde Tir rapide au niveau 2, Tir multiple au niveau 6 et Tir de précision amélioré au niveau 11." } },
+        { "value": "twoWeaponFighting", "label": { "en": "Two-Weapon Fighting", "fr": "Combat à deux armes" }, "description": { "en": "Specializes in wielding a weapon in each hand. Grants Two-Weapon Fighting at level 2, Improved Two-Weapon Fighting at level 6, and Greater Two-Weapon Fighting at level 11.", "fr": "Se spécialise dans le maniement d'une arme dans chaque main. Accorde Combat à deux armes au niveau 2, Combat à deux armes amélioré au niveau 6 et Combat à deux armes supérieur au niveau 11." } }
       ],
-      "placeholder": { "en": "Select Combat Style...", "fr": "Choisir un style de combat..." },
+      "defaultValue": "archery",
+      "allowEmptySelection": false,
       "grantsFeats": [
         { "featId": "rapid-shot", "levelAcquired": 2, "conditionOnChoiceValue": "archery", "note": { "en": "Archery Style (L2)", "fr": "Style Archerie (N2)" } },
         { "featId": "two-weapon-fighting", "levelAcquired": 2, "conditionOnChoiceValue": "twoWeaponFighting", "note": { "en": "Two-Weapon Style (L2)", "fr": "Style Deux Armes (N2)" } },
