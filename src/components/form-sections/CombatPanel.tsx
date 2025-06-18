@@ -1,7 +1,6 @@
-
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import type {
   Character,
   InfoDialogContentType,
@@ -489,6 +488,8 @@ const CombatPanelComponent = ({
       baseModifier: baseInitiative,
       calculationBreakdown: breakdown,
       rerollTwentiesForChecks: rerollTwentiesForChecks,
+      weaponDamageDiceString: "", // Required, but not used for non-damage
+      weaponCriticalMultiplier: 1, // Required, but not used for non-damage
     });
   };
 
@@ -510,6 +511,8 @@ const CombatPanelComponent = ({
       baseModifier: totalGrappleModifier,
       calculationBreakdown: breakdown,
       rerollTwentiesForChecks: rerollTwentiesForChecks,
+      weaponDamageDiceString: "", // Required, but not used
+      weaponCriticalMultiplier: 1, // Required, but not used
     });
   };
 
@@ -528,6 +531,8 @@ const CombatPanelComponent = ({
       baseModifier: calculatedMeleeAttackBonus,
       calculationBreakdown: breakdown,
       rerollTwentiesForChecks: false,
+      weaponDamageDiceString: "", // Not used for attack rolls
+      weaponCriticalMultiplier: 1, // Not used for attack rolls
     });
   };
 
@@ -541,6 +546,8 @@ const CombatPanelComponent = ({
       baseModifier: calculatedRangedAttackBonus,
       calculationBreakdown: breakdown,
       rerollTwentiesForChecks: false,
+      weaponDamageDiceString: "", // Not used
+      weaponCriticalMultiplier: 1, // Not used
     });
   };
 
@@ -553,7 +560,7 @@ const CombatPanelComponent = ({
     if (selectedMeleeWeaponInstanceId === 'unarmed') {
       actualDiceString = unarmedBaseDamageFromFeat;
       if (!actualDiceString || typeof actualDiceString !== 'string' || actualDiceString.trim() === "" || actualDiceString === "0" || !actualDiceString.includes('d')) {
-        actualDiceString = '1d3';
+        actualDiceString = "1d3"; // Explicit fallback
       }
       actualCritMultiplierString = "x2";
     } else if (selectedMeleeWeaponDefinition) {
@@ -567,11 +574,11 @@ const CombatPanelComponent = ({
     onOpenRollDialog({
       dialogTitle: (UI_STRINGS.rollDialogTitleMeleeDamageFormat || "Melee Damage ({weaponName}: {dice})")
         .replace("{weaponName}", weaponNameForTitle)
-        .replace("{dice}", actualDiceString || "N/A"),
+        .replace("{dice}", actualDiceString || "0d0"),
       rollType: `damage_roll_melee_${selectedMeleeWeaponInstanceId}`,
       baseModifier: calculatedMeleeNumericalDamageBonus,
       calculationBreakdown: breakdown,
-      weaponDamageDiceString: actualDiceString,
+      weaponDamageDiceString: actualDiceString || "0d0",
       weaponCriticalMultiplier: critMultiplier,
       extraDamageDice: undefined, 
       rerollTwentiesForChecks: false,
@@ -590,11 +597,11 @@ const CombatPanelComponent = ({
     onOpenRollDialog({
       dialogTitle: (UI_STRINGS.rollDialogTitleRangedDamageFormat || "Ranged Damage ({weaponName}: {dice})")
         .replace("{weaponName}", weaponName)
-        .replace("{dice}", actualDiceString || "N/A"),
+        .replace("{dice}", actualDiceString || "0d0"),
       rollType: `damage_roll_ranged_${selectedRangedWeaponInstanceId}`,
       baseModifier: calculatedRangedNumericalDamageBonus,
       calculationBreakdown: breakdown,
-      weaponDamageDiceString: actualDiceString,
+      weaponDamageDiceString: actualDiceString || "0d0",
       weaponCriticalMultiplier: critMultiplier,
       rerollTwentiesForChecks: false,
     });
@@ -917,5 +924,3 @@ const CombatPanelComponent = ({
 };
 CombatPanelComponent.displayName = 'CombatPanelComponent';
 export const CombatPanel = React.memo(CombatPanelComponent);
-
-    

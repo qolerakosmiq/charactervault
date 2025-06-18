@@ -1,7 +1,6 @@
-
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import type {
   AbilityName, Character, CharacterClass,
@@ -13,7 +12,7 @@ import type {
   SpeedDetails, SpeedType, CharacterAlignment, ProcessedSiteData, SpeedPanelCharacterData, CombatPanelCharacterData, LanguageId,
   AggregatedFeatEffects, ExperiencePanelData, ComboboxOption, MagicSchoolId, Item, GenericBreakdownItem, DamageReductionFeatEffect,
   CharacterFavoredEnemy, CharacterAnimalCompanion, DomainDefinition, DndDeityOption,
-  GearSlot, GearSlotId, ItemDefinition, ItemDefinitionId, ItemInstance, ItemBaseType, CharacterClassSpecificChoice
+  GearSlot, GearSlotId, ItemDefinition, ItemDefinitionId, ItemBaseType, CharacterClassSpecificChoice
 } from '@/types/character';
 import {
   getNetAgingEffects,
@@ -83,7 +82,7 @@ function createBaseCharacterData(
     const {
       DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, DEFAULT_RESISTANCE_VALUE,
       DEFAULT_SPEED_DETAILS, DEFAULT_SPEED_PENALTIES, DND_RACES, DND_CLASSES,
-      SIZES, SKILL_DEFINITIONS, CLASS_SKILLS, DND_RACE_ABILITY_MODIFIERS_DATA
+      SIZES, SKILL_DEFINITIONS, CLASS_SKILLS, DND_RACE_ABILITY_MODIFIERS_DATA, UI_STRINGS
     } = translations;
 
     const defaultHumanRace = DND_RACES.find(r => r.id === 'human');
@@ -131,7 +130,7 @@ function createBaseCharacterData(
 
 
     return {
-      id: crypto.randomUUID(), name: '', playerName: '', campaign: '', homeland: '', race: defaultRaceValue, alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, sizeModifierAttack: defaultSizeModifierAttack, age: 20, gender: 'unspecified',
+      id: crypto.randomUUID(), name: UI_STRINGS.newCharacterDefaultName || 'New Adventurer', playerName: '', campaign: '', homeland: '', race: defaultRaceValue, alignment: 'true-neutral' as CharacterAlignment, deity: '', size: defaultSize, sizeModifierAttack: defaultSizeModifierAttack, age: 20, gender: 'unspecified',
       languages: [], experiencePoints: 0, classSpecificChoices: [],
       abilityScores: { ...(JSON.parse(JSON.stringify(DEFAULT_ABILITIES))) },
       abilityScoreTempCustomModifiers: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
@@ -632,13 +631,15 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   }, [translations, allAvailableSkillDefinitionsForDisplay, allAvailableFeatDefinitions]);
 
   const handleSkillChange = React.useCallback((skillId: string, ranks: number, miscModifier: number, isClassSkill?: boolean) => {
-    setCharacter(prev => prev ? ({
-      ...prev,
-      skills: prev.skills.map(s =>
+    setCharacter(prev => {
+      if (!prev) return null;
+      const updatedSkills = prev.skills.map(s =>
         s.id === skillId ? { ...s, ranks, miscModifier, isClassSkill: isClassSkill !== undefined ? isClassSkill : s.isClassSkill } : s
-      ),
-    }) : null);
+      );
+      return { ...prev, skills: updatedSkills };
+    });
   }, []);
+
 
   const handleCustomSkillDefinitionSaveToStore = React.useCallback((skillData: CustomSkillDefinition) => {
     if(!translations || !translations.UI_STRINGS) throw new Error("Translations not loaded for skill save");
@@ -797,7 +798,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     setIsRollAbilityDialogOpen(true);
   }, []);
 
-  const handleRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString?: string) => {
+  const handleRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString: string) => {
   }, []);
 
 
@@ -1383,7 +1384,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
           rollType={rollDialogProps.rollType}
           baseModifier={rollDialogProps.baseModifier}
           calculationBreakdown={rollDialogProps.calculationBreakdown}
-          weaponDamageDice={rollDialogProps.weaponDamageDice}
+          weaponDamageDiceString={rollDialogProps.weaponDamageDiceString}
+          weaponCriticalMultiplier={rollDialogProps.weaponCriticalMultiplier}
           onRoll={handleRollResult}
           rerollTwentiesForChecks={rollDialogProps.rerollTwentiesForChecks}
         />
@@ -1410,4 +1412,3 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
-

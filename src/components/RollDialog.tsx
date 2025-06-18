@@ -1,7 +1,6 @@
-
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -20,7 +19,7 @@ import { renderModifierValue, sectionHeadingClass } from '@/components/info-dial
 import { cn } from '@/lib/utils';
 import { parseAndRollDice, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea'; // Added for debug output
+import { Textarea } from '@/components/ui/textarea';
 
 export interface RollDialogProps {
   isOpen: boolean;
@@ -29,10 +28,10 @@ export interface RollDialogProps {
   rollType: string;
   baseModifier: number; // Static bonuses
   calculationBreakdown: GenericBreakdownItem[];
-  weaponDamageDiceString?: string;
-  weaponCriticalMultiplier?: number;
+  weaponDamageDiceString: string; // Now required
+  weaponCriticalMultiplier: number; // Now required
   extraDamageDice?: string[];
-  onRoll: (diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString?: string) => void;
+  onRoll: (diceResult: number, totalBonus: number, finalResult: number, weaponDamageDiceString: string) => void;
   rerollTwentiesForChecks?: boolean;
 }
 
@@ -58,18 +57,17 @@ export function RollDialog({
   const [isCritical, setIsCritical] = React.useState(false);
   const [rolledWeaponDiceDetails, setRolledWeaponDiceDetails] = React.useState<string | null>(null);
   const [rolledExtraDiceDetails, setRolledExtraDiceDetails] = React.useState<string | null>(null);
-  const [debugOutput, setDebugOutput] = React.useState<string>(""); // State for debug output
+  const [debugOutput, setDebugOutput] = React.useState<string>("");
 
   const isDamageRoll = rollType.toLowerCase().includes('damage');
   const isAttackRoll = rollType.toLowerCase().includes('attack');
   const isCheckRoll = !isDamageRoll && !isAttackRoll && !rollType.startsWith('grapple_check') && !rollType.startsWith('initiative_check');
 
-  // --- Debugging logic for canBeCritical ---
   const cond1_isDamageRoll = isDamageRoll;
   const cond2_weaponDamageDiceStringExists = !!weaponDamageDiceString;
   const cond3_weaponDamageDiceStringNotEmpty = weaponDamageDiceString ? weaponDamageDiceString.trim() !== "" : false;
   const cond4_weaponDamageDiceStringNotZero = weaponDamageDiceString ? weaponDamageDiceString !== "0" : false;
-  const cond5_weaponCriticalMultiplierExists = !!weaponCriticalMultiplier;
+  const cond5_weaponCriticalMultiplierExists = !!weaponCriticalMultiplier; // Will always be true if number
   const cond6_weaponCriticalMultiplierGt1 = weaponCriticalMultiplier ? weaponCriticalMultiplier > 1 : false;
 
   const canBeCritical =
@@ -79,11 +77,9 @@ export function RollDialog({
     cond4_weaponDamageDiceStringNotZero &&
     cond5_weaponCriticalMultiplierExists &&
     cond6_weaponCriticalMultiplierGt1;
-  // --- End Debugging logic for canBeCritical ---
 
   React.useEffect(() => {
     if (isOpen) {
-      // Reset state when dialog opens
       setInitialD20Roll(null);
       setBonusRolls([]);
       setTotalDiceValue(null);
@@ -92,7 +88,6 @@ export function RollDialog({
       setRolledWeaponDiceDetails(null);
       setRolledExtraDiceDetails(null);
       
-      // Populate debug output with props and canBeCritical calculation
       const propLogs = [
         "--- RollDialog Props & Initial State ---",
         `isOpen: ${isOpen}`,
@@ -114,18 +109,16 @@ export function RollDialog({
         "-----------------------------------",
       ];
       setDebugOutput(propLogs.join('\n'));
-
     } else {
-      setDebugOutput(""); // Clear debug output when dialog closes
+      setDebugOutput("");
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isOpen, dialogTitle, rollType, baseModifier, weaponDamageDiceString, 
     weaponCriticalMultiplier, extraDamageDice, rerollTwentiesForChecks,
-    // Re-add dependencies for canBeCritical calculation to ensure debug output updates if these change while dialog is open (though less likely for props)
     cond1_isDamageRoll, cond2_weaponDamageDiceStringExists, cond3_weaponDamageDiceStringNotEmpty,
     cond4_weaponDamageDiceStringNotZero, cond5_weaponCriticalMultiplierExists, cond6_weaponCriticalMultiplierGt1,
-    canBeCritical
+    canBeCritical 
   ]);
 
 
@@ -142,7 +135,7 @@ export function RollDialog({
       let weaponDiceIndividualRolls: string[] = [];
 
       if (weaponDamageDiceString && weaponDamageDiceString.trim() !== "" && weaponDamageDiceString !== "0") {
-        const numCritRolls = isCritical && weaponCriticalMultiplier && weaponCriticalMultiplier > 1 ? weaponCriticalMultiplier : 1;
+        const numCritRolls = isCritical && weaponCriticalMultiplier > 1 ? weaponCriticalMultiplier : 1;
         currentDebugLogs.push(`Damage Roll: isCritical=${isCritical}, numCritRolls=${numCritRolls}`);
         for (let i = 0; i < numCritRolls; i++) {
           const { result: roll, debugLogs: wdDebug } = parseAndRollDice(weaponDamageDiceString);
@@ -189,7 +182,7 @@ export function RollDialog({
       setFinalResult(totalDamage);
       onRoll(currentTotalDiceRolled, baseModifier, totalDamage, weaponDamageDiceString);
 
-    } else { // d20 roll (attack, check, save)
+    } else { 
       const { result: firstRollResult, debugLogs: d20Debug } = parseAndRollDice("1d20");
       currentDebugLogs.push(...d20Debug.map(log => `Initial d20 Roll: ${log}`));
       const firstRoll = firstRollResult;
@@ -216,7 +209,7 @@ export function RollDialog({
       setTotalDiceValue(currentTotalD20Value);
       const calculatedFinalResult = currentTotalD20Value + baseModifier;
       setFinalResult(calculatedFinalResult);
-      onRoll(currentTotalD20Value, baseModifier, calculatedFinalResult);
+      onRoll(currentTotalD20Value, baseModifier, calculatedFinalResult, weaponDamageDiceString); // Pass weaponDamageDiceString even for non-damage
       currentDebugLogs.push(`d20 Total Value: ${currentTotalD20Value}`);
       currentDebugLogs.push(`baseModifier (static): ${baseModifier}`);
       currentDebugLogs.push(`finalResult (d20 + static): ${calculatedFinalResult}`);
@@ -379,7 +372,7 @@ export function RollDialog({
             <div className={resultCardBackground}>
               {isDamageRoll ? (
                 <>
-                  {isCritical && weaponCriticalMultiplier && weaponCriticalMultiplier > 1 && weaponDamageDiceString && weaponDamageDiceString.trim() !== "" && weaponDamageDiceString !== "0" && (
+                  {isCritical && weaponCriticalMultiplier > 1 && weaponDamageDiceString && weaponDamageDiceString.trim() !== "" && weaponDamageDiceString !== "0" && (
                     <div className="text-center mb-1">
                       <Badge variant="destructive" className="text-sm px-2 py-0.5">{UI_STRINGS.rollDialogCriticalHitAppliedLabel || "CRITICAL HIT APPLIED!"}</Badge>
                     </div>
@@ -441,14 +434,12 @@ export function RollDialog({
           )}
         </div>
 
-        {/* Debug Textarea */}
         <Textarea
           readOnly
           value={debugOutput}
           className="mt-4 w-full h-32 text-xs bg-muted/50 border-dashed"
           placeholder="Debug output will appear here..."
         />
-        {/* End Debug Textarea */}
 
         <DialogFooter className="mt-2">
           <Button onClick={handleRollOrConfirm} disabled={isRolling} className="w-full sm:w-auto">
@@ -464,4 +455,3 @@ export function RollDialog({
     </Dialog>
   );
 }
-
