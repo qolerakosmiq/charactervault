@@ -67,10 +67,10 @@
     },
     {
       "id": "universal",
-      "label": { "en": "Universal", "fr": "Universel" },
+      "label": { "en": "Universalist (No Specialization)", "fr": "Généraliste (Pas de spécialisation)" },
       "description": {
-        "en": "Not a school, but a category for spells that all wizards can learn, such as cantrips or spells that do not fall into any specific school.",
-        "fr": "Pas une école, mais une catégorie pour les sorts que tous les magiciens peuvent apprendre, tels que les sorts mineurs ou les sorts qui n'appartiennent à aucune école spécifique."
+        "en": "Not specializing in any one school. Universalists can learn spells from all schools without restriction but do not gain bonus spells or abilities from a specific school.",
+        "fr": "Ne se spécialise dans aucune école. Les généralistes peuvent apprendre des sorts de toutes les écoles sans restriction mais ne gagnent pas de sorts ou de capacités bonus d'une école spécifique."
       }
     }
   ]

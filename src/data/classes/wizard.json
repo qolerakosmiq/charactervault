@@ -23,8 +23,7 @@
       "descriptionKey": "wizardSpecializationDescription",
       "choiceType": "select",
       "optionsSource": "magicSchools",
-      "allowEmptySelection": true,
-      "emptySelectionLabelKey": "magicSchoolUniversalOption",
+      "allowEmptySelection": false,
       "defaultValue": "universal"
     },
     {
