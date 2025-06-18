@@ -22,11 +22,11 @@ import type {
   CharacterClassSpecificChoice
 } from '@/types/character-core';
 import { isAlignmentCompatibleWithDeity, isAlignmentValidForRequirement } from '@/types/character';
-import { getLocalizedString } from '@/i18n/i18n-data';
+import { getLocalizedString, type ProcessedSiteData } from '@/i18n/i18n-data';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScrollText, Info, Heart, Activity } from 'lucide-react'; // Added Heart
+import { ScrollText, Info, Heart, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -74,7 +74,6 @@ const CharacterFormCoreInfoSectionComponent = ({
   aggregatedFeatEffects,
 }: CharacterFormCoreInfoSectionProps) => {
   const { translations, language: currentLang } = useI18n();
-  // Assuming translations are always available due to fail-fast or parent component checks
   const { UI_STRINGS, ALIGNMENTS, DND_RACES, DND_CLASSES, DND_DEITIES, SIZES, GENDERS, DND_DOMAINS, DND_MAGIC_SCHOOLS } = translations!;
 
 
@@ -143,7 +142,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     const currentAlignmentIsValidForNewClass = availableAlignments.some(a => a.id === localAlignment);
 
     if (!currentAlignmentIsValidForNewClass) {
-        const preferredDefaultsFromData: readonly CharacterAlignment[] = UI_STRINGS.preferredDefaultAlignmentIds as unknown as readonly CharacterAlignment[];
+        const preferredDefaultsFromData = UI_STRINGS.preferredDefaultAlignmentIds as unknown as readonly CharacterAlignment[];
         let newAlignmentToSet: CharacterAlignment | undefined = undefined;
 
         for (const preferred of preferredDefaultsFromData) {
@@ -234,7 +233,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     const existingChoices = characterData.classSpecificChoices || [];
     let updatedChoices: CharacterClassSpecificChoice[];
 
-    if (slotIndex !== undefined) { // Multi-input scenario
+    if (slotIndex !== undefined) { 
       const choiceExists = existingChoices.some(
         (c) => c.featureKey === featureKey && c.slotIndex === slotIndex
       );
@@ -250,7 +249,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       if (newValue === "" || newValue === DOMAIN_NONE_OPTION_VALUE || newValue === MAGIC_SCHOOL_NONE_OPTION_VALUE) {
         updatedChoices = updatedChoices.filter(c => !(c.featureKey === featureKey && c.slotIndex === slotIndex));
       }
-    } else { // Single input scenario
+    } else { 
       const choiceExists = existingChoices.some((c) => c.featureKey === featureKey && c.slotIndex === undefined);
       if (choiceExists) {
         updatedChoices = existingChoices.map((c) =>
@@ -460,7 +459,6 @@ const CharacterFormCoreInfoSectionComponent = ({
       );
     }
     return <div key={`${uiBlock.key}-error-${blockIndex}`} className="text-destructive">Unsupported choiceType: {uiBlock.choiceType} for {uiBlock.key}</div>;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characterData.classes, characterData.classSpecificChoices, aggregatedFeatEffects, UI_STRINGS, currentLang, DND_DOMAINS, DND_MAGIC_SCHOOLS, handleClassSpecificChoiceChange]);
 
 
