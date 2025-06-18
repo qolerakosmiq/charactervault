@@ -26,7 +26,7 @@ import { getLocalizedString } from '@/i18n/i18n-data';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScrollText, Info } from 'lucide-react';
+import { ScrollText, Info, Heart, Activity } from 'lucide-react'; // Added Heart
 import { Button } from '@/components/ui/button';
 import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -74,6 +74,7 @@ const CharacterFormCoreInfoSectionComponent = ({
   aggregatedFeatEffects,
 }: CharacterFormCoreInfoSectionProps) => {
   const { translations, language: currentLang } = useI18n();
+  // Assuming translations are always available due to fail-fast or parent component checks
   const { UI_STRINGS, ALIGNMENTS, DND_RACES, DND_CLASSES, DND_DEITIES, SIZES, GENDERS, DND_DOMAINS, DND_MAGIC_SCHOOLS } = translations!;
 
 
@@ -380,12 +381,12 @@ const CharacterFormCoreInfoSectionComponent = ({
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
           <Select
             name={uiBlock.key}
-            value={currentBlockValue || undefined} // Pass undefined if empty for Select to show placeholder
+            value={currentBlockValue}
             onValueChange={(val) => handleClassSpecificChoiceChange(uiBlock.key, val, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)}
             disabled={isDisabled}
           >
             <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`} className="h-9 text-sm">
-              <SelectValue placeholder={placeholderForSelectOrCombobox} />
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {filteredActualOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
@@ -645,6 +646,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     const changeValue = effect.change > 0 ? `+${effect.change}` : String(effect.change);
                     if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
+                    else badgeClassNameInternal = cn(badgeClassNameInternal, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
                     return (
                       <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}>
                         {effect.ability.substring(0, 3).toUpperCase()}{'\u00A0|\u00A0'}<b>{changeValue}</b>
@@ -706,4 +708,3 @@ const CharacterFormCoreInfoSectionComponent = ({
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
 
-    
