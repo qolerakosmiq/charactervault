@@ -68,7 +68,7 @@ export interface CharacterFormCoreInfoSectionProps {
   onOpenClassInfoDialog: () => void;
   onOpenAlignmentInfoDialog: () => void;
   onOpenDeityInfoDialog: () => void;
-  onOpenClassSpecificChoiceInfoDialog: (contentType: InfoDialogContentType) => void; // Made non-optional
+  onOpenClassSpecificChoiceInfoDialog: (contentType: InfoDialogContentType) => void;
   aggregatedFeatEffects?: AggregatedFeatEffects | null;
 }
 
@@ -267,7 +267,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     }
     optionsForDialog.sort((a,b) => a.label.localeCompare(b.label));
     onOpenClassSpecificChoiceInfoDialog({ type: 'classSpecificChoiceOptions', title: blockLabel, options: optionsForDialog });
-  }, [onOpenClassSpecificChoiceInfoDialog, DND_DOMAINS, DND_MAGIC_SCHOOLS, currentLang, UI_STRINGS, translations]);
+  }, [onOpenClassSpecificChoiceInfoDialog, translations, DND_DOMAINS, DND_MAGIC_SCHOOLS, currentLang, UI_STRINGS]);
 
 
   React.useEffect(() => {
@@ -434,7 +434,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) initialOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, currentLang) }));
     initialOptions.sort((a,b) => a.label.localeCompare(b.label));
 
-    let finalSelectOptions: ComboboxOption[] = [];
+    const finalSelectOptions: ComboboxOption[] = [];
     if (uiBlock.allowEmptySelection && uiBlock.emptySelectionLabelKey && UI_STRINGS[uiBlock.emptySelectionLabelKey]) {
       finalSelectOptions.push({ value: UI_EMPTY_SELECTION_VALUE, label: UI_STRINGS[uiBlock.emptySelectionLabelKey]!, disabled: false });
     }
@@ -477,11 +477,11 @@ const CharacterFormCoreInfoSectionComponent = ({
     const uiValueForComponent = currentBlockValueForRender === "" ? UI_EMPTY_SELECTION_VALUE : currentBlockValueForRender;
     const handleChange = (val: string) => { handleClassSpecificChoiceChange(uiBlock.key, val === UI_EMPTY_SELECTION_VALUE ? "" : val, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined); };
 
-    const commonInfoButton = (uiBlock.choiceType === 'select' || uiBlock.choiceType === 'combobox') && onOpenClassSpecificChoiceInfoDialog ? (
+    const commonInfoButton = (uiBlock.choiceType === 'select' || uiBlock.choiceType === 'combobox') && !!onOpenClassSpecificChoiceInfoDialog ? (
       <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={() => handleOpenChoiceInfoDialog(uiBlock)} disabled={panelIsLocked} aria-label={`Info for ${blockLabel}`} >
         <Info className="h-5 w-5" />
       </Button>
-    ) : null;
+    ) : <span className="debug-label">no button debug</span>;
 
     if (uiBlock.choiceType === 'select') {
       return (
@@ -547,7 +547,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     handleClassSpecificChoiceChange, 
     onOpenClassSpecificChoiceInfoDialog, 
     getCurrentValue,
-    handleOpenChoiceInfoDialog // Added this to dependency array
+    handleOpenChoiceInfoDialog
   ]);
 
 
@@ -729,5 +729,3 @@ const CharacterFormCoreInfoSectionComponent = ({
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
 
-
-    
