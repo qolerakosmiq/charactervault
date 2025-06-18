@@ -20,14 +20,14 @@ import type {
   ComboboxOption, 
   LocalizedString,
   CharacterClassSpecificChoice,
-  InfoDialogContentType // Added
+  InfoDialogContentType
 } from '@/types/character-core';
 import { isAlignmentCompatibleWithDeity, isAlignmentValidForRequirement } from '@/types/character';
 import { getLocalizedString, type ProcessedSiteData } from '@/i18n/i18n-data';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScrollText, Info, Heart, Activity, ListChecks } from 'lucide-react'; // Added ListChecks
+import { ScrollText, Info, Heart, Activity, ListChecks, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -37,6 +37,8 @@ import { useI18n } from '@/context/I18nProvider';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Separator } from '@/components/ui/separator';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
+import { Skeleton } from '@/components/ui/skeleton';
+import { DEFAULT_LANGUAGE } from '@/i18n/config';
 
 const DEBOUNCE_DELAY = 400;
 
@@ -66,7 +68,7 @@ export interface CharacterFormCoreInfoSectionProps {
   onOpenClassInfoDialog: () => void;
   onOpenAlignmentInfoDialog: () => void;
   onOpenDeityInfoDialog: () => void;
-  onOpenClassSpecificChoiceInfoDialog?: (contentType: InfoDialogContentType) => void; // Added
+  onOpenClassSpecificChoiceInfoDialog?: (contentType: InfoDialogContentType) => void;
   aggregatedFeatEffects?: AggregatedFeatEffects | null;
 }
 
@@ -81,12 +83,10 @@ const CharacterFormCoreInfoSectionComponent = ({
   onOpenClassInfoDialog,
   onOpenAlignmentInfoDialog,
   onOpenDeityInfoDialog,
-  onOpenClassSpecificChoiceInfoDialog, // Added
+  onOpenClassSpecificChoiceInfoDialog,
   aggregatedFeatEffects,
 }: CharacterFormCoreInfoSectionProps) => {
-  const { translations, language: currentLang } = useI18n();
-  const { UI_STRINGS, ALIGNMENTS, DND_RACES, DND_CLASSES, DND_DEITIES, SIZES, GENDERS, DND_DOMAINS, DND_MAGIC_SCHOOLS } = translations!;
-
+  const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
 
   const [localName, setLocalName] = useDebouncedFormField(
     characterData.name,
@@ -133,9 +133,30 @@ const CharacterFormCoreInfoSectionComponent = ({
     React.useCallback((value) => onFieldChange('size', value as CharacterSize), [onFieldChange]),
     DEBOUNCE_DELAY
   );
+  
+  if (translationsLoading || !translations) {
+    return (
+      <LockablePanelWrapper
+        title={translations?.UI_STRINGS.coreAttributesTitle || "Core Attributes"}
+        description={translations?.UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer."}
+        icon={ScrollText}
+        cardContentClassName="space-y-6 pt-6"
+        initialLockedState={false}
+      >
+        {() => (
+          <div className="flex justify-center items-center py-10">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingText || "Loading..."}</p>
+          </div>
+        )}
+      </LockablePanelWrapper>
+    );
+  }
 
-  const selectedRaceInfo = React.useMemo(() => DND_RACES.find(r => r.id === localRace), [DND_RACES, localRace]);
-  const selectedClassInfo = React.useMemo(() => DND_CLASSES.find(c => c.id === localClassName), [DND_CLASSES, localClassName]);
+  const { UI_STRINGS, ALIGNMENTS, DND_RACES, DND_CLASSES, DND_DEITIES, SIZES, GENDERS, DND_DOMAINS, DND_MAGIC_SCHOOLS, PREFERRED_DEFAULT_ALIGNMENT_IDS } = translations;
+
+  const selectedRaceInfo = DND_RACES.find(r => r.id === localRace);
+  const selectedClassInfo = DND_CLASSES.find(c => c.id === localClassName);
 
   const availableAlignments = React.useMemo(() => {
     const classRestriction = selectedClassInfo?.alignmentRestriction;
@@ -167,13 +188,9 @@ const CharacterFormCoreInfoSectionComponent = ({
 
   const genderSelectOptions = React.useMemo(() => {
     const unspecifiedOption = GENDERS.find(g => g.id === 'unspecified') || { id: 'unspecified' as GenderId, label: 'Unspecified' };
-    
     const options: ComboboxOption[] = [{ value: UI_EMPTY_SELECTION_VALUE, label: (UI_STRINGS.selectGenderPlaceholder) }];
     options.push({ value: unspecifiedOption.id, label: unspecifiedOption.label});
-
-
     const raceSpecificGenders = selectedRaceInfo?.genderOptions;
-
     if (raceSpecificGenders && raceSpecificGenders.length > 0) {
       options.push(...raceSpecificGenders.map(go => ({value: go.id as GenderId, label: go.label})));
     } else {
@@ -242,53 +259,40 @@ const CharacterFormCoreInfoSectionComponent = ({
          if (!choiceExists) updatedChoices = updatedChoices.filter(c => !(c.featureKey === featureKey && c.slotIndex === undefined && c.value === ""));
       }
     }
-    
     updatedChoices = updatedChoices.filter(c => {
       if (c.value !== "") return true;
       const originalChoice = (characterData.classSpecificChoices || []).find(ec => ec.featureKey === c.featureKey && ec.slotIndex === c.slotIndex);
       const uiBlockDef = selectedClassInfo?.uiSections?.find(uib => uib.key === c.featureKey);
       return (originalChoice && originalChoice.value !== "") || (uiBlockDef && uiBlockDef.defaultValue === "");
     });
-
-
     onFieldChange('classSpecificChoices', updatedChoices);
   }, [characterData.classSpecificChoices, onFieldChange, selectedClassInfo?.uiSections]);
 
 
   React.useEffect(() => {
     if (!selectedClassInfo?.uiSections) return;
-
     let choicesToUpdate: CharacterClassSpecificChoice[] = [...(characterData.classSpecificChoices || [])];
     let changed = false;
-
     selectedClassInfo.uiSections.forEach(uiBlock => {
       if (uiBlock.isHeadingOnly) return;
-
       const numSlots = uiBlock.choiceType === 'multiInput' && uiBlock.maxSelections ? uiBlock.maxSelections : 1;
-
       for (let i = 0; i < numSlots; i++) {
         const slotIndex = uiBlock.choiceType === 'multiInput' ? i : undefined;
         const existingChoice = choicesToUpdate.find(c => c.featureKey === uiBlock.key && c.slotIndex === slotIndex);
-
         if (!existingChoice) {
           let valueToSet: string | undefined = uiBlock.defaultValue;
-
-          if (valueToSet === undefined) { 
+          if (valueToSet === undefined) {
             if (uiBlock.allowEmptySelection) {
-              valueToSet = ""; 
+              valueToSet = "";
             } else {
               let tempOptions: ComboboxOption[] = [];
               if (uiBlock.optionsSource === 'domains' && DND_DOMAINS) tempOptions = DND_DOMAINS.map(d => ({ value: d.id, label: d.label }));
               else if (uiBlock.optionsSource === 'magicSchools' && DND_MAGIC_SCHOOLS) tempOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }));
-              else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) tempOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, currentLang) }));
-              
+              else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) tempOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, currentLang, DEFAULT_LANGUAGE, `${uiBlock.key}.customOptions.${opt.value}.label`) }));
               const actualSelectableOptions = tempOptions.filter(opt => opt.value !== UI_EMPTY_SELECTION_VALUE && opt.value !== "");
-              if (actualSelectableOptions.length > 0) {
-                valueToSet = actualSelectableOptions[0].value;
-              }
+              if (actualSelectableOptions.length > 0) valueToSet = actualSelectableOptions[0].value;
             }
           }
-          
           if (valueToSet !== undefined) {
             if (valueToSet !== "" || (valueToSet === "" && uiBlock.defaultValue === "")) {
                 choicesToUpdate.push({ featureKey: uiBlock.key, value: valueToSet, slotIndex });
@@ -298,170 +302,113 @@ const CharacterFormCoreInfoSectionComponent = ({
         }
       }
     });
-
-    if (changed) {
-      onFieldChange('classSpecificChoices', choicesToUpdate);
-    }
+    if (changed) onFieldChange('classSpecificChoices', choicesToUpdate);
   }, [selectedClassInfo?.id, selectedClassInfo?.uiSections, DND_DOMAINS, DND_MAGIC_SCHOOLS, currentLang, onFieldChange, characterData.classSpecificChoices]);
 
-
   React.useEffect(() => {
-    if (!selectedClassInfo || !UI_STRINGS.preferredDefaultAlignmentIds) return;
-
+    if (!selectedClassInfo || !PREFERRED_DEFAULT_ALIGNMENT_IDS) return;
     const currentAlignmentIsValidForNewClass = availableAlignments.some(a => a.id === localAlignment);
-
     if (!currentAlignmentIsValidForNewClass) {
-        const preferredDefaultsFromData = UI_STRINGS.preferredDefaultAlignmentIds as unknown as readonly CharacterAlignment[];
         let newAlignmentToSet: CharacterAlignment | undefined = undefined;
-
-        for (const preferred of preferredDefaultsFromData) {
+        for (const preferred of PREFERRED_DEFAULT_ALIGNMENT_IDS) {
             if (availableAlignments.some(a => a.id === preferred)) {
                 newAlignmentToSet = preferred;
                 break;
             }
         }
-        if (!newAlignmentToSet && availableAlignments.length > 0) {
-           newAlignmentToSet = availableAlignments[0].id as CharacterAlignment;
-        }
-        if (!newAlignmentToSet && preferredDefaultsFromData.length > 0) {
-           newAlignmentToSet = preferredDefaultsFromData[0];
-        }
+        if (!newAlignmentToSet && availableAlignments.length > 0) newAlignmentToSet = availableAlignments[0].id as CharacterAlignment;
+        if (!newAlignmentToSet && PREFERRED_DEFAULT_ALIGNMENT_IDS.length > 0) newAlignmentToSet = PREFERRED_DEFAULT_ALIGNMENT_IDS[0];
         if (!newAlignmentToSet && ALIGNMENTS.length > 0) {
             const trueNeutralFallback = ALIGNMENTS.find(a => a.id === 'true-neutral')?.id as CharacterAlignment | undefined;
             newAlignmentToSet = trueNeutralFallback || ALIGNMENTS[0].id as CharacterAlignment;
         }
-
-        if (newAlignmentToSet && newAlignmentToSet !== localAlignment) {
-            setLocalAlignment(newAlignmentToSet);
-        }
+        if (newAlignmentToSet && newAlignmentToSet !== localAlignment) setLocalAlignment(newAlignmentToSet);
     }
-  }, [localClassName, availableAlignments, localAlignment, selectedClassInfo, UI_STRINGS.preferredDefaultAlignmentIds, ALIGNMENTS, setLocalAlignment]);
+  }, [localClassName, availableAlignments, localAlignment, selectedClassInfo, PREFERRED_DEFAULT_ALIGNMENT_IDS, ALIGNMENTS, setLocalAlignment]);
 
   React.useEffect(() => {
     if (localDeity === "") return;
-
     const currentDeityInfo = DND_DEITIES.find(d => d.id === localDeity);
     if (!currentDeityInfo) return;
-
     let deityIsValid = true;
-    if (!isAlignmentCompatibleWithDeity(localAlignment, currentDeityInfo.alignment)) {
-      deityIsValid = false;
-    }
+    if (!isAlignmentCompatibleWithDeity(localAlignment, currentDeityInfo.alignment)) deityIsValid = false;
     if (deityIsValid && selectedClassInfo?.deityAlignmentRestriction) {
-      if (!isAlignmentValidForRequirement(currentDeityInfo.alignment, selectedClassInfo.deityAlignmentRestriction)) {
-        deityIsValid = false;
-      }
+      if (!isAlignmentValidForRequirement(currentDeityInfo.alignment, selectedClassInfo.deityAlignmentRestriction)) deityIsValid = false;
     }
-    if (!deityIsValid) {
-      setLocalDeity("");
-    }
+    if (!deityIsValid) setLocalDeity("");
   }, [localAlignment, localClassName, localDeity, DND_DEITIES, selectedClassInfo, setLocalDeity]);
 
   React.useEffect(() => {
     if (!selectedClassInfo?.uiSections || !characterData.classSpecificChoices) return;
     let choicesChanged = false;
-    const newChoices = [...characterData.classSpecificChoices]; 
-
+    const newChoices = [...characterData.classSpecificChoices];
     selectedClassInfo.uiSections.forEach(uiBlock => {
       if (uiBlock.isHeadingOnly) return;
-
       const numSlots = uiBlock.choiceType === 'multiInput' && uiBlock.maxSelections ? uiBlock.maxSelections : 1;
       for (let i = 0; i < numSlots; i++) {
         const slotIndex = uiBlock.choiceType === 'multiInput' ? i : undefined;
         const currentChoiceForSlot = newChoices.find(c => c.featureKey === uiBlock.key && c.slotIndex === slotIndex);
         const currentValue = currentChoiceForSlot?.value;
-
-        if (currentValue !== undefined && currentValue !== "") { 
+        if (currentValue !== undefined && currentValue !== "") {
           let isInvalid = false;
-          if (uiBlock.excludeSpecificValues?.includes(currentValue)) {
-            isInvalid = true;
-          }
+          if (uiBlock.excludeSpecificValues?.includes(currentValue)) isInvalid = true;
           if (!isInvalid && uiBlock.excludeOptionsFromKeys) {
             isInvalid = uiBlock.excludeOptionsFromKeys.some(excludedKey => {
               const valOfExcludedKey = getCurrentValue(excludedKey);
               return valOfExcludedKey === currentValue && valOfExcludedKey !== "";
             });
           }
-          
           if (isInvalid) {
-            let resetValue = ""; 
+            let resetValue = "";
             if (!uiBlock.allowEmptySelection) {
-              resetValue = uiBlock.defaultValue || ""; 
+              resetValue = uiBlock.defaultValue || "";
               if (resetValue === "") {
                 let tempOptions: ComboboxOption[] = [];
                 if (uiBlock.optionsSource === 'domains' && DND_DOMAINS) tempOptions = DND_DOMAINS.map(d => ({ value: d.id, label: d.label }));
                 else if (uiBlock.optionsSource === 'magicSchools' && DND_MAGIC_SCHOOLS) tempOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }));
-                else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) tempOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, currentLang) }));
-                
-                const actualSelectableOptions = tempOptions.filter(opt => 
-                    opt.value !== UI_EMPTY_SELECTION_VALUE && opt.value !== "" && 
+                else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) tempOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, currentLang, DEFAULT_LANGUAGE, `${uiBlock.key}.customOptions.${opt.value}.label`) }));
+                const actualSelectableOptions = tempOptions.filter(opt =>
+                    opt.value !== UI_EMPTY_SELECTION_VALUE && opt.value !== "" &&
                     !(uiBlock.excludeSpecificValues?.includes(opt.value)) &&
                     !(uiBlock.excludeOptionsFromKeys?.some(ek => getCurrentValue(ek) === opt.value && getCurrentValue(ek) !== ""))
                 );
-                if (actualSelectableOptions.length > 0) {
-                  resetValue = actualSelectableOptions[0].value;
-                }
+                if (actualSelectableOptions.length > 0) resetValue = actualSelectableOptions[0].value;
               }
             }
-            
-            if (currentChoiceForSlot) {
-              if (currentChoiceForSlot.value !== resetValue) {
-                  currentChoiceForSlot.value = resetValue;
-                  choicesChanged = true;
-              }
+            if (currentChoiceForSlot && currentChoiceForSlot.value !== resetValue) {
+                currentChoiceForSlot.value = resetValue;
+                choicesChanged = true;
             }
           }
         }
       }
     });
-
-    if (choicesChanged) {
-      onFieldChange('classSpecificChoices', newChoices);
-    }
+    if (choicesChanged) onFieldChange('classSpecificChoices', newChoices);
   }, [characterData.classSpecificChoices, selectedClassInfo?.uiSections, onFieldChange, getCurrentValue, DND_DOMAINS, DND_MAGIC_SCHOOLS, currentLang]);
-
 
   const handleOpenChoiceInfoDialog = React.useCallback((uiBlock: ClassSpecificUIBlock) => {
     if (!onOpenClassSpecificChoiceInfoDialog) return;
-
-    const blockLabel = getLocalizedString(uiBlock.label || uiBlock.labelKey, currentLang);
+    const blockLabelText = uiBlock.label ? getLocalizedString(uiBlock.label, currentLang) : (uiBlock.labelKey && UI_STRINGS[uiBlock.labelKey]) ? UI_STRINGS[uiBlock.labelKey]! : uiBlock.key;
     let optionsToShow: Array<{ id: string; label: string; description?: string; }> = [];
-
     if (uiBlock.optionsSource === 'domains' && DND_DOMAINS) {
-      optionsToShow = DND_DOMAINS.map(d => ({
-        id: d.id,
-        label: d.label,
-        description: d.description
-      }));
+      optionsToShow = DND_DOMAINS.map(d => ({ id: d.id, label: d.label, description: d.description }));
     } else if (uiBlock.optionsSource === 'magicSchools' && DND_MAGIC_SCHOOLS) {
-      optionsToShow = DND_MAGIC_SCHOOLS.map(s => ({
-        id: s.id,
-        label: s.label,
-        description: s.description
-      }));
+      optionsToShow = DND_MAGIC_SCHOOLS.map(s => ({ id: s.id, label: s.label, description: s.description }));
     } else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) {
       optionsToShow = uiBlock.customOptions.map(opt => ({
         id: opt.value,
-        label: getLocalizedString(opt.label, currentLang),
-        description: opt.description ? getLocalizedString(opt.description, currentLang) : undefined
+        label: getLocalizedString(opt.label, currentLang, DEFAULT_LANGUAGE, `${uiBlock.key}.customOptions.${opt.value}.label`),
+        description: opt.description ? getLocalizedString(opt.description, currentLang, DEFAULT_LANGUAGE, `${uiBlock.key}.customOptions.${opt.value}.description`) : undefined
       }));
     }
     optionsToShow.sort((a,b) => a.label.localeCompare(b.label));
-
-    onOpenClassSpecificChoiceInfoDialog({
-      type: 'classSpecificChoiceOptions',
-      title: blockLabel,
-      options: optionsToShow
-    });
-  }, [onOpenClassSpecificChoiceInfoDialog, DND_DOMAINS, DND_MAGIC_SCHOOLS, currentLang]);
+    onOpenClassSpecificChoiceInfoDialog({ type: 'classSpecificChoiceOptions', title: blockLabelText, options: optionsToShow });
+  }, [onOpenClassSpecificChoiceInfoDialog, DND_DOMAINS, DND_MAGIC_SCHOOLS, currentLang, UI_STRINGS]);
 
 
   const renderClassSpecificUI = React.useCallback((uiBlock: ClassSpecificUIBlock, panelIsLocked: boolean, blockIndex: number) => {
     const currentCharacterClassLevel = characterData.classes[0]?.level || 0;
-    if (uiBlock.requiredLevel && currentCharacterClassLevel < uiBlock.requiredLevel) {
-      return null;
-    }
-
+    if (uiBlock.requiredLevel && currentCharacterClassLevel < uiBlock.requiredLevel) return null;
     if (uiBlock.conditionAggregatedEffect && aggregatedFeatEffects) {
       const propValue = aggregatedFeatEffects[uiBlock.conditionAggregatedEffect.property as keyof AggregatedFeatEffects] as any;
       let conditionMet = false;
@@ -474,113 +421,90 @@ const CharacterFormCoreInfoSectionComponent = ({
       }
       if (!conditionMet) return null;
     }
-
     if (uiBlock.conditionDependsOnUIStateKey) {
       const stateValue = getCurrentValue(uiBlock.conditionDependsOnUIStateKey);
-      if (uiBlock.conditionDependsOnUIStateValueNotIn && uiBlock.conditionDependsOnUIStateValueNotIn.includes(stateValue || "")) {
-        return null;
-      }
-      if (uiBlock.conditionDependsOnUIStateValueIs && !uiBlock.conditionDependsOnUIStateValueIs.includes(stateValue || "")) {
-        return null;
-      }
+      if (uiBlock.conditionDependsOnUIStateValueNotIn && uiBlock.conditionDependsOnUIStateValueNotIn.includes(stateValue || "")) return null;
+      if (uiBlock.conditionDependsOnUIStateValueIs && !uiBlock.conditionDependsOnUIStateValueIs.includes(stateValue || "")) return null;
     }
 
-    const blockLabel = getLocalizedString(uiBlock.label || uiBlock.labelKey, currentLang);
-    const blockDescription = uiBlock.description ? getLocalizedString(uiBlock.description, currentLang) : (uiBlock.descriptionKey ? UI_STRINGS[uiBlock.descriptionKey] : undefined);
-    const blockNote = uiBlock.note ? getLocalizedString(uiBlock.note, currentLang) : undefined;
+    let blockLabel: string;
+    if (uiBlock.label) { blockLabel = getLocalizedString(uiBlock.label, currentLang, DEFAULT_LANGUAGE, `${uiBlock.key}.label`); }
+    else if (uiBlock.labelKey && UI_STRINGS[uiBlock.labelKey]) { blockLabel = UI_STRINGS[uiBlock.labelKey]!; }
+    else { blockLabel = uiBlock.key; }
+
+    let blockDescription: string | undefined;
+    if (uiBlock.description) { blockDescription = getLocalizedString(uiBlock.description, currentLang, DEFAULT_LANGUAGE, `${uiBlock.key}.description`); }
+    else if (uiBlock.descriptionKey && UI_STRINGS[uiBlock.descriptionKey]) { blockDescription = UI_STRINGS[uiBlock.descriptionKey]!; }
+    
+    let blockNote: string | undefined;
+    if (uiBlock.note) { blockNote = getLocalizedString(uiBlock.note, currentLang, DEFAULT_LANGUAGE, `${uiBlock.key}.note`); }
+    
+    let inputPlaceholderText: string | undefined;
+    if (uiBlock.inputPlaceholder) { inputPlaceholderText = getLocalizedString(uiBlock.inputPlaceholder, currentLang, DEFAULT_LANGUAGE, `${uiBlock.key}.inputPlaceholder`); }
+    else if (uiBlock.inputPlaceholderKey && UI_STRINGS[uiBlock.inputPlaceholderKey]) { inputPlaceholderText = UI_STRINGS[uiBlock.inputPlaceholderKey]!; }
 
     let initialOptions: ComboboxOption[] = [];
     if (uiBlock.optionsSource === 'domains' && DND_DOMAINS) initialOptions = DND_DOMAINS.map(d => ({ value: d.id, label: d.label }));
     else if (uiBlock.optionsSource === 'magicSchools' && DND_MAGIC_SCHOOLS) initialOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }));
-    else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) initialOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, currentLang) }));
-    
+    else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) initialOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, currentLang, DEFAULT_LANGUAGE, `${uiBlock.key}.customOptions.${opt.value}.label`) }));
     initialOptions.sort((a,b) => a.label.localeCompare(b.label));
 
     let finalSelectOptions: ComboboxOption[] = [];
-    if (uiBlock.allowEmptySelection && uiBlock.emptySelectionLabelKey) {
-      finalSelectOptions.push({ value: UI_EMPTY_SELECTION_VALUE, label: UI_STRINGS[uiBlock.emptySelectionLabelKey] || "None", disabled: false });
+    if (uiBlock.allowEmptySelection && uiBlock.emptySelectionLabelKey && UI_STRINGS[uiBlock.emptySelectionLabelKey]) {
+      finalSelectOptions.push({ value: UI_EMPTY_SELECTION_VALUE, label: UI_STRINGS[uiBlock.emptySelectionLabelKey]!, disabled: false });
     }
     
     const valuesToDisable = new Set<string>(uiBlock.excludeSpecificValues || []);
     if (uiBlock.excludeOptionsFromKeys) {
       uiBlock.excludeOptionsFromKeys.forEach(keyToExcludeFrom => {
         const val = getCurrentValue(keyToExcludeFrom);
-        if (val && val !== "") { 
-          valuesToDisable.add(val);
-        }
+        if (val && val !== "") valuesToDisable.add(val);
       });
     }
-    const currentBlockValue = getCurrentValue(uiBlock.key, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined);
+    const currentBlockValueForRender = getCurrentValue(uiBlock.key, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined);
 
     initialOptions.forEach(opt => {
-      const isDisabledByExclusion = valuesToDisable.has(opt.value) && opt.value !== currentBlockValue;
+      const isDisabledByExclusion = valuesToDisable.has(opt.value) && opt.value !== currentBlockValueForRender;
       finalSelectOptions.push({ ...opt, disabled: isDisabledByExclusion || opt.disabled });
     });
-
 
     let isDisabledByPanelOrDependency = panelIsLocked;
     if (uiBlock.relatedSlotKeyForDisable && !isDisabledByPanelOrDependency) {
         const relatedChoiceValue = getCurrentValue(uiBlock.relatedSlotKeyForDisable);
-        if (!relatedChoiceValue || relatedChoiceValue === "") {
-            isDisabledByPanelOrDependency = true;
-        }
+        if (!relatedChoiceValue || relatedChoiceValue === "") isDisabledByPanelOrDependency = true;
     }
     if (!isDisabledByPanelOrDependency && uiBlock.disabledIfChoiceValue) {
         const controllingChoiceValue = getCurrentValue(uiBlock.disabledIfChoiceValue.featureKey);
-        if (uiBlock.disabledIfChoiceValue.values.includes(controllingChoiceValue)) {
-            isDisabledByPanelOrDependency = true;
-        }
+        if (uiBlock.disabledIfChoiceValue.values.includes(controllingChoiceValue)) isDisabledByPanelOrDependency = true;
     }
-
 
     if (uiBlock.isHeadingOnly) {
       return (
-        <div key={`${uiBlock.key}-${blockIndex}`} className="mt-3 mb-1">
+        <div key={`${uiBlock.key}-${blockIndex}-heading`} className="mt-3 mb-1">
           <h3 className="text-lg font-semibold text-foreground/80">{blockLabel}</h3>
           {blockDescription && <p className="text-xs text-muted-foreground">{blockDescription}</p>}
           <Separator className="mt-1" />
         </div>
       );
     }
-
     
-    const uiValueForComponent = currentBlockValue === "" ? UI_EMPTY_SELECTION_VALUE : currentBlockValue;
-
-    const handleChange = (val: string) => {
-        handleClassSpecificChoiceChange(uiBlock.key, val === UI_EMPTY_SELECTION_VALUE ? "" : val, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined);
-    };
+    const uiValueForComponent = currentBlockValueForRender === "" ? UI_EMPTY_SELECTION_VALUE : currentBlockValueForRender;
+    const handleChange = (val: string) => { handleClassSpecificChoiceChange(uiBlock.key, val === UI_EMPTY_SELECTION_VALUE ? "" : val, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined); };
 
     const commonInfoButton = (uiBlock.choiceType === 'select' || uiBlock.choiceType === 'combobox') && onOpenClassSpecificChoiceInfoDialog ? (
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9"
-        onClick={() => handleOpenChoiceInfoDialog(uiBlock)}
-        disabled={panelIsLocked}
-        aria-label={`Info for ${blockLabel}`}
-      >
+      <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={() => handleOpenChoiceInfoDialog(uiBlock)} disabled={panelIsLocked} aria-label={`Info for ${blockLabel}`} >
         <Info className="h-5 w-5" />
       </Button>
     ) : null;
 
     if (uiBlock.choiceType === 'select') {
       return (
-        <div key={`${uiBlock.key}-${blockIndex}`} className="space-y-1.5">
+        <div key={`${uiBlock.key}-${blockIndex}-select`} className="space-y-1.5">
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
           <div className="flex items-center gap-2">
-            <Select
-              name={uiBlock.key}
-              value={uiValueForComponent}
-              onValueChange={handleChange}
-              disabled={isDisabledByPanelOrDependency}
-            >
-              <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`} className="h-9 text-sm flex-grow">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {finalSelectOptions.map(opt => <SelectItem key={opt.value} value={opt.value} disabled={opt.disabled}>{opt.label}</SelectItem>)}
-              </SelectContent>
+            <Select name={uiBlock.key} value={uiValueForComponent} onValueChange={handleChange} disabled={isDisabledByPanelOrDependency} >
+              <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`} className="h-9 text-sm flex-grow"> <SelectValue /> </SelectTrigger>
+              <SelectContent> {finalSelectOptions.map(opt => <SelectItem key={opt.value} value={opt.value} disabled={opt.disabled}>{opt.label}</SelectItem>)} </SelectContent>
             </Select>
             {commonInfoButton}
           </div>
@@ -589,19 +513,11 @@ const CharacterFormCoreInfoSectionComponent = ({
         </div>
       );
     } else if (uiBlock.choiceType === 'combobox') {
-      const inputPlaceholderText = uiBlock.inputPlaceholder ? getLocalizedString(uiBlock.inputPlaceholder, currentLang) : (uiBlock.inputPlaceholderKey ? UI_STRINGS[uiBlock.inputPlaceholderKey] : undefined);
       return (
-        <div key={`${uiBlock.key}-${blockIndex}`} className="space-y-1.5">
+        <div key={`${uiBlock.key}-${blockIndex}-combobox`} className="space-y-1.5">
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
            <div className="flex items-center gap-2">
-            <ComboboxPrimitive
-              options={finalSelectOptions}
-              value={uiValueForComponent}
-              onChange={handleChange}
-              placeholder={inputPlaceholderText}
-              triggerClassName="h-9 text-sm flex-grow"
-              disabled={isDisabledByPanelOrDependency}
-            />
+            <ComboboxPrimitive options={finalSelectOptions} value={uiValueForComponent} onChange={handleChange} placeholder={inputPlaceholderText} triggerClassName="h-9 text-sm flex-grow" disabled={isDisabledByPanelOrDependency} />
             {commonInfoButton}
           </div>
           {blockDescription && <p className="text-xs text-muted-foreground">{blockDescription}</p>}
@@ -610,46 +526,25 @@ const CharacterFormCoreInfoSectionComponent = ({
       );
     } else if (uiBlock.choiceType === 'multiInput' && uiBlock.maxSelections && uiBlock.maxSelections > 0) {
       const numInputsToRender = uiBlock.maxSelections;
-      const slotLabelTemplate = uiBlock.slotLabel ? getLocalizedString(uiBlock.slotLabel, currentLang) : (uiBlock.slotLabelKey ? UI_STRINGS[uiBlock.slotLabelKey] : `${uiBlock.key} Slot {slotNum}`);
-      const inputPlaceholderText = uiBlock.inputPlaceholder ? getLocalizedString(uiBlock.inputPlaceholder, currentLang) : (uiBlock.inputPlaceholderKey ? UI_STRINGS[uiBlock.inputPlaceholderKey] : undefined);
-
+      const slotLabelTemplate = uiBlock.slotLabel ? getLocalizedString(uiBlock.slotLabel, currentLang) : (uiBlock.slotLabelKey && UI_STRINGS[uiBlock.slotLabelKey] ? UI_STRINGS[uiBlock.slotLabelKey]! : `${uiBlock.key} Slot {slotNum}`);
       return (
         <div key={`${uiBlock.key}-group-${blockIndex}`} className="space-y-3 p-3 border rounded-md bg-muted/20">
-          <Label className="flex items-center text-md font-medium">
-            {blockLabel}
-            <Badge variant="outline" className="ml-2">{numInputsToRender}</Badge>
-          </Label>
+          <Label className="flex items-center text-md font-medium">{blockLabel} <Badge variant="outline" className="ml-2">{numInputsToRender}</Badge></Label>
           {blockDescription && <p className="text-xs text-muted-foreground">{blockDescription}</p>}
           {Array.from({ length: numInputsToRender }).map((_, index) => (
             <div key={`${uiBlock.key}-slot-${index}`} className="space-y-1">
-              <Label htmlFor={`${uiBlock.key}-input-${index}`} className="text-xs">
-                {parseAndRenderUIString(slotLabelTemplate, { slotNum: index + 1 })}
-              </Label>
-              <Input
-                id={`${uiBlock.key}-input-${index}`}
-                value={getCurrentValue(uiBlock.key, index)}
-                onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, index)}
-                placeholder={inputPlaceholderText}
-                className="h-9 text-sm"
-                disabled={isDisabledByPanelOrDependency}
-              />
+              <Label htmlFor={`${uiBlock.key}-input-${index}`} className="text-xs"> {parseAndRenderUIString(slotLabelTemplate, { slotNum: index + 1 })} </Label>
+              <Input id={`${uiBlock.key}-input-${index}`} value={getCurrentValue(uiBlock.key, index)} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, index)} placeholder={inputPlaceholderText} className="h-9 text-sm" disabled={isDisabledByPanelOrDependency} />
             </div>
           ))}
           {blockNote && <p className="text-xs text-destructive/80 italic mt-1">{blockNote}</p>}
         </div>
       );
     } else if (uiBlock.choiceType === 'textInput') {
-      const inputPlaceholderText = uiBlock.inputPlaceholder ? getLocalizedString(uiBlock.inputPlaceholder, currentLang) : (uiBlock.inputPlaceholderKey ? UI_STRINGS[uiBlock.inputPlaceholderKey] : undefined);
       return (
-         <div key={`${uiBlock.key}-${blockIndex}`} className="space-y-1.5">
+         <div key={`${uiBlock.key}-${blockIndex}-textInput`} className="space-y-1.5">
             <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
-            <Input
-                id={`cspec-${uiBlock.key}-${blockIndex}`}
-                value={currentBlockValue}
-                onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)}
-                placeholder={inputPlaceholderText}
-                disabled={isDisabledByPanelOrDependency}
-            />
+            <Input id={`cspec-${uiBlock.key}-${blockIndex}`} value={currentBlockValueForRender} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
             {blockDescription && <p className="text-xs text-muted-foreground">{blockDescription}</p>}
             {blockNote && <p className="text-xs text-destructive/80 italic mt-1">{blockNote}</p>}
          </div>
@@ -684,21 +579,11 @@ const CharacterFormCoreInfoSectionComponent = ({
             <div className="space-y-1.5">
               <Label htmlFor="race">{UI_STRINGS.raceLabel}</Label>
               <div className="flex items-center gap-2">
-                <Select
-                  value={localRace}
-                  onValueChange={(value) => setLocalRace(value as DndRaceId)}
-                  disabled={panelIsLocked}
-                >
-                  <SelectTrigger id="race" className="flex-grow h-9 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DND_RACES.map(race => <SelectItem key={race.id} value={race.id}>{race.label}</SelectItem>)}
-                  </SelectContent>
+                <Select value={localRace} onValueChange={(value) => setLocalRace(value as DndRaceId)} disabled={panelIsLocked} >
+                  <SelectTrigger id="race" className="flex-grow h-9 text-sm"> <SelectValue /> </SelectTrigger>
+                  <SelectContent> {DND_RACES.map(race => <SelectItem key={race.id} value={race.id}>{race.label}</SelectItem>)} </SelectContent>
                 </Select>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenRaceInfoDialog} disabled={!localRace || panelIsLocked}>
-                  <Info className="h-5 w-5" />
-                </Button>
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenRaceInfoDialog} disabled={!localRace || panelIsLocked}> <Info className="h-5 w-5" /> </Button>
               </div>
               {selectedRaceInfo && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
                  <div className="flex flex-wrap items-baseline gap-1 pt-[6px] ml-1">
@@ -709,11 +594,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
                     else badgeClassNameInternal = cn(badgeClassNameInternal, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
-                    return (
-                       <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}>
-                          {parseAndRenderUIString(UI_STRINGS.abilityScoreRaceModBadgeFormat, {abilityAbbr: effect.ability.substring(0,3).toUpperCase(), change: changeValue})}
-                       </Badge>
-                    );
+                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString(UI_STRINGS.abilityScoreRaceModBadgeFormat, {abilityAbbr: effect.ability.substring(0,3).toUpperCase(), change: changeValue})} </Badge> );
                   })}
                 </div>
               )}
@@ -721,45 +602,24 @@ const CharacterFormCoreInfoSectionComponent = ({
              <div className="space-y-1.5">
               <Label htmlFor="className">{UI_STRINGS.classLabel}</Label>
               <div className="flex items-center gap-2">
-                <Select
-                  value={localClassName}
-                  onValueChange={(value) => setLocalClassName(value as DndClassId)}
-                  disabled={panelIsLocked}
-                >
+                <Select value={localClassName} onValueChange={(value) => setLocalClassName(value as DndClassId)} disabled={panelIsLocked} >
                   <SelectTrigger id="className" className="flex-grow h-9 text-sm"> <SelectValue /> </SelectTrigger>
                   <SelectContent> {DND_CLASSES.map(c => <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>)} </SelectContent>
                 </Select>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenClassInfoDialog} disabled={!localClassName || panelIsLocked} >
-                  <Info className="h-5 w-5" />
-                </Button>
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenClassInfoDialog} disabled={!localClassName || panelIsLocked} > <Info className="h-5 w-5" /> </Button>
               </div>
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-[6px] ml-1">
-                {selectedClassInfo?.hitDice && (
-                   <Badge variant="secondary" className="whitespace-nowrap">
-                    <Heart fill="currentColor" className="inline h-3 w-3 mr-1.5 text-primary/70" />
-                     {parseAndRenderUIString(UI_STRINGS.hitDiceLabel, {value: selectedClassInfo.hitDice})}
-                  </Badge>
-                )}
+                {selectedClassInfo?.hitDice && ( <Badge variant="secondary" className="whitespace-nowrap"> <Heart fill="currentColor" className="inline h-3 w-3 mr-1.5 text-primary/70" /> {parseAndRenderUIString(UI_STRINGS.hitDiceLabel, {value: selectedClassInfo.hitDice})} </Badge> )}
                 {aggregatedFeatEffects?.grantedAbilities && aggregatedFeatEffects.grantedAbilities.map(ability => {
                    const abilityNameForDisplay = getLocalizedString(ability.name, currentLang);
                    if (ability.uses && typeof ability.uses.value === 'number' && ability.uses.per) {
                     const localizedPeriod = (ability.uses.per === 'day' ? (UI_STRINGS.periodDay) : ability.uses.per === 'encounter' ? (UI_STRINGS.periodEncounter) : ability.uses.per === 'week' ? (UI_STRINGS.periodWeek) : ability.uses.per);
                     const usesValue = ability.uses.value;
-                    return (
-                      <Badge key={ability.abilityKey} variant="secondary" className="whitespace-nowrap bg-accent text-accent-foreground">
-                        <Activity className="inline h-3 w-3 mr-1" />
-                        {parseAndRenderUIString(UI_STRINGS.abilityUsesFormat, {abilityName: abilityNameForDisplay, period: localizedPeriod, usesValue: String(usesValue)})}
-                      </Badge>
-                    );
+                    return ( <Badge key={ability.abilityKey} variant="secondary" className="whitespace-nowrap bg-accent text-accent-foreground"> <Activity className="inline h-3 w-3 mr-1" /> {parseAndRenderUIString(UI_STRINGS.abilityUsesFormat, {abilityName: abilityNameForDisplay, period: localizedPeriod, usesValue: String(usesValue)})} </Badge> );
                   } else if (ability.uses && ability.uses.value === "customPool" && ability.abilityKey === "layOnHandsHealingPool" && aggregatedFeatEffects?.modifiedMechanics?.layOnHandsHealingPool) {
                     const localizedPeriod = UI_STRINGS.periodDay;
                     const poolValue = aggregatedFeatEffects.modifiedMechanics.layOnHandsHealingPool.value;
-                    return (
-                         <Badge key={ability.abilityKey} variant="secondary" className="whitespace-nowrap bg-accent text-accent-foreground">
-                            <Heart className="inline h-3 w-3 mr-1" />
-                            {parseAndRenderUIString(UI_STRINGS.abilityPoolFormat, {abilityName: abilityNameForDisplay, poolValue: String(typeof poolValue === 'number' ? poolValue : "Pool"), period: localizedPeriod})}
-                        </Badge>
-                    );
+                    return ( <Badge key={ability.abilityKey} variant="secondary" className="whitespace-nowrap bg-accent text-accent-foreground"> <Heart className="inline h-3 w-3 mr-1" /> {parseAndRenderUIString(UI_STRINGS.abilityPoolFormat, {abilityName: abilityNameForDisplay, poolValue: String(typeof poolValue === 'number' ? poolValue : "Pool"), period: localizedPeriod})} </Badge> );
                   }
                   return null;
                 })}
@@ -777,20 +637,9 @@ const CharacterFormCoreInfoSectionComponent = ({
             <div className="space-y-1.5">
               <Label htmlFor="alignment">{UI_STRINGS.alignmentLabel}</Label>
               <div className="flex items-center gap-2">
-                <Select
-                  name="alignment"
-                  value={localAlignment === "" ? UI_EMPTY_SELECTION_VALUE : localAlignment}
-                  onValueChange={(value) => setLocalAlignment(value === UI_EMPTY_SELECTION_VALUE ? "" : value as CharacterAlignment)}
-                  disabled={panelIsLocked}
-                >
-                  <SelectTrigger id="alignment" className="flex-grow h-9 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableAlignments.map(align => (
-                      <SelectItem key={align.id} value={align.id === "" ? UI_EMPTY_SELECTION_VALUE : align.id}>{align.label}</SelectItem>
-                    ))}
-                  </SelectContent>
+                <Select name="alignment" value={localAlignment === "" ? UI_EMPTY_SELECTION_VALUE : localAlignment} onValueChange={(value) => setLocalAlignment(value === UI_EMPTY_SELECTION_VALUE ? "" : value as CharacterAlignment)} disabled={panelIsLocked} >
+                  <SelectTrigger id="alignment" className="flex-grow h-9 text-sm"> <SelectValue /> </SelectTrigger>
+                  <SelectContent> {availableAlignments.map(align => ( <SelectItem key={align.id} value={align.id === "" ? UI_EMPTY_SELECTION_VALUE : align.id}>{align.label}</SelectItem> ))} </SelectContent>
                 </Select>
                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked}> <Info className="h-5 w-5" /> </Button>
               </div>
@@ -798,23 +647,11 @@ const CharacterFormCoreInfoSectionComponent = ({
             <div className="space-y-1.5">
                 <Label htmlFor="deity">{UI_STRINGS.deityLabel}</Label>
                 <div className="flex items-center gap-2">
-                  <Select
-                    value={localDeity === "" ? UI_EMPTY_SELECTION_VALUE : localDeity}
-                    onValueChange={(value) => setLocalDeity(value === UI_EMPTY_SELECTION_VALUE ? "" : value)}
-                    disabled={panelIsLocked}
-                  >
+                  <Select value={localDeity === "" ? UI_EMPTY_SELECTION_VALUE : localDeity} onValueChange={(value) => setLocalDeity(value === UI_EMPTY_SELECTION_VALUE ? "" : value)} disabled={panelIsLocked} >
                     <SelectTrigger id="deity" className="flex-grow h-9 text-sm"> <SelectValue /> </SelectTrigger>
-                    <SelectContent>
-                      {deitySelectOptions.map(opt => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
+                    <SelectContent> {deitySelectOptions.map(opt => ( <SelectItem key={opt.value} value={opt.value}> {opt.label} </SelectItem> ))} </SelectContent>
                   </Select>
-                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenDeityInfoDialog} disabled={!localDeity || localDeity.trim() === '' || panelIsLocked} >
-                    <Info className="h-5 w-5" />
-                  </Button>
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenDeityInfoDialog} disabled={!localDeity || localDeity.trim() === '' || panelIsLocked} > <Info className="h-5 w-5" /> </Button>
                 </div>
               </div>
           </div>
@@ -822,18 +659,7 @@ const CharacterFormCoreInfoSectionComponent = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
             <div className="space-y-1.5">
               <Label htmlFor="age" className="inline-block w-full text-center md:text-center">{UI_STRINGS.ageLabel}</Label>
-              <NumberSpinnerInput
-                id="age"
-                value={localAge}
-                onChange={setLocalAge}
-                min={currentMinAgeForInput}
-                max={1000}
-                inputClassName="w-full h-10 text-base text-center"
-                buttonClassName="h-10 w-10"
-                buttonSize="icon"
-                className="justify-center"
-                disabled={panelIsLocked}
-              />
+              <NumberSpinnerInput id="age" value={localAge} onChange={setLocalAge} min={currentMinAgeForInput} max={1000} inputClassName="w-full h-10 text-base text-center" buttonClassName="h-10 w-10" buttonSize="icon" className="justify-center" disabled={panelIsLocked} />
               {ageEffectsDetails && (ageEffectsDetails.categoryName !== (UI_STRINGS.ageCategoryAdult) || ageEffectsDetails.effects.length > 0) && (
                  <div className="flex flex-wrap items-baseline justify-center md:justify-start gap-1 pt-[6px] ml-1">
                   <Badge variant="secondary" className="whitespace-nowrap"> {parseAndRenderUIString(ageEffectsDetails.categoryName)} </Badge>
@@ -844,45 +670,23 @@ const CharacterFormCoreInfoSectionComponent = ({
                     if (effect.change > 0) badgeClassNameInternal = cn(badgeClassNameInternal, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (effect.change < 0) { badgeVariantProp = "destructive"; badgeClassNameInternal = cn(badgeClassNameInternal, "hover:bg-destructive"); }
                     else badgeClassNameInternal = cn(badgeClassNameInternal, "bg-muted/50 text-muted-foreground border-border", "hover:bg-muted/50 hover:text-muted-foreground");
-                    return (
-                      <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}>
-                        {parseAndRenderUIString(UI_STRINGS.abilityScoreRaceModBadgeFormat, {abilityAbbr: effect.ability.substring(0,3).toUpperCase(), change: changeValue})}
-                      </Badge>
-                    );
+                    return ( <Badge key={effect.ability} variant={badgeVariantProp} className={badgeClassNameInternal}> {parseAndRenderUIString(UI_STRINGS.abilityScoreRaceModBadgeFormat, {abilityAbbr: effect.ability.substring(0,3).toUpperCase(), change: changeValue})} </Badge> );
                   })}
                 </div>
               )}
               </div>
             <div className="space-y-1.5">
               <Label htmlFor="gender">{UI_STRINGS.genderLabel}</Label>
-              <Select
-                name="gender"
-                value={localGender === "" ? UI_EMPTY_SELECTION_VALUE : localGender}
-                onValueChange={(value) => setLocalGender(value === UI_EMPTY_SELECTION_VALUE ? "" : value as GenderId)}
-                disabled={panelIsLocked}
-              >
-                <SelectTrigger id="gender" className="h-9 text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {genderSelectOptions.map(g => (
-                    <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
-                  ))}
-                </SelectContent>
+              <Select name="gender" value={localGender === "" ? UI_EMPTY_SELECTION_VALUE : localGender} onValueChange={(value) => setLocalGender(value === UI_EMPTY_SELECTION_VALUE ? "" : value as GenderId)} disabled={panelIsLocked} >
+                <SelectTrigger id="gender" className="h-9 text-sm"> <SelectValue /> </SelectTrigger>
+                <SelectContent> {genderSelectOptions.map(g => ( <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem> ))} </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="sizeCategory">{UI_STRINGS.sizeLabel}</Label>
-              <Select
-                name="sizeCategory"
-                value={localSize === "" ? UI_EMPTY_SELECTION_VALUE : localSize}
-                onValueChange={(value) => setLocalSize(value === UI_EMPTY_SELECTION_VALUE ? "" : value as CharacterSize)}
-                disabled={panelIsLocked}
-              >
+              <Select name="sizeCategory" value={localSize === "" ? UI_EMPTY_SELECTION_VALUE : localSize} onValueChange={(value) => setLocalSize(value === UI_EMPTY_SELECTION_VALUE ? "" : value as CharacterSize)} disabled={panelIsLocked} >
                 <SelectTrigger id="sizeCategory" className="h-9 text-sm"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {SIZES.map(s => <SelectItem key={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id} value={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id}>{s.label}</SelectItem>)}
-                </SelectContent>
+                <SelectContent> {SIZES.map(s => <SelectItem key={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id} value={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id}>{s.label}</SelectItem>)} </SelectContent>
               </Select>
               <div className="flex items-baseline gap-1 pt-[6px] ml-1">
                 {localSize && (() => {
@@ -894,11 +698,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     const acModValue = acMod > 0 ? `+${acMod}` : String(acMod);
                     if (acMod > 0) badgeClassNameForAc = cn(badgeClassNameForAc, "bg-emerald-700 text-emerald-100 border-emerald-600", "hover:bg-emerald-700 hover:text-emerald-100");
                     else if (acMod < 0) { badgeVariantProp = "destructive"; badgeClassNameForAc = cn(badgeClassNameForAc, "hover:bg-destructive"); }
-                    return (
-                      <Badge variant={badgeVariantProp} className={badgeClassNameForAc}>
-                        {parseAndRenderUIString(UI_STRINGS.acModSizeBadgeFormat, { acModValue: acModValue })}
-                      </Badge>
-                    );
+                    return ( <Badge variant={badgeVariantProp} className={badgeClassNameForAc}> {parseAndRenderUIString(UI_STRINGS.acModSizeBadgeFormat, { acModValue: acModValue })} </Badge> );
                   } return null;
                 })()}
               </div>
@@ -911,5 +711,3 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
-
-
