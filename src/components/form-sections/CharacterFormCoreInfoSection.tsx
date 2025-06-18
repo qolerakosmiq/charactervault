@@ -41,18 +41,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 
 const DEBOUNCE_DELAY = 400;
-
-function generateRandomAlphanumericString(length: number): string {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-const UI_EMPTY_SELECTION_VALUE = generateRandomAlphanumericString(50);
-
+const UI_EMPTY_SELECTION_VALUE = `___INTERNAL_EMPTY_SELECT_PLACEHOLDER_f8d2e4c6a1b9___`;
 
 export interface CharacterFormCoreInfoSectionProps {
   characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes' | 'classSpecificChoices'>;
@@ -104,7 +93,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     DEBOUNCE_DELAY
   );
   const [localClassName, setLocalClassName] = useDebouncedFormField(
-    characterData.classes[0].className,
+    characterData.classes[0]?.className || '',
     React.useCallback((value) => onClassChange(value as DndClassId | string), [onClassChange]),
     DEBOUNCE_DELAY
   );
@@ -246,7 +235,10 @@ const CharacterFormCoreInfoSectionComponent = ({
     if (!onOpenClassSpecificChoiceInfoDialog || !translations || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !UI_STRINGS) return;
     
     let optionsForDialog: Array<{ id: string; label: string; description?: string; }> = [];
-    const blockLabel = uiBlock.label ? getLocalizedString(uiBlock.label, currentLang) : (uiBlock.labelKey && UI_STRINGS[uiBlock.labelKey]) ? UI_STRINGS[uiBlock.labelKey]! : uiBlock.key;
+    let blockLabel: string;
+    if (uiBlock.labelKey && UI_STRINGS[uiBlock.labelKey]) { blockLabel = UI_STRINGS[uiBlock.labelKey]!; }
+    else if (uiBlock.label) { blockLabel = getLocalizedString(uiBlock.label, currentLang); }
+    else { blockLabel = uiBlock.key; }
 
     if (uiBlock.optionsSource === 'domains') {
       optionsForDialog = DND_DOMAINS.map(d => ({
@@ -447,15 +439,14 @@ const CharacterFormCoreInfoSectionComponent = ({
     initialOptions.forEach(opt => {
       let isDisabled = opt.disabled || false;
       if (uiBlock.excludeSpecificValues?.includes(opt.value)) isDisabled = true;
-      if (uiBlock.excludeOptionsFromKeys) {
+      if (!isDisabled && uiBlock.excludeOptionsFromKeys) {
         const isExcludedByOtherKey = uiBlock.excludeOptionsFromKeys.some(excludedKey => {
           const valOfExcludedKey = getCurrentValue(excludedKey);
-          // An option is disabled if its value matches a value from an excluded key,
-          // AND that value is not the currently selected value for THIS block (to allow seeing the current selection even if it's "invalid" based on other choices)
-          // AND the value from the excluded key is not itself an empty/none selection.
-          return valOfExcludedKey === opt.value && opt.value !== currentBlockValue && valOfExcludedKey !== "" && valOfExcludedKey !== UI_EMPTY_SELECTION_VALUE;
+          return valOfExcludedKey === opt.value && opt.value !== "" && valOfExcludedKey !== UI_EMPTY_SELECTION_VALUE;
         });
-        if (isExcludedByOtherKey) isDisabled = true;
+        if (isExcludedByOtherKey && opt.value !== currentBlockValue) {
+          isDisabled = true;
+        }
       }
       finalSelectOptions.push({ ...opt, disabled: isDisabled });
     });
@@ -474,7 +465,9 @@ const CharacterFormCoreInfoSectionComponent = ({
       <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)} disabled={panelIsLocked} aria-label={`Info for ${blockLabel}`} >
         <Info className="h-5 w-5" />
       </Button>
-    ) : <span className="debug-label">{uiBlock.choiceType}</span>;
+    ) : (
+      <span className="debug-label">{String(onOpenClassSpecificChoiceInfoDialog ?? 'debug-prop-is-falsy')}</span>
+    );
 
     const uiValueForComponent = currentBlockValue === "" ? UI_EMPTY_SELECTION_VALUE : currentBlockValue;
     const handleChange = (val: string) => { handleClassSpecificChoiceChange(uiBlock.key, val === UI_EMPTY_SELECTION_VALUE ? "" : val, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined); };
@@ -496,7 +489,7 @@ const CharacterFormCoreInfoSectionComponent = ({
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
           <div className="flex items-center gap-2">
             <Select name={uiBlock.key} value={uiValueForComponent} onValueChange={handleChange} disabled={isDisabledByPanelOrDependency} >
-              <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`} className="h-9 text-sm flex-grow"> <SelectValue /> </SelectTrigger>
+              <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`} className="flex-grow h-9 text-sm"> <SelectValue /> </SelectTrigger>
               <SelectContent> {finalSelectOptions.map(opt => <SelectItem key={opt.value} value={opt.value} disabled={opt.disabled}>{opt.label}</SelectItem>)} </SelectContent>
             </Select>
             {commonInfoButton}
