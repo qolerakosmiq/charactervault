@@ -39,7 +39,7 @@ export function getBab(
   let totalBab = 0;
   classes.forEach(charClass => {
     if (!charClass.className) return;
-    const classDef = allClassDefinitions.find(cd => cd.id === charClass.className); // Changed value to id
+    const classDef = allClassDefinitions.find(cd => cd.id === charClass.className); 
     if (!classDef || !classDef.babProgression) { 
       totalBab += Math.floor(charClass.level * 0.5);
       return;
@@ -89,7 +89,7 @@ export function getBaseSaves(
 
   for (const charClass of classes) {
     if (!charClass.className) continue;
-    const classDef = allClassDefinitions.find(cd => cd.id === charClass.className); // Changed value to id
+    const classDef = allClassDefinitions.find(cd => cd.id === charClass.className); 
 
     if (classDef && classDef.saves) {
       baseSavesResult.fortitude += calculateClassSaveContribution(charClass.level, classDef.saves.fortitude);
@@ -137,7 +137,7 @@ export function getSizeModifierAC(
   SIZES_DATA: readonly CharacterSizeObject[]
 ): number {
   if (!sizeId) return 0;
-  const sizeObject = SIZES_DATA.find(s => s.id === sizeId); // Changed value to id
+  const sizeObject = SIZES_DATA.find(s => s.id === sizeId); 
   return sizeObject ? sizeObject.acModifier : 0;
 }
 
@@ -146,7 +146,7 @@ export function getSizeModifierAttack(
   SIZES_DATA: readonly CharacterSizeObject[]
 ): number {
   if (!sizeId) return 0;
-  const sizeObject = SIZES_DATA.find(s => s.id === sizeId); // Changed value to id
+  const sizeObject = SIZES_DATA.find(s => s.id === sizeId); 
   return sizeObject ? sizeObject.acModifier : 0;
 }
 
@@ -156,9 +156,9 @@ export function getSizeModifierGrapple(
   SIZES_DATA: readonly CharacterSizeObject[]
 ): number {
   if (!sizeId) return 0;
-  const sizeObject = SIZES_DATA.find(s => s.id === sizeId); // Changed value to id
+  const sizeObject = SIZES_DATA.find(s => s.id === sizeId); 
   if (!sizeObject) return 0;
-  switch (sizeObject.id) { // Changed value to id
+  switch (sizeObject.id) { 
     case 'fine': return -16;
     case 'diminutive': return -12;
     case 'tiny': return -8;
@@ -177,10 +177,10 @@ export function getUnarmedGrappleDamage(
   SIZES_DATA: readonly CharacterSizeObject[]
 ): string {
   if (!sizeId) {
-    const mediumSize = SIZES_DATA.find(s => s.id === 'medium'); // Changed value to id
+    const mediumSize = SIZES_DATA.find(s => s.id === 'medium'); 
     return mediumSize?.grappleDamage || '1d3';
   }
-  const sizeObject = SIZES_DATA.find(s => s.id === sizeId); // Changed value to id
+  const sizeObject = SIZES_DATA.find(s => s.id === sizeId); 
   return sizeObject?.grappleDamage || '0';
 }
 
@@ -223,22 +223,14 @@ export function calculateLevelFromXp(xp: number, xpTable: readonly XpDataEntry[]
 
 interface ParseAndRollResult {
   result: number;
-  debugLogs: string[];
 }
 
 export function parseAndRollDice(diceString: string): ParseAndRollResult {
-  const debugLogs: string[] = [];
-  debugLogs.push(`parseAndRollDice received: "${diceString}" (type: ${typeof diceString})`);
-
   if (!diceString || typeof diceString !== 'string') {
-    debugLogs.push("Input is not a valid string. Returning 0.");
-    return { result: 0, debugLogs };
+    return { result: 0 };
   }
 
   const cleanedString = diceString.trim();
-  debugLogs.push(`Cleaned string: "${cleanedString}"`);
-
-  // Regex to find a static modifier at the end (+X or -Y)
   const modifierRegex = /([+-])\s*(\d+)$/;
   let staticModifier = 0;
   let dicePart = cleanedString;
@@ -248,50 +240,26 @@ export function parseAndRollDice(diceString: string): ParseAndRollResult {
     const sign = modifierMatch[1];
     const value = parseInt(modifierMatch[2], 10);
     staticModifier = (sign === '+') ? value : -value;
-    dicePart = cleanedString.substring(0, modifierMatch.index).trim(); // Remove modifier part
-    debugLogs.push(`Modifier found: ${sign}${value} -> staticModifier: ${staticModifier}`);
-    debugLogs.push(`Remaining dicePart: "${dicePart}"`);
-  } else {
-    debugLogs.push("No static modifier found at the end.");
+    dicePart = cleanedString.substring(0, modifierMatch.index).trim();
   }
 
-  // Regex to parse the XdY dice notation
-  const diceNotationRegex = /^(\d*)d(\d+)$/i; // Case insensitive for 'd'
+  const diceNotationRegex = /^(\d*)d(\d+)$/i;
   const diceMatch = dicePart.match(diceNotationRegex);
-
   let totalRoll = 0;
 
   if (diceMatch) {
     const numDice = diceMatch[1] ? parseInt(diceMatch[1], 10) : 1;
     const numSides = parseInt(diceMatch[2], 10);
-    debugLogs.push(`Dice notation parsed: numDice=${numDice}, numSides=${numSides}`);
-
     if (numDice > 0 && numSides > 0) {
       for (let i = 0; i < numDice; i++) {
-        const roll = Math.floor(Math.random() * numSides) + 1;
-        debugLogs.push(`Roll ${i + 1}/${numDice} (d${numSides}): ${roll}`);
-        totalRoll += roll;
+        totalRoll += Math.floor(Math.random() * numSides) + 1;
       }
-      debugLogs.push(`Total from dice: ${totalRoll}`);
-    } else {
-      debugLogs.push("Invalid dice numbers or sides. Dice roll part is 0.");
     }
   } else if (dicePart && !isNaN(Number(dicePart))) {
-    // If no "d" is found, try to parse the dicePart as a plain number (e.g. "3")
     totalRoll = parseInt(dicePart, 10);
-    debugLogs.push(`No dice notation ('d') found. Parsed "${dicePart}" as static value: ${totalRoll}`);
-  } else if (dicePart) {
-    debugLogs.push(`Could not parse dicePart "${dicePart}" as dice or number. Dice roll part is 0.`);
-  } else if (!dicePart && modifierMatch) {
-    // Only a modifier was present, e.g. "+2"
-    debugLogs.push("Only a static modifier was present, no dice part.");
-    totalRoll = 0; // Dice part is 0
-  } else {
-     debugLogs.push(`Could not parse input "${cleanedString}" as dice or number. Returning 0 for dice part.`);
   }
 
   const finalResult = totalRoll + staticModifier;
-  debugLogs.push(`Final Result: totalRoll=${totalRoll} + staticModifier=${staticModifier} = ${finalResult}`);
-  return { result: finalResult, debugLogs };
+  return { result: finalResult };
 }
 
