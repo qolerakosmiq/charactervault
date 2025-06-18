@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -26,7 +27,7 @@ import { getLocalizedString, type ProcessedSiteData } from '@/i18n/i18n-data';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScrollText, Info, Heart, Activity, ListChecks, Loader2 } from 'lucide-react'; // Added Heart, Activity, ListChecks
+import { ScrollText, Info, Heart, Activity, ListChecks, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -40,7 +41,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 
 const DEBOUNCE_DELAY = 400;
-const UI_EMPTY_SELECTION_VALUE = `___INTERNAL_EMPTY_SELECT_PLACEHOLDER_f8d2e4c6a1b9___`; // More unique placeholder
+const UI_EMPTY_SELECTION_VALUE = `___INTERNAL_EMPTY_SELECT_PLACEHOLDER_f8d2e4c6a1b9___`; 
 
 export interface CharacterFormCoreInfoSectionProps {
   characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes' | 'classSpecificChoices'>;
@@ -56,7 +57,7 @@ export interface CharacterFormCoreInfoSectionProps {
   onOpenClassInfoDialog: () => void;
   onOpenAlignmentInfoDialog: () => void;
   onOpenDeityInfoDialog: () => void;
-  onOpenClassSpecificChoiceInfoDialog: (contentType: InfoDialogContentType) => void;
+  onOpenClassSpecificChoiceInfoDialog: (contentType: InfoDialogContentType) => void; // Made non-optional
   aggregatedFeatEffects?: AggregatedFeatEffects | null;
 }
 
@@ -550,15 +551,15 @@ const CharacterFormCoreInfoSectionComponent = ({
     handleClassSpecificChoiceChange, 
     onOpenClassSpecificChoiceInfoDialog, 
     getCurrentValue,
-    handleOpenClassSpecificChoiceInfoDialogInternal // Added this new callback to dependency array
+    handleOpenClassSpecificChoiceInfoDialogInternal
   ]);
 
 
   if (translationsLoading || !translations || !UI_STRINGS || !DND_RACES || !DND_CLASSES || !ALIGNMENTS || !DND_DEITIES || !SIZES || !GENDERS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS) {
     return (
       <LockablePanelWrapper
-        title={translations?.UI_STRINGS.coreAttributesTitle}
-        description={translations?.UI_STRINGS.coreAttributesDescription}
+        title={translations?.UI_STRINGS.coreAttributesTitle || "Core Attributes"}
+        description={translations?.UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer."}
         icon={ScrollText}
         cardContentClassName="space-y-6 pt-6"
         initialLockedState={false}
@@ -566,7 +567,7 @@ const CharacterFormCoreInfoSectionComponent = ({
         {() => (
           <div className="flex justify-center items-center py-10">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingText}</p>
+            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingText || "Loading..."}</p>
           </div>
         )}
       </LockablePanelWrapper>
@@ -731,3 +732,6 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
+
+    
+    
