@@ -1,0 +1,66 @@
+
+{
+  "commonDataFileConfigs": [
+    { "path": "common/alignments", "key": "ALIGNMENTS_DATA", "bundleKey": "alignments", "isArrayDataFile": true },
+    { "path": "common/base", "bundleKey": "base", "isArrayDataFile": false },
+    { "path": "common/deities", "key": "DND_DEITIES_DATA", "bundleKey": "deities", "isArrayDataFile": true },
+    { "path": "common/domains", "key": "DND_DOMAINS_DATA", "bundleKey": "domains", "isArrayDataFile": true },
+    { "path": "common/languages", "key": "LANGUAGES_DATA", "bundleKey": "languages", "isArrayDataFile": true },
+    { "path": "common/magic-schools", "key": "DND_MAGIC_SCHOOLS_DATA", "bundleKey": "magicSchools", "isArrayDataFile": true },
+    { "path": "common/races", "key": "DND_RACES_DATA", "bundleKey": "races", "isArrayDataFile": true },
+    { "path": "common/skills", "bundleKey": "skills", "isArrayDataFile": false },
+    { "path": "common/xp", "bundleKey": "xpTable", "isArrayDataFile": false },
+    { "path": "feats/common-feats", "bundleKey": "commonFeats", "isArrayDataFile": false },
+    { "path": "common/gear-slots", "key": "GEAR_SLOTS_DATA", "bundleKey": "gearSlots", "isArrayDataFile": true }
+  ],
+  "classFileNames": [
+    "barbarian", "bard", "cleric", "druid", "fighter", "monk",
+    "paladin", "ranger", "rogue", "sorcerer", "soulknife", "wizard"
+  ],
+  "itemDataFileConfigs": [
+    { "path": "items/weapons", "key": "ITEM_DEFINITIONS_WEAPONS_DATA", "bundleKey": "item_definitions_weapons", "isArrayDataFile": true },
+    { "path": "items/armor", "key": "ITEM_DEFINITIONS_ARMOR_DATA", "bundleKey": "item_definitions_armor", "isArrayDataFile": true },
+    { "path": "items/shields", "key": "ITEM_DEFINITIONS_SHIELDS_DATA", "bundleKey": "item_definitions_shields", "isArrayDataFile": true },
+    { "path": "items/magic-items", "key": "ITEM_DEFINITIONS_MAGIC_ITEMS_DATA", "bundleKey": "item_definitions_magic_items", "isArrayDataFile": true }
+  ],
+  "uiStringFiles": [
+    "ui/ability-roller-dialog",
+    "ui/ability-scores-section",
+    "ui/character-card",
+    "ui/character-sheet-page",
+    "ui/character-sheet-tabs",
+    "ui/combat-stats-section",
+    "ui/common",
+    "ui/core-info-section",
+    "ui/custom-definition-dialogs",
+    "ui/dashboard",
+    "ui/dialogs",
+    "ui/dm-settings",
+    "ui/feat-selection-dialog",
+    "ui/feat-skill-suggester-dialog",
+    "ui/forms",
+    "ui/form-ability-scores",
+    "ui/form-armor-class",
+    "ui/form-combat",
+    "ui/form-conditions",
+    "ui/form-core-info",
+    "ui/form-experience",
+    "ui/form-feats",
+    "ui/form-health",
+    "ui/form-languages",
+    "ui/form-resistances",
+    "ui/form-saving-throws",
+    "ui/form-skills",
+    "ui/form-speed",
+    "ui/form-story-portrait",
+    "ui/general",
+    "ui/info-display-dialog",
+    "ui/inventory-listing",
+    "ui/new-character-page",
+    "ui/point-buy-dialog",
+    "ui/roll-dialog",
+    "ui/specialization-input-dialog",
+    "ui/spells-listing"
+  ]
+}
+    

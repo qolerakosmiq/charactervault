@@ -1,10 +1,7 @@
 
-import type { LocaleDataBundle, RawClassDataEntry, RawUiStringsData, LocalizedString, GearSlotsJson, ItemsWeaponsJson, ItemsArmorJson, ItemsShieldsJson, ItemsMagicItemsJson } from './i18n-data';
+import type { LocaleDataBundle, RawClassDataEntry, RawUiStringsData, LocalizedString } from './i18n-data';
 import type { LanguageCode } from './config';
-
-// Helper for dynamic imports, assuming files are in 'src/data/'
-// In a real Node.js/Next.js build environment, you might use 'fs' to list files.
-// For this prototype, we'll simulate by listing expected files.
+import loaderManifest from '@/data/loader.json';
 
 async function loadJson(path: string, isArrayDataFile: boolean = false, expectedKey?: string) {
   try {
@@ -13,81 +10,23 @@ async function loadJson(path: string, isArrayDataFile: boolean = false, expected
   } catch (e) {
     console.warn(`Could not load ${path}.json, returning fallback.`);
     if (isArrayDataFile && expectedKey) {
-        return { [expectedKey]: [] }; 
+        return { [expectedKey]: [] };
     }
-    return {}; 
+    return {};
   }
 }
 
-const commonDataFileConfigs = [
-  { path: 'common/alignments', key: 'ALIGNMENTS_DATA', isArray: true },
-  { path: 'common/base', isArray: false },
-  { path: 'common/deities', key: 'DND_DEITIES_DATA', isArray: true },
-  { path: 'common/domains', key: 'DND_DOMAINS_DATA', isArray: true },
-  { path: 'common/languages', key: 'LANGUAGES_DATA', isArray: true },
-  { path: 'common/magic-schools', key: 'DND_MAGIC_SCHOOLS_DATA', isArray: true },
-  { path: 'common/races', key: 'DND_RACES_DATA', isArray: true },
-  { path: 'common/skills', isArray: false },
-  { path: 'common/xp', isArray: false },
-  { path: 'feats/common-feats', isArray: false },
-  { path: 'common/gear-slots', key: 'GEAR_SLOTS_DATA', isArray: true }
-];
-
-
-const classFileNames = [
-  'barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk',
-  'paladin', 'ranger', 'rogue', 'sorcerer', 'soulknife', 'wizard'
-];
-
-const itemFileConfigs = [
-  { path: 'items/weapons', key: 'ITEM_DEFINITIONS_WEAPONS_DATA', bundleKey: 'item_definitions_weapons', isArray: true },
-  { path: 'items/armor', key: 'ITEM_DEFINITIONS_ARMOR_DATA', bundleKey: 'item_definitions_armor', isArray: true },
-  { path: 'items/shields', key: 'ITEM_DEFINITIONS_SHIELDS_DATA', bundleKey: 'item_definitions_shields', isArray: true },
-  { path: 'items/magic-items', key: 'ITEM_DEFINITIONS_MAGIC_ITEMS_DATA', bundleKey: 'item_definitions_magic_items', isArray: true },
-];
-
-const uiStringFiles = [
-  'ui/common',
-  'ui/dashboard',
-  'ui/character-card',
-  'ui/dm-settings',
-  'ui/character-sheet-page',
-  'ui/character-sheet-tabs',
-  'ui/core-info-section',
-  'ui/ability-scores-section',
-  'ui/combat-stats-section',
-  'ui/inventory-listing',
-  'ui/spells-listing',
-  'ui/form-core-info',
-  'ui/form-ability-scores',
-  'ui/form-story-portrait',
-  'ui/form-skills',
-  'ui/form-feats',
-  'ui/form-saving-throws',
-  'ui/form-armor-class',
-  'ui/form-health',
-  'ui/form-speed',
-  'ui/form-combat',
-  'ui/form-resistances',
-  'ui/form-languages',
-  'ui/form-conditions',
-  'ui/form-experience',
-  'ui/ability-roller-dialog',
-  'ui/point-buy-dialog',
-  'ui/feat-selection-dialog',
-  'ui/specialization-input-dialog',
-  'ui/feat-skill-suggester-dialog',
-  'ui/custom-definition-dialogs',
-  'ui/info-display-dialog',
-  'ui/roll-dialog'
-];
-
-
 export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBundle> {
-  const commonDataPromises = commonDataFileConfigs.map(config => loadJson(config.path, config.isArray, config.key));
+  const { commonDataFileConfigs, classFileNames, itemDataFileConfigs, uiStringFiles } = loaderManifest;
+
+  const commonDataPromises = commonDataFileConfigs.map(config =>
+    loadJson(config.path, config.isArrayDataFile, config.key)
+  );
   const classPromises = classFileNames.map(className => loadJson(`classes/${className}`));
-  const itemDataPromises = itemFileConfigs.map(config => loadJson(config.path, config.isArray, config.key));
-  const uiStringPromises = uiStringFiles.map(fileKey => loadJson(fileKey));
+  const itemDataPromises = itemDataFileConfigs.map(config =>
+    loadJson(config.path, config.isArrayDataFile, config.key)
+  );
+  const uiStringPromises = uiStringFiles.map(filePath => loadJson(filePath)); // filePath is already "ui/filename"
 
   const [
     commonDataResults,
@@ -100,25 +39,16 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
     Promise.all(itemDataPromises),
     Promise.all(uiStringPromises)
   ]);
-  
+
   const bundle: Partial<LocaleDataBundle> = {};
 
-  bundle.alignments = commonDataResults[0] as LocaleDataBundle['alignments'];
-  bundle.base = commonDataResults[1] as LocaleDataBundle['base'];
-  bundle.deities = commonDataResults[2] as LocaleDataBundle['deities'];
-  bundle.domains = commonDataResults[3] as LocaleDataBundle['domains'];
-  bundle.languages = commonDataResults[4] as LocaleDataBundle['languages'];
-  bundle.magicSchools = commonDataResults[5] as LocaleDataBundle['magicSchools'];
-  bundle.races = commonDataResults[6] as LocaleDataBundle['races'];
-  bundle.skills = commonDataResults[7] as LocaleDataBundle['skills'];
-  bundle.xpTable = commonDataResults[8] as LocaleDataBundle['xpTable'];
-  bundle.commonFeats = commonDataResults[9] as LocaleDataBundle['commonFeats'];
-  bundle.gearSlots = commonDataResults[10] as LocaleDataBundle['gearSlots'];
+  commonDataFileConfigs.forEach((config, index) => {
+    (bundle as any)[config.bundleKey] = commonDataResults[index];
+  });
 
+  bundle.allClasses = classDataResults.filter(c => c && typeof c === 'object' && (c as any).id) as RawClassDataEntry[];
 
-  bundle.allClasses = classDataResults.filter(c => c && typeof c === 'object' && c.id) as RawClassDataEntry[];
-
-  itemFileConfigs.forEach((config, index) => {
+  itemDataFileConfigs.forEach((config, index) => {
     (bundle as any)[config.bundleKey] = itemDataResults[index] as any;
   });
 
@@ -132,9 +62,9 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
     }
     return acc;
   }, {});
-
   bundle.uiStrings = mergedUiStrings;
 
+  // Ensure all expected keys exist on the bundle, even if files were missing
   const finalBundle: LocaleDataBundle = {
     alignments: bundle.alignments || { ALIGNMENTS_DATA: [] },
     base: bundle.base || {
@@ -164,5 +94,4 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
 
   return finalBundle;
 }
-
     
