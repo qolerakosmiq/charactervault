@@ -43,6 +43,8 @@
   "rollDialogDamageMultiplierLabel": { "en": "Damage", "fr": "Dégâts" },
   "rollDialogCriticalHitAppliedLabel": { "en": "CRITICAL HIT APPLIED!", "fr": "COUP CRITIQUE APPLIQUÉ !" },
   "rollDialogWeaponDamageDiceLabel": { "en": "Weapon Dice Rolled:", "fr": "Dés d'Arme Lancés :" },
+  "rollDialogBaseDamagePlusModLabel": { "en": "Dice + Modifiers:", "fr": "Dés + Modificateurs :" },
+  "rollDialogCritMultiplierAppliedLabel": { "en": "Critical Multiplier Applied:", "fr": "Multiplicateur Critique Appliqué :" },
   "rollDialogExtraDamageDiceLabel": { "en": "Extra Dice Rolled:", "fr": "Dés Supplémentaires Lancés :" },
   "infoDialogAbilityBreakdownAriaLabel": { "en": "Detailed breakdown for {abilityName}", "fr": "Détail du calcul pour {abilityName}" },
   "rollDialogAbilityModifierLabel": { "en": "Ability Modifier ({abilityAbbr})", "fr": "Modificateur de Caractéristique ({abilityAbbr})" },
@@ -64,3 +66,4 @@
   "infoDialogTitleRangedAttackBreakdown": { "en": "Ranged Attack Breakdown", "fr": "Détail de l'Attaque à Distance" },
   "infoDialogTitleRangedDamageBreakdown": { "en": "Ranged Damage Breakdown", "fr": "Détail des Dégâts à Distance" }
 }
+

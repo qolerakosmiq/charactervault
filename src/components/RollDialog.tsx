@@ -51,12 +51,17 @@ export function RollDialog({
   const { translations, isLoading: translationsLoading } = useI18n();
   const [initialD20Roll, setInitialD20Roll] = React.useState<number | null>(null);
   const [bonusRolls, setBonusRolls] = React.useState<number[]>([]);
-  const [totalDiceValue, setTotalDiceValue] = React.useState<number | null>(null);
+  const [totalDiceValue, setTotalDiceValue] = React.useState<number | null>(null); // For damage, this will be weapon dice + extra dice
   const [finalResult, setFinalResult] = React.useState<number | null>(null);
   const [isRolling, setIsRolling] = React.useState(false);
   const [isCritical, setIsCritical] = React.useState(false);
+  
+  // For displaying damage roll steps
   const [rolledWeaponDiceDetails, setRolledWeaponDiceDetails] = React.useState<string | null>(null);
+  const [baseDamagePlusModDetails, setBaseDamagePlusModDetails] = React.useState<string | null>(null);
+  const [critMultiplierAppliedDetails, setCritMultiplierAppliedDetails] = React.useState<string | null>(null);
   const [rolledExtraDiceDetails, setRolledExtraDiceDetails] = React.useState<string | null>(null);
+
 
   const isDamageRoll = rollType.toLowerCase().includes('damage');
   const isAttackRoll = rollType.toLowerCase().includes('attack');
@@ -77,6 +82,8 @@ export function RollDialog({
       setFinalResult(null);
       setIsCritical(false);
       setRolledWeaponDiceDetails(null);
+      setBaseDamagePlusModDetails(null);
+      setCritMultiplierAppliedDetails(null);
       setRolledExtraDiceDetails(null);
     }
   }, [isOpen]);
@@ -85,51 +92,50 @@ export function RollDialog({
   const handleRollOrConfirm = () => {
     setIsRolling(true);
     setRolledWeaponDiceDetails(null);
+    setBaseDamagePlusModDetails(null);
+    setCritMultiplierAppliedDetails(null);
     setRolledExtraDiceDetails(null);
     
     if (isDamageRoll && translations) {
-      let multipliedWeaponDiceRollResult = 0;
-      const weaponDiceRolls: number[] = [];
-      let weaponDiceIndividualRolls: string[] = [];
+      const { result: weaponDiceRollResult } = parseAndRollDice(weaponDamageDiceString);
+      setRolledWeaponDiceDetails(`${weaponDamageDiceString} (${weaponDiceRollResult})`);
 
-      if (weaponDamageDiceString && weaponDamageDiceString.trim() !== "" && weaponDamageDiceString !== "0" && weaponDamageDiceString.includes('d')) {
-        const numCritRolls = isCritical && weaponCriticalMultiplier > 1 ? weaponCriticalMultiplier : 1;
-        for (let i = 0; i < numCritRolls; i++) {
-          const { result: roll } = parseAndRollDice(weaponDamageDiceString);
-          weaponDiceRolls.push(roll);
-          weaponDiceIndividualRolls.push(String(roll));
-          multipliedWeaponDiceRollResult += roll;
-        }
-        if (weaponDiceRolls.length > 0) {
-          setRolledWeaponDiceDetails(`${numCritRolls > 1 ? `${numCritRolls}x ` : ''}${weaponDamageDiceString} (${weaponDiceIndividualRolls.join(', ')}) = ${multipliedWeaponDiceRollResult}`);
-        }
+      const damageWithBaseMod = weaponDiceRollResult + baseModifier;
+      setBaseDamagePlusModDetails(`(${weaponDiceRollResult} + ${baseModifier}) = ${damageWithBaseMod}`);
+
+      let critAppliedDamage = damageWithBaseMod;
+      if (isCritical && weaponCriticalMultiplier > 1) {
+        critAppliedDamage = damageWithBaseMod * weaponCriticalMultiplier;
+        setCritMultiplierAppliedDetails(`${damageWithBaseMod} x${weaponCriticalMultiplier} = ${critAppliedDamage}`);
+      } else {
+        setCritMultiplierAppliedDetails(null); // Clear if not critical
       }
-
-      let extraDiceRollResult = 0;
-      const extraDiceRollsBreakdown: string[] = [];
+      
+      let extraDiceRollTotal = 0;
+      const extraDiceBreakdownParts: string[] = [];
       if (extraDamageDice && extraDamageDice.length > 0) {
         extraDamageDice.forEach((diceStr) => {
           if (diceStr && diceStr.trim() !== "" && diceStr !== "0") {
             const { result: roll } = parseAndRollDice(diceStr);
-            extraDiceRollResult += roll;
-            extraDiceRollsBreakdown.push(`${diceStr} (${roll})`);
+            extraDiceRollTotal += roll;
+            extraDiceBreakdownParts.push(`${diceStr} (${roll})`);
           }
         });
-        if (extraDiceRollsBreakdown.length > 0) {
-          setRolledExtraDiceDetails(`${extraDiceRollsBreakdown.join(' + ')} = ${extraDiceRollResult}`);
+        if (extraDiceBreakdownParts.length > 0) {
+          setRolledExtraDiceDetails(`${extraDiceBreakdownParts.join(' + ')} = ${extraDiceRollTotal}`);
         }
       }
       
-      const currentTotalDiceRolled = multipliedWeaponDiceRollResult + extraDiceRollResult;
-      const totalDamage = currentTotalDiceRolled + baseModifier;
+      const totalFinalDamage = critAppliedDamage + extraDiceRollTotal;
 
-      setInitialD20Roll(null); 
-      setBonusRolls([]);      
-      setTotalDiceValue(currentTotalDiceRolled);
-      setFinalResult(totalDamage);
-      onRoll(currentTotalDiceRolled, baseModifier, totalDamage, weaponDamageDiceString);
+      setInitialD20Roll(null); // Not used for damage
+      setBonusRolls([]);      // Not used for damage
+      setTotalDiceValue(weaponDiceRollResult + extraDiceRollTotal); // Sum of raw dice
+      setFinalResult(totalFinalDamage);
+      onRoll(weaponDiceRollResult + extraDiceRollTotal, baseModifier, totalFinalDamage, weaponDamageDiceString);
 
     } else { 
+      // Non-damage roll (Attack, Check, Save)
       const { result: firstRollResult } = parseAndRollDice("1d20");
       const firstRoll = firstRollResult;
       setInitialD20Roll(firstRoll);
@@ -140,8 +146,8 @@ export function RollDialog({
 
       if (isRelevantCheckRoll && rerollTwentiesForChecks && firstRoll === 20) {
         let latestBonusRoll = 20;
-        let safetyBreak = 0;
-        while (latestBonusRoll === 20 && safetyBreak < 10) {
+        let safetyBreak = 0; // Prevent infinite loop
+        while (latestBonusRoll === 20 && safetyBreak < 10) { // Limit to 10 rerolls
           const {result: bonusRollVal } = parseAndRollDice("1d20");
           latestBonusRoll = bonusRollVal;
           currentBonusRolls.push(latestBonusRoll);
@@ -217,8 +223,12 @@ export function RollDialog({
               <div>
                 {calculationBreakdown.map((item, index) => {
                   if (item.label === (UI_STRINGS.infoDialogTotalLabel || "Total") && item.isBold) {
-                    return null;
+                    return null; // Hide the "Total" from breakdown as we show it below
                   }
+                  if (isDamageRoll && item.label === (UI_STRINGS.infoDialogTotalNumericBonusLabel || "Total Numeric Bonus") && item.isBold) {
+                    return null; // Hide this too for damage rolls, as baseModifier is used in steps
+                  }
+
 
                   let labelText = typeof item.label === 'string' ? item.label : (UI_STRINGS.rollDialogGenericBreakdownLabel || "Component");
                   let abilityAbbr: string | undefined;
@@ -232,10 +242,11 @@ export function RollDialog({
                             abilityAbbr = potentialAbbr;
                         }
                     } else if (item.label === (UI_STRINGS.rollDialogAbilityModifierLabel || "Ability Modifier ({abilityAbbr})")) {
+                        // Attempt to find the ability from various sources for context
                         const matchFromTitle = dialogTitle.match(/\(([^)]+)\)/);
                         const matchFromRollTypeAbility = rollType.match(/ability_check_(\w+)/);
                         const matchFromRollTypeSave = rollType.match(/saving_throw_(\w+)/);
-                        const matchFromRollTypeSkill = rollType.match(/skill_check_([a-zA-Z-]+)_(\w+)/);
+                        const matchFromRollTypeSkill = rollType.match(/skill_check_([a-zA-Z-]+)_(\w+)/); // More specific skill ID match
 
                         let abilityKey: string | undefined;
 
@@ -245,7 +256,7 @@ export function RollDialog({
                             abilityKey = SAVING_THROW_ABILITIES[saveType];
                         } else if (matchFromRollTypeSkill && translations.SKILL_DEFINITIONS) {
                             const skillIdParts = rollType.split('_');
-                            const skillId = skillIdParts.length > 2 ? skillIdParts.slice(2).join('_') : skillIdParts[1];
+                            const skillId = skillIdParts.length > 2 ? skillIdParts.slice(2).join('_') : skillIdParts[1]; // Reconstruct skill ID like 'knowledge-arcana'
                             const skillDef = translations.SKILL_DEFINITIONS.find(sd => sd.id === skillId);
                             if (skillDef) abilityKey = skillDef.keyAbility as string;
                         } else if (matchFromTitle && translations.ABILITY_LABELS) {
@@ -307,7 +318,7 @@ export function RollDialog({
             </div>
           )}
 
-          {totalDiceValue !== null && finalResult !== null && (
+          {finalResult !== null && (
             <div className={resultCardBackground}>
               {isDamageRoll ? (
                 <>
@@ -322,16 +333,24 @@ export function RollDialog({
                         <span className="font-bold text-primary">{rolledWeaponDiceDetails}</span>
                     </div>
                   )}
+                  {baseDamagePlusModDetails && (
+                     <div className="flex justify-between items-center text-sm">
+                        <span className="text-foreground">{UI_STRINGS.rollDialogBaseDamagePlusModLabel || "Dice + Modifiers:"}</span>
+                        <span className="font-bold text-primary">{baseDamagePlusModDetails}</span>
+                    </div>
+                  )}
+                  {critMultiplierAppliedDetails && (
+                     <div className="flex justify-between items-center text-sm">
+                        <span className="text-foreground">{UI_STRINGS.rollDialogCritMultiplierAppliedLabel || "Critical Multiplier:"}</span>
+                        <span className="font-bold text-primary">{critMultiplierAppliedDetails}</span>
+                    </div>
+                  )}
                    {rolledExtraDiceDetails && (
                     <div className="flex justify-between items-center text-sm">
                         <span className="text-foreground">{UI_STRINGS.rollDialogExtraDamageDiceLabel || "Extra Dice Rolled:"}</span>
                         <span className="font-bold text-primary">{rolledExtraDiceDetails}</span>
                     </div>
                   )}
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-foreground">{UI_STRINGS.rollDialogDamageOtherBonusesLabel || "Other Bonuses:"}</span>
-                    <span className="font-bold text-primary">{renderModifierValue(baseModifier)}</span>
-                  </div>
                   <Separator className="my-1 bg-border/50"/>
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalDamageStringLabel || "Total Damage:"}</span>
@@ -387,4 +406,3 @@ export function RollDialog({
     </Dialog>
   );
 }
-
