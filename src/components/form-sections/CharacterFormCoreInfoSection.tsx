@@ -136,8 +136,9 @@ const CharacterFormCoreInfoSectionComponent = ({
   
   const { UI_STRINGS, ALIGNMENTS, DND_RACES, DND_CLASSES, DND_DEITIES, SIZES, GENDERS, DND_DOMAINS, DND_MAGIC_SCHOOLS, PREFERRED_DEFAULT_ALIGNMENT_IDS } = translations || {};
 
-  const selectedRaceInfo = React.useMemo(() => DND_RACES?.find(r => r.id === localRace), [DND_RACES, localRace]);
   const selectedClassInfo = React.useMemo(() => DND_CLASSES?.find(c => c.id === localClassName), [DND_CLASSES, localClassName]);
+  const selectedRaceInfo = React.useMemo(() => DND_RACES?.find(r => r.id === localRace), [DND_RACES, localRace]);
+
 
   const availableAlignments = React.useMemo(() => {
     if (!ALIGNMENTS || !selectedClassInfo) return [];
@@ -185,6 +186,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     }
     return uniqueOptions;
   }, [GENDERS, selectedRaceInfo, UI_STRINGS]);
+
 
   const getCurrentValue = React.useCallback((key: string, index?: number): string => {
       const choice = (characterData.classSpecificChoices || []).find(
@@ -240,7 +242,7 @@ const CharacterFormCoreInfoSectionComponent = ({
   }, [characterData.classSpecificChoices, onFieldChange, selectedClassInfo?.uiSections]);
 
 
-  const handleOpenChoiceInfoDialog = React.useCallback((uiBlock: ClassSpecificUIBlock) => {
+  const handleOpenClassSpecificChoiceInfoDialogInternal = React.useCallback((uiBlock: ClassSpecificUIBlock) => {
     if (!onOpenClassSpecificChoiceInfoDialog || !translations || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !UI_STRINGS) return;
     
     let optionsForDialog: Array<{ id: string; label: string; description?: string; }> = [];
@@ -413,20 +415,23 @@ const CharacterFormCoreInfoSectionComponent = ({
     }
 
     let blockLabel: string;
-    if (uiBlock.label) { blockLabel = getLocalizedString(uiBlock.label, currentLang, DEFAULT_LANGUAGE, `${uiBlock.key}.label`); }
-    else if (uiBlock.labelKey && UI_STRINGS[uiBlock.labelKey]) { blockLabel = UI_STRINGS[uiBlock.labelKey]!; }
+    if (uiBlock.labelKey && UI_STRINGS[uiBlock.labelKey]) { blockLabel = UI_STRINGS[uiBlock.labelKey]!; }
+    else if (uiBlock.label) { blockLabel = getLocalizedString(uiBlock.label, currentLang); }
     else { blockLabel = uiBlock.key; }
-
+    
     let blockDescription: string | undefined;
-    if (uiBlock.description) { blockDescription = getLocalizedString(uiBlock.description, currentLang, DEFAULT_LANGUAGE, `${uiBlock.key}.description`); }
-    else if (uiBlock.descriptionKey && UI_STRINGS[uiBlock.descriptionKey]) { blockDescription = UI_STRINGS[uiBlock.descriptionKey]!; }
+    if (uiBlock.descriptionKey && UI_STRINGS[uiBlock.descriptionKey]) { blockDescription = UI_STRINGS[uiBlock.descriptionKey]!; }
+    else if (uiBlock.description) { blockDescription = getLocalizedString(uiBlock.description, currentLang); }
     
     let blockNote: string | undefined;
-    if (uiBlock.note) { blockNote = getLocalizedString(uiBlock.note, currentLang, DEFAULT_LANGUAGE, `${uiBlock.key}.note`); }
+    if (uiBlock.note) { blockNote = getLocalizedString(uiBlock.note, currentLang); }
     
     let inputPlaceholderText: string | undefined;
-    if (uiBlock.inputPlaceholder) { inputPlaceholderText = getLocalizedString(uiBlock.inputPlaceholder, currentLang, DEFAULT_LANGUAGE, `${uiBlock.key}.inputPlaceholder`); }
-    else if (uiBlock.inputPlaceholderKey && UI_STRINGS[uiBlock.inputPlaceholderKey]) { inputPlaceholderText = UI_STRINGS[uiBlock.inputPlaceholderKey]!; }
+    if (uiBlock.inputPlaceholderKey && UI_STRINGS[uiBlock.inputPlaceholderKey]) { inputPlaceholderText = UI_STRINGS[uiBlock.inputPlaceholderKey]!; }
+    else if (uiBlock.inputPlaceholder) { inputPlaceholderText = getLocalizedString(uiBlock.inputPlaceholder, currentLang); }
+
+
+    const currentBlockValue = getCurrentValue(uiBlock.key, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined);
 
     let initialOptions: ComboboxOption[] = [];
     if (uiBlock.optionsSource === 'domains') initialOptions = DND_DOMAINS.map(d => ({ value: d.id, label: getLocalizedString(d.label, currentLang) }));
@@ -439,15 +444,16 @@ const CharacterFormCoreInfoSectionComponent = ({
       finalSelectOptions.push({ value: UI_EMPTY_SELECTION_VALUE, label: UI_STRINGS[uiBlock.emptySelectionLabelKey]!, disabled: false });
     }
     
-    const currentBlockValueForRender = getCurrentValue(uiBlock.key, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined);
-
     initialOptions.forEach(opt => {
       let isDisabled = opt.disabled || false;
       if (uiBlock.excludeSpecificValues?.includes(opt.value)) isDisabled = true;
       if (uiBlock.excludeOptionsFromKeys) {
         const isExcludedByOtherKey = uiBlock.excludeOptionsFromKeys.some(excludedKey => {
           const valOfExcludedKey = getCurrentValue(excludedKey);
-          return valOfExcludedKey === opt.value && opt.value !== currentBlockValueForRender && valOfExcludedKey !== "";
+          // An option is disabled if its value matches a value from an excluded key,
+          // AND that value is not the currently selected value for THIS block (to allow seeing the current selection even if it's "invalid" based on other choices)
+          // AND the value from the excluded key is not itself an empty/none selection.
+          return valOfExcludedKey === opt.value && opt.value !== currentBlockValue && valOfExcludedKey !== "" && valOfExcludedKey !== UI_EMPTY_SELECTION_VALUE;
         });
         if (isExcludedByOtherKey) isDisabled = true;
       }
@@ -463,6 +469,16 @@ const CharacterFormCoreInfoSectionComponent = ({
         const controllingChoiceValue = getCurrentValue(uiBlock.disabledIfChoiceValue.featureKey);
         if (uiBlock.disabledIfChoiceValue.values.includes(controllingChoiceValue)) isDisabledByPanelOrDependency = true;
     }
+    
+    const commonInfoButton = (uiBlock.choiceType === 'select' || uiBlock.choiceType === 'combobox') && !!onOpenClassSpecificChoiceInfoDialog ? (
+      <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)} disabled={panelIsLocked} aria-label={`Info for ${blockLabel}`} >
+        <Info className="h-5 w-5" />
+      </Button>
+    ) : <span className="debug-label">{uiBlock.choiceType}</span>;
+
+    const uiValueForComponent = currentBlockValue === "" ? UI_EMPTY_SELECTION_VALUE : currentBlockValue;
+    const handleChange = (val: string) => { handleClassSpecificChoiceChange(uiBlock.key, val === UI_EMPTY_SELECTION_VALUE ? "" : val, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined); };
+
 
     if (uiBlock.isHeadingOnly) {
       return (
@@ -473,15 +489,6 @@ const CharacterFormCoreInfoSectionComponent = ({
         </div>
       );
     }
-    
-    const uiValueForComponent = currentBlockValueForRender === "" ? UI_EMPTY_SELECTION_VALUE : currentBlockValueForRender;
-    const handleChange = (val: string) => { handleClassSpecificChoiceChange(uiBlock.key, val === UI_EMPTY_SELECTION_VALUE ? "" : val, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined); };
-
-    const commonInfoButton = (uiBlock.choiceType === 'select' || uiBlock.choiceType === 'combobox') && !!onOpenClassSpecificChoiceInfoDialog ? (
-      <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={() => handleOpenChoiceInfoDialog(uiBlock)} disabled={panelIsLocked} aria-label={`Info for ${blockLabel}`} >
-        <Info className="h-5 w-5" />
-      </Button>
-    ) : <span className="debug-label">no button debug</span>;
 
     if (uiBlock.choiceType === 'select') {
       return (
@@ -530,7 +537,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       return (
          <div key={`${uiBlock.key}-${blockIndex}-textInput`} className="space-y-1.5">
             <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
-            <Input id={`cspec-${uiBlock.key}-${blockIndex}`} value={currentBlockValueForRender} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
+            <Input id={`cspec-${uiBlock.key}-${blockIndex}`} value={currentBlockValue} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
             {blockDescription && <p className="text-xs text-muted-foreground">{blockDescription}</p>}
             {blockNote && <p className="text-xs text-destructive/80 italic mt-1">{blockNote}</p>}
          </div>
@@ -547,15 +554,15 @@ const CharacterFormCoreInfoSectionComponent = ({
     handleClassSpecificChoiceChange, 
     onOpenClassSpecificChoiceInfoDialog, 
     getCurrentValue,
-    handleOpenChoiceInfoDialog
+    handleOpenClassSpecificChoiceInfoDialogInternal
   ]);
 
 
   if (translationsLoading || !translations || !UI_STRINGS || !DND_RACES || !DND_CLASSES || !ALIGNMENTS || !DND_DEITIES || !SIZES || !GENDERS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS) {
     return (
       <LockablePanelWrapper
-        title={translations?.UI_STRINGS.coreAttributesTitle || "Core Attributes"}
-        description={translations?.UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer."}
+        title={translations?.UI_STRINGS.coreAttributesTitle}
+        description={translations?.UI_STRINGS.coreAttributesDescription}
         icon={ScrollText}
         cardContentClassName="space-y-6 pt-6"
         initialLockedState={false}
@@ -563,7 +570,7 @@ const CharacterFormCoreInfoSectionComponent = ({
         {() => (
           <div className="flex justify-center items-center py-10">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingText || "Loading..."}</p>
+            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingText}</p>
           </div>
         )}
       </LockablePanelWrapper>
