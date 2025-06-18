@@ -208,7 +208,7 @@ const CombatPanelComponent = ({
     totalBonus += weaponEnhancement.damage;
 
     if (powerAttackVal > 0 && (weaponType === 'melee' || weaponType === 'unarmed')) {
-      totalBonus += powerAttackVal; // Power Attack ADDS to damage
+      totalBonus += powerAttackVal;
     }
     return totalBonus;
   }, [getActiveDamageBonuses, getWeaponEnhancementBonus]);
@@ -551,37 +551,23 @@ const CombatPanelComponent = ({
     let actualCritMultiplierString: string | undefined;
 
     if (selectedMeleeWeaponInstanceId === 'unarmed') {
-      let defaultUnarmedDamage = UI_STRINGS.unarmedDamageDefault; // This should be "1d3"
-      const monkEffect = aggregatedFeatEffects?.modifiedMechanics?.unarmedDamage;
-
-      if (monkEffect?.isActive && typeof monkEffect.value === 'string' && monkEffect.value.trim() !== "" && monkEffect.value !== "0" && monkEffect.value.includes('d')) {
-        actualDiceString = monkEffect.value;
-      } else {
-        actualDiceString = defaultUnarmedDamage;
+      actualDiceString = unarmedBaseDamageFromFeat;
+      if (!actualDiceString || typeof actualDiceString !== 'string' || actualDiceString.trim() === "" || actualDiceString === "0" || !actualDiceString.includes('d')) {
+        actualDiceString = '1d3';
       }
-      
-      // Explicit fallback if UI_STRINGS.unarmedDamageDefault was bad or monk effect resulted in a non-dice string
-      if (typeof actualDiceString !== 'string' || !actualDiceString.includes('d') || actualDiceString.trim() === "" || actualDiceString === "0") {
-        actualDiceString = '1d3'; // Hard fallback
-      }
-      actualCritMultiplierString = "x2"; // Default for unarmed
+      actualCritMultiplierString = "x2";
     } else if (selectedMeleeWeaponDefinition) {
       actualDiceString = selectedMeleeWeaponDefinition.damage;
       actualCritMultiplierString = selectedMeleeWeaponDefinition.criticalMultiplier;
     }
-    
-    // Ensure actualDiceString is undefined if not a valid dice string format
-    if (typeof actualDiceString !== 'string' || actualDiceString.trim() === "" || actualDiceString === "0" || !actualDiceString.includes('d')) {
-      actualDiceString = undefined; // Set to JS undefined, not the string "undefined"
-    }
-    
+        
     const critMultiplier = parseCritMultiplier(actualCritMultiplierString);
     const breakdown = getMeleeDamageBonusBreakdownComponentsInternal().filter(item => item.label !== (UI_STRINGS.infoDialogTotalNumericBonusLabel || "Total Numeric Bonus"));
     
     onOpenRollDialog({
       dialogTitle: (UI_STRINGS.rollDialogTitleMeleeDamageFormat || "Melee Damage ({weaponName}: {dice})")
         .replace("{weaponName}", weaponNameForTitle)
-        .replace("{dice}", (selectedMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMeleeWeaponDefinition?.damage) || "N/A"),
+        .replace("{dice}", actualDiceString || "N/A"),
       rollType: `damage_roll_melee_${selectedMeleeWeaponInstanceId}`,
       baseModifier: calculatedMeleeNumericalDamageBonus,
       calculationBreakdown: breakdown,
@@ -597,9 +583,6 @@ const CombatPanelComponent = ({
     const weaponName = getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE);
 
     let actualDiceString: string | undefined = selectedRangedWeaponDefinition.damage;
-    if (typeof actualDiceString !== 'string' || actualDiceString.trim() === "" || actualDiceString === "0" || !actualDiceString.includes('d')) {
-      actualDiceString = undefined;
-    }
 
     const critMultiplier = parseCritMultiplier(selectedRangedWeaponDefinition.criticalMultiplier);
     const breakdown = getRangedDamageBonusBreakdownComponentsInternal().filter(item => item.label !== (UI_STRINGS.infoDialogTotalNumericBonusLabel || "Total Numeric Bonus"));
