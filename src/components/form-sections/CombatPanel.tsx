@@ -23,7 +23,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Button } from '@/components/ui/button';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Swords, Info, Loader2, Dices, Hand, ArrowRightLeft, Activity, Shield as ShieldIcon, Lock, Unlock } from 'lucide-react';
-import { getAbilityModifierByName, getBab, calculateInitiative, calculateGrapple, getSizeModifierGrapple, getUnarmedGrappleDamage, getSizeModifierAttack } from '@/lib/dnd-utils';
+import { getAbilityModifierByName, getBab, calculateInitiative, calculateGrapple, getSizeModifierGrapple, getUnarmedGrappleDamage, getSizeModifierAttack, parseAndRollDice } from '@/lib/dnd-utils';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
@@ -208,7 +208,7 @@ const CombatPanelComponent = ({
     totalBonus += weaponEnhancement.damage;
 
     if (powerAttackVal > 0 && (weaponType === 'melee' || weaponType === 'unarmed')) {
-      totalBonus += powerAttackVal;
+      totalBonus += powerAttackVal; // Power Attack ADDS to damage
     }
     return totalBonus;
   }, [getActiveDamageBonuses, getWeaponEnhancementBonus]);
@@ -520,7 +520,7 @@ const CombatPanelComponent = ({
   };
 
   const handleOpenMeleeAttackRollDialog = () => {
-    const weaponName = selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : (UI_STRINGS.attacksPanelUnarmedOption || "Unarmed");
+    const weaponName = selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : (selectedMeleeWeaponInstanceId === 'unarmed' ? (UI_STRINGS.attacksPanelUnarmedOption || "Unarmed") : "N/A");
     const breakdown = getMeleeAttackBonusBreakdownComponentsInternal().filter(item => item.label !== (UI_STRINGS.infoDialogTotalLabel || "Total"));
     onOpenRollDialog({
       dialogTitle: (UI_STRINGS.rollDialogTitleMeleeAttackFormat || "Roll Melee Attack ({weaponName})").replace("{weaponName}", weaponName),
@@ -545,24 +545,34 @@ const CombatPanelComponent = ({
   };
 
   const handleOpenMeleeDamageRollDialog = () => {
-    const weaponName = selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : UI_STRINGS.attacksPanelUnarmedOption || "Unarmed";
+    const weaponNameForTitle = selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : (selectedMeleeWeaponInstanceId === 'unarmed' ? (UI_STRINGS.attacksPanelUnarmedOption || "Unarmed") : "N/A");
     
     let actualDiceString: string | undefined;
     let actualCritMultiplierString: string | undefined;
 
     if (selectedMeleeWeaponInstanceId === 'unarmed') {
-      actualDiceString = UI_STRINGS.unarmedDamageDefault || "1d3"; // Default if translation missing
-      if (aggregatedFeatEffects?.modifiedMechanics?.unarmedDamage?.isActive && typeof aggregatedFeatEffects.modifiedMechanics.unarmedDamage.value === 'string') {
-        actualDiceString = aggregatedFeatEffects.modifiedMechanics.unarmedDamage.value;
+      let defaultUnarmedDamage = UI_STRINGS.unarmedDamageDefault; // This should be "1d3"
+      const monkEffect = aggregatedFeatEffects?.modifiedMechanics?.unarmedDamage;
+
+      if (monkEffect?.isActive && typeof monkEffect.value === 'string' && monkEffect.value.trim() !== "" && monkEffect.value !== "0" && monkEffect.value.includes('d')) {
+        actualDiceString = monkEffect.value;
+      } else {
+        actualDiceString = defaultUnarmedDamage;
+      }
+      
+      // Explicit fallback if UI_STRINGS.unarmedDamageDefault was bad or monk effect resulted in a non-dice string
+      if (typeof actualDiceString !== 'string' || !actualDiceString.includes('d') || actualDiceString.trim() === "" || actualDiceString === "0") {
+        actualDiceString = '1d3'; // Hard fallback
       }
       actualCritMultiplierString = "x2"; // Default for unarmed
     } else if (selectedMeleeWeaponDefinition) {
       actualDiceString = selectedMeleeWeaponDefinition.damage;
       actualCritMultiplierString = selectedMeleeWeaponDefinition.criticalMultiplier;
     }
-
+    
+    // Ensure actualDiceString is undefined if not a valid dice string format
     if (typeof actualDiceString !== 'string' || actualDiceString.trim() === "" || actualDiceString === "0" || !actualDiceString.includes('d')) {
-      actualDiceString = undefined;
+      actualDiceString = undefined; // Set to JS undefined, not the string "undefined"
     }
     
     const critMultiplier = parseCritMultiplier(actualCritMultiplierString);
@@ -570,13 +580,14 @@ const CombatPanelComponent = ({
     
     onOpenRollDialog({
       dialogTitle: (UI_STRINGS.rollDialogTitleMeleeDamageFormat || "Melee Damage ({weaponName}: {dice})")
-        .replace("{weaponName}", weaponName)
-        .replace("{dice}", actualDiceString || "N/A"),
+        .replace("{weaponName}", weaponNameForTitle)
+        .replace("{dice}", (selectedMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMeleeWeaponDefinition?.damage) || "N/A"),
       rollType: `damage_roll_melee_${selectedMeleeWeaponInstanceId}`,
       baseModifier: calculatedMeleeNumericalDamageBonus,
       calculationBreakdown: breakdown,
       weaponDamageDiceString: actualDiceString,
       weaponCriticalMultiplier: critMultiplier,
+      extraDamageDice: undefined, 
       rerollTwentiesForChecks: false,
     });
   };
@@ -923,6 +934,5 @@ const CombatPanelComponent = ({
 };
 CombatPanelComponent.displayName = 'CombatPanelComponent';
 export const CombatPanel = React.memo(CombatPanelComponent);
-
 
     
