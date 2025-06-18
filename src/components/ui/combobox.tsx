@@ -21,14 +21,15 @@ import {
 } from "@/components/ui/popover"
 
 export interface ComboboxOption {
-  value: string // This remains 'value' as it's the prop for the underlying CMDK CommandItem
+  value: string 
   label: string
+  disabled?: boolean;
 }
 
 interface ComboboxProps {
   options: readonly ComboboxOption[]
-  value?: string // This is the currently selected 'value' (which would correspond to an 'id' from our data)
-  onChange: (value: string) => void // Callback receives the 'id'
+  value?: string 
+  onChange: (value: string) => void 
   placeholder?: string
   searchPlaceholder?: string
   emptyPlaceholder?: string
@@ -40,7 +41,7 @@ interface ComboboxProps {
 
 export function ComboboxPrimitive({
   options,
-  value, // This 'value' is the ID of the selected item
+  value, 
   onChange,
   placeholder = "Select an option...",
   searchPlaceholder = "Search...",
@@ -50,23 +51,20 @@ export function ComboboxPrimitive({
   isEditable = false,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
-  const [inputValue, setInputValue] = React.useState("") // For CommandInput when not editable
+  const [inputValue, setInputValue] = React.useState("") 
 
   const handleSelect = (currentLabel: string) => {
-    // CommandItem's onSelect provides the label (its 'value' prop)
     const selectedOption = options.find(opt => (opt.label ?? '').toLowerCase() === (currentLabel ?? '').toLowerCase());
     if (selectedOption) {
-      onChange(selectedOption.value); // Pass the actual ID back
-      if (!isEditable) setInputValue(""); // Clear search if not editable
+      onChange(selectedOption.value); 
+      if (!isEditable) setInputValue(""); 
     } else if (isEditable) {
-      onChange(currentLabel); // Pass typed value if editable
+      onChange(currentLabel); 
     }
     setOpen(false);
   };
 
-  // For editable combobox, we directly bind the CommandInput to the external 'value' (which is an ID)
-  // For non-editable, inputValue is used for search filtering within CommandInput.
-  const currentCommandInputValue = isEditable ? (value || "") : inputValue; // Ensure value is string for editable input
+  const currentCommandInputValue = isEditable ? (value || "") : inputValue; 
   const onCommandInputChange = isEditable ? onChange : setInputValue;
 
 
@@ -84,7 +82,7 @@ export function ComboboxPrimitive({
     <Popover open={open} onOpenChange={(isOpen) => {
       setOpen(isOpen);
       if (!isOpen && !isEditable) {
-        setInputValue(""); // Clear search on close if not editable
+        setInputValue(""); 
       }
     }}>
       <PopoverTrigger
@@ -107,7 +105,7 @@ export function ComboboxPrimitive({
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   handleClear(e);
-                  e.preventDefault(); // Prevent PopoverTrigger's default behavior
+                  e.preventDefault(); 
                 }
               }}
               className="h-6 w-6 p-0 mr-1 flex items-center justify-center rounded-sm text-muted-foreground hover:text-destructive focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
@@ -120,7 +118,7 @@ export function ComboboxPrimitive({
         </div>
       </PopoverTrigger>
       <PopoverContent className={cn("w-[--radix-popover-trigger-width] p-0", popoverContentClassName)}>
-        <Command shouldFilter={!isEditable}> {/* CMDK handles filtering if not editable */}
+        <Command shouldFilter={!isEditable}> 
           <CommandInput
             placeholder={searchPlaceholder}
             value={currentCommandInputValue}
@@ -131,9 +129,10 @@ export function ComboboxPrimitive({
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem
-                  key={option.value} // Use the ID as key
-                  value={option.label} // CMDK filters based on this 'value' prop, so use label for search
+                  key={option.value} 
+                  value={option.label} 
                   onSelect={handleSelect}
+                  disabled={option.disabled} 
                 >
                   <Check
                     className={cn(

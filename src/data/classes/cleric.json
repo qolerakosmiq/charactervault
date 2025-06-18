@@ -45,7 +45,8 @@
         "featureKey": "clericDomain1",
         "values": [""]
       },
-      "grantsFeatsFromDomainChoice": true
+      "grantsFeatsFromDomainChoice": true,
+      "excludeOptionsFromKeys": ["clericDomain1"]
     }
   ],
   "grantedFeats": [

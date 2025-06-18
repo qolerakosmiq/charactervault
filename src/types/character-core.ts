@@ -461,7 +461,7 @@ export interface ClassSpecificUIGrantsFeat {
   levelAcquired?: number;
   note?: LocalizedString;
   conditionOnChoiceValue?: string;
-  grantsFeatsFromDomainChoice?: boolean; // New flag
+  grantsFeatsFromDomainChoice?: boolean;
 }
 
 export interface ClassSpecificUIBlock {
@@ -472,11 +472,11 @@ export interface ClassSpecificUIBlock {
   descriptionKey?: keyof ProcessedSiteData['UI_STRINGS'];
   inputPlaceholder?: LocalizedString;
   inputPlaceholderKey?: keyof ProcessedSiteData['UI_STRINGS'];
-  slotLabel?: LocalizedString; // For multiInput
-  slotLabelKey?: keyof ProcessedSiteData['UI_STRINGS']; // For multiInput
+  slotLabel?: LocalizedString;
+  slotLabelKey?: keyof ProcessedSiteData['UI_STRINGS'];
   choiceType: "select" | "combobox" | "textInput" | "multiInput" | "heading";
   isHeadingOnly?: boolean;
-  maxSelections?: number; // For multiInput
+  maxSelections?: number;
   optionsSource?: "domains" | "magicSchools" | "rangerCombatStyles" | "customList";
   customOptions?: ClassSpecificUICustomOption[];
   grantsFeats?: ClassSpecificUIGrantsFeat[];
@@ -486,9 +486,11 @@ export interface ClassSpecificUIBlock {
   relatedSlotKeyForDisable?: string;
   disabledIfChoiceValue?: { featureKey: string; values: string[] };
   note?: LocalizedString;
-  defaultValue?: string; // Added
-  allowEmptySelection?: boolean; // Added
-  emptySelectionLabelKey?: keyof ProcessedSiteData['UI_STRINGS']; // Added
+  defaultValue?: string;
+  allowEmptySelection?: boolean;
+  emptySelectionLabelKey?: keyof ProcessedSiteData['UI_STRINGS'];
+  excludeOptionsFromKeys?: string[];
+  excludeSpecificValues?: string[];
 }
 
 export interface FeatChoiceFilterCase {
@@ -512,7 +514,7 @@ export interface DndRaceOption {
   grantedFeats?: Array<{ featId: string; note?: string; name?: string; levelAcquired?: number }>;
   speeds?: Partial<Record<SpeedType, number>>;
   automaticLanguages?: LanguageId[];
-  genderOptions?: Array<{ id: GenderId; label: string }>; // Added for race-specific genders
+  genderOptions?: Array<{ id: GenderId; label: string }>;
 }
 export interface DndClassOption {
   id: DndClassId | string;
@@ -528,8 +530,8 @@ export interface DndClassOption {
     reflex: "good" | "poor";
     will: "good" | "poor";
   };
-  alignmentRestriction?: string; // e.g., "lawful-good", "any-lawful", "any-nonlawful"
-  deityAlignmentRestriction?: string; // e.g., "lawful-good" for Paladin's deity
+  alignmentRestriction?: string;
+  deityAlignmentRestriction?: string;
   uiSections?: ClassSpecificUIBlock[];
   featChoiceFilters?: FeatChoiceFilter[];
   classSpecificFeats?: FeatDefinitionJsonData[];
@@ -687,6 +689,7 @@ export type SpeedType = 'land' | 'burrow' | 'climb' | 'fly' | 'swim';
 export interface ComboboxOption {
   value: string;
   label: string;
+  disabled?: boolean;
 }
 
 export interface GenericBreakdownItem {
@@ -892,3 +895,8 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
   loadSpeedPenalty_base: 0, loadSpeedPenalty_miscModifier: 0
 };
 export const DEFAULT_RESISTANCE_VALUE_DATA: ResistanceValue = { base: 0, customMod: 0 };
+
+// Removed: export * from './character-core';
+// Types are exported by being declared with 'export' keyword.
+// Exporting the module itself is not needed.
+// Constants are exported directly.

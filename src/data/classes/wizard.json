@@ -24,7 +24,7 @@
       "choiceType": "select",
       "optionsSource": "magicSchools",
       "allowEmptySelection": true,
-      "emptySelectionLabelKey": "magicSchoolUniversalOption", 
+      "emptySelectionLabelKey": "magicSchoolUniversalOption",
       "defaultValue": "universal"
     },
     {
@@ -37,7 +37,9 @@
       "emptySelectionLabelKey": "prohibitedSchoolNoneOption",
       "defaultValue": "",
       "conditionDependsOnUIStateKey": "chosenSpecializationSchool",
-      "conditionDependsOnUIStateValueNotIn": ["", "universal"]
+      "conditionDependsOnUIStateValueNotIn": ["", "universal"],
+      "excludeOptionsFromKeys": ["chosenSpecializationSchool"],
+      "excludeSpecificValues": ["divination", "universal"]
     },
     {
       "key": "prohibitedSchool2",
@@ -51,7 +53,9 @@
       "conditionDependsOnUIStateKey": "chosenSpecializationSchool",
       "conditionDependsOnUIStateValueNotIn": ["", "universal"],
       "relatedSlotKeyForDisable": "prohibitedSchool1",
-      "disabledIfChoiceValue": { "featureKey": "prohibitedSchool1", "values": [""] }
+      "disabledIfChoiceValue": { "featureKey": "prohibitedSchool1", "values": [""] },
+      "excludeOptionsFromKeys": ["chosenSpecializationSchool", "prohibitedSchool1"],
+      "excludeSpecificValues": ["divination", "universal"]
     }
   ],
   "grantedFeats": [
