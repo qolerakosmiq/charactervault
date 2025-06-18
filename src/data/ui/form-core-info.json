@@ -14,15 +14,12 @@
   "hitDiceLabel": { "en": "Hit Dice | <b>{value}</b>", "fr": "Dés de vie | <b>{value}</b>" },
   "favoredEnemySlotsAvailableShort": { "en": "{slots} Slot(s)", "fr": "{slots} Emplacement(s)"},
   "favoredEnemyBonusDisplayInfo": { "en": "Bonuses vs Favored Enemies: +{skillBonus} to skills (Bluff, Listen, Sense Motive, Spot, Survival), +{damageBonus} to damage.", "fr": "Bonus vs Ennemis Jurés : +{skillBonus} aux compétences (Bluff, Perception auditive, Psychologie, Détection, Survie), +{damageBonus} aux dégâts." },
-  "wizardSpecializationTitle": { "en": "Wizard Specialization", "fr": "Spécialisation de Magicien" },
   "wizardSpecializationDescription": { "en": "Selecting a specialization grants one bonus spell slot per spell level for that school, but requires choosing two prohibited schools (Divination cannot be prohibited). Generalists (Universal school) have no prohibited schools and can prepare an extra spell of any school per spell level.", "fr": "Choisir une spécialisation accorde un emplacement de sort bonus par niveau de sort pour cette école, mais nécessite de choisir deux écoles interdites (la Divination ne peut pas être interdite). Les généralistes (école Universelle) n'ont pas d'écoles interdites et peuvent préparer un sort supplémentaire de n'importe quelle école par niveau de sort." },
   "wizardSpecializationSchoolLabel": { "en": "Specialization School", "fr": "École de spécialisation" },
-  "wizardSpecializationSchoolPlaceholder": { "en": "Select School (or Generalist)", "fr": "Choisir une École (ou Généraliste)" },
-  "wizardProhibitedSchoolsTitle": { "en": "Prohibited Schools", "fr": "Écoles Interdites" },
-  "wizardProhibitedSchoolsDescription": { "en": "Choose two schools of magic to prohibit. You cannot learn or cast spells from these schools. Divination cannot be prohibited.", "fr": "Choisissez deux écoles de magie à interdire. Vous ne pouvez ni apprendre ni lancer de sorts de ces écoles. La Divination ne peut pas être interdite." },
+  "wizardProhibitedSchool1Description": { "en": "Spells from prohibited schools cannot be learned or cast. Divination cannot be prohibited. Cannot be your specialized school.", "fr": "Les sorts des écoles interdites ne peuvent être ni appris ni lancés. La Divination ne peut pas être interdite. Ne peut pas être votre école de spécialisation." },
   "wizardProhibitedSchool1Label": { "en": "First Prohibited School", "fr": "Première École Interdite" },
+  "wizardProhibitedSchool2Description": { "en": "Spells from prohibited schools cannot be learned or cast. Divination cannot be prohibited. Cannot be your specialized school or the first prohibited school.", "fr": "Les sorts des écoles interdites ne peuvent être ni appris ni lancés. La Divination ne peut pas être interdite. Ne peut pas être votre école de spécialisation ou la première école interdite." },
   "wizardProhibitedSchool2Label": { "en": "Second Prohibited School", "fr": "Seconde École Interdite" },
-  "wizardProhibitedSchoolPlaceholder": { "en": "Select Prohibited School...", "fr": "Choisir une École Interdite..." },
   "wizardProhibitedSchoolNote": { "en": "Cannot prohibit Divination, your specialized school, or select the same school twice.", "fr": "Impossible d'interdire la Divination, votre école de spécialisation, ou de sélectionner deux fois la même école." },
   "toastAlignmentAutoChangedTitle": { "en": "Alignment Updated", "fr": "Alignement mis à jour" },
   "toastAlignmentAutoChangedDesc": { "en": "Your alignment was changed to '{newAlignment}' to be compatible with the {className} class restrictions.", "fr": "Votre alignement a été changé en '{newAlignment}' pour être compatible avec les restrictions de la classe {className}." },
@@ -35,6 +32,9 @@
   "selectAlignmentPlaceholder": { "en": "Select Alignment...", "fr": "Choisir un Alignement..." },
   "selectDeityPlaceholder": { "en": "Select Deity...", "fr": "Choisir une Divinité..." },
   "selectSizePlaceholder": { "en": "Select Size...", "fr": "Choisir une Taille..." },
-  "selectGenderPlaceholder": { "en": "Select Gender...", "fr": "Choisir un Genre..." }
+  "selectGenderPlaceholder": { "en": "Select Gender...", "fr": "Choisir un Genre..." },
+  "clericDomainsTitle": { "en": "Cleric Domains", "fr": "Domaines de Prêtre" },
+  "clericDomain1Label": { "en": "First Domain", "fr": "Premier Domaine" },
+  "clericDomain2Label": { "en": "Second Domain", "fr": "Second Domaine" }
 }
     

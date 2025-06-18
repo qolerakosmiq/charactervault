@@ -84,9 +84,10 @@
   "loadingOptionsTitle": { "en": "Loading options...", "fr": "Chargement des options..." },
   "loadingAbilityNamesTitle": { "en": "Loading ability names...", "fr": "Chargement des noms de caractéristiques..." },
   "deityNoneOption": { "en": "None", "fr": "Aucun(e)" },
-  "domainNoneOption": { "en": "__NONE_DOMAIN__", "fr": "__AUCUN_DOMAINE__" },
-  "magicSchoolNoneOption": { "en": "__NONE_SCHOOL__", "fr": "__AUCUNE_ÉCOLE__" },
-  "prohibitedSchoolNoneOption": { "en": "__NONE_SCHOOL__", "fr": "__AUCUNE_ÉCOLE__" },
+  "domainNoneOption": { "en": "None", "fr": "Aucun" },
+  "magicSchoolUniversalOption": { "en": "Universalist (No Specialization)", "fr": "Généraliste (Pas de spécialisation)" },
+  "magicSchoolNoneOption": { "en": "None / Universalist", "fr": "Aucune / Généraliste" },
+  "prohibitedSchoolNoneOption": { "en": "None", "fr": "Aucune" },
   "newCharacterDefaultName": { "en": "New Adventurer", "fr": "Nouvel Aventurier" },
   "formButtonCreateCharacter": { "en": "Create Character", "fr": "Créer le personnage" }
 }

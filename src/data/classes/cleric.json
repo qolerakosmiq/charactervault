@@ -1,3 +1,4 @@
+
 {
   "id": "cleric",
   "label": { "en": "Cleric", "fr": "Prêtre" },
@@ -17,28 +18,32 @@
   "uiSections": [
     {
       "key": "clericDomainsTitle",
-      "label": { "en": "Cleric Domains", "fr": "Domaines de Prêtre" },
+      "labelKey": "clericDomainsTitle",
       "choiceType": "heading",
       "isHeadingOnly": true
     },
     {
       "key": "clericDomain1",
-      "label": { "en": "First Domain", "fr": "Premier Domaine" },
+      "labelKey": "clericDomain1Label",
       "choiceType": "select",
       "optionsSource": "domains",
-      "placeholder": { "en": "Select Domain...", "fr": "Choisir un domaine..." },
+      "allowEmptySelection": true,
+      "emptySelectionLabelKey": "domainNoneOption",
+      "defaultValue": "",
       "grantsFeatsFromDomainChoice": true
     },
     {
       "key": "clericDomain2",
-      "label": { "en": "Second Domain", "fr": "Second Domaine" },
+      "labelKey": "clericDomain2Label",
       "choiceType": "select",
       "optionsSource": "domains",
-      "placeholder": { "en": "Select Domain...", "fr": "Choisir un domaine..." },
+      "allowEmptySelection": true,
+      "emptySelectionLabelKey": "domainNoneOption",
+      "defaultValue": "",
       "relatedSlotKeyForDisable": "clericDomain1",
       "disabledIfChoiceValue": {
         "featureKey": "clericDomain1",
-        "values": ["__NONE_DOMAIN__", ""]
+        "values": [""]
       },
       "grantsFeatsFromDomainChoice": true
     }

@@ -467,18 +467,16 @@ export interface ClassSpecificUIGrantsFeat {
 export interface ClassSpecificUIBlock {
   key: string;
   label?: LocalizedString;
-  labelKey?: string;
+  labelKey?: keyof ProcessedSiteData['UI_STRINGS'];
   description?: LocalizedString;
-  descriptionKey?: string;
-  placeholder?: LocalizedString;
-  placeholderKey?: string;
+  descriptionKey?: keyof ProcessedSiteData['UI_STRINGS'];
   inputPlaceholder?: LocalizedString;
-  inputPlaceholderKey?: string;
-  slotLabel?: LocalizedString;
-  slotLabelKey?: string;
+  inputPlaceholderKey?: keyof ProcessedSiteData['UI_STRINGS'];
+  slotLabel?: LocalizedString; // For multiInput
+  slotLabelKey?: keyof ProcessedSiteData['UI_STRINGS']; // For multiInput
   choiceType: "select" | "combobox" | "textInput" | "multiInput" | "heading";
   isHeadingOnly?: boolean;
-  maxSelections?: number;
+  maxSelections?: number; // For multiInput
   optionsSource?: "domains" | "magicSchools" | "rangerCombatStyles" | "customList";
   customOptions?: ClassSpecificUICustomOption[];
   grantsFeats?: ClassSpecificUIGrantsFeat[];
@@ -488,6 +486,9 @@ export interface ClassSpecificUIBlock {
   relatedSlotKeyForDisable?: string;
   disabledIfChoiceValue?: { featureKey: string; values: string[] };
   note?: LocalizedString;
+  defaultValue?: string; // Added
+  allowEmptySelection?: boolean; // Added
+  emptySelectionLabelKey?: keyof ProcessedSiteData['UI_STRINGS']; // Added
 }
 
 export interface FeatChoiceFilterCase {
@@ -891,5 +892,3 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
   loadSpeedPenalty_base: 0, loadSpeedPenalty_miscModifier: 0
 };
 export const DEFAULT_RESISTANCE_VALUE_DATA: ResistanceValue = { base: 0, customMod: 0 };
-
-    
