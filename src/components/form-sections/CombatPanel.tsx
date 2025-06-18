@@ -447,7 +447,7 @@ const CombatPanelComponent = ({
         components.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel || "Weapon Enhancement", value: weaponEnhancement.damage});
     }
 
-    let totalNumericBonusFromEffects = weaponEnhancement.damage; // Start with weapon enhancement
+    let totalNumericBonusFromEffects = weaponEnhancement.damage; 
     const activeBonuses = getActiveDamageBonuses('ranged', selectedRangedWeaponDefinition);
 
     activeBonuses.forEach(effect => {
@@ -551,15 +551,18 @@ const CombatPanelComponent = ({
     let actualCritMultiplierString: string | undefined;
 
     if (selectedMeleeWeaponInstanceId === 'unarmed') {
-      actualDiceString = unarmedBaseDamageFromFeat; 
+      actualDiceString = UI_STRINGS.unarmedDamageDefault || "1d3"; // Default if translation missing
+      if (aggregatedFeatEffects?.modifiedMechanics?.unarmedDamage?.isActive && typeof aggregatedFeatEffects.modifiedMechanics.unarmedDamage.value === 'string') {
+        actualDiceString = aggregatedFeatEffects.modifiedMechanics.unarmedDamage.value;
+      }
       actualCritMultiplierString = "x2"; // Default for unarmed
     } else if (selectedMeleeWeaponDefinition) {
       actualDiceString = selectedMeleeWeaponDefinition.damage;
       actualCritMultiplierString = selectedMeleeWeaponDefinition.criticalMultiplier;
     }
 
-    if (!actualDiceString || actualDiceString.trim() === "" || actualDiceString === "0") {
-      actualDiceString = undefined; 
+    if (typeof actualDiceString !== 'string' || actualDiceString.trim() === "" || actualDiceString === "0" || !actualDiceString.includes('d')) {
+      actualDiceString = undefined;
     }
     
     const critMultiplier = parseCritMultiplier(actualCritMultiplierString);
@@ -583,7 +586,7 @@ const CombatPanelComponent = ({
     const weaponName = getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE);
 
     let actualDiceString: string | undefined = selectedRangedWeaponDefinition.damage;
-    if (!actualDiceString || actualDiceString.trim() === "" || actualDiceString === "0") {
+    if (typeof actualDiceString !== 'string' || actualDiceString.trim() === "" || actualDiceString === "0" || !actualDiceString.includes('d')) {
       actualDiceString = undefined;
     }
 
@@ -921,3 +924,5 @@ const CombatPanelComponent = ({
 CombatPanelComponent.displayName = 'CombatPanelComponent';
 export const CombatPanel = React.memo(CombatPanelComponent);
 
+
+    
