@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -27,7 +26,7 @@ import { getLocalizedString, type ProcessedSiteData } from '@/i18n/i18n-data';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScrollText, Info, Heart, Activity, ListChecks, Loader2 } from 'lucide-react';
+import { ScrollText, Info, Heart, Activity, ListChecks, Loader2 } from 'lucide-react'; // Added Heart, Activity, ListChecks
 import { Button } from '@/components/ui/button';
 import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -41,7 +40,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 
 const DEBOUNCE_DELAY = 400;
-const UI_EMPTY_SELECTION_VALUE = `___INTERNAL_EMPTY_SELECT_PLACEHOLDER_f8d2e4c6a1b9___`;
+const UI_EMPTY_SELECTION_VALUE = `___INTERNAL_EMPTY_SELECT_PLACEHOLDER_f8d2e4c6a1b9___`; // More unique placeholder
 
 export interface CharacterFormCoreInfoSectionProps {
   characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes' | 'classSpecificChoices'>;
@@ -235,10 +234,10 @@ const CharacterFormCoreInfoSectionComponent = ({
     if (!onOpenClassSpecificChoiceInfoDialog || !translations || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !UI_STRINGS) return;
     
     let optionsForDialog: Array<{ id: string; label: string; description?: string; }> = [];
-    let blockLabel: string;
-    if (uiBlock.labelKey && UI_STRINGS[uiBlock.labelKey]) { blockLabel = UI_STRINGS[uiBlock.labelKey]!; }
-    else if (uiBlock.label) { blockLabel = getLocalizedString(uiBlock.label, currentLang); }
-    else { blockLabel = uiBlock.key; }
+    let blockLabelForDialog: string;
+    if (uiBlock.labelKey && UI_STRINGS[uiBlock.labelKey]) { blockLabelForDialog = UI_STRINGS[uiBlock.labelKey]!; }
+    else if (uiBlock.label) { blockLabelForDialog = getLocalizedString(uiBlock.label, currentLang); }
+    else { blockLabelForDialog = uiBlock.key; }
 
     if (uiBlock.optionsSource === 'domains') {
       optionsForDialog = DND_DOMAINS.map(d => ({
@@ -260,8 +259,8 @@ const CharacterFormCoreInfoSectionComponent = ({
       }));
     }
     optionsForDialog.sort((a,b) => a.label.localeCompare(b.label));
-    onOpenClassSpecificChoiceInfoDialog({ type: 'classSpecificChoiceOptions', title: blockLabel, options: optionsForDialog });
-  }, [onOpenClassSpecificChoiceInfoDialog, translations, DND_DOMAINS, DND_MAGIC_SCHOOLS, currentLang, UI_STRINGS]);
+    onOpenClassSpecificChoiceInfoDialog({ type: 'classSpecificChoiceOptions', title: blockLabelForDialog, options: optionsForDialog });
+  }, [onOpenClassSpecificChoiceInfoDialog, translations, DND_DOMAINS, DND_MAGIC_SCHOOLS, UI_STRINGS, currentLang]);
 
 
   React.useEffect(() => {
@@ -352,7 +351,7 @@ const CharacterFormCoreInfoSectionComponent = ({
           if (!isInvalid && uiBlock.excludeOptionsFromKeys) {
             isInvalid = uiBlock.excludeOptionsFromKeys.some(excludedKey => {
               const valOfExcludedKey = getCurrentValue(excludedKey);
-              return valOfExcludedKey === currentValue && valOfExcludedKey !== "";
+              return valOfExcludedKey === currentValue && valOfExcludedKey !== "" && valOfExcludedKey !== UI_EMPTY_SELECTION_VALUE;
             });
           }
           if (isInvalid) {
@@ -367,7 +366,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 const actualSelectableOptions = tempOptions.filter(opt =>
                     opt.value !== UI_EMPTY_SELECTION_VALUE && opt.value !== "" &&
                     !(uiBlock.excludeSpecificValues?.includes(opt.value)) &&
-                    !(uiBlock.excludeOptionsFromKeys?.some(ek => getCurrentValue(ek) === opt.value && getCurrentValue(ek) !== ""))
+                    !(uiBlock.excludeOptionsFromKeys?.some(ek => getCurrentValue(ek) === opt.value && getCurrentValue(ek) !== "" && getCurrentValue(ek) !== UI_EMPTY_SELECTION_VALUE))
                 );
                 if (actualSelectableOptions.length > 0) resetValue = actualSelectableOptions[0].value;
               }
@@ -462,12 +461,16 @@ const CharacterFormCoreInfoSectionComponent = ({
     }
     
     const commonInfoButton = (uiBlock.choiceType === 'select' || uiBlock.choiceType === 'combobox') && !!onOpenClassSpecificChoiceInfoDialog ? (
-      <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)} disabled={panelIsLocked} aria-label={`Info for ${blockLabel}`} >
+      <Button
+        type="button" variant="ghost" size="icon"
+        className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9"
+        onClick={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
+        disabled={panelIsLocked}
+        aria-label={`Info for ${blockLabel}`}
+      >
         <Info className="h-5 w-5" />
       </Button>
-    ) : (
-      <span className="debug-label">{String(onOpenClassSpecificChoiceInfoDialog ?? 'debug-prop-is-falsy')}</span>
-    );
+    ) : null;
 
     const uiValueForComponent = currentBlockValue === "" ? UI_EMPTY_SELECTION_VALUE : currentBlockValue;
     const handleChange = (val: string) => { handleClassSpecificChoiceChange(uiBlock.key, val === UI_EMPTY_SELECTION_VALUE ? "" : val, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined); };
@@ -547,7 +550,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     handleClassSpecificChoiceChange, 
     onOpenClassSpecificChoiceInfoDialog, 
     getCurrentValue,
-    handleOpenClassSpecificChoiceInfoDialogInternal
+    handleOpenClassSpecificChoiceInfoDialogInternal // Added this new callback to dependency array
   ]);
 
 
@@ -728,4 +731,3 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
-

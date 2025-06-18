@@ -1,6 +1,7 @@
+
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import type {
   AbilityName, Character, CharacterClass,
@@ -806,6 +807,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   const handleOpenClassInfoDialog = React.useCallback(() => { if (character?.classes[0]?.className) { openInfoDialog({ type: 'class' }); } }, [character?.classes, openInfoDialog]);
   const handleOpenAlignmentInfoDialog = React.useCallback(() => openInfoDialog({ type: 'alignmentSummary' }), [openInfoDialog]);
   const handleOpenDeityInfoDialog = React.useCallback(() => openInfoDialog({ type: 'deity' }), [openInfoDialog]);
+  const handleOpenClassSpecificChoiceInfoDialog = React.useCallback((contentType: InfoDialogContentType) => { openInfoDialog(contentType); }, [openInfoDialog]);
+
 
   const handleOpenAbilityScoreBreakdownDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => { openInfoDialog({ type: 'abilityScoreBreakdown', abilityName: ability }); }, [openInfoDialog]);
   const handleOpenCombatStatInfoDialog = React.useCallback((contentType: InfoDialogContentType) => { openInfoDialog(contentType); }, [openInfoDialog]);
@@ -1161,6 +1164,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             onOpenClassInfoDialog={handleOpenClassInfoDialog}
             onOpenAlignmentInfoDialog={handleOpenAlignmentInfoDialog}
             onOpenDeityInfoDialog={handleOpenDeityInfoDialog}
+            onOpenClassSpecificChoiceInfoDialog={handleOpenClassSpecificChoiceInfoDialog}
             aggregatedFeatEffects={aggregatedFeatEffects}
           />
         )}
@@ -1412,3 +1416,5 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
+
+    
