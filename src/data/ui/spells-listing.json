@@ -1,0 +1,9 @@
+
+{
+  "spellsPanelTitle": { "en": "Spells", "fr": "Sorts" },
+  "spellsPanelDescription": { "en": "Manage your character's arcane and divine abilities.", "fr": "Gérez les capacités arcaniques et divines de votre personnage." },
+  "spellsPanelComingSoonTitle": { "en": "Spell Management Coming Soon!", "fr": "Gestion des sorts bientôt disponible !" },
+  "spellsPanelComingSoonDescription": { "en": "Soon you'll be able to track your known spells, prepared spells, and spell slots here.", "fr": "Bientôt, vous pourrez suivre ici vos sorts connus, vos sorts préparés et vos emplacements de sorts." },
+  "spellsPanelImageAlt": { "en": "Empty fire camp", "fr": "Camp de feu vide" }
+}
+    

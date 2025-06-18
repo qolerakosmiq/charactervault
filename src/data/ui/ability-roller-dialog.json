@@ -1,0 +1,16 @@
+
+{
+  "rollerDialogTitle": { "en": "Roll Initial Ability Scores", "fr": "Lancer les caractéristiques initiales" },
+  "rollerDialogDescPart1": { "en": "Roll 4d6 (drop lowest", "fr": "Lancez 4d6 (gardez les 3 meilleurs" },
+  "rollerDialogDescRerollOnes": { "en": ", rerolling 1s", "fr": ", relancez les 1" },
+  "rollerDialogDescPart2": { "en": "). Assign these values to your abilities.", "fr": "). Assignez ces valeurs à vos caractéristiques." },
+  "rollerDialogYourScoresLabel": { "en": "Your Rolled Scores", "fr": "Vos scores lancés" },
+  "rollerDialogRerollButton": { "en": "Reroll Scores", "fr": "Relancer les scores" },
+  "rollerDialogApplyButton": { "en": "Apply Scores", "fr": "Appliquer les scores" },
+  "rollerDialogNotSelectedOption": { "en": "Not selected", "fr": "Non sélectionné" },
+  "rollerDialogErrorNotAllAssignedToastTitle": { "en": "Assignment Incomplete", "fr": "Assignation incomplète" },
+  "rollerDialogErrorNotAllAssignedToastDesc": { "en": "Please assign all rolled scores to abilities before applying.", "fr": "Veuillez assigner tous les scores lancés aux caractéristiques avant d'appliquer." },
+  "rollerDialogClassPriorityIntro": { "en": "Based on your selection of", "fr": "Selon votre sélection de" },
+  "rollerDialogClassPriorityPart2": { "en": "class, the generally recommended primary abilities are:", "fr": "classe, les caractéristiques principales généralement recommandées sont :" }
+}
+    

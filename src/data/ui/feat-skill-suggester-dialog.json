@@ -1,0 +1,22 @@
+
+{
+  "toastAISuggestionMissingInfoTitle": { "en": "Missing Information for AI", "fr": "Informations manquantes pour l'IA" },
+  "toastAISuggestionMissingInfoDesc": { "en": "Character class and level are required for AI suggestions.", "fr": "La classe et le niveau du personnage sont requis pour les suggestions de l'IA." },
+  "toastAISuggestionErrorTitle": { "en": "AI Suggestion Error", "fr": "Erreur de suggestion de l'IA" },
+  "toastAISuggestionErrorDesc": { "en": "Could not fetch suggestions. Check console for details.", "fr": "Impossible de récupérer les suggestions. Vérifiez la console pour plus de détails." },
+  "aiSuggestionsButton": { "en": "AI Suggestions", "fr": "Suggestions IA" },
+  "aiSuggestedFeatLabel": { "en": "AI Suggested", "fr": "Suggéré par IA" },
+  "aiSuggestionsDialogTitle": { "en": "AI {suggestionType} Suggestions", "fr": "Suggestions IA pour {suggestionType}" },
+  "aiSuggestionsDialogDescription": { "en": "Get AI-powered suggestions for {suggestionType} based on {characterClass} (Level {level}).", "fr": "Obtenez des suggestions IA pour {suggestionType} basées sur {characterClass} (Niveau {level})." },
+  "aiSuggestionsGenerateButton": { "en": "Generate Suggestions", "fr": "Générer les suggestions" },
+  "aiSuggestionsLoadingText": { "en": "Conjuring suggestions...", "fr": "Invocation des suggestions..." },
+  "aiSuggestionsFeatsHeading": { "en": "Suggested Feats", "fr": "Dons suggérés" },
+  "aiSuggestionsSkillsHeading": { "en": "Suggested Skills to Focus On", "fr": "Compétences suggérées à privilégier" },
+  "aiSuggestionsAddButton": { "en": "Add", "fr": "Ajouter" },
+  "aiSuggestionsNoResults": { "en": "No specific suggestions found for this combination.", "fr": "Aucune suggestion spécifique trouvée pour cette combinaison." },
+  "toastFeatAddedFromAISuggestionTitle": { "en": "Feat Added from AI", "fr": "Don ajouté par IA" },
+  "toastFeatAddedFromAISuggestionDesc": { "en": "The feat '{itemName}' has been added to your character based on AI suggestion.", "fr": "Le don '{itemName}' a été ajouté à votre personnage sur suggestion de l'IA." },
+  "toastSkillAddedFromAISuggestionTitle": { "en": "Skill Focus Added from AI", "fr": "Focus de compétence ajouté par IA" },
+  "toastSkillAddedFromAISuggestionDesc": { "en": "Focus on skill '{itemName}' noted. (Actual skill point allocation is manual).", "fr": "Focus sur la compétence '{itemName}' noté. (L'allocation réelle des points de compétence est manuelle)." }
+}
+    

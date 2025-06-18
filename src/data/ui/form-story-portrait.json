@@ -1,0 +1,25 @@
+
+{
+  "storyPortraitPanelTitle": { "en": "Personal Story & Appearance", "fr": "Histoire Personnelle et Apparence" },
+  "storyPortraitPanelDescription": { "en": "Flesh out your character's background and physical details.", "fr": "Détaillez l'historique et les caractéristiques physiques de votre personnage." },
+  "characterPortraitLabel": { "en": "Character Portrait", "fr": "Portrait du personnage" },
+  "noPortraitUploadedText": { "en": "No portrait uploaded", "fr": "Aucun portrait téléversé" },
+  "personalStoryLabel": { "en": "Personal Story", "fr": "Histoire personnelle" },
+  "personalStoryPlaceholder": { "en": "Describe your character's history, motivations, personality, and defining moments...", "fr": "Décrivez l'histoire, les motivations, la personnalité et les moments marquants de votre personnage..." },
+  "campaignLabel": { "en": "Campaign", "fr": "Campagne" },
+  "campaignPlaceholder": { "en": "e.g., The Sunless Citadel, A Homebrewed Adventure", "fr": "ex : La Citadelle Sans Soleil, Une Aventure Maison" },
+  "homelandLabel": { "en": "Homeland", "fr": "Terre natale" },
+  "homelandPlaceholder": { "en": "e.g., The Northern Wastes, Aerie Peak", "fr": "ex : Les Terres Désolées du Nord, Pic d'Aerie" },
+  "physicalAppearanceHeading": { "en": "Physical Appearance", "fr": "Apparence physique" },
+  "heightLabel": { "en": "Height", "fr": "Taille" },
+  "heightPlaceholder": { "en": "e.g., 5'10\"", "fr": "ex : 1m78" },
+  "weightLabel": { "en": "Weight", "fr": "Poids" },
+  "weightPlaceholder": { "en": "e.g., 160 lbs", "fr": "ex : 72 kg" },
+  "eyesLabel": { "en": "Eyes", "fr": "Yeux" },
+  "eyesPlaceholder": { "en": "e.g., Hazel", "fr": "ex : Noisette" },
+  "hairLabel": { "en": "Hair", "fr": "Cheveux" },
+  "hairPlaceholder": { "en": "e.g., Raven Black, Tousled", "fr": "ex : Noir corbeau, Ébouriffés" },
+  "skinLabel": { "en": "Skin", "fr": "Peau" },
+  "skinPlaceholder": { "en": "e.g., Fair, Tanned", "fr": "ex : Claire, Bronzée" }
+}
+    

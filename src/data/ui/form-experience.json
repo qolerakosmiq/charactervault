@@ -1,0 +1,12 @@
+
+{
+  "experiencePanelTitle": { "en": "Experience", "fr": "Expérience" },
+  "experiencePanelDescription": { "en": "Track your character's progression and current experience points.", "fr": "Suivez la progression de votre personnage et ses points d'expérience actuels." },
+  "experiencePanelCurrentXpMainLabel": { "en": "Current XP", "fr": "XP Actuels" },
+  "experiencePanelCurrentXpSubLabel": { "en": "Experience Points", "fr": "Points d'Expérience" },
+  "experiencePanelLevelLabelFormat": { "en": "Level {levelNumber}", "fr": "Niveau {levelNumber}" },
+  "experiencePanelXpToLevelUpFormat": { "en": "{currentXp} / {xpForNextLevel} XP", "fr": "{currentXp} / {xpForNextLevel} XP" },
+  "experiencePanelMaxLevel": { "en": "Max Level Reached", "fr": "Niveau Max Atteint" },
+  "experiencePanelLevelUpButton": { "en": "Level Up", "fr": "Monter de Niveau" }
+}
+    

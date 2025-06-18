@@ -1,0 +1,19 @@
+
+{
+  "tabLabelCore": { "en": "Core", "fr": "Infos" },
+  "tabLabelAbilities": { "en": "Abilities", "fr": "Carac." },
+  "tabLabelCombat": { "en": "Combat", "fr": "Combat" },
+  "tabLabelSkills": { "en": "Skills", "fr": "Comp." },
+  "tabLabelFeats": { "en": "Feats", "fr": "Dons" },
+  "tabLabelInventory": { "en": "Inventory", "fr": "Invent." },
+  "tabLabelSpells": { "en": "Spells", "fr": "Sorts" },
+  "toastCharacterSavedTitle": { "en": "Character Saved", "fr": "Personnage sauvegardé" },
+  "toastCharacterSavedDescription": { "en": "{characterName} has been updated.", "fr": "{characterName} a été mis à jour." },
+  "toastCharacterDeletedTitle": { "en": "Character Deleted", "fr": "Personnage supprimé" },
+  "toastCharacterDeletedDescription": { "en": "{characterName} has been sent to the great beyond.", "fr": "{characterName} a été envoyé dans l'au-delà." },
+  "deleteCharacterButton": { "en": "Delete Character", "fr": "Supprimer le personnage" },
+  "deleteCharacterConfirmTitle": { "en": "Confirm Deletion", "fr": "Confirmer la suppression" },
+  "deleteCharacterConfirmDescription": { "en": "Are you sure you want to delete {characterName}? This action cannot be undone.", "fr": "Êtes-vous sûr de vouloir supprimer {characterName} ? Cette action ne peut pas être annulée." },
+  "deleteButtonLabel": { "en": "Delete", "fr": "Supprimer" }
+}
+    

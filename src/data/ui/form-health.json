@@ -1,0 +1,33 @@
+
+{
+  "healthPanelTitle": { "en": "Health & Vitality", "fr": "Santé et Vitalité" },
+  "healthPanelDescription": { "en": "Manage hit points, damage, and related attributes.", "fr": "Gérez les points de vie, les dégâts et les attributs associés." },
+  "healthPanelStatusLabel": { "en": "Status:", "fr": "État :" },
+  "healthStatusNormal": { "en": "Normal", "fr": "Normal" },
+  "healthStatusDying": { "en": "Dying", "fr": "Mourant" },
+  "healthStatusDead": { "en": "Dead", "fr": "Mort" },
+  "healthStatusDisabled": { "en": "Disabled", "fr": "Affaibli" },
+  "healthStatusStaggered": { "en": "Staggered", "fr": "Chancelant" },
+  "healthStatusUnconscious": { "en": "Unconscious", "fr": "Inconscient" },
+  "healthBarLabelHitPoints": { "en": "Hit Points", "fr": "Points de Vie" },
+  "healthBarLabelTemporary": { "en": "Temporary", "fr": "Temporaires" },
+  "healthBarLabelNonlethal": { "en": "Nonlethal", "fr": "Non létaux" },
+  "healthPanelCurrentHpLabel": { "en": "Current Hit Points", "fr": "Points de Vie Actuels" },
+  "healthPanelNonlethalDamageLabel": { "en": "Nonlethal Damage", "fr": "Dégâts Non Létaux" },
+  "healthPanelTemporaryHitPointsLabel": { "en": "Temporary Hit Points", "fr": "Points de Vie Temporaires" },
+  "healthPanelNumberOfWoundsLabel": { "en": "Number of Wounds", "fr": "Nombre de Blessures" },
+  "healthPanelBaseMaxHpLabel": { "en": "Base Hit Points", "fr": "Points de Vie de Base" },
+  "healthPanelAbilityModLabel": { "en": "Ability Modifier", "fr": "Modificateur de Caractéristique" },
+  "healthPanelMiscMaxHpLabel": { "en": "Misc Modifier", "fr": "Modificateur Divers" },
+  "healthPanelCustomModLabel": { "en": "Custom Modifier", "fr": "Modificateur Personnalisé" },
+  "healthPanelMaxHpLabel": { "en": "Maximum Hit Points", "fr": "Points de Vie Maximum" },
+  "healthPanelMissingHpLabel": { "en": "Missing Hit Points", "fr": "Points de Vie Manquants" },
+  "healthPanelMaxHpMiscModInfoNote_prefix": { "en": "<b>Note:</b> The ", "fr": "<b>Note :</b> Le " },
+  "healthPanelMaxHpMiscModInfoNote_suffix": { "en": " to Maximum Hit Points includes bonuses from magic items, active feats, and other persistent effects.", "fr": " aux Points de Vie Maximum inclut les bonus des objets magiques, des dons actifs et d'autres effets persistants." },
+  "maxHpDialogBaseHpLabel": { "en": "Base Hit Points", "fr": "Points de Vie de Base" },
+  "maxHpDialogAbilityModLabel": { "en": "Ability Modifier", "fr": "Modificateur de Caractéristique" },
+  "maxHpDialogMiscModLabel": { "en": "Misc Modifier", "fr": "Modificateur Divers" },
+  "maxHpDialogCustomModLabel": { "en": "Custom Modifier", "fr": "Modificateur Personnalisé" },
+  "maxHpDialogTotalLabel": { "en": "Maximum Hit Points", "fr": "Points de Vie Maximum" }
+}
+    

@@ -1,0 +1,22 @@
+
+{
+  "speedPanelTitle": { "en": "Movement Speeds", "fr": "Vitesses de déplacement" },
+  "speedPanelDescription": { "en": "Manage your character's various movement capabilities and penalties.", "fr": "Gérez les diverses capacités de mouvement et pénalités de votre personnage." },
+  "speedPanelLoadingSpeeds": { "en": "Loading speed details...", "fr": "Chargement des détails de vitesse..." },
+  "speedMiscModifierLabel": { "en": "Misc Modifier", "fr": "Modificateur divers" },
+  "armorPenaltyCardTitle": { "en": "Armor Penalty Effect", "fr": "Effet de la pénalité d'armure" },
+  "loadPenaltyCardTitle": { "en": "Load Penalty Effect", "fr": "Effet de la pénalité de charge" },
+  "speedUnit": { "en": "ft.", "fr": "m." },
+  "speedStepIncrement": { "en": "5", "fr": "1.5" },
+  "speedLabelLand": { "en": "Land Speed", "fr": "Vitesse terrestre" },
+  "speedLabelBurrow": { "en": "Burrow Speed", "fr": "Vitesse de creusement" },
+  "speedLabelClimb": { "en": "Climb Speed", "fr": "Vitesse d'escalade" },
+  "speedLabelFly": { "en": "Fly Speed", "fr": "Vitesse de vol" },
+  "speedLabelSwim": { "en": "Swim Speed", "fr": "Vitesse de nage" },
+  "infoDialogSpeedBaseRaceLabel": { "en": "Base ({raceName})", "fr": "Base ({raceName})" },
+  "infoDialogSpeedMiscModifierLabel": { "en": "Misc Modifier", "fr": "Modificateur Divers" },
+  "infoDialogSpeedArmorPenaltyLabel": { "en": "Armor Penalty", "fr": "Pénalité d'Armure" },
+  "infoDialogSpeedLoadPenaltyLabel": { "en": "Load Penalty", "fr": "Pénalité de Charge" },
+  "infoDialogSpeedTotalPrefixLabel": { "en": "Total", "fr": "Total" }
+}
+    

@@ -1,0 +1,12 @@
+
+{
+  "pointBuyDialogTitle": { "en": "Point Buy Ability Scores", "fr": "Achat par points des caractéristiques" },
+  "pointBuyDialogDescription": { "en": "Distribute points to set your character's initial ability scores. Scores start at 8, and the maximum score is 18.", "fr": "Répartissez les points pour définir les caractéristiques initiales de votre personnage. Les scores commencent à 8, et le score maximum est de 18." },
+  "pointBuyDialogTotalPointsBudgetLabel": { "en": "Total Points Budget:", "fr": "Budget total de points:" },
+  "pointBuyDialogPointsSpentLabel": { "en": "Points Spent:", "fr": "Points dépensés:" },
+  "pointBuyDialogPointsRemainingLabel": { "en": "Points Remaining:", "fr": "Points restants:" },
+  "pointBuyDialogCostLabel": { "en": "Cost:", "fr": "Coût:" },
+  "pointBuyDialogErrorInvalidApplicationTitle": { "en": "Invalid Scores", "fr": "Scores invalides" },
+  "pointBuyDialogErrorInvalidApplicationDesc": { "en": "Cannot apply scores. Points spent must exactly match the total points budget, or the budget is invalid.", "fr": "Impossible d'appliquer les scores. Les points dépensés doivent correspondre exactement au budget total de points, ou le budget est invalide." }
+}
+    

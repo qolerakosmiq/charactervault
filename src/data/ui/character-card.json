@@ -1,0 +1,14 @@
+
+{
+  "alertDialogDeleteCharacterTitle": { "en": "Are you sure?", "fr": "Êtes-vous sûr ?" },
+  "alertDialogDeleteCharacterDescription": { "en": "This action cannot be undone. This will permanently delete the character \"{characterName}\".", "fr": "Cette action ne peut pas être annulée. Cela supprimera définitivement le personnage \"{characterName}\"." },
+  "alertDialogDeleteCharacterCancelButton": { "en": "Cancel", "fr": "Annuler" },
+  "alertDialogDeleteCharacterConfirmButton": { "en": "Delete", "fr": "Supprimer" },
+  "characterCardViewEditButton": { "en": "View/Edit", "fr": "Voir/Modifier" },
+  "characterCardDeleteButton": { "en": "Delete", "fr": "Supprimer" },
+  "alignmentNotSet": { "en": "Alignment Not Set", "fr": "Alignement non défini" },
+  "raceNotSet": { "en": "Race Not Set", "fr": "Race non définie" },
+  "classNotSet": { "en": "Class Not Set", "fr": "Classe non définie" },
+  "sizeNotSet": { "en": "Size Not Set", "fr": "Taille non définie" }
+}
+    

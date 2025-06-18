@@ -30,7 +30,7 @@ const commonDataFileConfigs = [
   { path: 'common/skills', isArray: false },
   { path: 'common/xp', isArray: false },
   { path: 'feats/common-feats', isArray: false },
-  { path: 'common/gear-slots', key: 'GEAR_SLOTS_DATA', isArray: true } // Added gear-slots
+  { path: 'common/gear-slots', key: 'GEAR_SLOTS_DATA', isArray: true }
 ];
 
 
@@ -44,11 +44,42 @@ const itemFileConfigs = [
   { path: 'items/armor', key: 'ITEM_DEFINITIONS_ARMOR_DATA', bundleKey: 'item_definitions_armor', isArray: true },
   { path: 'items/shields', key: 'ITEM_DEFINITIONS_SHIELDS_DATA', bundleKey: 'item_definitions_shields', isArray: true },
   { path: 'items/magic-items', key: 'ITEM_DEFINITIONS_MAGIC_ITEMS_DATA', bundleKey: 'item_definitions_magic_items', isArray: true },
-  // Add more item file configs here
 ];
 
 const uiStringFiles = [
-  'ui/character-sheet', 'ui/dashboard', 'ui/dialogs', 'ui/forms', 'ui/general'
+  'ui/common',
+  'ui/dashboard',
+  'ui/character-card',
+  'ui/dm-settings',
+  'ui/character-sheet-page',
+  'ui/character-sheet-tabs',
+  'ui/core-info-section',
+  'ui/ability-scores-section',
+  'ui/combat-stats-section',
+  'ui/inventory-listing',
+  'ui/spells-listing',
+  'ui/form-core-info',
+  'ui/form-ability-scores',
+  'ui/form-story-portrait',
+  'ui/form-skills',
+  'ui/form-feats',
+  'ui/form-saving-throws',
+  'ui/form-armor-class',
+  'ui/form-health',
+  'ui/form-speed',
+  'ui/form-combat',
+  'ui/form-resistances',
+  'ui/form-languages',
+  'ui/form-conditions',
+  'ui/form-experience',
+  'ui/ability-roller-dialog',
+  'ui/point-buy-dialog',
+  'ui/feat-selection-dialog',
+  'ui/specialization-input-dialog',
+  'ui/feat-skill-suggester-dialog',
+  'ui/custom-definition-dialogs',
+  'ui/info-display-dialog',
+  'ui/roll-dialog'
 ];
 
 
@@ -134,3 +165,4 @@ export async function loadLocaleData(lang: LanguageCode): Promise<LocaleDataBund
   return finalBundle;
 }
 
+    

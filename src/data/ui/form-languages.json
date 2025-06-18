@@ -1,0 +1,17 @@
+
+{
+  "languagesPanelTitle": { "en": "Languages", "fr": "Langues" },
+  "languagesPanelDescription": { "en": "Manage your character's known languages.", "fr": "Gérez les langues connues de votre personnage." },
+  "languagesPanelSlotsAvailableLabel": { "en": "Languages Available: ", "fr": "Langues disponibles : " },
+  "languagesPanelSlotsLeftLabel": { "en": "Languages Left: ", "fr": "Langues restantes : " },
+  "languagesPanelFormulaIntModLabel": { "en": "Intelligence Modifier", "fr": "Modificateur d'Intelligence" },
+  "languagesPanelFormulaSkillRanksLabel": { "en": "Speak Language Ranks", "fr": "Rangs en Langage" },
+  "languagesPanelAutomaticBadgeLabel": { "en": "Automatic", "fr": "Automatique" },
+  "languagesPanelRemoveAriaLabel": { "en": "Remove {languageName}", "fr": "Supprimer {languageName}" },
+  "languagesPanelAddButton": { "en": "Add Language", "fr": "Ajouter une langue" },
+  "languagesPanelComboboxPlaceholder": { "en": "Select language...", "fr": "Choisir une langue..." },
+  "languagesPanelComboboxSearch": { "en": "Search languages...", "fr": "Rechercher des langues..." },
+  "languagesPanelComboboxEmpty": { "en": "No language found.", "fr": "Aucune langue trouvée." },
+  "languagesPanelNoLanguagesKnown": { "en": "No languages currently known.", "fr": "Aucune langue actuellement connue." }
+}
+    

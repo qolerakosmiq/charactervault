@@ -1,0 +1,15 @@
+
+{
+  "savingThrowsPanelTitle": { "en": "Saving Throws", "fr": "Jets de Sauvegarde" },
+  "savingThrowsPanelLoading": { "en": "Loading saving throw details...", "fr": "Chargement des détails des jets de sauvegarde..." },
+  "savingThrowsRowLabelTotal": { "en": "Total", "fr": "Total" },
+  "savingThrowsRowLabelBase": { "en": "Base", "fr": "Base" },
+  "savingThrowsRowLabelAbilityModifier": { "en": "Ability Modifier", "fr": "Mod. de Carac." },
+  "savingThrowsRowLabelMagicModifier": { "en": "Magic Modifier", "fr": "Mod. Magique" },
+  "savingThrowsRowLabelMiscModifier": { "en": "Misc Modifier", "fr": "Mod. Divers" },
+  "savingThrowsRowLabelTemporaryModifier": { "en": "Temporary Modifier", "fr": "Mod. Temporaire" },
+  "savingThrowsFeatsModifierLabel": { "en": "Feats Modifiers", "fr": "Modificateurs de Dons" },
+  "savingThrowsPanelMiscModInfoNote_prefix": { "en": "<b>Note:</b> The ", "fr": "<b>Note :</b> La ligne " },
+  "savingThrowsPanelMiscModInfoNote_suffix": { "en": " line includes bonuses from magic items, active feats, and other persistent effects.", "fr": " inclut les bonus des objets magiques, des dons actifs et d'autres effets persistants." }
+}
+    

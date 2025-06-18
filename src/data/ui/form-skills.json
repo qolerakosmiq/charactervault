@@ -1,0 +1,36 @@
+
+{
+  "skillsPanelTitle": { "en": "Skills", "fr": "Compétences" },
+  "skillsPanelLoadingSkills": { "en": "Loading skills...", "fr": "Chargement des compétences..." },
+  "skillsPanelDescription": { "en": "Allocate skill points based on your class and Intelligence.", "fr": "Allouez des points de compétence en fonction de votre classe et de votre Intelligence." },
+  "skillPointsAvailableLabel": { "en": "Skill Points Available:", "fr": "Points de compétence disponibles :" },
+  "skillPointsLeftLabel": { "en": "Skill Points Left:", "fr": "Points de compétence restants :" },
+  "skillsTableClassHeader": { "en": "Class<br/>Skill?", "fr": "Classe<br/>Comp?" },
+  "skillsTableSkillHeader": { "en": "Skill Name", "fr": "Nom de Compétence" },
+  "skillsTableTotalBonusHeader": { "en": "Total", "fr": "Total" },
+  "skillsTableKeyAbilityHeader": { "en": "Key<br/>Ability", "fr": "Carac.<br/>Clé" },
+  "skillsTableAbilityModHeader": { "en": "Ability Mod", "fr": "Mod. Carac." },
+  "skillsTableMiscModHeader": { "en": "User Misc", "fr": "Mod. Utilisateur" },
+  "skillsTableRanksHeader": { "en": "Ranks", "fr": "Rangs" },
+  "skillsTableCostHeader": { "en": "Cost", "fr": "Coût" },
+  "skillsTableMaxHeader": { "en": "Max", "fr": "Max" },
+  "skillsTableTooltipInfoForSkill": { "en": "Info for {skillName}", "fr": "Infos pour {skillName}" },
+  "skillPointFormulaLine1": {
+    "en": "(<badge>{classLabel} Base | <b>{baseSkillPointsForClass}</b></badge> + <badge outline>{intelligenceAbilityLabel} Modifier | <b>{intelligenceModifier}</b></badge>{racialBonusPart}) × <b><color accent>4</color></b> for First Level = <b><color accent>{pointsForFirstLevel}</color></b>",
+    "fr": "(<badge>{classLabel} Base | <b>{baseSkillPointsForClass}</b></badge> + <badge outline>{intelligenceAbilityLabel} Modificateur | <b>{intelligenceModifier}</b></badge>{racialBonusPart}) × <b><color accent>4</color></b> pour Premier Niveau = <b><color accent>{pointsForFirstLevel}</color></b>"
+  },
+  "skillPointFormulaLine2": {
+    "en": "+ (<badge>{classLabel} Base | <b>{baseSkillPointsForClass}</b></badge> + <badge outline>{intelligenceAbilityLabel} Modifier | <b>{intelligenceModifier}</b></badge>{racialBonusPart}) × <b><color accent>{progressionLevels}</color></b> for Progression = <b><color accent>{pointsFromLevelProgression}</color></b>",
+    "fr": "+ (<badge>{classLabel} Base | <b>{baseSkillPointsForClass}</b></badge> + <badge outline>{intelligenceAbilityLabel} Modificateur | <b>{intelligenceModifier}</b></badge>{racialBonusPart}) × <b><color accent>{progressionLevels}</color></b> pour Progression = <b><color accent>{pointsFromLevelProgression}</color></b>"
+  },
+  "skillPointRacialBonusPartFormat": {
+    "en": " + <badge>Racial Bonus | <b>{racialBonusSkillPoints}</b></badge>",
+    "fr": " + <badge>Bonus Racial | <b>{racialBonusSkillPoints}</b></badge>"
+  },
+  "skillPointFormulaMinOneNote": {
+    "en": "Minimum 1 skill point per level applies after all bonuses.",
+    "fr": "Minimum 1 point de compétence par niveau s'applique après tous les bonus."
+  },
+  "skillPointFormulaSelectClassPrompt": { "en": "Select a class to see detailed skill point calculation.", "fr": "Sélectionnez une classe pour voir le calcul détaillé des points de compétence." }
+}
+    

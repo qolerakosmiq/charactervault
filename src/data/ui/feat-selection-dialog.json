@@ -1,0 +1,9 @@
+
+{
+  "featSelectionDialogTitle": { "en": "Select a Feat", "fr": "Choisir un don" },
+  "featSelectionDialogDescription": { "en": "Search and choose a feat from the list. Descriptions and prerequisites are shown below each feat.", "fr": "Recherchez et choisissez un don dans la liste. Les descriptions et prérequis sont affichés sous chaque don." },
+  "featSelectionDialogDescriptionCategoryFilter": { "en": "Choose a feat from the filtered list. Showing feats for category:", "fr": "Choisissez un don dans la liste filtrée. Affichage des dons pour la catégorie :" },
+  "featSelectionDialogSearchPlaceholder": { "en": "Search feats by name or description...", "fr": "Rechercher des dons par nom ou description..." },
+  "featSelectionDialogEmpty": { "en": "No feats found.", "fr": "Aucun don trouvé." }
+}
+    

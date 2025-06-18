@@ -1,0 +1,6 @@
+
+{
+  "toastCharacterForgedTitle": { "en": "Character Forged!", "fr": "Personnage forgé !" },
+  "toastCharacterForgedDescription": { "en": "{characterName} has been successfully created.", "fr": "{characterName} a été créé avec succès." }
+}
+    

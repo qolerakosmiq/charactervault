@@ -1,0 +1,33 @@
+
+{
+  "armorClassPanelTitle": { "en": "Armor Class", "fr": "Classe d'Armure" },
+  "savingThrowsPanelTitle": { "en": "Saving Throws", "fr": "Jets de Sauvegarde" },
+  "savingThrowsRowLabelBase": { "en": "Base", "fr": "Base" },
+  "savingThrowsRowLabelAbilityModifier": { "en": "Ability Modifier", "fr": "Mod. de Carac." },
+  "savingThrowsRowLabelMagicModifier": { "en": "Magic Modifier", "fr": "Mod. Magique" },
+  "savingThrowsRowLabelMiscModifier": { "en": "Misc Modifier", "fr": "Mod. Divers" },
+  "savingThrowsRowLabelTemporaryModifier": { "en": "Temporary Modifier", "fr": "Mod. Temporaire" },
+  "savingThrowsRowLabelTotal": { "en": "Total", "fr": "Total" },
+  "savingThrowsFeatsModifierLabel": { "en": "Feats Modifiers", "fr": "Modificateurs de Dons" },
+  "savingThrowsPanelMiscModInfoNote_prefix": { "en": "<b>Note:</b> The ", "fr": "<b>Note :</b> La ligne " },
+  "savingThrowsPanelMiscModInfoNote_suffix": { "en": " line includes bonuses from magic items, active feats, and other persistent effects.", "fr": " inclut les bonus des objets magiques, des dons actifs et d'autres effets persistants." },
+  "combatPanelCombatVitalsTitle": { "en": "Combat Vitals", "fr": "Signes Vitaux de Combat" },
+  "combatPanelBabLabel": { "en": "Base Attack Bonus", "fr": "Bonus d'Attaque de Base" },
+  "combatPanelInitiativeLabel": { "en": "Initiative", "fr": "Initiative" },
+  "combatPanelGrappleModifierLabel": { "en": "Grapple Modifier", "fr": "Modificateur de Lutte" },
+  "combatPanelFlurryOfBlowsLabel": { "en": "Flurry of Blows", "fr": "Déluge de Coups" },
+  "attacksPanelMeleeTitle": { "en": "Melee Attacks", "fr": "Attaques au Corps à Corps" },
+  "attacksPanelMeleeWeaponLabel": { "en": "Melee Weapon", "fr": "Arme de Corps à Corps" },
+  "attacksPanelWeaponDamageLabel": { "en": "Damage", "fr": "Dégâts" },
+  "attacksPanelWeaponCriticalLabel": { "en": "Critical", "fr": "Critique" },
+  "attacksPanelWeaponDamageTypeLabel": { "en": "Type", "fr": "Type" },
+  "attacksPanelAttackBonusLabel": { "en": "Attack Bonus", "fr": "Bonus d'Attaque" },
+  "attacksPanelDamageBonusLabel": { "en": "Damage Bonus", "fr": "Bonus de Dégâts" },
+  "attacksPanelRangedTitle": { "en": "Ranged Attacks", "fr": "Attaques à Distance" },
+  "attacksPanelRangedWeaponLabel": { "en": "Ranged Weapon", "fr": "Arme à Distance" },
+  "attacksPanelNoRangedWeapons": { "en": "No ranged weapons", "fr": "Aucune arme à distance" },
+  "attacksPanelSelectRangedWeapon": { "en": "Select ranged weapon...", "fr": "Choisir une arme à distance..." },
+  "attacksPanelWeaponRangeLabel": { "en": "Range", "fr": "Portée" },
+  "attacksPanelUnarmedOption": { "en": "Unarmed", "fr": "À mains nues" }
+}
+    
