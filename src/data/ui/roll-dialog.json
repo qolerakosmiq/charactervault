@@ -30,6 +30,7 @@
   "rollDialogTitleMeleeAttackFormat": { "en": "Roll Melee Attack ({weaponName})", "fr": "Lancer une Attaque au Corps à Corps ({weaponName})" },
   "rollDialogTitleMeleeDamageFormat": { "en": "Melee Damage ({weaponName}: {dice})", "fr": "Dégâts au Corps à Corps ({weaponName} : {dice})" },
   "rollDialogTitleRangedAttackFormat": { "en": "Roll Ranged Attack ({weaponName})", "fr": "Lancer une Attaque à Distance ({weaponName})" },
-  "rollDialogTitleRangedDamageFormat": { "en": "Ranged Damage ({weaponName}: {dice})", "fr": "Dégâts à Distance ({weaponName} : {dice})" }
+  "rollDialogTitleRangedDamageFormat": { "en": "Ranged Damage ({weaponName}: {dice})", "fr": "Dégâts à Distance ({weaponName} : {dice})" },
+  "rollDialogSkillCheckAriaLabel": { "en": "Roll {skillName} Check", "fr": "Lancer un test de {skillName}" }
 }
     
