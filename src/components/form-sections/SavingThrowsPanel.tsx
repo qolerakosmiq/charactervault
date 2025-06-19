@@ -204,33 +204,39 @@ const SavingThrowsPanelComponent = ({
         const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
         
         let leftBorderColorClass = "border-border"; 
-        let rightBgClass = "bg-muted";      
-        let rightTextClass = "text-muted-foreground"; 
-        let rightBorderColorClass = "border-border"; 
+        let leftBgClass = "bg-muted";      
+        let leftTextClass = "text-muted-foreground"; 
+        
+        let rightBorderColorClass = "border-border";
+        let rightBgClass = "bg-transparent";
+        let rightTextClass = "text-foreground";
+
 
         if (abilityMod > 0) {
+          rightBorderColorClass = "border-emerald-600"; // Border for value
+          rightTextClass = "text-emerald-500";
+          leftBgClass = "bg-emerald-600"; // Background for abbreviation
+          leftTextClass = "text-emerald-50";
           leftBorderColorClass = "border-emerald-600";
-          rightBgClass = "bg-emerald-600";
-          rightTextClass = "text-emerald-50";
-          rightBorderColorClass = "border-emerald-600";
         } else if (abilityMod < 0) {
+          rightBorderColorClass = "border-destructive"; // Border for value
+          rightTextClass = "text-destructive";
+          leftBgClass = "bg-destructive"; // Background for abbreviation
+          leftTextClass = "text-destructive-foreground";
           leftBorderColorClass = "border-destructive";
-          rightBgClass = "bg-destructive";
-          rightTextClass = "text-destructive-foreground";
-          rightBorderColorClass = "border-destructive";
         }
         
         return (
           <DualBadge
-            leftLabel={renderModifierValue(abilityMod)}
-            rightLabel={abilityAbbr}
+            leftLabel={abilityAbbr}
+            rightLabel={renderModifierValue(abilityMod)}
             leftClassName={cn(
-              "bg-transparent text-foreground border-2 rounded-l-full border-r-0 !px-2 !py-0.5 !h-auto",
-              leftBorderColorClass 
+              "border-2 rounded-l-full !px-2 !py-0.5 !h-auto",
+              leftBgClass, leftTextClass, leftBorderColorClass
             )}
             rightClassName={cn(
-              "border-2 rounded-r-full -ml-[2px] !px-2 !py-0.5 !h-auto",
-              rightBgClass, rightTextClass, rightBorderColorClass 
+              "bg-transparent border-2 rounded-r-full -ml-[2px] !px-2 !py-0.5 !h-auto",
+              rightTextClass, rightBorderColorClass 
             )}
             className="text-sm"
           />
@@ -277,9 +283,9 @@ const SavingThrowsPanelComponent = ({
             <table className="w-full min-w-[400px] table-fixed">
               <thead>
                 <tr className="border-b">
-                  <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground w-[100px]"></th>
+                  <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground w-1/4"></th>
                   {SAVE_TYPES.map((saveType) => (
-                    <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-foreground capitalize w-32">
+                    <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-foreground capitalize w-1/4">
                       {SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType}
                     </th>
                   ))}
