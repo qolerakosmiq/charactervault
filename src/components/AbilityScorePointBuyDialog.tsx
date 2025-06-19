@@ -134,12 +134,12 @@ export function AbilityScorePointBuyDialog({
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingAbilityNamesTitle}</p>
           </div>
-           <DialogFooter className="mt-6 pt-4 border-t">
+           <DialogFooter className="mt-6">
             <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
-              Cancel
+              {translations?.UI_STRINGS.pointBuyDialogCancelButton || "Cancel"}
             </Button>
             <Button disabled type="button">
-              Apply Scores
+              {translations?.UI_STRINGS.pointBuyDialogApplyButton || "Apply Scores"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -247,7 +247,7 @@ export function AbilityScorePointBuyDialog({
             </div>
         </ScrollArea>
 
-        <DialogFooter className="mt-6 pt-4 border-t">
+        <DialogFooter className="mt-6">
           <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
             {UI_STRINGS.pointBuyDialogCancelButton}
           </Button>
