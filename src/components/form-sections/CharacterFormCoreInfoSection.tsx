@@ -17,7 +17,7 @@ import type {
   DndClassOption,
   AggregatedFeatEffects,
   ClassSpecificUIBlock,
-  ComboboxOption, 
+  ComboboxOption,
   LocalizedString,
   CharacterClassSpecificChoice,
   InfoDialogContentType
@@ -40,6 +40,7 @@ import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 import { DualBadge } from '@/components/ui/DualBadge';
+import { Card } from '@/components/ui/card'; // Added Card import
 
 const DEBOUNCE_DELAY = 400;
 
@@ -134,7 +135,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     React.useCallback((value) => onFieldChange('size', value as CharacterSize), [onFieldChange]),
     DEBOUNCE_DELAY
   );
-  
+
   const { UI_STRINGS, ALIGNMENTS, DND_RACES, DND_CLASSES, DND_DEITIES, SIZES, GENDERS, DND_DOMAINS, DND_MAGIC_SCHOOLS, PREFERRED_DEFAULT_ALIGNMENT_IDS } = translations || {};
 
   const selectedClassInfo = React.useMemo(() => DND_CLASSES?.find(c => c.id === localClassName), [DND_CLASSES, localClassName]);
@@ -217,7 +218,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       } else {
         updatedChoices = [...existingChoices, { featureKey, value: newValue, slotIndex }];
       }
-      if (newValue === "") { 
+      if (newValue === "") {
         if (!choiceExists) updatedChoices = updatedChoices.filter(c => !(c.featureKey === featureKey && c.slotIndex === slotIndex && c.value === ""));
       }
     } else {
@@ -229,7 +230,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       } else {
         updatedChoices = [...existingChoices, { featureKey, value: newValue }];
       }
-      if (newValue === "") { 
+      if (newValue === "") {
          if (!choiceExists) updatedChoices = updatedChoices.filter(c => !(c.featureKey === featureKey && c.slotIndex === undefined && c.value === ""));
       }
     }
@@ -245,7 +246,7 @@ const CharacterFormCoreInfoSectionComponent = ({
 
   const handleOpenClassSpecificChoiceInfoDialogInternal = React.useCallback((uiBlock: ClassSpecificUIBlock) => {
     if (!onOpenClassSpecificChoiceInfoDialog || !translations || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !UI_STRINGS) return;
-    
+
     let optionsForDialog: Array<{ id: string; label: string; description?: string; }> = [];
     let blockLabelForDialog: string;
     if (uiBlock.labelKey && UI_STRINGS[uiBlock.labelKey]) { blockLabelForDialog = UI_STRINGS[uiBlock.labelKey]!; }
@@ -297,7 +298,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               if (uiBlock.optionsSource === 'domains') tempOptions = DND_DOMAINS.map(d => ({ value: d.id, label: getLocalizedString(d.label, currentLang) }));
               else if (uiBlock.optionsSource === 'magicSchools') tempOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: getLocalizedString(s.label, currentLang) }));
               else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) tempOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, currentLang) }));
-              
+
               const actualSelectableOptions = tempOptions.filter(opt => opt.value !== UI_EMPTY_SELECTION_VALUE && opt.value !== "");
               if (actualSelectableOptions.length > 0) valueToSet = actualSelectableOptions[0].value;
             }
@@ -422,14 +423,14 @@ const CharacterFormCoreInfoSectionComponent = ({
     if (uiBlock.labelKey && UI_STRINGS[uiBlock.labelKey]) { blockLabel = UI_STRINGS[uiBlock.labelKey]!; }
     else if (uiBlock.label) { blockLabel = getLocalizedString(uiBlock.label, currentLang); }
     else { blockLabel = uiBlock.key; }
-    
+
     let blockDescription: string | undefined;
     if (uiBlock.descriptionKey && UI_STRINGS[uiBlock.descriptionKey]) { blockDescription = UI_STRINGS[uiBlock.descriptionKey]!; }
     else if (uiBlock.description) { blockDescription = getLocalizedString(uiBlock.description, currentLang); }
-    
+
     let blockNote: string | undefined;
     if (uiBlock.note) { blockNote = getLocalizedString(uiBlock.note, currentLang); }
-    
+
     let inputPlaceholderText: string | undefined;
     if (uiBlock.inputPlaceholderKey && UI_STRINGS[uiBlock.inputPlaceholderKey]) { inputPlaceholderText = UI_STRINGS[uiBlock.inputPlaceholderKey]!; }
     else if (uiBlock.inputPlaceholder) { inputPlaceholderText = getLocalizedString(uiBlock.inputPlaceholder, currentLang); }
@@ -449,11 +450,11 @@ const CharacterFormCoreInfoSectionComponent = ({
     if (uiBlock.allowEmptySelection && uiBlock.emptySelectionLabelKey && UI_STRINGS[uiBlock.emptySelectionLabelKey]) {
       finalSelectOptions.push({ value: UI_EMPTY_SELECTION_VALUE, label: UI_STRINGS[uiBlock.emptySelectionLabelKey]!, disabled: false });
     }
-    
+
     initialOptions.forEach(opt => {
       let isDisabled = opt.disabled || false;
       if (uiBlock.excludeSpecificValues?.includes(opt.value)) isDisabled = true;
-      
+
       if (!isDisabled && uiBlock.excludeOptionsFromKeys) {
         const isExcludedByOtherKey = uiBlock.excludeOptionsFromKeys.some(excludedKey => {
           const valOfExcludedKey = getCurrentValue(excludedKey);
@@ -475,7 +476,7 @@ const CharacterFormCoreInfoSectionComponent = ({
         const controllingChoiceValue = getCurrentValue(uiBlock.disabledIfChoiceValue.featureKey);
         if (uiBlock.disabledIfChoiceValue.values.includes(controllingChoiceValue)) isDisabledByPanelOrDependency = true;
     }
-    
+
     const commonInfoButton = (uiBlock.choiceType === 'select' || uiBlock.choiceType === 'combobox') && !!onOpenClassSpecificChoiceInfoDialog ? (
       <Button
         type="button" variant="ghost" size="icon"
@@ -491,8 +492,8 @@ const CharacterFormCoreInfoSectionComponent = ({
 
     if (uiBlock.isHeadingOnly) {
       return (
-        <div key={`${uiBlock.key}-${blockIndex}-heading`} className="mt-3 mb-1">
-          <h3 className="text-lg font-semibold text-foreground/80">{blockLabel}</h3>
+        <div key={`${uiBlock.key}-${blockIndex}-heading`} className="mt-1 mb-0"> {/* Adjusted margins */}
+          <h3 className="text-md font-semibold text-foreground/80">{blockLabel}</h3> {/* Adjusted font size */}
           {blockDescription && <p className="text-xs text-muted-foreground">{blockDescription}</p>}
           <Separator className="mt-1" />
         </div>
@@ -530,7 +531,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       const numInputsToRender = uiBlock.maxSelections;
       const slotLabelTemplate = uiBlock.slotLabel ? getLocalizedString(uiBlock.slotLabel, currentLang) : (uiBlock.slotLabelKey && UI_STRINGS[uiBlock.slotLabelKey] ? UI_STRINGS[uiBlock.slotLabelKey]! : `${uiBlock.key} Slot {slotNum}`);
       return (
-        <div key={`${uiBlock.key}-group-${blockIndex}`} className="space-y-3 p-3 border rounded-md bg-muted/20">
+        <div key={`${uiBlock.key}-group-${blockIndex}`} className="space-y-3 p-3 border rounded-md bg-background/50">
           <Label className="flex items-center text-md font-medium">{blockLabel} <Badge variant="outline" className="ml-2">{numInputsToRender}</Badge></Label>
           {blockDescription && <p className="text-xs text-muted-foreground">{blockDescription}</p>}
           {Array.from({ length: numInputsToRender }).map((_, index) => (
@@ -554,14 +555,14 @@ const CharacterFormCoreInfoSectionComponent = ({
     }
     return <div key={`${uiBlock.key}-error-${blockIndex}`} className="text-destructive">Unsupported choiceType: {uiBlock.choiceType} for {uiBlock.key}</div>;
   }, [
-    characterData.classSpecificChoices, 
-    aggregatedFeatEffects, 
-    UI_STRINGS, 
-    currentLang, 
-    DND_DOMAINS, 
-    DND_MAGIC_SCHOOLS, 
-    handleClassSpecificChoiceChange, 
-    onOpenClassSpecificChoiceInfoDialog, 
+    characterData.classSpecificChoices,
+    aggregatedFeatEffects,
+    UI_STRINGS,
+    currentLang,
+    DND_DOMAINS,
+    DND_MAGIC_SCHOOLS,
+    handleClassSpecificChoiceChange,
+    onOpenClassSpecificChoiceInfoDialog,
     getCurrentValue,
     handleOpenClassSpecificChoiceInfoDialogInternal
   ]);
@@ -622,23 +623,23 @@ const CharacterFormCoreInfoSectionComponent = ({
                  <div className="flex flex-wrap items-baseline gap-1 pt-[6px] ml-1">
                   {raceSpecialQualities.abilityEffects.map((effect) => {
                     const change = effect.change;
-                    let leftBorderColorClass = "border-border"; // Default
+                    let leftBorderColorClass = "border-border";
                     let rightBgClass = "bg-muted";
                     let rightTextClass = "text-muted-foreground";
                     let rightBorderColorClass = "border-border";
 
                     if (change > 0) {
-                      leftBorderColorClass = "border-emerald-600";
-                      rightBgClass = "bg-emerald-600";
-                      rightTextClass = "text-emerald-50";
-                      rightBorderColorClass = "border-emerald-600";
+                      leftBorderColorClass = "border-emerald-700"; // Darker green for border
+                      rightBgClass = "bg-emerald-600"; // Standard green for fill
+                      rightTextClass = "text-emerald-50"; // Light text
+                      rightBorderColorClass = "border-emerald-700"; // Match left border
                     } else if (change < 0) {
                       leftBorderColorClass = "border-destructive";
                       rightBgClass = "bg-destructive";
                       rightTextClass = "text-destructive-foreground";
                       rightBorderColorClass = "border-destructive";
                     }
-                    
+
                     return (
                        <DualBadge
                         key={effect.ability}
@@ -667,8 +668,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <DualBadge
                     leftLabel={UI_STRINGS.hitDiceBadgeLabel || "HD"}
                     rightLabel={selectedClassInfo.hitDice}
-                    leftClassName="bg-transparent text-foreground border-primary/60"
-                    rightClassName="bg-primary text-primary-foreground border-primary"
+                    leftClassName="bg-transparent text-foreground border-primary/60 border-2"
+                    rightClassName="bg-primary text-primary-foreground border-primary border-2"
                     className="mr-1 mb-1"
                   />
                 )}
@@ -682,8 +683,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                         key={ability.abilityKey}
                         leftLabel={abilityNameForDisplay}
                         rightLabel={`${usesValue} / ${localizedPeriod}`}
-                        leftClassName="bg-transparent text-foreground border-accent/60"
-                        rightClassName="bg-accent text-accent-foreground border-accent"
+                        leftClassName="bg-transparent text-foreground border-accent/60 border-2"
+                        rightClassName="bg-accent text-accent-foreground border-accent border-2"
                         className="mr-1 mb-1"
                       />
                     );
@@ -695,8 +696,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                         key={ability.abilityKey}
                         leftLabel={abilityNameForDisplay}
                         rightLabel={`${typeof poolValue === 'number' ? poolValue : UI_STRINGS.abilityUsesPoolPlaceholder || "Pool"} / ${localizedPeriod}`}
-                        leftClassName="bg-transparent text-foreground border-accent/60"
-                        rightClassName="bg-accent text-accent-foreground border-accent"
+                        leftClassName="bg-transparent text-foreground border-accent/60 border-2"
+                        rightClassName="bg-accent text-accent-foreground border-accent border-2"
                         className="mr-1 mb-1"
                       />
                     );
@@ -707,11 +708,17 @@ const CharacterFormCoreInfoSectionComponent = ({
             </div>
           </div>
 
-          {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.map((uiBlock, index) => (
-            <React.Fragment key={`ui-section-wrapper-${uiBlock.key}-${index}`}>
-              {renderClassSpecificUI(uiBlock, panelIsLocked, index)}
-            </React.Fragment>
-          ))}
+          {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.length > 0 && (
+            <Card className="mt-6 p-4 pt-3 bg-background shadow-md">
+              <div className="space-y-4">
+                {selectedClassInfo.uiSections.map((uiBlock, index) => (
+                  <React.Fragment key={`ui-section-wrapper-${uiBlock.key}-${index}`}>
+                    {renderClassSpecificUI(uiBlock, panelIsLocked, index)}
+                  </React.Fragment>
+                ))}
+              </div>
+            </Card>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div className="space-y-1.5">
@@ -745,36 +752,36 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <DualBadge
                     leftLabel={UI_STRINGS.ageCategoryBadgeLabel || "Age Cat."}
                     rightLabel={ageEffectsDetails.categoryName}
-                    leftClassName="bg-transparent text-foreground border-secondary/60"
-                    rightClassName="bg-secondary text-secondary-foreground border-secondary"
+                    leftClassName="bg-transparent text-foreground border-secondary/60 border-2"
+                    rightClassName="bg-secondary text-secondary-foreground border-secondary border-2"
                     className="mr-1 mb-1"
                   />
                   {ageEffectsDetails.effects.map((effect) => {
                     const change = effect.change;
-                    let leftBorderColorClass = "border-border"; // Default
+                    let leftBorderColorClass = "border-border";
                     let rightBgClass = "bg-muted";
                     let rightTextClass = "text-muted-foreground";
                     let rightBorderColorClass = "border-border";
 
                     if (change > 0) {
-                      leftBorderColorClass = "border-emerald-600";
+                      leftBorderColorClass = "border-emerald-700";
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
-                      rightBorderColorClass = "border-emerald-600";
+                      rightBorderColorClass = "border-emerald-700";
                     } else if (change < 0) {
                       leftBorderColorClass = "border-destructive";
                       rightBgClass = "bg-destructive";
                       rightTextClass = "text-destructive-foreground";
                       rightBorderColorClass = "border-destructive";
                     }
-                    
+
                     return (
                        <DualBadge
                         key={effect.ability}
                         leftLabel={effect.ability.substring(0, 3).toUpperCase()}
                         rightLabel={change > 0 ? `+${change}` : String(change)}
-                        leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass)}
-                        rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass)}
+                        leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass, "border-2")}
+                        rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass, "border-2")}
                         className="mr-1 mb-1"
                       />
                     );
@@ -800,30 +807,30 @@ const CharacterFormCoreInfoSectionComponent = ({
                   const selectedSizeObject = SIZES.find(s => s.id === localSize);
                   if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
                     const acMod = selectedSizeObject.acModifier;
-                    
+
                     let leftBorderColorClass = "border-border";
                     let rightBgClass = "bg-muted";
                     let rightTextClass = "text-muted-foreground";
                     let rightBorderColorClass = "border-border";
-                    
+
                     if (acMod > 0) {
-                      leftBorderColorClass = "border-emerald-600";
+                      leftBorderColorClass = "border-emerald-700";
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
-                      rightBorderColorClass = "border-emerald-600";
+                      rightBorderColorClass = "border-emerald-700";
                     } else if (acMod < 0) {
                       leftBorderColorClass = "border-destructive";
                       rightBgClass = "bg-destructive";
                       rightTextClass = "text-destructive-foreground";
                       rightBorderColorClass = "border-destructive";
                     }
-                    
+
                     return (
                       <DualBadge
                         leftLabel={UI_STRINGS.sizeAcModLeftBadgeLabel || "AC"}
                         rightLabel={acMod > 0 ? `+${acMod}` : String(acMod)}
-                        leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass)}
-                        rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass)}
+                        leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass, "border-2")}
+                        rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass, "border-2")}
                         className="mr-1 mb-1"
                       />
                     );
