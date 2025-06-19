@@ -3,20 +3,19 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-// Removed: import { Badge, type BadgeProps } from "@/components/ui/badge"; // No longer using internal Badges
 
 interface DualBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   leftLabel: React.ReactNode;
   rightLabel: React.ReactNode;
   leftClassName?: string;
   rightClassName?: string;
-  // Removed: leftVariant, rightVariant, separatorClassName
+  // separatorClassName prop is no longer needed with this border approach
 }
 
 export function DualBadge({
   leftLabel,
   rightLabel,
-  className,
+  className, // For positioning/margins, not for border styling of the DualBadge itself
   leftClassName,
   rightClassName,
   ...props
@@ -24,23 +23,23 @@ export function DualBadge({
   return (
     <div
       className={cn(
-        "inline-flex items-stretch rounded-full overflow-hidden shadow-sm text-xs font-medium", // Base badge-like text styling
+        "inline-flex items-stretch rounded-full overflow-hidden shadow-sm text-xs font-medium",
         className
       )}
       {...props}
     >
       <span
         className={cn(
-          "px-2 py-0.5", // Consistent padding like a badge
-          leftClassName
+          "px-2 py-0.5 border-2", // Each part has a 2px border
+          leftClassName // Will receive border-color, bg-color, text-color
         )}
       >
         {leftLabel}
       </span>
       <span
         className={cn(
-          "px-2 py-0.5", // Consistent padding like a badge
-          rightClassName
+          "px-2 py-0.5 border-2 -ml-[2px]", // Overlap borders by 2px (the border width)
+          rightClassName // Will receive border-color, bg-color, text-color
         )}
       >
         {rightLabel}

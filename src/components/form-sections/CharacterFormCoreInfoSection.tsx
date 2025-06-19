@@ -460,8 +460,6 @@ const CharacterFormCoreInfoSectionComponent = ({
           const valOfExcludedKey = getCurrentValue(excludedKey);
           return valOfExcludedKey === opt.value && opt.value !== "" && valOfExcludedKey !== UI_EMPTY_SELECTION_VALUE;
         });
-        // Only disable if it's NOT the currently selected value for THIS block.
-        // This allows the current value to remain visible in the dropdown even if it's "taken" by another.
         if (isExcludedByOtherKey && opt.value !== currentBlockValueForProp) {
           isDisabled = true;
         }
@@ -625,30 +623,31 @@ const CharacterFormCoreInfoSectionComponent = ({
                  <div className="flex flex-wrap items-baseline gap-1 pt-[6px] ml-1">
                   {raceSpecialQualities.abilityEffects.map((effect) => {
                     const change = effect.change;
-                    const leftClass = "text-foreground border-t border-b border-l";
-                    const rightClass = "border-t border-b border-r";
-                    let borderColorClass = "border-border"; // Default for neutral
-                    let rightBgClass = "bg-muted text-muted-foreground";
+                    let leftBorderColorClass = "border-border";
+                    let rightBorderColorClass = "border-border";
+                    let rightBgClass = "bg-muted";
                     let rightTextClass = "text-muted-foreground";
 
                     if (change > 0) {
-                      borderColorClass = "border-emerald-700"; // Slightly darker for border
+                      leftBorderColorClass = "border-emerald-600";
+                      rightBorderColorClass = "border-emerald-600";
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
                     } else if (change < 0) {
-                      borderColorClass = "border-destructive";
+                      leftBorderColorClass = "border-destructive";
+                      rightBorderColorClass = "border-destructive";
                       rightBgClass = "bg-destructive";
                       rightTextClass = "text-destructive-foreground";
                     }
                     
                     return (
-                      <DualBadge
+                       <DualBadge
                         key={effect.ability}
+                        leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass)}
+                        rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass)}
                         leftLabel={effect.ability.substring(0, 3).toUpperCase()}
                         rightLabel={change > 0 ? `+${change}` : String(change)}
-                        leftClassName={cn(leftClass, borderColorClass, "border-r-0")}
-                        rightClassName={cn(rightClass, rightBgClass, rightTextClass, borderColorClass, "border-l-0")}
-                        className="whitespace-nowrap"
+                        className="mr-1 mb-1"
                       />
                     );
                   })}
@@ -721,18 +720,19 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <Badge variant="secondary" className="whitespace-nowrap"> {parseAndRenderUIString(ageEffectsDetails.categoryName)} </Badge>
                   {ageEffectsDetails.effects.map((effect) => {
                     const change = effect.change;
-                    const leftClass = "text-foreground border-t border-b border-l";
-                    const rightClass = "border-t border-b border-r";
-                    let borderColorClass = "border-border";
-                    let rightBgClass = "bg-muted text-muted-foreground";
+                    let leftBorderColorClass = "border-border";
+                    let rightBorderColorClass = "border-border";
+                    let rightBgClass = "bg-muted";
                     let rightTextClass = "text-muted-foreground";
 
                     if (change > 0) {
-                      borderColorClass = "border-emerald-700";
+                      leftBorderColorClass = "border-emerald-600";
+                      rightBorderColorClass = "border-emerald-600";
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
                     } else if (change < 0) {
-                      borderColorClass = "border-destructive";
+                      leftBorderColorClass = "border-destructive";
+                      rightBorderColorClass = "border-destructive";
                       rightBgClass = "bg-destructive";
                       rightTextClass = "text-destructive-foreground";
                     }
@@ -740,11 +740,11 @@ const CharacterFormCoreInfoSectionComponent = ({
                     return (
                        <DualBadge
                         key={effect.ability}
+                        leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass)}
+                        rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass)}
                         leftLabel={effect.ability.substring(0, 3).toUpperCase()}
                         rightLabel={change > 0 ? `+${change}` : String(change)}
-                        leftClassName={cn(leftClass, borderColorClass, "border-r-0")}
-                        rightClassName={cn(rightClass, rightBgClass, rightTextClass, borderColorClass, "border-l-0")}
-                        className="whitespace-nowrap"
+                        className="mr-1 mb-1"
                       />
                     );
                   })}
@@ -770,29 +770,31 @@ const CharacterFormCoreInfoSectionComponent = ({
                   if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
                     const acMod = selectedSizeObject.acModifier;
                     
-                    const leftClass = "text-foreground border-t border-b border-l";
-                    const rightClass = "border-t border-b border-r";
-                    let borderColorClass = "border-border"; 
-                    let rightBgClass = "bg-muted text-muted-foreground";
+                    let leftBorderColorClass = "border-border";
+                    let rightBorderColorClass = "border-border";
+                    let rightBgClass = "bg-muted";
                     let rightTextClass = "text-muted-foreground";
-
-                    if (acMod > 0) { // Typically size mod is negative or zero for AC bonus
-                      borderColorClass = "border-emerald-700";
+                    
+                    // Size modifier to AC is typically positive for smaller sizes, negative for larger
+                    if (acMod > 0) {
+                      leftBorderColorClass = "border-emerald-600";
+                      rightBorderColorClass = "border-emerald-600";
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
                     } else if (acMod < 0) {
-                      borderColorClass = "border-destructive";
+                      leftBorderColorClass = "border-destructive";
+                      rightBorderColorClass = "border-destructive";
                       rightBgClass = "bg-destructive";
                       rightTextClass = "text-destructive-foreground";
                     }
                     
                     return (
                       <DualBadge
+                        leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass)}
+                        rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass)}
                         leftLabel={UI_STRINGS.acModSizeBadgeFormat ? UI_STRINGS.acModSizeBadgeFormat.split('|')[0].trim() : "AC"}
                         rightLabel={acMod > 0 ? `+${acMod}` : String(acMod)}
-                        leftClassName={cn(leftClass, borderColorClass, "border-r-0")}
-                        rightClassName={cn(rightClass, rightBgClass, rightTextClass, borderColorClass, "border-l-0")}
-                        className="whitespace-nowrap"
+                        className="mr-1 mb-1"
                       />
                     );
                   } return null;
