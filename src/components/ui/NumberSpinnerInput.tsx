@@ -126,27 +126,13 @@ export function NumberSpinnerInput({
   const minBoundCheck = Number.isFinite(min) ? min! : -Infinity;
   const maxBoundCheck = Number.isFinite(max) ? max! : Infinity;
 
-  const getButtonPlaceholderSizeClass = () => {
-    if (buttonClassName) {
-        // Attempt to extract h- and w- classes to maintain size
-        const heightClass = buttonClassName.match(/h-\d+/)?.[0] || (buttonSize === 'icon' ? 'h-10' : 'h-8'); // Default for sm/default if not in class
-        const widthClass = buttonClassName.match(/w-\d+/)?.[0] || (buttonSize === 'icon' ? 'w-10' : 'w-8');
-        return cn("flex-none", heightClass, widthClass);
-    }
-    // Fallback to buttonSize defaults
-    switch (buttonSize) {
-        case 'sm': return "h-9 w-9 flex-none";
-        case 'lg': return "h-11 w-11 flex-none";
-        case 'icon': return "h-10 w-10 flex-none";
-        default: return "h-10 w-10 flex-none"; // Default size
-    }
-  };
-  const buttonPlaceholderSizeClass = getButtonPlaceholderSizeClass();
-
-
   return (
-    <div className={cn("flex items-center space-x-1", className)}>
-      {!disabled ? (
+    <div className={cn(
+      "flex items-center",
+      !disabled && "space-x-1", // Only apply spacing if buttons are visible
+      className
+    )}>
+      {!disabled && (
         <Button
           type="button"
           variant="ghost"
@@ -158,8 +144,6 @@ export function NumberSpinnerInput({
         >
           <MinusCircle className="h-4 w-4" />
         </Button>
-      ) : (
-        <div className={cn(buttonPlaceholderSizeClass)} />
       )}
       <Input
         id={id}
@@ -173,12 +157,13 @@ export function NumberSpinnerInput({
         readOnly={readOnly}
         className={cn(
             "text-center appearance-none", 
-            inputClassName 
+            inputClassName,
+            disabled && "w-full" // When disabled, input takes full width of its container
         )}
         style={{ MozAppearance: 'textfield' }} 
         aria-live="polite"
       />
-      {!disabled ? (
+      {!disabled && (
         <Button
           type="button"
           variant="ghost"
@@ -190,8 +175,6 @@ export function NumberSpinnerInput({
         >
           <PlusCircle className="h-4 w-4" />
         </Button>
-      ) : (
-         <div className={cn(buttonPlaceholderSizeClass)} />
       )}
     </div>
   );
