@@ -7,10 +7,12 @@
   "rollerDialogYourScoresLabel": { "en": "Your Rolled Scores", "fr": "Vos scores lancés" },
   "rollerDialogRerollButton": { "en": "Reroll Scores", "fr": "Relancer les scores" },
   "rollerDialogApplyButton": { "en": "Apply Scores", "fr": "Appliquer les scores" },
+  "rollerDialogCancelButton": { "en": "Cancel", "fr": "Annuler" },
   "rollerDialogNotSelectedOption": { "en": "Not selected", "fr": "Non sélectionné" },
   "rollerDialogErrorNotAllAssignedToastTitle": { "en": "Assignment Incomplete", "fr": "Assignation incomplète" },
   "rollerDialogErrorNotAllAssignedToastDesc": { "en": "Please assign all rolled scores to abilities before applying.", "fr": "Veuillez assigner tous les scores lancés aux caractéristiques avant d'appliquer." },
   "rollerDialogClassPriorityIntro": { "en": "Based on your selection of", "fr": "Selon votre sélection de" },
-  "rollerDialogClassPriorityPart2": { "en": "class, the generally recommended primary abilities are:", "fr": "classe, les caractéristiques principales généralement recommandées sont :" }
+  "rollerDialogClassPriorityPart2": { "en": "class, the generally recommended primary abilities are:", "fr": "classe, les caractéristiques principales généralement recommandées sont :" },
+  "rollerDialogTitleLoading": { "en": "Rolling the Dice...", "fr": "Lancement des dés..." }
 }
     
