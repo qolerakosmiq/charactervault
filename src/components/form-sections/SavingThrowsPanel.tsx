@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -8,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // CardTitle might not be used directly in the loop
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
@@ -144,7 +145,7 @@ const SavingThrowsPanelComponent = ({
       title={UI_STRINGS.savingThrowsPanelTitle || "Saving Throws"}
       icon={Zap}
       initialLockedState={false}
-      cardContentClassName="space-y-2 pt-4"
+      cardContentClassName="pt-4"
     >
       {({ isLocked: panelIsLocked }) => (
         <>
@@ -176,20 +177,19 @@ const SavingThrowsPanelComponent = ({
 
               return (
                 <Card key={saveType} className="shadow-sm">
-                  <CardHeader className="p-3 pb-2">
-                    <CardTitle className="text-base font-semibold flex justify-between items-center font-serif">
-                      <span>{saveTypeLabel}</span>
-                      <div className="flex items-center space-x-1">
-                        <span className={cn("text-2xl font-bold", totalCalculatedValue >= 0 ? "text-accent" : "text-destructive")}>
-                          {totalCalculatedValue >= 0 ? '+' : ''}{totalCalculatedValue}
-                        </span>
+                  <CardHeader className="p-4 flex flex-col items-center space-y-1 text-center">
+                    <span className="text-lg font-semibold">{saveTypeLabel}</span>
+                    <div className="flex items-center justify-center space-x-1">
+                        <p className={cn("text-3xl font-bold", totalCalculatedValue >= 0 ? "text-accent" : "text-destructive")}>
+                            {totalCalculatedValue >= 0 ? '+' : ''}{totalCalculatedValue}
+                        </p>
                         <Button
                           type="button"
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6 text-muted-foreground hover:text-foreground"
                           onClick={() => onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType: saveType })}
-                          aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel || "Info for {saveTypeLabel} Save").replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType)}
+                          aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel || "Info for {saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel)}
                         >
                           <Info className="h-4 w-4" />
                         </Button>
@@ -203,27 +203,26 @@ const SavingThrowsPanelComponent = ({
                         >
                           <Dices className="h-4 w-4" />
                         </Button>
-                      </div>
-                    </CardTitle>
+                    </div>
                   </CardHeader>
                   {!panelIsLocked && (
-                    <CardContent className="p-4 pt-0 space-y-3 text-sm">
-                      <div className="text-center">
+                    <CardContent className="p-4 pt-0 space-y-3">
+                      <div className="space-y-1 text-center">
                         <Label className="text-xs text-muted-foreground">{UI_STRINGS.savingThrowsRowLabelBase || "Base"}</Label>
                         <p className="font-semibold text-md">{baseSaveValue}</p>
                       </div>
-                      <div className="text-center">
+                      <div className="space-y-1 text-center">
                         <Label className="text-xs text-muted-foreground">{UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability Modifier"}</Label>
                         <div className="mt-1 flex justify-center">
                             <DualBadge
-                                leftLabel={renderModifierValue(abilityModifier)}
-                                rightLabel={abilityAbbr}
-                                leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0 !px-1.5 !py-0.5 !h-auto", valueBorderColorClass)}
-                                rightClassName={cn("border-2 rounded-r-full -ml-[2px] !px-1.5 !py-0.5 !h-auto", valueBgClass, valueTextClass, valueBorderColorClass)}
+                                leftLabel={abilityAbbr}
+                                rightLabel={renderModifierValue(abilityModifier)}
+                                leftClassName={cn("border-2 rounded-l-full border-r-0 !px-1.5 !py-0.5 !h-auto", valueBgClass, valueTextClass, valueBorderColorClass)}
+                                rightClassName={cn("bg-transparent text-foreground border-2 rounded-r-full -ml-[2px] !px-1.5 !py-0.5 !h-auto", valueBorderColorClass)}
                             />
                         </div>
                       </div>
-                      <div className="text-center">
+                      <div className="space-y-1 text-center">
                         <Label className="text-xs text-muted-foreground inline-flex items-center">
                           {UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}
                           <TooltipProvider>
@@ -243,21 +242,21 @@ const SavingThrowsPanelComponent = ({
                         </Label>
                         <p className="font-semibold text-md">{renderModifierValue(calculatedTotalMiscBonusForSaveVal)}</p>
                       </div>
-                      <div className="text-center">
+                      <div className="space-y-1 text-center">
                         <Label htmlFor={`temp-mod-${saveType}`} className="text-xs text-muted-foreground">
                             {UI_STRINGS.savingThrowsRowLabelTemporaryModifier || "Temporary Modifier"}
                         </Label>
-                        <div className="mt-1 flex justify-center">
+                        <div className="mt-1 w-full">
                           <NumberSpinnerInput
                             id={`temp-mod-${saveType}`}
                             value={localTemporaryMod}
                             onChange={setLocalTemporaryMod}
                             min={-20}
                             max={20}
-                            inputClassName="w-20 h-8 text-sm"
+                            inputClassName="w-full h-8 text-sm text-center"
                             buttonSize="sm"
                             buttonClassName="h-8 w-8"
-                            className="justify-center"
+                            className="w-full justify-between"
                             disabled={panelIsLocked}
                           />
                         </div>
@@ -269,7 +268,7 @@ const SavingThrowsPanelComponent = ({
             })}
           </div>
           {!panelIsLocked && (
-            <p className="text-xs text-muted-foreground pt-2 text-center">
+            <p className="text-xs text-muted-foreground pt-3 text-center border-t border-border/30 mt-4">
               <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_prefix }} />
               <Badge variant="outline" className="text-xs">{UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}</Badge>
               <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_suffix }} />
@@ -283,3 +282,4 @@ const SavingThrowsPanelComponent = ({
 
 SavingThrowsPanelComponent.displayName = 'SavingThrowsPanelComponent';
 export const SavingThrowsPanel = React.memo(SavingThrowsPanelComponent);
+    
