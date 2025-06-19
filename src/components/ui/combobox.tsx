@@ -11,7 +11,6 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandInput,
-  CommandItem,
   CommandList,
 } from "@/components/ui/command"
 import {
@@ -21,15 +20,15 @@ import {
 } from "@/components/ui/popover"
 
 export interface ComboboxOption {
-  value: string 
+  value: string
   label: string
   disabled?: boolean;
 }
 
 interface ComboboxProps {
   options: readonly ComboboxOption[]
-  value?: string 
-  onChange: (value: string) => void 
+  value?: string
+  onChange: (value: string) => void
   placeholder?: string
   searchPlaceholder?: string
   emptyPlaceholder?: string
@@ -37,11 +36,12 @@ interface ComboboxProps {
   triggerClassName?: string
   popoverContentClassName?: string
   isEditable?: boolean;
+  disabled?: boolean; // Added disabled prop
 }
 
 export function ComboboxPrimitive({
   options,
-  value, 
+  value,
   onChange,
   placeholder = "Select an option...",
   searchPlaceholder = "Search...",
@@ -49,22 +49,23 @@ export function ComboboxPrimitive({
   triggerClassName,
   popoverContentClassName,
   isEditable = false,
+  disabled = false, // Added disabled prop
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
-  const [inputValue, setInputValue] = React.useState("") 
+  const [inputValue, setInputValue] = React.useState("")
 
   const handleSelect = (currentLabel: string) => {
     const selectedOption = options.find(opt => (opt.label ?? '').toLowerCase() === (currentLabel ?? '').toLowerCase());
     if (selectedOption) {
-      onChange(selectedOption.value); 
-      if (!isEditable) setInputValue(""); 
+      onChange(selectedOption.value);
+      if (!isEditable) setInputValue("");
     } else if (isEditable) {
-      onChange(currentLabel); 
+      onChange(currentLabel);
     }
     setOpen(false);
   };
 
-  const currentCommandInputValue = isEditable ? (value || "") : inputValue; 
+  const currentCommandInputValue = isEditable ? (value || "") : inputValue;
   const onCommandInputChange = isEditable ? onChange : setInputValue;
 
 
@@ -72,6 +73,7 @@ export function ComboboxPrimitive({
   const displayLabel = foundOption ? foundOption.label : (isEditable && value ? value : placeholder);
 
   const handleClear = (e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
+    if (disabled) return;
     e.stopPropagation();
     onChange('');
     if (!isEditable) setInputValue("");
@@ -79,10 +81,11 @@ export function ComboboxPrimitive({
   };
 
   return (
-    <Popover open={open} onOpenChange={(isOpen) => {
+    <Popover open={open && !disabled} onOpenChange={(isOpen) => {
+      if (disabled) return;
       setOpen(isOpen);
       if (!isOpen && !isEditable) {
-        setInputValue(""); 
+        setInputValue("");
       }
     }}>
       <PopoverTrigger
@@ -94,22 +97,28 @@ export function ComboboxPrimitive({
         )}
         role="combobox"
         aria-expanded={open}
+        disabled={disabled} // Pass disabled to PopoverTrigger
       >
         <span className="truncate pr-6">{displayLabel}</span>
         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
           {value && (
             <div
               role="button"
-              tabIndex={0}
+              tabIndex={disabled ? -1 : 0}
               onClick={handleClear}
               onKeyDown={(e) => {
+                if (disabled) return;
                 if (e.key === 'Enter' || e.key === ' ') {
                   handleClear(e);
-                  e.preventDefault(); 
+                  e.preventDefault();
                 }
               }}
-              className="h-6 w-6 p-0 mr-1 flex items-center justify-center rounded-sm text-muted-foreground hover:text-destructive focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              className={cn(
+                "h-6 w-6 p-0 mr-1 flex items-center justify-center rounded-sm text-muted-foreground hover:text-destructive focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                disabled && "opacity-50 cursor-not-allowed pointer-events-none"
+              )}
               aria-label="Clear selection"
+              aria-disabled={disabled}
             >
               <ClearIcon className="h-4 w-4" />
             </div>
@@ -117,36 +126,39 @@ export function ComboboxPrimitive({
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </div>
       </PopoverTrigger>
-      <PopoverContent className={cn("w-[--radix-popover-trigger-width] p-0", popoverContentClassName)}>
-        <Command shouldFilter={!isEditable}> 
-          <CommandInput
-            placeholder={searchPlaceholder}
-            value={currentCommandInputValue}
-            onValueChange={onCommandInputChange}
-          />
-          <CommandList>
-            <CommandEmpty>{emptyPlaceholder}</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.value} 
-                  value={option.label} 
-                  onSelect={handleSelect}
-                  disabled={option.disabled} 
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      (value || '').toLowerCase() === (option.value ?? '').toLowerCase() ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {option.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
+      {!disabled && (
+        <PopoverContent className={cn("w-[--radix-popover-trigger-width] p-0", popoverContentClassName)}>
+          <Command shouldFilter={!isEditable}>
+            <CommandInput
+              placeholder={searchPlaceholder}
+              value={currentCommandInputValue}
+              onValueChange={onCommandInputChange}
+              disabled={disabled} // Pass disabled to CommandInput
+            />
+            <CommandList>
+              <CommandEmpty>{emptyPlaceholder}</CommandEmpty>
+              <CommandGroup>
+                {options.map((option) => (
+                  <CommandItem
+                    key={option.value}
+                    value={option.label}
+                    onSelect={handleSelect}
+                    disabled={option.disabled}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        (value || '').toLowerCase() === (option.value ?? '').toLowerCase() ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {option.label}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      )}
     </Popover>
   )
 }
