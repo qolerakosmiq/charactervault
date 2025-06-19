@@ -9,13 +9,12 @@ interface DualBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   rightLabel: React.ReactNode;
   leftClassName?: string;
   rightClassName?: string;
-  // separatorClassName prop is no longer needed with this border approach
 }
 
 export function DualBadge({
   leftLabel,
   rightLabel,
-  className, // For positioning/margins, not for border styling of the DualBadge itself
+  className,
   leftClassName,
   rightClassName,
   ...props
@@ -30,16 +29,16 @@ export function DualBadge({
     >
       <span
         className={cn(
-          "px-2 py-0.5 border-2", // Each part has a 2px border
-          leftClassName // Will receive border-color, bg-color, text-color
+          "px-2 py-0.5 border-2 rounded-l-full", // Added rounded-l-full
+          leftClassName
         )}
       >
         {leftLabel}
       </span>
       <span
         className={cn(
-          "px-2 py-0.5 border-2 -ml-[2px]", // Overlap borders by 2px (the border width)
-          rightClassName // Will receive border-color, bg-color, text-color
+          "px-2 py-0.5 border-2 -ml-[2px] rounded-r-full", // Added rounded-r-full
+          rightClassName
         )}
       >
         {rightLabel}
