@@ -245,14 +245,29 @@ const CharacterFormCoreInfoSectionComponent = ({
 
 
   const handleOpenClassSpecificChoiceInfoDialogInternal = React.useCallback((uiBlock: ClassSpecificUIBlock) => {
-    if (!onOpenClassSpecificChoiceInfoDialog || !translations || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !UI_STRINGS) return;
+    if (!onOpenClassSpecificChoiceInfoDialog || !translations || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !UI_STRINGS || !DND_CREATURE_TYPES) return;
+
+    let blockLabelForDialog: string;
+    if (uiBlock.infoDialogTitle) {
+        blockLabelForDialog = getLocalizedString(uiBlock.infoDialogTitle, currentLang);
+    } else if (uiBlock.labelKey && UI_STRINGS[uiBlock.labelKey]) {
+        blockLabelForDialog = UI_STRINGS[uiBlock.labelKey]!;
+    } else if (uiBlock.label) {
+        blockLabelForDialog = getLocalizedString(uiBlock.label, currentLang);
+    } else {
+        blockLabelForDialog = uiBlock.key;
+    }
+
+    if (uiBlock.infoDialogContent) {
+        onOpenClassSpecificChoiceInfoDialog({
+            type: 'genericHtml',
+            title: blockLabelForDialog,
+            content: getLocalizedString(uiBlock.infoDialogContent, currentLang)
+        });
+        return;
+    }
 
     let optionsForDialog: Array<{ id: string; label: string; description?: string; }> = [];
-    let blockLabelForDialog: string;
-    if (uiBlock.labelKey && UI_STRINGS[uiBlock.labelKey]) { blockLabelForDialog = UI_STRINGS[uiBlock.labelKey]!; }
-    else if (uiBlock.label) { blockLabelForDialog = getLocalizedString(uiBlock.label, currentLang); }
-    else { blockLabelForDialog = uiBlock.key; }
-
     if (uiBlock.optionsSource === 'domains') {
       optionsForDialog = DND_DOMAINS.map(d => ({
         id: d.id,
@@ -268,8 +283,8 @@ const CharacterFormCoreInfoSectionComponent = ({
     } else if (uiBlock.optionsSource === 'creatureTypes' && DND_CREATURE_TYPES) {
       optionsForDialog = DND_CREATURE_TYPES.map(ct => ({
         id: ct.id,
-        label: ct.label,
-        description: undefined // Creature types usually don't have extensive descriptions for this context
+        label: ct.label, // Already localized from processRawDataBundle
+        description: ct.description // Already localized
       }));
     } else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) {
       optionsForDialog = uiBlock.customOptions.map(opt => ({
@@ -486,7 +501,7 @@ const CharacterFormCoreInfoSectionComponent = ({
         if (uiBlock.disabledIfChoiceValue.values.includes(controllingChoiceValue)) isDisabledByPanelOrDependency = true;
     }
 
-    const commonInfoButton = (uiBlock.choiceType === 'select' || uiBlock.choiceType === 'combobox') && !!onOpenClassSpecificChoiceInfoDialog ? (
+    const commonInfoButton = (uiBlock.infoDialogContent || uiBlock.optionsSource) && !!onOpenClassSpecificChoiceInfoDialog ? (
       <Button
         type="button" variant="ghost" size="icon"
         className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9"
@@ -630,7 +645,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenRaceInfoDialog} disabled={!localRace || panelIsLocked}> <Info className="h-5 w-5" /> </Button>
               </div>
               {selectedRaceInfo && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
-                 <div className="flex flex-wrap items-baseline gap-1 pt-[6px] ml-1">
+                 <div className="flex flex-wrap items-baseline gap-1 pt-[6px] justify-center md:justify-start">
                   {raceSpecialQualities.abilityEffects.map((effect) => {
                     const change = effect.change;
                     let leftBorderColorClass = "border-border";
@@ -639,15 +654,15 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let rightBorderColorClass = "border-border";
 
                     if (change > 0) {
-                      leftBorderColorClass = "border-emerald-600"; // Darker green for outline part
+                      leftBorderColorClass = "border-emerald-700";
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
-                      rightBorderColorClass = "border-emerald-600"; // Match the fill
+                      rightBorderColorClass = "border-emerald-600";
                     } else if (change < 0) {
                       leftBorderColorClass = "border-destructive";
                       rightBgClass = "bg-destructive";
                       rightTextClass = "text-destructive-foreground";
-                      rightBorderColorClass = "border-destructive"; // Match the fill
+                      rightBorderColorClass = "border-destructive";
                     }
 
                     return (
@@ -673,10 +688,10 @@ const CharacterFormCoreInfoSectionComponent = ({
                 </Select>
                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenClassInfoDialog} disabled={!localClassName || panelIsLocked} > <Info className="h-5 w-5" /> </Button>
               </div>
-              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-[6px] ml-1">
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-[6px] justify-center md:justify-start">
                 {selectedClassInfo?.hitDice && (
                   <DualBadge
-                    leftLabel={UI_STRINGS.hitDiceBadgeLabel || "HD"}
+                    leftLabel={UI_STRINGS.hitDiceBadgeLabel}
                     rightLabel={selectedClassInfo.hitDice}
                     leftClassName="bg-transparent text-foreground border-primary/60"
                     rightClassName="bg-primary text-primary-foreground border-primary"
@@ -760,7 +775,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               {ageEffectsDetails && (ageEffectsDetails.categoryName !== (UI_STRINGS.ageCategoryAdult) || ageEffectsDetails.effects.length > 0) && (
                  <div className="flex flex-wrap items-baseline justify-center gap-1 pt-[6px]">
                   <DualBadge
-                    leftLabel={UI_STRINGS.ageCategoryBadgeLabel || "Age Cat."}
+                    leftLabel={UI_STRINGS.ageCategoryBadgeLabel}
                     rightLabel={ageEffectsDetails.categoryName}
                     leftClassName="bg-transparent text-foreground border-secondary/60"
                     rightClassName="bg-secondary text-secondary-foreground border-secondary"
@@ -774,7 +789,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let rightBorderColorClass = "border-border";
 
                     if (change > 0) {
-                      leftBorderColorClass = "border-emerald-600";
+                      leftBorderColorClass = "border-emerald-700";
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
                       rightBorderColorClass = "border-emerald-600";
@@ -812,7 +827,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 <SelectTrigger id="sizeCategory" className="h-9 text-sm"><SelectValue /></SelectTrigger>
                 <SelectContent> {SIZES.map(s => <SelectItem key={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id} value={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id}>{s.label}</SelectItem>)} </SelectContent>
               </Select>
-              <div className="flex items-baseline justify-center md:justify-start gap-1 pt-[6px] ml-1">
+              <div className="flex items-baseline justify-center md:justify-start gap-1 pt-[6px]">
                 {localSize && (() => {
                   const selectedSizeObject = SIZES.find(s => s.id === localSize);
                   if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
@@ -824,7 +839,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let rightBorderColorClass = "border-border";
 
                     if (acMod > 0) {
-                      leftBorderColorClass = "border-emerald-600";
+                      leftBorderColorClass = "border-emerald-700";
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
                       rightBorderColorClass = "border-emerald-600";
@@ -837,7 +852,7 @@ const CharacterFormCoreInfoSectionComponent = ({
 
                     return (
                       <DualBadge
-                        leftLabel={UI_STRINGS.sizeAcModLeftBadgeLabel || "AC"}
+                        leftLabel={UI_STRINGS.sizeAcModLeftBadgeLabel}
                         rightLabel={acMod > 0 ? `+${acMod}` : String(acMod)}
                         leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass)}
                         rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass)}
@@ -856,3 +871,6 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
+
+    
+    

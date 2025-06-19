@@ -454,7 +454,7 @@ export interface ClassSpecificUIBlockConditionAggregatedEffect {
 export interface ClassSpecificUICustomOption {
   value: string;
   label: LocalizedString;
-  description?: LocalizedString; // Added
+  description?: LocalizedString;
 }
 
 export interface ClassSpecificUIGrantsFeat {
@@ -471,6 +471,8 @@ export interface ClassSpecificUIBlock {
   labelKey?: keyof ProcessedSiteData['UI_STRINGS'];
   description?: LocalizedString;
   descriptionKey?: keyof ProcessedSiteData['UI_STRINGS'];
+  infoDialogTitle?: LocalizedString;
+  infoDialogContent?: LocalizedString;
   inputPlaceholder?: LocalizedString;
   inputPlaceholderKey?: keyof ProcessedSiteData['UI_STRINGS'];
   slotLabel?: LocalizedString;
@@ -478,7 +480,7 @@ export interface ClassSpecificUIBlock {
   choiceType: "select" | "combobox" | "textInput" | "multiInput" | "heading";
   isHeadingOnly?: boolean;
   maxSelections?: number;
-  optionsSource?: "domains" | "magicSchools" | "rangerCombatStyles" | "customList";
+  optionsSource?: "domains" | "magicSchools" | "rangerCombatStyles" | "customList" | "creatureTypes";
   customOptions?: ClassSpecificUICustomOption[];
   grantsFeats?: ClassSpecificUIGrantsFeat[];
   requiredLevel?: number;
@@ -902,3 +904,6 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
   loadSpeedPenalty_base: 0, loadSpeedPenalty_miscModifier: 0
 };
 export const DEFAULT_RESISTANCE_VALUE_DATA: ResistanceValue = { base: 0, customMod: 0 };
+
+    
+    

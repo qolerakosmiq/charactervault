@@ -19,7 +19,8 @@
     {
       "key": "rangerCombatStyle",
       "label": { "en": "Ranger Combat Style", "fr": "Style de combat du Rôdeur" },
-      "description": { "en": "At 2nd level, a ranger must select one of two combat styles to pursue: archery or two-weapon combat. This choice affects the character’s class features but does not restrict his selection of feats or special abilities in any way.", "fr": "Au niveau 2, un rôdeur doit choisir l'un des deux styles de combat suivants : l'archerie ou le combat à deux armes. Ce choix affecte les caractéristiques de classe du personnage mais ne restreint en aucun cas sa sélection de dons ou de capacités spéciales." },
+      "infoDialogTitle": { "en": "Ranger Combat Style Choice", "fr": "Choix du Style de Combat du Rôdeur" },
+      "infoDialogContent": { "en": "At 2nd level, a ranger must select one of two combat styles to pursue: archery or two-weapon combat. This choice affects the character’s class features but does not restrict his selection of feats or special abilities in any way.", "fr": "Au niveau 2, un rôdeur doit choisir l'un des deux styles de combat suivants : l'archerie ou le combat à deux armes. Ce choix affecte les caractéristiques de classe du personnage mais ne restreint en aucun cas sa sélection de dons ou de capacités spéciales." },
       "choiceType": "select",
       "optionsSource": "customList",
       "customOptions": [
@@ -40,14 +41,14 @@
     {
       "key": "rangerFavoredEnemiesTitle",
       "label": { "en": "Favored Enemies", "fr": "Ennemis jurés" },
-      "description": { "en": "The ranger gains bonuses on checks and damage rolls against these types of creatures.", "fr": "Le rôdeur gagne des bonus aux tests et jets de dégâts contre ces types de créatures." },
       "choiceType": "heading",
       "isHeadingOnly": true
     },
     {
       "key": "rangerFavoredEnemy1",
       "label": { "en": "Favored Enemy (Level 1)", "fr": "Ennemi juré (Niveau 1)" },
-      "description": { "en": "The ranger gains a +2 bonus on Bluff, Listen, Sense Motive, Spot, and Survival checks when using these skills against creatures of this type. Likewise, he gets a +2 bonus on weapon damage rolls against such creatures. See full class description for details on increasing bonuses and adding more enemies.", "fr": "Le rôdeur gagne un bonus de +2 aux tests de Bluff, Perception auditive, Psychologie, Détection et Survie lorsqu'il utilise ces compétences contre des créatures de ce type. De même, il obtient un bonus de +2 aux jets de dégâts d'arme contre de telles créatures. Voir la description complète de la classe pour les détails sur l'augmentation des bonus et l'ajout d'autres ennemis." },
+      "infoDialogTitle": { "en": "Favored Enemy Mechanic", "fr": "Mécanique de l'Ennemi Juré" },
+      "infoDialogContent": { "en": "The ranger gains a +2 bonus on Bluff, Listen, Sense Motive, Spot, and Survival checks when using these skills against creatures of this type. Likewise, he gets a +2 bonus on weapon damage rolls against such creatures. See full class description for details on increasing bonuses and adding more enemies.", "fr": "Le rôdeur gagne un bonus de +2 aux tests de Bluff, Perception auditive, Psychologie, Détection et Survie lorsqu'il utilise ces compétences contre des créatures de ce type. De même, il obtient un bonus de +2 aux jets de dégâts d'arme contre de telles créatures. Voir la description complète de la classe pour les détails sur l'augmentation des bonus et l'ajout d'autres ennemis." },
       "choiceType": "combobox",
       "optionsSource": "creatureTypes",
       "inputPlaceholderKey": "rangerFavoredEnemyPlaceholder",
@@ -185,5 +186,6 @@
     }
   ]
 }
+    
     
     

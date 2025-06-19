@@ -72,6 +72,7 @@ export interface MagicSchoolsJson {
 export interface CreatureTypeDataEntry {
   id: string; // Creature type ID (e.g., "humanoid-orc", "undead")
   label: LocalizedString;
+  description?: LocalizedString; // Added for brief descriptions
 }
 export interface CreatureTypesJson {
   DND_CREATURE_TYPES_DATA: CreatureTypeDataEntry[];
@@ -227,7 +228,7 @@ export interface LocaleDataBundle {
   xpTable: XpJson;
   domains: DomainJson;
   magicSchools: MagicSchoolsJson;
-  creatureTypes: CreatureTypesJson; // Added
+  creatureTypes: CreatureTypesJson;
   gearSlots: GearSlotsJson;
   item_definitions_weapons: ItemsWeaponsJson;
   item_definitions_armor: ItemsArmorJson;
@@ -248,7 +249,7 @@ export interface ProcessedSiteData {
   DND_DEITIES: readonly DndDeityOption[];
   DND_DOMAINS: readonly DomainDefinition[];
   DND_MAGIC_SCHOOLS: readonly MagicSchoolDefinition[];
-  DND_CREATURE_TYPES: readonly { id: string; label: string; }[]; // Added
+  DND_CREATURE_TYPES: readonly { id: string; label: string; description?: string }[];
   SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[];
   DND_FEATS_DEFINITIONS: readonly FeatDefinitionJsonData[];
   FEAT_TYPES: readonly { id: FeatTypeString; label: string }[];
@@ -392,7 +393,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
 
   const ALIGNMENTS = processLocalizedArray<AlignmentDataEntry, CharacterAlignmentObject>(getAndValidateArray(bundle.alignments?.ALIGNMENTS_DATA, 'Alignments'), lang, 'alignments', ['description']);
   const LANGUAGES = processLocalizedArray<LanguageDataEntry, LanguageOption>(getAndValidateArray(bundle.languages?.LANGUAGES_DATA, 'Languages'), lang, 'languages');
-  const DND_CREATURE_TYPES = processLocalizedArray<CreatureTypeDataEntry, { id: string; label: string }>(getAndValidateArray(bundle.creatureTypes?.DND_CREATURE_TYPES_DATA, 'Creature Types'), lang, 'creatureTypes');
+  const DND_CREATURE_TYPES = processLocalizedArray<CreatureTypeDataEntry, { id: string; label: string; description?: string }>(getAndValidateArray(bundle.creatureTypes?.DND_CREATURE_TYPES_DATA, 'Creature Types'), lang, 'creatureTypes', ['description']);
   const XP_TABLE = getAndValidateArray(bundle.xpTable?.XP_TABLE_DATA, 'XP Table').sort((a, b) => a.level - b.level);
   const EPIC_LEVEL_XP_INCREASE = bundle.xpTable?.EPIC_LEVEL_XP_INCREASE;
   if (typeof EPIC_LEVEL_XP_INCREASE !== 'number') throw new Error("[DATA_ERROR] EPIC_LEVEL_XP_INCREASE is missing or not a number.");
@@ -570,6 +571,34 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
         })
     }});
 
+    const localizedUiSections = uiSections?.map((uiBlock, uiIndex) => {
+      const uiBlockDebugKeyPrefix = `classes.${id}.uiSections[${uiIndex}]`;
+      const localizedBlock: ClassSpecificUIBlock = { ...uiBlock };
+
+      if (uiBlock.label) localizedBlock.label = getLocalizedString(uiBlock.label, lang, DEFAULT_LANGUAGE, `${uiBlockDebugKeyPrefix}.label`);
+      if (uiBlock.description) localizedBlock.description = getLocalizedString(uiBlock.description, lang, DEFAULT_LANGUAGE, `${uiBlockDebugKeyPrefix}.description`);
+      if (uiBlock.infoDialogTitle) localizedBlock.infoDialogTitle = getLocalizedString(uiBlock.infoDialogTitle, lang, DEFAULT_LANGUAGE, `${uiBlockDebugKeyPrefix}.infoDialogTitle`);
+      if (uiBlock.infoDialogContent) localizedBlock.infoDialogContent = getLocalizedString(uiBlock.infoDialogContent, lang, DEFAULT_LANGUAGE, `${uiBlockDebugKeyPrefix}.infoDialogContent`);
+      if (uiBlock.inputPlaceholder) localizedBlock.inputPlaceholder = getLocalizedString(uiBlock.inputPlaceholder, lang, DEFAULT_LANGUAGE, `${uiBlockDebugKeyPrefix}.inputPlaceholder`);
+      if (uiBlock.slotLabel) localizedBlock.slotLabel = getLocalizedString(uiBlock.slotLabel, lang, DEFAULT_LANGUAGE, `${uiBlockDebugKeyPrefix}.slotLabel`);
+      if (uiBlock.note) localizedBlock.note = getLocalizedString(uiBlock.note, lang, DEFAULT_LANGUAGE, `${uiBlockDebugKeyPrefix}.note`);
+      
+      if (uiBlock.customOptions) {
+        localizedBlock.customOptions = uiBlock.customOptions.map((opt, optIndex) => ({
+          ...opt,
+          label: getLocalizedString(opt.label, lang, DEFAULT_LANGUAGE, `${uiBlockDebugKeyPrefix}.customOptions[${optIndex}].label`),
+          description: opt.description ? getLocalizedString(opt.description, lang, DEFAULT_LANGUAGE, `${uiBlockDebugKeyPrefix}.customOptions[${optIndex}].description`) : undefined,
+        }));
+      }
+      if (uiBlock.grantsFeats) {
+        localizedBlock.grantsFeats = uiBlock.grantsFeats.map((gf, gfIndex) => ({
+          ...gf,
+          note: gf.note ? getLocalizedString(gf.note, lang, DEFAULT_LANGUAGE, `${uiBlockDebugKeyPrefix}.grantsFeats[${gfIndex}].note`) : undefined
+        }));
+      }
+      return localizedBlock;
+    });
+
     const localizedClass: DndClassOption = {
       id: id,
       label: getLocalizedString(label, lang, DEFAULT_LANGUAGE, `classes.${id}.label`),
@@ -586,12 +615,12 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       alignmentRestriction: alignmentRestriction,
       deityAlignmentRestriction: deityAlignmentRestriction,
       abilityScorePriorities: abilityScorePriorities,
-      uiSections: uiSections,
+      uiSections: localizedUiSections,
       featChoiceFilters: featChoiceFilters ? featChoiceFilters.map(fcf => ({
         ...fcf,
         filterCases: fcf.filterCases.map(fc => ({
           ...fc,
-          noteMustContain: getLocalizedString(fc.noteMustContain, lang, DEFAULT_LANGUAGE, `classes.${id}.featChoiceFilters.${fcf.characterField}.${fc.choiceValue}.note`)
+          noteMustContain: getLocalizedString(fc.noteMustContain, lang, DEFAULT_LANGUAGE, `classes.${id}.featChoiceFilters.${fcf.classSpecificChoiceKey}.${fc.choiceValue}.note`)
         }))
       })) : undefined,
       classSpecificFeats: localizedClassSpecificFeats,
@@ -787,7 +816,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   return {
     ALIGNMENTS,
     LANGUAGES,
-    DND_CREATURE_TYPES, // Added
+    DND_CREATURE_TYPES,
     XP_TABLE,
     EPIC_LEVEL_XP_INCREASE,
     SIZES,
@@ -829,4 +858,5 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   };
 }
 
+    
     

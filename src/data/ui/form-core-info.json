@@ -39,6 +39,7 @@
   "ageCategoryBadgeLabel": { "en": "Age Cat.", "fr": "Cat. Âge" },
   "sizeAcModLeftBadgeLabel": { "en": "AC", "fr": "CA" },
   "rangerFavoredEnemyPlaceholder": { "en": "Select creature type...", "fr": "Choisir un type de créature..." },
-  "favoredEnemyNoneOption": { "en": "None / Not Selected", "fr": "Aucun / Non sélectionné" }
+  "favoredEnemyNoneOption": { "en": "None", "fr": "Aucun" }
 }
+    
     
