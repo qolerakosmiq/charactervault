@@ -384,7 +384,9 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     return data;
   };
   const getAndValidateObject = <T>(data: T | undefined, name: string): T => {
-    if (!data || typeof data !== 'object') throw new Error(`[DATA_ERROR] ${name} data is missing or not an object.`);
+    if (data === undefined) throw new Error(`[DATA_ERROR] ${name} data is missing (undefined).`);
+    if (data === null) throw new Error(`[DATA_ERROR] ${name} data is missing (null).`);
+    if (typeof data !== 'object') throw new Error(`[DATA_ERROR] ${name} data is not an object.`);
     return data;
   }
 
@@ -779,6 +781,8 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     ? { ...bundle.base.DEFAULT_ABILITIES_DATA }
     : { ...HARDCODED_DEFAULT_ABILITIES };
 
+  const baseData = getAndValidateObject(bundle.base, 'Base Data');
+  const skillsData = getAndValidateObject(bundle.skills, 'Skills Data');
 
   return {
     ALIGNMENTS,
@@ -808,20 +812,21 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     ITEM_DEFINITIONS_SHIELDS,
     ITEM_DEFINITIONS_MAGIC_ITEMS,
     DEFAULT_ABILITIES: processedDefaultAbilities,
-    DEFAULT_SAVING_THROWS: getAndValidateObject(bundle.base?.DEFAULT_SAVING_THROWS_DATA, 'Default Saving Throws'),
-    DEFAULT_RESISTANCE_VALUE: getAndValidateObject(bundle.base?.DEFAULT_RESISTANCE_VALUE_DATA, 'Default Resistance Value'),
-    DEFAULT_SPEED_DETAILS: getAndValidateObject(bundle.base?.DEFAULT_SPEED_DETAILS_DATA, 'Default Speed Details'),
-    DEFAULT_SPEED_PENALTIES: getAndValidateObject(bundle.base?.DEFAULT_SPEED_PENALTIES_DATA, 'Default Speed Penalties'),
-    DND_RACE_MIN_ADULT_AGE_DATA: BaseJson['DND_RACE_MIN_ADULT_AGE_DATA'],
-    DND_RACE_BASE_MAX_AGE_DATA: BaseJson['DND_RACE_BASE_MAX_AGE_DATA'],
-    RACE_TO_AGING_CATEGORY_MAP_DATA: BaseJson['RACE_TO_AGING_CATEGORY_MAP_DATA'],
+    DEFAULT_SAVING_THROWS: getAndValidateObject(baseData.DEFAULT_SAVING_THROWS_DATA, 'Default Saving Throws'),
+    DEFAULT_RESISTANCE_VALUE: getAndValidateObject(baseData.DEFAULT_RESISTANCE_VALUE_DATA, 'Default Resistance Value'),
+    DEFAULT_SPEED_DETAILS: getAndValidateObject(baseData.DEFAULT_SPEED_DETAILS_DATA, 'Default Speed Details'),
+    DEFAULT_SPEED_PENALTIES: getAndValidateObject(baseData.DEFAULT_SPEED_PENALTIES_DATA, 'Default Speed Penalties'),
+    DND_RACE_MIN_ADULT_AGE_DATA: getAndValidateObject(baseData.DND_RACE_MIN_ADULT_AGE_DATA, 'Min Adult Age Data'),
+    DND_RACE_BASE_MAX_AGE_DATA: getAndValidateObject(baseData.DND_RACE_BASE_MAX_AGE_DATA, 'Base Max Age Data'),
+    RACE_TO_AGING_CATEGORY_MAP_DATA: getAndValidateObject(baseData.RACE_TO_AGING_CATEGORY_MAP_DATA, 'Race to Aging Category Map'),
     DND_RACE_AGING_EFFECTS_DATA: DND_RACE_AGING_EFFECTS_DATA_PROCESSED,
-    DND_RACE_ABILITY_MODIFIERS_DATA: BaseJson['DND_RACE_ABILITY_MODIFIERS_DATA'],
-    DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA: BaseJson['DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA'],
-    CLASS_SKILLS: SkillsJson['CLASS_SKILLS_DATA'],
-    CLASS_SKILL_POINTS_BASE: SkillsJson['CLASS_SKILL_POINTS_BASE_DATA'],
-    SKILL_SYNERGIES: SkillsJson['SKILL_SYNERGIES_DATA'],
+    DND_RACE_ABILITY_MODIFIERS_DATA: getAndValidateObject(baseData.DND_RACE_ABILITY_MODIFIERS_DATA, 'Race Ability Modifiers'),
+    DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA: getAndValidateObject(baseData.DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA, 'Race Skill Points Bonus'),
+    CLASS_SKILLS: getAndValidateObject(skillsData.CLASS_SKILLS_DATA, 'Class Skills'),
+    CLASS_SKILL_POINTS_BASE: getAndValidateObject(skillsData.CLASS_SKILL_POINTS_BASE_DATA, 'Class Skill Points Base'),
+    SKILL_SYNERGIES: getAndValidateObject(skillsData.SKILL_SYNERGIES_DATA, 'Skill Synergies'),
     UI_STRINGS,
   };
 }
 
+    
