@@ -177,7 +177,7 @@ const SavingThrowsPanelComponent = ({
 
               return (
                 <Card key={saveType} className="shadow-sm">
-                  <CardHeader className="p-4 flex flex-col items-center space-y-1 text-center">
+                  <CardHeader className="p-3 pb-2 flex flex-col items-center space-y-1 text-center">
                     <span className="text-sm font-medium">{saveTypeLabel}</span>
                     <div className="flex items-center justify-center space-x-1">
                         <p className={cn("text-xl font-bold text-accent")}>
@@ -272,7 +272,7 @@ const SavingThrowsPanelComponent = ({
             })}
           </div>
           {!panelIsLocked && (
-            <p className="text-muted-foreground pt-3 text-left border-t border-border/30 mt-4">
+            <p className="text-sm text-muted-foreground pt-3 text-left border-t border-border/30 mt-4">
               <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_prefix }} />
               <Badge variant="outline">{UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}</Badge>
               <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_suffix }} />
@@ -286,4 +286,3 @@ const SavingThrowsPanelComponent = ({
 
 SavingThrowsPanelComponent.displayName = 'SavingThrowsPanelComponent';
 export const SavingThrowsPanel = React.memo(SavingThrowsPanelComponent);
-
