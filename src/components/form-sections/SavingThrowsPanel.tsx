@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -9,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // CardTitle might not be used directly in the loop
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
@@ -177,10 +176,10 @@ const SavingThrowsPanelComponent = ({
 
               return (
                 <Card key={saveType} className="shadow-sm">
-                  <CardHeader className="p-4 flex flex-col items-center space-y-1 text-center">
-                    <span className="text-lg font-semibold">{saveTypeLabel}</span>
+                  <CardHeader className="p-3 pb-2 flex flex-col items-center space-y-1 text-center">
+                    <span className="text-sm font-medium">{saveTypeLabel}</span>
                     <div className="flex items-center justify-center space-x-1">
-                        <p className={cn("text-3xl font-bold", totalCalculatedValue >= 0 ? "text-accent" : "text-destructive")}>
+                        <p className={cn("text-xl font-bold text-accent")}>
                             {totalCalculatedValue >= 0 ? '+' : ''}{totalCalculatedValue}
                         </p>
                         <Button
@@ -206,7 +205,7 @@ const SavingThrowsPanelComponent = ({
                     </div>
                   </CardHeader>
                   {!panelIsLocked && (
-                    <CardContent className="p-4 pt-0 space-y-3">
+                    <CardContent className="p-3 pt-1 space-y-3">
                       <div className="space-y-1 text-center">
                         <Label className="text-xs text-muted-foreground">{UI_STRINGS.savingThrowsRowLabelBase || "Base"}</Label>
                         <p className="font-semibold text-md">{baseSaveValue}</p>
@@ -282,4 +281,3 @@ const SavingThrowsPanelComponent = ({
 
 SavingThrowsPanelComponent.displayName = 'SavingThrowsPanelComponent';
 export const SavingThrowsPanel = React.memo(SavingThrowsPanelComponent);
-    
