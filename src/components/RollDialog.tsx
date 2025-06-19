@@ -193,14 +193,14 @@ export function RollDialog({
   const resultCardBackground = cn(
     "p-3 border rounded-md space-y-1",
     isInitialRollCritFailure ? "bg-destructive/20 border-destructive/50" :
-    isInitialRollNat20 ? "bg-emerald-600/20 border-emerald-600/50" : // Nat 20 is green
+    isInitialRollNat20 ? "bg-emerald-600/20 border-emerald-600/50" : 
     "bg-card border-border"
   );
 
   const diceResultColor = cn(
     "font-bold text-lg",
     isInitialRollCritFailure ? "text-destructive" :
-    isInitialRollNat20 ? "text-emerald-500" : // Nat 20 is green
+    isInitialRollNat20 ? "text-emerald-500" : 
     "text-primary"
   );
 
@@ -293,8 +293,8 @@ export function RollDialog({
                 <div className="flex justify-between text-lg">
                   <span className="font-semibold">
                     {isDamageRoll 
-                      ? (UI_STRINGS.rollDialogTotalNumericBonusLabel || "Total Numeric Bonus") 
-                      : (UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus")}
+                      ? (UI_STRINGS.rollDialogTotalNumericBonusLabel) 
+                      : (UI_STRINGS.rollDialogTotalBonusLabel)}
                   </span>
                   <span className="font-bold text-accent">
                     {renderModifierValue(baseModifier)}
@@ -312,7 +312,7 @@ export function RollDialog({
                 onCheckedChange={(checked) => setIsCritical(!!checked)}
               />
               <Label htmlFor="critical-hit-checkbox" className="font-medium">
-                {UI_STRINGS.rollDialogCriticalHitLabel || "Critical Hit!"} ({weaponCriticalMultiplier}x {UI_STRINGS.rollDialogDamageMultiplierLabel || "Damage"})
+                {UI_STRINGS.rollDialogCriticalHitLabel} ({weaponCriticalMultiplier}x {UI_STRINGS.rollDialogDamageMultiplierLabel})
               </Label>
             </div>
           )}
@@ -323,7 +323,7 @@ export function RollDialog({
                 <>
                   {isCritical && weaponCriticalMultiplier > 1 && weaponDamageDiceString && weaponDamageDiceString.trim() !== "" && weaponDamageDiceString !== "0" && (
                     <div className="text-center mb-1">
-                      <Badge variant="destructive" className="text-sm px-2 py-0.5">{UI_STRINGS.rollDialogCriticalHitAppliedLabel || "CRITICAL HIT APPLIED!"}</Badge>
+                      <Badge variant="destructive" className="text-sm px-2 py-0.5">{UI_STRINGS.rollDialogCriticalHitAppliedLabel}</Badge>
                     </div>
                   )}
                   {rolledWeaponDiceDetails && (
@@ -376,7 +376,7 @@ export function RollDialog({
                     <span className="text-foreground">{UI_STRINGS.rollDialogTotalBonusLabel}</span>
                     <span className="font-bold text-primary">{renderModifierValue(baseModifier)}</span>
                   </div>
-                  <Separator className="mt-2 mb-1" />
+                  <Separator className="mt-1 mb-1" />
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalResultLabel}</span>
                     {isInitialRollCritFailure ? (
