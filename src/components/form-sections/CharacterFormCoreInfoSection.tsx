@@ -248,7 +248,12 @@ const CharacterFormCoreInfoSectionComponent = ({
     if (!onOpenClassSpecificChoiceInfoDialog || !translations || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !UI_STRINGS || !DND_CREATURE_TYPES) return;
 
     const blockLabelForDialog = uiBlock.infoDialogTitle || uiBlock.label || uiBlock.key;
-    const introductoryContentForDialog = uiBlock.infoDialogContent || uiBlock.description;
+    
+    let introductoryContentForDialog: string | undefined = uiBlock.infoDialogContent;
+    if (!introductoryContentForDialog) {
+        introductoryContentForDialog = uiBlock.description;
+    }
+
 
     let optionsForDialog: Array<{ id: string; label: string; description?: string; }> = [];
     if (uiBlock.optionsSource === 'domains') {
@@ -272,8 +277,8 @@ const CharacterFormCoreInfoSectionComponent = ({
     } else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) {
       optionsForDialog = uiBlock.customOptions.map(opt => ({
         id: opt.value,
-        label: opt.label as string, // Assumes already localized
-        description: opt.description as string | undefined // Assumes already localized
+        label: opt.label, 
+        description: opt.description
       }));
     }
     optionsForDialog.sort((a,b) => a.label.localeCompare(b.label));
@@ -316,7 +321,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               if (uiBlock.optionsSource === 'domains') tempOptions = DND_DOMAINS.map(d => ({ value: d.id, label: d.label }));
               else if (uiBlock.optionsSource === 'magicSchools') tempOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }));
               else if (uiBlock.optionsSource === 'creatureTypes') tempOptions = DND_CREATURE_TYPES.map(ct => ({ value: ct.id, label: ct.label }));
-              else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) tempOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: opt.label as string }));
+              else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) tempOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: opt.label }));
 
               const actualSelectableOptions = tempOptions.filter(opt => opt.value !== UI_EMPTY_SELECTION_VALUE && opt.value !== "");
               if (actualSelectableOptions.length > 0) valueToSet = actualSelectableOptions[0].value;
@@ -396,7 +401,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 if (uiBlock.optionsSource === 'domains') tempOptions = DND_DOMAINS.map(d => ({ value: d.id, label: d.label }));
                 else if (uiBlock.optionsSource === 'magicSchools') tempOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }));
                 else if (uiBlock.optionsSource === 'creatureTypes') tempOptions = DND_CREATURE_TYPES.map(ct => ({ value: ct.id, label: ct.label }));
-                else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) tempOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: opt.label as string }));
+                else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) tempOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: opt.label }));
                 const actualSelectableOptions = tempOptions.filter(opt =>
                     opt.value !== UI_EMPTY_SELECTION_VALUE && opt.value !== "" &&
                     !(uiBlock.excludeSpecificValues?.includes(opt.value)) &&
@@ -453,7 +458,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     if (uiBlock.optionsSource === 'domains') initialOptions = DND_DOMAINS.map(d => ({ value: d.id, label: d.label }));
     else if (uiBlock.optionsSource === 'magicSchools') initialOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }));
     else if (uiBlock.optionsSource === 'creatureTypes') initialOptions = DND_CREATURE_TYPES.map(ct => ({ value: ct.id, label: ct.label }));
-    else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) initialOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: opt.label as string }));
+    else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) initialOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: opt.label }));
     initialOptions.sort((a,b) => a.label.localeCompare(b.label));
 
     const finalSelectOptions: ComboboxOption[] = [];
@@ -493,7 +498,7 @@ const CharacterFormCoreInfoSectionComponent = ({
         type="button" variant="ghost" size="icon"
         className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9"
         onClick={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
-        disabled={panelIsLocked}
+        disabled={panelIsLocked && !(uiBlock.optionsSource || hasInfoContentForDialog)}
         aria-label={(UI_STRINGS.infoDialogClassSpecificChoiceAriaLabel || "Info for {choiceName}").replace("{choiceName}", blockLabel)}
       >
         <Info className="h-5 w-5" />
@@ -568,10 +573,9 @@ const CharacterFormCoreInfoSectionComponent = ({
     DND_MAGIC_SCHOOLS,
     DND_CREATURE_TYPES,
     handleClassSpecificChoiceChange,
-    onOpenClassSpecificChoiceInfoDialog,
+    onOpenClassSpecificChoiceInfoDialogInternal,
     getCurrentValue,
-    handleOpenClassSpecificChoiceInfoDialogInternal,
-    translations // Added to dependencies because UI_STRINGS comes from it
+    translations
   ]);
 
 
@@ -624,9 +628,9 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <SelectTrigger id="race" className="flex-grow h-9 text-sm"> <SelectValue /> </SelectTrigger>
                   <SelectContent> {DND_RACES.map(race => <SelectItem key={race.id} value={race.id}>{race.label}</SelectItem>)} </SelectContent>
                 </Select>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenRaceInfoDialog} disabled={!localRace || panelIsLocked}> <Info className="h-5 w-5" /> </Button>
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenRaceInfoDialog} disabled={!localRace}> <Info className="h-5 w-5" /> </Button>
               </div>
-              {selectedRaceInfo && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
+              {!panelIsLocked && selectedRaceInfo && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
                  <div className="flex flex-wrap items-baseline gap-1 pt-[6px] justify-center md:justify-start">
                   {raceSpecialQualities.abilityEffects.map((effect) => {
                     const change = effect.change;
@@ -668,10 +672,10 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <SelectTrigger id="className" className="flex-grow h-9 text-sm"> <SelectValue /> </SelectTrigger>
                   <SelectContent> {DND_CLASSES.map(c => <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>)} </SelectContent>
                 </Select>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenClassInfoDialog} disabled={!localClassName || panelIsLocked} > <Info className="h-5 w-5" /> </Button>
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenClassInfoDialog} disabled={!localClassName} > <Info className="h-5 w-5" /> </Button>
               </div>
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-[6px] justify-center md:justify-start">
-                {selectedClassInfo?.hitDice && (
+                {!panelIsLocked && selectedClassInfo?.hitDice && (
                   <DualBadge
                     leftLabel={UI_STRINGS.hitDiceBadgeLabel}
                     rightLabel={selectedClassInfo.hitDice}
@@ -680,7 +684,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     className="mr-1 mb-1"
                   />
                 )}
-                {aggregatedFeatEffects?.grantedAbilities && aggregatedFeatEffects.grantedAbilities.map(ability => {
+                {!panelIsLocked && aggregatedFeatEffects?.grantedAbilities && aggregatedFeatEffects.grantedAbilities.map(ability => {
                    const abilityNameForDisplay = ability.name;
                    if (ability.uses && typeof ability.uses.value === 'number' && ability.uses.per) {
                     const localizedPeriod = (ability.uses.per === 'day' ? (UI_STRINGS.periodDay) : ability.uses.per === 'encounter' ? (UI_STRINGS.periodEncounter) : ability.uses.per === 'week' ? (UI_STRINGS.periodWeek) : ability.uses.per);
@@ -735,7 +739,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <SelectTrigger id="alignment" className="flex-grow h-9 text-sm"> <SelectValue /> </SelectTrigger>
                   <SelectContent> {availableAlignments.map(align => ( <SelectItem key={align.id} value={align.id === "" ? UI_EMPTY_SELECTION_VALUE : align.id}>{align.label}</SelectItem> ))} </SelectContent>
                 </Select>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked}> <Info className="h-5 w-5" /> </Button>
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenAlignmentInfoDialog}> <Info className="h-5 w-5" /> </Button>
               </div>
             </div>
             <div className="space-y-1.5">
@@ -745,7 +749,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     <SelectTrigger id="deity" className="flex-grow h-9 text-sm"> <SelectValue /> </SelectTrigger>
                     <SelectContent> {deitySelectOptions.map(opt => ( <SelectItem key={opt.value} value={opt.value}> {opt.label} </SelectItem> ))} </SelectContent>
                   </Select>
-                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenDeityInfoDialog} disabled={!localDeity || localDeity.trim() === '' || panelIsLocked} > <Info className="h-5 w-5" /> </Button>
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenDeityInfoDialog} disabled={!localDeity || localDeity.trim() === ''} > <Info className="h-5 w-5" /> </Button>
                 </div>
               </div>
           </div>
@@ -754,7 +758,7 @@ const CharacterFormCoreInfoSectionComponent = ({
             <div className="space-y-1.5">
               <Label htmlFor="age" className="inline-block w-full text-center md:text-center">{UI_STRINGS.ageLabel}</Label>
               <NumberSpinnerInput id="age" value={localAge} onChange={setLocalAge} min={currentMinAgeForInput} max={1000} inputClassName="w-full h-10 text-base text-center" buttonClassName="h-10 w-10" buttonSize="icon" className="justify-center" disabled={panelIsLocked} />
-              {ageEffectsDetails && (ageEffectsDetails.categoryName !== (UI_STRINGS.ageCategoryAdult) || ageEffectsDetails.effects.length > 0) && (
+              {!panelIsLocked && ageEffectsDetails && (ageEffectsDetails.categoryName !== (UI_STRINGS.ageCategoryAdult) || ageEffectsDetails.effects.length > 0) && (
                  <div className="flex flex-wrap items-baseline justify-center gap-1 pt-[6px]">
                   <DualBadge
                     leftLabel={UI_STRINGS.ageCategoryBadgeLabel}
@@ -809,8 +813,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 <SelectTrigger id="sizeCategory" className="h-9 text-sm"><SelectValue /></SelectTrigger>
                 <SelectContent> {SIZES.map(s => <SelectItem key={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id} value={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id}>{s.label}</SelectItem>)} </SelectContent>
               </Select>
-              <div className="flex items-baseline justify-center md:justify-start gap-1 pt-[6px]">
-                {localSize && (() => {
+              {!panelIsLocked && localSize && (() => {
                   const selectedSizeObject = SIZES.find(s => s.id === localSize);
                   if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
                     const acMod = selectedSizeObject.acModifier;
@@ -833,17 +836,18 @@ const CharacterFormCoreInfoSectionComponent = ({
                     }
 
                     return (
-                      <DualBadge
-                        leftLabel={UI_STRINGS.sizeAcModLeftBadgeLabel}
-                        rightLabel={acMod > 0 ? `+${acMod}` : String(acMod)}
-                        leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0", leftBorderColorClass)}
-                        rightClassName={cn("border-2 rounded-r-full -ml-[2px]", rightBgClass, rightTextClass, rightBorderColorClass)}
-                        className="mr-1 mb-1"
-                      />
+                      <div className="flex items-baseline justify-center md:justify-start gap-1 pt-[6px]">
+                        <DualBadge
+                          leftLabel={UI_STRINGS.sizeAcModLeftBadgeLabel}
+                          rightLabel={acMod > 0 ? `+${acMod}` : String(acMod)}
+                          leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0", leftBorderColorClass)}
+                          rightClassName={cn("border-2 rounded-r-full -ml-[2px]", rightBgClass, rightTextClass, rightBorderColorClass)}
+                          className="mr-1 mb-1"
+                        />
+                      </div>
                     );
                   } return null;
                 })()}
-              </div>
             </div>
           </div>
         </>

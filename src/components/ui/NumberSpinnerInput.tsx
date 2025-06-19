@@ -63,7 +63,9 @@ export function NumberSpinnerInput({
       num = Number.isFinite(value) ? value : (min !== -Infinity && Number.isFinite(min) ? min : 0);
     }
 
-    num = Math.max(min === -Infinity ? -Infinity : (Number.isFinite(min) ? min! : 0), Math.min(max === Infinity ? Infinity : (Number.isFinite(max) ? max! : Infinity), num));
+    const minBound = Number.isFinite(min) ? min! : -Infinity;
+    const maxBound = Number.isFinite(max) ? max! : Infinity;
+    num = Math.max(minBound, Math.min(maxBound, num));
     const finalNum = parseFloat(num.toFixed(precision)); 
     
     if (finalNum !== value || String(finalNum) !== String(value)) {
@@ -121,19 +123,44 @@ export function NumberSpinnerInput({
     }
   };
 
+  const minBoundCheck = Number.isFinite(min) ? min! : -Infinity;
+  const maxBoundCheck = Number.isFinite(max) ? max! : Infinity;
+
+  const getButtonPlaceholderSizeClass = () => {
+    if (buttonClassName) {
+        // Attempt to extract h- and w- classes to maintain size
+        const heightClass = buttonClassName.match(/h-\d+/)?.[0] || (buttonSize === 'icon' ? 'h-10' : 'h-8'); // Default for sm/default if not in class
+        const widthClass = buttonClassName.match(/w-\d+/)?.[0] || (buttonSize === 'icon' ? 'w-10' : 'w-8');
+        return cn("flex-none", heightClass, widthClass);
+    }
+    // Fallback to buttonSize defaults
+    switch (buttonSize) {
+        case 'sm': return "h-9 w-9 flex-none";
+        case 'lg': return "h-11 w-11 flex-none";
+        case 'icon': return "h-10 w-10 flex-none";
+        default: return "h-10 w-10 flex-none"; // Default size
+    }
+  };
+  const buttonPlaceholderSizeClass = getButtonPlaceholderSizeClass();
+
+
   return (
     <div className={cn("flex items-center space-x-1", className)}>
-      <Button
-        type="button"
-        variant="ghost"
-        size={buttonSize}
-        className={cn("p-0 aspect-square flex-none", buttonClassName)}
-        onClick={handleDecrement}
-        disabled={disabled || Number(value) <= (min === -Infinity ? -Infinity : (Number.isFinite(min) ? min! : -Infinity))}
-        aria-label="Decrement"
-      >
-        <MinusCircle className="h-4 w-4" />
-      </Button>
+      {!disabled ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size={buttonSize}
+          className={cn("p-0 aspect-square flex-none", buttonClassName)}
+          onClick={handleDecrement}
+          disabled={Number(value) <= minBoundCheck}
+          aria-label="Decrement"
+        >
+          <MinusCircle className="h-4 w-4" />
+        </Button>
+      ) : (
+        <div className={cn(buttonPlaceholderSizeClass)} />
+      )}
       <Input
         id={id}
         type="text" 
@@ -145,23 +172,27 @@ export function NumberSpinnerInput({
         disabled={disabled}
         readOnly={readOnly}
         className={cn(
-            "w-12 h-8 text-center appearance-none", 
-            inputClassName
+            "text-center appearance-none", 
+            inputClassName 
         )}
         style={{ MozAppearance: 'textfield' }} 
         aria-live="polite"
       />
-      <Button
-        type="button"
-        variant="ghost"
-        size={buttonSize}
-        className={cn("p-0 aspect-square flex-none", buttonClassName)}
-        onClick={handleIncrement}
-        disabled={disabled || Number(value) >= (max === Infinity ? Infinity : (Number.isFinite(max) ? max! : Infinity)) || isIncrementDisabled}
-        aria-label="Increment"
-      >
-        <PlusCircle className="h-4 w-4" />
-      </Button>
+      {!disabled ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size={buttonSize}
+          className={cn("p-0 aspect-square flex-none", buttonClassName)}
+          onClick={handleIncrement}
+          disabled={Number(value) >= maxBoundCheck || isIncrementDisabled}
+          aria-label="Increment"
+        >
+          <PlusCircle className="h-4 w-4" />
+        </Button>
+      ) : (
+         <div className={cn(buttonPlaceholderSizeClass)} />
+      )}
     </div>
   );
 }
