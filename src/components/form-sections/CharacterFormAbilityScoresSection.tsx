@@ -143,7 +143,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
         initialLockedState={false}
        >
         {() => (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-3">
             {abilityKeys.map(ability => (
               <div key={ability} className="flex flex-col items-center space-y-1.5 p-3 border rounded-md bg-card shadow-sm">
                 <Skeleton className="h-6 w-12 mb-1" />
@@ -172,7 +172,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
       >
         {({ isLocked: panelIsLocked }) => (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-3">
               {abilityKeys.map(ability => {
                 const [baseScoreValue, setBaseScoreValue] = debouncedStates[ability];
                 const [tempCustomModValue, setTempCustomModValue] = debouncedStates[`${ability}TempMod`];
@@ -209,7 +209,6 @@ const CharacterFormAbilityScoresSectionComponent = ({
                           className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5 mt-0.5"
                           onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
                            aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel).replace("{abilityName}", abilityDisplayName)}
-                           // Info button always active regardless of lock
                         >
                           <Info className="h-3.5 w-3.5" />
                         </Button>
@@ -221,7 +220,6 @@ const CharacterFormAbilityScoresSectionComponent = ({
                           className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5 mt-0.5"
                           onClick={() => handleOpenRollDialog(ability)}
                           aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
-                          // Dice button always active regardless of lock
                         >
                           <Dices className="h-3.5 w-3.5" />
                       </Button>
