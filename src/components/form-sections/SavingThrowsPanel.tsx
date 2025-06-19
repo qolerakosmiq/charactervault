@@ -13,8 +13,8 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
-// import { Badge } from '@/components/ui/badge'; // No longer needed for this row's specific styling
 import { DualBadge } from '@/components/ui/DualBadge'; 
+import { Badge } from '@/components/ui/badge'; // Added this line
 import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store'; 
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
@@ -106,6 +106,8 @@ const SavingThrowsPanelComponent = ({
       baseModifier: totalSaveModifier,
       calculationBreakdown: breakdown,
       rerollTwentiesForChecks: rerollTwentiesForChecks, 
+      weaponDamageDiceString: "", // Not applicable here
+      weaponCriticalMultiplier: 1, // Not applicable here
     });
   }, [translations, abilityScores, savingThrowsData, aggregatedFeatEffects, onOpenRollDialog, calculateCalculatedTotalMiscBonusForSave, debouncedTemporaryMods, rerollTwentiesForChecks]);
 
@@ -315,6 +317,3 @@ const SavingThrowsPanelComponent = ({
 
 SavingThrowsPanelComponent.displayName = 'SavingThrowsPanelComponent';
 export const SavingThrowsPanel = React.memo(SavingThrowsPanelComponent);
-
-    
-    
