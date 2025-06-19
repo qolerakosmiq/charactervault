@@ -214,8 +214,8 @@ export function AbilityScoreRollerDialog({
             <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingOptionsTitle}</p>
           </div>
           <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => onOpenChange(false)} disabled>Cancel</Button>
-            <Button disabled>Apply Scores</Button>
+            <Button variant="outline" onClick={() => onOpenChange(false)} disabled>{translations?.UI_STRINGS.rollerDialogCancelButton}</Button>
+            <Button disabled>{translations?.UI_STRINGS.rollerDialogApplyButton}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -242,7 +242,7 @@ export function AbilityScoreRollerDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="my-4 space-y-4">
+        <div className="mt-4 space-y-4"> {/* Changed my-4 to mt-4 */}
           <div className="text-center">
             <Label className="text-sm font-medium text-muted-foreground">
               {UI_STRINGS.rollerDialogYourScoresLabel}
