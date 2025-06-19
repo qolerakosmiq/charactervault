@@ -193,14 +193,14 @@ export function RollDialog({
   const resultCardBackground = cn(
     "p-3 border rounded-md space-y-1",
     isInitialRollCritFailure ? "bg-destructive/20 border-destructive/50" :
-    isInitialRollNat20 && bonusRolls.length === 0 ? "bg-emerald-600/20 border-emerald-600/50" :
+    isInitialRollNat20 ? "bg-emerald-600/20 border-emerald-600/50" : // Nat 20 is green
     "bg-card border-border"
   );
 
   const diceResultColor = cn(
     "font-bold text-lg",
     isInitialRollCritFailure ? "text-destructive" :
-    isInitialRollNat20 && bonusRolls.length === 0 ? "text-emerald-500" :
+    isInitialRollNat20 ? "text-emerald-500" : // Nat 20 is green
     "text-primary"
   );
 
@@ -223,10 +223,10 @@ export function RollDialog({
               <div>
                 {calculationBreakdown.map((item, index) => {
                   if (item.label === (UI_STRINGS.infoDialogTotalLabel || "Total") && item.isBold) {
-                    return null; // Hide the "Total" from breakdown as we show it below
+                    return null; 
                   }
-                  if (isDamageRoll && item.label === (UI_STRINGS.infoDialogTotalNumericBonusLabel || "Total Numeric Bonus") && item.isBold) {
-                    return null; // Hide this too for damage rolls, as baseModifier is used in steps
+                  if (isDamageRoll && item.label === (UI_STRINGS.rollDialogTotalNumericBonusLabel || "Total Numeric Bonus") && item.isBold) {
+                    return null; 
                   }
 
 
@@ -242,11 +242,10 @@ export function RollDialog({
                             abilityAbbr = potentialAbbr;
                         }
                     } else if (item.label === (UI_STRINGS.rollDialogAbilityModifierLabel || "Ability Modifier ({abilityAbbr})")) {
-                        // Attempt to find the ability from various sources for context
                         const matchFromTitle = dialogTitle.match(/\(([^)]+)\)/);
                         const matchFromRollTypeAbility = rollType.match(/ability_check_(\w+)/);
                         const matchFromRollTypeSave = rollType.match(/saving_throw_(\w+)/);
-                        const matchFromRollTypeSkill = rollType.match(/skill_check_([a-zA-Z-]+)_(\w+)/); // More specific skill ID match
+                        const matchFromRollTypeSkill = rollType.match(/skill_check_([a-zA-Z-]+)_(\w+)/); 
 
                         let abilityKey: string | undefined;
 
@@ -256,7 +255,7 @@ export function RollDialog({
                             abilityKey = SAVING_THROW_ABILITIES[saveType];
                         } else if (matchFromRollTypeSkill && translations.SKILL_DEFINITIONS) {
                             const skillIdParts = rollType.split('_');
-                            const skillId = skillIdParts.length > 2 ? skillIdParts.slice(2).join('_') : skillIdParts[1]; // Reconstruct skill ID like 'knowledge-arcana'
+                            const skillId = skillIdParts.length > 2 ? skillIdParts.slice(2).join('_') : skillIdParts[1]; 
                             const skillDef = translations.SKILL_DEFINITIONS.find(sd => sd.id === skillId);
                             if (skillDef) abilityKey = skillDef.keyAbility as string;
                         } else if (matchFromTitle && translations.ABILITY_LABELS) {
@@ -329,31 +328,31 @@ export function RollDialog({
                   )}
                   {rolledWeaponDiceDetails && (
                     <div className="flex justify-between items-center text-sm">
-                        <span className="text-foreground">{UI_STRINGS.rollDialogWeaponDamageDiceLabel || "Weapon Dice Rolled:"}</span>
+                        <span className="text-foreground">{UI_STRINGS.rollDialogWeaponDamageDiceLabel}</span>
                         <span className="font-bold text-primary">{rolledWeaponDiceDetails}</span>
                     </div>
                   )}
                   {baseDamagePlusModDetails && (
                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-foreground">{UI_STRINGS.rollDialogBaseDamagePlusModLabel || "Dice + Modifiers:"}</span>
+                        <span className="text-foreground">{UI_STRINGS.rollDialogBaseDamagePlusModLabel}</span>
                         <span className="font-bold text-primary">{baseDamagePlusModDetails}</span>
                     </div>
                   )}
                   {critMultiplierAppliedDetails && (
                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-foreground">{UI_STRINGS.rollDialogCritMultiplierAppliedLabel || "Critical Multiplier:"}</span>
+                        <span className="text-foreground">{UI_STRINGS.rollDialogCritMultiplierAppliedLabel}</span>
                         <span className="font-bold text-primary">{critMultiplierAppliedDetails}</span>
                     </div>
                   )}
                    {rolledExtraDiceDetails && (
                     <div className="flex justify-between items-center text-sm">
-                        <span className="text-foreground">{UI_STRINGS.rollDialogExtraDamageDiceLabel || "Extra Dice Rolled:"}</span>
+                        <span className="text-foreground">{UI_STRINGS.rollDialogExtraDamageDiceLabel}</span>
                         <span className="font-bold text-primary">{rolledExtraDiceDetails}</span>
                     </div>
                   )}
                   <Separator className="my-1 bg-border/50"/>
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalDamageStringLabel || "Total Damage:"}</span>
+                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalDamageStringLabel}</span>
                     <span className="font-bold text-lg text-primary">{finalResult}</span>
                   </div>
                 </>
@@ -362,24 +361,24 @@ export function RollDialog({
                   {initialD20Roll !== null && (
                     <div className="flex justify-between items-center">
                       <div className="flex items-center">
-                        <span className="text-sm text-foreground">{UI_STRINGS.rollDialogDiceRollLabel || "Dice Roll:"}{'\u00A0'}</span><Badge variant="outline">1d20</Badge>
+                        <span className="text-sm text-foreground">{UI_STRINGS.rollDialogDiceRollLabel}{'\u00A0'}</span><Badge variant="outline">1d20</Badge>
                       </div>
                       <span className={diceResultColor}>{initialD20Roll}</span>
                     </div>
                   )}
                   {bonusRolls.length > 0 && (
                      <div className="flex justify-between items-center">
-                      <span className="text-sm text-foreground">{UI_STRINGS.rollDialogBonusDiceRollLabel || "Bonus Dice Roll:"}</span>
+                      <span className="text-sm text-foreground">{UI_STRINGS.rollDialogBonusDiceRollLabel}</span>
                       <span className="font-bold text-lg text-primary">{bonusRolls.join(', ')}</span>
                     </div>
                   )}
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-foreground">{UI_STRINGS.rollDialogTotalBonusLabel || "Total Bonus:"}</span>
+                    <span className="text-foreground">{UI_STRINGS.rollDialogTotalBonusLabel}</span>
                     <span className="font-bold text-primary">{renderModifierValue(baseModifier)}</span>
                   </div>
                   <Separator className="mt-2 mb-1" />
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalResultLabel || "Final Result:"}</span>
+                    <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalResultLabel}</span>
                     {isInitialRollCritFailure ? (
                       <span className="font-bold text-lg text-destructive">{UI_STRINGS.rollDialogCritFailureLabel || "Critical Failure!"}</span>
                     ) : (
@@ -406,3 +405,4 @@ export function RollDialog({
     </Dialog>
   );
 }
+
