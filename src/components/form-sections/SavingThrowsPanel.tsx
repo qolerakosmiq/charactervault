@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card'; // Removed CardTitle
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
@@ -142,7 +142,7 @@ const SavingThrowsPanelComponent = ({
 
   return (
     <LockablePanelWrapper
-      title={UI_STRINGS.savingThrowsPanelTitle || "Saving Throws"}
+      title={UI_STRINGS.savingThrowsPanelTitle}
       icon={Zap}
       initialLockedState={false}
       cardContentClassName="pt-4"
@@ -190,7 +190,7 @@ const SavingThrowsPanelComponent = ({
                           className="h-6 w-6 text-muted-foreground hover:text-foreground"
                           onClick={() => onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType: saveType })}
                           aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel || "Info for {saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel)}
-                          disabled={panelIsLocked && (saveType === 'fortitude' || saveType === 'reflex' || saveType === 'will')}
+                          disabled={!onOpenInfoDialog}
                         >
                           <Info className="h-4 w-4" />
                         </Button>
@@ -201,7 +201,7 @@ const SavingThrowsPanelComponent = ({
                           className="h-6 w-6 text-muted-foreground hover:text-primary"
                           onClick={() => handleOpenSavingThrowRollDialog(saveType)}
                           aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel)}
-                          disabled={panelIsLocked}
+                          disabled={!onOpenRollDialog}
                         >
                           <Dices className="h-4 w-4" />
                         </Button>
@@ -211,11 +211,11 @@ const SavingThrowsPanelComponent = ({
                     <CardContent className="p-3 pt-1">
                       <div className="space-y-1.5">
                         <div className="space-y-1 text-center">
-                          <Label className="text-xs text-muted-foreground">{UI_STRINGS.savingThrowsRowLabelBase || "Base"}</Label>
+                          <Label className="text-xs text-muted-foreground">{UI_STRINGS.savingThrowsRowLabelBase}</Label>
                           <p className="font-semibold text-md">{baseSaveValue}</p>
                         </div>
                         <div className="space-y-1 text-center">
-                          <Label className="text-xs text-muted-foreground">{UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability Modifier"}</Label>
+                          <Label className="text-xs text-muted-foreground">{UI_STRINGS.savingThrowsRowLabelAbilityModifier}</Label>
                           <div className="flex justify-center mt-1">
                               <DualBadge
                                   leftLabel={renderModifierValue(abilityModifier)}
@@ -227,7 +227,7 @@ const SavingThrowsPanelComponent = ({
                         </div>
                         <div className="space-y-1 text-center">
                           <Label className="text-xs text-muted-foreground inline-flex items-center">
-                            {UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}
+                            {UI_STRINGS.savingThrowsRowLabelMiscModifier}
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
@@ -236,7 +236,7 @@ const SavingThrowsPanelComponent = ({
                                 <TooltipContent side="top" className="max-w-xs">
                                   <p className="text-xs">
                                     <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_prefix }} />
-                                    <Badge variant="outline" className="text-xs">{UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}</Badge>
+                                    <Badge variant="outline" className="text-xs">{UI_STRINGS.savingThrowsRowLabelMiscModifier}</Badge>
                                     <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_suffix }}/>
                                   </p>
                                 </TooltipContent>
@@ -247,7 +247,7 @@ const SavingThrowsPanelComponent = ({
                         </div>
                         <div className="space-y-1 text-center">
                           <Label htmlFor={`temp-mod-${saveType}`} className="text-xs text-muted-foreground">
-                              {UI_STRINGS.savingThrowsRowLabelTemporaryModifier || "Temporary Modifier"}
+                              {UI_STRINGS.savingThrowsRowLabelTemporaryModifier}
                           </Label>
                           <div className="mt-1 w-full">
                             <NumberSpinnerInput
@@ -274,7 +274,7 @@ const SavingThrowsPanelComponent = ({
           {!panelIsLocked && (
             <p className="text-sm text-muted-foreground pt-3 text-left border-t border-border/30 mt-4">
               <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_prefix }} />
-              <Badge variant="outline">{UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}</Badge>
+              <Badge variant="outline">{UI_STRINGS.savingThrowsRowLabelMiscModifier}</Badge>
               <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_suffix }} />
             </p>
           )}
@@ -286,3 +286,4 @@ const SavingThrowsPanelComponent = ({
 
 SavingThrowsPanelComponent.displayName = 'SavingThrowsPanelComponent';
 export const SavingThrowsPanel = React.memo(SavingThrowsPanelComponent);
+
