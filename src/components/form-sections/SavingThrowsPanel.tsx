@@ -4,12 +4,12 @@
 import *as React from 'react';
 import type { AbilityScores, SavingThrows, SavingThrowType, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects, GenericBreakdownItem } from '@/types/character';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
-import { Zap, Loader2, Info, Dices, Lock, Unlock, HelpCircle } from 'lucide-react';
+import { Zap, Loader2, Info, Dices, Lock, Unlock } from 'lucide-react'; // Removed HelpCircle
 import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card'; // Removed CardTitle
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
@@ -20,7 +20,8 @@ import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Separator } from '@/components/ui/separator';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+// Tooltip components are no longer needed for the Misc Modifier label
+// import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const DEBOUNCE_DELAY = 400;
 
@@ -175,9 +176,10 @@ const SavingThrowsPanelComponent = ({
                 valueTextClass = "text-destructive-foreground";
               }
 
+
               return (
                 <Card key={saveType} className="shadow-sm">
-                  <CardHeader className="p-3 pb-2 flex flex-col items-center space-y-1 text-center">
+                  <CardHeader className="p-4 flex flex-col items-center space-y-1 text-center">
                     <span className="text-sm font-medium">{saveTypeLabel}</span>
                     <div className="flex items-center justify-center space-x-1">
                         <p className={cn("text-xl font-bold text-accent")}>
@@ -218,30 +220,16 @@ const SavingThrowsPanelComponent = ({
                           <Label className="text-xs text-muted-foreground">{UI_STRINGS.savingThrowsRowLabelAbilityModifier}</Label>
                           <div className="flex justify-center mt-1">
                               <DualBadge
-                                  leftLabel={renderModifierValue(abilityModifier)}
-                                  rightLabel={abilityAbbr}
-                                  leftClassName={cn("border-2 rounded-l-full border-r-0 !px-1.5 !py-0.5 !h-auto", valueBorderColorClass)}
-                                  rightClassName={cn("bg-transparent text-foreground border-2 rounded-r-full -ml-[2px] !px-1.5 !py-0.5 !h-auto", valueBgClass, valueTextClass, valueBorderColorClass)}
+                                  leftLabel={abilityAbbr}
+                                  rightLabel={renderModifierValue(abilityModifier)}
+                                  leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0 !px-1.5 !py-0.5 !h-auto", valueBorderColorClass)}
+                                  rightClassName={cn("border-2 rounded-r-full -ml-[2px] !px-1.5 !py-0.5 !h-auto", valueBgClass, valueTextClass, valueBorderColorClass)}
                               />
                           </div>
                         </div>
                         <div className="space-y-1 text-center">
-                          <Label className="text-xs text-muted-foreground inline-flex items-center">
+                          <Label className="text-xs text-muted-foreground">
                             {UI_STRINGS.savingThrowsRowLabelMiscModifier}
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <HelpCircle className="h-3 w-3 ml-1 text-muted-foreground/70 cursor-help" />
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="max-w-xs">
-                                  <p className="text-xs">
-                                    <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_prefix }} />
-                                    <Badge variant="outline" className="text-xs">{UI_STRINGS.savingThrowsRowLabelMiscModifier}</Badge>
-                                    <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_suffix }}/>
-                                  </p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
                           </Label>
                           <p className="font-semibold text-md">{renderModifierValue(calculatedTotalMiscBonusForSaveVal)}</p>
                         </div>
