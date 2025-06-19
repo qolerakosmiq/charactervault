@@ -258,9 +258,14 @@ const CharacterFormCoreInfoSectionComponent = ({
         blockLabelForDialog = uiBlock.key;
     }
     
-    const introductoryContentHtml = uiBlock.infoDialogContent 
-      ? getLocalizedString(uiBlock.infoDialogContent, currentLang) 
-      : undefined;
+    let introductoryContentForDialog: string | undefined = undefined;
+    if (uiBlock.infoDialogContent) {
+      introductoryContentForDialog = getLocalizedString(uiBlock.infoDialogContent, currentLang);
+    } else if (uiBlock.descriptionKey && UI_STRINGS[uiBlock.descriptionKey]) {
+      introductoryContentForDialog = UI_STRINGS[uiBlock.descriptionKey]!;
+    } else if (uiBlock.description) {
+      introductoryContentForDialog = getLocalizedString(uiBlock.description, currentLang);
+    }
 
     let optionsForDialog: Array<{ id: string; label: string; description?: string; }> = [];
     if (uiBlock.optionsSource === 'domains') {
@@ -278,8 +283,8 @@ const CharacterFormCoreInfoSectionComponent = ({
     } else if (uiBlock.optionsSource === 'creatureTypes' && DND_CREATURE_TYPES) {
       optionsForDialog = DND_CREATURE_TYPES.map(ct => ({
         id: ct.id,
-        label: ct.label, // Already localized from processRawDataBundle
-        description: ct.description // Already localized
+        label: ct.label, 
+        description: ct.description 
       }));
     } else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) {
       optionsForDialog = uiBlock.customOptions.map(opt => ({
@@ -290,18 +295,18 @@ const CharacterFormCoreInfoSectionComponent = ({
     }
     optionsForDialog.sort((a,b) => a.label.localeCompare(b.label));
     
-    if (uiBlock.optionsSource) {
+    if (uiBlock.optionsSource && optionsForDialog.length > 0) {
         onOpenClassSpecificChoiceInfoDialog({ 
             type: 'classSpecificChoiceOptions', 
             title: blockLabelForDialog, 
             options: optionsForDialog,
-            introductoryContentHtml: introductoryContentHtml
+            introductoryContentHtml: introductoryContentForDialog
         });
-    } else if (introductoryContentHtml) {
+    } else if (introductoryContentForDialog) {
         onOpenClassSpecificChoiceInfoDialog({
             type: 'genericHtml',
             title: blockLabelForDialog,
-            content: introductoryContentHtml
+            content: introductoryContentForDialog
         });
     }
   }, [onOpenClassSpecificChoiceInfoDialog, translations, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, UI_STRINGS, currentLang]);
@@ -456,10 +461,6 @@ const CharacterFormCoreInfoSectionComponent = ({
     else if (uiBlock.label) { blockLabel = getLocalizedString(uiBlock.label, currentLang); }
     else { blockLabel = uiBlock.key; }
 
-    let blockDescription: string | undefined;
-    if (uiBlock.descriptionKey && UI_STRINGS[uiBlock.descriptionKey]) { blockDescription = UI_STRINGS[uiBlock.descriptionKey]!; }
-    else if (uiBlock.description) { blockDescription = getLocalizedString(uiBlock.description, currentLang); }
-
     let blockNote: string | undefined;
     if (uiBlock.note) { blockNote = getLocalizedString(uiBlock.note, currentLang); }
 
@@ -510,7 +511,8 @@ const CharacterFormCoreInfoSectionComponent = ({
         if (uiBlock.disabledIfChoiceValue.values.includes(controllingChoiceValue)) isDisabledByPanelOrDependency = true;
     }
 
-    const commonInfoButton = (uiBlock.infoDialogContent || uiBlock.optionsSource) && !!onOpenClassSpecificChoiceInfoDialog ? (
+    const hasInfoContentForDialog = uiBlock.infoDialogContent || uiBlock.description || uiBlock.descriptionKey;
+    const commonInfoButton = (hasInfoContentForDialog || uiBlock.optionsSource) && !!onOpenClassSpecificChoiceInfoDialog ? (
       <Button
         type="button" variant="ghost" size="icon"
         className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9"
@@ -527,7 +529,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       return (
         <div key={`${uiBlock.key}-${blockIndex}-heading`} className="mt-1 mb-0">
           <h3 className="text-md font-semibold text-accent">{blockLabel}</h3>
-          {blockDescription && <p className="text-xs text-muted-foreground">{blockDescription}</p>}
+          {/* Description removed from here */}
           <Separator className="mt-1" />
         </div>
       );
@@ -544,7 +546,7 @@ const CharacterFormCoreInfoSectionComponent = ({
             </Select>
             {commonInfoButton}
           </div>
-          {blockDescription && <p className="text-xs text-muted-foreground">{blockDescription}</p>}
+          {/* Description removed from here */}
           {blockNote && <p className="text-xs text-destructive/80 italic mt-1">{blockNote}</p>}
         </div>
       );
@@ -553,10 +555,10 @@ const CharacterFormCoreInfoSectionComponent = ({
         <div key={`${uiBlock.key}-${blockIndex}-combobox`} className="space-y-1.5">
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
            <div className="flex items-center gap-2">
-            <ComboboxPrimitive options={finalSelectOptions} value={uiValueForComponent} onChange={handleChange} placeholder={inputPlaceholderText || UI_STRINGS.selectPlaceholder} triggerClassName="h-9 text-sm flex-grow" disabled={isDisabledByPanelOrDependency} />
+            <ComboboxPrimitive options={finalSelectOptions} value={uiValueForComponent} onChange={handleChange} placeholder={inputPlaceholderText || UI_STRINGS.selectPlaceholder} triggerClassName="h-9 text-sm flex-grow" disabled={isDisabledByPanelOrDependency} isEditable={uiBlock.optionsSource === 'creatureTypes'} />
             {commonInfoButton}
           </div>
-          {blockDescription && <p className="text-xs text-muted-foreground">{blockDescription}</p>}
+          {/* Description removed from here */}
           {blockNote && <p className="text-xs text-destructive/80 italic mt-1">{blockNote}</p>}
         </div>
       );
@@ -566,7 +568,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       return (
         <div key={`${uiBlock.key}-group-${blockIndex}`} className="space-y-3 p-3 border rounded-md bg-background/50">
           <Label className="flex items-center text-md font-medium">{blockLabel} <Badge variant="outline" className="ml-2">{numInputsToRender}</Badge></Label>
-          {blockDescription && <p className="text-xs text-muted-foreground">{blockDescription}</p>}
+          {/* Description removed from here */}
           {Array.from({ length: numInputsToRender }).map((_, index) => (
             <div key={`${uiBlock.key}-slot-${index}`} className="space-y-1">
               <Label htmlFor={`${uiBlock.key}-input-${index}`} className="text-xs"> {parseAndRenderUIString(slotLabelTemplate, { slotNum: index + 1 })} </Label>
@@ -581,7 +583,7 @@ const CharacterFormCoreInfoSectionComponent = ({
          <div key={`${uiBlock.key}-${blockIndex}-textInput`} className="space-y-1.5">
             <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
             <Input id={`cspec-${uiBlock.key}-${blockIndex}`} value={currentBlockValueForProp} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
-            {blockDescription && <p className="text-xs text-muted-foreground">{blockDescription}</p>}
+            {/* Description removed from here */}
             {blockNote && <p className="text-xs text-destructive/80 italic mt-1">{blockNote}</p>}
          </div>
       );
@@ -598,7 +600,8 @@ const CharacterFormCoreInfoSectionComponent = ({
     handleClassSpecificChoiceChange,
     onOpenClassSpecificChoiceInfoDialog,
     getCurrentValue,
-    handleOpenClassSpecificChoiceInfoDialogInternal
+    handleOpenClassSpecificChoiceInfoDialogInternal,
+    translations // Added to dependencies because UI_STRINGS comes from it
   ]);
 
 
@@ -663,7 +666,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let rightBorderColorClass = "border-border";
 
                     if (change > 0) {
-                      leftBorderColorClass = "border-emerald-700";
+                      leftBorderColorClass = "border-emerald-600"; // Changed from 700 to match fill
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
                       rightBorderColorClass = "border-emerald-600";
@@ -798,7 +801,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let rightBorderColorClass = "border-border";
 
                     if (change > 0) {
-                      leftBorderColorClass = "border-emerald-700";
+                      leftBorderColorClass = "border-emerald-600"; 
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
                       rightBorderColorClass = "border-emerald-600";
@@ -848,7 +851,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let rightBorderColorClass = "border-border";
 
                     if (acMod > 0) {
-                      leftBorderColorClass = "border-emerald-700";
+                      leftBorderColorClass = "border-emerald-600";
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
                       rightBorderColorClass = "border-emerald-600";
@@ -881,5 +884,3 @@ const CharacterFormCoreInfoSectionComponent = ({
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
 
-    
-    
