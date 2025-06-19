@@ -11,7 +11,7 @@
   "ageLabel": { "en": "Age", "fr": "Âge" },
   "genderLabel": { "en": "Gender", "fr": "Genre" },
   "sizeLabel": { "en": "Size Category", "fr": "Catégorie de taille" },
-  "hitDiceLabel": { "en": "Hit Dice | <b>{value}</b>", "fr": "Dés de vie | <b>{value}</b>" },
+  "hitDiceBadgeLabel": { "en": "HD", "fr": "DV" },
   "favoredEnemySlotsAvailableShort": { "en": "{slots} Slot(s)", "fr": "{slots} Emplacement(s)"},
   "favoredEnemyBonusDisplayInfo": { "en": "Bonuses vs Favored Enemies: +{skillBonus} to skills (Bluff, Listen, Sense Motive, Spot, Survival), +{damageBonus} to damage.", "fr": "Bonus vs Ennemis Jurés : +{skillBonus} aux compétences (Bluff, Perception auditive, Psychologie, Détection, Survie), +{damageBonus} aux dégâts." },
   "wizardSpecializationDescription": { "en": "Selecting a specialization grants one bonus spell slot per spell level for that school, but requires choosing two prohibited schools (Divination cannot be prohibited). Generalists (Universal school) have no prohibited schools and can prepare an extra spell of any school per spell level.", "fr": "Choisir une spécialisation accorde un emplacement de sort bonus par niveau de sort pour cette école, mais nécessite de choisir deux écoles interdites (la Divination ne peut pas être interdite). Les généralistes (école Universelle) n'ont pas d'écoles interdites et peuvent préparer un sort supplémentaire de n'importe quelle école par niveau de sort." },
@@ -36,10 +36,9 @@
   "clericDomainsTitle": { "en": "Cleric Domains", "fr": "Domaines de Prêtre" },
   "clericDomain1Label": { "en": "First Domain", "fr": "Premier Domaine" },
   "clericDomain2Label": { "en": "Second Domain", "fr": "Second Domaine" },
-  "hitDiceBadgeLabel": { "en": "HD", "fr": "DV" },
   "ageCategoryBadgeLabel": { "en": "Age Cat.", "fr": "Cat. Âge" },
   "sizeAcModLeftBadgeLabel": { "en": "AC", "fr": "CA" },
-  "abilityUsesPoolPlaceholder": { "en": "Pool", "fr": "Réserve" },
-  "infoDialogClassSpecificChoiceAriaLabel": { "en": "Info for {choiceName}", "fr": "Infos pour {choiceName}" }
+  "rangerFavoredEnemyPlaceholder": { "en": "Select creature type...", "fr": "Choisir un type de créature..." },
+  "favoredEnemyNoneOption": { "en": "None / Not Selected", "fr": "Aucun / Non sélectionné" }
 }
     

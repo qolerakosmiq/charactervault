@@ -136,7 +136,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     DEBOUNCE_DELAY
   );
 
-  const { UI_STRINGS, ALIGNMENTS, DND_RACES, DND_CLASSES, DND_DEITIES, SIZES, GENDERS, DND_DOMAINS, DND_MAGIC_SCHOOLS, PREFERRED_DEFAULT_ALIGNMENT_IDS } = translations || {};
+  const { UI_STRINGS, ALIGNMENTS, DND_RACES, DND_CLASSES, DND_DEITIES, SIZES, GENDERS, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, PREFERRED_DEFAULT_ALIGNMENT_IDS } = translations || {};
 
   const selectedClassInfo = React.useMemo(() => DND_CLASSES?.find(c => c.id === localClassName), [DND_CLASSES, localClassName]);
   const selectedRaceInfo = React.useMemo(() => DND_RACES?.find(r => r.id === localRace), [DND_RACES, localRace]);
@@ -265,6 +265,12 @@ const CharacterFormCoreInfoSectionComponent = ({
         label: getLocalizedString(s.label, currentLang, DEFAULT_LANGUAGE, `magicSchools.${s.id}.label`),
         description: s.description ? getLocalizedString(s.description, currentLang, DEFAULT_LANGUAGE, `magicSchools.${s.id}.description`) : undefined
       }));
+    } else if (uiBlock.optionsSource === 'creatureTypes' && DND_CREATURE_TYPES) {
+      optionsForDialog = DND_CREATURE_TYPES.map(ct => ({
+        id: ct.id,
+        label: ct.label,
+        description: undefined // Creature types usually don't have extensive descriptions for this context
+      }));
     } else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) {
       optionsForDialog = uiBlock.customOptions.map(opt => ({
         id: opt.value,
@@ -274,11 +280,11 @@ const CharacterFormCoreInfoSectionComponent = ({
     }
     optionsForDialog.sort((a,b) => a.label.localeCompare(b.label));
     onOpenClassSpecificChoiceInfoDialog({ type: 'classSpecificChoiceOptions', title: blockLabelForDialog, options: optionsForDialog });
-  }, [onOpenClassSpecificChoiceInfoDialog, translations, DND_DOMAINS, DND_MAGIC_SCHOOLS, UI_STRINGS, currentLang]);
+  }, [onOpenClassSpecificChoiceInfoDialog, translations, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, UI_STRINGS, currentLang]);
 
 
   React.useEffect(() => {
-    if (!selectedClassInfo?.uiSections || !translations || !UI_STRINGS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS) return;
+    if (!selectedClassInfo?.uiSections || !translations || !UI_STRINGS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) return;
     let choicesToUpdate: CharacterClassSpecificChoice[] = [...(characterData.classSpecificChoices || [])];
     let changed = false;
 
@@ -297,6 +303,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               let tempOptions: ComboboxOption[] = [];
               if (uiBlock.optionsSource === 'domains') tempOptions = DND_DOMAINS.map(d => ({ value: d.id, label: getLocalizedString(d.label, currentLang) }));
               else if (uiBlock.optionsSource === 'magicSchools') tempOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: getLocalizedString(s.label, currentLang) }));
+              else if (uiBlock.optionsSource === 'creatureTypes') tempOptions = DND_CREATURE_TYPES.map(ct => ({ value: ct.id, label: ct.label }));
               else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) tempOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, currentLang) }));
 
               const actualSelectableOptions = tempOptions.filter(opt => opt.value !== UI_EMPTY_SELECTION_VALUE && opt.value !== "");
@@ -313,7 +320,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       }
     });
     if (changed) onFieldChange('classSpecificChoices', choicesToUpdate);
-  }, [selectedClassInfo?.id, selectedClassInfo?.uiSections, translations, UI_STRINGS, DND_DOMAINS, DND_MAGIC_SCHOOLS, currentLang, onFieldChange, characterData.classSpecificChoices]);
+  }, [selectedClassInfo?.id, selectedClassInfo?.uiSections, translations, UI_STRINGS, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, currentLang, onFieldChange, characterData.classSpecificChoices]);
 
   React.useEffect(() => {
     if (!selectedClassInfo || !PREFERRED_DEFAULT_ALIGNMENT_IDS || !ALIGNMENTS) return;
@@ -349,7 +356,7 @@ const CharacterFormCoreInfoSectionComponent = ({
   }, [localAlignment, localClassName, localDeity, DND_DEITIES, selectedClassInfo, setLocalDeity]);
 
   React.useEffect(() => {
-    if (!selectedClassInfo?.uiSections || !characterData.classSpecificChoices || !translations || !DND_DOMAINS || !DND_MAGIC_SCHOOLS) return;
+    if (!selectedClassInfo?.uiSections || !characterData.classSpecificChoices || !translations || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) return;
     let choicesChanged = false;
     const newChoices = [...characterData.classSpecificChoices];
     selectedClassInfo.uiSections.forEach(uiBlock => {
@@ -376,6 +383,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 let tempOptions: ComboboxOption[] = [];
                 if (uiBlock.optionsSource === 'domains') tempOptions = DND_DOMAINS.map(d => ({ value: d.id, label: getLocalizedString(d.label, currentLang) }));
                 else if (uiBlock.optionsSource === 'magicSchools') tempOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: getLocalizedString(s.label, currentLang) }));
+                else if (uiBlock.optionsSource === 'creatureTypes') tempOptions = DND_CREATURE_TYPES.map(ct => ({ value: ct.id, label: ct.label }));
                 else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) tempOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, currentLang) }));
                 const actualSelectableOptions = tempOptions.filter(opt =>
                     opt.value !== UI_EMPTY_SELECTION_VALUE && opt.value !== "" &&
@@ -394,10 +402,10 @@ const CharacterFormCoreInfoSectionComponent = ({
       }
     });
     if (choicesChanged) onFieldChange('classSpecificChoices', newChoices);
-  }, [characterData.classSpecificChoices, selectedClassInfo?.uiSections, onFieldChange, getCurrentValue, translations, DND_DOMAINS, DND_MAGIC_SCHOOLS, currentLang]);
+  }, [characterData.classSpecificChoices, selectedClassInfo?.uiSections, onFieldChange, getCurrentValue, translations, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, currentLang]);
 
   const renderClassSpecificUI = React.useCallback((uiBlock: ClassSpecificUIBlock, panelIsLocked: boolean, blockIndex: number) => {
-    if (!UI_STRINGS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS) return <Skeleton className="h-10 w-full my-2" />;
+    if (!UI_STRINGS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) return <Skeleton className="h-10 w-full my-2" />;
 
     const currentCharacterClassLevel = characterData.classes[0]?.level || 0;
     if (uiBlock.requiredLevel && currentCharacterClassLevel < uiBlock.requiredLevel) return null;
@@ -443,6 +451,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     let initialOptions: ComboboxOption[] = [];
     if (uiBlock.optionsSource === 'domains') initialOptions = DND_DOMAINS.map(d => ({ value: d.id, label: getLocalizedString(d.label, currentLang) }));
     else if (uiBlock.optionsSource === 'magicSchools') initialOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: getLocalizedString(s.label, currentLang) }));
+    else if (uiBlock.optionsSource === 'creatureTypes') initialOptions = DND_CREATURE_TYPES.map(ct => ({ value: ct.id, label: ct.label }));
     else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) initialOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, currentLang) }));
     initialOptions.sort((a,b) => a.label.localeCompare(b.label));
 
@@ -520,7 +529,7 @@ const CharacterFormCoreInfoSectionComponent = ({
         <div key={`${uiBlock.key}-${blockIndex}-combobox`} className="space-y-1.5">
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
            <div className="flex items-center gap-2">
-            <ComboboxPrimitive options={finalSelectOptions} value={uiValueForComponent} onChange={handleChange} placeholder={inputPlaceholderText} triggerClassName="h-9 text-sm flex-grow" disabled={isDisabledByPanelOrDependency} />
+            <ComboboxPrimitive options={finalSelectOptions} value={uiValueForComponent} onChange={handleChange} placeholder={inputPlaceholderText || UI_STRINGS.selectPlaceholder} triggerClassName="h-9 text-sm flex-grow" disabled={isDisabledByPanelOrDependency} />
             {commonInfoButton}
           </div>
           {blockDescription && <p className="text-xs text-muted-foreground">{blockDescription}</p>}
@@ -561,6 +570,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     currentLang,
     DND_DOMAINS,
     DND_MAGIC_SCHOOLS,
+    DND_CREATURE_TYPES,
     handleClassSpecificChoiceChange,
     onOpenClassSpecificChoiceInfoDialog,
     getCurrentValue,
@@ -568,7 +578,7 @@ const CharacterFormCoreInfoSectionComponent = ({
   ]);
 
 
-  if (translationsLoading || !translations || !UI_STRINGS || !DND_RACES || !DND_CLASSES || !ALIGNMENTS || !DND_DEITIES || !SIZES || !GENDERS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS) {
+  if (translationsLoading || !translations || !UI_STRINGS || !DND_RACES || !DND_CLASSES || !ALIGNMENTS || !DND_DEITIES || !SIZES || !GENDERS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) {
     return (
       <LockablePanelWrapper
         title={translations?.UI_STRINGS.coreAttributesTitle || "Core Attributes"}
@@ -629,15 +639,15 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let rightBorderColorClass = "border-border";
 
                     if (change > 0) {
-                      leftBorderColorClass = "border-emerald-700";
+                      leftBorderColorClass = "border-emerald-600"; // Darker green for outline part
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
-                      rightBorderColorClass = "border-emerald-700";
+                      rightBorderColorClass = "border-emerald-600"; // Match the fill
                     } else if (change < 0) {
                       leftBorderColorClass = "border-destructive";
                       rightBgClass = "bg-destructive";
                       rightTextClass = "text-destructive-foreground";
-                      rightBorderColorClass = "border-destructive";
+                      rightBorderColorClass = "border-destructive"; // Match the fill
                     }
 
                     return (
@@ -645,8 +655,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                         key={effect.ability}
                         leftLabel={effect.ability.substring(0, 3).toUpperCase()}
                         rightLabel={change > 0 ? `+${change}` : String(change)}
-                        leftClassName={cn("bg-transparent text-foreground border-2", leftBorderColorClass)}
-                        rightClassName={cn(rightBgClass, rightTextClass, "border-2", rightBorderColorClass)}
+                        leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass)}
+                        rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass)}
                         className="mr-1 mb-1"
                       />
                     );
@@ -668,8 +678,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <DualBadge
                     leftLabel={UI_STRINGS.hitDiceBadgeLabel || "HD"}
                     rightLabel={selectedClassInfo.hitDice}
-                    leftClassName="bg-transparent text-foreground border-2 border-primary/60"
-                    rightClassName="bg-primary text-primary-foreground border-2 border-primary"
+                    leftClassName="bg-transparent text-foreground border-primary/60"
+                    rightClassName="bg-primary text-primary-foreground border-primary"
                     className="mr-1 mb-1"
                   />
                 )}
@@ -683,8 +693,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                         key={ability.abilityKey}
                         leftLabel={abilityNameForDisplay}
                         rightLabel={`${usesValue} / ${localizedPeriod}`}
-                        leftClassName="bg-transparent text-foreground border-2 border-accent/60"
-                        rightClassName="bg-accent text-accent-foreground border-2 border-accent"
+                        leftClassName="bg-transparent text-foreground border-accent/60"
+                        rightClassName="bg-accent text-accent-foreground border-accent"
                         className="mr-1 mb-1"
                       />
                     );
@@ -696,8 +706,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                         key={ability.abilityKey}
                         leftLabel={abilityNameForDisplay}
                         rightLabel={`${typeof poolValue === 'number' ? poolValue : UI_STRINGS.abilityUsesPoolPlaceholder || "Pool"} / ${localizedPeriod}`}
-                        leftClassName="bg-transparent text-foreground border-2 border-accent/60"
-                        rightClassName="bg-accent text-accent-foreground border-2 border-accent"
+                        leftClassName="bg-transparent text-foreground border-accent/60"
+                        rightClassName="bg-accent text-accent-foreground border-accent"
                         className="mr-1 mb-1"
                       />
                     );
@@ -752,8 +762,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <DualBadge
                     leftLabel={UI_STRINGS.ageCategoryBadgeLabel || "Age Cat."}
                     rightLabel={ageEffectsDetails.categoryName}
-                    leftClassName="bg-transparent text-foreground border-2 border-secondary/60"
-                    rightClassName="bg-secondary text-secondary-foreground border-2 border-secondary"
+                    leftClassName="bg-transparent text-foreground border-secondary/60"
+                    rightClassName="bg-secondary text-secondary-foreground border-secondary"
                     className="mr-1 mb-1"
                   />
                   {ageEffectsDetails.effects.map((effect) => {
@@ -764,10 +774,10 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let rightBorderColorClass = "border-border";
 
                     if (change > 0) {
-                      leftBorderColorClass = "border-emerald-700";
+                      leftBorderColorClass = "border-emerald-600";
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
-                      rightBorderColorClass = "border-emerald-700";
+                      rightBorderColorClass = "border-emerald-600";
                     } else if (change < 0) {
                       leftBorderColorClass = "border-destructive";
                       rightBgClass = "bg-destructive";
@@ -780,8 +790,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                         key={effect.ability}
                         leftLabel={effect.ability.substring(0, 3).toUpperCase()}
                         rightLabel={change > 0 ? `+${change}` : String(change)}
-                        leftClassName={cn("bg-transparent text-foreground border-2", leftBorderColorClass)}
-                        rightClassName={cn(rightBgClass, rightTextClass, "border-2", rightBorderColorClass)}
+                        leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass)}
+                        rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass)}
                         className="mr-1 mb-1"
                       />
                     );
@@ -814,10 +824,10 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let rightBorderColorClass = "border-border";
 
                     if (acMod > 0) {
-                      leftBorderColorClass = "border-emerald-700";
+                      leftBorderColorClass = "border-emerald-600";
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
-                      rightBorderColorClass = "border-emerald-700";
+                      rightBorderColorClass = "border-emerald-600";
                     } else if (acMod < 0) {
                       leftBorderColorClass = "border-destructive";
                       rightBgClass = "bg-destructive";
@@ -829,8 +839,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                       <DualBadge
                         leftLabel={UI_STRINGS.sizeAcModLeftBadgeLabel || "AC"}
                         rightLabel={acMod > 0 ? `+${acMod}` : String(acMod)}
-                        leftClassName={cn("bg-transparent text-foreground border-2", leftBorderColorClass)}
-                        rightClassName={cn(rightBgClass, rightTextClass, "border-2", rightBorderColorClass)}
+                        leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass)}
+                        rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass)}
                         className="mr-1 mb-1"
                       />
                     );

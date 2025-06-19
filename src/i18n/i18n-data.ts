@@ -69,6 +69,14 @@ export interface MagicSchoolsJson {
   DND_MAGIC_SCHOOLS_DATA: RawMagicSchoolDefinition[];
 }
 
+export interface CreatureTypeDataEntry {
+  id: string; // Creature type ID (e.g., "humanoid-orc", "undead")
+  label: LocalizedString;
+}
+export interface CreatureTypesJson {
+  DND_CREATURE_TYPES_DATA: CreatureTypeDataEntry[];
+}
+
 
 export interface SizeDataEntry {
   id: CharacterSize;
@@ -219,12 +227,12 @@ export interface LocaleDataBundle {
   xpTable: XpJson;
   domains: DomainJson;
   magicSchools: MagicSchoolsJson;
-  gearSlots: GearSlotsJson; // Added
-  item_definitions_weapons: ItemsWeaponsJson; // Added
-  item_definitions_armor: ItemsArmorJson; // Added
-  item_definitions_shields: ItemsShieldsJson; // Added
-  item_definitions_magic_items: ItemsMagicItemsJson; // Added
-  // Add more item types as needed
+  creatureTypes: CreatureTypesJson; // Added
+  gearSlots: GearSlotsJson;
+  item_definitions_weapons: ItemsWeaponsJson;
+  item_definitions_armor: ItemsArmorJson;
+  item_definitions_shields: ItemsShieldsJson;
+  item_definitions_magic_items: ItemsMagicItemsJson;
   uiStrings: RawUiStringsData;
 }
 
@@ -240,6 +248,7 @@ export interface ProcessedSiteData {
   DND_DEITIES: readonly DndDeityOption[];
   DND_DOMAINS: readonly DomainDefinition[];
   DND_MAGIC_SCHOOLS: readonly MagicSchoolDefinition[];
+  DND_CREATURE_TYPES: readonly { id: string; label: string; }[]; // Added
   SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[];
   DND_FEATS_DEFINITIONS: readonly FeatDefinitionJsonData[];
   FEAT_TYPES: readonly { id: FeatTypeString; label: string }[];
@@ -249,12 +258,11 @@ export interface ProcessedSiteData {
   DAMAGE_REDUCTION_RULES_OPTIONS: readonly { id: string; label: string }[];
   ALIGNMENT_PREREQUISITE_OPTIONS: readonly { id: string; label: string }[];
   PREFERRED_DEFAULT_ALIGNMENT_IDS: readonly CharacterAlignment[];
-  GEAR_SLOTS: readonly GearSlot[]; // Added
-  ITEM_DEFINITIONS_WEAPONS: readonly ItemDefinition[]; // Added
-  ITEM_DEFINITIONS_ARMOR: readonly ItemDefinition[]; // Added
-  ITEM_DEFINITIONS_SHIELDS: readonly ItemDefinition[]; // Added
-  ITEM_DEFINITIONS_MAGIC_ITEMS: readonly ItemDefinition[]; // Added
-  // Add more item types as needed
+  GEAR_SLOTS: readonly GearSlot[];
+  ITEM_DEFINITIONS_WEAPONS: readonly ItemDefinition[];
+  ITEM_DEFINITIONS_ARMOR: readonly ItemDefinition[];
+  ITEM_DEFINITIONS_SHIELDS: readonly ItemDefinition[];
+  ITEM_DEFINITIONS_MAGIC_ITEMS: readonly ItemDefinition[];
   DEFAULT_ABILITIES: AbilityScores;
   DEFAULT_SAVING_THROWS: SavingThrows;
   DEFAULT_RESISTANCE_VALUE: ResistanceValue;
@@ -382,6 +390,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
 
   const ALIGNMENTS = processLocalizedArray<AlignmentDataEntry, CharacterAlignmentObject>(getAndValidateArray(bundle.alignments?.ALIGNMENTS_DATA, 'Alignments'), lang, 'alignments', ['description']);
   const LANGUAGES = processLocalizedArray<LanguageDataEntry, LanguageOption>(getAndValidateArray(bundle.languages?.LANGUAGES_DATA, 'Languages'), lang, 'languages');
+  const DND_CREATURE_TYPES = processLocalizedArray<CreatureTypeDataEntry, { id: string; label: string }>(getAndValidateArray(bundle.creatureTypes?.DND_CREATURE_TYPES_DATA, 'Creature Types'), lang, 'creatureTypes');
   const XP_TABLE = getAndValidateArray(bundle.xpTable?.XP_TABLE_DATA, 'XP Table').sort((a, b) => a.level - b.level);
   const EPIC_LEVEL_XP_INCREASE = bundle.xpTable?.EPIC_LEVEL_XP_INCREASE;
   if (typeof EPIC_LEVEL_XP_INCREASE !== 'number') throw new Error("[DATA_ERROR] EPIC_LEVEL_XP_INCREASE is missing or not a number.");
@@ -774,6 +783,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
   return {
     ALIGNMENTS,
     LANGUAGES,
+    DND_CREATURE_TYPES, // Added
     XP_TABLE,
     EPIC_LEVEL_XP_INCREASE,
     SIZES,
@@ -802,15 +812,15 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
     DEFAULT_RESISTANCE_VALUE: getAndValidateObject(bundle.base?.DEFAULT_RESISTANCE_VALUE_DATA, 'Default Resistance Value'),
     DEFAULT_SPEED_DETAILS: getAndValidateObject(bundle.base?.DEFAULT_SPEED_DETAILS_DATA, 'Default Speed Details'),
     DEFAULT_SPEED_PENALTIES: getAndValidateObject(bundle.base?.DEFAULT_SPEED_PENALTIES_DATA, 'Default Speed Penalties'),
-    DND_RACE_MIN_ADULT_AGE_DATA: getAndValidateObject(bundle.base?.DND_RACE_MIN_ADULT_AGE_DATA, 'Race Min Adult Age Data'),
-    DND_RACE_BASE_MAX_AGE_DATA: getAndValidateObject(bundle.base?.DND_RACE_BASE_MAX_AGE_DATA, 'Race Base Max Age Data'),
-    RACE_TO_AGING_CATEGORY_MAP_DATA: getAndValidateObject(bundle.base?.RACE_TO_AGING_CATEGORY_MAP_DATA, 'Race to Aging Category Map'),
+    DND_RACE_MIN_ADULT_AGE_DATA: BaseJson['DND_RACE_MIN_ADULT_AGE_DATA'],
+    DND_RACE_BASE_MAX_AGE_DATA: BaseJson['DND_RACE_BASE_MAX_AGE_DATA'],
+    RACE_TO_AGING_CATEGORY_MAP_DATA: BaseJson['RACE_TO_AGING_CATEGORY_MAP_DATA'],
     DND_RACE_AGING_EFFECTS_DATA: DND_RACE_AGING_EFFECTS_DATA_PROCESSED,
-    DND_RACE_ABILITY_MODIFIERS_DATA: getAndValidateObject(bundle.base?.DND_RACE_ABILITY_MODIFIERS_DATA, 'Race Ability Modifiers'),
-    DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA: getAndValidateObject(bundle.base?.DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA, 'Race Skill Points Bonus'),
-    CLASS_SKILLS: getAndValidateObject(bundle.skills?.CLASS_SKILLS_DATA, 'Class Skills Data'),
-    CLASS_SKILL_POINTS_BASE: getAndValidateObject(bundle.skills?.CLASS_SKILL_POINTS_BASE_DATA, 'Class Skill Points Base'),
-    SKILL_SYNERGIES: getAndValidateObject(bundle.skills?.SKILL_SYNERGIES_DATA, 'Skill Synergies Data'),
+    DND_RACE_ABILITY_MODIFIERS_DATA: BaseJson['DND_RACE_ABILITY_MODIFIERS_DATA'],
+    DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA: BaseJson['DND_RACE_SKILL_POINTS_BONUS_PER_LEVEL_DATA'],
+    CLASS_SKILLS: SkillsJson['CLASS_SKILLS_DATA'],
+    CLASS_SKILL_POINTS_BASE: SkillsJson['CLASS_SKILL_POINTS_BASE_DATA'],
+    SKILL_SYNERGIES: SkillsJson['SKILL_SYNERGIES_DATA'],
     UI_STRINGS,
   };
 }

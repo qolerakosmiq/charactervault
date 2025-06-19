@@ -1,4 +1,3 @@
-
 {
   "commonDataFileConfigs": [
     { "path": "common/alignments", "key": "ALIGNMENTS_DATA", "bundleKey": "alignments", "isArrayDataFile": true },
@@ -11,7 +10,8 @@
     { "path": "common/skills", "bundleKey": "skills", "isArrayDataFile": false },
     { "path": "common/xp", "bundleKey": "xpTable", "isArrayDataFile": false },
     { "path": "feats/common-feats", "bundleKey": "commonFeats", "isArrayDataFile": false },
-    { "path": "common/gear-slots", "key": "GEAR_SLOTS_DATA", "bundleKey": "gearSlots", "isArrayDataFile": true }
+    { "path": "common/gear-slots", "key": "GEAR_SLOTS_DATA", "bundleKey": "gearSlots", "isArrayDataFile": true },
+    { "path": "common/creature-types", "key": "DND_CREATURE_TYPES_DATA", "bundleKey": "creatureTypes", "isArrayDataFile": true }
   ],
   "classFileNames": [
     "barbarian", "bard", "cleric", "druid", "fighter", "monk",
