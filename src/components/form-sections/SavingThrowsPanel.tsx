@@ -204,26 +204,26 @@ const SavingThrowsPanelComponent = ({
         const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
         
         let leftBorderColorClass = "border-border"; 
-        let leftBgClass = "bg-muted";      
-        let leftTextClass = "text-muted-foreground"; 
+        let leftBgClass = "bg-transparent";      
+        let leftTextClass = "text-foreground"; 
         
         let rightBorderColorClass = "border-border";
-        let rightBgClass = "bg-transparent";
-        let rightTextClass = "text-foreground";
+        let rightBgClass = "bg-muted";
+        let rightTextClass = "text-muted-foreground";
 
 
         if (abilityMod > 0) {
-          rightBorderColorClass = "border-emerald-600"; // Border for value
+          leftBorderColorClass = "border-emerald-600"; 
+          leftBgClass = "bg-emerald-600"; 
+          leftTextClass = "text-emerald-50"; 
+          rightBorderColorClass = "border-emerald-600";
           rightTextClass = "text-emerald-500";
-          leftBgClass = "bg-emerald-600"; // Background for abbreviation
-          leftTextClass = "text-emerald-50";
-          leftBorderColorClass = "border-emerald-600";
         } else if (abilityMod < 0) {
-          rightBorderColorClass = "border-destructive"; // Border for value
-          rightTextClass = "text-destructive";
-          leftBgClass = "bg-destructive"; // Background for abbreviation
-          leftTextClass = "text-destructive-foreground";
           leftBorderColorClass = "border-destructive";
+          leftBgClass = "bg-destructive"; 
+          leftTextClass = "text-destructive-foreground";
+          rightBorderColorClass = "border-destructive";
+          rightTextClass = "text-destructive";
         }
         
         return (
@@ -280,7 +280,7 @@ const SavingThrowsPanelComponent = ({
       {({ isLocked: panelIsLocked }) => (
         <>
           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
-            <table className="w-full min-w-[400px] table-fixed">
+            <table className="w-full min-w-[520px] table-fixed">
               <thead>
                 <tr className="border-b">
                   <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground w-1/4"></th>
