@@ -622,21 +622,21 @@ const CharacterFormCoreInfoSectionComponent = ({
                  <div className="flex flex-wrap items-baseline gap-1 pt-[6px] ml-1">
                   {raceSpecialQualities.abilityEffects.map((effect) => {
                     const change = effect.change;
-                    let leftBorderColorClass = "border-border";
-                    let rightBorderColorClass = "border-border";
+                    let leftBorderColorClass = "border-border"; // Default
                     let rightBgClass = "bg-muted";
                     let rightTextClass = "text-muted-foreground";
+                    let rightBorderColorClass = "border-border";
 
                     if (change > 0) {
-                      leftBorderColorClass = "border-emerald-700";
-                      rightBorderColorClass = "border-emerald-700";
+                      leftBorderColorClass = "border-emerald-600";
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
+                      rightBorderColorClass = "border-emerald-600";
                     } else if (change < 0) {
                       leftBorderColorClass = "border-destructive";
-                      rightBorderColorClass = "border-destructive";
                       rightBgClass = "bg-destructive";
                       rightTextClass = "text-destructive-foreground";
+                      rightBorderColorClass = "border-destructive";
                     }
                     
                     return (
@@ -741,7 +741,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               <Label htmlFor="age" className="inline-block w-full text-center md:text-center">{UI_STRINGS.ageLabel}</Label>
               <NumberSpinnerInput id="age" value={localAge} onChange={setLocalAge} min={currentMinAgeForInput} max={1000} inputClassName="w-full h-10 text-base text-center" buttonClassName="h-10 w-10" buttonSize="icon" className="justify-center" disabled={panelIsLocked} />
               {ageEffectsDetails && (ageEffectsDetails.categoryName !== (UI_STRINGS.ageCategoryAdult) || ageEffectsDetails.effects.length > 0) && (
-                 <div className="flex flex-wrap items-baseline justify-center md:justify-start gap-1 pt-[6px] ml-1">
+                 <div className="flex flex-wrap items-baseline justify-center gap-1 pt-[6px]">
                   <DualBadge
                     leftLabel={UI_STRINGS.ageCategoryBadgeLabel || "Age Cat."}
                     rightLabel={ageEffectsDetails.categoryName}
@@ -751,21 +751,21 @@ const CharacterFormCoreInfoSectionComponent = ({
                   />
                   {ageEffectsDetails.effects.map((effect) => {
                     const change = effect.change;
-                    let leftBorderColorClass = "border-border";
-                    let rightBorderColorClass = "border-border";
+                    let leftBorderColorClass = "border-border"; // Default
                     let rightBgClass = "bg-muted";
                     let rightTextClass = "text-muted-foreground";
+                    let rightBorderColorClass = "border-border";
 
                     if (change > 0) {
-                      leftBorderColorClass = "border-emerald-700";
-                      rightBorderColorClass = "border-emerald-700";
+                      leftBorderColorClass = "border-emerald-600";
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
+                      rightBorderColorClass = "border-emerald-600";
                     } else if (change < 0) {
                       leftBorderColorClass = "border-destructive";
-                      rightBorderColorClass = "border-destructive";
                       rightBgClass = "bg-destructive";
                       rightTextClass = "text-destructive-foreground";
+                      rightBorderColorClass = "border-destructive";
                     }
                     
                     return (
@@ -795,27 +795,27 @@ const CharacterFormCoreInfoSectionComponent = ({
                 <SelectTrigger id="sizeCategory" className="h-9 text-sm"><SelectValue /></SelectTrigger>
                 <SelectContent> {SIZES.map(s => <SelectItem key={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id} value={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id}>{s.label}</SelectItem>)} </SelectContent>
               </Select>
-              <div className="flex items-baseline gap-1 pt-[6px] ml-1">
+              <div className="flex items-baseline justify-center md:justify-start gap-1 pt-[6px] ml-1">
                 {localSize && (() => {
                   const selectedSizeObject = SIZES.find(s => s.id === localSize);
                   if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
                     const acMod = selectedSizeObject.acModifier;
                     
                     let leftBorderColorClass = "border-border";
-                    let rightBorderColorClass = "border-border";
                     let rightBgClass = "bg-muted";
                     let rightTextClass = "text-muted-foreground";
+                    let rightBorderColorClass = "border-border";
                     
                     if (acMod > 0) {
-                      leftBorderColorClass = "border-emerald-700";
-                      rightBorderColorClass = "border-emerald-700";
+                      leftBorderColorClass = "border-emerald-600";
                       rightBgClass = "bg-emerald-600";
                       rightTextClass = "text-emerald-50";
+                      rightBorderColorClass = "border-emerald-600";
                     } else if (acMod < 0) {
                       leftBorderColorClass = "border-destructive";
-                      rightBorderColorClass = "border-destructive";
                       rightBgClass = "bg-destructive";
                       rightTextClass = "text-destructive-foreground";
+                      rightBorderColorClass = "border-destructive";
                     }
                     
                     return (
