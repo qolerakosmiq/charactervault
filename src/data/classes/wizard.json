@@ -19,7 +19,7 @@
   "uiSections": [
     {
       "key": "chosenSpecializationSchool",
-      "labelKey": "wizardSpecializationSchoolLabel",
+      "label": { "en": "Specialization School", "fr": "École de spécialisation" },
       "infoDialogTitle": { "en": "Wizard School Specialization", "fr": "Spécialisation d'École de Magicien" },
       "infoDialogContent": { "en": "Selecting a specialization grants one bonus spell slot per spell level for that school, but requires choosing two prohibited schools (Divination cannot be prohibited). Generalists (Universal school) have no prohibited schools and can prepare an extra spell of any school per spell level.", "fr": "Choisir une spécialisation accorde un emplacement de sort bonus par niveau de sort pour cette école, mais nécessite de choisir deux écoles interdites (la Divination ne peut pas être interdite). Les généralistes (école Universelle) n'ont pas d'écoles interdites et peuvent préparer un sort supplémentaire de n'importe quelle école par niveau de sort." },
       "choiceType": "select",
@@ -29,7 +29,7 @@
     },
     {
       "key": "wizardProhibitedSchoolsTitle",
-      "labelKey": "wizardProhibitedSchoolsTitle",
+      "label": { "en": "Prohibited Schools", "fr": "Écoles Interdites" },
       "choiceType": "heading",
       "isHeadingOnly": true,
       "conditionDependsOnUIStateKey": "chosenSpecializationSchool",
@@ -37,13 +37,13 @@
     },
     {
       "key": "prohibitedSchool1",
-      "labelKey": "wizardProhibitedSchool1Label",
+      "label": { "en": "First Prohibited School", "fr": "Première École Interdite" },
       "infoDialogTitle": { "en": "First Prohibited School Choice", "fr": "Choix de la Première École Interdite" },
       "infoDialogContent": { "en": "Spells from prohibited schools cannot be learned or cast. Divination cannot be prohibited. Cannot be your specialized school.", "fr": "Les sorts des écoles interdites ne peuvent être ni appris ni lancés. La Divination ne peut pas être interdite. Ne peut pas être votre école de spécialisation." },
       "choiceType": "select",
       "optionsSource": "magicSchools",
       "allowEmptySelection": true,
-      "emptySelectionLabelKey": "prohibitedSchoolNoneOption",
+      "emptySelectionLabel": { "en": "None", "fr": "Aucune" },
       "defaultValue": "",
       "conditionDependsOnUIStateKey": "chosenSpecializationSchool",
       "conditionDependsOnUIStateValueNotIn": ["", "universal"],
@@ -52,13 +52,13 @@
     },
     {
       "key": "prohibitedSchool2",
-      "labelKey": "wizardProhibitedSchool2Label",
+      "label": { "en": "Second Prohibited School", "fr": "Seconde École Interdite" },
       "infoDialogTitle": { "en": "Second Prohibited School Choice", "fr": "Choix de la Seconde École Interdite" },
       "infoDialogContent": { "en": "Spells from prohibited schools cannot be learned or cast. Divination cannot be prohibited. Cannot be your specialized school or the first prohibited school.", "fr": "Les sorts des écoles interdites ne peuvent être ni appris ni lancés. La Divination ne peut pas être interdite. Ne peut pas être votre école de spécialisation ou la première école interdite." },
       "choiceType": "select",
       "optionsSource": "magicSchools",
       "allowEmptySelection": true,
-      "emptySelectionLabelKey": "prohibitedSchoolNoneOption",
+      "emptySelectionLabel": { "en": "None", "fr": "Aucune" },
       "defaultValue": "",
       "conditionDependsOnUIStateKey": "chosenSpecializationSchool",
       "conditionDependsOnUIStateValueNotIn": ["", "universal"],
@@ -148,3 +148,4 @@
     }
   ]
 }
+

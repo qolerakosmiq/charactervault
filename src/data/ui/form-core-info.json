@@ -14,11 +14,6 @@
   "hitDiceBadgeLabel": { "en": "HD", "fr": "DV" },
   "favoredEnemySlotsAvailableShort": { "en": "{slots} Slot(s)", "fr": "{slots} Emplacement(s)"},
   "favoredEnemyBonusDisplayInfo": { "en": "Bonuses vs Favored Enemies: +{skillBonus} to skills (Bluff, Listen, Sense Motive, Spot, Survival), +{damageBonus} to damage.", "fr": "Bonus vs Ennemis Jurés : +{skillBonus} aux compétences (Bluff, Perception auditive, Psychologie, Détection, Survie), +{damageBonus} aux dégâts." },
-  "wizardSpecializationSchoolLabel": { "en": "Specialization School", "fr": "École de spécialisation" },
-  "wizardProhibitedSchoolsTitle": { "en": "Prohibited Schools", "fr": "Écoles Interdites" },
-  "wizardProhibitedSchool1Label": { "en": "First Prohibited School", "fr": "Première École Interdite" },
-  "wizardProhibitedSchool2Label": { "en": "Second Prohibited School", "fr": "Seconde École Interdite" },
-  "wizardProhibitedSchoolNote": { "en": "Cannot prohibit Divination, your specialized school, or select the same school twice.", "fr": "Impossible d'interdire la Divination, votre école de spécialisation, ou de sélectionner deux fois la même école." },
   "toastAlignmentAutoChangedTitle": { "en": "Alignment Updated", "fr": "Alignement mis à jour" },
   "toastAlignmentAutoChangedDesc": { "en": "Your alignment was changed to '{newAlignment}' to be compatible with the {className} class restrictions.", "fr": "Votre alignement a été changé en '{newAlignment}' pour être compatible avec les restrictions de la classe {className}." },
   "toastInvalidDeityForClassTitle": { "en": "Invalid Deity Choice", "fr": "Choix de Divinité Invalide" },
@@ -31,13 +26,8 @@
   "selectDeityPlaceholder": { "en": "Select Deity...", "fr": "Choisir une Divinité..." },
   "selectSizePlaceholder": { "en": "Select Size...", "fr": "Choisir une Taille..." },
   "selectGenderPlaceholder": { "en": "Select Gender...", "fr": "Choisir un Genre..." },
-  "clericDomainsTitle": { "en": "Cleric Domains", "fr": "Domaines de Prêtre" },
-  "clericDomain1Label": { "en": "First Domain", "fr": "Premier Domaine" },
-  "clericDomain2Label": { "en": "Second Domain", "fr": "Second Domaine" },
   "ageCategoryBadgeLabel": { "en": "Age Cat.", "fr": "Cat. Âge" },
-  "sizeAcModLeftBadgeLabel": { "en": "AC", "fr": "CA" },
-  "rangerFavoredEnemyPlaceholder": { "en": "Select creature type...", "fr": "Choisir un type de créature..." },
-  "favoredEnemyNoneOption": { "en": "None", "fr": "Aucun" }
+  "sizeAcModLeftBadgeLabel": { "en": "AC", "fr": "CA" }
 }
     
     

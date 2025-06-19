@@ -1,4 +1,5 @@
 
+
 import type {
   CharacterAlignment, CharacterSize, AbilityName, DndRaceId, DndClassId, DndDeityId,
   FeatDefinitionJsonData, SkillDefinitionJsonData, ClassSkillsJsonData, ClassSkillPointsBaseJsonData,
@@ -582,6 +583,7 @@ export function processRawDataBundle(bundle: LocaleDataBundle, lang: LanguageCod
       if (uiBlock.inputPlaceholder) localizedBlock.inputPlaceholder = getLocalizedString(uiBlock.inputPlaceholder, lang, DEFAULT_LANGUAGE, `${uiBlockDebugKeyPrefix}.inputPlaceholder`);
       if (uiBlock.slotLabel) localizedBlock.slotLabel = getLocalizedString(uiBlock.slotLabel, lang, DEFAULT_LANGUAGE, `${uiBlockDebugKeyPrefix}.slotLabel`);
       if (uiBlock.note) localizedBlock.note = getLocalizedString(uiBlock.note, lang, DEFAULT_LANGUAGE, `${uiBlockDebugKeyPrefix}.note`);
+      if (uiBlock.emptySelectionLabel) localizedBlock.emptySelectionLabel = getLocalizedString(uiBlock.emptySelectionLabel, lang, DEFAULT_LANGUAGE, `${uiBlockDebugKeyPrefix}.emptySelectionLabel`);
       
       if (uiBlock.customOptions) {
         localizedBlock.customOptions = uiBlock.customOptions.map((opt, optIndex) => ({
