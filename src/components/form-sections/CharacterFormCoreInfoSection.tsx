@@ -243,65 +243,47 @@ const CharacterFormCoreInfoSectionComponent = ({
     onFieldChange('classSpecificChoices', updatedChoices);
   }, [characterData.classSpecificChoices, onFieldChange, selectedClassInfo?.uiSections]);
 
-
   const handleOpenClassSpecificChoiceInfoDialogInternal = React.useCallback((uiBlock: ClassSpecificUIBlock) => {
-    if (!onOpenClassSpecificChoiceInfoDialog || !translations || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !UI_STRINGS || !DND_CREATURE_TYPES) return;
+    if (!onOpenClassSpecificChoiceInfoDialog || !translations || !translations.DND_DOMAINS || !translations.DND_MAGIC_SCHOOLS || !translations.UI_STRINGS || !translations.DND_CREATURE_TYPES) return;
 
-    const blockLabelForDialog = uiBlock.infoDialogTitle || uiBlock.label || uiBlock.key;
+    const blockLabelForDialog = uiBlock.label || uiBlock.key;
     
     let introductoryContentForDialog: string | undefined = uiBlock.infoDialogContent;
-    if (!introductoryContentForDialog) {
+    if (!introductoryContentForDialog && uiBlock.description) { // If explicit dialog content is not there, use the block's main description
         introductoryContentForDialog = uiBlock.description;
     }
 
-
     let optionsForDialog: Array<{ id: string; label: string; description?: string; }> = [];
     if (uiBlock.optionsSource === 'domains') {
-      optionsForDialog = DND_DOMAINS.map(d => ({
-        id: d.id,
-        label: d.label,
-        description: d.description
-      }));
+      optionsForDialog = translations.DND_DOMAINS.map(d => ({ id: d.id, label: d.label, description: d.description }));
     } else if (uiBlock.optionsSource === 'magicSchools') {
-      optionsForDialog = DND_MAGIC_SCHOOLS.map(s => ({
-        id: s.id,
-        label: s.label,
-        description: s.description
-      }));
-    } else if (uiBlock.optionsSource === 'creatureTypes' && DND_CREATURE_TYPES) {
-      optionsForDialog = DND_CREATURE_TYPES.map(ct => ({
-        id: ct.id,
-        label: ct.label, 
-        description: ct.description 
-      }));
+      optionsForDialog = translations.DND_MAGIC_SCHOOLS.map(s => ({ id: s.id, label: s.label, description: s.description }));
+    } else if (uiBlock.optionsSource === 'creatureTypes' && translations.DND_CREATURE_TYPES) {
+      optionsForDialog = translations.DND_CREATURE_TYPES.map(ct => ({ id: ct.id, label: ct.label,  description: ct.description  }));
     } else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) {
-      optionsForDialog = uiBlock.customOptions.map(opt => ({
-        id: opt.value,
-        label: opt.label, 
-        description: opt.description
-      }));
+      optionsForDialog = uiBlock.customOptions.map(opt => ({ id: opt.value, label: opt.label, description: opt.description }));
     }
     optionsForDialog.sort((a,b) => a.label.localeCompare(b.label));
     
     if (uiBlock.optionsSource && optionsForDialog.length > 0) {
         onOpenClassSpecificChoiceInfoDialog({ 
             type: 'classSpecificChoiceOptions', 
-            title: blockLabelForDialog, 
+            title: uiBlock.infoDialogTitle || blockLabelForDialog, 
             options: optionsForDialog,
-            introductoryContentHtml: introductoryContentForDialog
+            introductoryContentHtml: introductoryContentForDialog 
         });
-    } else if (introductoryContentForDialog) {
+    } else if (introductoryContentForDialog) { // If there's no options source, but there *is* content to show (from infoDialogContent or description)
         onOpenClassSpecificChoiceInfoDialog({
             type: 'genericHtml',
             title: blockLabelForDialog,
             content: introductoryContentForDialog
         });
     }
-  }, [onOpenClassSpecificChoiceInfoDialog, translations, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, UI_STRINGS]);
+  }, [onOpenClassSpecificChoiceInfoDialog, translations]);
 
 
   React.useEffect(() => {
-    if (!selectedClassInfo?.uiSections || !translations || !UI_STRINGS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) return;
+    if (!selectedClassInfo?.uiSections || !translations || !translations.UI_STRINGS || !translations.DND_DOMAINS || !translations.DND_MAGIC_SCHOOLS || !translations.DND_CREATURE_TYPES) return;
     let choicesToUpdate: CharacterClassSpecificChoice[] = [...(characterData.classSpecificChoices || [])];
     let changed = false;
 
@@ -318,9 +300,9 @@ const CharacterFormCoreInfoSectionComponent = ({
               valueToSet = "";
             } else {
               let tempOptions: ComboboxOption[] = [];
-              if (uiBlock.optionsSource === 'domains') tempOptions = DND_DOMAINS.map(d => ({ value: d.id, label: d.label }));
-              else if (uiBlock.optionsSource === 'magicSchools') tempOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }));
-              else if (uiBlock.optionsSource === 'creatureTypes') tempOptions = DND_CREATURE_TYPES.map(ct => ({ value: ct.id, label: ct.label }));
+              if (uiBlock.optionsSource === 'domains') tempOptions = translations.DND_DOMAINS.map(d => ({ value: d.id, label: d.label }));
+              else if (uiBlock.optionsSource === 'magicSchools') tempOptions = translations.DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }));
+              else if (uiBlock.optionsSource === 'creatureTypes') tempOptions = translations.DND_CREATURE_TYPES.map(ct => ({ value: ct.id, label: ct.label }));
               else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) tempOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: opt.label }));
 
               const actualSelectableOptions = tempOptions.filter(opt => opt.value !== UI_EMPTY_SELECTION_VALUE && opt.value !== "");
@@ -337,7 +319,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       }
     });
     if (changed) onFieldChange('classSpecificChoices', choicesToUpdate);
-  }, [selectedClassInfo?.id, selectedClassInfo?.uiSections, translations, UI_STRINGS, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, onFieldChange, characterData.classSpecificChoices]);
+  }, [selectedClassInfo?.id, selectedClassInfo?.uiSections, translations, onFieldChange, characterData.classSpecificChoices]);
 
   React.useEffect(() => {
     if (!selectedClassInfo || !PREFERRED_DEFAULT_ALIGNMENT_IDS || !ALIGNMENTS) return;
@@ -373,7 +355,7 @@ const CharacterFormCoreInfoSectionComponent = ({
   }, [localAlignment, localClassName, localDeity, DND_DEITIES, selectedClassInfo, setLocalDeity]);
 
   React.useEffect(() => {
-    if (!selectedClassInfo?.uiSections || !characterData.classSpecificChoices || !translations || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) return;
+    if (!selectedClassInfo?.uiSections || !characterData.classSpecificChoices || !translations || !translations.DND_DOMAINS || !translations.DND_MAGIC_SCHOOLS || !translations.DND_CREATURE_TYPES) return;
     let choicesChanged = false;
     const newChoices = [...characterData.classSpecificChoices];
     selectedClassInfo.uiSections.forEach(uiBlock => {
@@ -398,9 +380,9 @@ const CharacterFormCoreInfoSectionComponent = ({
               resetValue = uiBlock.defaultValue || "";
               if (resetValue === "") {
                 let tempOptions: ComboboxOption[] = [];
-                if (uiBlock.optionsSource === 'domains') tempOptions = DND_DOMAINS.map(d => ({ value: d.id, label: d.label }));
-                else if (uiBlock.optionsSource === 'magicSchools') tempOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }));
-                else if (uiBlock.optionsSource === 'creatureTypes') tempOptions = DND_CREATURE_TYPES.map(ct => ({ value: ct.id, label: ct.label }));
+                if (uiBlock.optionsSource === 'domains') tempOptions = translations.DND_DOMAINS.map(d => ({ value: d.id, label: d.label }));
+                else if (uiBlock.optionsSource === 'magicSchools') tempOptions = translations.DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }));
+                else if (uiBlock.optionsSource === 'creatureTypes') tempOptions = translations.DND_CREATURE_TYPES.map(ct => ({ value: ct.id, label: ct.label }));
                 else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) tempOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: opt.label }));
                 const actualSelectableOptions = tempOptions.filter(opt =>
                     opt.value !== UI_EMPTY_SELECTION_VALUE && opt.value !== "" &&
@@ -419,10 +401,12 @@ const CharacterFormCoreInfoSectionComponent = ({
       }
     });
     if (choicesChanged) onFieldChange('classSpecificChoices', newChoices);
-  }, [characterData.classSpecificChoices, selectedClassInfo?.uiSections, onFieldChange, getCurrentValue, translations, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES]);
+  }, [characterData.classSpecificChoices, selectedClassInfo?.uiSections, onFieldChange, getCurrentValue, translations]);
 
   const renderClassSpecificUI = React.useCallback((uiBlock: ClassSpecificUIBlock, panelIsLocked: boolean, blockIndex: number) => {
-    if (!UI_STRINGS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) return <Skeleton className="h-10 w-full my-2" />;
+    if (!translations || !translations.UI_STRINGS || !translations.DND_DOMAINS || !translations.DND_MAGIC_SCHOOLS || !translations.DND_CREATURE_TYPES) return <Skeleton className="h-10 w-full my-2" />;
+
+    const { UI_STRINGS, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES } = translations;
 
     const currentCharacterClassLevel = characterData.classes[0]?.level || 0;
     if (uiBlock.requiredLevel && currentCharacterClassLevel < uiBlock.requiredLevel) return null;
@@ -568,14 +552,11 @@ const CharacterFormCoreInfoSectionComponent = ({
   }, [
     characterData.classSpecificChoices,
     aggregatedFeatEffects,
-    UI_STRINGS,
-    DND_DOMAINS,
-    DND_MAGIC_SCHOOLS,
-    DND_CREATURE_TYPES,
+    translations, // Now this single dependency covers UI_STRINGS, DND_DOMAINS, etc.
     handleClassSpecificChoiceChange,
-    onOpenClassSpecificChoiceInfoDialogInternal,
+    handleOpenClassSpecificChoiceInfoDialogInternal, // Corrected: use the memoized internal handler
     getCurrentValue,
-    translations
+    onOpenClassSpecificChoiceInfoDialog // Prop for the internal handler to call
   ]);
 
 
@@ -628,7 +609,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <SelectTrigger id="race" className="flex-grow h-9 text-sm"> <SelectValue /> </SelectTrigger>
                   <SelectContent> {DND_RACES.map(race => <SelectItem key={race.id} value={race.id}>{race.label}</SelectItem>)} </SelectContent>
                 </Select>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenRaceInfoDialog} disabled={!localRace}> <Info className="h-5 w-5" /> </Button>
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenRaceInfoDialog} disabled={!localRace && panelIsLocked /* Corrected logic for info button disable */}> <Info className="h-5 w-5" /> </Button>
               </div>
               {!panelIsLocked && selectedRaceInfo && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
                  <div className="flex flex-wrap items-baseline gap-1 pt-[6px] justify-center md:justify-start">
@@ -672,7 +653,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <SelectTrigger id="className" className="flex-grow h-9 text-sm"> <SelectValue /> </SelectTrigger>
                   <SelectContent> {DND_CLASSES.map(c => <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>)} </SelectContent>
                 </Select>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenClassInfoDialog} disabled={!localClassName} > <Info className="h-5 w-5" /> </Button>
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenClassInfoDialog} disabled={!localClassName && panelIsLocked} > <Info className="h-5 w-5" /> </Button>
               </div>
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-[6px] justify-center md:justify-start">
                 {!panelIsLocked && selectedClassInfo?.hitDice && (
@@ -739,7 +720,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <SelectTrigger id="alignment" className="flex-grow h-9 text-sm"> <SelectValue /> </SelectTrigger>
                   <SelectContent> {availableAlignments.map(align => ( <SelectItem key={align.id} value={align.id === "" ? UI_EMPTY_SELECTION_VALUE : align.id}>{align.label}</SelectItem> ))} </SelectContent>
                 </Select>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenAlignmentInfoDialog}> <Info className="h-5 w-5" /> </Button>
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment /* Corrected logic */}> <Info className="h-5 w-5" /> </Button>
               </div>
             </div>
             <div className="space-y-1.5">
@@ -749,7 +730,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     <SelectTrigger id="deity" className="flex-grow h-9 text-sm"> <SelectValue /> </SelectTrigger>
                     <SelectContent> {deitySelectOptions.map(opt => ( <SelectItem key={opt.value} value={opt.value}> {opt.label} </SelectItem> ))} </SelectContent>
                   </Select>
-                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenDeityInfoDialog} disabled={!localDeity || localDeity.trim() === ''} > <Info className="h-5 w-5" /> </Button>
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenDeityInfoDialog} disabled={(panelIsLocked && (!localDeity || localDeity.trim() === '')) || (!localDeity || localDeity.trim() === '')} > <Info className="h-5 w-5" /> </Button>
                 </div>
               </div>
           </div>
@@ -857,4 +838,3 @@ const CharacterFormCoreInfoSectionComponent = ({
 };
 CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
 export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
-
