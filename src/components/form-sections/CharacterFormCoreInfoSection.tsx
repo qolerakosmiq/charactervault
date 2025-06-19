@@ -627,7 +627,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenRaceInfoDialog} disabled={panelIsLocked && !localRace}> <Info className="h-5 w-5" /> </Button>
               </div>
               {!panelIsLocked && selectedRaceInfo && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
-                 <div className="flex flex-wrap items-baseline gap-1 pt-[6px] justify-start">
+                 <div className="flex flex-wrap items-baseline gap-1 pt-1.5 justify-start">
                   {raceSpecialQualities.abilityEffects.map((effect) => {
                     const change = effect.change;
                     let leftBorderColorClass = "border-border";
@@ -670,7 +670,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 </Select>
                 <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenClassInfoDialog} disabled={panelIsLocked && !localClassName} > <Info className="h-5 w-5" /> </Button>
               </div>
-              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-[6px] justify-start">
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-1.5 justify-start">
                 {!panelIsLocked && selectedClassInfo?.hitDice && (
                   <DualBadge
                     leftLabel={UI_STRINGS.hitDiceBadgeLabel}
@@ -768,7 +768,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               <Label htmlFor="age" className="inline-block w-full text-center md:text-center">{UI_STRINGS.ageLabel}</Label>
               <NumberSpinnerInput id="age" value={localAge} onChange={setLocalAge} min={currentMinAgeForInput} max={1000} inputClassName="w-full h-10 text-sm text-center" buttonClassName="h-10 w-10" buttonSize="icon" className="justify-center" disabled={panelIsLocked} />
               {!panelIsLocked && ageEffectsDetails && (ageEffectsDetails.categoryName !== (UI_STRINGS.ageCategoryAdult) || ageEffectsDetails.effects.length > 0) && (
-                 <div className="flex flex-wrap items-baseline justify-center gap-1 pt-[6px]">
+                 <div className="flex flex-wrap items-baseline justify-center gap-1 pt-1.5">
                   <DualBadge
                     leftLabel={UI_STRINGS.ageCategoryBadgeLabel}
                     rightLabel={ageEffectsDetails.categoryName}
@@ -845,7 +845,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     }
 
                     return (
-                      <div className="flex items-baseline justify-start gap-1 pt-[6px]">
+                      <div className="flex items-baseline justify-start gap-1 pt-1.5">
                         <DualBadge
                           leftLabel={UI_STRINGS.sizeAcModLeftBadgeLabel}
                           rightLabel={acMod > 0 ? `+${acMod}` : String(acMod)}

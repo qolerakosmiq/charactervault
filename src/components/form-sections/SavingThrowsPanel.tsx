@@ -169,7 +169,6 @@ const SavingThrowsPanelComponent = ({
                   className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
                   onClick={() => onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType: saveType })}
                   aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel || "Info for {saveTypeLabel} Save").replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType)}
-                  
                 >
                   <Info className="h-4 w-4" />
                 </Button>
@@ -180,7 +179,6 @@ const SavingThrowsPanelComponent = ({
                   className="h-6 w-6 text-muted-foreground hover:text-primary"
                   onClick={() => handleOpenSavingThrowRollDialog(saveType)}
                   aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType)}
-                  
                 >
                   <Dices className="h-4 w-4" />
                 </Button>
@@ -213,17 +211,15 @@ const SavingThrowsPanelComponent = ({
 
 
         if (abilityMod > 0) {
-          leftBorderColorClass = "border-emerald-600"; 
+          rightBorderColorClass = "border-emerald-600"; 
           leftBgClass = "bg-emerald-600"; 
           leftTextClass = "text-emerald-50"; 
-          rightBorderColorClass = "border-emerald-600";
-          rightTextClass = "text-emerald-500";
+          leftBorderColorClass = "border-emerald-600"; 
         } else if (abilityMod < 0) {
-          leftBorderColorClass = "border-destructive";
+          rightBorderColorClass = "border-destructive";
           leftBgClass = "bg-destructive"; 
           leftTextClass = "text-destructive-foreground";
-          rightBorderColorClass = "border-destructive";
-          rightTextClass = "text-destructive";
+          leftBorderColorClass = "border-destructive";
         }
         
         return (
@@ -280,7 +276,7 @@ const SavingThrowsPanelComponent = ({
       {({ isLocked: panelIsLocked }) => (
         <>
           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
-            <table className="w-full min-w-[520px] table-fixed">
+            <table className="w-full min-w-[32.5rem] table-fixed">
               <thead>
                 <tr className="border-b">
                   <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground w-1/4"></th>
