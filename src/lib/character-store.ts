@@ -17,14 +17,14 @@ const FULL_CHARACTER_DEFAULTS: Omit<Character, 'id'> = {
   deity: '',
   size: 'medium',
   age: 20,
-  gender: '',
+  gender: 'unspecified', // Changed from ''
   height: '',
   weight: '',
   eyes: '',
   hair: '',
   skin: '',
   languages: [],
-  experiencePoints: 0, // Added
+  experiencePoints: 0, 
   abilityScores: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
   abilityScoreTempCustomModifiers: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
   hp: 10,
@@ -105,16 +105,14 @@ function ensureCharacterDefaults(character: Partial<Character>): Character {
   hydratedCharacter.inventory = character.inventory || [];
   hydratedCharacter.damageReduction = character.damageReduction || [];
   hydratedCharacter.languages = character.languages || [];
-  hydratedCharacter.experiencePoints = character.experiencePoints ?? FULL_CHARACTER_DEFAULTS.experiencePoints; // Added
+  hydratedCharacter.experiencePoints = character.experiencePoints ?? FULL_CHARACTER_DEFAULTS.experiencePoints; 
 
-  // Ensure new health fields have defaults if not present
   hydratedCharacter.baseMaxHp = character.baseMaxHp ?? FULL_CHARACTER_DEFAULTS.baseMaxHp;
   hydratedCharacter.customMaxHpModifier = character.customMaxHpModifier ?? FULL_CHARACTER_DEFAULTS.customMaxHpModifier;
   hydratedCharacter.nonlethalDamage = character.nonlethalDamage ?? FULL_CHARACTER_DEFAULTS.nonlethalDamage;
   hydratedCharacter.temporaryHp = character.temporaryHp ?? FULL_CHARACTER_DEFAULTS.temporaryHp;
   hydratedCharacter.numberOfWounds = character.numberOfWounds ?? FULL_CHARACTER_DEFAULTS.numberOfWounds;
   
-  // Ensure all top-level keys from defaults are present
   for (const key of Object.keys(FULL_CHARACTER_DEFAULTS) as Array<keyof typeof FULL_CHARACTER_DEFAULTS>) {
     if (hydratedCharacter[key] === undefined) {
       (hydratedCharacter as any)[key] = FULL_CHARACTER_DEFAULTS[key];

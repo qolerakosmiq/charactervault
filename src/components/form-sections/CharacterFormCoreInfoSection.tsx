@@ -161,10 +161,11 @@ const CharacterFormCoreInfoSectionComponent = ({
   }, [DND_DEITIES, localAlignment, selectedClassInfo, UI_STRINGS]);
 
   const genderSelectOptions = React.useMemo(() => {
-    if (!GENDERS || !UI_STRINGS) return [{ value: UI_EMPTY_SELECTION_VALUE, label: "Loading..." }];
+    if (!GENDERS || !UI_STRINGS) return [];
+    const options: ComboboxOption[] = [];
     const unspecifiedOption = GENDERS.find(g => g.id === 'unspecified') || { id: 'unspecified' as GenderId, label: 'Unspecified' };
-    const options: ComboboxOption[] = [{ value: UI_EMPTY_SELECTION_VALUE, label: (UI_STRINGS.selectGenderPlaceholder) }];
-    options.push({ value: unspecifiedOption.id, label: unspecifiedOption.label});
+    options.push({ value: unspecifiedOption.id, label: unspecifiedOption.label });
+
     const raceSpecificGenders = selectedRaceInfo?.genderOptions;
     if (raceSpecificGenders && raceSpecificGenders.length > 0) {
       options.push(...raceSpecificGenders.map(go => ({value: go.id as GenderId, label: go.label})));
@@ -178,15 +179,14 @@ const CharacterFormCoreInfoSectionComponent = ({
     if (!options.find(opt => opt.value === 'other')) {
       options.push({value: otherOption.id, label: otherOption.label});
     }
-    const uniqueOptions: ComboboxOption[] = [options[0]];
-    const seenValues = new Set<string>([options[0].value]);
-    for (let i = 1; i < options.length; i++) {
-        if (!seenValues.has(options[i].value)) {
-            uniqueOptions.push(options[i]);
-            seenValues.add(options[i].value);
-        }
-    }
-    return uniqueOptions;
+    
+    const uniqueOptionsMap = new Map<string, ComboboxOption>();
+    options.forEach(opt => {
+      if (!uniqueOptionsMap.has(opt.value)) {
+        uniqueOptionsMap.set(opt.value, opt);
+      }
+    });
+    return Array.from(uniqueOptionsMap.values());
   }, [GENDERS, selectedRaceInfo, UI_STRINGS]);
 
 
@@ -247,9 +247,9 @@ const CharacterFormCoreInfoSectionComponent = ({
     if (!onOpenClassSpecificChoiceInfoDialog || !translations || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !UI_STRINGS || !DND_CREATURE_TYPES) return;
 
     const blockLabelForDialog = uiBlock.label || uiBlock.key;
-    let introductoryContentForDialog = uiBlock.infoDialogContent; // Prefer explicit dialog content
-    if (!introductoryContentForDialog) {
-      introductoryContentForDialog = uiBlock.description; // Fallback to block description
+    let introductoryContentForDialog = uiBlock.infoDialogContent; 
+    if (!introductoryContentForDialog && uiBlock.description) {
+      introductoryContentForDialog = uiBlock.description;
     }
 
     let optionsForDialog: Array<{ id: string; label: string; description?: string; }> = [];
@@ -273,10 +273,10 @@ const CharacterFormCoreInfoSectionComponent = ({
             options: optionsForDialog,
             introductoryContentHtml: introductoryContentForDialog 
         });
-    } else if (introductoryContentForDialog) {
+    } else if (introductoryContentForDialog) { // If no options, but there is intro content (which might have been the form description)
         onOpenClassSpecificChoiceInfoDialog({
             type: 'genericHtml',
-            title: blockLabelForDialog,
+            title: uiBlock.infoDialogTitle || blockLabelForDialog,
             content: introductoryContentForDialog
         });
     }
@@ -475,13 +475,13 @@ const CharacterFormCoreInfoSectionComponent = ({
         if (uiBlock.disabledIfChoiceValue.values.includes(controllingChoiceValue)) isDisabledByPanelOrDependency = true;
     }
 
-    const hasInfoContentForDialog = uiBlock.infoDialogContent || uiBlock.description;
-    const commonInfoButton = (uiBlock.optionsSource || hasInfoContentForDialog) && !!onOpenClassSpecificChoiceInfoDialog ? (
+    const hasInfoContentForDialog = uiBlock.optionsSource || uiBlock.infoDialogContent || uiBlock.description;
+    const commonInfoButton = (hasInfoContentForDialog && !!onOpenClassSpecificChoiceInfoDialog) ? (
       <Button
         type="button" variant="ghost" size="icon"
         className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9"
         onClick={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
-        disabled={panelIsLocked && !(uiBlock.optionsSource || hasInfoContentForDialog)}
+        disabled={panelIsLocked && !hasInfoContentForDialog}
         aria-label={(UI_STRINGS.infoDialogClassSpecificChoiceAriaLabel || "Info for {choiceName}").replace("{choiceName}", blockLabel)}
       >
         <Info className="h-5 w-5" />
@@ -550,7 +550,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       return (
          <div key={`${uiBlock.key}-${blockIndex}-textInput`} className="space-y-1.5">
             <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
-            <Input id={`cspec-${uiBlock.key}-${blockIndex}`} value={currentBlockValueForProp} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
+            <Input id={`cspec-${uiBlock.key}-${blockIndex}`} value={currentBlockValueForProp} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} className="h-10 text-sm"/>
             {blockNote && <p className="text-xs text-destructive/80 italic mt-1">{blockNote}</p>}
          </div>
       );
@@ -564,7 +564,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     handleClassSpecificChoiceChange,
     handleOpenClassSpecificChoiceInfoDialogInternal,
     onOpenClassSpecificChoiceInfoDialog,
-    getCurrentValue
+    getCurrentValue,
   ]);
 
 
@@ -601,11 +601,11 @@ const CharacterFormCoreInfoSectionComponent = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div className="space-y-1.5">
               <Label htmlFor="name">{UI_STRINGS.characterNameLabel}</Label>
-              <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} />
+              <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} className="h-10 text-sm"/>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="playerName">{UI_STRINGS.playerNameLabel}</Label>
-              <Input id="playerName" name="playerName" value={localPlayerName} onChange={(e) => setLocalPlayerName(e.target.value)} disabled={panelIsLocked}/>
+              <Input id="playerName" name="playerName" value={localPlayerName} onChange={(e) => setLocalPlayerName(e.target.value)} disabled={panelIsLocked} className="h-10 text-sm"/>
             </div>
           </div>
 
@@ -617,7 +617,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <SelectTrigger id="race" className="flex-grow h-10 text-sm"> <SelectValue placeholder={UI_STRINGS.selectRacePlaceholder} /> </SelectTrigger>
                   <SelectContent> {DND_RACES.map(race => <SelectItem key={race.id} value={race.id}>{race.label}</SelectItem>)} </SelectContent>
                 </Select>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenRaceInfoDialog} disabled={panelIsLocked && !localRace}> <Info className="h-5 w-5" /> </Button>
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenRaceInfoDialog} disabled={!localRace && panelIsLocked}> <Info className="h-5 w-5" /> </Button>
               </div>
               {!panelIsLocked && selectedRaceInfo && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
                  <div className="flex flex-wrap items-baseline gap-1 pt-[6px] justify-center md:justify-start">
@@ -661,7 +661,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <SelectTrigger id="className" className="flex-grow h-10 text-sm"> <SelectValue placeholder={UI_STRINGS.selectClassPlaceholder} /> </SelectTrigger>
                   <SelectContent> {DND_CLASSES.map(c => <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>)} </SelectContent>
                 </Select>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenClassInfoDialog} disabled={panelIsLocked && !localClassName} > <Info className="h-5 w-5" /> </Button>
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenClassInfoDialog} disabled={!localClassName && panelIsLocked} > <Info className="h-5 w-5" /> </Button>
               </div>
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-[6px] justify-center md:justify-start">
                 {!panelIsLocked && selectedClassInfo?.hitDice && (
@@ -728,7 +728,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <SelectTrigger id="alignment" className="flex-grow h-10 text-sm"> <SelectValue placeholder={UI_STRINGS.selectAlignmentPlaceholder} /> </SelectTrigger>
                   <SelectContent> {availableAlignments.map(align => ( <SelectItem key={align.id} value={align.id === "" ? UI_EMPTY_SELECTION_VALUE : align.id}>{align.label}</SelectItem> ))} </SelectContent>
                 </Select>
-                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment}> <Info className="h-5 w-5" /> </Button>
+                <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenAlignmentInfoDialog} disabled={!localAlignment && panelIsLocked}> <Info className="h-5 w-5" /> </Button>
               </div>
             </div>
             <div className="space-y-1.5">
@@ -751,7 +751,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                       ))}
                     </SelectContent>
                   </Select>
-                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenDeityInfoDialog} disabled={(panelIsLocked && (!localDeity || localDeity.trim() === '')) || (!localDeity || localDeity.trim() === '')} > <Info className="h-5 w-5" /> </Button>
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-9 w-9" onClick={onOpenDeityInfoDialog} disabled={(!localDeity || localDeity.trim() === '') || (panelIsLocked && (!localDeity || localDeity.trim() === ''))} > <Info className="h-5 w-5" /> </Button>
                 </div>
               </div>
           </div>
@@ -804,7 +804,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               </div>
             <div className="space-y-1.5">
               <Label htmlFor="gender">{UI_STRINGS.genderLabel}</Label>
-              <Select name="gender" value={localGender === "" ? UI_EMPTY_SELECTION_VALUE : localGender} onValueChange={(value) => setLocalGender(value === UI_EMPTY_SELECTION_VALUE ? "" : value as GenderId)} disabled={panelIsLocked} >
+              <Select name="gender" value={localGender} onValueChange={(value) => setLocalGender(value as GenderId)} disabled={panelIsLocked} >
                 <SelectTrigger id="gender" className="h-10 text-sm"> <SelectValue placeholder={UI_STRINGS.selectGenderPlaceholder} /> </SelectTrigger>
                 <SelectContent> {genderSelectOptions.map(g => ( <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem> ))} </SelectContent>
               </Select>
