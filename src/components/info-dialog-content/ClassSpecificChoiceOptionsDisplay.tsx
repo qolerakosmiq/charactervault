@@ -6,34 +6,44 @@ import { Separator } from '@/components/ui/separator';
 import { sectionHeadingClass } from './dialog-utils'; // Assuming this utility class exists
 
 interface ClassSpecificChoiceOptionsDisplayProps {
-  title: string; // The title is already localized and passed from the parent
+  title: string; 
+  introductoryContentHtml?: string; // Added prop for general description
   options: Array<{ id: string; label: string; description?: string }>;
   uiStrings: Record<string, string>;
 }
 
 export const ClassSpecificChoiceOptionsDisplay: React.FC<ClassSpecificChoiceOptionsDisplayProps> = ({
-  title, // This component doesn't need to localize the title again
+  title, 
+  introductoryContentHtml, // Destructure new prop
   options,
   uiStrings,
 }) => {
-  if (!options || options.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground">
-        {uiStrings.infoDialogNoOptionsAvailable || "No options available for this choice."}
-      </p>
-    );
-  }
 
-  // The main dialog title is handled by InfoDisplayDialog.tsx
-  // This component focuses on rendering the list of options.
+  // The main dialog title is handled by InfoDisplayDialog.tsx.
+  // This component focuses on rendering the introductory content and the list of options.
 
   return (
     <div className="space-y-3">
-      {options.map((option, index) => (
+      {introductoryContentHtml && (
+        <>
+          <div
+            className="text-sm prose prose-sm dark:prose-invert max-w-none"
+            dangerouslySetInnerHTML={{ __html: introductoryContentHtml }}
+          />
+          {options && options.length > 0 && <Separator className="my-3" />}
+        </>
+      )}
+
+      {(!options || options.length === 0) && !introductoryContentHtml && (
+         <p className="text-sm text-muted-foreground">
+            {uiStrings.infoDialogNoOptionsAvailable || "No options available for this choice."}
+         </p>
+      )}
+
+      {options && options.length > 0 && options.map((option, index) => (
         <React.Fragment key={option.id}>
           <div>
-            {/* Option Label as a sub-heading if needed, or directly in description */}
-            <h3 className={sectionHeadingClass} style={{ fontSize: '1.1rem', marginBottom: '0.25rem' }}> {/* Slightly smaller heading for options */}
+            <h3 className={sectionHeadingClass} style={{ fontSize: '1.0rem', marginBottom: '0.25rem', marginTop: index > 0 || introductoryContentHtml ? '0.75rem' : '0' }}>
               {option.label}
             </h3>
             {option.description && (

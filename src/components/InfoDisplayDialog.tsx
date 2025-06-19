@@ -970,7 +970,7 @@ export function InfoDisplayDialog({
         iconKey = 'classSpecificChoiceOptions';
         data = {
           title: contentType.title,
-          content: [<ClassSpecificChoiceOptionsDisplay title={contentType.title} options={contentType.options} uiStrings={UI_STRINGS} />]
+          content: [<ClassSpecificChoiceOptionsDisplay title={contentType.title} introductoryContentHtml={contentType.introductoryContentHtml} options={contentType.options} uiStrings={UI_STRINGS} />]
         };
         break;
     }
@@ -1050,4 +1050,5 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
+
 

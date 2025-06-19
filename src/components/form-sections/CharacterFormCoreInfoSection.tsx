@@ -257,15 +257,10 @@ const CharacterFormCoreInfoSectionComponent = ({
     } else {
         blockLabelForDialog = uiBlock.key;
     }
-
-    if (uiBlock.infoDialogContent) {
-        onOpenClassSpecificChoiceInfoDialog({
-            type: 'genericHtml',
-            title: blockLabelForDialog,
-            content: getLocalizedString(uiBlock.infoDialogContent, currentLang)
-        });
-        return;
-    }
+    
+    const introductoryContentHtml = uiBlock.infoDialogContent 
+      ? getLocalizedString(uiBlock.infoDialogContent, currentLang) 
+      : undefined;
 
     let optionsForDialog: Array<{ id: string; label: string; description?: string; }> = [];
     if (uiBlock.optionsSource === 'domains') {
@@ -294,7 +289,21 @@ const CharacterFormCoreInfoSectionComponent = ({
       }));
     }
     optionsForDialog.sort((a,b) => a.label.localeCompare(b.label));
-    onOpenClassSpecificChoiceInfoDialog({ type: 'classSpecificChoiceOptions', title: blockLabelForDialog, options: optionsForDialog });
+    
+    if (uiBlock.optionsSource) {
+        onOpenClassSpecificChoiceInfoDialog({ 
+            type: 'classSpecificChoiceOptions', 
+            title: blockLabelForDialog, 
+            options: optionsForDialog,
+            introductoryContentHtml: introductoryContentHtml
+        });
+    } else if (introductoryContentHtml) {
+        onOpenClassSpecificChoiceInfoDialog({
+            type: 'genericHtml',
+            title: blockLabelForDialog,
+            content: introductoryContentHtml
+        });
+    }
   }, [onOpenClassSpecificChoiceInfoDialog, translations, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, UI_STRINGS, currentLang]);
 
 
@@ -670,8 +679,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                         key={effect.ability}
                         leftLabel={effect.ability.substring(0, 3).toUpperCase()}
                         rightLabel={change > 0 ? `+${change}` : String(change)}
-                        leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass)}
-                        rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass)}
+                        leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0", leftBorderColorClass)}
+                        rightClassName={cn("border-2 rounded-r-full -ml-[2px]", rightBgClass, rightTextClass, rightBorderColorClass)}
                         className="mr-1 mb-1"
                       />
                     );
@@ -693,8 +702,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <DualBadge
                     leftLabel={UI_STRINGS.hitDiceBadgeLabel}
                     rightLabel={selectedClassInfo.hitDice}
-                    leftClassName="bg-transparent text-foreground border-primary/60"
-                    rightClassName="bg-primary text-primary-foreground border-primary"
+                    leftClassName="bg-transparent text-foreground border-2 rounded-l-full border-r-0 border-primary/60"
+                    rightClassName="bg-primary text-primary-foreground border-2 rounded-r-full -ml-[2px] border-primary"
                     className="mr-1 mb-1"
                   />
                 )}
@@ -708,8 +717,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                         key={ability.abilityKey}
                         leftLabel={abilityNameForDisplay}
                         rightLabel={`${usesValue} / ${localizedPeriod}`}
-                        leftClassName="bg-transparent text-foreground border-accent/60"
-                        rightClassName="bg-accent text-accent-foreground border-accent"
+                        leftClassName="bg-transparent text-foreground border-2 rounded-l-full border-r-0 border-accent/60"
+                        rightClassName="bg-accent text-accent-foreground border-2 rounded-r-full -ml-[2px] border-accent"
                         className="mr-1 mb-1"
                       />
                     );
@@ -721,8 +730,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                         key={ability.abilityKey}
                         leftLabel={abilityNameForDisplay}
                         rightLabel={`${typeof poolValue === 'number' ? poolValue : UI_STRINGS.abilityUsesPoolPlaceholder || "Pool"} / ${localizedPeriod}`}
-                        leftClassName="bg-transparent text-foreground border-accent/60"
-                        rightClassName="bg-accent text-accent-foreground border-accent"
+                        leftClassName="bg-transparent text-foreground border-2 rounded-l-full border-r-0 border-accent/60"
+                        rightClassName="bg-accent text-accent-foreground border-2 rounded-r-full -ml-[2px] border-accent"
                         className="mr-1 mb-1"
                       />
                     );
@@ -777,8 +786,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <DualBadge
                     leftLabel={UI_STRINGS.ageCategoryBadgeLabel}
                     rightLabel={ageEffectsDetails.categoryName}
-                    leftClassName="bg-transparent text-foreground border-secondary/60"
-                    rightClassName="bg-secondary text-secondary-foreground border-secondary"
+                    leftClassName="bg-transparent text-foreground border-2 rounded-l-full border-r-0 border-secondary/60"
+                    rightClassName="bg-secondary text-secondary-foreground border-2 rounded-r-full -ml-[2px] border-secondary"
                     className="mr-1 mb-1"
                   />
                   {ageEffectsDetails.effects.map((effect) => {
@@ -805,8 +814,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                         key={effect.ability}
                         leftLabel={effect.ability.substring(0, 3).toUpperCase()}
                         rightLabel={change > 0 ? `+${change}` : String(change)}
-                        leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass)}
-                        rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass)}
+                        leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0", leftBorderColorClass)}
+                        rightClassName={cn("border-2 rounded-r-full -ml-[2px]", rightBgClass, rightTextClass, rightBorderColorClass)}
                         className="mr-1 mb-1"
                       />
                     );
@@ -854,8 +863,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                       <DualBadge
                         leftLabel={UI_STRINGS.sizeAcModLeftBadgeLabel}
                         rightLabel={acMod > 0 ? `+${acMod}` : String(acMod)}
-                        leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass)}
-                        rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass)}
+                        leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0", leftBorderColorClass)}
+                        rightClassName={cn("border-2 rounded-r-full -ml-[2px]", rightBgClass, rightTextClass, rightBorderColorClass)}
                         className="mr-1 mb-1"
                       />
                     );

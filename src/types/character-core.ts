@@ -732,7 +732,7 @@ export type InfoDialogContentType =
   | { type: 'rangedAttackBreakdown'; components: GenericBreakdownItem[] }
   | { type: 'rangedDamageBreakdown'; components: GenericBreakdownItem[] }
   | { type: 'genericNumericalBreakdown'; titleKey: keyof ProcessedSiteData['UI_STRINGS']; components: GenericBreakdownItem[] }
-  | { type: 'classSpecificChoiceOptions'; title: string; options: Array<{ id: string; label: string; description?: string; }>; };
+  | { type: 'classSpecificChoiceOptions'; title: string; options: Array<{ id: string; label: string; description?: string; }>; introductoryContentHtml?: string; };
 
 
 export interface SkillDefinitionForDisplay {
