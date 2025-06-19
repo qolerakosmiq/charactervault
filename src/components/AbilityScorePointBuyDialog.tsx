@@ -202,7 +202,7 @@ export function AbilityScorePointBuyDialog({
                   </div>
                 )}
 
-                <Separator />
+                {/* Removed Separator component from here */}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
                 {ABILITY_ORDER.map((ability) => {
@@ -234,7 +234,7 @@ export function AbilityScorePointBuyDialog({
                               max={MAX_SCORE}
                               readOnly={true}
                               isIncrementDisabled={incrementWouldExceedBudget || score >= MAX_SCORE}
-                              inputClassName="w-16 h-10 text-center text-sm"
+                              inputClassName="w-16 h-10 text-sm text-center"
                               buttonClassName="h-10 w-10"
                               buttonSize="icon"
                               className="justify-center"
