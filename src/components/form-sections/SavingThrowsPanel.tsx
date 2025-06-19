@@ -209,10 +209,10 @@ const SavingThrowsPanelComponent = ({
         let rightBorderColorClass = "border-border"; 
 
         if (abilityMod > 0) {
-          leftBorderColorClass = "border-emerald-600"; // Value side border
-          rightBgClass = "bg-emerald-600";      // Abbr side background
-          rightTextClass = "text-emerald-50";   // Abbr side text
-          rightBorderColorClass = "border-emerald-600"; // Abbr side border
+          leftBorderColorClass = "border-emerald-600";
+          rightBgClass = "bg-emerald-600";
+          rightTextClass = "text-emerald-50";
+          rightBorderColorClass = "border-emerald-600";
         } else if (abilityMod < 0) {
           leftBorderColorClass = "border-destructive";
           rightBgClass = "bg-destructive";
@@ -222,15 +222,15 @@ const SavingThrowsPanelComponent = ({
         
         return (
           <DualBadge
-            leftLabel={abilityAbbr} 
-            rightLabel={renderModifierValue(abilityMod)} 
+            leftLabel={renderModifierValue(abilityMod)}
+            rightLabel={abilityAbbr}
             leftClassName={cn(
-              "border-2 rounded-l-full !px-2 !py-0.5 !h-auto",
-              rightBgClass, rightTextClass, rightBorderColorClass 
+              "bg-transparent text-foreground border-2 rounded-l-full border-r-0 !px-2 !py-0.5 !h-auto",
+              leftBorderColorClass 
             )}
             rightClassName={cn(
-              "bg-transparent text-foreground border-2 rounded-r-full -ml-[2px] !px-2 !py-0.5 !h-auto",
-              leftBorderColorClass 
+              "border-2 rounded-r-full -ml-[2px] !px-2 !py-0.5 !h-auto",
+              rightBgClass, rightTextClass, rightBorderColorClass 
             )}
             className="text-sm"
           />
@@ -274,12 +274,12 @@ const SavingThrowsPanelComponent = ({
       {({ isLocked: panelIsLocked }) => (
         <>
           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
-            <table className="w-full min-w-[400px]">
+            <table className="w-full min-w-[400px] table-fixed">
               <thead>
                 <tr className="border-b">
                   <th className="py-2 px-1 text-left text-sm font-medium text-muted-foreground w-[100px]"></th>
                   {SAVE_TYPES.map((saveType) => (
-                    <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-foreground capitalize">
+                    <th key={saveType} className="py-2 px-1 text-center text-sm font-medium text-foreground capitalize w-32">
                       {SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType}
                     </th>
                   ))}
@@ -331,5 +331,3 @@ const SavingThrowsPanelComponent = ({
 
 SavingThrowsPanelComponent.displayName = 'SavingThrowsPanelComponent';
 export const SavingThrowsPanel = React.memo(SavingThrowsPanelComponent);
-
-    
