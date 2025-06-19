@@ -1,6 +1,7 @@
+
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { AbilityScores, SavingThrows, SavingThrowType, SingleSavingThrow, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects, GenericBreakdownItem } from '@/types/character';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 import { Zap, Loader2, Info, Dices } from 'lucide-react';
@@ -13,7 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { DualBadge } from '@/components/ui/DualBadge'; 
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/badge'; // Ensured Badge is imported
 import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store'; 
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
@@ -64,12 +65,14 @@ const SavingThrowsPanelComponent = ({
         if (effect.isActive && (effect.save === saveType || effect.save === 'all')) {
           if (typeof effect.value === 'number') {
             totalMiscBonus += effect.value;
+          } else if (effect.value === 'CHA' && abilityScores) { // Paladin Divine Grace
+             totalMiscBonus += getAbilityModifierByName(abilityScores, 'charisma');
           }
         }
       });
     }
     return totalMiscBonus;
-  }, [aggregatedFeatEffects, savingThrowsData.savingThrows]);
+  }, [aggregatedFeatEffects, savingThrowsData.savingThrows, abilityScores]);
 
 
   const handleOpenSavingThrowRollDialog = React.useCallback((saveType: SavingThrowType) => {
@@ -165,7 +168,7 @@ const SavingThrowsPanelComponent = ({
                   className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
                   onClick={() => onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType: saveType })}
                   aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel || "Info for {saveTypeLabel} Save").replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType)}
-                  disabled={panelIsLocked}
+                  disabled={panelIsLocked && (dataRow.rowKey !== 'total')}
                 >
                   <Info className="h-4 w-4" />
                 </Button>
@@ -176,7 +179,7 @@ const SavingThrowsPanelComponent = ({
                   className="h-6 w-6 text-muted-foreground hover:text-primary"
                   onClick={() => handleOpenSavingThrowRollDialog(saveType)}
                   aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType)}
-                  disabled={panelIsLocked}
+                  disabled={panelIsLocked && (dataRow.rowKey !== 'total')}
                 >
                   <Dices className="h-4 w-4" />
                 </Button>
@@ -199,16 +202,16 @@ const SavingThrowsPanelComponent = ({
         const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === abilityKey);
         const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
         
-        let leftBorderColorClass = "border-border";
-        let rightBgClass = "bg-muted";
-        let rightTextClass = "text-muted-foreground";
-        let rightBorderColorClass = "border-border";
+        let leftBorderColorClass = "border-border"; // Border for the value (left)
+        let rightBgClass = "bg-muted";      // Background for the abbreviation (right)
+        let rightTextClass = "text-muted-foreground"; // Text for the abbreviation (right)
+        let rightBorderColorClass = "border-border"; // Border for the abbreviation (right)
 
         if (abilityMod > 0) {
-          leftBorderColorClass = "border-emerald-600"; // Border for value
-          rightBgClass = "bg-emerald-600";      // Background for abbreviation
-          rightTextClass = "text-emerald-50";    // Text for abbreviation
-          rightBorderColorClass = "border-emerald-600"; // Border for abbreviation
+          leftBorderColorClass = "border-emerald-600";
+          rightBgClass = "bg-emerald-600";
+          rightTextClass = "text-emerald-50";
+          rightBorderColorClass = "border-emerald-600";
         } else if (abilityMod < 0) {
           leftBorderColorClass = "border-destructive";
           rightBgClass = "bg-destructive";
@@ -218,15 +221,15 @@ const SavingThrowsPanelComponent = ({
         
         return (
           <DualBadge
-            leftLabel={renderModifierValue(abilityMod)} // Value on left
-            rightLabel={abilityAbbr}                     // Abbreviation on right
+            leftLabel={abilityAbbr} // Abbreviation on left with solid background
+            rightLabel={renderModifierValue(abilityMod)} // Value on right with colored border
             leftClassName={cn(
-              "bg-transparent text-foreground border-2 rounded-l-full border-r-0 !px-2 !py-0.5 !h-auto",
-              leftBorderColorClass // Style for value (bordered)
+              "border-2 rounded-l-full !px-2 !py-0.5 !h-auto",
+              rightBgClass, rightTextClass, rightBorderColorClass 
             )}
             rightClassName={cn(
-              "border-2 rounded-r-full -ml-[2px] !px-2 !py-0.5 !h-auto",
-              rightBgClass, rightTextClass, rightBorderColorClass // Style for abbreviation (solid bg)
+              "bg-transparent text-foreground border-2 rounded-r-full -ml-[2px] !px-2 !py-0.5 !h-auto",
+              leftBorderColorClass 
             )}
             className="text-sm"
           />
@@ -283,6 +286,9 @@ const SavingThrowsPanelComponent = ({
               </thead>
               <tbody>
                 {dataRows.map((dataRow) => {
+                  if (panelIsLocked && dataRow.rowKey !== 'total') {
+                    return null; 
+                  }
                   const rowLabel = UI_STRINGS[dataRow.labelKey] || dataRow.labelKey.replace('savingThrowsRowLabel', '');
                   return (
                     <tr key={dataRow.rowKey} className="border-b last:border-b-0 transition-colors hover:bg-muted/10">
@@ -309,11 +315,13 @@ const SavingThrowsPanelComponent = ({
               </tbody>
             </table>
           </div>
-          <p className="text-sm text-muted-foreground pt-2">
-            <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_prefix }} />
-            <Badge variant="outline">{UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}</Badge>
-            <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_suffix }}/>
-          </p>
+          {!panelIsLocked && (
+            <p className="text-sm text-muted-foreground pt-2">
+              <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_prefix }} />
+              <Badge variant="outline">{UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}</Badge>
+              <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_suffix }}/>
+            </p>
+          )}
         </>
       )}
     </LockablePanelWrapper>
@@ -322,3 +330,5 @@ const SavingThrowsPanelComponent = ({
 
 SavingThrowsPanelComponent.displayName = 'SavingThrowsPanelComponent';
 export const SavingThrowsPanel = React.memo(SavingThrowsPanelComponent);
+
+    
