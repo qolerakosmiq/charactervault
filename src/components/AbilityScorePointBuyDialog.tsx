@@ -109,10 +109,10 @@ export function AbilityScorePointBuyDialog({
     if (pointsRemaining === 0 && isValidBudgetProp) {
       onScoresApplied(currentScores);
       onOpenChange(false);
-    } else {
+    } else if (translations?.UI_STRINGS) {
       toast({
-        title: translations?.UI_STRINGS.pointBuyDialogErrorInvalidApplicationTitle,
-        description: translations?.UI_STRINGS.pointBuyDialogErrorInvalidApplicationDesc,
+        title: translations.UI_STRINGS.pointBuyDialogErrorInvalidApplicationTitle,
+        description: translations.UI_STRINGS.pointBuyDialogErrorInvalidApplicationDesc,
         variant: "destructive",
       });
     }
@@ -127,12 +127,12 @@ export function AbilityScorePointBuyDialog({
           <DialogHeader>
             <DialogTitle className="flex items-center font-serif">
               <Calculator className="mr-2 h-6 w-6 text-primary" />
-              {translations?.UI_STRINGS.pointBuyDialogTitleLoading}
+              {translations?.UI_STRINGS.pointBuyDialogTitleLoading || "Loading Point Buy..."}
             </DialogTitle>
           </DialogHeader>
           <div className="flex justify-center items-center py-10">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingAbilityNamesTitle}</p>
+            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingAbilityNamesTitle || "Loading ability names..."}</p>
           </div>
            <DialogFooter className="mt-6">
             <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
@@ -234,7 +234,7 @@ export function AbilityScorePointBuyDialog({
                               max={MAX_SCORE}
                               readOnly={true}
                               isIncrementDisabled={incrementWouldExceedBudget || score >= MAX_SCORE}
-                              inputClassName="w-16 h-10 text-center text-xl"
+                              inputClassName="w-16 h-10 text-center text-sm"
                               buttonClassName="h-10 w-10"
                               buttonSize="icon"
                               className="justify-center"
@@ -259,3 +259,4 @@ export function AbilityScorePointBuyDialog({
     </Dialog>
   );
 }
+
