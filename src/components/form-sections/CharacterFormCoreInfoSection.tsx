@@ -40,7 +40,7 @@ import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 import { DualBadge } from '@/components/ui/DualBadge';
-import { Card } from '@/components/ui/card'; // Added Card import
+import { Card } from '@/components/ui/card';
 
 const DEBOUNCE_DELAY = 400;
 
@@ -492,8 +492,8 @@ const CharacterFormCoreInfoSectionComponent = ({
 
     if (uiBlock.isHeadingOnly) {
       return (
-        <div key={`${uiBlock.key}-${blockIndex}-heading`} className="mt-1 mb-0"> {/* Adjusted margins */}
-          <h3 className="text-md font-semibold text-foreground/80">{blockLabel}</h3> {/* Adjusted font size */}
+        <div key={`${uiBlock.key}-${blockIndex}-heading`} className="mt-1 mb-0">
+          <h3 className="text-md font-semibold text-accent">{blockLabel}</h3>
           {blockDescription && <p className="text-xs text-muted-foreground">{blockDescription}</p>}
           <Separator className="mt-1" />
         </div>
@@ -629,10 +629,10 @@ const CharacterFormCoreInfoSectionComponent = ({
                     let rightBorderColorClass = "border-border";
 
                     if (change > 0) {
-                      leftBorderColorClass = "border-emerald-700"; // Darker green for border
-                      rightBgClass = "bg-emerald-600"; // Standard green for fill
-                      rightTextClass = "text-emerald-50"; // Light text
-                      rightBorderColorClass = "border-emerald-700"; // Match left border
+                      leftBorderColorClass = "border-emerald-700";
+                      rightBgClass = "bg-emerald-600";
+                      rightTextClass = "text-emerald-50";
+                      rightBorderColorClass = "border-emerald-700";
                     } else if (change < 0) {
                       leftBorderColorClass = "border-destructive";
                       rightBgClass = "bg-destructive";
@@ -645,8 +645,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                         key={effect.ability}
                         leftLabel={effect.ability.substring(0, 3).toUpperCase()}
                         rightLabel={change > 0 ? `+${change}` : String(change)}
-                        leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass)}
-                        rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass)}
+                        leftClassName={cn("bg-transparent text-foreground border-2", leftBorderColorClass)}
+                        rightClassName={cn(rightBgClass, rightTextClass, "border-2", rightBorderColorClass)}
                         className="mr-1 mb-1"
                       />
                     );
@@ -668,8 +668,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <DualBadge
                     leftLabel={UI_STRINGS.hitDiceBadgeLabel || "HD"}
                     rightLabel={selectedClassInfo.hitDice}
-                    leftClassName="bg-transparent text-foreground border-primary/60 border-2"
-                    rightClassName="bg-primary text-primary-foreground border-primary border-2"
+                    leftClassName="bg-transparent text-foreground border-2 border-primary/60"
+                    rightClassName="bg-primary text-primary-foreground border-2 border-primary"
                     className="mr-1 mb-1"
                   />
                 )}
@@ -683,8 +683,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                         key={ability.abilityKey}
                         leftLabel={abilityNameForDisplay}
                         rightLabel={`${usesValue} / ${localizedPeriod}`}
-                        leftClassName="bg-transparent text-foreground border-accent/60 border-2"
-                        rightClassName="bg-accent text-accent-foreground border-accent border-2"
+                        leftClassName="bg-transparent text-foreground border-2 border-accent/60"
+                        rightClassName="bg-accent text-accent-foreground border-2 border-accent"
                         className="mr-1 mb-1"
                       />
                     );
@@ -696,8 +696,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                         key={ability.abilityKey}
                         leftLabel={abilityNameForDisplay}
                         rightLabel={`${typeof poolValue === 'number' ? poolValue : UI_STRINGS.abilityUsesPoolPlaceholder || "Pool"} / ${localizedPeriod}`}
-                        leftClassName="bg-transparent text-foreground border-accent/60 border-2"
-                        rightClassName="bg-accent text-accent-foreground border-accent border-2"
+                        leftClassName="bg-transparent text-foreground border-2 border-accent/60"
+                        rightClassName="bg-accent text-accent-foreground border-2 border-accent"
                         className="mr-1 mb-1"
                       />
                     );
@@ -709,7 +709,7 @@ const CharacterFormCoreInfoSectionComponent = ({
           </div>
 
           {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.length > 0 && (
-            <Card className="mt-6 p-4 pt-3 bg-background shadow-md">
+            <Card className="mt-6 p-4 pt-3 bg-background">
               <div className="space-y-4">
                 {selectedClassInfo.uiSections.map((uiBlock, index) => (
                   <React.Fragment key={`ui-section-wrapper-${uiBlock.key}-${index}`}>
@@ -752,8 +752,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                   <DualBadge
                     leftLabel={UI_STRINGS.ageCategoryBadgeLabel || "Age Cat."}
                     rightLabel={ageEffectsDetails.categoryName}
-                    leftClassName="bg-transparent text-foreground border-secondary/60 border-2"
-                    rightClassName="bg-secondary text-secondary-foreground border-secondary border-2"
+                    leftClassName="bg-transparent text-foreground border-2 border-secondary/60"
+                    rightClassName="bg-secondary text-secondary-foreground border-2 border-secondary"
                     className="mr-1 mb-1"
                   />
                   {ageEffectsDetails.effects.map((effect) => {
@@ -780,8 +780,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                         key={effect.ability}
                         leftLabel={effect.ability.substring(0, 3).toUpperCase()}
                         rightLabel={change > 0 ? `+${change}` : String(change)}
-                        leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass, "border-2")}
-                        rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass, "border-2")}
+                        leftClassName={cn("bg-transparent text-foreground border-2", leftBorderColorClass)}
+                        rightClassName={cn(rightBgClass, rightTextClass, "border-2", rightBorderColorClass)}
                         className="mr-1 mb-1"
                       />
                     );
@@ -829,8 +829,8 @@ const CharacterFormCoreInfoSectionComponent = ({
                       <DualBadge
                         leftLabel={UI_STRINGS.sizeAcModLeftBadgeLabel || "AC"}
                         rightLabel={acMod > 0 ? `+${acMod}` : String(acMod)}
-                        leftClassName={cn("bg-transparent text-foreground", leftBorderColorClass, "border-2")}
-                        rightClassName={cn(rightBgClass, rightTextClass, rightBorderColorClass, "border-2")}
+                        leftClassName={cn("bg-transparent text-foreground border-2", leftBorderColorClass)}
+                        rightClassName={cn(rightBgClass, rightTextClass, "border-2", rightBorderColorClass)}
                         className="mr-1 mb-1"
                       />
                     );
