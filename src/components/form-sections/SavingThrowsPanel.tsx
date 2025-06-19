@@ -1,7 +1,6 @@
-
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import type { AbilityScores, SavingThrows, SavingThrowType, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects, GenericBreakdownItem } from '@/types/character';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 import { Zap, Loader2, Info, Dices, Lock, Unlock, HelpCircle } from 'lucide-react';
@@ -9,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
@@ -145,7 +144,7 @@ const SavingThrowsPanelComponent = ({
       title={UI_STRINGS.savingThrowsPanelTitle || "Saving Throws"}
       icon={Zap}
       initialLockedState={false}
-      cardContentClassName="space-y-2"
+      cardContentClassName="space-y-2 pt-4"
     >
       {({ isLocked: panelIsLocked }) => (
         <>
@@ -177,9 +176,9 @@ const SavingThrowsPanelComponent = ({
 
               return (
                 <Card key={saveType} className="shadow-sm">
-                  <CardHeader className="p-4">
-                    <CardTitle className="text-lg font-semibold flex justify-between items-center">
-                      <span className="font-serif">{saveTypeLabel}</span>
+                  <CardHeader className="p-3 pb-2">
+                    <CardTitle className="text-base font-semibold flex justify-between items-center font-serif">
+                      <span>{saveTypeLabel}</span>
                       <div className="flex items-center space-x-1">
                         <span className={cn("text-2xl font-bold", totalCalculatedValue >= 0 ? "text-accent" : "text-destructive")}>
                           {totalCalculatedValue >= 0 ? '+' : ''}{totalCalculatedValue}
@@ -208,57 +207,61 @@ const SavingThrowsPanelComponent = ({
                     </CardTitle>
                   </CardHeader>
                   {!panelIsLocked && (
-                    <CardContent className="p-4 pt-0 space-y-1.5 text-sm">
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">{UI_STRINGS.savingThrowsRowLabelBase || "Base"}</span>
-                          <span className="font-semibold">{baseSaveValue}</span>
+                    <CardContent className="p-4 pt-0 space-y-3 text-sm">
+                      <div className="text-center">
+                        <Label className="text-xs text-muted-foreground">{UI_STRINGS.savingThrowsRowLabelBase || "Base"}</Label>
+                        <p className="font-semibold text-md">{baseSaveValue}</p>
+                      </div>
+                      <div className="text-center">
+                        <Label className="text-xs text-muted-foreground">{UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability Modifier"}</Label>
+                        <div className="mt-1 flex justify-center">
+                            <DualBadge
+                                leftLabel={renderModifierValue(abilityModifier)}
+                                rightLabel={abilityAbbr}
+                                leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0 !px-1.5 !py-0.5 !h-auto", valueBorderColorClass)}
+                                rightClassName={cn("border-2 rounded-r-full -ml-[2px] !px-1.5 !py-0.5 !h-auto", valueBgClass, valueTextClass, valueBorderColorClass)}
+                            />
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">{UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability Modifier"}</span>
-                          <DualBadge
-                            leftLabel={renderModifierValue(abilityModifier)}
-                            rightLabel={abilityAbbr}
-                            leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0 !px-1.5 !py-0.5 !h-auto", valueBorderColorClass)}
-                            rightClassName={cn("border-2 rounded-r-full -ml-[2px] !px-1.5 !py-0.5 !h-auto", valueBgClass, valueTextClass, valueBorderColorClass)}
+                      </div>
+                      <div className="text-center">
+                        <Label className="text-xs text-muted-foreground inline-flex items-center">
+                          {UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <HelpCircle className="h-3 w-3 ml-1 text-muted-foreground/70 cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-xs">
+                                <p className="text-xs">
+                                  <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_prefix }} />
+                                  <Badge variant="outline" className="text-xs">{UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}</Badge>
+                                  <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_suffix }}/>
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </Label>
+                        <p className="font-semibold text-md">{renderModifierValue(calculatedTotalMiscBonusForSaveVal)}</p>
+                      </div>
+                      <div className="text-center">
+                        <Label htmlFor={`temp-mod-${saveType}`} className="text-xs text-muted-foreground">
+                            {UI_STRINGS.savingThrowsRowLabelTemporaryModifier || "Temporary Modifier"}
+                        </Label>
+                        <div className="mt-1 flex justify-center">
+                          <NumberSpinnerInput
+                            id={`temp-mod-${saveType}`}
+                            value={localTemporaryMod}
+                            onChange={setLocalTemporaryMod}
+                            min={-20}
+                            max={20}
+                            inputClassName="w-20 h-8 text-sm"
+                            buttonSize="sm"
+                            buttonClassName="h-8 w-8"
+                            className="justify-center"
+                            disabled={panelIsLocked}
                           />
                         </div>
-                        <div className="flex justify-between items-center">
-                           <span className="text-muted-foreground inline-flex items-center">
-                            {UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <HelpCircle className="h-3 w-3 ml-1 text-muted-foreground/70 cursor-help" />
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="max-w-xs">
-                                  <p className="text-xs">
-                                    <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_prefix }} />
-                                    <Badge variant="outline" className="text-xs">{UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}</Badge>
-                                    <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_suffix }}/>
-                                  </p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </span>
-                          <span className="font-semibold">{renderModifierValue(calculatedTotalMiscBonusForSaveVal)}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <Label htmlFor={`temp-mod-${saveType}`} className="text-muted-foreground">{UI_STRINGS.savingThrowsRowLabelTemporaryModifier || "Temporary Modifier"}</Label>
-                          <div className="w-28">
-                            <NumberSpinnerInput
-                              id={`temp-mod-${saveType}`}
-                              value={localTemporaryMod}
-                              onChange={setLocalTemporaryMod}
-                              min={-20}
-                              max={20}
-                              inputClassName="w-12 h-7 text-xs"
-                              buttonSize="sm"
-                              buttonClassName="h-7 w-7"
-                              className="justify-end"
-                              disabled={panelIsLocked}
-                            />
-                          </div>
-                        </div>
+                      </div>
                     </CardContent>
                   )}
                 </Card>
