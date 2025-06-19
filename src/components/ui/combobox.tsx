@@ -12,6 +12,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandList,
+  CommandItem, // Added CommandItem here
 } from "@/components/ui/command"
 import {
   Popover,
@@ -36,7 +37,7 @@ interface ComboboxProps {
   triggerClassName?: string
   popoverContentClassName?: string
   isEditable?: boolean;
-  disabled?: boolean; // Added disabled prop
+  disabled?: boolean;
 }
 
 export function ComboboxPrimitive({
@@ -49,82 +50,85 @@ export function ComboboxPrimitive({
   triggerClassName,
   popoverContentClassName,
   isEditable = false,
-  disabled = false, // Added disabled prop
+  disabled = false,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
-  const [inputValue, setInputValue] = React.useState("")
+  const [inputValue, setInputValue] = React.useState("") // Used for non-editable display/filtering
+
+  // Determine what the CommandInput should display and how it behaves
+  const currentCommandInputValue = isEditable ? (value || "") : inputValue;
+  const onCommandInputChange = isEditable ? onChange : setInputValue;
 
   const handleSelect = (currentLabel: string) => {
     const selectedOption = options.find(opt => (opt.label ?? '').toLowerCase() === (currentLabel ?? '').toLowerCase());
     if (selectedOption) {
       onChange(selectedOption.value);
-      if (!isEditable) setInputValue("");
+      if (!isEditable) setInputValue(""); // Clear search term for non-editable
     } else if (isEditable) {
+      // If editable and no option matches, the typed text becomes the value
       onChange(currentLabel);
     }
     setOpen(false);
   };
-
-  const currentCommandInputValue = isEditable ? (value || "") : inputValue;
-  const onCommandInputChange = isEditable ? onChange : setInputValue;
-
-
+  
   const foundOption = options.find((option) => (option.value ?? '').toLowerCase() === (value ?? '').toLowerCase());
   const displayLabel = foundOption ? foundOption.label : (isEditable && value ? value : placeholder);
 
   const handleClear = (e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
     if (disabled) return;
     e.stopPropagation();
-    onChange('');
-    if (!isEditable) setInputValue("");
-    setOpen(false);
+    onChange(''); // Clear the actual value
+    if (!isEditable) setInputValue(""); // Clear search input if not editable
+    setOpen(false); // Close popover
   };
+
 
   return (
     <Popover open={open && !disabled} onOpenChange={(isOpen) => {
       if (disabled) return;
       setOpen(isOpen);
       if (!isOpen && !isEditable) {
-        setInputValue("");
+        setInputValue(""); // Reset input on close if not editable
       }
     }}>
       <PopoverTrigger
-        className={cn(
-          buttonVariants({ variant: "outline" }),
-          "w-full justify-between font-normal relative",
-          !value && "text-muted-foreground",
-          triggerClassName
-        )}
-        role="combobox"
-        aria-expanded={open}
-        disabled={disabled} // Pass disabled to PopoverTrigger
+        asChild
+        disabled={disabled}
       >
-        <span className="truncate pr-6">{displayLabel}</span>
-        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
-          {value && (
-            <div
-              role="button"
-              tabIndex={disabled ? -1 : 0}
-              onClick={handleClear}
-              onKeyDown={(e) => {
-                if (disabled) return;
-                if (e.key === 'Enter' || e.key === ' ') {
-                  handleClear(e);
-                  e.preventDefault();
-                }
-              }}
-              className={cn(
-                "h-6 w-6 p-0 mr-1 flex items-center justify-center rounded-sm text-muted-foreground hover:text-destructive focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-                disabled && "opacity-50 cursor-not-allowed pointer-events-none"
-              )}
-              aria-label="Clear selection"
-              aria-disabled={disabled}
-            >
-              <ClearIcon className="h-4 w-4" />
-            </div>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className={cn(
+            "w-full justify-between font-normal relative",
+            !value && "text-muted-foreground",
+            triggerClassName
           )}
-          <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
-        </div>
+        >
+          <span className="truncate pr-6">{displayLabel}</span>
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
+            {value && !disabled && (
+              <div
+                role="button"
+                tabIndex={0} 
+                onClick={handleClear}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleClear(e);
+                    e.preventDefault();
+                  }
+                }}
+                className={cn(
+                  "h-6 w-6 p-0 mr-1 flex items-center justify-center rounded-sm text-muted-foreground hover:text-destructive focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                )}
+                aria-label="Clear selection"
+              >
+                <ClearIcon className="h-4 w-4" />
+              </div>
+            )}
+            <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+          </div>
+        </Button>
       </PopoverTrigger>
       {!disabled && (
         <PopoverContent className={cn("w-[--radix-popover-trigger-width] p-0", popoverContentClassName)}>
@@ -133,7 +137,7 @@ export function ComboboxPrimitive({
               placeholder={searchPlaceholder}
               value={currentCommandInputValue}
               onValueChange={onCommandInputChange}
-              disabled={disabled} // Pass disabled to CommandInput
+              disabled={disabled}
             />
             <CommandList>
               <CommandEmpty>{emptyPlaceholder}</CommandEmpty>
