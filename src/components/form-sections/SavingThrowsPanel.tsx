@@ -177,7 +177,7 @@ const SavingThrowsPanelComponent = ({
 
               return (
                 <Card key={saveType} className="shadow-sm">
-                  <CardHeader className="p-3 pb-2 flex flex-col items-center space-y-1 text-center">
+                  <CardHeader className="p-4 flex flex-col items-center space-y-1 text-center">
                     <span className="text-sm font-medium">{saveTypeLabel}</span>
                     <div className="flex items-center justify-center space-x-1">
                         <p className={cn("text-xl font-bold text-accent")}>
@@ -190,6 +190,7 @@ const SavingThrowsPanelComponent = ({
                           className="h-6 w-6 text-muted-foreground hover:text-foreground"
                           onClick={() => onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType: saveType })}
                           aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel || "Info for {saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel)}
+                          disabled={panelIsLocked && (saveType === 'fortitude' || saveType === 'reflex' || saveType === 'will')}
                         >
                           <Info className="h-4 w-4" />
                         </Button>
@@ -200,6 +201,7 @@ const SavingThrowsPanelComponent = ({
                           className="h-6 w-6 text-muted-foreground hover:text-primary"
                           onClick={() => handleOpenSavingThrowRollDialog(saveType)}
                           aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel)}
+                          disabled={panelIsLocked}
                         >
                           <Dices className="h-4 w-4" />
                         </Button>
@@ -207,7 +209,7 @@ const SavingThrowsPanelComponent = ({
                   </CardHeader>
                   {!panelIsLocked && (
                     <CardContent className="p-3 pt-1">
-                      <div className="space-y-1.5"> {/* Changed from space-y-3 */}
+                      <div className="space-y-1.5">
                         <div className="space-y-1 text-center">
                           <Label className="text-xs text-muted-foreground">{UI_STRINGS.savingThrowsRowLabelBase || "Base"}</Label>
                           <p className="font-semibold text-md">{baseSaveValue}</p>
@@ -270,9 +272,9 @@ const SavingThrowsPanelComponent = ({
             })}
           </div>
           {!panelIsLocked && (
-            <p className="text-xs text-muted-foreground pt-3 text-center border-t border-border/30 mt-4">
+            <p className="text-muted-foreground pt-3 text-left border-t border-border/30 mt-4">
               <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_prefix }} />
-              <Badge variant="outline" className="text-xs">{UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}</Badge>
+              <Badge variant="outline">{UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier"}</Badge>
               <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_suffix }} />
             </p>
           )}
