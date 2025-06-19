@@ -1,7 +1,6 @@
-
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import type { AbilityScores, SavingThrows, SavingThrowType, SingleSavingThrow, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects, GenericBreakdownItem } from '@/types/character';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 import { Zap, Loader2, Info, Dices } from 'lucide-react';
@@ -14,7 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { DualBadge } from '@/components/ui/DualBadge'; 
-import { Badge } from '@/components/ui/badge'; // Added this line
+import { Badge } from '@/components/ui/badge';
 import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store'; 
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
@@ -106,8 +105,8 @@ const SavingThrowsPanelComponent = ({
       baseModifier: totalSaveModifier,
       calculationBreakdown: breakdown,
       rerollTwentiesForChecks: rerollTwentiesForChecks, 
-      weaponDamageDiceString: "", // Not applicable here
-      weaponCriticalMultiplier: 1, // Not applicable here
+      weaponDamageDiceString: "", 
+      weaponCriticalMultiplier: 1, 
     });
   }, [translations, abilityScores, savingThrowsData, aggregatedFeatEffects, onOpenRollDialog, calculateCalculatedTotalMiscBonusForSave, debouncedTemporaryMods, rerollTwentiesForChecks]);
 
@@ -206,10 +205,10 @@ const SavingThrowsPanelComponent = ({
         let rightBorderColorClass = "border-border";
 
         if (abilityMod > 0) {
-          leftBorderColorClass = "border-emerald-600";
-          rightBgClass = "bg-emerald-600";
-          rightTextClass = "text-emerald-50";
-          rightBorderColorClass = "border-emerald-600";
+          leftBorderColorClass = "border-emerald-600"; // Border for value
+          rightBgClass = "bg-emerald-600";      // Background for abbreviation
+          rightTextClass = "text-emerald-50";    // Text for abbreviation
+          rightBorderColorClass = "border-emerald-600"; // Border for abbreviation
         } else if (abilityMod < 0) {
           leftBorderColorClass = "border-destructive";
           rightBgClass = "bg-destructive";
@@ -219,10 +218,16 @@ const SavingThrowsPanelComponent = ({
         
         return (
           <DualBadge
-            leftLabel={renderModifierValue(abilityMod)}
-            rightLabel={abilityAbbr}
-            leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0 !px-2 !py-0.5 !h-auto", leftBorderColorClass)}
-            rightClassName={cn("border-2 rounded-r-full -ml-[2px] !px-2 !py-0.5 !h-auto", rightBgClass, rightTextClass, rightBorderColorClass)}
+            leftLabel={renderModifierValue(abilityMod)} // Value on left
+            rightLabel={abilityAbbr}                     // Abbreviation on right
+            leftClassName={cn(
+              "bg-transparent text-foreground border-2 rounded-l-full border-r-0 !px-2 !py-0.5 !h-auto",
+              leftBorderColorClass // Style for value (bordered)
+            )}
+            rightClassName={cn(
+              "border-2 rounded-r-full -ml-[2px] !px-2 !py-0.5 !h-auto",
+              rightBgClass, rightTextClass, rightBorderColorClass // Style for abbreviation (solid bg)
+            )}
             className="text-sm"
           />
         );
