@@ -191,16 +191,16 @@ export function RollDialog({
   const isInitialRollNat20 = !isDamageRoll && initialD20Roll === 20;
 
   const resultCardBackground = cn(
-    "p-3 border rounded-md space-y-1",
+    "p-3 border rounded-md", // Removed space-y-1
     isInitialRollCritFailure ? "bg-destructive/20 border-destructive/50" :
-    isInitialRollNat20 ? "bg-emerald-600/20 border-emerald-600/50" : 
+    (isInitialRollNat20 && !isDamageRoll) ? "bg-emerald-600/20 border-emerald-600/50" : 
     "bg-card border-border"
   );
 
   const diceResultColor = cn(
     "font-bold text-lg",
     isInitialRollCritFailure ? "text-destructive" :
-    isInitialRollNat20 ? "text-emerald-500" : 
+    (isInitialRollNat20 && !isDamageRoll) ? "text-emerald-500" : 
     "text-primary"
   );
 
@@ -327,31 +327,31 @@ export function RollDialog({
                     </div>
                   )}
                   {rolledWeaponDiceDetails && (
-                    <div className="flex justify-between items-center text-sm">
+                    <div className="flex justify-between items-center text-sm mb-0.5">
                         <span className="text-foreground">{UI_STRINGS.rollDialogWeaponDamageDiceLabel}</span>
                         <span className="font-bold text-primary">{rolledWeaponDiceDetails}</span>
                     </div>
                   )}
                   {baseDamagePlusModDetails && (
-                     <div className="flex justify-between items-center text-sm">
+                     <div className="flex justify-between items-center text-sm mb-0.5">
                         <span className="text-foreground">{UI_STRINGS.rollDialogBaseDamagePlusModLabel}</span>
                         <span className="font-bold text-primary">{baseDamagePlusModDetails}</span>
                     </div>
                   )}
                   {critMultiplierAppliedDetails && (
-                     <div className="flex justify-between items-center text-sm">
+                     <div className="flex justify-between items-center text-sm mb-0.5">
                         <span className="text-foreground">{UI_STRINGS.rollDialogCritMultiplierAppliedLabel}</span>
                         <span className="font-bold text-primary">{critMultiplierAppliedDetails}</span>
                     </div>
                   )}
                    {rolledExtraDiceDetails && (
-                    <div className="flex justify-between items-center text-sm">
+                    <div className="flex justify-between items-center text-sm mb-0.5">
                         <span className="text-foreground">{UI_STRINGS.rollDialogExtraDamageDiceLabel}</span>
                         <span className="font-bold text-primary">{rolledExtraDiceDetails}</span>
                     </div>
                   )}
                   <Separator className="my-1 bg-border/50"/>
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center mt-0.5">
                     <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalDamageStringLabel}</span>
                     <span className="font-bold text-lg text-primary">{finalResult}</span>
                   </div>
@@ -359,7 +359,7 @@ export function RollDialog({
               ) : ( 
                 <>
                   {initialD20Roll !== null && (
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center mb-0.5">
                       <div className="flex items-center">
                         <span className="text-sm text-foreground">{UI_STRINGS.rollDialogDiceRollLabel}{'\u00A0'}</span><Badge variant="outline">1d20</Badge>
                       </div>
@@ -367,17 +367,17 @@ export function RollDialog({
                     </div>
                   )}
                   {bonusRolls.length > 0 && (
-                     <div className="flex justify-between items-center">
+                     <div className="flex justify-between items-center mb-0.5">
                       <span className="text-sm text-foreground">{UI_STRINGS.rollDialogBonusDiceRollLabel}</span>
                       <span className="font-bold text-lg text-primary">{bonusRolls.join(', ')}</span>
                     </div>
                   )}
-                  <div className="flex justify-between items-center text-sm">
+                  <div className="flex justify-between items-center text-sm mb-0.5">
                     <span className="text-foreground">{UI_STRINGS.rollDialogTotalBonusLabel}</span>
                     <span className="font-bold text-primary">{renderModifierValue(baseModifier)}</span>
                   </div>
-                  <Separator className="mt-1 mb-1" />
-                  <div className="flex justify-between items-center">
+                  <Separator className="mt-2 mb-1" />
+                  <div className="flex justify-between items-center mt-0.5">
                     <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalResultLabel}</span>
                     {isInitialRollCritFailure ? (
                       <span className="font-bold text-lg text-destructive">{UI_STRINGS.rollDialogCritFailureLabel || "Critical Failure!"}</span>
