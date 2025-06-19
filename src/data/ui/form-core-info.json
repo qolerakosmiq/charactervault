@@ -35,6 +35,11 @@
   "selectGenderPlaceholder": { "en": "Select Gender...", "fr": "Choisir un Genre..." },
   "clericDomainsTitle": { "en": "Cleric Domains", "fr": "Domaines de Prêtre" },
   "clericDomain1Label": { "en": "First Domain", "fr": "Premier Domaine" },
-  "clericDomain2Label": { "en": "Second Domain", "fr": "Second Domaine" }
+  "clericDomain2Label": { "en": "Second Domain", "fr": "Second Domaine" },
+  "hitDiceBadgeLabel": { "en": "HD", "fr": "DV" },
+  "ageCategoryBadgeLabel": { "en": "Age Cat.", "fr": "Cat. Âge" },
+  "sizeAcModLeftBadgeLabel": { "en": "AC", "fr": "CA" },
+  "abilityUsesPoolPlaceholder": { "en": "Pool", "fr": "Réserve" },
+  "infoDialogClassSpecificChoiceAriaLabel": { "en": "Info for {choiceName}", "fr": "Infos pour {choiceName}" }
 }
     

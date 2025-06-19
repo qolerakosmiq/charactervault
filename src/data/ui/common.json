@@ -89,6 +89,8 @@
   "magicSchoolNoneOption": { "en": "None / Universalist", "fr": "Aucune / Généraliste" },
   "prohibitedSchoolNoneOption": { "en": "None", "fr": "Aucune" },
   "newCharacterDefaultName": { "en": "New Adventurer", "fr": "Nouvel Aventurier" },
-  "formButtonCreateCharacter": { "en": "Create Character", "fr": "Créer le personnage" }
+  "formButtonCreateCharacter": { "en": "Create Character", "fr": "Créer le personnage" },
+  "infoDialogNoOptionsAvailable": { "en": "No options available for this choice.", "fr": "Aucune option disponible pour ce choix."},
+  "infoDialogNoDescriptionAvailable": { "en": "No description available.", "fr": "Aucune description disponible."}
 }
     
