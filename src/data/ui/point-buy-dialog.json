@@ -7,6 +7,9 @@
   "pointBuyDialogPointsRemainingLabel": { "en": "Points Remaining:", "fr": "Points restants:" },
   "pointBuyDialogCostLabel": { "en": "Cost:", "fr": "Coût:" },
   "pointBuyDialogErrorInvalidApplicationTitle": { "en": "Invalid Scores", "fr": "Scores invalides" },
-  "pointBuyDialogErrorInvalidApplicationDesc": { "en": "Cannot apply scores. Points spent must exactly match the total points budget, or the budget is invalid.", "fr": "Impossible d'appliquer les scores. Les points dépensés doivent correspondre exactement au budget total de points, ou le budget est invalide." }
+  "pointBuyDialogErrorInvalidApplicationDesc": { "en": "Cannot apply scores. Points spent must exactly match the total points budget, or the budget is invalid.", "fr": "Impossible d'appliquer les scores. Les points dépensés doivent correspondre exactement au budget total de points, ou le budget est invalide." },
+  "pointBuyDialogCancelButton": { "en": "Cancel", "fr": "Annuler" },
+  "pointBuyDialogApplyButton": { "en": "Apply Scores", "fr": "Appliquer les scores" },
+  "pointBuyDialogTitleLoading": { "en": "Loading Point Buy...", "fr": "Chargement de l'achat par points..." }
 }
     
