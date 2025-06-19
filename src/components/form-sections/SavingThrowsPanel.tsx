@@ -14,10 +14,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { DualBadge } from '@/components/ui/DualBadge'; 
-import { Badge } from '@/components/ui/badge'; // Ensured Badge is imported
+import { Badge } from '@/components/ui/badge';
 import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store'; 
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
+import { Separator } from '@/components/ui/separator';
 
 const DEBOUNCE_DELAY = 400;
 
@@ -168,7 +169,7 @@ const SavingThrowsPanelComponent = ({
                   className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
                   onClick={() => onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType: saveType })}
                   aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel || "Info for {saveTypeLabel} Save").replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType)}
-                  disabled={panelIsLocked && (dataRow.rowKey !== 'total')}
+                  
                 >
                   <Info className="h-4 w-4" />
                 </Button>
@@ -179,7 +180,7 @@ const SavingThrowsPanelComponent = ({
                   className="h-6 w-6 text-muted-foreground hover:text-primary"
                   onClick={() => handleOpenSavingThrowRollDialog(saveType)}
                   aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType)}
-                  disabled={panelIsLocked && (dataRow.rowKey !== 'total')}
+                  
                 >
                   <Dices className="h-4 w-4" />
                 </Button>
@@ -202,16 +203,16 @@ const SavingThrowsPanelComponent = ({
         const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === abilityKey);
         const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
         
-        let leftBorderColorClass = "border-border"; // Border for the value (left)
-        let rightBgClass = "bg-muted";      // Background for the abbreviation (right)
-        let rightTextClass = "text-muted-foreground"; // Text for the abbreviation (right)
-        let rightBorderColorClass = "border-border"; // Border for the abbreviation (right)
+        let leftBorderColorClass = "border-border"; 
+        let rightBgClass = "bg-muted";      
+        let rightTextClass = "text-muted-foreground"; 
+        let rightBorderColorClass = "border-border"; 
 
         if (abilityMod > 0) {
-          leftBorderColorClass = "border-emerald-600";
-          rightBgClass = "bg-emerald-600";
-          rightTextClass = "text-emerald-50";
-          rightBorderColorClass = "border-emerald-600";
+          leftBorderColorClass = "border-emerald-600"; // Value side border
+          rightBgClass = "bg-emerald-600";      // Abbr side background
+          rightTextClass = "text-emerald-50";   // Abbr side text
+          rightBorderColorClass = "border-emerald-600"; // Abbr side border
         } else if (abilityMod < 0) {
           leftBorderColorClass = "border-destructive";
           rightBgClass = "bg-destructive";
@@ -221,8 +222,8 @@ const SavingThrowsPanelComponent = ({
         
         return (
           <DualBadge
-            leftLabel={abilityAbbr} // Abbreviation on left with solid background
-            rightLabel={renderModifierValue(abilityMod)} // Value on right with colored border
+            leftLabel={abilityAbbr} 
+            rightLabel={renderModifierValue(abilityMod)} 
             leftClassName={cn(
               "border-2 rounded-l-full !px-2 !py-0.5 !h-auto",
               rightBgClass, rightTextClass, rightBorderColorClass 
