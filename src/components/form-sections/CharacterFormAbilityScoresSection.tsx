@@ -61,19 +61,19 @@ const CharacterFormAbilityScoresSectionComponent = ({
   const debouncedStates = {} as Record<Exclude<AbilityName, 'none'>, [number, (val: number) => void]> &
                                 Record<`${Exclude<AbilityName, 'none'>}TempMod`, [number, (val: number) => void]>;
 
-  abilityKeys.forEach(key => {
-    const baseScoreCallback = React.useCallback((value: number) => onBaseAbilityScoreChange(key, value), [onBaseAbilityScoreChange, key]);
+  abilityKeys.forEach(ability => {
+    const baseScoreCallback = React.useCallback((value: number) => onBaseAbilityScoreChange(ability, value), [onBaseAbilityScoreChange, ability]);
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    debouncedStates[key] = useDebouncedFormField(
-      abilityScoresData.abilityScores[key] || 0,
+    debouncedStates[ability] = useDebouncedFormField(
+      abilityScoresData.abilityScores[ability] || 0,
       baseScoreCallback,
       DEBOUNCE_DELAY
     );
     
-    const tempModCallback = React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange(key, value), [onAbilityScoreTempCustomModifierChange, key]);
+    const tempModCallback = React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange(ability, value), [onAbilityScoreTempCustomModifierChange, ability]);
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    debouncedStates[`${key}TempMod`] = useDebouncedFormField(
-      abilityScoresData.abilityScoreTempCustomModifiers?.[key] || 0,
+    debouncedStates[`${ability}TempMod`] = useDebouncedFormField(
+      abilityScoresData.abilityScoreTempCustomModifiers?.[ability] || 0,
       tempModCallback,
       DEBOUNCE_DELAY
     );
@@ -265,11 +265,11 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
             {!panelIsLocked && (
               <>
-                <div className="flex justify-end gap-2 mt-4 mb-2">
-                    <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} className="w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row sm:justify-end gap-2 mt-4 mb-2">
+                    <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)}>
                         <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton}
                     </Button>
-                    <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} className="w-full sm:w-auto">
+                    <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)}>
                         <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton}
                     </Button>
                 </div>
