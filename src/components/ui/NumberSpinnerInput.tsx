@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 // Threshold in REM units for TOTAL COMPONENT WIDTH.
 // If total component width is less than or equal to this, hide buttons.
 // If total component width is greater than this, show them.
-const MIN_TOTAL_WIDTH_FOR_BUTTONS_REM = 7.5; // Approx 120px at 16px/rem.
+const MIN_TOTAL_WIDTH_FOR_BUTTONS_REM = 8.5; // Approx 136px at 16px/rem.
 
 const OBSERVER_DEBOUNCE_MS = 100;
 const INITIAL_CHECK_DELAY_MS = 100;
@@ -63,7 +63,7 @@ export function NumberSpinnerInput({
     
     const thresholdPx = MIN_TOTAL_WIDTH_FOR_BUTTONS_REM * rootFontSize;
     const newShouldShow = componentTotalWidthPx > thresholdPx;
-
+    
     setShowButtons(prevShowButtons => {
       if (newShouldShow !== prevShowButtons) {
         return newShouldShow;
