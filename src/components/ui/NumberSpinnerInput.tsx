@@ -8,8 +8,10 @@ import { MinusCircle, PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Thresholds in REM units for hysteresis.
-const MIN_INPUT_WIDTH_REM_FOR_BUTTONS_TO_HIDE = 3.75; // Approx 60px. Buttons hide if width < this.
-const MIN_INPUT_WIDTH_REM_FOR_BUTTONS_TO_SHOW = 3.85; // Approx 61.6px. Buttons show if width > this (when already hidden).
+const MIN_INPUT_WIDTH_REM_FOR_BUTTONS_TO_HIDE = 3.75; // Approx 60px. If input field (with buttons visible) is narrower, hide buttons.
+const MIN_INPUT_WIDTH_REM_FOR_BUTTONS_TO_SHOW = 5.0;  // Approx 80px. If input field (full width, buttons hidden) is wider, show buttons.
+const OBSERVER_DEBOUNCE_MS = 100;
+const INITIAL_CHECK_DELAY_MS = 100;
 
 interface NumberSpinnerInputProps {
   value: number;
@@ -45,7 +47,9 @@ export function NumberSpinnerInput({
   const [internalDisplayValue, setInternalDisplayValue] = React.useState(String(value));
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [showButtons, setShowButtons] = React.useState(true);
-  const debounceTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  // Using a ref for the debounce timer to avoid including it in useEffect dependencies
+  const observerDebounceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+
 
   React.useEffect(() => {
     if (readOnly || document.activeElement !== inputRef.current) {
@@ -57,49 +61,47 @@ export function NumberSpinnerInput({
     const inputElement = inputRef.current;
     if (!inputElement) return;
 
-    let debounceTimer: NodeJS.Timeout | null = null;
-
-    const resizeObserverCallback = (entries: ResizeObserverEntry[]) => {
-      if (!entries || entries.length === 0) return;
-      const currentWidth = entries[0].contentRect.width;
-
-      if (debounceTimer) clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-        if (!document.documentElement) return; // Guard against null documentElement
+    const calculateAndSetVisibility = (currentWidthPx: number) => {
+        if (!document.documentElement) return;
         const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
         const thresholdHidePx = MIN_INPUT_WIDTH_REM_FOR_BUTTONS_TO_HIDE * rootFontSize;
         const thresholdShowPx = MIN_INPUT_WIDTH_REM_FOR_BUTTONS_TO_SHOW * rootFontSize;
 
-        setShowButtons(prevShowButtons => {
-          let newShouldShow = prevShowButtons;
-          if (prevShowButtons) { // If buttons are currently shown
-            if (currentWidth < thresholdHidePx) newShouldShow = false;
-          } else { // If buttons are currently hidden
-            if (currentWidth > thresholdShowPx) newShouldShow = true;
-          }
-          // Only return a new value if it's different, to prevent unnecessary re-renders
-          return prevShowButtons === newShouldShow ? prevShowButtons : newShouldShow;
+        setShowButtons((prevShowButtons) => {
+            let newShouldShow = prevShowButtons;
+            if (prevShowButtons) { // If buttons are currently shown
+                if (currentWidthPx < thresholdHidePx) newShouldShow = false;
+            } else { // If buttons are currently hidden
+                if (currentWidthPx > thresholdShowPx) newShouldShow = true;
+            }
+            return newShouldShow; // React only re-renders if newShouldShow is different
         });
-      }, 50); // Debounce for 50ms
     };
+    
+    const observer = new ResizeObserver((entries) => {
+        if (!entries || entries.length === 0) return;
+        const currentWidthPx = entries[0].contentRect.width;
 
-    const observer = new ResizeObserver(resizeObserverCallback);
+        if (observerDebounceTimerRef.current) clearTimeout(observerDebounceTimerRef.current);
+        observerDebounceTimerRef.current = setTimeout(() => {
+            calculateAndSetVisibility(currentWidthPx);
+        }, OBSERVER_DEBOUNCE_MS);
+    });
+
     observer.observe(inputElement);
 
-    // Perform an initial check manually after a very short delay for initial layout
     const initialCheckTimeoutId = setTimeout(() => {
-        if (inputElement) { // Check if element still exists
-            resizeObserverCallback([{ contentRect: inputElement.getBoundingClientRect() } as ResizeObserverEntry]);
+        if (inputElement) {
+            calculateAndSetVisibility(inputElement.offsetWidth);
         }
-    }, 10);
-
+    }, INITIAL_CHECK_DELAY_MS);
 
     return () => {
-      if (debounceTimer) clearTimeout(debounceTimer);
-      clearTimeout(initialCheckTimeoutId);
-      observer.disconnect();
+        if (observerDebounceTimerRef.current) clearTimeout(observerDebounceTimerRef.current);
+        clearTimeout(initialCheckTimeoutId);
+        observer.disconnect();
     };
-  }, [inputClassName]); // Re-run if inputClassName changes, which can affect initial width
+  }, [inputClassName]); // Re-run if inputClassName changes, which can affect initial width/styling.
 
   const getPrecision = (s: number) => {
     const stepStr = String(s);
@@ -216,7 +218,7 @@ export function NumberSpinnerInput({
         className={cn(
             "text-center appearance-none", 
             inputClassName,
-            !shouldRenderButtons && "w-full"
+            !shouldRenderButtons && "w-full" // Input takes full width if buttons are hidden
         )}
         style={{ MozAppearance: 'textfield' }} 
         aria-live="polite"
