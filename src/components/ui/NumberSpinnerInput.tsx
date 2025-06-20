@@ -7,8 +7,9 @@ import { Input } from '@/components/ui/input';
 import { MinusCircle, PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Threshold in REM units.
-const MIN_INPUT_WIDTH_REM = 3.75; // Approx 60px at 16px root font size.
+// Thresholds in REM units for hysteresis.
+const MIN_INPUT_WIDTH_REM_FOR_BUTTONS_TO_HIDE = 3.75; // Approx 60px. Buttons hide if width < this.
+const MIN_INPUT_WIDTH_REM_FOR_BUTTONS_TO_SHOW = 3.85; // Approx 61.6px. Buttons show if width > this (when already hidden).
 
 interface NumberSpinnerInputProps {
   value: number;
@@ -55,21 +56,30 @@ export function NumberSpinnerInput({
   React.useEffect(() => {
     const inputEl = inputRef.current;
     if (!inputEl || typeof window === 'undefined' || typeof ResizeObserver === 'undefined') {
-      // Fallback if observer not available or element not ready
-      // Consider if a different default for showButtons is needed here
       return;
     }
 
-    const calculateAndSet = (currentWidth: number) => {
-      const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16; // Fallback root font size
-      const thresholdPx = MIN_INPUT_WIDTH_REM * rootFontSize;
-      const newShouldShow = currentWidth >= thresholdPx;
+    const calculateAndSetVisibility = (currentWidth: number) => {
+      const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      const thresholdHidePx = MIN_INPUT_WIDTH_REM_FOR_BUTTONS_TO_HIDE * rootFontSize;
+      const thresholdShowPx = MIN_INPUT_WIDTH_REM_FOR_BUTTONS_TO_SHOW * rootFontSize;
 
       setShowButtons(prevShowButtons => {
+        let newShouldShow = prevShowButtons;
+        if (prevShowButtons) { // If buttons are currently shown
+          if (currentWidth < thresholdHidePx) {
+            newShouldShow = false; // Hide them
+          }
+        } else { // If buttons are currently hidden
+          if (currentWidth > thresholdShowPx) {
+            newShouldShow = true; // Show them
+          }
+        }
+
         if (prevShowButtons !== newShouldShow) {
           return newShouldShow;
         }
-        return prevShowButtons;
+        return prevShowButtons; // No change
       });
     };
 
@@ -82,16 +92,16 @@ export function NumberSpinnerInput({
         clearTimeout(debounceTimeoutRef.current);
       }
       debounceTimeoutRef.current = setTimeout(() => {
-        calculateAndSet(currentWidth);
-      }, 50); // 50ms debounce
+        calculateAndSetVisibility(currentWidth);
+      }, 50); // Debounce observer calls
     });
 
     observer.observe(inputEl);
-    // Initial check needs to happen after the element is fully rendered and sized
-    // Using a slight delay for initial check or relying on the first observer trigger
+    
+    // Initial check
     const initialCheckTimeout = setTimeout(() => {
         if (inputRef.current) {
-            calculateAndSet(inputRef.current.offsetWidth);
+            calculateAndSetVisibility(inputRef.current.offsetWidth);
         }
     }, 0);
 
@@ -104,7 +114,9 @@ export function NumberSpinnerInput({
       observer.unobserve(inputEl);
       observer.disconnect();
     };
-  }, [inputClassName]); // Dependency: inputClassName. MIN_INPUT_WIDTH_REM is a const.
+  // Dependencies should include things that might change how the threshold is calculated or if the observer needs re-setup.
+  // inputClassName can affect initial width, so it's included.
+  }, [inputClassName]);
 
   const getPrecision = (s: number) => {
     const stepStr = String(s);
@@ -186,7 +198,6 @@ export function NumberSpinnerInput({
   const minBoundCheck = Number.isFinite(min) ? min! : -Infinity;
   const maxBoundCheck = Number.isFinite(max) ? max! : Infinity;
   
-  // Determine if buttons should actually be rendered based on `showButtons` state and `disabled` prop
   const shouldRenderButtons = !disabled && showButtons;
 
   return (
