@@ -191,7 +191,7 @@ export function RollDialog({
   const isInitialRollNat20 = !isDamageRoll && initialD20Roll === 20;
 
   const resultCardBackground = cn(
-    "p-3 border rounded-md", // Removed space-y-1
+    "p-3 border rounded-md", 
     isInitialRollCritFailure ? "bg-destructive/20 border-destructive/50" :
     (isInitialRollNat20 && !isDamageRoll) ? "bg-emerald-600/20 border-emerald-600/50" : 
     "bg-card border-border"
@@ -381,6 +381,8 @@ export function RollDialog({
                     <span className="text-lg font-semibold">{UI_STRINGS.rollDialogFinalResultLabel}</span>
                     {isInitialRollCritFailure ? (
                       <span className="font-bold text-lg text-destructive">{UI_STRINGS.rollDialogCritFailureLabel || "Critical Failure!"}</span>
+                    ) : (!isDamageRoll && finalResult !== null && finalResult < 0) ? (
+                      <span className="font-bold text-lg text-destructive">0</span>
                     ) : (
                       <span className="font-bold text-lg text-primary">{finalResult}</span>
                     )}
