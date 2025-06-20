@@ -7,10 +7,8 @@ import { Input } from '@/components/ui/input';
 import { MinusCircle, PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Threshold in REM units. 3.75rem is approx 60px at 16px root font size.
-// This is a heuristic for when the input field is too narrow to comfortably fit "9999"
-// and the increment/decrement buttons.
-const MIN_INPUT_WIDTH_REM = 3.75;
+// Threshold in REM units.
+const MIN_INPUT_WIDTH_REM = 3.75; // Approx 60px at 16px root font size.
 
 interface NumberSpinnerInputProps {
   value: number;
@@ -46,6 +44,7 @@ export function NumberSpinnerInput({
   const [internalDisplayValue, setInternalDisplayValue] = React.useState(String(value));
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [showButtons, setShowButtons] = React.useState(true);
+  const debounceTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   React.useEffect(() => {
     if (readOnly || document.activeElement !== inputRef.current) {
@@ -54,39 +53,50 @@ export function NumberSpinnerInput({
   }, [value, readOnly]);
 
   React.useEffect(() => {
-    const checkWidths = () => {
-      const inputEl = inputRef.current;
-      if (!inputEl || typeof window === 'undefined') {
-        setShowButtons(true); // Default to showing if no element or SSR
-        return;
-      }
+    const inputEl = inputRef.current;
+    if (!inputEl || typeof window === 'undefined' || typeof ResizeObserver === 'undefined') {
+      setShowButtons(true);
+      return;
+    }
+
+    const calculateAndSetShowButtons = (currentWidth: number) => {
       const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
       const thresholdPx = MIN_INPUT_WIDTH_REM * rootFontSize;
-
-      if (inputEl.offsetWidth < thresholdPx) {
+      if (currentWidth < thresholdPx) {
         setShowButtons(false);
       } else {
         setShowButtons(true);
       }
     };
 
-    checkWidths(); // Initial check
+    const observer = new ResizeObserver(entries => {
+      if (!entries || entries.length === 0) {
+        return;
+      }
+      const entry = entries[0];
+      const currentWidth = entry.target.offsetWidth;
 
-    const inputElForObserver = inputRef.current;
-    if (!inputElForObserver || typeof window === 'undefined' || typeof ResizeObserver === 'undefined') {
-      return; // Observer not supported or element not ready
-    }
-
-    const resizeObserver = new ResizeObserver(() => {
-      checkWidths();
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+      debounceTimeoutRef.current = setTimeout(() => {
+        calculateAndSetShowButtons(currentWidth);
+      }, 50); // 50ms debounce delay
     });
 
-    resizeObserver.observe(inputElForObserver);
+    observer.observe(inputEl);
+    
+    // Initial check
+    calculateAndSetShowButtons(inputEl.offsetWidth);
 
     return () => {
-      resizeObserver.unobserve(inputElForObserver);
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+      observer.unobserve(inputEl);
+      observer.disconnect();
     };
-  }, [inputClassName]); // Re-check if inputClassName changes, as it might affect width
+  }, [inputClassName]); // Re-check if inputClassName changes
 
   const getPrecision = (s: number) => {
     const stepStr = String(s);
