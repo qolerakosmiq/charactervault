@@ -7,10 +7,10 @@ import { Input } from '@/components/ui/input';
 import { MinusCircle, PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Threshold: approx width of "9999" at text-sm (14px font) which is ~28px,
-// plus typical padding (12px L + 12px R = 24px) and border (1px L + 1px R = 2px).
-// Total ~54px. Using 60px (3.75rem) for a bit of buffer.
-const MIN_INPUT_WIDTH_FOR_BUTTONS_PX = 60;
+// Threshold in REM units. 3.75rem is approx 60px at 16px root font size.
+// This is a heuristic for when the input field is too narrow to comfortably fit "9999"
+// and the increment/decrement buttons.
+const MIN_INPUT_WIDTH_REM = 3.75;
 
 interface NumberSpinnerInputProps {
   value: number;
@@ -56,22 +56,26 @@ export function NumberSpinnerInput({
   React.useEffect(() => {
     const checkWidths = () => {
       const inputEl = inputRef.current;
-      if (!inputEl) {
-        setShowButtons(true); // Default to showing if no element yet
+      if (!inputEl || typeof window === 'undefined') {
+        setShowButtons(true); // Default to showing if no element or SSR
         return;
       }
-      if (inputEl.offsetWidth < MIN_INPUT_WIDTH_FOR_BUTTONS_PX) {
+      const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+      const thresholdPx = MIN_INPUT_WIDTH_REM * rootFontSize;
+
+      if (inputEl.offsetWidth < thresholdPx) {
         setShowButtons(false);
       } else {
         setShowButtons(true);
       }
     };
 
-    // Initial check
-    checkWidths();
+    checkWidths(); // Initial check
 
     const inputElForObserver = inputRef.current;
-    if (!inputElForObserver) return;
+    if (!inputElForObserver || typeof window === 'undefined' || typeof ResizeObserver === 'undefined') {
+      return; // Observer not supported or element not ready
+    }
 
     const resizeObserver = new ResizeObserver(() => {
       checkWidths();
