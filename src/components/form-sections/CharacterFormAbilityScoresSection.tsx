@@ -174,8 +174,8 @@ const CharacterFormAbilityScoresSectionComponent = ({
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-3">
               {abilityKeys.map(ability => {
-                const [baseScoreValue, setBaseScoreValue] = debouncedStates[ability];
-                const [tempCustomModValue, setTempCustomModValue] = debouncedStates[`${ability}TempMod`];
+                const [baseScoreValue, setBaseScoreValue] = debouncedStates[key];
+                const [tempCustomModValue, setTempCustomModValue] = debouncedStates[`${key}TempMod`];
 
                 const actualScoreData = detailedAbilityScores ? detailedAbilityScores[ability] : null;
                 const displayTotalScore = actualScoreData
@@ -200,29 +200,30 @@ const CharacterFormAbilityScoresSectionComponent = ({
                     <div className="flex items-center justify-center flex-wrap gap-x-1 gap-y-1 mb-1">
                       <span className="text-xl font-bold text-accent">{displayTotalScore}</span>
                       <span className="text-xl text-accent font-normal">({displayModifier >= 0 ? '+' : ''}{displayModifier})</span>
-
-                      {actualScoreData && (
-                         <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center"
-                          onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
-                           aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel).replace("{abilityName}", abilityDisplayName)}
-                        >
-                          <Info className="h-3.5 w-3.5" />
+                      <div className="flex items-center">
+                        {actualScoreData && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center"
+                            onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
+                            aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel).replace("{abilityName}", abilityDisplayName)}
+                          >
+                            <Info className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center"
+                            onClick={() => handleOpenRollDialog(ability)}
+                            aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
+                          >
+                            <Dices className="h-3.5 w-3.5" />
                         </Button>
-                      )}
-                      <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center"
-                          onClick={() => handleOpenRollDialog(ability)}
-                          aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
-                        >
-                          <Dices className="h-3.5 w-3.5" />
-                      </Button>
+                      </div>
                     </div>
 
                     {!panelIsLocked && (
