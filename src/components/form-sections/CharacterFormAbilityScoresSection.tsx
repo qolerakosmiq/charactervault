@@ -197,7 +197,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                       <span className="text-xs text-muted-foreground">{abilityDisplayName}</span>
                     </Label>
 
-                    <div className="flex items-center justify-center space-x-1 mb-1">
+                    <div className="flex items-center justify-center flex-wrap gap-x-1 gap-y-1 mb-1">
                       <span className="text-xl font-bold text-accent">{displayTotalScore}</span>
                       <span className="text-xl text-accent font-normal">({displayModifier >= 0 ? '+' : ''}{displayModifier})</span>
 
@@ -206,7 +206,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5 mt-0.5"
+                          className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center"
                           onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
                            aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel).replace("{abilityName}", abilityDisplayName)}
                         >
@@ -217,7 +217,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center ml-0.5 mt-0.5"
+                          className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center"
                           onClick={() => handleOpenRollDialog(ability)}
                           aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
                         >
@@ -314,6 +314,3 @@ const CharacterFormAbilityScoresSectionComponent = ({
 };
 CharacterFormAbilityScoresSectionComponent.displayName = 'CharacterFormAbilityScoresSectionComponent';
 export const CharacterFormAbilityScoresSection = React.memo(CharacterFormAbilityScoresSectionComponent);
-
-    
-    
