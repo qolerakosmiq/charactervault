@@ -55,48 +55,56 @@ export function NumberSpinnerInput({
   React.useEffect(() => {
     const inputEl = inputRef.current;
     if (!inputEl || typeof window === 'undefined' || typeof ResizeObserver === 'undefined') {
-      setShowButtons(true);
+      // Fallback if observer not available or element not ready
+      // Consider if a different default for showButtons is needed here
       return;
     }
 
-    const calculateAndSetShowButtons = (currentWidth: number) => {
-      const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const calculateAndSet = (currentWidth: number) => {
+      const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16; // Fallback root font size
       const thresholdPx = MIN_INPUT_WIDTH_REM * rootFontSize;
-      if (currentWidth < thresholdPx) {
-        setShowButtons(false);
-      } else {
-        setShowButtons(true);
-      }
+      const newShouldShow = currentWidth >= thresholdPx;
+
+      setShowButtons(prevShowButtons => {
+        if (prevShowButtons !== newShouldShow) {
+          return newShouldShow;
+        }
+        return prevShowButtons;
+      });
     };
 
     const observer = new ResizeObserver(entries => {
-      if (!entries || entries.length === 0) {
-        return;
-      }
+      if (!entries || entries.length === 0) return;
       const entry = entries[0];
-      const currentWidth = entry.target.offsetWidth;
+      const currentWidth = entry.contentRect?.width || entry.target.offsetWidth;
 
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
       }
       debounceTimeoutRef.current = setTimeout(() => {
-        calculateAndSetShowButtons(currentWidth);
-      }, 50); // 50ms debounce delay
+        calculateAndSet(currentWidth);
+      }, 50); // 50ms debounce
     });
 
     observer.observe(inputEl);
-    
-    // Initial check
-    calculateAndSetShowButtons(inputEl.offsetWidth);
+    // Initial check needs to happen after the element is fully rendered and sized
+    // Using a slight delay for initial check or relying on the first observer trigger
+    const initialCheckTimeout = setTimeout(() => {
+        if (inputRef.current) {
+            calculateAndSet(inputRef.current.offsetWidth);
+        }
+    }, 0);
+
 
     return () => {
+      clearTimeout(initialCheckTimeout);
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
       }
       observer.unobserve(inputEl);
       observer.disconnect();
     };
-  }, [inputClassName]); // Re-check if inputClassName changes
+  }, [inputClassName]); // Dependency: inputClassName. MIN_INPUT_WIDTH_REM is a const.
 
   const getPrecision = (s: number) => {
     const stepStr = String(s);
@@ -177,15 +185,17 @@ export function NumberSpinnerInput({
 
   const minBoundCheck = Number.isFinite(min) ? min! : -Infinity;
   const maxBoundCheck = Number.isFinite(max) ? max! : Infinity;
-  const shouldDisplayButtons = !disabled && showButtons;
+  
+  // Determine if buttons should actually be rendered based on `showButtons` state and `disabled` prop
+  const shouldRenderButtons = !disabled && showButtons;
 
   return (
     <div className={cn(
       "flex items-center",
-      shouldDisplayButtons && "space-x-1", 
+      shouldRenderButtons && "space-x-1", 
       className
     )}>
-      {shouldDisplayButtons && (
+      {shouldRenderButtons && (
         <Button
           type="button"
           variant="ghost"
@@ -212,12 +222,12 @@ export function NumberSpinnerInput({
         className={cn(
             "text-center appearance-none", 
             inputClassName,
-            !shouldDisplayButtons && "w-full" 
+            !shouldRenderButtons && "w-full" // Input takes full width if buttons are not rendered
         )}
         style={{ MozAppearance: 'textfield' }} 
         aria-live="polite"
       />
-      {shouldDisplayButtons && (
+      {shouldRenderButtons && (
         <Button
           type="button"
           variant="ghost"
