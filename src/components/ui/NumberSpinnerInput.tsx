@@ -7,6 +7,11 @@ import { Input } from '@/components/ui/input';
 import { MinusCircle, PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// Threshold: approx width of "9999" at text-sm (14px font) which is ~28px,
+// plus typical padding (12px L + 12px R = 24px) and border (1px L + 1px R = 2px).
+// Total ~54px. Using 60px (3.75rem) for a bit of buffer.
+const MIN_INPUT_WIDTH_FOR_BUTTONS_PX = 60;
+
 interface NumberSpinnerInputProps {
   value: number;
   onChange: (newValue: number) => void;
@@ -39,12 +44,45 @@ export function NumberSpinnerInput({
   isIncrementDisabled = false,
 }: NumberSpinnerInputProps) {
   const [internalDisplayValue, setInternalDisplayValue] = React.useState(String(value));
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const [showButtons, setShowButtons] = React.useState(true);
 
   React.useEffect(() => {
-    if (readOnly || document.activeElement !== document.getElementById(id || '')) {
+    if (readOnly || document.activeElement !== inputRef.current) {
       setInternalDisplayValue(String(value));
     }
-  }, [value, id, readOnly]);
+  }, [value, readOnly]);
+
+  React.useEffect(() => {
+    const checkWidths = () => {
+      const inputEl = inputRef.current;
+      if (!inputEl) {
+        setShowButtons(true); // Default to showing if no element yet
+        return;
+      }
+      if (inputEl.offsetWidth < MIN_INPUT_WIDTH_FOR_BUTTONS_PX) {
+        setShowButtons(false);
+      } else {
+        setShowButtons(true);
+      }
+    };
+
+    // Initial check
+    checkWidths();
+
+    const inputElForObserver = inputRef.current;
+    if (!inputElForObserver) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      checkWidths();
+    });
+
+    resizeObserver.observe(inputElForObserver);
+
+    return () => {
+      resizeObserver.unobserve(inputElForObserver);
+    };
+  }, [inputClassName]); // Re-check if inputClassName changes, as it might affect width
 
   const getPrecision = (s: number) => {
     const stepStr = String(s);
@@ -125,14 +163,15 @@ export function NumberSpinnerInput({
 
   const minBoundCheck = Number.isFinite(min) ? min! : -Infinity;
   const maxBoundCheck = Number.isFinite(max) ? max! : Infinity;
+  const shouldDisplayButtons = !disabled && showButtons;
 
   return (
     <div className={cn(
       "flex items-center",
-      !disabled && "space-x-1", // Only apply spacing if buttons are visible
+      shouldDisplayButtons && "space-x-1", 
       className
     )}>
-      {!disabled && (
+      {shouldDisplayButtons && (
         <Button
           type="button"
           variant="ghost"
@@ -146,6 +185,7 @@ export function NumberSpinnerInput({
         </Button>
       )}
       <Input
+        ref={inputRef}
         id={id}
         type="text" 
         inputMode="decimal" 
@@ -158,12 +198,12 @@ export function NumberSpinnerInput({
         className={cn(
             "text-center appearance-none", 
             inputClassName,
-            disabled && "w-full" // When disabled, input takes full width of its container
+            !shouldDisplayButtons && "w-full" 
         )}
         style={{ MozAppearance: 'textfield' }} 
         aria-live="polite"
       />
-      {!disabled && (
+      {shouldDisplayButtons && (
         <Button
           type="button"
           variant="ghost"
