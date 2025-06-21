@@ -73,8 +73,6 @@ interface ClassSpecificFieldProps {
   onOpenInfoDialog: () => void;
   blockIndex: number;
   allChoices: CharacterClassSpecificChoice[];
-  characterLevel: number;
-  aggregatedFeatEffects: AggregatedFeatEffects | null;
 }
 
 const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
@@ -84,33 +82,9 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   onOpenInfoDialog,
   blockIndex,
   allChoices,
-  characterLevel,
-  aggregatedFeatEffects,
 }) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
-  const isVisible = React.useMemo(() => {
-    if (uiBlock.requiredLevel && characterLevel < uiBlock.requiredLevel) return false;
-    if (uiBlock.conditionAggregatedEffect && aggregatedFeatEffects) {
-      const propValue = aggregatedFeatEffects[uiBlock.conditionAggregatedEffect.property as keyof AggregatedFeatEffects] as any;
-      switch (uiBlock.conditionAggregatedEffect.comparison) {
-        case 'exists': return propValue !== undefined && propValue !== null && (Array.isArray(propValue) ? propValue.length > 0 : true);
-        case 'greaterThan': return typeof propValue === 'number' && propValue > (uiBlock.conditionAggregatedEffect.value as number);
-        case 'equals': return propValue === uiBlock.conditionAggregatedEffect.value;
-        case 'lessThan': return typeof propValue === 'number' && propValue < (uiBlock.conditionAggregatedEffect.value as number);
-        case 'notEquals': return propValue !== uiBlock.conditionAggregatedEffect.value;
-        default: return true;
-      }
-    }
-    if (uiBlock.conditionDependsOnUIStateKey) {
-      const controllingValue = allChoices.find(c => c.featureKey === uiBlock.conditionDependsOnUIStateKey)?.value || "";
-      if (uiBlock.conditionDependsOnUIStateValueNotIn) {
-          return !uiBlock.conditionDependsOnUIStateValueNotIn.includes(controllingValue);
-      }
-    }
-    return true;
-  }, [uiBlock, characterLevel, aggregatedFeatEffects, allChoices]);
-  
   const finalSelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [];
 
@@ -146,12 +120,10 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
     return finalOptions;
 
   }, [translationsLoading, translations, uiBlock, allChoices]);
-
+  
   if (translationsLoading || !translations) {
     return <Skeleton className="h-10 w-full" />;
   }
-  
-  if (!isVisible) return null;
 
   const { UI_STRINGS } = translations;
   
@@ -223,7 +195,7 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
       const slotLabelTemplate = uiBlock.slotLabel ? getLocalizedString(uiBlock.slotLabel, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : "Slot {slotNum}";
 
       return (
-        <div key={`${uiBlock.key}-group-${blockIndex}`} className={cn("flex flex-col border rounded-md bg-background/50 p-3", panelFieldVerticalGap)}>
+        <div key={`${uiBlock.key}-group-${blockIndex}`} className={cn("flex flex-col border rounded-md bg-background/50 p-3", panelGridGap)}>
           <Label className="flex font-medium whitespace-nowrap">{blockLabel} <Badge variant="outline">{numInputsToRender}</Badge></Label>
           {Array.from({ length: numInputsToRender }).map((_, index) => {
               const isDisabledByPanelOrDependency = isVisuallyDisabled || (uiBlock.relatedSlotKeyForDisable && !allChoices.find(c => c.featureKey === uiBlock.relatedSlotKeyForDisable)?.value);
@@ -525,6 +497,38 @@ const BasicInformationSectionComponent = ({
     if (!deityIsValid) setLocalDeity("");
   }, [localAlignment, localClassName, localDeity, DND_DEITIES, selectedClassInfo, setLocalDeity]);
   
+  const classSpecificFieldsVisibility = React.useMemo(() => {
+    const visibility: Record<string, boolean> = {};
+    if (!selectedClassInfo?.uiSections) {
+        return visibility;
+    }
+    
+    selectedClassInfo.uiSections.forEach((uiBlock, index) => {
+        let isVisible = true;
+        if (uiBlock.requiredLevel && characterLevel < uiBlock.requiredLevel) {
+            isVisible = false;
+        } else if (uiBlock.conditionAggregatedEffect && aggregatedFeatEffects) {
+          const propValue = aggregatedFeatEffects[uiBlock.conditionAggregatedEffect.property as keyof AggregatedFeatEffects] as any;
+          switch (uiBlock.conditionAggregatedEffect.comparison) {
+            case 'exists': isVisible = propValue !== undefined && propValue !== null && (Array.isArray(propValue) ? propValue.length > 0 : true); break;
+            case 'greaterThan': isVisible = typeof propValue === 'number' && propValue > (uiBlock.conditionAggregatedEffect.value as number); break;
+            case 'equals': isVisible = propValue === uiBlock.conditionAggregatedEffect.value; break;
+            case 'lessThan': isVisible = typeof propValue === 'number' && propValue < (uiBlock.conditionAggregatedEffect.value as number); break;
+            case 'notEquals': isVisible = propValue !== uiBlock.conditionAggregatedEffect.value; break;
+            default: break;
+          }
+        } else if (uiBlock.conditionDependsOnUIStateKey) {
+          const controllingValue = classSpecificChoices.find(c => c.featureKey === uiBlock.conditionDependsOnUIStateKey)?.value || "";
+          if (uiBlock.conditionDependsOnUIStateValueNotIn) {
+              isVisible = !uiBlock.conditionDependsOnUIStateValueNotIn.includes(controllingValue);
+          }
+        }
+        visibility[`${uiBlock.key}-${index}`] = isVisible;
+    });
+    return visibility;
+  }, [selectedClassInfo, characterLevel, aggregatedFeatEffects, classSpecificChoices]);
+
+  
   if (translationsLoading || !UI_STRINGS || !DND_RACES || !DND_CLASSES || !ALIGNMENTS || !DND_DEITIES || !SIZES || !GENDERS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) {
     return null;
   }
@@ -629,19 +633,22 @@ const BasicInformationSectionComponent = ({
           {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.length > 0 && (
             <div className={cn("flex flex-col rounded-md border bg-background/50", panelGridGap, panelContentPadding)}>
               <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
-                {selectedClassInfo.uiSections.map((uiBlock, index) => (
-                  <MemoizedClassSpecificField
-                    key={`csf-memo-${uiBlock.key}-${index}`}
-                    uiBlock={uiBlock}
-                    isVisuallyDisabled={panelIsLocked}
-                    onValueChange={(newValue) => handleClassSpecificChoiceChange(uiBlock.key, newValue, uiBlock.choiceType === 'multiInput' ? index : undefined)}
-                    onOpenInfoDialog={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
-                    blockIndex={index}
-                    characterLevel={characterLevel}
-                    allChoices={classSpecificChoices}
-                    aggregatedFeatEffects={aggregatedFeatEffects}
-                  />
-                ))}
+                {selectedClassInfo.uiSections.map((uiBlock, index) => {
+                  if (!classSpecificFieldsVisibility[`${uiBlock.key}-${index}`]) {
+                      return null;
+                  }
+                  return (
+                    <MemoizedClassSpecificField
+                      key={`csf-memo-${uiBlock.key}-${index}`}
+                      uiBlock={uiBlock}
+                      isVisuallyDisabled={panelIsLocked}
+                      onValueChange={(newValue) => handleClassSpecificChoiceChange(uiBlock.key, newValue, uiBlock.choiceType === 'multiInput' ? index : undefined)}
+                      onOpenInfoDialog={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
+                      blockIndex={index}
+                      allChoices={classSpecificChoices}
+                    />
+                  );
+                })}
               </div>
             </div>
           )}
@@ -758,3 +765,4 @@ const BasicInformationSectionComponent = ({
 };
 BasicInformationSectionComponent.displayName = 'BasicInformationSectionComponent';
 export const BasicInformationSection = React.memo(BasicInformationSectionComponent);
+
