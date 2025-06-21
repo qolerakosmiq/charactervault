@@ -604,10 +604,10 @@ const CharacterFormCoreInfoSectionComponent = ({
       description={UI_STRINGS.coreAttributesDescription}
       icon={ScrollText}
       initialLockedState={false}
-      headerClassName=""
+      headerClassName="bg-muted/20"
     >
       {({ isLocked: panelIsLocked }) => (
-        <div className="">
+        <div>
           <div className={cn("grid grid-cols-2")}>
             <div>
               <Label htmlFor="name" className={panelFieldLabelMargin}>{UI_STRINGS.characterNameLabel}</Label>
