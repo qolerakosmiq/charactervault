@@ -1,7 +1,7 @@
 
 {
-  "coreAttributesTitle": { "en": "Core Attributes", "fr": "Attributs principaux" },
-  "coreAttributesDescription": { "en": "Define the fundamental aspects of your adventurer.", "fr": "Définissez les aspects fondamentaux de votre aventurier." },
+  "basicInformationPanelTitle": { "en": "Basic Information", "fr": "Informations de base" },
+  "basicInformationPanelDescription": { "en": "Define the fundamental aspects of your adventurer.", "fr": "Définissez les aspects fondamentaux de votre aventurier." },
   "characterNameLabel": { "en": "Character Name", "fr": "Nom du personnage" },
   "playerNameLabel": { "en": "Player Name", "fr": "Nom du joueur" },
   "raceLabel": { "en": "Race", "fr": "Race" },
@@ -21,7 +21,9 @@
   "toastInvalidDeityForAlignmentTitle": { "en": "Deity Alignment Mismatch", "fr": "Désaccord d'Alignement de Divinité" },
   "toastInvalidDeityForAlignmentDesc": { "en": "The deity '{deityName}' is not compatible with your character's alignment '{alignment}'.", "fr": "La divinité '{deityName}' n'est pas compatible avec l'alignement de votre personnage '{alignment}'." },
   "ageCategoryBadgeLabel": { "en": "Age Cat.", "fr": "Cat. Âge" },
-  "sizeAcModLeftBadgeLabel": { "en": "AC", "fr": "CA" }
+  "sizeAcModLeftBadgeLabel": { "en": "AC", "fr": "CA" },
+  "abilityUsesPoolPlaceholder": { "en": "Pool", "fr": "Réserve" }
 }
     
     
+

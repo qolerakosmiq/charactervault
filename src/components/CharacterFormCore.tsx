@@ -47,7 +47,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 import { RollDialog, type RollDialogProps } from '@/components/RollDialog';
-import { CharacterFormCoreInfoSection, type CharacterFormCoreInfoSectionProps } from '@/components/form-sections/CharacterFormCoreInfoSection';
+import { BasicInformationSection, type BasicInformationSectionProps } from '@/components/form-sections/CharacterFormCoreInfoSection';
 import { CharacterFormAbilityScoresSection, type CharacterFormAbilityScoresSectionProps } from '@/components/form-sections/CharacterFormAbilityScoresSection';
 import { CharacterFormStoryPortraitSection, type CharacterFormStoryPortraitSectionProps } from '@/components/form-sections/CharacterFormStoryPortraitSection';
 import { SkillsFormSection, type SkillsFormSectionProps } from '@/components/form-sections/SkillsFormSection';
@@ -302,8 +302,8 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   ]);
 
 
-  const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<CharacterFormCoreInfoSectionProps['ageEffectsDetails']>(null);
-  const [raceSpecialQualities, setRaceSpecialQualities] = React.useState<CharacterFormCoreInfoSectionProps['raceSpecialQualities']>(null);
+  const [ageEffectsDetails, setAgeEffectsDetails] = React.useState<BasicInformationSectionProps['ageEffectsDetails']>(null);
+  const [raceSpecialQualities, setRaceSpecialQualities] = React.useState<BasicInformationSectionProps['raceSpecialQualities']>(null);
   const [activeInfoDialogType, setActiveInfoDialogType] = React.useState<InfoDialogContentType | null>(null);
   const [isInfoDialogOpen, setIsInfoDialogOpen] = React.useState(false);
 
@@ -909,7 +909,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   }, [aggregatedFeatEffects]);
 
 
-  const coreInfoData = React.useMemo<CharacterFormCoreInfoSectionProps['characterData'] | undefined>(() => {
+  const basicInfoData = React.useMemo<BasicInformationSectionProps['characterData'] | undefined>(() => {
     if (!character) return undefined;
     return {
       name: character.name, playerName: character.playerName, race: character.race, alignment: character.alignment,
@@ -1141,7 +1141,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     !translations.UI_STRINGS ||
     !detailedAbilityScores ||
     !aggregatedFeatEffects ||
-    !coreInfoData ||
+    !basicInfoData ||
     allItemDefinitions.length === 0
   ) {
     return (
@@ -1161,9 +1161,9 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   return (
     <>
       <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="space-y-8">
-        {coreInfoData && (
-          <CharacterFormCoreInfoSection
-            characterData={coreInfoData}
+        {basicInfoData && (
+          <BasicInformationSection
+            characterData={basicInfoData}
             onFieldChange={handleCoreInfoFieldChange}
             onClassChange={handleClassChange}
             ageEffectsDetails={ageEffectsDetails}
@@ -1427,4 +1427,3 @@ CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
 
     
-

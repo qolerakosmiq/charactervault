@@ -54,7 +54,7 @@ const generateRandomAlphanumericString = (length: number): string => {
 const UI_EMPTY_SELECTION_VALUE = generateRandomAlphanumericString(50);
 
 
-export interface CharacterFormCoreInfoSectionProps {
+export interface BasicInformationSectionProps {
   characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes' | 'classSpecificChoices'>;
   onFieldChange: (
     field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classSpecificChoices'>,
@@ -73,7 +73,7 @@ export interface CharacterFormCoreInfoSectionProps {
 }
 
 
-const CharacterFormCoreInfoSectionComponent = ({
+const BasicInformationSectionComponent = ({
   characterData,
   onFieldChange,
   onClassChange,
@@ -86,7 +86,7 @@ const CharacterFormCoreInfoSectionComponent = ({
   onOpenDeityInfoDialog,
   onOpenClassSpecificChoiceInfoDialog,
   aggregatedFeatEffects,
-}: CharacterFormCoreInfoSectionProps) => {
+}: BasicInformationSectionProps) => {
   const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
 
   const [localName, setLocalName] = useDebouncedFormField(
@@ -585,8 +585,8 @@ const CharacterFormCoreInfoSectionComponent = ({
 
   return (
     <LockablePanelWrapper
-      title={UI_STRINGS.coreAttributesTitle}
-      description={UI_STRINGS.coreAttributesDescription}
+      title={UI_STRINGS.basicInformationPanelTitle}
+      description={UI_STRINGS.basicInformationPanelDescription}
       icon={ScrollText}
       initialLockedState={false}
       headerClassName="bg-muted/20"
@@ -614,7 +614,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     <SelectContent> {DND_RACES.map(race => <SelectItem key={race.id} value={race.id}>{race.label}</SelectItem>)} </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenRaceInfoDialog} disabled={panelIsLocked && !localRace} > <Info /> </Button>
+                <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenRaceInfoDialog} disabled={panelIsLocked && !localRace} className="shrink-0"> <Info /> </Button>
               </div>
               {!panelIsLocked && selectedRaceInfo && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
                  <div className={cn("flex flex-wrap", panelBadgeGroupGap, panelSubLabelMargin)}>
@@ -639,7 +639,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     <SelectContent> {DND_CLASSES.map(c => <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>)} </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenClassInfoDialog} disabled={panelIsLocked && !localClassName} > <Info /> </Button>
+                <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenClassInfoDialog} disabled={panelIsLocked && !localClassName} className="shrink-0"> <Info /> </Button>
               </div>
               <div className={cn("flex flex-wrap", panelBadgeGroupGap, panelSubLabelMargin)}>
                 {!panelIsLocked && selectedClassInfo?.hitDice && (
@@ -703,7 +703,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     <SelectContent> {availableAlignments.map(align => ( <SelectItem key={align.id} value={align.id === "" ? UI_EMPTY_SELECTION_VALUE : align.id}>{align.label}</SelectItem> ))} </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment}> <Info /> </Button>
+                <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment} className="shrink-0"> <Info /> </Button>
               </div>
             </div>
             <div>
@@ -728,7 +728,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                         </SelectContent>
                       </Select>
                   </div>
-                  <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenDeityInfoDialog} disabled={(panelIsLocked && (!localDeity || localDeity.trim() === '')) || (!localDeity || localDeity.trim() === '')} > <Info /> </Button>
+                  <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenDeityInfoDialog} disabled={(panelIsLocked && (!localDeity || localDeity.trim() === '')) || (!localDeity || localDeity.trim() === '')} className="shrink-0"> <Info /> </Button>
                 </div>
               </div>
           </div>
@@ -803,5 +803,5 @@ const CharacterFormCoreInfoSectionComponent = ({
     </LockablePanelWrapper>
   );
 };
-CharacterFormCoreInfoSectionComponent.displayName = 'CharacterFormCoreInfoSectionComponent';
-export const CharacterFormCoreInfoSection = React.memo(CharacterFormCoreInfoSectionComponent);
+BasicInformationSectionComponent.displayName = 'BasicInformationSectionComponent';
+export const BasicInformationSection = React.memo(BasicInformationSectionComponent);
