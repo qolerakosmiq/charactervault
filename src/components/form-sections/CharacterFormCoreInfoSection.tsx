@@ -479,12 +479,12 @@ const CharacterFormCoreInfoSectionComponent = ({
     const commonInfoButton = (hasInfoContentForDialog && !!onOpenClassSpecificChoiceInfoDialog) ? (
       <Button
         type="button" variant="ghost"
-        className="shrink-0 text-muted-foreground hover:text-foreground"
+        className="shrink-0 text-muted-foreground hover:text-foreground h-5 w-5 p-0"
         onClick={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
         disabled={panelIsLocked && !hasInfoContentForDialog}
         aria-label={(UI_STRINGS.infoDialogClassSpecificChoiceAriaLabel || "Info for {choiceName}").replace("{choiceName}", blockLabel)}
       >
-        <Info className="h-4 w-4" />
+        <Info />
       </Button>
     ) : null;
 
@@ -575,7 +575,6 @@ const CharacterFormCoreInfoSectionComponent = ({
     getCurrentValue,
   ]);
 
-
   if (translationsLoading || !translations || !UI_STRINGS || !DND_RACES || !DND_CLASSES || !ALIGNMENTS || !DND_DEITIES || !SIZES || !GENDERS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) {
     return (
       <LockablePanelWrapper
@@ -628,7 +627,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     <SelectTrigger id="race" className="flex-grow"> <SelectValue /> </SelectTrigger>
                     <SelectContent> {DND_RACES.map(race => <SelectItem key={race.id} value={race.id}>{race.label}</SelectItem>)} </SelectContent>
                   </Select>
-                  <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenRaceInfoDialog} disabled={panelIsLocked && !localRace}> <Info className="h-4 w-4" /> </Button>
+                  <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground h-5 w-5 p-0" onClick={onOpenRaceInfoDialog} disabled={panelIsLocked && !localRace}> <Info /> </Button>
                 </div>
                 {!panelIsLocked && selectedRaceInfo && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
                    <div className="flex flex-wrap">
@@ -659,7 +658,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     <SelectTrigger id="className" className="flex-grow"> <SelectValue /> </SelectTrigger>
                     <SelectContent> {DND_CLASSES.map(c => <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>)} </SelectContent>
                   </Select>
-                  <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenClassInfoDialog} disabled={panelIsLocked && !localClassName} > <Info className="h-4 w-4" /> </Button>
+                  <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground h-5 w-5 p-0" onClick={onOpenClassInfoDialog} disabled={panelIsLocked && !localClassName} > <Info /> </Button>
                 </div>
                 <div className="flex flex-wrap">
                   {!panelIsLocked && selectedClassInfo?.hitDice && (
@@ -720,7 +719,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     <SelectTrigger id="alignment" className="flex-grow"> <SelectValue /> </SelectTrigger>
                     <SelectContent> {availableAlignments.map(align => ( <SelectItem key={align.id} value={align.id === "" ? UI_EMPTY_SELECTION_VALUE : align.id}>{align.label}</SelectItem> ))} </SelectContent>
                   </Select>
-                  <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment}> <Info className="h-4 w-4" /> </Button>
+                  <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground h-5 w-5 p-0" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment}> <Info /> </Button>
                 </div>
               </div>
               <div>
@@ -743,7 +742,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                         ))}
                       </SelectContent>
                     </Select>
-                    <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenDeityInfoDialog} disabled={(panelIsLocked && (!localDeity || localDeity.trim() === '')) || (!localDeity || localDeity.trim() === '')} > <Info className="h-4 w-4" /> </Button>
+                    <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground h-5 w-5 p-0" onClick={onOpenDeityInfoDialog} disabled={(panelIsLocked && (!localDeity || localDeity.trim() === '')) || (!localDeity || localDeity.trim() === '')} > <Info /> </Button>
                   </div>
                 </div>
             </div>
