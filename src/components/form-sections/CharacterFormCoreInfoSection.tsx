@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -39,7 +38,7 @@ import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 import { DualBadge } from '@/components/ui/DualBadge';
-import { panelHeaderPadding, panelContentPadding, panelGridGap, panelFieldLabelMargin, panelFieldHorizontalGap } from '@/config/layout';
+import { panelHeaderPadding, panelContentPadding, panelGridGap, panelFieldLabelMargin, panelFieldHorizontalGap, panelSubLabelMargin, panelBadgeGroupGap } from '@/config/layout';
 
 const DEBOUNCE_DELAY = 400;
 
@@ -606,8 +605,8 @@ const CharacterFormCoreInfoSectionComponent = ({
       headerClassName="bg-muted/20"
     >
       {({ isLocked: panelIsLocked }) => (
-        <div className={`grid grid-cols-1 ${panelGridGap}`}>
-          <div className={`grid grid-cols-2 ${panelGridGap}`}>
+        <div className={cn("grid grid-cols-1", panelGridGap)}>
+          <div className={cn("grid grid-cols-2", panelGridGap)}>
             <div>
               <Label htmlFor="name" className={panelFieldLabelMargin}>{UI_STRINGS.characterNameLabel}</Label>
               <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} />
@@ -618,7 +617,7 @@ const CharacterFormCoreInfoSectionComponent = ({
             </div>
           </div>
 
-          <div className={`grid grid-cols-2 ${panelGridGap}`}>
+          <div className={cn("grid grid-cols-2", panelGridGap)}>
             <div>
               <Label htmlFor="race" className={panelFieldLabelMargin}>{UI_STRINGS.raceLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
@@ -631,7 +630,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenRaceInfoDialog} disabled={panelIsLocked && !localRace} > <Info /> </Button>
               </div>
               {!panelIsLocked && selectedRaceInfo && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
-                 <div className="flex flex-wrap gap-1 mt-2">
+                 <div className={cn("flex flex-wrap", panelBadgeGroupGap, panelSubLabelMargin)}>
                   {raceSpecialQualities.abilityEffects.map((effect) => (
                        <DualBadge
                         key={effect.ability}
@@ -655,7 +654,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 </div>
                 <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenClassInfoDialog} disabled={panelIsLocked && !localClassName} > <Info /> </Button>
               </div>
-              <div className="flex flex-wrap gap-1 mt-2">
+              <div className={cn("flex flex-wrap", panelBadgeGroupGap, panelSubLabelMargin)}>
                 {!panelIsLocked && selectedClassInfo?.hitDice && (
                   <DualBadge
                     leftLabel={UI_STRINGS.hitDiceBadgeLabel}
@@ -695,7 +694,7 @@ const CharacterFormCoreInfoSectionComponent = ({
           </div>
 
           {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.length > 0 && (
-            <div className={`grid grid-cols-1 ${panelGridGap} border-t pt-4`}>
+            <div className={cn("grid grid-cols-1 pt-4 border-t", panelGridGap)}>
                 {selectedClassInfo.uiSections.map((uiBlock, index) => (
                   <React.Fragment key={`ui-section-wrapper-${uiBlock.key}-${index}`}>
                     {renderClassSpecificUI(uiBlock, panelIsLocked, index)}
@@ -704,7 +703,7 @@ const CharacterFormCoreInfoSectionComponent = ({
             </div>
           )}
 
-          <div className={`grid grid-cols-2 ${panelGridGap}`}>
+          <div className={cn("grid grid-cols-2", panelGridGap)}>
             <div>
               <Label htmlFor="alignment" className={panelFieldLabelMargin}>{UI_STRINGS.alignmentLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
@@ -744,7 +743,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               </div>
           </div>
 
-          <div className={`grid grid-cols-3 ${panelGridGap}`}>
+          <div className={cn("grid grid-cols-3", panelGridGap)}>
             <div>
               <Label htmlFor="age" className={cn("inline-block", panelFieldLabelMargin)}>{UI_STRINGS.ageLabel}</Label>
               <input
@@ -758,7 +757,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 className={cn('flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50')}
               />
               {!panelIsLocked && ageEffectsDetails && (ageEffectsDetails.categoryName !== (UI_STRINGS.ageCategoryAdult) || ageEffectsDetails.effects.length > 0) && (
-                 <div className="flex flex-wrap gap-1 mt-2">
+                 <div className={cn("flex flex-wrap", panelBadgeGroupGap, panelSubLabelMargin)}>
                   <DualBadge
                     leftLabel={UI_STRINGS.ageCategoryBadgeLabel}
                     rightLabel={ageEffectsDetails.categoryName}
@@ -798,7 +797,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                   if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
                     const acMod = selectedSizeObject.acModifier;
                     return (
-                      <div className="flex flex-wrap gap-1 mt-2">
+                      <div className={cn("flex flex-wrap", panelBadgeGroupGap, panelSubLabelMargin)}>
                         <DualBadge
                           leftLabel={UI_STRINGS.sizeAcModLeftBadgeLabel}
                           rightLabel={acMod > 0 ? `+${acMod}` : String(acMod)}
