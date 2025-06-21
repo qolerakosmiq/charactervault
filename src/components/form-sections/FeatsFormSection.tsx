@@ -12,7 +12,7 @@ import {
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, PlusCircle, Trash2, Pencil, Loader2, Info, Edit3, Lock, Unlock } from 'lucide-react';
+import { Award, PlusCircle, Trash2, Pencil, Loader2, Info, Edit3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from '../FeatSelectionDialog';
 import { SpecializationInputDialog } from '../SpecializationInputDialog';
@@ -22,6 +22,7 @@ import { Separator } from '@/components/ui/separator';
 import { useI18n, type I18nContextType } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getLocalizedString } from '@/i18n/i18n-data';
+import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 
 export interface FeatsFormSectionProps {
   featSectionData: Pick<Character, 'race' | 'classes' | 'feats' | 'age' | 'alignment' | 'experiencePoints' | 'deity' | 'classSpecificChoices'>;
@@ -70,8 +71,6 @@ const FeatsFormSectionComponent = ({
   const i18nContext = useI18n();
   const { translations, isLoading: translationsLoading, language } = i18nContext;
   const { toast } = useToast();
-  const [isLocked, setIsLocked] = React.useState(false);
-  const toggleLock = React.useCallback(() => setIsLocked(prev => !prev), []);
 
   const [isFeatDialogOpen, setIsFeatDialogOpen] = React.useState(false);
   const [featDialogFilterCategory, setFeatDialogFilterCategory] = React.useState<string | undefined>(undefined);
@@ -311,7 +310,7 @@ const FeatsFormSectionComponent = ({
   }, [translations, allAvailableFeatDefinitions, onEditCustomFeatDefinition, toast]);
 
   const renderFeatInstance = React.useCallback((instance: CharacterFeatInstance, isPanelLocked: boolean) => {
-    if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.SKILL_DEFINITIONS) return <Skeleton className="h-20 w-full mb-2" />;
+    if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.SKILL_DEFINITIONS) return <Skeleton key={instance.instanceId} className="h-20 w-full mb-2" />;
 
     const definition = allAvailableFeatDefinitions.find(def => def.id === instance.definitionId);
     if (!definition) {
@@ -457,7 +456,7 @@ const FeatsFormSectionComponent = ({
 
         </div>
         <div className="flex items-center shrink-0">
-          {isCustomDefinition && !panelIsLocked && (
+          {isCustomDefinition && !isPanelLocked && (
             <Button
               type="button" variant="ghost" size="icon"
               onClick={() => handleOpenEditDialog(instance.definitionId)}
@@ -465,7 +464,7 @@ const FeatsFormSectionComponent = ({
               aria-label={(UI_STRINGS.featInstanceEditAriaLabel || "Edit {featLabel} definition").replace("{featLabel}", featLabel)}
             ><Pencil className="h-4 w-4" /></Button>
           )}
-          {!instance.isGranted && definition.requiresSpecialization && !panelIsLocked && (
+          {!instance.isGranted && definition.requiresSpecialization && !isPanelLocked && (
              <Button
               type="button" variant="ghost" size="icon"
               onClick={() => handleOpenEditSpecializationDialog(instance)}
@@ -473,7 +472,7 @@ const FeatsFormSectionComponent = ({
               aria-label={(UI_STRINGS.featEditSpecializationAriaLabel || "Edit specialization for {featLabel}").replace("{featLabel}", featLabel)}
             ><Edit3 className="h-4 w-4" /></Button>
           )}
-          {!instance.isGranted && !panelIsLocked && (
+          {!instance.isGranted && !isPanelLocked && (
             <Button
               type="button" variant="ghost" size="icon"
               onClick={() => handleRemoveChosenFeatInstance(instance.instanceId)}
@@ -512,48 +511,27 @@ const FeatsFormSectionComponent = ({
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div className="flex items-center space-x-3">
-              <Award className="h-8 w-8 text-primary" />
-              <div>
-                <CardTitle className="text-2xl font-serif">{UI_STRINGS.featsPanelTitle}</CardTitle>
-                <CardDescription>{UI_STRINGS.featsPanelDescription}</CardDescription>
+      <LockablePanelWrapper
+        title={UI_STRINGS.featsPanelTitle}
+        description={UI_STRINGS.featsPanelDescription}
+        icon={Award}
+        initialLockedState={false}
+      >
+        {({ isLocked: panelIsLocked }) => (
+          <CardContent className="flex flex-col">
+            <div className="mb-3 p-3 border rounded-md bg-muted/30">
+              <div className="flex justify-between items-center">
+                <p className="text-sm font-medium">
+                  {UI_STRINGS.featsPanelFeatsAvailableLabel} <span className="text-lg font-bold text-primary">{availableFeatSlots}</span>
+                </p>
+                <p className="text-sm font-medium">
+                  {UI_STRINGS.featsPanelFeatsLeftLabel} <span className={cn(
+                    "text-lg font-bold whitespace-nowrap",
+                    featSlotsLeft >= 0 ? "text-emerald-500" : "text-destructive"
+                  )}>{featSlotsLeft}</span>
+                </p>
               </div>
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "h-7 w-7 shrink-0 p-1.5", 
-                isLocked
-                  ? "text-muted-foreground hover:text-foreground"
-                  : "bg-accent text-accent-foreground hover:bg-accent/90"
-              )}
-              onClick={toggleLock}
-              aria-pressed={!isLocked}
-              aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelUnlocked : UI_STRINGS.lockButtonAriaLabelLocked}
-            >
-              {isLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="flex flex-col">
-        <div className="mb-3 p-3 border rounded-md bg-muted/30">
-            <div className="flex justify-between items-center">
-              <p className="text-sm font-medium">
-                {UI_STRINGS.featsPanelFeatsAvailableLabel} <span className="text-lg font-bold text-primary">{availableFeatSlots}</span>
-              </p>
-              <p className="text-sm font-medium">
-                {UI_STRINGS.featsPanelFeatsLeftLabel} <span className={cn(
-                  "text-lg font-bold whitespace-nowrap",
-                  featSlotsLeft >= 0 ? "text-emerald-500" : "text-destructive"
-                )}>{featSlotsLeft}</span>
-              </p>
-            </div>
-             <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {UI_STRINGS.featsPanelBreakdownBaseLabel}{'\u00A0'}<Badge variant="outline">{featSlotsBreakdown.base}</Badge>
                 {featSlotsBreakdown.racial > 0 && (
                     <>
@@ -568,61 +546,60 @@ const FeatsFormSectionComponent = ({
                     ))
                 )}
                 {' = '}<span className="font-bold text-primary">{availableFeatSlots}</span>
-            </p>
-          </div>
-
-          {aggregatedFeatEffects?.favoredEnemyBonuses && (aggregatedFeatEffects.favoredEnemyBonuses.skillBonus > 0 || aggregatedFeatEffects.favoredEnemyBonuses.damageBonus > 0) && (
-            <div className="mt-1 mb-3 p-2 border border-dashed border-primary/50 rounded-md bg-primary/5 text-sm text-primary">
-              <Info className="inline h-4 w-4 mr-1.5 mb-0.5" />
-              {UI_STRINGS.favoredEnemyBonusDisplayInfo
-                .replace('{skillBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.skillBonus))
-                .replace('{damageBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.damageBonus))}
-                { ' ' }
-                ({(UI_STRINGS.favoredEnemySlotsAvailableShort || "Slot(s)").replace('{slots}', String(aggregatedFeatEffects.favoredEnemySlots || 0))})
+              </p>
             </div>
-          )}
-
-
-          <div className="mt-3 mb-1 flex gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={handleOpenFeatDialog} disabled={isLocked || (featSlotsLeft <= 0 && (!classBonusDetails || classBonusDetails.length === 0 || classBonusDetails.every(d => d.count === 0)))}>
-              <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.featsPanelAddButton}
-            </Button>
-          </div>
-
-          {userChosenFeatInstances.length > 0 && (
-            <>
-              <h3 className={cn("text-lg font-semibold mb-2 text-primary", "mt-2")}>
-                {UI_STRINGS.featsPanelChosenFeatsTitle}
-              </h3>
-              <div className="space-y-1 mb-3">
-                {userChosenFeatInstances.map(instance => renderFeatInstance(instance, isLocked))}
+            
+            {aggregatedFeatEffects?.favoredEnemyBonuses && (aggregatedFeatEffects.favoredEnemyBonuses.skillBonus > 0 || aggregatedFeatEffects.favoredEnemyBonuses.damageBonus > 0) && (
+              <div className="mt-1 mb-3 p-2 border border-dashed border-primary/50 rounded-md bg-primary/5 text-sm text-primary">
+                <Info className="inline h-4 w-4 mr-1.5 mb-0.5" />
+                {UI_STRINGS.favoredEnemyBonusDisplayInfo
+                  .replace('{skillBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.skillBonus))
+                  .replace('{damageBonus}', String(aggregatedFeatEffects.favoredEnemyBonuses.damageBonus))}
+                  { ' ' }
+                  ({(UI_STRINGS.favoredEnemySlotsAvailableShort || "Slot(s)").replace('{slots}', String(aggregatedFeatEffects.favoredEnemySlots || 0))})
               </div>
-            </>
-          )}
+            )}
+            
+            <div className="mt-3 mb-1 flex gap-2">
+              <Button type="button" variant="outline" size="sm" onClick={handleOpenFeatDialog} disabled={panelIsLocked || (featSlotsLeft <= 0 && (!classBonusDetails || classBonusDetails.length === 0 || classBonusDetails.every(d => d.count === 0)))}>
+                <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.featsPanelAddButton}
+              </Button>
+            </div>
+            
+            {userChosenFeatInstances.length > 0 && (
+              <>
+                <h3 className={cn("text-lg font-semibold mb-2 text-primary", "mt-2")}>
+                  {UI_STRINGS.featsPanelChosenFeatsTitle}
+                </h3>
+                <div className="space-y-1 mb-3">
+                  {userChosenFeatInstances.map(instance => renderFeatInstance(instance, panelIsLocked))}
+                </div>
+              </>
+            )}
 
-          {grantedFeatInstances.length > 0 && (
-            <>
-              {userChosenFeatInstances.length > 0 && <Separator className="my-2" />}
-              <h3
-                className={cn(
-                  "text-lg font-semibold mb-2 text-primary",
-                   userChosenFeatInstances.length === 0 ? "mt-2" : ""
-                )}
-              >
-                {UI_STRINGS.featsPanelGrantedFeatsTitle}
-              </h3>
-              <div className="space-y-1 mb-3">
-                {grantedFeatInstances.map(instance => renderFeatInstance(instance, isLocked))}
-              </div>
-            </>
-          )}
+            {grantedFeatInstances.length > 0 && (
+              <>
+                {userChosenFeatInstances.length > 0 && <Separator className="my-2" />}
+                <h3
+                  className={cn(
+                    "text-lg font-semibold mb-2 text-primary",
+                    userChosenFeatInstances.length === 0 ? "mt-2" : ""
+                  )}
+                >
+                  {UI_STRINGS.featsPanelGrantedFeatsTitle}
+                </h3>
+                <div className="space-y-1 mb-3">
+                  {grantedFeatInstances.map(instance => renderFeatInstance(instance, panelIsLocked))}
+                </div>
+              </>
+            )}
 
-          {userChosenFeatInstances.length === 0 && grantedFeatInstances.length === 0 && (
-             <p className="text-sm text-muted-foreground mt-4">{UI_STRINGS.featsPanelNoFeatsYet}</p>
-          )}
-
-        </CardContent>
-      </Card>
+            {userChosenFeatInstances.length === 0 && grantedFeatInstances.length === 0 && (
+              <p className="text-sm text-muted-foreground mt-4">{UI_STRINGS.featsPanelNoFeatsYet}</p>
+            )}
+          </CardContent>
+        )}
+      </LockablePanelWrapper>
       <FeatSelectionDialog
         isOpen={isFeatDialogOpen}
         onOpenChange={setIsFeatDialogOpen}
