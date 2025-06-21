@@ -51,6 +51,8 @@ interface ClassSpecificFieldProps {
   onValueChange: (newValue: string) => void;
   onOpenInfoDialog: () => void;
   allChoices: CharacterClassSpecificChoice[];
+  characterLevel: number;
+  aggregatedFeatEffects: AggregatedFeatEffects | null;
 }
 
 const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
@@ -59,8 +61,32 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   onValueChange,
   onOpenInfoDialog,
   allChoices,
+  characterLevel,
+  aggregatedFeatEffects,
 }) => {
   const { translations, isLoading: translationsLoading } = useI18n();
+
+  const isVisible = React.useMemo(() => {
+    if (uiBlock.requiredLevel && characterLevel < uiBlock.requiredLevel) return false;
+    if (uiBlock.conditionAggregatedEffect && aggregatedFeatEffects) {
+      const propValue = aggregatedFeatEffects[uiBlock.conditionAggregatedEffect.property as keyof AggregatedFeatEffects] as any;
+      switch (uiBlock.conditionAggregatedEffect.comparison) {
+        case 'exists': return propValue !== undefined && propValue !== null && (Array.isArray(propValue) ? propValue.length > 0 : true);
+        case 'greaterThan': return typeof propValue === 'number' && propValue > (uiBlock.conditionAggregatedEffect.value as number);
+        case 'equals': return propValue === uiBlock.conditionAggregatedEffect.value;
+        case 'lessThan': return typeof propValue === 'number' && propValue < (uiBlock.conditionAggregatedEffect.value as number);
+        case 'notEquals': return propValue !== uiBlock.conditionAggregatedEffect.value;
+        default: return true;
+      }
+    } else if (uiBlock.conditionDependsOnUIStateKey) {
+      const controllingValue = allChoices.find(c => c.featureKey === uiBlock.conditionDependsOnUIStateKey)?.value || "";
+      if (uiBlock.conditionDependsOnUIStateValueNotIn) {
+        return !uiBlock.conditionDependsOnUIStateValueNotIn.includes(controllingValue);
+      }
+    }
+    return true;
+  }, [uiBlock, characterLevel, aggregatedFeatEffects, allChoices]);
+
 
   const finalSelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [];
@@ -96,6 +122,10 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
     finalOptions.push(...filteredOptions);
     return finalOptions;
   }, [translationsLoading, translations, uiBlock, allChoices]);
+  
+  if (!isVisible) {
+    return null;
+  }
   
   if (translationsLoading || !translations) {
     return null;
@@ -159,6 +189,46 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   }
   return <div key={`${uiBlock.key}-error`} className="text-destructive">Unsupported choiceType: {uiBlock.choiceType} for {uiBlock.key}</div>;
 };
+
+const classSpecificFieldAreEqual = (prevProps: Readonly<ClassSpecificFieldProps>, nextProps: Readonly<ClassSpecificFieldProps>): boolean => {
+  // Direct prop checks
+  if (prevProps.isVisuallyDisabled !== nextProps.isVisuallyDisabled) return false;
+  if (prevProps.uiBlock.key !== nextProps.uiBlock.key) return false;
+  if (prevProps.characterLevel !== nextProps.characterLevel) return false;
+
+  // Check if this component's own value has changed
+  const currentKey = nextProps.uiBlock.key;
+  const prevValue = prevProps.allChoices.find(c => c.featureKey === currentKey)?.value;
+  const nextValue = nextProps.allChoices.find(c => c.featureKey === currentKey)?.value;
+  if (prevValue !== nextValue) return false;
+
+  // Check if any of the dependencies for this component have changed value
+  const dependentKeys = [
+    ...(nextProps.uiBlock.excludeOptionsFromKeys || []),
+    nextProps.uiBlock.relatedSlotKeyForDisable,
+    nextProps.uiBlock.disabledIfChoiceValue?.featureKey,
+    nextProps.uiBlock.conditionDependsOnUIStateKey, // Added for visibility dependencies
+  ].filter(Boolean) as string[];
+  
+  if (dependentKeys.length > 0) {
+    for (const key of dependentKeys) {
+      const prevDepValue = prevProps.allChoices.find(c => c.featureKey === key)?.value;
+      const nextDepValue = nextProps.allChoices.find(c => c.featureKey === key)?.value;
+      if (prevDepValue !== nextDepValue) {
+        return false;
+      }
+    }
+  }
+
+  // Check for aggregatedFeatEffects changes ONLY if the component depends on it
+  if (nextProps.uiBlock.conditionAggregatedEffect && prevProps.aggregatedFeatEffects !== nextProps.aggregatedFeatEffects) {
+    return false;
+  }
+  
+  return true;
+};
+
+const MemoizedClassSpecificField = React.memo(ClassSpecificFieldComponent, classSpecificFieldAreEqual);
 
 
 export interface BasicInformationSectionProps {
@@ -382,16 +452,24 @@ const BasicInformationSectionComponent = ({
 
   React.useEffect(() => {
     if (!selectedClassInfo || !PREFERRED_DEFAULT_ALIGNMENT_IDS || !ALIGNMENTS) return;
-    const currentAlignmentIsValidForNewClass = availableAlignments.some(a => a.id === localAlignment);
+    
+    // This effect runs only when localClassName changes.
+    // It recalculates available alignments and checks if the current one is valid.
+    const classRestriction = selectedClassInfo.alignmentRestriction;
+    if (!classRestriction || classRestriction === 'any') return; // No change needed if any alignment is allowed
+    
+    const validAlignmentsForClass = ALIGNMENTS.filter(align => isAlignmentValidForRequirement(align.id as CharacterAlignment, classRestriction));
+    const currentAlignmentIsValidForNewClass = validAlignmentsForClass.some(a => a.id === localAlignment);
+
     if (!currentAlignmentIsValidForNewClass) {
         let newAlignmentToSet: CharacterAlignment | undefined = undefined;
         for (const preferred of PREFERRED_DEFAULT_ALIGNMENT_IDS) {
-            if (availableAlignments.some(a => a.id === preferred)) {
+            if (validAlignmentsForClass.some(a => a.id === preferred)) {
                 newAlignmentToSet = preferred;
                 break;
             }
         }
-        if (!newAlignmentToSet && availableAlignments.length > 0) newAlignmentToSet = availableAlignments[0].id as CharacterAlignment;
+        if (!newAlignmentToSet && validAlignmentsForClass.length > 0) newAlignmentToSet = validAlignmentsForClass[0].id as CharacterAlignment;
         if (!newAlignmentToSet && PREFERRED_DEFAULT_ALIGNMENT_IDS.length > 0) newAlignmentToSet = PREFERRED_DEFAULT_ALIGNMENT_IDS[0];
         if (!newAlignmentToSet && ALIGNMENTS.length > 0) {
             const trueNeutralFallback = ALIGNMENTS.find(a => a.id === 'true-neutral')?.id as CharacterAlignment | undefined;
@@ -399,47 +477,22 @@ const BasicInformationSectionComponent = ({
         }
         if (newAlignmentToSet && newAlignmentToSet !== localAlignment) setLocalAlignment(newAlignmentToSet);
     }
-  }, [localClassName, availableAlignments, localAlignment, selectedClassInfo, PREFERRED_DEFAULT_ALIGNMENT_IDS, ALIGNMENTS, setLocalAlignment]);
+  }, [localClassName, setLocalAlignment, ALIGNMENTS, PREFERRED_DEFAULT_ALIGNMENT_IDS]); // Minimal dependencies
 
   React.useEffect(() => {
     if (localDeity === "" || !DND_DEITIES) return;
     const currentDeityInfo = DND_DEITIES.find(d => d.id === localDeity);
     if (!currentDeityInfo) return;
+    const currentClassInfo = DND_CLASSES?.find(c => c.id === localClassName);
+    
     let deityIsValid = true;
     if (!isAlignmentCompatibleWithDeity(localAlignment, currentDeityInfo.alignment)) deityIsValid = false;
-    if (deityIsValid && selectedClassInfo?.deityAlignmentRestriction) {
-      if (!isAlignmentValidForRequirement(currentDeityInfo.alignment, selectedClassInfo.deityAlignmentRestriction)) deityIsValid = false;
+    if (deityIsValid && currentClassInfo?.deityAlignmentRestriction) {
+      if (!isAlignmentValidForRequirement(currentDeityInfo.alignment, currentClassInfo.deityAlignmentRestriction)) deityIsValid = false;
     }
     if (!deityIsValid) setLocalDeity("");
-  }, [localAlignment, localClassName, localDeity, DND_DEITIES, selectedClassInfo, setLocalDeity]);
+  }, [localAlignment, localClassName, localDeity, setLocalDeity, DND_DEITIES, DND_CLASSES]); // Minimal dependencies
   
-  const visibleUiBlockKeys = React.useMemo(() => {
-    if (!selectedClassInfo?.uiSections) return [];
-    
-    return selectedClassInfo.uiSections
-      .filter(uiBlock => {
-        if (uiBlock.requiredLevel && characterLevel < uiBlock.requiredLevel) return false;
-        if (uiBlock.conditionAggregatedEffect && aggregatedFeatEffects) {
-          const propValue = aggregatedFeatEffects[uiBlock.conditionAggregatedEffect.property as keyof AggregatedFeatEffects] as any;
-          switch (uiBlock.conditionAggregatedEffect.comparison) {
-            case 'exists': return propValue !== undefined && propValue !== null && (Array.isArray(propValue) ? propValue.length > 0 : true);
-            case 'greaterThan': return typeof propValue === 'number' && propValue > (uiBlock.conditionAggregatedEffect.value as number);
-            case 'equals': return propValue === uiBlock.conditionAggregatedEffect.value;
-            case 'lessThan': return typeof propValue === 'number' && propValue < (uiBlock.conditionAggregatedEffect.value as number);
-            case 'notEquals': return propValue !== uiBlock.conditionAggregatedEffect.value;
-            default: return true;
-          }
-        } else if (uiBlock.conditionDependsOnUIStateKey) {
-          const controllingValue = classSpecificChoices.find(c => c.featureKey === uiBlock.conditionDependsOnUIStateKey)?.value || "";
-          if (uiBlock.conditionDependsOnUIStateValueNotIn) {
-            return !uiBlock.conditionDependsOnUIStateValueNotIn.includes(controllingValue);
-          }
-        }
-        return true;
-      })
-      .map(block => block.key);
-  }, [selectedClassInfo, characterLevel, aggregatedFeatEffects, classSpecificChoices]);
-
   const disabledStates = React.useMemo(() => {
     const states: Record<string, boolean> = {};
     if (!selectedClassInfo?.uiSections) return states;
@@ -560,14 +613,11 @@ const BasicInformationSectionComponent = ({
             </div>
           </div>
 
-          {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.length > 0 && visibleUiBlockKeys.length > 0 && (
+          {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.length > 0 && (
             <div className={cn("flex flex-col rounded-md border bg-background/50", panelGridGap, panelContentPadding)}>
               <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
                 {selectedClassInfo.uiSections.map((uiBlock, index) => {
-                  if (!visibleUiBlockKeys.includes(uiBlock.key)) return null;
-
                   const isVisuallyDisabled = panelIsLocked || disabledStates[uiBlock.key];
-
                   return (
                     <MemoizedClassSpecificField
                       key={`csf-memo-${uiBlock.key}-${index}`}
@@ -576,6 +626,8 @@ const BasicInformationSectionComponent = ({
                       onValueChange={(newValue) => handleClassSpecificChoiceChange(uiBlock.key, newValue)}
                       onOpenInfoDialog={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
                       allChoices={classSpecificChoices}
+                      characterLevel={characterLevel}
+                      aggregatedFeatEffects={aggregatedFeatEffects}
                     />
                   );
                 })}
@@ -694,41 +746,4 @@ const BasicInformationSectionComponent = ({
   );
 };
 BasicInformationSectionComponent.displayName = 'BasicInformationSectionComponent';
-
-
-// Custom comparison function for React.memo
-const classSpecificFieldAreEqual = (prevProps: Readonly<ClassSpecificFieldProps>, nextProps: Readonly<ClassSpecificFieldProps>): boolean => {
-  // If visibility changes, re-render
-  if (prevProps.isVisuallyDisabled !== nextProps.isVisuallyDisabled) return false;
-
-  // If the component's own block definition changes (shouldn't happen often, but good to check)
-  if (prevProps.uiBlock.key !== nextProps.uiBlock.key) return false;
-
-  // Functions are stable due to useCallback/useRef, so we can skip them.
-
-  const currentKey = nextProps.uiBlock.key;
-
-  // Check if this component's own value has changed
-  const prevValue = prevProps.allChoices.find(c => c.featureKey === currentKey)?.value;
-  const nextValue = nextProps.allChoices.find(c => c.featureKey === currentKey)?.value;
-  if (prevValue !== nextValue) return false;
-
-  // Check if any of the dependencies for this component have changed value
-  const dependentKeys = nextProps.uiBlock.excludeOptionsFromKeys || [];
-  for (const key of dependentKeys) {
-    const prevDepValue = prevProps.allChoices.find(c => c.featureKey === key)?.value;
-    const nextDepValue = nextProps.allChoices.find(c => c.featureKey === key)?.value;
-    if (prevDepValue !== nextDepValue) {
-      // A dependency changed, so this component must re-render to update its options list
-      return false;
-    }
-  }
-
-  // If we get here, none of the relevant props have changed. Don't re-render.
-  return true;
-}
-
-const MemoizedClassSpecificField = React.memo(ClassSpecificFieldComponent, classSpecificFieldAreEqual);
-
-
 export const BasicInformationSection = React.memo(BasicInformationSectionComponent);
