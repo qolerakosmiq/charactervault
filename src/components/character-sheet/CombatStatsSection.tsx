@@ -2,7 +2,7 @@
 'use client';
 
 import type { Character, AbilityScores, SavingThrows, CharacterClass, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, InfoDialogContentType, DetailedAbilityScores, AggregatedFeatEffects, SavingThrowType, ItemDefinition, ItemInstance, GearSlotId, WeaponStyleType } from '@/types/character';
-import { SAVING_THROW_ABILITIES } from '@/types/character';
+import { SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, Swords, Heart, Zap as InitiativeIcon, ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, Info, Brain, ShieldCheck, PlusCircle, Trash2, Loader2, Dices, Hand, ArrowRightLeft, Activity } from 'lucide-react';

@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -56,7 +55,7 @@ const LockablePanelWrapperComponent = ({
     <Card className={cardClassName}>
       <CardHeader className={cn("relative", panelHeaderPadding, headerClassName)}>
         <div className="flex items-start pr-10">
-          {Icon && <Icon className="text-primary h-7 w-7 mr-3" />}
+          {Icon && <Icon className="text-primary h-7 w-7 mr-3 shrink-0" />}
           <div>
             <CardTitle className="font-serif text-xl">{title}</CardTitle>
             {description && <CardDescription>{description}</CardDescription>}
