@@ -39,8 +39,7 @@ import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 import { DualBadge } from '@/components/ui/DualBadge';
-import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
-import { panelFieldLabelMargin, panelFieldHorizontalGap } from '@/config/layout';
+import { panelHeaderPadding, panelContentPadding, panelGridGap, panelFieldLabelMargin, panelFieldHorizontalGap } from '@/config/layout';
 
 const DEBOUNCE_DELAY = 400;
 
@@ -607,8 +606,8 @@ const CharacterFormCoreInfoSectionComponent = ({
       headerClassName="bg-muted/20"
     >
       {({ isLocked: panelIsLocked }) => (
-        <div>
-          <div className="grid grid-cols-2">
+        <div className={`grid grid-cols-1 ${panelGridGap}`}>
+          <div className={`grid grid-cols-2 ${panelGridGap}`}>
             <div>
               <Label htmlFor="name" className={panelFieldLabelMargin}>{UI_STRINGS.characterNameLabel}</Label>
               <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} />
@@ -619,7 +618,7 @@ const CharacterFormCoreInfoSectionComponent = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-2">
+          <div className={`grid grid-cols-2 ${panelGridGap}`}>
             <div>
               <Label htmlFor="race" className={panelFieldLabelMargin}>{UI_STRINGS.raceLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
@@ -629,7 +628,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     <SelectContent> {DND_RACES.map(race => <SelectItem key={race.id} value={race.id}>{race.label}</SelectItem>)} </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={onOpenRaceInfoDialog} disabled={panelIsLocked && !localRace} > <Info /> </Button>
+                <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenRaceInfoDialog} disabled={panelIsLocked && !localRace} > <Info /> </Button>
               </div>
               {!panelIsLocked && selectedRaceInfo && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
                  <div className="flex flex-wrap gap-1 mt-2">
@@ -654,7 +653,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     <SelectContent> {DND_CLASSES.map(c => <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>)} </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={onOpenClassInfoDialog} disabled={panelIsLocked && !localClassName} > <Info /> </Button>
+                <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenClassInfoDialog} disabled={panelIsLocked && !localClassName} > <Info /> </Button>
               </div>
               <div className="flex flex-wrap gap-1 mt-2">
                 {!panelIsLocked && selectedClassInfo?.hitDice && (
@@ -696,18 +695,16 @@ const CharacterFormCoreInfoSectionComponent = ({
           </div>
 
           {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.length > 0 && (
-            <Card>
-              <CardContent>
+            <div className={`grid grid-cols-1 ${panelGridGap} border-t pt-4`}>
                 {selectedClassInfo.uiSections.map((uiBlock, index) => (
                   <React.Fragment key={`ui-section-wrapper-${uiBlock.key}-${index}`}>
                     {renderClassSpecificUI(uiBlock, panelIsLocked, index)}
                   </React.Fragment>
                 ))}
-              </CardContent>
-            </Card>
+            </div>
           )}
 
-          <div className="grid grid-cols-2">
+          <div className={`grid grid-cols-2 ${panelGridGap}`}>
             <div>
               <Label htmlFor="alignment" className={panelFieldLabelMargin}>{UI_STRINGS.alignmentLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
@@ -717,7 +714,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                     <SelectContent> {availableAlignments.map(align => ( <SelectItem key={align.id} value={align.id === "" ? UI_EMPTY_SELECTION_VALUE : align.id}>{align.label}</SelectItem> ))} </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment}> <Info /> </Button>
+                <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment}> <Info /> </Button>
               </div>
             </div>
             <div>
@@ -742,12 +739,12 @@ const CharacterFormCoreInfoSectionComponent = ({
                         </SelectContent>
                       </Select>
                   </div>
-                  <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={onOpenDeityInfoDialog} disabled={(panelIsLocked && (!localDeity || localDeity.trim() === '')) || (!localDeity || localDeity.trim() === '')} > <Info /> </Button>
+                  <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenDeityInfoDialog} disabled={(panelIsLocked && (!localDeity || localDeity.trim() === '')) || (!localDeity || localDeity.trim() === '')} > <Info /> </Button>
                 </div>
               </div>
           </div>
 
-          <div className="grid grid-cols-3">
+          <div className={`grid grid-cols-3 ${panelGridGap}`}>
             <div>
               <Label htmlFor="age" className={cn("inline-block", panelFieldLabelMargin)}>{UI_STRINGS.ageLabel}</Label>
               <input
