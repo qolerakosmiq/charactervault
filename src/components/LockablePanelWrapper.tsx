@@ -53,17 +53,17 @@ const LockablePanelWrapperComponent = ({
 
   return (
     <Card className={cardClassName}>
-      <CardHeader className={headerClassName}>
-        <div className="flex justify-between items-start">
-          <div className="flex items-center space-x-3">
-            {Icon && <Icon className="h-8 w-8 text-primary" />}
+      <CardHeader className={cn("p-0", headerClassName)}>
+        <div className="flex justify-between">
+          <div className="flex">
+            {Icon && <Icon className="text-primary" />}
             <div>
-              <CardTitle className="text-2xl font-serif">{title}</CardTitle>
+              <CardTitle className="font-serif">{title}</CardTitle>
               {description && <CardDescription>{description}</CardDescription>}
             </div>
           </div>
-          <div className="flex items-center gap-x-1">
-            {typeof headerActions === 'function' ? headerActions(isLocked) : headerActions}
+          <div className="flex">
+            {typeof headerActions === 'function' ? headerActions(isPanelLocked) : headerActions}
             <Button
               type="button"
               variant="ghost"
@@ -72,13 +72,13 @@ const LockablePanelWrapperComponent = ({
               aria-label={lockAriaLabel}
               aria-pressed={!isLocked}
               className={cn(
-                "h-7 w-7 shrink-0 p-1.5",
+                "shrink-0", 
                 isLocked
                   ? "text-muted-foreground hover:text-foreground"
                   : "bg-accent text-accent-foreground hover:bg-accent/90"
               )}
             >
-              {isLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
+              {isLocked ? <Lock /> : <Unlock />}
             </Button>
           </div>
         </div>
