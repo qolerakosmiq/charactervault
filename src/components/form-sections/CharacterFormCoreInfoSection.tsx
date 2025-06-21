@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -694,13 +695,16 @@ const CharacterFormCoreInfoSectionComponent = ({
           </div>
 
           {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.length > 0 && (
-            <div className={cn("grid grid-cols-1 pt-4 border-t", panelGridGap)}>
+            <>
+              <Separator className="my-4" />
+              <div className={cn("grid grid-cols-1", panelGridGap)}>
                 {selectedClassInfo.uiSections.map((uiBlock, index) => (
                   <React.Fragment key={`ui-section-wrapper-${uiBlock.key}-${index}`}>
                     {renderClassSpecificUI(uiBlock, panelIsLocked, index)}
                   </React.Fragment>
                 ))}
-            </div>
+              </div>
+            </>
           )}
 
           <div className={cn("grid grid-cols-2", panelGridGap)}>
@@ -746,7 +750,7 @@ const CharacterFormCoreInfoSectionComponent = ({
           <div className={cn("grid grid-cols-3", panelGridGap)}>
             <div>
               <Label htmlFor="age" className={cn("inline-block", panelFieldLabelMargin)}>{UI_STRINGS.ageLabel}</Label>
-              <input
+              <Input
                 id="age"
                 type="number"
                 value={localAge}
@@ -754,7 +758,6 @@ const CharacterFormCoreInfoSectionComponent = ({
                 min={currentMinAgeForInput}
                 max={1000}
                 disabled={panelIsLocked}
-                className={cn('flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50')}
               />
               {!panelIsLocked && ageEffectsDetails && (ageEffectsDetails.categoryName !== (UI_STRINGS.ageCategoryAdult) || ageEffectsDetails.effects.length > 0) && (
                  <div className={cn("flex flex-wrap", panelBadgeGroupGap, panelSubLabelMargin)}>
