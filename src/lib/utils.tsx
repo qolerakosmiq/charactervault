@@ -65,10 +65,8 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
       const contentMatch = badgeMatch.match(/<badge(?: outline)?>(.*?)<\/badge>/);
       const rawBadgeContent = contentMatch ? contentMatch[1] : '';
       
-      // Replace spaces in the raw badge content string with non-breaking spaces
       const badgeContentWithNbsp = rawBadgeContent.replace(/ /g, "\u00A0");
       
-      // Recursively parse the (now non-breaking space-ified) badge content
       const badgeChildNodes = parseAndRenderUIString(badgeContentWithNbsp, dataContext);
       
       elements.push(
@@ -124,3 +122,12 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
     React.isValidElement(el) ? (el.key ? el : React.cloneElement(el, { key: `parsed-el-${i}-${Math.random().toString(36).substring(7)}` })) : el
   ));
 }
+
+export const generateRandomAlphanumericString = (length: number): string => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+};
