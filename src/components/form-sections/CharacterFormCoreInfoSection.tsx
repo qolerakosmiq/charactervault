@@ -606,7 +606,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       headerClassName="p-4 bg-muted/20"
     >
       {({ isLocked: panelIsLocked }) => (
-        <CardContent>
+        <div className="space-y-4">
           <div className="grid grid-cols-2">
             <div>
               <Label htmlFor="name">{UI_STRINGS.characterNameLabel}</Label>
@@ -812,7 +812,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 })()}
             </div>
           </div>
-        </CardContent>
+        </div>
       )}
     </LockablePanelWrapper>
   );
