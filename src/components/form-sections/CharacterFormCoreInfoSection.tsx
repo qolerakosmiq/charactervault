@@ -581,8 +581,9 @@ const CharacterFormCoreInfoSectionComponent = ({
         title={translations?.UI_STRINGS.coreAttributesTitle || "Core Attributes"}
         description={translations?.UI_STRINGS.coreAttributesDescription || "Define the fundamental aspects of your adventurer."}
         icon={ScrollText}
-        cardContentClassName="space-y-6 pt-6"
+        cardContentClassName="pt-6"
         initialLockedState={false}
+        headerClassName="bg-muted/20"
       >
         {() => (
           <div className="flex justify-center items-center py-10">
@@ -600,12 +601,13 @@ const CharacterFormCoreInfoSectionComponent = ({
       title={UI_STRINGS.coreAttributesTitle}
       description={UI_STRINGS.coreAttributesDescription}
       icon={ScrollText}
-      cardContentClassName="space-y-6 pt-6"
+      cardContentClassName="pt-6"
       initialLockedState={false}
+      headerClassName="bg-muted/20"
     >
       {({ isLocked: panelIsLocked }) => (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 items-start">
             <div className="space-y-1.5">
               <Label htmlFor="name">{UI_STRINGS.characterNameLabel}</Label>
               <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} className="h-10 text-sm"/>
@@ -616,7 +618,7 @@ const CharacterFormCoreInfoSectionComponent = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 items-start">
             <div className="space-y-1.5">
               <Label htmlFor="race">{UI_STRINGS.raceLabel}</Label>
               <div className="flex items-center gap-2">
@@ -716,8 +718,8 @@ const CharacterFormCoreInfoSectionComponent = ({
           </div>
 
           {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.length > 0 && (
-            <Card className="mt-6 p-4 pt-3 bg-background">
-              <div className="space-y-4">
+            <Card className="bg-background">
+              <div className="p-4 pt-3">
                 {selectedClassInfo.uiSections.map((uiBlock, index) => (
                   <React.Fragment key={`ui-section-wrapper-${uiBlock.key}-${index}`}>
                     {renderClassSpecificUI(uiBlock, panelIsLocked, index)}
@@ -727,7 +729,7 @@ const CharacterFormCoreInfoSectionComponent = ({
             </Card>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 items-start">
             <div className="space-y-1.5">
               <Label htmlFor="alignment">{UI_STRINGS.alignmentLabel}</Label>
               <div className="flex items-center gap-2">
@@ -763,7 +765,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-3 items-start">
             <div className="space-y-1.5">
               <Label htmlFor="age" className="inline-block w-full text-center md:text-center">{UI_STRINGS.ageLabel}</Label>
               <NumberSpinnerInput id="age" value={localAge} onChange={setLocalAge} min={currentMinAgeForInput} max={1000} inputClassName="w-full h-10 text-sm text-center" buttonClassName="h-10 w-10" buttonSize="icon" className="justify-center" disabled={panelIsLocked} />

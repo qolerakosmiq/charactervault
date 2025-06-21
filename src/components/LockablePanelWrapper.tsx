@@ -17,6 +17,7 @@ interface LockablePanelWrapperProps {
   onLockChange?: (isLocked: boolean) => void;
   cardClassName?: string;
   cardContentClassName?: string;
+  headerClassName?: string;
   headerActions?: ((isPanelLocked: boolean) => React.ReactNode) | React.ReactNode;
 }
 
@@ -29,6 +30,7 @@ const LockablePanelWrapperComponent = ({
   onLockChange,
   cardClassName,
   cardContentClassName,
+  headerClassName,
   headerActions,
 }: LockablePanelWrapperProps) => {
   const [isLocked, setIsLocked] = React.useState(initialLockedState);
@@ -51,7 +53,7 @@ const LockablePanelWrapperComponent = ({
 
   return (
     <Card className={cardClassName}>
-      <CardHeader>
+      <CardHeader className={headerClassName}>
         <div className="flex justify-between items-start">
           <div className="flex items-center space-x-3">
             {Icon && <Icon className="h-8 w-8 text-primary" />}
@@ -90,5 +92,3 @@ const LockablePanelWrapperComponent = ({
 
 LockablePanelWrapperComponent.displayName = "LockablePanelWrapperComponent";
 export const LockablePanelWrapper = React.memo(LockablePanelWrapperComponent);
-
-    
