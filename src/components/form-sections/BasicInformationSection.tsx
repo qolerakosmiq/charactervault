@@ -146,7 +146,6 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
 
   }, [translationsLoading, translations, uiBlock, allChoices]);
 
-  // MOVED THE CONDITIONAL RETURN HERE - AFTER ALL HOOKS
   if (!isVisible) return null;
   
   if (translationsLoading || !translations) {
@@ -223,7 +222,7 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
       const slotLabelTemplate = uiBlock.slotLabel ? getLocalizedString(uiBlock.slotLabel, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : "Slot {slotNum}";
 
       return (
-        <div key={`${uiBlock.key}-group-${blockIndex}`} className={cn("flex flex-col rounded-md border bg-background/50 p-3", panelFieldVerticalGap)}>
+        <div key={`${uiBlock.key}-group-${blockIndex}`} className={cn("flex flex-col border rounded-md bg-background/50 p-3", panelFieldVerticalGap)}>
           <Label className="flex font-medium whitespace-nowrap">{blockLabel} <Badge variant="outline">{numInputsToRender}</Badge></Label>
           {Array.from({ length: numInputsToRender }).map((_, index) => {
               const isDisabledByPanelOrDependency = isVisuallyDisabled || (uiBlock.relatedSlotKeyForDisable && !allChoices.find(c => c.featureKey === uiBlock.relatedSlotKeyForDisable)?.value);
@@ -235,7 +234,7 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
                 </div>
               );
           })}
-          {blockNote && <p className="italic mt-2 text-xs text-muted-foreground">{blockNote}</p>}
+          {blockNote && <p className="italic text-xs text-muted-foreground">{blockNote}</p>}
         </div>
       );
   }
@@ -312,6 +311,57 @@ const BasicInformationSectionComponent = ({
   const selectedClassInfo = React.useMemo(() => DND_CLASSES?.find(c => c.id === localClassName), [DND_CLASSES, localClassName]);
   const selectedRaceInfo = React.useMemo(() => DND_RACES?.find(r => r.id === localRace), [DND_RACES, localRace]);
 
+  const choicesRef = React.useRef(characterData.classSpecificChoices);
+  React.useEffect(() => {
+    choicesRef.current = characterData.classSpecificChoices;
+  }, [characterData.classSpecificChoices]);
+
+  const handleClassSpecificChoiceChange = React.useCallback((
+    featureKey: string,
+    newValue: string,
+    slotIndex?: number
+  ) => {
+    const existingChoices = choicesRef.current || [];
+    let updatedChoices: CharacterClassSpecificChoice[];
+
+    if (slotIndex !== undefined) {
+      const choiceExists = existingChoices.some(
+        (c) => c.featureKey === featureKey && c.slotIndex === slotIndex
+      );
+      if (choiceExists) {
+        updatedChoices = existingChoices.map((c) =>
+          c.featureKey === featureKey && c.slotIndex === slotIndex
+            ? { ...c, value: newValue }
+            : c
+        );
+      } else {
+        updatedChoices = [...existingChoices, { featureKey, value: newValue, slotIndex }];
+      }
+      if (newValue === "") {
+        if (!choiceExists) updatedChoices = updatedChoices.filter(c => !(c.featureKey === featureKey && c.slotIndex === slotIndex && c.value === ""));
+      }
+    } else {
+      const choiceExists = existingChoices.some((c) => c.featureKey === featureKey && c.slotIndex === undefined);
+      if (choiceExists) {
+        updatedChoices = existingChoices.map((c) =>
+          (c.featureKey === featureKey && c.slotIndex === undefined) ? { ...c, value: newValue } : c
+        );
+      } else {
+        updatedChoices = [...existingChoices, { featureKey, value: newValue }];
+      }
+      if (newValue === "") {
+         if (!choiceExists) updatedChoices = updatedChoices.filter(c => !(c.featureKey === featureKey && c.slotIndex === undefined && c.value === ""));
+      }
+    }
+    updatedChoices = updatedChoices.filter(c => {
+      if (c.value !== "") return true;
+      const originalChoice = (choicesRef.current || []).find(ec => ec.featureKey === c.featureKey && ec.slotIndex === c.slotIndex);
+      const uiBlockDef = selectedClassInfo?.uiSections?.find(uib => uib.key === c.featureKey);
+      return (originalChoice && originalChoice.value !== "") || (uiBlockDef && uiBlockDef.defaultValue === "");
+    });
+    onFieldChange('classSpecificChoices', updatedChoices);
+  }, [onFieldChange, selectedClassInfo?.uiSections]);
+
 
   const availableAlignments = React.useMemo(() => {
     if (!ALIGNMENTS || !selectedClassInfo) return [];
@@ -359,53 +409,6 @@ const BasicInformationSectionComponent = ({
     });
     return Array.from(uniqueOptionsMap.values());
   }, [GENDERS, selectedRaceInfo, UI_STRINGS]);
-
-
-  const handleClassSpecificChoiceChange = React.useCallback((
-    featureKey: string,
-    newValue: string,
-    slotIndex?: number
-  ) => {
-    const existingChoices = characterData.classSpecificChoices || [];
-    let updatedChoices: CharacterClassSpecificChoice[];
-
-    if (slotIndex !== undefined) {
-      const choiceExists = existingChoices.some(
-        (c) => c.featureKey === featureKey && c.slotIndex === slotIndex
-      );
-      if (choiceExists) {
-        updatedChoices = existingChoices.map((c) =>
-          c.featureKey === featureKey && c.slotIndex === slotIndex
-            ? { ...c, value: newValue }
-            : c
-        );
-      } else {
-        updatedChoices = [...existingChoices, { featureKey, value: newValue, slotIndex }];
-      }
-      if (newValue === "") {
-        if (!choiceExists) updatedChoices = updatedChoices.filter(c => !(c.featureKey === featureKey && c.slotIndex === slotIndex && c.value === ""));
-      }
-    } else {
-      const choiceExists = existingChoices.some((c) => c.featureKey === featureKey && c.slotIndex === undefined);
-      if (choiceExists) {
-        updatedChoices = existingChoices.map((c) =>
-          (c.featureKey === featureKey && c.slotIndex === undefined) ? { ...c, value: newValue } : c
-        );
-      } else {
-        updatedChoices = [...existingChoices, { featureKey, value: newValue }];
-      }
-      if (newValue === "") {
-         if (!choiceExists) updatedChoices = updatedChoices.filter(c => !(c.featureKey === featureKey && c.slotIndex === undefined && c.value === ""));
-      }
-    }
-    updatedChoices = updatedChoices.filter(c => {
-      if (c.value !== "") return true;
-      const originalChoice = (characterData.classSpecificChoices || []).find(ec => ec.featureKey === c.featureKey && ec.slotIndex === c.slotIndex);
-      const uiBlockDef = selectedClassInfo?.uiSections?.find(uib => uib.key === c.featureKey);
-      return (originalChoice && originalChoice.value !== "") || (uiBlockDef && uiBlockDef.defaultValue === "");
-    });
-    onFieldChange('classSpecificChoices', updatedChoices);
-  }, [onFieldChange, characterData.classSpecificChoices, selectedClassInfo?.uiSections]);
 
 
   const handleOpenClassSpecificChoiceInfoDialogInternal = React.useCallback((uiBlock: ClassSpecificUIBlock) => {
