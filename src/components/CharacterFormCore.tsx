@@ -1176,6 +1176,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             onOpenDeityInfoDialog={handleOpenDeityInfoDialog}
             onOpenClassSpecificChoiceInfoDialog={handleOpenClassSpecificChoiceInfoDialog}
             aggregatedFeatEffects={aggregatedFeatEffects}
+            characterLevel={characterLevelFromXP}
           />
         )}
 
@@ -1426,5 +1427,3 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
-
-    

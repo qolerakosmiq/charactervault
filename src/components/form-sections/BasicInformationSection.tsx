@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -60,7 +61,200 @@ export interface BasicInformationSectionProps {
   onOpenDeityInfoDialog: () => void;
   onOpenClassSpecificChoiceInfoDialog: (contentType: InfoDialogContentType) => void;
   aggregatedFeatEffects?: AggregatedFeatEffects | null;
+  characterLevel: number;
 }
+
+
+interface ClassSpecificFieldProps {
+  uiBlock: ClassSpecificUIBlock;
+  panelIsLocked: boolean;
+  characterLevel: number;
+  aggregatedFeatEffects?: AggregatedFeatEffects | null;
+  getCurrentValue: (key: string, index?: number) => string;
+  handleClassSpecificChoiceChange: (featureKey: string, newValue: string, slotIndex?: number) => void;
+  handleOpenClassSpecificChoiceInfoDialogInternal: (uiBlock: ClassSpecificUIBlock) => void;
+  blockIndex: number;
+}
+
+const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
+  uiBlock,
+  panelIsLocked,
+  characterLevel,
+  aggregatedFeatEffects,
+  getCurrentValue,
+  handleClassSpecificChoiceChange,
+  handleOpenClassSpecificChoiceInfoDialogInternal,
+  blockIndex
+}) => {
+  const { translations, isLoading: translationsLoading } = useI18n();
+
+  if (translationsLoading || !translations) {
+    return <Skeleton className="h-10 w-full" />;
+  }
+
+  const { UI_STRINGS, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES } = translations;
+
+  if (uiBlock.requiredLevel && characterLevel < uiBlock.requiredLevel) return null;
+  if (uiBlock.conditionAggregatedEffect && aggregatedFeatEffects) {
+    const propValue = aggregatedFeatEffects[uiBlock.conditionAggregatedEffect.property as keyof AggregatedFeatEffects] as any;
+    let conditionMet = false;
+    switch (uiBlock.conditionAggregatedEffect.comparison) {
+      case 'exists': conditionMet = propValue !== undefined && propValue !== null && (Array.isArray(propValue) ? propValue.length > 0 : true); break;
+      case 'greaterThan': conditionMet = typeof propValue === 'number' && propValue > (uiBlock.conditionAggregatedEffect.value as number); break;
+      case 'equals': conditionMet = propValue === uiBlock.conditionAggregatedEffect.value; break;
+      case 'lessThan': conditionMet = typeof propValue === 'number' && propValue < (uiBlock.conditionAggregatedEffect.value as number); break;
+      case 'notEquals': conditionMet = propValue !== uiBlock.conditionAggregatedEffect.value; break;
+    }
+    if (!conditionMet) return null;
+  }
+  if (uiBlock.conditionDependsOnUIStateKey) {
+    const stateValue = getCurrentValue(uiBlock.conditionDependsOnUIStateKey);
+    if (uiBlock.conditionDependsOnUIStateValueNotIn && uiBlock.conditionDependsOnUIStateValueNotIn.includes(stateValue || "")) return null;
+    if (uiBlock.conditionDependsOnUIStateValueIs && !uiBlock.conditionDependsOnUIStateValueIs.includes(stateValue || "")) return null;
+  }
+
+  const blockLabel = uiBlock.label || uiBlock.key;
+  const blockNote = uiBlock.note;
+  const inputPlaceholderText = uiBlock.inputPlaceholder || UI_STRINGS.selectPlaceholder;
+  const emptySelectionLabelText = uiBlock.emptySelectionLabel || UI_STRINGS.deityNoneOption;
+
+
+  const currentBlockValueForProp = getCurrentValue(uiBlock.key, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined);
+  const uiValueForComponent = currentBlockValueForProp === "" ? UI_EMPTY_SELECTION_VALUE : currentBlockValueForProp;
+  const handleChange = (val: string) => { handleClassSpecificChoiceChange(uiBlock.key, val === UI_EMPTY_SELECTION_VALUE ? "" : val, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined); };
+
+  let initialOptions: ComboboxOption[] = [];
+  if (uiBlock.optionsSource === 'domains') initialOptions = DND_DOMAINS.map(d => ({ value: d.id, label: d.label }));
+  else if (uiBlock.optionsSource === 'magicSchools') initialOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }));
+  else if (uiBlock.optionsSource === 'creatureTypes') initialOptions = DND_CREATURE_TYPES.map(ct => ({ value: ct.id, label: ct.label }));
+  else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) initialOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: opt.label }));
+  initialOptions.sort((a,b) => a.label.localeCompare(b.label));
+
+  const finalSelectOptions: ComboboxOption[] = [];
+  if (uiBlock.allowEmptySelection && emptySelectionLabelText) {
+    finalSelectOptions.push({ value: UI_EMPTY_SELECTION_VALUE, label: emptySelectionLabelText, disabled: false });
+  }
+
+  initialOptions.forEach(opt => {
+    let isDisabled = opt.disabled || false;
+    if (uiBlock.excludeSpecificValues?.includes(opt.value)) isDisabled = true;
+
+    if (!isDisabled && uiBlock.excludeOptionsFromKeys) {
+      const isExcludedByOtherKey = uiBlock.excludeOptionsFromKeys.some(excludedKey => {
+        const valOfExcludedKey = getCurrentValue(excludedKey);
+        return valOfExcludedKey === opt.value && opt.value !== "" && valOfExcludedKey !== UI_EMPTY_SELECTION_VALUE;
+      });
+      if (isExcludedByOtherKey && opt.value !== currentBlockValueForProp) {
+        isDisabled = true;
+      }
+    }
+    finalSelectOptions.push({ ...opt, disabled: isDisabled });
+  });
+
+  let isDisabledByPanelOrDependency = panelIsLocked;
+  if (uiBlock.relatedSlotKeyForDisable && !isDisabledByPanelOrDependency) {
+      const relatedChoiceValue = getCurrentValue(uiBlock.relatedSlotKeyForDisable);
+      if (!relatedChoiceValue || relatedChoiceValue === "") isDisabledByPanelOrDependency = true;
+  }
+  if (!isDisabledByPanelOrDependency && uiBlock.disabledIfChoiceValue) {
+      const controllingChoiceValue = getCurrentValue(uiBlock.disabledIfChoiceValue.featureKey);
+      if (uiBlock.disabledIfChoiceValue.values.includes(controllingChoiceValue)) isDisabledByPanelOrDependency = true;
+  }
+
+  const hasInfoContentForDialog = uiBlock.optionsSource || uiBlock.infoDialogContent || uiBlock.description;
+  const commonInfoButton = (hasInfoContentForDialog && !!handleOpenClassSpecificChoiceInfoDialogInternal) ? (
+    <Button
+      type="button" variant="ghost" size="icon-sm"
+      className="shrink-0 text-muted-foreground hover:text-foreground"
+      onClick={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
+      disabled={panelIsLocked && !hasInfoContentForDialog}
+      aria-label={(UI_STRINGS.infoDialogClassSpecificChoiceAriaLabel || "Info for {choiceName}").replace("{choiceName}", blockLabel)}
+    >
+      <Info />
+    </Button>
+  ) : null;
+
+
+  if (uiBlock.isHeadingOnly) {
+    return (
+      <div key={`${uiBlock.key}-${blockIndex}-heading`} className="md:col-span-2">
+        <h3 className="text-lg font-bold text-accent">{blockLabel}</h3>
+      </div>
+    );
+  }
+
+  if (uiBlock.choiceType === 'select') {
+    return (
+      <div key={`${uiBlock.key}-${blockIndex}-select`} className={panelFieldVerticalGap}>
+        <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`} className="whitespace-nowrap">{blockLabel}</Label>
+        <div className={cn("flex items-center", panelFieldHorizontalGap)}>
+          <div className="flex-grow">
+              <Select name={uiBlock.key} value={uiValueForComponent} onValueChange={handleChange} disabled={isDisabledByPanelOrDependency} >
+                  <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`}> <SelectValue /> </SelectTrigger>
+                  <SelectContent> {finalSelectOptions.map(opt => <SelectItem key={opt.value} value={opt.value} disabled={opt.disabled}>{opt.label}</SelectItem>)} </SelectContent>
+              </Select>
+          </div>
+          {commonInfoButton}
+        </div>
+        {blockNote && <p className="italic">{blockNote}</p>}
+      </div>
+    );
+  } else if (uiBlock.choiceType === 'combobox') { 
+    return (
+      <div key={`${uiBlock.key}-${blockIndex}-combobox`} className={panelFieldVerticalGap}>
+        <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`} className="whitespace-nowrap">{blockLabel}</Label>
+         <div className={cn("flex items-center", panelFieldHorizontalGap)}>
+          <div className="flex-grow">
+              <Select
+                name={uiBlock.key}
+                value={uiValueForComponent}
+                onValueChange={handleChange}
+                disabled={isDisabledByPanelOrDependency}
+              >
+                <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {finalSelectOptions.map(opt => (
+                    <SelectItem key={opt.value} value={opt.value} disabled={opt.disabled}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+          </div>
+          {commonInfoButton}
+        </div>
+        {blockNote && <p className="italic">{blockNote}</p>}
+      </div>
+    );
+  } else if (uiBlock.choiceType === 'multiInput' && uiBlock.maxSelections && uiBlock.maxSelections > 0) {
+    const numInputsToRender = uiBlock.maxSelections;
+    const slotLabelTemplate = uiBlock.slotLabel || `${uiBlock.key} Slot {slotNum}`;
+    return (
+      <div key={`${uiBlock.key}-group-${blockIndex}`} className={cn("border rounded-md bg-background/50 p-3 flex flex-col", panelGridGap)}>
+        <Label className="flex font-medium whitespace-nowrap">{blockLabel} <Badge variant="outline">{numInputsToRender}</Badge></Label>
+        {Array.from({ length: numInputsToRender }).map((_, index) => (
+          <div key={`${uiBlock.key}-slot-${index}`} className={panelFieldVerticalGap}>
+            <Label htmlFor={`${uiBlock.key}-input-${index}`} className="whitespace-nowrap"> {parseAndRenderUIString(slotLabelTemplate, { slotNum: index + 1 })} </Label>
+            <Input id={`${uiBlock.key}-input-${index}`} value={getCurrentValue(uiBlock.key, index)} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, index)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
+          </div>
+        ))}
+        {blockNote && <p className="italic">{blockNote}</p>}
+      </div>
+    );
+  } else if (uiBlock.choiceType === 'textInput') {
+    return (
+       <div key={`${uiBlock.key}-${blockIndex}-textInput`} className={panelFieldVerticalGap}>
+          <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`} className="whitespace-nowrap">{blockLabel}</Label>
+          <Input id={`cspec-${uiBlock.key}-${blockIndex}`} value={currentBlockValueForProp} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
+          {blockNote && <p className="italic">{blockNote}</p>}
+       </div>
+    );
+  }
+  return <div key={`${uiBlock.key}-error-${blockIndex}`} className="text-destructive">Unsupported choiceType: {uiBlock.choiceType} for {uiBlock.key}</div>;
+}
+const MemoizedClassSpecificField = React.memo(ClassSpecificFieldComponent);
 
 
 const BasicInformationSectionComponent = ({
@@ -76,6 +270,7 @@ const BasicInformationSectionComponent = ({
   onOpenDeityInfoDialog,
   onOpenClassSpecificChoiceInfoDialog,
   aggregatedFeatEffects,
+  characterLevel,
 }: BasicInformationSectionProps) => {
   const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
 
@@ -393,179 +588,6 @@ const BasicInformationSectionComponent = ({
     if (choicesChanged) onFieldChange('classSpecificChoices', newChoices);
   }, [characterData.classSpecificChoices, selectedClassInfo?.uiSections, onFieldChange, getCurrentValue, translations, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES]);
 
-  const renderClassSpecificUI = React.useCallback((uiBlock: ClassSpecificUIBlock, panelIsLocked: boolean, blockIndex: number) => {
-    if (!translations || !UI_STRINGS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) return null;
-
-    const currentCharacterClassLevel = characterData.classes[0]?.level || 0;
-    if (uiBlock.requiredLevel && currentCharacterClassLevel < uiBlock.requiredLevel) return null;
-    if (uiBlock.conditionAggregatedEffect && aggregatedFeatEffects) {
-      const propValue = aggregatedFeatEffects[uiBlock.conditionAggregatedEffect.property as keyof AggregatedFeatEffects] as any;
-      let conditionMet = false;
-      switch (uiBlock.conditionAggregatedEffect.comparison) {
-        case 'exists': conditionMet = propValue !== undefined && propValue !== null && (Array.isArray(propValue) ? propValue.length > 0 : true); break;
-        case 'greaterThan': conditionMet = typeof propValue === 'number' && propValue > (uiBlock.conditionAggregatedEffect.value as number); break;
-        case 'equals': conditionMet = propValue === uiBlock.conditionAggregatedEffect.value; break;
-        case 'lessThan': conditionMet = typeof propValue === 'number' && propValue < (uiBlock.conditionAggregatedEffect.value as number); break;
-        case 'notEquals': conditionMet = propValue !== uiBlock.conditionAggregatedEffect.value; break;
-      }
-      if (!conditionMet) return null;
-    }
-    if (uiBlock.conditionDependsOnUIStateKey) {
-      const stateValue = getCurrentValue(uiBlock.conditionDependsOnUIStateKey);
-      if (uiBlock.conditionDependsOnUIStateValueNotIn && uiBlock.conditionDependsOnUIStateValueNotIn.includes(stateValue || "")) return null;
-      if (uiBlock.conditionDependsOnUIStateValueIs && !uiBlock.conditionDependsOnUIStateValueIs.includes(stateValue || "")) return null;
-    }
-
-    const blockLabel = uiBlock.label || uiBlock.key;
-    const blockNote = uiBlock.note;
-    const inputPlaceholderText = uiBlock.inputPlaceholder || UI_STRINGS.selectPlaceholder;
-    const emptySelectionLabelText = uiBlock.emptySelectionLabel || UI_STRINGS.deityNoneOption;
-
-
-    const currentBlockValueForProp = getCurrentValue(uiBlock.key, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined);
-    const uiValueForComponent = currentBlockValueForProp === "" ? UI_EMPTY_SELECTION_VALUE : currentBlockValueForProp;
-    const handleChange = (val: string) => { handleClassSpecificChoiceChange(uiBlock.key, val === UI_EMPTY_SELECTION_VALUE ? "" : val, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined); };
-
-    let initialOptions: ComboboxOption[] = [];
-    if (uiBlock.optionsSource === 'domains') initialOptions = DND_DOMAINS.map(d => ({ value: d.id, label: d.label }));
-    else if (uiBlock.optionsSource === 'magicSchools') initialOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }));
-    else if (uiBlock.optionsSource === 'creatureTypes') initialOptions = DND_CREATURE_TYPES.map(ct => ({ value: ct.id, label: ct.label }));
-    else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) initialOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: opt.label }));
-    initialOptions.sort((a,b) => a.label.localeCompare(b.label));
-
-    const finalSelectOptions: ComboboxOption[] = [];
-    if (uiBlock.allowEmptySelection && emptySelectionLabelText) {
-      finalSelectOptions.push({ value: UI_EMPTY_SELECTION_VALUE, label: emptySelectionLabelText, disabled: false });
-    }
-
-    initialOptions.forEach(opt => {
-      let isDisabled = opt.disabled || false;
-      if (uiBlock.excludeSpecificValues?.includes(opt.value)) isDisabled = true;
-
-      if (!isDisabled && uiBlock.excludeOptionsFromKeys) {
-        const isExcludedByOtherKey = uiBlock.excludeOptionsFromKeys.some(excludedKey => {
-          const valOfExcludedKey = getCurrentValue(excludedKey);
-          return valOfExcludedKey === opt.value && opt.value !== "" && valOfExcludedKey !== UI_EMPTY_SELECTION_VALUE;
-        });
-        if (isExcludedByOtherKey && opt.value !== currentBlockValueForProp) {
-          isDisabled = true;
-        }
-      }
-      finalSelectOptions.push({ ...opt, disabled: isDisabled });
-    });
-
-    let isDisabledByPanelOrDependency = panelIsLocked;
-    if (uiBlock.relatedSlotKeyForDisable && !isDisabledByPanelOrDependency) {
-        const relatedChoiceValue = getCurrentValue(uiBlock.relatedSlotKeyForDisable);
-        if (!relatedChoiceValue || relatedChoiceValue === "") isDisabledByPanelOrDependency = true;
-    }
-    if (!isDisabledByPanelOrDependency && uiBlock.disabledIfChoiceValue) {
-        const controllingChoiceValue = getCurrentValue(uiBlock.disabledIfChoiceValue.featureKey);
-        if (uiBlock.disabledIfChoiceValue.values.includes(controllingChoiceValue)) isDisabledByPanelOrDependency = true;
-    }
-
-    const hasInfoContentForDialog = uiBlock.optionsSource || uiBlock.infoDialogContent || uiBlock.description;
-    const commonInfoButton = (hasInfoContentForDialog && !!onOpenClassSpecificChoiceInfoDialog) ? (
-      <Button
-        type="button" variant="ghost" size="icon-sm"
-        className="shrink-0 text-muted-foreground hover:text-foreground"
-        onClick={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
-        disabled={panelIsLocked && !hasInfoContentForDialog}
-        aria-label={(UI_STRINGS.infoDialogClassSpecificChoiceAriaLabel || "Info for {choiceName}").replace("{choiceName}", blockLabel)}
-      >
-        <Info />
-      </Button>
-    ) : null;
-
-
-    if (uiBlock.isHeadingOnly) {
-      return (
-        <div key={`${uiBlock.key}-${blockIndex}-heading`} className="md:col-span-2">
-          <h3 className="text-lg font-bold text-accent">{blockLabel}</h3>
-        </div>
-      );
-    }
-
-    if (uiBlock.choiceType === 'select') {
-      return (
-        <div key={`${uiBlock.key}-${blockIndex}-select`} className={panelFieldVerticalGap}>
-          <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`} className="whitespace-nowrap">{blockLabel}</Label>
-          <div className={cn("flex items-center", panelFieldHorizontalGap)}>
-            <div className="flex-grow">
-                <Select name={uiBlock.key} value={uiValueForComponent} onValueChange={handleChange} disabled={isDisabledByPanelOrDependency} >
-                    <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`}> <SelectValue /> </SelectTrigger>
-                    <SelectContent> {finalSelectOptions.map(opt => <SelectItem key={opt.value} value={opt.value} disabled={opt.disabled}>{opt.label}</SelectItem>)} </SelectContent>
-                </Select>
-            </div>
-            {commonInfoButton}
-          </div>
-          {blockNote && <p className="italic">{blockNote}</p>}
-        </div>
-      );
-    } else if (uiBlock.choiceType === 'combobox') { 
-      return (
-        <div key={`${uiBlock.key}-${blockIndex}-combobox`} className={panelFieldVerticalGap}>
-          <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`} className="whitespace-nowrap">{blockLabel}</Label>
-           <div className={cn("flex items-center", panelFieldHorizontalGap)}>
-            <div className="flex-grow">
-                <Select
-                  name={uiBlock.key}
-                  value={uiValueForComponent}
-                  onValueChange={handleChange}
-                  disabled={isDisabledByPanelOrDependency}
-                >
-                  <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {finalSelectOptions.map(opt => (
-                      <SelectItem key={opt.value} value={opt.value} disabled={opt.disabled}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-            </div>
-            {commonInfoButton}
-          </div>
-          {blockNote && <p className="italic">{blockNote}</p>}
-        </div>
-      );
-    } else if (uiBlock.choiceType === 'multiInput' && uiBlock.maxSelections && uiBlock.maxSelections > 0) {
-      const numInputsToRender = uiBlock.maxSelections;
-      const slotLabelTemplate = uiBlock.slotLabel || `${uiBlock.key} Slot {slotNum}`;
-      return (
-        <div key={`${uiBlock.key}-group-${blockIndex}`} className="flex flex-col gap-3 rounded-md border bg-background/50 p-3">
-          <Label className="flex font-medium whitespace-nowrap">{blockLabel} <Badge variant="outline">{numInputsToRender}</Badge></Label>
-          {Array.from({ length: numInputsToRender }).map((_, index) => (
-            <div key={`${uiBlock.key}-slot-${index}`} className={panelFieldVerticalGap}>
-              <Label htmlFor={`${uiBlock.key}-input-${index}`} className="whitespace-nowrap"> {parseAndRenderUIString(slotLabelTemplate, { slotNum: index + 1 })} </Label>
-              <Input id={`${uiBlock.key}-input-${index}`} value={getCurrentValue(uiBlock.key, index)} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, index)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
-            </div>
-          ))}
-          {blockNote && <p className="italic">{blockNote}</p>}
-        </div>
-      );
-    } else if (uiBlock.choiceType === 'textInput') {
-      return (
-         <div key={`${uiBlock.key}-${blockIndex}-textInput`} className={panelFieldVerticalGap}>
-            <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`} className="whitespace-nowrap">{blockLabel}</Label>
-            <Input id={`cspec-${uiBlock.key}-${blockIndex}`} value={currentBlockValueForProp} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
-            {blockNote && <p className="italic">{blockNote}</p>}
-         </div>
-      );
-    }
-    return <div key={`${uiBlock.key}-error-${blockIndex}`} className="text-destructive">Unsupported choiceType: {uiBlock.choiceType} for {uiBlock.key}</div>;
-  }, [
-    characterData.classSpecificChoices, characterData.classes,
-    aggregatedFeatEffects,
-    translations,
-    DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, UI_STRINGS,
-    handleClassSpecificChoiceChange,
-    handleOpenClassSpecificChoiceInfoDialogInternal,
-    onOpenClassSpecificChoiceInfoDialog,
-    getCurrentValue,
-  ]);
   
   if (translationsLoading || !UI_STRINGS || !DND_RACES || !DND_CLASSES || !ALIGNMENTS || !DND_DEITIES || !SIZES || !GENDERS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) {
     return null;
@@ -673,9 +695,17 @@ const BasicInformationSectionComponent = ({
             <div className={cn("flex flex-col rounded-md border bg-background/50", panelGridGap, panelContentPadding)}>
               <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
                 {selectedClassInfo.uiSections.map((uiBlock, index) => (
-                  <React.Fragment key={`ui-section-wrapper-${uiBlock.key}-${index}`}>
-                    {renderClassSpecificUI(uiBlock, panelIsLocked, index)}
-                  </React.Fragment>
+                   <MemoizedClassSpecificField
+                    key={`csf-memo-${uiBlock.key}-${index}`}
+                    uiBlock={uiBlock}
+                    panelIsLocked={panelIsLocked}
+                    characterLevel={characterLevel}
+                    aggregatedFeatEffects={aggregatedFeatEffects}
+                    getCurrentValue={getCurrentValue}
+                    handleClassSpecificChoiceChange={handleClassSpecificChoiceChange}
+                    handleOpenClassSpecificChoiceInfoDialogInternal={handleOpenClassSpecificChoiceInfoDialogInternal}
+                    blockIndex={index}
+                  />
                 ))}
               </div>
             </div>
