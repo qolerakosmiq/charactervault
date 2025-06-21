@@ -68,25 +68,23 @@ export interface BasicInformationSectionProps {
 interface ClassSpecificFieldProps {
   uiBlock: ClassSpecificUIBlock;
   isVisuallyDisabled: boolean;
-  currentValue: string;
-  allChoices: CharacterClassSpecificChoice[];
   onValueChange: (newValue: string) => void;
   onOpenInfoDialog: () => void;
-  characterLevel: number;
-  aggregatedFeatEffects: AggregatedFeatEffects | null;
   blockIndex: number;
+  characterLevel: number;
+  allChoices: CharacterClassSpecificChoice[];
+  aggregatedFeatEffects: AggregatedFeatEffects | null;
 }
 
 const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   uiBlock,
   isVisuallyDisabled: propIsVisuallyDisabled,
-  currentValue,
-  allChoices,
   onValueChange,
   onOpenInfoDialog,
-  characterLevel,
-  aggregatedFeatEffects,
   blockIndex,
+  characterLevel,
+  allChoices,
+  aggregatedFeatEffects,
 }) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
@@ -111,18 +109,6 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
     }
     return true;
   }, [uiBlock, characterLevel, aggregatedFeatEffects, allChoices]);
-  
-  if (!isVisible) return null;
-  
-  let isVisuallyDisabled = propIsVisuallyDisabled;
-  if (uiBlock.relatedSlotKeyForDisable && !isVisuallyDisabled) {
-      const relatedChoiceValue = allChoices.find(c => c.featureKey === uiBlock.relatedSlotKeyForDisable)?.value;
-      if (!relatedChoiceValue || relatedChoiceValue === "") isVisuallyDisabled = true;
-  }
-  if (!isVisuallyDisabled && uiBlock.disabledIfChoiceValue) {
-      const controllingChoiceValue = allChoices.find(c => c.featureKey === uiBlock.disabledIfChoiceValue.featureKey)?.value;
-      if (controllingChoiceValue && uiBlock.disabledIfChoiceValue.values.includes(controllingChoiceValue)) isVisuallyDisabled = true;
-  }
 
   const finalSelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [];
@@ -159,16 +145,38 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
     return finalOptions;
 
   }, [translationsLoading, translations, uiBlock, allChoices]);
+
+  // MOVED THE CONDITIONAL RETURN HERE - AFTER ALL HOOKS
+  if (!isVisible) return null;
   
   if (translationsLoading || !translations) {
     return <Skeleton className="h-10 w-full" />;
   }
   
   const { UI_STRINGS } = translations;
+  
+  let isVisuallyDisabled = propIsVisuallyDisabled;
+  if (uiBlock.relatedSlotKeyForDisable && !isVisuallyDisabled) {
+      const relatedChoiceValue = allChoices.find(c => c.featureKey === uiBlock.relatedSlotKeyForDisable)?.value;
+      if (!relatedChoiceValue || relatedChoiceValue === "") isVisuallyDisabled = true;
+  }
+  if (!isVisuallyDisabled && uiBlock.disabledIfChoiceValue) {
+      const controllingChoiceValue = allChoices.find(c => c.featureKey === uiBlock.disabledIfChoiceValue.featureKey)?.value;
+      if (controllingChoiceValue && uiBlock.disabledIfChoiceValue.values.includes(controllingChoiceValue)) isVisuallyDisabled = true;
+  }
+
   const blockLabel = uiBlock.label ? getLocalizedString(uiBlock.label, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : uiBlock.key;
   const blockNote = uiBlock.note ? getLocalizedString(uiBlock.note, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : undefined;
   const inputPlaceholderText = uiBlock.inputPlaceholder ? getLocalizedString(uiBlock.inputPlaceholder, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : UI_STRINGS.selectPlaceholder;
 
+  const getCurrentValue = (key: string, index?: number): string => {
+    const choice = (allChoices || []).find(
+      c => c.featureKey === key && (index === undefined || c.slotIndex === index)
+    );
+    return choice?.value ?? "";
+  };
+
+  const currentValue = getCurrentValue(uiBlock.key, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined);
   const uiValueForComponent = currentValue === "" ? UI_EMPTY_SELECTION_VALUE : currentValue;
   const handleChange = (val: string) => { onValueChange(val === UI_EMPTY_SELECTION_VALUE ? "" : val); };
 
@@ -207,7 +215,7 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
           </div>
           {commonInfoButton}
         </div>
-        {blockNote && <p className="italic">{blockNote}</p>}
+        {blockNote && <p className="italic text-xs text-muted-foreground">{blockNote}</p>}
       </div>
     );
   } else if (uiBlock.choiceType === 'multiInput') {
@@ -219,14 +227,15 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
           <Label className="flex font-medium whitespace-nowrap">{blockLabel} <Badge variant="outline">{numInputsToRender}</Badge></Label>
           {Array.from({ length: numInputsToRender }).map((_, index) => {
               const isDisabledByPanelOrDependency = isVisuallyDisabled || (uiBlock.relatedSlotKeyForDisable && !allChoices.find(c => c.featureKey === uiBlock.relatedSlotKeyForDisable)?.value);
+              const multiInputCurrentValue = getCurrentValue(uiBlock.key, index);
               return (
                 <div key={`${uiBlock.key}-slot-${index}`} className={panelFieldVerticalGap}>
                   <Label htmlFor={`${uiBlock.key}-input-${index}`} className="whitespace-nowrap"> {parseAndRenderUIString(slotLabelTemplate, { slotNum: index + 1 })} </Label>
-                  <Input id={`${uiBlock.key}-input-${index}`} value={currentValue} onChange={(e) => onValueChange(e.target.value)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
+                  <Input id={`${uiBlock.key}-input-${index}`} value={multiInputCurrentValue} onChange={(e) => onValueChange(e.target.value)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
                 </div>
               );
           })}
-          {blockNote && <p className="italic mt-2">{blockNote}</p>}
+          {blockNote && <p className="italic mt-2 text-xs text-muted-foreground">{blockNote}</p>}
         </div>
       );
   }
@@ -512,26 +521,8 @@ const BasicInformationSectionComponent = ({
   }, [localAlignment, localClassName, localDeity, DND_DEITIES, selectedClassInfo, setLocalDeity]);
   
   if (translationsLoading || !UI_STRINGS || !DND_RACES || !DND_CLASSES || !ALIGNMENTS || !DND_DEITIES || !SIZES || !GENDERS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) {
-    return (
-      <LockablePanelWrapper
-        title={UI_STRINGS?.basicInformationPanelTitle}
-        description={UI_STRINGS?.basicInformationPanelDescription}
-        icon={ScrollText}
-        headerClassName="bg-muted/20"
-        initialLockedState={false}
-      >
-        {() => (<div className="flex justify-center p-4"><Loader2 className="animate-spin" /></div>) }
-      </LockablePanelWrapper>
-    );
+    return null;
   }
-
-  const getCurrentValue = (key: string, index?: number): string => {
-    const choice = (characterData.classSpecificChoices || []).find(
-      c => c.featureKey === key && (index === undefined || c.slotIndex === index)
-    );
-    return choice?.value ?? "";
-  };
-
 
   return (
     <LockablePanelWrapper
@@ -633,23 +624,19 @@ const BasicInformationSectionComponent = ({
           {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.length > 0 && (
             <div className={cn("flex flex-col rounded-md border bg-background/50", panelGridGap, panelContentPadding)}>
               <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
-                {selectedClassInfo.uiSections.map((uiBlock, index) => {
-                  const currentValue = getCurrentValue(uiBlock.key, uiBlock.choiceType === 'multiInput' ? index : undefined);
-                  return (
-                     <MemoizedClassSpecificField
-                      key={`csf-memo-${uiBlock.key}-${index}`}
-                      uiBlock={uiBlock}
-                      isVisuallyDisabled={panelIsLocked}
-                      currentValue={currentValue}
-                      allChoices={characterData.classSpecificChoices || []}
-                      onValueChange={(newValue) => handleClassSpecificChoiceChange(uiBlock.key, newValue, uiBlock.choiceType === 'multiInput' ? index : undefined)}
-                      onOpenInfoDialog={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
-                      characterLevel={characterLevel}
-                      aggregatedFeatEffects={aggregatedFeatEffects}
-                      blockIndex={index}
-                    />
-                  );
-                })}
+                {selectedClassInfo.uiSections.map((uiBlock, index) => (
+                  <MemoizedClassSpecificField
+                    key={`csf-memo-${uiBlock.key}-${index}`}
+                    uiBlock={uiBlock}
+                    isVisuallyDisabled={panelIsLocked}
+                    onValueChange={(newValue) => handleClassSpecificChoiceChange(uiBlock.key, newValue, uiBlock.choiceType === 'multiInput' ? index : undefined)}
+                    onOpenInfoDialog={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
+                    blockIndex={index}
+                    characterLevel={characterLevel}
+                    allChoices={characterData.classSpecificChoices || []}
+                    aggregatedFeatEffects={aggregatedFeatEffects}
+                  />
+                ))}
               </div>
             </div>
           )}
