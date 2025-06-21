@@ -53,18 +53,17 @@ const LockablePanelWrapperComponent = ({
 
   return (
     <Card className={cardClassName}>
-      <CardHeader className={cn("p-0", headerClassName)}>
-        <div className="flex justify-between">
-          <div className="flex">
-            {Icon && <Icon className="text-primary" />}
-            <div>
-              <CardTitle className="font-serif">{title}</CardTitle>
-              {description && <CardDescription>{description}</CardDescription>}
-            </div>
+      <CardHeader className={cn("flex justify-between items-start p-4", headerClassName)}>
+        <div className="flex items-center space-x-3">
+          {Icon && <Icon className="text-primary" />}
+          <div>
+            <CardTitle className="font-serif">{title}</CardTitle>
+            {description && <CardDescription>{description}</CardDescription>}
           </div>
-          <div className="flex">
-            {typeof headerActions === 'function' ? headerActions(isPanelLocked) : headerActions}
-            <Button
+        </div>
+        <div className="flex">
+          {typeof headerActions === 'function' ? headerActions(isLocked) : headerActions}
+          <Button
               type="button"
               variant="ghost"
               size="icon"
@@ -80,7 +79,6 @@ const LockablePanelWrapperComponent = ({
             >
               {isLocked ? <Lock /> : <Unlock />}
             </Button>
-          </div>
         </div>
       </CardHeader>
       <CardContent className={cardContentClassName}>
