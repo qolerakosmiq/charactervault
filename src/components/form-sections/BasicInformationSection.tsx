@@ -69,32 +69,72 @@ interface ClassSpecificFieldProps {
   uiBlock: ClassSpecificUIBlock;
   isVisuallyDisabled: boolean;
   currentValue: string;
-  allChoices: CharacterClassSpecificChoice[]; // Pass all choices for dependency checks
+  allChoices: CharacterClassSpecificChoice[];
   onValueChange: (newValue: string) => void;
   onOpenInfoDialog: () => void;
+  characterLevel: number;
+  aggregatedFeatEffects: AggregatedFeatEffects | null;
+  blockIndex: number;
 }
 
 const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   uiBlock,
-  isVisuallyDisabled,
+  isVisuallyDisabled: propIsVisuallyDisabled,
   currentValue,
   allChoices,
   onValueChange,
   onOpenInfoDialog,
+  characterLevel,
+  aggregatedFeatEffects,
+  blockIndex,
 }) => {
   const { translations, isLoading: translationsLoading } = useI18n();
+
+  const isVisible = React.useMemo(() => {
+    if (uiBlock.requiredLevel && characterLevel < uiBlock.requiredLevel) return false;
+    if (uiBlock.conditionAggregatedEffect && aggregatedFeatEffects) {
+      const propValue = aggregatedFeatEffects[uiBlock.conditionAggregatedEffect.property as keyof AggregatedFeatEffects] as any;
+      switch (uiBlock.conditionAggregatedEffect.comparison) {
+        case 'exists': return propValue !== undefined && propValue !== null && (Array.isArray(propValue) ? propValue.length > 0 : true);
+        case 'greaterThan': return typeof propValue === 'number' && propValue > (uiBlock.conditionAggregatedEffect.value as number);
+        case 'equals': return propValue === uiBlock.conditionAggregatedEffect.value;
+        case 'lessThan': return typeof propValue === 'number' && propValue < (uiBlock.conditionAggregatedEffect.value as number);
+        case 'notEquals': return propValue !== uiBlock.conditionAggregatedEffect.value;
+        default: return true;
+      }
+    }
+    if (uiBlock.conditionDependsOnUIStateKey) {
+      const controllingValue = allChoices.find(c => c.featureKey === uiBlock.conditionDependsOnUIStateKey)?.value || "";
+      if (uiBlock.conditionDependsOnUIStateValueNotIn) {
+          return !uiBlock.conditionDependsOnUIStateValueNotIn.includes(controllingValue);
+      }
+    }
+    return true;
+  }, [uiBlock, characterLevel, aggregatedFeatEffects, allChoices]);
+  
+  if (!isVisible) return null;
+  
+  let isVisuallyDisabled = propIsVisuallyDisabled;
+  if (uiBlock.relatedSlotKeyForDisable && !isVisuallyDisabled) {
+      const relatedChoiceValue = allChoices.find(c => c.featureKey === uiBlock.relatedSlotKeyForDisable)?.value;
+      if (!relatedChoiceValue || relatedChoiceValue === "") isVisuallyDisabled = true;
+  }
+  if (!isVisuallyDisabled && uiBlock.disabledIfChoiceValue) {
+      const controllingChoiceValue = allChoices.find(c => c.featureKey === uiBlock.disabledIfChoiceValue.featureKey)?.value;
+      if (controllingChoiceValue && uiBlock.disabledIfChoiceValue.values.includes(controllingChoiceValue)) isVisuallyDisabled = true;
+  }
 
   const finalSelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [];
 
     const { DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, UI_STRINGS } = translations;
-    const emptySelectionLabelText = uiBlock.emptySelectionLabel || UI_STRINGS.deityNoneOption;
+    const emptySelectionLabelText = uiBlock.emptySelectionLabel ? getLocalizedString(uiBlock.emptySelectionLabel, translations.UI_STRINGS.currentLangCodeForNotesFallback || 'en') : UI_STRINGS.deityNoneOption;
 
     let initialOptions: ComboboxOption[] = [];
     if (uiBlock.optionsSource === 'domains') initialOptions = DND_DOMAINS.map(d => ({ value: d.id, label: d.label }));
     else if (uiBlock.optionsSource === 'magicSchools') initialOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }));
     else if (uiBlock.optionsSource === 'creatureTypes') initialOptions = DND_CREATURE_TYPES.map(ct => ({ value: ct.id, label: ct.label }));
-    else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) initialOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: opt.label }));
+    else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) initialOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, translations.UI_STRINGS.currentLangCodeForNotesFallback || 'en') }));
 
     let filteredOptions = [...initialOptions];
 
@@ -125,9 +165,9 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   }
   
   const { UI_STRINGS } = translations;
-  const blockLabel = uiBlock.label || uiBlock.key;
-  const blockNote = uiBlock.note;
-  const inputPlaceholderText = uiBlock.inputPlaceholder || UI_STRINGS.selectPlaceholder;
+  const blockLabel = uiBlock.label ? getLocalizedString(uiBlock.label, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : uiBlock.key;
+  const blockNote = uiBlock.note ? getLocalizedString(uiBlock.note, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : undefined;
+  const inputPlaceholderText = uiBlock.inputPlaceholder ? getLocalizedString(uiBlock.inputPlaceholder, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : UI_STRINGS.selectPlaceholder;
 
   const uiValueForComponent = currentValue === "" ? UI_EMPTY_SELECTION_VALUE : currentValue;
   const handleChange = (val: string) => { onValueChange(val === UI_EMPTY_SELECTION_VALUE ? "" : val); };
@@ -172,21 +212,21 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
     );
   } else if (uiBlock.choiceType === 'multiInput') {
       const numInputsToRender = uiBlock.maxSelections || 1;
-      const slotLabelTemplate = uiBlock.slotLabel || "Slot {slotNum}";
+      const slotLabelTemplate = uiBlock.slotLabel ? getLocalizedString(uiBlock.slotLabel, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : "Slot {slotNum}";
 
       return (
-        <div key={`${uiBlock.key}-group`} className={cn("flex flex-col rounded-md border bg-background/50 p-3", panelFieldVerticalGap)}>
+        <div key={`${uiBlock.key}-group-${blockIndex}`} className={cn("flex flex-col rounded-md border bg-background/50 p-3", panelFieldVerticalGap)}>
           <Label className="flex font-medium whitespace-nowrap">{blockLabel} <Badge variant="outline">{numInputsToRender}</Badge></Label>
           {Array.from({ length: numInputsToRender }).map((_, index) => {
               const isDisabledByPanelOrDependency = isVisuallyDisabled || (uiBlock.relatedSlotKeyForDisable && !allChoices.find(c => c.featureKey === uiBlock.relatedSlotKeyForDisable)?.value);
               return (
                 <div key={`${uiBlock.key}-slot-${index}`} className={panelFieldVerticalGap}>
                   <Label htmlFor={`${uiBlock.key}-input-${index}`} className="whitespace-nowrap"> {parseAndRenderUIString(slotLabelTemplate, { slotNum: index + 1 })} </Label>
-                  <Input id={`${uiBlock.key}-input-${index}`} value={allChoices.find(c => c.featureKey === uiBlock.key && c.slotIndex === index)?.value || ''} onChange={(e) => onValueChange(e.target.value)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
+                  <Input id={`${uiBlock.key}-input-${index}`} value={currentValue} onChange={(e) => onValueChange(e.target.value)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
                 </div>
               );
           })}
-          {blockNote && <p className="italic">{blockNote}</p>}
+          {blockNote && <p className="italic mt-2">{blockNote}</p>}
         </div>
       );
   }
@@ -362,10 +402,10 @@ const BasicInformationSectionComponent = ({
   const handleOpenClassSpecificChoiceInfoDialogInternal = React.useCallback((uiBlock: ClassSpecificUIBlock) => {
     if (!onOpenClassSpecificChoiceInfoDialog || !translations || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !UI_STRINGS || !DND_CREATURE_TYPES) return;
 
-    const blockLabelForDialog = uiBlock.label || uiBlock.key;
-    let introductoryContentForDialog = uiBlock.infoDialogContent; 
+    const blockLabelForDialog = uiBlock.label ? getLocalizedString(uiBlock.label, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : uiBlock.key;
+    let introductoryContentForDialog = uiBlock.infoDialogContent ? getLocalizedString(uiBlock.infoDialogContent, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : undefined; 
     if (!introductoryContentForDialog && uiBlock.description) { 
-      introductoryContentForDialog = uiBlock.description;
+      introductoryContentForDialog = getLocalizedString(uiBlock.description, UI_STRINGS.currentLangCodeForNotesFallback || 'en');
     }
 
     let optionsForDialog: Array<{ id: string; label: string; description?: string; }> = [];
@@ -377,7 +417,7 @@ const BasicInformationSectionComponent = ({
       } else if (uiBlock.optionsSource === 'creatureTypes' && DND_CREATURE_TYPES) {
         optionsForDialog = DND_CREATURE_TYPES.map(ct => ({ id: ct.id, label: ct.label,  description: ct.description  }));
       } else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) {
-        optionsForDialog = uiBlock.customOptions.map(opt => ({ id: opt.value, label: opt.label, description: opt.description }));
+        optionsForDialog = uiBlock.customOptions.map(opt => ({ id: opt.value, label: getLocalizedString(opt.label, UI_STRINGS.currentLangCodeForNotesFallback || 'en'), description: opt.description ? getLocalizedString(opt.description, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : undefined }));
       }
       optionsForDialog.sort((a,b) => a.label.localeCompare(b.label));
     }
@@ -385,14 +425,14 @@ const BasicInformationSectionComponent = ({
     if (uiBlock.optionsSource && optionsForDialog.length > 0) {
         onOpenClassSpecificChoiceInfoDialog({ 
             type: 'classSpecificChoiceOptions', 
-            title: uiBlock.infoDialogTitle || blockLabelForDialog, 
+            title: uiBlock.infoDialogTitle ? getLocalizedString(uiBlock.infoDialogTitle, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : blockLabelForDialog, 
             options: optionsForDialog,
             introductoryContentHtml: introductoryContentForDialog 
         });
     } else if (introductoryContentForDialog) { 
         onOpenClassSpecificChoiceInfoDialog({
             type: 'genericHtml',
-            title: uiBlock.infoDialogTitle || blockLabelForDialog,
+            title: uiBlock.infoDialogTitle ? getLocalizedString(uiBlock.infoDialogTitle, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : blockLabelForDialog,
             content: introductoryContentForDialog
         });
     }
@@ -407,7 +447,7 @@ const BasicInformationSectionComponent = ({
     selectedClassInfo.uiSections.forEach(uiBlock => {
       if (uiBlock.isHeadingOnly) return;
       const numSlots = uiBlock.choiceType === 'multiInput' ? uiBlock.maxSelections : 1;
-      for (let i = 0; i < numSlots; i++) {
+      for (let i = 0; i < (numSlots || 1); i++) {
         const slotIndex = uiBlock.choiceType === 'multiInput' ? i : undefined;
         const existingChoice = choicesToUpdate.find(c => c.featureKey === uiBlock.key && c.slotIndex === slotIndex);
         if (!existingChoice) {
@@ -420,7 +460,7 @@ const BasicInformationSectionComponent = ({
               if (uiBlock.optionsSource === 'domains') tempOptions = DND_DOMAINS.map(d => ({ value: d.id, label: d.label }));
               else if (uiBlock.optionsSource === 'magicSchools') tempOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }));
               else if (uiBlock.optionsSource === 'creatureTypes') tempOptions = DND_CREATURE_TYPES.map(ct => ({ value: ct.id, label: ct.label }));
-              else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) tempOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: opt.label }));
+              else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) tempOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, UI_STRINGS.currentLangCodeForNotesFallback || 'en') }));
 
               const actualSelectableOptions = tempOptions.filter(opt => opt.value !== UI_EMPTY_SELECTION_VALUE && opt.value !== "");
               if (actualSelectableOptions.length > 0) valueToSet = actualSelectableOptions[0].value;
@@ -472,7 +512,17 @@ const BasicInformationSectionComponent = ({
   }, [localAlignment, localClassName, localDeity, DND_DEITIES, selectedClassInfo, setLocalDeity]);
   
   if (translationsLoading || !UI_STRINGS || !DND_RACES || !DND_CLASSES || !ALIGNMENTS || !DND_DEITIES || !SIZES || !GENDERS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) {
-    return null;
+    return (
+      <LockablePanelWrapper
+        title={UI_STRINGS?.basicInformationPanelTitle}
+        description={UI_STRINGS?.basicInformationPanelDescription}
+        icon={ScrollText}
+        headerClassName="bg-muted/20"
+        initialLockedState={false}
+      >
+        {() => (<div className="flex justify-center p-4"><Loader2 className="animate-spin" /></div>) }
+      </LockablePanelWrapper>
+    );
   }
 
   const getCurrentValue = (key: string, index?: number): string => {
@@ -550,7 +600,7 @@ const BasicInformationSectionComponent = ({
                   />
                 )}
                 {!panelIsLocked && aggregatedFeatEffects?.grantedAbilities && aggregatedFeatEffects.grantedAbilities.map(ability => {
-                   const abilityNameForDisplay = ability.name;
+                   const abilityNameForDisplay = getLocalizedString(ability.name, currentLang);
                    if (ability.uses && typeof ability.uses.value === 'number' && ability.uses.per) {
                     const localizedPeriod = (ability.uses.per === 'day' ? (UI_STRINGS.periodDay) : ability.uses.per === 'encounter' ? (UI_STRINGS.periodEncounter) : ability.uses.per === 'week' ? (UI_STRINGS.periodWeek) : ability.uses.per);
                     const usesValue = ability.uses.value;
@@ -584,50 +634,19 @@ const BasicInformationSectionComponent = ({
             <div className={cn("flex flex-col rounded-md border bg-background/50", panelGridGap, panelContentPadding)}>
               <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
                 {selectedClassInfo.uiSections.map((uiBlock, index) => {
-                  const isVisible = React.useMemo(() => {
-                    if (uiBlock.requiredLevel && characterLevel < uiBlock.requiredLevel) return false;
-                    if (uiBlock.conditionAggregatedEffect && aggregatedFeatEffects) {
-                      const propValue = aggregatedFeatEffects[uiBlock.conditionAggregatedEffect.property as keyof AggregatedFeatEffects] as any;
-                      switch (uiBlock.conditionAggregatedEffect.comparison) {
-                        case 'exists': return propValue !== undefined && propValue !== null && (Array.isArray(propValue) ? propValue.length > 0 : true);
-                        case 'greaterThan': return typeof propValue === 'number' && propValue > (uiBlock.conditionAggregatedEffect.value as number);
-                        case 'equals': return propValue === uiBlock.conditionAggregatedEffect.value;
-                        case 'lessThan': return typeof propValue === 'number' && propValue < (uiBlock.conditionAggregatedEffect.value as number);
-                        case 'notEquals': return propValue !== uiBlock.conditionAggregatedEffect.value;
-                        default: return true;
-                      }
-                    }
-                    if (uiBlock.conditionDependsOnUIStateKey) {
-                      const controllingValue = getCurrentValue(uiBlock.conditionDependsOnUIStateKey);
-                      if (uiBlock.conditionDependsOnUIStateValueNotIn) {
-                          return !uiBlock.conditionDependsOnUIStateValueNotIn.includes(controllingValue);
-                      }
-                    }
-                    return true;
-                  }, [uiBlock, aggregatedFeatEffects, characterLevel, characterData.classSpecificChoices]);
-
-                  if (!isVisible) return null;
-                  
-                  let isVisuallyDisabled = panelIsLocked;
-                  if (uiBlock.relatedSlotKeyForDisable && !isVisuallyDisabled) {
-                      const relatedChoiceValue = getCurrentValue(uiBlock.relatedSlotKeyForDisable);
-                      if (!relatedChoiceValue || relatedChoiceValue === "") isVisuallyDisabled = true;
-                  }
-                  if (!isVisuallyDisabled && uiBlock.disabledIfChoiceValue) {
-                      const controllingChoiceValue = getCurrentValue(uiBlock.disabledIfChoiceValue.featureKey);
-                      if (uiBlock.disabledIfChoiceValue.values.includes(controllingChoiceValue)) isVisuallyDisabled = true;
-                  }
                   const currentValue = getCurrentValue(uiBlock.key, uiBlock.choiceType === 'multiInput' ? index : undefined);
-
                   return (
                      <MemoizedClassSpecificField
                       key={`csf-memo-${uiBlock.key}-${index}`}
                       uiBlock={uiBlock}
-                      isVisuallyDisabled={isVisuallyDisabled}
+                      isVisuallyDisabled={panelIsLocked}
                       currentValue={currentValue}
                       allChoices={characterData.classSpecificChoices || []}
                       onValueChange={(newValue) => handleClassSpecificChoiceChange(uiBlock.key, newValue, uiBlock.choiceType === 'multiInput' ? index : undefined)}
                       onOpenInfoDialog={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
+                      characterLevel={characterLevel}
+                      aggregatedFeatEffects={aggregatedFeatEffects}
+                      blockIndex={index}
                     />
                   );
                 })}
