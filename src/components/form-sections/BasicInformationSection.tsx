@@ -118,7 +118,6 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
     }
     finalOptions.push(...filteredOptions);
     return finalOptions;
-
   }, [translationsLoading, translations, uiBlock, allChoices]);
   
   if (translationsLoading || !translations) {
@@ -280,11 +279,6 @@ const BasicInformationSectionComponent = ({
     DEBOUNCE_DELAY
   );
 
-  const { UI_STRINGS, ALIGNMENTS, DND_RACES, DND_CLASSES, DND_DEITIES, SIZES, GENDERS, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, PREFERRED_DEFAULT_ALIGNMENT_IDS } = translations || {};
-
-  const selectedClassInfo = React.useMemo(() => DND_CLASSES?.find(c => c.id === localClassName), [DND_CLASSES, localClassName]);
-  const selectedRaceInfo = React.useMemo(() => DND_RACES?.find(r => r.id === localRace), [DND_RACES, localRace]);
-
   const choicesRef = React.useRef(classSpecificChoices);
   React.useEffect(() => {
     choicesRef.current = classSpecificChoices;
@@ -327,6 +321,7 @@ const BasicInformationSectionComponent = ({
          if (!choiceExists) updatedChoices = updatedChoices.filter(c => !(c.featureKey === featureKey && c.slotIndex === undefined && c.value === ""));
       }
     }
+    const selectedClassInfo = translations?.DND_CLASSES?.find(c => c.id === localClassName);
     updatedChoices = updatedChoices.filter(c => {
       if (c.value !== "") return true;
       const originalChoice = (choicesRef.current || []).find(ec => ec.featureKey === c.featureKey && ec.slotIndex === c.slotIndex);
@@ -334,8 +329,43 @@ const BasicInformationSectionComponent = ({
       return (originalChoice && originalChoice.value !== "") || (uiBlockDef && uiBlockDef.defaultValue === "");
     });
     onFieldChange('classSpecificChoices', updatedChoices);
-  }, [onFieldChange, selectedClassInfo]);
+  }, [onFieldChange, translations, localClassName]);
+  
+  const { UI_STRINGS, ALIGNMENTS, DND_RACES, DND_CLASSES, DND_DEITIES, SIZES, GENDERS, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, PREFERRED_DEFAULT_ALIGNMENT_IDS } = translations || {};
 
+  const selectedClassInfo = React.useMemo(() => DND_CLASSES?.find(c => c.id === localClassName), [DND_CLASSES, localClassName]);
+  const selectedRaceInfo = React.useMemo(() => DND_RACES?.find(r => r.id === localRace), [DND_RACES, localRace]);
+
+  const classSpecificFieldsVisibility = React.useMemo(() => {
+    const visibility: Record<string, boolean> = {};
+    if (!selectedClassInfo?.uiSections) {
+        return visibility;
+    }
+    
+    selectedClassInfo.uiSections.forEach((uiBlock, index) => {
+        let isVisible = true;
+        if (uiBlock.requiredLevel && characterLevel < uiBlock.requiredLevel) {
+            isVisible = false;
+        } else if (uiBlock.conditionAggregatedEffect && aggregatedFeatEffects) {
+          const propValue = aggregatedFeatEffects[uiBlock.conditionAggregatedEffect.property as keyof AggregatedFeatEffects] as any;
+          switch (uiBlock.conditionAggregatedEffect.comparison) {
+            case 'exists': isVisible = propValue !== undefined && propValue !== null && (Array.isArray(propValue) ? propValue.length > 0 : true); break;
+            case 'greaterThan': isVisible = typeof propValue === 'number' && propValue > (uiBlock.conditionAggregatedEffect.value as number); break;
+            case 'equals': isVisible = propValue === uiBlock.conditionAggregatedEffect.value; break;
+            case 'lessThan': isVisible = typeof propValue === 'number' && propValue < (uiBlock.conditionAggregatedEffect.value as number); break;
+            case 'notEquals': isVisible = propValue !== uiBlock.conditionAggregatedEffect.value; break;
+            default: break;
+          }
+        } else if (uiBlock.conditionDependsOnUIStateKey) {
+          const controllingValue = classSpecificChoices.find(c => c.featureKey === uiBlock.conditionDependsOnUIStateKey)?.value || "";
+          if (uiBlock.conditionDependsOnUIStateValueNotIn) {
+              isVisible = !uiBlock.conditionDependsOnUIStateValueNotIn.includes(controllingValue);
+          }
+        }
+        visibility[`${uiBlock.key}-${index}`] = isVisible;
+    });
+    return visibility;
+  }, [selectedClassInfo, characterLevel, aggregatedFeatEffects, classSpecificChoices]);
 
   const availableAlignments = React.useMemo(() => {
     if (!ALIGNMENTS || !selectedClassInfo) return [];
@@ -496,38 +526,6 @@ const BasicInformationSectionComponent = ({
     }
     if (!deityIsValid) setLocalDeity("");
   }, [localAlignment, localClassName, localDeity, DND_DEITIES, selectedClassInfo, setLocalDeity]);
-  
-  const classSpecificFieldsVisibility = React.useMemo(() => {
-    const visibility: Record<string, boolean> = {};
-    if (!selectedClassInfo?.uiSections) {
-        return visibility;
-    }
-    
-    selectedClassInfo.uiSections.forEach((uiBlock, index) => {
-        let isVisible = true;
-        if (uiBlock.requiredLevel && characterLevel < uiBlock.requiredLevel) {
-            isVisible = false;
-        } else if (uiBlock.conditionAggregatedEffect && aggregatedFeatEffects) {
-          const propValue = aggregatedFeatEffects[uiBlock.conditionAggregatedEffect.property as keyof AggregatedFeatEffects] as any;
-          switch (uiBlock.conditionAggregatedEffect.comparison) {
-            case 'exists': isVisible = propValue !== undefined && propValue !== null && (Array.isArray(propValue) ? propValue.length > 0 : true); break;
-            case 'greaterThan': isVisible = typeof propValue === 'number' && propValue > (uiBlock.conditionAggregatedEffect.value as number); break;
-            case 'equals': isVisible = propValue === uiBlock.conditionAggregatedEffect.value; break;
-            case 'lessThan': isVisible = typeof propValue === 'number' && propValue < (uiBlock.conditionAggregatedEffect.value as number); break;
-            case 'notEquals': isVisible = propValue !== uiBlock.conditionAggregatedEffect.value; break;
-            default: break;
-          }
-        } else if (uiBlock.conditionDependsOnUIStateKey) {
-          const controllingValue = classSpecificChoices.find(c => c.featureKey === uiBlock.conditionDependsOnUIStateKey)?.value || "";
-          if (uiBlock.conditionDependsOnUIStateValueNotIn) {
-              isVisible = !uiBlock.conditionDependsOnUIStateValueNotIn.includes(controllingValue);
-          }
-        }
-        visibility[`${uiBlock.key}-${index}`] = isVisible;
-    });
-    return visibility;
-  }, [selectedClassInfo, characterLevel, aggregatedFeatEffects, classSpecificChoices]);
-
   
   if (translationsLoading || !UI_STRINGS || !DND_RACES || !DND_CLASSES || !ALIGNMENTS || !DND_DEITIES || !SIZES || !GENDERS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) {
     return null;
@@ -765,4 +763,5 @@ const BasicInformationSectionComponent = ({
 };
 BasicInformationSectionComponent.displayName = 'BasicInformationSectionComponent';
 export const BasicInformationSection = React.memo(BasicInformationSectionComponent);
+
 

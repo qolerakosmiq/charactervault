@@ -972,10 +972,9 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       age: character.age,
       alignment: character.alignment,
       experiencePoints: character.experiencePoints,
-      classSpecificChoices: character.classSpecificChoices,
       deity: character.deity,
     };
-  }, [character?.race, character?.classes, character?.feats, character?.age, character?.alignment, character?.experiencePoints, character?.classSpecificChoices, character?.deity]);
+  }, [character?.race, character?.classes, character?.feats, character?.age, character?.alignment, character?.experiencePoints, character?.deity]);
 
   const savingThrowsData = React.useMemo<SavingThrowsPanelProps['savingThrowsData'] | undefined>(() => {
     if(!character) return undefined;
@@ -1141,7 +1140,6 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     !translations.UI_STRINGS ||
     !detailedAbilityScores ||
     !aggregatedFeatEffects ||
-    !basicInfoData ||
     allItemDefinitions.length === 0
   ) {
     return (
@@ -1427,3 +1425,4 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
+
