@@ -54,7 +54,7 @@ const LockablePanelWrapperComponent = ({
   return (
     <Card className={cardClassName}>
       <CardHeader className={cn("flex justify-between items-start p-4", headerClassName)}>
-        <div className="flex items-center space-x-3">
+        <div className="flex items-start space-x-3">
           {Icon && <Icon className="text-primary" />}
           <div>
             <CardTitle className="font-serif">{title}</CardTitle>
