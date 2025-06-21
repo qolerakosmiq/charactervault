@@ -46,7 +46,8 @@ const UI_EMPTY_SELECTION_VALUE = generateRandomAlphanumericString(50);
 
 
 export interface BasicInformationSectionProps {
-  characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes' | 'classSpecificChoices'>;
+  characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
+  classSpecificChoices: CharacterClassSpecificChoice[];
   onFieldChange: (
     field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classSpecificChoices'>,
     value: any
@@ -71,8 +72,8 @@ interface ClassSpecificFieldProps {
   onValueChange: (newValue: string) => void;
   onOpenInfoDialog: () => void;
   blockIndex: number;
-  characterLevel: number;
   allChoices: CharacterClassSpecificChoice[];
+  characterLevel: number;
   aggregatedFeatEffects: AggregatedFeatEffects | null;
 }
 
@@ -82,8 +83,8 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   onValueChange,
   onOpenInfoDialog,
   blockIndex,
-  characterLevel,
   allChoices,
+  characterLevel,
   aggregatedFeatEffects,
 }) => {
   const { translations, isLoading: translationsLoading } = useI18n();
@@ -109,7 +110,7 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
     }
     return true;
   }, [uiBlock, characterLevel, aggregatedFeatEffects, allChoices]);
-
+  
   const finalSelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [];
 
@@ -146,12 +147,12 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
 
   }, [translationsLoading, translations, uiBlock, allChoices]);
 
-  if (!isVisible) return null;
-  
   if (translationsLoading || !translations) {
     return <Skeleton className="h-10 w-full" />;
   }
   
+  if (!isVisible) return null;
+
   const { UI_STRINGS } = translations;
   
   let isVisuallyDisabled = propIsVisuallyDisabled;
@@ -234,7 +235,7 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
                 </div>
               );
           })}
-          {blockNote && <p className="italic text-xs text-muted-foreground">{blockNote}</p>}
+          {blockNote && <p className="italic mt-2">{blockNote}</p>}
         </div>
       );
   }
@@ -245,6 +246,7 @@ const MemoizedClassSpecificField = React.memo(ClassSpecificFieldComponent);
 
 const BasicInformationSectionComponent = ({
   characterData,
+  classSpecificChoices,
   onFieldChange,
   onClassChange,
   ageEffectsDetails,
@@ -311,10 +313,10 @@ const BasicInformationSectionComponent = ({
   const selectedClassInfo = React.useMemo(() => DND_CLASSES?.find(c => c.id === localClassName), [DND_CLASSES, localClassName]);
   const selectedRaceInfo = React.useMemo(() => DND_RACES?.find(r => r.id === localRace), [DND_RACES, localRace]);
 
-  const choicesRef = React.useRef(characterData.classSpecificChoices);
+  const choicesRef = React.useRef(classSpecificChoices);
   React.useEffect(() => {
-    choicesRef.current = characterData.classSpecificChoices;
-  }, [characterData.classSpecificChoices]);
+    choicesRef.current = classSpecificChoices;
+  }, [classSpecificChoices]);
 
   const handleClassSpecificChoiceChange = React.useCallback((
     featureKey: string,
@@ -360,7 +362,7 @@ const BasicInformationSectionComponent = ({
       return (originalChoice && originalChoice.value !== "") || (uiBlockDef && uiBlockDef.defaultValue === "");
     });
     onFieldChange('classSpecificChoices', updatedChoices);
-  }, [onFieldChange, selectedClassInfo?.uiSections]);
+  }, [onFieldChange, selectedClassInfo]);
 
 
   const availableAlignments = React.useMemo(() => {
@@ -453,7 +455,7 @@ const BasicInformationSectionComponent = ({
 
   React.useEffect(() => {
     if (!selectedClassInfo?.uiSections || !translations || !UI_STRINGS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) return;
-    let choicesToUpdate: CharacterClassSpecificChoice[] = [...(characterData.classSpecificChoices || [])];
+    let choicesToUpdate: CharacterClassSpecificChoice[] = [...(classSpecificChoices || [])];
     let changed = false;
 
     selectedClassInfo.uiSections.forEach(uiBlock => {
@@ -488,7 +490,7 @@ const BasicInformationSectionComponent = ({
       }
     });
     if (changed) onFieldChange('classSpecificChoices', choicesToUpdate);
-  }, [selectedClassInfo?.id, selectedClassInfo?.uiSections, translations, UI_STRINGS, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, onFieldChange, characterData.classSpecificChoices]);
+  }, [selectedClassInfo?.id, selectedClassInfo?.uiSections, translations, UI_STRINGS, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, onFieldChange, classSpecificChoices]);
 
   React.useEffect(() => {
     if (!selectedClassInfo || !PREFERRED_DEFAULT_ALIGNMENT_IDS || !ALIGNMENTS) return;
@@ -636,7 +638,7 @@ const BasicInformationSectionComponent = ({
                     onOpenInfoDialog={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
                     blockIndex={index}
                     characterLevel={characterLevel}
-                    allChoices={characterData.classSpecificChoices || []}
+                    allChoices={classSpecificChoices}
                     aggregatedFeatEffects={aggregatedFeatEffects}
                   />
                 ))}

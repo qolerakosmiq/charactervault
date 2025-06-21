@@ -914,10 +914,9 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     if (!character) return undefined;
     return {
       name: character.name, playerName: character.playerName, race: character.race, alignment: character.alignment,
-      deity: character.deity, size: character.size, age: character.age, gender: character.gender, classes: character.classes,
-      classSpecificChoices: character.classSpecificChoices,
+      deity: character.deity, size: character.size, age: character.age, gender: character.gender, classes: character.classes
     };
-  }, [character?.name, character?.playerName, character?.race, character?.alignment, character?.deity, character?.size, character?.age, character?.gender, character?.classes, character?.classSpecificChoices]);
+  }, [character?.name, character?.playerName, character?.race, character?.alignment, character?.deity, character?.size, character?.age, character?.gender, character?.classes]);
 
   const abilityScoresData = React.useMemo<CharacterFormAbilityScoresSectionProps['abilityScoresData'] | undefined>(() => {
     if (!character) return undefined;
@@ -1165,6 +1164,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         {basicInfoData && (
           <BasicInformationSection
             characterData={basicInfoData}
+            classSpecificChoices={character.classSpecificChoices || []}
             onFieldChange={handleCoreInfoFieldChange}
             onClassChange={handleClassChange}
             ageEffectsDetails={ageEffectsDetails}
