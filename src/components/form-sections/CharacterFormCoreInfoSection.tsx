@@ -501,7 +501,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       return (
         <div key={`${uiBlock.key}-${blockIndex}-select`}>
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
-          <div className="flex">
+          <div className="flex items-center">
             <div className="flex-grow">
                 <Select name={uiBlock.key} value={uiValueForComponent} onValueChange={handleChange} disabled={isDisabledByPanelOrDependency} >
                     <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`}> <SelectValue /> </SelectTrigger>
@@ -517,7 +517,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       return (
         <div key={`${uiBlock.key}-${blockIndex}-combobox`}>
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
-           <div className="flex">
+           <div className="flex items-center">
             <div className="flex-grow">
                 <Select
                   name={uiBlock.key}
@@ -603,7 +603,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       description={UI_STRINGS.coreAttributesDescription}
       icon={ScrollText}
       initialLockedState={false}
-      headerClassName="bg-muted/20"
+      headerClassName="p-4 bg-muted/20"
     >
       {({ isLocked: panelIsLocked }) => (
         <CardContent>
@@ -621,14 +621,14 @@ const CharacterFormCoreInfoSectionComponent = ({
           <div className="grid grid-cols-2">
             <div>
               <Label htmlFor="race">{UI_STRINGS.raceLabel}</Label>
-              <div className="flex">
+              <div className="flex items-center">
                 <div className="flex-grow">
                   <Select value={localRace} onValueChange={(value) => setLocalRace(value as DndRaceId)} disabled={panelIsLocked} >
                     <SelectTrigger id="race"> <SelectValue /> </SelectTrigger>
                     <SelectContent> {DND_RACES.map(race => <SelectItem key={race.id} value={race.id}>{race.label}</SelectItem>)} </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon-sm" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenRaceInfoDialog} disabled={panelIsLocked && !localRace}> <Info /> </Button>
+                <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenRaceInfoDialog} disabled={panelIsLocked && !localRace}> <Info /> </Button>
               </div>
               {!panelIsLocked && selectedRaceInfo && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
                  <div className="flex flex-wrap">
@@ -646,14 +646,14 @@ const CharacterFormCoreInfoSectionComponent = ({
             </div>
              <div>
               <Label htmlFor="className">{UI_STRINGS.classLabel}</Label>
-              <div className="flex">
+              <div className="flex items-center">
                 <div className="flex-grow">
                   <Select value={localClassName} onValueChange={(value) => setLocalClassName(value as DndClassId)} disabled={panelIsLocked} >
                     <SelectTrigger id="className"> <SelectValue /> </SelectTrigger>
                     <SelectContent> {DND_CLASSES.map(c => <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>)} </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon-sm" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenClassInfoDialog} disabled={panelIsLocked && !localClassName} > <Info /> </Button>
+                <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenClassInfoDialog} disabled={panelIsLocked && !localClassName} > <Info /> </Button>
               </div>
               <div className="flex flex-wrap">
                 {!panelIsLocked && selectedClassInfo?.hitDice && (
@@ -709,19 +709,19 @@ const CharacterFormCoreInfoSectionComponent = ({
           <div className="grid grid-cols-2">
             <div>
               <Label htmlFor="alignment">{UI_STRINGS.alignmentLabel}</Label>
-              <div className="flex">
+              <div className="flex items-center">
                 <div className="flex-grow">
                   <Select name="alignment" value={localAlignment === "" ? UI_EMPTY_SELECTION_VALUE : localAlignment} onValueChange={(value) => setLocalAlignment(value === UI_EMPTY_SELECTION_VALUE ? "" : value as CharacterAlignment)} disabled={panelIsLocked} >
                     <SelectTrigger id="alignment"> <SelectValue /> </SelectTrigger>
                     <SelectContent> {availableAlignments.map(align => ( <SelectItem key={align.id} value={align.id === "" ? UI_EMPTY_SELECTION_VALUE : align.id}>{align.label}</SelectItem> ))} </SelectContent>
                   </Select>
                 </div>
-                <Button type="button" variant="ghost" size="icon-sm" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment}> <Info /> </Button>
+                <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment}> <Info /> </Button>
               </div>
             </div>
             <div>
                 <Label htmlFor="deity">{UI_STRINGS.deityLabel}</Label>
-                <div className="flex">
+                <div className="flex items-center">
                   <div className="flex-grow">
                       <Select
                         name="deity"
@@ -741,7 +741,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                         </SelectContent>
                       </Select>
                   </div>
-                  <Button type="button" variant="ghost" size="icon-sm" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenDeityInfoDialog} disabled={(panelIsLocked && (!localDeity || localDeity.trim() === '')) || (!localDeity || localDeity.trim() === '')} > <Info /> </Button>
+                  <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenDeityInfoDialog} disabled={(panelIsLocked && (!localDeity || localDeity.trim() === '')) || (!localDeity || localDeity.trim() === '')} > <Info /> </Button>
                 </div>
               </div>
           </div>
@@ -749,7 +749,7 @@ const CharacterFormCoreInfoSectionComponent = ({
           <div className="grid grid-cols-3">
             <div>
               <Label htmlFor="age" className="inline-block">{UI_STRINGS.ageLabel}</Label>
-              <Input
+              <input
                 id="age"
                 type="number"
                 value={localAge}
@@ -757,6 +757,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                 min={currentMinAgeForInput}
                 max={1000}
                 disabled={panelIsLocked}
+                className={cn('flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50')}
               />
               {!panelIsLocked && ageEffectsDetails && (ageEffectsDetails.categoryName !== (UI_STRINGS.ageCategoryAdult) || ageEffectsDetails.effects.length > 0) && (
                  <div className="flex flex-wrap">
@@ -786,10 +787,14 @@ const CharacterFormCoreInfoSectionComponent = ({
             </div>
             <div>
               <Label htmlFor="sizeCategory">{UI_STRINGS.sizeLabel}</Label>
-              <Select name="sizeCategory" value={localSize === "" ? UI_EMPTY_SELECTION_VALUE : localSize} onValueChange={(value) => setLocalSize(value === UI_EMPTY_SELECTION_VALUE ? "" : value as CharacterSize)} disabled={panelIsLocked} >
-                <SelectTrigger id="sizeCategory"><SelectValue /></SelectTrigger>
-                <SelectContent> {SIZES.map(s => <SelectItem key={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id} value={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id}>{s.label}</SelectItem>)} </SelectContent>
-              </Select>
+              <div className="flex items-center">
+                <div className="flex-grow">
+                  <Select name="sizeCategory" value={localSize === "" ? UI_EMPTY_SELECTION_VALUE : localSize} onValueChange={(value) => setLocalSize(value === UI_EMPTY_SELECTION_VALUE ? "" : value as CharacterSize)} disabled={panelIsLocked} >
+                    <SelectTrigger id="sizeCategory"><SelectValue /></SelectTrigger>
+                    <SelectContent> {SIZES.map(s => <SelectItem key={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id} value={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id}>{s.label}</SelectItem>)} </SelectContent>
+                  </Select>
+                </div>
+              </div>
               {!panelIsLocked && localSize && (() => {
                   const selectedSizeObject = SIZES.find(s => s.id === localSize);
                   if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
