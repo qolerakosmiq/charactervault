@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -536,7 +535,7 @@ const BasicInformationSectionComponent = ({
       const numInputsToRender = uiBlock.maxSelections;
       const slotLabelTemplate = uiBlock.slotLabel || `${uiBlock.key} Slot {slotNum}`;
       return (
-        <div key={`${uiBlock.key}-group-${blockIndex}`} className="border rounded-md bg-background/50 p-3 flex flex-col gap-3">
+        <div key={`${uiBlock.key}-group-${blockIndex}`} className="flex flex-col gap-3 rounded-md border bg-background/50 p-3">
           <Label className="flex font-medium whitespace-nowrap">{blockLabel} <Badge variant="outline">{numInputsToRender}</Badge></Label>
           {Array.from({ length: numInputsToRender }).map((_, index) => (
             <div key={`${uiBlock.key}-slot-${index}`} className={panelFieldVerticalGap}>
@@ -544,7 +543,7 @@ const BasicInformationSectionComponent = ({
               <Input id={`${uiBlock.key}-input-${index}`} value={getCurrentValue(uiBlock.key, index)} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, index)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
             </div>
           ))}
-          {blockNote && <p className="italic mt-2">{blockNote}</p>}
+          {blockNote && <p className="italic">{blockNote}</p>}
         </div>
       );
     } else if (uiBlock.choiceType === 'textInput') {

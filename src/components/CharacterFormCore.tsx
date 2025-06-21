@@ -47,7 +47,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { InfoDisplayDialog } from '@/components/InfoDisplayDialog';
 import { RollDialog, type RollDialogProps } from '@/components/RollDialog';
-import { BasicInformationSection, type BasicInformationSectionProps } from '@/components/form-sections/CharacterFormCoreInfoSection';
+import { BasicInformationSection, type BasicInformationSectionProps } from '@/components/form-sections/BasicInformationSection';
 import { CharacterFormAbilityScoresSection, type CharacterFormAbilityScoresSectionProps } from '@/components/form-sections/CharacterFormAbilityScoresSection';
 import { CharacterFormStoryPortraitSection, type CharacterFormStoryPortraitSectionProps } from '@/components/form-sections/CharacterFormStoryPortraitSection';
 import { SkillsFormSection, type SkillsFormSectionProps } from '@/components/form-sections/SkillsFormSection';
@@ -873,14 +873,15 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     onSave(finalCharacterData);
   }, [character, onSave, toast, translations]);
   
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+  const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLFormElement>) => {
     if (
       e.key === 'Enter' &&
-      (e.target as HTMLElement).tagName.toLowerCase() === 'input'
+      e.target instanceof HTMLElement &&
+      e.target.tagName.toLowerCase() === 'input'
     ) {
       e.preventDefault();
     }
-  };
+  }, []);
 
   const characterLevelFromXP = React.useMemo(() => {
     if (!character?.experiencePoints || !translations?.XP_TABLE || !translations.EPIC_LEVEL_XP_INCREASE) return 1;
