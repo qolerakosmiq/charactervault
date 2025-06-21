@@ -30,7 +30,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollText, Info, Heart, Activity, ListChecks, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn, parseAndRenderUIString } from '@/lib/utils';
+import { cn, parseAndRenderUIString, generateRandomAlphanumericString } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
@@ -38,18 +38,10 @@ import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 import { DualBadge } from '@/components/ui/DualBadge';
-import { panelGridGap, panelFieldHorizontalGap, panelFieldVerticalGap, panelBadgeGroupGap } from '@/config/layout';
+import { panelGridGap, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelBadgeGroupGap } from '@/config/layout';
 
 const DEBOUNCE_DELAY = 400;
 
-const generateRandomAlphanumericString = (length: number): string => {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-};
 const UI_EMPTY_SELECTION_VALUE = generateRandomAlphanumericString(50);
 
 
@@ -552,7 +544,7 @@ const BasicInformationSectionComponent = ({
               <Input id={`${uiBlock.key}-input-${index}`} value={getCurrentValue(uiBlock.key, index)} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, index)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
             </div>
           ))}
-          {blockNote && <p className="italic">{blockNote}</p>}
+          {blockNote && <p className="italic mt-2">{blockNote}</p>}
         </div>
       );
     } else if (uiBlock.choiceType === 'textInput') {
@@ -679,7 +671,7 @@ const BasicInformationSectionComponent = ({
           </div>
 
           {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.length > 0 && (
-            <div className="flex flex-col gap-4 rounded-md border bg-background/50 p-4">
+            <div className={cn("flex flex-col rounded-md border bg-background/50", panelGridGap, panelContentPadding)}>
               <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
                 {selectedClassInfo.uiSections.map((uiBlock, index) => (
                   <React.Fragment key={`ui-section-wrapper-${uiBlock.key}-${index}`}>

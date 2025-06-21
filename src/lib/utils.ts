@@ -1,3 +1,4 @@
+
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import React from 'react';
@@ -34,11 +35,10 @@ const getProperty = (obj: any, path: string): any => {
     }
     return current;
   } catch (error) {
-    console.error(`Error accessing path "${path}" in object:`, obj, error);
+    // console.error(`Error accessing path "${path}" in object:`, obj, error);
     return undefined;
   }
 };
-
 
 export function parseAndRenderUIString(uiString: string, dataContext?: Record<string, any>): React.ReactNode {
   if (!uiString) return '';
@@ -46,53 +46,88 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
   const elements: React.ReactNode[] = [];
   let lastIndex = 0;
 
-  // Regex to find <badge> tags and {variable.path[index].property} placeholders
-  const regex = /(<badge(?: outline)?>.*?<\/badge>)|({[a-zA-Z0-9_.[\]]+})/g;
+  const regex = /(<badge(?: outline)?>.*?<\/badge>)|(<color accent>.*?<\/color>)|(<b>.*?<\/b>)|(<br\s*\/?>)|({[a-zA-Z0-9_.[\]]+})/g;
 
   let match;
   while ((match = regex.exec(uiString)) !== null) {
-    // Add text before the match
     if (match.index > lastIndex) {
       elements.push(uiString.substring(lastIndex, match.index));
     }
 
-    const fullMatch = match[0];
+    const badgeMatch = match[1];
+    const colorMatch = match[2];
+    const boldMatch = match[3];
+    const brMatch = match[4];
+    const variableMatch = match[5];
 
-    if (fullMatch.startsWith("<badge")) {
-      const isOutline = fullMatch.startsWith("<badge outline>");
-      const contentMatch = fullMatch.match(/<badge(?: outline)?>(.*?)<\/badge>/);
-      let content = contentMatch ? contentMatch[1] : '';
+    if (badgeMatch) {
+      const isOutline = badgeMatch.includes(" outline");
+      const contentMatch = badgeMatch.match(/<badge(?: outline)?>(.*?)<\/badge>/);
+      const rawBadgeContent = contentMatch ? contentMatch[1] : '';
       
-      // Check if badge content is a variable placeholder
-      if (content.startsWith("{") && content.endsWith("}")) {
-        const variablePathInBadge = content.substring(1, content.length - 1);
-        const valueInBadge = dataContext ? getProperty(dataContext, variablePathInBadge) : undefined;
-        content = valueInBadge !== undefined ? String(valueInBadge) : `{${variablePathInBadge}}`;
-      }
-
+      const badgeContentWithNbsp = rawBadgeContent.replace(/ /g, "\u00A0");
+      
+      const badgeChildNodes = parseAndRenderUIString(badgeContentWithNbsp, dataContext);
+      
       elements.push(
-        <Badge key={`${match.index}-${elements.length}`} variant={isOutline ? "outline" : "default"}>
-          {content}
+        <Badge key={`${match.index}-${elements.length}-badge-${Math.random().toString(36).substring(7)}`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
+          {badgeChildNodes}
         </Badge>
       );
-    } else if (fullMatch.startsWith("{") && fullMatch.endsWith("}")) {
-      const variablePath = fullMatch.substring(1, fullMatch.length - 1);
+    } else if (colorMatch) {
+      const colorContentMatch = colorMatch.match(/<color accent>(.*?)<\/color>/);
+      const content = colorContentMatch ? colorContentMatch[1] : '';
+      elements.push(
+        <span key={`${match.index}-${elements.length}-color-${Math.random().toString(36).substring(7)}`} className="text-accent">
+          {parseAndRenderUIString(content, dataContext)}
+        </span>
+      );
+    } else if (boldMatch) {
+      const boldContentMatch = boldMatch.match(/<b>(.*?)<\/b>/);
+      const content = boldContentMatch ? boldContentMatch[1] : '';
+      elements.push(
+        <strong key={`${match.index}-${elements.length}-bold-${Math.random().toString(36).substring(7)}`}>
+          {parseAndRenderUIString(content, dataContext)}
+        </strong>
+      );
+    } else if (brMatch) {
+      elements.push(React.createElement('br', { key: `${match.index}-${elements.length}-br-${Math.random().toString(36).substring(7)}` }));
+    } else if (variableMatch) {
+      const variablePath = variableMatch.substring(1, variableMatch.length - 1);
       const value = dataContext ? getProperty(dataContext, variablePath) : undefined;
-      elements.push(value !== undefined ? String(value) : `{${variablePath}}`);
+      
+      if (value !== undefined) {
+        if (typeof value === 'string' && (value.includes('<badge') || value.includes('<color') || value.includes('<b>') || value.includes('{') || value.includes('<br'))) {
+          elements.push(parseAndRenderUIString(value, dataContext));
+        } else {
+          elements.push(String(value));
+        }
+      } else {
+        elements.push(`{${variablePath}}`); 
+      }
     }
     lastIndex = regex.lastIndex;
   }
 
-  // Add any remaining text after the last match
   if (lastIndex < uiString.length) {
     elements.push(uiString.substring(lastIndex));
   }
 
-  // If only one element and it's a string, return it directly, otherwise return a fragment
   if (elements.length === 0) return '';
-  if (elements.length === 1 && typeof elements[0] === 'string') return elements[0];
+  if (elements.length === 1 && typeof elements[0] === 'string') {
+    return elements[0];
+  }
   
   return React.createElement(React.Fragment, null, ...elements.map((el, i) => 
-    React.isValidElement(el) ? React.cloneElement(el, { key: `parsed-${i}` }) : el
+    React.isValidElement(el) ? (el.key ? el : React.cloneElement(el, { key: `parsed-el-${i}-${Math.random().toString(36).substring(7)}` })) : el
   ));
 }
+
+export const generateRandomAlphanumericString = (length: number): string => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+};
