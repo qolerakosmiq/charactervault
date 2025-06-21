@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Dices, Info, Calculator, Loader2 } from 'lucide-react';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { cn } from '@/lib/utils';
-import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
+import { Input } from '@/components/ui/input';
 import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog';
 import { AbilityScorePointBuyDialog } from '@/components/AbilityScorePointBuyDialog';
 import { RollDialog, type RollDialogProps } from '@/components/RollDialog';
@@ -20,8 +20,7 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { useToast } from '@/hooks/use-toast';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { parseAndRenderUIString } from '@/lib/utils';
-
-const DEBOUNCE_DELAY = 400; // ms
+import { panelGridGap, panelFieldVerticalGap, DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
 
 const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -67,7 +66,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
     debouncedStates[ability] = useDebouncedFormField(
       abilityScoresData.abilityScores[ability] || 0,
       baseScoreCallback,
-      DEBOUNCE_DELAY
+      DEBOUNCE_DELAY_FORM_INPUT
     );
     
     const tempModCallback = React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange(ability, value), [onAbilityScoreTempCustomModifierChange, ability]);
@@ -75,7 +74,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
     debouncedStates[`${ability}TempMod`] = useDebouncedFormField(
       abilityScoresData.abilityScoreTempCustomModifiers?.[ability] || 0,
       tempModCallback,
-      DEBOUNCE_DELAY
+      DEBOUNCE_DELAY_FORM_INPUT
     );
   });
 
@@ -143,15 +142,15 @@ const CharacterFormAbilityScoresSectionComponent = ({
         initialLockedState={false}
        >
         {() => (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-3">
+          <div className={cn("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3", panelGridGap)}>
             {abilityKeys.map(ability => (
-              <div key={ability} className="flex flex-col items-center space-y-1.5 p-3 border rounded-md bg-card shadow-sm">
+              <div key={ability} className="flex flex-col items-center p-3 border rounded-md bg-card shadow-sm gap-2">
                 <Skeleton className="h-6 w-12 mb-1" />
                 <Skeleton className="h-8 w-16 mb-1" />
                 <Skeleton className="h-4 w-16 mb-1" />
-                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-9 w-full" />
                 <Skeleton className="h-4 w-20 mt-1" />
-                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-9 w-full" />
               </div>
             ))}
           </div>
@@ -172,7 +171,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
       >
         {({ isLocked: panelIsLocked }) => (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-3">
+            <div className={cn("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3", panelGridGap)}>
               {abilityKeys.map(ability => {
                 const [baseScoreValue, setBaseScoreValue] = debouncedStates[ability];
                 const [tempCustomModValue, setTempCustomModValue] = debouncedStates[`${ability}TempMod`];
@@ -191,15 +190,15 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
 
                 return (
-                  <div key={ability} className="flex flex-col items-center space-y-1.5 p-3 border rounded-md bg-card shadow-sm">
+                  <div key={ability} className="flex flex-col items-center p-3 border rounded-md bg-card shadow-sm gap-2">
                     <Label htmlFor={!panelIsLocked ? `base-score-${ability}`: undefined} className="text-center text-md font-medium flex flex-col items-center">
                       <span>{abilityAbbr}</span>
                       <span className="text-xs text-muted-foreground">{abilityDisplayName}</span>
                     </Label>
 
-                    <div className="flex items-center justify-center flex-wrap gap-x-1 gap-y-1 mb-1">
-                      <span className="text-xl font-bold text-accent">{displayTotalScore}</span>
-                      <span className="text-xl text-accent font-normal">({displayModifier >= 0 ? '+' : ''}{displayModifier})</span>
+                    <div className="flex items-center justify-center flex-wrap gap-x-1 gap-y-1">
+                      <p className="text-lg font-bold text-accent">{displayTotalScore}</p>
+                      <span className="text-lg text-accent font-normal">({displayModifier >= 0 ? '+' : ''}{displayModifier})</span>
                       <div className="flex items-center">
                         {actualScoreData && (
                           <Button
@@ -228,31 +227,27 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
                     {!panelIsLocked && (
                       <>
-                        <div className="w-full space-y-0.5">
+                        <div className={cn("w-full", panelFieldVerticalGap)}>
                           <Label htmlFor={`base-score-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
-                          <NumberSpinnerInput
+                          <Input
                             id={`base-score-${ability}`}
+                            type="number"
                             value={baseScoreValue}
-                            onChange={setBaseScoreValue}
+                            onChange={(e) => setBaseScoreValue(parseInt(e.target.value, 10) || 1)}
                             min={1}
-                            inputClassName="h-8 text-base text-center"
-                            buttonSize="icon"
-                            buttonClassName="h-8 w-8"
-                            className="w-full justify-center"
+                            className="h-9 text-base text-center"
                             disabled={panelIsLocked}
                           />
                         </div>
 
-                        <div className="w-full space-y-0.5 pt-1">
+                        <div className={cn("w-full pt-1", panelFieldVerticalGap)}>
                           <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresTempModLabel}</Label>
-                          <NumberSpinnerInput
+                          <Input
                             id={`temp-mod-${ability}`}
+                            type="number"
                             value={tempCustomModValue}
-                            onChange={setTempCustomModValue}
-                            inputClassName="h-8 text-base text-center"
-                            buttonSize="icon"
-                            buttonClassName="h-8 w-8"
-                            className="w-full justify-center"
+                            onChange={(e) => setTempCustomModValue(parseInt(e.target.value, 10) || 0)}
+                            className="h-9 text-base text-center"
                             disabled={panelIsLocked}
                           />
                         </div>
@@ -266,10 +261,10 @@ const CharacterFormAbilityScoresSectionComponent = ({
             {!panelIsLocked && (
               <>
                 <div className="flex flex-col sm:flex-row sm:justify-end gap-2 mt-4 mb-2">
-                    <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)}>
+                    <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} disabled={panelIsLocked}>
                         <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton}
                     </Button>
-                    <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)}>
+                    <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} disabled={panelIsLocked}>
                         <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton}
                     </Button>
                 </div>
@@ -315,3 +310,4 @@ const CharacterFormAbilityScoresSectionComponent = ({
 };
 CharacterFormAbilityScoresSectionComponent.displayName = 'CharacterFormAbilityScoresSectionComponent';
 export const CharacterFormAbilityScoresSection = React.memo(CharacterFormAbilityScoresSectionComponent);
+
