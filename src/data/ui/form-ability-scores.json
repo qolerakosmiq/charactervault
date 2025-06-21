@@ -1,6 +1,7 @@
 
 {
   "abilityScoresSectionTitle": { "en": "Ability Scores", "fr": "Caractéristiques" },
+  "abilityScoresPanelDescription": { "en": "Manage your character's core attributes and generate initial scores.", "fr": "Gérez les attributs principaux de votre personnage et générez les scores initiaux." },
   "abilityScoresRollButton": { "en": "Roll Scores", "fr": "Lancer les scores" },
   "abilityScoresPointBuyButton": { "en": "Point Buy", "fr": "Achat par points" },
   "abilityScoresBaseScoreLabel": { "en": "Base Score", "fr": "Score de base" },
@@ -8,6 +9,8 @@
   "abilityScoresFinalModifierLabel": { "en": "Final Modifier", "fr": "Modificateur final" },
   "abilityScoresNote_full": { "en": "<b>Note:</b> The <badge outline>Temporary Modifier</badge> field adjusts the <badge outline>Base Score</badge>, not the ability modifier derived from the base score. Other bonuses from race, aging, or feats are applied automatically to the total score.", "fr": "<b>Note :</b> Le champ <badge outline>Modificateur temporaire</badge> ajuste le <badge outline>Score de base</badge>, et non le modificateur de caractéristique dérivé du score de base. Les autres bonus de race, de vieillissement ou de dons sont appliqués automatiquement au score total." },
   "abilityScoreRaceModBadgeFormat": { "en": "{abilityAbbr} | <b>{change}</b>", "fr": "{abilityAbbr} | <b>{change}</b>" },
-  "acModSizeBadgeFormat": { "en": "AC | <b>{acModValue}</b>", "fr": "CA | <b>{acModValue}</b>" }
+  "acModSizeBadgeFormat": { "en": "AC | <b>{acModValue}</b>", "fr": "CA | <b>{acModValue}</b>" },
+  "infoDialogAbilityBreakdownAriaLabel": { "en": "Detailed breakdown for {abilityName}", "fr": "Détail du calcul pour {abilityName}" },
+  "rollDialogAbilityCheckAriaLabel": { "en": "Roll {abilityName} Check", "fr": "Lancer un test de {abilityName}" }
 }
     

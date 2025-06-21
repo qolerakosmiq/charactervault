@@ -20,7 +20,7 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { useToast } from '@/hooks/use-toast';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { parseAndRenderUIString } from '@/lib/utils';
-import { panelGridGap, panelFieldVerticalGap, DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
+import { panelGridGap, panelFieldVerticalGap, panelFieldHorizontalGap, DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
 
 const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -137,14 +137,15 @@ const CharacterFormAbilityScoresSectionComponent = ({
     return (
        <LockablePanelWrapper
         title={translations?.UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}
+        description={translations?.UI_STRINGS.abilityScoresPanelDescription || "Manage your character's core attributes and generate initial scores."}
         icon={Dices}
-        cardContentClassName="pt-2"
+        headerClassName="bg-muted/20"
         initialLockedState={false}
        >
         {() => (
           <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
             {abilityKeys.map(ability => (
-              <div key={ability} className="flex flex-col items-center p-3 border rounded-md bg-card shadow-sm gap-2">
+              <div key={ability} className="flex flex-col p-3 border rounded-md bg-card shadow-sm gap-2">
                 <Skeleton className="h-6 w-12 mb-1" />
                 <Skeleton className="h-8 w-16 mb-1" />
                 <Skeleton className="h-4 w-16 mb-1" />
@@ -165,8 +166,9 @@ const CharacterFormAbilityScoresSectionComponent = ({
     <>
       <LockablePanelWrapper
         title={UI_STRINGS.abilityScoresSectionTitle}
+        description={UI_STRINGS.abilityScoresPanelDescription}
         icon={Dices}
-        cardContentClassName="pt-2"
+        headerClassName="bg-muted/20"
         initialLockedState={false}
       >
         {({ isLocked: panelIsLocked }) => (
@@ -186,47 +188,44 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
 
                 return (
-                  <div key={ability} className="flex flex-col items-center p-3 border rounded-md bg-card shadow-sm gap-2">
-                    <Label htmlFor={!panelIsLocked ? `base-score-${ability}`: undefined} className="text-center text-md font-medium flex flex-col items-center">
+                  <div key={ability} className="flex flex-col p-3 border rounded-md bg-card shadow-sm gap-2">
+                    <Label htmlFor={!panelIsLocked ? `base-score-${ability}` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                       <span>{abilityAbbr}</span>
                       <span className="text-xs text-muted-foreground">{abilityDisplayName}</span>
                     </Label>
 
-                    <div className="flex flex-col items-center">
-                      <p className="text-2xl font-bold text-accent">{displayTotalScore}</p>
-                      
-                      <div className="mt-1 flex flex-col items-center">
-                          <Label className="text-xs text-muted-foreground">{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
-                          <div className="flex items-center justify-center">
-                              <span className="text-lg text-accent font-normal">{displayModifier >= 0 ? '+' : ''}{displayModifier}</span>
-                              <div className="flex items-center">
-                                {actualScoreData && (
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center"
-                                    onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
-                                    aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel).replace("{abilityName}", abilityDisplayName)}
-                                  >
-                                    <Info className="h-3.5 w-3.5" />
-                                  </Button>
-                                )}
+                    <p className="text-2xl font-bold text-accent text-center">{displayTotalScore}</p>
+                    
+                    <div className="mt-1 flex flex-col items-center">
+                        <Label className="text-xs text-muted-foreground">{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
+                        <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                            <span className="text-lg text-accent font-normal">{displayModifier >= 0 ? '+' : ''}{displayModifier}</span>
+                            <div className="flex items-center">
+                              {actualScoreData && (
                                 <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center"
-                                    onClick={() => handleOpenRollDialog(ability)}
-                                    aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
-                                  >
-                                    <Dices className="h-3.5 w-3.5" />
-                                  </Button>
-                              </div>
-                          </div>
-                      </div>
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center"
+                                  onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
+                                  aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel).replace("{abilityName}", abilityDisplayName)}
+                                >
+                                  <Info className="h-3.5 w-3.5" />
+                                </Button>
+                              )}
+                              <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center"
+                                  onClick={() => handleOpenRollDialog(ability)}
+                                  aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
+                                >
+                                  <Dices className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                        </div>
                     </div>
-
 
                     {!panelIsLocked && (
                       <div className="w-full mt-auto pt-2 space-y-2">
