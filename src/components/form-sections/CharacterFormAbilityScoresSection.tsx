@@ -192,37 +192,44 @@ const CharacterFormAbilityScoresSectionComponent = ({
                       <span className="text-xs text-muted-foreground">{abilityDisplayName}</span>
                     </Label>
 
-                    <div className="flex items-center justify-center flex-wrap gap-x-1 gap-y-1">
-                      <p className="text-lg font-bold text-accent">{displayTotalScore}</p>
-                      <span className="text-lg text-accent font-normal">({displayModifier >= 0 ? '+' : ''}{displayModifier})</span>
-                      <div className="flex items-center">
-                        {actualScoreData && (
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center"
-                            onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
-                            aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel).replace("{abilityName}", abilityDisplayName)}
-                          >
-                            <Info className="h-3.5 w-3.5" />
-                          </Button>
-                        )}
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center"
-                            onClick={() => handleOpenRollDialog(ability)}
-                            aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
-                          >
-                            <Dices className="h-3.5 w-3.5" />
-                          </Button>
+                    <div className="flex flex-col items-center">
+                      <p className="text-2xl font-bold text-accent">{displayTotalScore}</p>
+                      
+                      <div className="mt-1 flex flex-col items-center">
+                          <Label className="text-xs text-muted-foreground">{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
+                          <div className="flex items-center justify-center">
+                              <span className="text-lg text-accent font-normal">{displayModifier >= 0 ? '+' : ''}{displayModifier}</span>
+                              <div className="flex items-center">
+                                {actualScoreData && (
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center"
+                                    onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
+                                    aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel).replace("{abilityName}", abilityDisplayName)}
+                                  >
+                                    <Info className="h-3.5 w-3.5" />
+                                  </Button>
+                                )}
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center"
+                                    onClick={() => handleOpenRollDialog(ability)}
+                                    aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
+                                  >
+                                    <Dices className="h-3.5 w-3.5" />
+                                  </Button>
+                              </div>
+                          </div>
                       </div>
                     </div>
 
+
                     {!panelIsLocked && (
-                      <>
+                      <div className="w-full mt-auto pt-2 space-y-2">
                         <div className={cn("w-full", panelFieldVerticalGap)}>
                           <Label htmlFor={`base-score-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
                           <Input
@@ -247,7 +254,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                             disabled={panelIsLocked}
                           />
                         </div>
-                      </>
+                      </div>
                     )}
                   </div>
                 );
