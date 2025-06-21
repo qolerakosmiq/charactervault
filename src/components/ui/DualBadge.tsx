@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 type DualBadgeColor = 'primary' | 'secondary' | 'accent' | 'destructive' | 'emerald' | 'default';
 
-interface DualBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface DualBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   leftLabel?: React.ReactNode;
   rightLabel?: React.ReactNode;
   color?: DualBadgeColor;
@@ -55,7 +55,7 @@ export function DualBadge({
             "bg-transparent text-foreground border-2 rounded-l-full border-r-0",
             "px-2.5 py-0.5",
             styles.borderColor,
-            !hasRight && "rounded-r-full border-r-2" 
+            !hasRight && "rounded-r-full border-r-2"
           )}
         >
           {leftLabel}

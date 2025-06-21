@@ -14,7 +14,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
-import { DualBadge } from '@/components/ui/DualBadge';
+import { DualBadge, type DualBadgeProps } from '@/components/ui/DualBadge';
 import { Badge } from '@/components/ui/badge';
 import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
@@ -160,23 +160,12 @@ const SavingThrowsPanelComponent = ({
               const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === abilityKey);
               const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
 
-              let leftBorderColorClass = "border-border";
-              let rightBgClass = "bg-muted";
-              let rightTextClass = "text-muted-foreground";
-              let rightBorderColorClass = "border-border";
-
+              let badgeColor: DualBadgeProps['color'] = 'default';
               if (abilityModifier > 0) {
-                leftBorderColorClass = "border-emerald-600";
-                rightBgClass = "bg-emerald-600";
-                rightTextClass = "text-emerald-50";
-                rightBorderColorClass = "border-emerald-600";
+                badgeColor = 'emerald';
               } else if (abilityModifier < 0) {
-                leftBorderColorClass = "border-destructive";
-                rightBgClass = "bg-destructive";
-                rightTextClass = "text-destructive-foreground";
-                rightBorderColorClass = "border-destructive";
+                badgeColor = 'destructive';
               }
-
 
               return (
                 <Card key={saveType} className="shadow-sm">
@@ -222,9 +211,8 @@ const SavingThrowsPanelComponent = ({
                           <div className="flex justify-center mt-1">
                               <DualBadge
                                   leftLabel={abilityAbbr}
-                                  rightLabel={abilityModifier >= 0 ? `+${abilityModifier}` : String(abilityModifier)}
-                                  leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0 px-2.5 py-0.5", leftBorderColorClass)}
-                                  rightClassName={cn("border-2 rounded-r-full -ml-[2px] px-2.5 py-0.5", rightBgClass, rightTextClass, rightBorderColorClass)}
+                                  rightLabel={renderModifierValue(abilityModifier)}
+                                  color={badgeColor}
                               />
                           </div>
                         </div>
@@ -275,4 +263,3 @@ const SavingThrowsPanelComponent = ({
 
 SavingThrowsPanelComponent.displayName = 'SavingThrowsPanelComponent';
 export const SavingThrowsPanel = React.memo(SavingThrowsPanelComponent);
-
