@@ -64,7 +64,7 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   characterLevel,
   aggregatedFeatEffects,
 }) => {
-  const { translations, isLoading: translationsLoading } = useI18n();
+  const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
 
   const isVisible = React.useMemo(() => {
     if (uiBlock.requiredLevel && characterLevel < uiBlock.requiredLevel) return false;
@@ -92,13 +92,13 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
     if (translationsLoading || !translations) return [];
 
     const { DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, UI_STRINGS } = translations;
-    const emptySelectionLabelText = uiBlock.emptySelectionLabel ? getLocalizedString(uiBlock.emptySelectionLabel, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : UI_STRINGS.deityNoneOption;
+    const emptySelectionLabelText = uiBlock.emptySelectionLabel ? getLocalizedString(uiBlock.emptySelectionLabel, currentLang) : UI_STRINGS.deityNoneOption;
 
     let initialOptions: ComboboxOption[] = [];
     if (uiBlock.optionsSource === 'domains') initialOptions = DND_DOMAINS.map(d => ({ value: d.id, label: d.label }));
     else if (uiBlock.optionsSource === 'magicSchools') initialOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }));
     else if (uiBlock.optionsSource === 'creatureTypes') initialOptions = DND_CREATURE_TYPES.map(ct => ({ value: ct.id, label: ct.label }));
-    else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) initialOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, UI_STRINGS.currentLangCodeForNotesFallback || 'en') }));
+    else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) initialOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, currentLang) }));
 
     let filteredOptions = [...initialOptions];
 
@@ -121,7 +121,7 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
     }
     finalOptions.push(...filteredOptions);
     return finalOptions;
-  }, [translationsLoading, translations, uiBlock, allChoices]);
+  }, [translationsLoading, translations, uiBlock, allChoices, currentLang]);
   
   if (!isVisible) {
     return null;
@@ -133,9 +133,9 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   
   const { UI_STRINGS } = translations;
   
-  const blockLabel = uiBlock.label ? getLocalizedString(uiBlock.label, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : uiBlock.key;
-  const blockNote = uiBlock.note ? getLocalizedString(uiBlock.note, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : undefined;
-  const inputPlaceholderText = uiBlock.inputPlaceholder ? getLocalizedString(uiBlock.inputPlaceholder, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : UI_STRINGS.selectPlaceholder;
+  const blockLabel = uiBlock.label ? getLocalizedString(uiBlock.label, currentLang) : uiBlock.key;
+  const blockNote = uiBlock.note ? getLocalizedString(uiBlock.note, currentLang) : undefined;
+  const inputPlaceholderText = uiBlock.inputPlaceholder ? getLocalizedString(uiBlock.inputPlaceholder, currentLang) : UI_STRINGS.selectPlaceholder;
 
   const getCurrentValue = (key: string): string => {
     const choice = (allChoices || []).find(
@@ -155,7 +155,7 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
       className="shrink-0 text-muted-foreground hover:text-foreground"
       onClick={onOpenInfoDialog}
       disabled={isVisuallyDisabled && !hasInfoContentForDialog}
-      aria-label={(UI_STRINGS.infoDialogClassSpecificChoiceAriaLabel || "Info for {choiceName}").replace("{choiceName}", blockLabel)}
+      aria-label={UI_STRINGS.infoDialogClassSpecificChoiceAriaLabel.replace("{choiceName}", blockLabel)}
     >
       <Info />
     </Button>
@@ -191,23 +191,19 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
 };
 
 const classSpecificFieldAreEqual = (prevProps: Readonly<ClassSpecificFieldProps>, nextProps: Readonly<ClassSpecificFieldProps>): boolean => {
-  // Direct prop checks
   if (prevProps.isVisuallyDisabled !== nextProps.isVisuallyDisabled) return false;
   if (prevProps.uiBlock.key !== nextProps.uiBlock.key) return false;
   if (prevProps.characterLevel !== nextProps.characterLevel) return false;
 
-  // Check if this component's own value has changed
   const currentKey = nextProps.uiBlock.key;
   const prevValue = prevProps.allChoices.find(c => c.featureKey === currentKey)?.value;
   const nextValue = nextProps.allChoices.find(c => c.featureKey === currentKey)?.value;
   if (prevValue !== nextValue) return false;
 
-  // Check if any of the dependencies for this component have changed value
   const dependentKeys = [
     ...(nextProps.uiBlock.excludeOptionsFromKeys || []),
     nextProps.uiBlock.relatedSlotKeyForDisable,
     nextProps.uiBlock.disabledIfChoiceValue?.featureKey,
-    nextProps.uiBlock.conditionDependsOnUIStateKey, // Added for visibility dependencies
   ].filter(Boolean) as string[];
   
   if (dependentKeys.length > 0) {
@@ -220,7 +216,13 @@ const classSpecificFieldAreEqual = (prevProps: Readonly<ClassSpecificFieldProps>
     }
   }
 
-  // Check for aggregatedFeatEffects changes ONLY if the component depends on it
+  // Check visibility dependency separately
+  if(nextProps.uiBlock.conditionDependsOnUIStateKey) {
+     const controllingKey = nextProps.uiBlock.conditionDependsOnUIStateKey;
+     const prevControllingValue = prevProps.allChoices.find(c => c.featureKey === controllingKey)?.value;
+     const nextControllingValue = nextProps.allChoices.find(c => c.featureKey === controllingKey)?.value;
+     if(prevControllingValue !== nextControllingValue) return false;
+  }
   if (nextProps.uiBlock.conditionAggregatedEffect && prevProps.aggregatedFeatEffects !== nextProps.aggregatedFeatEffects) {
     return false;
   }
@@ -414,10 +416,10 @@ const BasicInformationSectionComponent = ({
   const handleOpenClassSpecificChoiceInfoDialogInternal = React.useCallback((uiBlock: ClassSpecificUIBlock) => {
     if (!onOpenClassSpecificChoiceInfoDialog || !translations || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !UI_STRINGS || !DND_CREATURE_TYPES) return;
 
-    const blockLabelForDialog = uiBlock.label ? getLocalizedString(uiBlock.label, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : uiBlock.key;
-    let introductoryContentForDialog = uiBlock.infoDialogContent ? getLocalizedString(uiBlock.infoDialogContent, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : undefined; 
+    const blockLabelForDialog = uiBlock.label ? getLocalizedString(uiBlock.label, currentLang) : uiBlock.key;
+    let introductoryContentForDialog = uiBlock.infoDialogContent ? getLocalizedString(uiBlock.infoDialogContent, currentLang) : undefined; 
     if (!introductoryContentForDialog && uiBlock.description) { 
-      introductoryContentForDialog = getLocalizedString(uiBlock.description, UI_STRINGS.currentLangCodeForNotesFallback || 'en');
+      introductoryContentForDialog = getLocalizedString(uiBlock.description, currentLang);
     }
 
     let optionsForDialog: Array<{ id: string; label: string; description?: string; }> = [];
@@ -429,7 +431,7 @@ const BasicInformationSectionComponent = ({
       } else if (uiBlock.optionsSource === 'creatureTypes' && DND_CREATURE_TYPES) {
         optionsForDialog = DND_CREATURE_TYPES.map(ct => ({ id: ct.id, label: ct.label,  description: ct.description  }));
       } else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) {
-        optionsForDialog = uiBlock.customOptions.map(opt => ({ id: opt.value, label: getLocalizedString(opt.label, UI_STRINGS.currentLangCodeForNotesFallback || 'en'), description: opt.description ? getLocalizedString(opt.description, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : undefined }));
+        optionsForDialog = uiBlock.customOptions.map(opt => ({ id: opt.value, label: getLocalizedString(opt.label, currentLang), description: opt.description ? getLocalizedString(opt.description, currentLang) : undefined }));
       }
       optionsForDialog.sort((a,b) => a.label.localeCompare(b.label));
     }
@@ -437,18 +439,18 @@ const BasicInformationSectionComponent = ({
     if (uiBlock.optionsSource && optionsForDialog.length > 0) {
         onOpenClassSpecificChoiceInfoDialog({ 
             type: 'classSpecificChoiceOptions', 
-            title: uiBlock.infoDialogTitle ? getLocalizedString(uiBlock.infoDialogTitle, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : blockLabelForDialog, 
+            title: uiBlock.infoDialogTitle ? getLocalizedString(uiBlock.infoDialogTitle, currentLang) : blockLabelForDialog, 
             options: optionsForDialog,
             introductoryContentHtml: introductoryContentForDialog 
         });
     } else if (introductoryContentForDialog) { 
         onOpenClassSpecificChoiceInfoDialog({
             type: 'genericHtml',
-            title: uiBlock.infoDialogTitle ? getLocalizedString(uiBlock.infoDialogTitle, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : blockLabelForDialog,
+            title: uiBlock.infoDialogTitle ? getLocalizedString(uiBlock.infoDialogTitle, currentLang) : blockLabelForDialog,
             content: introductoryContentForDialog
         });
     }
-  }, [onOpenClassSpecificChoiceInfoDialog, translations, DND_DOMAINS, DND_MAGIC_SCHOOLS, UI_STRINGS, DND_CREATURE_TYPES]);
+  }, [onOpenClassSpecificChoiceInfoDialog, translations, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, currentLang]);
 
   React.useEffect(() => {
     if (!selectedClassInfo || !PREFERRED_DEFAULT_ALIGNMENT_IDS || !ALIGNMENTS) return;
@@ -477,7 +479,7 @@ const BasicInformationSectionComponent = ({
         }
         if (newAlignmentToSet && newAlignmentToSet !== localAlignment) setLocalAlignment(newAlignmentToSet);
     }
-  }, [localClassName, setLocalAlignment, ALIGNMENTS, PREFERRED_DEFAULT_ALIGNMENT_IDS]); // Minimal dependencies
+  }, [localClassName, setLocalAlignment, ALIGNMENTS, PREFERRED_DEFAULT_ALIGNMENT_IDS, localAlignment, selectedClassInfo]);
 
   React.useEffect(() => {
     if (localDeity === "" || !DND_DEITIES) return;
@@ -491,7 +493,7 @@ const BasicInformationSectionComponent = ({
       if (!isAlignmentValidForRequirement(currentDeityInfo.alignment, currentClassInfo.deityAlignmentRestriction)) deityIsValid = false;
     }
     if (!deityIsValid) setLocalDeity("");
-  }, [localAlignment, localClassName, localDeity, setLocalDeity, DND_DEITIES, DND_CLASSES]); // Minimal dependencies
+  }, [localAlignment, localClassName, localDeity, setLocalDeity, DND_DEITIES, DND_CLASSES]);
   
   const disabledStates = React.useMemo(() => {
     const states: Record<string, boolean> = {};
@@ -602,7 +604,7 @@ const BasicInformationSectionComponent = ({
                       <DualBadge
                         key={ability.abilityKey}
                         leftLabel={abilityNameForDisplay}
-                        rightLabel={`${typeof poolValue === 'number' ? poolValue : UI_STRINGS.abilityUsesPoolPlaceholder || "Pool"} / ${localizedPeriod}`}
+                        rightLabel={`${typeof poolValue === 'number' ? poolValue : UI_STRINGS.abilityUsesPoolPlaceholder} / ${localizedPeriod}`}
                         color="accent"
                       />
                     );
