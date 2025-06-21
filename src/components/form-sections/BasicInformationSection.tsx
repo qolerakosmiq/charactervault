@@ -55,7 +55,7 @@ interface ClassSpecificFieldProps {
 
 const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   uiBlock,
-  isVisuallyDisabled: propIsVisuallyDisabled,
+  isVisuallyDisabled,
   onValueChange,
   onOpenInfoDialog,
   allChoices,
@@ -103,16 +103,6 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   
   const { UI_STRINGS } = translations;
   
-  let isVisuallyDisabled = propIsVisuallyDisabled;
-  if (uiBlock.relatedSlotKeyForDisable && !isVisuallyDisabled) {
-      const relatedChoiceValue = allChoices.find(c => c.featureKey === uiBlock.relatedSlotKeyForDisable)?.value;
-      if (!relatedChoiceValue || relatedChoiceValue === "") isVisuallyDisabled = true;
-  }
-  if (!isVisuallyDisabled && uiBlock.disabledIfChoiceValue) {
-      const controllingChoiceValue = allChoices.find(c => c.featureKey === uiBlock.disabledIfChoiceValue.featureKey)?.value;
-      if (controllingChoiceValue && uiBlock.disabledIfChoiceValue.values.includes(controllingChoiceValue)) isVisuallyDisabled = true;
-  }
-
   const blockLabel = uiBlock.label ? getLocalizedString(uiBlock.label, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : uiBlock.key;
   const blockNote = uiBlock.note ? getLocalizedString(uiBlock.note, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : undefined;
   const inputPlaceholderText = uiBlock.inputPlaceholder ? getLocalizedString(uiBlock.inputPlaceholder, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : UI_STRINGS.selectPlaceholder;
@@ -169,7 +159,6 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   }
   return <div key={`${uiBlock.key}-error`} className="text-destructive">Unsupported choiceType: {uiBlock.choiceType} for {uiBlock.key}</div>;
 };
-const MemoizedClassSpecificField = React.memo(ClassSpecificFieldComponent);
 
 
 export interface BasicInformationSectionProps {
@@ -424,30 +413,51 @@ const BasicInformationSectionComponent = ({
     if (!deityIsValid) setLocalDeity("");
   }, [localAlignment, localClassName, localDeity, DND_DEITIES, selectedClassInfo, setLocalDeity]);
   
-  const visibleUiBlocks = React.useMemo(() => {
+  const visibleUiBlockKeys = React.useMemo(() => {
     if (!selectedClassInfo?.uiSections) return [];
     
-    return selectedClassInfo.uiSections.filter(uiBlock => {
-      if (uiBlock.requiredLevel && characterLevel < uiBlock.requiredLevel) return false;
-      if (uiBlock.conditionAggregatedEffect && aggregatedFeatEffects) {
-        const propValue = aggregatedFeatEffects[uiBlock.conditionAggregatedEffect.property as keyof AggregatedFeatEffects] as any;
-        switch (uiBlock.conditionAggregatedEffect.comparison) {
-          case 'exists': return propValue !== undefined && propValue !== null && (Array.isArray(propValue) ? propValue.length > 0 : true);
-          case 'greaterThan': return typeof propValue === 'number' && propValue > (uiBlock.conditionAggregatedEffect.value as number);
-          case 'equals': return propValue === uiBlock.conditionAggregatedEffect.value;
-          case 'lessThan': return typeof propValue === 'number' && propValue < (uiBlock.conditionAggregatedEffect.value as number);
-          case 'notEquals': return propValue !== uiBlock.conditionAggregatedEffect.value;
-          default: return true;
+    return selectedClassInfo.uiSections
+      .filter(uiBlock => {
+        if (uiBlock.requiredLevel && characterLevel < uiBlock.requiredLevel) return false;
+        if (uiBlock.conditionAggregatedEffect && aggregatedFeatEffects) {
+          const propValue = aggregatedFeatEffects[uiBlock.conditionAggregatedEffect.property as keyof AggregatedFeatEffects] as any;
+          switch (uiBlock.conditionAggregatedEffect.comparison) {
+            case 'exists': return propValue !== undefined && propValue !== null && (Array.isArray(propValue) ? propValue.length > 0 : true);
+            case 'greaterThan': return typeof propValue === 'number' && propValue > (uiBlock.conditionAggregatedEffect.value as number);
+            case 'equals': return propValue === uiBlock.conditionAggregatedEffect.value;
+            case 'lessThan': return typeof propValue === 'number' && propValue < (uiBlock.conditionAggregatedEffect.value as number);
+            case 'notEquals': return propValue !== uiBlock.conditionAggregatedEffect.value;
+            default: return true;
+          }
+        } else if (uiBlock.conditionDependsOnUIStateKey) {
+          const controllingValue = classSpecificChoices.find(c => c.featureKey === uiBlock.conditionDependsOnUIStateKey)?.value || "";
+          if (uiBlock.conditionDependsOnUIStateValueNotIn) {
+            return !uiBlock.conditionDependsOnUIStateValueNotIn.includes(controllingValue);
+          }
         }
-      } else if (uiBlock.conditionDependsOnUIStateKey) {
-        const controllingValue = classSpecificChoices.find(c => c.featureKey === uiBlock.conditionDependsOnUIStateKey)?.value || "";
-        if (uiBlock.conditionDependsOnUIStateValueNotIn) {
-          return !uiBlock.conditionDependsOnUIStateValueNotIn.includes(controllingValue);
-        }
-      }
-      return true;
-    });
+        return true;
+      })
+      .map(block => block.key);
   }, [selectedClassInfo, characterLevel, aggregatedFeatEffects, classSpecificChoices]);
+
+  const disabledStates = React.useMemo(() => {
+    const states: Record<string, boolean> = {};
+    if (!selectedClassInfo?.uiSections) return states;
+
+    selectedClassInfo.uiSections.forEach(uiBlock => {
+      let isDisabled = false;
+      if (uiBlock.relatedSlotKeyForDisable) {
+        const relatedValue = classSpecificChoices.find(c => c.featureKey === uiBlock.relatedSlotKeyForDisable)?.value;
+        if (!relatedValue || relatedValue === "") isDisabled = true;
+      }
+      if (!isDisabled && uiBlock.disabledIfChoiceValue) {
+        const controllingValue = classSpecificChoices.find(c => c.featureKey === uiBlock.disabledIfChoiceValue.featureKey)?.value;
+        if (controllingValue && uiBlock.disabledIfChoiceValue.values.includes(controllingValue)) isDisabled = true;
+      }
+      states[uiBlock.key] = isDisabled;
+    });
+    return states;
+  }, [selectedClassInfo, classSpecificChoices]);
 
   if (translationsLoading || !UI_STRINGS || !DND_RACES || !DND_CLASSES || !ALIGNMENTS || !DND_DEITIES || !SIZES || !GENDERS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) {
     return null;
@@ -550,19 +560,25 @@ const BasicInformationSectionComponent = ({
             </div>
           </div>
 
-          {visibleUiBlocks.length > 0 && (
+          {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.length > 0 && visibleUiBlockKeys.length > 0 && (
             <div className={cn("flex flex-col rounded-md border bg-background/50", panelGridGap, panelContentPadding)}>
               <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
-                {visibleUiBlocks.map((uiBlock, index) => (
-                  <MemoizedClassSpecificField
-                    key={`csf-memo-${uiBlock.key}-${index}`}
-                    uiBlock={uiBlock}
-                    isVisuallyDisabled={panelIsLocked}
-                    onValueChange={(newValue) => handleClassSpecificChoiceChange(uiBlock.key, newValue)}
-                    onOpenInfoDialog={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
-                    allChoices={classSpecificChoices}
-                  />
-                ))}
+                {selectedClassInfo.uiSections.map((uiBlock, index) => {
+                  if (!visibleUiBlockKeys.includes(uiBlock.key)) return null;
+
+                  const isVisuallyDisabled = panelIsLocked || disabledStates[uiBlock.key];
+
+                  return (
+                    <MemoizedClassSpecificField
+                      key={`csf-memo-${uiBlock.key}-${index}`}
+                      uiBlock={uiBlock}
+                      isVisuallyDisabled={isVisuallyDisabled}
+                      onValueChange={(newValue) => handleClassSpecificChoiceChange(uiBlock.key, newValue)}
+                      onOpenInfoDialog={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
+                      allChoices={classSpecificChoices}
+                    />
+                  );
+                })}
               </div>
             </div>
           )}
@@ -678,8 +694,41 @@ const BasicInformationSectionComponent = ({
   );
 };
 BasicInformationSectionComponent.displayName = 'BasicInformationSectionComponent';
+
+
+// Custom comparison function for React.memo
+const classSpecificFieldAreEqual = (prevProps: Readonly<ClassSpecificFieldProps>, nextProps: Readonly<ClassSpecificFieldProps>): boolean => {
+  // If visibility changes, re-render
+  if (prevProps.isVisuallyDisabled !== nextProps.isVisuallyDisabled) return false;
+
+  // If the component's own block definition changes (shouldn't happen often, but good to check)
+  if (prevProps.uiBlock.key !== nextProps.uiBlock.key) return false;
+
+  // Functions are stable due to useCallback/useRef, so we can skip them.
+
+  const currentKey = nextProps.uiBlock.key;
+
+  // Check if this component's own value has changed
+  const prevValue = prevProps.allChoices.find(c => c.featureKey === currentKey)?.value;
+  const nextValue = nextProps.allChoices.find(c => c.featureKey === currentKey)?.value;
+  if (prevValue !== nextValue) return false;
+
+  // Check if any of the dependencies for this component have changed value
+  const dependentKeys = nextProps.uiBlock.excludeOptionsFromKeys || [];
+  for (const key of dependentKeys) {
+    const prevDepValue = prevProps.allChoices.find(c => c.featureKey === key)?.value;
+    const nextDepValue = nextProps.allChoices.find(c => c.featureKey === key)?.value;
+    if (prevDepValue !== nextDepValue) {
+      // A dependency changed, so this component must re-render to update its options list
+      return false;
+    }
+  }
+
+  // If we get here, none of the relevant props have changed. Don't re-render.
+  return true;
+}
+
+const MemoizedClassSpecificField = React.memo(ClassSpecificFieldComponent, classSpecificFieldAreEqual);
+
+
 export const BasicInformationSection = React.memo(BasicInformationSectionComponent);
-
-
-
-
