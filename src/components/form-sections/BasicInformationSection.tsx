@@ -45,33 +45,11 @@ const DEBOUNCE_DELAY = 400;
 const UI_EMPTY_SELECTION_VALUE = generateRandomAlphanumericString(50);
 
 
-export interface BasicInformationSectionProps {
-  characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
-  classSpecificChoices: CharacterClassSpecificChoice[];
-  onFieldChange: (
-    field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classSpecificChoices'>,
-    value: any
-  ) => void;
-  onClassChange: (className: DndClassId | string) => void;
-  ageEffectsDetails: AgingEffectsDetails | null;
-  raceSpecialQualities: RaceSpecialQualities | null;
-  currentMinAgeForInput: number;
-  onOpenRaceInfoDialog: () => void;
-  onOpenClassInfoDialog: () => void;
-  onOpenAlignmentInfoDialog: () => void;
-  onOpenDeityInfoDialog: () => void;
-  onOpenClassSpecificChoiceInfoDialog: (contentType: InfoDialogContentType) => void;
-  aggregatedFeatEffects?: AggregatedFeatEffects | null;
-  characterLevel: number;
-}
-
-
 interface ClassSpecificFieldProps {
   uiBlock: ClassSpecificUIBlock;
   isVisuallyDisabled: boolean;
   onValueChange: (newValue: string) => void;
   onOpenInfoDialog: () => void;
-  blockIndex: number;
   allChoices: CharacterClassSpecificChoice[];
 }
 
@@ -80,22 +58,27 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   isVisuallyDisabled: propIsVisuallyDisabled,
   onValueChange,
   onOpenInfoDialog,
-  blockIndex,
   allChoices,
 }) => {
   const { translations, isLoading: translationsLoading } = useI18n();
+  
+  const isVisible = React.useMemo(() => {
+    // This logic is now handled in the parent `BasicInformationSection`.
+    // This component assumes it should render if it's being called.
+    return true; 
+  }, []);
 
   const finalSelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [];
 
     const { DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, UI_STRINGS } = translations;
-    const emptySelectionLabelText = uiBlock.emptySelectionLabel ? getLocalizedString(uiBlock.emptySelectionLabel, translations.UI_STRINGS.currentLangCodeForNotesFallback || 'en') : UI_STRINGS.deityNoneOption;
+    const emptySelectionLabelText = uiBlock.emptySelectionLabel ? getLocalizedString(uiBlock.emptySelectionLabel, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : UI_STRINGS.deityNoneOption;
 
     let initialOptions: ComboboxOption[] = [];
     if (uiBlock.optionsSource === 'domains') initialOptions = DND_DOMAINS.map(d => ({ value: d.id, label: d.label }));
     else if (uiBlock.optionsSource === 'magicSchools') initialOptions = DND_MAGIC_SCHOOLS.map(s => ({ value: s.id, label: s.label }));
     else if (uiBlock.optionsSource === 'creatureTypes') initialOptions = DND_CREATURE_TYPES.map(ct => ({ value: ct.id, label: ct.label }));
-    else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) initialOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, translations.UI_STRINGS.currentLangCodeForNotesFallback || 'en') }));
+    else if (uiBlock.optionsSource === 'customList' && uiBlock.customOptions) initialOptions = uiBlock.customOptions.map(opt => ({ value: opt.value, label: getLocalizedString(opt.label, UI_STRINGS.currentLangCodeForNotesFallback || 'en') }));
 
     let filteredOptions = [...initialOptions];
 
@@ -120,10 +103,10 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
     return finalOptions;
   }, [translationsLoading, translations, uiBlock, allChoices]);
   
-  if (translationsLoading || !translations) {
-    return <Skeleton className="h-10 w-full" />;
+  if (translationsLoading || !translations || !isVisible) {
+    return null;
   }
-
+  
   const { UI_STRINGS } = translations;
   
   let isVisuallyDisabled = propIsVisuallyDisabled;
@@ -140,14 +123,14 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   const blockNote = uiBlock.note ? getLocalizedString(uiBlock.note, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : undefined;
   const inputPlaceholderText = uiBlock.inputPlaceholder ? getLocalizedString(uiBlock.inputPlaceholder, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : UI_STRINGS.selectPlaceholder;
 
-  const getCurrentValue = (key: string, index?: number): string => {
+  const getCurrentValue = (key: string): string => {
     const choice = (allChoices || []).find(
-      c => c.featureKey === key && (index === undefined || c.slotIndex === index)
+      c => c.featureKey === key && c.slotIndex === undefined
     );
     return choice?.value ?? "";
   };
 
-  const currentValue = getCurrentValue(uiBlock.key, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined);
+  const currentValue = getCurrentValue(uiBlock.key);
   const uiValueForComponent = currentValue === "" ? UI_EMPTY_SELECTION_VALUE : currentValue;
   const handleChange = (val: string) => { onValueChange(val === UI_EMPTY_SELECTION_VALUE ? "" : val); };
 
@@ -189,31 +172,31 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
         {blockNote && <p className="italic text-xs text-muted-foreground">{blockNote}</p>}
       </div>
     );
-  } else if (uiBlock.choiceType === 'multiInput') {
-      const numInputsToRender = uiBlock.maxSelections || 1;
-      const slotLabelTemplate = uiBlock.slotLabel ? getLocalizedString(uiBlock.slotLabel, UI_STRINGS.currentLangCodeForNotesFallback || 'en') : "Slot {slotNum}";
-
-      return (
-        <div key={`${uiBlock.key}-group-${blockIndex}`} className={cn("flex flex-col border rounded-md bg-background/50 p-3", panelGridGap)}>
-          <Label className="flex font-medium whitespace-nowrap">{blockLabel} <Badge variant="outline">{numInputsToRender}</Badge></Label>
-          {Array.from({ length: numInputsToRender }).map((_, index) => {
-              const isDisabledByPanelOrDependency = isVisuallyDisabled || (uiBlock.relatedSlotKeyForDisable && !allChoices.find(c => c.featureKey === uiBlock.relatedSlotKeyForDisable)?.value);
-              const multiInputCurrentValue = getCurrentValue(uiBlock.key, index);
-              return (
-                <div key={`${uiBlock.key}-slot-${index}`} className={panelFieldVerticalGap}>
-                  <Label htmlFor={`${uiBlock.key}-input-${index}`} className="whitespace-nowrap"> {parseAndRenderUIString(slotLabelTemplate, { slotNum: index + 1 })} </Label>
-                  <Input id={`${uiBlock.key}-input-${index}`} value={multiInputCurrentValue} onChange={(e) => onValueChange(e.target.value)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
-                </div>
-              );
-          })}
-          {blockNote && <p className="italic mt-2">{blockNote}</p>}
-        </div>
-      );
   }
   return <div key={`${uiBlock.key}-error`} className="text-destructive">Unsupported choiceType: {uiBlock.choiceType} for {uiBlock.key}</div>;
 };
 const MemoizedClassSpecificField = React.memo(ClassSpecificFieldComponent);
 
+
+export interface BasicInformationSectionProps {
+  characterData: Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes'>;
+  classSpecificChoices: CharacterClassSpecificChoice[];
+  onFieldChange: (
+    field: keyof Pick<Character, 'name' | 'playerName' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classSpecificChoices'>,
+    value: any
+  ) => void;
+  onClassChange: (className: DndClassId | string) => void;
+  ageEffectsDetails: AgingEffectsDetails | null;
+  raceSpecialQualities: RaceSpecialQualities | null;
+  currentMinAgeForInput: number;
+  onOpenRaceInfoDialog: () => void;
+  onOpenClassInfoDialog: () => void;
+  onOpenAlignmentInfoDialog: () => void;
+  onOpenDeityInfoDialog: () => void;
+  onOpenClassSpecificChoiceInfoDialog: (contentType: InfoDialogContentType) => void;
+  aggregatedFeatEffects?: AggregatedFeatEffects | null;
+  characterLevel: number;
+}
 
 const BasicInformationSectionComponent = ({
   characterData,
@@ -279,61 +262,80 @@ const BasicInformationSectionComponent = ({
     DEBOUNCE_DELAY
   );
 
-  const choicesRef = React.useRef(classSpecificChoices);
+  const classSpecificChoicesRef = React.useRef(classSpecificChoices);
   React.useEffect(() => {
-    choicesRef.current = classSpecificChoices;
+    classSpecificChoicesRef.current = classSpecificChoices;
   }, [classSpecificChoices]);
 
+  const { UI_STRINGS, ALIGNMENTS, DND_RACES, DND_CLASSES, DND_DEITIES, SIZES, GENDERS, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, PREFERRED_DEFAULT_ALIGNMENT_IDS } = translations || {};
+
+  const selectedClassInfo = React.useMemo(() => DND_CLASSES?.find(c => c.id === localClassName), [DND_CLASSES, localClassName]);
+  
   const handleClassSpecificChoiceChange = React.useCallback((
     featureKey: string,
     newValue: string,
     slotIndex?: number
   ) => {
-    const existingChoices = choicesRef.current || [];
+    const currentChoices = classSpecificChoicesRef.current;
     let updatedChoices: CharacterClassSpecificChoice[];
 
     if (slotIndex !== undefined) {
-      const choiceExists = existingChoices.some(
+      const choiceExists = currentChoices.some(
         (c) => c.featureKey === featureKey && c.slotIndex === slotIndex
       );
       if (choiceExists) {
-        updatedChoices = existingChoices.map((c) =>
+        updatedChoices = currentChoices.map((c) =>
           c.featureKey === featureKey && c.slotIndex === slotIndex
             ? { ...c, value: newValue }
             : c
         );
       } else {
-        updatedChoices = [...existingChoices, { featureKey, value: newValue, slotIndex }];
-      }
-      if (newValue === "") {
-        if (!choiceExists) updatedChoices = updatedChoices.filter(c => !(c.featureKey === featureKey && c.slotIndex === slotIndex && c.value === ""));
+        updatedChoices = [...currentChoices, { featureKey, value: newValue, slotIndex }];
       }
     } else {
-      const choiceExists = existingChoices.some((c) => c.featureKey === featureKey && c.slotIndex === undefined);
+      const choiceExists = currentChoices.some((c) => c.featureKey === featureKey && c.slotIndex === undefined);
       if (choiceExists) {
-        updatedChoices = existingChoices.map((c) =>
+        updatedChoices = currentChoices.map((c) =>
           (c.featureKey === featureKey && c.slotIndex === undefined) ? { ...c, value: newValue } : c
         );
       } else {
-        updatedChoices = [...existingChoices, { featureKey, value: newValue }];
-      }
-      if (newValue === "") {
-         if (!choiceExists) updatedChoices = updatedChoices.filter(c => !(c.featureKey === featureKey && c.slotIndex === undefined && c.value === ""));
+        updatedChoices = [...currentChoices, { featureKey, value: newValue }];
       }
     }
-    const selectedClassInfo = translations?.DND_CLASSES?.find(c => c.id === localClassName);
-    updatedChoices = updatedChoices.filter(c => {
-      if (c.value !== "") return true;
-      const originalChoice = (choicesRef.current || []).find(ec => ec.featureKey === c.featureKey && ec.slotIndex === c.slotIndex);
-      const uiBlockDef = selectedClassInfo?.uiSections?.find(uib => uib.key === c.featureKey);
-      return (originalChoice && originalChoice.value !== "") || (uiBlockDef && uiBlockDef.defaultValue === "");
-    });
-    onFieldChange('classSpecificChoices', updatedChoices);
-  }, [onFieldChange, translations, localClassName]);
-  
-  const { UI_STRINGS, ALIGNMENTS, DND_RACES, DND_CLASSES, DND_DEITIES, SIZES, GENDERS, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, PREFERRED_DEFAULT_ALIGNMENT_IDS } = translations || {};
 
-  const selectedClassInfo = React.useMemo(() => DND_CLASSES?.find(c => c.id === localClassName), [DND_CLASSES, localClassName]);
+    let finalChoices = [...updatedChoices];
+    const allUiSections = selectedClassInfo?.uiSections || [];
+
+    const resetChildrenOf = (parentKey: string, choices: CharacterClassSpecificChoice[]) => {
+      let resetChoices = [...choices];
+      allUiSections.forEach(uiBlock => {
+        const isDependent = uiBlock.excludeOptionsFromKeys?.includes(parentKey) || uiBlock.disabledIfChoiceValue?.featureKey === parentKey;
+        if (isDependent) {
+          const childIndex = resetChoices.findIndex(c => c.featureKey === uiBlock.key);
+          if (childIndex > -1) {
+            resetChoices[childIndex] = { ...resetChoices[childIndex], value: "" };
+          }
+        }
+      });
+      return resetChoices;
+    };
+
+    finalChoices = resetChildrenOf(featureKey, finalChoices);
+    
+    if (featureKey === 'chosenSpecializationSchool') {
+      const prohibited1Index = finalChoices.findIndex(c => c.featureKey === 'prohibitedSchool1');
+      if (prohibited1Index > -1) finalChoices[prohibited1Index] = { ...finalChoices[prohibited1Index], value: "" };
+      
+      const prohibited2Index = finalChoices.findIndex(c => c.featureKey === 'prohibitedSchool2');
+      if (prohibited2Index > -1) finalChoices[prohibited2Index] = { ...finalChoices[prohibited2Index], value: "" };
+    }
+
+    if (JSON.stringify(finalChoices) !== JSON.stringify(currentChoices)) {
+      onFieldChange('classSpecificChoices', finalChoices);
+    }
+  }, [onFieldChange, selectedClassInfo]);
+
+
   const selectedRaceInfo = React.useMemo(() => DND_RACES?.find(r => r.id === localRace), [DND_RACES, localRace]);
 
   const classSpecificFieldsVisibility = React.useMemo(() => {
@@ -642,7 +644,6 @@ const BasicInformationSectionComponent = ({
                       isVisuallyDisabled={panelIsLocked}
                       onValueChange={(newValue) => handleClassSpecificChoiceChange(uiBlock.key, newValue, uiBlock.choiceType === 'multiInput' ? index : undefined)}
                       onOpenInfoDialog={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
-                      blockIndex={index}
                       allChoices={classSpecificChoices}
                     />
                   );
@@ -763,5 +764,6 @@ const BasicInformationSectionComponent = ({
 };
 BasicInformationSectionComponent.displayName = 'BasicInformationSectionComponent';
 export const BasicInformationSection = React.memo(BasicInformationSectionComponent);
+
 
 
