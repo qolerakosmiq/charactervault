@@ -136,13 +136,13 @@ const CharacterFormAbilityScoresSectionComponent = ({
   if (translationsLoading || !translations) {
     return (
        <LockablePanelWrapper
-        title={translations?.UI_STRINGS.abilityScoresSectionTitle}
+        title={"Ability Scores"}
         icon={Dices}
         cardContentClassName="pt-2"
         initialLockedState={false}
        >
         {() => (
-          <div className={cn("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3", panelGridGap)}>
+          <div className={cn("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
             {abilityKeys.map(ability => (
               <div key={ability} className="flex flex-col items-center p-3 border rounded-md bg-card shadow-sm gap-2">
                 <Skeleton className="h-6 w-12 mb-1" />
@@ -171,7 +171,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
       >
         {({ isLocked: panelIsLocked }) => (
           <>
-            <div className={cn("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3", panelGridGap)}>
+            <div className={cn("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
               {abilityKeys.map(ability => {
                 const [baseScoreValue, setBaseScoreValue] = debouncedStates[ability];
                 const [tempCustomModValue, setTempCustomModValue] = debouncedStates[`${ability}TempMod`];
@@ -310,4 +310,3 @@ const CharacterFormAbilityScoresSectionComponent = ({
 };
 CharacterFormAbilityScoresSectionComponent.displayName = 'CharacterFormAbilityScoresSectionComponent';
 export const CharacterFormAbilityScoresSection = React.memo(CharacterFormAbilityScoresSectionComponent);
-
