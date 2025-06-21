@@ -39,8 +39,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 import { DualBadge } from '@/components/ui/DualBadge';
 import { panelGridGap, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelBadgeGroupGap } from '@/config/layout';
-
-const DEBOUNCE_DELAY = 400;
+import { DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
 
 const UI_EMPTY_SELECTION_VALUE = generateRandomAlphanumericString(50);
 
@@ -51,8 +50,6 @@ interface ClassSpecificFieldProps {
   onValueChange: (newValue: string) => void;
   onOpenInfoDialog: () => void;
   allChoices: CharacterClassSpecificChoice[];
-  characterLevel: number;
-  aggregatedFeatEffects: AggregatedFeatEffects | null;
 }
 
 const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
@@ -61,32 +58,8 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   onValueChange,
   onOpenInfoDialog,
   allChoices,
-  characterLevel,
-  aggregatedFeatEffects,
 }) => {
   const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
-
-  const isVisible = React.useMemo(() => {
-    if (uiBlock.requiredLevel && characterLevel < uiBlock.requiredLevel) return false;
-    if (uiBlock.conditionAggregatedEffect && aggregatedFeatEffects) {
-      const propValue = aggregatedFeatEffects[uiBlock.conditionAggregatedEffect.property as keyof AggregatedFeatEffects] as any;
-      switch (uiBlock.conditionAggregatedEffect.comparison) {
-        case 'exists': return propValue !== undefined && propValue !== null && (Array.isArray(propValue) ? propValue.length > 0 : true);
-        case 'greaterThan': return typeof propValue === 'number' && propValue > (uiBlock.conditionAggregatedEffect.value as number);
-        case 'equals': return propValue === uiBlock.conditionAggregatedEffect.value;
-        case 'lessThan': return typeof propValue === 'number' && propValue < (uiBlock.conditionAggregatedEffect.value as number);
-        case 'notEquals': return propValue !== uiBlock.conditionAggregatedEffect.value;
-        default: return true;
-      }
-    } else if (uiBlock.conditionDependsOnUIStateKey) {
-      const controllingValue = allChoices.find(c => c.featureKey === uiBlock.conditionDependsOnUIStateKey)?.value || "";
-      if (uiBlock.conditionDependsOnUIStateValueNotIn) {
-        return !uiBlock.conditionDependsOnUIStateValueNotIn.includes(controllingValue);
-      }
-    }
-    return true;
-  }, [uiBlock, characterLevel, aggregatedFeatEffects, allChoices]);
-
 
   const finalSelectOptions = React.useMemo(() => {
     if (translationsLoading || !translations) return [];
@@ -122,10 +95,6 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
     finalOptions.push(...filteredOptions);
     return finalOptions;
   }, [translationsLoading, translations, uiBlock, allChoices, currentLang]);
-  
-  if (!isVisible) {
-    return null;
-  }
   
   if (translationsLoading || !translations) {
     return null;
@@ -192,9 +161,7 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
 
 const classSpecificFieldAreEqual = (prevProps: Readonly<ClassSpecificFieldProps>, nextProps: Readonly<ClassSpecificFieldProps>): boolean => {
   if (prevProps.isVisuallyDisabled !== nextProps.isVisuallyDisabled) return false;
-  if (prevProps.uiBlock.key !== nextProps.uiBlock.key) return false;
-  if (prevProps.characterLevel !== nextProps.characterLevel) return false;
-
+  
   const currentKey = nextProps.uiBlock.key;
   const prevValue = prevProps.allChoices.find(c => c.featureKey === currentKey)?.value;
   const nextValue = nextProps.allChoices.find(c => c.featureKey === currentKey)?.value;
@@ -205,26 +172,13 @@ const classSpecificFieldAreEqual = (prevProps: Readonly<ClassSpecificFieldProps>
     nextProps.uiBlock.relatedSlotKeyForDisable,
     nextProps.uiBlock.disabledIfChoiceValue?.featureKey,
   ].filter(Boolean) as string[];
-  
-  if (dependentKeys.length > 0) {
-    for (const key of dependentKeys) {
-      const prevDepValue = prevProps.allChoices.find(c => c.featureKey === key)?.value;
-      const nextDepValue = nextProps.allChoices.find(c => c.featureKey === key)?.value;
-      if (prevDepValue !== nextDepValue) {
-        return false;
-      }
-    }
-  }
 
-  // Check visibility dependency separately
-  if(nextProps.uiBlock.conditionDependsOnUIStateKey) {
-     const controllingKey = nextProps.uiBlock.conditionDependsOnUIStateKey;
-     const prevControllingValue = prevProps.allChoices.find(c => c.featureKey === controllingKey)?.value;
-     const nextControllingValue = nextProps.allChoices.find(c => c.featureKey === controllingKey)?.value;
-     if(prevControllingValue !== nextControllingValue) return false;
-  }
-  if (nextProps.uiBlock.conditionAggregatedEffect && prevProps.aggregatedFeatEffects !== nextProps.aggregatedFeatEffects) {
-    return false;
+  for (const key of dependentKeys) {
+    const prevDepValue = prevProps.allChoices.find(c => c.featureKey === key)?.value;
+    const nextDepValue = nextProps.allChoices.find(c => c.featureKey === key)?.value;
+    if (prevDepValue !== nextDepValue) {
+      return false;
+    }
   }
   
   return true;
@@ -270,6 +224,7 @@ const BasicInformationSectionComponent = ({
   characterLevel,
 }: BasicInformationSectionProps) => {
   const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
+
   const classSpecificChoicesRef = React.useRef(classSpecificChoices);
   React.useEffect(() => {
     classSpecificChoicesRef.current = classSpecificChoices;
@@ -278,47 +233,47 @@ const BasicInformationSectionComponent = ({
   const [localName, setLocalName] = useDebouncedFormField(
     characterData.name,
     React.useCallback((value) => onFieldChange('name', value), [onFieldChange]),
-    DEBOUNCE_DELAY
+    DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localPlayerName, setLocalPlayerName] = useDebouncedFormField(
     characterData.playerName || '',
     React.useCallback((value) => onFieldChange('playerName', value), [onFieldChange]),
-    DEBOUNCE_DELAY
+    DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localRace, setLocalRace] = useDebouncedFormField(
     characterData.race,
     React.useCallback((value) => onFieldChange('race', value as DndRaceId), [onFieldChange]),
-    DEBOUNCE_DELAY
+    DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localClassName, setLocalClassName] = useDebouncedFormField(
     characterData.classes[0]?.className || '',
     React.useCallback((value) => onClassChange(value as DndClassId | string), [onClassChange]),
-    DEBOUNCE_DELAY
+    DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localAlignment, setLocalAlignment] = useDebouncedFormField(
     characterData.alignment,
     React.useCallback((value) => onFieldChange('alignment', value as CharacterAlignment), [onFieldChange]),
-    DEBOUNCE_DELAY
+    DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localDeity, setLocalDeity] = useDebouncedFormField(
     characterData.deity || "",
     React.useCallback((value) => onFieldChange('deity', value as DndDeityId | string), [onFieldChange]),
-    DEBOUNCE_DELAY
+    DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localAge, setLocalAge] = useDebouncedFormField(
     characterData.age,
     React.useCallback((value) => onFieldChange('age', Math.max(value, currentMinAgeForInput)), [onFieldChange, currentMinAgeForInput]),
-    DEBOUNCE_DELAY
+    DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localGender, setLocalGender] = useDebouncedFormField(
     characterData.gender,
     React.useCallback((value) => onFieldChange('gender', value as GenderId | string), [onFieldChange]),
-    DEBOUNCE_DELAY
+    DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localSize, setLocalSize] = useDebouncedFormField(
     characterData.size,
     React.useCallback((value) => onFieldChange('size', value as CharacterSize), [onFieldChange]),
-    DEBOUNCE_DELAY
+    DEBOUNCE_DELAY_FORM_INPUT
   );
 
   const { UI_STRINGS, ALIGNMENTS, DND_RACES, DND_CLASSES, DND_DEITIES, SIZES, GENDERS, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, PREFERRED_DEFAULT_ALIGNMENT_IDS } = translations || {};
@@ -455,10 +410,8 @@ const BasicInformationSectionComponent = ({
   React.useEffect(() => {
     if (!selectedClassInfo || !PREFERRED_DEFAULT_ALIGNMENT_IDS || !ALIGNMENTS) return;
     
-    // This effect runs only when localClassName changes.
-    // It recalculates available alignments and checks if the current one is valid.
     const classRestriction = selectedClassInfo.alignmentRestriction;
-    if (!classRestriction || classRestriction === 'any') return; // No change needed if any alignment is allowed
+    if (!classRestriction || classRestriction === 'any') return; 
     
     const validAlignmentsForClass = ALIGNMENTS.filter(align => isAlignmentValidForRequirement(align.id as CharacterAlignment, classRestriction));
     const currentAlignmentIsValidForNewClass = validAlignmentsForClass.some(a => a.id === localAlignment);
@@ -479,7 +432,7 @@ const BasicInformationSectionComponent = ({
         }
         if (newAlignmentToSet && newAlignmentToSet !== localAlignment) setLocalAlignment(newAlignmentToSet);
     }
-  }, [localClassName, setLocalAlignment, ALIGNMENTS, PREFERRED_DEFAULT_ALIGNMENT_IDS, localAlignment, selectedClassInfo]);
+  }, [localClassName]);
 
   React.useEffect(() => {
     if (localDeity === "" || !DND_DEITIES) return;
@@ -493,7 +446,7 @@ const BasicInformationSectionComponent = ({
       if (!isAlignmentValidForRequirement(currentDeityInfo.alignment, currentClassInfo.deityAlignmentRestriction)) deityIsValid = false;
     }
     if (!deityIsValid) setLocalDeity("");
-  }, [localAlignment, localClassName, localDeity, setLocalDeity, DND_DEITIES, DND_CLASSES]);
+  }, [localAlignment, localClassName]);
   
   const disabledStates = React.useMemo(() => {
     const states: Record<string, boolean> = {};
@@ -513,6 +466,30 @@ const BasicInformationSectionComponent = ({
     });
     return states;
   }, [selectedClassInfo, classSpecificChoices]);
+
+  const visibleUiSections = React.useMemo(() => {
+    return selectedClassInfo?.uiSections?.filter(uiBlock => {
+      if (uiBlock.requiredLevel && characterLevel < uiBlock.requiredLevel) return false;
+      if (uiBlock.conditionAggregatedEffect && aggregatedFeatEffects) {
+        const propValue = (aggregatedFeatEffects as any)[uiBlock.conditionAggregatedEffect.property];
+        switch (uiBlock.conditionAggregatedEffect.comparison) {
+          case 'exists': return propValue !== undefined && propValue !== null && (Array.isArray(propValue) ? propValue.length > 0 : true);
+          case 'greaterThan': return typeof propValue === 'number' && propValue > (uiBlock.conditionAggregatedEffect.value as number);
+          case 'equals': return propValue === uiBlock.conditionAggregatedEffect.value;
+          case 'lessThan': return typeof propValue === 'number' && propValue < (uiBlock.conditionAggregatedEffect.value as number);
+          case 'notEquals': return propValue !== uiBlock.conditionAggregatedEffect.value;
+          default: return true;
+        }
+      } else if (uiBlock.conditionDependsOnUIStateKey) {
+        const controllingValue = classSpecificChoices.find(c => c.featureKey === uiBlock.conditionDependsOnUIStateKey)?.value || "";
+        if (uiBlock.conditionDependsOnUIStateValueNotIn) {
+          return !uiBlock.conditionDependsOnUIStateValueNotIn.includes(controllingValue);
+        }
+      }
+      return true;
+    }) || [];
+  }, [selectedClassInfo, characterLevel, aggregatedFeatEffects, classSpecificChoices]);
+
 
   if (translationsLoading || !UI_STRINGS || !DND_RACES || !DND_CLASSES || !ALIGNMENTS || !DND_DEITIES || !SIZES || !GENDERS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) {
     return null;
@@ -615,10 +592,10 @@ const BasicInformationSectionComponent = ({
             </div>
           </div>
 
-          {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.length > 0 && (
+          {visibleUiSections.length > 0 && (
             <div className={cn("flex flex-col rounded-md border bg-background/50", panelGridGap, panelContentPadding)}>
               <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
-                {selectedClassInfo.uiSections.map((uiBlock, index) => {
+                {visibleUiSections.map((uiBlock, index) => {
                   const isVisuallyDisabled = panelIsLocked || disabledStates[uiBlock.key];
                   return (
                     <MemoizedClassSpecificField
@@ -628,8 +605,6 @@ const BasicInformationSectionComponent = ({
                       onValueChange={(newValue) => handleClassSpecificChoiceChange(uiBlock.key, newValue)}
                       onOpenInfoDialog={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
                       allChoices={classSpecificChoices}
-                      characterLevel={characterLevel}
-                      aggregatedFeatEffects={aggregatedFeatEffects}
                     />
                   );
                 })}

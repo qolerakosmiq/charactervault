@@ -19,8 +19,7 @@ import { renderModifierValue } from '@/components/info-dialog-content/dialog-uti
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; // Added
-
-const DEBOUNCE_DELAY = 400;
+import { DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
 
 export interface ArmorClassPanelProps {
   character: Character;
@@ -41,7 +40,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
   const [localTemporaryAcModifier, setLocalTemporaryAcModifier] = useDebouncedFormField(
     character?.acMiscModifier || 0,
     handleUpdateCallback('acMiscModifier'),
-    DEBOUNCE_DELAY
+    DEBOUNCE_DELAY_FORM_INPUT
   );
 
   const calculateTotalAcComponent = React.useCallback((

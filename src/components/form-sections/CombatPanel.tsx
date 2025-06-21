@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -33,8 +34,7 @@ import { cn } from '@/lib/utils';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
-
-const DEBOUNCE_DELAY = 400;
+import { DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
 
 export type CombatFieldKey = keyof Pick<Character,
   'babMiscModifier' | 'initiativeMiscModifier' | 'grappleMiscModifier' |
@@ -70,25 +70,25 @@ const CombatPanelComponent = ({
 
 
   const [localBabMiscModifier, setLocalBabMiscModifier] = useDebouncedFormField(
-    combatData.babMiscModifier || 0, (value) => onCharacterUpdate('babMiscModifier', value), DEBOUNCE_DELAY
+    combatData.babMiscModifier || 0, (value) => onCharacterUpdate('babMiscModifier', value), DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localInitiativeMiscModifier, setLocalInitiativeMiscModifier] = useDebouncedFormField(
-    combatData.initiativeMiscModifier || 0, (value) => onCharacterUpdate('initiativeMiscModifier', value), DEBOUNCE_DELAY
+    combatData.initiativeMiscModifier || 0, (value) => onCharacterUpdate('initiativeMiscModifier', value), DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localGrappleMiscModifier, setLocalGrappleMiscModifier] = useDebouncedFormField(
-    combatData.grappleMiscModifier || 0, (value) => onCharacterUpdate('grappleMiscModifier', value), DEBOUNCE_DELAY
+    combatData.grappleMiscModifier || 0, (value) => onCharacterUpdate('grappleMiscModifier', value), DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localGrappleDamageBonus, setLocalGrappleDamageBonus] = useDebouncedFormField(
-    combatData.grappleDamage_bonus || 0, (value) => onCharacterUpdate('grappleDamage_bonus', value), DEBOUNCE_DELAY
+    combatData.grappleDamage_bonus || 0, (value) => onCharacterUpdate('grappleDamage_bonus', value), DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localGrappleWeaponChoice, setLocalGrappleWeaponChoice] = useDebouncedFormField(
-    combatData.grappleWeaponChoice || 'unarmed', (value) => onCharacterUpdate('grappleWeaponChoice', value), DEBOUNCE_DELAY
+    combatData.grappleWeaponChoice || 'unarmed', (value) => onCharacterUpdate('grappleWeaponChoice', value), DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localPowerAttackValue, setLocalPowerAttackValue] = useDebouncedFormField(
-    combatData.powerAttackValue || 0, (value) => onCharacterUpdate('powerAttackValue', value), DEBOUNCE_DELAY
+    combatData.powerAttackValue || 0, (value) => onCharacterUpdate('powerAttackValue', value), DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localCombatExpertiseValue, setLocalCombatExpertiseValue] = useDebouncedFormField(
-    combatData.combatExpertiseValue || 0, (value) => onCharacterUpdate('combatExpertiseValue', value), DEBOUNCE_DELAY
+    combatData.combatExpertiseValue || 0, (value) => onCharacterUpdate('combatExpertiseValue', value), DEBOUNCE_DELAY_FORM_INPUT
   );
 
   const allWeaponDefinitions = React.useMemo(() => {

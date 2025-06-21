@@ -15,8 +15,7 @@ import { getXpRequiredForLevel } from '@/lib/dnd-utils';
 import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; // Added
-
-const DEBOUNCE_DELAY_XP = 500;
+import { DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
 
 export interface ExperiencePanelData {
   currentXp: number;
@@ -43,7 +42,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
   const [localCurrentXp, setLocalCurrentXp] = useDebouncedFormField(
     currentXp,
     debouncedXpChange,
-    DEBOUNCE_DELAY_XP
+    DEBOUNCE_DELAY_FORM_INPUT
   );
 
   const xpForCurrentLevelStart = React.useMemo(() => {
@@ -76,8 +75,8 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
   if (translationsLoading || !translations) {
     return (
       <LockablePanelWrapper
-        title={translations?.UI_STRINGS.experiencePanelTitle}
-        description={translations?.UI_STRINGS.experiencePanelDescription}
+        title={translations?.UI_STRINGS.experiencePanelTitle || "Experience"}
+        description={translations?.UI_STRINGS.experiencePanelDescription || "Track your character's progression and current experience points."}
         icon={Award}
         cardContentClassName="space-y-4 pt-4"
         initialLockedState={false}
@@ -170,6 +169,3 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
 };
 ExperiencePanelComponent.displayName = "ExperiencePanelComponent";
 export const ExperiencePanel = React.memo(ExperiencePanelComponent);
-
-
-    

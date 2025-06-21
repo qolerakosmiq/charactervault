@@ -35,9 +35,8 @@ import type { GenericBreakdownItem } from '@/types/character-core';
 import type { AggregatedFeatEffects as AggFeatsType } from '@/types/character-core';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
+import { DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
 
-
-const DEBOUNCE_DELAY_SKILLS = 500; // ms
 
 interface SkillDisplayInfo extends SkillType {
   name: string;
@@ -75,6 +74,7 @@ export interface SkillsFormSectionProps {
 }
 
 
+// Helper component for a single skill row to encapsulate its debounced field
 const DebouncedSkillRankInput: React.FC<{
   skillId: string;
   initialValue: number;
@@ -86,7 +86,7 @@ const DebouncedSkillRankInput: React.FC<{
   const [localRank, setLocalRank] = useDebouncedFormField(
     initialValue,
     onDebouncedChange,
-    DEBOUNCE_DELAY_SKILLS
+    DEBOUNCE_DELAY_FORM_INPUT
   );
   return (
     <NumberSpinnerInput
@@ -114,7 +114,7 @@ const DebouncedSkillMiscModInput: React.FC<{
   const [localMiscMod, setLocalMiscMod] = useDebouncedFormField(
     initialValue,
     onDebouncedChange,
-    DEBOUNCE_DELAY_SKILLS
+    DEBOUNCE_DELAY_FORM_INPUT
   );
   return (
     <NumberSpinnerInput
@@ -521,4 +521,3 @@ const SkillsFormSectionComponent = ({
 SkillsFormSectionComponent.displayName = 'SkillsFormSectionComponent';
 
 export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
-

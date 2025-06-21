@@ -15,8 +15,7 @@ import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; // Added
-
-const DEBOUNCE_DELAY_HEALTH = 400;
+import { DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
 
 export type HealthPanelData = Pick<Character,
   'hp' | 'baseMaxHp' | 'customMaxHpModifier' |
@@ -48,32 +47,32 @@ const HealthPanelComponent = ({
   const [localHp, setLocalHp] = useDebouncedFormField(
     healthData.hp,
     React.useCallback((value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp > 0 ? calculatedMaxHp : value)), [onCharacterUpdate, calculatedMaxHp]),
-    DEBOUNCE_DELAY_HEALTH
+    DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localBaseMaxHp, setLocalBaseMaxHp] = useDebouncedFormField(
     healthData.baseMaxHp,
     React.useCallback((value) => onCharacterUpdate('baseMaxHp', value), [onCharacterUpdate]),
-    DEBOUNCE_DELAY_HEALTH
+    DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localCustomMaxHpModifier, setLocalCustomMaxHpModifier] = useDebouncedFormField(
     healthData.customMaxHpModifier,
     React.useCallback((value) => onCharacterUpdate('customMaxHpModifier', value), [onCharacterUpdate]),
-    DEBOUNCE_DELAY_HEALTH
+    DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localNonlethalDamage, setLocalNonlethalDamage] = useDebouncedFormField(
     healthData.nonlethalDamage,
     React.useCallback((value) => onCharacterUpdate('nonlethalDamage', value), [onCharacterUpdate]),
-    DEBOUNCE_DELAY_HEALTH
+    DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localTemporaryHp, setLocalTemporaryHp] = useDebouncedFormField(
     healthData.temporaryHp,
     React.useCallback((value) => onCharacterUpdate('temporaryHp', value), [onCharacterUpdate]),
-    DEBOUNCE_DELAY_HEALTH
+    DEBOUNCE_DELAY_FORM_INPUT
   );
   const [localNumberOfWounds, setLocalNumberOfWounds] = useDebouncedFormField(
     healthData.numberOfWounds || 0,
     React.useCallback((value) => onCharacterUpdate('numberOfWounds', value), [onCharacterUpdate]),
-    DEBOUNCE_DELAY_HEALTH
+    DEBOUNCE_DELAY_FORM_INPUT
   );
 
 

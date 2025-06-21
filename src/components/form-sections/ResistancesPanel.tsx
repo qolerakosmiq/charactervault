@@ -19,9 +19,7 @@ import { cn } from '@/lib/utils';
 import { getLocalizedString } from '@/i18n/i18n-data'; 
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config'; 
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
-
-
-const DEBOUNCE_DELAY = 400;
+import { DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
 
 export interface ResistancesPanelProps {
   characterData: Pick<Character, 
@@ -65,7 +63,7 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
     debouncedResistanceMods[field] = useDebouncedFormField(
       characterData[field]?.customMod || 0,
       (value) => onResistanceChange(field, 'customMod', value),
-      DEBOUNCE_DELAY
+      DEBOUNCE_DELAY_FORM_INPUT
     );
   });
 
@@ -295,6 +293,7 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
                         inputClassName="w-16 h-7 text-sm text-center" 
                         buttonClassName="h-7 w-7"
                         buttonSize="sm"
+                        disabled={isLocked}
                       />
                     </div>
                   </div>
@@ -348,6 +347,7 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
                         inputClassName="w-16 h-7 text-sm text-center"
                         buttonClassName="h-7 w-7"
                         buttonSize="sm"
+                        disabled={isLocked}
                       />
                     </div>
                   </div>
@@ -371,11 +371,12 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
                         buttonClassName="h-9 w-9"
                         buttonSize="sm"
                         className="w-full" 
+                        disabled={isLocked}
                         />
                     </div>
                     <div className="space-y-1">
                           <Label htmlFor="form-dr-rule" className="text-sm inline-block w-full text-left">{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
-                          <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
+                          <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)} disabled={isLocked}>
                               <SelectTrigger id="form-dr-rule" className="h-9 text-sm">
                                 <SelectValue />
                               </SelectTrigger>
@@ -390,7 +391,7 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
                       </div>
                     <div className="space-y-1">
                         <Label htmlFor="form-dr-type" className="text-sm inline-block w-full text-left">{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
-                        <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
+                        <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)} disabled={isLocked}>
                             <SelectTrigger id="form-dr-type" className="h-9 text-sm">
                               <SelectValue placeholder={UI_STRINGS.resistancesPanelDrSelectTypePlaceholder} />
                             </SelectTrigger>
@@ -407,7 +408,7 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
                             </SelectContent>
                         </Select>
                     </div>
-                    <Button type="button" onClick={handleAddDamageReduction} size="sm" className="mt-3 w-full">
+                    <Button type="button" onClick={handleAddDamageReduction} size="sm" className="mt-3 w-full" disabled={isLocked}>
                         <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.resistancesPanelAddDrButton}
                     </Button>
                   </div>
@@ -432,7 +433,7 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
                                   )}
                                 </div>
                                 {!dr.isGranted && (
-                                <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80 shrink-0" onClick={() => handleRemoveDamageReduction(dr.id)}>
+                                <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80 shrink-0" onClick={() => handleRemoveDamageReduction(dr.id)} disabled={isLocked}>
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
                                 )}
@@ -459,5 +460,3 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
 };
 ResistancesPanelComponent.displayName = 'ResistancesPanelComponent';
 export const ResistancesPanel = React.memo(ResistancesPanelComponent);
-
-    

@@ -14,8 +14,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
-
-const DEBOUNCE_DELAY = 400;
+import { DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
 
 export type SpeedPanelCharacterData = Pick<Character,
   'race' | 'size' | 'classes' |
@@ -79,7 +78,7 @@ const SpeedPanelComponent = ({
     debouncedSpeedMods[config.type] = useDebouncedFormField(
       speedData[config.fieldKey]?.miscModifier || 0,
       onUpdateCallback,
-      DEBOUNCE_DELAY
+      DEBOUNCE_DELAY_FORM_INPUT
     );
   });
 
@@ -87,14 +86,14 @@ const SpeedPanelComponent = ({
   const [localArmorPenaltyMiscMod, setLocalArmorPenaltyMiscMod] = useDebouncedFormField(
     speedData.armorSpeedPenalty_miscModifier || 0,
     armorPenaltyCallback,
-    DEBOUNCE_DELAY
+    DEBOUNCE_DELAY_FORM_INPUT
   );
 
   const loadPenaltyCallback = React.useCallback((value: number) => onCharacterUpdate('loadSpeedPenalty_miscModifier', value), [onCharacterUpdate]);
   const [localLoadPenaltyMiscMod, setLocalLoadPenaltyMiscMod] = useDebouncedFormField(
     speedData.loadSpeedPenalty_miscModifier || 0,
     loadPenaltyCallback,
-    DEBOUNCE_DELAY
+    DEBOUNCE_DELAY_FORM_INPUT
   );
 
 
@@ -208,6 +207,7 @@ const SpeedPanelComponent = ({
                     size="icon"
                     className="h-7 w-7 text-muted-foreground hover:text-foreground"
                     onClick={() => onOpenSpeedInfoDialog(type)}
+                    disabled={isLocked}
                   >
                     <Info className="h-4 w-4" />
                   </Button>
@@ -225,6 +225,7 @@ const SpeedPanelComponent = ({
                     buttonClassName="h-8 w-8"
                     buttonSize="sm"
                     className="justify-center mt-0.5"
+                    disabled={isLocked}
                   />
                 </div>
               </div>
@@ -258,6 +259,7 @@ const SpeedPanelComponent = ({
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-foreground"
                 onClick={onOpenArmorSpeedPenaltyInfoDialog}
+                disabled={isLocked}
               >
                 <Info className="h-4 w-4" />
               </Button>
@@ -275,6 +277,7 @@ const SpeedPanelComponent = ({
                 buttonClassName="h-8 w-8"
                 buttonSize="sm"
                 className="justify-center mt-0.5"
+                disabled={isLocked}
               />
             </div>
           </div>
@@ -302,6 +305,7 @@ const SpeedPanelComponent = ({
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-foreground"
                 onClick={onOpenLoadSpeedPenaltyInfoDialog}
+                disabled={isLocked}
               >
                 <Info className="h-4 w-4" />
               </Button>
@@ -319,6 +323,7 @@ const SpeedPanelComponent = ({
                 buttonClassName="h-8 w-8"
                 buttonSize="sm"
                 className="justify-center mt-0.5"
+                disabled={isLocked}
               />
             </div>
           </div>
@@ -329,4 +334,3 @@ const SpeedPanelComponent = ({
 };
 SpeedPanelComponent.displayName = 'SpeedPanelComponent';
 export const SpeedPanel = React.memo(SpeedPanelComponent);
-
