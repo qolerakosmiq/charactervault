@@ -39,7 +39,7 @@ import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 import { DualBadge } from '@/components/ui/DualBadge';
-import { panelHeaderPadding, panelContentPadding, panelGridGap, panelFieldHorizontalGap, panelFieldVerticalGap, panelSubLabelMargin, panelBadgeGroupGap } from '@/config/layout';
+import { panelGridGap, panelFieldHorizontalGap, panelFieldVerticalGap, panelSubLabelMargin, panelBadgeGroupGap } from '@/config/layout';
 
 const DEBOUNCE_DELAY = 400;
 
@@ -491,7 +491,7 @@ const BasicInformationSectionComponent = ({
     if (uiBlock.isHeadingOnly) {
       return (
         <div key={`${uiBlock.key}-${blockIndex}-heading`} className="md:col-span-2">
-          <h3 className="text-md font-semibold text-accent">{blockLabel}</h3>
+          <h3 className="text-lg font-bold text-accent">{blockLabel}</h3>
         </div>
       );
     }
