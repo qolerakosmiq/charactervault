@@ -39,7 +39,7 @@ import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 import { DualBadge } from '@/components/ui/DualBadge';
-import { panelHeaderPadding, panelContentPadding, panelGridGap, panelFieldHorizontalGap, panelSubLabelMargin, panelBadgeGroupGap } from '@/config/layout';
+import { panelHeaderPadding, panelContentPadding, panelGridGap, panelFieldHorizontalGap, panelSubLabelMargin, panelBadgeGroupGap, panelFieldVerticalGap } from '@/config/layout';
 
 const DEBOUNCE_DELAY = 400;
 
@@ -404,7 +404,7 @@ const BasicInformationSectionComponent = ({
   }, [characterData.classSpecificChoices, selectedClassInfo?.uiSections, onFieldChange, getCurrentValue, translations, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES]);
 
   const renderClassSpecificUI = React.useCallback((uiBlock: ClassSpecificUIBlock, panelIsLocked: boolean, blockIndex: number) => {
-    if (!translations || !UI_STRINGS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) return <Skeleton />;
+    if (!translations || !UI_STRINGS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) return null;
 
     const currentCharacterClassLevel = characterData.classes[0]?.level || 0;
     if (uiBlock.requiredLevel && currentCharacterClassLevel < uiBlock.requiredLevel) return null;
@@ -499,7 +499,7 @@ const BasicInformationSectionComponent = ({
 
     if (uiBlock.choiceType === 'select') {
       return (
-        <div key={`${uiBlock.key}-${blockIndex}-select`}>
+        <div key={`${uiBlock.key}-${blockIndex}-select`} className={panelFieldVerticalGap}>
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`} className="whitespace-nowrap">{blockLabel}</Label>
           <div className={cn("flex items-center", panelFieldHorizontalGap)}>
             <div className="flex-grow">
@@ -515,7 +515,7 @@ const BasicInformationSectionComponent = ({
       );
     } else if (uiBlock.choiceType === 'combobox') { 
       return (
-        <div key={`${uiBlock.key}-${blockIndex}-combobox`}>
+        <div key={`${uiBlock.key}-${blockIndex}-combobox`} className={panelFieldVerticalGap}>
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`} className="whitespace-nowrap">{blockLabel}</Label>
            <div className={cn("flex items-center", panelFieldHorizontalGap)}>
             <div className="flex-grow">
@@ -546,20 +546,20 @@ const BasicInformationSectionComponent = ({
       const numInputsToRender = uiBlock.maxSelections;
       const slotLabelTemplate = uiBlock.slotLabel || `${uiBlock.key} Slot {slotNum}`;
       return (
-        <div key={`${uiBlock.key}-group-${blockIndex}`} className="border rounded-md bg-background/50">
+        <div key={`${uiBlock.key}-group-${blockIndex}`} className="border rounded-md bg-background/50 p-3 space-y-3">
           <Label className="flex font-medium whitespace-nowrap">{blockLabel} <Badge variant="outline">{numInputsToRender}</Badge></Label>
           {Array.from({ length: numInputsToRender }).map((_, index) => (
-            <div key={`${uiBlock.key}-slot-${index}`}>
+            <div key={`${uiBlock.key}-slot-${index}`} className={panelFieldVerticalGap}>
               <Label htmlFor={`${uiBlock.key}-input-${index}`} className="whitespace-nowrap"> {parseAndRenderUIString(slotLabelTemplate, { slotNum: index + 1 })} </Label>
               <Input id={`${uiBlock.key}-input-${index}`} value={getCurrentValue(uiBlock.key, index)} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, index)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
             </div>
           ))}
-          {blockNote && <p className="italic">{blockNote}</p>}
+          {blockNote && <p className="italic mt-2">{blockNote}</p>}
         </div>
       );
     } else if (uiBlock.choiceType === 'textInput') {
       return (
-         <div key={`${uiBlock.key}-${blockIndex}-textInput`}>
+         <div key={`${uiBlock.key}-${blockIndex}-textInput`} className={panelFieldVerticalGap}>
             <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`} className="whitespace-nowrap">{blockLabel}</Label>
             <Input id={`cspec-${uiBlock.key}-${blockIndex}`} value={currentBlockValueForProp} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
             {blockNote && <p className="italic">{blockNote}</p>}
@@ -577,9 +577,9 @@ const BasicInformationSectionComponent = ({
     onOpenClassSpecificChoiceInfoDialog,
     getCurrentValue,
   ]);
-
-  if (translationsLoading || !translations || !UI_STRINGS || !DND_RACES || !DND_CLASSES || !ALIGNMENTS || !DND_DEITIES || !SIZES || !GENDERS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) {
-    return null;
+  
+  if (translationsLoading || !UI_STRINGS || !DND_RACES || !DND_CLASSES || !ALIGNMENTS || !DND_DEITIES || !SIZES || !GENDERS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) {
+    return null; 
   }
 
 
@@ -594,18 +594,18 @@ const BasicInformationSectionComponent = ({
       {({ isLocked: panelIsLocked }) => (
         <div className={cn("grid grid-cols-1", panelGridGap)}>
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
-            <div>
+            <div className={panelFieldVerticalGap}>
               <Label htmlFor="name" className="whitespace-nowrap">{UI_STRINGS.characterNameLabel}</Label>
               <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} />
             </div>
-            <div>
+            <div className={panelFieldVerticalGap}>
               <Label htmlFor="playerName" className="whitespace-nowrap">{UI_STRINGS.playerNameLabel}</Label>
               <Input id="playerName" name="playerName" value={localPlayerName} onChange={(e) => setLocalPlayerName(e.target.value)} disabled={panelIsLocked} />
             </div>
           </div>
 
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
-            <div>
+            <div className={panelFieldVerticalGap}>
               <Label htmlFor="race" className="whitespace-nowrap">{UI_STRINGS.raceLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
                 <div className="flex-grow">
@@ -630,7 +630,7 @@ const BasicInformationSectionComponent = ({
                 </div>
               )}
             </div>
-             <div>
+             <div className={panelFieldVerticalGap}>
               <Label htmlFor="className" className="whitespace-nowrap">{UI_STRINGS.classLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
                 <div className="flex-grow">
@@ -694,7 +694,7 @@ const BasicInformationSectionComponent = ({
           )}
 
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
-            <div>
+            <div className={panelFieldVerticalGap}>
               <Label htmlFor="alignment" className="whitespace-nowrap">{UI_STRINGS.alignmentLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
                 <div className="flex-grow">
@@ -706,7 +706,7 @@ const BasicInformationSectionComponent = ({
                 <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment} className="shrink-0"> <Info /> </Button>
               </div>
             </div>
-            <div>
+            <div className={panelFieldVerticalGap}>
                 <Label htmlFor="deity" className="whitespace-nowrap">{UI_STRINGS.deityLabel}</Label>
                 <div className={cn("flex items-center", panelFieldHorizontalGap)}>
                   <div className="flex-grow">
@@ -734,7 +734,7 @@ const BasicInformationSectionComponent = ({
           </div>
 
           <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
-            <div>
+            <div className={panelFieldVerticalGap}>
               <Label htmlFor="age" className="block whitespace-nowrap">{UI_STRINGS.ageLabel}</Label>
               <Input
                 id="age"
@@ -764,14 +764,14 @@ const BasicInformationSectionComponent = ({
                 </div>
               )}
               </div>
-            <div>
+            <div className={panelFieldVerticalGap}>
               <Label htmlFor="gender" className="whitespace-nowrap">{UI_STRINGS.genderLabel}</Label>
               <Select name="gender" value={localGender} onValueChange={(value) => setLocalGender(value as GenderId)} disabled={panelIsLocked} >
                 <SelectTrigger id="gender"> <SelectValue /> </SelectTrigger>
                 <SelectContent> {genderSelectOptions.map(g => ( <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem> ))} </SelectContent>
               </Select>
             </div>
-            <div>
+            <div className={panelFieldVerticalGap}>
               <Label htmlFor="sizeCategory" className="whitespace-nowrap">{UI_STRINGS.sizeLabel}</Label>
               <div className="flex items-center">
                 <div className="flex-grow">
