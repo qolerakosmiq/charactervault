@@ -872,6 +872,15 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     const finalCharacterData = { ...character };
     onSave(finalCharacterData);
   }, [character, onSave, toast, translations]);
+  
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (
+      e.key === 'Enter' &&
+      (e.target as HTMLElement).tagName.toLowerCase() === 'input'
+    ) {
+      e.preventDefault();
+    }
+  };
 
   const characterLevelFromXP = React.useMemo(() => {
     if (!character?.experiencePoints || !translations?.XP_TABLE || !translations.EPIC_LEVEL_XP_INCREASE) return 1;
@@ -1151,7 +1160,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="space-y-8">
         {coreInfoData && (
           <CharacterFormCoreInfoSection
             characterData={coreInfoData}
@@ -1418,3 +1427,4 @@ CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
 
     
+
