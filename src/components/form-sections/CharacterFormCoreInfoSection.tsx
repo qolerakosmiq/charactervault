@@ -40,7 +40,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 import { DualBadge } from '@/components/ui/DualBadge';
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
-import { panelGridGap, panelFieldLabelMargin, panelFieldHorizontalGap } from '@/config/layout';
+import { panelFieldLabelMargin, panelFieldHorizontalGap } from '@/config/layout';
 
 const DEBOUNCE_DELAY = 400;
 
@@ -502,7 +502,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       return (
         <div key={`${uiBlock.key}-${blockIndex}-select`}>
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
-          <div className="flex items-center">
+          <div className={cn("flex items-center", panelFieldHorizontalGap)}>
             <div className="flex-grow">
                 <Select name={uiBlock.key} value={uiValueForComponent} onValueChange={handleChange} disabled={isDisabledByPanelOrDependency} >
                     <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`}> <SelectValue /> </SelectTrigger>
@@ -518,7 +518,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       return (
         <div key={`${uiBlock.key}-${blockIndex}-combobox`}>
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
-           <div className="flex items-center">
+           <div className={cn("flex items-center", panelFieldHorizontalGap)}>
             <div className="flex-grow">
                 <Select
                   name={uiBlock.key}
@@ -607,8 +607,8 @@ const CharacterFormCoreInfoSectionComponent = ({
       headerClassName=""
     >
       {({ isLocked: panelIsLocked }) => (
-        <div className={cn("space-y-4")}>
-          <div className={cn("grid grid-cols-2", panelGridGap)}>
+        <div className="">
+          <div className={cn("grid grid-cols-2")}>
             <div>
               <Label htmlFor="name" className={panelFieldLabelMargin}>{UI_STRINGS.characterNameLabel}</Label>
               <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} />
@@ -619,7 +619,7 @@ const CharacterFormCoreInfoSectionComponent = ({
             </div>
           </div>
 
-          <div className={cn("grid grid-cols-2", panelGridGap)}>
+          <div className={cn("grid grid-cols-2")}>
             <div>
               <Label htmlFor="race" className={panelFieldLabelMargin}>{UI_STRINGS.raceLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
@@ -707,7 +707,7 @@ const CharacterFormCoreInfoSectionComponent = ({
             </Card>
           )}
 
-          <div className={cn("grid grid-cols-2", panelGridGap)}>
+          <div className={cn("grid grid-cols-2")}>
             <div>
               <Label htmlFor="alignment" className={panelFieldLabelMargin}>{UI_STRINGS.alignmentLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
@@ -747,7 +747,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               </div>
           </div>
 
-          <div className={cn("grid grid-cols-3", panelGridGap)}>
+          <div className={cn("grid grid-cols-3")}>
             <div>
               <Label htmlFor="age" className={cn("inline-block", panelFieldLabelMargin)}>{UI_STRINGS.ageLabel}</Label>
               <input

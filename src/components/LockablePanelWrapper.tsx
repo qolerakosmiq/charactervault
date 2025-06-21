@@ -54,12 +54,12 @@ const LockablePanelWrapperComponent = ({
 
   return (
     <Card className={cardClassName}>
-      <CardHeader className={cn("relative bg-muted/20", panelHeaderPadding, headerClassName)}>
+      <CardHeader className={cn("relative", panelHeaderPadding, headerClassName)}>
         <div className="flex items-start pr-10">
           {Icon && <Icon className="text-primary h-7 w-7 mr-3" />}
           <div>
             <CardTitle className="font-serif text-xl">{title}</CardTitle>
-            {description && <CardDescription className="text-base">{description}</CardDescription>}
+            {description && <CardDescription>{description}</CardDescription>}
           </div>
         </div>
         <div className="absolute top-4 right-4 flex">
