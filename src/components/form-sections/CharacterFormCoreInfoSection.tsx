@@ -500,7 +500,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     if (uiBlock.choiceType === 'select') {
       return (
         <div key={`${uiBlock.key}-${blockIndex}-select`}>
-          <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
+          <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`} className="whitespace-nowrap">{blockLabel}</Label>
           <div className={cn("flex items-center", panelFieldHorizontalGap)}>
             <div className="flex-grow">
                 <Select name={uiBlock.key} value={uiValueForComponent} onValueChange={handleChange} disabled={isDisabledByPanelOrDependency} >
@@ -516,7 +516,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     } else if (uiBlock.choiceType === 'combobox') { 
       return (
         <div key={`${uiBlock.key}-${blockIndex}-combobox`}>
-          <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
+          <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`} className="whitespace-nowrap">{blockLabel}</Label>
            <div className={cn("flex items-center", panelFieldHorizontalGap)}>
             <div className="flex-grow">
                 <Select
@@ -547,10 +547,10 @@ const CharacterFormCoreInfoSectionComponent = ({
       const slotLabelTemplate = uiBlock.slotLabel || `${uiBlock.key} Slot {slotNum}`;
       return (
         <div key={`${uiBlock.key}-group-${blockIndex}`} className="border rounded-md bg-background/50">
-          <Label className="flex font-medium">{blockLabel} <Badge variant="outline">{numInputsToRender}</Badge></Label>
+          <Label className="flex font-medium whitespace-nowrap">{blockLabel} <Badge variant="outline">{numInputsToRender}</Badge></Label>
           {Array.from({ length: numInputsToRender }).map((_, index) => (
             <div key={`${uiBlock.key}-slot-${index}`}>
-              <Label htmlFor={`${uiBlock.key}-input-${index}`}> {parseAndRenderUIString(slotLabelTemplate, { slotNum: index + 1 })} </Label>
+              <Label htmlFor={`${uiBlock.key}-input-${index}`} className="whitespace-nowrap"> {parseAndRenderUIString(slotLabelTemplate, { slotNum: index + 1 })} </Label>
               <Input id={`${uiBlock.key}-input-${index}`} value={getCurrentValue(uiBlock.key, index)} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, index)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
             </div>
           ))}
@@ -560,7 +560,7 @@ const CharacterFormCoreInfoSectionComponent = ({
     } else if (uiBlock.choiceType === 'textInput') {
       return (
          <div key={`${uiBlock.key}-${blockIndex}-textInput`}>
-            <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
+            <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`} className="whitespace-nowrap">{blockLabel}</Label>
             <Input id={`cspec-${uiBlock.key}-${blockIndex}`} value={currentBlockValueForProp} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
             {blockNote && <p className="italic">{blockNote}</p>}
          </div>
@@ -607,20 +607,20 @@ const CharacterFormCoreInfoSectionComponent = ({
     >
       {({ isLocked: panelIsLocked }) => (
         <div className={cn("grid grid-cols-1", panelGridGap)}>
-          <div className={cn("grid grid-cols-2", panelGridGap)}>
+          <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
             <div>
-              <Label htmlFor="name">{UI_STRINGS.characterNameLabel}</Label>
+              <Label htmlFor="name" className="whitespace-nowrap">{UI_STRINGS.characterNameLabel}</Label>
               <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} />
             </div>
             <div>
-              <Label htmlFor="playerName">{UI_STRINGS.playerNameLabel}</Label>
+              <Label htmlFor="playerName" className="whitespace-nowrap">{UI_STRINGS.playerNameLabel}</Label>
               <Input id="playerName" name="playerName" value={localPlayerName} onChange={(e) => setLocalPlayerName(e.target.value)} disabled={panelIsLocked} />
             </div>
           </div>
 
-          <div className={cn("grid grid-cols-2", panelGridGap)}>
+          <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
             <div>
-              <Label htmlFor="race">{UI_STRINGS.raceLabel}</Label>
+              <Label htmlFor="race" className="whitespace-nowrap">{UI_STRINGS.raceLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
                 <div className="flex-grow">
                   <Select value={localRace} onValueChange={(value) => setLocalRace(value as DndRaceId)} disabled={panelIsLocked} >
@@ -645,7 +645,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               )}
             </div>
              <div>
-              <Label htmlFor="className">{UI_STRINGS.classLabel}</Label>
+              <Label htmlFor="className" className="whitespace-nowrap">{UI_STRINGS.classLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
                 <div className="flex-grow">
                   <Select value={localClassName} onValueChange={(value) => setLocalClassName(value as DndClassId)} disabled={panelIsLocked} >
@@ -707,9 +707,9 @@ const CharacterFormCoreInfoSectionComponent = ({
             </>
           )}
 
-          <div className={cn("grid grid-cols-2", panelGridGap)}>
+          <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
             <div>
-              <Label htmlFor="alignment">{UI_STRINGS.alignmentLabel}</Label>
+              <Label htmlFor="alignment" className="whitespace-nowrap">{UI_STRINGS.alignmentLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
                 <div className="flex-grow">
                   <Select name="alignment" value={localAlignment === "" ? UI_EMPTY_SELECTION_VALUE : localAlignment} onValueChange={(value) => setLocalAlignment(value === UI_EMPTY_SELECTION_VALUE ? "" : value as CharacterAlignment)} disabled={panelIsLocked} >
@@ -721,7 +721,7 @@ const CharacterFormCoreInfoSectionComponent = ({
               </div>
             </div>
             <div>
-                <Label htmlFor="deity">{UI_STRINGS.deityLabel}</Label>
+                <Label htmlFor="deity" className="whitespace-nowrap">{UI_STRINGS.deityLabel}</Label>
                 <div className={cn("flex items-center", panelFieldHorizontalGap)}>
                   <div className="flex-grow">
                       <Select
@@ -747,9 +747,9 @@ const CharacterFormCoreInfoSectionComponent = ({
               </div>
           </div>
 
-          <div className={cn("grid grid-cols-3", panelGridGap)}>
+          <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
             <div>
-              <Label htmlFor="age" className="inline-block">{UI_STRINGS.ageLabel}</Label>
+              <Label htmlFor="age" className="block whitespace-nowrap">{UI_STRINGS.ageLabel}</Label>
               <Input
                 id="age"
                 type="number"
@@ -779,14 +779,14 @@ const CharacterFormCoreInfoSectionComponent = ({
               )}
               </div>
             <div>
-              <Label htmlFor="gender">{UI_STRINGS.genderLabel}</Label>
+              <Label htmlFor="gender" className="whitespace-nowrap">{UI_STRINGS.genderLabel}</Label>
               <Select name="gender" value={localGender} onValueChange={(value) => setLocalGender(value as GenderId)} disabled={panelIsLocked} >
                 <SelectTrigger id="gender"> <SelectValue /> </SelectTrigger>
                 <SelectContent> {genderSelectOptions.map(g => ( <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem> ))} </SelectContent>
               </Select>
             </div>
             <div>
-              <Label htmlFor="sizeCategory">{UI_STRINGS.sizeLabel}</Label>
+              <Label htmlFor="sizeCategory" className="whitespace-nowrap">{UI_STRINGS.sizeLabel}</Label>
               <div className="flex items-center">
                 <div className="flex-grow">
                   <Select name="sizeCategory" value={localSize === "" ? UI_EMPTY_SELECTION_VALUE : localSize} onValueChange={(value) => setLocalSize(value === UI_EMPTY_SELECTION_VALUE ? "" : value as CharacterSize)} disabled={panelIsLocked} >
