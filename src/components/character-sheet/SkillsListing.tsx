@@ -1,20 +1,19 @@
-
 'use client';
 
-import type { Character, Skill as SkillType, AbilityScores, AggregatedFeatEffects, DetailedAbilityScores } from '@/types/character'; // Added AggregatedFeatEffects, DetailedAbilityScores
-import type { AbilityName } from '@/types/character-core'; // Explicitly from core
+import type { Character, Skill as SkillType, AbilityScores, AggregatedFeatEffects, DetailedAbilityScores } from '@/types/character';
+import type { AbilityName } from '@/types/character-core';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Scroll, Loader2 } from 'lucide-react';
-import { getAbilityModifierByName } from '@/lib/dnd-utils'; // calculateSumOfClassLevels removed as XP is now used for level
+import { getAbilityModifierByName, calculateLevelFromXp } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
-import { calculateLevelFromXp, calculateTotalSynergyBonus, calculateRacialSkillBonus, calculateSizeSpecificSkillBonus } from '@/types/character'; // Import relevant calculators
-import React from 'react'; // Added React for useMemo
+import { calculateTotalSynergyBonus, calculateRacialSkillBonus, calculateSizeSpecificSkillBonus } from '@/types/character';
+import React from 'react';
 
 interface SkillsListingProps {
   skills: SkillType[];
@@ -172,5 +171,3 @@ export const SkillsListing: React.FC<SkillsListingProps> = ({
 };
 
 SkillsListing.displayName = "SkillsListingComponent";
-
-    
