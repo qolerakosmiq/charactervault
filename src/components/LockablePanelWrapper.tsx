@@ -7,10 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Lock, Unlock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useI18n } from '@/context/I18nProvider';
+import { panelHeaderPadding, panelContentPadding } from '@/config/layout';
 
 interface LockablePanelWrapperProps {
   title: string;
-  description?: string; 
+  description?: string;
   icon: React.ElementType;
   children: React.ReactNode | (({ isLocked }: { isLocked: boolean }) => React.ReactNode);
   initialLockedState?: boolean;
@@ -53,9 +54,9 @@ const LockablePanelWrapperComponent = ({
 
   return (
     <Card className={cardClassName}>
-      <CardHeader className={cn("relative p-4 bg-muted/20", headerClassName)}>
-        <div className="flex items-start gap-3 pr-10">
-          {Icon && <Icon className="text-primary h-7 w-7" />}
+      <CardHeader className={cn("relative bg-muted/20", panelHeaderPadding, headerClassName)}>
+        <div className="flex items-start pr-10">
+          {Icon && <Icon className="text-primary h-7 w-7 mr-3" />}
           <div>
             <CardTitle className="font-serif text-xl">{title}</CardTitle>
             {description && <CardDescription className="text-base">{description}</CardDescription>}
@@ -71,7 +72,7 @@ const LockablePanelWrapperComponent = ({
               aria-label={lockAriaLabel}
               aria-pressed={!isLocked}
               className={cn(
-                "h-7 w-7 shrink-0 p-1.5", 
+                "h-7 w-7 shrink-0 p-1.5",
                 isLocked
                   ? "text-muted-foreground hover:text-foreground"
                   : "bg-accent text-accent-foreground hover:bg-accent/90"
@@ -81,7 +82,7 @@ const LockablePanelWrapperComponent = ({
             </Button>
         </div>
       </CardHeader>
-      <CardContent className={cardContentClassName}>
+      <CardContent className={cn(panelContentPadding, cardContentClassName)}>
         {typeof children === 'function' ? children({ isLocked }) : children}
       </CardContent>
     </Card>
