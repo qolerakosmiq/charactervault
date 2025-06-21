@@ -39,7 +39,7 @@ import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 import { DualBadge } from '@/components/ui/DualBadge';
-import { panelHeaderPadding, panelContentPadding, panelGridGap, panelFieldHorizontalGap, panelSubLabelMargin, panelBadgeGroupGap, panelFieldVerticalGap } from '@/config/layout';
+import { panelHeaderPadding, panelContentPadding, panelGridGap, panelFieldHorizontalGap, panelFieldVerticalGap, panelSubLabelMargin, panelBadgeGroupGap } from '@/config/layout';
 
 const DEBOUNCE_DELAY = 400;
 
@@ -490,9 +490,8 @@ const BasicInformationSectionComponent = ({
 
     if (uiBlock.isHeadingOnly) {
       return (
-        <div key={`${uiBlock.key}-${blockIndex}-heading`}>
+        <div key={`${uiBlock.key}-${blockIndex}-heading`} className="md:col-span-2">
           <h3 className="text-md font-semibold text-accent">{blockLabel}</h3>
-          <Separator/>
         </div>
       );
     }
@@ -579,7 +578,7 @@ const BasicInformationSectionComponent = ({
   ]);
   
   if (translationsLoading || !UI_STRINGS || !DND_RACES || !DND_CLASSES || !ALIGNMENTS || !DND_DEITIES || !SIZES || !GENDERS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) {
-    return null; 
+    return null;
   }
 
 
@@ -588,8 +587,8 @@ const BasicInformationSectionComponent = ({
       title={UI_STRINGS.basicInformationPanelTitle}
       description={UI_STRINGS.basicInformationPanelDescription}
       icon={ScrollText}
-      initialLockedState={false}
       headerClassName="bg-muted/20"
+      initialLockedState={false}
     >
       {({ isLocked: panelIsLocked }) => (
         <div className={cn("grid grid-cols-1", panelGridGap)}>
@@ -681,16 +680,15 @@ const BasicInformationSectionComponent = ({
           </div>
 
           {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.length > 0 && (
-            <>
-              <Separator className="my-4" />
-              <div className={cn("grid grid-cols-1", panelGridGap)}>
+            <div className="space-y-4 rounded-md border bg-background/50 p-4">
+              <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
                 {selectedClassInfo.uiSections.map((uiBlock, index) => (
                   <React.Fragment key={`ui-section-wrapper-${uiBlock.key}-${index}`}>
                     {renderClassSpecificUI(uiBlock, panelIsLocked, index)}
                   </React.Fragment>
                 ))}
               </div>
-            </>
+            </div>
           )}
 
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
