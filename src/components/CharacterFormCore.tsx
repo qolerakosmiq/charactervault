@@ -1,7 +1,7 @@
 
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import type {
   AbilityName, Character, CharacterClass,
@@ -591,7 +591,21 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     setCharacter(prev => {
       if (!prev) return null;
       const updatedClasses = [{ ...prev.classes[0], id: prev.classes[0]?.id || crypto.randomUUID(), className: value, level: 1 }];
-      const characterWithNewClass = { ...prev, classes: updatedClasses, classSpecificChoices: [] };
+      
+      const newClassDef = translations.DND_CLASSES.find(c => c.id === value);
+      const newClassSpecificChoices: CharacterClassSpecificChoice[] = [];
+      if (newClassDef?.uiSections) {
+        newClassDef.uiSections.forEach(uiBlock => {
+          if (uiBlock.defaultValue !== undefined && uiBlock.defaultValue !== null) {
+            newClassSpecificChoices.push({
+              featureKey: uiBlock.key,
+              value: uiBlock.defaultValue,
+            });
+          }
+        });
+      }
+      
+      const characterWithNewClass = { ...prev, classes: updatedClasses, classSpecificChoices: newClassSpecificChoices };
 
       const newSkills = allAvailableSkillDefinitionsForDisplay.map(skillDef => {
           const existingInstance = prev.skills.find(s => s.id === skillDef.id);
@@ -840,7 +854,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     }
     const UI_STRINGS = translations.UI_STRINGS;
     if (!character.name || character.name.trim() === '') { toast({ title: UI_STRINGS.toastMissingCharacterNameTitle, description: UI_STRINGS.toastMissingCharacterNameDesc, variant: "destructive" }); return; }
-    if (!character.race || character.race.trim() === '') { toast({ title: UI_STRINGS.toastMissingCharacterRaceTitle, description: UI_STRINGS.toastMissingCharacterRaceDesc, variant: "destructive" }); return; }
+    if (!character.race || character.race.trim() === '') { toast({ title: UI_STRINGS.toastMissingCharacterRaceTitle, description: UI_STRINGS.toastMissingCharacterNameDesc, variant: "destructive" }); return; }
     if (!character.classes[0]?.className || character.classes[0]?.className.trim() === '') { toast({ title: UI_STRINGS.toastMissingCharacterClassTitle, description: UI_STRINGS.toastMissingCharacterClassDesc, variant: "destructive" }); return; }
     if (!character.alignment) { toast({ title: UI_STRINGS.toastMissingAlignmentTitle, description: UI_STRINGS.toastMissingAlignmentDesc, variant: "destructive" }); return; }
 
@@ -1159,24 +1173,22 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
   return (
     <>
       <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="space-y-8">
-        {basicInfoData && (
-          <BasicInformationSection
-            characterData={basicInfoData}
-            classSpecificChoices={character.classSpecificChoices || []}
-            onFieldChange={handleCoreInfoFieldChange}
-            onClassChange={handleClassChange}
-            ageEffectsDetails={ageEffectsDetails}
-            raceSpecialQualities={raceSpecialQualities}
-            currentMinAgeForInput={currentMinAgeForInput}
-            onOpenRaceInfoDialog={handleOpenRaceInfoDialog}
-            onOpenClassInfoDialog={handleOpenClassInfoDialog}
-            onOpenAlignmentInfoDialog={handleOpenAlignmentInfoDialog}
-            onOpenDeityInfoDialog={handleOpenDeityInfoDialog}
-            onOpenClassSpecificChoiceInfoDialog={handleOpenClassSpecificChoiceInfoDialog}
-            aggregatedFeatEffects={aggregatedFeatEffects}
-            characterLevel={characterLevelFromXP}
-          />
-        )}
+        <BasicInformationSection
+          characterData={basicInfoData}
+          classSpecificChoices={character.classSpecificChoices || []}
+          onFieldChange={handleCoreInfoFieldChange}
+          onClassChange={handleClassChange}
+          ageEffectsDetails={ageEffectsDetails}
+          raceSpecialQualities={raceSpecialQualities}
+          currentMinAgeForInput={currentMinAgeForInput}
+          onOpenRaceInfoDialog={handleOpenRaceInfoDialog}
+          onOpenClassInfoDialog={handleOpenClassInfoDialog}
+          onOpenAlignmentInfoDialog={handleOpenAlignmentInfoDialog}
+          onOpenDeityInfoDialog={handleOpenDeityInfoDialog}
+          onOpenClassSpecificChoiceInfoDialog={handleOpenClassSpecificChoiceInfoDialog}
+          aggregatedFeatEffects={aggregatedFeatEffects}
+          characterLevel={characterLevelFromXP}
+        />
 
         {abilityScoresData && detailedAbilityScores && (
           <CharacterFormAbilityScoresSection
@@ -1426,3 +1438,5 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
 
+
+    
