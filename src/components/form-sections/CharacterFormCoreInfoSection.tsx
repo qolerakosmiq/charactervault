@@ -404,7 +404,7 @@ const CharacterFormCoreInfoSectionComponent = ({
   }, [characterData.classSpecificChoices, selectedClassInfo?.uiSections, onFieldChange, getCurrentValue, translations, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES]);
 
   const renderClassSpecificUI = React.useCallback((uiBlock: ClassSpecificUIBlock, panelIsLocked: boolean, blockIndex: number) => {
-    if (!translations || !UI_STRINGS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) return <Skeleton className="h-10 w-full my-2" />;
+    if (!translations || !UI_STRINGS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) return <Skeleton />;
 
     const currentCharacterClassLevel = characterData.classes[0]?.level || 0;
     if (uiBlock.requiredLevel && currentCharacterClassLevel < uiBlock.requiredLevel) return null;
@@ -477,52 +477,52 @@ const CharacterFormCoreInfoSectionComponent = ({
     const hasInfoContentForDialog = uiBlock.optionsSource || uiBlock.infoDialogContent || uiBlock.description;
     const commonInfoButton = (hasInfoContentForDialog && !!onOpenClassSpecificChoiceInfoDialog) ? (
       <Button
-        type="button" variant="ghost" size="icon"
-        className="shrink-0 text-muted-foreground hover:text-foreground h-5 w-5 p-0"
+        type="button" variant="ghost"
+        className="shrink-0 text-muted-foreground hover:text-foreground"
         onClick={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
         disabled={panelIsLocked && !hasInfoContentForDialog}
         aria-label={(UI_STRINGS.infoDialogClassSpecificChoiceAriaLabel || "Info for {choiceName}").replace("{choiceName}", blockLabel)}
       >
-        <Info className="h-3.5 w-3.5" />
+        <Info />
       </Button>
     ) : null;
 
 
     if (uiBlock.isHeadingOnly) {
       return (
-        <div key={`${uiBlock.key}-${blockIndex}-heading`} className="mt-1 mb-0">
+        <div key={`${uiBlock.key}-${blockIndex}-heading`}>
           <h3 className="text-md font-semibold text-accent">{blockLabel}</h3>
-          <Separator className="mt-1" />
+          <Separator/>
         </div>
       );
     }
 
     if (uiBlock.choiceType === 'select') {
       return (
-        <div key={`${uiBlock.key}-${blockIndex}-select`} className="space-y-1.5">
+        <div key={`${uiBlock.key}-${blockIndex}-select`}>
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center">
             <Select name={uiBlock.key} value={uiValueForComponent} onValueChange={handleChange} disabled={isDisabledByPanelOrDependency} >
-              <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`} className="flex-grow h-10 text-sm"> <SelectValue/> </SelectTrigger>
+              <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`} className="flex-grow text-sm"> <SelectValue/> </SelectTrigger>
               <SelectContent> {finalSelectOptions.map(opt => <SelectItem key={opt.value} value={opt.value} disabled={opt.disabled}>{opt.label}</SelectItem>)} </SelectContent>
             </Select>
             {commonInfoButton}
           </div>
-          {blockNote && <p className="text-xs text-destructive/80 italic mt-1">{blockNote}</p>}
+          {blockNote && <p className="text-xs text-destructive/80 italic">{blockNote}</p>}
         </div>
       );
     } else if (uiBlock.choiceType === 'combobox') { 
       return (
-        <div key={`${uiBlock.key}-${blockIndex}-combobox`} className="space-y-1.5">
+        <div key={`${uiBlock.key}-${blockIndex}-combobox`}>
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
-           <div className="flex items-center gap-2">
+           <div className="flex items-center">
             <Select
               name={uiBlock.key}
               value={uiValueForComponent}
               onValueChange={handleChange}
               disabled={isDisabledByPanelOrDependency}
             >
-              <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`} className="flex-grow h-10 text-sm">
+              <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`} className="flex-grow text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -535,30 +535,30 @@ const CharacterFormCoreInfoSectionComponent = ({
             </Select>
             {commonInfoButton}
           </div>
-          {blockNote && <p className="text-xs text-destructive/80 italic mt-1">{blockNote}</p>}
+          {blockNote && <p className="text-xs text-destructive/80 italic">{blockNote}</p>}
         </div>
       );
     } else if (uiBlock.choiceType === 'multiInput' && uiBlock.maxSelections && uiBlock.maxSelections > 0) {
       const numInputsToRender = uiBlock.maxSelections;
       const slotLabelTemplate = uiBlock.slotLabel || `${uiBlock.key} Slot {slotNum}`;
       return (
-        <div key={`${uiBlock.key}-group-${blockIndex}`} className="space-y-3 p-3 border rounded-md bg-background/50">
-          <Label className="flex items-center text-md font-medium">{blockLabel} <Badge variant="outline" className="ml-2">{numInputsToRender}</Badge></Label>
+        <div key={`${uiBlock.key}-group-${blockIndex}`} className="border rounded-md bg-background/50">
+          <Label className="flex items-center text-md font-medium">{blockLabel} <Badge variant="outline">{numInputsToRender}</Badge></Label>
           {Array.from({ length: numInputsToRender }).map((_, index) => (
-            <div key={`${uiBlock.key}-slot-${index}`} className="space-y-1">
+            <div key={`${uiBlock.key}-slot-${index}`}>
               <Label htmlFor={`${uiBlock.key}-input-${index}`} className="text-xs"> {parseAndRenderUIString(slotLabelTemplate, { slotNum: index + 1 })} </Label>
-              <Input id={`${uiBlock.key}-input-${index}`} value={getCurrentValue(uiBlock.key, index)} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, index)} placeholder={inputPlaceholderText} className="h-10 text-sm" disabled={isDisabledByPanelOrDependency} />
+              <Input id={`${uiBlock.key}-input-${index}`} value={getCurrentValue(uiBlock.key, index)} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, index)} placeholder={inputPlaceholderText} className="text-sm" disabled={isDisabledByPanelOrDependency} />
             </div>
           ))}
-          {blockNote && <p className="text-xs text-destructive/80 italic mt-1">{blockNote}</p>}
+          {blockNote && <p className="text-xs text-destructive/80 italic">{blockNote}</p>}
         </div>
       );
     } else if (uiBlock.choiceType === 'textInput') {
       return (
-         <div key={`${uiBlock.key}-${blockIndex}-textInput`} className="space-y-1.5">
+         <div key={`${uiBlock.key}-${blockIndex}-textInput`}>
             <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
-            <Input id={`cspec-${uiBlock.key}-${blockIndex}`} value={currentBlockValueForProp} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} className="h-10 text-sm"/>
-            {blockNote && <p className="text-xs text-destructive/80 italic mt-1">{blockNote}</p>}
+            <Input id={`cspec-${uiBlock.key}-${blockIndex}`} value={currentBlockValueForProp} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} className="text-sm"/>
+            {blockNote && <p className="text-xs text-destructive/80 italic">{blockNote}</p>}
          </div>
       );
     }
@@ -586,9 +586,9 @@ const CharacterFormCoreInfoSectionComponent = ({
         headerClassName="bg-muted/20"
       >
         {() => (
-          <div className="flex justify-center items-center py-10">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingText || "Loading..."}</p>
+          <div className="flex justify-center items-center">
+            <Loader2 className="animate-spin text-primary" />
+            <p className="text-muted-foreground">{translations?.UI_STRINGS.loadingText || "Loading..."}</p>
           </div>
         )}
       </LockablePanelWrapper>
@@ -607,27 +607,27 @@ const CharacterFormCoreInfoSectionComponent = ({
     >
       {({ isLocked: panelIsLocked }) => (
         <>
-          <div className="space-y-0">
+          <div>
             <div className="grid grid-cols-1 md:grid-cols-2 items-start">
-              <div className="space-y-1.5 p-4">
+              <div>
                 <Label htmlFor="name">{UI_STRINGS.characterNameLabel}</Label>
-                <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} className="h-10 text-sm"/>
+                <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} className="text-sm"/>
               </div>
-              <div className="space-y-1.5 p-4">
+              <div>
                 <Label htmlFor="playerName">{UI_STRINGS.playerNameLabel}</Label>
-                <Input id="playerName" name="playerName" value={localPlayerName} onChange={(e) => setLocalPlayerName(e.target.value)} disabled={panelIsLocked} className="h-10 text-sm"/>
+                <Input id="playerName" name="playerName" value={localPlayerName} onChange={(e) => setLocalPlayerName(e.target.value)} disabled={panelIsLocked} className="text-sm"/>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 items-start">
-              <div className="space-y-1.5 p-4">
+              <div>
                 <Label htmlFor="race">{UI_STRINGS.raceLabel}</Label>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center">
                   <Select value={localRace} onValueChange={(value) => setLocalRace(value as DndRaceId)} disabled={panelIsLocked} >
-                    <SelectTrigger id="race" className="flex-grow h-10 text-sm"> <SelectValue /> </SelectTrigger>
+                    <SelectTrigger id="race" className="flex-grow text-sm"> <SelectValue /> </SelectTrigger>
                     <SelectContent> {DND_RACES.map(race => <SelectItem key={race.id} value={race.id}>{race.label}</SelectItem>)} </SelectContent>
                   </Select>
-                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-5 w-5 p-0" onClick={onOpenRaceInfoDialog} disabled={panelIsLocked && !localRace}> <Info className="h-3.5 w-3.5" /> </Button>
+                  <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenRaceInfoDialog} disabled={panelIsLocked && !localRace}> <Info/> </Button>
                 </div>
                 {!panelIsLocked && selectedRaceInfo && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
                    <div className="flex flex-wrap items-baseline justify-start">
@@ -656,7 +656,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                           leftLabel={effect.ability.substring(0, 3).toUpperCase()}
                           rightLabel={change > 0 ? `+${change}` : String(change)}
                           leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0", leftBorderColorClass)}
-                          rightClassName={cn("border-2 rounded-r-full -ml-[2px]", rightBgClass, rightTextClass, rightBorderColorClass)}
+                          rightClassName={cn("border-2 rounded-r-full", rightBgClass, rightTextClass, rightBorderColorClass)}
                           className=""
                         />
                       );
@@ -664,14 +664,14 @@ const CharacterFormCoreInfoSectionComponent = ({
                   </div>
                 )}
               </div>
-               <div className="space-y-1.5 p-4">
+               <div>
                 <Label htmlFor="className">{UI_STRINGS.classLabel}</Label>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center">
                   <Select value={localClassName} onValueChange={(value) => setLocalClassName(value as DndClassId)} disabled={panelIsLocked} >
-                    <SelectTrigger id="className" className="flex-grow h-10 text-sm"> <SelectValue /> </SelectTrigger>
+                    <SelectTrigger id="className" className="flex-grow text-sm"> <SelectValue /> </SelectTrigger>
                     <SelectContent> {DND_CLASSES.map(c => <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>)} </SelectContent>
                   </Select>
-                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-5 w-5 p-0" onClick={onOpenClassInfoDialog} disabled={panelIsLocked && !localClassName} > <Info className="h-3.5 w-3.5" /> </Button>
+                  <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenClassInfoDialog} disabled={panelIsLocked && !localClassName} > <Info /> </Button>
                 </div>
                 <div className="flex flex-wrap items-baseline justify-start">
                   {!panelIsLocked && selectedClassInfo?.hitDice && (
@@ -720,7 +720,7 @@ const CharacterFormCoreInfoSectionComponent = ({
 
             {selectedClassInfo?.uiSections && selectedClassInfo.uiSections.length > 0 && (
               <Card className="bg-background">
-                <div className="p-4 pt-3">
+                <div className="">
                   {selectedClassInfo.uiSections.map((uiBlock, index) => (
                     <React.Fragment key={`ui-section-wrapper-${uiBlock.key}-${index}`}>
                       {renderClassSpecificUI(uiBlock, panelIsLocked, index)}
@@ -731,26 +731,26 @@ const CharacterFormCoreInfoSectionComponent = ({
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 items-start">
-              <div className="space-y-1.5 p-4">
+              <div>
                 <Label htmlFor="alignment">{UI_STRINGS.alignmentLabel}</Label>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center">
                   <Select name="alignment" value={localAlignment === "" ? UI_EMPTY_SELECTION_VALUE : localAlignment} onValueChange={(value) => setLocalAlignment(value === UI_EMPTY_SELECTION_VALUE ? "" : value as CharacterAlignment)} disabled={panelIsLocked} >
-                    <SelectTrigger id="alignment" className="flex-grow h-10 text-sm"> <SelectValue /> </SelectTrigger>
+                    <SelectTrigger id="alignment" className="flex-grow text-sm"> <SelectValue /> </SelectTrigger>
                     <SelectContent> {availableAlignments.map(align => ( <SelectItem key={align.id} value={align.id === "" ? UI_EMPTY_SELECTION_VALUE : align.id}>{align.label}</SelectItem> ))} </SelectContent>
                   </Select>
-                  <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-5 w-5 p-0" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment}> <Info className="h-3.5 w-3.5" /> </Button>
+                  <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment}> <Info /> </Button>
                 </div>
               </div>
-              <div className="space-y-1.5 p-4">
+              <div>
                   <Label htmlFor="deity">{UI_STRINGS.deityLabel}</Label>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center">
                     <Select
                       name="deity"
                       value={localDeity === "" ? UI_EMPTY_SELECTION_VALUE : localDeity}
                       onValueChange={(value) => setLocalDeity(value === UI_EMPTY_SELECTION_VALUE ? "" : value)}
                       disabled={panelIsLocked || (selectedClassInfo?.deityAlignmentRestriction && deitySelectOptions.length <= 1)}
                     >
-                      <SelectTrigger id="deity" className="flex-grow h-10 text-sm">
+                      <SelectTrigger id="deity" className="flex-grow text-sm">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -761,15 +761,15 @@ const CharacterFormCoreInfoSectionComponent = ({
                         ))}
                       </SelectContent>
                     </Select>
-                    <Button type="button" variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground h-5 w-5 p-0" onClick={onOpenDeityInfoDialog} disabled={(panelIsLocked && (!localDeity || localDeity.trim() === '')) || (!localDeity || localDeity.trim() === '')} > <Info className="h-3.5 w-3.5" /> </Button>
+                    <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenDeityInfoDialog} disabled={(panelIsLocked && (!localDeity || localDeity.trim() === '')) || (!localDeity || localDeity.trim() === '')} > <Info /> </Button>
                   </div>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 items-start">
-              <div className="space-y-1.5 p-4">
-                <Label htmlFor="age" className="inline-block w-full text-center md:text-center">{UI_STRINGS.ageLabel}</Label>
-                <NumberSpinnerInput id="age" value={localAge} onChange={setLocalAge} min={currentMinAgeForInput} max={1000} inputClassName="w-full h-10 text-sm text-center" buttonClassName="h-10 w-10" buttonSize="icon" className="justify-center" disabled={panelIsLocked} />
+              <div>
+                <Label htmlFor="age" className="inline-block text-center md:text-center">{UI_STRINGS.ageLabel}</Label>
+                <NumberSpinnerInput id="age" value={localAge} onChange={setLocalAge} min={currentMinAgeForInput} max={1000} inputClassName="text-sm text-center" buttonSize="icon" className="justify-center" disabled={panelIsLocked} />
                 {!panelIsLocked && ageEffectsDetails && (ageEffectsDetails.categoryName !== (UI_STRINGS.ageCategoryAdult) || ageEffectsDetails.effects.length > 0) && (
                    <div className="flex flex-wrap items-baseline justify-center">
                     <DualBadge
@@ -804,7 +804,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                           leftLabel={effect.ability.substring(0, 3).toUpperCase()}
                           rightLabel={change > 0 ? `+${change}` : String(change)}
                           leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0", leftBorderColorClass)}
-                          rightClassName={cn("border-2 rounded-r-full -ml-[2px]", rightBgClass, rightTextClass, rightBorderColorClass)}
+                          rightClassName={cn("border-2 rounded-r-full", rightBgClass, rightTextClass, rightBorderColorClass)}
                           className=""
                         />
                       );
@@ -812,17 +812,17 @@ const CharacterFormCoreInfoSectionComponent = ({
                   </div>
                 )}
                 </div>
-              <div className="space-y-1.5 p-4">
+              <div>
                 <Label htmlFor="gender">{UI_STRINGS.genderLabel}</Label>
                 <Select name="gender" value={localGender} onValueChange={(value) => setLocalGender(value as GenderId)} disabled={panelIsLocked} >
-                  <SelectTrigger id="gender" className="h-10 text-sm"> <SelectValue /> </SelectTrigger>
+                  <SelectTrigger id="gender" className="text-sm"> <SelectValue /> </SelectTrigger>
                   <SelectContent> {genderSelectOptions.map(g => ( <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem> ))} </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-1.5 p-4">
+              <div>
                 <Label htmlFor="sizeCategory">{UI_STRINGS.sizeLabel}</Label>
                 <Select name="sizeCategory" value={localSize === "" ? UI_EMPTY_SELECTION_VALUE : localSize} onValueChange={(value) => setLocalSize(value === UI_EMPTY_SELECTION_VALUE ? "" : value as CharacterSize)} disabled={panelIsLocked} >
-                  <SelectTrigger id="sizeCategory" className="h-10 text-sm"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="sizeCategory" className="text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent> {SIZES.map(s => <SelectItem key={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id} value={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id}>{s.label}</SelectItem>)} </SelectContent>
                 </Select>
                 {!panelIsLocked && localSize && (() => {
@@ -853,7 +853,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                             leftLabel={UI_STRINGS.sizeAcModLeftBadgeLabel}
                             rightLabel={acMod > 0 ? `+${acMod}` : String(acMod)}
                             leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0", leftBorderColorClass)}
-                            rightClassName={cn("border-2 rounded-r-full -ml-[2px]", rightBgClass, rightTextClass, rightBorderColorClass)}
+                            rightClassName={cn("border-2 rounded-r-full", rightBgClass, rightTextClass, rightBorderColorClass)}
                             className=""
                           />
                         </div>
