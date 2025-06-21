@@ -579,49 +579,7 @@ const CharacterFormCoreInfoSectionComponent = ({
   ]);
 
   if (translationsLoading || !translations || !UI_STRINGS || !DND_RACES || !DND_CLASSES || !ALIGNMENTS || !DND_DEITIES || !SIZES || !GENDERS || !DND_DOMAINS || !DND_MAGIC_SCHOOLS || !DND_CREATURE_TYPES) {
-    return (
-      <LockablePanelWrapper
-        title={UI_STRINGS?.coreAttributesTitle}
-        description={UI_STRINGS?.coreAttributesDescription}
-        icon={ScrollText}
-        headerClassName="bg-muted/20"
-      >
-        {() => (
-          <div className={cn("grid grid-cols-1", panelGridGap)}>
-            <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
-              <div>
-                <Label><Skeleton className="h-5 w-24 mb-1.5" /></Label>
-                <Skeleton className="h-10 w-full" />
-              </div>
-              <div>
-                <Label><Skeleton className="h-5 w-24 mb-1.5" /></Label>
-                <Skeleton className="h-10 w-full" />
-              </div>
-            </div>
-             <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
-                <div>
-                    <Label><Skeleton className="h-5 w-12 mb-1.5" /></Label>
-                    <Skeleton className="h-10 w-full" />
-                </div>
-                <div>
-                    <Label><Skeleton className="h-5 w-12 mb-1.5" /></Label>
-                    <Skeleton className="h-10 w-full" />
-                </div>
-            </div>
-            <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
-              <div>
-                <Label><Skeleton className="h-5 w-20 mb-1.5" /></Label>
-                <Skeleton className="h-10 w-full" />
-              </div>
-              <div>
-                <Label><Skeleton className="h-5 w-16 mb-1.5" /></Label>
-                <Skeleton className="h-10 w-full" />
-              </div>
-            </div>
-          </div>
-        )}
-      </LockablePanelWrapper>
-    );
+    return null;
   }
 
 
